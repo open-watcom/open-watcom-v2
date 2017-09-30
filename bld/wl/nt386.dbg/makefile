@@ -1,4 +1,4 @@
-#pmake: debug os_nt cpu_386
+#pmake: nobuild debug os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386

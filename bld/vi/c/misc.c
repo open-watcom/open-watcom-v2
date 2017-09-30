@@ -496,7 +496,7 @@ bool ExitWithPrompt( bool do_quit, bool push_pop )
         num++;
     }
     BringUpFile( InfoHead, true );
-    for( i = 0; i < num; i++ ){
+    for( i = 0; i < num; i++ ) {
         if( NextFile() > ERR_NO_ERR ) {
             // file modified ask
             if( FileExitOptionSaveChanges( CurrentFile ) ) {
@@ -740,7 +740,7 @@ char *StrMerge( int cnt, char *str, ... )
     char        *n;
 
     va_start( arg, str );
-    for( ; cnt > 0; --cnt ) {
+    for( ; cnt-- > 0; ) {
         n = va_arg( arg, char * );
         if( n != NULL ) {
             strcat( str, n );

@@ -1,7 +1,7 @@
 # Master Open Watcom Builder Control file
 # =======================================
 
-set PROJDIR=<CWD>
+set PROJDIR=<OWBINDIR>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 
@@ -257,8 +257,8 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <1> docs docsclean ]
-#===========================
+[ BLOCK <1> docs docsclean docpdf cpdocpdf ]
+#===========================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <1> test testclean cleanlog ]

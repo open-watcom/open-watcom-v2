@@ -50,6 +50,11 @@
 #include "os2extx.h"
 #include "os2v2acc.h"
 
+extern  __GINFOSEG  *GblInfo;
+
+extern  void    DebugSession( void );
+extern  void    AppSession( void );
+
 /*
  * globals
  */
@@ -68,11 +73,7 @@ ULONG           ExceptNum;
 HMODULE         ThisDLLModHandle;
 scrtype         Screen;
 
-extern  __GINFOSEG  *GblInfo;
-
-extern  void    DebugSession( void );
-extern  void    AppSession( void );
-
+static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 trap_retval ReqRead_io( void )
 {
@@ -172,7 +173,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosChgFilePtr( acc->handle, acc->pos, acc->mode, &ret->pos );
+    ret->err = DosChgFilePtr( acc->handle, acc->pos, local_seek_method[acc->mode], &ret->pos );
     return( sizeof( *ret ) );
 }
 

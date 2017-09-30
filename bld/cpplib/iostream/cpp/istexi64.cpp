@@ -33,7 +33,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <limits.h>
+#include <climits>
 #include <iostream>
 #include <streambu>
 #endif

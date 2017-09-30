@@ -34,9 +34,6 @@
 #define __DBGMEM_INCLUDED
 
 #include "walloca.h"
-#ifndef __alloca
-#define __alloca(s)     _alloca( __ALLOCA_ALIGN( s ) )
-#endif
 
 extern void     *DbgRealloc( void *, size_t );
 extern void     *ChkAlloc( size_t, char * );
@@ -49,7 +46,7 @@ extern void     MemFini( void );
 #define _ChkAlloc( res, size, type )    res = ChkAlloc( size, type )
 #define _Realloc( res, size )           res = DbgRealloc( res, size )
 #define _Alloc( res, size )             res = DbgAlloc( size )
-#define _AllocA( res, size )            res = __alloca( size )
+#define _AllocA( res, size )            res = walloca( size )
 #define _Free( ptr )                    DbgFree( ptr )
 
 extern void SysSetMemLimit( void );

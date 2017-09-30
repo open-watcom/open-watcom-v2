@@ -35,10 +35,10 @@
 
 
 extern "C"
-size_t CPPLIB( ts_size )(       // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
+std::size_t CPPLIB( ts_size )(  // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
     RT_TYPE_SIG sig )           // - type signature
 {
-    size_t size;                // - size of an element
+    std::size_t size;           // - size of an element
 
     sig = CPPLIB( ts_refed )( sig );
     switch( sig->hdr.type ) {

@@ -34,13 +34,15 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <stdlib.h>
-#include <string.h>
-#include <iostream.h>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 #include "osthdr.h"
+
+namespace std {
 
 ostream &ostream::operator << ( unsigned __int64 i ) {
 /****************************************************/
@@ -73,7 +75,7 @@ ostream &ostream::operator << ( unsigned __int64 i ) {
     if( flags() & ios::uppercase ) {
         strupr( buffer );
     }
-    size = ::strlen( buffer );
+    size = strlen( buffer );
 
     // Write the number:
     if( opfx() ) {
@@ -82,3 +84,5 @@ ostream &ostream::operator << ( unsigned __int64 i ) {
     }
     return( *this );
 }
+
+} // namespace std

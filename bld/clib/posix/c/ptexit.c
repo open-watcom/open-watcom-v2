@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stddef.h>
 #include <pthread.h>
 #include <process.h>
 #include <stdio.h>
@@ -39,25 +40,26 @@
 #include "_ptint.h"
 
 
-_WCRTLINK void pthread_exit(void *value_ptr)
+_WCRTLINK void pthread_exit( void *value_ptr )
 {
-pthread_t myself;
+    pthread_t myself;
 
     /* Call the thread cleanup routines */
-    __call_all_pthread_cleaners( );
+    __call_all_pthread_cleaners();
 
-    myself = __get_current_thread( );
-    if(myself == NULL) {
+    myself = __get_current_thread();
+    if( myself == NULL ) {
         _endthread();
+        // never return
     }
-    
+
     /* Unlock to release any joins */
     pthread_mutex_unlock( __get_thread_running_mutex( myself ) );
-    
+
     /* If detached, destroy all internal memory for this thread */
     if( __get_thread_detached( myself ) == 1 )
         __unregister_thread( myself );
-    
-    _endthread();
-}    
 
+    _endthread();
+    // never return
+}

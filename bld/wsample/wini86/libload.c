@@ -145,7 +145,7 @@ static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
     if( handle >= 0 ) {
         read( handle, &de, sizeof( de ) );
         if( de.signature == DOS_SIGNATURE ) {
-            lseek( handle, ( de.file_size - 1L ) * 512L + (long)de.mod_size, SEEK_SET );
+            lseek( handle, de.file_size * 512L - (-de.mod_size & 0x1ff), SEEK_SET );
         } else {
             lseek( handle, 0, SEEK_SET );
         }

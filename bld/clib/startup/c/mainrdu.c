@@ -121,7 +121,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
         if( _LpCmdLine == 0 )
             _LpCmdLine = "";
         else {
-           while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 ) 
+           while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 )
                _LpCmdLine++;
         }
     }
@@ -135,6 +135,7 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 
     if( RdosIsForked() ) {
         __CEndFork();
+        // never return
     } else {
         if( !__Is_DLL ) {
             __DoneExceptionFilter();
@@ -145,6 +146,10 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
         __FirstThreadData = NULL;
         if( !__Is_DLL ) {
             RdosUnloadExe( ret_code );
+            // never return
         }
+        // !TO DO
+        // here is missing call to system exit procedure
+        // should never return
     }
 }

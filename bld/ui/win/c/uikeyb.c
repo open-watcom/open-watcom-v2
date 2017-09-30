@@ -30,14 +30,12 @@
 
 
 #include <string.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include <dos.h>
-#include <windows.h>
-#include "uidos.h"
 #include "uidef.h"
+#include "uidos.h"
 #include "uishift.h"
 #include "biosui.h"
+#include <windows.h>
 
 
 #define PICK_ONE(x) PickOne( EV_ALT_##x, EV_CTRL_##x, EV_SHIFT_##x, EV_##x )

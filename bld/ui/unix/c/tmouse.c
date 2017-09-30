@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #if defined( __UNIX__ )

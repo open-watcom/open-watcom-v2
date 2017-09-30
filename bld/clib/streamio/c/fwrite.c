@@ -37,7 +37,7 @@
 #include "rterrno.h"
 #include "fileacc.h"
 #include "qwrite.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "streamio.h"
 #include "thread.h"
 

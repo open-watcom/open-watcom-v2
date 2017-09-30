@@ -33,8 +33,6 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
-#include <string.h>
 #include "win.h"
 /*
  * _SetMyDC - set display context for windows
@@ -61,18 +59,19 @@ int _MessageLoop( BOOL doexit )
             if( doexit ) {
                 _WindowsExitRtn = NULL;
                 exit( msg.wParam );
+                // never return
             }
             break;
         }
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
-    #if defined(__NT__)
-        // Yield() is obsolete under Win32
-        Sleep(0);
-    #else
-        Yield();
-    #endif
+#if defined(__NT__)
+    // Yield() is obsolete under Win32
+    Sleep(0);
+#else
+    Yield();
+#endif
     return( rc );
 
 } /* _MessageLoop */
@@ -83,13 +82,14 @@ int _MessageLoop( BOOL doexit )
 int _BlockingMessageLoop( BOOL doexit )
 {
     MSG         msg;
-    WORD        rc=1;
+    WORD        rc;
 
     rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
     if( !rc ) {
         if( doexit ) {
             _WindowsExitRtn = NULL;
             exit( msg.wParam );
+            // never return
         }
     } else {
         TranslateMessage( &msg );
@@ -118,23 +118,23 @@ void _ExecutionComplete( void )
 
 } /* _ExecutionComplete */
 
-int     _SetConTitle( LPWDATA w, char *title ) {
-//==============================================
-
+int     _SetConTitle( LPWDATA w, const char *title )
+//==================================================
+{
     SetWindowText( w->hwnd, title );
     return( 1 );
 }
 
-int     _SetAppTitle( char *title ) {
-//===================================
-
+int     _SetAppTitle( const char *title )
+//=======================================
+{
     SetWindowText( _MainWindow, title );
     return( 1 );
 }
 
-int     _ShutDown( void ) {
-//=========================
-
+int     _ShutDown( void )
+//=======================
+{
     flushall();
     DestroyWindow( _MainWindow );
     _MainWindowDestroyed = 1;
@@ -142,11 +142,10 @@ int     _ShutDown( void ) {
 }
 
 
-int     _CloseWindow( LPWDATA w ) {
-//=================================
-
+int     _CloseWindow( LPWDATA w )
+//===============================
+{
     if( w->destroy ) {
-        _DestroyAWindow( w );
         DestroyWindow( w->hwnd );
     }
     return( 0 );
@@ -162,7 +161,8 @@ void _NewCursor( LPWDATA w, cursors type )
         DestroyCaret();
         w->hascursor = FALSE;
     }
-    if( type == KILL_CURSOR ) return;
+    if( type == KILL_CURSOR )
+        return;
     w->CaretType = type;
     switch( type ) {
     case SMALL_CURSOR:
@@ -189,26 +189,22 @@ void _DisplayCursor( LPWDATA w )
 
     dc = GetDC( w->hwnd );
     SelectObject( dc, _FixedFont );
-    #ifdef _MBCS
-        #ifdef __NT__
-            GetTextExtentPoint32( dc, w->tmpbuff->data,
-                                  FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data,w->buffoff+w->curr_pos),
-                                  &size );
-        #else
-            GetTextExtentPoint( dc, w->tmpbuff->data,
-                                FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos),
-                                &size );
-        #endif
-    #else
-        #ifdef __NT__
-            GetTextExtentPoint32( dc, w->tmpbuff->data, w->buffoff+w->curr_pos,
-                                  &size );
-        #else
-            GetTextExtentPoint( dc, w->tmpbuff->data, w->buffoff+w->curr_pos,
-                                &size );
-        #endif
-    #endif
-    SetCaretPos( size.cx+1, (w->LastLineNumber-w->TopLineNumber)*w->ychar );
+#ifdef _MBCS
+  #ifdef __NT__
+    GetTextExtentPoint32( dc, w->tmpbuff->data,
+                          FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos ), &size );
+  #else
+    GetTextExtentPoint( dc, w->tmpbuff->data,
+                        FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos ), &size );
+  #endif
+#else
+  #ifdef __NT__
+    GetTextExtentPoint32( dc, w->tmpbuff->data, w->buffoff + w->curr_pos, &size );
+  #else
+    GetTextExtentPoint( dc, w->tmpbuff->data, w->buffoff + w->curr_pos, &size );
+  #endif
+#endif
+    SetCaretPos( size.cx + 1, ( w->LastLineNumber - w->TopLineNumber ) * w->ychar );
     ReleaseDC( w->hwnd, dc );
     ShowCaret( w->hwnd );
 
@@ -217,13 +213,16 @@ void _DisplayCursor( LPWDATA w )
 /*
  * _SetInputMode - set whether or not we are in input mode
  */
-void _SetInputMode( LPWDATA w, BOOL val  )
+void _SetInputMode( LPWDATA w, int val  )
 {
     WORD cmd;
 
     w->InputMode = val;
-    if( w->InputMode ) cmd = MF_GRAYED;
-    else cmd = MF_ENABLED;
+    if( w->InputMode ) {
+        cmd = MF_GRAYED;
+    } else {
+        cmd = MF_ENABLED;
+    }
     EnableMenuItem( _SubMenuEdit, MSG_FLUSH, cmd );
 
 } /* _SetInputMode */
@@ -234,7 +233,7 @@ void _SetInputMode( LPWDATA w, BOOL val  )
 void _ShowWindowActive( LPWDATA w, LPWDATA last )
 {
     if( last != NULL ) {
-        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS+last->handles[0],
+        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS + last->handles[0],
                  MF_UNCHECKED | MF_BYCOMMAND );
         SendMessage( last->hwnd, WM_NCACTIVATE, FALSE, 0L );
         if( last->CaretType != ORIGINAL_CURSOR ) {
@@ -242,7 +241,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         }
     }
     if( w != NULL ) {
-        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS+w->handles[0],
+        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS + w->handles[0],
                  MF_CHECKED | MF_BYCOMMAND );
         ShowWindow( w->hwnd, SW_SHOW );
         SendMessage( w->hwnd, WM_NCACTIVATE, TRUE, 0L );

@@ -33,30 +33,28 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
-#include <string.h>
 #define INCL_GPI
 #include "win.h"
 #include "pmmenu.h"
 
+
 extern HWND _GetWinMenuHandle( void );
 
-#define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
-
-int _MessageLoop( BOOL doexit ) {
-//===============================
-
+int _MessageLoop( BOOL doexit )
+//=============================
+{
     QMSG        msg;
     int         rc;
     extern int  DoStdIO;
 
     rc = 1;
-    while ( WinPeekMsg( _AnchorBlock, &msg, NULL, 0, 0, PM_NOREMOVE ) ) {
-        rc = WinGetMsg( _AnchorBlock, &msg, NULL, 0, 0 );
+    while( WinPeekMsg( _AnchorBlock, &msg, NULLHANDLE, 0, 0, PM_NOREMOVE ) ) {
+        rc = WinGetMsg( _AnchorBlock, &msg, NULLHANDLE, 0, 0 );
         if( !rc ) {
             if( doexit ) {
                 _WindowsExitRtn = NULL;
                 exit( 0 );
+                // never return
             }
             return( rc );
         }
@@ -65,17 +63,18 @@ int _MessageLoop( BOOL doexit ) {
     return( rc );
 }
 
-int _BlockingMessageLoop( BOOL doexit ) {
-//======================================
-
+int _BlockingMessageLoop( BOOL doexit )
+//=====================================
+{
     int         rc;
     QMSG        msg;
 
-    rc = WinGetMsg( _AnchorBlock, &msg, NULL, 0, 0 );
+    rc = WinGetMsg( _AnchorBlock, &msg, NULLHANDLE, 0, 0 );
     if( !rc ) {
         if( doexit ) {
             _WindowsExitRtn = NULL;
             exit( 0 );
+            // never return
         }
         return( rc );
     }
@@ -83,45 +82,45 @@ int _BlockingMessageLoop( BOOL doexit ) {
     return( _MessageLoop( doexit ) );
 }
 
-int     _SetConTitle( LPWDATA w, char *title ) {
-//==============================================
-
+int     _SetConTitle( LPWDATA w, const char *title )
+//==================================================
+{
     return( WinSetWindowText( w->frame, title ) );
 }
 
-int     _SetAppTitle( char *title ) {
-//===================================
-
+int     _SetAppTitle( const char *title )
+//=======================================
+{
     return( WinSetWindowText( _MainFrameWindow, title ) );
 }
 
-int     _ShutDown( void ) {
-//=========================
-
+int     _ShutDown( void )
+//=======================
+{
     WinSetWindowPos( _MainFrameWindow, 0, 0, 0, 0, 0, SWP_MINIMIZE );
     WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
     return( 0 );
 }
 
-int     _CloseWindow( LPWDATA w ) {
-//=================================
-
+int     _CloseWindow( LPWDATA w )
+//===============================
+{
     if( w->destroy ) {
         WinSendMsg( w->hwnd, WM_CLOSE, 0, 0 );
     }
     return( 0 );
 }
 
-void    _NewCursor( LPWDATA w, cursors type ) {
-//============================================
-
+void    _NewCursor( LPWDATA w, cursors type )
+//===========================================
 // change the cursor type
-
+{
     if( w->hascursor ) {
         WinDestroyCursor( w->hwnd );
         w->hascursor = FALSE;
     }
-    if( type == KILL_CURSOR ) return;
+    if( type == KILL_CURSOR )
+        return;
     w->CaretType = type;
     switch( type ) {
     case SMALL_CURSOR:
@@ -140,11 +139,10 @@ void    _NewCursor( LPWDATA w, cursors type ) {
 }
 
 
-void    _DisplayCursor( LPWDATA w ) {
-//==================================
-
+void    _DisplayCursor( LPWDATA w )
+//=================================
 // show the current cursor position
-
+{
     HPS                 ps;
     int                 x;
     int                 y;
@@ -152,25 +150,24 @@ void    _DisplayCursor( LPWDATA w ) {
 
     ps = WinGetPS( w->hwnd );
     _SelectFont( ps );
-    #ifdef _MBCS
-        GpiQueryTextBox( ps, FAR_mbsnbcnt(w->tmpbuff->data,w->curr_pos),
-                         w->tmpbuff->data, TXTBOX_COUNT, points );
-    #else
-        GpiQueryTextBox( ps, w->curr_pos, w->tmpbuff->data, TXTBOX_COUNT, points );
-    #endif
+#ifdef _MBCS
+    GpiQueryTextBox( ps, _mbsnbcnt( (unsigned char *)w->tmpbuff->data, w->curr_pos ),
+                     w->tmpbuff->data, TXTBOX_COUNT, points );
+#else
+    GpiQueryTextBox( ps, w->curr_pos, w->tmpbuff->data, TXTBOX_COUNT, points );
+#endif
     x = points[TXTBOX_CONCAT].x;
-    y = (w->y2 - w->y1) - (w->LastLineNumber-w->TopLineNumber+1) * w->ychar;
+    y = ( w->y2 - w->y1 ) - ( w->LastLineNumber - w->TopLineNumber + 1 ) * w->ychar;
     WinReleasePS( ps );
     WinCreateCursor( w->hwnd, x, y, 0, 0, CURSOR_SETPOS, NULL );
     WinShowCursor( w->hwnd, TRUE );
 }
 
 
-void    _SetInputMode( LPWDATA w, BOOL val ) {
-//===========================================
-
+void    _SetInputMode( LPWDATA w, int val )
+//=========================================
 // set whether or not we are in input mode
-
+{
     w->InputMode = val;
 }
 
@@ -188,13 +185,12 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         menudesc.afAttribute = 0;
         menudesc.iPosition = 0;
         menudesc.id = DID_WIND_STDIO + last->handles[0];
-        menudesc.hwndSubMenu = NULL;
-        WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
+        menudesc.hwndSubMenu = NULLHANDLE;
+        WinSendMsg( _GetWinMenuHandle(), (ULONG)MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
         if( last->CaretType != ORIGINAL_CURSOR ) {
             _NewCursor( last, KILL_CURSOR );
         }
-        WinSendMsg( WinWindowFromID( last->frame, FID_TITLEBAR ), TBM_SETHILITE,
-                FALSE, 0 );
+        WinSendMsg( WinWindowFromID( last->frame, FID_TITLEBAR ), TBM_SETHILITE, FALSE, 0 );
         WinSetFocus( HWND_DESKTOP, _MainWindow );
     }
     if( w != NULL ) {
@@ -208,14 +204,13 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         menudesc.afAttribute = MIA_CHECKED;
         menudesc.iPosition = 0;
         menudesc.id = DID_WIND_STDIO + w->handles[0];
-        menudesc.hwndSubMenu = NULL;
-        WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
+        menudesc.hwndSubMenu = NULLHANDLE;
+        WinSendMsg( _GetWinMenuHandle(), (ULONG)MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
         if( w->CaretType != ORIGINAL_CURSOR ) {
             _NewCursor( w, w->CaretType );
             _DisplayCursor( w );
         }
-        WinSendMsg( WinWindowFromID( w->frame, FID_TITLEBAR ), TBM_SETHILITE,
-                MPFROMSHORT( TRUE ), 0 );
+        WinSendMsg( WinWindowFromID( w->frame, FID_TITLEBAR ), TBM_SETHILITE, MPFROMSHORT( TRUE ), 0 );
     }
 
 } /* _ShowWindowActive */
@@ -226,8 +221,8 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
  */
 void _OutOfMemory( void )
 {
-        WinMessageBox( HWND_DESKTOP, _MainWindow, "Out Of Memory!",
-                       "SYSTEM ERROR", 0, MB_OK );
+    WinMessageBox( HWND_DESKTOP, _MainWindow, "Out Of Memory!", "SYSTEM ERROR", 0, MB_OK );
+
 } /* _OutOfMemory */
 
 
@@ -243,9 +238,9 @@ void _ExecutionComplete( void )
 } /* _ExecutionComplete */
 
 
-void _Error( HWND hwndDlg, char *caption, char *msg ) {
-//=======================================================
-
+void _Error( HWND hwndDlg, char *caption, char *msg )
+//===================================================
+{
     WinMessageBox( HWND_DESKTOP, hwndDlg, msg, caption, 0,
                    MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 }
@@ -253,8 +248,8 @@ void _Error( HWND hwndDlg, char *caption, char *msg ) {
 /*
  * _ResizeWindows - Resize windows after a main window resize
  */
-void _ResizeWindows( void ) {
-
+void _ResizeWindows( void )
+{
     int         i;
     int         place = 0;
     LPWDATA     w;
@@ -263,26 +258,26 @@ void _ResizeWindows( void ) {
     int         resize = FALSE;
 
     WinQueryWindowPos( _MainFrameWindow, &mwps );
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         w = _MainWindowData->windows[i];
         WinQueryWindowPos( w->frame, &swps );
-        if ( swps.fl & SWP_MAXIMIZE ) {
+        if( swps.fl & SWP_MAXIMIZE ) {
             WinSetWindowPos( w->frame, swps.hwndInsertBehind, swps.x,
                                 swps.y, swps.cx, swps.cy, SWP_MINIMIZE );
             WinSetWindowPos( w->frame, swps.hwndInsertBehind, swps.x,
                                 swps.y, swps.cx, swps.cy, SWP_MAXIMIZE );
-        } else if ( !( swps.fl & SWP_MINIMIZE ) ) {
-            if ( ( swps.x + swps.cx ) > mwps.cx ) {
+        } else if( (swps.fl & SWP_MINIMIZE) == 0 ) {
+            if( ( swps.x + swps.cx ) > mwps.cx ) {
                 swps.cx = mwps.cx - ( place * w->xchar ) + 4;
                 swps.x = ( place * w->xchar ) - 4;
                 resize = TRUE;
             }
-            if ( ( swps.y + swps.cy ) > mwps.cy ) {
+            if( ( swps.y + swps.cy ) > mwps.cy ) {
                 swps.cy = mwps.cy - ( ( place + 3 ) * w->ychar );
                 swps.y = 0;
                 resize = TRUE;
             }
-            if ( resize ) {
+            if( resize ) {
                 place += 4;
                 WinSetWindowPos( w->frame, swps.hwndInsertBehind, swps.x,
                                 swps.y, swps.cx, swps.cy, SWP_MOVE | SWP_RESTORE | SWP_SIZE );

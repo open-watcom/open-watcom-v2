@@ -896,7 +896,7 @@ static MP_TYPE classifyMpExpr(  // CLASSIFY A MEMBER-POINTER EXPRESSION
                 retn = MP_EXPR;
             }
         }
-    } else if( NodeIsZeroConstant( expr ) ) {
+    } else if( NodeIsZeroConstant( expr ) || NodeIsNullptr( expr ) ) {
         replace = MembPtrZero( TypeGetCache( TYPC_VOID_MEMBER_PTR ) );
         *a_expr = NodeReplaceTop( *a_expr, replace );
         retn = MP_ZERO;

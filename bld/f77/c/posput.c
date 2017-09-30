@@ -121,13 +121,13 @@ static  void    PutTextRec( b_file *io, const char *b, int len )
         return;
     if( ( io->attrs & CC_NOCR ) == 0 ) {
 #if defined( __UNIX__ )
-        tag[0] = LF;
+        tag[0] = CHAR_LF;
         len = 1;
 #else
-        tag[0] = CR;
+        tag[0] = CHAR_CR;
         len = 1;
         if( ( io->attrs & CC_NOLF ) == 0 ) {
-            tag[1] = LF;
+            tag[1] = CHAR_LF;
             ++len;
         }
 #endif

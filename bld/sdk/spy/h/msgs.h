@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,28 +30,29 @@
 ****************************************************************************/
 
 
-#define SPYMSG_CLIPBOARD   102
-#define SPYMSG_DDE         103
-#define SPYMSG_IME         104
-#define SPYMSG_INIT        105
-#define SPYMSG_INPUT       106
-#define SPYMSG_MDI         107
-#define SPYMSG_MOUSE       108
-#define SPYMSG_NCMISC      109
-#define SPYMSG_NCMOUSE     110
-#define SPYMSG_OTHER       111
-#define SPYMSG_SYSTEM      112
-#define SPYMSG_UNKNOWN     113
-#define SPYMSG_USER        114
-#define SPYMSG_WINDOW      115
-#define SPYMSG_CONTROLS    116
-#define SPYMSG_ALLCLEAR    120
-#define SPYMSG_ALLSET      121
-#define SPYMSG_RANGE_0     122
-#define SPYMSG_RANGE_1     123
-#define SPYMSG_RANGE_2     124
-#define SPYMSG_RANGE_3     125
-#define SPYMSG_DLG1        130
-#define SPYMSG_DLG2        131
-#define SPYMSG_DLG3        132
-#define SPYMSG_DLG4        133
+#define SPYMSG_CLASS01      102
+#define SPYMSG_CLASS02      103
+#define SPYMSG_CLASS03      104
+#define SPYMSG_CLASS04      105
+#define SPYMSG_CLASS05      106
+#define SPYMSG_CLASS06      107
+#define SPYMSG_CLASS07      108
+#define SPYMSG_CLASS08      109
+#define SPYMSG_CLASS09      110
+#define SPYMSG_CLASS10      111
+#define SPYMSG_CLASS11      112
+#define SPYMSG_CLASS12      113
+#define SPYMSG_CLASS13      114
+#define SPYMSG_CLASS14      115
+#define SPYMSG_CLASS15      116
+#define SPYMSG_CLASS16      117
+#define SPYMSG_ALLCLEAR     120
+#define SPYMSG_ALLSET       121
+#define SPYMSG_RANGE_0      122
+#define SPYMSG_RANGE_1      123
+#define SPYMSG_RANGE_2      124
+#define SPYMSG_RANGE_3      125
+#define SPYMSG_DLG1         130
+#define SPYMSG_DLG2         131
+#define SPYMSG_DLG3         132
+#define SPYMSG_DLG4         133

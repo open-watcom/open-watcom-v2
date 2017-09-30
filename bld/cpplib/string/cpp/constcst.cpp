@@ -60,8 +60,8 @@
 
 #include "strng.h"
 
-String::String( const char *cstr, size_t n )
-/******************************************/
+String::String( const char *cstr, std::size_t n )
+/***********************************************/
         : __offset( 0 ), __c_string( NULL ) {
 // Constructor: make a String from a C string.
 // If cstr is NULL, then make an empty String.
@@ -70,14 +70,14 @@ String::String( const char *cstr, size_t n )
     if( cstr == NULL ) {
         n = 0;
     } else if( n == NPOS ) {
-        n = ::strlen( cstr );
+        n = std::strlen( cstr );
     }
     __srep = __AllocStringRep( NULL, n );
     if( __srep == NULL ) {
         __slength = 0;
     } else {
         if( n > 0 ) {
-            ::memcpy( __srep->__value, cstr, n );
+            std::memcpy( __srep->__value, cstr, n );
         }
         __slength = n;
     }

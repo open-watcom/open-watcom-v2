@@ -31,7 +31,7 @@
 
 
 #include "cpplib.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include "exitwmsg.h"
 
 

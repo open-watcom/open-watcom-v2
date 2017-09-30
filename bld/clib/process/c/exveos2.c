@@ -47,8 +47,10 @@ _WCRTLINK int execve( const char *path, const char *const argv[],
     int         rc;
 
     rc = spawnve( P_NOWAIT, path, argv, envp );
-    if( _RWD_errno != 0 ) return( -1 );
+    if( _RWD_errno != 0 )
+        return( -1 );
     __int23_exit();
     DosExit( EXIT_PROCESS, rc );
+    // never return
     return( 0 );
 }

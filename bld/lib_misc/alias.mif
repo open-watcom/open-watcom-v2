@@ -1,15 +1,15 @@
 .extensions:
-.extensions: .mif .dat .obj .c .h
+.extensions: .gmk .dat .obj .c .h
 
-../objs.mif : aliases.dat
-    rm -f ../objs.mif ../a/*.asm
+../objs.gmk : aliases.dat
+    rm -f ../objs.gmk ../a/*.gas
 !ifeq verbose 0
     @echo aliasgen aliases.dat
 !endif
-    $(noecho)aliasgen aliases.dat ../a/ ../objs.mif
+    $(noecho)aliasgen aliases.dat ../a/ ../objs.gmk
 
 clean : .symbolic
-    rm -f *.obj *.err ../a/*.asm ../objs.mif
+    rm -f *.obj *.err ../a/*.gas ../objs.gmk
 
 realclean : .symbolic clean
-    rm -f ../objs.mif ../a/*.asm
+    rm -f ../objs.gmk ../a/*.gas

@@ -34,9 +34,9 @@
 //  Any project that includes this pre-processor will probably substitute
 //  their own support for these routines.
 //
-#include "preproc.h"
+#include "_preproc.h"
 
-void *PP_Malloc( size_t size )
+void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
 
@@ -47,12 +47,12 @@ void *PP_Malloc( size_t size )
     return( p );
 }
 
-void PP_Free( void *p )
+void PPENTRY PP_Free( void *p )
 {
     free( p );
 }
 
-void PP_OutOfMemory()
+void PPENTRY PP_OutOfMemory()
 {
     printf( "Out of memory\n" );
     exit( 1 );

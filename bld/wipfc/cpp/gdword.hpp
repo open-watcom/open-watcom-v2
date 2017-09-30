@@ -47,16 +47,16 @@ public:
     void setIndex( STD1::uint16_t i ) { idx = i; };
     STD1::uint16_t index() const { return idx; };
     const std::wstring& getText() const { return text; };
-    size_t writeWord( std::FILE* out ) const;
+    std::size_t writeWord( std::FILE* out ) const;
     bool operator==( const GlobalDictionaryWord& rhs ) const { return text == rhs.text; };
     bool operator==( const std::wstring& rhs ) const { return text == rhs; };
     bool operator<( const GlobalDictionaryWord& rhs ) const;
     //Functions forwarded to FTSElement
-    void setPages( size_t count ) { fts.setPages( count ); };
-    void onPage( size_t i ) { fts.onPage( i ); };
+    void setPages( std::size_t count ) { fts.setPages( count ); };
+    void onPage( std::size_t i ) { fts.onPage( i ); };
     void buildFTS() { fts.build(); };
     bool bigFTS() { return fts.bigFTS(); };
-    size_t writeFTS( std::FILE* out, bool big ) { return fts.write( out, big ); };
+    std::size_t writeFTS( std::FILE* out, bool big ) { return fts.write( out, big ); };
 private:
     GlobalDictionaryWord( const GlobalDictionaryWord& rhs );            //no copy
     GlobalDictionaryWord& operator=( const GlobalDictionaryWord& rhs ); //no assignment

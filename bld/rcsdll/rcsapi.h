@@ -30,6 +30,11 @@
 
 
 #include <stddef.h>
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <os2.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,31 +49,37 @@ extern "C" {
 #endif
 
 #if defined( __NT__ )
-    #include <windows.h>
-    typedef const char *rcsstring;
-    typedef void *rcsdata;
-    #define RCSAPI  WINAPI
+    typedef const char          *rcsstring;
+    typedef void                *rcsdata;
+  #ifdef _WIN64
+    typedef HWND                rcshwnd;
+  #else
+    typedef HWND                rcshwnd;
+  #endif
+    #define RCSAPI              WINAPI
 #elif defined( __WINDOWS__ )
-    #include <windows.h>
-    typedef const char __far *rcsstring;
-    typedef void __far *rcsdata;
-    #define RCSAPI WINAPI
+    typedef const char          __far *rcsstring;
+    typedef void                __far *rcsdata;
+    typedef HWND                rcshwnd;
+    #define RCSAPI              WINAPI
 #elif defined( __OS2__ )
-    #include <os2.h>
-    typedef const char *rcsstring;
-    typedef void *rcsdata;
+    typedef const char          *rcsstring;
+    typedef void                *rcsdata;
+    typedef unsigned long       rcshwnd;
   #if !defined( __WATCOMC__ )
     #define RCSAPI
   #else
-    #define RCSAPI APIENTRY
+    #define RCSAPI              APIENTRY
   #endif
 #elif defined( __DOS__ )
-    typedef const char *rcsstring;
-    typedef void *rcsdata;
+    typedef const char          *rcsstring;
+    typedef void                *rcsdata;
+    typedef unsigned long       rcshwnd;
     #define RCSAPI
 #elif defined( __UNIX__ )
-    typedef const char *rcsstring;
-    typedef void *rcsdata;
+    typedef const char          *rcsstring;
+    typedef void                *rcsdata;
+    typedef unsigned long       rcshwnd;
     #define RCSAPI
 #else
     #error Unsupported OS
@@ -76,15 +87,15 @@ extern "C" {
 #endif
 
 /* parms to RCSSetSystem, retvals from RCSQuerySystem */
-#define NO_RCS   0
-#define MKS_RCS  1
-#define MKS_SI   2
-#define PVCS     3
-#define GENERIC  4
-#define O_CYCLE  5
-#define PERFORCE 6
-#define WPROJ    7
-#define MAX_RCS_TYPE    7
+typedef enum {
+    #define pick1(a,b,c,d)      a,
+    #define pick2(a,b,c,d)      a,
+    #include "rcssyst.h"
+    #undef pick1
+    #undef pick2
+} rcstype;
+#define RCS_TYPE_FIRST  MKS_RCS
+#define RCS_TYPE_LAST   WPROJ
 
 #define RCS_DLL_VER     1
 
@@ -92,13 +103,13 @@ typedef int RCSAPI      BatchCallback( rcsstring str, void *cookie );
 typedef int RCSAPI      MessageBoxCallback( rcsstring text, rcsstring title, char *buffer, int len, void *cookie );
 
 typedef int RCSAPI      RCSGetVersionFn( void );
-typedef rcsdata RCSAPI  RCSInitFn( unsigned long, char *cfg_dir );
+typedef rcsdata RCSAPI  RCSInitFn( rcshwnd, char *cfg_dir );
 typedef int RCSAPI      RCSCheckoutFn( rcsdata, rcsstring, rcsstring, rcsstring );
 typedef int RCSAPI      RCSCheckinFn( rcsdata, rcsstring, rcsstring, rcsstring );
 typedef int RCSAPI      RCSHasShellFn( rcsdata );
 typedef int RCSAPI      RCSRunShellFn( rcsdata );
-typedef int RCSAPI      RCSSetSystemFn( rcsdata, int );
-typedef int RCSAPI      RCSQuerySystemFn( rcsdata );
+typedef int RCSAPI      RCSSetSystemFn( rcsdata, rcstype );
+typedef rcstype RCSAPI  RCSQuerySystemFn( rcsdata );
 typedef int RCSAPI      RCSRegBatchCbFn( rcsdata, BatchCallback *, void * );
 typedef int RCSAPI      RCSRegMsgBoxCbFn( rcsdata, MessageBoxCallback *, void * );
 typedef void RCSAPI     RCSSetPauseFn( rcsdata, int );

@@ -453,6 +453,7 @@ static void __far Respond( void )
         if( ServerDie ) {
             ServerDie |= DIE_RESPOND;
             DosExit( EXIT_THREAD, 0 );
+            // never return
         }
     }
 }
@@ -482,6 +483,7 @@ static void __far Broadcast( void )
             IpxSend( IPXSocket, &SAPECB );
             ServerDie |= DIE_BROADCAST;
             DosExit( EXIT_THREAD, 0 );
+            // never return
         }
     }
 }

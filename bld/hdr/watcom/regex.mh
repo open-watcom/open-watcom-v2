@@ -13,10 +13,8 @@
 
 :include cpponly.sp
 
-namespace std {
-
-    // TODO: Implement me!
-    
-}
+:include nsstd.sp
+:include nyi.sp
+:include nsstdepi.sp
 
 #endif

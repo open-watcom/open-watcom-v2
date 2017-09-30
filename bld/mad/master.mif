@@ -45,7 +45,7 @@ ext_rdos_386  = .dll
 # cflags stuff
 ###############
 extra_cpp_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 
@@ -86,7 +86,7 @@ version_res_dll_nt_x64 = version.res
 verrc_dll = $(name)
 !include verrc.mif
 
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 xname_basename = mad$(target_cpu)$(bld_ver)
 !else
 xname_basename = mad$(target_cpu)

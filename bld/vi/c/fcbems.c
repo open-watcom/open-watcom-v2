@@ -246,9 +246,7 @@ void EMSFini( void )
     if( !EMSCtrl.inuse ) {
         return;
     }
-    curr = EMSCtrl.allocated;
-    while( curr ) {
-        curr--;
+    for( curr = EMSCtrl.allocated; curr-- > 0; ) {
         _EMSReleaseMemory( EMSCtrl.handles[curr] );
     }
     EMSCtrl.allocated = 0;

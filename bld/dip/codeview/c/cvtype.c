@@ -293,7 +293,7 @@ static walk_result TypeListWalk( imp_image_handle *ii, virt_mem head,
     unsigned            base_idx;
 
     free_list = NULL;
-    list = __alloca( sizeof( *list ) );
+    list = walloca( sizeof( *list ) );
     list->prev = NULL;
     list->curr = head;
     list->containing_type = containing_type;
@@ -357,7 +357,7 @@ inherit_class:
                     continue;
                 }
                 if( free_list == NULL ) {
-                    free_list = __alloca( sizeof( *list ) );
+                    free_list = walloca( sizeof( *list ) );
                     free_list->prev = NULL;
                 }
                 tmp = free_list;
@@ -832,7 +832,7 @@ static dip_status MatchSymLocation( imp_image_handle *ii, imp_sym_handle *is,
     if( ds != DS_OK )
         return( ds );
     /* name can't be longer than 256 because of CV format */
-    buff = __alloca( len + (SCOPE_TOKEN_LEN + 256) );
+    buff = walloca( len + (SCOPE_TOKEN_LEN + 256) );
     start = &buff[SCOPE_TOKEN_LEN + 256];
     buff = &start[len];
     memcpy( start, name, len );

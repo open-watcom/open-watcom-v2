@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "win.h"
@@ -41,7 +40,7 @@
  */
 void _SaveAllLines( LPWDATA w )
 {
-    char                fname[CCHMAXPATH+1];
+    char                fname[CCHMAXPATH + 1];
     FILEDLG             fdlg;
     HWND                hwmenu;
     FILE                *f;
@@ -53,14 +52,13 @@ void _SaveAllLines( LPWDATA w )
     fname[0] = 0;
     memset( &fdlg, 0, sizeof( FILEDLG ) );
     fdlg.cbSize = sizeof( FILEDLG );
-    fdlg.fl = FDS_SAVEAS_DIALOG | FDS_CENTER | FDS_PRELOAD_VOLINFO |
-                FDS_ENABLEFILELB;
+    fdlg.fl = FDS_SAVEAS_DIALOG | FDS_CENTER | FDS_PRELOAD_VOLINFO | FDS_ENABLEFILELB;
     fdlg.pszTitle = "Save File Name Selection";
     fdlg.pszOKButton = "~Save";
     strcpy( fdlg.szFullFile, "*.*" );
 
     hwmenu = WinWindowFromID( _MainFrameWindow, FID_MENU );
-    if ( WinFileDlg( HWND_DESKTOP, hwmenu, &fdlg ) ) {
+    if( WinFileDlg( HWND_DESKTOP, hwmenu, &fdlg ) ) {
         /*
          * save lines
          */
@@ -72,10 +70,8 @@ void _SaveAllLines( LPWDATA w )
             _Error( hwmenu, fdlg.szFullFile, "Error opening file" );
             return;
         }
-        ld = w->LineHead;
-        while( ld != NULL ) {
+        for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
             fprintf( f,"%s\n", ld->data );
-            ld = ld->next;
         }
         fclose( f );
         _Error( hwmenu, fdlg.szFullFile, "Data saved to file" );
@@ -102,39 +98,39 @@ void _CopyAllLines( LPWDATA w )
     /*
      * get number of bytes
      */
-    ld = w->LineHead;
     total = 0;
-    while( ld != NULL ) {
+    for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         total += strlen( ld->data ) + 2;
-        ld = ld->next;
     }
-    if( total > MAX_BYTES ) len = (unsigned) MAX_BYTES;
-    else len = total;
+    if( total > MAX_BYTES ) {
+        len = (unsigned) MAX_BYTES;
+    } else {
+        len = total;
+    }
 
     /*
      * get memory block
      */
     rc = PAG_COMMIT | OBJ_GIVEABLE | PAG_WRITE;
-    rc = DosAllocSharedMem( &data, NULL, len + 1, rc );
+    rc = DosAllocSharedMem( (PPVOID)&data, NULL, len + 1, rc );
     if( rc ) {
-        _Error( NULL, "Copy to Clipboard Error", "Out of Memory" );
+        _Error( NULLHANDLE, "Copy to Clipboard Error", "Out of Memory" );
         return;
     }
 
     /*
      * copy data into block
      */
-    ld = w->LineHead;
     total = 0;
     ptr = data;
-    while( ld != NULL ) {
-        slen = FARstrlen( ld->data ) + 2;
-        if( total + slen > MAX_BYTES ) break;
+    for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
+        slen = strlen( ld->data ) + 2;
+        if( total + slen > MAX_BYTES )
+            break;
         memcpy( &ptr[total], ld->data, slen - 2 );
-        ptr[total+slen-2] = 0x0d;
-        ptr[total+slen-1] = 0x0a;
+        ptr[total + slen - 2] = 0x0d;
+        ptr[total + slen - 1] = 0x0a;
         total += slen;
-        ld = ld->next;
     }
     ptr[total] = 0;
 

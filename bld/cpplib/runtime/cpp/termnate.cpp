@@ -30,38 +30,36 @@
 ****************************************************************************/
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "rtexcept.h"
-#include <except.h>
 #include "rtmsgs.h"
 #include "exitwmsg.h"
 
 
 namespace std {
 
-_WPRTLINK
-_WCNORETURN
-void terminate( void )          // HANDLE TERMINATE
-{
-    PFV handler;                // - NULL or handler set by "set_terminate"
-    THREAD_CTL *thr;            // - thread ptr
-    char* msg;                  // - error message
+    _WPRTLINK _WCNORETURN
+    void terminate( void )          // HANDLE TERMINATE
+    {
+        terminate_handler handler;  // - NULL or handler set by "set_terminate"
+        THREAD_CTL *thr;            // - thread ptr
+        char* msg;                  // - error message
 
-    thr = &_RWD_ThreadData;
-    handler = thr->terminate;
-    if( NULL == handler ) {
-        thr = PgmThread();
-        msg = thr->abort_msg;
-        if( msg == NULL ) {
-            __exit( 1 );
+        thr = &_RWD_ThreadData;
+        handler = thr->terminate;
+        if( NULL == handler ) {
+            thr = PgmThread();
+            msg = thr->abort_msg;
+            if( msg == NULL ) {
+                __exit( 1 );
+                // never return
+            }
+        } else {
+            (*handler)();
+            msg = RTMSG_RET_TERMIN;
         }
-    } else {
-        (*handler)();
-        msg = RTMSG_RET_TERMIN;
+        CPPLIB( fatal_runtime_error )( msg, 1 );
+        // never return
     }
-    CPPLIB( fatal_runtime_error )( msg, 1 );
-    // never return
-}
 
 }

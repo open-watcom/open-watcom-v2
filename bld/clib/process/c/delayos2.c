@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <dos.h>
 #define INCL_DOSPROCESS
 #include <wos2.h>

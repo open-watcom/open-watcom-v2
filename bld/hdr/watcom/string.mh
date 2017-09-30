@@ -1,13 +1,13 @@
 ::
 :: This file generates three different headers.
 ::
-::   string.h: Default wsplice operation.
-::   cstring : CNAME wsplice operation.
-::   string  : CPPSTRING wsplice operation.
+::   string.h : Default wsplice operation.
+::   cstring  : CNAME wsplice operation.
+::   string   : CPPONLY(+CNAME) wsplice operation.
 ::
 :: Note that string is not directly related to string.h or cstring.
 ::
-:segment !CPPSTRING
+:segment !CPPONLY
 /***************************************************************************
  * FILE: string.h/cstring (String functions)
  *
@@ -38,13 +38,13 @@
 // C99 types in string.h.
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
-#define _WINT_T_DEFINED_
-using std::wint_t;
+ #define _WINT_T_DEFINED_
+ using std::wint_t;
 #endif
 
 // C99 functions in string.h
@@ -71,9 +71,9 @@ using std::strstr;
 using std::strtok;
 using std::strxfrm;
 
-:include ext.sp
 // C99 functions not officially in string.h
-:segment !NO_WIDECHAR
+:include ext.sp
+:: Wide character version
 using std::wcscat;
 using std::wcschr;
 using std::wcscmp;
@@ -90,7 +90,6 @@ using std::wcsspn;
 using std::wcsstr;
 using std::wcstok;
 using std::wcsxfrm;
-:endsegment
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -104,316 +103,147 @@ using std::wcsxfrm;
 :include cpluspro.sp
 
 :endsegment
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include wint_t.sp
 
 :include size_t.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-:include errno_t.sp
-
-:include rsize_t.sp
-
-:include saferepi.sp
-
-:endsegment
 :include null.sp
 
 :include nlserror.sp
 
-:segment CNAME
-namespace std {
-
-:endsegment
-_WCIRTLINK extern void    *memchr( const void *__s, int __c, size_t __n );
-_WCIRTLINK extern int     memcmp( const void *__s1, const void *__s2, size_t __n );
-_WCIRTLINK extern void    *memcpy( void *__s1, const void *__s2, size_t __n );
-_WCRTLINK  extern void    *memmove( void *__s1, const void *__s2, size_t __n );
+:include nsstd.sp
+_WCIRTLINK extern void      *memchr( const void *__s, int __c, size_t __n );
+_WCIRTLINK extern int       memcmp( const void *__s1, const void *__s2, size_t __n );
+_WCIRTLINK extern void      *memcpy( void *__s1, const void *__s2, size_t __n );
+_WCRTLINK  extern void      *memmove( void *__s1, const void *__s2, size_t __n );
 :segment DOS | QNX
-#if defined(_M_I86)
-_WCIRTLINK extern void    *memset( void *__s, int __c, size_t __n );
+#ifdef _M_I86
+_WCIRTLINK extern void      *memset( void *__s, int __c, size_t __n );
 #else
 :endsegment
-_WCRTLINK  extern void    *memset( void *__s, int __c, size_t __n );
+_WCRTLINK  extern void      *memset( void *__s, int __c, size_t __n );
 :segment DOS | QNX
 #endif
 :endsegment
-_WCIRTLINK extern char    *strcat( char *__s1, const char *__s2 );
-_WCIRTLINK extern char    *strchr( const char *__s, int __c );
+_WCIRTLINK extern char      *strcat( char *__s1, const char *__s2 );
+_WCIRTLINK extern char      *strchr( const char *__s, int __c );
 :segment DOS | QNX
-#if defined(_M_I86)
-_WCIRTLINK extern int     strcmp( const char *__s1, const char *__s2 );
+#ifdef _M_I86
+_WCIRTLINK extern int       strcmp( const char *__s1, const char *__s2 );
 #else
 :endsegment
-_WCRTLINK  extern int     strcmp( const char *__s1, const char *__s2 );
+_WCRTLINK  extern int       strcmp( const char *__s1, const char *__s2 );
 :segment DOS | QNX
 #endif
 :endsegment
-_WCRTLINK  extern int     strcoll( const char *__s1, const char *__s2 );
-_WCIRTLINK extern char    *strcpy( char *__s1, const char *__s2 );
-_WCRTLINK  extern size_t  strcspn( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char    *strerror( int __errnum );
-_WCIRTLINK extern size_t  strlen( const char *__s );
-_WCRTLINK  extern char    *strncat( char *__s1, const char *__s2, size_t __n );
-_WCRTLINK  extern int     strncmp( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK  extern char    *strncpy( char *__s1, const char *__s2, size_t __n );
-_WCRTLINK  extern char    *strpbrk( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char    *strrchr( const char *__s, int __c );
-_WCRTLINK  extern size_t  strspn( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char    *strstr( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char    *strtok( char *__s1, const char *__s2 );
-_WCRTLINK  extern size_t  strxfrm( char *__s1, const char *__s2, size_t __n );
-
-:segment CNAME
-} // namespace std
-
-:endsegment
-_WCRTLINK  extern int _stricoll( const char *__s1, const char *__s2 );
-_WCRTLINK  extern int _strncoll( const char *__s1, const char *__s2, _w_size_t __n );
-_WCRTLINK  extern int _strnicoll( const char *__s1, const char *__s2, _w_size_t __n );
-
-:segment DOS
-#if defined(__NT__)
-_WCRTLINK extern char  *_doserror( int __oserrnum );
-#endif
-:endsegment
-_WCRTLINK extern int   _memicmp( const void *__s1, const void *__s2, _w_size_t __n );
-_WCRTLINK extern char  *_strdup( const char *__string );
-_WCRTLINK extern char  *_strerror( const char *__s );
-_WCRTLINK extern int   _stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char  *_strlwr( char *__string );
-_WCRTLINK extern int   _strnicmp( const char *__s1, const char *__s2, _w_size_t __n );
-_WCRTLINK extern char  *_strnset( char *__string, int __c, _w_size_t __len );
-_WCRTLINK extern char  *_strrev( char *__string );
-_WCRTLINK extern char  *_strset( char *__string, int __c );
-_WCRTLINK extern char  *_strupr( char *__string );
+_WCRTLINK  extern int       strcoll( const char *__s1, const char *__s2 );
+_WCIRTLINK extern char      *strcpy( char *__s1, const char *__s2 );
+_WCRTLINK  extern size_t    strcspn( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char      *strerror( int __errnum );
+_WCIRTLINK extern size_t    strlen( const char *__s );
+_WCRTLINK  extern char      *strncat( char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern int       strncmp( const char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern char      *strncpy( char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern char      *strpbrk( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char      *strrchr( const char *__s, int __c );
+_WCRTLINK  extern size_t    strspn( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char      *strstr( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char      *strtok( char *__s1, const char *__s2 );
+_WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
+:include nsstdepi.sp
 
 :include ext.sp
 
+/* MS extension functions */
+
+_WCRTLINK  extern int       _stricoll( const char *__s1, const char *__s2 );
+_WCRTLINK  extern int       _strncoll( const char *__s1, const char *__s2, __w_size_t __n );
+_WCRTLINK  extern int       _strnicoll( const char *__s1, const char *__s2, __w_size_t __n );
+
+:segment DOS
+#ifdef __NT__
+_WCRTLINK extern char       *_doserror( int __oserrnum );
+#endif
+:endsegment
+_WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_size_t __n );
+_WCRTLINK extern char       *_strdup( const char *__string );
+_WCRTLINK extern char       *_strerror( const char *__s );
+_WCRTLINK extern int        _stricmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern char       *_strlwr( char *__string );
+_WCRTLINK extern int        _strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
+_WCRTLINK extern char       *_strnset( char *__string, int __c, __w_size_t __len );
+_WCRTLINK extern char       *_strrev( char *__string );
+_WCRTLINK extern char       *_strset( char *__string, int __c );
+_WCRTLINK extern char       *_strupr( char *__string );
+
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
-_WCRTLINK  extern char   *strspnp( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char   *strtok_r( char *__s1, const char *__s2, char **__p1 );
+_WCRTLINK  extern char      *strspnp( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char      *strtok_r( char *__s1, const char *__s2, char **__p1 );
 
-:segment DOS
-#if !defined(_fmemccpy) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemchr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemcpy) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemmove) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemset) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemcmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fmemicmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fstrcat) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern char _WCFAR *_fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrchr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrchr( const char _WCFAR *__s, int __c );
-:segment DOS
-#endif
-#if !defined(_fstrcmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern int _fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrcpy) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern char _WCFAR *_fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrcspn) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern _w_size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrdup) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrdup( const char _WCFAR *__string );
-:segment DOS
-#endif
-#if !defined(_fstricmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern int _fstricmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrncat) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fstrlen) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCIRTLINK extern _w_size_t _fstrlen( const char _WCFAR *__s );
-:segment DOS
-#endif
-#if !defined(_fstrlwr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrlwr( char _WCFAR *__string );
-:segment DOS
-#endif
-#if !defined(_fstrncmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fstrncpy) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fstrnicmp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-:segment DOS
-#endif
-#if !defined(_fstrnset) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, _w_size_t __len );
-:segment DOS
-#endif
-#if !defined(_fstrpbrk) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrpbrk( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrrchr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrrchr( const char _WCFAR *__s, int __c );
-:segment DOS
-#endif
-#if !defined(_fstrrev) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrrev( char _WCFAR *__string );
-:segment DOS
-#endif
-#if !defined(_fstrset) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrset( char _WCFAR *__string, int __c );
-:segment DOS
-#endif
-#if !defined(_fstrspn) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern _w_size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrspnp) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrspnp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrstr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrstr( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrtok) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrtok( char _WCFAR *__s1, const char _WCFAR *__s2 );
-:segment DOS
-#endif
-#if !defined(_fstrtok_r) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset, char _WCFAR **ptr );
-:segment DOS
-#endif
-#if !defined(_fstrupr) || !defined(_INC_WINDOWSX)
-:endsegment
-_WCRTLINK extern char _WCFAR *_fstrupr( char _WCFAR *__string );
-:segment DOS
-#endif
-:endsegment
-_WCIRTLINK extern void movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
+/* Far version of functions */
 
-_WCRTLINK extern int   bcmp( const void *__s1, const void *__s2, _w_size_t __n );
-_WCRTLINK extern void  bcopy( const void *__s1, void *__s2, _w_size_t __n );
-_WCRTLINK extern void  bzero( void *__s, _w_size_t __n );
-_WCRTLINK extern void  *memccpy( void *__s1, const void *__s2, int __c, _w_size_t __n );
-_WCRTLINK extern int   memicmp( const void *__s1, const void *__s2, _w_size_t __n );
-_WCRTLINK extern int   strcmpi( const char *__s1, const char *__s2 );
-_WCRTLINK extern char  *strdup( const char *__string );
-_WCRTLINK extern int   stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char  *strlwr( char *__string );
-_WCRTLINK extern int   strnicmp( const char *__s1, const char *__s2, _w_size_t __n );
-_WCRTLINK extern char  *strnset( char *__string, int __c, _w_size_t __len );
-_WCRTLINK extern char  *strrev( char *__string );
-_WCRTLINK extern char  *strset( char *__string, int __c );
-_WCRTLINK extern char  *strupr( char *__string );
+:keep WINDOWSX_STRING
+:include windowsx.sp
+:remove WINDOWSX_STRING
+
+_WCIRTLINK extern void      movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
+
+_WCRTLINK extern int        bcmp( const void *__s1, const void *__s2, __w_size_t __n );
+_WCRTLINK extern void       bcopy( const void *__s1, void *__s2, __w_size_t __n );
+_WCRTLINK extern void       bzero( void *__s, __w_size_t __n );
+_WCRTLINK extern void       *memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
+_WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_size_t __n );
+_WCRTLINK extern int        strcmpi( const char *__s1, const char *__s2 );
+_WCRTLINK extern char       *strdup( const char *__string );
+_WCRTLINK extern int        stricmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern char       *strlwr( char *__string );
+_WCRTLINK extern int        strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
+_WCRTLINK extern char       *strnset( char *__string, int __c, __w_size_t __len );
+_WCRTLINK extern char       *strrev( char *__string );
+_WCRTLINK extern char       *strset( char *__string, int __c );
+_WCRTLINK extern char       *strupr( char *__string );
 
 /* BSD 'safe' string copy functions */
-_WCRTLINK extern _w_size_t strlcat( char *__s1, const char *__s2, _w_size_t __n );
-_WCRTLINK extern _w_size_t strlcpy( char *__s1, const char *__s2, _w_size_t __n );
 
-:segment !NO_WIDECHAR
-:segment CNAME
-namespace std {
+_WCRTLINK extern __w_size_t strlcat( char *__s1, const char *__s2, __w_size_t __n );
+_WCRTLINK extern __w_size_t strlcpy( char *__s1, const char *__s2, __w_size_t __n );
 
-:endsegment
-_WCRTLINK extern wchar_t  *wcscat( wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *wcschr( const wchar_t *, wint_t );
-_WCRTLINK extern int      wcscmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int      wcscoll( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern wchar_t  *wcscpy( wchar_t *, const wchar_t * );
-_WCRTLINK extern size_t   wcscspn( const wchar_t *, const wchar_t * );
-_WCRTLINK extern size_t   wcslen( const wchar_t * );
-_WCRTLINK extern wchar_t  *wcsncat( wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern int      wcsncmp( const wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t  *wcsncpy( wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t  *wcspbrk( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *wcsrchr( const wchar_t *, wint_t );
-_WCRTLINK extern size_t   wcsspn( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *wcsstr( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
-_WCRTLINK extern size_t   wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+/* Wide character handling functions */
 
-:segment CNAME
-} // namespace std
+:: Wide character version
+:include nsstd.sp
+_WCRTLINK extern wchar_t    *wcscat( wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *wcschr( const wchar_t *, wint_t );
+_WCRTLINK extern int        wcscmp( const wchar_t *, const wchar_t * );
+_WCRTLINK extern int        wcscoll( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t    *wcscpy( wchar_t *, const wchar_t * );
+_WCRTLINK extern size_t     wcscspn( const wchar_t *, const wchar_t * );
+_WCRTLINK extern size_t     wcslen( const wchar_t * );
+_WCRTLINK extern wchar_t    *wcsncat( wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern int        wcsncmp( const wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern wchar_t    *wcsncpy( wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern wchar_t    *wcspbrk( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *wcsrchr( const wchar_t *, wint_t );
+_WCRTLINK extern size_t     wcsspn( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *wcsstr( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
+_WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+:include nsstdepi.sp
 
-:endsegment
-_WCRTLINK extern int      wcscmpi( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *wcserror( int );
+:: Wide character version
+_WCRTLINK extern int        wcscmpi( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *wcserror( int );
 :segment DOS
-#if defined(__NT__)
-_WCRTLINK extern wchar_t  *_wdoserror( int __errnum );
+#ifdef __NT__
+_WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
 #endif
 :endsegment
 
-::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, _w_size_t );
-::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
+:: Wide character version
+::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, __w_size_t );
+::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
 ::_WCRTLINK extern wchar_t  *wcsdup( const wchar_t * );
 ::_WCRTLINK extern wchar_t  *wcslwr( wchar_t * );
 ::_WCRTLINK extern wchar_t  *wcsupr( wchar_t * );
@@ -421,82 +251,80 @@ _WCRTLINK extern wchar_t  *_wdoserror( int __errnum );
 ::_WCRTLINK extern wchar_t  *wcsrev( wchar_t * );
 ::_WCRTLINK extern wchar_t  *wcsset( wchar_t *, wchar_t );
 ::
-_WCRTLINK extern wchar_t    *_ustrtok( wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, _w_size_t );
+_WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, __w_size_t );
 _WCRTLINK extern wchar_t    *_wcsspnp( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
+_WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
 _WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
 _WCRTLINK extern wchar_t    *_wcslwr( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
 _WCRTLINK extern int        _wcsicmp( const wchar_t *, const wchar_t * );
 _WCRTLINK extern int        _wcsicoll( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
-_WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
+_WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
+_WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 _WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
 _WCRTLINK extern wchar_t    *_wcserror( const wchar_t * );
 
-/* BSD 'safe' wide string copy functions */
-_WCRTLINK extern _w_size_t  wcslcat( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
-_WCRTLINK extern _w_size_t  wcslcpy( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
-:endsegment
+/* BSD 'safe' wide character string copy functions */
+
+:: Wide character version
+_WCRTLINK extern __w_size_t wcslcat( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
+_WCRTLINK extern __w_size_t wcslcpy( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 
 /* Additional Functions (POSIX but non-standard in string.h) */
 
-_WCRTLINK extern int strcasecmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern int strncasecmp( const char *__s1, const char *__s2, _w_size_t __n );
+_WCRTLINK extern int        strcasecmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern int        strncasecmp( const char *__s1, const char *__s2, __w_size_t __n );
 
 :segment QNX
 /* QNX's Additional Functions (non-ANSI, non-POSIX) */
 
-extern void __strerror( int __max, int __errnum, char *__buf );
+extern void                 __strerror( int __max, int __errnum, char *__buf );
+
 :endsegment
 :include extepi.sp
 
 #ifdef  __INLINE_FUNCTIONS__
+
 :include ext.sp
  #pragma intrinsic(movedata,_fmemchr,_fmemcmp,_fmemcpy,_fmemset)
  #pragma intrinsic(_fstrcat,_fstrcmp,_fstrcpy,_fstrlen)
 :include extepi.sp
-:segment CNAME
-namespace std {
-  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
-:segment DOS | QNX
-  #if defined(_M_I86)
-    #pragma intrinsic(memset,strcmp)
-  #endif
-:endsegment
-}
-:elsesegment
+
+:include nsstd.sp
  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
 :segment DOS | QNX
- #if defined(_M_I86)
+ #ifdef _M_I86
   #pragma intrinsic(memset,strcmp)
  #endif
 :endsegment
-:endsegment
+:include nsstdepi.sp
+
 #endif  /* __INLINE_FUNCTIONS__ */
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
-_WCRTLINK extern errno_t memcpy_s( void * __restrict __s1, rsize_t __s1max, const void * __restrict __s2, rsize_t __n );
-_WCRTLINK extern errno_t memmove_s( void *__s1, rsize_t __s1max, const void *__s2, rsize_t __n );
-_WCRTLINK extern errno_t strcpy_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
-_WCRTLINK extern errno_t strncpy_s( char * __restrict s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+:include errno_t.sp
 
-_WCRTLINK extern errno_t strcat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
-_WCRTLINK extern errno_t strncat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+:include rsize_t.sp
 
-_WCRTLINK extern char    *strtok_s( char * __restrict __s1, rsize_t * __restrict __s1max, const char * __restrict __s2, char ** __restrict __ptr );
-
-_WCRTLINK extern errno_t strerror_s( char *__s, rsize_t __maxsize, errno_t __errnum );
-_WCRTLINK extern size_t  strerrorlen_s( errno_t __errnum );
-_WCRTLINK extern size_t  strnlen_s( const char *__s, size_t __maxsize );
+_WCRTLINK extern errno_t    memcpy_s( void * __restrict __s1, rsize_t __s1max, const void * __restrict __s2, rsize_t __n );
+_WCRTLINK extern errno_t    memmove_s( void *__s1, rsize_t __s1max, const void *__s2, rsize_t __n );
+_WCRTLINK extern errno_t    strcpy_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
+_WCRTLINK extern errno_t    strncpy_s( char * __restrict s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+_WCRTLINK extern errno_t    strcat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
+_WCRTLINK extern errno_t    strncat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+_WCRTLINK extern char       *strtok_s( char * __restrict __s1, rsize_t * __restrict __s1max, const char * __restrict __s2, char ** __restrict __ptr );
+_WCRTLINK extern errno_t    strerror_s( char *__s, rsize_t __maxsize, errno_t __errnum );
+_WCRTLINK extern size_t     strerrorlen_s( errno_t __errnum );
+_WCRTLINK extern size_t     strnlen_s( const char *__s, size_t __maxsize );
 
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment CNAME
 :include cplusepi.sp
 :elsesegment
@@ -528,7 +356,7 @@ _WCRTLINK extern size_t  strnlen_s( const char *__s, size_t __maxsize );
 
 :: The header <_strdef.h> is indirectly included below.
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 namespace _watcom {
@@ -539,21 +367,32 @@ namespace _watcom {
 
   struct ichar_traits : std::char_traits< char > {
 
-    // Use tolower for compatibility with _memicmp.
     static bool eq( const char_type &c1, const char_type &c2 )
       { return( std::tolower( c1 ) == std::tolower( c2 ) ); }
 
     static bool lt( const char_type &c1, const char_type &c2 )
       { return( std::tolower( c1 ) < std::tolower( c2 ) ); }
 
-    static int compare( const char_type *s1, const char_type *s2, size_t n )
-      { return( _memicmp( s1, s2, n ) ); }
+    static int compare( const char_type *s1, const char_type *s2, std::size_t n )
+      {
+        while( n-- > 0 ) {
+          if( std::tolower( *s1 ) > std::tolower( *s2 ) )
+            return( 1 );
+          if( std::tolower( *s1 ) < std::tolower( *s2 ) )
+            return( -1 );
+          if( *s1 == '\0' || *s2 == '\0' )
+            return( 0 );
+          s1++;
+          s2++;
+        }
+        return( 0 );
+      }
 
     // Too bad there's no _memichr.
-    static const char_type *find( const char_type *s, size_t n, const char_type &a )
+    static const char_type *find( const char_type *s, std::size_t n, const char_type &a )
     {
-      const char_type *result = 0;
-      for( size_t i = 0; i < n; ++i ) {
+      const char_type *result = NULL;
+      while( n-- > 0 ) {
         if( std::tolower( *s ) == std::tolower( a ) ) {
           result = s;
           break;
@@ -573,8 +412,7 @@ namespace _watcom {
 
 :include namwat.sp
 
-namespace std {
-
+:include nsstd.sp
   // ================================
   // Member functions of basic_string
   // ================================
@@ -643,8 +481,7 @@ namespace std {
     if( buf_length > other_length ) {
       Traits::copy( buffer, s, other_length );
       str_length = other_length;
-    }
-    else {
+    } else {
       replace_buffer( s, other_length );
     }
     return( *this );
@@ -847,8 +684,7 @@ namespace std {
     if( n < buf_length - str_length ) {
       Traits::copy( buffer + str_length, s, n );
       str_length += n;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + n;
       size_type new_length;
@@ -933,8 +769,7 @@ namespace std {
       Traits::move( buffer + pos + n, buffer + pos, str_length - pos );
       Traits::copy( buffer + pos, s, n );
       str_length += n;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + n;
       size_type new_length;
@@ -998,8 +833,7 @@ namespace std {
         buffer + pos + insert_length, buffer + pos, str_length - pos );
       Traits::assign( buffer + pos, insert_length, c );
       str_length += insert_length;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + insert_length;
       size_type new_length;
@@ -1142,8 +976,7 @@ namespace std {
                     str_length - pos - remove_length );
       Traits::copy( buffer + pos, s, n2 );
       str_length = result_length;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type new_length;
       pointer new_buffer = alloc( result_length + 1, new_length );
@@ -1574,7 +1407,8 @@ namespace std {
           break;
         }
       }
-      if ( !found ) return( index );
+      if( !found )
+        return( index );
       ++index;
     }
 
@@ -1957,8 +1791,7 @@ namespace std {
     left.swap( right );
   }
   #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

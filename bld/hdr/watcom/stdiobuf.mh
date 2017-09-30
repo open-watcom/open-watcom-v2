@@ -52,4 +52,4 @@ inline FILE *stdiobuf::stdiofile() {
     return __file_pointer;
 }
 
-#endif
+#endif /* _STDIOBUF_H_INCLUDED */

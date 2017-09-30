@@ -59,14 +59,16 @@
 
 #include "strng.h"
 
-String &String::operator += ( const char *cstr ) {
-/************************************************/
+String &String::operator += ( const char *cstr )
+/**********************************************/
 // Append operator: append a C string to a String
-    size_t cstrlen;
+{
+    std::size_t cstrlen;
 
     // If "s" is an empty string, don't change *this at all:
-    cstrlen = (cstr == NULL) ? 0 : ::strlen( cstr );
-    if( cstrlen == 0 ) return( *this );
+    cstrlen = (cstr == NULL) ? 0 : std::strlen( cstr );
+    if( cstrlen == 0 )
+        return( *this );
 
     // If *this is an empty string, just use "cstr":
     if( __slength == 0 ) {

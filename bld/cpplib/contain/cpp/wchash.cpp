@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <wchash.h>
 #include <wchiter.h>
 
@@ -158,7 +158,8 @@ _WPRTLINK WCSLink * WCHashBase::base_remove_but_not_delete( TTypePtr elem ) {
 // The insert function for HashSets
 //
 
-_WPRTLINK WCSLink * WCHashBase::base_set_insert( TTypePtr elem ) {
+_WPRTLINK WCSLink * WCHashBase::base_set_insert( TTypePtr elem )
+{
     unsigned bucket = 0;
     unsigned index = 0;
     if( base_find( elem, &bucket, &index, FIND_FIRST ) == 0 ) {
@@ -178,7 +179,7 @@ _WPRTLINK WCSLink * WCHashBase::base_set_insert( TTypePtr elem ) {
     // find succeeded: an equivalent element was previously in the hash set
     base_throw_not_unique();
     return( 0 );
-};
+}
 
 
 //
@@ -186,10 +187,11 @@ _WPRTLINK WCSLink * WCHashBase::base_set_insert( TTypePtr elem ) {
 // a base for a user defined hash.
 //
 
-_WPRTLINK unsigned WCHashBase::bitHash( const void * ptr, size_t size ) {
+_WPRTLINK unsigned WCHashBase::bitHash( const void * ptr, std::size_t size )
+{
     char * curr = (char *)ptr;
     long count = *curr;
-    for( size_t i = 1; i < size; i++ ) {
+    for( std::size_t i = 1; i < size; i++ ) {
         count += 37 * count + *curr;
         curr++;
     }
@@ -354,7 +356,7 @@ _WPRTLINK void WCHashIterBase::reset() {
 // Supply basic hash destructor for pure virtual function
 //
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 
 WCHashBase::~WCHashBase() {

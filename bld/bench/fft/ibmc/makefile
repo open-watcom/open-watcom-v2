@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\fft.mif
+!include ../fft.mif

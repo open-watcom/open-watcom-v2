@@ -516,7 +516,7 @@ vi_rc SwitchSavebuf( void )
      */
     buf = -1;
     for( i = 0; i < MAX_SAVEBUFS; i++ ) {
-        if( LastEvent == SavebufBound[i] ){
+        if( LastEvent == SavebufBound[i] ) {
             buf = i;
             break;
         }

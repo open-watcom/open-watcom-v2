@@ -49,8 +49,18 @@ comment&
 
 .386p
 
-public __x386_zero_base_ptr,__x386_zero_base_selector,__data_bottom,__x386_init
-public _cstart_,__exit_with_msg_,sbrk_,__exit_,__brk_,__x32_zero_base_ptr
+include extender.inc
+
+public __x386_zero_base_ptr
+public __x386_zero_base_selector
+public __data_bottom
+public __x386_init
+public _cstart_
+public __exit_with_msg_
+public sbrk_
+public __exit_
+public __brk_
+public __x32_zero_base_ptr
 public __x32_zero_base_selector
 
 ;define 16 bit segments first so they will be located at the beginning
@@ -160,11 +170,25 @@ __x386_zero_base_ptr            dd      0f0000000h
 ;the variables in the following list are from the module crwdata
         public  "C",__FPE_handler
         public  "C",_Extender
-        public  __LpPgmName,__LpCmdLine
-        public  __Envptr,__no87,__cbyte2
-        public  __child,__cbyte,__STACKTOP,__STACKLOW
-        public  __osminor,__osmajor,__psp,__curbrk
-        public  __dynend,__x386_stacklow,__X32VM,__ASTACKSIZ,__ASTACKPTR
+        public  __LpPgmName
+        public  __LpCmdLine
+        public  __Envptr
+        public  __no87
+        public  __cbyte2
+        public  __child
+        public  __cbyte
+        public  __STACKTOP
+        public  __STACKLOW
+        public  __osminor
+        public  __osmajor
+        public  __psp
+        public  __curbrk
+        public  __dynend
+        public  __x386_stacklow
+        public  __X32VM
+        public  __ASTACKSIZ
+        public  __ASTACKPTR
+
 __dynend        dd      0
 __curbrk        dd      0
 __LpCmdLine     dd      0
@@ -180,7 +204,7 @@ __cbyte         dd      0
 __cbyte2        dd      0
 __child         dd      0
 __no87          db      0
-_Extender       db      3               ;pretend we are Pharlap version 3
+_Extender       db      X_PHARLAP_V3    ;pretend we are Pharlap version 3
                 db      0
 __Envptr        df      0
 __osmajor       db      0

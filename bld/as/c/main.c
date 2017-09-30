@@ -72,9 +72,10 @@ int main( int argc, char **argv )
             AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
             fputc( '\n', stderr );
         }
-        while( *argv ) {
+        PP_Init( '#' );
+        while( *argv != NULL ) {
             fname = MakeAsmFilename( *argv );
-            if( PP_Init( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE, NULL ) != 0 ) {
+            if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE, NULL ) != 0 ) {
                 AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
                 fputc( '\n', stderr );
             } else {
@@ -104,9 +105,10 @@ int main( int argc, char **argv )
                 InsFini();
                 SymFini();
             }
-            PP_Fini();
+            PP_FileFini();
             ++argv;
         }
+        PP_Fini();
     }
     OptionsFini();
     AsMsgFini();

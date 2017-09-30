@@ -577,7 +577,7 @@ void    GenProlog( void )
         EmitNameInCode();
     }
 
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         CodeLineNumber( HeadBlock->ins.hd.line_num, false );
     }
 
@@ -902,11 +902,13 @@ static  void    Enter( void ) {
     int         i;
 
     lex_level = CurrProc->lex_level;
-    if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 ) &&
 #if _TARGET & _TARG_80386
-    CurrProc->locals.size <= 65535 &&
+    if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 ) && CurrProc->locals.size < 65536
+      && ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
+#else
+    if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 )
+      && ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
 #endif
-    ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
         DoEnter( lex_level );
         HW_CTurnOn( CurrProc->state.used, HW_BP );
         CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
@@ -1158,8 +1160,7 @@ static  void    DoEpilog( void )
                         }
                     } else if( CurrProc->targ.base_adjust != 0 ) {
                         GenLeaSP( -CurrProc->targ.base_adjust );
-                    } else if( _CPULevel( CPU_186 ) && (!_CPULevel( CPU_486 ) ||
-                        OptForSize > 50) ) {
+                    } else if( _CPULevel( CPU_186 ) && (!_CPULevel( CPU_486 ) || OptForSize > 50) ) {
                         GenLeave();
                         HW_CTurnOff( to_pop, HW_BP );
                     } else {

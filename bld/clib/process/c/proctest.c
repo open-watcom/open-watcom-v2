@@ -36,6 +36,9 @@
 #include <string.h>
 #include <process.h>
 #include <signal.h>
+#if defined( __UNIX__ )
+    #include <sys/stat.h>
+#endif
 
 
 char ProgramName[512];                          /* executable filename */
@@ -134,7 +137,7 @@ int main( int argc, char * const argv[] )
     if( child ) {
         char    *env_var;
 
-        if( argc == 4 ) {        
+        if( argc == 4 ) {
         /* Verify expected command line contents */
             VERIFY( !strcmp( argv[1], ARG1 ) );
             VERIFY( !strcmp( argv[2], ARG2 ) );
@@ -166,13 +169,13 @@ int main( int argc, char * const argv[] )
             }
             else
                 return( EXIT_FAILURE );
-        }                   
+        }
     } else {
         int         rc;
         char        **env;
         const char  *path = "PATH=.";   /* Default PATH if none is found */
         const char  *child_args[] = { ProgramName, ARG1, ARG2, ARG3, NULL };
-        const char  *child_envp[] = { NULL, VAR_NAME "=" VAR_TEXT, NULL };
+        const char  *child_envp[] = { NULL, VAR_NAME "=" VAR_TEXT, "DOS4G=QUIET", NULL };
 
         /* We need to pass PATH down to the child because DOS/4GW style stub
          * programs rely on it to function properly.
@@ -200,7 +203,7 @@ int main( int argc, char * const argv[] )
 
         /* Modify our environment that child will inherit */
         VERIFY( !setenv( VAR_NAME, VAR_TEXT, 1 ) );
-        
+
         rc = spawnl( P_WAIT, ProgramName, ProgramName, ARG1, ARG2, ARG3, NULL );
         VERIFY( rc == CHILD_RC );
 
@@ -231,8 +234,11 @@ int main( int argc, char * const argv[] )
 
         /* Check inherited output redirection */
         handle_out = dup( STDOUT_FILENO );
-        
-        handle = creat( "test.fil", S_IREAD|S_IWRITE );
+#if defined( __UNIX__ )
+        handle = creat( "test.fil", (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH) );
+#else
+        handle = creat( "test.fil", S_IREAD | S_IWRITE );
+#endif
         VERIFY( handle != -1 );
 
         status = dup2( handle, STDOUT_FILENO );
@@ -246,7 +252,7 @@ int main( int argc, char * const argv[] )
 
         status = dup2( handle_out, STDOUT_FILENO );
         VERIFY( status != -1 );
-        
+
         handle = open( "test.fil", O_RDWR );
         VERIFY( handle != -1 );
 
@@ -261,6 +267,8 @@ int main( int argc, char * const argv[] )
 
         signal_count = 0;
         signal_number = 0;
+
+#ifdef SIGBREAK
         /* Install SIGBREAK handler */
         VERIFY( signal( SIGBREAK, break_handler ) == SIG_DFL );
 
@@ -272,6 +280,7 @@ int main( int argc, char * const argv[] )
         /* Raise again - nothing should have happened */
         VERIFY( raise( SIGBREAK ) == 0 );
         VERIFY( signal_count == 1 );
+#endif
 
         /*** Print a pass/fail message and quit ***/
         if( NumErrors != 0 ) {

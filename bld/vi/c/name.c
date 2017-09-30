@@ -33,8 +33,8 @@
 #include "banner.h"
 
 #if defined( __WIN__ )
-char _NEAR BANNER1[] = banner1w1( "Text Editor for Windows" );
+const char _NEAR BANNER1[] = banner1w1( "Text Editor for Windows" );
 #else
-char _NEAR BANNER1[] = banner1w1( "Vi Text Editor" );
+const char _NEAR BANNER1[] = banner1w1( "Vi Text Editor" );
 #endif
-char _NEAR BANNER2[] = banner1w2( _VI_VERSION_ );
+const char _NEAR BANNER2[] = banner1w2( _VI_VERSION_ );

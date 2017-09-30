@@ -40,7 +40,7 @@
 #include "lseek.h"
 #include "streamio.h"
 #include "close.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "tmpfile.h"
 
 

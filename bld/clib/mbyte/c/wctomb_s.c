@@ -31,12 +31,13 @@
 
 #include "variety.h"
 #include "saferlib.h"
+#include <stddef.h>
+#include <mbstring.h>
 #ifdef __NT__
     #include <windows.h>
     #include <winnls.h>
     #include "mbchar.h"
 #endif
-#include <mbstring.h>
 #include "farfunc.h"
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,8 @@
 #include "variety.h"
 #include <math.h>
 
-_WMRTLINK int matherr( struct _exception *x )
-/*******************************************/
+_WCHANDLER int matherr( struct _exception *x )
+/********************************************/
 {
     x = x;
     return( 0 );    /* 0 => take default action on error */

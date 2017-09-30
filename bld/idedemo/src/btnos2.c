@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #define INCL_PM
 #include <os2.h>
 #include "button.h"

@@ -32,8 +32,6 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
 #include "win.h"
 
 #define SS_ALT          0x01
@@ -99,17 +97,17 @@ void _WindowsKeyPush( WORD key, WORD data )
     } else {
         ch = trans_key[0];  /* 1 or 2 characters */
         if( char_count == 2 ) {
-            charList[ keyTop ] = ch;
-            scanList[ keyTop ] = scan;
-            keyTop = (keyTop+1) % KBFSIZE;
+            charList[keyTop] = ch;
+            scanList[keyTop] = scan;
+            keyTop = ( keyTop + 1 ) % KBFSIZE;
             ch = trans_key[1];
         }
     }
 #endif
     if( havekey ) {
-        charList[ keyTop ] = ch;
-        scanList[ keyTop ] = scan;
-        keyTop = (keyTop+1) % KBFSIZE;
+        charList[keyTop] = ch;
+        scanList[keyTop] = scan;
+        keyTop = ( keyTop + 1 ) % KBFSIZE;
     }
 } /* _WindowsKeyPush */
 
@@ -161,9 +159,9 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
     }
 
     if( havekey ) {
-        charList[ keyTop ] = ch;
-        scanList[ keyTop ] = scan;
-        keyTop = (keyTop + 1) % KBFSIZE;
+        charList[keyTop] = ch;
+        scanList[keyTop] = scan;
+        keyTop = ( keyTop + 1 ) % KBFSIZE;
     }
 
 } /* _WindowsVirtualKeyPush */
@@ -199,7 +197,7 @@ int _GetKeyboard( int *scan )
     if( scan != NULL ) {
         *scan = (int)scanList[keyBottom];
     }
-    keyBottom = (keyBottom + 1) % KBFSIZE;
+    keyBottom = ( keyBottom + 1 ) % KBFSIZE;
     return( ch );
 
 } /* _GetKeyboard */
@@ -232,12 +230,12 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #endif
 
 #ifdef _MBCS
-    res = _MemAlloc( MB_CUR_MAX * ( maxbuff + 1 ) );
+    res = FARmalloc( MB_CUR_MAX * ( maxbuff + 1 ) );
 #else
-    res = _MemAlloc( maxbuff + 1 );
+    res = FARmalloc( maxbuff + 1 );
 #endif
     if( res == NULL)
-        return( 0 );
+        _OutOfMemoryExit();
 
     hwnd = w->hwnd;
 
@@ -247,8 +245,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
     _GotEOF = FALSE;
     str[0] = 0;
 
-    while( 1 ) {
-
+    for( ;; ) {
         w->curr_pos = curr_pos;
         _DisplayCursor( w );
         while( !_KeyboardHit( TRUE ) );
@@ -279,12 +276,12 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                         if( _ismbblead( ci ) ) {
                             expectingTrailByte = 1;
                             p = __mbsninc( (unsigned char *)str, curr_pos );
-                            for( i = strlen( (char *)p ); i >= 0; i-- )
+                            for( i = strlen( (char *)p ) + 1; i-- > 0; )
                                 p[i + 2] = p[i];
                             p[0] = ci;
                         } else {                    /* shift over one byte */
                             p = __mbsninc( (unsigned char *)str, curr_pos );
-                            for( i = strlen( (char *)p ); i >= 0; i-- )
+                            for( i = strlen( (char *)p ) + 1; i-- > 0; )
                                 p[i + 1] = p[i];
                             p[0] = ci;
                         }
@@ -336,14 +333,14 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                     if( _ismbblead( ci ) ) {
                         expectingTrailByte = 1;
                         if( !_ismbblead( *p ) ) {
-                            for( i = strlen( (char *)p + 1 ); i >= 0; i-- ) {
-                                p[i + 2] = p[i + 1];    /* shift over one byte */
+                            for( i = strlen( (char *)p ) + 1; i-- > 1; ) {
+                                p[i + 1] = p[i];    /* shift over one byte */
                             }
                         }
                         p[0] = ci;
                     } else {
                         if( _ismbblead( *p ) ) {   /* shift over one byte */
-                            for( i = 1; i <= strlen( (char *)p + 1 ); i++ ) {
+                            for( i = 1; i < strlen( (char *)p ); i++ ) {
                                 p[i] = p[i + 1];
                             }
                         }
@@ -400,7 +397,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 _SetInputMode( w, FALSE );
                 FARstrcat( res, str );
                 FARstrcpy( str, res );
-                _MemFree( res );
+                FARfree( res );
                 /* return number of bytes */
                 return( strlen( str ) );
             case VK_LEFT:
@@ -470,10 +467,10 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 str[i] = str[len - wt + i];
 #else
             len = strlen( str );
-            ci = str[ len - wt ];
-            str[ len - wt ] = 0;
+            ci = str[len - wt];
+            str[len - wt] = 0;
             FARstrcat( res, str );
-            str[ len - wt ] = ci;
+            str[len - wt] = ci;
             for( i = 0; i <= wt; i++ )
                 str[i] = str[len - wt + i];
 #endif

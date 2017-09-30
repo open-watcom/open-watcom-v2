@@ -16,7 +16,7 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
 #ifndef _ITERATOR_INCLUDED
@@ -24,11 +24,10 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     namespace _ow {
 
         // Used for small subsequences when doing a QuickSort.
@@ -87,18 +86,18 @@ namespace std {
         {
             using std::swap;
             typedef typename std::iterator_traits< RandomAccess >::difference_type
-                difference_type; 
+                difference_type;
 
             // If the '10' is changed here, be sure to update the regression tests.
-            if( right - left < 10 )
+            if( right - left < 10 ) {
                 insertion_sort( seq + left, seq + right + 1, comp );
-            else {
+            } else {
                 typename std::iterator_traits< RandomAccess >::value_type
                     pivot = *med3( seq, left, right, comp );
 
                 difference_type i = left;
                 difference_type j = right - 1;
-                for( ; ; ) {
+                for( ;; ) {
                     while( comp( seq[++i], pivot ) ) ;
                     while( comp( pivot, seq[--j] ) ) ;
                     if( i >= j ) break;
@@ -142,7 +141,7 @@ namespace std {
                                Compare comp )
     {
         typedef typename iterator_traits< ForwardIterator >::difference_type length_type;
-        
+
         ForwardIterator p1( first );
         length_type len = last - first;   // This should really use distance( ).
         length_type mid = len/2;
@@ -510,7 +509,6 @@ namespace std {
         return ( prev_permutation( first, last,
                      std::less< typename iterator_traits< Bidirectional >::value_type >( ) ) );
     }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "clib.h"
 #include "debugme.h"
 #include "nw3to5.h"
@@ -269,7 +270,7 @@ void SetupPIDForACleanExit( T_ProcessID *pPID )
     for( screen = pNCS->NCSOSSLHead; screen; screen = screen->OSSLink ) {
         screen->OSSAttributes |= AUTO_DESTROY_SCREEN;
     }
-    pNCS->NCSUnloadFunc = NULL;
+    pNCS->NCSUnloadFunc = 0L;
     pNCS->NCSExitCount = EXIT_LIMIT + 1;
 #endif
 }

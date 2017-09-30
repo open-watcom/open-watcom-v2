@@ -38,8 +38,8 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))0)
-#define FRLPTR(s)   XBPTR(freelistp, s)
+#define HEAP(s)     ((heapblkp __based(s) *)0)
+#define FRLPTR(s)   freelistp __based(s) *
 
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
@@ -104,10 +104,8 @@ _WCRTLINK int _bheapchk( __segment seg )
             heap_status = _HEAPBADNODE;
         } else if( heap_status == _HEAPBADPTR ) {
             heap_status = _HEAPBADNODE;
-        } else {
-            if( heap_status == _HEAPEND ) {
-                heap_status = _HEAPOK;
-            }
+        } else if( heap_status == _HEAPEND ) {
+            heap_status = _HEAPOK;
         }
     }
     _ReleaseFHeap();

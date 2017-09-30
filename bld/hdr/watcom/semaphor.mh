@@ -14,6 +14,8 @@
 
 :segment LINUX
 
+:include time_t.sp
+
 :include timespec.sp
 
 typedef struct {

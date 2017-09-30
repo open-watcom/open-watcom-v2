@@ -141,7 +141,7 @@ void PollMouse( int *status, int *row, int *col )
             }
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
-        } else if( !(lastStatus & MOUSE_ANY_BUTTON_DOWN ) ) {
+        } else if( (lastStatus & MOUSE_ANY_BUTTON_DOWN) == 0 ) {
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
         } else {

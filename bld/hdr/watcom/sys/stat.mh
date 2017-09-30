@@ -139,7 +139,6 @@ _WCRTLINK extern int     stat64( const char *filename, struct stat64 * __buf );
 :endsegment
 
 :include wchar_t.sp
-
 struct _stat {
         dev_t   st_dev;         /* disk drive file resides on */
         ino_t   st_ino;         /* this inode's #, not used for DOS */

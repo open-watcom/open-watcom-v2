@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #if defined( __OS2__ )
   #define INCL_GPI
 #endif
@@ -55,30 +54,30 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 
     /*** If needed, clear the window to avoid residue ***/
     if( clearFlag ) {
-        #ifdef __OS2__
-            /* Clearing done for OS/2 in _DisplayLineInWindowWithColor */
-        #else
-            /* Clearing doesn't always work as with OS/2, so it's done here */
-            dc = GetDC( w->hwnd );
-            #ifndef __NT__
-                UnrealizeObject( w->brush );
-            #endif
-            oldBrush = SelectObject( dc, w->brush );
-            #ifdef __NT__
-                SetBrushOrgEx( dc, 0, 0, NULL  );
-            #endif
-            GetClientRect( w->hwnd, &rect );
-            FillRect( dc, &rect, w->brush );
-            SelectObject( dc, oldBrush );
-            ReleaseDC( w->hwnd, dc );
-        #endif
+#ifdef __OS2__
+        /* Clearing done for OS/2 in _DisplayLineInWindowWithColor */
+#else
+        /* Clearing doesn't always work as with OS/2, so it's done here */
+        dc = GetDC( w->hwnd );
+    #ifndef __NT__
+        UnrealizeObject( w->brush );
+    #endif
+        oldBrush = SelectObject( dc, w->brush );
+    #ifdef __NT__
+        SetBrushOrgEx( dc, 0, 0, NULL  );
+    #endif
+        GetClientRect( w->hwnd, &rect );
+        FillRect( dc, &rect, w->brush );
+        SelectObject( dc, oldBrush );
+        ReleaseDC( w->hwnd, dc );
+#endif
     }
 
     ln = w->TopLineNumber;
     ld = _GetLineDataPointer( w, ln );
     end = w->height;
 
-    for( i=1; i<end; i++ ) {
+    for( i = 1; i < end; i++ ) {
         if( ld == NULL ) {
             _DisplayLineInWindow( w, i, " " );
         } else {
@@ -151,7 +150,7 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         POINTL          points[TXTBOX_COUNT];
 
         ptl.x = 0;
-        ptl.y = (w->y2 - w->y1) - (line+1)*w->ychar + w->base_offset;
+        ptl.y = ( w->y2 - w->y1 ) - ( line + 1 ) * w->ychar + w->base_offset;
         ps = WinGetPS( hwnd );
         _SelectFont( ps );
         GpiQueryTextBox( ps, startcol, w->tmpbuff->data, TXTBOX_COUNT, points );
@@ -162,12 +161,12 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         GpiQueryTextBox( ps, strlen( buff ), buff, TXTBOX_COUNT, points );
     #endif
         rcl.xRight = points[TXTBOX_BOTTOMRIGHT].x;
-        rcl.yTop = (w->y2 - w->y1) - line*w->ychar;
+        rcl.yTop = ( w->y2 - w->y1 ) - line * w->ychar;
         rcl.yBottom = rcl.yTop - w->ychar;
         WinFillRect( ps, &rcl, c1 );
         GpiSetColor( ps, c2 );
     #ifdef _MBCS
-        GpiCharStringAt( ps, &ptl, _mbsnbcnt(buff,w->width), buff );
+        GpiCharStringAt( ps, &ptl, _mbsnbcnt( (PBYTE)buff, w->width ), buff );
     #else
         GpiCharStringAt( ps, &ptl, w->width, buff );
     #endif
@@ -252,12 +251,12 @@ void _ClearWindow( LPWDATA w )
         int             count;
 
         mbc = _mbsnextc( (unsigned char *)" " );
-        for( count=0; count < w->width * w->height; count++ ) {
+        for( count = 0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
         }
     }
 #else
-    FARmemset( w->image, 0x20, w->width*w->height );
+    FARmemset( w->image, ' ', w->width * w->height );
 #endif
 
 #if defined( __OS2__ )
@@ -302,21 +301,21 @@ void _ShiftWindow( LPWDATA w, int diff )
     int         i,sline,eline,add;
 
     hwnd = w->hwnd;
-    amt = -diff*w->ychar;
+    amt = -diff * w->ychar;
 
 #if defined( __OS2__ )
     {
         RECTL       rcl;
 
         WinQueryWindowRect( hwnd, &rcl );
-        WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULL, NULL, SW_INVALIDATERGN );
+        WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULLHANDLE, NULL, SW_INVALIDATERGN );
     }
 #else
     {
         RECT        rect;
 
         GetClientRect( hwnd, &rect );
-        i = (rect.bottom + 1) / w->ychar;
+        i = ( rect.bottom + 1 ) / w->ychar;
         rect.bottom = i * w->ychar;
         ScrollWindow( hwnd, 0, amt, NULL, &rect );
     }
@@ -335,16 +334,14 @@ void _ShiftWindow( LPWDATA w, int diff )
             eline = sline;
         add = 1;
     }
-    i = sline;
-    while( i != eline ) {
+    for( i = sline; i != eline; i += add ) {
         txt_s = (LPSTR)&w->image[i * w->width];
-        txt_d = (LPSTR)&w->image[(i - diff) * w->width];
+        txt_d = (LPSTR)&w->image[( i - diff ) * w->width];
 #ifdef _MBCS
         FARmemcpy( txt_d, txt_s, sizeof( mb_char ) * w->width );
 #else
         FARmemcpy( txt_d, txt_s, w->width );
 #endif
-        i += add;
     }
 
 } /* _ShiftWindow */
@@ -356,7 +353,7 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
 {
     int height;
 
-    height = (y2 - y1 + 1) / w->ychar + 1;
+    height = ( y2 - y1 + 1 ) / w->ychar + 1;
     if( w->CurrentLineNumber - w->TopLineNumber >= height ) {
         w->CurrentLineNumber = w->TopLineNumber + height - 1;
     }
@@ -365,28 +362,32 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
     w->x2 = x2;
     w->y1 = y1;
     w->y2 = y2;
-    w->width = (x2 - x1 + 1) / w->xchar + 1;
+    w->width = ( x2 - x1 + 1 ) / w->xchar + 1;
     w->height = height;
 
     /*** Initialize a new w->image array ***/
-    _MemFree( w->image );
+    FARfree( w->image );
 #ifdef _MBCS
     {
         mb_char         mbc;
         int             count;
 
-        w->image = _MemAlloc( sizeof( mb_char ) * w->width * w->height );
+        w->image = FARmalloc( sizeof( mb_char ) * w->width * w->height );
+        if( w->image == NULL )
+            _OutOfMemoryExit();
         mbc = _mbsnextc( (unsigned char *)" " );
         for( count = 0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
         }
     }
 #else
-    w->image = _MemAlloc( w->width * w->height );
-    FARmemset( w->image, 0x20, w->width * w->height );
+    w->image = FARmalloc( w->width * w->height );
+    if( w->image == NULL )
+        _OutOfMemoryExit();
+    FARmemset( w->image, ' ', w->width * w->height );
 #endif
 
-    if( w->width > w->maxwidth ) {
+    if( w->maxwidth < w->width ) {
         w->maxwidth = w->width;
     }
 

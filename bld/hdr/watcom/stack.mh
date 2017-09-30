@@ -18,8 +18,7 @@
  #include <deque>
 #endif
 
-namespace std {
-
+:include nsstd.sp
 /*===================================================================
  * stack template adaptor
  */
@@ -85,7 +84,6 @@ bool operator<=( stack< Type, Container > const & x,
 {
     return( x.c <= y.c );
 }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

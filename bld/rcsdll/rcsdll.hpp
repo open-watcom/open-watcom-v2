@@ -80,7 +80,11 @@ extern mksRcsSystem MksRcs;
 class mksSISystem : public rcsSystem
 {
 public:
+#if defined( __NT__ ) || defined( __WINDOWS__ )
     mksSISystem() { dllId = 0; };
+#else
+    mksSISystem() {};
+#endif
     ~mksSISystem();
     int init( userData * );
     int fini();
@@ -89,7 +93,9 @@ public:
     int hasShell() { return( 1 ); };
     int runShell();
 private:
-    long dllId;
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+    HINSTANCE dllId;
+#endif
 };
 extern mksSISystem MksSI;
 
@@ -131,7 +137,11 @@ extern wprojRcs Wproj;
 class objectCycleSystem : public rcsSystem
 {
 public:
+#if defined( __NT__ ) || defined( __WINDOWS__ )
     objectCycleSystem() { dllId = 0; };
+#else
+    objectCycleSystem() {};
+#endif
     ~objectCycleSystem();
     int init( userData * );
     int fini();
@@ -140,7 +150,9 @@ public:
     int hasShell() { return( 1 ); };
     int runShell();
 private:
-    long dllId;
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+    HINSTANCE dllId;
+#endif
 };
 extern objectCycleSystem ObjCycle;
 
@@ -162,21 +174,39 @@ public:
 };
 extern p4System Perforce;
 
+/* Git */
+class gitSystem : public rcsSystem
+{
+public:
+    gitSystem() { checkin_name = "git_ci"; checkout_name = "git_co"; };
+    int hasShell() { return( 1 ); };
+    int runShell() {
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+        DWORD       rc;
+        rc = WinExec( (LPSTR)"git.exe", SW_RESTORE );
+        return( rc > 31 );
+#else
+        return( system( "git.exe" ) == 0 );
+#endif
+    };
+};
+extern gitSystem Git;
+
 class userData {
 public:
-    userData( long win, rcsstring cfg ) :
+    userData( rcshwnd win, rcsstring cfg ) :
         window(win),batcher(NULL),msgBox(NULL),currentSystem(NULL),cfgDir(cfg),pause(0) {};
     int regBatcher( BatchCallback *fp, void *c )
         { batcher = fp; batch_cookie=c; return( 1 ); };
     int regMessager( MessageBoxCallback *fp, void *c )
         { msgBox = fp; msg_cookie=c; return( 1 ); };
-    int setSystem( int rcs_type );
+    int setSystem( rcstype rcs_type );
     rcsstring getCfgDir() { return( cfgDir ); };
     rcsSystem *getSystem() { return( currentSystem ); };
     void setPause( int on ) { if( on ) { pause=1; } else { pause = 1; } };
     int getPause() { return( pause ); };
 
-    long                        window;
+    rcshwnd                     window;
     BatchCallback               *batcher;
     MessageBoxCallback          *msgBox;
     void                        *batch_cookie;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,18 +31,16 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
 #include "loadcc.h"
+#include "log.h"
 
-#if defined( __NT__ )
-    #define LISTBOX_X       6
-    #define LISTBOX_Y       6
-#else
+
+#ifdef __WINDOWS__
     #define LISTBOX_X       10
     #define LISTBOX_Y       10
+#else
+    #define LISTBOX_X       6
+    #define LISTBOX_Y       6
 #endif
 
 static int          xChar, yChar;
@@ -55,16 +53,20 @@ typedef struct column_info {
 
 #define NUM_COLUMNS 5
 
-column_info columns[NUM_COLUMNS] = {
-    { STR_HEADING_1, 150 },
-    { STR_HEADING_2, 80 },
-    { STR_HEADING_3, 80 },
-    { STR_HEADING_4, 80 },
-    { STR_HEADING_5, 80 }
-};
+#ifdef _WIN64
+#define VAR_COLUMN_WIDTH    150
+#else
+#define VAR_COLUMN_WIDTH    80
 #endif
 
-static int          SpyListBoxXSize;
+column_info columns[NUM_COLUMNS] = {
+    { STR_HEADING_1, 200 },                 // text
+    { STR_HEADING_2, VAR_COLUMN_WIDTH },    // HWND
+    { STR_HEADING_3, 80 },                  // UINT
+    { STR_HEADING_4, VAR_COLUMN_WIDTH },    // WPARAM
+    { STR_HEADING_5, VAR_COLUMN_WIDTH }     // LPARAM
+};
+#endif
 
 /*
  * setCharSize - set the character size variables
@@ -86,10 +88,10 @@ static void setCharSize( HWND parent )
 /*
  * SpyOut - display spy message
  */
-void SpyOut( char *msg, LPMSG pmsg )
+void SpyOut( char *msg, LPMSG pmsg, char *class_name )
 {
-    static int      i;
-    char            res[SPYOUT_LENGTH + 1];
+    int             i;
+    char            res[SPYOUT_LENGTH + 1 + 80];
 #ifdef __NT__
     LVITEM          lvi;
     char            hwnd_str[SPYOUT_HWND_LEN + 1];
@@ -104,20 +106,22 @@ void SpyOut( char *msg, LPMSG pmsg )
 
     if( pmsg != NULL ) {
         FormatSpyMessage( msg, pmsg, res );
+        res[SPYOUT_LENGTH] = ' ';
+        strcpy( res + SPYOUT_LENGTH + 1, class_name );
     } else {
         strcpy( res, msg );
     }
-    SpyLogOut( res );
+    LogOut( res );
 
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
         lvi.mask = LVIF_TEXT;
-        lvi.iItem = SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
+        lvi.iItem = (int)SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
         lvi.iSubItem = 0;
-        lvi.pszText = msg;
-        SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
-        if( pmsg != NULL ) {
-            GetHexStr( hwnd_str, (DWORD)(pointer_int)pmsg->hwnd, SPYOUT_HWND_LEN );
+        lvi.pszText = NULL;
+        i = (int)SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
+        if( pmsg != NULL && i != -1 ) {
+            GetHexStr( hwnd_str, (UINT_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
             hwnd_str[SPYOUT_HWND_LEN] = '\0';
             GetHexStr( msg_str, pmsg->message, SPYOUT_MSG_LEN );
             msg_str[SPYOUT_MSG_LEN] = '\0';
@@ -125,21 +129,24 @@ void SpyOut( char *msg, LPMSG pmsg )
             wparam_str[SPYOUT_WPARAM_LEN] = '\0';
             GetHexStr( lparam_str, pmsg->lParam, SPYOUT_LPARAM_LEN );
             lparam_str[SPYOUT_LPARAM_LEN] = '\0';
+            lvi.iSubItem = 0;
+            lvi.pszText = msg;
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 1;
             lvi.pszText = hwnd_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 2;
             lvi.pszText = msg_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 3;
             lvi.pszText = wparam_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 4;
             lvi.pszText = lparam_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
         }
         if( SpyMessagesAutoScroll ) {
-            SendMessage( SpyListBox, LVM_ENSUREVISIBLE, lvi.iItem, FALSE );
+            SendMessage( SpyListBox, LVM_ENSUREVISIBLE, i, FALSE );
         }
     } else {
 #endif
@@ -168,10 +175,20 @@ void CreateSpyBox( HWND parent )
 #ifdef __NT__
     if( LoadCommCtrl() ) {
         AllowVariableFonts();
-        SpyListBox = CreateWindowEx( WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
-                                     WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL,
-                                     LISTBOX_X, LISTBOX_Y, 0, 0, parent,
-                                     (HANDLE)(pointer_int)SPY_LIST_BOX, Instance, NULL );
+        SpyListBox = CreateWindowEx(
+            WS_EX_CLIENTEDGE,                   /* Window extended style */
+            WC_LISTVIEW,                        /* Window class name */
+            NULL,                               /* Window caption */
+            WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL,
+                                                /* Window style */
+            LISTBOX_X,                          /* Initial X position */
+            LISTBOX_Y,                          /* Initial Y position */
+            0,                                  /* Initial X size */
+            0,                                  /* Initial Y size */
+            parent,                             /* Parent window handle */
+            (HANDLE)SPY_LIST_BOX,               /* Window menu handle */
+            Instance,                           /* Program instance handle */
+            NULL );                             /* Create parameters */
         lvc.mask = LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
         for( i = 0; i < NUM_COLUMNS; i++ ) {
             lvc.cx = columns[i].width;
@@ -186,37 +203,36 @@ void CreateSpyBox( HWND parent )
     } else if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
   #endif
         SpyListBox = CreateWindowEx(
-            WS_EX_CLIENTEDGE,       /* Window extended style */
-            "LISTBOX",              /* Window class name */
-            "Messages",             /* Window caption */
-            WS_CHILD | LBS_NOTIFY
-            | WS_VSCROLL,           /* Window style */
-            LISTBOX_X,              /* Initial X position */
-            LISTBOX_Y,              /* Initial Y position */
-            0,                      /* Initial X size */
-            0,                      /* Initial Y size */
-            parent,                 /* Parent window handle */
-            (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
-            Instance,               /* Program instance handle */
-            NULL );                 /* Create parameters */
+            WS_EX_CLIENTEDGE,                   /* Window extended style */
+            "LISTBOX",                          /* Window class name */
+            "Messages",                         /* Window caption */
+            WS_CHILD | LBS_NOTIFY | WS_VSCROLL, /* Window style */
+            LISTBOX_X,                          /* Initial X position */
+            LISTBOX_Y,                          /* Initial Y position */
+            0,                                  /* Initial X size */
+            0,                                  /* Initial Y size */
+            parent,                             /* Parent window handle */
+            (HANDLE)SPY_LIST_BOX,               /* Window menu handle */
+            Instance,                           /* Program instance handle */
+            NULL );                             /* Create parameters */
   #ifndef _WIN64
     } else
   #endif
 #endif
   #ifndef _WIN64
         SpyListBox = CreateWindow(
-            "LISTBOX",              /* Window class name */
-            "Messages",             /* Window caption */
-            WS_CHILD | LBS_NOTIFY | WS_VSCROLL
-            | WS_BORDER ,           /* Window style */
-            LISTBOX_X,              /* Initial X position */
-            LISTBOX_Y,              /* Initial Y position */
-            0,                      /* Initial X size */
-            0,                      /* Initial Y size */
-            parent,                 /* Parent window handle */
-            (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
-            Instance,               /* Program instance handle */
-            NULL );                 /* Create parameters */
+            "LISTBOX",                          /* Window class name */
+            "Messages",                         /* Window caption */
+            WS_CHILD | LBS_NOTIFY | WS_VSCROLL | WS_BORDER,
+                                                /* Window style */
+            LISTBOX_X,                          /* Initial X position */
+            LISTBOX_Y,                          /* Initial Y position */
+            0,                                  /* Initial X size */
+            0,                                  /* Initial Y size */
+            parent,                             /* Parent window handle */
+            (HANDLE)SPY_LIST_BOX,               /* Window menu handle */
+            Instance,                           /* Program instance handle */
+            NULL );                             /* Create parameters */
   #endif
 
     ShowWindow( SpyListBox, SW_NORMAL );
@@ -226,19 +242,18 @@ void CreateSpyBox( HWND parent )
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
-        SpyListBoxXSize = (int)strlen( TitleBar + 1 ) * xChar;
         SpyListBoxTitle = CreateWindow(
-            "STATIC",                   /* Window class name */
-            TitleBar,                   /* Window caption */
-            SS_LEFT | WS_CHILD,         /* Window style */
-            LISTBOX_X + 4,              /* Initial X position */
-            LISTBOX_Y,                  /* Initial Y position */
-            SpyListBoxXSize,            /* Initial X size */
-            yChar,                      /* Initial Y size */
-            parent,                     /* Parent window handle */
-            (HMENU)NULL,                /* Window menu handle */
-            Instance,                   /* Program instance handle */
-            NULL );                     /* Create parameters */
+            "STATIC",                           /* Window class name */
+            TitleBar,                           /* Window caption */
+            SS_LEFT | WS_CHILD,                 /* Window style */
+            LISTBOX_X + 4,                      /* Initial X position */
+            LISTBOX_Y,                          /* Initial Y position */
+            ( TitleBarLen + 1 ) * xChar,        /* Initial X size */
+            yChar,                              /* Initial Y size */
+            parent,                             /* Parent window handle */
+            (HMENU)NULL,                        /* Window menu handle */
+            Instance,                           /* Program instance handle */
+            NULL );                             /* Create parameters */
         ShowWindow( SpyListBoxTitle, SW_NORMAL );
         UpdateWindow( SpyListBoxTitle );
         SetMonoFont( SpyListBoxTitle );
@@ -270,17 +285,8 @@ void ClearSpyBox( void )
  */
 void SpyMessagePauseToggle( void )
 {
-    WORD        check;
-
-    check = MF_BYCOMMAND;
-    if( SpyMessagesPaused ) {
-        check |= MF_UNCHECKED;
-        SpyMessagesPaused = FALSE;
-    } else {
-        SpyMessagesPaused = TRUE;
-        check |= MF_CHECKED;
-    }
-    CheckMenuItem( SpyMenu, SPY_PAUSE_MESSAGES, check );
+    SpyMessagesPaused = !SpyMessagesPaused;
+    CheckMenuItem( SpyMenu, SPY_PAUSE_MESSAGES, MF_BYCOMMAND | (( SpyMessagesPaused ) ? MF_CHECKED : MF_UNCHECKED) );
 
 } /* SpyMessagePauseToggle */
 
@@ -291,6 +297,7 @@ void SpyMessagePauseToggle( void )
 void ResizeSpyBox( WORD width, WORD height )
 {
     int         nheight;
+    int         xheight;
     int         ypos;
     RECT        area;
     HWND        hinthwnd;
@@ -311,10 +318,12 @@ void ResizeSpyBox( WORD width, WORD height )
         GetWindowRect( hinthwnd, &area );
         nheight -= area.bottom - area.top;
     }
+    xheight = 0;
     if( SpyMainWndInfo.show_toolbar ) {
         GetSpyToolRect( &area );
-        ypos += area.bottom - area.top;
-        nheight -= area.bottom - area.top;
+        xheight = area.bottom - area.top;
+        ypos += xheight;
+        nheight -= xheight;
     }
     if( nheight < 0 ) {
         ShowWindow( SpyListBoxTitle, SW_HIDE );
@@ -329,6 +338,7 @@ void ResizeSpyBox( WORD width, WORD height )
     }
 
     MoveWindow( SpyListBox, LISTBOX_X, ypos, width, nheight, TRUE );
+    MoveWindow( SpyListBoxTitle, LISTBOX_X + 4, LISTBOX_Y + xheight, ( TitleBarLen + 1 ) * xChar, yChar, TRUE );
 
 } /* ResizeSpyBox */
 
@@ -343,11 +353,8 @@ void ResetSpyListBox( void )
     SetMonoFont( SpyListBox );
     SetMonoFont( SpyListBoxTitle );
 
-
     GetClientRect( SpyMainWindow, &r );
     ResizeSpyBox( r.right - r.left, r.bottom - r.top );
-
-    MoveWindow( SpyListBoxTitle, LISTBOX_X + 4, LISTBOX_Y, SpyListBoxXSize, yChar, TRUE );
 
     InvalidateRect( SpyListBox, NULL, FALSE );
     InvalidateRect( SpyListBoxTitle, NULL, FALSE );
@@ -356,12 +363,26 @@ void ResetSpyListBox( void )
 
 } /* ResetSpyListBox */
 
+#ifdef __NT__
+static void message_name_align( char *name )
+{
+    size_t  len;
+
+    for( len = strlen( name ); len < SPYOUT_NAME_LEN; ++len ) {
+        name[len] = ' ';
+    }
+    len = SPYOUT_NAME_LEN;
+    name[len] = '\0';
+}
+#endif
+
 /*
  * GetSpyBoxSelection - get the currently selected message
  */
 bool GetSpyBoxSelection( char *str )
 {
     int     sel;
+
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
@@ -374,32 +395,68 @@ bool GetSpyBoxSelection( char *str )
 #ifdef __NT__
     } else {
         LVITEM  lvi;
-        char    buf[9];
+        char    buf[80];
+
         memset( str, ' ', SPYOUT_LENGTH );
-        str[SPYOUT_LENGTH - 1] = '\0';
-        sel = SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
-        if( sel == (LRESULT)-1 ) {
+        str[SPYOUT_LENGTH] = '\0';
+        sel = (int)SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
+        if( sel == -1 ) {
             return( false );
         }
-        lvi.mask = LVIF_TEXT;
-        lvi.iItem = (int)sel;
-        lvi.iSubItem = 0;
         lvi.pszText = buf;
-        lvi.cchTextMax = SPYOUT_LENGTH;
-        SendMessage( SpyListBox, LVM_GETITEM, 0, (LPARAM)&lvi );
-        strcpy( str, buf );
-        str[strlen( str )] = ' ';
+        lvi.cchTextMax = sizeof( buf );
+        lvi.iSubItem = 0;
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        message_name_align( buf );
+        memcpy( str, buf, SPYOUT_NAME_LEN );
         lvi.iSubItem = 1;
-        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
-        strncpy( &str[SPYOUT_HWND], buf, SPYOUT_HWND_LEN );
-        str[SPYOUT_HWND + SPYOUT_HWND_LEN] = ' ';
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        memcpy( str + SPYOUT_HWND, buf, SPYOUT_HWND_LEN );
         lvi.iSubItem = 2;
-        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
-        strncpy( &str[SPYOUT_MSG], buf, SPYOUT_MSG_LEN );
-        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = ' ';
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        memcpy( str + SPYOUT_MSG, buf, SPYOUT_MSG_LEN );
         return( true );
     }
 #endif
 
 } /* GetSpyBoxSelection */
 
+char *LogSpyBoxLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+        LVITEM      lvi;
+        char        buf[80];
+
+        lvi.pszText = buf;
+        lvi.cchTextMax = sizeof( buf );
+        lvi.iSubItem = 0;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        message_name_align( buf );
+        strcpy( str, buf );
+        buf[0] = ' ';
+        lvi.pszText++;
+        lvi.cchTextMax--;
+        lvi.iSubItem = 1;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 2;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 3;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 4;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}

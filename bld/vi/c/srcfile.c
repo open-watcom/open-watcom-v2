@@ -85,11 +85,11 @@ vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, const char *data )
     if( name[0] == '@' ) {
         info    *cinfo;
 
-        if( !stricmp( &name[1], "." ) ) {
+        if( stricmp( &name[1], "." ) == 0 ) {
             cinfo = CurrentInfo;
         } else {
             for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-                if( !strcmp( cinfo->CurrentFile->name, &name[1] ) ) {
+                if( strcmp( cinfo->CurrentFile->name, &name[1] ) == 0 ) {
                     break;
                 }
             }

@@ -127,7 +127,7 @@ static  void    doInfo( any_oc *oc ) {
         prologueEnd = lc;
         break;
     case INFO_DBG_RTN_END:
-        if( _IsModel( NUMBERS ) ) {
+        if( _IsModel( DBG_NUMBERS ) ) {
             OutFuncEnd( lc );
         }
         if( _IsModel( DBG_LOCALS ) ) {
@@ -209,7 +209,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             lc = AskLocation();
             procStart = lc;
             procLabel = lbl;
-            if( _IsModel( NUMBERS ) ) {
+            if( _IsModel( DBG_NUMBERS ) ) {
                 OutFuncStart( lbl, lc, oc->oc_handle.line );
             }
         }

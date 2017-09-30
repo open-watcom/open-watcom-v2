@@ -480,7 +480,7 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
 
         if( rc == ERR_FIND_NOT_FOUND || rc == ERR_FIND_END_OF_FILE ||
             rc == ERR_FIND_TOP_OF_FILE ) {
-            if( !(flags & FINDFL_NOERROR) ) {
+            if( (flags & FINDFL_NOERROR) == 0 ) {
                 Error( GetErrorMsg( rc ), sStr );
                 rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
             }
@@ -532,7 +532,7 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
         }
         ReplaceString( &sStr, lastFind );
     } else {
-        if( !(flags & FINDFL_NOCHANGE) ) {
+        if( (flags & FINDFL_NOCHANGE) == 0 ) {
             ReplaceString( &lastFind, st );
         }
         ReplaceString( &sStr, st );
@@ -568,7 +568,7 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
                 pos->column = 0;
             }
         }
-        if( wrapped && !(flags & FINDFL_WRAP) ) {
+        if( wrapped && (flags & FINDFL_WRAP) == 0 ) {
             if( flags & FINDFL_FORWARD ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {

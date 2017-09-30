@@ -730,9 +730,9 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
         }
         if( in_group ) {
             if( curr->id == id ) {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, 0 );
+                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
             } else {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, 0 );
+                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, (WPI_PARAM2)0 );
             }
         }
         if( curr->id == last ) {

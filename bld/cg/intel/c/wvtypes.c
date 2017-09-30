@@ -101,7 +101,7 @@ static  uint    SignedSizeClass( signed_32 num ) {
         class = 0;
     } else if( num >= -32768 && num <= 32767 ) {
         class = 1;
-   } else {
+    } else {
         class = 2;
     }
     return( class );
@@ -189,7 +189,7 @@ extern  void    WVDumpName( dbg_name name, dbg_type tipe )
         BuffIndex( name->scope );
         if( tipe == DBG_FWD_TYPE ) {
             BuffForward( &name->patch );
-       } else {
+        } else {
             BuffIndex( tipe );
         }
         BuffString( name->len, name->name );

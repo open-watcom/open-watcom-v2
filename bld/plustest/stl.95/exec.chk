@@ -1,0 +1,1058 @@
+PASS compiling accum1
+sum = 15
+PASS executing accum1
+PASS compiling accum2
+prod = 120
+PASS executing accum2
+PASS compiling adjdiff0
+1 2 4 8 16 
+1 1 2 4 8 
+PASS executing adjdiff0
+PASS compiling adjdiff1
+0 1 4 9 16 25 36 49 64 81 
+0 1 3 5 7 9 11 13 15 17 
+PASS executing adjdiff1
+PASS compiling adjdiff2
+1 2 3 4 5 6 7 8 9 10 
+1 2 6 12 20 30 42 56 72 90 
+PASS executing adjdiff2
+PASS compiling adjfind0
+No adjacent pairs
+Found adjacent pair of: 1 at offset 3
+PASS executing adjfind0
+PASS compiling adjfind1
+No adjacent pairs
+Found adjacent pair of: 7
+PASS executing adjfind1
+PASS compiling adjfind2
+Found two adjacent strings of equal length: Jack -and- Mike
+PASS executing adjfind2
+PASS compiling advance
+At Beginning: 0
+At Beginning + 5: 5
+PASS executing advance
+PASS compiling alg1
+min (4, 7) = 4
+max ('a', 'z') = z
+PASS executing alg1
+PASS compiling alg2
+Count of 2s = 3
+PASS executing alg2
+PASS compiling alg3
+Count of 2s = 3
+PASS executing alg3
+PASS compiling alg4
+1962
+1992
+1999
+2001
+PASS executing alg4
+PASS compiling bcompos1
+1 is odd and positive
+PASS executing bcompos1
+PASS compiling bcompos2
+1 is odd and positive
+PASS executing bcompos2
+PASS compiling bind1st1
+1
+2
+PASS executing bind1st1
+PASS compiling bind1st2
+1
+2
+PASS executing bind1st2
+PASS compiling bind2nd1
+1
+2
+4
+PASS executing bind2nd1
+PASS compiling bind2nd2
+1
+2
+4
+PASS executing bind2nd2
+PASS compiling binsert1
+laurie
+jennifer
+leisa
+PASS executing binsert1
+PASS compiling binsert2
+laurie
+jennifer
+leisa
+PASS executing binsert2
+PASS compiling binsrch1
+found 42
+PASS executing binsrch1
+PASS compiling binsrch2
+ff is in labels.
+PASS executing binsrch2
+PASS compiling bnegate1
+1
+4
+7
+9
+PASS executing bnegate1
+PASS compiling bnegate2
+1
+4
+7
+9
+PASS executing bnegate2
+PASS compiling bvec1
+000
+101
+PASS executing bvec1
+PASS compiling copy1
+ Src: A string to be copied.
+Dest: A string to be copied.
+PASS executing copy1
+PASS compiling copy2
+0 1 2 3 4 5 6 7 8 9 
+PASS executing copy2
+PASS compiling copy3
+0 1 2 3 4 5 6 7 8 9 
+PASS executing copy3
+PASS compiling copy4
+0 1 2 3 4 5 6 7 8 9 
+PASS executing copy4
+PASS compiling copyb
+0 1 2 3 4 5 6 7 8 9 
+PASS executing copyb
+PASS compiling copyb0
+1 2 3 4 5 
+1 2 3 4 5 
+PASS executing copyb0
+PASS compiling count0
+Found 4 1's.
+PASS executing count0
+PASS compiling count1
+Found 33 2's.
+PASS executing count1
+PASS compiling countif1
+Found 33 odd elements.
+PASS executing countif1
+PASS compiling deque1
+d[0] = 1
+d[1] = 4
+d[2] = 9
+d[3] = 16
+
+d[0] = 4
+d[1] = 9
+d[2] = 25
+PASS executing deque1
+PASS compiling divides
+result = 2
+PASS executing divides
+PASS compiling eqlrnge0
+2 can be inserted from before index 4 to before index 8
+PASS executing eqlrnge0
+PASS compiling eqlrnge1
+Within the collection:
+	0 0 0 1 1 1 2 2 2 3 
+2 can be inserted from before index 6 to before index 9
+PASS executing eqlrnge1
+PASS compiling eqlrnge2
+Within the collection:
+	aabbccddggghhklllmqqqqssyyzz
+q can be inserted from before index 18 to before index 22
+PASS executing eqlrnge2
+PASS compiling equal0
+numbers1 is not equal to numbers2
+numbers3 is equal to numbers1
+PASS executing equal0
+PASS compiling equal1
+v1 is not equal to v2
+v1 is equal to v2
+PASS executing equal1
+PASS compiling equal2
+v2[i] == v1[i] * v1[i]
+PASS executing equal2
+PASS compiling equalto
+1
+0
+1
+0
+PASS executing equalto
+PASS compiling error1
+PASS executing error1
+PASS compiling fill1
+42 42 42 42 42 42 42 42 42 42 
+PASS executing fill1
+PASS compiling filln1
+42 42 42 42 42 42 42 42 42 42 
+PASS executing filln1
+PASS compiling find0
+Found 25 at offset 5
+PASS executing find0
+PASS compiling find1
+Found 1972 at offset 3
+PASS executing find1
+PASS compiling findif0
+Value 15 at offset 3 is odd
+PASS executing findif0
+PASS compiling findif1
+Value 9 at offset 2 is divisible by 3
+PASS executing findif1
+PASS compiling finsert1
+leisa
+jennifer
+laurie
+PASS executing finsert1
+PASS compiling finsert2
+leisa
+jennifer
+laurie
+PASS executing finsert2
+PASS compiling foreach0
+1 1 2 3 5 8 13 21 34 55 
+PASS executing foreach0
+PASS compiling foreach1
+0 1 4 9 16 25 36 49 64 81 
+PASS executing foreach1
+PASS compiling func1
+Number greater than 3 = 2
+PASS executing func1
+PASS compiling func2
+5
+4
+1
+PASS executing func2
+PASS compiling func3
+5
+4
+1
+PASS executing func3
+PASS compiling gener1
+16838 5758 10113 17515 31051 5627 23010 7419 16212 4086 
+PASS executing gener1
+PASS compiling gener2
+1 1 2 3 5 8 13 21 34 55 
+PASS executing gener2
+PASS compiling genern1
+16838 5758 10113 17515 31051 5627 23010 7419 16212 4086 
+PASS executing genern1
+PASS compiling genern2
+1 1 2 3 5 8 13 21 34 55 
+PASS executing genern2
+PASS compiling greateq
+4
+3
+2
+1
+PASS executing greateq
+PASS compiling greater
+4
+3
+2
+1
+PASS executing greater
+PASS compiling incl0
+numbers1 does not include numbers3
+numbers2 includes numbers3
+PASS executing incl0
+PASS compiling incl1
+v1 does not include v2
+v1 includes v2
+PASS executing incl1
+PASS compiling incl2
+v1 does not include v2
+v1 includes v2
+PASS executing incl2
+PASS compiling inplmrg1
+1 10 42 3 16 32 
+1 3 10 16 32 42 
+PASS executing inplmrg1
+PASS compiling inplmrg2
+4 3 2 1 0 4 3 2 1 0 
+4 4 3 3 2 2 1 1 0 0 
+PASS executing inplmrg2
+PASS compiling inrprod0
+Inner product = 55
+PASS executing inrprod0
+PASS compiling inrprod1
+Inner product (sum of products) of:
+	1 2 3 
+	3 2 1 
+is: 10
+PASS executing inrprod1
+PASS compiling inrprod2
+Inner product (product of sums):
+	1 2 3 
+	3 2 1 
+is: 64
+PASS executing inrprod2
+PASS compiling insert1
+laurie
+jennifer
+amanda
+saskia
+carrie
+leisa
+PASS executing insert1
+PASS compiling insert2
+laurie
+jennifer
+amanda
+saskia
+carrie
+leisa
+PASS executing insert2
+PASS compiling iota1
+42 43 44 45 46 47 48 49 50 51 
+PASS executing iota1
+PASS compiling istmit1
+Please enter a string: read asdf
+PASS executing istmit1
+PASS compiling iter1
+zippy
+motorboy
+PASS executing iter1
+PASS compiling iter2
+zippy
+motorboy
+PASS executing iter2
+PASS compiling iter3
+motorboy
+zippy
+PASS executing iter3
+PASS compiling iter4
+last element is 3
+first element is 1
+PASS executing iter4
+PASS compiling iterswp0
+3 1 2 0 4 5 
+PASS executing iterswp0
+PASS compiling iterswp1
+3 1 2 0 4 5 
+PASS executing iterswp1
+PASS compiling less
+1
+2
+3
+4
+PASS executing less
+PASS compiling lesseq
+1
+2
+3
+4
+PASS executing lesseq
+PASS compiling lexcmp1
+shine is before shoe
+PASS executing lexcmp1
+PASS compiling lexcmp2
+shoe is after shine
+PASS executing lexcmp2
+PASS compiling list1
+1
+4
+9
+16
+36
+PASS executing list1
+PASS compiling list2
+1
+4
+9
+16
+PASS executing list2
+PASS compiling list3
+original: xlxtss
+reversed: sstxlx
+removed: sstl
+uniqued: stl
+sorted: lst
+PASS executing list3
+PASS compiling list4
+123467
+PASS executing list4
+PASS compiling logicand
+0
+1
+0
+0
+PASS executing logicand
+PASS compiling logicnot
+count = 2
+PASS executing logicnot
+PASS compiling logicor
+1
+1
+0
+1
+PASS executing logicor
+PASS compiling lwrbnd1
+0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 
+3 can be inserted at index: 12
+PASS executing lwrbnd1
+PASS compiling lwrbnd2
+d can be inserted at index: 4
+PASS executing lwrbnd2
+PASS compiling map1
+m['x'] = 20
+m['x'] = 10
+m['z'] = 0
+m.count ('z') = 1
+First insertion successful
+Existing pair c -> 100
+PASS executing map1
+PASS compiling max1
+100
+PASS executing max1
+PASS compiling max2
+shoe
+PASS executing max2
+PASS compiling maxelem1
+56
+PASS executing maxelem1
+PASS compiling maxelem2
+Todd
+PASS executing maxelem2
+PASS compiling merge0
+-5 1 6 13 25 26 36 46 99 101 
+PASS executing merge0
+PASS compiling merge1
+0 1 2 3 4 
+3 4 5 6 7 
+0 1 2 3 3 4 4 5 6 7 
+PASS executing merge1
+PASS compiling merge2
+10 9 8 7 6 
+7 6 5 4 3 
+10 9 8 7 7 6 6 5 4 3 
+PASS executing merge2
+PASS compiling min1
+42
+PASS executing min1
+PASS compiling min2
+shine
+PASS executing min2
+PASS compiling minelem1
+-242
+PASS executing minelem1
+PASS compiling minelem2
+Brett
+PASS executing minelem2
+PASS compiling minus
+0
+1
+-1
+5
+PASS executing minus
+PASS compiling mismtch0
+n1 and n2 are the same
+Mismatch at offset: 3
+PASS executing mismtch0
+PASS compiling mismtch1
+v1 and v2 are the same
+mismatch at index: 5
+PASS executing mismtch1
+PASS compiling mismtch2
+n1 and n2 are the same
+mismatch at index: 2
+PASS executing mismtch2
+PASS compiling mkheap0
+19
+13
+11
+10
+5
+4
+PASS executing mkheap0
+PASS compiling mkheap1
+4
+5
+10
+11
+13
+19
+PASS executing mkheap1
+PASS compiling mmap1
+count ('X') = 0
+count ('X') = 1
+count ('X') = 2
+X -> 10
+X -> 20
+Y -> 32
+Erased 2 items
+PASS executing mmap1
+PASS compiling mmap2
+lower bound:
+3 -> c
+upper bound:
+6 -> f
+PASS executing mmap2
+PASS compiling modulus
+2
+0
+10
+2
+PASS executing modulus
+PASS compiling mset1
+count (42) = 0
+count (42) = 1
+count (42) = 2
+40 Not found
+Found 42
+Erased 2 instances
+PASS executing mset1
+PASS compiling mset2
+alf
+bob
+chas
+chas
+dave
+ed
+PASS executing mset2
+PASS compiling mset3
+lower bound = 3
+upper bound = 6
+PASS executing mset3
+PASS compiling mset4
+lower bound = 3
+upper bound = 6
+PASS executing mset4
+PASS compiling mset5
+Using less_than: 
+1
+3
+6
+9
+Using greater_than: 
+9
+6
+3
+1
+PASS executing mset5
+PASS compiling negate
+-1
+-2
+-3
+PASS executing negate
+PASS compiling nequal
+0
+1
+0
+1
+PASS executing nequal
+PASS compiling nextprm0
+0 2 1 
+PASS executing nextprm0
+PASS compiling nextprm1
+0 1 2 
+0 2 1 
+1 0 2 
+1 2 0 
+2 0 1 
+2 1 0 
+0 1 2 
+0 2 1 
+1 0 2 
+1 2 0 
+PASS executing nextprm1
+PASS compiling nextprm2
+ABC
+ACB
+BAC
+BCA
+CAB
+CBA
+ABC
+ACB
+BAC
+BCA
+PASS executing nextprm2
+PASS compiling nthelem0
+1 0 2 3 4 5 
+PASS executing nthelem0
+PASS compiling nthelem1
+8 8 3 5 1 7 0 9 2 6 
+0 2 3 1 5 6 7 9 8 8 
+PASS executing nthelem1
+PASS compiling nthelem2
+8 8 3 5 1 7 0 9 2 6 
+8 8 9 7 6 5 3 0 2 1 
+PASS executing nthelem2
+PASS compiling ostmit
+hello
+1524
+PASS executing ostmit
+PASS compiling pair0
+p.first = 1, p.second = 10
+PASS executing pair0
+PASS compiling pair1
+p.first = 1, p.second = 10
+PASS executing pair1
+PASS compiling pair2
+p.first = 1
+p.second = 10
+PASS executing pair2
+PASS compiling parsrt0
+1 2 3 5 4 6 
+PASS executing parsrt0
+PASS compiling parsrt1
+8 8 3 5 1 7 0 9 2 6 
+0 1 2 3 5 8 8 9 7 6 
+PASS executing parsrt1
+PASS compiling parsrt2
+aa ff dd ee cc bb 
+aa bb cc ff ee dd 
+PASS executing parsrt2
+PASS compiling parsrtc0
+1 2 3 
+PASS executing parsrtc0
+PASS compiling parsrtc1
+8 8 3 5 1 7 0 9 2 6 
+0 1 2 3 5 
+PASS executing parsrtc1
+PASS compiling parsrtc2
+aa ff dd ee cc bb 
+aa ff dd ee cc bb 
+PASS executing parsrtc2
+PASS compiling partsrt0
+1 2 3 5 4 6 
+PASS executing partsrt0
+PASS compiling partsum0
+1 3 6 10 15 21 
+PASS executing partsum0
+PASS compiling partsum1
+0 1 2 3 4 5 6 7 8 9 
+0 1 3 6 10 15 21 28 36 45 
+PASS executing partsum1
+PASS compiling partsum2
+1 2 3 4 5 
+1 2 6 24 120 
+PASS executing partsum2
+PASS compiling pheap1
+1 4 7 20 
+PASS executing pheap1
+PASS compiling pheap2
+20 7 4 1 
+PASS executing pheap2
+PASS compiling plus
+total = 77
+PASS executing plus
+PASS compiling pqueue1
+101
+69
+42
+PASS executing pqueue1
+PASS compiling pqueue2
+1pe
+3o1
+86LC5YEChyf3Y
+86f2ZdZHj3lrY
+86mNoM8ZngBzc
+86sVI5ronsYGc
+86sVI5ronsYGc
+86vy3e2ODUryw
+ape
+c1t
+cat
+dog
+PASS executing pqueue2
+PASS compiling prevprm0
+2 1 0 
+PASS executing prevprm0
+PASS compiling prevprm1
+0 1 2 
+2 1 0 
+2 0 1 
+1 2 0 
+1 0 2 
+0 2 1 
+0 1 2 
+2 1 0 
+2 0 1 
+1 2 0 
+PASS executing prevprm1
+PASS compiling prevprm2
+0 1 2 
+0 2 1 
+1 0 2 
+1 2 0 
+2 0 1 
+2 1 0 
+0 1 2 
+0 2 1 
+1 0 2 
+1 2 0 
+PASS executing prevprm2
+PASS compiling ptition0
+6 1 3 10 12 20 
+PASS executing ptition0
+PASS compiling ptition1
+18 18 13 15 11 7 10 19 12 6 
+6 10 7 15 11 13 18 19 12 18 
+PASS executing ptition1
+PASS compiling ptrbinf1
+8
+7
+8
+13
+PASS executing ptrbinf1
+PASS compiling ptrbinf2
+8
+7
+8
+13
+PASS executing ptrbinf2
+PASS compiling ptrunf1
+2 is even
+PASS executing ptrunf1
+PASS compiling ptrunf2
+2 is even
+PASS executing ptrunf2
+PASS compiling queue1
+42
+101
+69
+PASS executing queue1
+PASS compiling remcopy1
+1 3 1 3 0 0 
+PASS executing remcopy1
+PASS compiling remcpif1
+2 2 0 0 0 0 
+PASS executing remcpif1
+PASS compiling remif1
+0 0 2 2 2 2 
+PASS executing remif1
+PASS compiling remove1
+2 3 2 3 2 3 
+PASS executing remove1
+PASS compiling repcpif1
+0 1 2 3 4 0 1 2 3 4 
+0 1 2 3 4 0 1 2 3 4 
+0 42 2 42 4 0 42 2 42 4 
+PASS executing repcpif1
+PASS compiling replace0
+0 1 42 0 1 42 
+PASS executing replace0
+PASS compiling replace1
+0 1 2 3 4 0 1 2 3 4 
+0 1 42 3 4 0 1 42 3 4 
+PASS executing replace1
+PASS compiling replcpy1
+0 1 42 0 1 42 
+PASS executing replcpy1
+PASS compiling replif1
+0 1 2 3 4 0 1 2 3 4 
+0 42 2 42 4 0 42 2 42 4 
+PASS executing replif1
+PASS compiling revbit2
+3
+2
+5
+1
+PASS executing revbit2
+PASS compiling revcopy1
+0 1 2 3 4 5 
+5 4 3 2 1 0 
+PASS executing revcopy1
+PASS compiling reverse1
+5 4 3 2 1 0 
+PASS executing reverse1
+PASS compiling reviter2
+3
+2
+5
+1
+PASS executing reviter2
+PASS compiling rndshuf0
+4 1 6 3 2 5 
+PASS executing rndshuf0
+PASS compiling rndshuf1
+0 1 2 3 4 5 6 7 8 9 
+6 8 9 2 1 4 3 7 0 5 
+6 5 8 2 4 1 0 3 7 9 
+4 2 8 9 6 5 1 0 7 3 
+PASS executing rndshuf1
+PASS compiling rndshuf2
+0 1 2 3 4 5 6 7 8 9 
+4 5 9 8 1 3 6 0 2 7 
+3 9 4 7 6 5 2 0 1 8 
+2 8 7 1 3 5 4 0 6 9 
+PASS executing rndshuf2
+PASS compiling rotate0
+3 4 5 0 1 2 
+PASS executing rotate0
+PASS compiling rotate1
+0 1 2 3 4 5 6 7 8 9 
+0 1 2 3 4 5 6 7 8 9 
+1 2 3 4 5 6 7 8 9 0 
+3 4 5 6 7 8 9 0 1 2 
+6 7 8 9 0 1 2 3 4 5 
+0 1 2 3 4 5 6 7 8 9 
+5 6 7 8 9 0 1 2 3 4 
+1 2 3 4 5 6 7 8 9 0 
+8 9 0 1 2 3 4 5 6 7 
+6 7 8 9 0 1 2 3 4 5 
+5 6 7 8 9 0 1 2 3 4 
+
+PASS executing rotate1
+PASS compiling rotcopy0
+3 4 5 0 1 2 
+PASS executing rotcopy0
+PASS compiling rotcopy1
+0 1 2 3 4 5 6 7 8 9 
+0 1 2 3 4 5 6 7 8 9 
+1 2 3 4 5 6 7 8 9 0 
+2 3 4 5 6 7 8 9 0 1 
+3 4 5 6 7 8 9 0 1 2 
+4 5 6 7 8 9 0 1 2 3 
+5 6 7 8 9 0 1 2 3 4 
+6 7 8 9 0 1 2 3 4 5 
+7 8 9 0 1 2 3 4 5 6 
+8 9 0 1 2 3 4 5 6 7 
+9 0 1 2 3 4 5 6 7 8 
+
+PASS executing rotcopy1
+PASS compiling search0
+v3 not contained in v1
+Found v3 in v2 at offset: 3
+PASS executing search0
+PASS compiling search1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 50 51 52 
+v2 not contained in v1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 4 5 6 
+Found v2 in v1 at offset: 4
+PASS executing search1
+PASS compiling search2
+grades: A B C D F 
+letters:Q E D 
+letters not found in grades
+grades: A B C D F 
+letters:B C D 
+letters found in grades at offset: 1
+PASS executing search2
+PASS compiling set1
+count (42) = 0
+count (42) = 1
+count (42) = 1
+1 elements erased
+PASS executing set1
+PASS compiling set2
+Inserted new element 42
+Existing element = 42
+PASS executing set2
+PASS compiling setdiff0
+18 0 0 0 
+10 17 23 0 
+PASS executing setdiff0
+PASS compiling setdiff1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 7 8 9 10 11 12 13 14 15 16 
+0 1 2 3 4 5 6 
+PASS executing setdiff1
+PASS compiling setdiff2
+word1: A B C D E F G H I J K L M N O 
+word2: L M N O P Q R S T U V W X Y Z 
+A B C D E F G H I J K 
+PASS executing setdiff2
+PASS compiling setintr0
+13 23 0 0 
+PASS executing setintr0
+PASS compiling setintr1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 7 8 9 10 11 12 13 14 15 16 
+7 8 9 
+PASS executing setintr1
+PASS compiling setintr2
+word1: A B C D E F G H I J K L M N O 
+word2: L M N O P Q R S T U V W X Y Z 
+L M N O 
+PASS executing setintr2
+PASS compiling setsymd0
+10 17 18 0 
+PASS executing setsymd0
+PASS compiling setsymd1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 7 8 9 10 11 12 13 14 15 16 
+0 1 2 3 4 5 6 10 11 12 13 14 15 16 
+PASS executing setsymd1
+PASS compiling setsymd2
+word1: A B C D E F G H I J K L M N O 
+word2: L M N O P Q R S T U V W X Y Z 
+A B C D E F G H I J K P Q R S T U V W X Y Z 
+PASS executing setsymd2
+PASS compiling setunon0
+10 13 17 18 23 0 0 
+PASS executing setunon0
+PASS compiling setunon1
+v1: 0 1 2 3 4 5 6 7 8 9 
+v2: 7 8 9 10 11 12 13 14 15 16 
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+PASS executing setunon1
+PASS compiling setunon2
+word1: A B C D E F G H I J K L M N O 
+word2: L M N O P Q R S T U V W X Y Z 
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 
+PASS executing setunon2
+PASS compiling sort1
+-10 1 11 19 42 50 
+PASS executing sort1
+PASS compiling sort2
+before: 1 50 -10 11 42 19 
+after: 50 42 19 11 1 -10 
+PASS executing sort2
+PASS compiling stack1
+69
+101
+42
+PASS executing stack1
+PASS compiling stack2
+69
+101
+42
+PASS executing stack2
+PASS compiling stblptn0
+5 6 -2 10 11 20 
+PASS executing stblptn0
+PASS compiling stblptn1
+18 18 13 15 11 7 10 19 12 6 
+7 10 6 18 18 13 15 11 19 12 
+PASS executing stblptn1
+PASS compiling stblsrt1
+-10 1 11 19 42 50 
+PASS executing stblsrt1
+PASS compiling stblsrt2
+aa bb cc dd ll qq 
+PASS executing stblsrt2
+PASS compiling swap1
+a = 42 b = 19
+a = 19 b = 42
+PASS executing swap1
+PASS compiling swprnge1
+World Hello
+Hello World
+PASS executing swprnge1
+PASS compiling tech01
+..\stl.94\examples\tech01.cpp
+PASS executing tech01
+PASS compiling times
+total = 70
+PASS executing times
+PASS compiling trnsfrm1
+5 1 0 -1 -6 -11 
+PASS executing trnsfrm1
+PASS compiling trnsfrm2
+Hello World!
+PASS executing trnsfrm2
+PASS compiling ucompos1
+1
+2
+4
+PASS executing ucompos1
+PASS compiling ucompos2
+1
+2
+4
+PASS executing ucompos2
+PASS compiling unegate1
+2
+PASS executing unegate1
+PASS compiling unegate2
+2
+PASS executing unegate2
+PASS compiling uniqcpy1
+0 1 2 3 4 0 0 0 
+PASS executing uniqcpy1
+PASS compiling uniqcpy2
+QQWWEERTTYY
+QQWWEERTTYY
+QWERTY
+PASS executing uniqcpy2
+PASS compiling unique1
+0 1 2 3 4 2 3 4 
+PASS executing unique1
+PASS compiling unique2
+QQWWEERTTYY
+QWERTYRTTYY
+PASS executing unique2
+PASS compiling uprbnd1
+0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 
+3 can be inserted at index: 16
+PASS executing uprbnd1
+PASS compiling uprbnd2
+d can be inserted at index: 4
+PASS executing uprbnd2
+PASS compiling vec1
+empty = 1
+size = 0
+max_size = 1073741823
+size = 1
+v1[0] = 42
+PASS executing vec1
+PASS compiling vec2
+v1 = 32.1 40.5 
+v2 = 3.56 
+v1 = 3.56 
+v2 = 32.1 40.5 
+v2 = 3.56 
+PASS executing vec2
+PASS compiling vec3
+v1 = hi
+v2 = ho
+(v1 == v2) = 0
+(v1 < v2) = 1
+PASS executing vec3
+PASS compiling vec4
+front = 1
+back = 16, size = 4
+back = 25, size = 5
+back = 16, size = 4
+PASS executing vec4
+PASS compiling vec5
+v[0] = 1
+v[1] = 4
+v[2] = 9
+v[3] = 16
+PASS executing vec5
+PASS compiling vec6
+v[0] = 1
+v[1] = 4
+v[2] = 9
+v[3] = 16
+v[4] = 25
+v[5] = 36
+
+v[0] = 4
+v[1] = 9
+v[2] = 16
+v[3] = 25
+v[4] = 36
+
+v[0] = 4
+v[1] = 9
+v[2] = 16
+v[3] = 25
+
+v[0] = 4
+v[1] = 25
+
+PASS executing vec6
+PASS compiling vec7
+v[0] = 0
+v[1] = 1
+v[2] = 4
+v[3] = 25
+v[4] = 36
+
+v[0] = 0
+v[1] = 1
+v[2] = 4
+v[3] = 9
+v[4] = 16
+v[5] = 25
+v[6] = 36
+
+PASS executing vec7
+PASS compiling vec8
+capacity = 0
+capacity = 1024
+capacity = 5000
+PASS executing vec8

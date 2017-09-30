@@ -46,7 +46,7 @@ bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
         if( !GUISetFocus( wnd, id ) ) {
             return( false );
         }
-        return( GUIToControl( wnd, id, CB_SHOWDROPDOWN, (WPI_PARAM1)drop, 0L, NULL ) );
+        return( GUIToControl( wnd, id, CB_SHOWDROPDOWN, (WPI_PARAM1)drop, (WPI_PARAM2)0, NULL ) );
         break;
     default :
         return( false );

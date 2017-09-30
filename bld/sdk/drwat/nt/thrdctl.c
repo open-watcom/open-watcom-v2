@@ -414,7 +414,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadCtlInfo       *info;
-    int                 index;
+    LRESULT             index;
     char                buf[200];
     DWORD               threadid;
     ThreadNode          *thread;
@@ -441,7 +441,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         sprintf( buf, "(%s)", info->procinfo.name );
         SetDlgItemText( hwnd, THREAD_PROC_PATH, buf );
         SendDlgItemMessage( hwnd, THREAD_LIST, LB_SETCURSEL, 0, 0L );
-        index = (int)SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
+        index = SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
         if( index != LB_ERR ) {
             enableChoices( hwnd, TRUE );
         }
@@ -451,13 +451,12 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         cmd = LOWORD( wparam );
         if( cmd == THREAD_SUSPEND || cmd == THREAD_RESUME ||
             cmd == THREAD_KILL || cmd == THREAD_SET_PRIORITY ) {
-            index = (int)SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
+            index = SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETCURSEL, 0, 0L );
             if( index == LB_ERR ) {
-                RCMessageBox( hwnd, STR_NO_SELECTED_THREAD, AppName,
-                            MB_OK | MB_ICONEXCLAMATION );
+                RCMessageBox( hwnd, STR_NO_SELECTED_THREAD, AppName, MB_OK | MB_ICONEXCLAMATION );
                 break;
             }
-            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, index, (LPARAM)(LPSTR)buf );
+            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, (WPARAM)index, (LPARAM)(LPSTR)buf );
             threadid = getThreadId( buf );
             process = FindProcess( info->procinfo.pid );
             thread = FindThread( process, threadid );
@@ -489,10 +488,8 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                     RCsprintf( buf, STR_CANT_SUSPEND_THRD_X, threadid );
                     MessageBox( hwnd, buf, action, MB_ICONQUESTION | MB_OK );
                 } else if( susp_cnt > 0 ) {
-                    RCsprintf( buf, STR_THREAD_ALREADY_SUSP,
-                               threadid, susp_cnt );
-                    index = MessageBox( hwnd, buf, action,
-                                        MB_ICONQUESTION | MB_YESNO );
+                    RCsprintf( buf, STR_THREAD_ALREADY_SUSP, threadid, susp_cnt );
+                    index = MessageBox( hwnd, buf, action, MB_ICONQUESTION | MB_YESNO );
                     if( index == IDNO ) {
                         ResumeThread( thread->threadhdl );
                     }

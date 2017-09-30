@@ -32,23 +32,26 @@
 
 #include "cmdedit.h"
 
-static char Lower( char c ) {
-/***************************/
-
-    if( ( c >= 'A' ) && ( c <= 'Z' ) ) return( c | ' ' );
+static char Lower( char c )
+/*************************/
+{
+    if( ( c >= 'A' ) && ( c <= 'Z' ) )
+        return( c | ' ' );
     return( c );
 }
 
-int Equal( char far * str1, char far * str2, int len ) {
-/******************************************************/
-
-    while( --len >= 0 ) {
+int Equal( char __far * str1, char __far * str2, int len )
+/********************************************************/
+{
+    while( len-- > 0 ) {
         if( *str1 == ' ' && *str2 == '\t' ) {
             /**/
         } else if( *str2 == ' ' && *str1 == '\t' ) {
             /**/
         } else {
-            if( Lower( *str1 ) != Lower( *str2 ) ) return( FALSE );
+            if( Lower( *str1 ) != Lower( *str2 ) ) {
+                return( FALSE );
+            }
         }
         ++str1;
         ++str2;
@@ -56,9 +59,9 @@ int Equal( char far * str1, char far * str2, int len ) {
     return( TRUE );
 }
 
-void ZapLower( char far *str ) {
-/**************************/
-
+void ZapLower( char *str )
+/************************/
+{
     while( *str != '\0' && *str != '\r' ) {
         *str = Lower( *str );
         ++str;
@@ -77,38 +80,36 @@ void PutChar( char ch ) {
 }
 
 
-void PutPad( char far * str, int len ) {
-/**************************************/
-
-    while( *str ) {
+void PutPad( char *str, int len )
+/*******************************/
+{
+    for( ; *str != '\0'; str++ ) {
         PutChar( *str );
         --len;
-        ++str;
     }
-    while( len > 0 ) {
+    for( ; len-- > 0; ) {
         PutChar( ' ' );
-        --len;
     }
 }
 
 
-void PutString( char far * str ) {
-/********************************/
-
+void PutString( char *str )
+/*************************/
+{
     PutPad( str, -1 );
 }
 
 
-void PutNL() {
-/************/
-
+void PutNL( void )
+/****************/
+{
     PutString( "\r\n" );
 }
 
 
-int PutMore() {
-/**************/
-
+int PutMore( void )
+/*****************/
+{
     PutString( "\r... More [y|n]\r" );
     KbdCharIn( &KbdChar, 0, 0 );
     PutString( "\r              \r" );
@@ -145,25 +146,27 @@ void RestorePrompt( char PASPTR *line ) {
 }
 
 
-void SetCursorType() {
-/****************/
-
+void SetCursorType( void )
+/************************/
+{
     VioSetCurType( &Cur, 0 );
 }
 
 
-char far *GetEnv( char far *name, int len ) {
-/*******************************************/
+char __far *GetEnv( char __far *name, int len )
+/*********************************************/
+{
+    char    __far *environ;
+    USHORT  envoff, envseg;
 
-    char far *environ;
-    USHORT envoff, envseg;
-
-    if( DosGetEnv( &envseg, &envoff ) != 0 ) return( 0 );
-    environ = MK_FP( envseg, 0 );
-    while( !_null( *environ ) ) {
-        if( Equal( environ, name, len ) ) return( environ + len );
-        while( !_null( *environ ) ) ++environ;
-        ++environ;
+    if( DosGetEnv( &envseg, &envoff ) != 0 )
+        return( 0 );
+    for( environ = MK_FP( envseg, 0 ); !_null( *environ ); environ++ ) {
+        if( Equal( environ, name, len ) )
+            return( environ + len );
+        while( !_null( *environ ) ) {
+            ++environ;
+        }
     }
     return( 0 );
 }

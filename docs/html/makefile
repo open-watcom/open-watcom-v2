@@ -1,5 +1,5 @@
 #pmake: nobuild docs os_nt html
 
-dotarget=html
+docset=html
 
 !include ../mif/master.mif

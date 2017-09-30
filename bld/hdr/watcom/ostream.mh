@@ -42,8 +42,7 @@ using std::flush;
  #include <ios>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   // **************************** OSTREAM ************************************
 :include pshpackl.sp
   class _WPRTLINK ostream : virtual public ios {
@@ -224,8 +223,7 @@ namespace std {
   _WPRTLINK extern ostream & endl( ostream & );
   _WPRTLINK extern ostream & ends( ostream & );
   _WPRTLINK extern ostream &flush( ostream & );
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

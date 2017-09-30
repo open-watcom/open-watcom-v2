@@ -98,8 +98,7 @@ vi_rc SrcAssign( const char *data, vlist *vl )
             }
         }
         if( check_end ) {
-            ++data;
-            while( data[0] != '\0' ) {
+            for( ++data; data[0] != '\0'; data++ ) {
                 switch( data[0] ) {
                 case 't':
                     timeflag = true;
@@ -120,7 +119,6 @@ vi_rc SrcAssign( const char *data, vlist *vl )
                     lnumflag = true;
                     break;
                 }
-                ++data;
             }
         }
         Expand( tmp1, tmp, vl );

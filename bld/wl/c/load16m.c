@@ -305,7 +305,7 @@ extern void Fini16MLoadFile( void )
     _HostU16toTarg( DOS16M_SIGNATURE, exe_head.signature );
     temp = hdr_size / 16U;
     _HostU16toTarg( exe_size % 512U, exe_head.last_page_bytes );
-    temp = exe_size / 512U;
+    temp = ( exe_size + 511U ) / 512U;
     _HostU16toTarg( temp, exe_head.pages_in_file );
     _HostU16toTarg( FmtData.u.d16m.extended, exe_head.max_alloc );
     _HostU16toTarg( 0, exe_head.min_alloc );

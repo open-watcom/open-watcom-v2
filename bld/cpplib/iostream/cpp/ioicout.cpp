@@ -36,7 +36,8 @@
 #include <iostream>
 #include <stdiobuf.h>
 #endif
-#include "ioutil.h"
+#include "clibsupp.h"
+
 
 #pragma initialize 20;
 

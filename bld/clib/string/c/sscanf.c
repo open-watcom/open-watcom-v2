@@ -33,6 +33,7 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <wchar.h>
 #include "scanf.h"
 
 

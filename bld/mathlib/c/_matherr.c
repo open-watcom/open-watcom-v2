@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc.
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -33,14 +32,26 @@
 
 #include "variety.h"
 #include <fenv.h>
-#include <stdio.h>
+#include <math.h>
 #include <unistd.h>
 #include <errno.h>
-#include "mathlib.h"
 #include "clibsupp.h"
 #include "_matherr.h"
+#include "extfunc.h"
+
+
+#define _RWD_matherr    __matherr_handler
+
+typedef int     matherr_fn( struct _exception * );
+typedef matherr_fn __matherr_fn;
+#if defined(_M_IX86)
+    #pragma aux (__outside_CLIB) __matherr_fn;
+#endif
+
+static __matherr_fn *__matherr_handler = (__matherr_fn *)matherr;
 
 static const char * const Msgs[] = {
+    /* see cmath/math.h header file for definitions */
     0,
     "Domain error",
     "Argument singularity",
@@ -56,15 +67,9 @@ static char *MathFuncNames[] = {
     #undef pick
 };
 
-#if defined(_M_IX86)
-int (*__matherr_handler)( struct _exception * ) = __matherr;
-#else
-int (*__matherr_handler)( struct _exception * ) = matherr;
-#endif
-
-_WMRTLINK void _set_matherr( int (*rtn)( struct _exception * ) )
+_WMRTLINK void _set_matherr( matherr_fn *rtn )
 {
-    _RWD_matherr = rtn;
+    _RWD_matherr = (__matherr_fn *)rtn;
 }
 
 void __rterrmsg( int errcode, const char *funcname )
@@ -86,7 +91,7 @@ char *__rtmathfuncname( int funccode )
 _WMRTLINK double _matherr( struct _exception *excp )
 /**************************************************/
 {
-    if( (*_RWD_matherr)( excp ) == 0 ) {
+    if( _RWD_matherr == NULL || (*_RWD_matherr)( excp ) == 0 ) {
         __rterrmsg( excp->type, excp->name );
         excp->type == DOMAIN ? __set_EDOM() : __set_ERANGE();
     }
@@ -96,57 +101,56 @@ _WMRTLINK double _matherr( struct _exception *excp )
 _WMRTLINK void __reporterrorsimple( int type )
 {
    if( math_errhandling & MATH_ERRNO ) {
-        switch(type) {
-            case DOMAIN:
-                errno = EDOM;
-                break;
-            case OVERFLOW:
-            case UNDERFLOW:
-            case SING:
-                errno = ERANGE;
-                break;
-        }      
+        switch( type ) {
+        case DOMAIN:
+            errno = EDOM;
+            break;
+        case OVERFLOW:
+        case UNDERFLOW:
+        case SING:
+            errno = ERANGE;
+            break;
+        }
     }
 
     if( math_errhandling & MATH_ERREXCEPT ) {
-        switch(type) {
-            case DOMAIN:
-                feraiseexcept(FE_INVALID);
-                break;
-            case OVERFLOW:
-                feraiseexcept(FE_OVERFLOW);
-                break;
-            case UNDERFLOW:
-                feraiseexcept(FE_UNDERFLOW);
-                break;
-            case TLOSS:
-            case PLOSS:
-                feraiseexcept(FE_INEXACT);
-                break;
-            case SING:
-                feraiseexcept(FE_DIVBYZERO);
-                break;
-        }      
+        switch( type ) {
+        case DOMAIN:
+            feraiseexcept( FE_INVALID );
+            break;
+        case OVERFLOW:
+            feraiseexcept( FE_OVERFLOW );
+            break;
+        case UNDERFLOW:
+            feraiseexcept( FE_UNDERFLOW );
+            break;
+        case TLOSS:
+        case PLOSS:
+            feraiseexcept( FE_INEXACT );
+            break;
+        case SING:
+            feraiseexcept( FE_DIVBYZERO );
+            break;
+        }
     }
 }
 
 _WMRTLINK int __reporterror( int type, const char *name, double arg1, double arg2, double retval )
 {
-int ret;
-struct _exception report;
+    int                 ret;
+    struct _exception   report;
 
     ret = 0;
-
-    __reporterrorsimple(type);
-
-    if( math_errhandling & MATH_ERRWATCOM ) {
-        report.type = type;
-        report.name = name;
-        report.arg1 = arg1;
-        report.arg2 = arg2;
-        report.retval = retval;
-        ret = _RWD_matherr(&report);
+    __reporterrorsimple( type );
+    if( _RWD_matherr != NULL ) {
+        if( math_errhandling & MATH_ERRWATCOM ) {
+            report.type = type;
+            report.name = name;
+            report.arg1 = arg1;
+            report.arg2 = arg2;
+            report.retval = retval;
+            ret = (*_RWD_matherr)( &report );
+        }
     }
-        
-    return ret;
+    return( ret );
 }

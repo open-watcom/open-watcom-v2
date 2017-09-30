@@ -52,14 +52,12 @@ static RO_STATE* nextDtorPosn(  // POSITION TO NEXT DTOR
         default :
             GOOF_EXC( "nextDtorPosn: bad DTC_" );
             // never return
-            break;
         case DTC_CATCH :
         case DTC_TRY :
         case DTC_FN_EXC :
 #ifndef RT_EXC_ENABLED
             GOOF_EXC( "nextDtorPosn: -xs code in -xd library" );
             // never return
-            break;
 #endif
         case DTC_ACTUAL_VBASE :
         case DTC_ACTUAL_DBASE :
@@ -163,7 +161,6 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
             default :
                 GOOF_EXC( "destruct_traverse: invalid command" );
                 // never return
-                break;
             case DTC_ARRAY :
               { RT_ARRAY_INIT* array_init;
                 array_init = PointUsingOffset( RT_ARRAY_INIT
@@ -177,25 +174,26 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
 #ifdef RT_EXC_ENABLED
                 cmd = TryFromCatch( cmd );
                 dtorCaughtException( rtc, rw, cmd );
+                break;
 #else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
                 // never return
 #endif
-                break;
             case DTC_FN_EXC :
 #ifdef RT_EXC_ENABLED
                 dtorFnexcException( rtc, rw, cmd );
+                break;
 #else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
                 // never return
 #endif
-                break;
             case DTC_TRY :
-#ifndef RT_EXC_ENABLED
+#ifdef RT_EXC_ENABLED
+                break;
+#else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
                 // never return
 #endif
-                break;
             case DTC_COMP_VBASE :
                 dtorComponent( cmd
                              , DTOR_COMPONENT

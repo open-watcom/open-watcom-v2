@@ -31,13 +31,11 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "win.h"
 #include "pmdlgid.h"
 
-#define DISPLAY(x)              WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 #define MAX_INTEGER_FIELD       11
 
 typedef struct {
@@ -112,7 +110,7 @@ static char *helpMsg = "Enter the number of lines of text you would like to keep
 static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 //===============================================================
 {
-    char        buff[MAX_INTEGER_FIELD+1];
+    char        buff[MAX_INTEGER_FIELD + 1];
 
     ultoa( val, buff, 10 );
     WinSetDlgItemText( hwndDlg, id, buff );
@@ -122,12 +120,12 @@ static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
 //=================================================================
 {
-    char        buff[MAX_INTEGER_FIELD+1];
+    char        buff[MAX_INTEGER_FIELD + 1];
     char        *ptr;
     ULONG       val;
     ULONG       len;
 
-    len = WinQueryDlgItemText( hwndDlg, id, MAX_INTEGER_FIELD+1, buff );
+    len = WinQueryDlgItemText( hwndDlg, id, MAX_INTEGER_FIELD + 1, buff );
     /* strtoul will accept negative numbers */
     ptr = buff;
     while( isspace( (unsigned char)*ptr ) )
@@ -160,7 +158,7 @@ static BOOL chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg 
 }
 
 /*
- * _GetIntervalBox - control dialog for getting interval
+ * IntervalDialogProc - control dialog for getting interval
  */
 static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg, MPARAM mp1, MPARAM mp2 )
 //=============================================================================================
@@ -209,9 +207,9 @@ static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg, MPARAM mp
 
 
 /*
- * _GetClearInterval - return number of lines between clearing
+ * _GetAutoClearInterval - return number of lines between clearing
  */
-void _GetClearInterval( void )
+void _GetAutoClearInterval( void )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -227,7 +225,7 @@ void _GetClearInterval( void )
                 _getint[i].cclass, _getint[i].text, _getint[i].presparms,
                 _getint[i].ctldata, _getint[i].ctldatalen );
         if( new_dlgtemplate == NULL  ) {
-            PMfree( old_dlgtemplate );
+            free( old_dlgtemplate );
             return;
         }
         old_dlgtemplate = new_dlgtemplate;
@@ -236,4 +234,4 @@ void _GetClearInterval( void )
     new_dlgtemplate = _DoneAddingControls( old_dlgtemplate );
     _DynamicDialogBox( (PFNWP)IntervalDialogProc, _MainWindow, new_dlgtemplate );
 
-} /* _GetClearInterval */
+} /* _GetAutoClearInterval */

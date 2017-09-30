@@ -14,7 +14,7 @@
 :include cpponly.sp
 
 #ifndef _ALGORITHM_INCLUDED
-  #include <algorith>
+  #include <algorithm>
 #endif
 
 #ifndef _DEQUE_INCLUDED
@@ -22,15 +22,14 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
-  #include <function>
+  #include <functional>
 #endif
 
 #ifndef _VECTOR_INCLUDED
   #include <vector>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     // =====
     // Queue
     // =====
@@ -171,7 +170,7 @@ namespace std {
     {
         c.swap( other.c );
     }
-    
+
     // _Sane( ) const
     template< class Type, class Container >
     inline bool queue< Type, Container >::_Sane( ) const
@@ -353,7 +352,6 @@ namespace std {
         x.swap( y );
     }
     #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

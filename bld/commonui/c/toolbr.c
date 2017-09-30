@@ -106,11 +106,10 @@ static bool round_corners = false;      /* Platform has rounded buttons? */
  */
 static tool *findTool( tool *list, ctl_id id )
 {
-    while( list != NULL ) {
+    for( ; list != NULL; list = list->next ) {
         if( list->id == id ) {
             break;
         }
-        list = list->next;
     }
     return( list );
 
@@ -218,14 +217,12 @@ static void createButtonList( HWND hwnd, toolbar *bar, tool *top )
      * we are going to create buttons for all the tools from top
      * to the end of the list.
      */
-    while( top != NULL ) {
+    for( ; top != NULL; top = top->next ) {
         if( !buttonPosition( hwnd, bar, top, &pos ) ) {
             /* No more buttons will fit. */
             break;
         }
-        _wpi_setrectvalues( &top->area, pos.x, pos.y, pos.x + bar->button_size.x,
-                            pos.y + bar->button_size.y );
-        top = top->next;
+        _wpi_setrectvalues( &top->area, pos.x, pos.y, pos.x + bar->button_size.x, pos.y + bar->button_size.y );
     }
 
 } /* createButtonList */
@@ -446,7 +443,7 @@ void ToolBarChangeSysColors( COLORREF tbFace, COLORREF tbHighlight, COLORREF tbS
 void ToolBarDestroy ( toolbar *bar )
 {
     tool    *curr;
-    tool    *tmp;
+    tool    *next;
 
     if( bar ) {
         if( bar->hwnd != HNULL ) {
@@ -457,11 +454,9 @@ void ToolBarDestroy ( toolbar *bar )
             DestroyWindow( bar->container );
         }
 #endif
-        curr = bar->tool_list;
-        while( curr != NULL ) {
-            tmp = curr;
-            curr = curr->next;
-            MemFree( tmp );
+        for( curr = bar->tool_list; curr != NULL; curr = next ) {
+            next = curr->next;
+            MemFree( curr );
         }
         if( bar->bgbrush != NULLHANDLE ) {
             _wpi_deleteobject( bar->bgbrush );

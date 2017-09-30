@@ -27,12 +27,17 @@ files = $+ $(static_objs) $-
 !include deftarg.mif
 
 !include $(cpplib_dir)/flags.mif
-
+!include $(cpplib_dir)/libflags.mif
 !include $(cpplib_dir)/librules.mif
 
 target_lib = $(prefix)$(suffix).lib
 !ifdef prefix_x
 target_lib_x = $(prefix_x)$(suffix).lib
+!endif
+
+!ifeq release 0
+objs += $(dbg_objs_c)
+xobjs += $(dbg_objs_c)
 !endif
 
 !ifndef target_objs

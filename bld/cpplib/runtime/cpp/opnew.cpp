@@ -43,54 +43,48 @@
 // 0004
 
 #include "cpplib.h"
-#include "lock.h"
-#include <malloc>
-#include <stddef.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #define __SW_BR
-#endif
-#include <new.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #undef __SW_BR
-#endif
+#include <malloc.h>
 
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-static void* __do_new( unsigned size )
+#ifdef _RTDLL
+static void *__do_new( std::size_t size )
 #else
-_WPRTLINK void* operator new(    // ALLOCATE STORAGE FOR NEW
-    size_t size )               // - size required
+_WPRTLINK void *operator new(   // ALLOCATE STORAGE FOR NEW
+    std::size_t size )          // - size required
 #endif
 {
     void *p;
     PFU  _handler;
-    PFV  handler;
+    std::new_handler handler;
 
     if( size == 0 ) {
         ++size;
     }
     for(;;) {
         p = malloc( size );
-        if( p != NULL ) break;
+        if( p != NULL )
+            break;
 
         // first try Microsoft Style handler
         _handler = _RWD_ThreadData._new_handler;
-        if( NULL != _handler ) {
-            if( (*_handler)( size ) ) continue;
+        if( NULL != _handler && (*_handler)( size ) ) {
+            continue;
         }
 
         // now try ANSI Style handler
         handler = _RWD_ThreadData.new_handler;
-        if( NULL == handler ) break;
+        if( NULL == handler )
+            break;
         (*handler)();
     }
     return p;
 }
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static _PUP __pfn_new = &__do_new;
 
-_WPRTLINK extern _PUP _set_op_new( _PUP on ) {
+_WPRTLINK extern _PUP _set_op_new( _PUP on )
+{
     _PUP old;
     _RWD_StaticInitSema.p();
     old = __pfn_new;
@@ -99,8 +93,8 @@ _WPRTLINK extern _PUP _set_op_new( _PUP on ) {
     return( old );
 }
 
-_WPRTLINK void* operator new(    // ALLOCATE STORAGE FOR NEW
-    size_t size )               // - size required
+_WPRTLINK void* operator new(   // ALLOCATE STORAGE FOR NEW
+    std::size_t size )          // - size required
 {
     return (*__pfn_new)( size );
 }

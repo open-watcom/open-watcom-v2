@@ -85,7 +85,7 @@ bool WREGetCurrentResource( WRECurrentResInfo *current )
     WRETypeName *tn;
     bool        ok;
     HWND        resLbox;
-    int         index;
+    LRESULT     pos;
 
     ok = (current != NULL);
 
@@ -114,12 +114,12 @@ bool WREGetCurrentResource( WRECurrentResInfo *current )
     }
 
     if( ok ) {
-        index = (int)SendMessage( resLbox, LB_GETCURSEL, 0, 0 );
-        ok = (index != LB_ERR);
+        pos = SendMessage( resLbox, LB_GETCURSEL, 0, 0 );
+        ok = (pos != LB_ERR);
     }
 
     if( ok ) {
-        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA, index, 0 );
+        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         ok = (current->lang != NULL);
     }
 

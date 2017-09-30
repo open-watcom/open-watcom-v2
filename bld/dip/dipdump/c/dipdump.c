@@ -39,6 +39,8 @@
 #include "bool.h"
 #include "dip.h"
 #include "digcli.h"
+#include "dipdump.h"
+
 
 /**
  * Options
@@ -236,7 +238,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     printf( "%5d  ", ++*idx );
 
     /* symbol info */
-    rc = SymInfo( sym, NULL, &sinfo );
+    rc = DIPSymInfo( sym, NULL, &sinfo );
     if( rc == DS_OK ) {
         switch( sinfo.kind ) {
         case SK_NONE:       printf( "NONE  " ); break;
@@ -256,7 +258,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 
     /* location (i.e. address) */
     ll.num = MAX_LOC_ENTRIES;
-    rc = SymLocation( sym, NULL, &ll );
+    rc = DIPSymLocation( sym, NULL, &ll );
     if( rc == DS_OK ) {
         if( ll.num > 0 ) {
             if( ll.e[0].type == LT_ADDR ) {
@@ -270,7 +272,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     } else if( sinfo.kind == SK_CONST ) {
         ll.num = 0;
         memset( buff, 0, sizeof( buff ) );
-        rc = SymValue( sym, NULL, &buff[0] );
+        rc = DIPSymValue( sym, NULL, &buff[0] );
         if( rc == DS_OK ) {
             switch( sinfo.ret_modifier ) {
             }
@@ -306,12 +308,12 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
@@ -324,30 +326,9 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     if( 1 ) {
         type_handle *type = alloca( DIPHandleSize( HK_TYPE, false ) );
 
-        rc = SymType( sym, type );
+        rc = DIPSymType( sym, type );
         if( rc ) {
         }
-
-#if 0
-mod_handle      SymMod( sym_handle * );
-unsigned        SymName( sym_handle *, location_context *, symbol_name, char *buff, unsigned buff_size );
-dip_status      SymType( sym_handle *, type_handle * );
-dip_status      SymValue( sym_handle *, location_context *, void * );
-dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
-dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
-dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
-dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );
-search_result   AddrSym( mod_handle, address, sym_handle * );
-search_result   LookupSym( symbol_source, void *, lookup_item *, void * );
-search_result   LookupSymEx( symbol_source, void *, lookup_item *, location_context *, void * );
-search_result   AddrScope( mod_handle, address, scope_block * );
-search_result   ScopeOuter( mod_handle, scope_block *, scope_block * );
-int             SymCmp( sym_handle *, sym_handle * );
-dip_status      SymAddRef( sym_handle * );
-dip_status      SymRelease( sym_handle * );
-dip_status      SymFreeAll();
-#endif
-
     }
 
 
@@ -389,7 +370,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
 /** @todo all this needs some serious work */
 
     /* type name. */
-    len = TypeName( th, 0, &tag, buff, sizeof( buff ) );
+    len = DIPTypeName( th, 0, &tag, buff, sizeof( buff ) );
     if( len > 0 ) {
         printf( "tag=%d %-13s  name=%s\n"
                 "       ",
@@ -397,7 +378,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     }
 
     /* type info */
-    rc = TypeInfo( th, NULL, &tinfo );
+    rc = DIPTypeInfo( th, NULL, &tinfo );
     if( rc == DS_OK ) {
         printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x %s\n",
                 tinfo.size,
@@ -407,14 +388,14 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
         switch( tinfo.kind ) {
         case TK_ARRAY: {
                 array_info ainfo;
-                rc = TypeArrayInfo( th, NULL, &ainfo, NULL );
+                rc = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
                 if( rc == DS_OK ) {
                     printf( "       "
                             "low_bound=%ld num_elts=%lu stride=%lu num_dims=%u column_major=%d\n",
                             ainfo.low_bound, ainfo.num_elts, ainfo.stride,
                             ainfo.num_dims, ainfo.column_major );
                 } else {
-                    printf( "TypeArrayInfo -> %d\n", rc );
+                    printf( "DIPTypeArrayInfo -> %d\n", rc );
                 }
             }
             break;
@@ -423,7 +404,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
             break;
         }
     } else {
-        printf( "TypeInfo -> %d\n", rc );
+        printf( "DIPTypeInfo -> %d\n", rc );
     }
 
     return( WR_CONTINUE );
@@ -454,13 +435,13 @@ static void CompareCues( cue_handle *cue, cue_handle *cue2,
                 actual_rc, expected_rc );
     }
     if( actual_rc == SR_CLOSEST || actual_rc == SR_EXACT ) {
-        address         addr  = CueAddr( cue );
-        unsigned long   line  = CueLine( cue );
-        address         addr2 = CueAddr( cue2 );
-        unsigned long   line2 = CueLine( cue2 );
+        address         addr  = DIPCueAddr( cue );
+        unsigned long   line  = DIPCueLine( cue );
+        address         addr2 = DIPCueAddr( cue2 );
+        unsigned long   line2 = DIPCueLine( cue2 );
         int             failed;
 
-        failed  = CueFileId( cue2 ) != CueFileId( cue );
+        failed  = DIPCueFileId( cue2 ) != DIPCueFileId( cue );
         failed |= exp_exact_line && line2 != line;
         failed |= exp_le_line && line2 <= line;
         failed |= exp_exact_addr
@@ -473,9 +454,9 @@ static void CompareCues( cue_handle *cue, cue_handle *cue2,
             printf( "FAILED: %s: cue2:{file=%#x line=%lu addr=%04x:%08lx}\n"
                     "       %*s != cue:{file=%#x line=%lu addr=%04x:%08lx}\n",
                     operation,
-                    CueFileId( cue2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
+                    DIPCueFileId( cue2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
                     strlen( operation ), "",
-                    CueFileId( cue ), line, addr.mach.segment, (long)addr.mach.offset );
+                    DIPCueFileId( cue ), line, addr.mach.segment, (long)addr.mach.offset );
         }
     }
 }
@@ -494,8 +475,8 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_handle      *next_cue = alloca( DIPHandleSize( HK_CUE, false ) );
     cue_handle      *prev_cue = NULL;
     cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE, false ) );
-    mod_handle      mod       = CueMod( cue );
-    cue_fileid      file_id   = CueFileId( cue );
+    mod_handle      mod       = DIPCueMod( cue );
+    cue_fileid      file_id   = DIPCueFileId( cue );
     search_result   search_rc;
     char            buff[1024];
     size_t          len;
@@ -503,7 +484,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
     /* filename */
     buff[0] = '\0';
-    len = CueFile( cue, buff, sizeof( buff ) );
+    len = DIPCueFile( cue, buff, sizeof( buff ) );
     if( len > 0 ) {
         printf( " %lx %s\n", file_id, buff );
     } else {
@@ -512,16 +493,16 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
     /* check the LineCue function */
     if( Opts.do_cue_tests ) {
-        search_rc = LineCue( mod, file_id, 0, 0, cue2 );
+        search_rc = DIPLineCue( mod, file_id, 0, 0, cue2 );
         CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, true, false,
-                     "LineCue(,,0,)" );
+                     "DIPLineCue(,,0,)" );
     }
 
     /* lines */
     do {
-        long        line   = CueLine( cue );
-        unsigned    column = CueColumn( cue );
-        address     addr   = CueAddr( cue );
+        long        line   = DIPCueLine( cue );
+        unsigned    column = DIPCueColumn( cue );
+        address     addr   = DIPCueAddr( cue );
 
 
         printf( "  Line %5ld ", line );
@@ -535,36 +516,36 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
         /* do tests */
         if( Opts.do_cue_tests ) {
-            if( CueFileId( cue ) !=  file_id ) {
+            if( DIPCueFileId( cue ) !=  file_id ) {
                 printf( "ERROR: file id changed! new:%#lx old:%#lx\n",
-                        (long)CueFileId( cue ), (long)file_id );
+                        (long)DIPCueFileId( cue ), (long)file_id );
             }
-            if( CueMod( cue ) !=  mod ) {
+            if( DIPCueMod( cue ) !=  mod ) {
                 printf( "ERROR: module changed! new:%#lx old:%#lx\n",
-                        (long)CueMod( cue ), (long)file_id );
+                        (long)DIPCueMod( cue ), (long)file_id );
             }
 
             /* line searches */
-            search_rc = LineCue( mod, file_id, line, 0, cue2 );
+            search_rc = DIPLineCue( mod, file_id, line, 0, cue2 );
             CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, false, false,
-                         "LineCue(,,n,)" );
+                         "DIPLineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
-                search_rc = LineCue( mod, file_id, line - 1, 0, cue2 );
+                search_rc = DIPLineCue( mod, file_id, line - 1, 0, cue2 );
                 CompareCues( prev_cue, cue2,
                              prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
                              search_rc, true, false, false, false,
-                             "LineCue(,,n-1,)" );
+                             "DIPLineCue(,,n-1,)" );
             }
 
             /* address searches */
-            search_rc = AddrCue( mod, addr, cue2 );
+            search_rc = DIPAddrCue( mod, addr, cue2 );
             CompareCues( cue, cue2, SR_EXACT, search_rc, false, false, true, false,
-                         "AddrCue(,,n,)" );
+                         "DIPAddrCue(,,n,)" );
         }
 
 
         /* next */
-        rc = CueAdjust( cue, 1, next_cue );
+        rc = DIPCueAdjust( cue, 1, next_cue );
         prev_cue  = cue;
         cue       = next_cue;
         next_cue  = prev_cue;
@@ -593,7 +574,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
     /*
      * Linenumbers.
      */
-    if( 1 && ModHasInfo( mh, HK_CUE ) == DS_OK ) {
+    if( 1 && DIPModHasInfo( mh, HK_CUE ) == DS_OK ) {
         printf( "%03d Line Numbers\n"
                 "-----------------\n"
                 "\n",
@@ -608,7 +589,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
     /*
      * Types
      */
-    if( 1 && ModHasInfo( mh, HK_TYPE ) == DS_OK ) {
+    if( 1 && DIPModHasInfo( mh, HK_TYPE ) == DS_OK ) {
         printf( " %03d Types\n"
                 "-----------\n"
                 "\n"
@@ -626,7 +607,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
     /*
      * Symbols.
      */
-    if( 1 && ModHasInfo( mh, HK_SYM ) == DS_OK ) {
+    if( 1 && DIPModHasInfo( mh, HK_SYM ) == DS_OK ) {
         printf( "%03d Symbols\n"
                 "------------\n"
                 "\n",
@@ -704,12 +685,12 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = SymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = SymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = SymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
@@ -749,20 +730,20 @@ static walk_result ModCallback( mod_handle mh, void *_idx )
     printf( "%5d  ", ++*idx );
 
     /* address */
-    addr = ModAddr( mh );
+    addr = DIPModAddr( mh );
     printf( "%04x:%08lx  ", addr.mach.segment, (long)addr.mach.offset );
 
     /* what info do we have? */
     printf( "%c%c%c%c  ",
-            ModHasInfo( mh, HK_IMAGE ) == DS_OK ? 'I' : '-',
-            ModHasInfo( mh, HK_TYPE  ) == DS_OK ? 'T' : '-',
-            ModHasInfo( mh, HK_CUE   ) == DS_OK ? 'C' : '-',
-            ModHasInfo( mh, HK_SYM   ) == DS_OK ? 'S' : '-'
+            DIPModHasInfo( mh, HK_IMAGE ) == DS_OK ? 'I' : '-',
+            DIPModHasInfo( mh, HK_TYPE  ) == DS_OK ? 'T' : '-',
+            DIPModHasInfo( mh, HK_CUE   ) == DS_OK ? 'C' : '-',
+            DIPModHasInfo( mh, HK_SYM   ) == DS_OK ? 'S' : '-'
             );
 
     /* language and name */
-    lang = ModSrcLang( mh );
-    len = ModName( mh, buff, sizeof(buff) );
+    lang = DIPModSrcLang( mh );
+    len = DIPModName( mh, buff, sizeof(buff) );
     if( len == 0 ) {
         buff[0] = '\0';
     }
@@ -807,7 +788,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
 
 #if 0 /* crashes codeview, nothing on dwarf. */
     buff[0] = '\0';
-    len = ModName( mh, buff, sizeof( buff ) );
+    len = DIPModName( mh, buff, sizeof( buff ) );
     if( len ) {
         printf( "module name = %s\n", buff );
     }
@@ -1015,9 +996,10 @@ static int PrintUsage( void )
 
 int main( int argc, char **argv )
 {
-    char    *dips[16] = { 0 };
+    char    *dips[16] = { NULL, NULL };
     int     next_dip = 0;
     int     c;
+    int     rc;
 //    char    *s;
 
     /* Process command line options */
@@ -1027,18 +1009,19 @@ int main( int argc, char **argv )
 
     while( (c = getopt( argc, argv, ":hd:" )) != EOF ) {
         switch( c ) {
-            case 'd': {
-                char    *dip = optarg;
+        case 'd': {
+            char    *dip = optarg;
 
-                if( next_dip >= sizeof( dips ) / sizeof( dips[0] ) ) {
-                    return( ErrorMsg( "too many DIPs!\n" ) );
-                }
-                dips[next_dip++] = dip;
-                break;
+            if( next_dip >= sizeof( dips ) / sizeof( dips[0] ) ) {
+                return( ErrorMsg( "too many DIPs!\n" ) );
             }
-            case 'h':
-            default:
-                return( PrintUsage() );
+            dips[next_dip++] = dip;
+            dips[next_dip] = NULL;
+            break;
+        }
+        case 'h':
+        default:
+            return( PrintUsage() );
         }
     }
 
@@ -1054,15 +1037,21 @@ int main( int argc, char **argv )
     }
 #endif
 
+#if defined( __UNIX__ ) || defined( __DOS__ )
+    PathInit();
+#endif
     /* Try to dump debug info for all remaining arguments */
+    rc = 0;
     while( argv[optind] ) {
-        int     rc = DumpFile( argv[optind], dips );
+        rc = DumpFile( argv[optind], dips );
 
         if( rc ) {
-            return( rc );
+            break;
         }
         ++optind;
     }
-
-    return( 0 );
+#if defined( __UNIX__ ) || defined( __DOS__ )
+    PathFini();
+#endif
+    return( rc );
 }

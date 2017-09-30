@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "cplx.h"
 #include "mathcode.h"
 
-#define _RWD_matherr    __matherr_handler
 
 #if !defined(_M_IX86) || defined(__FLAT__)
     typedef double                                      *m_dbl_arg;
@@ -64,41 +64,34 @@
     extern  double  __pow87_err( double, double, unsigned char );
     extern  double  __math87_err( double, unsigned char );
 
-    _WMRTLINK extern int    __matherr( struct _exception * );
-
  #if defined( __WATCOMC__ )
     #pragma aux __fprem     "*_" parm [];
-
-    #pragma aux __matherr   "*";
-
   #if defined(__386__)
-    #pragma aux _atan87    "_*" parm [edx eax] value [edx eax];
-    #pragma aux _exp87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _log87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _cos87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _sin87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _tan87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux __sqrt87   "*"  parm [edx eax] value [edx eax];
-    #pragma aux __sqrtd    "*"  parm [edx eax] value [edx eax];
-    #pragma aux _ModF      "_*" parm caller [eax] [edx];
-    #pragma aux _ZBuf2F    "_*" parm caller [eax] [edx];
+    #pragma aux _atan87     "_*" parm [edx eax] value [edx eax];
+    #pragma aux _exp87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _log87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _cos87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _sin87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _tan87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux __sqrt87    "*"  parm [edx eax] value [edx eax];
+    #pragma aux __sqrtd     "*"  parm [edx eax] value [edx eax];
+    #pragma aux _ModF       "_*" parm caller [eax] [edx];
+    #pragma aux _ZBuf2F     "_*" parm caller [eax] [edx];
   #else
-    #pragma aux _atan87    "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _exp87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _log87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _cos87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _sin87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _tan87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux __sqrt87   "*"  parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux __sqrtd    "*"  parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _ModF      "_*" parm caller [ax] [dx];
-    #pragma aux _ZBuf2F    "_*" parm caller [ax] [dx];
+    #pragma aux _atan87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _exp87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _log87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _cos87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _sin87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _tan87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux __sqrt87    "*"  parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux __sqrtd     "*"  parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _ModF       "_*" parm caller [ax] [dx];
+    #pragma aux _ZBuf2F     "_*" parm caller [ax] [dx];
   #endif
  #endif
 
 #endif
-
-extern  int     (*__matherr_handler)( struct _exception * );
 
 extern  void    __fprem( double, double, m_int_arg, m_dbl_arg );
 extern  int     __sgn( double );

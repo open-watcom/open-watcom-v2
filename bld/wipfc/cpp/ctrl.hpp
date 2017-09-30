@@ -48,7 +48,7 @@ public:
         CtrlTag( d, p, f, r, c ), page( false ), coverpage( false ) { };
     ~Ctrl() { };
     Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void build( Controls* ctrls );
 private:
     Ctrl( const Ctrl& rhs );            //no copy

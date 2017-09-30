@@ -17,7 +17,6 @@
 :include cpluspro.sp
 
 :include wchar_t.sp
-
 :segment LINUX
 :include lnxkpack.sp
 
@@ -147,7 +146,7 @@ typedef struct flock {
     off_t       l_len;
     long        l_sysid;
     pid_t       l_pid;
-#if defined( _M_I86 )
+#ifdef _M_I86
     short int   l_pid_pad;
 #endif
     short int   zero[3];
@@ -187,14 +186,14 @@ _WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
 _WCRTLINK extern int creat( const char *__path, mode_t __mode );
 :endsegment
 
-:segment !NO_WIDECHAR
+:: Wide character version
 _WCRTLINK extern int _wopen( const wchar_t *, int, ... );
 _WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
 _WCRTLINK extern int _wcreat( const wchar_t *, int );
-:endsegment
 :segment QNX | LINUX
 
 _WCRTLINK extern int fcntl( int __fildes, int __cmd, ... );
+:endsegment
 :segment QNX
 
 struct _io_open; /* for C++ */
@@ -206,7 +205,6 @@ _WCRTLINK extern int __sopen_slib( const char *__path, int __oflag, int __share,
                                    mode_t __mode );
 _WCRTLINK extern int __resolve_net( unsigned, int, struct _io_open *,
                                     const char *, unsigned, char * );
-:endsegment
 :endsegment
 
 :include poppack.sp

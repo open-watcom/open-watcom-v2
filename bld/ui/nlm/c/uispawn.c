@@ -31,7 +31,6 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "uidef.h"
 
 /* We don't worry about spawning other tasks in the NetWare environment. */

@@ -206,8 +206,8 @@ static void gen_set( void *dlg, ctl_elt *ctl, void *data )
     }
 }
 
-#include "setgen.dh"
-#include "setgen.ch"
+#include "setgen.gdh"
+#include "setgen.gch"
 
 static void globalTodlgData( void )
 {

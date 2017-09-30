@@ -50,9 +50,9 @@
 
 
 #define _64K                    (64UL*1024)
-#define EGA_VIDEO_BUFF          MK_PM( 0xa000, 0 )
-#define MONO_VIDEO_BUFF         MK_PM( 0xb000, 0 )
-#define COLOUR_VIDEO_BUFF       MK_PM( 0xb800, 0 )
+#define EGA_VIDEO_BUFF          EXTENDER_RM2PM( 0xa000, 0 )
+#define MONO_VIDEO_BUFF         EXTENDER_RM2PM( 0xb000, 0 )
+#define COLOUR_VIDEO_BUFF       EXTENDER_RM2PM( 0xb800, 0 )
 
 #define CURS_LOCATION_LOW       0xf
 #define CURS_LOCATION_HI        0xe
@@ -71,20 +71,15 @@
 #define MSMOUSE_VECTOR          0x33
 #define VID_STATE_SWAP          VID_STATE_ALL
 
-#define GetBIOSData( off, var ) var =                                        \
-                                sizeof( var ) == 1 ?                         \
-                                    *(uint_8 __far *)MK_PM( BD_SEG, off ) :     \
-                                sizeof( var ) == 2 ?                         \
-                                    *(uint_16 __far *)MK_PM( BD_SEG, off ) :    \
-                                *(uint_32 __far *)MK_PM( BD_SEG, off );
+#define GetBIOSData( off, var ) var =                                           \
+    ( sizeof( var ) == 1 ) ? *(uint_8 __far *)EXTENDER_RM2PM( BD_SEG, off ) :   \
+    ( sizeof( var ) == 2 ) ? *(uint_16 __far *)EXTENDER_RM2PM( BD_SEG, off ) :  \
+    *(uint_32 __far *)EXTENDER_RM2PM( BD_SEG, off );
 
-#define SetBIOSData( off, var ) ( sizeof( var ) == 1 ) ?                             \
-                                    ( *(uint_8 __far *)MK_PM( BD_SEG, off )          \
-                                        = var ) :                            \
-                                ( ( sizeof( var ) == 2 ) ?                           \
-                                    ( *(uint_16 __far *)MK_PM( BD_SEG, off )         \
-                                        = var ) :                            \
-                                ( *(uint_32 __far *)MK_PM( BD_SEG, off ) = var ) );
+#define SetBIOSData( off, var )                                                             \
+    ( sizeof( var ) == 1 ) ? ( *(uint_8 __far *)EXTENDER_RM2PM( BD_SEG, off ) = var ) :     \
+    ( ( sizeof( var ) == 2 ) ? ( *(uint_16 __far *)EXTENDER_RM2PM( BD_SEG, off ) = var ) :  \
+    ( *(uint_32 __far *)EXTENDER_RM2PM( BD_SEG, off ) = var ) );
 
 
 enum {
@@ -802,7 +797,7 @@ static void SwapSave( void )
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
             _fmemcpy( RegenSave + PageSize, EGA_VIDEO_BUFF, PageSize );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-            _fmemcpy( MK_PM( SwapSeg.segm.rm, 0 ), EGA_VIDEO_BUFF, 8*1024 );
+            _fmemcpy( EXTENDER_RM2PM( SwapSeg.segm.rm, 0 ), EGA_VIDEO_BUFF, 8*1024 );
             if( VirtScreen != NULL ) {
                 _fmemcpy( RegenSave + PageSize * 2, VirtScreen,  PageSize );
             }
@@ -852,7 +847,7 @@ static uint_8 RestoreEGA_VGA( void )
             if( VirtScreen != NULL ) {
                 _fmemcpy( VirtScreen, RegenSave + PageSize * 2, PageSize );
                 _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-                _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.segm.rm, 0 ), 8*1024 );
+                _fmemcpy( EGA_VIDEO_BUFF, EXTENDER_RM2PM( SwapSeg.segm.rm, 0 ), 8 * 1024 );
                 DoSetMode( SaveScrn.mode | 0x80 );
             } else {
                 DoSetMode( SaveScrn.mode | 0x80 );
@@ -860,7 +855,7 @@ static uint_8 RestoreEGA_VGA( void )
             }
         } else {
             _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-            _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.segm.rm, 0 ), 8*1024 );
+            _fmemcpy( EGA_VIDEO_BUFF, EXTENDER_RM2PM( SwapSeg.segm.rm, 0 ), 8 * 1024 );
             DoSetMode( SaveScrn.mode | 0x80 );
         }
     } else {
@@ -1040,10 +1035,10 @@ static void CheckMSMouse( void )
 {
     memptr              vect;
 
-    vect = *(memptr __far *)MK_PM( 0, MSMOUSE_VECTOR * sizeof( memptr ) );
+    vect = *(memptr __far *)EXTENDER_RM2PM( 0, MSMOUSE_VECTOR * sizeof( memptr ) );
     if( vect.a == 0 ) {
         _SwitchOff( SW_USE_MOUSE );
-    } else if( *(uint_8 __far*)MK_PM( vect.s.segment, vect.s.offset ) == 0xCF ) { // mad: nyi
+    } else if( *(uint_8 __far *)EXTENDER_RM2PM( vect.s.segment, vect.s.offset ) == 0xCF ) { // mad: nyi
         _SwitchOff( SW_USE_MOUSE );
     }
 }

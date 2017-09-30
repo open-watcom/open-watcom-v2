@@ -237,15 +237,15 @@ static void processFile( const char *arg )
     _splitpath2( arg, buff, NULL, NULL, NULL, &ext );
     if( fileType == TYPE_NONE ) {
         ftype = TYPE_C;
-        if( !stricmp( ext, ".for" ) ) {
+        if( stricmp( ext, ".for" ) == 0 ) {
             ftype = TYPE_FORTRAN;
-        } else if( !stricmp( ext, ".fi" ) ) {
+        } else if( stricmp( ext, ".fi" ) == 0 ) {
             ftype = TYPE_FORTRAN;
-        } else if( !stricmp( ext, ".pas" ) ) {
+        } else if( stricmp( ext, ".pas" ) == 0 ) {
             ftype = TYPE_PASCAL;
-        } else if( !stricmp( ext, ".cpp" ) ) {
+        } else if( stricmp( ext, ".cpp" ) == 0 ) {
             ftype = TYPE_CPLUSPLUS;
-        } else if( !stricmp( ext, ".asm" ) ) {
+        } else if( stricmp( ext, ".asm" ) == 0 ) {
             ftype = TYPE_ASM;
         }
     } else {
@@ -298,13 +298,11 @@ static void processFileList( const char *ptr )
     char                *ext;
     char                path[_MAX_PATH];
 
-    tmp = ptr;
-    while( *tmp != '\0' ) {
+    for( tmp = ptr; *tmp != '\0'; tmp++ ) {
         if( *tmp == '*' || *tmp == '?' ) {
             has_wild = true;
             break;
         }
-        tmp++;
     }
 
     if( !has_wild ) {
@@ -371,7 +369,7 @@ static void processOptionFile( const char *fname )
         if( *ptr == '\0' ) {
             continue;
         }
-        if( !stricmp( cmd, "file" ) ) {
+        if( stricmp( cmd, "file" ) == 0 ) {
             for( ;; ) {
                 arg = ptr;
                 while( !isspace( *ptr ) && *ptr != ',' && *ptr != '\0' ) {
@@ -391,12 +389,12 @@ static void processOptionFile( const char *fname )
                     break;
                 }
             }
-        } else if( !stricmp( cmd, "option" ) ) {
+        } else if( stricmp( cmd, "option" ) == 0 ) {
             WantTypedefs = false;
             WantMacros = false;
             WantAllDefines = false;
             WantUSE = false;
-            while( *ptr != '\0' ) {
+            for( ; *ptr != '\0'; ptr++ ) {
                 if( *ptr == 'f' ) {
                     ptr++;
                     while( isspace( *ptr ) ) {
@@ -416,7 +414,6 @@ static void processOptionFile( const char *fname )
                     break;
                 }
                 doOption( *ptr );
-                ptr++;
             }
         }
 

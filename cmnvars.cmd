@@ -18,10 +18,10 @@ set OWDEFBEGINLIBPATH=%BEGINLIBPATH%
 :defpath_set
 
 REM Subdirectory to be used for building OW build tools
-set OWOBJDIR=binbuild
+if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
 
 REM Subdirectory to be used for build binaries
-set OWBINDIR=%OWROOT%\build\bin
+set OWBINDIR=%OWROOT%\build\%OWOBJDIR%
 
 REM Subdirectory containing OW sources
 set OWSRCDIR=%OWROOT%\bld

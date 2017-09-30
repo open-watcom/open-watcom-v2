@@ -74,15 +74,16 @@ typedef enum  {
 
 #define REVERSE_PARMS           0x00000001L
 #define SUICIDAL                0x00000002L
-#define PARMS_BY_ADDRESS        0x00000004L
-#define MAKE_CALL_INLINE        0x00000008L
-#define HAS_VARARGS             0x00000010L
-#define PARMS_STACK_RESERVE     0x00000020L
-#define SETJMP_KLUGE            0x00000040L
-#define PARMS_PREFER_REGS       0x00000080L
-#define LAST_AUX_ATTRIBUTE      0x00000080L
+#define NORETURN                0x00000004L
+#define PARMS_BY_ADDRESS        0x00000008L
+#define MAKE_CALL_INLINE        0x00000010L
+#define HAS_VARARGS             0x00000020L
+#define PARMS_STACK_RESERVE     0x00000040L
+#define SETJMP_KLUGE            0x00000080L
+#define PARMS_PREFER_REGS       0x00000100L
+#define LAST_AUX_ATTRIBUTE      0x00000100L
 
-#define _TARG_AUX_SHIFT         8
+#define _TARG_AUX_SHIFT         9
 
 #if ( LAST_AUX_ATTRIBUTE >> _TARG_AUX_SHIFT ) != 0
     #error too many attributes

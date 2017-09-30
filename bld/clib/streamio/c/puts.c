@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdio.h>
+#include <wchar.h>
 
 
 _WCRTLINK int __F_NAME(puts,putws)( const CHAR_TYPE *s )

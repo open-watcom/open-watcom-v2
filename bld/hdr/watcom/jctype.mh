@@ -55,7 +55,8 @@ _WCRTDATA extern const char _WCDATA _IsKTable[257];
 
 :include cplusepi.sp
 
-#if !defined(__FUNCTION_DATA_ACCESS)
+#ifndef __FUNCTION_DATA_ACCESS
+
 #define iskana(__c)     (_IsKTable[(unsigned char)(__c)+1] & (_K|_KP))
 #define iskpun(__c)     (_IsKTable[(unsigned char)(__c)+1] & _KP)
 #define iskmoji(__c)    (_IsKTable[(unsigned char)(__c)+1] & _K)
@@ -67,6 +68,7 @@ _WCRTDATA extern const char _WCDATA _IsKTable[257];
 
 #define iskanji(__c)    (_IsKTable[(unsigned char)(__c)+1] & _J1)
 #define iskanji2(__c)   (_IsKTable[(unsigned char)(__c)+1] & _J2)
-#endif
+
+#endif /* __FUNCTION_DATA_ACCESS not defined */
 
 #endif

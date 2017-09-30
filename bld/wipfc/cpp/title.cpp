@@ -81,8 +81,8 @@ Lexer::Token Title::parse( Lexer* lexer, IpfHeader* hdr )
     }
     if( txt.size() > 47 )
         document->printError( ERR2_TEXTTOOLONG );
-    size_t index1 = 0;
-    size_t index2 = 0;
+    std::size_t index1 = 0;
+    std::size_t index2 = 0;
     char *title( hdr->title );
     while( index1 < txt.size() && index2 < 47 ) {
         index2 += std::wctomb( title + index2, txt[ index1 ] );

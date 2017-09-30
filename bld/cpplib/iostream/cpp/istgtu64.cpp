@@ -33,7 +33,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <ctype.h>
+#include <cctype>
 #include <iostream>
 #include <streambu>
 #endif
@@ -66,11 +66,11 @@ std::ios::iostate __getunsignedint64( std::streambuf *sb,
     if( !state && sign ) {
         ch = sb->sbumpc();
         int low_char = sb->speekc();
-        if( (base == 10 || base == 0) && isdigit( low_char ) ) {
+        if( (base == 10 || base == 0) && std::isdigit( low_char ) ) {
             offset++;
-        } else if( base == 16 && isxdigit( low_char ) ) {
+        } else if( base == 16 && std::isxdigit( low_char ) ) {
             offset++;
-        } else if( base == 8 && isdigit( low_char ) && low_char < '8' ) {
+        } else if( base == 8 && std::isdigit( low_char ) && low_char < '8' ) {
             offset++;
         } else {
             // this will catch (low_char == EOF) too

@@ -449,6 +449,7 @@ STATIC void bangIf( bool (*logical)(void), directiveTok tok )
     if( nestLevel >= MAX_NEST ) {
         PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
         ExitFatal();
+        // never return
     }
 
     nest[nestLevel++] = curNest; // save old nesting on the stack
@@ -486,6 +487,7 @@ STATIC void bangEndIf( void )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
         ExitFatal();
+        // never return
     }
     curNest = nest[--nestLevel];
 
@@ -504,6 +506,7 @@ STATIC void doElse( void )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
         ExitFatal();
+        // never return
     }
 
     if( curNest.elseFound ) {
@@ -553,6 +556,7 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
         ExitFatal();
+        // never return
     }
 
     if( curNest.elseFound ) {
@@ -616,6 +620,7 @@ STATIC void bangElse( void )
         (void)eatToEOL();
         PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
         ExitFatal();
+        // never return
     }
 }
 

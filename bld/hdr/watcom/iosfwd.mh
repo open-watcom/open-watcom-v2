@@ -39,7 +39,7 @@ using std::fstream;
 
 :include owrtlink.sp
 
-namespace std {
+:include nsstd.sp
   class _WPRTLINK ios;
 
   // Basic streams.
@@ -53,7 +53,7 @@ namespace std {
   class _WPRTLINK ifstream;
   class _WPRTLINK ofstream;
   class _WPRTLINK fstream;
-}
+:include nsstdepi.sp
 
 #endif
 :endsegment

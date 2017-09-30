@@ -31,10 +31,10 @@
 
 
 #include <stdio.h>
-#include <windows.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"

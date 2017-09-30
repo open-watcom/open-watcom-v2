@@ -55,7 +55,8 @@
 #define FAR16_CALL                     ( 0x00400000LL << _TARG_AUX_SHIFT )
 #define TOUCH_STACK                    ( 0x00800000LL << _TARG_AUX_SHIFT )
 #define LOAD_RDOSDEV_ON_ENTRY          ( 0x01000000LL << _TARG_AUX_SHIFT )
-#define LAST_TARG_AUX_ATTRIBUTE        ( 0x01000000LL << _TARG_AUX_SHIFT )
+#define FARSS                          ( 0x02000000LL << _TARG_AUX_SHIFT )
+#define LAST_TARG_AUX_ATTRIBUTE        ( 0x02000000LL << _TARG_AUX_SHIFT )
 
 #if LAST_TARG_AUX_ATTRIBUTE == 0
     #error Overflowed a long long

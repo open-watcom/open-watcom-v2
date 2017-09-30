@@ -11,9 +11,9 @@
 :include cpluspro.sp
 
 #ifdef _MARK_ON
- #if defined(_M_IX86)
+ #ifdef _M_IX86
 :segment DOS | QNX
-  #if defined(_M_I86)
+  #ifdef _M_I86
    extern void __mark( char __far * );
    #pragma aux __mark = 0xcc __parm __nomemory [__dx __ax] __modify __exact __nomemory []
   #else

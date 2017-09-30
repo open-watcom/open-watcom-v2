@@ -54,7 +54,7 @@
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
 
-extern void     __qnx_exit( int );
+_WCNORETURN extern void     __qnx_exit( int );
 
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
@@ -127,6 +127,7 @@ void SetCmdArgStart( int num, char *ptr )
 void KillDebugger( int rc )
 {
     __qnx_exit( 0 );
+    // never return
 }
 
 void GrabHandlers( void )

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "uidef.h"
 #ifndef __UNIX__
 #include <conio.h>

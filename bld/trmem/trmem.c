@@ -72,7 +72,7 @@ typedef unsigned        uint;
 msg(OUT_OF_MEMORY,      "Tracker out of memory" );
 msg(CHUNK_BYTE_UNFREED, "%U chunks (%Z bytes) unfreed" );
 msg(SIZE_ZERO,          "%W size zero" );
-msg(OVERRUN_ALLOCATION, "%W %D overrun allocation by %C of %T bytes" );
+msg(OVERRUN_ALLOCATION, "%W %D(%L) overrun allocation by %C of %T bytes" );
 //msg(UNDERRUN_ALLOCATION,"%W %D underrun allocation by %C of %U bytes" );
 msg(UNOWNED_CHUNK,      "%W unowned chunk %D" );
 msg(NULL_PTR,           "%W NULL pointer" );
@@ -234,7 +234,7 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
 {
     va_list     args;
-    char        buff[100];
+    char        buff[120];
     char *      ptr;
     char        ch;
     uint        ui;
@@ -544,7 +544,7 @@ static int isValidChunk( entry_ptr tr, const char *rtn, _trmem_who who, _trmem_h
 #endif
 #endif
     if( *(unsigned char *)_PtrAdd( mem, size ) != MARKER_BYTE ) {
-        trPrt( hdl, MSG_OVERRUN_ALLOCATION, rtn, who, mem, tr->who, size );
+        trPrt( hdl, MSG_OVERRUN_ALLOCATION, rtn, who, mem, tr->when, tr->who, size );
         return( 0 );
     }
     return( 1 );

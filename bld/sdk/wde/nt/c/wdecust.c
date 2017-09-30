@@ -390,23 +390,16 @@ bool WdeFindLibIndexFromInfo( LPCCINFO lpcci, WdeCustLib **lib, UINT *index )
 void WdeFreeSelectWinCBox( HWND win )
 {
     HWND                cbox;
-    int                 count;
+    int                 i;
     WdeCurrCustControl  *current;
 
     cbox = GetDlgItem( win, IDB_CUST_DESC );
-
-    count = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0L );
-
-    if( count > 0 ) {
-        do {
-            current = (WdeCurrCustControl *)
-                SendMessage( cbox, CB_GETITEMDATA, count, 0 );
-            if( current != NULL ) {
-                WRMemFree( current );
-                SendMessage( cbox, CB_SETITEMDATA, count, (LPARAM)NULL );
-            }
-            count--;
-        } while( count != 0 );
+    for( i = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0L ); i-- > 0; ) {
+        current = (WdeCurrCustControl *)SendMessage( cbox, CB_GETITEMDATA, i, 0 );
+        if( current != NULL ) {
+            WRMemFree( current );
+            SendMessage( cbox, CB_SETITEMDATA, i, (LPARAM)NULL );
+        }
     }
 }
 
@@ -414,7 +407,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
 {
     WdeCurrCustControl  *current;
     UINT                i;
-    int                 index;
+    LRESULT             index;
 
     for( i = 0; i < lib->num_classes; i++ ) {
         current = (WdeCurrCustControl *)WRMemAlloc( sizeof( WdeCurrCustControl ) );
@@ -424,15 +417,13 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
         }
         current->lib = lib;
         current->index = i;
-        index = (int)SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)lib->lpcci[i].szDesc );
-
+        index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)lib->lpcci[i].szDesc );
         if( index == CB_ERR || index == CB_ERRSPACE ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_ADDSTRING failed!" );
             WRMemFree( current );
             return( false );
         }
-
-        if( SendMessage( cbox, CB_SETITEMDATA, index, (LPARAM)(LPVOID)current ) == CB_ERR ) {
+        if( SendMessage( cbox, CB_SETITEMDATA, (WPARAM)index, (LPARAM)(LPVOID)current ) == CB_ERR ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_SETITEMDATA failed!" );
             WRMemFree( current );
             return( false );
@@ -464,18 +455,16 @@ bool WdeSetSelectWin( HWND win )
 
 bool WdeSetCurrentControl( HWND win, int which )
 {
-    int                 index;
+    LRESULT             index;
     WdeCurrCustControl  *current;
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
     if( index == 0 || index == CB_ERR ) {
         return( true );
     }
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0 );
-
-    current = (WdeCurrCustControl *)
-        SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0 );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, (WPARAM)index, 0 );
     if( current == NULL ) {
         WdeWriteTrail( "WdeSetCurrentControl: CB_GETITEMDATA failed!" );
         return( false );
@@ -504,7 +493,7 @@ void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 bool WdePreviewSelected( HWND win )
 {
     WdeCurrCustControl  *current;
-    int                 index;
+    LRESULT             index;
     char                *class;
     char                *caption;
     HWND                pwin;
@@ -518,7 +507,7 @@ bool WdePreviewSelected( HWND win )
     int                 pheight;
     WdeResizeRatio      resizer;
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
     if( index == 0 || index == CB_ERR ) {
         return( true );
     }
@@ -534,11 +523,8 @@ bool WdePreviewSelected( HWND win )
 
     InflateRect( &psize, -WDE_PREVIEW_PAD, -WDE_PREVIEW_PAD );
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
-
-    current = (WdeCurrCustControl *)
-        SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
-
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, (WPARAM)index, 0 );
     if( current == NULL ) {
         WdeWriteTrail( "WdePreviewSelected: CB_GETITEMDATA failed!" );
         return( false );

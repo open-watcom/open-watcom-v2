@@ -51,10 +51,12 @@ static bool         AlreadyRunning = false;
 
 BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
 {
-    char buff[256];
+    char    buff[256];
+    int     len;
 
     lParam=lParam;
-    GetClassName( hwnd, buff, sizeof( buff ) );
+    len = GetClassName( hwnd, buff, sizeof( buff ) );
+    buff[len] = '\0';
     if( strstr( buff, "PBFRAME" ) != NULL ) {
         GetWindowThreadProcessId(hwnd, &PidPB );
     }

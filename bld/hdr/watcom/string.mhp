@@ -26,10 +26,10 @@
 #endif
 
 const size_t NPOS = (size_t) -1;
-    
+
 // Define a typedef for a "C" function
 extern "C" {
- _WCRTLINK typedef int (*__zapcase_t)( int );
+ _WCRTLINK typedef int (_WCCALLBACK *__zapcase_t)( int );
 };
 
 class _WPRTLINK String {
@@ -75,92 +75,92 @@ public:
                        ( size_t __pos ) const;  // subscript operator
 
                                                 // comparison operators
-    friend _WPRTLINK int operator == ( 
+    friend _WPRTLINK int operator == (
             String const &, String const & );   //   String == String?
-    friend _WPRTLINK int operator == ( 
+    friend _WPRTLINK int operator == (
             String const &, char const * );     //   String == C string?
-    friend _WPRTLINK int operator == ( 
+    friend _WPRTLINK int operator == (
             char const *, String const & );     //   C string == String?
-    friend _WPRTLINK int operator == ( 
+    friend _WPRTLINK int operator == (
             String const &, char );             //   String == character?
-    friend _WPRTLINK int operator == ( 
+    friend _WPRTLINK int operator == (
             char, String const & );             //   character == String?
 
-    friend _WPRTLINK int operator != ( 
+    friend _WPRTLINK int operator != (
             String const &, String const & );   //   String != String?
-    friend _WPRTLINK int operator != ( 
+    friend _WPRTLINK int operator != (
             String const &, char const * );     //   String != C string?
-    friend _WPRTLINK int operator != ( 
+    friend _WPRTLINK int operator != (
             char const *, String const & );     //   C string != String?
-    friend _WPRTLINK int operator != ( 
+    friend _WPRTLINK int operator != (
             String const &, char );             //   String != character?
-    friend _WPRTLINK int operator != ( 
+    friend _WPRTLINK int operator != (
             char, String const & );             //   character != String?
 
-    friend _WPRTLINK int operator < ( 
+    friend _WPRTLINK int operator < (
             String const &, String const & );   //   String < String?
-    friend _WPRTLINK int operator < ( 
+    friend _WPRTLINK int operator < (
             String const &, char const * );     //   String < C string?
-    friend _WPRTLINK int operator < ( 
+    friend _WPRTLINK int operator < (
             char const *, String const & );     //   C string < String?
-    friend _WPRTLINK int operator < ( 
+    friend _WPRTLINK int operator < (
             String const &, char );             //   String < character?
-    friend _WPRTLINK int operator < ( 
+    friend _WPRTLINK int operator < (
             char, String const & );             //   character < String?
 
-    friend _WPRTLINK int operator <= ( 
+    friend _WPRTLINK int operator <= (
             String const &, String const & );   //   String <= String?
-    friend _WPRTLINK int operator <= ( 
+    friend _WPRTLINK int operator <= (
             String const &, char const * );     //   String <= C string?
-    friend _WPRTLINK int operator <= ( 
+    friend _WPRTLINK int operator <= (
             char const *, String const & );     //   C string <= String?
-    friend _WPRTLINK int operator <= ( 
+    friend _WPRTLINK int operator <= (
             String const &, char );             //   String <= character?
-    friend _WPRTLINK int operator <= ( 
+    friend _WPRTLINK int operator <= (
             char, String const & );             //   character <= String?
 
-    friend _WPRTLINK int operator > ( 
+    friend _WPRTLINK int operator > (
             String const &, String const & );   //   String > String?
-    friend _WPRTLINK int operator > ( 
+    friend _WPRTLINK int operator > (
             String const &, char const * );     //   String > C string?
-    friend _WPRTLINK int operator > ( 
+    friend _WPRTLINK int operator > (
             char const *, String const & );     //   C string > String?
-    friend _WPRTLINK int operator > ( 
+    friend _WPRTLINK int operator > (
             String const &, char );             //   String > character?
-    friend _WPRTLINK int operator > ( 
+    friend _WPRTLINK int operator > (
             char, String const & );             //   character > String?
 
-    friend _WPRTLINK int operator >= ( 
+    friend _WPRTLINK int operator >= (
             String const &, String const & );   //   String >= String?
-    friend _WPRTLINK int operator >= ( 
+    friend _WPRTLINK int operator >= (
             String const &, char const * );     //   String >= C string?
-    friend _WPRTLINK int operator >= ( 
+    friend _WPRTLINK int operator >= (
             char const *, String const & );     //   C string >= String?
-    friend _WPRTLINK int operator >= ( 
+    friend _WPRTLINK int operator >= (
             String const &, char );             //   String >= character?
-    friend _WPRTLINK int operator >= ( 
+    friend _WPRTLINK int operator >= (
             char, String const & );             //   character >= String?
 
                                                 // concatenate string operators
-    friend _WPRTLINK String operator + ( 
+    friend _WPRTLINK String operator + (
             String const &, String const & );   //   String + String
-    friend _WPRTLINK String operator + ( 
+    friend _WPRTLINK String operator + (
             String const &, char const * );     //   String + C string
-    friend String operator + ( 
+    friend String operator + (
             String const &, char * );           //   String + C string
-    friend _WPRTLINK String operator + ( 
+    friend _WPRTLINK String operator + (
             char const *, String const & );     //   C string + String
-    friend String operator + ( 
+    friend String operator + (
             char *, String const & );           //   C string + String
-    friend _WPRTLINK String operator + ( 
+    friend _WPRTLINK String operator + (
             String const &, char );             //   String + character
-    friend _WPRTLINK String operator + ( 
+    friend _WPRTLINK String operator + (
             char, String const & );             //   character + String
 
                                                 // input/output operators
-    friend _WPRTLINK istream & operator >> ( 
+    friend _WPRTLINK istream & operator >> (
             istream &, String & );              // input
-    friend _WPRTLINK ostream & operator << ( 
+    friend _WPRTLINK ostream & operator << (
             ostream &, String const & );        // output
 
 // Member functions:
@@ -185,7 +185,7 @@ public:
 
     int operator ! () const;                // invalid String?
     int valid() const;                      // valid String?
-    friend _WPRTLINK int valid( 
+    friend _WPRTLINK int valid(
             String const & );               // valid String?
 
     int alloc_mult_size() const;            // get string_mult_size
@@ -269,11 +269,11 @@ inline size_t String::length() const {
 inline int String::alloc_mult_size() const {
     return( String::__string_mult_size );
 }
-    
+
 inline String operator + ( String const &__s, char *__p ) {
     return( operator + ( __s, (char const *)__p ) );
 }
-    
+
 inline String operator + ( char *__p, String const &__s ) {
     return( operator + ( (char const *)__p, __s ) );
 }

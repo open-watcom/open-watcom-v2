@@ -35,18 +35,18 @@
 
 
 
-static size_t typesigIndex(     // FIND BASE-1 INDEX OF MATCHING TYPE SIGNATURE
-    DISPATCH_EXC* dispatch,     // - dispatch control
-    size_t count,               // - number of elements
-    RT_TYPE_SIG* tsigs )        // - type signatures
+static std::size_t typesigIndex(     // FIND BASE-1 INDEX OF MATCHING TYPE SIGNATURE
+    DISPATCH_EXC* dispatch,          // - dispatch control
+    std::size_t count,               // - number of elements
+    RT_TYPE_SIG* tsigs )             // - type signatures
 {
-    size_t index;               // - base-1 index
-    THROW_RO* throw_ro;         // - throw R/O block
-    rboolean zero_thrown;       // - true ==> zero was thrown
-    unsigned thr_ctr;           // - throw ctr.
-    unsigned ctr;               // - testing ctr.
-    RT_TYPE_SIG tsig;           // - current type signature, in tsigs
-    RT_TYPE_SIG thr_sig;        // - current type signature, from throw
+    std::size_t index;               // - base-1 index
+    THROW_RO* throw_ro;              // - throw R/O block
+    rboolean zero_thrown;            // - true ==> zero was thrown
+    unsigned thr_ctr;                // - throw ctr.
+    unsigned ctr;                    // - testing ctr.
+    RT_TYPE_SIG tsig;                // - current type signature, in tsigs
+    RT_TYPE_SIG thr_sig;             // - current type signature, from throw
 
     throw_ro = dispatch->ro;
     zero_thrown = dispatch->zero;
@@ -75,11 +75,10 @@ static rboolean dispatchableFnExc(// CHECK IF FUNCTION EXCEPTION SPEC. DISPATCH
     DISPATCH_EXC *dispatch,     // - dispatch control
     DTOR_CMD* cmd )             // - DTOR_CMD_FN_EXC command
 {
-    size_t index = typesigIndex( dispatch
+    std::size_t index = typesigIndex( dispatch
                                , cmd->fn_exc.count
                                , cmd->fn_exc.sigs );
-    rboolean retn = ( index == 0 )
-                || ( cmd->fn_exc.sigs[ index - 1 ] == NULL );
+    rboolean retn = ( index == 0 ) || ( cmd->fn_exc.sigs[ index - 1 ] == NULL );
     if( retn ) {
         dispatch->try_cmd = cmd;
     }
@@ -92,7 +91,7 @@ static rboolean dispatchableCatch(// CHECK IF DISPATCHABLE CATCH
     DTOR_CMD* cmd )             // - DTOR_CMD_TRY command
 {
     rboolean retn;              // - return: true ==> dispatachable
-    size_t index;               // - index of match catch (base-1)
+    std::size_t index;          // - index of match catch (base-1)
 
     index = typesigIndex( dispatch
                         , cmd->try_cmd.count
@@ -100,7 +99,7 @@ static rboolean dispatchableCatch(// CHECK IF DISPATCHABLE CATCH
     if( index == 0 ) {
         retn = false;
     } else {
-        -- index;
+        --index;
         dispatch->try_cmd = cmd;
         dispatch->catch_no = index;
         retn = true;

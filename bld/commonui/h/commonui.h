@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>    /* NULL value */
 #ifdef __OS2_PM__
     #define INCL_PM
     #define INCL_WINFRAMEMGR

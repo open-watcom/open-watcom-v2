@@ -157,6 +157,7 @@
 !inject stdio.h                     hdos hlnx hqnx
 !inject stdiobuf.h             hcpp
 !inject stdlib.h                    hdos hlnx hqnx
+!inject stdnoret.h                  hdos hlnx hqnx
 !inject streambu         noext hcpp
 !inject streambu.h             hcpp
 !inject string           noext hcpp

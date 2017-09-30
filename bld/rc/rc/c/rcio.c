@@ -57,40 +57,35 @@
 #include "clibext.h"
 
 
-static char *MakeTmpInSameDir( const char *dirfile, char *ext )
-/*************************************************************/
+char *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext )
+/***********************************************************************/
 {
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
     char    *out;
-#ifdef __DOS__
-    char    *fname = "__TMP__";
-#else
     char    fname[32];
+#if defined( __DOS__ ) || defined( __OSI__ )
+    sprintf( fname, "__TMP%c__", id );
+#else
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
-    sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
+    sprintf( fname, "__RCTMP%c%lu__", id, (unsigned long)getpid() );
 #endif
     out = RESALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
     _splitpath( dirfile, drive, dir, NULL, NULL );
     _makepath( out, drive, dir, fname, ext );
     return( out );
-} /* MakeTmpInSameDir */
+} /* RcMakeTmpInSameDir */
 
 static bool Pass1InitRes( void )
-/*****************************/
+/******************************/
 {
     WResID        null_id;
     ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
     /* put the temporary file in the same location as the output file */
-#ifdef USE_TEMPFILE
-    CurrResFile.filename = MakeTmpInSameDir( CmdLineParms.OutResFileName, "res" );
-#else
-    CurrResFile.filename = RESALLOC( strlen( CmdLineParms.OutResFileName ) + 1 );
-    strcpy( CurrResFile.filename, CmdLineParms.OutResFileName );
-#endif
+    CurrResFile.filename = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '0', "res" );
 
     /* initialize the directory */
     CurrResFile.dir = WResInitDir();
@@ -118,7 +113,7 @@ static bool Pass1InitRes( void )
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
         /* write null header here if it is win32 */
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 && CmdLineParms.MSResFormat ) {
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             null_loc.start = SemStartResource();
             null_loc.len = SemEndResource( null_loc.start );
             null_id.IsName = false;
@@ -141,67 +136,9 @@ static bool Pass1InitRes( void )
 } /* Pass1InitRes */
 
 int RcFindResource( const char *name, char *fullpath )
+/****************************************************/
 {
-    return( PP_FindInclude( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
-}
-
-
-static size_t GetPathElementLen( const char *path_list, const char *end )
-/*
- * This code is derived from code in watcom/c/pathlist.c
- * hold it in sync with this code
- */
-{
-    bool    is_blank;
-    char    c;
-    size_t  len;
-
-    is_blank = true;
-    len = 0;
-    while( path_list != end && (c = *path_list) != '\0' ) {
-        path_list++;
-        if( IS_INCLUDE_LIST_SEP( c ) ) {
-            if( !is_blank ) {
-                break;
-            }
-        } else if( IS_DIR_SEP( c ) ) {
-            is_blank = false;
-            ++len;
-        } else if( !is_blank ) {
-            ++len;
-        } else if( c != ' ' ) {
-            is_blank = false;
-            ++len;
-        }
-    }
-    return( len );
-}
-
-char *RcTmpFileName( void )
-/*************************/
-/* uses the TMP env. var. if it is set and puts the result into tmpfilename */
-/* which is assumed to be a buffer of at least _MAX_PATH characters */
-{
-    char        *nextchar;
-    const char  *tmpdir;
-    char        *out;
-    size_t      len;
-
-    tmpdir = RcGetEnv( "TMP" );
-    len = L_tmpnam + 1;
-    if( tmpdir != NULL && *tmpdir != '\0' ) {
-        len += GetPathElementLen( tmpdir, NULL ) + 1;
-    }
-    out = RESALLOC( len );
-    nextchar = out;
-    if( tmpdir != NULL && *tmpdir != '\0' ) {
-        GetPathElement( tmpdir, NULL, &nextchar );
-        if( !IS_PATH_SEP( nextchar[-1] ) ) {
-            *nextchar++ = DIR_SEP;
-        }
-    }
-    tmpnam( nextchar );
-    return( out );
+    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
 static bool PreprocessInputFile( void )
@@ -217,7 +154,7 @@ static bool PreprocessInputFile( void )
     if( CmdLineParms.IgnoreCWD ) {
         flags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_Init2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
+    rc = PP_FileInit2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
@@ -271,11 +208,11 @@ extern bool RcPass1IoInit( void )
             includepath = RcGetEnv( "OS2_INCLUDE" );
         }
         if( includepath != NULL ) {
-            PP_AddIncludePath( includepath );
+            PP_IncludePathAdd( includepath );
         }
         includepath = RcGetEnv( "INCLUDE" );
         if( includepath != NULL ) {
-            PP_AddIncludePath( includepath );
+            PP_IncludePathAdd( includepath );
         }
     }
     if( !CmdLineParms.NoPreprocess ) {
@@ -292,7 +229,7 @@ extern bool RcPass1IoInit( void )
         error = Pass1InitRes();
     }
     if( error )  {
-        PP_Fini();
+        PP_FileFini();
         RcIoTextInputShutdown();
         return( false );
     }
@@ -405,9 +342,7 @@ static void Pass1ResFileShutdown( void )
                 remove( CurrResFile.filename );
                 UnregisterTmpFile( CurrResFile.filename );
             } else if( !error ) {
-#ifdef USE_TEMPFILE
                 ChangeTmpToOutFile( CurrResFile.filename, CmdLineParms.OutResFileName );
-#endif
             }
             CurrResFile.IsOpen = false;
         }
@@ -646,7 +581,8 @@ extern bool RcPass2IoInit( void )
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
-    Pass2Info.TmpFileName = MakeTmpInSameDir( CmdLineParms.OutExeFileName, "tmp" );
+    /* put the temporary file in the same location as the output file */
+    Pass2Info.TmpFileName = RcMakeTmpInSameDir( CmdLineParms.OutExeFileName, '2', "tmp" );
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );

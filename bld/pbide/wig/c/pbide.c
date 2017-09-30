@@ -204,12 +204,14 @@ static HWND     ideHwnd;
 BOOL __export CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
 {
     char        buf[256];
+    int         len;
 
     lparam = lparam;
-    GetClassName( hwnd, buf, sizeof( buf ) );
-    if( !strcmp( buf, "GUIClass" ) ) {
+    len = GetClassName( hwnd, buf, sizeof( buf ) );
+    buf[len] = '\0';
+    if( strcmp( buf, IDE_WINDOW_CLASS ) == 0 ) {
         GetWindowText( hwnd, buf, sizeof( buf ) );
-        if( !strncmp( buf, IDE_WINDOW_CAPTION, IDE_WIN_CAP_LEN ) ) {
+        if( strncmp( buf, IDE_WINDOW_CAPTION, IDE_WIN_CAP_LEN ) == 0 ) {
             ideHwnd = hwnd;
             return( FALSE );
         }

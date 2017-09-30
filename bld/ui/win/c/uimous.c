@@ -30,9 +30,9 @@
 
 
 #include <dos.h>
+#include "uidef.h"
 #include <windows.h>
 #include "uidos.h"
-#include "uidef.h"
 #include "uimouse.h"
 #include "biosui.h"
 

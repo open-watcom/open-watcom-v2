@@ -50,6 +50,9 @@
 #include "os2extx.h"
 #include "os2v2acc.h"
 
+extern  void    DebugSession( void );
+extern  void    AppSession( void );
+
 /*
  * globals
  */
@@ -67,9 +70,7 @@ unsigned        CurrModHandle = 0;
 ULONG           ExceptNum;
 scrtype         Screen;
 
-extern  void    DebugSession( void );
-extern  void    AppSession( void );
-
+static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 trap_retval ReqRead_io( void )
 {
@@ -151,8 +152,7 @@ trap_retval ReqFile_open( void )
     } else {
         flags = OPEN_PRIVATE;
     }
-    retval = OpenFile( GetInPtr( sizeof( file_open_req ) ),
-                      MapAcc[acc->mode - 1], flags );
+    retval = OpenFile( GetInPtr( sizeof( file_open_req ) ), MapAcc[acc->mode - 1], flags );
     if( retval < 0 ) {
         ret->err = retval;
         ret->handle = 0;
@@ -171,7 +171,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, &pos );
+    ret->err = DosSetFilePtr( acc->handle, acc->pos, local_seek_method[acc->mode], &pos );
     ret->pos = pos;
     return( sizeof( *ret ) );
 }

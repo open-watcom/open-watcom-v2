@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\clinpack.mif
+!include ../clinpack.mif

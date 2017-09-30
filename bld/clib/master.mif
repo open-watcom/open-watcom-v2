@@ -1,5 +1,7 @@
 proj_name=clib
 
+.EXTENSIONS: .gas
+
 clib_host_cpu_086=i86
 clib_host_cpu_286=i86
 clib_host_cpu_386=386

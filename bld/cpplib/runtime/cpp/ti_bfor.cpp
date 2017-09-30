@@ -31,7 +31,7 @@
 
 #include "cpplib.h"
 
-#include <string.h>
+#include <cstring>
 #include <typeinfo>
 
 namespace std {

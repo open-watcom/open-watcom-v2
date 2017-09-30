@@ -767,7 +767,7 @@ static void write_linnum( void )
                 objr->d.linnum.d.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
             }
             objr->d.linnum.d.base.frame = 0; // fixme ?
-    
+
             write_record( objr, true );
         }
     }
@@ -883,24 +883,26 @@ static void get_fixup_list( unsigned long start, struct fixup **fl16, struct fix
     fix32 = NULL;
     for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
         fix = CreateFixupRec( start, fixi );
-        switch( fix->loc_method ) {
-        case FIX_OFFSET386:
-        case FIX_POINTER386:
-            if( fix32 == NULL ) {
-                *fl32 = fix;
-            } else {
-                fix32->next = fix;
+        if( fix != NULL ) {
+            switch( fix->loc_method ) {
+            case FIX_OFFSET386:
+            case FIX_POINTER386:
+                if( fix32 == NULL ) {
+                    *fl32 = fix;
+                } else {
+                    fix32->next = fix;
+                }
+                fix32 = fix;
+                break;
+            default:
+                if( fix16 == NULL ) {
+                    *fl16 = fix;
+                } else {
+                    fix16->next = fix;
+                }
+                fix16 = fix;
+                break;
             }
-            fix32 = fix;
-            break;
-        default:
-            if( fix16 == NULL ) {
-                *fl16 = fix;
-            } else {
-                fix16->next = fix;
-            }
-            fix16 = fix;
-            break;
         }
     }
     if( fix32 != NULL ) {
@@ -922,12 +924,14 @@ int get_fixup_list( unsigned long start, struct fixup **fl )
     fixo = NULL;
     for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
         fix = CreateFixupRec( start, fixi );
-        if( fixo == NULL ) {
-            *fl = fix;
-        } else {
-            fixo->next = fix;
+        if( fix != NULL ) {
+            if( fixo == NULL ) {
+                *fl = fix;
+            } else {
+                fixo->next = fix;
+            }
+            fixo = fix;
         }
-        fixo = fix;
     }
     if( fixo != NULL ) {
         fixo->next = NULL;
@@ -1160,7 +1164,7 @@ static void OnePassInit( void )
 {
     CmdlParamsInit();
     AssumeInit();
-    
+
     Options.locals_prefix[0] = '@';
     Options.locals_prefix[1] = '@';
     Options.locals_len = 0;

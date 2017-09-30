@@ -5,17 +5,19 @@
 #
 # Expects POSIX or OW tools.
 
+if [ -z "$OWROOT" ]; then
+    . ./setvars.sh
+fi
+
 if [ -z "$1" ]; then
     BUILDER_ARG=build
 else
     BUILDER_ARG=$1
 fi
 
-if [ -z "$OWROOT" ]; then
-    . ./setvars.sh
-fi
+if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 
-OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
+OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/bootx.log
 
 output_redirect()
 {
@@ -66,20 +68,16 @@ else
     rm -f $OWBINDIR/builder
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-    cd $OWSRCDIR
-    builder boot
-    RC=$?
-    if [ $RC -ne 0 ]; then
-        echo "builder bootstrap build error"
-    else
-        builder $BUILDER_ARG
+    if [ "$BUILDER_ARG" != "preboot" ]; then
+        cd $OWSRCDIR
+        builder boot
         RC=$?
         if [ $RC -ne 0 ]; then
             echo "builder bootstrap build error"
         else
-            builder rel
+            builder $BUILDER_ARG
             RC=$?
-	fi
+        fi
     fi
 fi
 cd $OWROOT

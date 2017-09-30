@@ -111,3 +111,14 @@ void PutOutGlobalHeader( FILE *fptr ) {
         fprintf( fptr, "%s\n\n", HeapDPMITitles );
     }
 } /* PutOutGlobalHeader */
+
+char *DumpGlobalLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    /* unused parameters */ (void)listview;
+
+    str[0] = '\0';
+    SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+    return( str );
+}

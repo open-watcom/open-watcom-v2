@@ -57,17 +57,24 @@
  #ifdef _WCNORETURN
   #error The macro _WCNORETURN is reserved for use by the runtime library.
  #endif
+ #ifdef _WCCALLBACK
+  #error The macro _WCCALLBACK is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCHANDLER
+  #error The macro _WCHANDLER is reserved for use by the runtime library.
+ #endif
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
- #if defined(_M_IX86)
-  #define _WCNORETURN __declspec(noreturn)
+ #ifdef _M_IX86
+  #define _WCCALLBACK __watcall
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR __near
   #define _WCFAR __far
   #define _WCHUGE __huge
   #define _WCINTERRUPT __interrupt
   #define _WCUNALIGNED
 :segment DOS | QNX
-  #if defined(_M_I86)
+  #ifdef _M_I86
    #define _WCI86NEAR __near
    #define _WCI86FAR __far
    #define _WCI86HUGE __huge
@@ -80,7 +87,8 @@
   #endif
 :endsegment
  #elif defined(__AXP__)
-  #define _WCNORETURN
+  #define _WCCALLBACK
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -90,7 +98,8 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__PPC__)
-  #define _WCNORETURN
+  #define _WCCALLBACK
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -100,7 +109,8 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__MIPS__)
-  #define _WCNORETURN
+  #define _WCCALLBACK
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -110,6 +120,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #else
+  #define _WCCALLBACK
   #define _WCNORETURN
   #define _WCNEAR
   #define _WCFAR
@@ -120,7 +131,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED
  #endif
- #if defined(M_I86HM)
+ #if defined( _M_I86 ) && defined( __HUGE__ )
   #define _WCDATA _WCFAR
  #elif defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
   #define _WCDATA
@@ -134,15 +145,17 @@
  #define _WMRTDATA _WRTLDCONV
  #define _WPRTLINK _WRTLFCONV
  #define _WPRTDATA _WRTLDCONV
+ #define _WCHANDLER __declspec(_WCCALLBACK)
 :elsesegment
- #if defined(__SW_BR)
-  #if defined(__NT__)
+ #ifdef __SW_BR
+  #ifdef __NT__
    #define _WCRTLINK __declspec(dllimport) _WRTLFCONV
    #define _WCRTDATA __declspec(dllimport) _WRTLDCONV
    #define _WMRTLINK __declspec(dllimport) _WRTLFCONV
    #define _WMRTDATA __declspec(dllimport) _WRTLDCONV
    #define _WPRTLINK __declspec(dllimport) _WRTLFCONV
    #define _WPRTDATA __declspec(dllimport) _WRTLDCONV
+   #define _WCHANDLER __declspec(dllimport) __declspec(_WCCALLBACK)
   #else
    #define _WCRTLINK _WRTLFCONV
    #define _WCRTDATA _WRTLDCONV
@@ -150,6 +163,7 @@
    #define _WMRTDATA _WRTLDCONV
    #define _WPRTLINK _WRTLFCONV
    #define _WPRTDATA _WRTLDCONV
+   #define _WCHANDLER __declspec(_WCCALLBACK)
   #endif
  #else
   #ifndef _WCRTLINK
@@ -170,11 +184,14 @@
   #ifndef _WPRTDATA
    #define _WPRTDATA _WRTLDCONV
   #endif
+  #ifndef _WCHANDLER
+   #define _WCHANDLER __declspec(_WCCALLBACK)
+  #endif
  #endif
 :endsegment
  /* control import modifier on intrinsic functions */
  #ifndef _WCIRTLINK
-  #if defined(__INLINE_FUNCTIONS__)
+  #ifdef __INLINE_FUNCTIONS__
    #define _WCIRTLINK _WRTLFCONV
   #else
    #define _WCIRTLINK _WCRTLINK

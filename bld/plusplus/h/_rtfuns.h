@@ -53,12 +53,12 @@
 // registration
 
 #if _CPU == _AXP
-, RTFUN( RTF_REG_FUN,           )                           // - not used on ALPHA
+, RTFUN1( RTF_REG_FUN )                                     // - not used on ALPHA
 #else
 , RTFUN( RTF_REG_FUN,           fun_register )              // - register a function
 #endif
 #if _CPU == _AXP
-, RTFUN( RTF_DEREGISTER,        )                           // - not used on ALPHA
+, RTFUN1( RTF_DEREGISTER )                                  // - not used on ALPHA
 #else
 , RTFUN( RTF_DEREGISTER,        base_deregister )           // - de-register one block
 #endif

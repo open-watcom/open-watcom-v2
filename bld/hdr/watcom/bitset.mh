@@ -24,15 +24,14 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 #ifndef _IOSFWD_INCLUDED
  #include <iosfwd>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     template< size_t N > class bitset {
     public:
         class reference {
@@ -190,7 +189,7 @@ namespace std {
                                   typename basic_string< Ch, Tr, A >::size_type pos = 0,
                                   typename basic_string< Ch, Tr, A >::size_type n = basic_string< Ch, Tr, A >::npos )
     {
-        // TODO: implement me.
+:include nyi.sp
     }
 #endif
     template< size_t N >
@@ -351,7 +350,7 @@ namespace std {
     template< size_t N >
     template< class Ch, class Tr, class A > basic_string< Ch, Tr, A > bitset< N >::to_string( ) const
     {
-        // TODO: implement me.
+:include nyi.sp
     }
 #endif
 
@@ -446,16 +445,15 @@ namespace std {
     template< class Ch, class Tr, size_t N >
     basic_istream< Ch, Tr > &operator<< ( basic_ostream< Ch, Tr >& os, const bitset< N >& x )
     {
-        // TODO: implement me.
+:include nyi.sp
     }
 
     template< class Ch, class Tr, size_t N >
     basic_istream< Ch, Tr > &operator>> ( basic_ostream< Ch, Tr >& os, const bitset< N >& x )
     {
-        // TODO: implement me.
+:include nyi.sp
     }
 #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

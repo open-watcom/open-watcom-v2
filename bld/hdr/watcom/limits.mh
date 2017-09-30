@@ -1,14 +1,18 @@
 ::
-:: This file generates three different headers: limits.h, climits, and
-:: limits. The "default" wsplice operation produces limits.h, the header
-:: used in the C library. A CNAME wsplice operation produces climits, the
-:: C++ partner to C's limits.h. Currently climits and limits.h are ident-
-:: ical. A special CPPLIMITS wsplice operation generates C++'s limits
-:: header. That header is not directly related to either limits.h or climits;
+:: This file generates three different headers.
+::
+::   limits.h : Default wsplice operation.
+::   climits  : CNAME wsplice operation.
+::   limits   : CPPONLY + CNAME wsplice operation.
+::
+:: The limits.h header used in the C library. 
+:: The climits header the C++ partner to C's limits.h.
+:: Currently climits and limits.h are identical. 
+:: C++'s limits header is not directly related to either limits.h or climits;
 :: it contains the definition of the numeric_limits template.
 :: (Peter Chapin)
 ::
-:segment !CPPLIMITS
+:segment !CPPONLY
 /***************************************************************************
  * FILE: limits.h/climits (Machine and OS limits)
  *
@@ -46,7 +50,7 @@
 #define SHRT_MIN    (-32767-1)  /*  minimum value of a short int        */
 #define SHRT_MAX    32767       /*  maximum value of a short int        */
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define USHRT_MAX  65535U      /*  maximum value of an unsigned short  */
 #else
 :endsegment
@@ -58,7 +62,7 @@
 #define LONG_MIN    (-2147483647L-1L) /* minimum value of a long int      */
 #define ULONG_MAX   4294967295UL      /* maximum value of an unsigned long*/
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define INT_MIN    (-32767-1)      /*  minimum value of an int         */
  #define INT_MAX    32767           /*  maximum value of an int         */
  #define UINT_MAX   65535U          /*  maximum value of an unsigned int*/
@@ -146,9 +150,9 @@
 #define _POSIX_THREAD_KEYS_MAX  512 /*  Open Watcom really doesn't have a   */
                                     /*  limit since a linked list is used,  */
                                     /*  but 512 is bigger than most.        */
-                                    
+
 #define PTHREAD_KEYS_MAX _POSIX_THREAD_KEYS_MAX
-                                    
+
 /*
  *  Run-time increasable values
  *
@@ -249,12 +253,8 @@
 :: (Peter Chapin)
 #include <cfloat>
 #include <climits>
-#include <cstddef>
-:: <cstddef> is needed for wchar_t. Once wchar_t is built-in this include
-:: can be removed.
 
-namespace std {
-
+:include nsstd.sp
   enum float_round_style {
     round_indeterminate       = -1,
     round_toward_zero         =  0,
@@ -526,7 +526,7 @@ namespace std {
     static int min() { return( INT_MIN ); }
     static int max() { return( INT_MAX ); }
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
     static const int digits = 15;
     static const int digits10 = 4;
 #else
@@ -677,7 +677,7 @@ namespace std {
     static unsigned int min() { return( 0 ); }
     static unsigned int max() { return( UINT_MAX ); }
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
     static const int digits = 16;
     static const int digits10 = 4;
 #else
@@ -890,8 +890,7 @@ namespace std {
     static const bool tinyness_before = false;
     static const float_round_style round_style = round_to_nearest;
   };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

@@ -731,7 +731,7 @@ Node *unary(Node *np)
  * to nelson beebe for the suggestion; let's see if it works everywhere.
  */
 
-/* #define HAS_ISBLANK */
+#define HAS_ISBLANK
 #ifndef HAS_ISBLANK
 
 int (xisblank)(int c)

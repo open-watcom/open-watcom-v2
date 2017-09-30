@@ -518,9 +518,8 @@ static void GrabName( drmem_hdl abbrev, drmem_hdl entry, String *name )
     strrev( name->s );
 }
 
-static void GetClassName( drmem_hdl   entry,
-                          String      *containing_name )
-/******************************************************/
+static void DRGetClassName( drmem_hdl entry, String *containing_name )
+/********************************************************************/
 {  //try and skip PCH
     drmem_hdl       abbrev;
     drmem_hdl       tmp_entry;
@@ -619,7 +618,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
         if( containing_die != DRMEM_HDL_NULL ) {
             String    containing_name;
 
-            GetClassName( containing_die, &containing_name );
+            DRGetClassName( containing_die, &containing_name );
             if( containing_name.s != NULL ) {
 
                 ListConcat( &( decname->var_bas ), MemberKwd );
@@ -748,7 +747,7 @@ static void GetContaining( List_T *list, drmem_hdl of )
         case DW_TAG_union_type:
         case DW_TAG_structure_type:
         case DW_TAG_WATCOM_namespace:
-            GetClassName( curr->handle, &containing_name );
+            DRGetClassName( curr->handle, &containing_name );
             if( containing_name.s != NULL ) {
                 ListConcat( list, MemberKwd );
 

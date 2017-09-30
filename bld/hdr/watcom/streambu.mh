@@ -14,7 +14,7 @@
 :include readonly.sp
 
 #ifndef _STREAMBUF_INCLUDED
- #include <streambu>
+ #include <streambuf>
 #endif
 using std::streambuf;
 
@@ -50,8 +50,7 @@ using std::streambuf;
 
 #define __char_to_int( __c )    ((int)(unsigned char)(__c))
 
-namespace std {
-
+:include nsstd.sp
   // **************************** STREAMBUF **********************************
 :include pshpackl.sp
   class _WPRTLINK streambuf {
@@ -289,8 +288,7 @@ namespace std {
     }
     return( do_sputn( __buf, __len ) );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

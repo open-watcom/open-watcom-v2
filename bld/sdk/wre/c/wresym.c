@@ -59,6 +59,13 @@
 #define MAX_PP_CHARS    512
 #define MAX_SYM_ADDS    128
 
+typedef struct {
+    unsigned        add_count;
+    unsigned        busy_count;
+    WRHashTable     *table;
+    bool            dup;
+} addsym_data;
+
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
@@ -84,12 +91,12 @@ extern char *WRESymSaveTitle;
 static char WREBusyChars[] = "-\\|/";
 static jmp_buf SymEnv;
 
-void PP_OutOfMemory( void )
+void PPENTRY PP_OutOfMemory( void )
 {
     longjmp( SymEnv, 1 );
 }
 
-void *PP_Malloc( size_t size )
+void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
 
@@ -100,7 +107,7 @@ void *PP_Malloc( size_t size )
     return( p );
 }
 
-void PP_Free( void *p )
+void PPENTRY PP_Free( void *p )
 {
     WRMemFree( p );
 }
@@ -141,51 +148,41 @@ static char *WREFindDLGInclude( WRInfo *info )
     return( include );
 }
 
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    char                busy_str[2];
+    WRHashValue         value;
+    addsym_data         *data = (addsym_data *)cookie;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WRHashValue)val->val.ivalue;
+    } else {
+        value = (WRHashValue)val->val.uvalue;
+    }
+    WRAddHashEntry( data->table, me->name, value, &data->dup, false, false );
+    data->add_count++;
+    if( data->add_count == MAX_SYM_ADDS ) {
+        data->busy_count++;
+        busy_str[0] = WREBusyChars[data->busy_count % 4];
+        busy_str[1] = '\0';
+        WRESetStatusText( NULL, busy_str, true );
+        data->add_count = 0;
+    }
+}
+
 static void WREAddSymbols( WRHashTable *table )
 {
-    int                 hash;
-    MACRO_ENTRY         *me;
-    const char          *endptr;
-    PREPROC_VALUE       val;
-    WRHashValue         value;
-    WRHashEntry         *entry;
-    bool                dup;
-    unsigned            add_count;
-    unsigned            busy_count;
-    char                busy_str[2];
+    addsym_data         data;
 
     if( table == NULL ) {
         return;
     }
+    data.dup = true;
+    data.add_count = 0;
+    data.busy_count = 0;
+    data.table = table;
 
-    dup = true;
-    add_count = 0;
-    busy_count = 0;
-    busy_str[1] = '\0';
-
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-            if( me->parmcount == 0 &&  me->replacement_list != NULL ) {
-                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
-                    if( *endptr == '\0' ) {
-                        if( val.type == PPTYPE_SIGNED ) {
-                            value = (WRHashValue)val.val.ivalue;
-                        } else {
-                            value = (WRHashValue)val.val.uvalue;
-                        }
-                        entry = WRAddHashEntry( table, me->name, value, &dup, false, false );
-                        add_count++;
-                        if( add_count == MAX_SYM_ADDS ) {
-                            busy_count++;
-                            busy_str[0] = WREBusyChars[busy_count % 4];
-                            WRESetStatusText( NULL, busy_str, TRUE );
-                            add_count = 0;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    PP_MacrosWalk( addsym_func, &data );
 }
 
 static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
@@ -202,6 +199,8 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
     bool                ok;
 
     name = NULL;
+
+    PP_Init( '#' );
 
     ok = (table != NULL);
 
@@ -230,14 +229,14 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
         inc_path = NULL;
         ret = setjmp( SymEnv );
         if( ret ) {
-            PP_Fini();
+            PP_FileFini();
             WREDisplayErrorMsg( WRE_SYMOUTOFMEM );
             ok = false;
         }
     }
 
     if( ok ) {
-        ok = !PP_Init( name, flags, inc_path );
+        ok = !PP_FileInit( name, flags, inc_path );
         if( !ok ) {
             WREDisplayErrorMsg( WRE_NOLOADHEADERFILE );
         }
@@ -262,7 +261,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
         }
         WREAddSymbols( *table );
         WRMakeHashTableClean( *table );
-        PP_Fini();
+        PP_FileFini();
         WRESetStatusText( NULL, " ", TRUE );
     }
 
@@ -272,6 +271,8 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
             name = NULL;
         }
     }
+
+    PP_Fini();
 
     WRESetWaitCursor( FALSE );
 

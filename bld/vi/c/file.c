@@ -224,7 +224,7 @@ bool RestoreInfo( info *ci  )
     VarAddRandC();
     if( CurrentFile == NULL ) {
         SetModifiedVar( false );
-    } else{
+    } else {
         SetModifiedVar( CurrentFile->modified );
         if( (unsigned)ci->linenumflag != EditFlags.LineNumbers ) {
             return( true );
@@ -443,7 +443,7 @@ bool CFileReadOnly( void )
  */
 void FileIOMessage( const char *name, linenum lnecnt, long bytecnt )
 {
-    if( !EditFlags.Quiet ){
+    if( !EditFlags.Quiet ) {
         Message1( "\"%s\" %l lines, %l bytes", name, lnecnt, bytecnt );
     }
 

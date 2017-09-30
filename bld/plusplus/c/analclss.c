@@ -445,7 +445,7 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     PTREE src,                  // - source expression
     PTREE tgt,                  // - target expression
     TYPE artype,                // - array type
-    unsigned rtn_code )         // - R/T code
+    RTF rt_code )               // - R/T code
 {
     target_size_t nelem;        // - number of array elements
 
@@ -457,7 +457,7 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     expr = NodeArgument( expr, tgt );
     expr = RunTimeCall( expr
                       , PointerTypeForArray( artype )
-                      , rtn_code );
+                      , rt_code );
     return expr;
 }
 
@@ -1251,7 +1251,7 @@ static PTREE generateArrayClassCall( // CALL CTOR/DTOR FOR ARRAY OF CLASS OBJ.s
     TYPE artype,                // - array type
     TYPE_SIG *sig,              // - type signature
     PTREE sym,                  // - symbol being operated upon
-    unsigned rtn_code )         // - code for runtime call
+    RTF rt_code )               // - code for runtime call
 {
     PTREE expr;                 // - generated expression
 
@@ -1259,7 +1259,7 @@ static PTREE generateArrayClassCall( // CALL CTOR/DTOR FOR ARRAY OF CLASS OBJ.s
                            , NULL
                            , sym
                            , artype
-                           , rtn_code );
+                           , rt_code );
     return expr;
 }
 
@@ -1704,7 +1704,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     ctor_prologue *data )       // - traversal data
 {
     TYPE cltype;                // - type of array element
-    unsigned rtn_code;          // - code for run-time routine
+    RTF rt_code;                // - code for run-time routine
     PTREE stmt;                 // - executable statement
     bool errors;                // - indicates error
     TYPE_SIG_ACCESS tsa;        // - access for type sig
@@ -1729,9 +1729,9 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
             return bitFieldNodeAssign( init_item, init_expr, NodeFetch );
         }
         if( TypeHasVirtualBases( cltype ) ) {
-            rtn_code = RTF_COPY_VARR;
+            rt_code = RTF_COPY_VARR;
         } else {
-            rtn_code = RTF_COPY_ARR;
+            rt_code = RTF_COPY_ARR;
         }
         tsa = TSA_COPY_CTOR;
     } else if( TypeNeedsCtor( cltype ) ) {
@@ -1740,9 +1740,9 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
             return NULL;
         }
         if( TypeHasVirtualBases( cltype ) ) {
-            rtn_code = RTF_CTOR_VARR;
+            rt_code = RTF_CTOR_VARR;
         } else {
-            rtn_code = RTF_CTOR_ARR;
+            rt_code = RTF_CTOR_ARR;
         }
         tsa = TSA_DEFAULT_CTOR;
     } else {
@@ -1757,7 +1757,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
                            , init_expr
                            , init_item
                            , init_type
-                           , rtn_code );
+                           , rt_code );
     {
         SYMBOL ctor;
         if( tsa == TSA_COPY_CTOR ) {

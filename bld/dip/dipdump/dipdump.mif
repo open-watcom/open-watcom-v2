@@ -19,6 +19,7 @@ dig_os = $(host_os)
 dig_os = $(dig_os_$(host_os)_$(host_cpu))
 !endif
 
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
@@ -29,6 +30,7 @@ objs = &
     dipdump.obj &
     digcli.obj  &
     dipcli.obj  &
+    pathlist.obj &
     $(dip_objs)
 
 !include exetarg.mif

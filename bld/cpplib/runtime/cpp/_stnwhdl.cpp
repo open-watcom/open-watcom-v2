@@ -40,10 +40,7 @@
 // 94/11/18  -- J.W.Welch        -- include rtexcept
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <malloc.h>
 #include "rtexcept.h"
-#include <new>
 
 
 _WPRTLINK

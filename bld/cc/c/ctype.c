@@ -581,8 +581,12 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             } else {
                                 info->naked = true;
                             }
+                        } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
+                            modifier = FLAG_ABORTS;
                         } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
                             modifier = FLAG_NORETURN;
+                        } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
+                            modifier = FLAG_FARSS;
                         } else {
                             CErr1( ERR_INVALID_DECLSPEC );
                         }
@@ -605,8 +609,22 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             info->decl_mod |= modifier;
                         }
                     }
+                    if( modifier & FLAG_ABORTS ) {
+                        if( info->decl_mod & FLAG_ABORTS ) {
+                            CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->decl_mod |= modifier;
+                        }
+                    }
                     if( modifier & FLAG_NORETURN ) {
                         if( info->decl_mod & FLAG_NORETURN ) {
+                            CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->decl_mod |= modifier;
+                        }
+                    }
+                    if( modifier & FLAG_FARSS ) {
+                        if( info->decl_mod & FLAG_FARSS ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->decl_mod |= modifier;
@@ -967,28 +985,45 @@ static void ClearFieldHashTable( TAGPTR tag )
     }
 }
 
-static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
+static bool CheckAdjModsTypeNode( type_modifiers old_mod, type_modifiers decl_mod )
+{
+    bool        adjust;
+
+    adjust = false;
+    if( (decl_mod & MASK_LANGUAGES) && (old_mod & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
+        if( old_mod & MASK_LANGUAGES ) {
+            CErr1( ERR_INVALID_DECLSPEC );
+        } else {
+            adjust = true;
+        }
+    }
+    if( (decl_mod & FLAG_ABORTS) && (old_mod & FLAG_ABORTS) == 0 ) {
+        adjust = true;
+    }
+    if( (decl_mod & FLAG_NORETURN) && (old_mod & FLAG_NORETURN) == 0 ) {
+        adjust = true;
+    }
+    if( (decl_mod & FLAG_FARSS) && (old_mod & FLAG_FARSS) == 0 ) {
+        adjust = true;
+    }
+    return( adjust );
+}
+
+void AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
 {
     if( decl_mod ) {
-        TYPEPTR     *xtyp;
         TYPEPTR     typ;
-        
-        xtyp = &field->field_type;
-        typ = *xtyp;
-        while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {
-            xtyp = &typ->object;
-            typ = *xtyp;
-        }
-        if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                }
+
+        if( sym != NULL ) {
+            if( CheckAdjModsTypeNode( sym->mods, decl_mod ) ) {
+                sym->mods |= decl_mod;
             }
-        } else {
-            CErr1( ERR_INVALID_DECLSPEC );
+        }
+        typ = *ptyp;
+        if( typ->decl_type == TYPE_FUNCTION ) {
+            if( CheckAdjModsTypeNode( typ->u.fn.decl_flags, decl_mod ) ) {
+                *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
+            }
         }
     }
 }
@@ -1054,7 +1089,7 @@ static target_size GetFields( TYPEPTR decl )
             if( CurToken != T_COLON ) {
                 field = FieldDecl( typ, info.mod, state );
                 field->level = struct_level;
-                AdjFieldTypeNode( field, info.decl_mod );
+                AdjModsTypeNode( &field->field_type, info.decl_mod, NULL );
                 field = NewField( field, decl );
             }
             if( CurToken == T_COLON ) {
@@ -1608,7 +1643,7 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     return( size );
 }
 
-/* Return an integer type of specified size, or NULL in case of failure. 
+/* Return an integer type of specified size, or NULL in case of failure.
  * The type will be signed if 'sign' is true. The type will have exactly
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).

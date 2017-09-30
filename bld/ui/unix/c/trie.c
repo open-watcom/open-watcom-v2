@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdlib.h>
 #include "walloca.h"
 #include <sys/types.h>
 #include <unistd.h>

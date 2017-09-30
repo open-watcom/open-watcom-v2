@@ -91,7 +91,7 @@ void Hide::buildText( Cell* cell )
 {
     std::string tmp;
     wtombstring( keyPhrase, tmp );
-    size_t size( tmp.size() );
+    std::size_t size( tmp.size() );
     if( size > 253 ) {
         tmp.erase( 253 );
         size = 253;
@@ -121,7 +121,7 @@ EHide::EHide( Document* d, Element *p, const std::wstring* f, unsigned int r,
 Lexer::Token EHide::parse( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
-    lexer = lexer;
+    (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
             document->printError( ERR1_ATTRNOTDEF );

@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\hanoi.mif
+!include ../hanoi.mif

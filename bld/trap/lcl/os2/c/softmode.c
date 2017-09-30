@@ -120,6 +120,7 @@ static void BeginThreadHelper( void )
     DosSemClear( &BeginThreadSem );
     SoftModeThread( _arg );
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }
 
 

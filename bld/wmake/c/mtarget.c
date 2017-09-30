@@ -42,7 +42,7 @@
 
 
 /* just for people to copy in */
-const TATTR FalseAttr = { false, false, false, false, false, false, false };
+const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
 
 #define HASH_PRIME    211
 #define CASESENSITIVE false  // Is Target Name case sensitive

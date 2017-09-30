@@ -85,6 +85,17 @@ static void PutOutLocalHeader( FILE *fptr ) {
     fprintf( fptr, "\n%s\n\n", HeapLocalTitles );
 } /* PutOutLocalHeader */
 
+static char *DumpLocalLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    /* unused parameters */ (void)listview;
+
+    str[0] = '\0';
+    SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+    return( str );
+}
+
 /*
  * SortByLocalType
  * NB this routine assumes that p1 and p2 have the same wHeapType
@@ -407,12 +418,10 @@ BOOL FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             ReDisplayLocalHeapList( info->list.box, NULL );
             break;
         case HEAPMENU_FILE_SAVE:
-            SaveListBox( SLB_SAVE_TMP, PutOutLocalHeader, Config.lfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, PutOutLocalHeader, DumpLocalLine, Config.lfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_FILE_SAVE_TO:
-            SaveListBox( SLB_SAVE_AS, PutOutLocalHeader, Config.lfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, PutOutLocalHeader, DumpLocalLine, Config.lfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_GLOBAL_MEMORYINFO:
             info->dialog = DisplayLocalHeapInfo( hwnd );

@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <rdos.h>
 #include <excpt.h>
 #include <float.h>

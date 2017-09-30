@@ -32,6 +32,7 @@
 
 #define INCLUDE_OLE_H
 #include "variety.h"
+#include <stddef.h>
 #include "cover.h"
 
 void Ole32InitObjectVtbl( LPOLEOBJECTVTBL povt, BOOL srvronly )

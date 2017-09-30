@@ -30,6 +30,13 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#if defined( __WATCOMC__ )
+    #include <mbctype.h>
+#endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    #include <windows.h>    //temporary ?
+#endif
 #include "mconfig.hpp"
 #include "mrule.hpp"
 #include "mtarget.hpp"
@@ -40,20 +47,10 @@
 #include "wobjfile.hpp"
 #include "mtypo.hpp"
 
-#if defined( __WATCOMC__ )
-#include <mbctype.h>
-#endif
 
-extern "C" {
-    #include <stdlib.h>
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-        #include <windows.h>    //temporary ?
-    #endif
-};
-
-#define MALLOC(s) (char*)malloc(s)
-#define REALLOC(p,s) (char*)realloc(p,s)
-#define FREE(p) if( p != NULL ) free(p)
+#define MALLOC(s)       (char *)malloc(s)
+#define REALLOC(p,s)    (char *)realloc(p,s)
+#define FREE(p)         if( p != NULL ) free(p)
 
 Define( MConfig )
 
@@ -113,11 +110,8 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
     #ifdef __AXP__
         _hostType = HOST_NT_AXP;
     #else
-        DWORD ver;
-
         _hostType = HOST_NT;
-        ver = GetVersion();
-        if( !( ver < 0x80000000 ) && !( LOBYTE( LOWORD( ver ) ) < 4 ) ) {
+        if( (GetVersion() & 0x800000FF) >= 0x80000004 ) {
             _hostType = HOST_WIN95;
         }
     #endif

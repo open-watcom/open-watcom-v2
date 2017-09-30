@@ -30,10 +30,12 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include "rtdata.h"
 #include "fileacc.h"
-#include "flush.h"
+#include "clibsupp.h"
+#include "flushall.h"
 
 
 int __flushall( int mask )

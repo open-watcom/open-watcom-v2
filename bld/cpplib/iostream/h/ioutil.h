@@ -36,8 +36,7 @@
 // function should be inlined
 #pragma warning 656 9
 
-#include "variety.h"
-#include <stdio.h>
+#include <cstdio>
 #include "xfloat.h"
 
 typedef int __huge_ptr_int;
@@ -63,14 +62,6 @@ public:
                                         char const *buffer,
                                         int size,
                                         int fill_offset );
-};
-
-// defined in CLIB
-extern "C" {
-_WCRTLINK extern int __plusplus_fstat( int handle, int *ios_mode );
-_WCRTLINK extern int __plusplus_open( const char *name, int *ios_mode, int prot );
-_WCRTLINK extern FILE *__get_std_stream( unsigned handle );
-_WCRTLINK extern int __flush( FILE *fp );
 };
 
 #define _IOUTIL_H_INCLUDED

@@ -30,6 +30,9 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #ifdef __NT__
     #include <windows.h>
     #include <winnls.h>
@@ -47,9 +50,6 @@
 #elif defined __WINDOWS__
     #include <windows.h>
 #endif
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include "wreslang.h"
 
 #ifdef __DOS__

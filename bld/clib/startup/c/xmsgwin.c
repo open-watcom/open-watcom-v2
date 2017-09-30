@@ -49,11 +49,14 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
 
     MessageBox( (HWND)NULL, tmp, "Open Watcom", MB_OK );
     _exit( retcode );
+    // never return
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         _exit( retcode );
+        // never return
     __exit_with_msg( msg, retcode );
+    // never return
 }

@@ -627,7 +627,7 @@ static void handleSymbols( WStringEditInfo *einfo )
 static void handleLoadSymbols( WStringEditInfo *einfo )
 {
     char        *file;
-    box_pos     pos;
+    LRESULT     pos;
 
     file = WLoadSymbols( &einfo->info->symbol_table,
                          einfo->info->symbol_file,
@@ -642,7 +642,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     einfo->info->symbol_file = file;
 
     pos = einfo->current_pos;
-    if( pos == -1 ) {
+    if( pos == LB_ERR ) {
         pos = 0;
     }
 
@@ -654,11 +654,9 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
 
     WInitEditWindowListBox( einfo );
 
-    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
-                            IDM_STREDCMDID, WR_HASHENTRY_ALL );
+    WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_STREDCMDID, WR_HASHENTRY_ALL );
 
-    SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST,
-                        LB_SETCURSEL, pos, 0 );
+    SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST, LB_SETCURSEL, (WPARAM)pos, 0 );
 
     einfo->info->modified = true;
 
@@ -1079,7 +1077,7 @@ void WHandleClear( WStringEditInfo *einfo )
             einfo->tbl->first_block = NULL;
             einfo->current_block = NULL;
             einfo->current_string = 0;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
                     WRMemFree( einfo->file_name );
@@ -1163,8 +1161,8 @@ WINEXPORT void CALLBACK WStrHelpSearchRoutine( void )
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     }
 }

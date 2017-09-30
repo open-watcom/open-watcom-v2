@@ -88,6 +88,7 @@ void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
     if( exStackP == MAX_EXSTACK ) {
         PrtMsg( FTL | PERCENT_MAKE_DEPTH );
         ExitFatal();
+        // never return
     }
     exStack[exStackP].targ   = targ;
     exStack[exStackP].dep    = dep;
@@ -252,6 +253,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
         if( ExecCList( err ) != RET_SUCCESS ) {
             PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] );
             ExitFatal();
+            // never return
         }
     } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
@@ -259,6 +261,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
                 if( unlink( targ->node.name ) != 0 ) {
                     PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
                     ExitFatal();
+                    // never return
                 }
             }
         }
@@ -363,6 +366,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
             }
             PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name );
             ExitFatal();
+            // never return
         }
     }
     if( !Glob.noexec ) {
@@ -375,6 +379,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
             if( ExecCList( before ) != RET_SUCCESS ) {
                 PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] );
                 ExitFatal();
+                // never return
             }
         }
         doneBefore = true;
@@ -384,6 +389,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
     exPop();
     if( ret == RET_ERROR ) {
         ExitError();
+        // never return
     }
     return( ret );
 }
@@ -887,10 +893,12 @@ RET_T Update( TARGET *targ )
     if( targ->special ) {
         PrtMsg( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name );
         ExitFatal();
+        // never return
     }
     if( targ->busy ) {
         PrtMsg( FTL | RECURSIVE_DEFINITION, targ->node.name );
         ExitFatal();
+        // never return
     }
     PrtMsg( DBG | INF | NEOL | UPDATING_TARGET, targ->node.name );
     targ->busy = true;
@@ -968,6 +976,7 @@ RET_T Update( TARGET *targ )
             // Target doesn't exist and we have no clue how to make it. Bomb out.
             PrtMsg( FTL | UNABLE_TO_MAKE, targ->node.name );
             ExitFatal();
+            // never return
         }
     }
 

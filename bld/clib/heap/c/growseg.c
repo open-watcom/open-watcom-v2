@@ -47,20 +47,16 @@
     #include <windows.h>
 #else
     #include <dos.h>
-#endif
-#include "rtdata.h"
-#if defined(__OS2__)
-#elif defined(__QNX__)
-#elif defined(__WINDOWS__)
-#else
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "heap.h"
 
 
-#define HEAP(s)             ((XBPTR(heapblkp, s))0)
-#define FRLPTR(s)           XBPTR(freelistp, s)
-#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev = 0
+#define HEAP(s)             ((heapblkp __based(s) *)0)
+#define FRLPTR(s)           freelistp __based(s) *
+#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; \
+                            ((FRLPTR(s))(p))->prev = 0
 
 int __GrowSeg( __segment seg, unsigned int amount )
 {
@@ -78,8 +74,8 @@ int __GrowSeg( __segment seg, unsigned int amount )
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
             amount = /*0x....ffff*/ ~0U;
-        if( amount < _amblksiz )
-            amount = _amblksiz;
+        if( amount < _RWD_amblksiz )
+            amount = _RWD_amblksiz;
         num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
         if( num_of_paras == 0 )
             num_of_paras = PARAS_IN_64K;

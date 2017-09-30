@@ -85,7 +85,7 @@ static void WdeSetTagState( WdeOrderedEntry *oe )
     if( oe != NULL && oe->tag != (HWND)NULL ) {
         if( oe->mode == WdeSetOrder ) {
             result = SendMessage( oe->tag, BM_GETSTATE, 0, 0 );
-            pressed = ((result & 0x0004) != 0);
+            pressed = ((result & BST_PUSHED) != 0);
             if( pressed && !oe->pos_set ) {
                 SendMessage( oe->tag, BM_SETSTATE, FALSE, 0 );
             } else if( !pressed && oe->pos_set ) {
@@ -441,19 +441,11 @@ void WdeReorderTags( WdeSetOrderLists *ol, bool force_redraw )
 void WdeTagPressed( WdeSetOrderStruct *o )
 {
     OBJPTR      parent;
-    WORD        state;
-    bool        shift;
 
     if( o != NULL ) {
         switch( o->old_oe->mode ) {
         case WdeSetOrder:
-            state = (WORD)GetKeyState( VK_SHIFT );
-#ifdef __NT__
-            shift = ( (state & 0x8000) != 0 );
-#else
-            shift = ( (state & 0x80) != 0 );
-#endif
-            if( shift ) {
+            if( GetKeyState( VK_SHIFT ) < 0 ) {
                 WdeOrderPrevTags( o );
             }
             WdeSetTagOrder( o, TRUE );

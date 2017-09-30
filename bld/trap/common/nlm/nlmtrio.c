@@ -62,8 +62,10 @@ void SayGNiteGracey( int return_code )
     KillMe( MyNLMHandle );
 #if defined ( __NW50__ )
     NXVmExit(return_code);
+    // never return
 #else
     CDestroyProcess( CGetMyProcessID() );
+    // never return
 #endif
 }
 
@@ -71,6 +73,7 @@ void StartupErr( const char *err )
 {
     OutputToScreen( systemConsoleScreen, "%s\r\n", err );
     SayGNiteGracey( 1 );
+    // never return
 }
 
 int KeyPress( void )

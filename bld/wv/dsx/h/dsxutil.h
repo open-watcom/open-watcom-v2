@@ -51,7 +51,7 @@ typedef union {
 
 #define         NUM_VECTS       256
 #define         MAX_MSG_SIZE    0x400
-#define         PARM_SIZE       (MAX_MSG_SIZE+0x40)
+#define         PARM_SIZE       (MAX_MSG_SIZE + 0x40)
 #define         STACK_SIZE      4096
 
 /* has to match STATICDATA structure in DSXHDLR.ASM */
@@ -108,7 +108,6 @@ extern unsigned_8       RMSegEnd[];
 
 #define _NBPARAS( bytes )       ( ( (bytes) + 15UL ) / 16 )
 #define RM_OFF( sym )           ((unsigned)(sym)-(unsigned)RMSegStart)
-#define MK_PM( s, o )           MK_FP( _ExtenderRealModeSelector, ((s) << 4) + (o) )
 
 extern void Boom( unsigned );
 #pragma aux Boom = "db 0xf, 0xff" parm [eax]

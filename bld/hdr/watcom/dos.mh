@@ -22,7 +22,7 @@
 
 :include cpluspro.sp
 
-#if defined(__DOS__)
+#ifdef __DOS__
  #define _DOSFAR _WCFAR
 #else
  #define _DOSFAR _WCI86FAR
@@ -31,7 +31,6 @@
 :include pshpackl.sp
 
 :include wchar_t.sp
-
 :keep NAMEMAX
 :include maxpath.sp
 :remove NAMEMAX
@@ -113,7 +112,7 @@ _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx,
                                 unsigned int __al);
 _WCRTLINK extern void     _chain_intr( void
                                       (_WCINTERRUPT _DOSFAR *__handler)() );
-#if defined(__NT__) || ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) )
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, void **__storage );
 #else
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, unsigned *__seg );
@@ -129,7 +128,7 @@ _WCRTLINK extern unsigned _dos_findfirst( const char *__path,
                                           struct find_t *__buf );
 _WCRTLINK extern unsigned _dos_findnext( struct find_t *__buf );
 _WCRTLINK extern unsigned _dos_findclose( struct find_t *__buf );
-#if defined(__NT__) || ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) )
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern unsigned _dos_freemem( void *__storage );
 #else
 _WCRTLINK extern unsigned _dos_freemem( unsigned __seg );
@@ -173,7 +172,7 @@ _WCRTLINK extern void     _harderr( int (_DOSFAR *__func)(
                                     unsigned _DOSFAR *__devhdr));
 _WCRTLINK extern void     _hardresume( int __result );
 _WCRTLINK extern void     _hardretn( int __error );
-#if defined(_M_IX86)
+#ifdef _M_IX86
 _WCRTLINK extern int      intdos( union REGS *, union REGS * );
 _WCRTLINK extern int      intdosx( union REGS *, union REGS *, struct SREGS * );
 #endif

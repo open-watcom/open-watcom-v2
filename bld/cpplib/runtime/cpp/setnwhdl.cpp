@@ -38,20 +38,21 @@
 // 92/05/15  -- G.R.Bentz        -- defined
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <malloc.h>
-#include <new>
 
 
-_WPRTLINK
-PFV set_new_handler(            // SET HANDLER FOR NEW FAILURE
-    PFV handler )               // - new handler to be used
-{
-    THREAD_CTL *thr;            // - thread control
-    PFV previous_handler;
+namespace std {
 
-    thr = &_RWD_ThreadData;
-    previous_handler = thr->new_handler;
-    thr->new_handler = handler;
-    return( previous_handler );
+    _WPRTLINK
+    new_handler set_new_handler(    // SET HANDLER FOR NEW FAILURE
+        new_handler handler )       // - new handler to be used
+    {
+        THREAD_CTL *thr;            // - thread control
+        new_handler previous_handler;
+
+        thr = &_RWD_ThreadData;
+        previous_handler = thr->new_handler;
+        thr->new_handler = handler;
+        return( previous_handler );
+    }
+
 }

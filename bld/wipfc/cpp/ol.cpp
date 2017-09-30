@@ -152,7 +152,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
 Lexer::Token Ol::parseAttributes( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
-    lexer = lexer;
+    (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
             document->printError( ERR1_ATTRNOTDEF );

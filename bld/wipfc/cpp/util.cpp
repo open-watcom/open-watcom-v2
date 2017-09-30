@@ -31,6 +31,7 @@
 #if defined( __unix__ ) && !defined( __UNIX__ )
     #define __UNIX__ __unix__
 #endif
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -165,7 +166,7 @@ std::string canonicalPath( char* arg )
 /*****************************************************************************/
 void wtombstring( const std::wstring& input, std::string& output )
 {
-    for( size_t index = 0; index < input.size(); ++index ) {
+    for( std::size_t index = 0; index < input.size(); ++index ) {
         char ch[ MB_LEN_MAX + 1 ];
         int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
         if( bytes == -1 )
@@ -177,7 +178,7 @@ void wtombstring( const std::wstring& input, std::string& output )
 /*****************************************************************************/
 void mbtowstring( const std::string& input, std::wstring& output )
 {
-    size_t index( 0 );
+    std::size_t index( 0 );
     while( index < input.size() ) {
         wchar_t wch;
         int consumed( std::mbtowc( &wch, input.data() + index, MB_CUR_MAX ) );

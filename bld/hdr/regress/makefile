@@ -7,7 +7,7 @@ CC = bwcl386
 !endif
 
 all : .symbolic
-    $(CC) -fe=exercise -fo=exercise -zq <<
+    $(CC) -fe=exercise -fo=exercise -I"../dos" -zq <<
 $#include <stdio.h>
 $#include <limits.h>
 
@@ -94,7 +94,6 @@ _UI16_MAX     = 65535
 _UI32_MAX     = 4294967295
 _UI64_MAX     = 18446744073709551615
 _UI8_MAX      = 255
-
 <<
 !else
     exercise | diff - <<
@@ -132,7 +131,6 @@ _UI16_MAX     = 65535
 _UI32_MAX     = 4294967295
 _UI64_MAX     = 18446744073709551615
 _UI8_MAX      = 255
-
 <<
 !endif
     rm -f exercise.*

@@ -63,7 +63,7 @@ static void setEditText( HWND hwnd, const char *tmp )
  */
 static void insertEditText( HWND hwnd, char *tmp )
 {
-    SendMessage( hwnd, EM_REPLACESEL, 0, (LPARAM)tmp );
+    SendMessage( hwnd, EM_REPLACESEL, 0, (LPARAM)(LPSTR)tmp );
 
 } /* insertEditText */
 

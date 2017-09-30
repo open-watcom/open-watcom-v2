@@ -23,7 +23,7 @@ using std::bad_typeid;
 
 // All included names should also be in the global namespace.
 #ifndef _EXCEPTION_H_INCLUDED
- #include <exceptio.h>
+ #include <exception.h>
 #endif
 
 #endif
@@ -38,11 +38,10 @@ using std::bad_typeid;
 :include owrtlink.sp
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   class _WPRTLINK type_info {
   public:
     ~type_info();
@@ -69,8 +68,7 @@ namespace std {
     bad_typeid( ) _WCTHROWS()
         : exception( "bad typeid expression" ) { }
   };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

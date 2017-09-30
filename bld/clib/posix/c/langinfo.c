@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <langinfo.h>
 #include "li_base.h"

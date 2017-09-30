@@ -10,7 +10,7 @@
 
 :include readonly.sp
 
-#if !defined(_M_IX86)
+#ifndef _M_IX86
  #error i86.h is for use with Intel platforms
 #endif
 
@@ -61,7 +61,7 @@ struct WORDREGS {
         unsigned short si;  __FILLER(_5)
         unsigned short di;  __FILLER(_6)
 :segment DOS | QNX
-#if defined(__WINDOWS_386__)
+#ifdef __WINDOWS_386__
         unsigned short cflag;
 #else
 :endsegment
@@ -104,7 +104,7 @@ union REGS {
 struct SREGS {
         unsigned short es, cs, ss, ds;
 :segment DOS | QNX
-#if !defined(_M_I86)
+#ifndef _M_I86
 :endsegment
         unsigned short fs, gs;
 :segment DOS | QNX
@@ -140,7 +140,7 @@ struct REGPACKW {
         unsigned short gs;
 :segment DOS | QNX
 #endif
-#if defined(__WINDOWS_386__)
+#ifdef __WINDOWS_386__
         unsigned short flags;
 #else
 :endsegment
@@ -199,7 +199,7 @@ struct INTPACKW {
 };
 struct INTPACKB {
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
         unsigned /*gs*/:16,/*fs*/:16,
                  /*es*/:16,/*ds*/:16,
                  /*di*/:16,/*si*/:16,
@@ -222,7 +222,7 @@ union  INTPACK {
         struct INTPACKB h;
         struct INTPACKW w;
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
         struct INTPACKW x;
 #else
 :endsegment
@@ -277,9 +277,9 @@ _WCRTLINK extern void    sound( unsigned __frequency );
 /* macros to break 'far' pointers into segment and offset components */
 
 #define _FP_OFF(__p) ((unsigned)(__p))
- 
+
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define _FP_SEG(__p) ((unsigned)((unsigned long)(void __far*)(__p) >> 16))
 #else
 :endsegment

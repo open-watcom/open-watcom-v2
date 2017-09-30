@@ -183,23 +183,23 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
 static unsigned typeSigNameSize(// COMPUTE SIZE OF NAME IN TYPE SIGNATURE
     THROBJ thr )                // - category of object
 {
-    unsigned size = 0;          // - size of mangled name in type signature
+    unsigned size;              // - size of mangled name in type signature
 
+    size = 0;
     switch( thr ) {
-      case THROBJ_SCALAR :
-      case THROBJ_PTR_FUN :
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_SCALAR :
+    case THROBJ_PTR_FUN :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
         size = CgDataPtrSize();
         break;
-      case THROBJ_PTR_SCALAR :
-      case THROBJ_PTR_CLASS :
-      case THROBJ_REFERENCE :
-      case THROBJ_VOID_STAR :
-      case THROBJ_ANYTHING :
-        size = 0;
+    case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_CLASS :
+    case THROBJ_REFERENCE :
+    case THROBJ_VOID_STAR :
+    case THROBJ_ANYTHING :
         break;
-      DbgDefault( "typeSigNameSize -- bad THROBJ_..." );
+    DbgDefault( "typeSigNameSize -- bad THROBJ_..." );
     }
     return size;
 }
@@ -251,37 +251,35 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
         } else {
             acc_ind = acc;
         }
+        size = 0;
         switch( thr ) {
-          case THROBJ_PTR_SCALAR :
-          case THROBJ_PTR_CLASS :
+        case THROBJ_PTR_SCALAR :
+        case THROBJ_PTR_CLASS :
             sig->base = TypeSigFind( acc_ind & TSA_INDIRECT
                                    , TypePointedAtModified( type )
                                    , err_locn
                                    , &err_this_time );
             size = typeSigHdrSize();
             break;
-          case THROBJ_SCALAR :
-          case THROBJ_PTR_FUN :
-          case THROBJ_VOID_STAR :
+        case THROBJ_SCALAR :
+        case THROBJ_PTR_FUN :
+        case THROBJ_VOID_STAR :
             size = typeSigHdrSize() + SizeTargetSizeT();
             break;
-          case THROBJ_REFERENCE :
+        case THROBJ_REFERENCE :
             sig->base = TypeSigFind( acc_ind
                                    , TypeReference( type )
                                    , err_locn
                                    , &err_this_time );
-            size = 0;
             break;
-          case THROBJ_CLASS :
-          case THROBJ_CLASS_VIRT :
+        case THROBJ_CLASS :
+        case THROBJ_CLASS_VIRT :
             size = 3 * CgCodePtrSize() + CgDataPtrSize() + typeSigHdrSize();
             break;
-          case THROBJ_ANYTHING :
-            size = 0;
+        case THROBJ_ANYTHING :
             break;
-          default :
+        default :
             DbgStmt( CFatal( "cgTypeSignature -- invalid throw category" ) );
-            size = 0;
         }
         size += typeSigNameSize( thr );
         if( size == 0 ) {

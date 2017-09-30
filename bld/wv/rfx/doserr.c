@@ -32,7 +32,7 @@
 #include "doserr.h"
 
 
-char *DosErrMsgs[] = {
+static const char * const DosErrMsgs[] = {
     "",
     #define pickdoserr(id,text) text,
     #include "_doserr.h"

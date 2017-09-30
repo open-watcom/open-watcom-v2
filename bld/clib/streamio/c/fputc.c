@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>
@@ -40,7 +41,7 @@
 #include "rterrno.h"
 #include "fileacc.h"
 #include "orient.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "streamio.h"
 #include "thread.h"
 

@@ -5,7 +5,7 @@
 :include crwatcnt.sp
 //
 // Description: This header is part of the C++ standard library. It
-//              defines a number of functional-like templates and 
+//              defines a number of functional-like templates and
 //              associated binders and adaptors.
 ///////////////////////////////////////////////////////////////////////////
 #ifndef _FUNCTIONAL_INCLUDED
@@ -19,8 +19,7 @@
  #include <cstddef>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     template< class Arg1, class Result >
     struct unary_function {
         typedef Arg1   argument_type;
@@ -160,7 +159,7 @@ namespace std {
     template< class Predicate >
     class binary_negate : public
         binary_function< typename Predicate::first_argument_type,
-                         typename Predicate::second_argument_type, 
+                         typename Predicate::second_argument_type,
                          bool > {
         const Predicate &pred;
     public:
@@ -185,7 +184,7 @@ namespace std {
         typename Operation::first_argument_type value;
     public:
         binder1st( const Operation &x,
-                   const typename Operation::first_argument_type &y ) 
+                   const typename Operation::first_argument_type &y )
             : op( x ), value( y ) { }
         typename Operation::result_type
         operator( )( const typename Operation::second_argument_type &x ) const
@@ -210,7 +209,7 @@ namespace std {
         typename Operation::second_argument_type value;
     public:
         binder2nd( const Operation &x,
-                   const typename Operation::second_argument_type &y ) 
+                   const typename Operation::second_argument_type &y )
             : op( x ), value( y ) { }
         typename Operation::result_type
         operator( )( const typename Operation::first_argument_type &x ) const
@@ -468,7 +467,7 @@ namespace std {
     };
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 
     template< >
     struct hash< long > : public unary_function< long, size_t >
@@ -568,7 +567,6 @@ namespace std {
         size_t operator( )( Type *p ) const
             { return( static_cast< size_t >( p ) ); }
     };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

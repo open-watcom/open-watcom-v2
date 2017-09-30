@@ -32,11 +32,9 @@
 
 #include "cpplib.h"
 #include "rtexcept.h"
-#include "lock.h"
 #define __LIB__
 #include "demangle.h"
 
-#include <new>
 #include <typeinfo>
 
 #pragma initialize 19;

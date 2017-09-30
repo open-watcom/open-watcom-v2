@@ -32,11 +32,7 @@
 #ifndef _WWINHELP_H_INCLUDED
 #define _WWINHELP_H_INCLUDED
 
-#ifdef __WINDOWS__
-typedef DWORD       HELP_DATA;
-#else
 typedef ULONG_PTR   HELP_DATA;
-#endif
 
 bool    WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );
 bool    WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );

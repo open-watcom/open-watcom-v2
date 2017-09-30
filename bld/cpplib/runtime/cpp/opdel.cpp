@@ -44,17 +44,10 @@
 //      the entry point can be replaced in the user code
 
 #include "cpplib.h"
-#include "lock.h"
 #include <malloc.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #define __SW_BR
-#endif
-#include <new.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #undef __SW_BR
-#endif
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+
+#ifdef _RTDLL
 static void __do_delete( void *p )
 #else
 _WPRTLINK void operator delete( // RELEASE STORAGE
@@ -66,10 +59,11 @@ _WPRTLINK void operator delete( // RELEASE STORAGE
     }
 }
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static _PVV __pfn_delete = &__do_delete;
 
-_WPRTLINK extern _PVV _set_op_delete( _PVV od ) {
+_WPRTLINK extern _PVV _set_op_delete( _PVV od )
+{
     _PVV old;
     _RWD_StaticInitSema.p();
     old = __pfn_delete;

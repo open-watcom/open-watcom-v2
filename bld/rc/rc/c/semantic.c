@@ -63,8 +63,8 @@ SemOffset SemStartResource( void )
         /* save current values */
         save_fid = CurrResFile.fid;
         save_name = CurrResFile.filename;
-        /* open a temporary file and trade handles with the RES file */
-        MSFormatTmpFile = RcTmpFileName();
+        /* put the temporary file in the same location as the output RES file */
+        MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
         CurrResFile.fid = ResOpenNewFile( MSFormatTmpFile );
         if( CurrResFile.fid == WRES_NIL_HANDLE ) {
             CurrResFile.fid = save_fid;
@@ -117,7 +117,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
 /***************************************************************************/
 {
     MResResourceHeader  ms_head;
-    long                cur_byte_num;
+    unsigned long       cur_byte_num;
     uint_8              cur_byte;
     bool                error;
     WResFileID          tmp_fid;

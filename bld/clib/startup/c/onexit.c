@@ -34,6 +34,7 @@
 
 _WCRTLINK onexit_t onexit( onexit_t func )
 {
-    if( atexit( func ) == 0 )  return( func );
+    if( atexit( func ) == 0 )
+        return( func );
     return( NULL );
 }

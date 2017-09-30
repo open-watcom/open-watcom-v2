@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
 #ifndef __UNIX__
@@ -45,10 +46,11 @@
 #include "fileacc.h"
 #include "qread.h"
 #include "orient.h"
-#include "flush.h"
+#include "flushall.h"
 #include "streamio.h"
 #include "thread.h"
 #include "fillbuf.h"
+
 
 #define DOS_EOF_CHAR        0x1a
 

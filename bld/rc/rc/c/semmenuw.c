@@ -319,8 +319,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         } else {
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
-        if( !error && CmdLineParms.MSResFormat &&
-                      CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             error = ResWritePadDWord( CurrResFile.fid );
         }
         if( error) {

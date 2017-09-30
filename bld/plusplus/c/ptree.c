@@ -396,6 +396,20 @@ static PTREE allocConstant( uint_8 op, type_id id )
     return new_tree;
 }
 
+/**
+ * Create a nullptr node.
+ */
+PTREE PTreeNullptrConstant( void )
+/******************************/
+{
+    PTREE nullptr_tree;
+
+    nullptr_tree = allocConstant( PT_PTR_CONSTANT, TYP_NULLPTR );
+
+
+    return( nullptr_tree );
+}
+
 
 PTREE PTreeBoolConstant( int v )
 /******************************/
@@ -1485,6 +1499,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
         break;
     case PT_TYPE:
         break;
+    case PT_PTR_CONSTANT:
     case PT_STRING_CONSTANT:
     case PT_FLOATING_CONSTANT:
         if( linkerConstantSymbolNode != NULL ) {

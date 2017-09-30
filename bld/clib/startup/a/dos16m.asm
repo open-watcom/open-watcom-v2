@@ -114,7 +114,7 @@ bad_start:                              ; .EXE indicates to start here
         mov     ds,ax
         mov     ah,9                    ; DOS output string
         int     21h
-        mov     ax,4CFFh                ; DOS exit with code OFF
+        mov     ax,4CFFh                ; DOS exit with code 0FFh
         int     21h
 
 badstart_msg    db      '.EXE has not been processed by MAKEPM', 10, 13, '$'

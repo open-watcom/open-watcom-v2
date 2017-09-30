@@ -34,6 +34,6 @@
 #include "variety.h"
 #include <float.h>
 
-extern std::ios::iostate __GetLDFloat( streambuf *, char *);
+extern std::ios::iostate __GetLDFloat( std::streambuf *, char * );
 
 #endif

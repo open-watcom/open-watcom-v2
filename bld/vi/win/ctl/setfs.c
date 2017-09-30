@@ -260,8 +260,8 @@ static void fs_set( void *dlg, ctl_elt *ctl, void *data )
     }
 }
 
-#include "setfs.dh"
-#include "setfs.ch"
+#include "setfs.gdh"
+#include "setfs.gch"
 
 static void globalTodlgData( dlg_data *data, info *envInfo )
 {
@@ -393,20 +393,19 @@ static void fillFileType( HWND hwndDlg )
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
     for( index = 0, fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ), ++index ) {
-        template1 = template = FTSGetFirstTemplate( fts );
         str[0] = '\0';
         strLen = 0;
-        while( template != NULL ) {
+        template1 = FTSGetFirstTemplate( fts );
+        for( template = template1; template != NULL; template = FTSGetNextTemplate( template ) ) {
             strLen += strlen( template->data ) + 2;
             if( strLen > sizeof( str ) ) {
                 break;
             }
             strcat( str, " " );
             strcat( str, template->data );
-            template = FTSGetNextTemplate( template );
         }
         filldlgData( dlgDataArray + index, template1->data, CurrentInfo );
-        SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(str + 1) );
+        SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(LPSTR)(str + 1) );
     }
     index = 0;
     if( oldCurrentInfo != NULL && oldCurrentInfo->CurrentFile != NULL ) {
@@ -530,7 +529,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
     // can't delete *.* entry
     rc = IDYES;
-    if( !strcmp( template, "*.*" ) ) {
+    if( strcmp( template, "*.*" ) == 0 ) {
         MessageBox( hwndDlg, "Cannot delete catch-all item", "", MB_ICONINFORMATION | MB_OK );
         rc = IDNO;
     }
@@ -568,7 +567,7 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
+    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)(LPSTR)text );
     if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
         MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );
@@ -581,7 +580,7 @@ static long insertFT( HWND hwndDlg )
     index = 0;
     memmove( dlgDataArray + index + 1, dlgDataArray + index, sizeof( dlg_data ) * ( dlgDataArray_count - index ) );
     dlgDataDefault( dlgDataArray + index );
-    SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)text );
+    SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(LPSTR)text );
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
     updateDialogSettings( hwndDlg, true );
 

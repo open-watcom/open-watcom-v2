@@ -29,18 +29,33 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <process.h>
+#include "bool.h"
+#include "wio.h"
+#include "iopath.h"
 #include "digtypes.h"
 #include "digcli.h"
+#include "digld.h"
+#include "pathlist.h"
+#include "dipdump.h"
 
 
 #if 0
-# define dprintf(a)     do { printf a; } while( 0 )
+# define dprintf(a)         do { printf a; } while( 0 )
 #else
-# define dprintf(a)     do {} while( 0 )
+# define dprintf(a)         do {} while( 0 )
+#endif
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
+typedef struct char_ring {
+    struct char_ring    *next;
+    char                name[1];
+} char_ring;
+
+static char   *FilePathList = NULL;
 #endif
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
@@ -164,3 +179,150 @@ unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
     dprintf(( "DIGCliMachineData: \n" ));
     return( 0 ); /// @todo check this out out.
 }
+
+#if defined( __UNIX__ ) || defined( __DOS__ )
+
+static char *addPath( char *old_list, const char *path_list )
+/***********************************************************/
+{
+    size_t          len;
+    size_t          old_len;
+    char            *new_list;
+    char            *p;
+
+    new_list = old_list;
+    if( path_list != NULL && *path_list != '\0' ) {
+        len = strlen( path_list );
+        if( old_list == NULL ) {
+            p = new_list = malloc( len + 1 );
+        } else {
+            old_len = strlen( old_list );
+            new_list = malloc( old_len + 1 + len + 1 );
+            memcpy( new_list, old_list, old_len );
+            free( old_list );
+            p = new_list + old_len;
+        }
+        while( *path_list != '\0' ) {
+            if( p != new_list )
+                *p++ = PATH_LIST_SEP;
+            path_list = GetPathElement( path_list, NULL, &p );
+        }
+        *p = '\0';
+    }
+    return( new_list );
+}
+
+static char *findFile( char *fullname, char *name, char *path_list )
+/******************************************************************/
+{
+    int         fh;
+    char        *p;
+    char        c;
+
+    fh = open( name, O_RDONLY | O_BINARY, S_IREAD );
+    if( fh != -1 ) {
+        close( fh );
+        strcpy( fullname, name );
+        return( fullname );
+    }
+    if( path_list != NULL ) {
+        while( (c = *path_list) != '\0' ) {
+            p = fullname;
+            do {
+                ++path_list;
+                if( IS_PATH_LIST_SEP( c ) )
+                    break;
+                *p = c;
+            } while( (c = *path_list) != '\0' );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            strcat( p, name );
+            fh = open( fullname, O_RDONLY | O_BINARY, S_IREAD );
+            if( fh != -1 ) {
+                close( fh );
+                return( fullname );
+            }
+        }
+    }
+    return( NULL );
+}
+
+void PathInit( void )
+/*******************/
+{
+    char        buff[_MAX_PATH];
+    char        *p;
+
+    if( _cmdname( buff ) != NULL ) {
+#if defined( __UNIX__ )
+        p = strrchr( buff, '/' );
+#else
+        p = strrchr( buff, '\\' );
+#endif
+        if( p != NULL ) {
+            *p = '\0';
+            FilePathList = addPath( FilePathList, buff );
+        }
+    }
+    FilePathList = addPath( FilePathList, getenv( "PATH" ) );
+#if defined(__UNIX__)
+    FilePathList = addPath( FilePathList, getenv( "WD_PATH" ) );
+    FilePathList = addPath( FilePathList, "/usr/watcom/wd" );
+    FilePathList = addPath( FilePathList, "/opt/watcom/wd" );
+#endif
+}
+
+void PathFini( void )
+{
+    free( FilePathList );
+}
+
+dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/******************************************************************************************************************/
+{
+    char        realname[ _MAX_PATH2 ];
+    char        *filename;
+    int         fd;
+
+    /* unused parameters */ (void)max_result;
+
+    memcpy( realname, name, name_len );
+    realname[name_len] = '\0';
+    if( ext != NULL && *ext != '\0' ) {
+        _splitpath2( realname, result, NULL, NULL, &filename, NULL );
+        _makepath( realname, NULL, NULL, filename, ext );
+    }
+    filename = findFile( result, realname, FilePathList );
+    fd = -1;
+    if( filename != NULL )
+        fd = open( filename, O_RDONLY );
+    if( fd == -1 )
+        return( DIG_NIL_HANDLE );
+    return( DIG_PH2FID( fd ) );
+}
+
+int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+{
+    unsigned read_len;
+    read_len = read( DIG_FID2PH( fid ), buff, len );
+printf("read: in: %x  out: %x\n", len, read_len);
+    return( read_len != len );
+}
+
+int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+{
+    unsigned long pos;
+
+    pos = lseek( DIG_FID2PH( fid ), offs, where );
+printf("seek: in: %lx  out: %lx\n", offs, pos);
+    return( pos == -1L );
+}
+
+int DIGLoader( Close )( dig_fhandle fid )
+{
+    return( close( DIG_FID2PH( fid ) ) != 0 );
+}
+
+#endif

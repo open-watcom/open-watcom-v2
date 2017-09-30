@@ -16,6 +16,7 @@ drwatcom_autodepends = .AUTODEPEND
 !include $(commonui_dir)/client.mif
 
 dig_os = $(host_os)
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 
@@ -33,7 +34,7 @@ extra_cpp_flags =
 !ifeq drwatcom_95 1
 extra_cpp_flags += -DCHICAGO
 !endif
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 extra_cpp_flags_nt = -DNOUSE3D
@@ -72,11 +73,11 @@ extra_proj_obj_win = globals.obj notify.obj winproc.obj debug.obj dump.obj &
         win32app.obj lddips.obj stack.obj &
         $(dis_objs)
 
-proj_obj =  listbox.obj log.obj stat.obj lognote.obj &
+proj_obj =  listbox.obj drwatlog.obj stat.obj lognote.obj &
         drwatcom.obj sym.obj profile.obj fault.obj &
         disasm.obj &
         $(extra_proj_obj_$(host_os)) &
-        $(dip_objs) dipcli.obj digcli.obj
+        dipcli.obj digcli.obj $(dip_objs)
 
 .asm : .
 .c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs)

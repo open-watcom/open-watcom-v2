@@ -43,7 +43,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
     char        tmpname[_MAX_PATH];
     int         len;
 
-    if( !(nd->d_stat.st_status & _FILE_USED ) ) {
+    if( (nd->d_stat.st_status & _FILE_USED) == 0 ) {
         strcpy( tmpname, path );
         len = strlen( tmpname );
         if( tmpname[len - 1] != FILE_SEP ) {

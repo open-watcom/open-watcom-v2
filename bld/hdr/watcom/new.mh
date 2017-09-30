@@ -18,6 +18,8 @@
 :: No using declarations here. <new.h> exists only to support legacy
 :: programs. Thus access to new features (like std::bad_alloc) via
 :: <new.h> is not provided.
+using std::new_handler;
+using std::set_new_handler;
 
 #endif
 :elsesegment
@@ -30,26 +32,25 @@
 
 :include owrtlink.sp
 
-#ifndef _STDDEF_H_INCLUDED
- #include <stddef.h>
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
 #endif
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 
 :include cpppfv.sp
 
-extern void *operator new( size_t );
-extern void *operator new( size_t, void * );
-extern void *operator new []( size_t );
-extern void *operator new []( size_t, void * );
+extern void *operator new( std::size_t );
+extern void *operator new( std::size_t, void * );
+extern void *operator new []( std::size_t );
+extern void *operator new []( std::size_t, void * );
 extern void operator delete( void * );
 extern void operator delete []( void * );
-_WPRTLINK extern PFV set_new_handler( PFV );
 _WPRTLINK extern PFU _set_new_handler( PFU );
 :segment DOS | LINUX
-#if defined(__SW_BR)
+#if defined(__SW_BR) || defined(_RTDLL)
  _WPRTLINK extern _PUP _set_op_new( _PUP );
  _WPRTLINK extern _PUP _set_op_new_array( _PUP );
  _WPRTLINK extern _PVV _set_op_delete( _PVV );
@@ -57,12 +58,17 @@ _WPRTLINK extern PFU _set_new_handler( PFU );
 #endif
 :endsegment
 
+:include nsstd.sp
+    typedef void (_WCCALLBACK *new_handler)();
+    _WPRTLINK extern new_handler set_new_handler( new_handler );
+:include nsstdepi.sp
+
 // NOTE: Open Watcom currently does not throw std::bad_alloc on
 // allocation failures. This class is defined here to so that programs
 // that reference it will at least compile. Consider this a first step
 // in building an exception throwing implementation of operator new.
 
-namespace std {
+:include nsstd.sp
   class bad_alloc : public exception {
   public:
     bad_alloc( ) _WCTHROWS() :
@@ -75,7 +81,7 @@ namespace std {
 
     virtual ~bad_alloc( ) _WCTHROWS() { }
   };
-}
+:include nsstdepi.sp
 
 #endif
 :endsegment

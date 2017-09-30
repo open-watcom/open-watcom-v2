@@ -36,8 +36,13 @@
 #include "heap.h"
 
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))(heap))
-#define FRLPTR(s)   XBPTR(freelistp, s)
+#ifdef _M_I86
+#define HEAP(s)     ((heapblkp __based(s) *)(heap))
+#define FRLPTR(s)   freelistp __based(s) *
+#else
+#define HEAP(s)     ((heapblkp _WCNEAR *)(heap))
+#define FRLPTR(s)   freelistp _WCNEAR *
+#endif
 
 //
 // input:
@@ -60,7 +65,7 @@ void_bptr __MemAllocator( unsigned req_size, __segment seg, void_bptr heap )
     if( req_size != 0 ) {                               // quit if size is zero
         unsigned    size;
 
-        size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );// round up size
+        size = __ROUND_UP_SIZE_HEAP( req_size );        // round up size
         if( size >= req_size ) {                        // quit if overflowed
             unsigned    largest;
 

@@ -2,7 +2,7 @@
 #ifndef _UINTPTR_T_DEFINED_
  #define _UINTPTR_T_DEFINED_
 :segment DOS | QNX
- #if defined(_M_I86)
+ #ifdef _M_I86
   #if defined(__SMALL__) || defined(__MEDIUM__)
    typedef unsigned int uintptr_t;
   #else

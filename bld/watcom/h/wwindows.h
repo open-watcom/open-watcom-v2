@@ -32,6 +32,7 @@
 #ifndef WWINDOWS_H_INCLUDED
 #define WWINDOWS_H_INCLUDED
 
+#include <stddef.h>     /* NULL value */
 #include <windows.h>
 #include "wi163264.h"
 #include "winexprt.h"

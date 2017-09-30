@@ -40,17 +40,20 @@
     #include <windows.h>
 #elif defined(__WINDOWS_386__)
     #include "windpmi.h"
-#endif
-#if defined(__OS2__)
+#elif defined(__OS2__)
     #include <wos2.h>
-#endif
-#if defined(__RDOS__)
+#elif defined(__RDOS__)
     #include <rdos.h>
-#endif
-#if defined(__CALL21__)
+#elif defined(__CALL21__) || defined(__DOS_EXT__)
     #include "tinyio.h"
 #endif
 
+
+#if defined(__DOS_EXT__)
+#define MINIMAL_LEN     0x1000
+#else
+#define MINIMAL_LEN     (sizeof( freelistp ) + 1)
+#endif
 
 #if defined(__SMALL_DATA__)
 
@@ -71,16 +74,11 @@ _WCRTLINK int _nheapmin( void )
     return( _nheapshrink() );
 }
 
-#if defined(__WARP__)        || \
-    defined(__WINDOWS__)     || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__RDOS__)
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+
 static int __ReturnMemToSystem( mheapptr heap )
 {
-    mheapptr    next_heap;
-
-    next_heap = heap->next;
   #if defined(__WARP__)
     if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
@@ -96,171 +94,131 @@ static int __ReturnMemToSystem( mheapptr heap )
         return( -1 );
   #elif defined(__CALL21__)
     // No way to free storage under OSI
-    if( heap )
+    if( heap != NULL )
         return( -1 );
+  #elif defined(__DOS_EXT__)
+    dpmi_hdr    *dpmi = BLK2DPMI( heap );
+    if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
+        TinyDPMIFree( dpmi->dpmi_handle );
+    } else {                            // else DOS block below 1MB
+        TinyFreeBlock( dpmi->dos_seg_value );
+    }
   #elif defined(__RDOS__)
     RdosFreeMem( heap );
   #endif
-    if( __MiniHeapRover == heap ) {  // Update rovers
-        if( next_heap != NULL ) {
-            __MiniHeapRover = next_heap;
-        } else {
-            __MiniHeapRover = __nheapbeg;
-            __LargestSizeB4MiniHeapRover = 0;
-        }
-    }
-    // Re-test rover; if we freed the only mini-heap, we might end up
-    // pointing back to it
-    if( __MiniHeapRover == heap ) {
-        __MiniHeapRover = NULL;
-    }
-    if( __MiniHeapFreeRover == heap ) {
-        __MiniHeapFreeRover = NULL;
-    }
     return( 0 ); // success
 }
 
-static void __ReleaseMiniHeap( mheapptr heap )
+int __nheapshrink( void )
 {
-    mheapptr    prev_heap;
+    mheapptr    heap;
     mheapptr    next_heap;
+    mheapptr    prev_heap;
 
-    prev_heap = heap->prev;
-    next_heap = heap->next;
-    if( __ReturnMemToSystem( heap ) == 0 ) {
-        if( prev_heap == NULL ) {
-            __nheapbeg = next_heap;
-        } else {
-            prev_heap->next = next_heap;
+    // Shrink by releasing mini-heaps
+
+    for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
+        next_heap = heap->next;
+        // see if the last free entry has the full size of the block ( - overhead )
+        // if it is then we can give this block back to the system
+        if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
+            prev_heap = heap->prev;
+            if( __ReturnMemToSystem( heap ) == 0 ) {
+                __UnlinkNHeap( heap, prev_heap, next_heap );
+            } else {
+                // do not unlink if the memory cannot be freed successfully
+            }
         }
-        if( next_heap != NULL ) {
-            next_heap->prev = prev_heap;
-        }
-    } //else: do not unlink if the memory cannot be freed successfully
+    }
+    return( 0 );
 }
 
 #endif
 
 _WCRTLINK int _nheapshrink( void )
 {
+    int         rc;
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__)
+#else
     mheapptr    heap;
-#if !defined(__WARP__)        && \
-    !defined(__WINDOWS__)     && \
-    !defined(__NT__)          && \
-    !defined(__CALL21__)      && \
-    !defined(__RDOS__)
-    // Shrink by adjusting _curbrk
-
     frlptr      last_free;
     frlptr      end_tag;
     unsigned    new_brk;
+#endif
+
+    // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-  #if defined(__DOS_EXT__)
-    if( !__IsCtsNHeap() ) {
-  #endif
-        if( __nheapbeg == NULL ) {
-            _ReleaseNHeap();
-            return( 0 ); // No near heap, can't shrink
-        }
-        /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next )
-            ;
-        /* check that last free block is at end of heap */
-        last_free = heap->freehead.prev;
-        end_tag = (frlptr)NEXT_BLK( last_free );
-        if( !IS_BLK_END( end_tag ) ) {
-            _ReleaseNHeap();
-            return( 0 );
-        }
-        if( end_tag != (frlptr)NEXT_BLK( heap ) ) {
-            _ReleaseNHeap();
-            return( 0 );
-        }
-  #if defined(__DOS_EXT__)
-        // only shrink if we can shave off at least 4k
-        if( last_free->len < 0x1000 ) {
-  #else
-        if( last_free->len <= sizeof( freelistp ) ) {
-  #endif
-            _ReleaseNHeap();
-            return( 0 );
-        }
-        /* make sure there hasn't been an external change in _curbrk */
-        if( sbrk( 0 ) != (void_nptr)BLK2CPTR( end_tag ) ) {
-            _ReleaseNHeap();
-            return( 0 );
-        }
-        /* calculate adjustment factor */
-        if( heap->len - last_free->len > sizeof( miniheapblkp ) ) {
-            // this miniheapblk is still being used
-  #if defined(__DOS_EXT__)
-            frlptr new_last_free;
-            new_last_free = (frlptr)( __ROUND_UP_SIZE_4K( (unsigned)last_free ) - TAG_SIZE );
-            if( new_last_free == last_free ) {
-  #endif
-                // remove entire entry
-                heap->len -= last_free->len;
-                --heap->numfree;
-                // Relink the freelist entries, and update the rover
-                heap->freehead.prev = last_free->prev;
-                last_free->prev->next = &heap->freehead;
-                if( heap->rover == last_free ) {
-                    heap->rover = last_free->prev;
-                }
-  #if defined(__DOS_EXT__)
-            } else {
-                // just shrink the last free entry
-                heap->len -= last_free->len;
-                last_free->len = (PTR)new_last_free - (PTR)last_free;
-                heap->len += last_free->len;
-                last_free = new_last_free;
-            }
-  #endif
-            SET_BLK_END( last_free );
-            new_brk = (unsigned)BLK2CPTR( last_free );
-        } else {
-            // we can remove this miniheapblk
-            if( heap->prev ) { // Not the first miniheapblk
-                heap->prev->next = NULL;
-                new_brk = (unsigned)heap;//->prev + (unsigned)heap->prev->len;
-            } else { // Is the first miniheapblk
-                new_brk = (unsigned)__nheapbeg;
-                __nheapbeg = NULL;
-            }
-            // Update rover info
-            if( __MiniHeapRover == heap ) {
-                __MiniHeapRover = __nheapbeg;
-                __LargestSizeB4MiniHeapRover = 0;
-            }
-        }
-
-        if( __brk( new_brk ) == (void_nptr)-1 ) {
-            _ReleaseNHeap();
-            return( -1 );
-        }
-        _ReleaseNHeap();
-        return( 0 );
-  #if defined(__DOS_EXT__)
-    }
-    __FreeDPMIBlocks(); // For RSI/zero-base and Intel CB
-    _ReleaseNHeap();
-    return( 0 );
-  #endif
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__)
+    rc = __nheapshrink();
 #else
-    // Shrink by releasing mini-heaps
-    {
-        mheapptr next_heap;
-
-        _AccessNHeap();
-        for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
-            next_heap = heap->next;
-            if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
-                __ReleaseMiniHeap( heap );
+  #if defined(__DOS_EXT__)
+    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+        rc = __nheapshrink();
+    } else {
+  #endif
+        rc = 0;
+        if( __nheapbeg != NULL ) {
+            /* Goto the end of miniheaplist (if there's more than 1 blk) */
+            for( heap = __nheapbeg; heap->next != NULL; heap = heap->next )
+                ;
+            /* check that last free block is at end of heap */
+            last_free = heap->freehead.prev;
+            end_tag = (frlptr)NEXT_BLK( last_free );
+            if( IS_BLK_END( end_tag ) && end_tag == (frlptr)NEXT_BLK( heap )
+                // only shrink if we can shave off at MINIMAL_LEN
+              && last_free->len >= MINIMAL_LEN
+                /* make sure there hasn't been an external change in _curbrk */
+              && sbrk( 0 ) == (void_nptr)BLK2CPTR( end_tag ) ) {
+                /* calculate adjustment factor */
+                if( heap->len - last_free->len > sizeof( miniheapblkp ) ) {
+                    // this miniheapblk is still being used
+#if defined(__DOS_EXT__)
+                    frlptr new_last_free;
+                    new_last_free = (frlptr)( __ROUND_UP_SIZE_4K( (unsigned)last_free ) - TAG_SIZE );
+                    if( new_last_free == last_free ) {
+#endif
+                        // remove entire entry
+                        heap->len -= last_free->len;
+                        --heap->numfree;
+                        // Relink the freelist entries, and update the rover
+                        heap->freehead.prev = last_free->prev;
+                        last_free->prev->next = &heap->freehead;
+                        if( heap->rover == last_free ) {
+                            heap->rover = last_free->prev;
+                        }
+#if defined(__DOS_EXT__)
+                    } else {
+                        // just shrink the last free entry
+                        heap->len -= last_free->len;
+                        last_free->len = (PTR)new_last_free - (PTR)last_free;
+                        heap->len += last_free->len;
+                        last_free = new_last_free;
+                    }
+#endif
+                    SET_BLK_END( last_free );
+                    new_brk = (unsigned)BLK2CPTR( last_free );
+                } else {
+                    // this miniheapblk is not used, we can remove it
+                    if( heap->prev != NULL ) { // Not the first miniheapblk
+                        new_brk = (unsigned)heap;//->prev + (unsigned)heap->prev->len;
+                    } else { // Is the first miniheapblk
+                        new_brk = (unsigned)__nheapbeg;
+                    }
+                    // Unlink and update rover info
+                    __UnlinkNHeap( heap, heap->prev, heap->next );
+                }
+                if( __brk( new_brk ) == (void_nptr)-1 ) {
+                    rc = -1;
+                }
             }
         }
-        _ReleaseNHeap();
-        return( 0 );
+  #if defined(__DOS_EXT__)
     }
+  #endif
 #endif
+    _ReleaseNHeap();
+    return( rc );
 }

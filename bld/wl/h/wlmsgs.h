@@ -293,10 +293,11 @@
 #define    MSG_MAP_MEM_SIZE                     311 + MSG_BASE
 #define    MSG_MAP_OVL_SIZE                     312 + MSG_BASE
 #define    MSG_MAP_ENTRY_PT_ADDR                313 + MSG_BASE
-#define    MSG_MAP_LINK_TIME                    314 + MSG_BASE
-#define    MSG_MAP_COMDAT                       315 + MSG_BASE
-#define    MSG_MAP_SYM_STATIC                   316 + MSG_BASE
-#define    MSG_MAP_DEFINING_MODULE              317 + MSG_BASE
+#define    MSG_MAP_STUB_FILE                    314 + MSG_BASE
+#define    MSG_MAP_LINK_TIME                    315 + MSG_BASE
+#define    MSG_MAP_COMDAT                       316 + MSG_BASE
+#define    MSG_MAP_SYM_STATIC                   317 + MSG_BASE
+#define    MSG_MAP_DEFINING_MODULE              318 + MSG_BASE
 
 #define    MSG_GENERAL_HELP_0                   340 + MSG_BASE
 #define    MSG_GENERAL_HELP_1                   341 + MSG_BASE

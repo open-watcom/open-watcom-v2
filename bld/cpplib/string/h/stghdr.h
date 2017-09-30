@@ -61,5 +61,5 @@
         extern int _AllocCount;
 #endif
 
-extern signed long __MatchStrings( const char *, size_t, const char *, size_t);
+extern signed long __MatchStrings( const char *, std::size_t, const char *, std::size_t );
 extern int __CompareChars( const char *, long, const char *, long );

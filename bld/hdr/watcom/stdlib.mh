@@ -32,8 +32,8 @@ using std::div_t;
 using std::ldiv_t;
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 
 // C99 functions in stdlib.h
@@ -50,13 +50,13 @@ using std::free;
 using std::labs;
 using std::ldiv;
 using std::malloc;
-:segment !NO_WIDECHAR
+:: Wide/Multi-byte character version
 using std::mblen;
 using std::mbstowcs;
 using std::mbtowc;
 using std::wcstombs;
 using std::wctomb;
-:endsegment
+::
 using std::qsort;
 using std::rand;
 using std::realloc;
@@ -69,14 +69,13 @@ using std::strtoull;
 
 :include process1.sp
 
+:: Wide character version
 :include ext.sp
-:segment !NO_WIDECHAR
 using std::wcstol;
 using std::wcstoll;
 using std::wcstod;
 using std::wcstoul;
 using std::wcstoull;
-:endsegment
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -96,24 +95,9 @@ using std::wcstoull;
 :endsegment
 :include pshpackl.sp
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include size_t.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-:include errno_t.sp
-
-:include rsize_t.sp
-
-typedef void (*constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
-
-:include saferepi.sp
-
-:endsegment
 :include null.sp
 
 :include mbmax.sp
@@ -128,10 +112,7 @@ typedef void (*constraint_handler_t)( const char * __restrict __msg, void * __re
 #define EXIT_FAILURE    0xFF
 :endsegment
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 typedef struct  {
     int     quot;
     int     rem;
@@ -151,14 +132,14 @@ _WCIRTLINK extern int    abs( int __j );
 #if defined(_M_IX86) && 0
 #pragma aux abs     parm nomemory modify nomemory
 #endif
-_WRTLFCONV extern int    atexit( void ( *__func )( void ) );
+_WRTLFCONV extern int    atexit( void (_WCCALLBACK *__func)( void ) );
 _WMRTLINK extern double  atof( const char *__nptr );
 _WCRTLINK extern int     atoi( const char *__nptr );
 _WCRTLINK extern long int atol( const char *__nptr );
 _WCRTLINK extern long long int atoll( const char *__nptr );
 _WCRTLINK extern void    *bsearch( const void *__key, const void *__base,
                                   size_t __nmemb, size_t __size,
-                                  int (*__compar)(const void *__pkey, const void *__pbase) );
+                                  int (_WCCALLBACK *__compare)(const void *__pkey, const void *__pbase) );
 _WCRTLINK extern void    *calloc( size_t __n, size_t __size );
 _WCIRTLINK extern div_t  div( int __numer, int __denom );
 _WCRTLINK _WCNORETURN extern void _Exit( int __status );
@@ -170,7 +151,7 @@ _WCIRTLINK extern long int labs( long int __j );
 #endif
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 _WCRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
 #else
 :endsegment
@@ -181,15 +162,15 @@ _WCIRTLINK extern ldiv_t  ldiv( long int __numer, long int __denom );
 _WCRTLINK extern long long int llabs( long long int __j );
 _WCRTLINK extern lldiv_t lldiv( long long int __numer, long long int __denom );
 _WCRTLINK extern void    *malloc( size_t __size );
-:segment !NO_WIDECHAR
+:: Multi-byte character version
 _WCRTLINK extern int     mblen( const char *__s, size_t __n );
 _WCRTLINK extern size_t  mbstowcs( wchar_t *__pwcs, const char *__s, size_t __n );
 _WCRTLINK extern int     mbtowc( wchar_t *__pwc, const char *__s, size_t __n );
 _WCRTLINK extern size_t  wcstombs( char *__s, const wchar_t *__pwcs, size_t __n );
 _WCRTLINK extern int     wctomb( char *__s, wchar_t __wchar );
-:endsegment
+::
 _WCRTLINK extern void    qsort( void *__base, size_t __nmemb, size_t __size,
-                                int (*__compar)( const void *, const void * ) );
+                                int (_WCCALLBACK *__compare)( const void *, const void * ) );
 _WCRTLINK extern int     rand( void );
 _WCRTLINK extern void    *realloc( void *__ptr, size_t __size );
 _WCRTLINK extern void    srand( unsigned int __seed );
@@ -200,37 +181,23 @@ _WCRTLINK extern long int strtol( const char *__nptr, char **__endptr, int __bas
 _WCRTLINK extern long long int strtoll( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long strtoul( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__endptr, int __base );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :keep  NOUSING
 :include process1.sp
 
-#if defined(__INLINE_FUNCTIONS__)
-:segment CNAME
-namespace std {
-  #pragma intrinsic(abs,div,labs)
-:segment DOS | QNX
-  #if !defined(_M_I86)
-:endsegment
-   #pragma intrinsic(ldiv)
-:segment DOS | QNX
-  #endif
-:endsegment
-}
-:elsesegment
+:include nsstd.sp
+#ifdef __INLINE_FUNCTIONS__
 #pragma intrinsic(abs,div,labs)
 :segment DOS | QNX
-#if !defined(_M_I86)
+#ifndef _M_I86
 :endsegment
  #pragma intrinsic(ldiv)
 :segment DOS | QNX
 #endif
 :endsegment
-:endsegment
-#endif
+#endif /* __INLINE_FUNCTIONS__ */
+:include nsstdepi.sp
 
 :segment !CNAME
 #define atof(p)  strtod(p,(char **)NULL)
@@ -257,20 +224,20 @@ _WMRTLINK extern char    *ecvt( double __val, int __ndig, int *__dec, int *__sig
 _WMRTLINK extern char    *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char    *fcvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char    *_fcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WCRTLINK extern char    *_fullpath( char *__buf, const char *__path, _w_size_t __size );
+_WCRTLINK extern char    *_fullpath( char *__buf, const char *__path, __w_size_t __size );
 _WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
 _WCRTLINK extern char    *_itoa( int __value, char *__buf, int __radix );
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
 _WCIRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
 :segment DOS | QNX
 #endif
-#if defined(_M_I86)
+#ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __shift );
 #else
 :endsegment
@@ -287,8 +254,8 @@ _WCRTLINK extern void    _makepath( char *__path, const char *__drive,
 _WCRTLINK extern int     mkstemp( char *__template );
 _WCIRTLINK extern unsigned int _rotl( unsigned int __value, unsigned int __shift );
 _WCIRTLINK extern unsigned int _rotr( unsigned int __value, unsigned int __shift );
-:segment !NO_WIDECHAR
 
+:: Wide character version
 _WMRTLINK extern wchar_t  *_wecvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern wchar_t  *_wfcvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern wchar_t  *_wgcvt( double __val, int __ndig, wchar_t *__buf );
@@ -303,31 +270,21 @@ _WCRTLINK extern wchar_t  *_ultow( unsigned long int, wchar_t *, int );
 _WCRTLINK extern wchar_t  *_ulltow( unsigned long long int, wchar_t *, int );
 _WMRTLINK extern double   _wtof( const wchar_t * );
 _WMRTLINK extern double   _watof( const wchar_t * );
-:segment CNAME
-namespace std {
-:endsegment
+
+:include nsstd.sp
 _WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern long long int wcstoll( const wchar_t *, wchar_t **, int );
 _WMRTLINK extern double  wcstod( const wchar_t *, wchar_t ** );
 _WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long long int wcstoull( const wchar_t *, wchar_t **, int );
-:segment CNAME
-}
-:endsegment
+:include nsstdepi.sp
+
 _WCRTLINK extern wchar_t  *_atouni( wchar_t *, const char * );
-_WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, _w_size_t );
+_WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );
 _WCRTLINK extern void     _wmakepath( wchar_t *__path, const wchar_t *__drive,
                                       const wchar_t *__dir,
                                       const wchar_t *__fname,
                                       const wchar_t *__ext );
-_WCRTLINK extern int      _wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *_wcsdup( const wchar_t * );
-_WCRTLINK extern int      _wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
-_WCRTLINK extern wchar_t  *_wcslwr( wchar_t * );
-_WCRTLINK extern wchar_t  *_wcsupr( wchar_t * );
-_WCRTLINK extern wchar_t  *_wcsrev( wchar_t * );
-_WCRTLINK extern wchar_t  *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t  *_wcsnset( wchar_t *, int, _w_size_t );
 _WCRTLINK extern wchar_t  *_wgetenv( const wchar_t *__name );
 _WCRTLINK extern int      _wsetenv( const wchar_t *__name,
                                       const wchar_t *__newvalue,
@@ -345,7 +302,6 @@ _WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
                                          const wchar_t *__env_var,
                                          wchar_t *__buf );
 _WCRTLINK extern int      _wsystem( const wchar_t *__cmd );
-:endsegment
 :endsegment
 
 _WCRTLINK extern int     setenv( const char *__name, const char *__newvalue, int __overwrite );
@@ -379,50 +335,16 @@ _WCRTLINK extern __int64 _strtoi64( const char *__nptr, char **__endptr, int __b
 _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endptr, int __base );
 
 :segment !CNAME
-#if defined(__INLINE_FUNCTIONS__)
+#ifdef __INLINE_FUNCTIONS__
  #pragma intrinsic(_rotl,_rotr)
 :segment DOS | QNX
- #if !defined(_M_I86)
+ #ifndef _M_I86
 :endsegment
   #pragma intrinsic(_lrotl,_lrotr)
 :segment DOS | QNX
  #endif
 :endsegment
 #endif
-
-:include saferpro.sp
-
-_WCRTLINK extern constraint_handler_t set_constraint_handler_s( constraint_handler_t __handler );
-_WCRTLINK extern void abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
-_WCRTLINK extern void ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
-
-_WCRTLINK extern errno_t getenv_s( size_t * __restrict __len, char * __restrict __value, rsize_t __maxsize, const char * __restrict __name );
-
-_WCRTLINK extern void    *bsearch_s( const void *__key, const void *__base, rsize_t __nmemb, rsize_t __size,
-                                     int (*__compar)(const void *__x, const void *__y, void *__context), void *__context);
-_WCRTLINK extern errno_t qsort_s( void *__base, rsize_t __nmemb, rsize_t __size,
-                                  int (*__compar)(const void *__x, const void *__y, void *__context), void *__context);
-
-_WCRTLINK extern errno_t wctomb_s( int * __restrict __status, char * __restrict __s, rsize_t __smax, wchar_t __wc );
-_WCRTLINK extern errno_t mbstowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * __restrict __src, rsize_t __len );
-_WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
-
-:include ext.sp
- _WCRTLINK extern errno_t _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
- _WCRTLINK extern errno_t _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
- _WCRTLINK extern errno_t _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
-
- _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
-:segment !NO_WIDECHAR
-:segment DOS
- #if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
-  _WCRTLINK extern errno_t  _get_wpgmptr( wchar_t ** __p );
- #endif
-:endsegment
-:endsegment
-:include extepi.sp
-
-:include saferepi.sp
 
 :include ext.sp
  _WCRTLINK extern int     _fwctomb( char _WCFAR * __s, wchar_t __wchar );
@@ -434,19 +356,19 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 
 :endsegment
 /* min and max macros */
-#if !defined(__max)
+#ifndef __max
 #define __max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
 :segment !CNAME
-#if !defined(max)
+#ifndef max
 #define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
 :endsegment
-#if !defined(__min)
+#ifndef __min
 #define __min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 :segment !CNAME
-#if !defined(min)
+#ifndef min
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 :endsegment
@@ -482,7 +404,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 #define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
 
 _WCRTLINK extern char ***__get_environ_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define environ   (*__get_environ_ptr())
 :segment DOS
 #elif defined(__SW_BR) || defined(_RTDLL)
@@ -491,10 +413,10 @@ _WCRTLINK extern char ***__get_environ_ptr( void );
 #endif
 _WCRTDATA extern char ** _WCDATA environ; /* pointer to environment table */
 
-:segment !NO_WIDECHAR
+:: Wide character version
 :segment DOS | LINUX
 _WCRTLINK extern wchar_t ***__get_wenviron_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _wenviron (*__get_wenviron_ptr())
 :segment DOS
 #elif defined(__SW_BR) || defined(_RTDLL)
@@ -504,9 +426,8 @@ _WCRTLINK extern wchar_t ***__get_wenviron_ptr( void );
 _WCRTDATA extern wchar_t ** _WCDATA _wenviron;   /* pointer to wide environment */
 
 :endsegment
-:endsegment
 _WCRTLINK extern char **__get_pgmptr_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _pgmptr   (*__get_pgmptr_ptr())
 :segment DOS
 #elif defined(__SW_BR) || defined(_RTDLL)
@@ -515,11 +436,11 @@ _WCRTLINK extern char **__get_pgmptr_ptr( void );
 #endif
 _WCRTDATA extern char * _WCDATA _pgmptr;  /* pointer to executable name */
 
-:segment !NO_WIDECHAR
+:: Wide character version
 :segment DOS
-#if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern wchar_t **__get_wpgmptr_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _wpgmptr  (*__get_wpgmptr_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define _wpgmptr  _wpgmptr_br
@@ -528,11 +449,10 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 #endif
 
 :endsegment
-:endsegment
 :segment DOS
-#if defined(__NT__)
+#ifdef __NT__
  _WCRTLINK extern int *__get_fileinfo_ptr( void );
- #if defined(__FUNCTION_DATA_ACCESS)
+ #ifdef __FUNCTION_DATA_ACCESS
   #define _fileinfo (*__get_fileinfo_ptr())
  #elif defined(__SW_BR) || defined(_RTDLL)
   #define _fileinfo _fileinfo_br
@@ -544,7 +464,7 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :include errno.sp
 
 :segment DOS
-#if !defined(__NETWARE__)
+#ifndef __NETWARE__
  _WCRTDATA extern int    _doserrno;
  _WCRTLINK extern int    *__get_doserrno_ptr( void );
  #define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
@@ -556,7 +476,7 @@ _WCRTLINK extern int            *__get_fmode_ptr( void );
 _WCRTLINK extern unsigned       *__get_minreal_ptr( void );
 _WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
 _WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _psp                (*__get_psp_ptr())
  #define _osmode             (*__get_osmode_ptr())
  #define _fmode              (*__get_fmode_ptr())
@@ -583,13 +503,13 @@ _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocat
 
 :endsegment
 :segment DOS | LINUX
-#if !defined(__NETWARE__)
+#ifndef __NETWARE__
 #define sys_errlist _sys_errlist
 #define sys_nerr _sys_nerr
 #endif
 _WCRTLINK extern char        **__get_sys_errlist_ptr( void );
 _WCRTLINK extern int         *__get_sys_nerr_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _sys_errlist        (*__get_sys_errlist_ptr())
  #define _sys_nerr           (*__get_sys_nerr_ptr())
 :segment DOS
@@ -605,7 +525,7 @@ _WCRTDATA extern int  _WCDATA _sys_nerr;        /* # of entries in _sys_errlist 
 _WCRTLINK extern unsigned      *__get_amblksiz_ptr( void );
 _WCRTLINK extern unsigned char *__get_osmajor_ptr( void );
 _WCRTLINK extern unsigned char *__get_osminor_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _amblksiz      (*__get_amblksiz_ptr())
  #define _osmajor       (*__get_osmajor_ptr())
  #define _osminor       (*__get_osminor_ptr())
@@ -619,13 +539,13 @@ _WCRTDATA extern unsigned char _WCDATA _osmajor;    /*  O/S major version # */
 _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 
 :segment DOS
-#if defined(__NT__)
+#ifdef __NT__
  _WCRTLINK extern unsigned short *__get_osbuild_ptr( void );
  _WCRTLINK extern unsigned int   *__get_osver_ptr( void );
  _WCRTLINK extern unsigned int   *__get_winmajor_ptr( void );
  _WCRTLINK extern unsigned int   *__get_winminor_ptr( void );
  _WCRTLINK extern unsigned int   *__get_winver_ptr( void );
- #if defined(__FUNCTION_DATA_ACCESS)
+ #ifdef __FUNCTION_DATA_ACCESS
   #define _osbuild          (*__get_osbuild_ptr())
   #define _osver            (*__get_osver_ptr())
   #define _winmajor         (*__get_winmajor_ptr())
@@ -647,8 +567,9 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
 :endsegment
 extern  int       __argc;       /* number of cmd line args */
 extern  char    **__argv;       /* vector of cmd line args */
-:segment DOS & !NO_WIDECHAR
-#if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
+:: Wide character version
+:segment DOS
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 extern  int       __wargc;      /* number of wide cmd line args */
 extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 #endif
@@ -660,11 +581,54 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 :endsegment
 :include brk.sp
 
-typedef void (*onexit_t)( void );
+typedef void (_WCCALLBACK *onexit_t)( void );
 _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 
 :include extepi.sp
 
+::::::::: Safer C :::::::::
+:segment !CNAME
+:include saferpro.sp
+
+:include errno_t.sp
+
+:include rsize_t.sp
+
+typedef void (_WCCALLBACK *constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+
+_WCRTLINK extern constraint_handler_t set_constraint_handler_s( constraint_handler_t __handler );
+_WCHANDLER extern void abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+_WCHANDLER extern void ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+
+_WCRTLINK extern errno_t getenv_s( size_t * __restrict __len, char * __restrict __value, rsize_t __maxsize, const char * __restrict __name );
+
+_WCRTLINK extern void    *bsearch_s( const void *__key, const void *__base, rsize_t __nmemb, rsize_t __size,
+                                     int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
+_WCRTLINK extern errno_t qsort_s( void *__base, rsize_t __nmemb, rsize_t __size,
+                                  int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
+
+_WCRTLINK extern errno_t wctomb_s( int * __restrict __status, char * __restrict __s, rsize_t __smax, wchar_t __wc );
+_WCRTLINK extern errno_t mbstowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * __restrict __src, rsize_t __len );
+_WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __restrict __dst, rsize_t __dstmax, const wchar_t * __restrict __src, rsize_t __len );
+
+:include ext.sp
+ _WCRTLINK extern errno_t _fwctomb_s( int _WCFAR * __restrict __status, char _WCFAR * __restrict __s, rsize_t __smax, wchar_t __wc );
+ _WCRTLINK extern errno_t _fmbstowcs_s( size_t _WCFAR * __restrict __retval, wchar_t _WCFAR * __restrict __dst, rsize_t __dstmax, const char _WCFAR * __restrict __src, rsize_t __len );
+ _WCRTLINK extern errno_t _fwcstombs_s( size_t _WCFAR * __restrict __retval, char _WCFAR * __restrict __dst, rsize_t __dstmax, const wchar_t _WCFAR * __restrict __src, rsize_t __len );
+
+ _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
+:: Wide character version
+:segment DOS
+ #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
+  _WCRTLINK extern errno_t  _get_wpgmptr( wchar_t ** __p );
+ #endif
+:endsegment
+:include extepi.sp
+
+:include saferepi.sp
+
+:endsegment
+::::::::: Safer C :::::::::
 :include poppack.sp
 
 :segment CNAME
@@ -673,19 +637,22 @@ _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 #endif /* __cplusplus not defined */
 :endsegment
 
-#endif
-
+#endif /* _CSTDLIB_INCLUDED */
+::::::::: C++ only :::::::::
 :segment CNAME
+
 :: For C++ provide the appropriate overloaded signatures. These signatures
 :: must not be extern "C" (which is why they are down here).
 #ifndef _INCLUDED_FROM_STDLIB_H
 #ifndef _CSTDLIB_AUX_INCLUDED
 #define _CSTDLIB_AUX_INCLUDED
-namespace std {
-  inline long int abs( long int __x ) { return( labs( __x ) ); }
-  inline ldiv_t div( long int __n, long int __d )
-    { return( ldiv( __n, __d ) ); }
-}
-#endif
-#endif
+
+:include nsstd.sp
+inline long int abs( long int __x ) { return( labs( __x ) ); }
+inline ldiv_t div( long int __n, long int __d ) { return( ldiv( __n, __d ) ); }
+:include nsstdepi.sp
+
+#endif /* _CSTDLIB_AUX_INCLUDED */
+#endif /* _INCLUDED_FROM_STDLIB_H */
 :endsegment
+::::::::: C++ only :::::::::

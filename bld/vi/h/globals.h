@@ -33,20 +33,20 @@
 #define _GLOBALS_INCLUDED
 
 /* strings */
-extern char _NEAR   BANNER1[];
-extern char _NEAR   BANNER2[];
-extern char _NEAR   MSG_CHARACTERS[];
-extern char _NEAR   MSG_LINES[];
-extern char _NEAR   MSG_PRESSANYKEY[];
-extern char _NEAR   MSG_DELETEDINTOBUFFER[];
-extern char _NEAR   CONFIG_FILE[];
-extern char _NEAR   MEMORIZE_MODE[];
-extern char _NEAR   SingleBlank[];
-extern char _NEAR   SingleSlash[];
-extern char _NEAR   SingleQuote[];
-extern char _NEAR   * _NEAR EditOpts[];
-extern char         * _NEAR BoolStr[];
-extern int          NumEditOpts;
+extern const char _NEAR   BANNER1[];
+extern const char _NEAR   BANNER2[];
+extern const char _NEAR   MSG_CHARACTERS[];
+extern const char _NEAR   MSG_LINES[];
+extern const char _NEAR   MSG_PRESSANYKEY[];
+extern const char _NEAR   MSG_DELETEDINTOBUFFER[];
+extern const char _NEAR   CONFIG_FILE[];
+extern const char _NEAR   MEMORIZE_MODE[];
+extern const char _NEAR   SingleBlank[];
+extern const char _NEAR   SingleSlash[];
+extern const char _NEAR   SingleQuote[];
+extern const char _NEAR   * _NEAR EditOpts[];
+extern const char _NEAR   * _NEAR BoolStr[];
+extern int                NumEditOpts;
 
 /* mouse data */
 #if defined( __LINUX__ )        /* compatible with the ui lib */
@@ -145,6 +145,7 @@ extern bool             NoRepeatInfo;
 extern char _NEAR       RepeatString[MAX_REPEAT_STRING];
 extern int              SourceErrCount;
 extern bool             BoundData;
+extern bool             RCSActive;
 
 /* file io globals */
 extern int              SwapBlocksInUse;
@@ -164,10 +165,10 @@ extern int          ScrollBarCharColor;
 
 /* parse constants */
 extern int          MaxColorTokens, ColorTokensSize;
-extern char _NEAR   TokensCmdLine[];
-extern char _NEAR   TokensSetVar[];
-extern char _NEAR   TokensSetFlag[];
-extern char _NEAR   TokensSetFlagShort[];
+extern const char _NEAR   TokensCmdLine[];
+extern const char _NEAR   TokensSetVar[];
+extern const char _NEAR   TokensSetFlag[];
+extern const char _NEAR   TokensSetFlagShort[];
 
 /* Toolbar constants */
 

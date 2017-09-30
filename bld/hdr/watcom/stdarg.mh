@@ -38,15 +38,11 @@ using std::va_list;
 :endsegment
 :include valist.sp
 
-:segment CNAME
-namespace std {
-  typedef __va_list va_list;
-}
-:elsesegment
+:include nsstd.sp
 typedef __va_list va_list;
-:endsegment
+:include nsstdepi.sp
 
-#if defined(__AXP__)
+#ifdef __AXP__
  #define _AXP_WORD_SIZE     8
  #define _AXP_FLOAT_SIZE    8
  #define _AXP_FLOAT_REGS    6
@@ -63,7 +59,7 @@ typedef __va_list va_list;
  #define va_end(ap)      ((void)0)
 #elif defined(__PPC__)
 :segment DOS
- #if defined(__NT__)
+ #ifdef __NT__
   #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
   #define       _ALIGNIT(ap,t) \
         ((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
@@ -93,7 +89,7 @@ typedef __va_list va_list;
 :segment DOS | QNX
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
- #if defined(__SW_ZU)
+ #ifdef __SW_ZU
 :endsegment
   #define va_start(ap,pn) ((ap)[0]=(char _WCFAR*)&pn+\
       ((sizeof(pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)

@@ -32,7 +32,6 @@
 
 #include <rdos.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "uidef.h"
 #include "uiforce.h"
 

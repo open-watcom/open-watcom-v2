@@ -42,9 +42,9 @@
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
-char _NEAR  SingleBlank[] = " ";
-char _NEAR  SingleSlash[] = "/";
-char _NEAR  SingleQuote[] = "\"";
+const char _NEAR  SingleBlank[] = " ";
+const char _NEAR  SingleSlash[] = "/";
+const char _NEAR  SingleQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;
@@ -105,12 +105,11 @@ char *StrMerge( int cnt, char *str, ... )
     char        *n;
 
     va_start( arg, str );
-    while( cnt > 0 ) {
+    for( ; cnt-- > 0; ) {
         n = va_arg( arg, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
-        cnt--;
     }
     va_end( arg );
     return( str );

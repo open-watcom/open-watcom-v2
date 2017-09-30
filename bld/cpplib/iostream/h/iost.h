@@ -29,18 +29,18 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include <ctype.h>
-#include <errno.h>
+#include <cctype>
+#include <cerrno>
 #include <float.h>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits.h>
-#include <stdio.h>
+#include <climits>
+#include <cstdio>
 #include <stdiobuf.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <streambu>
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #include <sys/stat.h>
 #include <unistd.h>

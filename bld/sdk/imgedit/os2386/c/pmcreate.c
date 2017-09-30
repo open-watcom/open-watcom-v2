@@ -64,6 +64,7 @@ void PM_CreateColourPal( void )
     if(!HColourPalette) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     /*
      * This will allow the colour palette to float outside the main window.
@@ -101,6 +102,7 @@ HWND PM_CreateCurrentDisp( HWND hparent )
     if(!frame_wnd) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     WinSetWindowPos( frame_wnd, HWND_TOP, CUR_WND_X, CUR_WND_Y, CUR_WND_WIDTH,
                         CUR_WND_HEIGHT, SWP_SIZE | SWP_MOVE | SWP_SHOW );
@@ -142,6 +144,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!(hwnd1)) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     WinSetPresParam( hwnd1, PP_FONTNAMESIZE, 7L, (PVOID)"8.Helv" );
     WinSetPresParam( hwnd1, PP_FOREGROUNDCOLORINDEX, (ULONG)sizeof(LONG),
@@ -168,6 +171,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!(hwnd2)) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     WinSetPresParam( hwnd2, PP_FONTNAMESIZE, 7L, (PVOID)"8.Helv" );
     WinSetPresParam( hwnd2, PP_FOREGROUNDCOLORINDEX, (ULONG)sizeof(LONG),
@@ -194,6 +198,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!hwnd3) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     WinSetPresParam( hwnd3, PP_FONTNAMESIZE, 7L, (PVOID)"8.Helv" );
     WinSetPresParam( hwnd3, PP_FOREGROUNDCOLORINDEX, (ULONG)sizeof(LONG),
@@ -221,6 +226,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!hwnd3) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     WinSetPresParam( hwnd3, PP_FONTNAMESIZE, 7L, (PVOID)"8.Helv" );
     WinSetPresParam( hwnd3, PP_FOREGROUNDCOLORINDEX, (ULONG)sizeof(LONG),
@@ -246,6 +252,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!client) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     *colours = client;
     WinSetPresParam( *colours, PP_BACKGROUNDCOLORINDEX, (ULONG)sizeof(RGB),
@@ -269,6 +276,7 @@ void PM_CreateColourCtrls( HWND hpar, HWND *colours, HWND *screenclrs,
     if(!frame_wnd) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
     *screenclrs = client;
     WinSetPresParam( frame_wnd, PP_BACKGROUNDCOLORINDEX, (ULONG)sizeof(RGB),
@@ -347,6 +355,7 @@ HWND PMNewDrawPad( img_node *node )
     if(!frame_wnd || !drawarea) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
 
     for (i=0; i < node->num_of_images; ++i) {
@@ -420,6 +429,7 @@ HWND PMCreateViewWin( HWND hviewwnd, BOOL foneview, int *showstate,
     if(!frame || !client) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
 
     h_adj = 2*WinQuerySysValue(HWND_DESKTOP, SV_CXBORDER) + 2 * BORDER_WIDTH;

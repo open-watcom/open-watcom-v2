@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include "rtdata.h"
@@ -38,7 +39,7 @@
 #include "printf.h"
 #include "fprtf.h"
 #include "orient.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "streamio.h"
 
 

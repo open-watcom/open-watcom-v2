@@ -28,7 +28,7 @@ using std::clog;
 #endif
 
 #ifndef _STREAMBUF_H_INCLUDED
- #include <streambu.h>
+ #include <streambuf.h>
 #endif
 
 #ifndef _ISTREAM_H_INCLUDED
@@ -55,7 +55,7 @@ using std::clog;
 #endif
 
 #ifndef _STREAMBUF_INCLUDED
- #include <streambu>
+ #include <streambuf>
 #endif
 
 #ifndef _ISTREAM_INCLUDED
@@ -74,12 +74,12 @@ enum {
 
 // **************************** PREDEFINED STREAMS ***************************
 
-namespace std {
+:include nsstd.sp
   _WPRTLINK extern istream _WCDATA cin;
   _WPRTLINK extern ostream _WCDATA cout;
   _WPRTLINK extern ostream _WCDATA cerr;
   _WPRTLINK extern ostream _WCDATA clog;
-}
+:include nsstdepi.sp
 
 #endif
 :endsegment

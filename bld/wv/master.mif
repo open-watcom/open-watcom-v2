@@ -30,6 +30,7 @@ os2pm = 1
 !include defrule.mif
 !include deftarg.mif
 
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 !include $(dig_dir)/trpcli.mif
@@ -79,7 +80,7 @@ extra_cpp_flags += -D__NOUI__
 !ifeq release 0
 extra_cpp_flags += -DAUI_DBG
 !endif
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING

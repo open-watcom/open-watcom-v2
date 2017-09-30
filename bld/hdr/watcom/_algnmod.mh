@@ -23,15 +23,15 @@
  #include <utility>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     // all_of( InputIterator, InputIterator, Predicate )
     // *************************************************
     template< class InputIterator, class Predicate >
     bool all_of( InputIterator first, InputIterator last, Predicate pred )
     {
         while( first != last ) {
-            if ( pred( *first ) == false ) return( false );
+            if( pred( *first ) == false )
+                return( false );
             ++first;
         }
         return( true );
@@ -43,7 +43,8 @@ namespace std {
     bool any_of( InputIterator first, InputIterator last, Predicate pred )
     {
         while( first != last ) {
-            if ( pred( *first ) == true ) return( true );
+            if( pred( *first ) == true )
+                return( true );
             ++first;
         }
         return( false );
@@ -55,7 +56,8 @@ namespace std {
     bool none_of( InputIterator first, InputIterator last, Predicate pred )
     {
         while( first != last ) {
-            if ( pred( *first ) == true ) return( false );
+            if( pred( *first ) == true )
+                return( false );
             ++first;
         }
         return( true );
@@ -189,7 +191,7 @@ namespace std {
     // find_first_of( Input, Input, Forward, Forward, BinaryPredicate )
     // ****************************************************************
     template< class InputIterator,
-              class ForwardIterator, 
+              class ForwardIterator,
               class BinaryPredictate >
     InputIterator find_first_of( InputIterator first1,
                                  InputIterator last1,
@@ -281,7 +283,7 @@ namespace std {
             ++first1; ++first2;
         }
         return( pair< InputIterator1, InputIterator2 >( first1, first2 ) );
-    } 
+    }
 
     // mismatch( InputIterator1, InputIterator1, InputIterator2, BinaryPredicate )
     //***************************************************************************
@@ -296,7 +298,7 @@ namespace std {
             ++first1; ++first2;
         }
         return( pair< InputIterator1, InputIterator2 >( first1, first2 ) );
-    } 
+    }
 
     // equal( InputIterator1, InputIterator1, InputIterator2 )
     // *******************************************************
@@ -419,14 +421,16 @@ namespace std {
             Size cnt = count;
             do {
                 ++a;
-                if ( --cnt == 0 ) return( first );
-                if ( a == last ) return( last );
-            } while ( pred( *a, value ) );
+                if( --cnt == 0 )
+                    return( first );
+                if( a == last ) {
+                    return( last );
+                }
+            } while( pred( *a, value ) );
             ++first;
         }
         return( last );
     }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

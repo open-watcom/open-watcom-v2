@@ -48,16 +48,16 @@
     };
 #pragma pack(pop)
 
-void FTSElement::setPages( size_t count )
+void FTSElement::setPages( std::size_t count )
 {
-    size_t elements( ( count + 7 ) / 8 );
+    std::size_t elements( ( count + 7 ) / 8 );
     pages.resize( elements );
     maxPage = count;
 }
 /***************************************************************************/
-void FTSElement::onPage( size_t i )
+void FTSElement::onPage( std::size_t i )
 {
-    size_t index( i / 8 );
+    std::size_t index( i / 8 );
     STD1::uint8_t mask( 0x80 >> ( i % 8 ) );
     if( !( pages[ index ] & mask ) ) {
         ++pageCount;
@@ -72,7 +72,7 @@ void FTSElement::build()
     else if( pageCount == maxPage )
         comp = ALL;
     else {
-        size_t score[ 5 ];
+        std::size_t score[ 5 ];
         score[ 0 ] = pageCount * sizeof( STD1::uint16_t );
         score[ 1 ] = ( maxPage - pageCount ) * sizeof( STD1::uint16_t );
         //find the last non-zero byte
@@ -97,10 +97,10 @@ void FTSElement::build()
             score[ 4 ] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
         }
         else
-            score[ 4 ] = static_cast< size_t >( -1 );
-        size_t index = 0;
+            score[ 4 ] = static_cast< std::size_t >( -1 );
+        std::size_t index = 0;
         dataSize = score[ 0 ];
-        for( size_t count = 1; count < sizeof( score ) / sizeof( size_t ); ++count ) {
+        for( std::size_t count = 1; count < sizeof( score ) / sizeof( std::size_t ); ++count ) {
             if( score[ count ] < dataSize ) {
                 dataSize = score[ count ];
                 index = count;
@@ -132,7 +132,7 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
     ConstPageIter tst( pages.begin() );
     ConstPageIter itr( pages.begin() + 1 );
     bool same( *itr == *tst  && *( itr + 1) == *tst  );
-    size_t sameCount( 2 );
+    std::size_t sameCount( 2 );
     while( itr != pages.end() ) {
         if( same ) {
             if( *itr != *tst ) {
@@ -158,11 +158,11 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
         else {
             if( *itr == *tst && itr + 1 != pages.end() && *( itr + 1 ) == *tst ) {
                 std::vector< STD1::uint8_t >::const_iterator byte( dif.begin() );
-                size_t difSize( dif.size() );
+                std::size_t difSize( dif.size() );
                 STD1::uint8_t code( 0xFF );
                 while( difSize > 128 ) {
                     rle.push_back( code );
-                    for( size_t count = 0; count <= 128; ++count ) {
+                    for( std::size_t count = 0; count <= 128; ++count ) {
                         rle.push_back( *byte );
                         ++byte;
                     }
@@ -174,7 +174,7 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
                     else
                         code = 0;
                     rle.push_back( code );
-                    for( size_t count = 0; count < difSize; ++count ) {
+                    for( std::size_t count = 0; count < difSize; ++count ) {
                         rle.push_back( *byte );
                         ++byte;
                     }
@@ -206,11 +206,11 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
     else {
         dif.push_back( *tst );
         std::vector< STD1::uint8_t >::const_iterator byte( dif.begin() );
-        size_t difSize( dif.size() );
+        std::size_t difSize( dif.size() );
         STD1::uint8_t code( 0xFF );
         while( difSize > 128 ) {
             rle.push_back( code );
-            for( size_t count = 0; count <= 128; ++count ) {
+            for( std::size_t count = 0; count <= 128; ++count ) {
                 rle.push_back( *byte );
                 ++byte;
             }
@@ -221,16 +221,16 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
         else
             code = 0;
         rle.push_back( code );
-        for( size_t count = 0; count < difSize; ++count ) {
+        for( std::size_t count = 0; count < difSize; ++count ) {
             rle.push_back( *byte );
             ++byte;
         }
     }
 }
 /***************************************************************************/
-size_t FTSElement::write( std::FILE *out, bool big ) const
+std::size_t FTSElement::write( std::FILE *out, bool big ) const
 {
-    size_t written( 0 );
+    std::size_t written( 0 );
     if( big ) {
         FTS16Header hdr;
         hdr.size = sizeof( FTS16Header );

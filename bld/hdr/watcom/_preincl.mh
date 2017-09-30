@@ -33,6 +33,8 @@
 #pragma include_alias( <unordered_map>,      <unorderm>   )
 #pragma include_alias( <unordered_set>,      <unorders>   )
 
+#pragma include_alias( <stdnoreturn.h>,      <stdnoret.h> )
+
 #define __STDC_LIB_EXT1__     200509L
 
 #endif /* __PREINCL_H_INCLUDED */

@@ -95,3 +95,6 @@ extern void         HideCursor( void );
 /* xmem.c */
 extern void         ExtendedMemoryInit( void );
 extern void         ExtendedMemoryFini( void );
+
+/* ui/windisp.c win/display.c */
+extern vi_rc        DisplayLineInWindow( window_id wid, int line, const char *text );

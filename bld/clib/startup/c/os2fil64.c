@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #define INCL_DOSMODULEMGR
 #include <wos2.h>
 #include "rtinit.h"

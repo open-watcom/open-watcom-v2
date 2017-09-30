@@ -33,8 +33,6 @@
 #include "guiwind.h"
 
 
-extern char GUIDefaultClassName[];
-
 char *GUIGetWindowClassName( void )
 {
     return( GUIDefaultClassName );

@@ -378,7 +378,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
         } else {
             char    sbuf[60];
 
-            sprintf( sbuf, "internal name length=%d is > %d (1)", str->len, ZZ_LEN_LIMIT );
+            sprintf( sbuf, "internal name length=%d is > %d (1)", (int)str->len, ZZ_LEN_LIMIT );
             CFatal( sbuf );
         }
         appendStrWithLen( str->string, str->len );
@@ -1108,12 +1108,12 @@ NAME CppNameThrowRo(            // NAME OF THROW R/O BLOCK
     return( mangledNameType( type, IN_NAME_THROW_RO ) );
 }
 
-static const char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
-    CGOP oper )                 // - operator
+static const char *cppNameCgop(     // PRODUCE PRINTABLE OPERATOR NAME
+    CGOP oper )                     // - operator
 {
-    const char *name;                 // - name
+    const char *name;               // - name
 
-    static const char *opNames[] = {   // - opcode long names
+    static const char * const opNames[] = {   // - opcode long names
         #include "ppopslnm.h"
     };
 

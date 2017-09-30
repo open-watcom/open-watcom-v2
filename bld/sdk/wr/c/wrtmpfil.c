@@ -39,7 +39,6 @@
 #include <direct.h>
 #include <errno.h>
 #include "wio.h"
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
@@ -68,6 +67,8 @@ bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
     size_t      len;
 
     fh = NULL;
+    s = 0;
+    len = 0;
     ok = ( fname != NULL && data != NULL && size != NULL );
 
     if( ok ) {
@@ -109,15 +110,15 @@ bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
     return( ok );
 }
 
-int WRAPI WRDeleteFile( const char *name )
+bool WRAPI WRDeleteFile( const char *name )
 {
     if( name != NULL && WRFileExists( name ) ) {
-        return( !remove( name ) );
+        return( remove( name ) == 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
-int WRAPI WRFileExists( const char *name )
+bool WRAPI WRFileExists( const char *name )
 {
     return( name != NULL && access( name, R_OK ) == 0 );
 }
@@ -175,13 +176,13 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
     return( ok );
 }
 
-int WRAPI WRRenameFile( const char *new, const char *old )
+bool WRAPI WRRenameFile( const char *new, const char *old )
 {
     char     new_drive[_MAX_DRIVE];
     char     old_drive[_MAX_DRIVE];
 
     if( new == NULL || old == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     _splitpath( new, new_drive, NULL, NULL, NULL );
@@ -191,14 +192,14 @@ int WRAPI WRRenameFile( const char *new, const char *old )
         if( WRCopyFile( new, old ) ) {
             return( WRDeleteFile( old ) );
         } else {
-            return( FALSE );
+            return( false );
         }
     } else {
         if( rename( old, new ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
         LastError = errno;
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -251,38 +252,34 @@ void WRAPI WRFreeTempFileName( char *name )
 
 char * WRAPI WRGetTempFileName( const char *ext )
 {
-    char    *buf;
-    char    tname[L_tmpnam];
-    char    *dir;
-    size_t  len;
-    char    fn_path[_MAX_PATH + 1];
-    char    fn_drive[_MAX_DRIVE];
-    char    fn_dir[_MAX_DIR];
-    char    fn_name[_MAX_FNAME];
-    char    fn_ext[_MAX_EXT];
-    int     no_tmp;
+    char        *buf;
+    char        tname[L_tmpnam];
+    const char  *dir;
+    size_t      len;
+    char        fn_path[_MAX_PATH + 1];
+    char        fn_drive[_MAX_DRIVE];
+    char        fn_dir[_MAX_DIR];
+    char        fn_name[_MAX_FNAME];
+    char        fn_ext[_MAX_EXT];
 
     if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
         (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {
-        no_tmp = FALSE;
+        strncpy( fn_path, dir, _MAX_PATH );
+        fn_path[_MAX_PATH] = '\0';
     } else {
-        dir = getcwd( (char *)NULL, 0 );
-        no_tmp = TRUE;
+        dir = getcwd( fn_path, sizeof( fn_path ) );
+        if( dir == NULL ) {
+            fn_path[0] = '\0';
+        }
     }
-
-    len = strlen( dir );
-    memcpy( fn_path, dir, len + 1 );
-    if( fn_path[len - 1] != '\\' && fn_path[len - 1] != '/' ) {
+    len = strlen( fn_path );
+    if( len > 0 && fn_path[len - 1] != '\\' && fn_path[len - 1] != '/' ) {
         fn_path[len] = '\\';
         fn_path[len + 1] = '\0';
     }
 
     if( dir != NULL ) {
         _splitpath( fn_path, fn_drive, fn_dir, NULL, NULL );
-        if( no_tmp ) {
-            fn_dir[0] = '\0';
-            free( dir );
-        }
     } else {
         fn_drive[0] = '\0';
         fn_dir[0] = '\0';

@@ -82,15 +82,15 @@ static sys_error        SysErrors[MAX_ERRORS];
 static error_handle     ErrRover;
 static error_handle     LastErr;
 
-const char  *RealFName( char const *name, open_access *loc )
+const char  *RealFName( char const *name, obj_attrs *oattrs )
 {
-    *loc &= ~(OP_REMOTE|OP_LOCAL);
+    *oattrs &= ~(OP_REMOTE | OP_LOCAL);
     if( name[0] == LOC_ESCAPE ) {
         if( (name[1] | 0x20) == REMOTE_LOC ) {
-            *loc |= OP_REMOTE;
+            *oattrs |= OP_REMOTE;
             name += 2;
         } else if( (name[1] | 0x20) == LOCAL_LOC ) {
-            *loc |= OP_LOCAL;
+            *oattrs |= OP_LOCAL;
             name += 2;
         } else if( name[1] == LOC_ESCAPE ) {
             name += 1;
@@ -99,43 +99,43 @@ const char  *RealFName( char const *name, open_access *loc )
     return( name );
 }
 
-static open_access DefaultLoc( open_access loc )
+static obj_attrs DefaultLoc( obj_attrs oattrs )
 {
-    if( (loc & (OP_REMOTE|OP_LOCAL) ) == 0 ) {
+    if( (oattrs & (OP_REMOTE | OP_LOCAL) ) == 0 ) {
         if( _IsOn( SW_REMOTE_FILES ) ) {
-            loc |= OP_REMOTE;
+            oattrs |= OP_REMOTE;
         } else {
-            loc |= OP_LOCAL;
+            oattrs |= OP_LOCAL;
         }
     }
-    if( (loc & OP_REMOTE) && !HaveRemoteFiles() ) {
-        loc &= ~OP_REMOTE;
-        loc |= OP_LOCAL;
+    if( (oattrs & OP_REMOTE) && !HaveRemoteFiles() ) {
+        oattrs &= ~OP_REMOTE;
+        oattrs |= OP_LOCAL;
     }
-    return( loc );
+    return( oattrs );
 }
 
-const char  *FileLoc( char const *name, open_access *loc )
+const char  *FileLoc( char const *name, obj_attrs *oattrs )
 {
-    open_access ind;
+    obj_attrs   oattrs_file;
 
-    ind = 0;
-    name = RealFName( name, &ind );
-    if( ind != 0 ) {
-        *loc &= ~(OP_LOCAL|OP_REMOTE);
-        *loc |= ind;
+    oattrs_file = 0;
+    name = RealFName( name, &oattrs_file );
+    if( oattrs_file ) {
+        *oattrs &= ~(OP_LOCAL | OP_REMOTE);
+        *oattrs |= oattrs_file;
     }
-    *loc = DefaultLoc( *loc );
+    *oattrs = DefaultLoc( *oattrs );
     return( name );
 }
 
 
-static file_components *PathInfo( char const *path, open_access loc )
+static const file_components *PathInfo( char const *path, obj_attrs oattrs )
 {
-    file_components     *info;
+    const file_components   *info;
 
-    FileLoc( path, &loc );
-    if( loc & OP_LOCAL ) {
+    FileLoc( path, &oattrs );
+    if( oattrs & OP_LOCAL ) {
         info = &LclFile;
     } else {
         info = &RemFile;
@@ -186,7 +186,7 @@ size_t WriteStream( file_handle fh, const void *b, size_t l )
 
 size_t WriteNL( file_handle fh )
 {
-    char    *nl;
+    const char      *nl;
 
     if( ISREMOTE( fh ) ) {
         nl = RemFile.newline;
@@ -215,28 +215,28 @@ unsigned long SeekStream( file_handle fh, long p, seek_method m )
     }
 }
 
-file_handle FileOpen( const char *name, open_access o )
+file_handle FileOpen( const char *name, obj_attrs oattrs )
 {
     sys_handle  sys;
     file_handle fh;
 
-    if( o & OP_SEARCH ) {
+    if( oattrs & OP_SEARCH ) {
         return( PathOpen( name, strlen( name ), "" ) );
     }
-    name = FileLoc( name, &o );
+    name = FileLoc( name, &oattrs );
     fh = FindFreeHandle();
     if( fh == NIL_HANDLE )
         return( NIL_HANDLE );
-    if( o & OP_REMOTE ) {
+    if( oattrs & OP_REMOTE ) {
         SETREMOTE( fh );
-        sys = RemoteOpen( name, o );
+        sys = RemoteOpen( name, oattrs );
     } else {
-        sys = LocalOpen( name, o );
+        sys = LocalOpen( name, oattrs );
     }
     if( sys == NIL_SYS_HANDLE )
         return( NIL_HANDLE );
     SYSHANDLE( fh ) = sys;
-    if( o & OP_APPEND )
+    if( oattrs & OP_APPEND )
         SeekStream( fh, 0, DIO_SEEK_END );
     return( fh );
 }
@@ -255,10 +255,10 @@ error_handle FileClose( file_handle fh )
 }
 
 
-error_handle FileRemove( char const *name, open_access loc )
+error_handle FileRemove( char const *name, obj_attrs oattrs )
 {
-    name = FileLoc( name, &loc );
-    if( loc & OP_REMOTE ) {
+    name = FileLoc( name, &oattrs );
+    if( oattrs & OP_REMOTE ) {
         return( RemoteErase( name ) );
     } else {
         return( LocalErase( name ) );
@@ -273,7 +273,7 @@ void WriteToPgmScreen( const void *buff, size_t len )
     RemoteWriteConsole( buff, len );
 }
 
-open_access FileHandleInfo( file_handle fh )
+obj_attrs FileHandleInfo( file_handle fh )
 {
     if( ISREMOTE( fh ) )
         return( OP_REMOTE );
@@ -293,7 +293,7 @@ char *SysErrMsg( error_handle errh, char *buff )
     return( buff + strlen( buff ) );
 }
 
-error_handle StashErrCode( sys_error syserr, open_access loc )
+error_handle StashErrCode( sys_error syserr, obj_attrs oattrs )
 {
     error_handle    errh;
 
@@ -303,7 +303,7 @@ error_handle StashErrCode( sys_error syserr, open_access loc )
         ErrRover = 0;
     errh = ErrRover + 1;
     SYSERROR( errh ) = syserr;
-    if( loc & OP_REMOTE )
+    if( oattrs & OP_REMOTE )
         SETREMOTE( errh );
     LastErr = errh;
     return( errh );
@@ -331,24 +331,25 @@ sys_handle GetSystemHandle( file_handle fh )
 
 bool IsAbsolutePath( const char *path )
 {
-    file_components     *info;
-    const char          *p;
-    open_access         loc;
+    const file_components   *info;
+    const char              *p;
+    obj_attrs               oattrs;
 
-    p = RealFName( path, &loc );
-    info = PathInfo( p, loc );
+    oattrs = 0;
+    p = RealFName( path, &oattrs );
+    info = PathInfo( p, oattrs );
     if( strlen( p ) == 0 )
         return( false );
     return( CHECK_PATH_ABS( p, info ) );
 }
 
-char *AppendPathDelim( char *path, open_access loc )
+char *AppendPathDelim( char *path, obj_attrs oattrs )
 {
-    file_components     *info;
-    size_t              len;
-    char                *end;
+    const file_components   *info;
+    size_t                  len;
+    char                    *end;
 
-    info = PathInfo( path, loc );
+    info = PathInfo( path, oattrs );
     len = strlen( path );
     end = path + len;
     if( len == 0 || !CHECK_PATH_SEP( end[-1], info ) ) {
@@ -357,14 +358,14 @@ char *AppendPathDelim( char *path, open_access loc )
     return( end );
 }
 
-const char  *SkipPathInfo( char const *path, open_access loc )
+const char  *SkipPathInfo( char const *path, obj_attrs oattrs )
 {
-    file_components     *info;
-    const char          *name;
-    char                c;
+    const file_components   *info;
+    const char              *name;
+    char                    c;
 
     name = path;
-    info = PathInfo( path, loc );
+    info = PathInfo( path, oattrs );
     while( (c = *path++) != NULLCHAR ) {
         if( CHECK_PATH_SEP( c, info ) ) {
             name = path;
@@ -374,15 +375,15 @@ const char  *SkipPathInfo( char const *path, open_access loc )
 }
 
 
-const char  *ExtPointer( char const *path, open_access loc )
+const char  *ExtPointer( char const *path, obj_attrs oattrs )
 {
-    file_components     *info;
-    const char          *p;
-    const char          *end;
-    char                c;
+    const file_components   *info;
+    const char              *p;
+    const char              *end;
+    char                    c;
 
     p = end = path + strlen( path );
-    info = PathInfo( path, loc );
+    info = PathInfo( path, oattrs );
     for( ;; ) {
         c = *--p;
         if( p < path )
@@ -396,41 +397,41 @@ const char  *ExtPointer( char const *path, open_access loc )
 }
 
 
-size_t MakeFileName( char *result, const char *name, const char *ext, open_access loc )
+size_t MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs )
 {
-    file_components     *info;
-    char                *p;
+    const file_components   *info;
+    char                    *p;
 
     p = StrCopy( name, result );
-    if( *ExtPointer( result, loc ) == NULLCHAR ) {
-        info = PathInfo( name, loc );
+    if( *ExtPointer( result, oattrs ) == NULLCHAR ) {
+        info = PathInfo( name, oattrs );
         *p++ = info->ext_separator;
         p = StrCopy( ext, p );
     }
     return( p - result );
 }
 
-static size_t MakeNameWithPath( open_access loc,
+static size_t MakeNameWithPath( obj_attrs oattrs,
                                 const char *path, size_t plen,
                                 const char *name, size_t nlen, char *res )
 {
-    file_components     *info;
-    char                *p;
+    const file_components   *info;
+    char                    *p;
 
     p = res;
-    if( loc & OP_REMOTE ) {
+    if( oattrs & OP_REMOTE ) {
         *p++ = LOC_ESCAPE;
         *p++ = REMOTE_LOC;
-    } else if( loc & OP_LOCAL ) {
+    } else if( oattrs & OP_LOCAL ) {
         *p++ = LOC_ESCAPE;
         *p++ = LOCAL_LOC;
     } else {
-        loc = DefaultLoc( loc );
+        oattrs = DefaultLoc( oattrs );
     }
     if( path != NULL ) {
         memcpy( p, path, plen );
         p += plen;
-        if( loc & OP_LOCAL ) {
+        if( oattrs & OP_LOCAL ) {
             info = &LclFile;
         } else {
             info = &RemFile;
@@ -476,27 +477,27 @@ file_handle LclStringToFullName( const char *name, size_t len, char *full )
 static file_handle FullPathOpenInternal( const char *name, size_t name_len, const char *ext,
                                     char *result, size_t max_result, bool force_local )
 {
-    char        buffer[TXT_LEN];
-    char        *p;
-    const char  *p1;
-    open_access loc;
-    bool        have_ext;
-    bool        have_path;
-    file_components *file;
-    file_handle fh;
-    char        c;
+    char                    buffer[TXT_LEN];
+    char                    *p;
+    const char              *p1;
+    obj_attrs               oattrs;
+    bool                    have_ext;
+    bool                    have_path;
+    const file_components   *file;
+    file_handle             fh;
+    char                    c;
 
-    loc = 0;
-    p1 = FileLoc( name, &loc );
+    oattrs = 0;
+    p1 = FileLoc( name, &oattrs );
     name_len -= p1 - name;
     name = p1;
     have_ext = false;
     have_path = false;
     if( force_local ) {
-        loc &= ~OP_REMOTE;
-        loc |= OP_LOCAL;
+        oattrs &= ~OP_REMOTE;
+        oattrs |= OP_LOCAL;
     }
-    if( loc & OP_LOCAL ) {
+    if( oattrs & OP_LOCAL ) {
         file = &LclFile;
     } else {
         file = &RemFile;
@@ -517,7 +518,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
         p = StrCopy( ext, p );
     }
     *p = NULLCHAR;
-    if( loc & OP_REMOTE ) {
+    if( oattrs & OP_REMOTE ) {
         RemoteStringToFullName( false, buffer, result, (trap_elen)max_result );
         fh = FileOpen( result, OP_READ | OP_REMOTE );
     } else if( have_path ) {
@@ -529,7 +530,7 @@ static file_handle FullPathOpenInternal( const char *name, size_t name_len, cons
     if( fh == NIL_HANDLE ) {
         strcpy( result, buffer );
     } else {
-        p1 = RealFName( result, &loc );
+        p1 = RealFName( result, &oattrs );
         memmove( result, p1, strlen( p1 ) + 1 );
     }
     return( fh );
@@ -567,21 +568,21 @@ file_handle LocalPathOpen( const char *name, size_t name_len, const char *ext )
 }
 
 #if !defined( BUILD_RFX )
-static bool IsWritable( char const *name, open_access loc )
+static bool IsWritable( char const *name, obj_attrs oattrs )
 {
     file_handle     fh;
 
-    fh = FileOpen( name, OP_READ | loc );
+    fh = FileOpen( name, oattrs | OP_READ );
     if( fh == NIL_HANDLE ) {
-        fh = FileOpen( name, OP_WRITE | OP_CREATE | loc );
+        fh = FileOpen( name, oattrs | OP_WRITE | OP_CREATE );
         if( fh != NIL_HANDLE ) {
             FileClose( fh );
-            FileRemove( name, loc );
+            FileRemove( name, oattrs );
             return( true );
         }
     } else {
         FileClose( fh );
-        fh = FileOpen( name, OP_WRITE | loc );
+        fh = FileOpen( name, oattrs | OP_WRITE );
         if( fh != NIL_HANDLE ) {
             FileClose( fh );
             return( true );
@@ -596,27 +597,27 @@ bool FindWritable( char const *src, char *dst )
     size_t      plen;
     size_t      nlen;
     const char  *name;
-    open_access loc;
+    obj_attrs   oattrs;
 
-    loc = 0;
-    src = RealFName( src, &loc );
-    if( IsWritable( src, loc ) ) {
+    oattrs = 0;
+    src = RealFName( src, &oattrs );
+    if( IsWritable( src, oattrs ) ) {
         StrCopy( src, dst );
         return( true );
     }
-    name = SkipPathInfo( src, loc );
+    name = SkipPathInfo( src, oattrs );
     nlen = strlen( name );
-    if( DefaultLoc( loc ) & OP_LOCAL ) {
+    if( DefaultLoc( oattrs ) & OP_LOCAL ) {
         plen = DUIEnvLkup( "HOME", buffer, sizeof( buffer ) );
         if( plen > 0 ) {
-            MakeNameWithPath( loc, buffer, plen, name, nlen, dst );
-            if( IsWritable( dst, loc ) ) {
+            MakeNameWithPath( oattrs, buffer, plen, name, nlen, dst );
+            if( IsWritable( dst, oattrs ) ) {
                 return( true );
             }
         }
     }
-    MakeNameWithPath( loc, NULL, 0, name, nlen, dst );
-    return( IsWritable( dst, loc ) );
+    MakeNameWithPath( oattrs, NULL, 0, name, nlen, dst );
+    return( IsWritable( dst, oattrs ) );
 }
 #endif
 

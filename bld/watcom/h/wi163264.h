@@ -46,18 +46,10 @@
 
 #if defined( _M_I86 )
 
-#define FARstricmp          _fstricmp
-#define FARstrcpy           _fstrcpy
-#define FARmemcpy           _fmemcpy
-
 #define INT_PTR             int
 #define UINT_PTR            unsigned int
 
 #else   /* __WINDOWS_386__ */
-
-#define FARstricmp          stricmp
-#define FARstrcpy           strcpy
-#define FARmemcpy           memcpy
 
 #define INT_PTR             short
 #define UINT_PTR            unsigned short
@@ -69,6 +61,7 @@
 
 #define BST_UNCHECKED       0
 #define BST_CHECKED         1
+#define BST_PUSHED          4
 
 #define GET_HINSTANCE(hwnd)                     (HINSTANCE)GetWindowWord( hwnd, GWW_HINSTANCE )
 #define GET_WNDPROC(hwnd)                       GetWindowLong( hwnd, GWL_WNDPROC )
@@ -118,10 +111,6 @@
 
 #define __FAR
 #define WINMAINENTRY        WINAPI
-
-#define FARstricmp          stricmp
-#define FARstrcpy           strcpy
-#define FARmemcpy           memcpy
 
 #define GET_WNDLONGPTR(hwnd, offs)              GetWindowLongPtr( hwnd, offs )
 #define SET_WNDLONGPTR(hwnd, offs, data)        SetWindowLongPtr( hwnd, offs, data )

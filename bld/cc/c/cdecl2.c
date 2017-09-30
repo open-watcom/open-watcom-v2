@@ -168,9 +168,12 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
-    sym->attribs.rent = false;   // Assume not override aka re-entrant
+    sym->attribs.rent = false;      /* Assume not override aka re-entrant */
     if( CompFlags.rent && (sym->attribs.declspec == DECLSPEC_DLLIMPORT) ) {
         sym->attribs.rent = true;
+    }
+    if( (sym->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
+        sym->mods |= FLAG_FARSS;    /* interrupts always use far stack */
     }
     if( stg_class == SC_REGISTER ||
         stg_class == SC_AUTO ||
@@ -229,8 +232,18 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             if( (sym->mods & FLAG_INLINE) != (old_sym.mods & FLAG_INLINE) ) {
                 old_sym.mods |= FLAG_INLINE;    //either is inline
             }
+            if( (sym->mods & FLAG_ABORTS) != (old_sym.mods & FLAG_ABORTS) ) {
+                if( sym->mods & FLAG_ABORTS ) {
+                    CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
+                }
+            }
             if( (sym->mods & FLAG_NORETURN) != (old_sym.mods & FLAG_NORETURN) ) {
                 if( sym->mods & FLAG_NORETURN ) {
+                    CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
+                }
+            }
+            if( (sym->mods & FLAG_FARSS) != (old_sym.mods & FLAG_FARSS) ) {
+                if( sym->mods & FLAG_FARSS ) {
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                 }
             }
@@ -527,54 +540,6 @@ new_var:
     return( sym_handle );
 }
 
-static void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
-{
-    TYPEPTR     typ;
-
-    if( decl_mod ) {
-        typ = sym->sym_type;
-        if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (sym->mods & MASK_LANGUAGES) != decl_mod ) {
-                if( sym->mods & MASK_LANGUAGES ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    sym->mods |= decl_mod;
-                    if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                        if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
-                        } else {
-                            sym->sym_type = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                        }
-                    }
-                }
-            }
-        } else {
-            TYPEPTR     *xtyp;
-
-            xtyp = &sym->sym_type;
-            while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {
-                xtyp = &typ->object;
-                typ = typ->object;
-            }
-            if( typ->decl_type == TYPE_FUNCTION ) {
-                if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                    if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                        CErr1( ERR_INVALID_DECLSPEC );
-                    } else {
-                        *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                    }
-                }
-            } else {
-                if( sym->mods & MASK_LANGUAGES ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    sym->mods |= decl_mod;
-                }
-            }
-        }
-    }
-}
-
 static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl_state *state )
 {
     SYM_HANDLE      sym_handle;
@@ -620,7 +585,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         }
         VfyNewSym( sym->info.hash, sym->name );
         sym->attribs.stg_class = info->stg;
-        AdjSymTypeNode( sym, info->decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         sym_handle = SymAdd( sym->info.hash, sym );
     } else {
         sym->attribs.declspec = info->decl;
@@ -634,7 +599,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                  CErr1( ERR_INVALID_DECLSPEC );
             }
         }
-        AdjSymTypeNode( sym, info->decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         if( typ->decl_type == TYPE_FUNCTION ) {
             sym_handle = FuncDecl( sym, info->stg, state );
         } else {
@@ -1068,7 +1033,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             typ = BPtrNode( typ, flags, info->segid, sym_handle, info->based_kind );
             sym_handle = SYM_NULL;
             info->segid = SEG_UNKNOWN;  // start over
-            info->modifier = (flags & (FLAG_INLINE|FLAG_NORETURN)) | TypeQualifier();  // .. * const
+            info->modifier = (flags & (FLAG_INLINE | FLAG_ABORTS | FLAG_NORETURN)) | TypeQualifier();  // .. * const
             info->based_kind = BASED_NONE;
         } else {
             break;
@@ -1527,7 +1492,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             }
         }
         sym->attribs.stg_class = stg_class;
-        AdjSymTypeNode( sym, info.decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info.decl_mod, sym );
         AdjParmType( sym );
         parmlist = NewParm( sym->sym_type, parmlist );
         if( parm_count == 0 ) {

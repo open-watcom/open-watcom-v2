@@ -43,7 +43,8 @@
 , dfnRKD( RKD_VOID      )   \
 , dfnRKD( RKD_MEMBPTR   )   \
 , dfnRKD( RKD_ELLIPSIS  )   \
-, dfnRKD( RKD_GENERIC   )
+, dfnRKD( RKD_GENERIC   )   \
+, dfnRKD( RKD_NULLPTR   )
 
 #define dfnRKD(a) a
 typedef enum                    // RKD -- kind of ranking for a type

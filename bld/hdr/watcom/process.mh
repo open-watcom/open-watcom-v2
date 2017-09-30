@@ -21,7 +21,6 @@
 :include cpluspro.sp
 
 :include wchar_t.sp
-
 /*
  *  POSIX 1003.1 Prototypes
  */
@@ -69,7 +68,7 @@ extern pid_t qnx_spawn( int __mode, struct _proc_spawn *__msgbuf, nid_t __node,
                  const char *__path, char **__argv, char **__envp,
                  char *__iov, int __ctfd );
 
-#if defined(__386__)
+#ifdef __386__
 extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*), void *__arg, int __flags );
 #endif
 
@@ -86,7 +85,7 @@ _WCRTDATA extern int __p_overlay;
 #define P_NOWAITO   3
 #define _P_NOWAITO  3
 
-#if defined(__NT__)
+#ifdef __NT__
 #define P_DETACH    4
 #define _P_DETACH   4
 #endif
@@ -104,15 +103,15 @@ _WCRTLINK extern int    _execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 
 :segment QNX | LINUX
-#if defined(__386__)
- _WCRTLINK extern int   _beginthread( void (*__start_address)(void *),
+#ifdef __386__
+ _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );
 :elsesegment
-#if defined(_M_I86)
+#ifdef _M_I86
  _WCRTLINK extern int _WCFAR  _beginthread(
-    void (_WCFAR *__start_address)(void _WCFAR *),
+    void (_WCCALLBACK _WCFAR *__start_address)(void _WCFAR *),
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void _WCFAR _endthread( void );
@@ -122,9 +121,9 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
           _beginthread( __sa, __chkstack(__sb), __ss, __al )
  #endif
 #else
- #if defined(__NT__)
+ #ifdef __NT__
   _WCRTLINK extern unsigned long _beginthread(
-                void (*__start_address)(void *),
+                void (_WCCALLBACK *__start_address)(void *),
                 unsigned __stack_size, void *__arglist );
   _WCRTLINK extern unsigned long _beginthreadex( void *__security,
                 unsigned __stack_size,
@@ -135,11 +134,11 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 :include thrdhndl.sp
  #elif defined(__RDOS__) || defined(__RDOSDEV__)
   _WCRTLINK extern int  _beginthread(
-                void (*__start_address)(void *), int prio,
+                void (_WCCALLBACK *__start_address)(void *), int prio,
                 const char *thread_name,
                 unsigned __stack_size, void *__arglist );
  #else
-  _WCRTLINK extern int  _beginthread( void (*__start_address)(void *),
+  _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
   #pragma intrinsic(_beginthread)
  #endif
@@ -215,11 +214,11 @@ _WCRTLINK extern int    _wspawnvpe( int __mode, const wchar_t *__path, const wch
 _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 
 :segment DOS
-#if defined(__NT__)
+#ifdef __NT__
  // For use when access to the DLL startup is required.
  // this function pointer will be called after the C library startup
  // and before the C++ library startup.
- #if defined(_WINDOWS_)
+ #ifdef _WINDOWS_
   extern BOOL (WINAPI   *_pRawDllMain)( HANDLE, DWORD, LPVOID );
  #else
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );

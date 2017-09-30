@@ -31,21 +31,20 @@
 
 
 #include "cpplib.h"
-#include <string.h>
+#include <cstring>
 #include "rtexcept.h"
 #include "exc_pr.h"
 #include "rtmsgs.h"
-#include "lock.h"
 
 
 typedef struct free_area FREE_AREA;
 struct free_area                // FREE_AREA -- freed area in exception area
 {
     FREE_AREA *next;            // - next free block -- MUST BE FIRST FIELD
-    size_t size;                // - size of free area
+    std::size_t size;           // - size of free area
 #if 0   // removed since it is never used (AFS 12-19-97)
 #ifdef __SW_BM
-    __lock _semaphore;           // - semaphore for area
+    __lock _semaphore;          // - semaphore for area
 #endif
 #endif
 };
@@ -53,7 +52,8 @@ struct free_area                // FREE_AREA -- freed area in exception area
 
 typedef struct exc_area EXC_AREA;
 struct exc_area                 // ENTIRE AREA
-{   size_t size;                // - size of area
+{
+    std::size_t size;           // - size of area
     FREE_AREA *freed;           // - freed blocks - NULL only at start
 #ifdef __SW_BM
     __lock semaphore;           // - semaphore for area
@@ -89,13 +89,13 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
         fr->size = __EXC_AREA.size - sizeof( EXC_AREA );
         __EXC_AREA.freed = fr;
 #ifndef NDEBUG
-        memset( (char*)fr + sizeof(FREE_AREA)
+        std::memset( (char*)fr + sizeof(FREE_AREA)
               , 0xEF
               , fr->size - sizeof(FREE_AREA) );
 #endif
     }
     sig = CPPLIB( ts_refed )( throw_ro->cnvs[0].signature );
-    size = CPPLIB( ts_size )( sig ) + SIZEOF_HDR + sizeof( size_t );
+    size = CPPLIB( ts_size )( sig ) + SIZEOF_HDR + sizeof( std::size_t );
     if( size < sizeof( FREE_AREA ) ) {
         size = sizeof( FREE_AREA );
     }
@@ -125,8 +125,8 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
 #ifdef __SW_BM
     __EXC_AREA.semaphore.v();
 #endif
-    *(size_t*)active = size;
-    active = (ACTIVE_EXC*)( (char*)active + sizeof( size_t ) );
+    *(std::size_t *)active = size;
+    active = (ACTIVE_EXC*)( (char*)active + sizeof( std::size_t ) );
     active->exc_area = &__EXC_AREA;
     thr = rtc->thr;
     active->prev = thr->excepts;
@@ -140,7 +140,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
     switch( sig->hdr.type ) {
       case THROBJ_SCALAR :
       case THROBJ_PTR_FUN :
-        memcpy( active->data, object, sig->scalar.size );
+        std::memcpy( active->data, object, sig->scalar.size );
         break;
       case THROBJ_CLASS :
       { _EXC_PR_FREE marker( rtc, 0, EXCSTATE_CTOR, active );
@@ -155,7 +155,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
       case THROBJ_PTR_CLASS :
       case THROBJ_PTR_SCALAR :
       case THROBJ_VOID_STAR :
-        memcpy( active->data, object, sizeof( void* ) );
+        std::memcpy( active->data, object, sizeof( void* ) );
         size = sizeof( void* );
         break;
       default :
@@ -185,10 +185,10 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
 #ifdef __SW_BM
     exc_area->semaphore.p();
 #endif
-    done = (FREE_AREA*)( (char*)active - sizeof( size_t ) );
-    done->size = *(size_t*)done;
+    done = (FREE_AREA*)( (char *)active - sizeof( std::size_t ) );
+    done->size = *(std::size_t *)done;
 #ifndef NDEBUG
-    memset( (char*)done + sizeof(FREE_AREA)
+    std::memset( (char*)done + sizeof(FREE_AREA)
           , 0xEF
           , done->size - sizeof(FREE_AREA) );
 #endif

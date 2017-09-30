@@ -61,7 +61,6 @@ typedef enum                    // TYPES OF DISPATCHABILITIES
 // Commands referenced from state-variable table
 //************************************************************************
 
-
 struct RT_ARRAY_INIT                    // RT_ARRAY_INIT: array being init'ed
 {   void* array;                        // - addr[ array ]
     RT_TYPE_SIG sig;                    // - type signature
@@ -103,7 +102,7 @@ struct DTOR_CMD_TRY                     // DTOR_CMD: TRY
 {   DTOR_CMD_BASE base;                 // - base
     DTOR_CMD_BASE base_catch;           // - base: catch
     AlignPad2
-    RT_STATE_VAR state;                 // - state preceding try
+    RT_STATE_VAR state_var;             // - state preceding try
     offset_t jmp_buf;                   // - RW-offset[ longjmp jmp_buf ]
     offset_t offset;                    // - RW-offset[ try variable ]
     offset_t count;                     // - number of catch blocks
@@ -137,7 +136,7 @@ struct DTOR_CMD_ARRAY_INIT              // DTOR_CMD: ARRAY_INIT
 };
 
 typedef void (*pFunDelete1)( void* );
-typedef void (*pFunDelete2)( void*, size_t );
+typedef void (*pFunDelete2)( void*, std::size_t );
 union pFunDelete {
     pFunDelete1 delete_1;
     pFunDelete2 delete_2;
@@ -154,8 +153,8 @@ struct DTOR_CMD_DLT_2                   // DTOR_CMD: DTC_DLT_..._2
 {   DTOR_CMD_BASE base;                 // - base
     AlignPad1
     offset_t offset;                    // - offset to ptr to area
-    pFunDelete2 op_del;                 // - operator delete( void*, size_t );
-    size_t size;                        // - size of object
+    pFunDelete2 op_del;                 // - operator delete( void*, std::size_t );
+    std::size_t size;                   // - size of object
 };
 
 union DTOR_CMD                          // DTOR_CMD: one of
@@ -168,7 +167,7 @@ union DTOR_CMD                          // DTOR_CMD: one of
     DTOR_CMD_COMPONENT component;       // - component of object
     DTOR_CMD_ARRAY_INIT array_init;     // - array being initialized
     DTOR_CMD_DLT_1 delete_1;            // - delete: operator delete(void*)
-    DTOR_CMD_DLT_2 delete_2;            // - delete: operator delete(void*,size_t)
+    DTOR_CMD_DLT_2 delete_2;            // - delete: operator delete(void*,std::size_t)
     DTOR_CMD_CTOR_TEST ctor_test;       // - ctor-test
 };
 
@@ -415,7 +414,6 @@ struct DISPATCH_EXC             // DISPATCH_EXC -- dispatch control
 #endif
 };
 
-
 //************************************************************************
 // PROTOTYPES
 //************************************************************************
@@ -587,10 +585,6 @@ void CPPLIB( PdUnwind )         // UNWIND USING PROCEDURE DESCRIPTORS
     ( FsExcRec* exc_rec )       // - exception record
 ;
 #endif
-_WPRTLINK
-void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
-    void )
-;
 RO_STATE* CPPLIB( stab_entry )  // GET ENTRY FOR STATE VARIABLE
     ( RO_DTREG* ro              // - R/O entry
     , RT_STATE_VAR state_var )  // - state variable
@@ -608,15 +602,23 @@ RO_STATE* CPPLIB( stab_trav_move )( // MOVE TO NEXT ACTUAL POSITION
 RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
     ( STAB_TRAVERSE* ctl )      // - control for travsersal
 ;
+
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
+;
+_WPRTLINK
+_WCNORETURN
+void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
+    void )
 ;
 
 #ifdef RW_REGISTRATION

@@ -31,11 +31,12 @@
 
 
 #ifndef _LOCK_H_INCLUDED
+#define _LOCK_H_INCLUDED
+
 #ifdef __SW_BM
 
 #include "sema4.h"
 
-//#include <stddef.h>
 #define  __lock_first( __a, __b )  ((__a) < (__b) ? (__a) : (__b))
 #define  __lock_second( __a, __b ) ((__a) > (__b) ? (__a) : (__b))
 
@@ -61,6 +62,6 @@ private:
 };
 #endif
 
-#endif
-#define _LOCK_H_INCLUDED
+#endif  /* __SW_BM */
+
 #endif

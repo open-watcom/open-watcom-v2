@@ -31,8 +31,6 @@
 
 
 #include "variety.h"
-#include <malloc.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -195,53 +193,15 @@ void _InitFunctionPointers( void )
 
 } /* _InitFunctionPointers */
 
-/*
- * _MemAlloc - allocate some memory
- */
-void _WCI86FAR *_MemAlloc( unsigned size )
+_WCNORETURN void _OutOfMemoryExit( void )
 {
-    void _WCI86FAR      *tmp;
-
-    tmp = FARmalloc( size );
-    if( tmp == NULL ) {
-        _OutOfMemory();
-        while( _MessageLoop( FALSE ) )
-            ;
-        _WindowsExitRtn = NULL;
-        exit( 0 );
-    }
-    FARmemset( tmp, 0, size );
-    return( tmp );
-
-} /* _MemAlloc */
-
-/*
- * _MemReAlloc - allocate some memory
- */
-void _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size )
-{
-    void _WCI86FAR      *tmp;
-
-    tmp = FARrealloc( ptr, size );
-    if( tmp == NULL ) {
-        _OutOfMemory();
-        while( _MessageLoop( FALSE ) )
-            ;
-        _WindowsExitRtn = NULL;
-        exit( 0 );
-    }
-    return( tmp );
-
-} /* _MemReAlloc */
-
-/*
- * _MemFree - free a block
- */
-void _MemFree( void _WCI86FAR *ptr )
-{
-    FARfree( ptr );
-
-} /* _MemFree */
+    _OutOfMemory();
+    while( _MessageLoop( FALSE ) )
+        ;
+    _WindowsExitRtn = NULL;
+    exit( 0 );
+    // never return
+}
 
 #ifdef __NT__
 #define X_MAX   70
@@ -252,8 +212,7 @@ void _MemFree( void _WCI86FAR *ptr )
 /*
  * _GetWindowNameAndCoords - set up name and coordinates for a new window
  */
-void _GetWindowNameAndCoords( char *name, char *dest,
-                        int *x1, int *x2, int *y1, int *y2 )
+void _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 )
 {
     static int  _concnt = 0;
     static int  _x1 = 0;
@@ -276,11 +235,11 @@ void _GetWindowNameAndCoords( char *name, char *dest,
     _y1 += 2;
     _x2 -= 2;
     _y2 -= 2;
-    if( _x1 > X_MAX/3 ) {
+    if( _x1 > ( X_MAX / 3 ) ) {
         _x1 = 0;
         _x2 = X_MAX;
     }
-    if( _y1 > Y_MAX/3 ) {
+    if( _y1 > ( Y_MAX / 3 ) ) {
         _y1 = 0;
         _y2 = Y_MAX;
     }
@@ -293,8 +252,10 @@ void _GetWindowNameAndCoords( char *name, char *dest,
 void _InitMainWindowData( HANDLE inst )
 {
 
-    _MainWindowData = _MemAlloc( sizeof( window_data ) );
-    FARmemset( _MainWindowData, 0, sizeof( window_data ) );
+    _MainWindowData = FARmalloc( sizeof( main_window_data ) );
+    if( _MainWindowData == NULL )
+        _OutOfMemoryExit();
+    FARmemset( _MainWindowData, 0, sizeof( main_window_data ) );
     _MainWindowData->inst = inst;
     _MainWindowData->window_count = 0;
     _MainWindowData->windows = NULL;
@@ -302,34 +263,48 @@ void _InitMainWindowData( HANDLE inst )
 } /* _InitMainWindowData */
 
 /*
+ * _FiniMainWindowData - free main window data area
+ */
+void _FiniMainWindowData( void )
+{
+
+    FARfree( _MainWindowData );
+
+} /* _FiniMainWindowData */
+
+/*
  * _AnotherWindowData - create yet another window data item
  */
 LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
 {
     LPWDATA     w;
-    int         h,hcnt,*hlist;
+    int         h,hcnt;
+    int         _WCI86FAR *hlist;
 
-    w = _MemAlloc( sizeof( window_data ) );
+    w = FARmalloc( sizeof( window_data ) );
+    if( w == NULL )
+        _OutOfMemoryExit();
     FARmemset( w, 0, sizeof( window_data ) );
-    _MainWindowData->windows = _MemReAlloc( _MainWindowData->windows,
+    _MainWindowData->windows = FARrealloc( _MainWindowData->windows,
                 sizeof( LPWDATA ) * ( _MainWindowData->window_count + 1 ) );
+    if( _MainWindowData->windows == NULL )
+        _OutOfMemoryExit();
     _MainWindowData->windows[_MainWindowData->window_count] = w;
     _MainWindowData->window_count++;
 
     w->CurrentLineNumber = 1L;
     w->TopLineNumber = 1L;
     w->LastLineNumber = 1L;
-    w->tmpbuff = _MemAlloc( sizeof( line_data ) + MAX_BUFF + 1 );
+    w->tmpbuff = FARmalloc( sizeof( line_data ) + MAX_BUFF + 1 );
+    if( w->tmpbuff == NULL )
+        _OutOfMemoryExit();
     w->CaretType = ORIGINAL_CURSOR;
     w->hwnd = hwnd;
 
     hcnt = 0;
     hlist = NULL;
-    while( 1 ) {
-        h = va_arg( al, int );
-        if( h == -1 )
-            break;
-        hlist = realloc( hlist, ( hcnt + 1 ) * sizeof( h ) );
+    while( (h = va_arg( al, int )) != -1 ) {
+        hlist = FARrealloc( hlist, ( hcnt + 1 ) * sizeof( h ) );
         hlist[hcnt] = h;
         hcnt++;
     }
@@ -340,9 +315,9 @@ LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
 } /* _AnotherWindowData */
 
 /*
- * _DestroyAWindow - get rid of a windows data
+ * _FreeWindowData - get rid of a windows data
  */
-void _DestroyAWindow( LPWDATA w )
+void _FreeWindowData( LPWDATA w )
 {
     int i,j;
 
@@ -353,10 +328,12 @@ void _DestroyAWindow( LPWDATA w )
                 _MainWindowData->windows[j] = _MainWindowData->windows[j + 1];
             }
             _ReleaseWindowResources( w );
-            _MemFree( w->handles );
-            _MemFree( w );
+            FARfree( w->image );
+            FARfree( w->handles );
+            FARfree( w->tmpbuff );
+            FARfree( w );
             return;
         }
     }
 
-} /* _DestroyAWindow */
+} /* _FreeWindowData */

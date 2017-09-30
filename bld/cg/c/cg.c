@@ -344,6 +344,7 @@ extern  void    DumpCClass( call_class c ) {
     if( c & NO_MEMORY_CHANGED ) Action( "NO_MEMORY_CHANGED " );
     if( c & NO_MEMORY_READ ) Action( "NO_MEMORY_READ " );
     if( c & SUICIDAL ) Action( "SUICIDAL " );
+    if( c & NORETURN ) Action( "NORETURN " );
 }
 
 extern  void    CClass( sym  s ) {

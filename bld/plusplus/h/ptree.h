@@ -227,6 +227,7 @@ extern PTREE PTreeAssign( PTREE to, PTREE from );
 extern PTREE PTreeAssignReloc( PTREE to, PTREE from, RELOC_LIST *reloc_list );
 extern PTREE PTreeFree( PTREE );
 extern void PTreeFreeSubtrees( PTREE );
+extern PTREE PTreeNullptrConstant( void );
 extern PTREE PTreeBoolConstant( int );
 extern PTREE PTreeIntConstant( int, type_id );
 extern PTREE PTreeInt64Constant( signed_64, type_id );

@@ -184,6 +184,9 @@ static const char* extsOut[] =        // extensions for output files
 
 #endif
 
+static const char* extsNo[] =        // no extensions
+    { NULL };
+
 static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
@@ -587,9 +590,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
+                bufpth[0] = '\0';
                 curr = SrcFileCurrent();
-                splitFileName( SrcFileName( curr ), &idescr );
-                _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                if( curr != NULL ) {
+                    splitFileName( SrcFileName( curr ), &idescr );
+                    _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
+                }
                 retb = openSrcPath( bufpth, exts, fd, typ );
                 if( retb ) {
                     break;
@@ -649,6 +655,9 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathCmd;
         }
+        break;
+    default:
+        exts = extsNo;
         break;
     }
     if( paths != NULL ) {

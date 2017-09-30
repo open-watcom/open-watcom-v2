@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdio.h>
 #include "ctags.h"
 //#include "misc.h"

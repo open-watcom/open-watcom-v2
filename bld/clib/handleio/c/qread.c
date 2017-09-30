@@ -98,7 +98,7 @@ int __qread( int handle, void *buffer, unsigned len )
         LPWDATA res;
 
         res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
+        if( res != NULL ) {
             int rt;
             rt = _WindowsStdin( res, buffer, len );
             return( rt );

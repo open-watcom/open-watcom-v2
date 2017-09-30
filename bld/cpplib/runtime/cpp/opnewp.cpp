@@ -39,10 +39,9 @@
 //      exported, but it is not present in new.h so that
 //      the entry point can be replaced in the user code
 #include "cpplib.h"
-#include <stddef.h>
 
 
-_WPRTLINK void *operator new( size_t, void *p )
+_WPRTLINK void *operator new( std::size_t, void *p )
 {
     return( p );
 }

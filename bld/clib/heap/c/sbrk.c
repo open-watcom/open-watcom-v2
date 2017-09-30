@@ -118,15 +118,14 @@ _WCRTLINK void_nptr sbrk( int increment )
 
     if( increment > 0 ) {
         h = LocalAlloc( LMEM_FIXED, increment );
-        if( h == NULL ) {
-            _RWD_errno = ENOMEM;
-            h = (HANDLE)-1;
+        if( h != NULL ) {
+            return( (void_nptr)h );
         }
+        _RWD_errno = ENOMEM;
     } else {
         _RWD_errno = EINVAL;
-        h = (HANDLE)-1;
     }
-    return( (void_nptr)h );
+    return( (void_nptr)-1 );
 }
 
 #elif defined(__OSI__)

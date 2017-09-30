@@ -32,7 +32,6 @@
 
 #include <wwindows.h>
 #include <stdlib.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "clibint.h"
 

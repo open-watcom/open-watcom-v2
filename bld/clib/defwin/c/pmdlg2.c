@@ -32,15 +32,12 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "win.h"
 
 static char             *dataSeg;
 static ULONG            dataSegLen;
-
-#define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 
 /*
  * _DialogTemplate - build a dialog template
@@ -60,7 +57,7 @@ TEMPLATE_HANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus 
     dataSegLen = 0;
     dataSeg = NULL;
 
-    dlgtemplate = PMmalloc( blocklen );
+    dlgtemplate = malloc( blocklen );
     if( dlgtemplate == NULL )
         return( NULL );
 
@@ -117,13 +114,13 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
     blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen = classlen + textlen + ctldatalen + dataSegLen;
 
-    new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
-    dataSeg = PMrealloc( dataSeg, ddatalen );
+    new_dlgtemplate = realloc( old_dlgtemplate, blocklen );
+    dataSeg = realloc( dataSeg, ddatalen );
     if( new_dlgtemplate == NULL || dataSeg == NULL ) {
         if( dataSeg != NULL )
-            PMfree( dataSeg );
+            free( dataSeg );
         if( new_dlgtemplate != NULL )
-            PMfree( new_dlgtemplate );
+            free( new_dlgtemplate );
         return( NULL );
     }
 
@@ -217,12 +214,12 @@ TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
             dit[record].offClassName += dt->cbTemplate;
         }
     }
-    new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
+    new_dlgtemplate = realloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
     dt = (WPDLGTEMPLATE)new_dlgtemplate;
     dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
-    _FARmemcpy( dit, dataSeg, dataSegLen );
+    memcpy( dit, dataSeg, dataSegLen );
     dt->cbTemplate += dataSegLen;
-    PMfree( dataSeg );
+    free( dataSeg );
     dataSeg = NULL;
     return( new_dlgtemplate );
 
@@ -237,8 +234,8 @@ int _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
     HWND handle;
 
     handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, NULL );
-    if ( handle == NULLHANDLE ) {
-        DISPLAY("Window Creation Error Occurred");
+    if( handle == NULLHANDLE ) {
+        WinMessageBox( HWND_DESKTOP, NULLHANDLE, "Window Creation Error Occurred", "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
         return( 0 );
     }
     rc = WinProcessDlg( handle );

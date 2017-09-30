@@ -45,9 +45,9 @@ typedef struct {
     do { \
         unsigned int __i; \
         fd_set *__arr = (set); \
-        for (__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i) \
+        for(__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i) \
             __FDS_BITS (__arr)[__i] = 0; \
-    } while (0)
+    } while( 0 )
 #define FD_SET(d, set)      (__FDS_BITS (set)[__FDELT (d)] |= __FDMASK (d))
 #define FD_CLR(d, set)      (__FDS_BITS (set)[__FDELT (d)] &= ~__FDMASK (d))
 #define FD_ISSET(d, set)    (__FDS_BITS (set)[__FDELT (d)] & __FDMASK (d))

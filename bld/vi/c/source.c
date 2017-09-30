@@ -621,7 +621,7 @@ static resident *residentScript( const char *fn )
     resident    *tmp;
 
     for( tmp = resHead; tmp != NULL; tmp = tmp->next ) {
-        if( !stricmp( fn, tmp->fn ) ) {
+        if( stricmp( fn, tmp->fn ) == 0 ) {
             break;
         }
     }

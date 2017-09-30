@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <wcskip.h>
 
 
@@ -39,7 +39,7 @@
 const int WCSkipBitsInRandom = 15;
 
 _WPRTLINK unsigned WCSkipNonTempBase::randomsLeft = WCSkipBitsInRandom / 2;
-_WPRTLINK unsigned WCSkipNonTempBase::randomBits = rand();
+_WPRTLINK unsigned WCSkipNonTempBase::randomBits = std::rand();
 
 
 
@@ -61,8 +61,8 @@ _WPRTLINK WCSkipNonTempBase::WCSkipNonTempBase( unsigned prob, unsigned max_ptrs
 //
 
 _WPRTLINK WCSkipNonTempBase::WCSkipNonTempBase( unsigned prob, unsigned max_ptrs,
-                                      void * (*user_alloc)( size_t ),
-                                      void (*user_dealloc)( void *, size_t ),
+                                      void * (*user_alloc)( std::size_t ),
+                                      void (*user_dealloc)( void *, std::size_t ),
                                       WCbool duplicates )
                   : alloc_fn( user_alloc ), dealloc_fn( user_dealloc ),
                     level( 0 ), allowDuplicates( duplicates ),
@@ -76,14 +76,15 @@ _WPRTLINK WCSkipNonTempBase::WCSkipNonTempBase( unsigned prob, unsigned max_ptrs
 //
 //
 
-_WPRTLINK void WCSkipNonTempBase::base_assign( const WCSkipNonTempBase * orig ) {
+_WPRTLINK void WCSkipNonTempBase::base_assign( const WCSkipNonTempBase * orig )
+{
     if( this != orig ) {
         clear();
         max_ptrs_in_node = orig->max_ptrs_in_node;
         base_init_header();
         base_construct( orig );
-    };
-};
+    }
+}
 
 
 
@@ -91,7 +92,8 @@ _WPRTLINK void WCSkipNonTempBase::base_assign( const WCSkipNonTempBase * orig ) 
 //
 //
 
-_WPRTLINK void WCSkipNonTempBase::base_construct( const WCSkipNonTempBase * orig ) {
+_WPRTLINK void WCSkipNonTempBase::base_construct( const WCSkipNonTempBase * orig )
+{
     alloc_fn = orig->alloc_fn;
     dealloc_fn = orig->dealloc_fn;
     max_ptrs_in_node = orig->max_ptrs_in_node;
@@ -109,7 +111,8 @@ _WPRTLINK void WCSkipNonTempBase::base_construct( const WCSkipNonTempBase * orig
 //
 //
 
-_WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_find( TTypePtr elem ) const {
+_WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_find( TTypePtr elem ) const
+{
     node_ptr curr;
     node_ptr next;
     curr = header;
@@ -136,7 +139,8 @@ _WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_find( TTypePtr elem ) const {
 //
 
 _WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_find_with_update( TTypePtr elem,
-                                                node_ptr update[] ) const {
+                                                node_ptr update[] ) const
+{
     node_ptr curr;
     node_ptr next;
     curr = header;
@@ -162,7 +166,8 @@ _WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_find_with_update( TTypePtr el
 //
 //
 
-void WCSkipNonTempBase::base_init( unsigned prob, unsigned max_ptrs ) {
+void WCSkipNonTempBase::base_init( unsigned prob, unsigned max_ptrs ) 
+{
     if( max_ptrs > WCSKIPLIST_MAX_PTRS ) {
         max_ptrs = WCSKIPLIST_MAX_PTRS;
     } else if( max_ptrs < 1 ) {
@@ -182,7 +187,8 @@ void WCSkipNonTempBase::base_init( unsigned prob, unsigned max_ptrs ) {
 //
 //
 
-_WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_insert( TTypePtr elem ) {
+_WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_insert( TTypePtr elem )
+{
     int k;
     node_ptr curr;
     node_ptr found;
@@ -230,7 +236,8 @@ _WPRTLINK WCSkipListPtrs * WCSkipNonTempBase::base_insert( TTypePtr elem ) {
 //
 //
 
-_WPRTLINK unsigned WCSkipNonTempBase::base_occurrencesOf( TTypePtr elem ) const {
+_WPRTLINK unsigned WCSkipNonTempBase::base_occurrencesOf( TTypePtr elem ) const
+{
     unsigned count = 0;
     node_ptr curr = base_find( elem );
 
@@ -249,7 +256,8 @@ _WPRTLINK unsigned WCSkipNonTempBase::base_occurrencesOf( TTypePtr elem ) const 
 //
 //
 
-_WPRTLINK int WCSkipNonTempBase::base_random_level() {
+_WPRTLINK int WCSkipNonTempBase::base_random_level() 
+{
     int level = 0;
     int b;
     do {
@@ -259,7 +267,7 @@ _WPRTLINK int WCSkipNonTempBase::base_random_level() {
         }
         randomBits >>= 2;
         if( --randomsLeft == 0 ) {
-            randomBits = rand();
+            randomBits = std::rand();
             randomsLeft = WCSkipBitsInRandom/2;
         }
     } while( !b );
@@ -272,7 +280,8 @@ _WPRTLINK int WCSkipNonTempBase::base_random_level() {
 //
 //
 
-_WPRTLINK unsigned WCSkipNonTempBase::base_removeAll( TTypePtr elem ) {
+_WPRTLINK unsigned WCSkipNonTempBase::base_removeAll( TTypePtr elem ) 
+{
     int k;
     int m;
     int i;
@@ -344,7 +353,8 @@ _WPRTLINK unsigned WCSkipNonTempBase::base_removeAll( TTypePtr elem ) {
 //
 
 _WPRTLINK WCSkipListPtrs *WCSkipNonTempBase::base_remove_but_not_delete( TTypePtr elem,
-                                                      int &num_ptrs_in_node ) {
+                                                      int &num_ptrs_in_node )
+{
     int k;
     int m;
     node_ptr found;
@@ -397,7 +407,8 @@ _WPRTLINK WCSkipListPtrs *WCSkipNonTempBase::base_remove_but_not_delete( TTypePt
 // update array, and requires no relinking.
 //
 
-_WPRTLINK void WCSkipNonTempBase::clear() {
+_WPRTLINK void WCSkipNonTempBase::clear()
+{
     node_ptr curr;
     node_ptr next;
     node_ptr delete_node;
@@ -449,7 +460,8 @@ _WPRTLINK void WCSkipNonTempBase::clear() {
 //
 //
 
-_WPRTLINK WCbool WCSkipNonTempBase::remove( TTypePtr elem ) {
+_WPRTLINK WCbool WCSkipNonTempBase::remove( TTypePtr elem )
+{
     int num_ptrs_in_node;
 
     node_ptr node = base_remove_but_not_delete( elem, num_ptrs_in_node );

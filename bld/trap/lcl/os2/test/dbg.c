@@ -170,6 +170,7 @@ void StartupErr( const char *err )
 {
     printf( "%s\n", err );
     exit( 1 );
+    // never return
 }
 #pragma off(unreferenced)
 void SectLoad( unsigned sect_id )

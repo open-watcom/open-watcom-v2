@@ -271,7 +271,7 @@ static void make_asm_axp( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_a%6s.asm", outdir, alias->filename );
+    sprintf( filename, "%s_a%6s.gas", outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -302,7 +302,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_i%6s.asm", outdir, alias->filename );
+    sprintf( filename, "%s_i%6s.gas", outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -333,7 +333,7 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_p%6s.asm", outdir, alias->filename );
+    sprintf( filename, "%s_p%6s.gas", outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -364,7 +364,7 @@ static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_m%6s.asm", outdir, alias->filename );
+    sprintf( filename, "%s_m%6s.gas", outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );

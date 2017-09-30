@@ -66,6 +66,7 @@ int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC 
 int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data )
 #endif
 {
+    char                lfFaceName[LF_FACESIZE];
 #ifdef __WINDOWS_386__
     const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
     tm = tm;
@@ -74,6 +75,12 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
 #else
     const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
+#endif
+
+#if defined( __WINDOWS__ ) || defined( _M_I86 )
+    _fstrcpy( lfFaceName, elf->elfLogFont.lfFaceName );
+#else
+    strcpy( lfFaceName, elf->elfLogFont.lfFaceName );
 #endif
     ftype = ftype;
     data = data;
@@ -86,18 +93,18 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
      * Changed the test to == 0, because it is easier to read and understand.
      */
 #if defined( __NT__ )
-    if( FARstricmp( elf->elfLogFont.lfFaceName, "andale mono" ) == 0 ||
-        FARstricmp( elf->elfLogFont.lfFaceName, "lucida console" ) == 0 ||
-        FARstricmp( elf->elfLogFont.lfFaceName, "vera sans mono" ) == 0 ||
-        FARstricmp( elf->elfLogFont.lfFaceName, "courier new" ) == 0 ||
-        FARstricmp( elf->elfLogFont.lfFaceName, "courier" ) == 0 ) {
+    if( stricmp( lfFaceName, "andale mono" ) == 0 ||
+        stricmp( lfFaceName, "lucida console" ) == 0 ||
+        stricmp( lfFaceName, "vera sans mono" ) == 0 ||
+        stricmp( lfFaceName, "courier new" ) == 0 ||
+        stricmp( lfFaceName, "courier" ) == 0 ) {
 #else
-    if( FARstricmp( elf->elfLogFont.lfFaceName, "courier new" ) == 0 ||
-        FARstricmp( elf->elfLogFont.lfFaceName, "courier" ) == 0 ) {
+    if( stricmp( lfFaceName, "courier new" ) == 0 ||
+        stricmp( lfFaceName, "courier" ) == 0 ) {
 #endif
         courierFont = CreateFont( 13, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, elf->elfLogFont.lfCharSet,
                                   OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                                  elf->elfLogFont.lfPitchAndFamily, elf->elfLogFont.lfFaceName );
+                                  elf->elfLogFont.lfPitchAndFamily, lfFaceName );
         return( 0 );
     }
     return( 1 );

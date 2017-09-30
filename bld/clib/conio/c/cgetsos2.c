@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #define INCL_SUB
 #include <wos2.h>
 #include "defwin.h"

@@ -44,7 +44,7 @@
 
 #if defined( INCL_MSGTEXT )
 
-static char *StringTable[] = {
+static const char * const StringTable[] = {
     "",                             // message ID's start at 1
     #include "incltext.gh"
 };

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <termios.h>
@@ -131,7 +130,7 @@ static bool ostream_init( int f )
 #define __putchar(_c) ((_con_out.curp < _con_out.ebuf) ? \
                         (*_con_out.curp++ = (_c)) : __oflush(_c))
 
-static void __flush( void )
+static void __flush_con( void )
 {
     int     len = _con_out.curp - _con_out.sbuf;
     int     offs = 0;
@@ -149,7 +148,7 @@ static void __flush( void )
 
 static int __oflush( int c )
 {
-    __flush();
+    __flush_con();
     //assert( _con_out.curp < _con_out.ebuf );
     return( __putchar( c ) );
 }
@@ -569,7 +568,7 @@ static void TI_CURSOR_MOVE( int c, int r )
 
     OldCol = c;
     OldRow = r;
-} 
+}
 
 static void TI_SETCOLOUR( int f, int b )
 {
@@ -856,7 +855,7 @@ static bool td_initconsole( void )
     QNX_NOWRAP();
     QNX_NOBOLD();
     QNX_NOBLINK();
-    __flush();
+    __flush_con();
     return( true );
 }
 #endif
@@ -889,7 +888,7 @@ static bool td_initconsole( void )
     TI_NOBOLD();
     TI_NOBLINK();
 
-    __flush();
+    __flush_con();
 
     return( true );
 }
@@ -999,7 +998,7 @@ static int td_fini( void )
     QNX_HOME();
     QNX_CLS();
     QNX_CURSOR_NORMAL();
-    __flush();
+    __flush_con();
     finikeyboard();
     uifinicursor();
     return( 0 );
@@ -1019,7 +1018,7 @@ static int td_fini( void )
     TI_RESET2_STRING();
     TI_PUT_FILE( reset_file );
     TI_RESET3_STRING();
-    __flush();
+    __flush_con();
 
     finikeyboard();
     uifinicursor();
@@ -1078,7 +1077,7 @@ static void td_hwcursor( void )
         break;
     }
     QNX_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
-    __flush();
+    __flush_con();
 }
 
 static void ti_hwcursor( void )
@@ -1105,7 +1104,7 @@ static void ti_hwcursor( void )
         TI_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
     }
 
-    __flush();
+    __flush_con();
 }
 
 
@@ -1121,7 +1120,7 @@ static int td_refresh( int must )
 
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         td_hwcursor();
-        __flush();
+        __flush_con();
         return( 0 );
     }
 
@@ -1171,7 +1170,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
     dirty_area.col0 = dirty_area.col1 = 0;
 
     td_hwcursor();
-    __flush();
+    __flush_con();
 
     return( 0 );
 }
@@ -1230,7 +1229,7 @@ static void update_shadow( void )
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
-    __flush();
+    __flush_con();
 
     // copy buffer to shadow buffer
     bufp = UIData->screen.origin;
@@ -1275,7 +1274,7 @@ static int ti_refresh( int must )
     // Move the cursor & return if dirty box contains no chars
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
-        __flush();
+        __flush_con();
         return( 0 );
     }
 
@@ -1368,7 +1367,7 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty_area.row1--; 
+                dirty_area.row1--;
             }
         }
 

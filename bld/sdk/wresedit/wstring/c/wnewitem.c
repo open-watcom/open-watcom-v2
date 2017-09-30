@@ -140,7 +140,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
     uint_16             id;
     char                *text;
     char                *symbol;
-    box_pos             pos;
+    LRESULT             pos;
 
     text = NULL;
     symbol = NULL;
@@ -172,12 +172,12 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
 
     if( ok ) {
         pos = WFindStringPos( einfo->tbl, id );
-        ok = (pos != -1);
+        ok = ( pos != LB_ERR );
     }
 
     if( ok ) {
         if( replace ) {
-            SendMessage( lbox, LB_DELETESTRING, pos, 0 );
+            SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
         }
         ok = WAddEditWinLBoxEntry( einfo, block, id, pos );
     }
@@ -185,7 +185,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
 
     if( ok ) {
         WSetEditWindowID( einfo->edit_dlg, id, block->symbol[id & 0xf] );
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR);
         if( ok ) {
             einfo->current_block = block;
             einfo->current_string = id;
@@ -193,7 +193,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
 #if 0
             einfo->current_block = NULL;
             einfo->current_string = 0;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             WHandleSelChange( einfo );
 #endif
         }
@@ -201,8 +201,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
 
     if( ok ) {
         SetFocus( GetDlgItem( einfo->edit_dlg, IDM_STREDTEXT ) );
-        SendDlgItemMessage( einfo->edit_dlg, IDM_STREDTEXT, EM_SETSEL,
-                            GET_EM_SETSEL_MPS( 0, -1 ) );
+        SendDlgItemMessage( einfo->edit_dlg, IDM_STREDTEXT, EM_SETSEL, GET_EM_SETSEL_MPS( 0, -1 ) );
     }
 
     if( symbol != NULL ) {
@@ -216,18 +215,17 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
     return( ok );
 }
 
-bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, box_pos pos )
+bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, LRESULT pos )
 {
     int         i;
 
     if( block != NULL ) {
         for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->block.String[i] != NULL ) {
-                if( !WAddEditWinLBoxEntry( einfo, block,
-                                           (block->blocknum & 0xfff0) + i, pos ) ) {
+                if( !WAddEditWinLBoxEntry( einfo, block, (block->blocknum & 0xfff0) + i, pos ) ) {
                     return( false );
                 }
-                if( pos != -1 ) {
+                if( pos != LB_ERR ) {
                     pos++;
                 }
             }
@@ -237,8 +235,7 @@ bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, box_pos 
     return( true );
 }
 
-bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
-                           uint_16 string_id, box_pos pos )
+bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 string_id, LRESULT pos )
 {
     bool    ok;
     char    *n;

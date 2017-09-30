@@ -77,6 +77,7 @@ static void init( void )
                                       (unsigned short *)&__lfn_rm_tb_segment );
     if( __lfn_rm_tb_selector == 0 ) {
         __fatal_runtime_error( "Unable to allocate LFN real mode transfer buffer", -1 );
+        // never return
     }
     *(long *)&__lfn_rm_tb_linear = TinyDPMIBase( __lfn_rm_tb_selector );
 }

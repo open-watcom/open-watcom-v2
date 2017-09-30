@@ -1,0 +1,22 @@
+/***************************************************************************
+ * FILE: stdnoreturn.h (Macro to simulate the 'noreturn' specifier in C)
+ *
+:include crwatcnt.sp
+ *
+ * Description: This header is part of the C11 standard library. It
+ *              provides a way for the programmer, at his/her option
+ *              to introduce the specifier 'noreturn' into a C program.
+ ***************************************************************************/
+
+#ifndef _STDNORETURN_H_INCLUDED
+#define _STDNORETURN_H_INCLUDED
+
+:include readonly.sp
+
+#ifndef __cplusplus
+
+#define noreturn _Noreturn
+
+#endif
+
+#endif

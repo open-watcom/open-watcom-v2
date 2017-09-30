@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <conio.h>
 #define INCL_16
 #define INCL_SUB

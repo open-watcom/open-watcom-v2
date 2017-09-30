@@ -52,6 +52,8 @@
 #include "nlmio.h"
 
 
+static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -153,7 +155,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    retval = IOSeek( acc->handle, acc->mode, acc->pos );
+    retval = IOSeek( acc->handle, local_seek_method[acc->mode], acc->pos );
     if( retval < 0 ) {
         ret->err = retval;
         ret->pos = 0;

@@ -50,11 +50,11 @@
 #define PTHREAD_CANCELED            ((void *)1)
 
 /* Creation/destruction */
-_WCRTLINK extern int  pthread_create( pthread_t *__thread, const pthread_attr_t *__attr, void *(*__start_routine)(void*), void *__arg );
+_WCRTLINK extern int  pthread_create( pthread_t *__thread, const pthread_attr_t *__attr, void *(_WCCALLBACK *__start_routine)(void *), void *__arg );
 _WCRTLINK extern void pthread_exit( void *__exit_val );
 
 /* Thread cleanup */
-_WCRTLINK extern void pthread_cleanup_push( void (*__routine)(void*), void *__arg );
+_WCRTLINK extern void pthread_cleanup_push( void (_WCCALLBACK *__routine)(void*), void *__arg );
 _WCRTLINK extern void pthread_cleanup_pop( int __execute );
 
 /* Mutexes */
@@ -93,7 +93,7 @@ _WCRTLINK extern int pthread_cond_wait( pthread_cond_t *__cond, pthread_mutex_t 
 _WCRTLINK extern int pthread_cond_timedwait( pthread_cond_t *__cond, pthread_mutex_t *__mutex, const struct timespec *abstime );
 
 /* Thread-specific keys */
-_WCRTLINK extern int pthread_key_create( pthread_key_t *__key, void (*__destructor)(void*) );
+_WCRTLINK extern int pthread_key_create( pthread_key_t *__key, void (_WCCALLBACK *__destructor)(void*) );
 _WCRTLINK extern int pthread_key_delete(pthread_key_t __key);
 _WCRTLINK extern int pthread_setspecific(pthread_key_t __key, void *__value);
 _WCRTLINK extern void *pthread_getspecific(pthread_key_t __key);
@@ -109,7 +109,7 @@ _WCRTLINK extern int pthread_rwlock_wrlock( pthread_rwlock_t *__rwlock );
 
 /* Barriers */
 _WCRTLINK extern int pthread_barrier_init( pthread_barrier_t *__barrier,
-                                           const pthread_barrierattr_t *__attr, 
+                                           const pthread_barrierattr_t *__attr,
                                            unsigned __count );
 _WCRTLINK extern int pthread_barrier_destroy( pthread_barrier_t *__barrier );
 _WCRTLINK extern int pthread_barrier_wait( pthread_barrier_t *__barrier );
@@ -186,7 +186,7 @@ _WCRTLINK extern int pthread_rwlockattr_getpshared( const pthread_rwlockattr_t *
 _WCRTLINK extern int pthread_rwlockattr_setpshared( pthread_rwlockattr_t *__attr, int __pshared );
 
 /* Execute-once routine */
-_WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (*__init_routine)(void) );
+_WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (_WCCALLBACK *__init_routine)(void) );
 
 /* Initializers */
 /* NOTE: These utilize internal values and must be synced with

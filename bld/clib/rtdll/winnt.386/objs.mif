@@ -11,7 +11,7 @@ dll_libs = $+ &
 !endif
 
 dll_def = $+ &
-    $(clib_dir)/library/$(__cifx__)/export.def &
+    $(clib_dir)/library/$(__cifx__)/export.gdf &
     $(clib_dir)/intel/export.def &
     $(clib_dir)/startup/export.def &
     $(clib_dir)/startup/$(convention).def &

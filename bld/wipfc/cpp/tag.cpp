@@ -83,7 +83,7 @@ Lexer::Token Tag::parse( Lexer* lexer )
 Lexer::Token Tag::parseAttributes( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
-    lexer = lexer;
+    (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
             document->printError( ERR1_NOATTR );

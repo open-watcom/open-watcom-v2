@@ -4,26 +4,24 @@
 # cross compilation)
 #
 # Set up host OS and CPU architecture
-!ifdef __NT386__
-host_os  = nt
-host_cpu = 386
-!else ifdef __OS2__
-host_os  = os2
-host_cpu = 386
-!else
-! error No default host_os and host_cpu
+!ifndef __NT__
+!ifndef __OS2__
+all:
+!endif
 !endif
 
 !ifeq compiler msvc
 ! ifndef %MSVCDir
-!  error MSVC data unset - run VCVARS32.BAT
+all:
+#!  error MSVC data unset - run VCVARS32.BAT
 ! endif
 msvc_root=$(%MSVCDir)
 !endif
 
 !ifeq compiler ibmc
 ! ifndef %CXXMAIN
-!  error IBM VisualAge C++ environment not set
+all:
+#!  error IBM VisualAge C++ environment not set
 ! endif
 ibmc_root=$(%CXXMAIN)
 !endif
@@ -87,7 +85,8 @@ deflink = $(msvc_root)\bin\link $(lflags_msvc) /out:$^. $(bench_dir)\support\msv
 
 deflink = $(ibmc_root)\bin\ilink $(lflags_ibmc) /out:$^. $(bench_dir)\support\ibmc\support.lib $<
 !else
-!error unknown compiler
+all:
+#!error unknown compiler
 !endif
 
 clean: .SYMBOLIC .EXPLICIT

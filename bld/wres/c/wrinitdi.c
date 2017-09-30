@@ -38,7 +38,7 @@
 WResDir WResInitDir( void )
 /*************************/
 {
-    WResDirHead *   newdir;
+    WResDirHead     *newdir;
 
     newdir = WRESALLOC( sizeof( WResDirHead ) );
     if( newdir == NULL ) {
@@ -46,7 +46,7 @@ WResDir WResInitDir( void )
     } else {
         newdir->NumResources = 0;
         newdir->NumTypes = 0;
-        newdir->TargetOS = WRES_OS_WIN16;
+        WResSetTargetOS( newdir, WRES_OS_WIN16 );
         newdir->Head = NULL;
         newdir->Tail = NULL;
     }

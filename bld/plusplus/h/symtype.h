@@ -154,7 +154,9 @@ typedef enum {
     MSDS_NAKED          = 0x0004,
     MSDS_THREAD         = 0x0008,
     MSDS_MODIFIER       = 0x0010,
-    MSDS_NORETURN       = 0x0020,
+    MSDS_ABORTS         = 0x0020,
+    MSDS_NORETURN       = 0x0040,
+    MSDS_FARSS          = 0x0080,
     MSDS_NULL           = 0x0000
 } ms_declspec_t;
 
@@ -224,42 +226,43 @@ PCH_struct decl_info {
 // types dealing with representing types
 
 typedef enum {
-    TYP_MIN             = 0x00,
-    TYP_ERROR           = 0x00,
-    TYP_BOOL            = 0x01,
-    TYP_CHAR            = 0x02,
-    TYP_SCHAR           = 0x03,
-    TYP_UCHAR           = 0x04,
-    TYP_WCHAR           = 0x05,
-    TYP_SSHORT          = 0x06,
-    TYP_USHORT          = 0x07,
-    TYP_SINT            = 0x08,
-    TYP_UINT            = 0x09,
-    TYP_SLONG           = 0x0a,
-    TYP_ULONG           = 0x0b,
-    TYP_SLONG64         = 0x0c,
-    TYP_ULONG64         = 0x0d,
-    TYP_FLOAT           = 0x0e,
-    TYP_DOUBLE          = 0x0f,
-    TYP_LONG_DOUBLE     = 0x10,
-    TYP_ENUM            = 0x11,
-    TYP_POINTER         = 0x12,
-    TYP_TYPEDEF         = 0x13,
-    TYP_CLASS           = 0x14,
-    TYP_BITFIELD        = 0x15,
-    TYP_FUNCTION        = 0x16,
-    TYP_ARRAY           = 0x17,
-    TYP_DOT_DOT_DOT     = 0x18,
-    TYP_VOID            = 0x19,
-    TYP_MODIFIER        = 0x1a,
-    TYP_MEMBER_POINTER  = 0x1b,
-    TYP_GENERIC         = 0x1c,
-    TYP_TYPENAME        = 0x1d,
-    TYP_FREE            = 0x1e,
+    TYP_ERROR,
+    TYP_BOOL,
+    TYP_CHAR,
+    TYP_SCHAR,
+    TYP_UCHAR,
+    TYP_WCHAR,
+    TYP_SSHORT,
+    TYP_USHORT,
+    TYP_SINT,
+    TYP_UINT,
+    TYP_SLONG,
+    TYP_ULONG,
+    TYP_SLONG64,
+    TYP_ULONG64,
+    TYP_FLOAT,
+    TYP_DOUBLE,
+    TYP_LONG_DOUBLE,
+    TYP_ENUM,
+    TYP_POINTER,
+    TYP_TYPEDEF,
+    TYP_CLASS,
+    TYP_BITFIELD,
+    TYP_FUNCTION,
+    TYP_ARRAY,
+    TYP_DOT_DOT_DOT,
+    TYP_VOID,
+    TYP_MODIFIER,
+    TYP_MEMBER_POINTER,
+    TYP_GENERIC,
+    TYP_TYPENAME,
+    TYP_FREE,
+    TYP_NULLPTR,
     TYP_MAX,
-
-    TYP_FIRST_VALID     = TYP_BOOL,
 } type_id;
+
+#define TYP_MIN         TYP_ERROR
+#define TYP_FIRST_VALID TYP_BOOL
 
 typedef enum {
     TF1_FIRST           = 0x00000001,               // TYP_ERROR
@@ -279,7 +282,9 @@ typedef enum {
     TF1_INTRINSIC       = 0x00000100,
     TF1_EXPLICIT        = 0x00000200,
     TF1_NAKED           = 0x00000400,
-    TF1_NORETURN        = 0x00000800,
+    TF1_ABORTS          = 0x00000800,
+    TF1_NORETURN        = 0x00001000,
+    TF1_FARSS           = 0x00002000,
     TF1_PLUSPLUS_SET    = 0x80000000,   /* note 1 */// don't change TF1_PLUSPLUS
     TF1_CONST           = 0x00000001,               // TYP_MODIFIER
     TF1_VOLATILE        = 0x00000002,
@@ -346,6 +351,7 @@ typedef enum {
                           | TF1_LOADDS
                           | TF1_INTRINSIC
                           | TF1_NAKED
+                          | TF1_ABORTS
                           | TF1_NORETURN
                           | TF1_PURE
                           | TF1_EXPLICIT
@@ -857,7 +863,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         int             sym_offset;     // - SC_AUTO,SC_REGISTER -- fast cgen
     } u;
     symbol_flag         flag;           // - flags
-    uint_8              flag2;          // - flags2
+    symbol_flag2        flag2;          // - flags2
     symbol_class        id;             // - storage class
     fe_seg_id           segid;          // - segment id
 };
@@ -1334,7 +1340,7 @@ extern SYMBOL ScopeASMUseSymbol( NAME, bool * );
 extern void ScopeASMUsesAuto( void );
 extern SYMBOL ScopeASMLookup( NAME );
 extern SYMBOL ScopeIntrinsic( bool );
-extern void ScopeAuxName( char *, AUX_INFO * );
+extern void ScopeAuxName( const char *, AUX_INFO * );
 
 extern SYMBOL ScopeInsert( SCOPE, SYMBOL, NAME );
 extern bool ScopeCarefulInsert( SCOPE, SYMBOL *, NAME );
@@ -1628,8 +1634,8 @@ extern TYPE MakePragmaModifier( AUX_INFO * );
 extern TYPE AddNonFunctionPragma( TYPE, TYPE );
 extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
-extern TYPE MakePragma( char * );
-extern TYPE MakeIndexPragma( unsigned );
+extern TYPE MakePragma( const char * );
+extern TYPE MakeIndexPragma( magic_word_idx );
 extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern bool FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );

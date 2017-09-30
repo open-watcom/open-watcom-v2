@@ -70,9 +70,9 @@ static BOOL HandleDialogs( WORD wparam )
 } /* HandleDialogs */
 
 /*
- * SaveExtra - save extra to file
+ * SaveHeader - save header to file
  */
-static void SaveExtra( FILE *f )
+static void SaveHeader( FILE *f )
 {
     time_t      tod;
 
@@ -81,7 +81,23 @@ static void SaveExtra( FILE *f )
     fprintf( f,"%s", ctime( &tod ) );
     fprintf( f,"------------------------------------------------------------------------\n" );
 
-} /* SaveExtra */
+} /* SaveHeader */
+
+static char *SaveLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}
 
 /*
  * WindowProc - main window message handler
@@ -157,12 +173,10 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             EraseLog();
             break;
         case MENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd,
-                         GetListBoxHwnd( ListBox ) );
+            SaveListBox( SLB_SAVE_AS, SaveHeader, SaveLine, "", AppName, hwnd, GetListBoxHwnd( ListBox ) );
             break;
         case MENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName,
-                         hwnd, GetListBoxHwnd( ListBox ) );
+            SaveListBox( SLB_SAVE_TMP, SaveHeader, SaveLine, ".\\drwat.txt", AppName, hwnd, GetListBoxHwnd( ListBox ) );
             break;
         case MENU_CLEAR:
             ClearListBox( ListBox );
@@ -188,7 +202,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             WWinHelp( hwnd, DR_HELP_FILE, HELP_CONTENTS, 0 );
             break;
         case MENU_HELP_SRCH:
-            WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
+            WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             break;
         case MENU_HELP_ON_HELP:
             WWinHelp( hwnd, HELP_HELP_FILE, HELP_HELPONHELP, 0 );

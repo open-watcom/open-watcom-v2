@@ -15,8 +15,8 @@
 
 :include cpponly.sp
 
-namespace std {
-
-} // namespace std
+:include nsstd.sp
+:include nyi.sp
+:include nsstdepi.sp
 
 #endif

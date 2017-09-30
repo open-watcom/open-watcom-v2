@@ -32,6 +32,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stddef.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include "linuxsys.h"

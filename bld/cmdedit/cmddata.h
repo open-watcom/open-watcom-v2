@@ -59,7 +59,7 @@ GLOBAL CURSOR  Cur;            // cursor information
 GLOBAL KBDDESC Kbd;            // Keyboard information
 GLOBAL KBDCHAR KbdChar;        // A character gotten from the keyboard
 GLOBAL USHORT  KbdHandle;      // The handle for kbd$ (OS/2)
-GLOBAL char    far *PFChars;   // chars from a pfkey that we pretend are typed
+GLOBAL char    __far *PFChars;  // chars from a pfkey that we pretend are typed
 GLOBAL char    Line[LINE_WIDTH];// the buffer for the command line
 
 GLOBAL int     AlwaysSave;
@@ -74,15 +74,7 @@ GLOBAL int     WantAlias;
 GLOBAL int     HideDirCmds;
 GLOBAL int     AliasSize;
 GLOBAL int     AppendSlash;
-
-#ifdef DOS
-    extern char far * far AliasList;
-#else
-    extern char far * AliasList;
-    GLOBAL char AliasArea[ 2048 ]; /* The DLL seems to need static memory */
-#endif
-
-GLOBAL int      HaveDirent;
-GLOBAL int      NextFileCalls;
-GLOBAL char     PathBuff[LINE_WIDTH];
-GLOBAL char far *PathCurr;
+GLOBAL int     HaveDirent;
+GLOBAL int     NextFileCalls;
+GLOBAL char    PathBuff[LINE_WIDTH];
+GLOBAL char    __far *PathCurr;

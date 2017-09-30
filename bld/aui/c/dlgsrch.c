@@ -56,7 +56,7 @@ static  void    GetRXStatus( gui_window *gui )
 
     magic = SrchMagicChars;
     for( i = CTL_FIRST_RX; i <= CTL_LAST_RX; ++i ) {
-        if( GUIIsChecked( gui, i ) ) {
+        if( GUIIsChecked( gui, i ) == GUI_CHECKED ) {
             *magic++ = MetaChar(i);
         }
     }
@@ -69,7 +69,7 @@ static  void    SetRXStatus( gui_window *gui )
     int i;
 
     for( i = CTL_FIRST_RX; i <= CTL_LAST_RX; ++i ) {
-        GUISetChecked( gui, i, strchr( SrchMagicChars, MetaChar(i) ) != NULL );
+        GUISetChecked( gui, i, ( strchr( SrchMagicChars, MetaChar(i) ) != NULL ) ? GUI_CHECKED : GUI_NOT_CHECKED );
     }
 }
 
@@ -123,7 +123,8 @@ extern void DlgSetHistory( gui_window *gui, void *history, char *cmd,
     int         i;
 
     GUISetFocus( gui, edit );
-    if( !WndPrevFromHistory( history, cmd ) ) return;
+    if( !WndPrevFromHistory( history, cmd ) )
+        return;
     GUISetText( gui, edit, cmd );
     GUISelectAll( gui, edit, true );
     GUIClearList( gui, list );
@@ -131,12 +132,13 @@ extern void DlgSetHistory( gui_window *gui, void *history, char *cmd,
         /* nothing */
     }
     i = -1;
-    for( ;; ) {
-        if( !WndNextFromHistory( history, cmd ) ) break;
+    for( ; WndNextFromHistory( history, cmd ); ) {
         GUIAddText( gui, list, cmd );
         ++i;
     }
-    if( i >= 0 ) GUISetCurrSelect( gui, list, i );
+    if( i >= 0 ) {
+        GUISetCurrSelect( gui, list, i );
+    }
 }
 
 
@@ -184,8 +186,8 @@ static void     GetDlgStatus( gui_window *gui, dlg_search *dlg )
     dlg->wnd->searchitem = GUIGetText( gui, CTL_SRCH_EDIT );
     if( dlg->wnd->searchitem == NULL )
         dlg->direction = 0;
-    dlg->case_ignore = GUIIsChecked( gui, CTL_SRCH_CASE );
-    dlg->use_rx = GUIIsChecked( gui, CTL_SRCH_RX );
+    dlg->case_ignore = ( GUIIsChecked( gui, CTL_SRCH_CASE ) == GUI_CHECKED );
+    dlg->use_rx = ( GUIIsChecked( gui, CTL_SRCH_RX ) == GUI_CHECKED );
     if( dlg->history != NULL ) {
         WndSaveToHistory( dlg->history, dlg->wnd->searchitem );
     }
@@ -196,8 +198,8 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
     char        cmd[256];
 
     dlg->direction = 0;
-    GUISetChecked( gui, CTL_SRCH_CASE, dlg->case_ignore );
-    GUISetChecked( gui, CTL_SRCH_RX, dlg->use_rx );
+    GUISetChecked( gui, CTL_SRCH_CASE, ( dlg->case_ignore ) ? GUI_CHECKED : GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_SRCH_RX, ( dlg->use_rx ) ? GUI_CHECKED : GUI_NOT_CHECKED );
     GUISetText( gui, CTL_SRCH_EDIT, dlg->wnd->searchitem );
     DlgSetHistory( gui, dlg->history, cmd, CTL_SRCH_EDIT, CTL_SRCH_LIST );
 }

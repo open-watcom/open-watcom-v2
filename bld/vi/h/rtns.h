@@ -78,7 +78,7 @@ vi_rc   ReadAFile( linenum, const char * );
 
 /* clset.c */
 vi_rc   Set( const char * );
-char    *GetASetVal( const char *token );
+const char *GetASetVal( const char *token );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
@@ -767,7 +767,7 @@ vi_rc   NewStatusWindow( void );
 vi_rc   ExpandWhiteSpace( void );
 vi_rc   CompressWhiteSpace( void );
 bool    ExpandTabsInABufferUpToColumn( int, char *, int, char *, int );
-bool    ExpandTabsInABuffer( char *, int, char *, int );
+bool    ExpandTabsInABuffer( const char *, int, char *, int );
 int     InsertTabSpace( int, char *, bool * );
 int     GetVirtualCursorPosition( char *, int );
 int     VirtualColumnOnCurrentLine( int );
@@ -826,13 +826,13 @@ undo    *PopUndoStack( undo_stack *stack );
 void    PushUndoStack( undo *item, undo_stack *stack );
 
 /* wingen.c */
-vi_rc   DisplayExtraInfo( window_info *, window_id *, char  _NEAR * _NEAR *, int );
+vi_rc   DisplayExtraInfo( window_info *, window_id *, const char  _NEAR * _NEAR *, int );
 vi_rc   NewMessageWindow( void );
 vi_rc   NewWindow2( window_id *, window_info * );
 void    Message1( const char *, ... );
 void    Message1Box( const char *, ... );
 void    Message2( const char *, ... );
-vi_rc   WPrintfLine( window_id, int, char *, ... );
+vi_rc   WPrintfLine( window_id, int, const char *, ... );
 bool    ColumnInWindow( int, int * );
 void    SetWindowSizes( void );
 void    SetWindowCursor( void );

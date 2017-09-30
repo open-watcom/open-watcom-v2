@@ -41,12 +41,14 @@
 #include "javaname.h"
 #include "jvmerr.h"
 
+#define OP_TRUNC        0x08
+
 extern HANDLE           FakeHandle;
 extern bool             TaskLoaded;
 
 extern unsigned         DoAccess();
 
-#define OP_TRUNC        0x08
+static const DWORD      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 trap_retval ReqFile_get_config( void )
 {
@@ -143,7 +145,7 @@ trap_retval ReqFile_seek( void )
         ret->pos = -1;
         return( sizeof( *ret ) );
     }
-    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, NULL, acc->mode );
+    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, NULL, local_seek_method[acc->mode] );
     if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
     } else {

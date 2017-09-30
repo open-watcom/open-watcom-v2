@@ -74,23 +74,23 @@ OBJS = macros.o main.o mautodep.o mautoomf.o mautoorl.o mautores.o \
  mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
  mtarget.o mupdate.o mvecstr.o dostimet.o clibext.o
 
-wsplice: wsplice.o clibext.o
+wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
-usage.gh : ../h/usage.sp wsplice
-	./wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
+usage.gh : ../h/usage.sp wsplice.exe
+	./wsplice.exe -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
 
-cretype : ../c/cretype.c
+cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -o $@ $?
 
-isarray.gh : cretype
-	./cretype > $@
+isarray.gh : cretype.exe
+	./cretype.exe > $@
 
-$(OWBINDIR)/wmake: wmake
-	cp wmake $@
+$(OWBINDIR)/wmake: wmake.exe
+	cp wmake.exe $@
 
-wmake: usage.gh isarray.gh $(OBJS)
+wmake.exe: usage.gh isarray.gh $(OBJS)
 	$(CC) -g $(OBJS) -o $@
 
 clean:
-	rm -f *.o *.gh
+	rm -f *.o *.gh *.exe

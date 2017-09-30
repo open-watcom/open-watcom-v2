@@ -58,12 +58,12 @@ STD1::uint32_t ExternalFiles::write( std::FILE *out )
     for( ConstTableIter itr = table.begin(); itr != table.end(); ++itr ) {
         std::string buffer;
         wtombstring( itr->first, buffer );
-        size_t length( buffer.size() );
+        std::size_t length( buffer.size() );
         if( length > 255 ) {
             buffer.erase( 255 );
             length = 255;
         }
-        size_t written;
+        std::size_t written;
         if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out) == EOF ||
             ( written = std::fwrite( buffer.data(), sizeof( char ), length, out ) ) != length )
             throw FatalError( ERR_WRITE );

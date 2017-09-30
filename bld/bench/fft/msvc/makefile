@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\fft.mif
+!include ../fft.mif

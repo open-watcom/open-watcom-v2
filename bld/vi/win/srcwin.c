@@ -121,16 +121,16 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             cmd = Expand( tmp, cmd, vl );
         }
         *result = ERR_INVALID_COMMAND;
-        if( !GetDWORD( &cmd, &left ) ){
+        if( !GetDWORD( &cmd, &left ) ) {
             return( true );
         }
-        if( !GetDWORD( &cmd, &top ) ){
+        if( !GetDWORD( &cmd, &top ) ) {
             return( true );
         }
-        if( !GetDWORD( &cmd, &width ) ){
+        if( !GetDWORD( &cmd, &width ) ) {
             return( true );
         }
-        if( !GetDWORD( &cmd, &height ) ){
+        if( !GetDWORD( &cmd, &height ) ) {
             return( true );
         }
         ShowWindow( root_window_id, SW_SHOWNORMAL );
@@ -265,22 +265,22 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_KEY, (HELP_DATA)(LPCSTR)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_KEY, (HELP_DATA)(LPCSTR)cmd );
             }
             break;
         case WINHELP_PARTIALKEY:
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)cmd );
             }
             break;
         }

@@ -31,9 +31,8 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
-#include "doscall.h"
 #include "uidef.h"
+#include "doscall.h"
 
 
 void UIAPI uispawnstart( void )

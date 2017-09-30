@@ -77,11 +77,11 @@ extern "C" {
         - tell the debugger to run a command
 
         DebuggerBreakAfterReturnWithMessage( num, msg ) \
-        - like checkenterdebuggerwithmessage, only it delays until after
+        - like CheckEnterDebuggerWithMessage, only it delays until after
           num returns have happened
 
         DebuggerBreakWithMessageAndUnwind( num, msg ) \
-        - like checkenterdebuggerwithmessage, plus cause the debugger to
+        - like CheckEnterDebuggerWithMessage, plus cause the debugger to
           display the app with the stack unwound 'num' levels
 
  */

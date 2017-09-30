@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <windows.h>
 #include "rtdata.h"
 #include "pdreg.h"
@@ -59,14 +60,14 @@ _WCRTLINK int _ProcSetsFP( _PDATA *pdata )
 
 _WCRTLINK _EXCINFO *_SetPData( _EXCINFO *info )
 {
-    info->pdata = RtlLookupFunctionEntry( info->pc );
+    info->FunctionEntry = RtlLookupFunctionEntry( info->ControlPC );
     return info;
 }
 
 
 _WCRTLINK void _NextExcInfo( _EXCINFO *info )
 {
-    info->pc = RtlVirtualUnwind( info->pc, info->pdata, &info->ContextRecord, &info->InFunction, info->EstablisherFrame, 0 );
+    info->ControlPC = RtlVirtualUnwind( info->ControlPC, info->FunctionEntry, &info->ContextRecord, &info->InFunction, info->EstablisherFrame, NULL );
     _SetPData( info );
 }
 
@@ -75,8 +76,7 @@ _WCRTLINK void _InitExcInfo( _EXCINFO *info )
 {
     RtlCaptureContext( &info->ContextRecord );
     info->InFunction = 1;
-    info->pc      = GetContextReg( &info->ContextRecord, Ra );
-
+    info->ControlPC = GetContextReg( &info->ContextRecord, Ra );
     _SetPData( info );
     _NextExcInfo( info );
 }

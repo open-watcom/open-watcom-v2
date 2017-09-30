@@ -218,12 +218,16 @@ void WriteGroups( void )
 static void WriteAbsSeg( void *_leader )
 /**************************************/
 {
-    seg_leader *leader = _leader;
+    seg_leader  *leader = _leader;
 
     if( leader->info & SEG_ABSOLUTE ) {
         WriteFormat( 0, "%s", leader->segname );
         WriteFormat( 24, "%s", leader->class->name );
-        WriteFormat( 40, "%a", &leader->seg_addr );
+        if( (FmtData.type & MK_16BIT) && (leader->info & USE_32) ) {
+            WriteFormat( 40, "%A", &leader->seg_addr );
+        } else {
+            WriteFormat( 40, "%a", &leader->seg_addr );
+        }
         WriteFormat( 60, "%h", leader->size );
         WriteMapNL( 1 );
     }
@@ -232,7 +236,7 @@ static void WriteAbsSeg( void *_leader )
 static void WriteNonAbsSeg( void *_seg )
 /**************************************/
 {
-    seg_leader *seg = _seg;
+    seg_leader  *seg = _seg;
 
     if( (seg->info & SEG_ABSOLUTE) == 0 ) {
         WriteFormat( 0, "%s", seg->segname );
@@ -240,7 +244,11 @@ static void WriteNonAbsSeg( void *_seg )
         if( seg->group != NULL ) {
             WriteFormat( 38, "%s", seg->group->sym->name );
         }
-        WriteFormat( 53, "%a", &seg->seg_addr );
+        if( (FmtData.type & MK_16BIT) && (seg->info & USE_32) ) {
+            WriteFormat( 53, "%A", &seg->seg_addr );
+        } else {
+            WriteFormat( 53, "%a", &seg->seg_addr );
+        }
         WriteFormat( 69, "%h", seg->size );
         WriteMapNL( 1 );
     } else {
@@ -384,12 +392,12 @@ static void WriteVerbSeg( void *_seg )
 /************************************/
 // NYI: completely broken for absolute segments
 {
-    segdata    *seg = _seg;
+    segdata     *seg = _seg;
     char        star;
     char        bang;
     char        see;
     targ_addr   addr;
-    seg_leader *leader;
+    seg_leader  *leader;
 
     if( seg->isdead )
         return;
@@ -415,7 +423,11 @@ static void WriteVerbSeg( void *_seg )
     }
     addr = leader->seg_addr;
     addr.off += seg->a.delta;
-    WriteFormat( 53, "%a%c%c%c", &addr, star, see, bang );
+    if( (FmtData.type & MK_16BIT) && seg->is32bit ) {
+        WriteFormat( 53, "%A%c%c%c", &addr, star, see, bang );
+    } else {
+        WriteFormat( 53, "%a%c%c%c", &addr, star, see, bang );
+    }
     WriteFormat( 70, "%h", seg->length );
     WriteMapNL( 1 );
 }
@@ -873,6 +885,15 @@ void MapSizes( void )
     }
     if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
+    }
+    if( FmtData.u.os2.no_stub ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, "none" );
+    } else if( ( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) && FmtData.u.os2.stub_file_name != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.os2.stub_file_name );
+    } else if( (FmtData.type & MK_DOS16M) && FmtData.u.d16m.stub != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.d16m.stub );
+    } else if( (FmtData.type & MK_PHAR_LAP) && FmtData.u.phar.stub != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.phar.stub );
     }
 }
 

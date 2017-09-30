@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "uidef.h"
 #include "uiattrs.h"
 #include "uivirt.h"
+
+
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
 static ORD              OldCursorRow;

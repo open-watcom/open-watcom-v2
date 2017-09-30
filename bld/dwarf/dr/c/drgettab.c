@@ -196,7 +196,7 @@ void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
     finish = start + DWRVMReadDWord( start );
     op_base = DWRVMReadByte( start + offsetof( stmt_prologue, opcode_base ) );
     start += offsetof( stmt_prologue, standard_opcode_lengths );
-    oparray = __alloca( op_base - 1 );
+    oparray = walloca( op_base - 1 );
     for( index = 0; index < op_base - 1; index++ ) {
         oparray[index] = DWRVMReadByte( start );
         start++;

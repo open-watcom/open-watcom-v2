@@ -32,12 +32,13 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <streambu>
 #endif
 #include "ioutil.h"
 #include "lock.h"
+
 
 namespace std {
 
@@ -65,7 +66,7 @@ namespace std {
             if( waiting > len ) {           // more than we have to sputn?
                 waiting = len;
             }
-            ::memcpy( pptr(), buf, waiting );
+            memcpy( pptr(), buf, waiting );
             pbump( waiting );
         } else {
             if( overflow( *buf ) == EOF ) {

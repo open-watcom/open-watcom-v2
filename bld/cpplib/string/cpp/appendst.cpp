@@ -60,9 +60,8 @@
 
 #include "strng.h"
 
-void String::__AppendToStringRep( const String &l, const char *r,
-/***************************************************************/
-    size_t rlen ) {
+void String::__AppendToStringRep( const String &l, const char *r, std::size_t rlen ) 
+/**********************************************************************************/
 // Append r/rlen to l, leaving *this pointing to the result.
 // For any append/concatenate operator where the left side is a String,
 // it might be possible to use realloc() to efficiently extend the
@@ -73,7 +72,8 @@ void String::__AppendToStringRep( const String &l, const char *r,
 // some other String(s) might be left with bad srep pointers!
 // Also, note that *this and "l" might be the same object, so be careful
 // about the reference count when altering the "srep" pointer.
-    size_t l_endoffset;
+{
+    std::size_t l_endoffset;
 
     l_endoffset = l.__offset + l.__slength;
 
@@ -84,7 +84,7 @@ void String::__AppendToStringRep( const String &l, const char *r,
         // If "r" is small enough to fit on the end of "l"
         // (in the unused area), then copy it there:
         if( l.__srep->__avail_length - l.__srep->__used_length >= rlen ) {
-            ::memcpy( l.__srep->__value + l.__srep->__used_length, r, rlen );
+            std::memcpy( l.__srep->__value + l.__srep->__used_length, r, rlen );
             l.__srep->__used_length += rlen;
             if( this == &l ) {
                 __slength += rlen;
@@ -109,7 +109,7 @@ void String::__AppendToStringRep( const String &l, const char *r,
             if( new_srep == NULL ) {
                 __FreeStringRep();
             } else {
-                ::memcpy( new_srep->__value + l_endoffset, r, rlen );
+                std::memcpy( new_srep->__value + l_endoffset, r, rlen );
                 if( this == &l ) {
                     __slength += rlen;
                     __srep     = new_srep;

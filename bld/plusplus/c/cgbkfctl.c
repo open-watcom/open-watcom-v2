@@ -110,7 +110,7 @@ FN_CTL *FnCtlPush(              // PUSH FILE CONTROL
     fctl->dtor_reg_reqd  = false;
     fctl->debug_info     = ( 0 == CgBackInlinedDepth() )
                          && ( GenSwitches
-                            & ( NUMBERS | DBG_TYPES | DBG_LOCALS ) );
+                            & ( DBG_NUMBERS | DBG_TYPES | DBG_LOCALS ) );
     if( has_cdtor ) {
         fctl->cdtor_val = cd_arg;
         fctl->has_cdtor_val = true;

@@ -263,7 +263,7 @@ void TestMisc( void )
     void *              addr;
     int                 count;
 
-    addr = memset( bufA, 0x00, 80 );            /* zero out memory */
+    addr = memset( bufA, 0, 80 );            /* zero out memory */
     VERIFY( addr == bufA );
 
     for( count=0; count<80; count++ )           /* ensure all zero bytes */
@@ -272,7 +272,7 @@ void TestMisc( void )
     #if defined( _M_IX86 )
     {
         void __far *    addrFar;
-        addrFar = _fmemset( bufB, 0x00, 80 );   /* zero out memory */
+        addrFar = _fmemset( bufB, 0, 80 );   /* zero out memory */
         VERIFY( addrFar == bufB );
 
         for( count=0; count<80; count++ ) {     /* ensure all zero bytes */
@@ -280,7 +280,7 @@ void TestMisc( void )
         }
     }
     #else
-        memset( bufB, 0x00, 80 );               /* zero out memory */
+        memset( bufB, 0, 80 );               /* zero out memory */
     #endif
 
     strcpy( bufA, "eHll,ow rodl" );             /* initialize string */

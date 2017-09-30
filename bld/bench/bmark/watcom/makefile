@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\bmark.mif
+!include ../bmark.mif

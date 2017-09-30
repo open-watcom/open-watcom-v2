@@ -48,31 +48,44 @@ _WCRTLINK void *_expand( void *cstg, size_t amount )
 
 _WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 {
+    size_t  growth_size;
+#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+#else
     struct {
         unsigned expanded : 1;
     }       flags;
     int     retval;
-    size_t  growth_size;
+#endif
 
-    flags.expanded = 0;
     _AccessNHeap();
+#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+    if( __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size ) != __HM_SUCCESS ) {
+        cstg = NULL;
+    }
+#else
+    flags.expanded = 0;
     for( ;; ) {
         retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
         if( retval == __HM_SUCCESS ) {
-            _ReleaseNHeap();
-            return( cstg );
-        }
-        if( retval == __HM_FAIL || !__IsCtsNHeap() )
             break;
+        }
+    #if defined( __DOS_EXT__ )
+        if( retval == __HM_FAIL || _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    #else
+        if( retval == __HM_FAIL ) {
+    #endif
+            cstg = NULL;
+            break;
+        }
         if( retval == __HM_TRYGROW ) {
-            if( flags.expanded )
-                break;
-            if( __ExpandDGROUP( growth_size ) == 0 ) {
+            if( flags.expanded || __ExpandDGROUP( growth_size ) == 0 ) {
+                cstg = NULL;
                 break;
             }
             flags.expanded = 1;
         }
     }
+#endif
     _ReleaseNHeap();
-    return( NULL );
+    return( cstg );
 }

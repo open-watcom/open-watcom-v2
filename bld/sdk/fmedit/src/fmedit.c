@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
-#define INCLUDE_COMMDLG_H
-#include <wwindows.h>
 #include "global.h"
 #include "dllmain.h"
 

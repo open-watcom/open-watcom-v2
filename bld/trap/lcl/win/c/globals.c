@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trpsys.h"

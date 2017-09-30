@@ -51,10 +51,11 @@ if ($#ARGV == -1) {
     exit 1;
 }
 
-my $home      = $Common::config{'HOME'};
-my $OW        = $Common::config{'OW'};
-my $TOOLS     = $Common::config{'TOOLS'};
-my $relroot   = $Common::config{'RELROOT'};
+my $home       = $Common::config{'HOME'};
+my $OW         = $Common::config{'OW'};
+my $TOOLS      = $Common::config{'TOOLS'};
+my $relroot    = $Common::config{'RELROOT'};
+my $ow_obj_dir = 'buildsrv';
 
 if ($^O eq 'MSWin32') {
     $OStype = 'WIN32';
@@ -127,9 +128,11 @@ sub set_prev_changeno
 sub batch_output_make_change_objdir
 {
     if ($OStype eq 'UNIX') {
+        print BATCH 'if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi';
         print BATCH 'if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi';
         print BATCH 'cd $OWOBJDIR';
     } else {
+        print BATCH 'if not exist %OWBINDIR% mkdir %OWBINDIR%';
         print BATCH 'if not exist %OWOBJDIR% mkdir %OWOBJDIR%';
         print BATCH 'cd %OWOBJDIR%';
     }
@@ -218,9 +221,10 @@ sub make_boot_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
-        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        else                        { print BATCH; }
+        else                         { print BATCH; }
     }
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
@@ -250,6 +254,7 @@ sub make_build_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
@@ -286,7 +291,8 @@ sub make_docs_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)            { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv OWTOOLS=/i)            { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv OWOBJDIR=/i)          { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
+        elsif (/$setenv OWTOOLS=/i)           { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i)          { ; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
         elsif (/$setenv OWWIN95HC=/i)         { ; }
@@ -328,6 +334,7 @@ sub make_test_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
@@ -363,9 +370,10 @@ sub make_installer_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
-        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        else                        { print BATCH; }
+        else                         { print BATCH; }
     }
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
@@ -392,16 +400,14 @@ sub process_log
     while (<LOGFILE>) {
         s/\r?\n//;
         if (/^[=]+ .* [=]+$/) {     # new project start
-            if ($project_name ne 'none') {
+            if ($project_name ne 'none' && $arch_test ne '') {
                 if ($first_message eq 'yes') {
                     print REPORT "$title Failed!";
                     $result = 'fail';
                     $first_message = 'no';
                 }
-                if ($arch_test ne '') {
-                    print REPORT "\t\t$project_name\t$arch_test";
-                    $result = 'fail';
-                }
+                print REPORT "\t\t$project_name\t$arch_test";
+                $result = 'fail';
             }
             @fields = split;
             $project_name = Common::remove_OWloc($fields[2]);
@@ -409,6 +415,17 @@ sub process_log
         } elsif (/^TEST/) {
             @fields = split;
             $arch_test = $fields[1];
+        } elsif (/^FAIL/) {
+            if ($project_name ne 'none' && $arch_test ne '') {
+                if ($first_message eq 'yes') {
+                    print REPORT "$title Failed!";
+                    $result = 'fail';
+                    $first_message = 'no';
+                }
+                print REPORT "\t\t$project_name\t$arch_test";
+                $result = 'fail';
+            }
+            $project_name = 'none';
         } elsif (/^PASS/) {
             $project_name = 'none';
         }
@@ -416,15 +433,13 @@ sub process_log
     close(LOGFILE);
 
     # Handle the case where the failed test is the last one.
-    if ($project_name ne 'none') {
-      if ($arch_test ne '') {
+    if ($project_name ne 'none' && $arch_test ne '') {
         if ($first_message eq 'yes') {
             print REPORT "$title Failed!";
             $first_message = 'no';
         }
         print REPORT "\t\t$project_name\t$arch_test";
         $result = 'fail';
-      }
     }
 
     # This is what we want to see.
@@ -513,7 +528,7 @@ sub run_boot_build
 
 sub run_build
 {
-    my $logfile = "$OW\/bld\/pass.log";
+    my $logfile = "$OW\/build\/$ow_obj_dir\/pass.log";
     my $bldbase = "$home\/$Common::config{'BLDBASE'}";
     my $bldlast = "$home\/$Common::config{'BLDLAST'}";
 

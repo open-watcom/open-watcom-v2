@@ -452,7 +452,7 @@ char *MemStrDup( const char *string )
 {
     char *rptr;
 
-    if( string == NULL ){
+    if( string == NULL ) {
         rptr = NULL;
     } else {
         rptr = (char *)MemAlloc( strlen( string ) + 1 );

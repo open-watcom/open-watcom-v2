@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
-#include "cover.h"
 #include <string.h>
+#include "cover.h"
 
 #define MAX_CNAME       10
 
@@ -40,6 +40,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     DWORD               alias;
     MDICREATESTRUCT     *mcs;
     char                class[MAX_CNAME];
+    int                 len;
 
     if( hwnd == (HWND)~0 )
         return( FALSE );
@@ -66,9 +67,8 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
      */
     if( hwnd == 0 )
         return( FALSE );
-    class[0] = 0;
-    GetClassName( hwnd, class, MAX_CNAME );
-    class[MAX_CNAME-1] = 0;
+    len = GetClassName( hwnd, class, sizeof( class ) );
+    class[len] = '\0';
 
     /*
      * combo box messages

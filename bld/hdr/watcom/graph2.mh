@@ -1,1 +1,2 @@
-:include graph.mh
+:keep VERSION2
+:include watcom/graph.mh

@@ -130,14 +130,14 @@ static void rtRegister(         // REGISTER A FUNCTION BY R/T CALL
 
 static SYMBOL registerHandler(  // REGISTER THE HANDLER
     SYMBOL rw,                  // - symbol for R/W block
-    unsigned rtn_code )         // - R/T handler code
+    RTF rt_code )               // - R/T handler code
 {
 #if 0
     CgAssignPtr( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr )
-               , CgAddrSymbol( RunTimeCallSymbol( rtn_code ) ) );
+               , CgAddrSymbol( RunTimeCallSymbol( rt_code ) ) );
 #else
     CgAssign( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr )
-            , CgAddrSymbol( RunTimeCallSymbol( rtn_code ) )
+            , CgAddrSymbol( RunTimeCallSymbol( rt_code ) )
             , TY_CODE_PTR );
 #endif
     return rw;

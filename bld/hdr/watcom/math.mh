@@ -52,6 +52,7 @@ using std::tanh;
 
 :: C99 functions in math.h that are currently considered extensions.
 :include extc99.sp
+
 using std::acosh;
 using std::asinh;
 using std::atanh;
@@ -102,7 +103,7 @@ using std::nanl;
 :include pshpackl.sp
 
 _WCRTLINK extern const double   *__get_HugeValue_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _HugeValue             (*__get_HugeValue_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define _HugeValue             _HugeValue_br
@@ -152,21 +153,19 @@ _WMRTDATA extern const float    __f_posqnan;
 #define INFINITY   __f_infinity
 #define NAN        __f_posqnan
 
-/* The sign of the gamma function as returned by 
+/* The sign of the gamma function as returned by
  * lgamma
  */
 extern int signgam;
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WMRTLINK extern double ceil( double __x );
 _WMRTLINK extern double floor( double __x );
 #if defined(_M_IX86) && 0
 #pragma aux ceil  parm nomemory modify nomemory
 #pragma aux floor parm nomemory modify nomemory
 #endif
+
 _WMRTLINK extern double frexp( double __value, int *__exp );
 _WMRTLINK extern double ldexp( double __x, int __exp );
 _WMRTLINK extern double modf( double __value, double *__iptr );
@@ -191,6 +190,7 @@ _WMIRTLINK extern double tanh( double __x );
 
 :: C99 functions in math.h that are currently considered extensions.
 :include extc99.sp
+
 _WMRTLINK extern double acosh( double __x );
 _WMRTLINK extern double asinh( double __x );
 _WMRTLINK extern double atanh( double __x );
@@ -232,7 +232,7 @@ _WMRTLINK extern double nanl(const char *ignored);
 #endif
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define FP_ILOGBNAN  (-32767-1)
  #define FP_ILOGB0    32767
 #else
@@ -248,16 +248,13 @@ extern int __math_errhandling_flag;
 #define MATH_ERRNO      1
 #define MATH_ERREXCEPT  2
 /* As an extension, support Watcom errors as well */
-#define MATH_ERRWATCOM  4   
+#define MATH_ERRWATCOM  4
 
 #define math_errhandling __math_errhandling_flag
 
 :include extepi.sp
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :include ext.sp
 ::
 :: Begin of extension section
@@ -266,14 +263,14 @@ extern int __math_errhandling_flag;
 /* non-ANSI */
 
 struct _complex {
-        double  x;
-        double  y;
+    double  x;
+    double  y;
 };
 :segment !CNAME
 
 struct complex {
-        double  x;
-        double  y;
+    double  x;
+    double  y;
 };
 :endsegment
 
@@ -290,20 +287,20 @@ _WMRTLINK extern double yn( int __n, double __x );
  */
 
 struct _exception {
-        int     type;           /* type of error, see below */
-        const char *name;       /* name of math function */
-        double  arg1;           /* value of first argument to function */
-        double  arg2;           /* second argument (if indicated) */
-        double  retval;         /* default return value */
+    int     type;           /* type of error, see below */
+    const char *name;       /* name of math function */
+    double  arg1;           /* value of first argument to function */
+    double  arg2;           /* second argument (if indicated) */
+    double  retval;         /* default return value */
 };
 :segment !CNAME
 
 struct  exception {
-        int     type;           /* type of error, see below */
-        const char *name;       /* name of math function */
-        double  arg1;           /* value of first argument to function */
-        double  arg2;           /* second argument (if indicated) */
-        double  retval;         /* default return value */
+    int     type;           /* type of error, see below */
+    const char *name;       /* name of math function */
+    double  arg1;           /* value of first argument to function */
+    double  arg2;           /* second argument (if indicated) */
+    double  retval;         /* default return value */
 };
 :endsegment
 
@@ -314,9 +311,9 @@ struct  exception {
 #define TLOSS           5       /* total loss of significance */
 #define PLOSS           6       /* partial loss of significance */
 
-_WMRTLINK extern int    matherr( struct _exception * );
+_WCHANDLER extern int   matherr( struct _exception * );
 _WMRTLINK extern double _matherr( struct _exception * );
-_WMRTLINK extern void   _set_matherr( int (*rtn)( struct _exception * ) );
+_WMRTLINK extern void   _set_matherr( int (_WCCALLBACK *rtn)( struct _exception * ) );
 
 _WCRTLINK extern int _dieeetomsbin( double *__x, double *__y );
 _WCRTLINK extern int _dmsbintoieee( double *__x, double *__y );
@@ -333,15 +330,12 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
     Defining the __NO_MATH_OPS macro will stop the compiler from
     recognizing the following functions as intrinsic operators.
 */
-:segment CNAME
-namespace std {
-  #pragma intrinsic(log,cos,sin,tan,sqrt,fabs,pow,atan2,fmod)
-  #pragma intrinsic(acos,asin,atan,cosh,exp,log10,sinh,tanh)
-}
-:elsesegment
+
+:include nsstd.sp
 #pragma intrinsic(log,cos,sin,tan,sqrt,fabs,pow,atan2,fmod)
 #pragma intrinsic(acos,asin,atan,cosh,exp,log10,sinh,tanh)
-:endsegment
+:include nsstdepi.sp
+
 #endif
 
 :include poppack.sp
@@ -352,41 +346,35 @@ namespace std {
 #endif /* __cplusplus not defined */
 :endsegment
 
-#endif
-
+#endif /* _CMATH_INCLUDED */
 :segment CNAME
+
 :: For C++ provide the appropriate overloaded signatures. These signatures
 :: must not be extern "C" (which is why they are down here).
 #ifndef _INCLUDED_FROM_MATH_H
 #ifndef _CMATH_AUX_INCLUDED
 #define _CMATH_AUX_INCLUDED
 
-namespace std {
-
+:include nsstd.sp
   // double
   inline double abs( double __x ) { return( fabs( __x ) ); }
-  inline double pow( double __x, int __y )
-    { return( pow( __x, (double)__y ) ); }
+  inline double pow( double __x, int __y ) { return( pow( __x, (double)__y ) ); }
 
   // float
   inline float abs  ( float __x ) { return( abs  ( (double)__x ) ); }
   inline float acos ( float __x ) { return( acos ( (double)__x ) ); }
   inline float asin ( float __x ) { return( asin ( (double)__x ) ); }
   inline float atan ( float __x ) { return( atan ( (double)__x ) ); }
-  inline float atan2( float __x, float __y )
-    { return( atan2( (double)__x, (double)__y ) ); }
+  inline float atan2( float __x, float __y ) { return( atan2( (double)__x, (double)__y ) ); }
   inline float ceil ( float __x ) { return( ceil ( (double)__x ) ); }
   inline float cos  ( float __x ) { return( cos  ( (double)__x ) ); }
   inline float cosh ( float __x ) { return( cosh ( (double)__x ) ); }
   inline float exp  ( float __x ) { return( exp  ( (double)__x ) ); }
   inline float fabs ( float __x ) { return( fabs ( (double)__x ) ); }
   inline float floor( float __x ) { return( floor( (double)__x ) ); }
-  inline float fmod ( float __x, float __y )
-    { return( fmod( (double)__x, (double)__y ) ); }
-  inline float frexp( float __value, int *__exp )
-    { return( frexp( (double)__value, __exp ) ); }
-  inline float ldexp( float __x, int __exp )
-    { return( ldexp( (double)__x, __exp ) ); }
+  inline float fmod ( float __x, float __y ) { return( fmod( (double)__x, (double)__y ) ); }
+  inline float frexp( float __value, int *__exp ) { return( frexp( (double)__value, __exp ) ); }
+  inline float ldexp( float __x, int __exp ) { return( ldexp( (double)__x, __exp ) ); }
   inline float log  ( float __x ) { return( log  ( (double)__x ) ); }
   inline float log10( float __x ) { return( log10( (double)__x ) ); }
   inline float modf ( float __value, float *__iptr )
@@ -396,10 +384,8 @@ namespace std {
     *__iptr = __i;
     return( __result );
   }
-  inline float pow  ( float __x, float __y )
-    { return( pow  ( (double)__x, (double)__y ) ); }
-  inline float pow  ( float __x, int __y )
-    { return( pow  ( (double)__x, __y ) ); }
+  inline float pow  ( float __x, float __y ) { return( pow  ( (double)__x, (double)__y ) ); }
+  inline float pow  ( float __x, int __y ) { return( pow  ( (double)__x, __y ) ); }
   inline float sin  ( float __x ) { return( sin  ( (double)__x ) ); }
   inline float sinh ( float __x ) { return( sinh ( (double)__x ) ); }
   inline float sqrt ( float __x ) { return( sqrt ( (double)__x ) ); }
@@ -411,20 +397,16 @@ namespace std {
   inline long double acos ( long double __x ) { return( acos ( (double)__x ) ); }
   inline long double asin ( long double __x ) { return( asin ( (double)__x ) ); }
   inline long double atan ( long double __x ) { return( atan ( (double)__x ) ); }
-  inline long double atan2( long double __x, long double __y )
-    { return( atan2( (double)__x, (double)__y ) ); }
+  inline long double atan2( long double __x, long double __y ) { return( atan2( (double)__x, (double)__y ) ); }
   inline long double ceil ( long double __x ) { return( ceil ( (double)__x ) ); }
   inline long double cos  ( long double __x ) { return( cos  ( (double)__x ) ); }
   inline long double cosh ( long double __x ) { return( cosh ( (double)__x ) ); }
   inline long double exp  ( long double __x ) { return( exp  ( (double)__x ) ); }
   inline long double fabs ( long double __x ) { return( fabs ( (double)__x ) ); }
   inline long double floor( long double __x ) { return( floor( (double)__x ) ); }
-  inline long double fmod ( long double __x, long double __y )
-    { return( fmod( (double)__x, (double)__y ) ); }
-  inline long double frexp( long double __value, int *__exp )
-    { return( frexp( (double)__value, __exp ) ); }
-  inline long double ldexp( long double __x, int __exp )
-    { return( ldexp( (double)__x, __exp ) ); }
+  inline long double fmod ( long double __x, long double __y ) { return( fmod( (double)__x, (double)__y ) ); }
+  inline long double frexp( long double __value, int *__exp ) { return( frexp( (double)__value, __exp ) ); }
+  inline long double ldexp( long double __x, int __exp ) { return( ldexp( (double)__x, __exp ) ); }
   inline long double log  ( long double __x ) { return( log  ( (double)__x ) ); }
   inline long double log10( long double __x ) { return( log10( (double)__x ) ); }
   inline long double modf ( long double __value, long double *__iptr )
@@ -434,19 +416,16 @@ namespace std {
     *__iptr = __i;
     return( __result );
   }
-  inline long double pow  ( long double __x, long double __y )
-    { return( pow  ( (double)__x, (double)__y ) ); }
-  inline long double pow  ( long double __x, int __y )
-    { return( pow  ( (double)__x, __y ) ); }
+  inline long double pow  ( long double __x, long double __y ) { return( pow  ( (double)__x, (double)__y ) ); }
+  inline long double pow  ( long double __x, int __y ) { return( pow  ( (double)__x, __y ) ); }
   inline long double sin  ( long double __x ) { return( sin  ( (double)__x ) ); }
   inline long double sinh ( long double __x ) { return( sinh ( (double)__x ) ); }
   inline long double sqrt ( long double __x ) { return( sqrt ( (double)__x ) ); }
   inline long double tan  ( long double __x ) { return( tan  ( (double)__x ) ); }
   inline long double tanh ( long double __x ) { return( tanh ( (double)__x ) ); }
+:include nsstdepi.sp
 
-} // namespace std
+#endif /* _CMATH_AUX_INCLUDED */
 
-#endif
-
-#endif
+#endif /* _INCLUDED_FROM_MATH_H */
 :endsegment

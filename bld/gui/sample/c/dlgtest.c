@@ -31,9 +31,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include "watcom.h"
 #include "sample.h"
 #include "dlgstat.h"
 #include "dlgtest.h"
+#include "wresdefn.h"
+
 
 GUICALLBACK TestDialogEventWnd;
 
@@ -77,7 +80,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );
@@ -149,13 +152,15 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     return( ret );
 }
 
-void TestDialogInit( void )
+#if 0
+static void TestDialogInit( void )
 {
     if( !GUIIsGUI() ) {
         DialogScaled = true;
         ControlsScaled = true;
     }
 }
+#endif
 
 void TestDialogCreate( gui_window *parent )
 {
@@ -207,7 +212,7 @@ void TestDialogCreate( gui_window *parent )
     }
 }
 
-bool DummyEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+static bool DummyEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui = gui;
     gui_ev = gui_ev;

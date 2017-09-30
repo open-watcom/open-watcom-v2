@@ -39,12 +39,12 @@ typedef struct dlg_window_set {
 
 static void SetDlgStatus( gui_window *gui )
 {
-    GUISetChecked( gui, CTL_OPT_AUTO,     false );
-    GUISetChecked( gui, CTL_OPT_BELL,     true );
-    GUISetChecked( gui, CTL_OPT_IMPLICIT, false );
-    GUISetChecked( gui, CTL_OPT_RECURSE,  true );
-    GUISetChecked( gui, CTL_OPT_FLIP,     false );
-    GUISetChecked( gui, CTL_OPT_CASE,     true );
+    GUISetChecked( gui, CTL_OPT_AUTO,     GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_OPT_BELL,     GUI_CHECKED );
+    GUISetChecked( gui, CTL_OPT_IMPLICIT, GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_OPT_RECURSE,  GUI_CHECKED );
+    GUISetChecked( gui, CTL_OPT_FLIP,     GUI_NOT_CHECKED );
+    GUISetChecked( gui, CTL_OPT_CASE,     GUI_CHECKED );
 }
 
 

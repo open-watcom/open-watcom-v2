@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <malloc.h>
 #include <i86.h>
 #include "initfini.h"
@@ -40,7 +41,7 @@
 #include "_int23.h"
 
 
-static void __CommonTerm( void )
+void __CommonTerm( void )
 {
     struct _heapinfo    hinfo;
     void _WCNEAR        *moffs;

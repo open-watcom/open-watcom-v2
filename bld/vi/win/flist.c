@@ -44,7 +44,7 @@ static info *findInfo( char *file_name )
     info    *i;
 
     for( i = InfoHead; i != NULL; i = i->next ) {
-        if( !strcmp( file_name, i->CurrentFile->name ) ) {
+        if( strcmp( file_name, i->CurrentFile->name ) == 0 ) {
             break;
         }
     }
@@ -98,7 +98,7 @@ static int fillBox( HWND list_box )
     count = 0;
     SendMessage( list_box, LB_RESETCONTENT, 0, 0L );
     for( i = InfoHead; i != NULL; i = i->next ) {
-        SendMessage( list_box, LB_ADDSTRING, 0, (LPARAM)i->CurrentFile->name );
+        SendMessage( list_box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)i->CurrentFile->name );
         count++;
     }
     SendMessage( list_box, LB_SETSEL, TRUE, 0L );

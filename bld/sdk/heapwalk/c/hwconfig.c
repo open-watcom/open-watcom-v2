@@ -156,10 +156,8 @@ void ReadConfig( void ) {
                                         Config.glob_xsize, WATCOM_INI );
     Config.glob_ysize = GetPrivateProfileInt( SECT_NAME, GLOB_YSIZE,
                                         Config.glob_ysize, WATCOM_INI );
-    GetPrivateProfileString( SECT_NAME, GSAVE, Config.gfname,
-                        Config.gfname, _MAX_PATH, WATCOM_INI );
-    GetPrivateProfileString( SECT_NAME, LSAVE, Config.lfname,
-                        Config.lfname, _MAX_PATH, WATCOM_INI );
+    GetPrivateProfileString( SECT_NAME, GSAVE, Config.gfname, Config.gfname, _MAX_PATH, WATCOM_INI );
+    GetPrivateProfileString( SECT_NAME, LSAVE, Config.lfname, Config.lfname, _MAX_PATH, WATCOM_INI );
 
     /* read information about the memory window */
 

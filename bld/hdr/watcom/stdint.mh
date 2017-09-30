@@ -63,7 +63,7 @@ using std::uintmax_t;
 :: if __STDC_LIMIT_MACROS is defined.
 ::
 :segment CNAME
-#if defined(__STDC_LIMIT_MACROS)
+#ifdef __STDC_LIMIT_MACROS
 
 :endsegment
 /* Exact-width types. */
@@ -78,7 +78,7 @@ using std::uintmax_t;
 
 #define UINT8_MAX   255
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define UINT16_MAX  65535U
 #else
 :endsegment
@@ -101,7 +101,7 @@ using std::uintmax_t;
 
 #define UINT_LEAST8_MAX   255
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define UINT_LEAST16_MAX  65535U
 #else
 :endsegment
@@ -114,7 +114,7 @@ using std::uintmax_t;
 
 /* Fast minimum-width types. */
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define INT_FAST8_MIN   (-32767-1)
  #define INT_FAST8_MAX   32767
  #define INT_FAST16_MIN  (-32767-1)
@@ -134,7 +134,7 @@ using std::uintmax_t;
 #define INT_FAST64_MAX  9223372036854775807LL
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define UINT_FAST8_MAX   65535U
  #define UINT_FAST16_MAX  65535U
 #else
@@ -149,7 +149,7 @@ using std::uintmax_t;
 
 /* Integer types able to hold object pointers. */
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #if defined(__SMALL__) || defined(__MEDIUM__)
   #define INTPTR_MIN   (-32767-1)
   #define INTPTR_MAX   32767
@@ -180,16 +180,14 @@ using std::uintmax_t;
 #define UINTMAX_MAX  18446744073709551615ULL
 
 /* Limits of wide character types */
-:: Also in wchar.h
-#define WCHAR_MIN       0
-#define WCHAR_MAX       65535U
+:include wcharmax.sp
 #define WINT_MIN        WCHAR_MIN
 #define WINT_MAX        WCHAR_MAX
 
 /* Limits of other integer types. */
 :segment DOS | QNX
-#if defined(_M_I86)
- #if defined(__HUGE__)
+#ifdef _M_I86
+ #ifdef __HUGE__
   #define PTRDIFF_MIN     (-2147483647L-1)
   #define PTRDIFF_MAX     2147483647L
  #else
@@ -220,7 +218,7 @@ using std::uintmax_t;
 :: if __STDC_CONSTANT_MACROS is defined.
 ::
 :segment CNAME
-#if defined(__STDC_CONSTANT_MACROS)
+#ifdef __STDC_CONSTANT_MACROS
 
 :endsegment
 #define INT8_C(x)    (x)
@@ -240,24 +238,8 @@ using std::uintmax_t;
 #endif /* Constant macros. */
 
 :endsegment
-:include saferpro.sp
-
-#if SIZE_MAX > 65535U
-:: In 32-bit environments, objects up to 2GB are allowed. This could be
-:: refined with OS-specific and possibly dynamically determined values.
- #define RSIZE_MAX      (SIZE_MAX >> 1)
-#else
-:: In 16-bit environments, anything up to SIZE_MAX is definitely valid!
- #define RSIZE_MAX      SIZE_MAX
-#endif
-
-:include saferepi.sp
-
 :: In cname version place all these typedefs in std namespace
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 :include exactint.sp
 
 /* Minimum-width types. */
@@ -288,11 +270,25 @@ typedef unsigned long long uint_fast64_t;
 /* Greatest-width types. */
 typedef long long intmax_t;
 typedef unsigned long long uintmax_t;
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
+::::::::: Safer C :::::::::
+:segment !CNAME
+:include saferpro.sp
+
+#if SIZE_MAX > 65535U
+:: In 32-bit environments, objects up to 2GB are allowed. This could be
+:: refined with OS-specific and possibly dynamically determined values.
+ #define RSIZE_MAX      (SIZE_MAX >> 1)
+#else
+:: In 16-bit environments, anything up to SIZE_MAX is definitely valid!
+ #define RSIZE_MAX      SIZE_MAX
+#endif
+
+:include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment !CNAME
 #endif /* __cplusplus not defined */
 :endsegment

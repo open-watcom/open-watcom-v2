@@ -39,6 +39,7 @@
 #include "bool.h"
 #include "watcom.h"
 #include "log.h"
+#include "logi.h"
 #include "mem.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
@@ -47,6 +48,14 @@
 #include "uistr.gh"
 #include "wclbproc.h"
 
+
+typedef struct loginfo {
+    LogConfig           config;
+    void                (*headerfn)( FILE * );
+    HANDLE              instance;
+    HWND                hwnd;
+    bool                init;
+} LogInfo;
 
 /* Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK LogSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
@@ -133,13 +142,13 @@ static void flushLog( bool free )
     WORD        i;
     FILE        *f;
 
-    f = fopen( LogCurInfo.config.curname, "wt+" );
+    f = fopen( LogCurInfo.config.curname, "at" );
     if( f == NULL ) {
         return;
     }
     for( i = 0; i < LinesUsed; i++ ) {
         fwrite( BufLines[i], 1, strlen( BufLines[i] ), f );
-        fwrite( "\r\n", 1, 2, f );
+        fwrite( "\n", 1, 1, f );
     }
     fclose( f );
     if( free ) {
@@ -264,7 +273,7 @@ void LogConfigure( void )
     DLGPROC     dlgproc;
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
         flushLog( true );
@@ -276,9 +285,9 @@ void LogConfigure( void )
 } /* LogConfigure */
 
 /*
- * SetLogDef - set the log configuration to the defaults
+ * LogSetDef - set the log configuration to the defaults
  */
-void SetLogDef( void )
+void LogSetDef( void )
 {
     strcpy( LogCurInfo.config.name, "dflt.log" );
     LogCurInfo.config.type = LOG_TYPE_CONTINUOUS;
@@ -286,29 +295,29 @@ void SetLogDef( void )
     LogCurInfo.config.query_for_name = true;
     LogCurInfo.init = true;
 
-} /* SetLogDef */
+} /* LogSetDef */
 
 /*
- * GetLogConfig - copy the current log configuration information to config
+ * LogGetConfig - copy the current log configuration information to config
  */
-void GetLogConfig( LogConfig *config )
+void LogGetConfig( LogConfig *config )
 {
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     *config = LogCurInfo.config;
 
-} /* GetLogConfig */
+} /* LogGetConfig */
 
 /*
- * SetLogConfig - set current log configuration
+ * LogSetConfig - set current log configuration
  */
-void SetLogConfig( LogConfig *config )
+void LogSetConfig( LogConfig *config )
 {
     LogCurInfo.config = *config;
     LogCurInfo.init = true;
 
-} /* SetLogConfig */
+} /* LogSetConfig */
 
 #define LOG_TYPE                "LOGtype"
 #define LOG_NAME                "LOGname"
@@ -316,14 +325,14 @@ void SetLogConfig( LogConfig *config )
 #define LOG_QUERY               "LOGquery"
 
 /*
- * SaveLogConfig - save the current log configuration
+ * LogSaveConfig - save the current log configuration
  */
-void SaveLogConfig( char *fname, char *section )
+void LogSaveConfig( char *fname, char *section )
 {
     char        buf[10];
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
 
     itoa( LogCurInfo.config.type, buf, 10 );
@@ -336,26 +345,26 @@ void SaveLogConfig( char *fname, char *section )
 
     WritePrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, fname );
 
-} /* SaveLogConfig */
+} /* LogSaveConfig */
 
 /*
- * LoadLogConfig - read log configuration information from the .ini file
+ * LogLoadConfig - read log configuration information from the .ini file
  */
 
-void LoadLogConfig( char *fname, char *section )
+void LogLoadConfig( char *fname, char *section )
 {
-    SetLogDef();
+    LogSetDef();
     LogCurInfo.config.type = GetPrivateProfileInt( section, LOG_TYPE, LogCurInfo.config.type, fname );
     LogCurInfo.config.def_action = GetPrivateProfileInt( section, LOG_ACTION, LogCurInfo.config.def_action, fname );
     LogCurInfo.config.query_for_name = GetPrivateProfileInt( section, LOG_QUERY, LogCurInfo.config.query_for_name, fname ) != 0;
     GetPrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, LogCurInfo.config.name, LOG_MAX_FNAME, fname );
 
-} /* LoadLogConfig */
+} /* LogLoadConfig */
 
 /*
- * SpyLogOut - dump a message to the log file
+ * LogOut - dump a message to the log file
  */
-void SpyLogOut( char *res )
+void LogOut( char *res )
 {
     size_t  len;
 
@@ -376,12 +385,12 @@ void SpyLogOut( char *res )
         }
     }
 
-} /* SpyLogOut */
+} /* LogOut */
 
 /*
- * SpyLogOpen - open the log file
+ * LogOpen - open the log file
  */
-bool SpyLogOpen( void )
+static bool LogOpen( void )
 {
     FILE        *f;
     DLGPROC     dlgproc;
@@ -390,7 +399,7 @@ bool SpyLogOpen( void )
     char        *fmode = "wt";
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( LogCurInfo.config.query_for_name ) {
         if( !getLogName( LogCurInfo.config.name, LogCurInfo.hwnd ) ) {
@@ -402,7 +411,7 @@ bool SpyLogOpen( void )
     case LOG_ACTION_TRUNC:
         break;
     case LOG_ACTION_APPEND:
-        fmode = "wt+";
+        fmode = "at";
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
@@ -411,7 +420,7 @@ bool SpyLogOpen( void )
             FreeProcInstance_DLG( dlgproc );
             switch( ret ) {
             case LOG_APPEND:
-                fmode = "wt+";
+                fmode = "at";
                 break;
             case LOG_REPLACE:
                 break;
@@ -424,36 +433,35 @@ bool SpyLogOpen( void )
     f = fopen( LogCurInfo.config.curname, fmode );
     if( f == NULL ) {
         msgtitle = AllocRCString( LOG_LOG_ERROR );
-        RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle,
-                      MB_OK | MB_ICONEXCLAMATION );
+        RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle, MB_OK | MB_ICONEXCLAMATION );
         FreeRCString( msgtitle );
         return( false );
     }
-    if( LogCurInfo.writefn != NULL ) {
-        LogCurInfo.writefn( f );
+    if( LogCurInfo.headerfn != NULL ) {
+        LogCurInfo.headerfn( f );
     }
     fclose( f );
     LogCurInfo.config.logging = true;
-    LogCurInfo.config.paused = true;
+    LogCurInfo.config.paused = false;
     return( true );
 
-} /* SpyLogOpen */
+} /* LogOpen */
 
 /*
- * SpyLogClose - close the log file
+ * LogClose - close the log file
  */
-void SpyLogClose( void )
+static void LogClose( void )
 {
     flushLog( true );
     LogCurInfo.config.logging = false;
     LogCurInfo.config.paused = false;
 
-} /* SpyLogClose */
+} /* LogClose */
 
 /*
- * SpyLogPauseToggle - switch between paused/unpaused state
+ * LogPauseToggle - switch between paused/unpaused state
  */
-bool SpyLogPauseToggle( void )
+bool LogPauseToggle( void )
 {
     if( LogCurInfo.config.logging ) {
         if( !LogCurInfo.config.paused ) {
@@ -463,7 +471,7 @@ bool SpyLogPauseToggle( void )
     }
     return( LogCurInfo.config.paused );
 
-} /* SpyLogPauseToggle */
+} /* LogPauseToggle */
 
 /*
  * LogToggle - toggle between logging and not logging modes
@@ -471,12 +479,12 @@ bool SpyLogPauseToggle( void )
 bool LogToggle( void )
 {
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( !LogCurInfo.config.logging ) {
-        return( SpyLogOpen() );
+        return( LogOpen() );
     }
-    SpyLogClose();
+    LogClose();
     return( LogCurInfo.config.logging );
 
 } /* LogToggle */
@@ -488,13 +496,25 @@ bool LogToggle( void )
  *      hwnd - is a window to be the parent to dialog boxes generated by
  *             the log function
  *      inst - is the INSTANCE of the calling application
- *      writefn - function that creates the log header or NULL if no
+ *      headerfn - function that creates the log header or NULL if no
  *                header is desired
  */
-void LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) )
+void LogInit( HWND hwnd, HANDLE inst, void (*headerfn)( FILE * ) )
 {
     LogCurInfo.hwnd = hwnd;
     LogCurInfo.instance = inst;
-    LogCurInfo.writefn = writefn;
+    LogCurInfo.headerfn = headerfn;
+    LogCurInfo.init = false;
 
 } /* LogInit */
+
+/*
+ * LogFini - must be called as last log functions to do finalization
+ *             flush data etc.
+ *
+ */
+void LogFini( void )
+{
+    LogClose();
+
+} /* LogFini */

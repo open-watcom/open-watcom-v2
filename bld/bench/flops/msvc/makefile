@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\flops.mif
+!include ../flops.mif

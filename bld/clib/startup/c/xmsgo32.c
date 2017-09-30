@@ -52,6 +52,7 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
     newline[1] = '\n';
     DosWrite( STDERR_FILENO, &newline, 2, &written );
     __exit( retcode );
+    // never return
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
@@ -59,5 +60,7 @@ _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned 
 {
     if( __EnterWVIDEO( msg ) )
         __exit( retcode );
+        // never return
     __exit_with_msg( msg, retcode );
+    // never return
 }

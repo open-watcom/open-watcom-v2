@@ -30,7 +30,7 @@
 :segment QNX
 
 :segment VERSION2
-#if !defined(__386__)
+#ifndef __386__
  #pragma library (graph2)
 #elif defined(__SW_3S)
  #pragma library (graph23s)
@@ -38,7 +38,7 @@
  #pragma library (graph23r)
 #endif
 :elsesegment
-#if !defined(__386__)
+#ifndef __386__
  #pragma library (graph)
 #elif defined(__SW_3S)
  #pragma library (graph3s)
@@ -115,7 +115,7 @@ struct _fontinfo {              /* structure for _getfontinfo */
 };
 
 /* Calling conventions for -fpi(87) are different than for -fpc */
-#if defined( __FPI__ )
+#ifdef __FPI__
  #define _arc_w              _arc_w_87
  #define _ellipse_w          _ellipse_w_87
  #define _floodfill_w        _floodfill_w_87
@@ -898,7 +898,7 @@ _WCRTLINK extern short
 ::  shared by pgchart and graphlib
 char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width );
 
-#if defined( _DEFAULT_WINDOWS )
+#ifdef _DEFAULT_WINDOWS
 _WCRTLINK extern void
 :segment INTERNAL
   _CGRAPH

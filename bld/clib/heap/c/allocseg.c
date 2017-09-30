@@ -52,10 +52,10 @@
 #include "rtdata.h"
 #include "heap.h"
 
-
-#define HEAP(s)             ((XBPTR(heapblk, s))0)
-#define FIRST_FRL(s)        ((XBPTR(freelist, s))(HEAP(s) + 1))
-#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len=END_TAG;((XBPTR(freelistp, s))(p))->prev=0
+#define HEAP(s)             ((heapblk __based(s) *)0)
+#define FIRST_FRL(s)        ((freelist __based(s) *)(HEAP(s) + 1))
+#define SET_HEAP_END(s,p)   ((freelistp __based(s) *)(p))->len=END_TAG; \
+                            ((freelistp __based(s) *)(p))->prev=0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
@@ -82,8 +82,8 @@ __segment __AllocSeg( unsigned int amount )
     }
     /*        heapinfo + frl,  allocated blk,  end tags */
     amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
-    if( amount < _amblksiz )
-        amount = _amblksiz;
+    if( amount < _RWD_amblksiz )
+        amount = _RWD_amblksiz;
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     if( num_of_paras == 0 )
         num_of_paras = PARAS_IN_64K;
@@ -109,14 +109,6 @@ __segment __AllocSeg( unsigned int amount )
             GlobalFree( hmem );
             return( _NULLSEG );
         }
-  #if 0
-        /* code generator can't handle this */
-        if( FP_OFF( px ) != 0 ) {    /* in case, Microsoft changes Windows */
-            GlobalUnlock( hmem );   /* in post 3.1 versions */
-            GlobalFree( hmem );
-            return( _NULLSEG );
-        }
-  #endif
         seg = FP_SEG( px );
     }
 #else

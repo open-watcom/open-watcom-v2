@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stddef.h>
 #include <dos.h>
 #include <malloc.h>
 #include <stdarg.h>
+#include <windows.h>
 
 #pragma aux Invoke16BitFunction "*_" value[eax] modify[eax ebx ecx edx];
 extern DWORD Invoke16BitFunction( void );

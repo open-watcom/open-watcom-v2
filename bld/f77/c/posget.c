@@ -175,16 +175,16 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             return( 0 );
         if( SysRead( io, rs, sizeof( char ) ) == READ_ERROR )
             return( 0 );
-        if( rs[0] == LF )
+        if( rs[0] == CHAR_LF )
             return( len );
 #if ! defined( __UNIX__ )
-        if( rs[0] == CR ) {
+        if( rs[0] == CHAR_CR ) {
             if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
                 return( 0 );
             }
-            if( rs[1] == LF )
+            if( rs[1] == CHAR_LF )
                 return( len );
-            if( ( io->attrs & CARRIAGE_CONTROL ) && ( rs[1] == FF ) ) {
+            if( ( io->attrs & CARRIAGE_CONTROL ) && ( rs[1] == CHAR_FF ) ) {
                 return( len );
             }
         }
@@ -225,16 +225,16 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             }
             ch = *ptr;
             ++ptr;
-            if( ch == LF )
+            if( ch == CHAR_LF )
                 break;
             if( !seen_cr ) {
-                if( ch == CTRL_Z ) {
+                if( ch == CHAR_CTRL_Z ) {
                     --ptr; // give back char so we don't read past EOF
                     if( read == 0 )
                         FSetEof( io );
                     break;
                 }
-                if( ch == CR ) {
+                if( ch == CHAR_CR ) {
                     seen_cr = true;
                 } else if( read < len ) {
                     b[read] = ch;
@@ -243,12 +243,12 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
                     trunc = true;
                 }
             } else {
-                if( ch == FF && (io->attrs & CARRIAGE_CONTROL) )
+                if( ch == CHAR_FF && (io->attrs & CARRIAGE_CONTROL) )
                     break;
                 --ptr;  // give back the char
                 seen_cr = false;
                 if( read < len ) {
-                    b[read] = CR;
+                    b[read] = CHAR_CR;
                     ++read;
                 } else {
                     trunc = true;
@@ -269,17 +269,17 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
             if( read == len )
                 break;
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
-            if( *b == LF )
+            if( *b == CHAR_LF )
                 return( read );
 #else
-            if( *b == CR ) {
+            if( *b == CHAR_CR ) {
                 ++b;
                 if( read == len - 1 )
                     break;
-                if( *b == LF )
+                if( *b == CHAR_LF )
                     return( read );
                 --b;
-            } else if( *b == CTRL_Z ) {
+            } else if( *b == CHAR_CTRL_Z ) {
                 FSetEof( io );
                 return( read );
             }
@@ -369,13 +369,13 @@ char    GetStdChar( void )
 
 #if defined( __WINDOWS__ )
     ch = getche();
-    if( ch == CR )
-        return( LF );
+    if( ch == CHAR_CR )
+        return( CHAR_LF );
 #else
     if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 )
         return( NULLCHAR );
 #if ! defined( __UNIX__ )
-    if( ch == CR ) {
+    if( ch == CHAR_CR ) {
         if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 ) {
             return( NULLCHAR );
         }

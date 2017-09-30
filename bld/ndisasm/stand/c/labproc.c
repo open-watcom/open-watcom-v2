@@ -53,13 +53,16 @@ extern dis_format_flags DFormat;
 static void labelNameAlloc( label_entry entry, const char *name )
 {
     char    *p;
+    size_t  len;
 
     // Demangle the name, if necessary
     if( !((Options & NODEMANGLE_NAMES) || (DFormat & DFF_ASM)) ) {
-        entry->label.name = MemAlloc( MAX_LINE_LEN + 3 );
-        __demangle_l( name, 0, entry->label.name + 2, MAX_LINE_LEN );
+        len = __demangle_l( name, 0, NULL, 0 );
+        entry->label.name = MemAlloc( len + 4 );
+        __demangle_l( name, 0, entry->label.name + 2, len + 1 );
     } else {
-        entry->label.name = MemAlloc( strlen( name ) + 8 );
+        len = strlen( name );
+        entry->label.name = MemAlloc( len + 4 );
         strcpy( entry->label.name + 2, name );
     }
     entry->label.name[0] = 0;
@@ -289,8 +292,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     sec_label_list = h_data->u.sec_label_list;
     entry = addLabel( sec_label_list, entry, sym_hnd );
     if( (Options & PRINT_PUBLICS) && entry->shnd != ORL_NULL_HANDLE &&
-            primary_type != ORL_SYM_TYPE_SECTION &&
-            entry->binding != ORL_SYM_BINDING_LOCAL ) {
+            primary_type != ORL_SYM_TYPE_SECTION && entry->binding != ORL_SYM_BINDING_LOCAL ) {
         Publics.number++;
     }
     return( ORL_OKAY );

@@ -33,8 +33,8 @@
 #define _SDFHDR_H_INCLUDED
 
 #include "variety.h"
-#include <stdio.h>
+#include <cstdio>
 
-extern int __stdiobuf_read( char *, size_t, size_t, FILE *);
+extern int __stdiobuf_read( char *, std::size_t, std::size_t, std::FILE *);
 
 #endif

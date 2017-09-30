@@ -604,9 +604,9 @@ user-defined-resource
     ;
 
 user-defined-type-id
-    :type-id
+    : type-id
         { $$ = $1; }
-    |Y_DLGINIT
+    | Y_DLGINIT
         { $$ = WResIDFromNum( 0xF0 ); }
     ;
 
@@ -636,14 +636,15 @@ raw-data-items
 raw-data-item
     : string-constant
         {
-            $$.IsString = true;
-            $$.TmpStr = true;
-            $$.StrLen = $1.length;
+            $$.IsString    = true;
+            $$.TmpStr      = true;
+            $$.WriteNull   = false;
+            $$.LongItem    = $1.lstring;
+            $$.StrLen      = $1.length;
             $$.Item.String = $1.string;
-            $$.LongItem = $1.lstring;
         }
     | constant-expression
-        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.LongItem = $1.longVal; $$.Item.Num = $1.Value; }
     ;
 
 rcdata-resource
@@ -1870,7 +1871,7 @@ value-item
     ;
 
 value-string-list
-    :string-constant
+    : string-constant
         {
             $$.IsNum = false;
             $$.Value.String = $1.string;

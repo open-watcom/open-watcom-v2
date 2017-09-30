@@ -78,7 +78,7 @@ extern "C" {
     //  NW386 Server exported functions
     */
     #define     AllocSignature  0x54524C41
-    extern long AllocateResourceTag( void *__NLMHandle, 
+    extern long AllocateResourceTag( void *__NLMHandle,
                     char *__descriptionString, long __resourceType );
     extern void *Alloc( long __numberOfBytes, long __resourceTag );
     extern long SizeOfAllocBlock( void * );
@@ -232,13 +232,14 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-_WCNORETURN void __exit( unsigned rc )
+_WCRTLINK _WCNORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*
  * Netware has own _exit procedure
  */
     _exit( rc );
+    // never return
 }
 
 /*#define INTERCEPT_ALLOCATIONS */

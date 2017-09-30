@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "_defwin.h"
 #include <stddef.h>
 
@@ -35,58 +36,48 @@
 #pragma aux __init_default_win "*";
 char __init_default_win;
 
-LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { NULL };
-void (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
-unsigned (*_WindowsNewWindow)( char *s, ... ) = { NULL };
-int (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
-int (*_WindowsSetAbout)( char *p1, char *p2 ) = { NULL };
-int (*_WindowsSetAppTitle)( char *p ) = { NULL };
-int (*_WindowsSetConTitle)( LPWDATA lp, char *s ) = { NULL };
-int (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
-int (*_WindowsYieldControl)( void ) = { NULL };
-int (*_WindowsShutDown)( void ) = { NULL };
-unsigned (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
-unsigned (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
-unsigned (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
-unsigned (*_WindowsGetch)( LPWDATA lp ) = { NULL };
-unsigned (*_WindowsGetche)( LPWDATA lp ) = { NULL };
-void (*_WindowsPutch)( LPWDATA lp, unsigned u ) = { NULL };
-void (*_WindowsExitRtn)( void ) = { NULL };
-
-#if ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) ) || defined(__NT__) || \
+#if ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) ) || defined(__NT__) || \
     defined(__WINDOWS_386__) || defined(__WINDOWS__)
 
 #define __SW_BW
 #include "variety.h"
 #include <wdefwin.h>
 
-_WCRTLINK int   _dwDeleteOnClose( int handle ) {
-    handle = handle;
+_WCRTLINK int   _dwDeleteOnClose( int handle )
+{
+    /* unused parameters */ (void)handle;
+
     return( 0 );
 }
 
-_WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text ) {
-    text = text;
-    title = title;
+_WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text )
+{
+    /* unused parameters */ (void)text; (void)title;
+
     return( 0 );
 }
 
-_WCRTLINK int   _dwSetAppTitle( const char *title ) {
-    title = title;
+_WCRTLINK int   _dwSetAppTitle( const char *title )
+{
+    /* unused parameters */ (void)title;
+
     return( 0 );
 }
 
-_WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
-    handle = handle;
-    title = title;
+_WCRTLINK int   _dwSetConTitle( int handle, const char *title )
+{
+    /* unused parameters */ (void)handle;
+
     return( 0 );
 }
 
-_WCRTLINK int   _dwYield( void ) {
+_WCRTLINK int   _dwYield( void )
+{
     return( 0 );
 }
 
-_WCRTLINK int   _dwShutDown( void ) {
+_WCRTLINK int   _dwShutDown( void )
+{
     return( 0 );
 }
 

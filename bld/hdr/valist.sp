@@ -1,8 +1,8 @@
 #ifndef _VA_LIST_DEFINED
 #define _VA_LIST_DEFINED
- #if defined(__PPC__)
+ #ifdef __PPC__
 :segment DOS
-  #if defined(__NT__)
+  #ifdef __NT__
    typedef char  *__va_list;
   #else
 :endsegment

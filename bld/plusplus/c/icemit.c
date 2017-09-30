@@ -480,6 +480,13 @@ static PTREE emitNode(          // EMIT A PTREE NODE
         PtdGenBefore( expr->decor );
     }
     switch( expr->op ) {
+      // By now, nullptr should effectively equate to zero.
+      // Note that a nullptr node should only reach this point if we are trying
+      // to codegen a decltype(nullptr) variable. Otherwise, the node should
+      // have been converted to the appropriate pointer type.
+      case PT_PTR_CONSTANT:
+        generate_expr_instr( expr, 0, IC_LEAF_CONST_INT );
+        break;
       case PT_INT_CONSTANT:
         if( expr->cgop != CO_IGNORE ) {
             if( NULL == Integral64Type( expr->type ) ) {
@@ -857,11 +864,7 @@ static void checkDeadCode(      // TEST FOR DEAD CODE
         expr = PTreeOp( &expr->u.subtree[0]->u.subtree[0] );
         if( expr->op == PT_SYMBOL ) {
             func = getPtreeSymbol( expr );
-            if( IsFuncAborts( func ) ) {
-                FunctionBodyDeadCode();
-                CgFrontCode( IC_AFTER_ABORTS );
-            }
-            if( IsPragmaAborts( func ) ) {
+            if( IsFuncAborts( func ) || IsPragmaAborts( func ) ) {
                 FunctionBodyDeadCode();
                 CgFrontCode( IC_AFTER_ABORTS );
             }

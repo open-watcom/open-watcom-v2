@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #include <stdlib.h>
 #include "win.h"
 
@@ -47,6 +46,8 @@ typedef struct {
    BYTE     infodatalen;
 } itemdata;
 
+WINEXPORT BOOL     CALLBACK IntervalDialogProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+
 static itemdata _getint[] = {
 {  4,  10, 50, 24, -1, SS_LEFT, "STATIC", "&Enter Number of Lines:", { 0 }, 0 },
 
@@ -61,9 +62,9 @@ static itemdata _getint[] = {
 
 
 /*
- * _GetIntervalBox - control dialog for getting interval
+ * IntervalDialogProc - control dialog for getting interval
  */
-BOOL CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
+BOOL CALLBACK IntervalDialogProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     char        tmp[128];
 
@@ -92,12 +93,12 @@ BOOL CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lp
 
     return( FALSE );
 
-} /* _GetIntervalBox */
+} /* IntervalDialogProc */
 
 /*
- * _GetClearInterval - return number of lines between clearing
+ * _GetAutoClearInterval - return number of lines between clearing
  */
-void _GetClearInterval( void )
+void _GetAutoClearInterval( void )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -125,6 +126,6 @@ void _GetClearInterval( void )
     }
 
     _DoneAddingControls( old_dlgtemplate );
-    _DynamicDialogBox( _GetIntervalBox, _MainWindowData->inst, _MainWindow, old_dlgtemplate );
+    _DynamicDialogBox( IntervalDialogProc, _MainWindowData->inst, _MainWindow, old_dlgtemplate );
 
-} /* _GetClearInterval */
+} /* _GetAutoClearInterval */

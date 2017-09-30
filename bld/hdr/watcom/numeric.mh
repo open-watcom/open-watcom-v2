@@ -13,8 +13,7 @@
 
 :include cpponly.sp
 
-namespace std {
-
+:include nsstd.sp
   // accumulate
   // **********
 
@@ -177,7 +176,6 @@ namespace std {
     }
     return( result );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

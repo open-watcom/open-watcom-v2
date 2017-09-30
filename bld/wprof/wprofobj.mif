@@ -10,6 +10,7 @@ dig_os_haiku    = haiku
 
 dig_os          = $(dig_os_$(host_os))
 
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 

@@ -36,6 +36,7 @@
 
 
 #ifdef __OS2_PM__
+    #include <stddef.h>     /* NULL value */
     #define INCL_GPI
     #define INCL_WIN
     #define INCL_DOSNLS
@@ -45,7 +46,7 @@
     #define INCLUDE_COMMDLG_H
     #define NOCOMM
     #define WIN32_LEAN_AND_MEAN
-    #include <wwindows.h>
+    #include <wwindows.h>   /* NULL value */
     #include <commdlg.h>
 #endif
 
@@ -63,9 +64,6 @@
 
 #define GUI_MENU_FONT   0
 #define GUI_CHANGE_FONT ( GUI_LAST_MENU_ID + GUI_MENU_FONT + 1 )
-
-typedef struct control_item     control_item;
-typedef struct popup_info       popup_info;
 
 typedef enum flags {
     NONE_SET            = 0x0000,
@@ -118,11 +116,26 @@ typedef struct gui_paint_info {
     int                 force_count;
 } gui_paint_info;
 
-#if defined( __GNUC__)
+typedef struct control_item {
+    bool                checked;
+    gui_ctl_id          id;
+    gui_control_class   control_class;
+    WPI_WNDPROC         win_call_back;
+    HWND                hwnd;
+    const char          *text;
+    gui_control_styles  style;
+    struct control_item *next;
+} control_item;
+
+typedef struct popup_info {
+    HMENU               popup;
+    gui_ctl_id          id;
+    bool                floating;
+    hint_type           type;
+    struct popup_info   *next;
+} popup_info;
+
 struct gui_window {
-#else
-typedef struct gui_window {
-#endif
     HWND                hwnd;
     HWND                hwnd_frame;
     HWND                root;
@@ -189,6 +202,12 @@ typedef struct gui_window {
 #define GUI_MDI_WORD            ( GUI_EXTRA_WORD + 1 )
 #define NUM_EXTRA_WORDS         ( GUI_MDI_WORD + 1 )
 #define GUI_ISROOTWIN(wnd)      ( wnd->root != NULL )
+
+#define GUI_CLASSNAME_MAX       64
+
+extern char GUIClass[GUI_CLASSNAME_MAX + 1];
+extern char GUIDialogClass[GUI_CLASSNAME_MAX + 1];
+extern char GUIDefaultClassName[];
 
 #include "guix.h"
 

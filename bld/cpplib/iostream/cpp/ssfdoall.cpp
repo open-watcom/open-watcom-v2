@@ -32,10 +32,11 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 #include "ioutil.h"
+
 
 namespace std {
 
@@ -79,7 +80,7 @@ namespace std {
         base_offset = (__huge_ptr_int)(eback() - oldbuf);
         ptr_offset  = (__huge_ptr_int)(gptr()  - oldbuf);
         end_offset  = (__huge_ptr_int)(egptr() - oldbuf);
-        ::memcpy( newbuf+base_offset, eback(), end_offset-base_offset );
+        memcpy( newbuf+base_offset, eback(), end_offset-base_offset );
         setg( newbuf+base_offset, newbuf+ptr_offset, newbuf+end_offset );
     }
 
@@ -92,7 +93,7 @@ namespace std {
         base_offset = (__huge_ptr_int)(pbase() - oldbuf);
         ptr_offset  = (__huge_ptr_int)(pptr()  - oldbuf);
         end_offset  = (__huge_ptr_int)(epptr() - oldbuf);
-        ::memcpy( newbuf+base_offset, pbase(), end_offset-base_offset );
+        memcpy( newbuf+base_offset, pbase(), end_offset-base_offset );
         end_offset += newbufsize - oldbufsize;    // grow the put area
         setp( newbuf+base_offset, newbuf+end_offset );
         pbump( ptr_offset - base_offset );
@@ -109,5 +110,4 @@ namespace std {
     return( __NOT_EOF );
   }
 
-}
-
+} // namespace std

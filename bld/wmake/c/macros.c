@@ -830,6 +830,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
 #ifdef DEVELOPMENT
         PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
         ExitFatal();
+        // never return
 #else
         PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
         break;
@@ -931,6 +932,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
             PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
         }
         ExitFatal();
+        // never return
     }
 
     result = deMacroToEnd( depth, end1, end2 );
@@ -945,6 +947,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
                 PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
             }
             ExitFatal();
+            // never return
         }
 
         /*
@@ -1114,6 +1117,7 @@ STATIC char *PartDeMacroProcess( void )
             }
             PrtMsg( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" );
             ExitFatal();
+            // never return
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

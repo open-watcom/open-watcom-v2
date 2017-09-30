@@ -37,7 +37,6 @@
 #endif
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #ifndef HP
     #include <termios.h>
@@ -105,7 +104,7 @@
 // current terminal
 #define _capable_of( sequence )         ( (sequence) != NULL )
 
-#define __flush()       {fflush( UIConFile );}
+#define __flush_con()   {fflush( UIConFile );}
 #if defined( SUN )
 #define __putp( str )   {tputs( str, 1, (int (*)(char))_con_putchar );}
 #elif defined( HP )  && ( OSVER >= 1100 ) && !defined( __GNUC__ )
@@ -873,7 +872,7 @@ static bool ti_initconsole( void )
     TI_NOBOLD();
     TI_NOBLINK();
 
-    __flush();
+    __flush_con();
 
     return( true );
 }
@@ -1029,7 +1028,7 @@ static int ti_fini( void )
     TI_KP_DISABLE();
 
     TI_PUT_FILE( reset_file );
-    __flush();
+    __flush_con();
 
     finikeyboard();
     uifinicursor();
@@ -1095,7 +1094,7 @@ static int ti_hwcursor( void )
         TI_CURSOR_MOVE( UIData->cursor_col, UIData->cursor_row );
     }
 
-    __flush();
+    __flush_con();
     return( 0 );
 }
 
@@ -1115,7 +1114,7 @@ static void update_shadow( void )
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
-    __flush();
+    __flush_con();
 
     // copy buffer to shadow buffer
     bufp = UIData->screen.origin;
@@ -1161,7 +1160,7 @@ static int ti_refresh( int must )
     // Move the cursor & return if dirty box contains no chars
     if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
-        __flush();
+        __flush_con();
         return( 0 );
     }
 

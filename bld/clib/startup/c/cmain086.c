@@ -46,7 +46,6 @@
 #if defined(__SW_BD)
 int _CMain( void )
 {
-    _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
     return( __dll_initialize() );
 }
 #else
@@ -54,7 +53,7 @@ extern int     main( int, char ** );
 
 void _CMain( void )
 {
-    _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
     exit( main( ___Argc, ___Argv ) );
+    // never return
 }
 #endif

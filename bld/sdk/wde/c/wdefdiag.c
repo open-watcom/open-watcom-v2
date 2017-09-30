@@ -93,7 +93,8 @@
 
 #define DEFAULT_FONTFACENAME    "Helv"
 #define DEFAULT_FONTPOINTSIZE   8
-#define DEFAULT_JFONTFACENAME   "‚l‚r –¾’©"
+/* following is DBCS text in Japanese "‚l‚r –¾’©" */
+#define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
 
@@ -805,7 +806,7 @@ bool WdeDialogInit( bool first )
 #ifdef WDE_USE_RC_FONTS
     char        *cp;
     char        *font_facename;
-    int         font_pointsize;
+    WORD        font_pointsize;
 #endif
 
     _wde_touch( first );
@@ -2605,7 +2606,7 @@ bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE 
     char        *font_facename;
     short       font_pointsize;
     bool        ok;
-    uint_32     style;
+    DWORD       style;
 
     MenuName = NULL;
     ClassName = NULL;

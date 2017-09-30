@@ -44,7 +44,7 @@ public:
     ~Warning() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Warning( const Warning& rhs );              //no copy
     Warning& operator=( const Warning& rhs );   //no assignment

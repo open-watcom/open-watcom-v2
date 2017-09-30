@@ -248,10 +248,8 @@ bool LostFileCheck( void )
         if( !EditFlags.RecoverLostFiles ) {
             if( !EditFlags.IgnoreLostFiles ) {
 #ifdef __WIN__
-                CloseStartupDialog();
                 key = GetAutosaveResponse();
                 handleKey( key );
-                ShowStartupDialog();
                 return( true );
 #else
                 SetPosToMessageLine();

@@ -15,8 +15,7 @@
 
 :include cpponly.sp
 
-namespace std {
-
+:include nsstd.sp
     namespace rel_ops {
 
         template< class Type >
@@ -125,7 +124,6 @@ namespace std {
     {
         return( pair< Type1, Type2 >( x, y ) );
     }
-    
-} // namespace std
+:include nsstdepi.sp
 
 #endif

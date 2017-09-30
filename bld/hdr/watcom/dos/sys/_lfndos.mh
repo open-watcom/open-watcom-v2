@@ -9,8 +9,8 @@
 :include readonly.sp
 
 #if defined(__WATCOM_LFN__) && defined(__DOS__)
- #if defined(_M_I86)
-  #if defined(__MEDIUM__)
+ #ifdef _M_I86
+  #ifdef __MEDIUM__
    #pragma library ( "doslfnm" )
   #elif defined(__COMPACT__)
    #pragma library ( "doslfnc" )

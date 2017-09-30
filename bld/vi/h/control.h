@@ -36,41 +36,33 @@
   #define __OS2V2__
 #endif
 
-#if defined( __WINDOWS__ )
+#if defined( _M_I86 )
+    #define _FAR    __far
+    #define _NEAR   __near
+#elif defined( __DOS__ ) && !defined( __4G__ )
+    #define _FAR    __far
+    #define _NEAR
+#else
     #define _FAR
-    #define __WIN__
-#elif defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
-    #define _FAR
-#elif defined( _M_I86 )
+    #define _NEAR
+#endif
+
+#if defined( __DOS__ ) && defined( _M_IX86 )
   #if _M_IX86 == 200
     #define USE_XMS
     #define USE_EMS
     #define USE_XTD
-    #define _FAR
   #elif _M_IX86 < 200
     #define USE_EMS
-    #define _FAR
   #endif
-#elif defined( _M_IX86 )
-  #if !defined( __4G__ )
-    #define _FAR    __far
-  #else
-    #define _FAR
-  #endif
-#else
-    #error _FAR not configured
+#elif defined( __DOS__ ) && defined( _M_I86 )
+    #define USE_EMS
 #endif
 
 #ifndef __WIN__
   #if defined( __CURSES__ ) || defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
     #define __VIO__
   #endif
-#endif
-
-#if defined( _M_I86 )
-  #define _NEAR __near
-#else
-  #define _NEAR
 #endif
 
 #if defined( __WATCOMC__ ) && !defined( __AXP__ ) && !defined( __PPC__ ) && !defined( __MIPS__ )

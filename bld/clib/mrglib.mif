@@ -13,11 +13,11 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @for %i in ($(objs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
-    @rm -f export.def
+    @rm -f export.gdf
     @%make echo_lib
     $(librarian) $(clib_lib_flags) $(clib_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
 !include ../../deps.mif

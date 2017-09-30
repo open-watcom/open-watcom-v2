@@ -59,14 +59,6 @@ void GUIInitGUIMenuHint( void )
 
 extern  bool    GUIMDI;
 
-typedef struct popup_info {
-    HMENU               popup;
-    gui_ctl_id          id;
-    bool                floating;
-    hint_type           type;
-    struct popup_info   *next;
-};
-
 static bool GetMenuFlags( HMENU hmenu, gui_ctl_id id_position, bool by_position,
                           unsigned *menu_flags, unsigned *attr_flags )
 {
@@ -554,9 +546,9 @@ bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floa
     popup = GetPopupHMENU( wnd, hmenu, id, &parent, &position, MENU_HINT );
 
     if ( popup != NULLHANDLE ) {
-        ret = _wpi_setmenutext( parent, position, text, TRUE );
+        ret = ( _wpi_setmenutext( parent, position, text, TRUE ) != 0 );
     } else {
-        ret = _wpi_setmenutext( hmenu, id, text, FALSE );
+        ret = ( _wpi_setmenutext( hmenu, id, text, FALSE ) != 0 );
     }
 
     if( hmenu == parent ) {
@@ -746,8 +738,7 @@ static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam,
 #else
     hmenu = (HMENU) lparam;
     if( !menu_closed &&
-        WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, true),
-                    MPFROMP(&mstate) ) ) {
+        WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, true), MPFROMP(&mstate) ) ) {
         is_sysmenu = ( mstate.afStyle & MF_SYSMENU );
         is_separator = false;
         is_popup = ( mstate.afStyle & MF_POPUP );

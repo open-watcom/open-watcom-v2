@@ -651,9 +651,8 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
 
     WInitEditWindowListBox( einfo );
 
-    if( einfo->current_pos != -1 ) {
-        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST,
-                            LB_SETCURSEL, einfo->current_pos, 0 );
+    if( einfo->current_pos != LB_ERR ) {
+        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_SETCURSEL, (WPARAM)einfo->current_pos, 0 );
     }
 
     WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
@@ -1111,7 +1110,7 @@ void WHandleClear( WAccelEditInfo *einfo )
             einfo->tbl->first_entry = NULL;
             einfo->tbl->num = 0;
             einfo->current_entry = NULL;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             einfo->getting_key = FALSE;
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
@@ -1197,8 +1196,8 @@ WINEXPORT void CALLBACK WAccHelpSearchRoutine( void )
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     }
 }

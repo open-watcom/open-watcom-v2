@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <strstrea>
+#include <strstream>
 #endif
 
 namespace std {
@@ -40,8 +41,7 @@ namespace std {
   // Create an empty strstreambuf that will use dynamic allocation using
   // the specified allocate/free functions.
 
-  strstreambuf::strstreambuf( void *(*alloc)( long ),
-                              void (*free)( void * ) ) {
+  strstreambuf::strstreambuf( void *(_WCCALLBACK *alloc)( long ), void (_WCCALLBACK *free)( void * ) ) {
     __strstreambuf( NULL, 0, NULL );
     __alloc_fn = alloc;
     __free_fn  = free;

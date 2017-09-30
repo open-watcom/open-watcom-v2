@@ -77,13 +77,12 @@ static vi_rc doOperator( event *ev )
         // a count is the only thing allowed to interfere between an op and
         // its argument so we just keep chewing...
         if( next != &EventList['0'] ) {
-            while( next->b.is_number ) {
+            for( ; next->b.is_number; next = nextEvent() ) {
                 if( EditFlags.Modeless ) {
                     next->alt_rtn.old();
                 } else {
                     next->rtn.old();
                 }
-                next = nextEvent();
             }
         }
         count *= GetRepeatCount();

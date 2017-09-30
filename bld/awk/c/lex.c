@@ -91,14 +91,14 @@ Keyword keywords[] ={	/* keep sorted: binary searched */
 
 #define	RET(x)	{ if(dbg)printf("lex %s\n", tokname(x)); return(x); }
 
-int peek(void)
+static int peek(void)
 {
 	int c = input();
 	unput(c);
 	return c;
 }
 
-int gettok(char **pbuf, int *psz)	/* get next input token */
+static int gettok(char **pbuf, int *psz)	/* get next input token */
 {
 	int c, retc;
 	char *buf = *pbuf;
@@ -434,7 +434,7 @@ int string(void)
 }
 
 
-int binsearch(char *w, Keyword *kp, int n)
+static int binsearch(char *w, Keyword *kp, int n)
 {
 	int cond, low, mid, high;
 

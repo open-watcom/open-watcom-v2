@@ -45,7 +45,7 @@
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define HEAP(s)     ((heapblkp __based(s) *)0)
 
 __segment __fheapbeg = _NULLSEG;        /* head of segment list in far heap */
 __segment __fheapRover = _NULLSEG;      /* segment to start search at */
@@ -80,7 +80,7 @@ _WCRTLINK void_fptr _fmalloc( size_t amt )
 
     // Try to determine which segment to begin allocating from.
     // first, round up the amount
-    size = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
+    size = __ROUND_UP_SIZE_HEAP( amt );
     if( size < FRL_SIZE ) {
         size = FRL_SIZE;
     }

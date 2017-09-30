@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 
 
 static void dumpheap( void )
@@ -76,10 +76,9 @@ int main( int argc, char *argv[] )
         printf( "Usage: testpp filename\n" );
         exit( 1 );
     }
-    if( argv[2] != NULL ) {
-        PP_PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], PPFLAG_EMIT_LINE, NULL ) != 0 ) {
+    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
+    if( PP_FileInit( argv[1], PPFLAG_EMIT_LINE, NULL ) != 0 ) {
+        PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );
     }
@@ -90,6 +89,7 @@ int main( int argc, char *argv[] )
         putchar( c );
     }
     dumpheap();
+    PP_FileFini();
     PP_Fini();
     dumpheap();
     return( 0 );

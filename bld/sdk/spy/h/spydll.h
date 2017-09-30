@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,6 @@
 ****************************************************************************/
 
 
-#ifdef __NT__
-    #define SPY_CLASS_NAME  "watspy_NT"
-#else
-    #define SPY_CLASS_NAME  "watspy"
-#endif
-
 #ifdef SPYDLL
 #define SPYDLLENTRY __declspec(dllexport)
 #elif defined( __NT__ )
@@ -43,5 +38,8 @@
 #define SPYDLLENTRY
 #endif
 
-SPYDLLENTRY extern void CALLBACK SetFilter( LPVOID );
+#ifdef __WINDOWS__
+SPYDLLENTRY extern void CALLBACK SetFilterProc( message_func * );
+#endif
+SPYDLLENTRY extern void CALLBACK SetFilter( void );
 SPYDLLENTRY extern void CALLBACK ClearFilter( void );

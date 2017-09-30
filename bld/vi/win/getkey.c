@@ -32,7 +32,7 @@
 /*
   Modified:     By:             Reason:
   ---------     ---             -------
-  July 28 02    ff              changed ConvertWierdCharacter() and 
+  July 28 02    ff              changed ConvertWierdCharacter() and
                                 MapVirtualKeyToVIKey() to correctly handle
                                 characters not translatable by ToAscii().
                                 (Like the Start Menu key on my keyboard :-) ).
@@ -180,12 +180,12 @@ bool AltDown( void )
 
 static vi_key ConvertWierdCharacter( WORD vk, WORD data )
 {
-    unsigned char   keyboard_state[256];
-    unsigned int    scancode = LOBYTE( data );
-#if defined( __NT__ )
-    WORD            newkey;
+    BYTE        keyboard_state[256];
+    UINT        scancode = LOBYTE( data );
+#if defined( __WINDOWS__ )
+    DWORD       newkey;
 #else
-    DWORD           newkey;
+    WORD        newkey;
 #endif
 
     GetKeyboardState( keyboard_state );

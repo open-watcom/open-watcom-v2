@@ -30,6 +30,15 @@ WINDOWS = 1
 
 !include trmem.mif
 
+cpp_objs = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+
+rc_objs = &
+    pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
+    exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
+    global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
+    rcerrors.obj tmpctl.obj autodep.obj &
+    dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
+
 objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
     wrsvexe.obj wrsvres.obj &
@@ -39,14 +48,7 @@ objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
     wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
-    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
-    rcerrprt.obj rcgetenv.obj &
-    wrstubs.obj &
-    pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
-    exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
-    global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-    rcerrors.obj tmpctl.obj autodep.obj &
-    dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
+    wrstubs.obj rcerrprt.obj rcgetenv.obj $(cpp_objs) $(rc_objs)
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 

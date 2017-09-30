@@ -31,8 +31,6 @@
 
 
 #include <wwindows.h>
-
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
 

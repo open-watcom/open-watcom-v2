@@ -38,6 +38,9 @@ REM set OWHHC=hhc
 
 REM ###############################
 
+REM Subdirectory to be used for building OW build tools
+set OWOBJDIR=binbuild
+
 REM Invoke the script for the common environment
 call %OWROOT%\cmnvars.cmd
 

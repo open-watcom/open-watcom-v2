@@ -61,8 +61,6 @@ extern int main( int, char **, char ** );
 #define __FAR
 #endif
 
-extern  void    __qnx_exit( int __status );
-
 void    __near *_endheap;                   /* temporary work-around */
 char    *__near __env_mask;
 char    ** _WCDATA environ;                 /* pointer to environment variables */
@@ -87,6 +85,7 @@ static void _WCI86FAR __null_FPE_rtn( int fpe_type )
 _WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
 }
 
 #if defined( _M_I86 )
@@ -253,7 +252,6 @@ void _CMain( free, n, cmd, stk_bot, pid )
     __InitRtns( 255 );                      /* call special initializer routines    */
     __MAGIC.sptrs[2] = cmd;                 /* save ptr to spawn message */
     SetupArgs( cmd );
-    _amblksiz = 8 * 1024;                   /* set minimum memory block allocation  */
 
     /*
        Invoke the "last chance" init code in the slib before executing the
@@ -268,6 +266,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
 
     /* Invoke main skipping over the full path of the loaded command */
     exit( main( _argc, _argv, environ ) );    /* 02-jan-91 */
+    // never return
 }
 #else
 
@@ -310,8 +309,8 @@ void _CMain( int argc, char **argv, char **arge )
     tdata->__data_size = __ThreadDataSize;
     __QNXInit( tdata );
     __InitRtns( 255 );
-    _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
     setup_es();
     exit( main( argc, argv, arge ) );
+    // never return
 }
 #endif

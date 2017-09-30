@@ -64,33 +64,33 @@ int __CompareChars( const char *l, long p_llen,
 /*****************************************************/
 // Compare the strings specified by l/p_llen and r/p_rlen.
 // Return -1, 0 or 1 depending on whether the relation is <, == or >.
-// If either length < 0, then use ::strlen to find the length.
-    int     ret;
-    size_t  llen;
-    size_t  rlen;
+// If either length < 0, then use std::strlen to find the length.
+    int         ret;
+    std::size_t llen;
+    std::size_t rlen;
 
     if( l == NULL ) {
         llen = 0;
     } else if( p_llen < 0 ) {
-        llen = ::strlen( l );
+        llen = std::strlen( l );
     } else {
-        llen = (size_t)p_llen;
+        llen = (std::size_t)p_llen;
     }
     if( r == NULL ) {
         rlen = 0;
     } else if( p_rlen < 0 ) {
-        rlen = ::strlen( r );
+        rlen = std::strlen( r );
     } else {
-        rlen = (size_t)p_rlen;
+        rlen = (std::size_t)p_rlen;
     }
     if( llen == rlen ) {
-        return( ::memcmp( l, r, llen ) );
+        return( std::memcmp( l, r, llen ) );
     }
     if( llen < rlen ) {
-        ret = ::memcmp( l, r, llen );
+        ret = std::memcmp( l, r, llen );
         return( ret == 0 ? -1 : ret );
     }
-    ret = ::memcmp( l, r, rlen );
+    ret = std::memcmp( l, r, rlen );
     return( ret == 0 ? 1 : ret );
 }
 

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
 

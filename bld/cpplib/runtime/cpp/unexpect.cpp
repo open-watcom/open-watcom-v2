@@ -30,30 +30,27 @@
 ****************************************************************************/
 
 #include "cpplib.h"
-#include <stddef.h>
 #include "rtexcept.h"
-#include <except.h>
 #include "rtmsgs.h"
 #include "exc_pr.h"
 
 namespace std {
 
-_WPRTLINK
-_WCNORETURN
-void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
-{
-    PFV handler;                    // - current handler
-    _RTCTL rt_ctl;                  // - run/time control
+    _WPRTLINK _WCNORETURN
+    void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
+    {
+        unexpected_handler handler;     // - current handler
+        _RTCTL rt_ctl;                  // - run/time control
 
-    handler = rt_ctl.thr->unexpected;
-    if( NULL == handler ) {
-        _EXC_PR exc_control( &rt_ctl, 0, EXCSTATE_TERMINATE );
-        terminate();
+        handler = rt_ctl.thr->unexpected;
+        if( NULL == handler ) {
+            _EXC_PR exc_control( &rt_ctl, 0, EXCSTATE_TERMINATE );
+            terminate();
+            // never return
+        }
+        (*handler)();
+        CPPLIB( fatal_runtime_error )( RTMSG_RET_UNEXPECT, 1 );
         // never return
     }
-    (*handler)();
-    CPPLIB( fatal_runtime_error )( RTMSG_RET_UNEXPECT, 1 );
-    // never return
-}
 
 }

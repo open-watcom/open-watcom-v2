@@ -28,8 +28,8 @@
 *
 ****************************************************************************/
 
-#include <stdlib.h>
 #include <wwindows.h>
+#include <stdlib.h>
 #include "global.h"
 #include "fmedit.def"
 #include "memory.def"
@@ -192,7 +192,6 @@ OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
     /* create an EATOM object */
     EATOM       *new;
     POINT       offset;
-    STATE_ID    st;
 
     new = EdAlloc( sizeof( EATOM ) );
     OBJ_DISPATCHER_SET( new, EAtomDispatch );
@@ -228,8 +227,7 @@ OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
         new->hwnd = NULL;
     }
     new->displayed = false;
-    st = GetState();
-    if( st != SELECTING ) {
+    if( GetState() != SELECTING ) {
         MouseAction( &new->rect );
     }
     ShowEAtomRect( new );

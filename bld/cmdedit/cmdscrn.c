@@ -40,7 +40,7 @@ void FlipScreenCursor( void )
 
     length = 2;
     VioReadCellStr( buffer, &length, Row+RowOffset, StartCol+ColOffset, 0 );
-    buffer[ 1 ] ^= 0x77;
+    buffer[1] ^= 0x77;
     VioWrtCellStr( buffer, length, Row+RowOffset, StartCol+ColOffset, 0 );
 }
 
@@ -50,22 +50,24 @@ void ReadScreen( int next_line )
 {
     USHORT len;
 
-    len = SCREEN_WIDTH - (StartCol+ColOffset);
+    len = SCREEN_WIDTH - ( StartCol + ColOffset );
     if( next_line ) {
         len += SCREEN_WIDTH;
-        if( len > LINE_WIDTH ) len = LINE_WIDTH;
+        if( len > LINE_WIDTH ) {
+            len = LINE_WIDTH;
+        }
     }
-    VioReadCharStr( Line, &len, Row+RowOffset, StartCol+ColOffset, 0 );
-    while( len != 0 ) {
-        if( Line[ len - 1 ] != ' ' ) break;
-        --len;
+    VioReadCharStr( Line, &len, Row + RowOffset, StartCol + ColOffset, 0 );
+    for( MaxCursor = len; len-- > 0; MaxCursor = len ) {
+        if( Line[len] != ' ' ) {
+            break;
+        }
     }
-    MaxCursor = len;
     Cursor = next_line ? MaxCursor : 0;
     Draw = TRUE;
     Base = 0;
     Edited = TRUE;
-    if( !next_line && len == SCREEN_WIDTH ) {
+    if( !next_line && MaxCursor == SCREEN_WIDTH ) {
         ReadScreen( 1 );
     }
 }

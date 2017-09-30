@@ -49,6 +49,6 @@
 /****************************************************************************/
 extern bool     WRLoadResourceFromWinNTEXE( WRInfo * );
 extern long int WRReadWinNTExeHeader( WResFileID, exe_pe_header * );
-extern int      WRIsHeaderValidWINNT( exe_pe_header * );
+extern bool     WRIsHeaderValidWINNT( exe_pe_header * );
 
 #endif

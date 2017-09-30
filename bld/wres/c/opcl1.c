@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <stddef.h>
 #include "watcom.h"
 #include "wres.h"
 #include "wresset2.h"

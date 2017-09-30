@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
 #include <stdarg.h>
+#include <windows.h>
 
 
 unsigned DbgFlags = -1;

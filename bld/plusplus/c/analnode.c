@@ -217,6 +217,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
           case PT_ERROR :
           case PT_STRING_CONSTANT :
           case PT_INT_CONSTANT :
+          case PT_PTR_CONSTANT :
           case PT_FLOATING_CONSTANT :
           case PT_TYPE :
           case PT_ID :
@@ -797,6 +798,18 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
         retb = false;
     }
     return( retb );
+}
+
+/**
+ * Test if node is nullptr
+ */
+bool NodeIsNullptr( PTREE node )
+{
+    if( node == NULL ) {
+        return( false );
+    }
+    
+    return ( node->op == PT_PTR_CONSTANT );
 }
 
 

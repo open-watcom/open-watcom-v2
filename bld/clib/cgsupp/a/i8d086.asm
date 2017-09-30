@@ -63,7 +63,7 @@ template <unsigned w,unsigned b>
     struct MLDiv {
         unsigned d[w+1];
         MLDiv( void ) {
-            memset( this, -1, sizeof( *this ) );
+            memset( this, 0xFF, sizeof( *this ) );
         }
         MLDiv( unsigned *p ) {
             unsigned i;

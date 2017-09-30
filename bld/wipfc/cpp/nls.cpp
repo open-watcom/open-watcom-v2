@@ -90,7 +90,7 @@ void Nls::readEntityFile( std::FILE *entty )
     int     offset;
     wchar_t c;
     while( std::fgets( buffer, sizeof( buffer ) / sizeof( char ), entty ) ) {
-        size_t len = std::strlen( buffer );
+        std::size_t len = std::strlen( buffer );
         killEOL( buffer + len - 1 );
         offset = std::mbtowc( &c, buffer, len );
         if( offset == -1 )
@@ -98,7 +98,7 @@ void Nls::readEntityFile( std::FILE *entty )
         if( offset > 1 )
             useDBCS = true;
         len = std::mbstowcs( text, buffer + offset, sizeof( text ) / sizeof( wchar_t ) );
-        if( len == static_cast< size_t >( -1 ))
+        if( len == static_cast< std::size_t >( -1 ))
             throw FatalError( ERR_T_CONV );
         text[ len ] = L'\0';
         entityMap.insert( std::map< std::wstring, wchar_t >::value_type( text, c ) );
@@ -133,7 +133,7 @@ void Nls::readNLS( std::FILE *nls )
     wchar_t* value;
     bool     doGrammer( false );
     while( std::fgetws( buffer, sizeof( buffer ) / sizeof( wchar_t ), nls )) {
-        size_t len( std::wcslen( buffer ) );
+        std::size_t len( std::wcslen( buffer ) );
         killEOL( buffer + len - 1 );
         if( len == 1 )
             continue;               //skip blank lines
@@ -294,7 +294,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
     return start;
 }
 /*****************************************************************************/
-void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType type )
+void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType rectype )
 {
     static const unsigned char defbits[ 2 ][ 32 ] = {\
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
@@ -305,7 +305,7 @@ void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType type )
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
-    std::memcpy( this->bits, &defbits[ type - 1 ][ 0 ], 32 * sizeof( char ) );
+    std::memcpy( this->bits, &defbits[ rectype - 1 ][ 0 ], 32 * sizeof( char ) );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammerDef::write( std::FILE *out ) const

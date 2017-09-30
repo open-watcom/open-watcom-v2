@@ -220,8 +220,10 @@ void SaveOrigVectors( void )
     unsigned            old;
 
 #ifdef FULL_SAVE
-    for( i = 0; i < INT_VECT_COUNT; ++i ) PMVectSaveList[i]=i;
-    for( i = 0; i < EXCEPT_COUNT; ++i ) PMExceptSaveList[i]=i;
+    for( i = 0; i < INT_VECT_COUNT; ++i )
+        PMVectSaveList[i] = i;
+    for( i = 0; i < EXCEPT_COUNT; ++i )
+        PMExceptSaveList[i] = i;
 #endif
     old = D32NullPtrCheck( 0 );
     /* haven't moved things yet, so PMData isn't set up */
@@ -276,7 +278,7 @@ static void GoToRealMode( void *rm_func )
         }
         DoRawSwitchToRM( RMData.segm.rm, offsetof( rm_data, stack ) + STACK_SIZE, RM_OFF( RawSwitchHandler ) );
         for( i = 0; i < NUM_PM_SAVE_EXCEPTS; ++i ) {
-            SavePMExcepts[i] = DPMIGetPMExceptionVector(PMExceptSaveList[i]);
+            SavePMExcepts[i] = DPMIGetPMExceptionVector( PMExceptSaveList[i] );
             DPMISetPMExceptionVector( PMExceptSaveList[i], OrigPMExcepts[i] );
         }
         for( i = 0; i < NUM_PM_SAVE_VECTS; ++i ) {
@@ -317,7 +319,7 @@ static char *CopyEnv( void )
     if( PMData->envseg.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    _fmemcpy( MK_PM( PMData->envseg.segm.rm, 0 ), envarea, envsize );
+    _fmemcpy( EXTENDER_RM2PM( PMData->envseg.segm.rm, 0 ), envarea, envsize );
     return( NULL );
 }
 
@@ -338,9 +340,7 @@ static char *SetTrapHandler( void )
             RawPMtoRMSwitchAddr = DPMIRawPMtoRMAddr();
             PMData->switchaddr.a= DPMIRawRMtoPMAddr();
         }
-        if( RawPMtoRMSwitchAddr == 0
-         || PMData->switchaddr.a == 0
-         || DPMICheck == 1 ) {
+        if( RawPMtoRMSwitchAddr == 0 || PMData->switchaddr.a == 0 || DPMICheck == 1 ) {
             IntrState = IS_RATIONAL;
         } else {
             PMData->saveaddr.a = DPMISavePMStateAddr();
@@ -348,8 +348,7 @@ static char *SetTrapHandler( void )
             if( PMData->savesize == 0 ) {
                 PMData->saveseg.dpmi_adr = 0;
             } else {
-                PMData->saveseg.dpmi_adr = DPMIAllocateDOSMemoryBlock(
-                                            _NBPARAS(PMData->savesize*2) );
+                PMData->saveseg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( PMData->savesize * 2 ) );
                 if( PMData->saveseg.segm.pm == 0 ) {
                     return( TC_ERR_OUT_OF_DOS_MEMORY );
                 }
@@ -439,7 +438,7 @@ static char *ReadInTrap( dig_fhandle fid )
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
+        *(addr_seg __far *)EXTENDER_RM2PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
     }
     return( NULL );
 }
@@ -496,8 +495,8 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
         callstruct->retlen = 0;
     }
     if( TRP_REQUEST( mx_in ) == REQ_CONNECT ) {
-        if( ( (connect_ret *)mx_out->ptr )->max_msg_size > MAX_MSG_SIZE ) {
-            ( (connect_ret *)mx_out->ptr )->max_msg_size = MAX_MSG_SIZE;
+        if( ((connect_ret *)mx_out->ptr)->max_msg_size > MAX_MSG_SIZE ) {
+            ((connect_ret *)mx_out->ptr)->max_msg_size = MAX_MSG_SIZE;
         }
     }
     return( callstruct->retlen );
@@ -543,7 +542,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             strcpy( buff, err );
         } else {
             strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-            head = MK_PM( TrapMem.segm.rm, 0 );
+            head = EXTENDER_RM2PM( TrapMem.segm.rm, 0 );
             if( head->sig == TRAP_SIGNATURE ) {
                 PMData->initfunc.s.offset = head->init;
                 PMData->reqfunc.s.offset  = head->req;

@@ -2,28 +2,24 @@ alt_error = 00
 
 !include testenv1.mif
 
-test : .symbolic start clean start_test $(dis_objs) $(objs) finish_test save
+test : .symbolic start clean start_test $(dis_objs) $(objs) test_set_result
+    @%make clean
 
-finish_test : .symbolic ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $< exec.out >>$(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) ../error.chk
-    %append $(log_file) PASS $(%__CWD__)
-    %make clean
+test_set_result : .symbolic ./chk_exec.exe
+    -%write error.out OK
+    -$< exec.out >>error.out
+    $(noecho)%make common_set_result_check
+
+check_result : .procedure
+    -diff -b error.out ../error.chk
 
 start_test : .symbolic
-    @if exist exec$(arch).sav rm -f exec$(arch).sav
-    @set ERROR_FILE=exec.out
+    @%make common_start_test
     @set ERROR_MSG=unknown failure
-    @%create $(%ERROR_FILE)
-
-save : .symbolic
-    @if exist exec.out cp exec.out exec$(arch).sav
 
 clean : .procedure
-    @if exist failure rm failure
-    @if exist *.dis rm -f *.dis
-    @if exist *.dib rm -f *.dib
-    @%make common_clean
+    @%make echo_clean
+    @if exist failure $(noecho)rm failure
+    @if exist *.dis $(noecho)rm -f *.dis
+    @if exist *.dib $(noecho)rm -f *.dib
+    $(noecho)%make common_clean

@@ -46,6 +46,7 @@
 #include "hashtabl.h"
 #include "pdata.h"
 #include "groups.h"
+#include "memfuncs.h"
 #include "demangle.h"
 
 #include "clibext.h"
@@ -71,7 +72,7 @@ hash_table      NameRecognitionTable;
 hash_table      SkipRefTable = NULL;
 
 orl_handle              ORLHnd;
-orl_file_handle         ObjFileHnd;
+orl_file_handle         ObjFileHnd = ORL_NULL_HANDLE;
 orl_sec_handle          debugHnd = ORL_NULL_HANDLE;
 dis_handle              DHnd;
 dis_format_flags        DFormat;
@@ -130,7 +131,7 @@ static void printUnixHeader( section_ptr section )
         *ca++ = '0' + (char)alignment;
         *ca = '\0';
 
-        if( (DFormat & DFF_ASM) == 0 ){
+        if( (DFormat & DFF_ASM) == 0 ) {
             BufferConcat("\t\t\t\t");
         }
         BufferStore(".new_section %s, \"%s\"", section->name, attributes );
@@ -257,7 +258,6 @@ static void printMasmHeader( section_ptr section )
     char                *astr;
     orl_sec_handle      shnd;
     orl_group_handle    grp;
-    char                comname[MAX_LINE_LEN];
 
     size = ORLSecGetSize( section->shnd );
 
@@ -291,16 +291,18 @@ static void printMasmHeader( section_ptr section )
         }
     } else {
         if( flags & ORL_SEC_FLAG_COMDAT ) {
-            if( Options & NODEMANGLE_NAMES ) {
-                size_t len;
+            char    *comname;
+            size_t  len;
 
+            if( Options & NODEMANGLE_NAMES ) {
                 len = strlen( name );
-                if( len > sizeof( comname ) - 1 )
-                    len = sizeof( comname ) - 1;
+                comname = MemAlloc( len + 1 );
                 memcpy( comname, name, len );
                 comname[len] = '\0';
             } else {
-                __demangle_l( name, 0, comname, sizeof( comname ) );
+                len = __demangle_l( name, 0, NULL, 0 );
+                comname = MemAlloc( len + 1 );
+                __demangle_l( name, 0, comname, len + 1 );
             }
             combine = ORLSecGetCombine( section->shnd );
             if( (combine & ORL_SEC_COMBINE_COMDAT_ALLOC_MASK) == ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC ) {
@@ -340,6 +342,7 @@ static void printMasmHeader( section_ptr section )
                     BufferStore( "Comdat: %s %s %s '%s' %08X bytes", comname,
                                  astr, getPick( combine ), name, size );
                 }
+                MemFree( comname );
             } else {
                 BufferStore( "Comdat: %s %s %s %s %08X bytes", name, astr,
                          getPick( combine ), getAlloc( combine ), size );
@@ -593,7 +596,7 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
     l_entry = *lab_entry;
     r_entry = *reference_entry;
 
-    for( loop = start; loop < end; ){
+    for( loop = start; loop < end; ) {
         /* Print a label if required */
         l_entry = dumpLabel( l_entry, section, loop, end );
 
@@ -725,7 +728,7 @@ static void bssSection( section_ptr section, dis_sec_size size, unsigned pass )
     PrintHeader( section );
 
     for( l_entry = sec_label_list->first; l_entry != NULL; l_entry = l_entry->next ) {
-        switch( l_entry->type ){
+        switch( l_entry->type ) {
         case LTYP_UNNAMED:
             PrintLinePrefixAddress( l_entry->offset, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
@@ -1019,36 +1022,44 @@ int main( int argc, char *argv[] )
     _argc = argc;
 #endif
 
-    Init();
-    /* build the symbol table */
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        error = DealWithSection( section, 1 );
-        if( error != RC_OKAY ) {
-            return( EXIT_FAILURE );
+    error = Init();
+    if( error == RC_OKAY ) {
+        /* build the symbol table */
+        for( section = Sections.first; section != NULL; section = section->next ) {
+            error = DealWithSection( section, 1 );
+            if( error != RC_OKAY ) {
+                break;
+            }
         }
-    }
-    /* number all the anonymous labels */
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        h_key.u.sec_handle = section->shnd;
-        h_data = HashTableQuery( HandleToLabelListTable, h_key );
-        if( h_data != NULL ) {
-            sec_label_list = h_data->u.sec_label_list;
-            if( sec_label_list != NULL ) {
-                numberUnnamedLabels( sec_label_list->first );
+        if( error == RC_OKAY ) {
+            /* number all the anonymous labels */
+            for( section = Sections.first; section != NULL; section = section->next ) {
+                h_key.u.sec_handle = section->shnd;
+                h_data = HashTableQuery( HandleToLabelListTable, h_key );
+                if( h_data != NULL ) {
+                    sec_label_list = h_data->u.sec_label_list;
+                    if( sec_label_list != NULL ) {
+                        numberUnnamedLabels( sec_label_list->first );
+                    }
+                }
+            }
+            doPrologue();
+            for( section = Sections.first; section != NULL; section = section->next ) {
+                error = DealWithSection( section, 2 );
+                if( error != RC_OKAY ) {
+                    break;
+                }
+            }
+            if( error == RC_OKAY ) {
+                doEpilogue();
+                if( Options & PRINT_PUBLICS ) {
+                    PrintPublics();
+                }
             }
         }
     }
-    doPrologue();
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        error = DealWithSection( section, 2 );
-        if( error != RC_OKAY ) {
-            return( EXIT_FAILURE );
-        }
-    }
-    doEpilogue();
-    if( Options & PRINT_PUBLICS ) {
-        PrintPublics();
-    }
     Fini();
+    if( error != RC_OKAY )
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
 }

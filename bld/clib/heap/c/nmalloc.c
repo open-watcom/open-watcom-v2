@@ -58,7 +58,7 @@ unsigned int    __LargestSizeB4MiniHeapRover = 0;
  * _os2lalloc always allocates from lower memory
  */
 
-unsigned char _os2_use_obj_any;
+unsigned char _os2_use_obj_any = 0;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
@@ -161,7 +161,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
 
     // Try to determine which miniheap to begin allocating from.
     // first, round up the amount
-    size = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
+    size = __ROUND_UP_SIZE_HEAP( amt );
     if( size < FRL_SIZE ) {
         size = FRL_SIZE;
     }
@@ -208,7 +208,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
         // OS/2 only - if not block of requested type, will allocate one and find in 2nd pass
         // Try to expand heap and retry
         if( expanded || !__ExpandDGROUP( amt ) ) {
-            if( !__nmemneed( amt ) ) {
+            if( __nmemneed( amt ) == 0 ) {
                 break;                  // give up
             }
             expanded = 0;

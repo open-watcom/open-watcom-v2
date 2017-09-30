@@ -35,9 +35,9 @@
 #include <stdio.h>
 #include <string.h>
 
+
 #undef TRUE
 #undef FALSE
-#undef NULL
 
 #include "miniproc.h"
 #if defined ( __NW40__ )

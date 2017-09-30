@@ -39,6 +39,8 @@
 #include "ntocomm.h"
 
 
+static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -101,7 +103,7 @@ trap_retval ReqFile_seek( void )
     CONV_LE_32( acc->pos );
     dbg_print(( "seek: handle %ld, position %ld, mode %d\n", acc->handle, acc->pos, acc->mode ));
     ret = GetOutPtr( 0 );
-    ret->pos = lseek( acc->handle, acc->pos, acc->mode );
+    ret->pos = lseek( acc->handle, acc->pos, local_seek_method[acc->mode] );
     if( ret->pos != ((off_t)-1) ) {
         errno = 0;
         ret->err = 0;

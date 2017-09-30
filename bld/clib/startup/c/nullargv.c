@@ -30,6 +30,7 @@
 
 
 #include <stdlib.h>
+
 extern int  main( void );
 extern void __Null_Argv( void );
 
@@ -37,5 +38,6 @@ void __Null_Argv( void )
 {
 #ifndef __NETWARE__
     exit( main() );
+    // never return
 #endif
 }

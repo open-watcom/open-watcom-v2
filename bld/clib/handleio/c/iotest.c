@@ -124,22 +124,22 @@ void TestOpenClose( void )
     int                 handle;
     int                 status;
 
-    handle = creat( "test.fil", S_IREAD|S_IWRITE );
+    handle = creat( "iotest.tmp", S_IREAD|S_IWRITE );
     VERIFY( handle != -1 );
 
     status = close( handle );
     VERIFY( status == 0 );
 
-    handle = open( "test.fil", O_RDWR|O_EXCL|O_CREAT, S_IREAD );
+    handle = open( "iotest.tmp", O_RDWR|O_EXCL|O_CREAT, S_IREAD );
     VERIFY( handle == -1 );
 
-    handle = open( "test.fil", O_RDWR|O_EXCL|O_TRUNC );
+    handle = open( "iotest.tmp", O_RDWR|O_EXCL|O_TRUNC );
     VERIFY( handle != -1 );
 
     status = close( handle );
     VERIFY( status == 0 );
 
-    handle = sopen( "test.fil", O_RDWR|O_TRUNC, SH_DENYNO );
+    handle = sopen( "iotest.tmp", O_RDWR|O_TRUNC, SH_DENYNO );
     VERIFY( handle != -1 );
 
     errno = 0;
@@ -164,7 +164,7 @@ void TestReadWrite( void )
     char                buf2[20];
     long                offset;
 
-    handle = open( "test.fil", O_RDWR|O_EXCL|O_TRUNC );
+    handle = open( "iotest.tmp", O_RDWR|O_EXCL|O_TRUNC );
     VERIFY( handle != -1 );
 
     status = write( handle, buf1, strlen(buf1) );
@@ -196,7 +196,7 @@ void TestSize( void )
     char                ch;
     struct stat         statBuf;
 
-    handle = open( "test.fil", O_RDWR );
+    handle = open( "iotest.tmp", O_RDWR );
     VERIFY( handle != -1 );
 
     status = chsize( handle, 0L );
@@ -260,7 +260,7 @@ void TestFileno( void )
     int                 status;
     long                size;
 
-    fp = fopen( "test.fil", "rb" );
+    fp = fopen( "iotest.tmp", "rb" );
     VERIFY( fp != NULL );
 
     handle = fileno( fp );
@@ -285,7 +285,7 @@ void TestDup( void )
     int                 status;
     long                offset;
 
-    handle1 = open( "test.fil", O_RDWR );
+    handle1 = open( "iotest.tmp", O_RDWR );
     VERIFY( handle1 != -1 );
 
     handle2 = dup( handle1 );
@@ -331,7 +331,7 @@ void TestLocking( void )
     int                 handle;
     int                 status;
 
-    handle = open( "test.fil", O_RDWR );
+    handle = open( "iotest.tmp", O_RDWR );
     VERIFY( handle != -1 );
 
     status = lock( handle, 0, 16384 );
@@ -362,7 +362,7 @@ void TestOsHandle( void )
     int                 posixHandle;
     int                 status;
 
-    posixHandle = open( "test.fil", O_RDWR );
+    posixHandle = open( "iotest.tmp", O_RDWR );
     VERIFY( posixHandle != -1 );
 
     osHandle = _os_handle( posixHandle );
@@ -385,25 +385,25 @@ void TestUnlink( void )
     int                 oldMask;
     int                 status;
 
-    status = unlink( "test.fil" );
+    status = unlink( "iotest.tmp" );
     VERIFY( status == 0 );
 
     oldMask = umask( S_IWRITE );
 
-    handle = open( "test.fil", O_RDWR|O_CREAT|O_TRUNC, S_IREAD|S_IWRITE );
+    handle = open( "iotest.tmp", O_RDWR|O_CREAT|O_TRUNC, S_IREAD|S_IWRITE );
     VERIFY( handle != -1 );
 
     status = close( handle );
     VERIFY( status == 0 );
 
 #if !defined( __UNIX__ ) && !defined( __RDOS__ ) // This call would succeed
-    status = unlink( "test.fil" );
+    status = unlink( "iotest.tmp" );
     VERIFY( status != 0 );
 #endif
 
-    status = chmod( "test.fil", S_IREAD|S_IWRITE );
+    status = chmod( "iotest.tmp", S_IREAD|S_IWRITE );
     VERIFY( status == 0 );
 
-    status = unlink( "test.fil" );
+    status = unlink( "iotest.tmp" );
     VERIFY( status == 0 );
 }

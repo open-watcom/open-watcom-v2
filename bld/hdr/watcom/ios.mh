@@ -35,9 +35,7 @@ using std::oct;
 :include owrtlink.sp
 
 // Define EOF to be the same as that used with C.
-#if !defined( EOF )
- #define EOF (-1)
-#endif
+:include eof.sp
 
 // __NOT_EOF is useful for those functions that return "something other
 // than EOF" to indicate that everything is OK.
@@ -50,8 +48,7 @@ using std::oct;
 // This is referred to in class ios, but is defined later, or elsewhere:
 class _WPRTLINK __WATCOM_ios;
 
-namespace std {
-
+:include nsstd.sp
   // Position in the stream (absolute value, 0 is first byte):
   typedef long streampos;
 
@@ -321,8 +318,7 @@ namespace std {
   _WPRTLINK extern ios &dec( ios & );
   _WPRTLINK extern ios &hex( ios & );
   _WPRTLINK extern ios &oct( ios & );
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

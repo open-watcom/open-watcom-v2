@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <strstrea>
+#include <strstream>
 #endif
 
 namespace std {

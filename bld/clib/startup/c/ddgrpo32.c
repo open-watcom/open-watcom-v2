@@ -35,6 +35,8 @@
  */
 
 #include "variety.h"
+#include <stdlib.h>
+#include <string.h>
 #define INCL_WIN
 #define INCL_DOSFILEMGR
 #define INCL_DOSERRORS
@@ -42,8 +44,6 @@
 #define INCL_DOSMODULEMGR
 #define INCL_ORDINALS
 #include <os2.h>
-#include <stdlib.h>
-#include <string.h>
 #include "ddgrp.h"
 
 #define message \

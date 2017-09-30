@@ -89,7 +89,7 @@ void PollMouse( int *status, windim *row, windim *col )
  */
 void InitMouse( void )
 {
-    if ( key_mouse ) {
+    if( key_mouse ) {
 #if 0 /* doesn't seem to work here, leave it for now (bart) */
         /* save current xterm mouse state */
         putp( "\033[?1001s" );
@@ -106,7 +106,7 @@ void InitMouse( void )
  */
 void FiniMouse( void )
 {
-    if ( key_mouse ) {
+    if( key_mouse ) {
         /* disable mouse tracking */
         putp( "\033[?1003l" );
         _finimouse();

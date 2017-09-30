@@ -422,12 +422,11 @@ void GUISetKeyState( void )
     shift = _wpi_getkeystate( VK_SHIFT ) < 0;
 
     vk_cap = _wpi_getkeystate( VK_CAPITAL );
-    /* vk_cap & 0x80 is caplock pressed.
-     * vk_cap & 0x01 indicates and odd number of toggles since the system
+    /* vk_cap & 0x8000 is caplock pressed.
+     * vk_cap & 0x0001 indicates and odd number of toggles since the system
      * was started.
      */
-    caplock = ( ( vk_cap & 0x8000 ) && !( vk_cap & 0x0001 ) ) ||
-              ( ( vk_cap & 0x0001 ) && !( vk_cap & 0x8000 ) );
+    caplock = ( ( vk_cap < 0 ) ? (vk_cap & 1) == 0 : (vk_cap & 1) != 0 );
     if( ( shift && !caplock ) || ( caplock && !shift ) ) {
         SET_KS_SHIFT;
     }
@@ -454,8 +453,7 @@ bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
     return( GUIConvertVirtKeyToGUIKey( (WORD)vk, scan ) );
 }
 
-WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                           WPI_PARAM2 lparam )
+WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window          *wnd = NULL;
     gui_key_state       key_state;
@@ -476,7 +474,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             // activated the main menu
             wnd = GUIGetWindow( hwnd );
             if( wnd && wnd->parent == GUIGetRootWindow() ) {
-                PostMessage(wnd->parent->root, WM_SYSCOMMAND, SC_KEYMENU, wparam);
+                PostMessage( wnd->parent->root, WM_SYSCOMMAND, SC_KEYMENU, wparam );
                 return( MAKELONG( 0, 1 ) );
             } else {
                 return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );

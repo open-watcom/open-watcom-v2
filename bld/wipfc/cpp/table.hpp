@@ -92,10 +92,10 @@ public:
         data( 1 ), colWidth( w ) { };
     ~TableCol() { };
     unsigned int rows() const { return data.size(); };
-    std::list< Element* >& rowData( unsigned int row ) { return data[ row ]; };
+    std::list< Element* >& rowData( unsigned int rowpos ) { return data[ rowpos ]; };
     Lexer::Token parse( Lexer* lexer );
-    void appendData( unsigned int row, Element* e ) { data[ row ].push_back( e ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void appendData( unsigned int rowpos, Element* e ) { data[ rowpos ].push_back( e ); };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     TableCol( const TableCol& rhs );            //no copy
     TableCol& operator=( const TableCol& rhs ); //no assignment
@@ -112,7 +112,7 @@ public:
     ~TableRow();
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     TableRow( const TableRow& rhs );            //no copy
     TableRow& operator=( const TableRow& rhs ); //no assignment

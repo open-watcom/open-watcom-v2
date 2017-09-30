@@ -32,6 +32,7 @@
 #ifdef __NETWARE__
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include "initarg.h"
 
     void __Init_Argv( void ) { }

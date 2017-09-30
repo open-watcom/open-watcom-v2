@@ -8,8 +8,8 @@ pick(   STR_NONE,
         "<none>",
         "<none>" )
 pick(   STR_CHILD_ID,
-        ", Child ID = %d (0x%0*x)",
-        ", Child ID = %d (0x%0*x)" )
+        ", Child ID = %d (0x%s)",
+        ", Child ID = %d (0x%s)" )
 pick(   STR_SPY_ON,
         "&Continue Spying",
         "&Continue Spying" )
@@ -19,18 +19,24 @@ pick(   STR_SPY_OFF,
 pick(   STR_APP_NAME,
         "Open Watcom Spy",
         "Open Watcom Spy" )
-pick(   STR_HEADINGS_NT,
-            "Message Name              hWnd     MsgID    wParam   lParam  ",
-            "Message Name              hWnd     MsgID    wParam   lParam  " )
-pick(   STR_HEADING_UNDERLINE_NT,
-            "===========================================================",
-            "===========================================================" )
 pick(   STR_HEADINGS_WIN,
-            "Message Name              hWnd MsgID wParam lParam",
-            "Message Name              hWnd MsgID wParam lParam" )
+            "Message Name                  hWnd MsgID wParam lParam",
+            "Message Name                  hWnd MsgID wParam lParam" )
 pick(   STR_HEADING_UNDERLINE_WIN,
-            "==================================================",
-            "==================================================" )
+            "======================================================",
+            "======================================================" )
+pick(   STR_HEADINGS_NT,
+            "Message Name                  hWnd     MsgID    wParam   lParam  ",
+            "Message Name                  hWnd     MsgID    wParam   lParam  " )
+pick(   STR_HEADING_UNDERLINE_NT,
+            "=================================================================",
+            "=================================================================" )
+pick(   STR_HEADINGS_NT64,
+            "Message Name                  hWnd             MsgID    wParam           lParam          ",
+            "Message Name                  hWnd             MsgID    wParam           lParam          " )
+pick(   STR_HEADING_UNDERLINE_NT64,
+            "=========================================================================================",
+            "=========================================================================================" )
 pick(   STR_MULTIPLE_WIN_TITLE,
         "%s - Multiple Windows",
         "%s - Multiple Windows" )
@@ -50,11 +56,11 @@ pick(   STR_HEADING_5,
         "lParam",
         "lParam" )
 pick(   STR_1_WIN_TITLE,
-        "%s - hWnd %0*x",
-        "%s - hWnd %0*x" )
+        "%s - hWnd 0x%s",
+        "%s - hWnd 0x%s" )
 pick(   STR_1_NAMED_WIN_TITLE,
-        "%s - hWnd %0*x (%s)",
-        "%s - hWnd %0*x (%s)" )
+        "%s - hWnd 0x%s (%s)",
+        "%s - hWnd 0x%s (%s)" )
 pick(   STR_ABOUT_NAME,
         "Open Watcom Spy for Windows" STR_BITNESS,
         "Open Watcom Spy for Windows" STR_BITNESS )
@@ -80,11 +86,14 @@ pick(   STR_SELECT_WIN,
         "Select Window",
         "Select Window" )
 pick(   STR_WM_USER_PLUS,
-        "WM_USER+%d",
-        "WM_USER+%d" )
+        "WM_USER+%u",
+        "WM_USER+%u" )
+pick(   STR_WM_APP_PLUS,
+        "WM_APP+%u",
+        "WM_APP+%u" )
 pick(   STR_UNKNOWN_MSG,
-        "UNKNOWN MSG: %04x",
-        "UNKNOWN MSG: %04x" )
+        "UNKNOWN MSG: 0x%s",
+        "UNKNOWN MSG: 0x%s" )
 pick(   STR_MSGS_TO_WATCH,
         "Messages To Watch",
         "Messages To Watch" )

@@ -53,14 +53,14 @@ public:
     ~I1() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
     void addSecondary( IndexItem* i ) { secondary.push_back( i ); };
     STD1::uint16_t secondaryCount() const
         { return static_cast< STD1::uint16_t >( secondary.size() ); };
     bool isGlobal() const { return primary->isGlobal(); };
-    size_t write( std::FILE* out );
+    std::size_t write( std::FILE* out );
     bool operator==( const I1& rhs ) const{ return *primary == *rhs.primary; };
     bool operator==( const std::wstring& rhs ) const { return *primary == rhs; };
     bool operator<( const I1& rhs ) const { return *primary < *rhs.primary; };

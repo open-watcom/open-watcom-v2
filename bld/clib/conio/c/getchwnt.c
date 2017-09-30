@@ -30,10 +30,11 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <windows.h>
 #include <conio.h>
+#include <windows.h>
 #include "ntconio.h"
 #include "rtdata.h"
 #include "fileacc.h"

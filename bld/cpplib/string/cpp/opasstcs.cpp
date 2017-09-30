@@ -60,19 +60,21 @@
 
 #include "strng.h"
 
-String &String::operator = ( const char *cstr ) {
-/***********************************************/
+String &String::operator = ( const char *cstr )
+/*********************************************/
 // Assignment operator: assign a String from a C string
-    size_t len;
+{
+    std::size_t len;
 
     __FreeStringRep();
-    len  = (cstr == NULL) ? 0 : ::strlen( cstr );
+    len  = (cstr == NULL) ? 0 : std::strlen( cstr );
     __srep = __AllocStringRep( NULL, len );
-    if( __srep == NULL ) return( *this );
+    if( __srep == NULL )
+        return( *this );
     __slength = len;
     __offset = 0;
     if( __slength > 0 ) {
-        ::memcpy( __srep->__value, cstr, __slength );
+        std::memcpy( __srep->__value, cstr, __slength );
     }
     return( *this );
 }

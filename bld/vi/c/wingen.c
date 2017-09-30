@@ -146,7 +146,7 @@ void Message2( const char *str, ... )
 /*
  * WPrintfLine - printf text on a window line
  */
-vi_rc WPrintfLine( window_id wid, int line, char *str, ... )
+vi_rc WPrintfLine( window_id wid, int line, const char *str, ... )
 {
     va_list     al;
     char        tmp[MAX_STR];
@@ -186,7 +186,7 @@ void SetWindowCursorForReal( void )
     }
 #ifdef __WIN__
     // for windows assume tabs to be of lenght 1
-    if( !EditFlags.RealTabs ){
+    if( !EditFlags.RealTabs ) {
         SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
     } else {
@@ -206,8 +206,7 @@ void SetWindowCursorForReal( void )
 /*
  * DisplayExtraInfo - display info in extra window
  */
-vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, char _NEAR * _NEAR *data,
-                      int numopts )
+vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, const char _NEAR * _NEAR *data, int numopts )
 {
     int     j;
     vi_rc   rc;

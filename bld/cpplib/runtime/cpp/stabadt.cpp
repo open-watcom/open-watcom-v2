@@ -41,7 +41,7 @@ void * dtor_the_array(          // CALL DESTRUCTORS FOR ARRAY ELEMENTS
     void *array;                // - array
     RT_TYPE_SIG sig;            // - signature of array
     pFUNdtor dtor;              // - destructor for an element
-    size_t size;                // - size of an array element
+    std::size_t size;           // - size of an array element
 
     sig = cta->_sig;
     size = sig->clss.size;

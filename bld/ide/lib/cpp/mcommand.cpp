@@ -86,6 +86,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     const char* cmd = gets();
     int location = EXECUTE_NORMAL;
     size_t i=0;
+
     if( strnicmp( &cmd[i], "!Batch ", 7 ) == 0 ) {
         i += 7;
         location = EXECUTE_BATCH;
@@ -154,7 +155,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     }
     if( target ) {
         size_t icount = com.size();
-        for( size_t i=0; i<icount; ) {
+        for( i = 0; i < icount; ) {
             WFileName f;
             if( strncmp( &com[i], "$@", 2 ) == 0 ) {
                 i += 2;

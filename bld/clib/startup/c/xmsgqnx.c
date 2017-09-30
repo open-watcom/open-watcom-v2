@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include "exitwmsg.h"
 
-extern  void    __qnx_exit( int );
+_WCNORETURN extern void     __qnx_exit( int );
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 {
@@ -45,6 +45,7 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
     c = '\n';
     write( STDERR_FILENO, &c, 1 );
     __qnx_exit( retcode );
+    // never return
 }
 
 
@@ -52,5 +53,7 @@ _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned 
 {
     if( __EnterWVIDEO( msg ) )
         __qnx_exit( retcode );
+        // never return
     __exit_with_msg( msg, retcode );
+    // never return
 }

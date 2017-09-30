@@ -33,9 +33,9 @@
 #ifndef WDEGLOBAL_INCLUDED
 #define WDEGLOBAL_INCLUDED
 
+#include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
-#include "commonui.h"
 #include "watcom.h"
 #include "bool.h"
 #include "fmedit.def"

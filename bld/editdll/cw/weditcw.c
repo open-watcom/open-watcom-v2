@@ -291,14 +291,13 @@ int __export FAR PASCAL EDITShowWindow( int iCmdShow )
 
 BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam )
 {
-    char    *szWantClass = CW_CLASS;
-    char    szThisClass[sizeof( CW_CLASS )];
+    char    szThisClass[sizeof( CW_CLASS ) + 1];
 
-    if( GetClassName( hwnd, szThisClass, sizeof( szThisClass ) ) + 1 != sizeof( szThisClass ) ) {
+    if( GetClassName( hwnd, szThisClass, sizeof( szThisClass ) ) != ( sizeof( CW_CLASS ) - 1 ) ) {
         // if not correct length, definitely no match
         return( TRUE );
     }
-    if( strcmp( szThisClass, szWantClass ) == 0 ) {
+    if( strcmp( szThisClass, CW_CLASS ) == 0 ) {
         // gotcha - store handle & stop enumeration
         *(HWND *)lParam = hwnd;
         return( FALSE );

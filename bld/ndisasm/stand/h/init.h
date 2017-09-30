@@ -34,7 +34,7 @@
 #define WDIS_INIT_INCLUDED
 
 extern void                     PrintErrorMsg( return_val, int );
-extern void                     Init( void );
+extern return_val               Init( void );
 extern void                     CloseObjFile( void );
 extern orl_machine_type         GetMachineType( void );
 extern orl_file_format          GetFormat( void );

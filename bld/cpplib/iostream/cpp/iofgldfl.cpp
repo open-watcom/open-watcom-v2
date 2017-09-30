@@ -33,16 +33,15 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <ctype.h>
-#include <stdlib.h>
+#include <cctype>
+#include <cstdlib>
 #include <iostream>
 #include <streambu>
 #endif
-#include "ioutil.h"
 #include "lock.h"
 #include "iofhdr.h"
 
-std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) {
+static std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) {
 
     std::ios::iostate  state;
     int           c, sign;
@@ -53,11 +52,11 @@ std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) 
         state |= std::ios::eofbit;
         return( state );
     }
-    if( !isdigit(c)  ) {
+    if( !std::isdigit(c)  ) {
         if( c == '+'  ||  c == '-' ) {
             sign = sb->sbumpc();
             c = sb->speekc();
-            if( !isdigit(c) ) {
+            if( !std::isdigit(c) ) {
                 if( is_exp || c != '.' ) {
                     state |= std::ios::failbit;
                     sb->sputbackc( (char)sign );
@@ -71,7 +70,7 @@ std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) 
     return( state );
 }
 
-std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
+static std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
 
     std::ios::iostate  state;
     int           c, mant_digits;
@@ -85,7 +84,7 @@ std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
         if( c == EOF ) {
             break;
         }
-        if( isdigit( c ) ) {
+        if( std::isdigit( c ) ) {
             mant_digits++;
             sb->sbumpc();
         } else if( c == '.' ) {
@@ -116,7 +115,7 @@ std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
     return( state );
 }
 
-std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
+static std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
 
     std::ios::iostate  state;
     int           c, exp, exp_digits;
@@ -124,7 +123,7 @@ std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
     state = std::ios::goodbit;
     exp_digits = 0;
     c = sb->speekc();
-    if( tolower(c) != 'e' ) {
+    if( std::tolower(c) != 'e' ) {
          return( state );
     }
     exp = sb->sbumpc();
@@ -138,7 +137,7 @@ std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
     if ( !state ) {
         for( ;; ) {
             c = sb->speekc();
-            if( isdigit( c ) ) {
+            if( std::isdigit( c ) ) {
                 exp_digits++;
                 sb->sbumpc();
             } else {

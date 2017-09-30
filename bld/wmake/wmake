@@ -7,12 +7,6 @@ link_sys = $(link_sys_$(bld_os))
 link_sys = $(bld_os)
 !endif
 
-!ifdef __UNIX__
-exe =
-!else
-exe = .exe
-!endif
-
 objs = &
   macros.obj main.obj mautodep.obj mautoomf.obj mautoorl.obj &
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
@@ -22,10 +16,11 @@ objs = &
 
 .c : ../c;$(builder_dir)/c;$(watcom_dir)/c
 
-$(%OWBINDIR)/wmake$(exe): wmk.exe
 !ifdef __UNIX__
+$(%OWBINDIR)/wmake : wmk.exe
         cp wmk.exe $@
 !else
+$(%OWBINDIR)\wmake.exe : wmk.exe
         copy wmk.exe $@
 !endif
 

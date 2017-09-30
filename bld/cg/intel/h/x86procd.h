@@ -47,6 +47,7 @@ typedef enum {
         ROUTINE_LOADS_DS                = 0x00008000,
         ROUTINE_STACK_RESERVE           = 0x00010000,
         ROUTINE_PREFER_REGS             = 0x00020000,
+        ROUTINE_FARSS                   = 0x00040000,
 
         /* don't use these directly -- use the macros below */
         ROUTINE_LONG                    = 0x00000002,

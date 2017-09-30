@@ -94,15 +94,13 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     MemWndConfig        memwndcfg;
     COPYDATASTRUCT      data;
 #ifndef CHICAGO
-    DWORD               ver;
     STARTUPINFO         startup;
     PROCESS_INFORMATION procinfo;
     BOOL                ret;
     char                cmd[_MAX_PATH];
     char*               env;
 
-    ver = GetVersion();
-    if( !( ver < 0x80000000 ) && !( LOBYTE( LOWORD( ver ) ) < 4 ) ) {
+    if( (GetVersion() & 0x800000FF) >= 0x80000004 ) {   // Win 9x/Me
         env = getenv( "WATCOM" );
         if( env == NULL ) {
             if( !env ) {

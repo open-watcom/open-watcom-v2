@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #include <stdlib.h>
 #include "win.h"
 

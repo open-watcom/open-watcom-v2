@@ -64,10 +64,9 @@
  * Prototypes for Linux system call functions
  */
 
-long    sys_brk( u_long brk );
-long    sys_open( const char * filename, int flags, int mode );
-long    sys_exit( int error_code );
-long    sys_getdents( u_int fd, struct dirent *dirp, u_int count );
-long    __socketcall( int call, u_long *args );
+extern long    sys_brk( u_long brk );
+extern long    sys_open( const char * filename, int flags, int mode );
+extern long    sys_getdents( u_int fd, struct dirent *dirp, u_int count );
+extern long    __socketcall( int call, u_long *args );
 
 #endif

@@ -96,7 +96,7 @@ _WCRTDATA extern int           _WCDATA __IsDBCS;
 #endif
 
 /* Implement small functions as macros for speed */
-#if !defined(__FUNCTION_DATA_ACCESS)
+#ifndef __FUNCTION_DATA_ACCESS
  #ifndef _ismbblead
  #define _ismbblead(__b) ( __IsDBCS \
                         ? ( __MBCSIsTable[(unsigned char)(__b)+1] & _MB_LEAD ) \

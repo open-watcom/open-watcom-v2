@@ -260,11 +260,11 @@ WResFileOffset res_tell( WResFileID fid )
 {
     if( fid == hInstance.fid ) {
         return( tell( WRES_FID2PH( fid ) ) );
+    } else if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
+        return( PosLoad() );
+    } else {
+        return( QPos( WRES_FID2PH( fid ) ) );
     }
-
-    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
-
-    return( PosLoad() );
 }
 
 bool res_ioerr( WResFileID fid, size_t rc )

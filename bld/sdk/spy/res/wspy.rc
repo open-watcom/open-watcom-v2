@@ -1,6 +1,8 @@
-#include "spy.h"
-#include "about.h"
+#include <windows.h>
 #include "banner.h"
+#include "about.h"
+#include "spyrc.h"
+
 
 #define FIRST_COPYRIGHT_YEAR "1993"
 

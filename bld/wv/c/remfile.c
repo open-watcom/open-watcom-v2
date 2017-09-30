@@ -53,15 +53,12 @@
 #include "trpld.h"
 
 
-extern trap_elen        MaxPacketLen;
+#define CACHED_HANDLES    16
 
-static trap_shandle     SuppFileId = 0;
-
-file_components         RemFile;
-
-#ifdef LOGGING
-static FILE    *logf;
-#endif
+#define SUPP_FILE_SERVICE( in, request )    \
+    in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE; \
+    in.supp.id          = SuppFileId;       \
+    in.req              = request;
 
 /* Remote file "cache" - correlates remote and local file handles */
 typedef struct _fcache_t {
@@ -69,13 +66,17 @@ typedef struct _fcache_t {
     sys_handle  remhandle;
 } fcache_t;
 
-#define CACHED_HANDLES    16
-static fcache_t    fcache[CACHED_HANDLES];
+extern trap_elen        MaxPacketLen;
 
-#define SUPP_FILE_SERVICE( in, request )    \
-    in.supp.core_req    = REQ_PERFORM_SUPPLEMENTARY_SERVICE; \
-    in.supp.id          = SuppFileId;       \
-    in.req              = request;
+file_components         RemFile;
+
+#ifdef LOGGING
+static FILE             *logf;
+#endif
+static trap_shandle     SuppFileId = 0;
+static fcache_t         fcache[CACHED_HANDLES];
+static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
+static const unsigned_8 remote_seek_method[] = { TF_SEEK_ORG, TF_SEEK_CUR, TF_SEEK_END };
 
 /* Return local handle of remote file equivalent */
 int GetCachedHandle(sys_handle remote)
@@ -215,7 +216,7 @@ size_t RemoteStringToFullName( bool executable, const char *name, char *res,
     }
 }
 
-sys_handle RemoteOpen( const char *name, open_access mode )
+sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -228,13 +229,13 @@ sys_handle RemoteOpen( const char *name, open_access mode )
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_OPEN );
     acc.mode = 0;
-    if( mode & OP_READ )
+    if( oattrs & OP_READ )
         acc.mode |= TF_READ;
-    if( mode & OP_WRITE )
+    if( oattrs & OP_WRITE )
         acc.mode |= TF_WRITE;
-    if( mode & OP_CREATE ) {
+    if( oattrs & OP_CREATE ) {
         acc.mode |= TF_CREATE;
-        if( mode & OP_EXEC ) {
+        if( oattrs & OP_EXEC ) {
             acc.mode |= TF_EXEC;
         }
     }
@@ -443,13 +444,13 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     /* Seek on local copy too (if available) */
     locfile = GetCachedHandle( hdl );
     if( locfile != -1 ) {
-        lseek( locfile, pos, method );
+        lseek( locfile, pos, local_seek_method[method] );
     }
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_SEEK );
     acc.handle = hdl;
     /* Magic again! The seek mode mapped exactly to our definition! */
-    acc.mode = method;
+    acc.mode = remote_seek_method[method];
     acc.pos = pos;
     CONV_LE_32( acc.handle );
     CONV_LE_32( acc.pos );

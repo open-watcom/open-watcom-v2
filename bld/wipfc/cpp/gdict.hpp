@@ -60,7 +60,7 @@ public:
     GlobalDictionaryWord* insert( std::wstring& word );
     //after insertions are completed, assign an index to each element
     //of the collection as if it were an array
-    void convert( size_t count );
+    void convert( std::size_t count );
     //get the index of a word in the collection
     STD1::uint16_t findIndex( std::wstring& word );
     STD1::uint16_t findIndex( GlobalDictionaryWord* word ) { return (*words.find( word ))->index(); };

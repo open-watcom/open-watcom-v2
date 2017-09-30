@@ -123,12 +123,13 @@ void    FiniInstance( void );
 void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( const char *str );
-void    ShowStartupDialog( void );
-void    CloseStartupDialog( void );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
-bool    HasShare( void );
 int     PickATag( int clist, char **list, const char *tagname );
+
+#ifdef __WINDOWS__
+bool    HasShare( void );
+#endif
 
 // clrpick.c
 void    InitClrPick( void );

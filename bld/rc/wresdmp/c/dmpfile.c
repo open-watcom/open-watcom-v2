@@ -156,8 +156,8 @@ static char * MemFlagsOffList[16] = {
     NULL
 };
 
-static bool DumpResource( WResDirWindow wind, WResFileID fid, uint_16 os )
-/************************************************************************/
+static bool DumpResource( WResDirWindow wind, WResFileID fid, WResTargetOS res_os )
+/*********************************************************************************/
 {
     bool            error;
     char            resname[15];
@@ -189,7 +189,7 @@ static bool DumpResource( WResDirWindow wind, WResFileID fid, uint_16 os )
     PrintUint16Flags( lang->MemoryFlags, MemFlagsOnList, MemFlagsOffList, 53 );
 
     if( CmdLineParms.DumpContents ) {
-        error = DumpContents( type, res, lang, fid, os );
+        error = DumpContents( type, res, lang, fid, res_os );
         if( error ) {
             return( true );
         }
@@ -205,23 +205,23 @@ static int DumpDir( WResDir dir, WResFileID fid )
     int             retcode;
     bool            error;
     WResDirWindow   wind;
-    uint_16         os;
+    WResTargetOS    res_os;
 
     retcode = 0;
 
     if( WResIsEmpty( dir ) ) {
         printf( "Directory in file %s is empty\n", CmdLineParms.FileName );
     } else {
-        os = WResGetTargetOS( dir );
+        res_os = WResGetTargetOS( dir );
         wind = WResFirstResource( dir );
         while( !WResIsLastResource( wind, dir ) ) {
-            error = DumpResource( wind, fid, os );
+            error = DumpResource( wind, fid, res_os );
             if( error ) {
                 retcode = 2;
             }
             wind = WResNextResource( wind, dir );
         }
-        error = DumpResource( wind, fid, os );
+        error = DumpResource( wind, fid, res_os );
         if( error ) {
             retcode = 2;
         }

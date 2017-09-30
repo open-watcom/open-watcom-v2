@@ -50,12 +50,11 @@ extern  void    WndRestoreToFront( a_window *wnd )
 
 void    WndNextNonIconToFront( a_window *wnd )
 {
-    while( wnd != NULL ) {
+    for( ; wnd != NULL; wnd = WndNext( wnd ) ) {
         if( _Isnt( wnd, WSW_ICONIFIED ) && wnd != WndMain ) {
             WndToFront( wnd );
             return;
         }
-        wnd = WndNext( wnd );
     }
 }
 

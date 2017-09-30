@@ -51,14 +51,15 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 ,   RTS_IS_THROW  = 0x8000      // - function is a C++ throw
 ,   RTS_NO_THROW  = 0x0001      // - never does throw or equivalent
 ,   RTS_CAN_THROW = 0x0002      // - could throw
-,   RTS_IG_THROW  = 0x0004      // - throwing to be ignored
-} RTS_TYPE;
+,   RTS_IGN_THROW = 0x0004      // - throwing to be ignored
+} RTS;
 
 // function name array
 
 static const char *runTimeCodeString[] = {
     #define QSTRING( name ) __STR( name )
     #define RTFUN( code, name ) QSTRING(CPPLIB(name))
+    #define RTFUN1( code )      ""
     #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
     #define RTFNC( code, name ) QSTRING(name)
     #define RTFNP( code, name ) #name
@@ -67,12 +68,13 @@ static const char *runTimeCodeString[] = {
 
     #undef QSTRING
     #undef RTFUN
+    #undef RTFUN1
     #undef RTDAT
     #undef RTFNC
     #undef RTFNP
 };
 
-static NAME runTimeCodeName[ ARRAY_SIZE( runTimeCodeString ) ];
+static NAME runTimeCodeName[ARRAY_SIZE( runTimeCodeString )];
 
 static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
     NAME name )                 // - name of run-time function
@@ -95,7 +97,7 @@ static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
 // exercised in the back end
 //
 static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
-    RTS_TYPE runtime_type,      // - run-time type definition
+    RTS rt_type,                // - run-time type definition
     NAME name )                 // - name of run-time function
 {
     SYMBOL sym;                 // - new symbol
@@ -103,29 +105,29 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     symbol_flag flags;          // - symbol's flags
 
     flags = SF_REFERENCED;
-    if( runtime_type & RTS_FUNCTION ) {
-        if( runtime_type & RTS_POINTER ) {
+    if( rt_type & RTS_FUNCTION ) {
+        if( rt_type & RTS_POINTER ) {
             sym_type = TypePtrVoidFunOfVoid();
-        } else if( runtime_type & RTS_HANDLER ) {
+        } else if( rt_type & RTS_HANDLER ) {
             sym_type = TypeVoidHandlerFunOfVoid();
         } else {
             sym_type = TypeVoidFunOfVoid();
         }
-        if( runtime_type & RTS_INLINE ) {
+        if( rt_type & RTS_INLINE ) {
             sym_type = AddFunctionFlag( sym_type, TF1_INTRINSIC );
         }
-        if( runtime_type & RTS_CAN_THROW ) {
+        if( rt_type & RTS_CAN_THROW ) {
             flags |= SF_LONGJUMP;
-        } else if( runtime_type & RTS_NO_THROW ) {
+        } else if( rt_type & RTS_NO_THROW ) {
             flags |= SF_NO_LONGJUMP;
-        } else if( runtime_type & RTS_IG_THROW ) {
-            RepoFunAdd( name, RFFLAG_IG_LONGJUMP );
+        } else if( rt_type & RTS_IGN_THROW ) {
+            RepoFunAdd( name, RFFLAG_IGN_LONGJUMP );
         }
-        if( runtime_type & RTS_IS_THROW ) {
+        if( rt_type & RTS_IS_THROW ) {
             flags |= SF_IS_THROW;
         }
-    } else if( runtime_type & RTS_BASE_VOID ) {
-        if( runtime_type & RTS_POINTER ) {
+    } else if( rt_type & RTS_BASE_VOID ) {
+        if( rt_type & RTS_POINTER ) {
             sym_type = TypePtrToVoid();
         } else {
             sym_type = GetBasicType( TYP_VOID );
@@ -146,96 +148,96 @@ bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
 }
 
 
-static NAME getRTCName( RTF code )
+static NAME getRTCName( RTF rt_code )
 {
     NAME name;
 
-    name = runTimeCodeName[ code ];
+    name = runTimeCodeName[rt_code];
     if( name == NULL ) {
-        name = NameCreateNoLen( runTimeCodeString[ code ] );
-        runTimeCodeName[ code ] = name;
+        name = NameCreateNoLen( runTimeCodeString[rt_code] );
+        runTimeCodeName[rt_code] = name;
     }
     return( name );
 }
 
 
 SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
-    RTF code )                  // - code for call
+    RTF rt_code )               // - code for call
 {
     SYMBOL sym;                 // - symbol for run-time call
     NAME name;                  // - name for function
-    RTS_TYPE runtime;           // - definition for run-time symbol
+    RTS rt_type;                // - definition for run-time symbol
 
-    name = getRTCName( code );
+    name = getRTCName( rt_code );
     sym = rtSymbolLookup( name );
     if( sym == NULL ) {
-        switch( code ) {
-          case RTF_ASSIGN_ARR :
-          case RTF_COPY_ARR :
-          case RTF_COPY_VARR :
-          case RTF_CTOR_ARR :
-          case RTF_CTOR_VARR :
-          case RTF_DEREGISTER :
-          case RTF_DTOR_ARR :
-          case RTF_CTAS_1S :
-          case RTF_CTAS_1M :
-          case RTF_CTAS_2S :
-            runtime = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_IG_THROW;
+        switch( rt_code ) {
+        case RTF_ASSIGN_ARR :
+        case RTF_COPY_ARR :
+        case RTF_COPY_VARR :
+        case RTF_CTOR_ARR :
+        case RTF_CTOR_VARR :
+        case RTF_DEREGISTER :
+        case RTF_DTOR_ARR :
+        case RTF_CTAS_1S :
+        case RTF_CTAS_1M :
+        case RTF_CTAS_2S :
+            rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_IGN_THROW;
             break;
-          case RTF_DYN_CAST_PTR :
-          case RTF_DYN_CAST_VOID :
-            runtime = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_NO_THROW;
+        case RTF_DYN_CAST_PTR :
+        case RTF_DYN_CAST_VOID :
+            rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_NO_THROW;
             break;
-          case RTF_CTAS_GM :
-          case RTF_CTAS_GS :
-          case RTF_DTOR_AR_STORE :
-          case RTF_DYN_CAST_REF :
-          case RTF_GET_TYPEID :
-            runtime = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_CAN_THROW;
+        case RTF_CTAS_GM :
+        case RTF_CTAS_GS :
+        case RTF_DTOR_AR_STORE :
+        case RTF_DYN_CAST_REF :
+        case RTF_GET_TYPEID :
+            rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_CAN_THROW;
             break;
-          case RTF_STATIC_INIT :
-            runtime = RTS_BASE_SINT | RTS_FUNCTION | RTS_NO_THROW;
+        case RTF_STATIC_INIT :
+            rt_type = RTS_BASE_SINT | RTS_FUNCTION | RTS_NO_THROW;
             break;
 #if _CPU == _AXP
-          case RTF_PD_HANDLER :
-          case RTF_PD_HANDLER_RTN :
+        case RTF_PD_HANDLER :
+        case RTF_PD_HANDLER_RTN :
 #else
-          case RTF_FS_HANDLER :
-          case RTF_FS_HANDLER_RTN :
+        case RTF_FS_HANDLER :
+        case RTF_FS_HANDLER_RTN :
 #endif
-            runtime = RTS_BASE_SINT | RTS_FUNCTION | RTS_HANDLER | RTS_NO_THROW;
+            rt_type = RTS_BASE_SINT | RTS_FUNCTION | RTS_HANDLER | RTS_NO_THROW;
             break;
-          case RTF_SETJMP :
-            runtime = RTS_BASE_UINT | RTS_FUNCTION | RTS_CAN_THROW;
+        case RTF_SETJMP :
+            rt_type = RTS_BASE_UINT | RTS_FUNCTION | RTS_CAN_THROW;
             break;
-          case RTF_MOD_DTOR :
+        case RTF_MOD_DTOR :
 //        case RTF_INLINE_FREG :    // not req'd with new library
-          case RTF_LONGJMP_REF :
-          case RTF_UNDEF_DATA :
-          case RTD_FS_ROOT :
-          case RTD_TS_GENERIC :
-          case RTD_TS_OS2 :
-          case RTD_TS_NT :
-            runtime = RTS_BASE_SINT;
+        case RTF_LONGJMP_REF :
+        case RTF_UNDEF_DATA :
+        case RTD_FS_ROOT :
+        case RTD_TS_GENERIC :
+        case RTD_TS_OS2 :
+        case RTD_TS_NT :
+            rt_type = RTS_BASE_SINT;
             break;
-          case RTF_THROW :
-          case RTF_THROW_ZERO :
-          case RTF_RETHROW :
-            runtime = RTS_BASE_VOID | RTS_FUNCTION | RTS_IS_THROW | RTF_THROW;
+        case RTF_THROW :
+        case RTF_THROW_ZERO :
+        case RTF_RETHROW :
+            rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_IS_THROW;
             // it is absolutely critical that the function definition
             // in the runtime library be #pragma aborts because otherwise
             // -3s code in the runtime lib assumes a return address was
             // pushed (AFS 29-jul-93)
             break;
-          case RTF_FS_PUSH :
-          case RTF_FS_POP :
-            runtime = RTS_BASE_VOID | RTS_FUNCTION | RTS_INLINE;
+        case RTF_FS_PUSH :
+        case RTF_FS_POP :
+            rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_INLINE;
             break;
-          default :
-            runtime = RTS_BASE_VOID | RTS_FUNCTION | RTS_NO_THROW;
+        default :
+            rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_NO_THROW;
             break;
         }
-        sym = rtSymbolCreate( runtime, name );
+        sym = rtSymbolCreate( rt_type, name );
     }
     return sym;
 }
@@ -244,12 +246,12 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
 PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
     PTREE expr,                 // - expression for operands
     TYPE type,                  // - type for function return
-    RTF code )                  // - code for function
+    RTF rt_code )               // - code for function
 {
     SYMBOL func;
 
-    func = RunTimeCallSymbol( code );
-    DbgVerify( (PointerTypeEquivalent( type ) == NULL)
+    func = RunTimeCallSymbol( rt_code );
+    DbgVerify( (PointerTypeEquivalent( type ) == NULL )
                == (PointerTypeEquivalent( SymFuncReturnType( func ) ) == NULL)
              , "RunTimeCall -- return type mismatch" );
     return NodeMakeCall( func, type, expr );
@@ -257,9 +259,9 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
 
 
 const char *RunTimeCodeString(  // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
-    RTF code )                  // - code for function
+    RTF rt_code )               // - code for function
 {
-    return( runTimeCodeString[code] );
+    return( runTimeCodeString[rt_code] );
 }
 
 static void rtfInit(            // INITIALIZE NAMES FOR NAMES PROCESSING
@@ -278,7 +280,7 @@ pch_status PCHReadRTFNames( void )
 {
     NAME *name;
 
-    for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
+    for( name = runTimeCodeName; name < &runTimeCodeName[RTF_LAST]; ++name ) {
         *name = NamePCHRead();
     }
     return( PCHCB_OK );
@@ -288,7 +290,7 @@ pch_status PCHWriteRTFNames( void )
 {
     NAME *name;
 
-    for( name = runTimeCodeName; name < &runTimeCodeName[ RTF_LAST ]; ++name ) {
+    for( name = runTimeCodeName; name < &runTimeCodeName[RTF_LAST]; ++name ) {
         NamePCHWrite( *name );
     }
     return( PCHCB_OK );

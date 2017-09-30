@@ -32,8 +32,8 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 
 namespace std {
@@ -44,11 +44,11 @@ namespace std {
   // array will not grow dynamically.
 
   ostrstream::ostrstream( signed char *str, int size, ios::openmode mode )
-    : strstreambase( (char *)str, 
+    : strstreambase( (char *)str,
                      size,
                      ((str==0) ? 0 : (char*)str +
                         ((mode & (ios::atend|ios::append)) ?
-                                       ::strlen( (char *)str ) : 0) ) ) {
+                                       strlen( (char *)str ) : 0) ) ) {
   }
 
 }

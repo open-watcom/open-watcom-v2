@@ -60,10 +60,10 @@
 
 #include "strng.h"
 
-String::String( const String &s, size_t pos, size_t n )
-/*****************************************************/
-        : __c_string( NULL ) {
+String::String( const String &s, std::size_t pos, std::size_t n ) : __c_string( NULL )
+/************************************************************************************/
 // Copy constructor: make a String from another String
+{
     if( pos > s.__slength ) {
         __srep = NULL; // exception: out-of-range error
     } else {
@@ -73,9 +73,11 @@ String::String( const String &s, size_t pos, size_t n )
         __slength = 0;
         __offset  = 0;
     } else {
-        if( n == NPOS ) n = s.__slength;
-        size_t rlen = s.__slength - pos;
-        if( rlen > n ) rlen = n;
+        if( n == NPOS )
+            n = s.__slength;
+        std::size_t rlen = s.__slength - pos;
+        if( rlen > n )
+            rlen = n;
         __srep->__refcount++;
         __slength = rlen;
         __offset  = s.__offset + pos;

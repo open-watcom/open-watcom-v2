@@ -1,4 +1,4 @@
-!if exist(../../../objs.mif)
-!   include ../../../objs.mif
+!if exist(../../../objs.gmk)
+!   include ../../../objs.gmk
 !endif
 !include ../../../../objlist.mif

@@ -1053,7 +1053,7 @@ void FiniScreen( void )
 \*****************************************************************************/
 
 
-static char         OldRow, OldCol;
+static uint_8       OldRow, OldCol;
 static CURSOR_TYPE  OldTyp;
 
 void uiinitcursor( void )
@@ -1073,9 +1073,10 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
         OldRow = row;
         OldCol = col;
         bios_cur_pos = BD_CURPOS;
-        if( FlipMech == FLIP_PAGE ) bios_cur_pos += 2;
-        SetBIOSData( bios_cur_pos+0, OldCol );
-        SetBIOSData( bios_cur_pos+1, OldRow );
+        if( FlipMech == FLIP_PAGE )
+            bios_cur_pos += 2;
+        SetBIOSData( bios_cur_pos + 0, OldCol );
+        SetBIOSData( bios_cur_pos + 1, OldRow );
         VIDSetPos( VIDPort, CurOffst + row * UIData->width + col );
         VIDSetCurTyp( VIDPort, typ == C_INSERT ? InsCur : RegCur );
     }

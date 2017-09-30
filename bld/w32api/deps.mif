@@ -270,7 +270,7 @@ windef.h : ../include/windef.mh $(owhdr) $(cplus)
 windns.h : ../include/windns.mh $(owhdr) $(cplus)
 windot11.h : ../include/windot11.mh $(owhdr) $(cplus)
 windows.h : ../include/windows.mh $(owhdr)
-windowsx.h : ../include/windowsx.mh $(owhdr) $(cplus) ../include/sndmsg.sp
+windowsx.h : ../include/windowsx.mh $(owhdr) $(cplus) ../include/sndmsg.sp $(hdr_dir)/windowsx.sp
 winefs.h : ../include/winefs.mh $(owhdr) $(cplus) ../include/algid.sp
 winerror.h : ../include/winerror.mh $(owhdr) $(cplus)
 wingdi.h : ../include/wingdi.mh $(owhdr) $(cplus)

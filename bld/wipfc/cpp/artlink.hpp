@@ -43,7 +43,7 @@ public:
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~Artlink() { };
     Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Artlink( const Artlink& rhs );              //no copy
     Artlink& operator=( const Artlink& rhs );   //no assignment
@@ -54,7 +54,7 @@ public:
     EArtlink( Document* d, Element *p, const std::wstring* f, unsigned int r, \
         unsigned int c ) : Tag( d, p, f, r, c ) { };
     ~EArtlink() { };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     EArtlink( const EArtlink& rhs );            //no copy
     EArtlink& operator=( const EArtlink& rhs ); //no assignment

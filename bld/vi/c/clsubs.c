@@ -67,10 +67,12 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
 {
     char        className[10];
     window_id   wid;
+    int         len;
 
     if( ncode == HCBT_ACTIVATE || ncode == HCBT_MOVESIZE ) {
         wid = (window_id)wparam;
-        GetClassName( wid, className, 10 );
+        len = GetClassName( wid, className, sizeof( className ) );
+        className[len] = '\0';
         if( strcmp( className, "#32770" ) == 0 ) {
             if( ncode == HCBT_MOVESIZE ) {
                 LPRECT  pos = (LPRECT)lparam;
@@ -234,14 +236,12 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     }
     if( *data == '/' )
         ++data;
-    data = SkipLeadingSpaces( data );
-    while( (c = *data) != '\0' ) {
+    for( data = SkipLeadingSpaces( data ); (c = *data) != '\0'; data++ ) {
         if( c == 'g' ) {
             gflag = true;
         } else if( c == 'i' || c == 'c' ) {
             iflag = true;
         }
-        ++data;
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {

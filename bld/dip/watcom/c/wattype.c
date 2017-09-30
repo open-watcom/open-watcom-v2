@@ -1374,7 +1374,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
             --count;
             p = NEXT_TYPE( p );
             if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-                new = __alloca( sizeof( *new ) );
+                new = walloca( sizeof( *new ) );
                 new->entry = Type->entry;
                 new->u.s.off = p - Type->start;
                 new->u.s.count = count;
@@ -1590,7 +1590,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
         --count;
         p = NEXT_TYPE( p );
         if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-            new = __alloca( sizeof( *new ) );
+            new = walloca( sizeof( *new ) );
             new->entry = Type->entry;
             new->u.s.off = p - Type->start;
             new->u.s.count = count;
@@ -1691,7 +1691,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
         --count;
         p = NEXT_TYPE( p );
         if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
-            new = __alloca( sizeof( *new ) );
+            new = walloca( sizeof( *new ) );
             new->entry = Type->entry;
             new->u.s.off = p - Type->start;
             new->u.s.count = count;
@@ -1761,7 +1761,7 @@ do_walk:
                 /* structure list is backwards -- reverse it */
                 p = NEXT_TYPE( p );
                 if( used == NULL ) {
-                    new_entry = __alloca( sizeof( *new_entry ) );
+                    new_entry = walloca( sizeof( *new_entry ) );
                 } else {
                     new_entry = used;
                     used = used->prev;
@@ -1786,7 +1786,7 @@ do_walk:
             if( GETU8( p + 1 ) == STRUCT_TYPE+ST_INHERIT ) {
                 if( wk( ii, SWI_INHERIT_START, NULL, d ) == WR_CONTINUE ) {
                     if( list->prev != NULL ) {
-                        new = __alloca( sizeof( *new ) );
+                        new = walloca( sizeof( *new ) );
                         new->entry = Type->entry;
                         new->u.todo = list->prev;
                         new->prev = pending;

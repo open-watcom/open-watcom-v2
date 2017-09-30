@@ -30,6 +30,7 @@
 
 #include "variety.h"
 #include "saferlib.h"
+#include <stddef.h>
 #include <stdio.h>
 
 _WCRTLINK extern char *gets_s( char *s, rsize_t n )

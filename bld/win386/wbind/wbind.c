@@ -109,7 +109,7 @@ static void updateNHStuff( FILE *fp, const char *modname, const char *desc )
 
     fseek( fp, 0, SEEK_SET );
     fread( &dh, 1, sizeof( dh ), fp );
-    off = ( dh.file_size - 1 ) * 512L + dh.mod_size;
+    off = dh.file_size * 512L - (-dh.mod_size & 0x1ff);
     fseek( fp, off, SEEK_SET );
     fread( &nh, 1, sizeof( nh ), fp );
     off += nh.resident_off + 1L;

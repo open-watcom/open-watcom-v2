@@ -88,7 +88,12 @@ bool AddDependency( const char *fname )
 
 static void writeOneNode( ResDepInfo *cur )
 {
-    RawDataItem         item = { 0 };
+    RawDataItem         item;
+
+    item.IsString  = false;
+    item.LongItem  = false;
+    item.TmpStr    = false;
+    item.WriteNull = false;
 
     /* write out time */
 #ifdef __BIG_ENDIAN__
@@ -103,7 +108,10 @@ static void writeOneNode( ResDepInfo *cur )
     SemWriteRawDataItem( item );
 #endif
 
-    /* write out len */
+    /* write out file name including termination */
+    /* length already includes termination */
+
+    /* write out length */
     item.Item.Num = cur->len;
     SemWriteRawDataItem( item );
 
@@ -111,7 +119,6 @@ static void writeOneNode( ResDepInfo *cur )
     item.IsString = true;
     item.Item.String = cur->name;
     item.StrLen = cur->len;
-    item.WriteNull = false;
     SemWriteRawDataItem( item );
 }
 

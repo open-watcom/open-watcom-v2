@@ -46,4 +46,5 @@ void StartupErr( const char *err )
     Output( err );
     Output( "\r\n" );
     exit( 1 );
+    // never return
 }

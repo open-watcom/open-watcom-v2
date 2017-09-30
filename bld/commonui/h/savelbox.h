@@ -37,9 +37,9 @@
 #define SLB_SAVE_AS     1
 #define SLB_SAVE_TMP    2
 
-void    SaveListBox( int how, void (*writefn)( FILE * ), char *tmpname, const char *appname, HWND mainhwnd, HWND listbox );
-void    ReportSave( HWND parent, char *fname, const char *appname, bool save_ok );
+void    SaveListBox( int how, void (*headerfn)(FILE *), char *(*linefn)(bool, HWND, int), const char *tmpname, const char *appname, HWND mainhwnd, HWND listbox );
+void    ReportSave( HWND parent, const char *fname, const char *appname, bool save_ok );
 bool    GetSaveFName( HWND mainhwnd, char *fname );
-bool    GenTmpFileName( char *tmpname, char *buf );
+bool    GenTmpFileName( const char *tmpname, char *buf );
 
 #endif /* _SAVELBOX_H_INCLUDED */

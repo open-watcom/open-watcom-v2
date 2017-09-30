@@ -34,12 +34,13 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <stdiobuf.h>
 #endif
 #include "ioutil.h"
 #include "sdfhdr.h"
+
 
 // Handle allocating a buffer, if required. Handle filling the get area
 // of the streambuf. Read more stuff from the input device. Return the

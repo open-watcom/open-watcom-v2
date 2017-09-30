@@ -85,7 +85,7 @@ void SetGadgetString( char *str )
     }
 }
 
-bool IsGadgetStringChanged( char *str )
+bool IsGadgetStringChanged( const char *str )
 {
     return( strcmp( str, windowBordersG ) != 0 );
 }
@@ -102,7 +102,7 @@ void WriteText( window_id wid, int x, int y, type_style *style, const char * tex
     int     tab;
 #endif
 
-    if( len > 0 ){
+    if( len > 0 ) {
         hdc = TextGetDC( wid, style );
         tab = FontTabWidth( style->font );
         TabbedTextOut( hdc, x, y, text, len, 1, &tab, 0 );
@@ -259,9 +259,9 @@ void ClientToRowCol( window_id wid, int x, int y, int *row, int *col, int divide
         return;
     }
     assert( dcline->start_col == LeftTopPos.column );
-    ss_start = ss = dcline->ss;
 
     // find which block x lies on
+    ss = ss_start = dcline->ss;
     while( ss->offset < x ) {
         // this could be the problem ?
         // will ss->offset always be valid
@@ -339,9 +339,8 @@ void ClientToRowCol( window_id wid, int x, int y, int *row, int *col, int divide
                  return;
             }
 #endif
-            end_str = start_str = text + startCols;
-
-            while( end_str != start_str + lenBlock ) {
+            start_str = text + startCols;
+            for( end_str = start_str; end_str != start_str + lenBlock; end_str++ ) {
                 if( *end_str == '\t' ) {
                     cur_pixel = (WinVirtualCursorPosition( text, end_str + 1 - text ) - LeftTopPos.column ) * avg_width;
                     if( cur_pixel > x ) {
@@ -352,12 +351,11 @@ void ClientToRowCol( window_id wid, int x, int y, int *row, int *col, int divide
                     start_str = end_str + 1;
                     startPixel = cur_pixel;
                 }
-                end_str++;
             }
             // startCols are virtual# columns before the block
             v_pos = WinVirtualCursorPosition( text, start_str - text + 1 ) - 1;
             if( start_str == text + startCols ) {
-                if( startCols != v_pos ){
+                if( startCols != v_pos ) {
                     startCols = v_pos - LeftTopPos.column;
                 }
             } else {
@@ -603,10 +601,11 @@ HWND GetOwnedWindow( POINT pt )
         }
     }
 
-    GetClassName( hwndElement, textBuffer, sizeof( textBuffer ) - 1 );
+    i = GetClassName( hwndElement, textBuffer, sizeof( textBuffer ) );
+    textBuffer[i] = '\0';
     nTypes = GetNumWindowTypes();
     for( i = 0; i < nTypes; i++ ) {
-        if( !strcmp( textBuffer, windowName[i] ) ) {
+        if( strcmp( textBuffer, windowName[i] ) == 0 ) {
             /* a recognized window - return handle to it
             */
             if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( root_window_id ) ) {
@@ -634,7 +633,7 @@ void MoveWindowTopRight( HWND hwnd )
     int     clientWidth, usWidth, usHeight;
     int     xshift, xshiftmax;
 
-    if( !BAD_ID(current_window_id) ){
+    if( !BAD_ID( current_window_id ) ) {
         GetClientRect( current_window_id, &rcClient );
         GetWindowRect( hwnd, &rcUs );
 
@@ -725,7 +724,7 @@ void UpdateStrSetting( HWND hwnd, int token, int id, char *oldval )
     char        value[MAX_STR];
 
     GetDlgItemText( hwnd, id, value, sizeof( value ) );
-    if( !strcmp( oldval, value ) ) {
+    if( strcmp( oldval, value ) == 0 ) {
         return;
     }
     DoStrSet( value, token );
@@ -809,17 +808,13 @@ static void dumpSSBlocks( ss_block *ss_start, dc_line *dcline )
     FILE *f = fopen( "C:\\vi.out", "a+t" );
 
     fprintf( f, "Bad SSBlock:: dumping current DC line\n" );
-    fprintf( f, "%s %d %d %d %d\n", dcline->text, ss->type, ss->end,
-             ss->len, ss->offset );
+    fprintf( f, "%s %d %d %d %d\n", dcline->text, ss->type, ss->end, ss->len, ss->offset );
 
-    ss++;
-    while( ss->end <= BEYOND_TEXT ) {
-        fprintf( f, "%d %d %d %d\n", ss->type, ss->end,
-                 ss->len, ss->offset );
+    for( ss++; ss->end <= BEYOND_TEXT; ss++ ) {
+        fprintf( f, "%d %d %d %d\n", ss->type, ss->end, ss->len, ss->offset );
         if( (ss->end == BEYOND_TEXT) || (ss->offset == 10000) ) {
             break;
         }
-        ss++;
     }
     fprintf( f, "\n" );
     fclose( f );

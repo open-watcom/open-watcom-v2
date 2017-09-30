@@ -11,7 +11,6 @@ name = cwhelp
 which = SERVER
 
 extra_objs = autolock.obj cwacc.obj cwintr.obj
-extra_deps = $(causeway_dir)/cw32/dosi86/cwdstub.exe
 
 extra_cpp_flags = -DCAUSEWAY
 extra_a_flags = -DCAUSEWAY

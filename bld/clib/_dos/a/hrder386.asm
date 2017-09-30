@@ -40,6 +40,7 @@ include extender.inc
 
         extrn   __GETDS         : near
         extrn   "C",_Extender   : byte
+
 _TEXT   segment word public 'CODE'
 _TEXT   ends
 

@@ -7,7 +7,7 @@ dll_libs = $+ &
     $-
 
 dll_def = $+ &
-    $(mathlib_dir)/library/$(__mifx__)/export.def &
+    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
     $(mathlib_dir)/export.$(processor) &
     $(mathlib_dir)/$(convention).$(processor) &
     $-

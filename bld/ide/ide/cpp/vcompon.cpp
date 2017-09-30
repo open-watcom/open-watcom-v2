@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <dos.h>
+#include <direct.h>
 #include "vpemain.hpp"
 #include "vcompon.hpp"
 #include "wpshbttn.hpp"
@@ -48,16 +50,11 @@
 #ifndef __OS2__
 #include "vfilelst.hpp"
 #endif
-
 #include "whotpbox.hpp"
 
-extern "C" {
-    #include <dos.h>
-    #include <objautod.h>
-    #include "rcdefs.h"
-    #include "autodep.h"
-    #include <direct.h>
-};
+#include "objautod.h"
+#include "rcdefs.h"
+#include "autodep.h"
 
 #include "clibext.h"
 

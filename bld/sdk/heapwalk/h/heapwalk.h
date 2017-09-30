@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "commonui.h"
+#include <stdio.h>
 #include "bool.h"
 #include "watcom.h"
 #include "heapwlk.h"
@@ -312,6 +312,7 @@ void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
 void PutOutGlobalHeader( FILE *fptr );
+char *DumpGlobalLine( bool listview, HWND list, int line );
 
 /* hwobjec.c */
 void ShowSelector( HWND list );

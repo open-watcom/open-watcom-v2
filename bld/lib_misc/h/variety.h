@@ -192,6 +192,7 @@
 // handle building dll's with appropriate linkage
 #if !defined(__SW_BR) && (defined(__WARP__) || defined(__NT__))
     #if defined(__MAKE_DLL_WRTLIB)
+        #define _RTDLL
         #undef _WCRTLINK
         #undef _WCIRTLINK
         #undef _WCRTDATA
@@ -324,6 +325,7 @@
 #define __null_check( p, a )
 #define __stream_check( s, a )
 
+#define __ROUND_UP_SIZE_64K( __x )          __ROUND_UP_SIZE(__x,65536)
 #define __ROUND_UP_SIZE_4K( __x )           __ROUND_UP_SIZE(__x,4096)
 #define __ROUND_UP_SIZE_PARA( __x )         __ROUND_UP_SIZE(__x,16)
 

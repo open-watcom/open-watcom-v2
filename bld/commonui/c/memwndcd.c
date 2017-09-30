@@ -310,12 +310,10 @@ static void genBackup( AsmInfo *asm )
     instruction ins;
 
     if( asm->usage_cnt < MAX_BACKUPS ) {
-        cnt = asm->increment;
         wptr = (WORD *)asm->data;
         _Offset = wptr[asm->usage_cnt];
-        while( cnt > 0 ) {
+        for( cnt = asm->increment; cnt > 0; cnt-- ) {
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
-            cnt--;
         }
         asm->usage_cnt++;
         wptr[asm->usage_cnt] = (WORD)_Offset;
@@ -334,12 +332,10 @@ static void genBigBackup( AsmInfo *asm )
     instruction ins;
 
     if( asm->usage_cnt < MAX_BACKUPS ) {
-        cnt = asm->increment;
         dwptr = (uint_32 *)asm->data;
         _Offset = dwptr[asm->usage_cnt];
-        while( cnt > 0 ) {
+        for( cnt = asm->increment; cnt > 0; cnt-- ) {
             MiscDoCode( &ins, Is32Bit, &DisasmInfo );
-            cnt--;
         }
         asm->usage_cnt++;
         dwptr[asm->usage_cnt] = _Offset;
@@ -589,9 +585,8 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
             cnt = ins_cnt - (ins_cnt % asm->increment);
             cnt -= asm->usage_cnt * asm->increment;
             cnt /= asm->increment;
-            while( cnt ) {
+            for( ; cnt > 0; cnt-- ) {
                 genBigBackup( asm );
-                cnt--;
             }
         } else {
             wptr = (WORD *)asm->data;
@@ -600,9 +595,8 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
             cnt = ins_cnt - (ins_cnt % asm->increment);
             cnt -= asm->usage_cnt * asm->increment;
             cnt /= asm->increment;
-            while( cnt ) {
+            for( ; cnt > 0; cnt-- ) {
                 genBackup( asm );
-                cnt--;
             }
         }
     }
@@ -618,9 +612,8 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
     } else {
         _Offset = 0;
     }
-    while( ins_cnt ) {
+    for( ; ins_cnt > 0; ins_cnt-- ) {
         MiscDoCode( &ins, Is32Bit, &DisasmInfo );
-        ins_cnt--;
     }
 
 } /* gotoIns */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,8 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdlib.h>
 #include "toolbr.h"
+
 
 #define OFFON_ITEM      8
 
@@ -142,13 +139,9 @@ void CreateSpyTool( HWND parent )
 /*
  * ShowSpyTool - show or hide toolbar
  */
-void ShowSpyTool( BOOL show )
+void ShowSpyTool( bool show )
 {
-    if( show ) {
-        ShowWindow( ToolBarWindow( toolBar ), SW_SHOW );
-    } else {
-        ShowWindow( ToolBarWindow( toolBar ), SW_HIDE );
-    }
+    ShowWindow( ToolBarWindow( toolBar ), ( show ) ? SW_SHOW : SW_HIDE );
 
 } /* ShowSpyTool */
 
@@ -194,7 +187,7 @@ void DestroySpyTool( void )
  */
 void SetOnOffTool( spystate ss )
 {
-    char        *str;
+    const char  *str;
 
     switch( ss ) {
     case OFF:
@@ -205,6 +198,9 @@ void SetOnOffTool( spystate ss )
         break;
     case NEITHER:
         str = "NOTONOFF";
+        break;
+    default:
+        str = "";
         break;
     }
     DeleteObject( toolList[OFFON_ITEM].hbmp );

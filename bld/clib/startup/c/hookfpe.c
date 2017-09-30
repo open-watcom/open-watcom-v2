@@ -30,13 +30,13 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #define INCL_DOSDEVICES
 #define INCL_SUB
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #include <wos2.h>
-#include <stdlib.h>
 #include "grabfp87.h"
 
 void __interrupt __FPEHandler();

@@ -37,9 +37,9 @@
 
 
 #ifdef TRMEM
-static _trmem_hdl   TRMemHandle;
+static _trmem_hdl   TRMemHandle = NULL;
 static int          TRFileHandle;   /* stream to put output on */
-static void     MemPrintLine( void *, const char * buff, size_t len );
+static void         MemPrintLine( void *, const char * buff, size_t len );
 #endif
 
 void MemOpen( void )
@@ -87,14 +87,18 @@ void MemFree( void *ptr )
 void MemPrtList( void )
 {
 #ifdef TRMEM
-    _trmem_prt_list( TRMemHandle );
+    if( TRMemHandle != NULL ) {
+        _trmem_prt_list( TRMemHandle );
+    }
 #endif
 }
 
 void MemClose( void )
 {
 #ifdef TRMEM
-    _trmem_close( TRMemHandle );
+    if( TRMemHandle != NULL ) {
+        _trmem_close( TRMemHandle );
+    }
 #endif
 }
 

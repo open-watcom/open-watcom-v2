@@ -43,9 +43,10 @@ void (__sigjmpsave)( sigjmp_buf env, int mask )
 }
 
 
-_WCRTLINK void (siglongjmp)( sigjmp_buf env, int val )
+_WCRTLINK _WCNORETURN void (siglongjmp)( sigjmp_buf env, int val )
 {
     if( env[0].__flg )
         sigprocmask( SIG_SETMASK, (sigset_t *)&env[0].__msk, 0 );
     longjmp( env[0].__buf, val );
+    // never return
 }

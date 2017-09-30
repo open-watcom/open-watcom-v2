@@ -84,12 +84,10 @@ bool GUIIsOpen( gui_window *wnd )
 
 bool GUIIsParentADialog( gui_window *wnd )
 {
-    wnd = GUIGetParentWindow( wnd );
-    while( wnd != NULL ) {
+    while( (wnd = GUIGetParentWindow( wnd )) != NULL ) {
         if( GUI_IS_DIALOG( wnd ) ) {
             return( true );
         }
-        wnd = GUIGetParentWindow( wnd );
     }
     return( false );
 }
@@ -304,11 +302,9 @@ void GUIDestroyAllChildren( gui_window *parent )
     gui_window  *wnd;
 
     GUIMarkChildrenWithFlag( parent, DOING_DESTROY );
-    wnd = GUIFindFirstChild( parent );
-    while( wnd ) {
+    while( (wnd = GUIFindFirstChild( parent )) != NULL ) {
         wnd->flags |= UTILITY_BIT;
         GUIDestroyWnd( wnd );
-        wnd = GUIFindFirstChild( parent );
     }
 }
 
@@ -316,10 +312,8 @@ void GUIDestroyAllPopupsWithNoParent( void )
 {
     gui_window  *wnd;
 
-    wnd = GUIFindFirstPopupWithNoParent();
-    while( wnd ) {
+    while( (wnd = GUIFindFirstPopupWithNoParent()) != NULL ) {
         GUIDestroyWnd( wnd );
-        wnd = GUIFindFirstPopupWithNoParent();
     }
 }
 
@@ -450,8 +444,7 @@ void GUIInvalidateResize( gui_window *wnd )
     wnd->old_rows = wnd->num_rows;
 }
 
-WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                            WPI_PARAM2 lparam )
+WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     if( hwnd != NULLHANDLE ) {
         return( _wpi_sendmessage( hwnd, msg, wparam, lparam ) );
@@ -460,8 +453,7 @@ WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     }
 }
 
-WPI_MRESULT GUISendDlgItemMessage( HWND parent, gui_ctl_id id, WPI_MSG msg,
-                                   WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_MRESULT GUISendDlgItemMessage( HWND parent, gui_ctl_id id, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND hwnd;
 
@@ -667,11 +659,10 @@ gui_window *GUIGetParentWindow( gui_window *wnd )
 
 bool GUIParentHasFlags( gui_window *wnd, gui_flags flags )
 {
-    while( wnd ) {
+    for( ; wnd != NULL; wnd = GUIGetParentWindow( wnd ) ) {
         if( wnd->flags & flags ) {
             return( true );
         }
-        wnd = GUIGetParentWindow( wnd );
     }
 
     return( false );

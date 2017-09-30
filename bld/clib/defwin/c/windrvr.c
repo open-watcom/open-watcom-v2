@@ -30,8 +30,6 @@
 
 
 #include "variety.h"
-#include <string.h>
-#include <malloc.h>
 #include <stdio.h>
 #include <signal.h>
 #include "win.h"
@@ -53,25 +51,25 @@ static long  shiftState = 0;
 #define SS_CAPS         0x04
 #define SS_CTRL         0x08
 
-int     _SetAboutDlg( char *title, char *text ) {
-//===============================================
-
-    if( title ) {
+int     _SetAboutDlg( const char *title, const char *text )
+//=========================================================
+{
+    if( title != NULL ) {
         if( DefaultAboutTitle != AboutTitle ) {
-            _MemFree( AboutTitle );
+            FARfree( AboutTitle );
         }
-        AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
-        if( !AboutTitle )
-            return( 0 );
+        AboutTitle = FARmalloc( strlen( title ) + 1 );
+        if( AboutTitle == NULL )
+            _OutOfMemoryExit();
         FARstrcpy( AboutTitle, title );
     }
-    if( text ) {
+    if( text != NULL ) {
         if( DefaultAboutMsg != AboutMsg ) {
-            _MemFree( AboutMsg );
+            FARfree( AboutMsg );
         }
-        AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
-        if( !AboutMsg )
-            return( 0 );
+        AboutMsg = FARmalloc( strlen( text ) + 1 );
+        if( AboutMsg == NULL )
+            _OutOfMemoryExit();
         FARstrcpy( AboutMsg, text );
     }
     return( 1 );
@@ -80,14 +78,13 @@ int     _SetAboutDlg( char *title, char *text ) {
 /*
  * MainWindowProc - message handler for the frame window
  */
-static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
-                                DWORD lparam )
+static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     LPWDATA     w;
     DWORD       old;
     char        tmp[128];
 
-    switch (message) {
+    switch( message ) {
     case WM_KILLFOCUS:
         w = _GetActiveWindowData();
         if( w != NULL ) {
@@ -116,7 +113,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
             break;
         case MSG_SETCLEARINT:
             old = _AutoClearLines;
-            _GetClearInterval();
+            _GetAutoClearInterval();
             if( _AutoClearLines != old ) {
                 sprintf( tmp,"Buffers will be cleared after %ld lines",
                     _AutoClearLines );
@@ -134,7 +131,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
             break;
         case MSG_FLUSH:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->InputMode ) {
+            if( w != NULL && w->InputMode == 0 ) {
                 if( w != NULL && !w->gphwin ) {
                     _FreeAllLines( w );
                     _ClearWindow( w );
@@ -167,7 +164,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
             shiftState &= ~SS_CTRL;
             raise( SIGBREAK );
             break;
-        } else if( ( shiftState & SS_CTRL ) && ( wparam == 'C' ) ) {
+        } else if( (shiftState & SS_CTRL) && ( wparam == 'C' ) ) {
             MessageBox( hwnd, "", "SIGINT",
                         MB_APPLMODAL | MB_ICONINFORMATION | MB_OK );
             shiftState &= ~SS_CTRL;
@@ -228,7 +225,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
 /*
  * _MainDriver - main message driver for the editor
  */
-long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
+long CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         dc;
@@ -273,7 +270,7 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
         break;
 
     case WM_DESTROY:
-        _DestroyAWindow( w );
+        _FreeWindowData( w );
         break;
 
     case WM_PAINT:
@@ -301,7 +298,7 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
         FillRect( dc, &rect, w->brush );
         SelectObject( dc, oldbrush );
         ReleaseDC( hwnd, dc );
-        _ResizeWin( w, rect.left, rect.top, rect.left+width, rect.top+height );
+        _ResizeWin( w, rect.left, rect.top, rect.left + width, rect.top + height );
         _DisplayAllLines( w, FALSE );
         return( 0 );
 

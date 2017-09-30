@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\heapsort.mif
+!include ../heapsort.mif

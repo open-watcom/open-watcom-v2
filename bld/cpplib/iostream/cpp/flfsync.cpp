@@ -33,10 +33,11 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 #endif
 #include "ioutil.h"
+
 
 namespace std {
 
@@ -75,7 +76,7 @@ namespace std {
         } else {
             offset = (__huge_ptr_int)(gptr() - egptr());
         }
-        if( lseek( fd(), offset, ios::cur ) < 0 ) {
+        if( ::lseek( fd(), offset, ios::cur ) < 0 ) {
             return( EOF );
         }
         setg( NULL, NULL, NULL );

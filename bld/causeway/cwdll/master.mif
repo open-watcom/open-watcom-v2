@@ -1,0 +1,36 @@
+proj_name = cwdll
+
+cwdll_autodepends = .AUTODEPEND
+
+cwdll_distrib_lib = 1
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+extra_a_flags = -DENGLISH=1 -I"../../inc"
+
+extra_l_flags = op verbose, statics
+
+.asm : ../../asm
+
+objs = &
+    cwkrnl1.obj &
+    cwkrnl2.obj &
+    cwkrnl3.obj &
+    cwkrnl4.obj
+
+cwdll.lib : $(objs) $(__MAKEFILES__)
+    $(noecho)%create cwapi.lbc
+    @%append cwapi.lbc ++'__CWAPI_CREATEPSP'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_DELETEPSP'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_EXECMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_DSIZESELECTOR'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_FINDMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_UNFINDMODULE'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_FINDFUNCTION'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_GETMEMLINEAR32'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_RESMEMLINEAR32'.'CAUSEWAY_KERNAL'
+    @%append cwapi.lbc ++'__CWAPI_RELMEMLINEAR32'.'CAUSEWAY_KERNAL'
+    @%make echo_lib
+    $(librarian) $(libflags) $(objs) @cwapi.lbc

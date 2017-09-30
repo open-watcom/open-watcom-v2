@@ -47,7 +47,7 @@
 #include "cthread.h"
 
 typedef struct thread_args {
-    thread_fn   *rtn;
+    thread_fn   *start_addr;
     void        *argument;
     int         signal;
     int         tid;
@@ -62,15 +62,15 @@ static void __far begin_thread_helper( void *param )
 /********************************************************/
 {
     thread_args         *td = (thread_args *)param;
-    thread_fn           *rtn;
+    __thread_fn         *start_addr;
     void                *arg;
 
     td->tid = RdosGetThreadHandle();    
-    rtn = td->rtn;
+    start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     RdosSignal( td->signal );
 
-    (*rtn)( arg );
+    (*start_addr)( arg );
     _endthread();
      return;
 }
@@ -89,7 +89,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
         return( -1L );
     }
 
-    td->rtn = start_addr;
+    td->start_addr = start_addr;
     td->argument = arglist;
     td->signal = RdosGetThreadHandle();
     RdosClearSignal();

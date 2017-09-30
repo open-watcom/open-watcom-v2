@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -245,7 +243,7 @@ EVENT TrieRead( void )
     eNode           *node;
     int             timeout;
 
-    buf = __alloca( KeyTrieDepth + 1 );
+    buf = walloca( KeyTrieDepth + 1 );
 
     trie = &KeyTrie;
     buf[0] = '\0';

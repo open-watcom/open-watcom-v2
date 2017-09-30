@@ -1,4 +1,11 @@
-:segment !CPPCOMPLEX
+::
+:: This file generates three different headers.
+::
+::   complex.h : Default wsplice operation.
+::   ccomplex  : CNAME wsplice operation.
+::   complex   : CPPONLY + CNAME wsplice operation.
+::
+:segment !CPPONLY
 //
 //  complex.h   Complex Numbers
 //
@@ -120,12 +127,12 @@ long double creall(long double complex z);
  #endif
 #else  /* __cplusplus */
 
-#if !defined(_M_IX86)
+#ifndef _M_IX86
  #pragma library( "cplx.lib" )
 #elif defined(__SW_FPC)
 :segment DOS | QNX
- #if defined(_M_I86)
-  #if defined(__MEDIUM__)
+ #ifdef _M_I86
+  #ifdef __MEDIUM__
    #pragma library ( "cplxm.lib" )
   #elif defined(__COMPACT__)
    #pragma library ( "cplxc.lib" )
@@ -138,7 +145,7 @@ long double creall(long double complex z);
   #endif
  #else
 :endsegment
-  #if defined(__3S__)
+  #ifdef __3S__
    #pragma library ( "cplx3s.lib" )
   #else
    #pragma library ( "cplx3r.lib" )
@@ -148,8 +155,8 @@ long double creall(long double complex z);
 :endsegment
 #else
 :segment DOS | QNX
- #if defined(_M_I86)
-  #if defined(__MEDIUM__)
+ #ifdef _M_I86
+  #ifdef __MEDIUM__
    #pragma library ( "cplx7m.lib" )
   #elif defined(__COMPACT__)
    #pragma library ( "cplx7c.lib" )
@@ -162,7 +169,7 @@ long double creall(long double complex z);
   #endif
  #else
 :endsegment
-  #if defined(__3S__)
+  #ifdef __3S__
    #pragma library ( "cplx73s.lib" )
   #else
    #pragma library ( "cplx73r.lib" )
@@ -462,8 +469,7 @@ inline double norm( Complex const &__cv ) {
  #include <ostream>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   template< class FloatT >
   class complex {
   public:
@@ -849,8 +855,7 @@ namespace std {
       FloatT temp2( 1.0 + ( temp1 * temp1 ) );
       return( complex< FloatT >( log( mag_rp ) + 0.5 * log( temp2 ),
                                  atan2( x.imag( ), x.real( ) ) ) );
-    }
-    else if( mag_ip > 32 * mag_rp ) {
+    } else if( mag_ip > 32 * mag_rp ) {
       FloatT temp1( x.real( ) / x.imag( ) );
       FloatT temp2( 1.0 + ( temp1 * temp1 ) );
       return( complex< FloatT >( log( mag_ip ) + 0.5 * log( temp2 ),
@@ -951,30 +956,31 @@ namespace std {
 
     char ch;
 
-    if (!(strm >> ch))
+    if( !(strm >> ch) )
       return strm;
 
-    if ('(' == ch) {
-      if (strm >> re && strm >> ch) {
-        if (',' == ch && strm >> im)
+    if( '(' == ch ) {
+      if( strm >> re && strm >> ch ) {
+        if( ',' == ch && strm >> im ) {
           strm >> ch;
+        }
 
-          // avoid setting failbit if either badbit
-          // or failbit is already set in the stream
-          if (')' != ch && strm)
-            strm.setstate (strm.failbit);
+        // avoid setting failbit if either badbit
+        // or failbit is already set in the stream
+        if( ')' != ch && strm ) {
+          strm.setstate( strm.failbit );
+        }
       }
-    }
-    else if (strm.putback (ch)) {
+    } else if( strm.putback( ch ) ) {
       strm >> re;
     }
 
-    if (strm)
+    if( strm )
       z = complex< FloatT >(re, im);
 
     return strm;
   }
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

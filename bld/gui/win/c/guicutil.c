@@ -60,15 +60,13 @@ bool GUIToControl( gui_window *wnd, gui_ctl_id id, WPI_MSG msg,
 }
 
 static bool GUIToComboListControl( gui_window *wnd, gui_ctl_id id, WPI_MSG msg,
-                            WPI_PARAM1 wparam, WPI_PARAM2 lparam,
-                            WPI_MRESULT *ret )
+                            WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
     return( GUIToControl( wnd, id, msg, wparam, lparam, ret ) );
 }
 
-WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg,
-                            WPI_MSG cb_msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam,
-                            WPI_MRESULT ret )
+WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg, WPI_MSG cb_msg,
+                            WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT ret )
 {
     gui_control_class   control_class;
     WPI_MRESULT         my_ret;
@@ -91,8 +89,7 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg,
     return( my_ret );
 }
 
-bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id,
-                         gui_control_class *control_class )
+bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class )
 {
     control_item        *item;
 

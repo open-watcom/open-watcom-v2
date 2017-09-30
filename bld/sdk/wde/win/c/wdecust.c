@@ -876,7 +876,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
 {
     WdeCurrCustControl  *current;
     uint_16             type;
-    int                 index;
+    LRESULT             index;
 
     for( type = 0; type < control->control_info.ms.wCtlTypes; type++ ) {
         current = (WdeCurrCustControl *)WRMemAlloc( sizeof( WdeCurrCustControl ) );
@@ -887,20 +887,17 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
         current->control = control;
         current->type = type;
         if( control->ms_lib ) {
-            index = (int)SendMessage( cbox, CB_ADDSTRING, 0,
-                (LPARAM)(LPCSTR)control->control_info.ms.Type[type].szDescr );
+            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)control->control_info.ms.Type[type].szDescr );
         } else {
-            index = (int)SendMessage( cbox, CB_ADDSTRING, 0,
-                (LPARAM)(LPCSTR)control->control_info.bor.Type[type].szDescr );
+            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)control->control_info.bor.Type[type].szDescr );
         }
-
         if( index == CB_ERR || index == CB_ERRSPACE ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_ADDSTRING failed!" );
             WRMemFree( current );
             return( false );
         }
 
-        if( SendMessage( cbox, CB_SETITEMDATA, index, (LPARAM)(LPVOID)current ) == CB_ERR ) {
+        if( SendMessage( cbox, CB_SETITEMDATA, (WPARAM)index, (LPARAM)(LPVOID)current ) == CB_ERR ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_SETITEMDATA failed!" );
             WRMemFree( current );
             return( false );
@@ -939,18 +936,16 @@ bool WdeSetSelectWin( HWND win )
 
 bool WdeSetCurrentControl( HWND win, int which )
 {
-    int                 index;
+    LRESULT             index;
     WdeCurrCustControl  *current;
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
     if( index == 0 || index == CB_ERR ) {
         return( true );
     }
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
-
-    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
-
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, (WPARAM)index, 0 );
     if( current == NULL ) {
         WdeWriteTrail( "WdeSetCurrentControl: CB_GETITEMDATA failed!" );
         return( false );
@@ -1001,7 +996,7 @@ void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 bool WdePreviewSelected( HWND win )
 {
     WdeCurrCustControl  *current;
-    int                 index;
+    LPARAM              index;
     char                *class;
     char                *caption;
     HWND                pwin;
@@ -1014,7 +1009,7 @@ bool WdePreviewSelected( HWND win )
     int                 pheight;
     WdeResizeRatio      resizer;
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );
     if( index == 0 || index == CB_ERR ) {
         return( true );
     }
@@ -1030,10 +1025,8 @@ bool WdePreviewSelected( HWND win )
 
     InflateRect( &psize, -WDE_PREVIEW_PAD, -WDE_PREVIEW_PAD );
 
-    index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
-
-    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
-
+    index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, (WPARAM)index, 0 );
     if( current == NULL ) {
         WdeWriteTrail( "WdePreviewSelected: CB_GETITEMDATA failed!" );
         return( false );

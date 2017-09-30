@@ -33,13 +33,11 @@
 #include "variety.h"
 #include "mbqnx.h"
 
-const utf_table
-#if defined( _M_I86HM )
-    __far
+#if defined( _M_I86 ) && defined( __HUGE__ )
+const utf_table __far __utf_table[7] = {
 #else
-    __near
+const utf_table __near __utf_table[7] = {
 #endif
-__utf_table[7] = {
     { 0x80, 0x00, 0 * 6, 0x0000007f, 0x00000000 },  /* 1 byte sequence */
     { 0xe0, 0xc0, 1 * 6, 0x000007ff, 0x00000080 },  /* 2 byte sequence */
     { 0xf0, 0xe0, 2 * 6, 0x0000ffff, 0x00000800 },  /* 3 byte sequence */

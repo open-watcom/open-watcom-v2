@@ -30,11 +30,10 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
-namespace std {
-
+:include nsstd.sp
 /* ==================================================================
  * class map
  */
@@ -230,7 +229,6 @@ public:
     multimap& operator=( multimap const & x ){Implementation::operator=( x ); return( *this );}
 
 }; //end template class multimap
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

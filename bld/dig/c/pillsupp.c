@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #if defined(__OS2__)
     #define INCL_DOSPROCESS
-
     #include <os2.h>
 #elif defined(__QNX__)
     #include <sys/kernel.h>
 #elif defined(__NT__)
     #include <windows.h>
 #endif
-#include <string.h>
 #include "pilltrig.h"
 #include "pillctrl.h"
 #include "pillsupp.h"

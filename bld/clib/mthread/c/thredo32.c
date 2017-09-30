@@ -52,7 +52,7 @@
 
 
 typedef struct thread_args {
-    thread_fn   *rtn;
+    thread_fn   *start_addr;
     void        *argument;
     HEV         event;
 } thread_args;
@@ -61,12 +61,12 @@ typedef struct thread_args {
 static void APIENTRY begin_thread_helper( thread_args *td )
 /*********************************************************/
 {
-    thread_fn                   *rtn;
+    __thread_fn                 *start_addr;
     void                        *arg;
     EXCEPTIONREGISTRATIONRECORD xcpt;
     thread_data                 *tdata;
 
-    rtn = td->rtn;
+    start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
 
     tdata = __alloca( __ThreadDataSize );
@@ -74,14 +74,16 @@ static void APIENTRY begin_thread_helper( thread_args *td )
     // tdata->__allocated = 0;
     tdata->__data_size = __ThreadDataSize;
     if( !__Is_DLL ) {
-        if( !__OS2AddThread( *_threadid, tdata ) ) return;
+        if( !__OS2AddThread( *_threadid, tdata ) ) {
+            return;
+        }
     }
 
     DosPostEventSem( td->event );
     _fpreset();
     __XCPTHANDLER = &xcpt;
     __sig_init_rtn();
-    (*rtn)( arg );
+    (*start_addr)( arg );
     _endthread();
 }
 
@@ -99,7 +101,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         __InitMultipleThread();
     }
     stack_bottom = stack_bottom;
-    td.rtn = start_addr;
+    td.start_addr = start_addr;
     td.argument = arglist;
     rc = DosCreateEventSem( NULL, &td.event, 0, 0 );
     if( rc != 0 ) return( -1 );
@@ -125,4 +127,5 @@ void __CEndThread( void )
     __sig_fini_rtn();
     __OS2RemoveThread();
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }

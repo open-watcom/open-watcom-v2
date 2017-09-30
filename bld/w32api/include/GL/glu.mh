@@ -1,5 +1,5 @@
 /*
- *  gl/glu.h    OpenGL utility functions
+ *  GL/glu.h    OpenGL utility functions
  *
 :include crwatcnt.sp
  */
@@ -12,7 +12,7 @@
 
 :include readonly.sp
 
-#include <gl/gl.h>
+#include <GL/gl.h>
 
 :include cpluspro.sp
 

@@ -85,6 +85,13 @@ RKD RkdForTypeId(       // GET RKD FOR TYPE ID
       case TYP_TYPENAME :
         retn = RKD_GENERIC;
         break;
+        
+      /*
+       * N4296: [2.13.7.1] "std::nullptr_t is a distinct type that is neither a pointer type nor a pointer to member type".
+       */
+      case TYP_NULLPTR :
+        retn = RKD_NULLPTR;
+        break;
       DbgDefault( "invalid RKD detected" );
     }
     return retn;

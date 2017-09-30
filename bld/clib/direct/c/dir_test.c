@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #ifdef __UNIX__
 #include <sys/stat.h>
@@ -37,9 +40,7 @@
 #else
 #include <direct.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif

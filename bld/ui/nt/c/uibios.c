@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <stdlib.h>
 #include <conio.h>
-#include "uidef.h"
 #include <stdio.h>
+#include "uidef.h"
+#include <windows.h>
 
 static MONITOR ui_data = {
     50,

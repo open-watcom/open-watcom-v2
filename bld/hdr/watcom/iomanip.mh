@@ -199,14 +199,14 @@ SMANIP_define( long );
 
 // Create the prototypes for the manipulator functions.
 
-namespace std {
+:include nsstd.sp
   SMANIP_make( long, resetiosflags );
   SMANIP_make( int,  setbase );
   SMANIP_make( int,  setfill );
   SMANIP_make( long, setiosflags );
   SMANIP_make( int,  setprecision );
   SMANIP_make( int,  setw );
-}
+:include nsstdepi.sp
 
 :elsesegment
 :include pshpackl.sp
@@ -334,24 +334,24 @@ template<class T>
 
 :segment IOMANIP_SIMPLIFICATION
 // manipulator prototypes
-namespace std {
+:include nsstd.sp
   smanip<long> resetiosflags( long );
   smanip<int>  setbase( int );
   smanip<int>  setfill( int );
   smanip<long> setiosflags( long );
   smanip<int>  setprecision( int );
   smanip<int>  setw( int );
-}
+:include nsstdepi.sp
 :elsesegment
 // applicator objects
-namespace std {
+:include nsstd.sp
   _WPRTLINK extern sapp<long> _WCDATA resetiosflags;
   _WPRTLINK extern sapp<int>  _WCDATA setbase;
   _WPRTLINK extern sapp<int>  _WCDATA setfill;
   _WPRTLINK extern sapp<long> _WCDATA setiosflags;
   _WPRTLINK extern sapp<int>  _WCDATA setprecision;
   _WPRTLINK extern sapp<int>  _WCDATA setw;
-}
+:include nsstdepi.sp
 :endsegment
 
 // define some compatibility macros for legacy code

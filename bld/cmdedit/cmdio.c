@@ -39,7 +39,7 @@ static char buff[MAX_FNAME];
 
 union REGPACK r;
 
-void CurrentPageInBH( void )
+static void CurrentPageInBH( void )
 {
     static union REGPACK l;
     l.h.ah = 15;
@@ -47,16 +47,16 @@ void CurrentPageInBH( void )
     r.h.bh = l.h.bh;
 }
 
-pasrtn DosGetEnv( USHORT PASPTR *segment, USHORT PASPTR *offset )
+USHORT DosGetEnv( USHORT PASPTR *segment, USHORT PASPTR *offset )
 {
     r.h.ah = 0x62;
     intr( 0x21, &r );
-    *segment = *(unsigned far *)MK_FP( r.x.bx, 0x2c );
+    *segment = *(unsigned __far *)MK_FP( r.x.bx, 0x2c );
     *offset = 0;
     return( 0 );
 }
 
-pasrtn DKbdGetStatus( KBDDESC PASPTR * kbd )
+USHORT DKbdGetStatus( KBDDESC PASPTR *kbd )
 {
     kbd->fsMask = KBD_ASCII | KBD_ECHO_ON;
     kbd->chTurnAround = '\r';
@@ -89,7 +89,7 @@ static int ChkExtendedKbd( void )
     return( 1 );
 }
 
-pasrtn DKbdCharIn( KBDCHAR PASPTR * k )
+USHORT DKbdCharIn( KBDCHAR PASPTR *k )
 {
     if( First ) {
         Extended = ChkExtendedKbd();
@@ -102,7 +102,8 @@ pasrtn DKbdCharIn( KBDCHAR PASPTR * k )
             r.h.ah = 0x01;
         }
         intr( 0x16, &r );
-        if( !( r.x.flags & INTR_ZF ) ) break;
+        if( !( r.x.flags & INTR_ZF ) )
+            break;
         intr( 0x28, &r );
     }
     if( Extended ) {
@@ -119,7 +120,7 @@ pasrtn DKbdCharIn( KBDCHAR PASPTR * k )
 }
 
 
-pasrtn DVioGetCurPos( USHORT PASPTR *row, USHORT PASPTR *col )
+USHORT DVioGetCurPos( USHORT PASPTR *row, USHORT PASPTR *col )
 {
     r.h.ah = 3;
     CurrentPageInBH();
@@ -129,7 +130,7 @@ pasrtn DVioGetCurPos( USHORT PASPTR *row, USHORT PASPTR *col )
     return( 0 );
 }
 
-pasrtn DVioSetCurPos( USHORT row, USHORT col )
+USHORT DVioSetCurPos( USHORT row, USHORT col )
 {
     r.h.ah = 2;
     CurrentPageInBH();
@@ -139,7 +140,7 @@ pasrtn DVioSetCurPos( USHORT row, USHORT col )
     return( 0 );
 }
 
-pasrtn DVioWrtCharStr( CHAR PASPTR *ch, USHORT len, USHORT row, USHORT col )
+USHORT DVioWrtCharStr( CHAR PASPTR *ch, USHORT len, USHORT row, USHORT col )
 {
     USHORT oldrow, oldcol;
 
@@ -156,7 +157,7 @@ pasrtn DVioWrtCharStr( CHAR PASPTR *ch, USHORT len, USHORT row, USHORT col )
     return( 0 );
 }
 
-pasrtn DVioReadCharStr( CHAR PASPTR *ch, USHORT PASPTR * len_p, USHORT row, USHORT col )
+USHORT DVioReadCharStr( CHAR PASPTR *ch, USHORT PASPTR *len_p, USHORT row, USHORT col )
 {
     int len;
     USHORT oldrow, oldcol;
@@ -180,7 +181,7 @@ pasrtn DVioReadCharStr( CHAR PASPTR *ch, USHORT PASPTR * len_p, USHORT row, USHO
     return( 0 );
 }
 
-pasrtn DVioWrtNChar( UCHAR PASPTR *ch, int times, USHORT row, USHORT col )
+USHORT DVioWrtNChar( UCHAR PASPTR *ch, int times, USHORT row, USHORT col )
 {
     USHORT oldrow, oldcol;
 
@@ -198,7 +199,7 @@ pasrtn DVioWrtNChar( UCHAR PASPTR *ch, int times, USHORT row, USHORT col )
     return( 0 );
 }
 
-pasrtn DVioSetCurType( CURSOR PASPTR * cur )
+USHORT DVioSetCurType( CURSOR PASPTR *cur )
 {
     r.h.ah = 1;
     r.h.ch = cur->yStart;
@@ -208,7 +209,7 @@ pasrtn DVioSetCurType( CURSOR PASPTR * cur )
     return( 0 );
 }
 
-pasrtn DVioGetCurType( CURSOR PASPTR * cur )
+USHORT DVioGetCurType( CURSOR PASPTR *cur )
 {
     r.h.ah = 3;
     CurrentPageInBH();
@@ -218,34 +219,32 @@ pasrtn DVioGetCurType( CURSOR PASPTR * cur )
     return( 0 );
 }
 
-pasrtn DVioReadCellStr( CHAR PASPTR *buff, USHORT PASPTR *plen, USHORT row, USHORT col )
+USHORT DVioReadCellStr( CHAR PASPTR *buff, USHORT PASPTR *plen, USHORT row, USHORT col )
 {
     int len;
     USHORT oldrow, oldcol;
 
     DVioGetCurPos( &oldrow, &oldcol );
     DVioSetCurPos( row, col );
-    len = *plen;
-    while( len >= 2 ) {
+    for( len = *plen; len >= 2; len -= 2 ) {
         CurrentPageInBH();
         r.h.ah = 8;
         intr( 0x10, &r );
         buff[0] = r.h.al;
         buff[1] = r.h.ah;
         buff += 2;
-        len -= 2;
     }
     DVioSetCurPos( oldrow, oldcol );
     return( 0 );
 }
 
-pasrtn DVioWrtCellStr( CHAR PASPTR *buff, USHORT len, USHORT row, USHORT col )
+USHORT DVioWrtCellStr( CHAR PASPTR *buff, USHORT len, USHORT row, USHORT col )
 {
     USHORT oldrow, oldcol;
 
     DVioGetCurPos( &oldrow, &oldcol );
     DVioSetCurPos( row, col );
-    while( len >= 2 ) {
+    for( ; len >= 2; len -= 2 ) {
         CurrentPageInBH();
         r.h.ah = 9;
         r.h.al = buff[0];
@@ -253,13 +252,12 @@ pasrtn DVioWrtCellStr( CHAR PASPTR *buff, USHORT len, USHORT row, USHORT col )
         r.x.cx = 1;
         intr( 0x10, &r );
         buff += 2;
-        len -= 2;
     }
     DVioSetCurPos( oldrow, oldcol );
     return( 0 );
 }
 
-pasrtn DosClose( USHORT hdl )
+USHORT DosClose( USHORT hdl )
 {
     r.h.ah = 0x3e;
     r.x.bx = hdl;
@@ -267,7 +265,7 @@ pasrtn DosClose( USHORT hdl )
     return( 0 );
 }
 
-pasrtn DDosOpen( char PASPTR * name, USHORT PASPTR * hdl )
+USHORT DDosOpen( char PASPTR *name, USHORT PASPTR *hdl )
 {
     r.x.dx = FP_OFF( name );
     r.x.ds = FP_SEG( name );
@@ -281,7 +279,7 @@ pasrtn DDosOpen( char PASPTR * name, USHORT PASPTR * hdl )
 }
 
 
-pasrtn DosChgFilePtr( int hdl, long offset, int typ, unsigned long PASPTR * newp )
+USHORT DosChgFilePtr( int hdl, long offset, int typ, unsigned long PASPTR *newp )
 {
     r.x.bx = hdl;
     r.x.cx = offset >> 16;
@@ -297,7 +295,7 @@ pasrtn DosChgFilePtr( int hdl, long offset, int typ, unsigned long PASPTR * newp
 }
 
 
-pasrtn DosRead( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *readlen )
+USHORT DosRead( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *readlen )
 {
     r.x.bx = hdl;
     r.x.ds = FP_SEG( buff );
@@ -315,7 +313,7 @@ pasrtn DosRead( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *readlen )
     }
 }
 
-pasrtn DosWrite( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *writelen )
+USHORT DosWrite( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *writelen )
 {
     r.x.bx = hdl;
     r.x.ds = FP_SEG( buff );
@@ -333,7 +331,7 @@ pasrtn DosWrite( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *writelen
     }
 }
 
-pasrtn DDosAllocSeg( unsigned size, int PASPTR * segp )
+USHORT DDosAllocSeg( unsigned size, int PASPTR *segp )
 {
     size += 16;
     size /= 16;
@@ -344,12 +342,12 @@ pasrtn DDosAllocSeg( unsigned size, int PASPTR * segp )
     return( 0 );
 }
 
-pasrtn DosFreeEnv( void )
+int DosFreeEnv( void )
 {
     r.h.ah = 0x62;
     intr( 0x21, &r );
     r.h.ah = 0x49;
-    r.x.es = *(unsigned far *)MK_FP( r.x.bx, 0x2c );
+    r.x.es = *(unsigned __far *)MK_FP( r.x.bx, 0x2c );
     intr( 0x21, &r );
     return( 0 );
 }
@@ -357,7 +355,7 @@ pasrtn DosFreeEnv( void )
 static int SavDTAOff;
 static int SavDTASeg;
 
-void setdta( int seg, int off )
+static void setdta( int seg, int off )
 {
     r.h.ah = 0x2F;
     intr( 0x21, &r );
@@ -381,13 +379,15 @@ static void resetdta( void )
 
 static short findHandle;
 
-pasrtn DDosFindFirst( char PASPTR * spec, int attr, DIRINFO PASPTR * buf )
+USHORT DDosFindFirst( char PASPTR *spec, int attr, DIRINFO PASPTR *buf )
 {
     char *p = buff;
     char *q = spec;
     for( ;; ) {
-        if( *q != '"' ) *p++ = *q;
-        if( !*q ) break;
+        if( *q != '"' )
+            *p++ = *q;
+        if( *q == '\0' )
+            break;
         ++q;
     }
     r.x.ax = 0x714E;
@@ -416,7 +416,7 @@ pasrtn DDosFindFirst( char PASPTR * spec, int attr, DIRINFO PASPTR * buf )
     return( ( r.x.flags & INTR_CF ) != 0 );
 }
 
-pasrtn DDosFindNext( DIRINFO PASPTR * buf )
+USHORT DDosFindNext( DIRINFO PASPTR *buf )
 {
     if( findHandle != 0 ) {
         r.x.ax = 0x714F;
@@ -437,7 +437,7 @@ pasrtn DDosFindNext( DIRINFO PASPTR * buf )
     return( ( r.x.flags & INTR_CF ) != 0 );
 }
 
-pasrtn DDosQCurDisk( USHORT PASPTR *drive )
+USHORT DDosQCurDisk( USHORT PASPTR *drive )
 {
     r.h.ah = 0x19;
     intr( 0x21, &r );
@@ -445,7 +445,7 @@ pasrtn DDosQCurDisk( USHORT PASPTR *drive )
     return( 0 );
 }
 
-pasrtn DosSelectDisk( int drive )
+USHORT DosSelectDisk( int drive )
 {
     r.h.ah = 0x0E;
     r.h.dl = drive - 1;
@@ -453,7 +453,7 @@ pasrtn DosSelectDisk( int drive )
     return( 0 );
 }
 
-pasrtn DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
+USHORT DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
 {
     int         length;
 
@@ -476,13 +476,15 @@ pasrtn DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
     }
 }
 
-pasrtn DDosChDir( char PASPTR *dir )
+USHORT DDosChDir( char PASPTR *dir )
 {
     char *p = dir;
     char *q = buff;
     for( ;; ) {
-        if( *p != '"' ) *q++ = *p;
-        if( !*p ) break;
+        if( *p != '"' )
+            *q++ = *p;
+        if( *p == '\0' )
+            break;
         ++p;
     }
     r.x.ax = 0x713B;

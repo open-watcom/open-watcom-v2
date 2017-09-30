@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stddef.h>
 #include <pthread.h>
 #include <sys/types.h>
 #include <sched.h>

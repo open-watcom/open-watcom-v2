@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <conio.h>
 #include "uidef.h"
 #include "uiattrs.h"

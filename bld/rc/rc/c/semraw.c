@@ -216,10 +216,10 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
         RESFREE( curnode );
     }
     if( call_startend ) {
+        resLoc.len = SemEndResource( resLoc.start );
         if( CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             ResWritePadDWord( CurrResFile.fid );
         }
-        resLoc.len = SemEndResource( resLoc.start );
     }
 
     return( resLoc );

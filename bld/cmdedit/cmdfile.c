@@ -33,16 +33,6 @@
 #include <ctype.h>
 #include "cmdedit.h"
 
-extern void     PutNL( void );
-extern void     PutPad( char far * str, int len );
-extern void     RestorePrompt( char PASPTR *line );
-extern int      ExpandDirCommand( void );
-extern int      ReplaceAlias( char far * alias, char * word, char * endword );
-extern void     ZapLower( char far *str );
-extern void     SavePrompt( char PASPTR *line );
-extern char     far *GetEnv( char far *name, int len );
-extern int      Equal( char far * str1, char far * str2, int len );
-
 
 void SaveLine( void )
 /*******************/
@@ -81,8 +71,11 @@ void MatchACommand( int (*advance)(char *), int (*retreat)(char *) )
             RestoreLine();
             return;
         }
-        if( MaxCursor < OldCursor ) continue;
-        if( Equal( OldLine, Line, OldCursor ) ) break;
+        if( MaxCursor < OldCursor )
+            continue;
+        if( Equal( OldLine, Line, OldCursor ) ) {
+            break;
+        }
     }
     Draw = TRUE;
     Base = 0;
@@ -96,7 +89,7 @@ void FiniFile( void )
 {
     HaveDirent = FALSE;
     NextFileCalls = 0;
-    PathCurr = 0;
+    PathCurr = NULL;
 }
 
 
@@ -119,18 +112,19 @@ int     NonFileChar( char ch )
 }
 
 
-int FileIgnore( DIRINFO PASPTR *dir, int fattr )
-/*********************************************/
+static int FileIgnore( DIRINFO PASPTR *dir, int fattr )
+/*****************************************************/
 {
     int         ignore_matches;
-    char        *p;
+    char        PASPTR *p;
     int         len;
-    char        far *envname;
-    char        *name;
+    char        __far *envname;
+    char        PASPTR *name;
 
-    if( fattr != 0 && !( dir->attrFile & fattr ) ) return( 1 );
+    if( fattr != 0 && !( dir->attrFile & fattr ) )
+        return( 1 );
     name = dir->achName;
-    if( PathCurr != 0 ) {
+    if( PathCurr != NULL ) {
 #ifdef DOS
         envname = ".COM.EXE.BAT";
 #else
@@ -138,7 +132,9 @@ int FileIgnore( DIRINFO PASPTR *dir, int fattr )
 #endif
     } else {
         envname = GetEnv( MATCH_NAME, sizeof( MATCH_NAME ) - 1 );
-        if( envname == (char far *)0 ) return( FALSE );
+        if( envname == NULL ) {
+            return( FALSE );
+        }
     }
     if( *envname == '~' ) {
         ++envname;
@@ -146,21 +142,25 @@ int FileIgnore( DIRINFO PASPTR *dir, int fattr )
     } else {
         ignore_matches = FALSE;
     }
-    while( !_null( *name ) && *name != '.' ) ++name;
+    while( !_null( *name ) && *name != '.' )
+        ++name;
 #ifndef DOS
     if( *name == '.' ) {
         /* consider: a.b.c   .c is the extension */
-        name += strlen( name ) - 1;
-        while( *name != '.' ) --name;
+        name += _fstrlen( name ) - 1;
+        while( *name != '.' ) {
+            --name;
+        }
     }
 #endif
     len = 0;
-    for( p = name; !_null( *p ); ++p ) ++len;
+    for( p = name; !_null( *p ); ++p )
+        ++len;
     for( ;; ) {
-        for( ;; ) {
-            if( *envname == '.' ) break;
-            if( _null( *envname ) ) return( !ignore_matches );
-            ++envname;
+        for( ; *envname != '.'; envname++ ) {
+            if( _null( *envname ) ) {
+                return( !ignore_matches );
+            }
         }
         if( len == 0 ) {
             if( envname[1] == '.' || _null( envname[1] ) ) {
@@ -178,8 +178,8 @@ int FileIgnore( DIRINFO PASPTR *dir, int fattr )
 }
 
 
-int FindNext( DIRINFO PASPTR *dir, int fattr )
-/********************************************/
+static int FindNext( DIRINFO PASPTR *dir, int fattr )
+/***************************************************/
 {
     USHORT tmp;
     int cnt;
@@ -187,8 +187,7 @@ int FindNext( DIRINFO PASPTR *dir, int fattr )
     tmp = 1;
     do {
         cnt = DosFindNext( 1, dir, sizeof( DIRINFO ), &tmp);
-        if( cnt != 0 ) return( cnt );
-    } while( FileIgnore( dir, fattr ) );
+    } while( cnt == 0 && FileIgnore( dir, fattr ) );
     return( cnt );
 }
 
@@ -206,7 +205,7 @@ void NextFile( void )
     USHORT              cnt;
     int                 searchpath;
     static              int lastrc;
-    static char         buff[ MAX_FNAME+2 ];
+    static char         buff[MAX_FNAME+2];
     char                c0,c1,c2,c3;
     char                *word;
     char                *alias;
@@ -222,7 +221,8 @@ void NextFile( void )
     }
     if( Cursor != 0 ) {
         if( !HaveDirent ) {
-            if( NextFileCalls == 0 ) SaveLine();
+            if( NextFileCalls == 0 )
+                SaveLine();
 recurse:
             path = 0;
             i = Cursor - 1;
@@ -231,37 +231,40 @@ recurse:
 #endif
             in_quote = FALSE;
             for( ;; ) {
-                if( Line[ i ] == '/' || Line[ i ] == '\\' ) path = 1;
+                if( Line[i] == '/' || Line[i] == '\\' )
+                    path = 1;
 #ifdef DOS
-                if( path == 0 && Line[ i ] == '.' ) dot = TRUE;
+                if( path == 0 && Line[i] == '.' )
+                    dot = TRUE;
 #endif
-                if( Line[i] == '"' ) in_quote = !in_quote;
-                if( !in_quote && NonFileChar( Line[ i ] ) ) {
+                if( Line[i] == '"' )
+                    in_quote = !in_quote;
+                if( !in_quote && NonFileChar( Line[i] ) ) {
                     ++i;
                     break;
                 }
-                if( i == 0 ) break;
+                if( i == 0 )
+                    break;
                 --i;
             }
             searchpath = FALSE;
             if( i == 0 ) {
-                if( PathCurr != 0 ) {
+                if( PathCurr != NULL ) {
                     searchpath = TRUE;
-                } else if( Line[0] != '.' && Line[0] != '\\' &&
-                           Line[0] != '/' &&
+                } else if( Line[0] != '.' && Line[0] != '\\' && Line[0] != '/' &&
                            ( MaxCursor == 0 || Line[1] != ':' ) ) {
                     searchpath = TRUE;
                 }
             }
             if( searchpath && !FileUnique ) {
-                if( NextFileCalls == 0 && PathCurr == 0 ) {
+                if( NextFileCalls == 0 && PathCurr == NULL ) {
                     PathCurr = GetEnv( PATH, sizeof( PATH ) - 1 );
-                } else if( PathCurr == 0 ) {
+                } else if( PathCurr == NULL ) {
                     lastrc = ~0;
                     goto done;
                 } else if( *PathCurr == '\0' ) {
                     ++NextFileCalls;
-                    PathCurr = 0;
+                    PathCurr = NULL;
                     lastrc = ~0;
                     RestoreLine();
                     goto done;
@@ -271,37 +274,34 @@ recurse:
                     dot = FALSE;
 #endif
                     word = PathBuff;
-                    for( ;; ) {
-                        if( *PathCurr == '\0' ) break;
-                        if( *PathCurr == ';' ) {
+                    for( ; (c0 = *PathCurr) != '\0'; PathCurr++ ) {
+                        if( c0 == ';' ) {
                             ++PathCurr;
                             break;
                         }
-                        *word = *PathCurr;
-                        ++word;
-                        ++PathCurr;
+                        *word++ = c0;
                     }
                     *word = 0;
                     ReplaceAlias( PathBuff, Line, Line );
-                    ReplaceAlias( "\\", Line+(word-PathBuff), Line+(word-PathBuff) );
+                    ReplaceAlias( "\\", Line + ( word - PathBuff ), Line + ( word - PathBuff ) );
                 }
             }
             c0 = Line[Cursor+0];
             c1 = Line[Cursor+1];
             c2 = Line[Cursor+2];
             c3 = Line[Cursor+3];
-            Line[ Cursor ] = '*';
+            Line[Cursor] = '*';
 
 #ifdef DOS
             if( !dot ) {
-                Line[ Cursor + 1 ] = '.';
-                Line[ Cursor + 2 ] = '*';
-                Line[ Cursor + 3 ] = '\0';
+                Line[Cursor + 1] = '.';
+                Line[Cursor + 2] = '*';
+                Line[Cursor + 3] = '\0';
             } else {
-                Line[ Cursor + 1 ] = '\0';
+                Line[Cursor + 1] = '\0';
             }
 #else
-            Line[ Cursor + 1 ] = '\0';
+            Line[Cursor + 1] = '\0';
 #endif
             hdl = 1;
             cnt = 1;
@@ -311,7 +311,8 @@ recurse:
             Line[Cursor+2] = c2;
             Line[Cursor+3] = c3;
             if( lastrc == 0 ) {
-                if( FileIgnore( &dir, fattr ) ) lastrc = FindNext( &dir, fattr );
+                if( FileIgnore( &dir, fattr ) )
+                    lastrc = FindNext( &dir, fattr );
                 HaveDirent = TRUE;
             }
         }
@@ -322,11 +323,13 @@ done:
             word = dir.achName;
             alias = buff;
             has_blank = strchr( dir.achName, ' ' ) != NULL;
-            if( has_blank ) *alias++ = '"';
+            if( has_blank )
+                *alias++ = '"';
             while( *alias = *word ) {
                 ++alias; ++word;
             }
-            if( has_blank ) *alias++ = '"';
+            if( has_blank )
+                *alias++ = '"';
             *alias = '\r';
             if( FileUnique ) {
                 if( PrintAllFiles ) {
@@ -345,7 +348,8 @@ done:
                         PutPad( dir.achName, 13 );
                     }
                     lastrc = FindNext( &dir, fattr );
-                    if( lastrc != 0 ) break;
+                    if( lastrc != 0 )
+                        break;
                     alias = buff;
                     word = dir.achName;
                     while( tolower( *alias ) == tolower( *word ) && *alias != '\r' ) {
@@ -370,24 +374,33 @@ done:
             }
             in_quote = FALSE;
             for( ;; ) {
-                if( Line[ i ] == '"' ) in_quote = !in_quote;
-                if( Line[ i ] == '\\' ) break;
-                if( Line[ i ] == '/' ) break;
-                if( Line[ i ] == ':' ) break;
-                if( !in_quote && NonFileChar( Line[ i ] ) ) break;
+                if( Line[i] == '"' )
+                    in_quote = !in_quote;
+                if( Line[i] == '\\' )
+                    break;
+                if( Line[i] == '/' )
+                    break;
+                if( Line[i] == ':' )
+                    break;
+                if( !in_quote && NonFileChar( Line[i] ) )
+                    break;
                 --i;
-                if( i == -1 ) break;
+                if( i == -1 ) {
+                    break;
+                }
             }
             ++i;
-            if( FileLower ) ZapLower( &buff );
+            if( FileLower )
+                ZapLower( &buff );
             if( AppendSlash ) {
                 alias = buff;
-                while( *alias != '\0' && *alias != '\r' ) ++alias;
+                while( *alias != '\0' && *alias != '\r' )
+                    ++alias;
                 *alias++ = is_directory ? '\\' : ' ';
                 *alias = 0;
             }
             ReplaceAlias( &buff, Line+i, Line+Cursor );
-        } else if( PathCurr != 0 ) {
+        } else if( PathCurr != NULL ) {
             RestoreLine();
             HaveDirent = FALSE;
             --NextFileCalls;

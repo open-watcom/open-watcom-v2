@@ -10,17 +10,14 @@ suppress_zc = 1
 !include defrule.mif
 !include deftarg.mif
 
-objs = rcsdll.obj inifile.obj $(extra_objs)
-!ifeq host_os nt
-objs += mkssi.obj
-!ifeq host_cpu 386
-objs += objcycle.obj
-!else ifeq host_cpu x64
-objs += objcycle.obj
-!endif
-!else ifeq host_os win
-objs += mkssi.obj
-!endif
+objs_wini86 = mkssi.obj objcycle.obj
+objs_win386 = mkssi.obj objcycle.obj
+objs_ntaxp  = mkssi.obj
+objs_ntppc  = mkssi.obj
+objs_nt386  = mkssi.obj objcycle.obj
+objs_ntx64  = mkssi.obj objcycle.obj
+
+objs = rcsdll.obj inifile.obj $(objs_$(host_os)$(host_cpu)) $(extra_objs)
 
 .cpp : ..;../mkssi;../ocycle
 

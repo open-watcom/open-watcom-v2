@@ -99,6 +99,19 @@ set CCCMD=accopy
     set LOGFNAME=doc
     echo **** DOC rule
 
+[ BLOCK <1> docpdf ]
+#===================
+    set LOGFNAME=docpdf
+    echo **** DOCPDF rule
+
+[ BLOCK <1> cpdocpdf ]
+#=====================
+    set LOGFNAME=cpdocref
+    echo **** CPDOCPDF rule
+    # with 'cpdocref', we want to force the copy to occur
+    set CPCMD=copy
+    set CCCMD=ccopy
+
 [ BLOCK <1> docsclean ]
 #======================
     set LOGFNAME=docclean

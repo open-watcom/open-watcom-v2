@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
@@ -37,6 +36,8 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <direct.h>
+#include <windows.h>
+
 
 #ifdef DEBUG
     #define Say( x ) printf x; fflush( stdout );

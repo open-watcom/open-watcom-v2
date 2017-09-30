@@ -30,8 +30,9 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include <stddef.h>
 #include <io.h>
+#include <windows.h>
 #include "iomode.h"
 #include "rtdata.h"
 #include "exitwmsg.h"
@@ -53,11 +54,14 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
     newline[1] = '\n';
     WriteFile( NT_STDERR_FILENO, &newline, 2, &written, NULL );
     __exit( retcode );
+    // never return
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         __exit( retcode );
+        // never return
     __exit_with_msg( msg, retcode );
+    // never return
 }

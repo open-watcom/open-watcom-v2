@@ -33,11 +33,11 @@
 #include "sysdef.h"
 
 
-typedef unsigned_8 seek_method; enum {
+typedef enum {
     DIO_SEEK_ORG,
     DIO_SEEK_CUR,
     DIO_SEEK_END
-};
+} seek_method;
 
 typedef enum {
     OP_READ         = 0x0001,
@@ -49,7 +49,7 @@ typedef enum {
     OP_LOCAL        = 0x0040,
     OP_SEARCH       = 0x0080,
     OP_EXEC         = 0x0100,
-} open_access;
+} obj_attrs;
 
 #define ERR_RETURN      ((size_t)-1)
 #define ERR_SEEK        ((unsigned long)-1L)
@@ -67,33 +67,32 @@ extern size_t           WriteText( file_handle, const void *, size_t );
 
 extern unsigned long    SeekStream( file_handle, long, seek_method );
 
-extern file_handle      FileOpen( char const *, open_access );
+extern file_handle      FileOpen( char const *, obj_attrs );
 extern error_handle     FileClose( file_handle );
-extern error_handle     FileRemove( char const *, open_access );
-extern const char       *FileLoc( char const *, open_access * );
-extern open_access      FileHandleInfo( file_handle );
+extern error_handle     FileRemove( char const *, obj_attrs );
+extern const char       *FileLoc( char const *, obj_attrs * );
+extern obj_attrs        FileHandleInfo( file_handle );
 extern sys_handle       GetSystemHandle( file_handle );
 
 extern char             *SysErrMsg( error_handle, char *buff );
-extern error_handle     StashErrCode( sys_error, open_access );
+extern error_handle     StashErrCode( sys_error, obj_attrs );
 extern error_handle     GetLastErr( void );
 extern sys_error        GetSystemErrCode( error_handle );
 
-extern const char       *SkipPathInfo( char const *, open_access );
-extern const char       *ExtPointer( char const *, open_access );
-extern char             *AppendPathDelim( char *, open_access );
-extern size_t           MakeFileName( char *result, const char *name, const char *ext, open_access loc );
-extern const char       *RealFName( char const *name, open_access *loc );
+extern const char       *SkipPathInfo( char const *, obj_attrs );
+extern const char       *ExtPointer( char const *, obj_attrs );
+extern char             *AppendPathDelim( char *, obj_attrs );
+extern size_t           MakeFileName( char *result, const char *name, const char *ext, obj_attrs oattrs );
+extern const char       *RealFName( char const *name, obj_attrs *oattrs );
 extern bool             IsAbsolutePath( const char *path );
-extern char             *AppendPathDelim( char *path, open_access loc );
-extern const char       *ExtPointer( char const *path, open_access loc );
+extern char             *AppendPathDelim( char *path, obj_attrs oattrs );
+extern const char       *ExtPointer( char const *path, obj_attrs oattrs );
 extern file_handle      LclStringToFullName( const char *name, size_t len, char *full );
 extern file_handle      FullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
 extern file_handle      LocalFullPathOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result );
 extern file_handle      PathOpen( const char *name, size_t name_len, const char *ext );
 extern file_handle      LocalPathOpen( const char *name, size_t name_len, const char *ext );
 
-extern bool             FindWritable( char const *, char * );
 #if !defined( BUILD_RFX )
 extern bool             FindWritable( char const *src, char *dst );
 #endif

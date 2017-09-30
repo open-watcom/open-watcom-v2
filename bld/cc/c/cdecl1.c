@@ -122,11 +122,10 @@ static void FuncDefn( SYMPTR sym )
         sym->flags |= SYM_CHECK_STACK;
 
     if( !CompFlags.zu_switch_used ) {
-        if( (sym->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
-            /* interrupt function */
-            TargetSwitches |= FLOATING_SS;      /* force -zu switch on */
+        if( sym->mods & FLAG_FARSS ) {          /* function use far stack */
+            TargetSwitches |= FLOATING_SS;
         } else {
-            TargetSwitches &= ~FLOATING_SS;     /* turn it back off */
+            TargetSwitches &= ~FLOATING_SS;
         }
     }
     if( CMPLIT( CurFunc->name, "main" ) == 0 || CMPLIT( CurFunc->name, "wmain" ) == 0 ) {

@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include <conio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <io.h>

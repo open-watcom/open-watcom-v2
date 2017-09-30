@@ -37,7 +37,7 @@ clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(proce
 ##########################
 # C COMPILER SETINGS
 ######
-sw_c_common = -za99-w8-zl-x-xx-zam-j
+sw_c_common = -za99-w8-zl-x-xx-zam-j-wpx
 !ifeq release 0
 !else
 sw_c_common += -we

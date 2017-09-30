@@ -34,9 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-#if defined( __WATCOMC__ )
-    #include <process.h>
-#endif
 #include "wio.h"
 #include "dis.h"
 #include "global.h"
@@ -132,7 +129,7 @@ static orl_sec_handle           symbolTable = ORL_NULL_HANDLE;
 static orl_sec_handle           dynSymTable = ORL_NULL_HANDLE;
 static orl_sec_handle           drectveSection = ORL_NULL_HANDLE;
 static section_list_struct      relocSections;
-static char                     *objFileBuf;
+static char                     *objFileBuf = NULL;
 static long                     objFilePos;
 static unsigned long            objFileLen;
 
@@ -527,8 +524,11 @@ static long objSeek( orl_file_id fid, long pos, int where )
 extern void CloseObjFile( void )
 /******************************/
 {
-    MemFree( ObjFileName );
-    MemFree( objFileBuf );
+    if( ObjFileName != NULL )
+        MemFree( ObjFileName );
+    if( objFileBuf != NULL ) {
+        MemFree( objFileBuf );
+    }
 }
 
 static void initGlobals( void )
@@ -819,13 +819,14 @@ void LeaveProgram( return_val exit_code, int message )
     exit( exit_code );
 }
 
-void Init( void )
+return_val Init( void )
 {
-    char                cmd_line[ CMD_LINE_LEN ];
     return_val          error;
     const char *        const *list;
     const char          *name;
     hash_entry_data     key_entry;
+
+    error = RC_OKAY;
 
     OutputDest = STDOUT_FILENO;
     ChangePrintDest( OutputDest );
@@ -834,36 +835,31 @@ void Init( void )
     relocSections.last = NULL;
     if( !MsgInit() ) {
         // MsgInit does its own error message printing
-        exit( -1 );
+        return( RC_ERROR );
     }
     MemOpen();
 
-    getcmd( cmd_line );
-    HandleArgs( cmd_line );
+    error = HandleArgs();
+    if( error != RC_OKAY ) {
+        return( error );
+    }
 
     openFiles();
     initGlobals();
     error = initHashTables();
-    if( error == RC_OKAY ) {
-        error = initServicesUsed();
-        if( error == RC_OKAY ) {
-            error = initSectionTables();
-            if( error != RC_OKAY ) {
-                // free hash tables and services
-                MemClose();
-                LeaveProgram( error, WHERE_CREATE_SEC_TABLES );
-            }
-        } else {
-            // free hash tables
-            CloseFiles();
-            FreeHashTables();
-            // initServicesUsed does its own error message printing
-            exit( error );
-        }
-    } else {
-        CloseFiles();
-        MemClose();
-        LeaveProgram( error, WHERE_INIT_HASH_TABLES );
+    if( error != RC_OKAY ) {
+        PrintErrorMsg( error, WHERE_INIT_HASH_TABLES );
+        return( error );
+    }
+    error = initServicesUsed();
+    if( error != RC_OKAY ) {
+        // initServicesUsed does its own error message printing
+        return( error );
+    }
+    error = initSectionTables();
+    if( error != RC_OKAY ) {
+        PrintErrorMsg( error, WHERE_CREATE_SEC_TABLES );
+        return( error );
     }
     if( Options & PRINT_PUBLICS ) {
         CreatePublicsArray();
@@ -884,7 +880,6 @@ void Init( void )
             }
         }
     }
-
     if( LabelChar == 0 ) {
         if( IsMasmOutput() ) {
             LabelChar = 'L';
@@ -892,4 +887,5 @@ void Init( void )
             LabelChar = 'X';
         }
     }
+    return( error );
 }

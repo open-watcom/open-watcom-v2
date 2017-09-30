@@ -1,4 +1,4 @@
-!include $(bench_dir)\mif\bench.mif
+!include $(bench_dir)/mif/bench.mif
 
 .cpp: $(bench_dir)\owstl
 .h: $(bench_dir)\owstl

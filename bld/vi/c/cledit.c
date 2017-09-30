@@ -137,7 +137,7 @@ vi_rc EditFile( const char *name, bool dammit )
         if( len > 0 ) {
             strcpy( mask, fn );
             cnt = 0;
-            for( i = len - 1; i >= 0; --i ) {
+            for( i = len; i-- > 0; ) {
                 if( fn[i] == FILE_SEP ) {
                     for( j = i + 1; j <= len; j++ ) {
                         mask[j - (i + 1)] = fn[j];
@@ -343,13 +343,13 @@ vi_rc EditFile( const char *name, bool dammit )
 } /* EditFile */
 
 #ifndef __WIN__
-static char _NEAR *_NEAR fileOpts[] =  {
-    "<F1> Go To",
-    "<F2> Quit",
-    "<F3> Save & Quit"
+static const char _NEAR *_NEAR fileOpts[] =  {
+    (const char _NEAR *)"<F1> Go To",
+    (const char _NEAR *)"<F2> Quit",
+    (const char _NEAR *)"<F3> Save & Quit"
 };
 
-#define NUM_OPTS sizeof( fileOpts ) / sizeof( char _NEAR * )
+#define NUM_OPTS sizeof( fileOpts ) / sizeof( fileOpts[0] )
 
 /*
  * EditFileFromList - edit from file in current active list

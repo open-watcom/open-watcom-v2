@@ -587,8 +587,6 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 
                 if( NULL == v_sibling ) {   /* last element, but may be more following. track grandparent */
                     if( v->parent->parent != NULL ) {
-                        var_node    *v_iter;
-
                         for( v_iter = v->parent->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
                             if( v_iter == v->parent ) {
                                 v_sibling = v_iter->next;

@@ -134,10 +134,8 @@ static void DoDestroy( gui_window * wnd, bool dialog )
         GUIEVENTWND( wnd, GUI_DESTROY, NULL );
         GUIFreeWindowMemory( wnd, false, dialog );
     } else {
-        wnd = GUIGetFront();
-        while( wnd != NULL ) {
+        while( (wnd = GUIGetFront()) != NULL ) {
             DoDestroy( wnd, GUI_IS_DIALOG( wnd ) );
-            wnd = GUIGetFront();
         }
     }
 }

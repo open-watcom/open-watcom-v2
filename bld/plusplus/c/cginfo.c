@@ -61,7 +61,6 @@
 #include "cppexit.h"
 #include "cgbackut.h"
 #include "cginmisc.h"
-#include "pragdefn.h"
 #include "specfuns.h"
 #include "autodept.h"
 #include "dwarfid.h"
@@ -823,6 +822,9 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #endif
             fn_flags = fn_type->flag;
+            if( fn_flags & TF1_ABORTS ) {
+                value |= SUICIDAL;
+            }
             if( fn_flags & TF1_NORETURN ) {
                 value |= SUICIDAL;
             }
@@ -843,6 +845,9 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
             if( fn_flags & TF1_INTERRUPT ) {
                 value |= INTERRUPT;
+            }
+            if( fn_flags & TF1_FARSS ) {
+                value |= FARSS;
             }
             if( fn_flags & TF1_LOADDS ) {
                 value |= LOAD_DS_ON_ENTRY;
@@ -1538,9 +1543,14 @@ bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
 }
 
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
-    SYMBOL func )               // - function symbol
+    SYMBOL func_sym )           // - function symbol
 {
-    return( (func->flag & TF1_NORETURN) != 0 );
+    TYPE    func_type;
+
+    func_type = FunctionDeclarationType( func_sym->sym_type );
+    if( func_type != NULL )
+        return( (func_type->flag & (TF1_NORETURN | TF1_ABORTS)) != 0 );
+    return( false );
 }
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL

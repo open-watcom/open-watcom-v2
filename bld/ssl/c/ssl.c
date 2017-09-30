@@ -130,12 +130,12 @@ static void Usage( void )
     Error( "Usage: ssl {-(v|c)} filename[.ssl] [out_file]" );
 }
 
-void UngetChar( int c )
+static void UngetChar( int c )
 {
     SavedChar = c;
 }
 
-int NextChar( void )
+static int NextChar( void )
 {
     int next;
 
@@ -169,8 +169,7 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
         ext = ".ssl";
     }
     _makepath( file_name, drive, dir, fname, ext );
-    PP_PreProcChar = '!';
-    if( PP_Init( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
+    if( PP_FileInit( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
     given = true;
@@ -207,6 +206,7 @@ static void CloseFiles( void )
     if( TblFile != NULL ) {
         fclose( TblFile );
     }
+    PP_FileFini();
 }
 
 
@@ -306,13 +306,13 @@ void Scan( void )
             return;
         }
     }
-    if( TokenBuff[0] == PP_PreProcChar && strcmp( &TokenBuff[1], "line" ) == 0 ) {
+    if( strcmp( TokenBuff, "!line" ) == 0 ) {
         Scan();
         LineNum = strtoul( TokenBuff, NULL, 0 ) - 1;
         Scan();
         strcpy( CurrFile, TokenBuff );
         Scan();
-    } else if( TokenBuff[0] == PP_PreProcChar && strcmp( &TokenBuff[1], "error" ) == 0 ) {
+    } else if( strcmp( TokenBuff, "!error" ) == 0 ) {
         TokenLen = 0;
         for( ;; ) {
             ch = NextChar();
@@ -374,6 +374,7 @@ int main( int argc, char *argv[] )
             break;
         }
     }
+    PP_Init( '!' );
     OpenFiles( verbose, file, argv[1] );
     Scan();
     Parse();
@@ -383,5 +384,6 @@ int main( int argc, char *argv[] )
     Dump( "\n\n #### DECLS ####\n\n" );
     DumpSymTbl();
     CloseFiles();
+    PP_Fini();
     return( 0 );
 }

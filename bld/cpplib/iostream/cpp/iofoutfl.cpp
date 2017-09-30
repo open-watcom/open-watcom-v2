@@ -71,7 +71,7 @@ namespace std {
     char                *x;
     CVT_INFO            cvt;
     char                stkbuf[ LONGEST_FLOAT + 1 ];
-    std::ios::fmtflags  format_flags;
+    ios::fmtflags       format_flags;
 #ifdef _LONG_DOUBLE_
     double              double_value;
 
@@ -87,10 +87,10 @@ namespace std {
         precision = MAX_PREC;
 
     format_flags = this->flags();
-    if(( format_flags & ( std::ios::scientific | ios::fixed )) == std::ios::scientific ) {
+    if(( format_flags & ( ios::scientific | ios::fixed )) == ios::scientific ) {
         cvt.flags = E_FMT;
         cvt.scale = 1;
-    } else if(( format_flags & ( std::ios::scientific | ios::fixed )) == std::ios::fixed ) {
+    } else if(( format_flags & ( ios::scientific | ios::fixed )) == ios::fixed ) {
         cvt.flags = F_FMT;
         cvt.scale = 0;
     } else {
@@ -100,18 +100,18 @@ namespace std {
             precision = 1;
         }
     }
-    if( format_flags & std::ios::showpoint ) {
+    if( format_flags & ios::showpoint ) {
         cvt.flags |= F_DOT;
     }
     cvt.ndigits = precision;
-    cvt.expchar = ( format_flags & std::ios::uppercase ) ? 'E' : 'e';
+    cvt.expchar = ( format_flags & ios::uppercase ) ? 'E' : 'e';
     cvt.expwidth = 0;
     __EFG_cvtld( &ld, &cvt, stkbuf );
     // put all the pieces together
     len = cvt.n1 + cvt.nz1 + cvt.n2 + cvt.nz2 + 1;
     if( cvt.sign < 0 ) {
         ++len;
-    } else if( format_flags & std::ios::showpos ) {
+    } else if( format_flags & ios::showpos ) {
         ++len;
     }
     if( len > sizeof( buf ) ) {
@@ -123,31 +123,31 @@ namespace std {
     digit_offset = 1;
     if( cvt.sign < 0 ) {
         x[i++] = '-';
-    } else if( format_flags & std::ios::showpos ) {
+    } else if( format_flags & ios::showpos ) {
         x[i++] = '+';
     } else {
         digit_offset = 0;
     }
     if( cvt.n1 != 0 ) {
-        ::memcpy( &x[i], &stkbuf[0], cvt.n1 );
+        memcpy( &x[i], &stkbuf[0], cvt.n1 );
         i += cvt.n1;
     }
     if( cvt.nz1 != 0 ) {
-        ::memset( &x[i], '0', cvt.nz1 );
+        memset( &x[i], '0', cvt.nz1 );
         i += cvt.nz1;
     }
     if( cvt.n2 != 0 ) {
-        ::memcpy( &x[i], &stkbuf[cvt.n1], cvt.n2 );
+        memcpy( &x[i], &stkbuf[cvt.n1], cvt.n2 );
         i += cvt.n2;
     }
     if( cvt.nz2 != 0 ) {
-        ::memset( &x[i], '0', cvt.nz2 );
+        memset( &x[i], '0', cvt.nz2 );
         i += cvt.nz2;
     }
     x[i] = '\0';
 
     if( opfx() ) {
-        setstate( __WATCOM_ios::writeitem( *this, x, ::strlen( x ), digit_offset ) );
+        setstate( __WATCOM_ios::writeitem( *this, x, strlen( x ), digit_offset ) );
         osfx();
     }
     if( len > sizeof( buf ) ) {

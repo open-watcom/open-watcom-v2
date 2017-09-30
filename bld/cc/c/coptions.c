@@ -963,14 +963,14 @@ static void Set_AI( void )          { CompFlags.no_check_inits = true; }
 static void Set_AQ( void )          { CompFlags.no_check_qualifiers = true; }
 static void Set_D0( void )
 {
-    GenSwitches &= ~(NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
+    GenSwitches &= ~(DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
     CompFlags.debug_info_some = false;
     CompFlags.no_debug_type_names = false;
     EnsureEndOfSwitch();
 }
 static void Set_D1( void )
 {
-    GenSwitches |= NUMBERS;
+    GenSwitches |= DBG_NUMBERS;
     if( *OptScanPtr == '+' ) {
         ++OptScanPtr;
         CompFlags.debug_info_some = true;
@@ -980,7 +980,7 @@ static void Set_D1( void )
 }
 static void Set_D2( void )
 {
-    GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
+    GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
     CompFlags.inline_functions = false;
     if( *OptScanPtr == '~' ) {
         ++OptScanPtr;

@@ -90,7 +90,7 @@ void ClearWindow( window_id wid )
     TextReleaseDC( wid, hdc );
 }
 
-vi_rc DisplayLineInWindow( window_id wid, int line, char *text )
+vi_rc DisplayLineInWindow( window_id wid, int line, const char *text )
 {
     text = text;
     wid = wid;
@@ -213,14 +213,10 @@ void MyTabbedTextOut( HDC hdc,
 
         while( tstring < string_end ) {
             tlen = 0;
-            while( *tstring != '\t' ){
+            for( ; *tstring != '\t' && tstring < string_end; tstring++ ) {
                 // BAD! Kevin.P.
                 // I think this portion of code is 8-bit dependant.
                 // Should call getNext() or something from TabHell
-                if( tstring == string_end ) {
-                    break;
-                }
-                tstring++;
                 tlen++;
             }
             if( funny_italic ) {
@@ -235,11 +231,7 @@ void MyTabbedTextOut( HDC hdc,
             }
 
             tlen = 0;
-            while( *tstring == '\t' ) {
-                if( tstring == string_end ) {
-                    break;
-                }
-                tstring++;
+            for( ; *tstring == '\t' && tstring < string_end; tstring++ ) {
                 tlen++;
             }
             if( tlen == 0 ) {
@@ -317,7 +309,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     // check out common text
 
     prev_col = start_col;
-    if( EditFlags.RealTabs ){
+    if( EditFlags.RealTabs ) {
         start_col = WinRealCursorPosition( otmp, start_col + 1 ) -1;
     }
 
@@ -387,7 +379,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
 
         // check if we are at the last block OR the remainder
         // of the line is "BEYOND_TEXT" *sigh*
-        while( ss_step->end != BEYOND_TEXT ) {
+        for( ; ss_step->end != BEYOND_TEXT; ss_step++ ) {
 
             // setup font and colors for next string.
             style = &SEType[ss_step->type];
@@ -408,10 +400,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
                 // put in dummy offsets for the rest of the blocks
                 // and exit
                 ss_step++;
-                for( ;; ) {
-                    if( ss_step->end == BEYOND_TEXT ) {
-                        break;
-                    }
+                for( ; ss_step->end != BEYOND_TEXT; ) {
                     ss_step->offset = 10000;
                     ss_step++;
                 }
@@ -424,7 +413,6 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
             }
 
             // advance to the next block
-            ss_step++;
             lastPos += len;
         }
 

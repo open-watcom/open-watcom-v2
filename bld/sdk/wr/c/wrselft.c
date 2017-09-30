@@ -33,7 +33,6 @@
 #include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
 #include "wrmaini.h"

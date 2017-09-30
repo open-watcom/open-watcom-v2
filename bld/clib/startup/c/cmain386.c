@@ -51,6 +51,7 @@
         #endif
         __CommonInit();
         exit( wmain( ___wArgc, ___wArgv ) );
+        // never return
     }
 #else
     extern      int     main( int, char ** );
@@ -63,5 +64,6 @@
         #endif
         __CommonInit();
         exit( main( ___Argc, ___Argv ) );
+        // never return
     }
 #endif

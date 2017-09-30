@@ -609,11 +609,14 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
     #define _wpi_f_getoldfont( hdc, oldfont ) SelectObject( hdc, oldfont )
 
 #ifdef __NT__
+  #ifdef _WIN64
     #define _wpi_f_getsystemfont( hdc, font ) \
-        GetObject( \
-            GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
-            DEFAULT_GUI_FONT : SYSTEM_FONT ) \
+        GetObject( GetStockObject( DEFAULT_GUI_FONT ), sizeof( *(font) ), (font) )
+  #else
+    #define _wpi_f_getsystemfont( hdc, font ) \
+        GetObject( GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? DEFAULT_GUI_FONT : SYSTEM_FONT ) \
             , sizeof( *(font) ), (font) )
+  #endif
 #else
     #define _wpi_f_getsystemfont( hdc, font ) \
         GetObject( GetStockObject( SYSTEM_FONT ), sizeof( *(font) ), (font) )
@@ -852,15 +855,18 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     #define _wpi_restorepres( pres, pres_id ) RestoreDC( pres, pres_id )
 
 #ifdef __NT__
+  #ifdef _WIN64
+    #define _wpi_getsystemfont() GetStockObject( DEFAULT_GUI_FONT )
+  #else
     #define _wpi_getsystemfont() \
-        GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
-        DEFAULT_GUI_FONT : SYSTEM_FONT )
+        GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? DEFAULT_GUI_FONT : SYSTEM_FONT )
+  #endif
 #else
     #define _wpi_getsystemfont() GetStockObject( SYSTEM_FONT )
 #endif
 
     #define _wpi_wmgetfont( hwnd, font_hld ) \
-        font_hld = _wpi_sendmessage( hwnd, WM_GETFONT, NULL, NULL );
+        font_hld = _wpi_sendmessage( hwnd, WM_GETFONT, 0, 0 );
 
     #define _wpi_createfont( logfont, hfont ) \
         hfont = CreateFontIndirect( &logfont );
@@ -1096,8 +1102,7 @@ extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
     #define _wpi_copyrect( dest, src ) CopyRect( dest, src )
 
     #define _wpi_setredraw( hwnd, redraw ) \
-        _wpi_sendmessage( hwnd, WM_SETREDRAW, \
-                          (WPI_PARAM1) (redraw), (WPI_PARAM2) NULL )
+        _wpi_sendmessage( hwnd, WM_SETREDRAW, (WPI_PARAM1)(redraw), 0 )
 
     #define _wpi_getfirstchild( hwnd ) GetWindow( hwnd, GW_CHILD )
 

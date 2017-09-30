@@ -50,12 +50,6 @@
 
 #define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
 
-enum {
-    #define pick( a, b, c ) a,
-    #include "auxinfo.h"
-    #undef pick
-};
-
 typedef void token_source_fn( void );
 
 //typedef target_ulong target_int_const;
@@ -203,9 +197,9 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
 ;
-AUX_INFO * PragmaLookup(        // FIND A PRAGMA
-    char * name,                // - name of the pragma
-    unsigned index )            // - index (M_UNKNOWN if not known)
+AUX_INFO *PragmaLookup(         // FIND A PRAGMA
+    const char *name,           // - name of the pragma
+    magic_word_idx index )      // - index (M_UNKNOWN if not known)
 ;
 AUX_INFO *PragmaGetIndex( AUX_INFO * );
 

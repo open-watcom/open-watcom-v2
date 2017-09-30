@@ -58,20 +58,20 @@
 //  94/04/06    Greg Bentz      combine header files
 
 #include "strng.h"
+#include <cstdlib>
 
 // Used to store the actual string value
 // Define a macro that is the size of a StringRep with an n-byte array:
 #define _SIZEOF_STRINGREP(n)    (sizeof( String::StringRep ) - 1 + n)
 
-size_t  String::__string_mult_size = 8;
+std::size_t     String::__string_mult_size = 8;
 
 #ifndef NDEBUG
         int _AllocCount = 0;
 #endif
 
-String::StringRep *String::__AllocStringRep( String::StringRep *old_srep,
-/***********************************************************************/
-    size_t len ) {
+String::StringRep *String::__AllocStringRep( String::StringRep *old_srep, std::size_t len ) 
+/*****************************************************************************************/
 // Allocate a StringRep long enough to hold a string of length "len".
 // If "old_srep" is not NULL, then reallocate it to be bigger.
 // Note that "old_srep" should only be non-NULL if the reference count is 1,
@@ -79,12 +79,13 @@ String::StringRep *String::__AllocStringRep( String::StringRep *old_srep,
 // makes the block move.
 // Round up the overall block length to a multiple of string_mult_size.
 // It is assumed that string_mult_size is a multiple of 8.
-    size_t              alloc_len;
+{
+    std::size_t         alloc_len;
     String::StringRep   *new_srep;
 
     alloc_len  = _SIZEOF_STRINGREP( len ) + String::__string_mult_size - 1;
     alloc_len &= -String::__string_mult_size;
-    new_srep   = (String::StringRep *) ::realloc( old_srep, alloc_len );
+    new_srep   = (String::StringRep *)std::realloc( old_srep, alloc_len );
     if( new_srep == NULL ) {
         return( NULL );
     }
@@ -96,5 +97,3 @@ String::StringRep *String::__AllocStringRep( String::StringRep *old_srep,
 #endif
     return( new_srep );
 }
-
-

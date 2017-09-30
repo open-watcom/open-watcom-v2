@@ -330,7 +330,7 @@ vi_rc ChangeCase( range *r )
     linenum     curr;
     vi_rc       rc;
     long        total;
-    char        *msg;
+    const char  *msg;
 
     UndoReplaceLines( r->start.line, r->end.line );
     if( r->start.line == r->end.line ) {

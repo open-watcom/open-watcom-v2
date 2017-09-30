@@ -77,7 +77,7 @@ bool Page::addWord( GlobalDictionaryWord* word )
 //Write a TOC entry
 STD1::uint32_t Page::write( std::FILE* out )
 {
-    size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
+    std::size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
     if( toc.extended ) {
         tocsize += sizeof( ExtTocEntry );
         if( etoc.setPos )
@@ -128,8 +128,8 @@ STD1::uint32_t Page::writeChildren( std::FILE* out ) const
 {
     STD1::uint32_t bytes( 0 );
     if( !children.empty() ) {
-        STD1::uint8_t size( 3 + static_cast< STD1::uint8_t >( children.size() * sizeof( STD1::uint16_t ) ) );
-        if( std::fputc( size, out ) == EOF )
+        STD1::uint8_t size_u8( 3 + static_cast< STD1::uint8_t >( children.size() * sizeof( STD1::uint16_t ) ) );
+        if( std::fputc( size_u8, out ) == EOF )
             throw FatalError( ERR_WRITE );
         ++bytes;
         if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 )

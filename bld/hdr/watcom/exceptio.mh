@@ -16,7 +16,7 @@
 :include readonly.sp
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 using std::exception;
 using std::bad_exception;
@@ -29,7 +29,7 @@ using std::terminate;
 // using std::uncaught_exception;
 
 // Needed for compatibility with Watcom legacy code?
-// #include <stdexcep.h>
+// #include <stdexcept.h>
 
 #endif
 :elsesegment
@@ -42,14 +42,13 @@ using std::terminate;
 
 :include owrtlink.sp
 
-:include cpppfv.sp
-
 :include watexc.sp
 
 :include throws.sp
 
-namespace std {
+:include except.sp
 
+:include nsstd.sp
   class _WPRTLINK exception {
     const char *_what_val;
   public:
@@ -83,17 +82,7 @@ namespace std {
 
     virtual ~bad_exception( ) _WCTHROWS() { }
   };
-
-
-  typedef void (*unexpected_handler)( );
-  typedef void (*terminate_handler)( );
-
-  _WPRTLINK _WCNORETURN extern void terminate( );
-  _WPRTLINK _WCNORETURN extern void unexpected( );
-  _WPRTLINK extern terminate_handler set_terminate( terminate_handler );
-  _WPRTLINK extern unexpected_handler set_unexpected( unexpected_handler );
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

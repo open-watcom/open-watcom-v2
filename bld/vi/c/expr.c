@@ -60,14 +60,14 @@ static int          tokenBuffCnt;
 
 #define str( a ) #a
 
-static char     colorTokens[] = {
+static const char   colorTokens[] = {
     #define vi_pick( a ) str( a\0 )
     #include "colors.h"
     #undef vi_pick
 };
 
 #ifdef __WIN__
-static char     ddeTokens[] = {
+static const char   ddeTokens[] = {
     "DDE_FACK\0"
     "DDE_FBUSY\0"
     "DDE_FDEFERUPD\0"
@@ -340,40 +340,40 @@ static token nextToken( void )
             if( tokenBuff[0] == '.' ) {
                 strcpy( tokenBuff, GetASetVal( &tokenBuff[1] ) );
                 constantVal = strtol( tokenBuff, NULL, 0 );
-                for( j = tokenBuffCnt - 1; j >= 0; --j ) {
+                for( j = tokenBuffCnt; j-- > 0; ) {
                     if( !isdigit( tokenBuff[j] ) ) {
                         currToken = T_STRING;
                         break;
                     }
                 }
-           } else if( !strcmp( tokenBuff, "config" ) ) {
+           } else if( strcmp( tokenBuff, "config" ) == 0 ) {
                 constantVal = EditFlags.Color * 100 + EditFlags.BlackAndWhite * 10 +
                     EditFlags.Monocolor;
-            } else if( !strcmp( tokenBuff, "rdonly" ) ) {
+            } else if( strcmp( tokenBuff, "rdonly" ) == 0 ) {
                 constantVal = CFileReadOnly();
-            } else if( !strcmp( tokenBuff, "lastrc" ) ) {
+            } else if( strcmp( tokenBuff, "lastrc" ) == 0 ) {
                 constantVal = (long)LastRC;
-            } else if( !strcmp( tokenBuff, "pagelen" ) ) {
+            } else if( strcmp( tokenBuff, "pagelen" ) == 0 ) {
                 constantVal = EditVars.WindMaxHeight;
-            } else if( !strcmp( tokenBuff, "endcolumn" ) ) {
+            } else if( strcmp( tokenBuff, "endcolumn" ) == 0 ) {
                 constantVal = EditVars.WindMaxWidth;
-            } else if( !strcmp( tokenBuff, "numundos" ) ) {
+            } else if( strcmp( tokenBuff, "numundos" ) == 0 ) {
                 if( UndoStack == NULL ) {
                     constantVal = 0;
                 } else {
                     constantVal = UndoStack->current + 1;
                 }
-            } else if( !strcmp( tokenBuff, "numredos" ) ) {
+            } else if( strcmp( tokenBuff, "numredos" ) == 0 ) {
                 if( UndoUndoStack == NULL ) {
                     constantVal = 0;
                 } else {
                     constantVal = UndoUndoStack->current + 1;
                 }
-            } else if( !strcmp( tokenBuff, "hassel" ) ) {
+            } else if( strcmp( tokenBuff, "hassel" ) == 0 ) {
                 constantVal = SelRgn.selected;
-            } else if( !strcmp( tokenBuff, "hasfile" ) ) {
+            } else if( strcmp( tokenBuff, "hasfile" ) == 0 ) {
                 constantVal = (CurrentFile != NULL);
-            } else if( !strncmp( tokenBuff, "emptybuf", 8 ) ) {
+            } else if( strncmp( tokenBuff, "emptybuf", 8 ) == 0 ) {
                 j = tokenBuff[8];
                 constantVal = IsEmptySavebuf( j );
             } else if( (j = Tokenize( colorTokens, tokenBuff, true )) != TOK_INVALID ) {

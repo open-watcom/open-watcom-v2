@@ -420,11 +420,9 @@ void WREEndLangMenuSession( WResLangNode *lnode )
 {
     WREMenuSession      *session;
 
-    session = WREFindLangMenuSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangMenuSession( lnode )) != NULL ) {
         session->info = WMenuEndEdit( session->hndl );
         WRERemoveMenuEditSession( session );
-        session = WREFindLangMenuSession( lnode );
     }
 }
 
@@ -432,11 +430,9 @@ void WREEndResMenuSessions( WREResInfo *rinfo )
 {
     WREMenuSession      *session;
 
-    session = WREFindResMenuSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResMenuSession( rinfo )) != NULL ) {
         session->info = WMenuEndEdit( session->hndl );
         WRERemoveMenuEditSession( session );
-        session = WREFindResMenuSession( rinfo );
     }
 }
 

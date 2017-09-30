@@ -34,14 +34,14 @@
 PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
     PTREE expr,                 // - expression for operands
     TYPE type,                  // - type for function return
-    RTF code )                  // - code for function
+    RTF rt_code )               // - code for function
 ;
 bool RunTimeIsThrow(            // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 ;
 SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
-    RTF code )                  // - code for call
+    RTF rt_code )               // - code for call
 ;
-const char *RunTimeCodeString(        // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
-    RTF code )                  // - code for function
+const char *RunTimeCodeString(  // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
+    RTF rt_code )               // - code for function
 ;

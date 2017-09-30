@@ -68,7 +68,7 @@ typedef struct WStringEditInfo {
     WStringTable        *tbl;
     WStringBlock        *current_block;
     uint_16             current_string;
-    int                 current_pos;
+    LRESULT             current_pos;
     HWND                win;
     HWND                edit_dlg;
     WStatBar            *wsb;
@@ -92,7 +92,7 @@ extern WStringBlock     *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 block
 extern WStringBlock     *WFindStringBlock( WStringTable *tbl, uint_16 blocknum );
 extern bool             WIsBlockEmpty( WStringBlock *block );
 extern bool             WRemoveStringBlock( WStringTable *tbl, WStringBlock *block );
-extern box_pos          WFindStringPos( WStringTable *tbl, uint_16 string_id );
+extern LRESULT          WFindStringPos( WStringTable *tbl, uint_16 string_id );
 extern void             WFreeStringTableBlocks( WStringBlock *block );
 extern uint_16          WFindLargestStringID( WStringTable *tbl );
 

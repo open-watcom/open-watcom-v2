@@ -31,9 +31,9 @@
 
 
 #include <stdio.h>
-#include <windows.h>
 #include <string.h>
 #include <dos.h>
+#include <windows.h>
 #include "bool.h"
 #include "cpuglob.h"
 #include "wdebug.h"

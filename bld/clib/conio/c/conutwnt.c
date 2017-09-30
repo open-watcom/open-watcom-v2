@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <io.h>
 #include <windows.h>
 #include "ntconio.h"

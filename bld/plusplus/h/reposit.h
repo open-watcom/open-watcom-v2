@@ -48,7 +48,7 @@ struct repo_rec_base            // REPOS_REC_BASE -- repository record, base
 typedef enum                    // REPO_FUN_FLAGS -- flags for function
 {   RFFLAG_CAN_LONGJUMP = 0x80000000 // - function could throw or equivalent
 ,   RFFLAG_NO_LONGJUMP  = 0x40000000 // - function never throws or equivalent
-,   RFFLAG_IG_LONGJUMP  = 0x20000000 // - ignore (R/T, based on parameters)
+,   RFFLAG_IGN_LONGJUMP = 0x20000000 // - ignore (R/T, based on parameters)
 } REPO_FUN_FLAGS;
 
 

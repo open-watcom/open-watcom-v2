@@ -34,6 +34,7 @@
 
 #if defined(__NT__)
 
+#include <stddef.h>
 #include <windows.h>
 
 #define NULL_HANDLE  (HANDLE)-1

@@ -19,8 +19,7 @@
  #include <cstddef>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   struct input_iterator_tag  { };
   struct output_iterator_tag { };
   struct forward_iterator_tag       : public input_iterator_tag         { };
@@ -99,8 +98,7 @@ namespace std {
   {
     if( n >= 0 ) {
       for( Distance i = 0; i < n; ++i ) ++it;
-    }
-    else {
+    } else {
       for( Distance i = 0; i > n; --i ) --it;
     }
   }
@@ -202,7 +200,7 @@ namespace std {
 
     explicit reverse_iterator( Iterator it ) : current( it )
       { }
-      
+
     template< class OtherIterator >
     reverse_iterator( const reverse_iterator< OtherIterator > &other ) :
       current( other.current ) { }
@@ -234,20 +232,20 @@ namespace std {
       advance( adjusted, -n );
       return( reverse_iterator( adjusted ) );
     }
-      
+
     reverse_iterator &operator+=( difference_type n )
       { advance( current, -n ); return( *this ); }
-      
+
     reverse_iterator operator-( difference_type n ) const
     {
       Iterator adjusted( current );
       advance( adjusted, n );
       return( reverse_iterator( adjusted ) );
     }
-    
+
     reverse_iterator &operator-=( difference_type n )
       { advance( current, n ); return( *this ); }
-      
+
     reference operator[]( difference_type n ) const
       { return( current[ -n - 1 ] ); }
   };
@@ -269,7 +267,7 @@ namespace std {
   {
     return( x.base( ) != y.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   bool operator<(
@@ -278,7 +276,7 @@ namespace std {
   {
     return( x.base( ) > y.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   bool operator>(
@@ -287,7 +285,7 @@ namespace std {
   {
     return( x.base( ) < y.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   bool operator<=(
@@ -296,7 +294,7 @@ namespace std {
   {
     return( x.base( ) >= y.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   bool operator>=(
@@ -305,7 +303,7 @@ namespace std {
   {
     return( x.base( ) <= y.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   typename reverse_iterator< Iterator >::difference_type operator-(
@@ -314,7 +312,7 @@ namespace std {
   {
     return( y.base( ) - x.base( ) );
   }
-  
+
   template< class Iterator >
   inline
   reverse_iterator< Iterator > operator+(
@@ -422,7 +420,6 @@ namespace std {
   insert_iterator< Container > inserter( Container &c, Inserter it )
     { return( insert_iterator< Container >
         ( c, typename Container::iterator( it ) ) ); }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

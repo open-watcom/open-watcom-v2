@@ -13,7 +13,7 @@
 # configuration values:
 #
 # targ_env_386 = wnt386/d4g386/cw386/os2386/linux386 (depends on current OS)
-# targ_env_i86 = os2i86/dosi86 (depends on current OS)
+# targ_env_i86 = os2i86/dosi86/wnti86 (depends on current OS)
 # targ_env_axp = ntaxp (depends on current OS)
 # targ_env_ppc = linuxppc/ntppc (depends on current OS)
 # targ_env_mps = linuxmips (depends on current OS)
@@ -130,56 +130,10 @@ path_wlink = $(src_dir)\wl\ntx64.dll
 
 .ERROR
     @%make set_old_path
-
-!ifdef buildtest
-!ifdef __OS2__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(os2api_dir)/os2386/h"
-!else ifdef __MSDOS__
-bld_incl    = -I"$(hdr_dir)/dos"
-!else ifdef __NT__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
-!else ifdef __LINUX__
-bld_incl    = -I"$(hdr_dir)/linux"
-!endif
-!endif
-
-!ifdef __OS2__
-bld_sys     = os2v2
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=os2
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __MSDOS__
-bld_sys     = dos4g
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=dos
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NTAXP__
-bld_sys     = ntaxp
-bld_cl      = $(buildtest_prefix)wclaxp -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NT386__
-bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NTX64__
-bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXPPC__
-bld_sys     = linuxppc
-bld_cl      = $(buildtest_prefix)wclppc -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXMIPS__
-bld_sys     = linuxmips
-bld_cl      = $(buildtest_prefix)wclmps -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUX386__
-bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXX64__
-bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!endif
+    @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+#    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failures
 
 !ifdef wasmtest_name
 bld_extra_defines = -DWASM
@@ -281,7 +235,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_386
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_386 d4g386
 #!    define targ_env_386 cw386
 !  else ifdef __OS2__
@@ -321,7 +275,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_i86
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_i86 dosi86
 !  else ifdef __OS2__
 !    define targ_env_i86 os2i86
@@ -354,7 +308,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_axp
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_axp dosaxp
 !  else ifdef __OS2__
 !    define targ_env_axp os2axp
@@ -425,7 +379,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_386
 !  ifdef buildtest
 #    build version of assembler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wasm_386 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_386 $(src_dir)\wasm\os2386\wasm
@@ -448,7 +402,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_i86
 !  ifdef buildtest
 #    build version of assembler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wasm_i86 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_i86 $(src_dir)\wasm\os2386\wasm
@@ -504,7 +458,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_386
 !  ifdef buildtest
 #    build version of C compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(bin_subdir)\wcc386
 !    else ifdef __OS2__
 !      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(bin_subdir)\wcc386
@@ -527,7 +481,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_i86
 !  ifdef buildtest
 #    build version of C compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\$(bin_subdir)\wcc
 !    else ifdef __OS2__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(bin_subdir)\wcc
@@ -629,7 +583,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_386
 !  ifdef buildtest
 #    build version of C++ compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\dos386\wpp386
 !    else ifdef __OS2__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\os2386.dll\wpp386
@@ -652,7 +606,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_i86
 !  ifdef buildtest
 #    build version of C++ compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\dos386\wpp
 !    else ifdef __OS2__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\os2386.dll\wpp
@@ -754,7 +708,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_386
 !  ifdef buildtest
 #    build version of F77 compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\dos386\wfc386
 !    else ifdef __OS2__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\os2386\wfc386
@@ -777,7 +731,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_i86
 !  ifdef buildtest
 #    build version of F77 compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\dos386\wfc
 !    else ifdef __OS2__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\os2386\wfc
@@ -1033,7 +987,7 @@ targ_run_lnxmps =
 run = $(targ_run_$(targ_env_$(arch)))
 
 !ifdef buildtest
-wbind = $(%OWROOT)\build\bin\bwbind.exe
+wbind = $(%OWBINDIR)\bwbind.exe
 win386ldr = $(src_dir)/win386/ext/win386.ext
 !else
 wbind = $(watcom_root)\binnt\wbind.exe
@@ -1186,6 +1140,7 @@ targ_lnk_lnxmps = system linuxmips
 was_any = -zq
 wcc_any = -zq
 wpp_any = -zq
+wcl_any = -zq
 wfc_any = -Quiet
 lnk_any = option noundefsok, map, quiet
 lib_any = -q
@@ -1224,6 +1179,56 @@ wfc_ppc = $(comp_wfc_ppc) $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
 wfc_mps = $(comp_wfc_mps) $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
 
 librarian = $(wlib_any) $(lib_any) -n -b
+
+!ifdef buildtest
+!ifdef __OS2__
+bld_incl    = -I"$(hdr_dir)/dos" -I"$(os2api_dir)/os2386/h"
+!else ifdef __MSDOS__
+bld_incl    = -I"$(hdr_dir)/dos"
+!else ifdef __NT__
+bld_incl    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
+!else ifdef __LINUX__
+bld_incl    = -I"$(hdr_dir)/linux"
+!endif
+!endif
+
+!ifdef __OS2__
+bld_sys     = os2v2
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=os2
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __MSDOS__
+bld_sys     = dos4g
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=dos
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NTAXP__
+bld_sys     = ntaxp
+bld_cl      = $(buildtest_prefix)wclaxp $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NT386__
+bld_sys     = nt
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NTX64__
+bld_sys     = nt
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXPPC__
+bld_sys     = linuxppc
+bld_cl      = $(buildtest_prefix)wclppc $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXMIPS__
+bld_sys     = linuxmips
+bld_cl      = $(buildtest_prefix)wclmps $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUX386__
+bld_sys     = linux
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXX64__
+bld_sys     = linux
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!endif
 
 set_path_wcc : .PROCEDURE .EXPLICIT
 !ifdef path_wcc
@@ -1270,6 +1275,66 @@ set_old_path : .PROCEDURE .EXPLICIT
     @set PATH=$(old_path)
 !endif
 
+echo_as : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo as $@
+!endif
+
+echo_cc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cc $@
+!endif
+
+echo_cxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo c++ $@
+!endif
+
+echo_wfc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wfc $@
+!endif
+
+echo_bldcl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_cl $@
+!endif
+
+echo_link : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo link $@
+!endif
+
+echo_lib : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo lib $@
+!endif
+
+echo_wdis : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wdis $@
+!endif
+
+echo_dmpobj : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo dmpobj $@
+!endif
+
+echo_diff : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo diff $@
+!endif
+
+echo_wbind : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wbind $@
+!endif
+
+echo_clean : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo clean
+!endif
+
 common_clean : .PROCEDURE .EXPLICIT
-    -rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
-    -rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+    -$(noecho)rm -f *.?bj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst
+    -$(noecho)rm -f *.tmp *.lbc *.gdf *.dll *.pdb *.pch *.lib *.res *.exe

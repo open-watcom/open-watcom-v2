@@ -96,7 +96,7 @@ typedef struct nlm_header_2 {
     char            descriptionText[ MAX_DESCRIPTION_LENGTH + 1 ];  /*vbl*/
     unsigned_32     stackSize;
     unsigned_32     reserved;
-    char            oldThreadName[ OLD_THREAD_NAME_LENGTH];
+    char            oldThreadName[ OLD_THREAD_NAME_LENGTH + 1];
     unsigned_8      screenNameLength;
     char            screenName[ MAX_SCREEN_NAME_LENGTH + 1 ];       /*vbl*/
     unsigned_8      threadNameLength;

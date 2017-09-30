@@ -827,7 +827,7 @@ trap_retval ReqProg_load( void )
             ++parms;
             --len;
         }
-        args = __alloca( i * sizeof( *args ) );
+        args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSize() - sizeof( *acc );
         i = 1;
@@ -848,7 +848,7 @@ trap_retval ReqProg_load( void )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = __alloca( (i+2) * sizeof( *args ) );
+        args = walloca( (i+2) * sizeof( *args ) );
         args[ SplitParms( parms, &args[1], len ) + 1 ] = NULL;
     }
     args[0] = parm_start;

@@ -54,6 +54,7 @@ void StartupError( vi_rc err )
 
     /* Do not call ExitEditor() because almost nothing is initialized yet. */
     exit( -1 );
+    // never return
 } /* StartupError */
 
 /*

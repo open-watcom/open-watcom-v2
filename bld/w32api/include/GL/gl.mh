@@ -1,5 +1,5 @@
 /*
- *  gl/gl.h     OpenGL functions
+ *  GL/gl.h     OpenGL functions
  *
 :include crwatcnt.sp
  */

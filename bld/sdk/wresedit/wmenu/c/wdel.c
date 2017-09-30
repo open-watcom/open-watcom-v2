@@ -63,18 +63,18 @@ bool WDeleteMenuEntry( WMenuEditInfo *einfo )
 {
     HWND        lbox;
     bool        ok;
-    box_pos     pos;
+    LRESULT     pos;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = (lbox != NULL);
+        ok = ( lbox != NULL );
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (pos != LB_ERR);
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = ( pos != LB_ERR );
     }
 
     if( ok ) {
@@ -84,28 +84,28 @@ bool WDeleteMenuEntry( WMenuEditInfo *einfo )
     return( ok );
 }
 
-bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, box_pos pos, bool free_it )
+bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, LRESULT pos, bool free_it )
 {
     HWND        lbox;
     bool        ok;
     WMenuEntry  *entry;
     LRESULT     ret;
-    box_pos     max;
+    LRESULT     count;
 
-    ok = (einfo != NULL && einfo->edit_dlg != NULL);
+    ok = ( einfo != NULL && einfo->edit_dlg != NULL );
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = (lbox != NULL);
+        ok = ( lbox != NULL );
     }
 
     if( ok ) {
-        max = (box_pos)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-        ok = (max != 0 && max != LB_ERR && pos < max);
+        count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+        ok = ( count != 0 && count != LB_ERR && pos < count );
     }
 
     if( ok ) {
-        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         if( entry != NULL ) {
             if( free_it ) {
                 ok = WRemoveMenuEntry( einfo->menu, entry );
@@ -124,17 +124,17 @@ bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, box_pos pos, bool free_it )
         if( free_it ) {
             ret = WInitEditWindowListBox( einfo );
         } else {
-            ret = SendMessage( lbox, LB_DELETESTRING, pos, 0 );
+            ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
         }
-        ok = (ret != LB_ERR);
+        ok = ( ret != LB_ERR );
     }
 
     if( ok ) {
         einfo->current_entry = NULL;
-        einfo->current_pos = -1;
-        if( pos > max - 2 )
-            pos = max - 2;
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        einfo->current_pos = LB_ERR;
+        if( pos > count - 2 )
+            pos = count - 2;
+        ok = ( SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR );
         if( ok ) {
             WHandleSelChange( einfo );
         } else {

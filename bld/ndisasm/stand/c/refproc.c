@@ -142,18 +142,15 @@ orl_return CreateNamedLabelRef( orl_reloc rel )
         h_key.u.sec_handle = rel->section;
         h_data = HashTableQuery( HandleToRefListTable, h_key );
         if( h_data != NULL ) {
+            ref->has_val = true;
             sec_ref_list = h_data->u.sec_ref_list;
             addRef( sec_ref_list, ref );
-        } else {
-            // error!!!!  should have been created
-            MemFree( ref );
-            return( ORL_ERROR );
+            return( ORL_OKAY );
         }
-    } else {
-        MemFree( ref );
-        return( ORL_ERROR );
+        // error!!!!  should have been created
     }
-    return( ORL_OKAY );
+    MemFree( ref );
+    return( ORL_ERROR );
 }
 
 orl_return DealWithRelocSection( orl_sec_handle shnd )
@@ -183,14 +180,14 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
     if( h_data != NULL ) {
+        ref->has_val = true;
         sec_ref_list = h_data->u.sec_ref_list;
         addRef( sec_ref_list, ref );
-    } else {
-        // error!!!!  should have been created
-        MemFree( ref );
-        return( RC_ERROR );
+        return( RC_OKAY );
     }
-    return( RC_OKAY );
+    // error!!!!  should have been created
+    MemFree( ref );
+    return( RC_ERROR );
 }
 
 return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
@@ -211,12 +208,12 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     h_key.u.sec_handle = shnd;
     h_data = HashTableQuery( HandleToRefListTable, h_key );
     if( h_data != NULL ) {
+        ref->has_val = true;
         sec_ref_list = h_data->u.sec_ref_list;
         addRef( sec_ref_list, ref );
-    } else {
-        // error!!!!  should have been created
-        MemFree( ref );
-        return( RC_ERROR );
+        return( RC_OKAY );
     }
-    return( RC_OKAY );
+    // error!!!!  should have been created
+    MemFree( ref );
+    return( RC_ERROR );
 }

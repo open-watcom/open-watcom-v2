@@ -38,24 +38,27 @@
 #include "memdmp.h"
 
 /* strings */
-char _NEAR      MSG_CHARACTERS[] = "characters";
-char _NEAR      MSG_LINES[] = "lines";
-char _NEAR      MSG_PRESSANYKEY[] = "Press any key";
-char _NEAR      MSG_DELETEDINTOBUFFER[] = " deleted into buffer ";
-char _NEAR      MEMORIZE_MODE[] = "Memorize Mode ";
-char _NEAR      CONFIG_FILE[] = CFG_NAME;
-char _NEAR      SingleBlank[] = " ";
-char _NEAR      SingleSlash[] = "/";
-char _NEAR      SingleQuote[] = "\"";
-char            * _NEAR BoolStr[] = { "FALSE", "TRUE" };
+const char          _NEAR MSG_CHARACTERS[] = "characters";
+const char          _NEAR MSG_LINES[] = "lines";
+const char          _NEAR MSG_PRESSANYKEY[] = "Press any key";
+const char          _NEAR MSG_DELETEDINTOBUFFER[] = " deleted into buffer ";
+const char          _NEAR MEMORIZE_MODE[] = "Memorize Mode ";
+const char          _NEAR CONFIG_FILE[] = CFG_NAME;
+const char          _NEAR SingleBlank[] = " ";
+const char          _NEAR SingleSlash[] = "/";
+const char          _NEAR SingleQuote[] = "\"";
+const char _NEAR    * _NEAR BoolStr[] = {
+    (const char _NEAR *)"FALSE",
+    (const char _NEAR *)"TRUE"
+};
 
 /* edit options */
-char _NEAR * _NEAR EditOpts[] =  {
-    "<F1> Go To",
-    "<F2> Edit",
-    "<F3> Get All"
+const char _NEAR * _NEAR EditOpts[] = {
+    (const char _NEAR *)"<F1> Go To",
+    (const char _NEAR *)"<F2> Edit",
+    (const char _NEAR *)"<F3> Get All"
 };
-int NumEditOpts = sizeof( EditOpts ) / sizeof( char _NEAR * );
+int NumEditOpts = sizeof( EditOpts ) / sizeof( EditOpts[0] );
 
 /* event data */
 event _NEAR EventList[] = {
@@ -225,6 +228,7 @@ bool            NoRepeatInfo;
 char            _NEAR RepeatString[MAX_REPEAT_STRING];
 int             SourceErrCount;
 bool            BoundData = false;
+bool            RCSActive = false;
 
 #define INITVARS
 /*

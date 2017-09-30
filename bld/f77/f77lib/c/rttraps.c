@@ -48,7 +48,7 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#if defined( __DOS__ )
   #include "extender.h"
 #endif
 #include "rterr.h"

@@ -117,7 +117,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( ok ) {
-        if( !(entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) ) {
+        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
             ok = false;
             itemname = WGETMENUITEMTEXT( entry->item );
             if( itemname != NULL ) {
@@ -128,7 +128,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( ok ) {
-        if( !(entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) ) {
+        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
             ok = WSetFlagsText( entry->item->Item.Normal.ItemFlags, &flagtext );
         }
     }

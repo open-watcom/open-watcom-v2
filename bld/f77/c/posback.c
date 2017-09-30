@@ -91,7 +91,7 @@ void    FBackspace( b_file *io, int rec_size )
             ch = GetPrevChar( io );
             if( ch == NO_CHAR )
                 return;
-            if( ch == LF ) {
+            if( ch == CHAR_LF ) {
                 break;
             }
         }

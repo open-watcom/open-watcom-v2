@@ -45,10 +45,10 @@
 
 #include "strng.h"
 
-String::String( size_t size, capacity cap )
-/*****************************************/
-        : __offset( 0 ), __c_string( NULL ) {
+String::String( std::size_t size, capacity cap ) : __offset( 0 ), __c_string( NULL )
+/**********************************************************************************/
 // Constructor: make a String with specified size
+{
     if( size == NPOS ) return; // Exception: length error
     __srep = __AllocStringRep( NULL, size );
     __slength = 0;
@@ -57,7 +57,7 @@ String::String( size_t size, capacity cap )
         __srep->__used_length = 0;
     } else {
         if( size > 0 ) {
-            ::memset( __srep->__value, 0, size );
+            std::memset( __srep->__value, 0, size );
             __slength = size;
         }
     }

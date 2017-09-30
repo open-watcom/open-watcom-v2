@@ -33,14 +33,14 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <ctype.h>
-#include <limits.h>
+#include <cctype>
+#include <climits>
 #include <iostream>
 #include <streambu>
 #endif
-#include "ioutil.h"
 #include "lock.h"
 #include "isthdr.h"
+
 
 // Used by getnumber. Multiplication by 8 is done using a left-shift of
 // three bits. Multiplication by 16 is done using a left-shift of four
@@ -102,10 +102,10 @@ std::ios::iostate __getnumberint64( std::streambuf *sb,
         if( base == 8 ) {
             is_digit = (ch >= '0'  &&  ch <= '7');
         } else {
-            is_digit = isdigit( ch );
+            is_digit = std::isdigit( ch );
             if( base == 16 && !is_digit ) {
                 char low_char;
-                low_char = (char)tolower( ch );
+                low_char = (char)std::tolower( ch );
                 if( low_char >= 'a'  &&  low_char <= 'f' ) {
                     digit_value = low_char - 'a' + 10;
                     is_digit    = true;

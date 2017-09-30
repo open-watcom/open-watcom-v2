@@ -32,7 +32,7 @@
 
 
 #include "variety.h"
-#include <string.h>
+#include <cstring>
 #include "strsrch.def"
 
 #define NOT_FOUND (-1)
@@ -63,7 +63,7 @@ extern "C" long StringSearch
     if( patlen == 1 ) {
         const char *  loc;
 
-        loc = (const char *)memchr( str, *pattern, strlen );
+        loc = (const char *)std::memchr( str, *pattern, strlen );
         return( loc == NULL ? NOT_FOUND : loc - str );
     }
 
@@ -88,7 +88,7 @@ extern "C" long StringSearch
         } else {
             extra_patlen = 0;
         }
-        memset( SkipTable, patlen, 256 );
+        std::memset( SkipTable, patlen, 256 );
         for( pat_index = 0; pat_index < patlen; ++pat_index ) {
             int c;
 
@@ -107,7 +107,7 @@ extern "C" long StringSearch
         for( ;; ) {
             if( pat_index == 0 ) {              // possible match?
                 if( extra_patlen == 0 ) break;  // yes!
-                if( memcmp( str + str_index + patlen,
+                if( std::memcmp( str + str_index + patlen,
                             pattern + patlen,
                             extra_patlen ) == 0 ) break;
                 str_index += patlen + 1;       // advance only 1 char

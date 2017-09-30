@@ -30,11 +30,12 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include <stddef.h>
 #include <excpt.h>
 #include <float.h>
 #include <signal.h>
 #include <unistd.h>
+#include <windows.h>
 #include "iomode.h"
 #include "rtdata.h"
 #include "sigfunc.h"
@@ -477,6 +478,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
     rv = UnhandledExceptionFilter( &rec );
     if( rv == EXCEPTION_EXECUTE_HANDLER ) {
         ExitProcess( -1 );
+        // never return
     } else if( rv == EXCEPTION_CONTINUE_EXECUTION ) {
         return( ExceptionContinueExecution );
     }

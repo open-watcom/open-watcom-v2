@@ -780,7 +780,7 @@ static void ConfWindowSwitches( window_toggle *toggle, int len, const char *sett
         Assembly window
 */
 
-static char AsmSettings[] = {
+static const char AsmSettings[] = {
     "Source\0"
     "NOSource\0"
     "Hexadecimal\0"
@@ -829,7 +829,7 @@ static void FPUConf( void )
         Variables window
 */
 
-static char VarSettings[] = {
+static const char VarSettings[] = {
     "Entire\0"
     "Partial\0"
     "CODe\0"
@@ -890,7 +890,7 @@ static void VarConf( void )
 }
 
 
-static char FuncSettings[] = {
+static const char FuncSettings[] = {
     "Typed\0"
     "All\0"
 };

@@ -146,7 +146,7 @@ BOOL CWinThread::OnIdle( LONG lCount )
 /************************************/
 {
     UNUSED_ALWAYS( lCount );
-    
+
     CWnd::DeleteTempMap();
     CMenu::DeleteTempMap();
     CDC::DeleteTempMap();
@@ -191,7 +191,7 @@ LRESULT CWinThread::ProcessWndProcException( CException *e, const MSG *pMsg )
 /***************************************************************************/
 {
     UNUSED_ALWAYS( e );
-    
+
     if( pMsg->message == WM_CREATE ) {
         return( -1 );
     } else if( pMsg->message == WM_PAINT ) {
@@ -328,4 +328,5 @@ void AFXAPI AfxEndThread( UINT nExitCode, BOOL bDelete )
         }
     }
     ::ExitThread( nExitCode );
+    // never return
 }

@@ -40,10 +40,6 @@
 /* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam );
 
-#define CLASS_LENGTH    8
-
-extern  char            GUIClass[];
-
 typedef struct {
     gui_window          *parent;
     ENUMCALLBACK        *func;
@@ -54,17 +50,20 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {
     gui_window  *wnd;
     enum_info   *info;
-    char        buff[CLASS_LENGTH + 1];
+    char        buff[GUI_CLASSNAME_MAX + 1];
     bool        is_gui;
+    int         len;
 
-    GetClassName( hwnd, buff, CLASS_LENGTH + 1 );
-    is_gui = strncmp( buff, GUIClass, CLASS_LENGTH ) == 0;
+    len = GetClassName( hwnd, buff, sizeof( buff ) );
+    buff[len] = '\0';
+    is_gui = ( strcmp( buff, GUIClass ) == 0 );
 #ifdef __OS2_PM__
     if( !is_gui ) {
         hwnd = WinWindowFromID( hwnd, FID_CLIENT );
         if( hwnd != NULLHANDLE ) {
-            GetClassName( hwnd, buff, CLASS_LENGTH + 1 );
-            is_gui = strncmp( buff, GUIClass, CLASS_LENGTH ) == 0;
+            GetClassName( hwnd, buff, sizeof( buff ) );
+            buff[len] = '\0';
+            is_gui = ( strcmp( buff, GUIClass ) == 0 );
         }
     }
 #endif

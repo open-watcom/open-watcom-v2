@@ -61,7 +61,7 @@ void Cell::addText( STD1::uint16_t word )
     LDIter itr( 
         //std::lower_bound( localDictionary.begin(), localDictionary.end(), word );
         std::find( localDictionary.begin(), localDictionary.end(), word ) );
-    size_t index = itr - localDictionary.begin();
+    std::size_t index = itr - localDictionary.begin();
     text.push_back( static_cast< STD1::uint8_t >( index ) );
 }
 /***************************************************************************/

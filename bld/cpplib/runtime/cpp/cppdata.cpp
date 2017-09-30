@@ -50,24 +50,16 @@ _WPRTLINK unsigned      _wint_thread_data_offset;
 extern "C" AXI( CPPLIB( multi_thread_init ), INIT_PRIORITY_THREAD )
 #endif
 
+extern "C" {
+
 #ifndef NDEBUG
 
-    extern "C" {
+    // THESE CAUSE THE DEBUGGING ROUTINES TO BE FORCED INTO MODULES
 
-        // THESE CAUSE THE DEBUGGING ROUTINES TO BE FORCED INTO MODULES
-
-        extern void CPPLIB( DbgRtDumpAutoDtor )( void );
-        extern void CPPLIB( DbgRtDumpModuleDtor )( void );
-
-        #pragma extref ( CPPLIB( DbgRtDumpAutoDtor ) );
-        #pragma extref ( CPPLIB( DbgRtDumpModuleDtor ) );
-
-    };
+    #pragma extref ( CPPLIB( DbgRtDumpAutoDtor ) );
+    #pragma extref ( CPPLIB( DbgRtDumpModuleDtor ) );
 
 #endif
-
-#if defined( _M_IX86 )
-extern "C" {
 
     // Note: these have _WPRTDATA because they are used only to check
     //       consistency. Linker must resolve references to them.
@@ -81,6 +73,7 @@ extern "C" {
     However, this fails when _WPRTLINK specifies a calling convention.
     It is not clear whether it really should fail or not.
 */
+#if defined( _M_IX86 )
 
     #if defined( FS_REGISTRATION_NT )
         _WPRTDATA int __compiled_under_NT;
@@ -93,11 +86,9 @@ extern "C" {
         #pragma aux   __compiled_under_generic "*";
     #endif
 
-};
 #elif defined( __AXP__ )
-extern "C" {
 
         _WPRTDATA int __compiled_under_generic;
 
-};
 #endif
+};

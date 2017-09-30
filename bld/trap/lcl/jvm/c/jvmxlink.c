@@ -220,6 +220,7 @@ void RemoteUnLink( void )
     CloseHandle( MemHdlLink );
     UnmapViewOfFile( UniquePid );
     ExitProcess( 0 );
+    // never return
 #else
     *Terminated = 1;
     ReleaseSemaphore( SemReadUp, 1, NULL );

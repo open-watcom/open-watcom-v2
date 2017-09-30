@@ -34,15 +34,14 @@
 extern "C" {
 #endif
 
-extern const char       *BatchLink( const char *__name );
-extern unsigned         BatchMaxCmdLine( void );
-extern unsigned         BatchChdir( const char *__new_dir );
-extern unsigned         BatchSpawn( const char *__cmd );
-extern unsigned         BatchCancel( void );
-extern unsigned         BatchAbort( void );
-extern unsigned         BatchCollect( void *__buffer, unsigned __len,
-                                        unsigned long *__status );
-extern void             BatchUnlink( int );
+extern const char   *BatchLink( const char *__name );
+extern unsigned     BatchMaxCmdLine( void );
+extern unsigned     BatchChdir( const char *__new_dir );
+extern unsigned     BatchSpawn( const char *__cmd );
+extern unsigned     BatchCancel( void );
+extern unsigned     BatchAbort( void );
+extern unsigned     BatchCollect( void *__buffer, unsigned __len, unsigned long *__status );
+extern void         BatchUnlink( int );
 
 #ifdef __cplusplus
 }

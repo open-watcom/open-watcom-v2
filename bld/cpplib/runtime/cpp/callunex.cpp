@@ -31,7 +31,7 @@
 
 
 #include "cpplib.h"
-#include <except.h>
+
 
 extern "C"
 _WCNORETURN

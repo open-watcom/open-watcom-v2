@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include "saferlib.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include "rtdata.h"
@@ -39,10 +40,10 @@
 #include "printf.h"
 #include "fprtf_s.h"
 #include "orient.h"
+#include "clibsupp.h"
+
 
 extern  void    __ioalloc( FILE * );
-extern  int     __flush( FILE * );
-
 
 /*
  * file_putc -- write a character to a file

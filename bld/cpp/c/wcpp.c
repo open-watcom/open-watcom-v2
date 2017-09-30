@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,7 +40,7 @@
 #include "swchar.h"
 
 
-static const char *usageMsg[] = {
+static const char * const usageMsg[] = {
     "Usage: wcpp [-c] [-d<macro>] [-i<path>] [-l] [-o<file>] [-zk0] [-zk1] [-zk2]\n"
     "\t\t[-zku8] [input files]\n",
     "input files\t\tlist of input source file names\n",
@@ -61,7 +61,7 @@ static const char *usageMsg[] = {
 /* forward declaration */
 static bool doScanParams( int argc, char *argv[] );
 
-void Quit( const char *usage_msg[], const char *str, ... )
+static void wcpp_quit( const char * const usage_msg[], const char *str, ... )
 {
     va_list     al;
 
@@ -139,7 +139,7 @@ static bool ScanOptionsArg( const char * arg )
         defines[numdefs++] = my_strdup( arg );
         break;
     case 'h':
-        Quit( usageMsg, NULL );
+        wcpp_quit( usageMsg, NULL );
         break;
     case 'i':
         {
@@ -149,7 +149,7 @@ static bool ScanOptionsArg( const char * arg )
             len = strlen( arg );
             p = malloc( len + 1 );
             scanString( p, arg, len );
-            PP_AddIncludePath( p );
+            PP_IncludePathAdd( p );
             free( p );
         }
         break;
@@ -186,7 +186,7 @@ static bool ScanOptionsArg( const char * arg )
         }
         // fall down
     default:
-        Quit( usageMsg, "Incorrect option\n" );
+        wcpp_quit( usageMsg, "Incorrect option\n" );
         break;
     }
     return( contok );
@@ -337,7 +337,7 @@ static bool doScanParams( int argc, char *argv[] )
         } else if( *arg == '@' ) {
             contok = scanEnvVarOrFile( arg + 1 ) && contok;
         } else if( *arg == '?' ) {
-            Quit( usageMsg, NULL );
+            wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {
             filenames = realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
@@ -356,10 +356,10 @@ int main( int argc, char *argv[] )
     FILE        *fo;
 
     if( argc < 2 ) {
-        Quit( usageMsg, "No filename specified\n" );
+        wcpp_quit( usageMsg, "No filename specified\n" );
     } else if( argc == 2 ) {
         if( !strcmp( argv[1], "?" ) ) {
-            Quit( usageMsg, NULL );
+            wcpp_quit( usageMsg, NULL );
         }
     }
 
@@ -367,13 +367,14 @@ int main( int argc, char *argv[] )
 
     rc = EXIT_FAILURE;
     if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+        PP_Init( '#' );
         fo = stdout;
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wb" );
         }
         rc = EXIT_SUCCESS;
         for( i = 0; i < nofilenames; ++i ) {
-            if( PP_Init( filenames[i], flags, NULL ) != 0 ) {
+            if( PP_FileInit( filenames[i], flags, NULL ) != 0 ) {
                 fprintf( stderr, "Unable to open '%s'\n", filenames[i] );
                 rc = EXIT_FAILURE;
                 break;
@@ -391,13 +392,14 @@ int main( int argc, char *argv[] )
 #endif
                 fputc( ch, fo );
             }
-            PP_Fini();
+            PP_FileFini();
         }
         if( fo == stdout ) {
             fflush( fo );
         } else if( fo != NULL ) {
             fclose( fo );
         }
+        PP_Fini();
     }
 
     if( out_filename != NULL ) {
@@ -415,7 +417,7 @@ int main( int argc, char *argv[] )
     PP_IncludePathFini();
 
     if( rc == EXIT_FAILURE && nofilenames == 0 ) {
-        Quit( usageMsg, "No filename specified\n" );
+        wcpp_quit( usageMsg, "No filename specified\n" );
     }
 
     return( rc );

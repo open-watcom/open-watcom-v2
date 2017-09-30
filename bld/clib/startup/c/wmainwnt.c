@@ -81,4 +81,5 @@ void __F_NAME(__WinMain,__wWinMain)( void )
                 0,
                 __F_NAME(_LpCmdLine,_LpwCmdLine),
                 SW_SHOWDEFAULT ) );
+    // never return
 }

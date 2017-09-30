@@ -32,8 +32,10 @@
 #ifndef _CMDLHELP_H
 #define _CMDLHELP_H
 
-extern int  BuildQuotedItem( char *buffer, size_t bufferlen, const char *path, const char *filename, const char *quote_char );
-extern int  UnquoteItem( char *dst, size_t maxlen, const char *src, int (*chk_sep)(char) );
-extern char *FindNextSep( const char *str, int (*chk_sep)(char) );
+#include "bool.h"
+
+extern bool BuildQuotedItem( char *buffer, size_t bufferlen, const char *path, const char *filename, const char *quote_char );
+extern bool UnquoteItem( char *dst, size_t maxlen, const char *src, bool (*chk_sep)(char) );
+extern char *FindNextSep( const char *str, bool (*chk_sep)(char) );
 
 #endif

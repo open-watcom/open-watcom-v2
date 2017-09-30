@@ -33,7 +33,7 @@
 #else
 #include "variety.h"
 #include <iostream>
-#include <streambu
+#include <streambuf>
 #endif
 #include "lock.h"
 

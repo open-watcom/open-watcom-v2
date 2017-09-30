@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <signal.h>
 #include <float.h>
 #include <windows.h>

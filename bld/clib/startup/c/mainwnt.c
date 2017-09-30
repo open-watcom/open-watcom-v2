@@ -150,7 +150,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
      * Later it was fixed to have both versions of GetEnvironmentStrings API entry
      * (multi-byte and wide versions) GetEnvironmentStringsA/GetEnvironmentStringsW and
      * FreeEnvironmentStringsA/FreeEnvironmentStringsW were added too.
-     * This problem affected only some versions of Windows NT 3.x and Win32s. 
+     * This problem affected only some versions of Windows NT 3.x and Win32s.
      * Due to this mess it is necessary check presence of appropriate entry point in WIN32
      * DLL on run-time.
      */
@@ -312,4 +312,5 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
     // for multi-threaded apps
     __FirstThreadData = NULL;
     ExitProcess( ret_code );
+    // never return
 }

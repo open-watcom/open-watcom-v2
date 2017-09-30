@@ -92,7 +92,7 @@ private:
         STD1::uint8_t  format;      //0
         STD1::uint8_t  bits[ 32 ];  //high-order bit first
         SbcsGrammerDef() : size( sizeof( SbcsGrammerDef ) ), type( Nls::TEXT ), format( 0 ) { };
-        void setDefaultBits( NlsRecType type );
+        void setDefaultBits( NlsRecType rectype );
         STD1::uint32_t write( std::FILE* out ) const;
         };
 #pragma pack(pop)

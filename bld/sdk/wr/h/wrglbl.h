@@ -33,6 +33,7 @@
 #ifndef WRGLBL_INCLUDED
 #define WRGLBL_INCLUDED
 
+#include "watcom.h"
 #include "wrdll.h"
 
 /****************************************************************************/

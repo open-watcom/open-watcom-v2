@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <string.h>
+#include <windows.h>
 #include "mem.h"
 #include "hwbiglb.h"
 

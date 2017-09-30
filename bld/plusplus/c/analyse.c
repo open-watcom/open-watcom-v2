@@ -1799,6 +1799,11 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
                     retn = OPCL_OTHER;
                 }
                 break;
+              // While nullptr is neither a pointer nor an arithmetic type,
+              // it should act like 0 on most occasions.
+              case PT_PTR_CONSTANT :
+                retn = OPCL_ARITH;
+                break;
               default :
                 retn = OPCL_OTHER;
                 break;
@@ -2975,7 +2980,7 @@ start_opac_string:
               &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
-            if( ! NodeIsZeroIntConstant( right ) ) {
+            if( !( NodeIsZeroIntConstant( right ) || NodeIsNullptr( right ) ) ) {
                 exprError( right, ERR_NOT_PTR_OR_ZERO );
                 break;
             }
@@ -4054,7 +4059,7 @@ start_opac_string:
                                   , GetBasicType( TYP_VOID )
                                   , RTF_RETHROW );
             } else {
-                unsigned rtcode;// - code for R/T routine
+                RTF rt_code;      // - code for R/T routine
 //                TYPE cl_type;   // - NULL or class type
                 type = throw_exp->type;
 //                cl_type = ClassTypeForType( type );
@@ -4093,7 +4098,7 @@ start_opac_string:
                     }
                 }
                 type = NodeType( throw_exp );
-                rtcode = RTF_THROW;
+                rt_code = RTF_THROW;
                 switch( ThrowCategory( type ) ) {
 //                  PTREE constant; // - constant node
                   case THROBJ_SCALAR :
@@ -4107,7 +4112,7 @@ start_opac_string:
                         INT_CONSTANT int_con;
                         if( NodeIsIntConstant( throw_exp, &int_con )
                             && Zero64( &int_con.u.value ) ) {
-                            rtcode = RTF_THROW_ZERO;
+                            rt_code = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );
                         throw_exp = NodeAssignTemporary( throw_exp->type, throw_exp );
@@ -4138,7 +4143,7 @@ start_opac_string:
                 }
                 expr = RunTimeCall( NodeArgument( expr, throw_exp )
                                   , GetBasicType( TYP_VOID )
-                                  , rtcode );
+                                  , rt_code );
             }
             expr = FunctionCouldThrow( expr );
             type = expr->type;
@@ -4425,7 +4430,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             if( 0 == ( expr->flags & PTF_BOOLEAN ) ) {
                 warnBoolAssignment( expr );
             }
-            expr = NodeConvertToBool( expr );
+            expr = CastImplicit( expr, GetBasicType( TYP_BOOL ), CNV_EXPR, &diagInit);
         }
     }
     return expr;

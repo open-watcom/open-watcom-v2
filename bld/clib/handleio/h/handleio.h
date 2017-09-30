@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-/* __plusplus_fstat and __plusplus_open are used by C++ run-time library */
-_WCRTLINK extern int    __plusplus_fstat( int handle, int *pios_mode );
-_WCRTLINK extern int    __plusplus_open( const char *name, int *pios_mode, int prot );
-
 extern unsigned     __IOMode( int handle );
 extern void         __set_handles( int num );
 extern void         __grow_iomode( int num );

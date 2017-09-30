@@ -2259,7 +2259,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
         char    *scope_name;
         scope_is = source;
         len = hllSymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        scope_name = __alloca( len + 1 );
+        scope_name = walloca( len + 1 );
         hllSymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
         data.li.scope.start = scope_name;
         data.li.scope.len = len;
@@ -2358,7 +2358,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     }
     if( new_len > 0 ) {
         li->name.len += new_len;
-        new = __alloca( li->name.len );
+        new = walloca( li->name.len );
         li->name.start = new;
         if( li->scope.start != NULL ) {
             memcpy( new, li->scope.start, li->scope.len );

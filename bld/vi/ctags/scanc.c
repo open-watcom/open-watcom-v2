@@ -184,13 +184,13 @@ static void doPreProcessorDirective( void )
      * swallow #else and #elif shit
      */
     if( acceptOnlyEndif == 0 ) {
-        if( !stricmp( buff, "else" ) || !stricmp( buff, "elif" ) ) {
+        if( stricmp( buff, "else" ) == 0 || stricmp( buff, "elif" ) == 0 ) {
             acceptOnlyEndif = 1;
         }
     } else {
-        if( !stricmp( buff, "endif" ) ) {
+        if( stricmp( buff, "endif" ) == 0 ) {
             acceptOnlyEndif--;
-        } else if( !strnicmp( buff, "if", 2 ) ) {
+        } else if( strnicmp( buff, "if", 2 ) == 0 ) {
             acceptOnlyEndif++;
         }
     }
@@ -198,7 +198,7 @@ static void doPreProcessorDirective( void )
     /*
      * if it is a #define, and we want macros, then get macro
      */
-    if( !stricmp( buff, "define" ) && (WantMacros || WantAllDefines) &&
+    if( stricmp( buff, "define" ) == 0 && (WantMacros || WantAllDefines) &&
         acceptOnlyEndif == 0 ) {
         ch = eatWhiteSpace();
         buffptr = buff;
@@ -521,7 +521,7 @@ void ScanC( void )
                     }
                     if( doit ) {
 #ifdef __ENABLE_FNAME_PROCESSING__
-                        if( !strnicmp( buff, "__F_NAME", 8 ) ) {
+                        if( strnicmp( buff, "__F_NAME", 8 ) == 0 ) {
                             *buffptr++ = '(';
 
                             do {
@@ -620,7 +620,7 @@ void ScanC( void )
                 }
                 *buffptr = 0;
                 if( acceptOnlyEndif == 0 ) {
-                    if( WantTypedefs && !have_typedef && !stricmp( buff, "typedef" ) ) {
+                    if( WantTypedefs && !have_typedef && stricmp( buff, "typedef" ) == 0 ) {
                         have_typedef = true;
                         typedef_level = brace_level;
                         paren_level = 0;
@@ -635,16 +635,16 @@ void ScanC( void )
                         if( !have_typedef ) {
                             have_struct = false;
                             have_cuse = false;
-                            if( WantClasses && !stricmp( buff, "class" ) ) {
+                            if( WantClasses && stricmp( buff, "class" ) == 0 ) {
                                 have_struct = true;
                                 have_cuse = true;
                             } else if( WantUSE ) {
-                                if( !stricmp( buff, "struct" ) ) {
+                                if( stricmp( buff, "struct" ) == 0 ) {
                                     have_struct = true;
                                     have_cuse = true;
-                                } else if( !stricmp( buff, "union" ) ){
+                                } else if( stricmp( buff, "union" ) == 0 ) {
                                     have_cuse = true;
-                                } else if( !stricmp( buff, "enum" ) ) {
+                                } else if( stricmp( buff, "enum" ) == 0 ) {
                                     have_cuse = true;
                                     have_enum = true;
                                 }
@@ -662,7 +662,7 @@ void ScanC( void )
                                 break;
                             }
                         } else {
-                            if( !strcmp( buff, "enum" ) ) {
+                            if( strcmp( buff, "enum" ) == 0 ) {
                                 have_enum = true;
                             }
                         }

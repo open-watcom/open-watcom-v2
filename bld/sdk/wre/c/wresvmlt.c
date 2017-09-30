@@ -248,13 +248,12 @@ void WREFreeSaveIntoData( WRSaveIntoData *idata )
 {
     WRSaveIntoData *next;
 
-    while( idata != NULL ) {
+    for( ; idata != NULL; idata = next ) {
         next = idata->next;
         if( idata->data != NULL ) {
             WRMemFree( idata->data );
         }
         WRMemFree( idata );
-        idata = next;
     }
 }
 

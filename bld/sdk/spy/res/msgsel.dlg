@@ -14,7 +14,7 @@ BEGIN
     LTEXT           "Count:", -1, 9, 16, 26, 8
     LTEXT           "1000", MSGSEL_COUNT, 40, 16, 48, 8
     LTEXT           "Window ID:", -1, 9, 76, 48, 8
-    LTEXT           "0xGGGGGGGG", MSGSEL_WINDOWID, 13, 86, 54, 8
+    LTEXT           "0x0000000000000000", MSGSEL_WINDOWID, 13, 86, 75, 8
     GROUPBOX        "Window", 103, 5, 59, 169, 47
     GROUPBOX        "Message: WM_MOVE", MSGSEL_NAME, 5, 0, 168, 56
 END

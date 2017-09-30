@@ -33,7 +33,6 @@
 #include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
 #include "wrmaini.h"
@@ -197,7 +196,7 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 {
     HWND        lbox;
-    LRESULT     index;
+    int         index;
 
     if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
         return( false );
@@ -208,7 +207,7 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
         return( false );
     }
 
-    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         return( false );
     }

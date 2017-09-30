@@ -1,4 +1,11 @@
-:segment !CPPMEMORY
+::
+:: This file generates three different headers.
+::
+::   memory.h : Default wsplice operation.
+::   cmemory  : CNAME wsplice operation.
+::   memory   : CPPONLY + CNAME wsplice operation.
+::
+:segment !CPPONLY
 /*
  *  memory.h    C library memory manipulation functions
  *
@@ -47,9 +54,9 @@
  #include <new>
 #endif
 
-#ifndef _TYPEINFO_INCLUDED  
+#ifndef _TYPEINFO_INCLUDED
  #include <typeinfo>
-#endif 
+#endif
 
 :include throws.sp
 
@@ -67,8 +74,7 @@ inline void _RawDestroy( Iterator ptr )
     ( *ptr ).~value_type( );
 }
 
-namespace std {
-
+:include nsstd.sp
     template< class Type > class allocator;
 
     // Allocator specialization for void
@@ -127,7 +133,7 @@ namespace std {
 
         void deallocate( pointer p, size_type )
             { ::operator delete( reinterpret_cast< unsigned char * >( p ) ); }
-        
+
         size_type max_size( ) const
             { return 0; }  // FIX ME
 
@@ -315,15 +321,15 @@ namespace std {
             { Type *tmp = ptr; ptr = 0; return( tmp ); }
 
         void reset( Type *p = 0 ) _WCTHROWS( )
-            { if ( ptr != p ) delete ptr; ptr = p; }
+            { if( ptr != p ) delete ptr; ptr = p; }
 
         auto_ptr( auto_ptr_ref< Type > r ) : ptr( r.ref.release( ) )
             { }
 
-        // template< class Type2 > 
+        // template< class Type2 >
         // operator auto_ptr_ref< Type2 >( )
         //     { return( auto_ptr_ref< Type2 >( *this ); }
-        
+
         // template< class Type2 >
         // operator auto_ptr< Type2 >( )
         //     { }
@@ -331,8 +337,8 @@ namespace std {
     private:
         Type *ptr;
     };
-  
-  
+
+
     // bad_weak_ptr class
     // ******************
 
@@ -351,6 +357,7 @@ namespace std {
     template< class T > class enable_shared_from_this;
 
     namespace _ow {
+
         class shared_holder;
         template< class T > class shared_holder_ptr;
         template< class T, class D > class shared_holder_deleter;
@@ -358,12 +365,13 @@ namespace std {
         struct static_pointer_cast_tag { };
         struct dynamic_pointer_cast_tag { };
         struct const_pointer_cast_tag { };
-    }
+
+    } // namespace _ow
 
     template< class T > class shared_ptr {
     public:
         typedef T element_type;
-        
+
         // constructors
         shared_ptr( ) : ptr( 0 ), holder( 0 ) { }
 
@@ -398,75 +406,79 @@ namespace std {
             if( ptr && holder )
                 holder->increase_count( );
         }
-        
-        template< class Y > 
+
+        template< class Y >
         shared_ptr( const shared_ptr< Y > &r ) : ptr( r.get( ) ), holder( r.get_holder( ) )
         {
             if( ptr && holder )
                 holder->increase_count( );
         }
 
-        template< class Y > 
+        template< class Y >
         explicit shared_ptr( const weak_ptr< Y > &r ) : ptr( r.get( ) ), holder( r.get_holder( ) )
         {
             if( r.expired( ) )
                 throw bad_weak_ptr( );
-                
+
             if( ptr && holder )
                 holder->increase_count( );
         }
-        
-        template< class Y > explicit shared_ptr( auto_ptr< Y > &r ) : ptr( r.get( ) ) 
+
+        template< class Y > explicit shared_ptr( auto_ptr< Y > &r ) : ptr( r.get( ) )
         {
             holder = new _ow::shared_holder_ptr< T >( ptr, 1 );
             check_enable_shared_from_this( r.release( ) );
         }
 
-        template< class Y > 
+        template< class Y >
         shared_ptr( const shared_ptr< Y > &r, _ow::static_pointer_cast_tag & )
             : ptr( static_cast< T* >( r.ptr ) ), holder( r.holder )
-        { 
-            if( ptr && holder )
+        {
+            if( ptr && holder ) {
                 holder->increase_count( );
+            }
         }
 
-        template< class Y > 
+        template< class Y >
         shared_ptr( const shared_ptr< Y > &r, _ow::dynamic_pointer_cast_tag & )
             : ptr( dynamic_cast< T* >( r.ptr ) ), holder( r.holder )
-        { 
-            if( ptr && holder )
+        {
+            if( ptr && holder ) {
                 holder->increase_count( );
-            else
+            } else {
                 holder = 0;
+            }
         }
 
-        template< class Y > 
-        shared_ptr( const shared_ptr< Y > &r, _ow::const_pointer_cast_tag & ) 
+        template< class Y >
+        shared_ptr( const shared_ptr< Y > &r, _ow::const_pointer_cast_tag & )
             : ptr( const_cast< T* >( r.ptr ) ), holder( r.holder )
-        { 
-            if( ptr && holder )
+        {
+            if( ptr && holder ) {
                 holder->increase_count( );
+            }
         }
-        
+
         // destructor
        ~shared_ptr( )
         {
-            if( holder )
+            if( holder ) {
                 holder->decrease_count( );
+            }
         }
-        
+
         // assignments
         shared_ptr &operator=( const shared_ptr &r )
         {
             if( r.holder )
                 r.holder->increase_count( );
-                    
+
             if( holder )
-                holder->decrease_count( );                    
-                    
+                holder->decrease_count( );
+
             ptr = r.ptr;
             holder = r.holder;
-                    
+
             return *this;
         }
 
@@ -474,28 +486,28 @@ namespace std {
         {
             if( r.get_holder( ) )
                 r.get_holder( )->increase_count( );
-            
+
             if( holder )
                 holder->decrease_count( );
-                    
+
             ptr = r.get( );
-            holder = r.get_holder( );   
-                    
+            holder = r.get_holder( );
+
             return *this;
         }
-        
+
         template< class Y > shared_ptr &operator=( auto_ptr< Y > &r )
         {
             if( holder )
                 holder->decrease_count( );
-                    
-            ptr = r.get( );    
+
+            ptr = r.get( );
             holder = new _ow::shared_holder_ptr< T >( ptr, 1 );
-            check_enable_shared_from_this( r.release( ) );    
-            
+            check_enable_shared_from_this( r.release( ) );
+
             return *this;
         }
-        
+
         // modifiers
         void swap( shared_ptr &r )
         {
@@ -506,21 +518,21 @@ namespace std {
             r.ptr = tmp_ptr;
             r.holder = tmp_holder;
         }
-        
+
         void reset( )
         {
             if( holder )
                 holder->decrease_count( );
-                    
+
             ptr = 0;
             holder = 0;
         }
-        
+
         template< class Y > void reset( Y *p )
         {
             if( holder )
                 holder->decrease_count( );
-                    
+
             ptr = p;
             try {
                 holder = new _ow::shared_holder_ptr< T >( ptr, 1 );
@@ -536,7 +548,7 @@ namespace std {
         {
             if( holder )
                 holder->decrease_count( );
-                
+
             ptr = p;
             try {
                 holder = new _ow::shared_holder_deleter< T, D >( ptr, d, 1 );
@@ -547,23 +559,23 @@ namespace std {
             }
             check_enable_shared_from_this( p );
         }
-        
+
         // observers
         T *get( ) const
             { return ptr; }
-            
+
         T &operator*( ) const
             { return *ptr; }
-        
+
         T *operator->( ) const
             { return ptr; }
-            
+
         long use_count( ) const
             { return holder ? holder->use_count( ) : 0; }
-           
+
         bool unique( ) const
             { return holder && holder->use_count( ) == 1; }
-        
+
         operator bool( ) const
             { return ptr != 0; }
 
@@ -572,9 +584,9 @@ namespace std {
 
         _ow::shared_holder *get_holder( ) const
             { return holder; }
-        
+
     private:
-      
+
         T *ptr;
         _ow::shared_holder *holder;
 
@@ -585,13 +597,13 @@ namespace std {
 
         friend class shared_ptr;
         friend class weak_ptr;
-        // friend template< class Y, class U > 
+        // friend template< class Y, class U >
         // bool operator< ( shared_ptr< Y > const &, shared_ptr< U > const & );
-        
+
     };
 
 
-    template< class T, class U > bool operator==( const shared_ptr< T > &a, 
+    template< class T, class U > bool operator==( const shared_ptr< T > &a,
                                                   const shared_ptr< U > &b )
     {
         return a.get( ) == b.get( );
@@ -603,14 +615,14 @@ namespace std {
         return a.get( ) != b.get( );
     }
 
-    template< class T, class U > bool operator<( const shared_ptr< T > &a, 
+    template< class T, class U > bool operator<( const shared_ptr< T > &a,
                                                  const shared_ptr< U > &b )
     {
         return a.get_holder( ) < b.get_holder( );
     }
 
     // template< class E, class T, class Y >
-    // basic_ostream< E, T > &operator<<( basic_ostream< E, T > &os, 
+    // basic_ostream< E, T > &operator<<( basic_ostream< E, T > &os,
     //                                    const shared_ptr< Y > &p )
     // {
     //     os << p.get( );
@@ -625,7 +637,7 @@ namespace std {
     // template< class T, class U >
     // shared_ptr< T > static_pointer_cast( const shared_ptr< U > &r )
     // {
-    //     return shared_ptr< T >( r, _ow::static_pointer_cast_tag( ) );        
+    //     return shared_ptr< T >( r, _ow::static_pointer_cast_tag( ) );
     // }
 
     // template< class T, class U >
@@ -656,14 +668,14 @@ namespace std {
 
         weak_ptr( ) : ptr( 0 ), holder( 0 ) { }
 
-        template< class Y > 
+        template< class Y >
         weak_ptr( const shared_ptr< Y > &r ) : ptr( r.get( ) ), holder( r.get_holder( ) )
         {
             if( holder )
                 holder->increase_weak_count( );
         }
 
-        weak_ptr( const weak_ptr &r ) : ptr( r.ptr ), holder( r.holder ) 
+        weak_ptr( const weak_ptr &r ) : ptr( r.ptr ), holder( r.holder )
         {
             if( holder )
                 holder->increase_weak_count( );
@@ -685,44 +697,44 @@ namespace std {
         // Assignment
 
         weak_ptr &operator=( const weak_ptr &r )
-        { 
+        {
             if( r.holder )
                 r.holder->increase_weak_count( );
-                    
+
             if( holder )
-                holder->decrease_weak_count( );                    
-                    
+                holder->decrease_weak_count( );
+
             ptr = r.ptr;
             holder = r.holder;
-                    
+
             return *this;
         }
 
         template< class Y > weak_ptr &operator=( const weak_ptr< Y > &r )
-        { 
+        {
             if( r.get_holder( ) )
                 r.get_holder( )->increase_weak_count( );
-                    
+
             if( holder )
-                holder->decrease_weak_count( );                    
-                    
+                holder->decrease_weak_count( );
+
             ptr = r.get( );
             holder = r.get_holder( );
-                    
+
             return *this;
         }
 
         template< class Y > weak_ptr &operator=( const shared_ptr< Y > &r )
-        { 
+        {
             if( r.get_holder( ) )
                 r.get_holder( )->increase_weak_count( );
-                    
+
             if( holder )
-                holder->decrease_weak_count( );                    
-                    
+                holder->decrease_weak_count( );
+
             ptr = r.get( );
             holder = r.get_holder( );
-                    
+
             return *this;
         }
 
@@ -737,7 +749,7 @@ namespace std {
             r.ptr = tmp_ptr;
             r.holder = tmp_holder;
         }
-        
+
         void reset( )
             { weak_ptr( ).swap( *this ); }
 
@@ -747,13 +759,13 @@ namespace std {
             { return holder ? holder->use_count( ) : 0; }
 
         bool expired( ) const
-            { return holder ? holder->use_count( ) == 0 : true; } 
+            { return holder ? holder->use_count( ) == 0 : true; }
 
         shared_ptr< T > lock( ) const
-        { 
-            if( expired( ) )
+        {
+            if( expired( ) ) {
                 return shared_ptr< T >( );
-            else {
+            } else {
                 shared_ptr< T > tmp( *this );
                 return tmp;
             }
@@ -761,7 +773,7 @@ namespace std {
 
         T *get( ) const
             { return ptr; }
-        
+
         _ow::shared_holder *get_holder( ) const
             { return holder; }
 
@@ -782,7 +794,7 @@ namespace std {
     {
         return a.get_holder( ) < b.get_holder( );
     }
-    
+
     template< class T >
     void swap( weak_ptr< T > &a, weak_ptr< T > &b )
     {
@@ -807,7 +819,7 @@ namespace std {
             shared_ptr< T > tmp( weak_this );
             return tmp;
         }
-         
+
         shared_ptr< T const > shared_from_this( ) const
         {
             shared_ptr< T const > tmp( weak_this );
@@ -822,17 +834,17 @@ namespace std {
 
 
     namespace _ow {
-        
+
         class shared_holder {
         public:
             shared_holder( long _count = 0 ) : count( _count ), weak_count( 0 ) { }
-            
+
             long use_count( ) const
                 { return count; }
-                
+
             void increase_count( )
                 { ++count; }
-                
+
             void decrease_count( )
             {
                 if( !(--count) ) {
@@ -847,7 +859,7 @@ namespace std {
                 { ++weak_count; }
 
             void decrease_weak_count( )
-            { 
+            {
                 if( !(--weak_count) ) {
                     if( !count ) {
                         delete this;
@@ -857,9 +869,9 @@ namespace std {
 
             virtual void *get_deleter( const type_info & ) const
                 { return 0; }
-                
+
             virtual ~shared_holder( ) { }
-                   
+
         private:
             long count;
             long weak_count;
@@ -871,11 +883,11 @@ namespace std {
         public:
             shared_holder_ptr( T *_ptr, long _count = 0 )
                 : shared_holder( _count), ptr( _ptr ) { }
-        
+
         private:
             virtual void delete_ptr( )
-                { delete ptr; } 
-        
+                { delete ptr; }
+
             T *ptr;
         };
 
@@ -888,20 +900,19 @@ namespace std {
         private:
             T *ptr;
             D d;
-            
+
             virtual void delete_ptr( )
                 { d( ptr ); }
 
             virtual void *get_deleter( const type_info &ti ) const
-            { 
-                return typeid( D ) == ti ? 
-                    static_cast< void* >( const_cast< D* >(&d) ) : 0; 
+            {
+                return typeid( D ) == ti ?
+                    static_cast< void* >( const_cast< D* >(&d) ) : 0;
             }
         };
 
-    } // End of namespace _ow.
-
-} // End of namespace std.
+    } // namespace _ow
+:include nsstdepi.sp
 
 #endif
 :endsegment

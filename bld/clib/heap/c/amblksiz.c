@@ -34,14 +34,14 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#if defined(__NT__)
-_WCRTDATA unsigned _WCDATA _amblksiz = 64 * 1024;
-#elif defined(__WINDOWS_386__)
-_WCRTDATA unsigned _WCDATA _amblksiz = 32 * 1024;
-#elif defined(__WINDOWS__)
+#if defined( _M_I86 )
 _WCRTDATA unsigned _WCDATA _amblksiz = 8 * 1024;
-#elif INT_MAX < 65535
-_WCRTDATA unsigned _WCDATA _amblksiz = 16;
-#else
+#elif defined( __NT__ )
+_WCRTDATA unsigned _WCDATA _amblksiz = 64 * 1024;
+#elif defined( __WINDOWS__ ) || defined( __OS2__ ) || defined( __LINUX__ ) || defined( __RDOS__ )
+_WCRTDATA unsigned _WCDATA _amblksiz = 32 * 1024;
+#elif defined( __QNX__ )
+_WCRTDATA unsigned _WCDATA _amblksiz = 8 * 1024;
+#else   // defined( __RDOSDEV__ ) || defined( __NETWARE__ ) || defined( __DOS__ )
 _WCRTDATA unsigned _WCDATA _amblksiz = 4 * 1024;
 #endif

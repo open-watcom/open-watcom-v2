@@ -36,13 +36,11 @@
 #define WRESMAGIC1  0xC3D2CDCF
 #define WRESVERSION 3               /* set to version number of the file format */
 
-enum {
+typedef enum {
     WRES_OS_WIN16 = 1,
     WRES_OS_WIN32,
     WRES_OS_OS2
-};
-
-typedef uint_16 WResTargetOS;
+} WResTargetOS;
 
 #include "pushpck1.h"
 typedef struct WResHeader {
@@ -54,7 +52,7 @@ typedef struct WResHeader {
 } WResHeader;
 
 typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
-    WResTargetOS    TargetOS;
+    uint_16         TargetOS;
     uint_16         reserved[4];    /* reserved for future use */
 } WResExtHeader;
 

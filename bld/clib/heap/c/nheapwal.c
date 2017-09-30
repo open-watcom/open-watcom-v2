@@ -59,7 +59,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
     if( frl == NULL ) {
         frl = FIRST_FRL( heap );
     } else {    /* advance to next entry */
-        for( ; heap->next != NULL; heap = heap->next ) {
+        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
             if( IS_IN_HEAP( frl, heap ) ) {
                 break;
             }
@@ -71,14 +71,14 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
         frl = frl_next;
     }
     for( ; IS_BLK_END( frl ); ) {
-        if( heap->next == NULL ) {
+        // We advance to next miniheapblk
+        heap = heap->next;
+        if( heap == NULL ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;
             entry->_pentry  = NULL;
             return( _HEAPEND );
         }
-        // We advance to next miniheapblk
-        heap = heap->next;
         frl = FIRST_FRL( heap );
     }
     entry->_pentry  = frl;

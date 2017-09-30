@@ -54,7 +54,7 @@ static bool getNextPos( int ch, int *opos )
                 pos++;
             }
 #endif
-        } else if ( ch == 0 ) {
+        } else if( ch == 0 ) {
             return( false );
         } else if( EditFlags.EightBits ) {
             pos++;
@@ -135,7 +135,7 @@ bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out,
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( char *in, int inlen, char *out, int outlen )
+bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outlen )
 {
     int             j, k, tb, l;
     bool            tabme = false;

@@ -64,6 +64,9 @@ export OWGUINOBUILD=1
 
 ##################################
 
+# Subdirectory to be used for building OW build tools
+export OWOBJDIR=binbuild
+
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
 

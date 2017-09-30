@@ -832,7 +832,8 @@ int main( int argc, char *argv[] )
     fclose( con );
     //Status_Print( );
 #ifdef __SW_BW
-    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    con = fopen( "tmp.log", "a" );
+    fprintf( con, "Tests completed (%s).\n", strlwr( argv[0] ) );
     _dwShutDown();
 #endif
 

@@ -71,6 +71,7 @@ STATIC void ignoring( TOKEN_T t, bool freelex )
 #ifdef DEVELOPMENT
         PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "ignoring" );
         ExitFatal();
+        // never return
 #else
         y = M_UNKNOWN_TOKEN;
 #endif
@@ -1006,6 +1007,7 @@ TLIST *Parse( void )
 #ifdef DEVELOPMENT
             PrtMsg( FTL | INVALID_TOKEN_IN, "Parse" );
             ExitFatal();
+            // never return
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

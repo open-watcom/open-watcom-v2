@@ -38,7 +38,8 @@
 #include <windows.h>
 #endif
 #include "iomode.h"
-#include "handleio.h"
+#include "clibsupp.h"
+
 
 // these must be the same as is defined in iostream.h
 

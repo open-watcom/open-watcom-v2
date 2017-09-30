@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "doscall.h"
 #include <dos.h>
 #include <malloc.h>
-#include <stdlib.h>
 #include "uidef.h"
+#include "doscall.h"
 #include "uimouse.h"
 
 

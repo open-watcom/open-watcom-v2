@@ -90,6 +90,7 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
         execve( path, argv, envp );
         write( status_pipe[1], &_RWD_errno, sizeof( _RWD_errno ) );
         _exit( 127 );
+        // never return
     }
     close( status_pipe[1] );
     /* EXEC's don't return, only SPAWN does */

@@ -39,7 +39,11 @@
 #include "istable.h"
 
 
-#undef  __iscsymf
+#ifdef __WIDECHAR__
+#undef __iswcsymf
+#else
+#undef __iscsymf
+#endif
 
 _WCRTLINK int __F_NAME(__iscsymf,__iswcsymf)( INTCHAR_TYPE c )
 {

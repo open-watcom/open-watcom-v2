@@ -8,8 +8,8 @@ linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 
 wsplice_opts = -i.. $($(system)_options) ../common.sp $[@ $^@
-wsplice_opts_p = -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
-wsplice_opts_c = -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
+wsplice_opts_p = -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $^@
+wsplice_opts_c = -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $^@
 
 wsplice_opts_i386 = -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
 wsplice_opts_mips = -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
@@ -101,49 +101,40 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 #
 # Special case for cname style headers
 #
-options_complex  = -kCPPCOMPLEX
-options_exceptio = -kCNAME
-options_fstream  = -kCNAME
-options_iomanip  = -kCNAME
-options_ios      = -kCNAME
-options_iosfwd   = -kCNAME
-options_iostream = -kCNAME
-options_istream  = -kCNAME
-options_limits   = -kCPPLIMITS
-options_locale   = -kCPPLOCALE
-options_memory   = -kCPPMEMORY
-options_new      = -kCNAME
-options_ostream  = -kCNAME
-options_sstream  = -kCNAME
-options_stdexcep = -kCNAME
-options_streambu = -kCNAME
-options_string   = -kCPPSTRING
-options_strstrea = -kCNAME
-options_typeinfo = -kCNAME
+options_complex  = -kCPPONLY
+options_limits   = -kCPPONLY
+options_locale   = -kCPPONLY
+options_memory   = -kCPPONLY
+options_string   = -kCPPONLY
 
 #
 # Special case for included C++ cname style headers
 #   for optimize C++ declaration out of C part
 #
-options_c_ctype    = -kCONLY
-options_c_inttypes = -kCONLY
-options_c_locale   = -kCONLY
-options_c_math     = -kCONLY
-options_c_signal   = -kCONLY
-options_c_stdarg   = -kCONLY
-options_c_stdbool  = -kCONLY
-options_c_stddef   = -kCONLY
-options_c_stdio    = -kCONLY
-options_c_stdlib   = -kCONLY
-options_c_string   = -kCONLY
-options_c_time     = -kCONLY
-options_c_wchar    = -kCONLY
-options_c_wctype   = -kCONLY
-
-#
-# Special case for graph2.h and pgchart2.h headers
-#
-options_c_graph2   = -i../watcom -kVERSION2
+options_h__algmut  = -kCNAME
+options_h__algnmod = -kCNAME
+options_h__algsort = -kCNAME
+options_h__hash    = -kCNAME
+options_h__meta    = -kCNAME
+options_h__rbtree  = -kCNAME
+options_h__strdef  = -kCNAME
+options_h_ctype    = -kCONLY
+options_h_except   = -kCNAME
+options_h_generic  = -kCNAME
+options_h_inttypes = -kCONLY
+options_h_locale   = -kCONLY
+options_h_math     = -kCONLY
+options_h_signal   = -kCONLY
+options_h_stdarg   = -kCONLY
+options_h_stdbool  = -kCONLY
+options_h_stddef   = -kCONLY
+options_h_stdio    = -kCONLY
+options_h_stdlib   = -kCONLY
+options_h_string   = -kCONLY
+options_h_time     = -kCONLY
+options_h_wcdefs   = -kCPPONLY
+options_h_wctype   = -kCONLY
+options_h_wchar    = -kCONLY
 
 !ifneq $(system)_dirs
 $($(system)_dirs):

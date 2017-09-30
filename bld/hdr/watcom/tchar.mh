@@ -344,7 +344,7 @@ _WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
 
 #ifdef __cplusplus
-}
+} // namespace std
 using std::wcstod;
 using std::wcstol;
 using std::wcstoul;
@@ -511,7 +511,7 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 
 /* ctype functions */
 
-#define _istascii       isascii
+#define _istascii       __isascii
 #define _istcntrl       iscntrl
 #define _istxdigit      isxdigit
 
@@ -836,21 +836,21 @@ _WCRTLINK extern int _tccmp(const char *, const char *);
 
 /* ctype functions */
 
-#define _istalnum   _ismbcalnum
-#define _istalpha   _ismbcalpha
-#define _istdigit   _ismbcdigit
-#define _istgraph   _ismbcgraph
-#define _istlegal   _ismbclegal
-#define _istlower   _ismbclower
-#define _istprint   _ismbcprint
-#define _istpunct   _ismbcpunct
-#define _istspace   _ismbcspace
-#define _istupper   _ismbcupper
+#define _istalnum       _ismbcalnum
+#define _istalpha       _ismbcalpha
+#define _istdigit       _ismbcdigit
+#define _istgraph       _ismbcgraph
+#define _istlegal       _ismbclegal
+#define _istlower       _ismbclower
+#define _istprint       _ismbcprint
+#define _istpunct       _ismbcpunct
+#define _istspace       _ismbcspace
+#define _istupper       _ismbcupper
 
-#define _totupper   _mbctoupper
-#define _totlower   _mbctolower
+#define _totupper       _mbctoupper
+#define _totlower       _mbctolower
 
-#define _istlead    _ismbblead
+#define _istlead        _ismbblead
 #define _istleadbyte    isleadbyte
 
 #else

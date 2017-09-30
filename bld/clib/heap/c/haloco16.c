@@ -31,12 +31,12 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
+#include <malloc.h>
 #include <dos.h>
 #include "seterrno.h"
 #define INCL_DOSMEMMGR
 #include <wos2.h>
-#include <stdlib.h>
-#include <malloc.h>
 #include "heap.h"
 
 

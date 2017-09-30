@@ -32,12 +32,12 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 
 namespace std {
@@ -45,4 +45,4 @@ namespace std {
   strstream::~strstream() {
   }
 
-}
+} // namespace std

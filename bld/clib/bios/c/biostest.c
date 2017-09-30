@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <bios.h>
-#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +36,11 @@
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif
+
+#if defined(__DOS__) || defined(__WINDOWS__)
+
+#include <bios.h>
+#include <conio.h>
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\
@@ -68,13 +71,6 @@ struct EquipBits {
 char    ProgramName[128];                       /* executable filename */
 int     NumErrors = 0;                          /* number of errors */
 int     Interactive = 0;                        /* run tests requiring input */
-
-#if defined(__DOS__) || defined(__WINDOWS__)
-    #define DO_TESTING
-#endif
-
-
-#ifdef DO_TESTING
 
 #define HI( w )     (((w) >> 8) & 0xFF)
 #define LO( w )     (((w) & 0xFF)
@@ -262,9 +258,6 @@ void TestTimeofday( void )
             ticks, hours, minutes, seconds );
 }
 
-#endif
-
-
 int main( int argc, char *argv[] )
 /********************************/
 {
@@ -283,7 +276,6 @@ int main( int argc, char *argv[] )
         Interactive = 1;
 
     /*** Test stuff ***/
-#ifdef DO_TESTING
     printf( "DOS version %d.%d\n", _osmajor, _osminor );
     /* DOS extenders often don't support INT 13h, skip. */
   #ifndef __386__
@@ -297,7 +289,6 @@ int main( int argc, char *argv[] )
     TestPrinter();
     TestSerialcom();
     TestTimeofday();
-#endif
 
     /*** Print a pass/fail message and quit ***/
     if( NumErrors != 0 ) {
@@ -313,3 +304,28 @@ int main( int argc, char *argv[] )
 
     return( EXIT_SUCCESS );
 }
+
+#else
+
+int main( int argc, char *argv[] )
+{
+#ifdef __SW_BW
+    FILE    *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( EXIT_FAILURE );
+    }
+#endif
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+
+    return( EXIT_SUCCESS );
+}
+
+#endif

@@ -30,10 +30,9 @@
 
 
 #include <rdos.h>
-#include <stdlib.h>
 #include <conio.h>
-#include "uidef.h"
 #include <stdio.h>
+#include "uidef.h"
 
 static MONITOR ui_data = {
     25,

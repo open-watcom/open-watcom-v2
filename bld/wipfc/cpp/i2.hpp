@@ -53,11 +53,11 @@ public:
     ~I2() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
     bool isGlobal() const { return index->isGlobal(); };
-    size_t write( std::FILE* out ) { return index->write( out ); };
+    std::size_t write( std::FILE* out ) { return index->write( out ); };
 private:
     I2( const I2& rhs );                //no copy
     I2& operator=( const I2& rhs );     //no assignment

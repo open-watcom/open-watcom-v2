@@ -326,12 +326,10 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             ProcessMark( hwnd, Instance, RecordMsg );
             break;
         case DDEMENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, DumpHeader, ".\\wdde.txt", AppName,
-                         hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, DumpHeader, DumpLine, ".\\wdde.txt", AppName, hwnd, info->list.box );
             break;
         case DDEMENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, DumpHeader, NULL, AppName,
-                         hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, DumpHeader, DumpLine, "", AppName, hwnd, info->list.box );
             break;
         case DDEMENU_TOOLBAR:
             ToggleTB( hwnd );
@@ -366,7 +364,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         case DDEMENU_LOG_PAUSE:
             mh = GetMenu( hwnd );
             flag = MF_BYCOMMAND;
-            if( SpyLogPauseToggle() ) {
+            if( LogPauseToggle() ) {
                 flag |= MF_CHECKED;
             } else {
                 flag |= MF_UNCHECKED;
@@ -415,8 +413,8 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             }
             break;
         case DDEMENU_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
+            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             }
             break;
         case DDEMENU_HELP_ON_HELP:
@@ -476,13 +474,13 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_ENDSESSION:
         if( wparam ) {
             SaveConfigFile();
-            SpyLogClose();
+            LogFini();
         }
         break;
     case WM_DESTROY:
         HintWndDestroy( info->hintbar );
         HintFini();
-        SpyLogClose();
+        LogFini();
         FreeProcInstance( (FARPROC)DDEProcInst );
         SaveConfigFile();
         FiniTrackWnd();

@@ -147,13 +147,14 @@ static msglist DDEErrorMsgs[] = {
 /*
  * fmtAlias
  */
-static char *fmtAlias( unsigned long id, char *alias, unsigned type, size_t *prefixlen )
+static char *fmtAlias( ULONG_PTR id, char *alias, unsigned type, size_t *prefixlen )
 {
     const char  *prefix;
     char        *ret;
     size_t      len;
     int         fmt_len;
     char        buf[10];
+    char        hexstr[20];
 
     switch( type ) {
     case DEALIAS_TASK:
@@ -179,7 +180,9 @@ static char *fmtAlias( unsigned long id, char *alias, unsigned type, size_t *pre
     }
     if( alias == NULL ) {
         alias = buf;
-        sprintf( alias, "0x%0*lX", fmt_len, id );
+        GetHexStr( hexstr, id, fmt_len );
+        hexstr[fmt_len] = '\0';
+        sprintf( alias, "0x%s", hexstr );
     }
     len = strlen( prefix );
     if( prefixlen != NULL )
@@ -195,7 +198,7 @@ static char *fmtAlias( unsigned long id, char *alias, unsigned type, size_t *pre
  * deAlias - convert a value to its associated alias or
  *           format it as a number if no alias exists
  */
-static char *deAlias( unsigned long id, unsigned type )
+static char *deAlias( ULONG_PTR id, unsigned type )
 {
     char        *alias;
     char        *ret;
@@ -277,7 +280,7 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor, char **replace
 /*
  * updateAlias
  */
-static void updateAlias( unsigned long id, char *newalias, char *oldalias, void *_info )
+static void updateAlias( ULONG_PTR id, char *newalias, char *oldalias, void *_info )
 {
     WORD        i;
     WORD        searchcnt;
@@ -314,12 +317,12 @@ static void updateAlias( unsigned long id, char *newalias, char *oldalias, void 
 /*
  * refreshAnAlias
  */
-static void refreshAnAlias( unsigned long id, char *text, void *info )
+static void refreshAnAlias( ULONG_PTR id, char *text, void *info )
 {
     char        *ptr;
     size_t      prefix;
 
-    if( id == (unsigned long)-1L ) {
+    if( id == (ULONG_PTR)-1L ) {
         return;
     }
     ptr = fmtAlias( id, NULL, ((ReplaceInfo *)info)->type, &prefix );
@@ -371,12 +374,15 @@ char *GetFmtStr( UINT fmt, char *buf )
 {
     char        *ret;
     const char  *fmtstr;
+    char        hexstr[20];
 
     ret = SrchMsg( fmt, FormatMsgs, NULL );
     if( ret == NULL ) {
         ret = buf;
+        GetHexStr( hexstr, fmt, ID_FMT_LEN );
+        hexstr[ID_FMT_LEN] = '\0';
         fmtstr = GetRCString( STR_UNKNOWN_FMT_ID );
-        sprintf( buf, fmtstr, FMT_ID_LEN, fmt );
+        sprintf( buf, fmtstr, hexstr );
     } else {
         strcpy( buf, ret );
     }
@@ -436,21 +442,21 @@ static void setHorzExtent( DDEWndInfo *info, char *text )
 void RecordMsg( char *buf )
 {
     DDEWndInfo          *info;
-    int                 ret;
+    LRESULT             ret;
     char                *ptr;
     char                *start;
 
     ptr = buf;
     start = buf;
     info = (DDEWndInfo *)GET_WNDINFO( DDEMainWnd );
-    while( *ptr ) {
+    while( *ptr != '\0' ) {
         if( *ptr == '\n' ) {
             *ptr = '\0';
             if( ConfigInfo.screen_out ) {
                 setHorzExtent( info, start );
                 SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
             }
-            SpyLogOut( start );
+            LogOut( start );
             *ptr = '\n';
             start = ptr + 1;
         }
@@ -459,12 +465,12 @@ void RecordMsg( char *buf )
     if( start != ptr ) {
         if( ConfigInfo.screen_out ) {
             setHorzExtent( info, start );
-            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
+            ret = SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
         }
-        SpyLogOut( start );
+        LogOut( start );
     }
     if( ConfigInfo.scroll && ConfigInfo.screen_out ) {
-        SendMessage( info->list.box, LB_SETTOPINDEX, ret, 0L );
+        SendMessage( info->list.box, LB_SETTOPINDEX, (WPARAM)ret, 0L );
     }
     /* NYI do something if the list box is full */
 
@@ -493,8 +499,8 @@ static void processCBStruct( char *buf, MONCBSTRUCT *info )
     } else {
         type_not_found = false;
     }
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
-    conv = deAlias( (unsigned long)info->hConv, DEALIAS_CONV );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
+    conv = deAlias( (ULONG_PTR)info->hConv, DEALIAS_CONV );
     switch( info->wType ) {
     case XTYP_ADVSTART:
     case XTYP_ADVSTOP:
@@ -616,9 +622,9 @@ static void processConvStruct( char *buf, MONCONVSTRUCT *info )
 
     server = HSZToString( info->hszSvc );
     topic = HSZToString( info->hszTopic );
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
-    clientconv = deAlias( (unsigned long)info->hConvClient, DEALIAS_CLIENT_CONV );
-    serverconv = deAlias( (unsigned long)info->hConvServer, DEALIAS_SERVER_CONV );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
+    clientconv = deAlias( (ULONG_PTR)info->hConvClient, DEALIAS_CLIENT_CONV );
+    serverconv = deAlias( (ULONG_PTR)info->hConvServer, DEALIAS_SERVER_CONV );
     if( info->fConnect ) {
         fmtstr = STR_CONV_EST_FMT_STR;
     } else {
@@ -642,7 +648,7 @@ static void processErrStruct( char *buf, MONERRSTRUCT *info )
     char                *type;
     char                *task;
 
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
     type = SrchMsg( info->wLastError, DDEErrorMsgs, "" );
     RCsprintf( buf, STR_ERR_STRUCT_FMT_STR, info->dwTime, task, type );
     MemFree( task );
@@ -658,8 +664,11 @@ static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
     msg_id              fmtid;
     char                *str;
     bool                str_alloced;
+    char                hexstr[20];
 #ifdef __NT__
+  #ifndef _WIN64
     DWORD               ver;
+  #endif
 #endif
 
     switch( info->fsAction ) {
@@ -676,7 +685,7 @@ static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
     default:
         return( false );
     }
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
     str = info->str;
     str_alloced = false;
 #ifdef __NT__
@@ -691,7 +700,9 @@ static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
     }
   #endif
 #endif
-    RCsprintf( buf, fmtid, info->dwTime, task, HSZ_FMT_LEN, info->hsz, str );
+    GetHexStr( hexstr, (ULONG_PTR)info->hsz, HSZ_FMT_LEN );
+    hexstr[HSZ_FMT_LEN] = '\0';
+    RCsprintf( buf, fmtid, info->dwTime, task, hexstr, str );
     if( str_alloced ) {
         MemFree( str );
     }
@@ -732,9 +743,9 @@ static void processLinkStruct( char *buf, MONLINKSTRUCT *info )
     topic = HSZToString( info->hszTopic );
     item = HSZToString( info->hszItem );
     fmt = GetFmtStr( info->wFmt, fbuf );
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
-    clientconv = deAlias( (unsigned long)info->hConvClient, DEALIAS_CLIENT_CONV );
-    serverconv = deAlias( (unsigned long)info->hConvServer, DEALIAS_SERVER_CONV );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
+    clientconv = deAlias( (ULONG_PTR)info->hConvClient, DEALIAS_CLIENT_CONV );
+    serverconv = deAlias( (ULONG_PTR)info->hConvServer, DEALIAS_SERVER_CONV );
     /* NYI what does fServer mean???? */
     RCsprintf( buf, fmtid, info->dwTime, task, info->hszSvc, service, info->hszTopic,
                topic, info->hszItem, item, fmt, serverconv, clientconv );
@@ -755,8 +766,8 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
     bool                msg_not_found;
     msg_id              fmtid;
 
-    task = deAlias( (unsigned long)info->hTask, DEALIAS_TASK );
-    tohwnd = deAlias( (unsigned long)info->hwndTo, DEALIAS_HWND );
+    task = deAlias( (ULONG_PTR)info->hTask, DEALIAS_TASK );
+    tohwnd = deAlias( (ULONG_PTR)info->hwndTo, DEALIAS_HWND );
     msg = SrchMsg( info->wMsg, DDEMsgs, NULL );
     if( msg == NULL ) {
         msg = AllocRCString( STR_UNKNOWN );

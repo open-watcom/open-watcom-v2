@@ -61,7 +61,7 @@ static  source_line_number      DumpLineNum( source_line_number n,
                                              bool label_line ) {
 /*************************************************************************/
 
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         if( n > 0 && n != last ) {
             last = n;
             CodeLineNumber( n, label_line );

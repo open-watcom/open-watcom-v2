@@ -179,7 +179,7 @@ void MatchFini( void )
 {
     int i;
 
-    for( i = 0; i < MatchCount; i++ ){
+    for( i = 0; i < MatchCount; i++ ) {
         MemFree( MatchData[i] );
     }
 }

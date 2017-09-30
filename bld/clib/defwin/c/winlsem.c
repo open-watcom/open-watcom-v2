@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <windows.h>
 #include "rtinit.h"
 

@@ -23,8 +23,7 @@
  #include <iterator>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     // copy( InputIterator, InputIterator, OutputIterator )
     // ****************************************************
     template< class InputIterator, class OutputIterator >
@@ -145,7 +144,8 @@ namespace std {
                      const Type &new_value )
     {
         while( first != last ) {
-            if ( pred( *first ) != false ) *first = new_value;
+            if( pred( *first ) != false )
+                *first = new_value;
             ++first;
         }
     }
@@ -455,13 +455,12 @@ namespace std {
         typedef typename iterator_traits< RandomAccess >::difference_type Int;
         Int length = last - first;
         Int i = 1;
-        
+
         while( i < length ) {
             swap( first[i], first[ rgen( i + 1 ) ] );
             ++i;
         }
     }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

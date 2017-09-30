@@ -11,9 +11,9 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 
-const char *PP_GetEnv( const char *name )
+const char * PPENTRY PP_GetEnv( const char *name )
 {
     return( getenv( name ) );
 }

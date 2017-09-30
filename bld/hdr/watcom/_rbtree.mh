@@ -25,14 +25,14 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
 #ifndef _MEMORY_INCLUDED
  #include <memory>
 #endif
 
-namespace std {
+:include nsstd.sp
     namespace _ow {
 
         /* ==================================================================
@@ -58,7 +58,7 @@ namespace std {
 
         /* ==================================================================
          * Red-Black Tree container interface
-         * To do: 
+         * To do:
          *  * find out what supposed to do with allocator alloc/construct exceptions
          *  * rebind and copy allocator
          *  * finish off all functions so has 14882 style interface
@@ -154,13 +154,15 @@ namespace std {
             {
                 // Presume initial data sorted. The hint is ignored when the tree is empty.
                 iterator hint;
-                for( ; f != l ; ++f ) hint = insert( hint, *f ).first; 
+                for( ; f != l ; ++f ) {
+                    hint = insert( hint, *f ).first;
+                }
             }
 
             RedBlackTree( const RedBlackTree & );
             RedBlackTree& operator=( const RedBlackTree & );
            ~RedBlackTree( );
-            Allocator get_allocator( ) const 
+            Allocator get_allocator( ) const
                 { Allocator a( mem ); return( a ); }
 
 
@@ -198,7 +200,7 @@ namespace std {
 
                 iterator_base( ) : self( 0 ), rbt( 0 )
                     { }
-                
+
                 iterator_base( const rbt_type *rb, Node *n ) : self( n ), rbt( rb )
                     { }
 
@@ -231,7 +233,7 @@ namespace std {
 
                 iterator& operator--( )
                     { return( (iterator &)iterator_base::operator--( ) ); }
- 
+
                 iterator operator--( int )
                     { iterator i = *this; operator--( ); return i; }
             };
@@ -262,14 +264,14 @@ namespace std {
                 const_iterator operator--( int )
                     { const_iterator i = *this; operator--( ); return i; }
             };
-            
+
             friend class iterator_base;
             friend class iterator;
             friend class const_iterator;
             /*
              * end of iterators
              * ------------------------------------------------------------------ */
-    
+
             iterator end( )
                 { return iterator( this, (Node *)0 ); }
 
@@ -281,7 +283,7 @@ namespace std {
 
             const_iterator begin( ) const
                 { return const_iterator( this, mFirst ); }
-    
+
             // pair< iterator, bool > insert( value_type const & );
 
             // TODO: Move to out-of-line when compiler supports syntax.
@@ -291,9 +293,11 @@ namespace std {
             {
                 // presume data sorted; use last insert point as hint
                 iterator hint;
-                if( first_it != last_it ) hint = insert( *first_it ).first;
-                for( ++first_it ; first_it != last_it ; ++first_it )
-                    hint = insert( hint, *first_it ).first; 
+                if( first_it != last_it )
+                    hint = insert( *first_it ).first;
+                for( ++first_it ; first_it != last_it ; ++first_it ) {
+                    hint = insert( hint, *first_it ).first;
+                }
             }
 
             void            erase( iterator );
@@ -316,7 +320,7 @@ namespace std {
             std::pair< const_iterator, const_iterator >
             equal_range( const key_type & x ) const
                 { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
-    
+
             bool _Sane( );
             int mError;
 
@@ -374,18 +378,17 @@ namespace std {
             }
             mRoot = mem.allocate( 1 );
             try {
-                mem.construct( mRoot,
-                               Node( that.mRoot->value, 0, that.mRoot->get_colour( ) ) );
+                mem.construct( mRoot, Node( that.mRoot->value, 0, that.mRoot->get_colour( ) ) );
             }
             catch( ... ) {
                 mem.deallocate( mRoot, 1 );
                 mRoot = 0;
                 throw;
             }
-        
+
             Node *n;
             Node *o;
-    
+
             o = that.mRoot;
             n = mRoot;
             for( ;; ) {
@@ -403,8 +406,7 @@ namespace std {
                     try {
                         n->left = mem.allocate( 1 );
                         try {
-                            mem.construct( n->left,
-                                           Node( o->value, n, o->get_colour( ) ) );
+                            mem.construct( n->left, Node( o->value, n, o->get_colour( ) ) );
                         }
                         catch( ... ) {
                             mem.deallocate( n->left, 1 );
@@ -417,15 +419,13 @@ namespace std {
                         throw;
                     }
                     n = n->left;
-                }
-                else if( o->right && !n->right ) {
+                } else if( o->right && !n->right ) {
                     // Or copy right node if we can/haven't already.
                     o = o->right;
                     try {
                         n->right = mem.allocate( 1 );
                         try {
-                            mem.construct( n->right,
-                                           Node( o->value, n, o->get_colour( ) ) );
+                            mem.construct( n->right, Node( o->value, n, o->get_colour( ) ) );
                         }
                         catch( ... ) {
                             mem.deallocate( n->right, 1 );
@@ -438,13 +438,11 @@ namespace std {
                         throw;
                     }
                     n = n->right;
-                }
-                else if( o->get_parent( ) ) {
+                } else if( o->get_parent( ) ) {
                     // No children nodes left to copy, move back up.
                     o = o->get_parent( );
                     n = n->get_parent( );
-                }
-                else {
+                } else {
                     //no children nodes left to copy and we are root therefore
                     //finished
                     return;
@@ -487,9 +485,11 @@ namespace std {
             // except mRoot.
             Node *n = mRoot;
             while( n ) {
-                if( n->left ) n = n->left;
-                else if( n->right ) n = n->right;
-                else {
+                if( n->left ) {
+                    n = n->left;
+                } else if( n->right ) {
+                    n = n->right;
+                } else {
                     // Delete it when all children gone.
                     if( !n->get_parent( ) ) {
                         // If no parent then root, therefore finished.
@@ -499,10 +499,13 @@ namespace std {
                         mRoot  = 0;
                         mFirst = 0;
                         mLast  = 0;
-                        return; 
+                        return;
                     }
-                    if( n == n->get_parent( )->left ) n->get_parent( )->left = 0;
-                    else n->get_parent( )->right = 0;
+                    if( n == n->get_parent( )->left ) {
+                        n->get_parent( )->left = 0;
+                    } else {
+                        n->get_parent( )->right = 0;
+                    }
                     Node *delete_me = n;
                     n = n->get_parent( );
                     mem.destroy( delete_me );
@@ -516,25 +519,27 @@ namespace std {
          * Climb the tree until we get to the key :)
          */
         template< class Key, class Compare, class Allocator, class ValueWrapper >
-        RedBlackTree< Key, Compare, Allocator, ValueWrapper >::iterator 
+        RedBlackTree< Key, Compare, Allocator, ValueWrapper >::iterator
         RedBlackTree< Key, Compare, Allocator, ValueWrapper >::find(const Key &find_me)
         {
             Node *n = mRoot;
             Node *notLT = 0;
-    
+
             while( n ) {
-                if( cmp(find_me, key_getter(n->value) ) ) n = n->left;
-                else {
-                    notLT=n;
-                    n=n->right;
+                if( cmp( find_me, key_getter( n->value ) ) ) {
+                    n = n->left;
+                } else {
+                    notLT = n;
+                    n = n->right;
                 }
             }
             // The last node the key is not less than (if any) may be equal, in which case it
             // was found.
-            if( notLT && !(cmp(key_getter(notLT->value), find_me) ) ) // !(a<b) & !(b<a) then a==b
+            if( notLT && !(cmp( key_getter( notLT->value ), find_me ) ) ) { // !(a<b) & !(b<a) then a==b
                 return iterator( this, notLT );
-            else
+            } else {
                 return end( );
+            }
         }
 
         /* ------------------------------------------------------------------
@@ -549,17 +554,18 @@ namespace std {
         {
             Node *n = mRoot;
             Node *nodeNotLTkey = 0;
-    
+
             while( n ) {
-                if( cmp( key_getter(n->value), find_me ) ) n = n->right;
-                else {
+                if( cmp( key_getter( n->value ), find_me ) ) {
+                    n = n->right;
+                } else {
                     nodeNotLTkey = n;
                     n = n->left;
                 }
             }
             // If there are no nodes >= find_me then nodeNotLTkey will still be 0 thus the end( )
             // iterator will be created as expected.
-            return( iterator(this, nodeNotLTkey) );
+            return( iterator( this, nodeNotLTkey ) );
         }
 
         /* ------------------------------------------------------------------
@@ -584,9 +590,9 @@ namespace std {
         {
             Node *n = mRoot;
             Node *nodeGTkey = 0;
-    
+
             while( n ) {
-                if( cmp( find_me, key_getter(n->value) ) ) {
+                if( cmp( find_me, key_getter( n->value ) ) ) {
                     nodeGTkey = n;
                     n = n->left;
                 } else {
@@ -609,11 +615,11 @@ namespace std {
         {
             return( const_cast<RedBlackTree*>( this )->upper_bound( k ) );
         }
-        
+
         /* ------------------------------------------------------------------
          * walk_right( Node* )
          *
-         * iterate to next greater node 
+         * iterate to next greater node
          */
         template< class Key, class Compare, class Allocator, class ValueWrapper >
         RedBlackTree< Key, Compare, Allocator, ValueWrapper >::Node *
@@ -621,9 +627,10 @@ namespace std {
         {
             if( n->right ) {
                 n = n->right;
-                while( n->left ) n = n->left;
-            }
-            else {
+                while( n->left ) {
+                    n = n->left;
+                }
+            } else {
                 while( n->get_parent( ) && (n == n->get_parent( )->right) ) {
                     n = n->get_parent( );
                 }
@@ -642,9 +649,10 @@ namespace std {
         {
             if( n->left ) {
                 n = n->left;
-                while( n->right ) n = n->right;
-            }
-            else {
+                while( n->right ) {
+                    n = n->right;
+                }
+            } else {
                 while( n->get_parent( ) && (n == n->get_parent( )->left) ) {
                     n = n->get_parent( );
                 }
@@ -663,7 +671,8 @@ namespace std {
             Node *n = i.get_node_pointer( );
             int c = 0;
             while( n ) {
-                if( n->is_black( ) ) c++;
+                if( n->is_black( ) )
+                    c++;
                 n = n->get_parent( );
             }
             return c;
@@ -690,15 +699,15 @@ namespace std {
          *
          * Ref: Chris Okasaki paper (2005?) proposing simple transform for insert balance and
          * Lyn Turbak CS231 handout #21 (2001)
-         * 
+         *
          * If uncle is red we just do a colour change, if uncle is black we do a transform in
          * summary 4 cases transform to this:
          *
-         *        y(b)          
-         *      /     \         
-         *    x(r)    z(r)      
-         *  /   \     /   \     
-         * a(b) b(b) c(b) d(b)  
+         *        y(b)
+         *      /     \
+         *    x(r)    z(r)
+         *  /   \     /   \
+         * a(b) b(b) c(b) d(b)
          *
          * case 1:          case 2:        case 3:         case 4:
          * (insert x)      (insert y)     (insert z)      (insert y)
@@ -715,7 +724,7 @@ namespace std {
             Node *inserted )
         {
             // At this point inserted->colour == red.
-            for( ;; ) { 
+            for( ;; ) {
                 /* Terminating case.
                  * 1. We have moved up the tree and are now the root.
                  * 2. Our parent is the root (therefore must be black).
@@ -734,9 +743,11 @@ namespace std {
                 Node *grandparent = inserted->get_parent( )->get_parent( );
                 Node *uncle;
                 // Find uncle.
-                if( parent == grandparent->left ) uncle = grandparent->right;
-                else uncle = grandparent->left;
-
+                if( parent == grandparent->left ) {
+                    uncle = grandparent->right;
+                } else {
+                    uncle = grandparent->left;
+                }
                 if( uncle && (uncle->is_red( )) ) {    // Main case a: red uncle.
                     // Now we propagate grandparents blackness between parent and uncle (without
                     // need to rotate).
@@ -747,69 +758,67 @@ namespace std {
                     inserted = grandparent; // Prepare to propergate red-red up tree.
                     // The execusion flow now jumps back to the for loop instead of recursive
                     // insert_balance_transform( inserted ).
-                }
-                else { // Main case b:  black uncle.
+                } else { // Main case b:  black uncle.
                     Node *x,*y,*z,*b,*c;
-                    // case 1
                     if( (inserted == parent->left) && (parent == grandparent->left) ) {
+                    // case 1
                         x = inserted;
                         y = parent;
                         z = grandparent;
                         b = x->right;
                         c = y->right;
-                    }
-                    //case 2 
-                    else if( (inserted == parent->right) && (parent == grandparent->left) ){
+                    } else if( (inserted == parent->right) && (parent == grandparent->left) ) {
+                    //case 2
                         x = parent;
                         y = inserted;
                         z = grandparent;
                         b = y->left;
                         c = y->right;
-                    }
+                    } else if( (inserted == parent->right) && (parent == grandparent->right) ) {
                     //case 3
-                    else if( (inserted == parent->right) && (parent == grandparent->right) ){
                         x = grandparent;
                         y = parent;
                         z = inserted;
                         b = y->left;
                         c = z->left;
-                    }
+                    } else if( (inserted == parent->left) && (parent == grandparent->right) ) {
                     //case4
-                    else if( (inserted == parent->left) && (parent == grandparent->right) ){
                         x = grandparent;
                         y = inserted;
                         z = parent;
                         b = y->left;
                         c = y->right;
                     }
-            
+
                     // Recolour - can use this order becase all leafs a,b,c,d must be black
                     // (uncle is black) this will stop red-red violation from propagating.
                     y->set_black( );
                     x->set_red( );
                     z->set_red( );
-            
+
                     // Transform to balanced structure.
                     if( grandparent == mRoot ) {
                         mRoot = y;
                         y->set_parent( 0 );
                     } else {
-                        if (grandparent->get_parent( )->left == grandparent){
+                        if( grandparent->get_parent( )->left == grandparent ) {
                             grandparent->get_parent( )->left = y;
                         } else { // Grandparent is righty.
                             grandparent->get_parent( )->right = y;
                         }
                         y->set_parent( grandparent->get_parent( ) );
                     }
-                    
+
                     y->left = x;
                     y->right = z;
                     x->set_parent( y );
                     z->set_parent( y );
                     x->right = b;
                     z->left = c;
-                    if( b ) b->set_parent( x );
-                    if( c ) c->set_parent( z );
+                    if( b )
+                        b->set_parent( x );
+                    if( c )
+                        c->set_parent( z );
                     // a and d are always already linked to the right parent in this case we
                     // have fixed the red-red violation so finish.
                     return;
@@ -831,8 +840,7 @@ namespace std {
                 if( mSize != 0 ) {
                     mError = 10;
                     return false;
-                }
-                else {
+                } else {
                     // Nothing else in tree to check.
                     return true;
                 }
@@ -846,7 +854,7 @@ namespace std {
             int count = 0;
             int maxheight = height(it);
             int bheight = -1;
-    
+
             if( n->left ) {             // Begining element cant have a left node.
                 mError = 20;
                 return false;
@@ -855,9 +863,9 @@ namespace std {
                 mError = 25;
                 return false;           // Root should always be black.
             }
-    
+
             do {
-                if( ++count > size( )  ){
+                if( ++count > size( ) ) {
                     mError = 30;                // We could have got trapped in a loop, can't
                     return false;               // be more iterations than size.
                 }
@@ -888,37 +896,40 @@ namespace std {
                     return false;               // Simple circular loop detection.
                     // ? Not sure this works as iterating will get stuck before detection ?
                 }
-                if( !n->get_parent( ) && n!=mRoot) {
+                if( !n->get_parent( ) && n != mRoot ) {
                     mError = 90;
                     return false;               // No parent but not root.
                 }
                 // Keep track of the lowest key we come across.
-                if( cmp( key_getter(n->value), *lowkey) ) {
-                    lowkey = &key_getter(n->value);
+                if( cmp( key_getter( n->value ), *lowkey ) ) {
+                    lowkey = &key_getter( n->value );
                     low_n = n;
                 }
                 // Keep track of the highest key we come across.
-                if( cmp(*highkey, key_getter(n->value)) ) {
-                    highkey = &key_getter(n->value);
+                if( cmp( *highkey, key_getter( n->value ) ) ) {
+                    highkey = &key_getter( n->value );
                     high_n = n;
                 }
                 if( !n->left || !n->right ) {   // Null child is a leaf.
-                    int bh = black_height(it);
-                    if( bheight == -1 ) bheight = bh;
-                    else if(bheight != bh) {
+                    int bh = black_height( it );
+                    if( bheight == -1 ) {
+                        bheight = bh;
+                    } else if( bheight != bh ) {
                         mError = 100;
                         return false;           // Black height to leaves not same.
                     }
                 }
-                int h = height(it);             // Keep track of deepest node depth.
-                if( h > maxheight ) maxheight = h;
-        
+                int h = height( it );           // Keep track of deepest node depth.
+                if( h > maxheight ) {
+                    maxheight = h;
+                }
+
             } while( ++it != end( ) );
-    
+
             if( count != size( ) ) {
                 mError = 110;
                 return false;
-            }        
+            }
             if( n->right ) { // End element cant have a right node.
                 mError = 120;
                 return false;
@@ -939,8 +950,9 @@ namespace std {
         RedBlackTree< Key, Compare, Allocator, ValueWrapper >::erase( const Key& k )
         {
             iterator it = find( k );
-            if( it == end( ) ) return 0;
-            else{
+            if( it == end( ) ) {
+                return 0;
+            } else {
                 erase( it );
                 return 1;
             }
@@ -960,34 +972,37 @@ namespace std {
             Node *parent;   // Parent of (re)moved endnode.
             bool  lefty;    // True if (re)moved endnode was left child.
             Node::Chroma colour;    // (Re)moved endnode colour.
-    
+
             mSize--;
-    
+
             if( delete_me == mFirst ) {
                 if( delete_me == mLast ) {
                     // Special case, deleted == only element in tree.
                     mFirst = 0;
                     mLast = 0;
+                } else {
+                    mFirst = walk_right( delete_me );
                 }
-                else 
-                    mFirst = walk_right(delete_me);
+            } else if( delete_me == mLast ) {
+                mLast = walk_left( delete_me );
             }
-            else if( delete_me == mLast) mLast = walk_left(delete_me);
-    
+
             // If not end node swap for predecessor.
             if( delete_me->left && delete_me->right ) {
                 Node *predecessor = walk_left( delete_me );
                 colour = predecessor->get_colour( );
                 child = predecessor->left;  // Predecessor can't have a right child.
-                if( predecessor == predecessor->get_parent( )->left ) lefty = true;
-                else lefty = false;
-                // Fix up parent's link.
-                if( delete_me == mRoot )
-                    mRoot = predecessor;
-                else if( delete_me == delete_me->get_parent( )->left ) {
-                    delete_me->get_parent( )->left = predecessor;
+                if( predecessor == predecessor->get_parent( )->left ) {
+                    lefty = true;
+                } else {
+                    lefty = false;
                 }
-                else {
+                // Fix up parent's link.
+                if( delete_me == mRoot ) {
+                    mRoot = predecessor;
+                } else if( delete_me == delete_me->get_parent( )->left ) {
+                    delete_me->get_parent( )->left = predecessor;
+                } else {
                     delete_me->get_parent( )->right = predecessor;
                 }
                 // If delete_me is one level above predecessor we have to be careful linking
@@ -998,8 +1013,7 @@ namespace std {
                     // Fix predecessors link.
                     predecessor->left = delete_me->left;
                     parent = predecessor->get_parent( );
-                }
-                else { // Predecessor is erased node's child.
+                } else { // Predecessor is erased node's child.
                     parent = predecessor;
                     // Leave old left child links intact.
                 }
@@ -1010,16 +1024,21 @@ namespace std {
                 predecessor->set_colour( delete_me->get_colour( ) );
                 predecessor->set_parent( delete_me->get_parent( ) );
                 predecessor->right = delete_me->right;
-            }
-            else { // End node.
-                if( delete_me->left ) child = delete_me->left;
-                else child = delete_me->right;
+            } else { // End node.
+                if( delete_me->left ) {
+                    child = delete_me->left;
+                } else {
+                    child = delete_me->right;
+                }
                 parent = delete_me->get_parent( );
                 colour = delete_me->get_colour( );
-                if( parent && (delete_me == parent->left) ) lefty = true;
-                else lefty = false;
+                if( parent && ( delete_me == parent->left ) ) {
+                    lefty = true;
+                } else {
+                    lefty = false;
+                }
             }
-    
+
             // Delete delete_me.
             mem.destroy( delete_me );
             mem.deallocate( delete_me, 1 );
@@ -1030,46 +1049,47 @@ namespace std {
                     mRoot = child;
                     mRoot->set_parent( 0 );
                     mRoot->set_black( );
-                }
-                else {
+                } else {
                     mRoot = 0;
                 }
-            }
-            else if( colour == Node::red ) {
+            } else if( colour == Node::red ) {
                 // Red end node cant have a single child node or it would have violated red-red
                 // rule or black height rule removing it doesn't change black height so we are
                 // done.
-                if( lefty ) parent->left = 0;
-                else parent->right = 0;
-            }
-            else if( child ) {
+                if( lefty ) {
+                    parent->left = 0;
+                } else {
+                    parent->right = 0;
+                }
+            } else if( child ) {
                 // Black end node may have a single child, in which case it has to be red and we
                 // can fix up the black height easily.
                 if( lefty ) {
                     parent->left = child;
-                }
-                else { // Righty.
+                } else { // Righty.
                     parent->right = child;
                 }
                 child->set_parent( parent );
                 child->set_black( );
-            }
-            else {
+            } else {
                 // Black node with no children.
-                if( lefty ) parent->left = 0;
-                else parent->right = 0;
+                if( lefty ) {
+                    parent->left = 0;
+                } else {
+                    parent->right = 0;
+                }
                 // (Re)moving this will cause black height problem do some operations to keep rb
                 // tree valid.
                 double_black_transform( parent,lefty );
             }
-            
+
             return;
         }
 
         /* ------------------------------------------------------------------
          * double_black_transform
          * Fix double-black node to rebalance the tree after delete
-         * 
+         *
          * (this doesn't touch key or type, can the compiler figure out it can use one block of
          * code for all template instantiations or does it need to be coded in a non template
          * base class?)
@@ -1084,25 +1104,24 @@ namespace std {
                 Node *x,*y,*z,*b,*c;
                 if( lefty ) {
                     sibling = parent->right;
-                }
-                else { // Righty.
+                } else { // Righty.
                     sibling = parent->left;
                 }
-        
+
                 if( sibling->is_black( ) ) {
                     if( ( sibling->right && sibling->right->is_red( ) ) ||
                         ( sibling->left && sibling->left->is_red( ) ) ) {
                         // Main case 1 sibling black, at least one nephew red we can fix this
                         // case.
                         /*
-                         *     case a               case b        case c              case d    
-                         *      Z(*)                 Z(*)          X(*)                X(*)     
-                         *     /   \\               /   \\       //    \             //    \    
-                         *   X(b)   d(bb)         Y(b)   d(bb)  a(bb)   Y(b)       a(bb)   Z(b) 
-                         *  /    \               /    \                 /  \              /  \  
+                         *     case a               case b        case c              case d
+                         *      Z(*)                 Z(*)          X(*)                X(*)
+                         *     /   \\               /   \\       //    \             //    \
+                         *   X(b)   d(bb)         Y(b)   d(bb)  a(bb)   Y(b)       a(bb)   Z(b)
+                         *  /    \               /    \                 /  \              /  \
                          * a(*)   Y(r)          X(r)  c(*)            b(*) Z(r)         Y(r) d(*)
-                         *       /   \         /   \                       /   \       /   \    
-                         *     b(b)   c(b)   a(b)  b(b)                   c(b) d(b)   b(b) c(b) 
+                         *       /   \         /   \                       /   \       /   \
+                         *     b(b)   c(b)   a(b)  b(b)                   c(b) d(b)   b(b) c(b)
                          *
                          * Transform to this:
                          *       Y(*)
@@ -1115,30 +1134,27 @@ namespace std {
                          * nodes a,b,c may be null (leafs).
                          */
                         if( sibling->right && sibling->right->is_red( ) ) {
-                            if( lefty ) {     // case 1 c
+                            if( lefty ) {   // case 1 c
                                 x = parent;
                                 y = sibling;
                                 z = sibling->right;
                                 b = y->left;
                                 c = z->left;
-                            }
-                            else {            // case 1 a
+                            } else {        // case 1 a
                                 z = parent;
                                 x = sibling;
                                 y = sibling->right;
                                 b = y->left;
                                 c = y->right;
                             }
-                        }
-                        else { // sibling->left && sibling->left->colour == red 
-                            if( lefty ) {     // case 1 d
+                        } else { // sibling->left && sibling->left->colour == red
+                            if( lefty ) {   // case 1 d
                                 x = parent;
                                 z = sibling;
                                 y = sibling->left;
                                 b = y->left;
                                 c = y->right;
-                            }
-                            else {            // case 1 b
+                            } else {        // case 1 b
                                 z = parent;
                                 y = sibling;
                                 x = sibling->left;
@@ -1148,11 +1164,14 @@ namespace std {
                         }
                         // Finish off case 1 by relinking to correct sturcture.
                         y->set_parent( parent->get_parent( ) );
-                        if( parent == mRoot ) mRoot = y;
-                        else {    // Link grandparent back to y.
-                            if( parent == parent->get_parent( )->left ) 
+                        if( parent == mRoot ) {
+                            mRoot = y;
+                        } else {    // Link grandparent back to y.
+                            if( parent == parent->get_parent( )->left ) {
                                 parent->get_parent( )->left = y;
-                            else parent->get_parent( )->right = y;
+                            } else {
+                                parent->get_parent( )->right = y;
+                            }
                         }
                         y->set_colour( parent->get_colour( ) );
                         y->left = x;
@@ -1160,54 +1179,54 @@ namespace std {
                         x->set_parent( y );
                         x->set_black( );
                         x->right = b;       // x->left is unchanged as a
-                        if( b ) b->set_parent( x );
+                        if( b )
+                            b->set_parent( x );
                         z->set_parent( y );
                         z->set_black( );
                         z->left = c;        // z->right is unchanged as d
-                        if( c ) c->set_parent( z );
+                        if( c )
+                            c->set_parent( z );
                         return;
-                    }
-                    else {  // Nephews both black.
-                        if( parent->is_red( ) ){
+                    } else {  // Nephews both black.
+                        if( parent->is_red( ) ) {
                             // Main case 2: sibling black, two black nephews, parent red we can
                             // fix this case
                             /*
-                             *      case a           case b         
-                             *       Z(r)             X(r)          
-                             *      /   \\           //   \         
-                             *    X(b)   d(bb)     a(bb)  Z(b)      
-                             *   /    \                  /    \     
-                             *  a(b)   b(b)             b(b)  d(b)  
-                             * 
+                             *      case a           case b
+                             *       Z(r)             X(r)
+                             *      /   \\           //   \
+                             *    X(b)   d(bb)     a(bb)  Z(b)
+                             *   /    \                  /    \
+                             *  a(b)   b(b)             b(b)  d(b)
+                             *
                              * Recolour to this:
-                             *        Z(b)              X(b)        
-                             *       /    \            /    \       
-                             *    X(r)    d(b)       a(b)   Z(r)    
-                             *   /   \                     /    \   
+                             *        Z(b)              X(b)
+                             *       /    \            /    \
+                             *    X(r)    d(b)       a(b)   Z(r)
+                             *   /   \                     /    \
                              *  a(b) b(b)                b(b)   d(b)
                              *
                              */
                             parent->set_black( );
                             sibling->set_red( );
                             return;
-                        }
-                        else { // Parent black.
+                        } else { // Parent black.
                             // Main case 3: sibling black, two black nephews, parent black.
                             /*
-                             *        case a           case b       
-                             *         Z(b)             X(b)        
-                             *        /   \\           //   \       
-                             *      X(b)   d(bb)     a(bb)  Z(b)    
-                             *     /    \                  /    \   
+                             *        case a           case b
+                             *         Z(b)             X(b)
+                             *        /   \\           //   \
+                             *      X(b)   d(bb)     a(bb)  Z(b)
+                             *     /    \                  /    \
                              *    a(b)   b(b)             b(b)  d(b)
-                             * 
+                             *
                              * Recolour to propergate double black:
-                             *        ||                ||          
-                             *       Z(bb)             X(bb)        
-                             *      /     \           /    \        
-                             *   X(r)      d(b)     a(b)   Z(r)     
-                             *  /   \                     /    \    
-                             * a(b) b(b)                b(b)   d(b) 
+                             *        ||                ||
+                             *       Z(bb)             X(bb)
+                             *      /     \           /    \
+                             *   X(r)      d(b)     a(b)   Z(r)
+                             *  /   \                     /    \
+                             * a(b) b(b)                b(b)   d(b)
                              *
                              * Not much we can do - propergate double black If double black has
                              * properaged to to root just set it black as we have acheived balance
@@ -1220,30 +1239,32 @@ namespace std {
                                 return;
                             }
                             Node* grandparent = parent->get_parent( );
-                            if( parent == grandparent->left) lefty = true;
-                            else lefty = false;
+                            if( parent == grandparent->left ) {
+                                lefty = true;
+                            } else {
+                                lefty = false;
+                            }
                             // Loop to top of double_black_transform with new parent (replaces
                             // recursion) double_black_transform(grandparent, lefty); return;
                             parent = grandparent;
                         }
                     } // End main case 2/3.
-                }
-                else {
+                } else {
                     // Main case 4: red sibling.
                     /*
-                     *        case a           case b       
-                     *         Z(b)             X(b)        
-                     *        /   \\           //   \       
-                     *      X(r)   d(bb)     a(bb)  Z(r)    
-                     *     /    \                  /    \   
+                     *        case a           case b
+                     *         Z(b)             X(b)
+                     *        /   \\           //   \
+                     *      X(r)   d(bb)     a(bb)  Z(r)
+                     *     /    \                  /    \
                      *    a(b)   b(b)             c(b)  d(b)
-                     * 
+                     *
                      * Recolour to propergate double black:
-                     *       X(b)                   Z(b)    
-                     *      /    \                 /    \   
+                     *       X(b)                   Z(b)
+                     *      /    \                 /    \
                      *   a(b)     Z(r)           X(r)   d(b)
-                     *           /   \\         //  \       
-                     *         b(b)  d(bb)   a(bb)  c(b)    
+                     *           /   \\         //  \
+                     *         b(b)  d(bb)   a(bb)  c(b)
                      *
                      * This is an annoying one! Note, a and b must have children (ie a/b
                      * can't be null/leaves) or the black height doesn't add up. Double
@@ -1254,30 +1275,27 @@ namespace std {
                     if( parent == mRoot ) {
                         mRoot = sibling;
                         sibling->set_parent( 0 );
-                    }
-                    else if ( parent == parent->get_parent( )->left ) {
+                    } else if( parent == parent->get_parent( )->left ) {
                         parent->get_parent( )->left = sibling;
                         sibling->set_parent( parent->get_parent( ) );
-                    }
-                    else {// Parent is a righty.
+                    } else {// Parent is a righty.
                         parent->get_parent( )->right = sibling;
                         sibling->set_parent( parent->get_parent( ) );
                     }
                     parent->set_red( );
                     sibling->set_black( );
-            
+
                     if( lefty ) {
                         // case b
                         x = parent;
                         c = sibling->left;
                         z = sibling;
-                        x->right = c;      
+                        x->right = c;
                         c->set_parent( x );
                         x->set_parent( z );
                         z->left = x;
                         // a & d stay linked to the same nodes
-                    }
-                    else {  // righty.
+                    } else {  // righty.
                         // case a
                         z = parent;
                         b = sibling->right;
@@ -1309,7 +1327,7 @@ namespace std {
         RedBlackTree< Key, Compare, Allocator, ValueWrapper >::unbalanced_insert(
             const value_type &v )
         {
-            if( mRoot==0 ) {                 // Special case nothing exists yet.
+            if( mRoot == 0 ) {              // Special case nothing exists yet.
                 mRoot = mem.allocate( 1 );
                 try {
                     mem.construct( mRoot, Node( v, 0, Node::black ) );
@@ -1324,19 +1342,18 @@ namespace std {
                 mSize++;
                 return( std::pair<iterator, bool>( iterator(this, mRoot), true ) );
             }
-    
+
             Node *n = mRoot;
             Node *notLT = 0;
             Node *last = n;
             bool  LtLast;
-    
+
             while( n ) {
                 if( cmp(key_getter( v ), key_getter( n->value ) ) ) {
                     last = n;
                     LtLast = true;
                     n = n->left;
-                }
-                else {
+                } else {
                     last = n;
                     LtLast = false;
                     notLT = n;
@@ -1346,8 +1363,7 @@ namespace std {
 
             // The last node the key is not less than (if any) may be equal, in which case it
             // was found.
-            if( notLT && 
-                !( cmp( key_getter( notLT->value ), key_getter( v ) ) ) ) {
+            if( notLT && !( cmp( key_getter( notLT->value ), key_getter( v ) ) ) ) {
                 // !(a<b) & !(b<a) then a==b
                 return( std::pair<iterator,bool>( iterator(this, notLT), false ) );
             }
@@ -1363,13 +1379,16 @@ namespace std {
             mSize++;
             if( LtLast ) {
                 last->left = newnode;
-                if( last == mFirst ) mFirst = newnode;
-            }
-            else {
+                if( last == mFirst ) {
+                    mFirst = newnode;
+                }
+            } else {
                 last->right = newnode;
-                if( last == mLast ) mLast = newnode;
+                if( last == mLast ) {
+                    mLast = newnode;
+                }
             }
-    
+
             return( std::pair<iterator,bool>( iterator(this, newnode), true ) );
         }
 
@@ -1390,7 +1409,7 @@ namespace std {
             const value_type &v )
         {
             pair< iterator, bool > inserted = unbalanced_insert( v );
-            if( inserted.second ) { 
+            if( inserted.second ) {
                 Node *n = inserted.first.get_node_pointer( );
                 if( n != mRoot ) {
                     // Do some operations to keep rb tree valid.
@@ -1421,14 +1440,11 @@ namespace std {
         {
             pair< iterator, bool > inserted;
             iterator b4hint;
-            if( mSize &&
-                ( hint == end( ) || cmp( key_getter(v), key_getter(*hint) ) ) ) {
-                
+            if( mSize && ( hint == end( ) || cmp( key_getter( v ), key_getter( *hint ) ) ) ) {
+
                 // At this point tree isn't empty and key is before hint.
                 b4hint = hint;
-                if( hint == begin( ) ||
-                    cmp( key_getter( *(--b4hint) ), key_getter( v ) ) ) {
-
+                if( hint == begin( ) || cmp( key_getter( *(--b4hint) ), key_getter( v ) ) ) {
                     // At this point key is also before begin or after (hint-1) so hint is good
                     // now, either hint->left or (hint-1)->right must have a unused leaf node
                     // where the new node belongs.
@@ -1437,8 +1453,7 @@ namespace std {
 
                     if( hint != end( ) && hint.get_node_pointer( )->left == 0 ) {
                         parent = hint.get_node_pointer( );
-                    }
-                    else {
+                    } else {
                         parent = b4hint.get_node_pointer( );
                         lefty = false;
                     }
@@ -1455,19 +1470,24 @@ namespace std {
                     // Fix up pointers.
                     if( lefty ) {
                         parent->left = newnode;
-                        if( parent == mFirst ) mFirst = newnode;
-                    }
-                    else {
+                        if( parent == mFirst ) {
+                            mFirst = newnode;
+                        }
+                    } else {
                         parent->right = newnode;
-                        if( parent == mLast ) mLast = newnode;
+                        if( parent == mLast ) {
+                            mLast = newnode;
+                        }
                     }
                     inserted = make_pair( iterator(this, newnode), true );
+                } else {
+                    inserted = unbalanced_insert( v ); // Hint bad (or key already exists).
                 }
-                else inserted = unbalanced_insert( v ); // Hint bad (or key already exists).
+            } else {
+                inserted = unbalanced_insert( v ); // Hint is bad or tree is empty.
             }
-            else inserted = unbalanced_insert( v ); // Hint is bad or tree is empty.
-    
-            if( inserted.second ) { 
+
+            if( inserted.second ) {
                 Node *n = inserted.first.get_node_pointer( );
                 if( n != mRoot ) {
                     // Do some operations to keep rb tree valid.
@@ -1484,7 +1504,7 @@ namespace std {
 
 
         /* ==================================================================
-         * MLRBTNode 
+         * MLRBTNode
          *
          * Sub-node type that forms a linked list and is stored in the rbtree node to create the
          * MultiListRBTree.
@@ -1514,7 +1534,7 @@ namespace std {
             typedef pair< const Key, Type > value_type;
             const Key &operator()( const value_type &v ) const
                 { return( v.first ); }
-    
+
             struct TreeWrapper {
                 // This is the rbtree value_type (pointer to list).
                 typedef MLRBTNode< pair< const Key, Type > > *value_type;
@@ -1529,7 +1549,7 @@ namespace std {
             typedef Key value_type;
             const Key &operator()( const value_type &v ) const
                 { return( v ); }
-    
+
             struct TreeWrapper{
                 // This is the rbtree value_type (pointer to list).
                 typedef MLRBTNode< Key > *value_type;
@@ -1539,7 +1559,7 @@ namespace std {
         };
 
         /* ==================================================================
-         * MultiListRBTree 
+         * MultiListRBTree
          *
          * Adds linked list to redblack tree to build a multimap/set. handles the list
          * operations in this class rather than using a full blown (or even a cut down one) list
@@ -1561,7 +1581,7 @@ namespace std {
         private:
             typedef RedBlackTree< Key, Compare, Allocator, ValueWrapper::TreeWrapper > tree_type;
             typedef MLRBTNode< value_type > node_type;
-    
+
             Allocator::rebind< node_type >::other mem; // Moved up here to stop crash.
 
         public:
@@ -1572,11 +1592,11 @@ namespace std {
             MultiListRBTree( const MultiListRBTree & );
            ~MultiListRBTree( );
 
-            Allocator get_allocator( ) const 
+            Allocator get_allocator( ) const
                 { Allocator a(mem); return( a ); }
 
             MultiListRBTree &operator=( const MultiListRBTree & );
-    
+
             /* ------------------------------------------------------------------
              * iterators
              */
@@ -1586,13 +1606,15 @@ namespace std {
             class iterator_base{
             public:
                 iterator_base &operator++( )
-                { 
+                {
                     if( self == (*tit)->bwd ) {  // If last element in list.
                         ++tit;
-                        if( tit != mlt->mTree.end( ) ) self = *tit;
-                        else self = 0;          // Signals end iterator.
-                    }
-                    else {
+                        if( tit != mlt->mTree.end( ) ) {
+                            self = *tit;
+                        } else {
+                            self = 0;          // Signals end iterator.
+                        }
+                    } else {
                         self = self->fwd;
                     }
                     return( *this );
@@ -1604,8 +1626,7 @@ namespace std {
                         // If first element in list or end of list.
                         --tit;
                         self = (*tit)->bwd;
-                    }
-                    else {
+                    } else {
                         self = self->bwd;
                     }
                     return( *this );
@@ -1623,7 +1644,7 @@ namespace std {
                 bool operator!=( const iterator_base &that )
                     { return( self != that.self ); }
 
-                const iterator_base &operator=( const iterator_base &that ) 
+                const iterator_base &operator=( const iterator_base &that )
                 {
                     tit = that.tit;
                     mlt = that.mlt;
@@ -1640,7 +1661,7 @@ namespace std {
                     : tit( x.tit ), mlt( x.mlt ), self( x.self )
                     { }
 
-                iterator_base( const MultiListRBTree *m, const tree_type::iterator &i ) 
+                iterator_base( const MultiListRBTree *m, const tree_type::iterator &i )
                     : mlt( m ), tit( i )
                     { ( tit != (mlt->mTree).end( ) ) ? self = (*tit) : self = 0; }
 
@@ -1697,7 +1718,7 @@ namespace std {
                 const_iterator( const iterator &i ) : iterator_base( i )
                     { }
 
-                const_iterator( const MultiListRBTree *m, const tree_type::iterator &i ) 
+                const_iterator( const MultiListRBTree *m, const tree_type::iterator &i )
                     : iterator_base( m, i )
                     { }
 
@@ -1760,7 +1781,7 @@ namespace std {
 
             std::pair< const_iterator, const_iterator > equal_range( const key_type & x ) const
                 { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
-    
+
             // OWSTL extentions.
             bool _Sane( );
 
@@ -1775,7 +1796,7 @@ namespace std {
          * copy ctor
          */
         template< class Key, class Compare, class Allocator, class ValueWrapper >
-        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::MultiListRBTree( 
+        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::MultiListRBTree(
             const MultiListRBTree< Key, Compare, Allocator, ValueWrapper > &that )
             : mTree( that.mTree ), mem( that.mem )
         {
@@ -1841,7 +1862,8 @@ namespace std {
                 // The copy either completely succeeds or completely fails so rewind the nodes
                 // added so far.
                 for( ; it != mTree.begin( ); --it ) {
-                    if( *it == 0 ) continue;
+                    if( *it == 0 )
+                        continue;
                     node_type *n = *it;
                     node_type *delete_me;
                     node_type *end = n;
@@ -1855,7 +1877,7 @@ namespace std {
                 mTree.clear( );
                 throw;
             }
-    
+
             // Success.
             mSize = that.mSize;
         }
@@ -1901,8 +1923,7 @@ namespace std {
             if( ans.second ) {  // Insert happened.
                 n->fwd = n;
                 n->bwd = n;
-            }
-            else {            // Already inserted.
+            } else {            // Already inserted.
                 node_type *o = *ans.first;  // Get pointer to already inserted node
                 n->bwd = o->bwd;            // fix up links so as to add new node
                 n->fwd = o;                 // to end of list.
@@ -1928,33 +1949,32 @@ namespace std {
             // !!!
 
             // To insert x at p:
-            //    if p == end || x <= *p
-            //       if p == begin || x >= *(p-1)
+            //    if( p == end || x <= *p ) {
+            //       if( p == begin || x >= *(p-1) ) {
             //          insert x before p
-            //       else
+            //       } else {
             //          insert x before upper_bound(x)
-            //    else
+            //       }
+            //    } else {
             //       insert x before lower_bound(x)
-            
+            //    }
+
             iterator pos;
             if( mSize == 0 ) {
                 pos = end( );
-            }
-            else {
+            } else {
                 if( hint == end( ) || !cmp( key_getter( *hint ), key_getter( v ) ) ) {
                     // !(hint < v)  ==  v <= hint
-                    iterator b4hint = hint; 
+                    iterator b4hint = hint;
                     if( hint == begin( ) || !cmp( key_getter( v ), key_getter( *(--b4hint) ) ) ) {
                         // !(v < hint)  ==  v >= hint
                         // Insert before hint.
                         pos = hint;
-                    }
-                    else {
+                    } else {
                         // Insert before upper_bound.
                         pos = upper_bound( key_getter(v) );
                     }
-                }
-                else {
+                } else {
                     // Insert before lower_bound.
                     pos = lower_bound( key_getter(v) );
                 }
@@ -1984,8 +2004,7 @@ namespace std {
                 // Only node in list.
                 n->fwd = n;
                 n->bwd = n;
-            }
-            else {
+            } else {
                 if( pos == end( ) || cmp( key_getter( v ), key_getter( *pos ) ) ) {
                     // Insert at end of previous list.
                     --pos;
@@ -1993,10 +2012,10 @@ namespace std {
                     n->fwd = pos.self->fwd;
                     pos.self->fwd->bwd = n;
                     pos.self->fwd = n;
-                }
-                else {
+                } else {
                     // Insert in list before hint.
-                    if( *(pos.tit) == pos.self ) *(pos.tit) = n;
+                    if( *(pos.tit) == pos.self )
+                        *(pos.tit) = n;
                     n->bwd = pos.self->bwd;
                     n->fwd = pos.self;
                     pos.self->bwd->fwd = n;
@@ -2043,7 +2062,8 @@ namespace std {
         template< class Key, class Compare, class Allocator, class ValueWrapper >
         bool MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::_Sane( )
         {
-            if( !mTree._Sane( ) ) return false;
+            if( !mTree._Sane( ) )
+                return false;
             // Do more tests here.
             return true;
         }
@@ -2066,7 +2086,8 @@ namespace std {
         MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::count( const key_type &k )
         {
             tree_type::iterator tit = mTree.find( k );
-            if( tit == mTree.end( ) ) return 0;
+            if( tit == mTree.end( ) )
+                return 0;
             node_type *start = *tit;
             node_type *n = start;
             size_type c = 0;
@@ -2074,7 +2095,7 @@ namespace std {
                 n = n->fwd;
                 ++c;
             } while( n != start );
-            
+
             return( c );
         }
 
@@ -2087,13 +2108,11 @@ namespace std {
             node_type *n = it.self;
             if( n == n->fwd ) {           // If only element in list...
                 mTree.erase( it.tit );
-            }
-            else if( *(it.tit) == n ) {   // If master element in list & >1 element...
+            } else if( *(it.tit) == n ) { // If master element in list & >1 element...
                 n->bwd->fwd = n->fwd;     // Relink to remove n.
                 n->fwd->bwd = n->bwd;
                 *(it.tit) = n->fwd;       // Set tree to hold new master element.
-            }
-            else {                        // If not master element & >1 element...
+            } else {                      // If not master element & >1 element...
                 n->bwd->fwd = n->fwd;     // Relink to remove n.
                 n->fwd->bwd = n->bwd;
             }
@@ -2171,7 +2190,7 @@ namespace std {
         }
 
 
-    } // End of namespace _ow
-} // End of namespace std
+    } // namespace _ow
+:include nsstdepi.sp
 
 #endif

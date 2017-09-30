@@ -89,7 +89,7 @@ static Range *doUnion( Range *r1, Range *r2 )
 {
     Range   *r, **rP = &r;
 
-    for( ;; ){
+    for( ;; ) {
         Range *s;
         if( r1->lb <= r2->lb ) {
             s = Range_new_copy( r1 );
@@ -104,9 +104,10 @@ static Range *doUnion( Range *r1, Range *r2 )
                     break;
                 if( r1->ub > s->ub )
                     s->ub = r1->ub;
-                if( !(r1 = r1->next) ) {
+                r1 = r1->next;
+                if( r1 == NULL ) {
                     uint ub = 0;
-                    for( ; r2 && r2->lb <= s->ub; r2 = r2->next )
+                    for( ; r2 != NULL && r2->lb <= s->ub; r2 = r2->next )
                         ub = r2->ub;
                     if( ub > s->ub )
                         s->ub = ub;
@@ -118,9 +119,10 @@ static Range *doUnion( Range *r1, Range *r2 )
                     break;
                 if( r2->ub > s->ub )
                     s->ub = r2->ub;
-                if( !(r2 = r2->next) ) {
+                r2 = r2->next;
+                if( r2 == NULL ) {
                     uint ub = 0;
-                    for( ; r1 && r1->lb <= s->ub; r1 = r1->next )
+                    for( ; r1 != NULL && r1->lb <= s->ub; r1 = r1->next )
                         ub = r1->ub;
                     if( ub > s->ub )
                         s->ub = ub;
@@ -136,15 +138,16 @@ static Range *doDiff( Range *r1, Range *r2 )
 {
     Range   *r, *s, **rP = &r;
 
-    for( ; r1; r1 = r1->next ) {
+    for( ; r1 != NULL ; r1 = r1->next ) {
         uint lb = r1->lb;
-        for( ; r2 && r2->ub <= r1->lb; r2 = r2->next ) ;
-        for( ; r2 && r2->lb <  r1->ub; r2 = r2->next ) {
+        for( ; r2 != NULL && r2->ub <= r1->lb; r2 = r2->next ) ;
+        for( ; r2 != NULL && r2->lb <  r1->ub; r2 = r2->next ) {
             if( lb < r2->lb ) {
                 *rP = s = Range_new( lb, r2->lb );
                 rP = &s->next;
             }
-            if( (lb = r2->ub) >= r1->ub ) {
+            lb = r2->ub;
+            if( lb >= r1->ub ) {
                 goto noMore;
             }
         }
@@ -349,8 +352,10 @@ static void MatchOp_split( RegExp *re, CharSet *s )
             if( a == NULL ) {
                 if( x->card == 1 )
                     continue;
-                x->nxt = a = s->freeHead;
-                if( !(s->freeHead = s->freeHead->nxt) )
+                a = s->freeHead;
+                x->nxt = a;
+                s->freeHead = s->freeHead->nxt;
+                if( s->freeHead == NULL )
                     s->freeTail = &s->freeHead;
                 a->nxt = NULL;
                 x->fix = s->fix;
@@ -358,7 +363,8 @@ static void MatchOp_split( RegExp *re, CharSet *s )
             }
             if( --(x->card) == 0 ) {
                 *s->freeTail = x;
-                *(s->freeTail = &x->nxt) = NULL;
+                s->freeTail = &x->nxt;
+                *(s->freeTail) = NULL;
             }
             s->rep[c] = a;
             ++(a->card);
@@ -494,9 +500,9 @@ RegExp *RegExp_new_CloseOp( RegExp *e )
 
 static RegExp *merge( RegExp *m1, RegExp *m2 )
 {
-    if( !m1 )
+    if( m1 == NULL )
         return( m2 );
-    if( !m2 )
+    if( m2 == NULL )
         return( m1 );
     return( RegExp_new_MatchOp( doUnion( m1->u.MatchOp.match, m2->u.MatchOp.match ) ) );
 }
@@ -511,19 +517,21 @@ RegExp *mkDiff( RegExp *e1, RegExp *e2 )
     RegExp  *m1, *m2;
     Range   *r;
 
-    if( !(m1 = RegExp_isA( e1, MATCHOP )) )
+    m1 = RegExp_isA( e1, MATCHOP );
+    if( m1 == NULL )
         return( NULL );
-    if( !(m2 = RegExp_isA( e2, MATCHOP )) )
+    m2 = RegExp_isA( e2, MATCHOP );
+    if( m2 == NULL )
         return( NULL );
     r = doDiff( m1->u.MatchOp.match, m2->u.MatchOp.match );
-    return( r ? RegExp_new_MatchOp( r ) : RegExp_new_NullOp() );
+    return( ( r != NULL ) ? RegExp_new_MatchOp( r ) : RegExp_new_NullOp() );
 }
 
 static RegExp *doAlt( RegExp *e1, RegExp *e2 )
 {
-    if( !e1 )
+    if( e1 == NULL )
         return( e2 );
-    if( !e2 )
+    if( e2 == NULL )
         return( e1 );
     return( RegExp_new_AltOp( e1, e2 ) );
 }
@@ -703,8 +711,8 @@ void genCode( FILE *o, RegExp *re )
         cerr << "\t" << cs.rep[j] - &cs.ptn[0] << endl;
     }
 */
-    for(j = 0; j < NCHARS; ++j){
-        if( !cs.rep[j]->nxt )
+    for( j = 0; j < NCHARS; ++j ) {
+        if( cs.rep[j]->nxt == NULL )
             cs.rep[j]->nxt = &cs.ptn[j];
         rep[j] = (Char)( cs.rep[j]->nxt - &cs.ptn[0] );
     }
@@ -718,7 +726,7 @@ void genCode( FILE *o, RegExp *re )
     eoi->i.link = eoi;
 
     optimize( ins );
-    for(j = 0; j < re->size;){
+    for( j = 0; j < re->size; ) {
         ins[j].i.marked = false;
         if( ins[j].i.tag == CHAR ) {
             j = (Ins *)ins[j].i.link - ins;

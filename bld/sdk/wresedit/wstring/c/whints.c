@@ -91,7 +91,7 @@ static WHintItem WHints[] = {
     { IDM_HELP,             W_STR_HELP            },
     { IDM_HELP_SEARCH,      W_STR_HELP_SEARCH     },
     { IDM_HELP_ON_HELP,     W_STR_HELP_ON_HELP    },
-    { -1,                   0                     }
+    { 0,                    0                     }
 };
 
 static WPopupHintItem WPopupHints[] = {
@@ -136,7 +136,7 @@ static WHintItem *WGetHintItem( ctl_id id )
 {
     int i;
 
-    for( i = 0; WHints[i].id != -1; i++ ) {
+    for( i = 0; WHints[i].id > 0; i++ ) {
         if( WHints[i].id == id ) {
             return( &WHints[i] );
         }

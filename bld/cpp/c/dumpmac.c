@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 #include "ppdmpmac.h"
 
 
@@ -77,10 +77,9 @@ int main( int argc, char *argv[] )
         printf( "Usage: dumpmac filename\r\n" );
         exit( 1 );
     }
-    if( argv[2] != NULL ) {
-        PP_PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
+    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
+    if( PP_FileInit( argv[1], 0, NULL ) != 0 ) {
+        PP_Fini();
         printf( "Unable to open '%s'\r\n", argv[1] );
         exit( 1 );
     }
@@ -92,6 +91,7 @@ int main( int argc, char *argv[] )
     }
     PP_Dump_Macros();
     dumpheap();
+    PP_FileFini();
     PP_Fini();
     dumpheap();
     return( 0 );

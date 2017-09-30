@@ -1098,16 +1098,11 @@ unsigned_32 GetStubSize( void )
         } else {
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
             if( dosheader.signature == DOS_SIGNATURE ) {
-                if( dosheader.mod_size == 0 ) {
-                    read_len = 512;
-                } else {
-                    read_len = dosheader.mod_size;
-                }
                 code_start = dosheader.hdr_size * 16ul;
-                read_len += (dosheader.file_size - 1) * 512ul - code_start;
+                read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
                 // make sure reloc_size is a multiple of 16.
                 reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
-                dosheader.hdr_size = 4 + reloc_size/16;
+                dosheader.hdr_size = 4 + reloc_size / 16;
                 stub_len = read_len + dosheader.hdr_size * 16ul;
             }
             QClose( the_file, FmtData.u.os2.stub_file_name );
@@ -1165,20 +1160,15 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
             stub_len = WriteDefStub( stub_align );
         } else {
-            if( dosheader.mod_size == 0 ) {
-                read_len = 512;
-            } else {
-                read_len = dosheader.mod_size;
-            }
             QSeek( the_file, dosheader.reloc_offset, FmtData.u.os2.stub_file_name );
             dosheader.reloc_offset = 0x40;
             code_start = dosheader.hdr_size * 16ul;
-            read_len += (dosheader.file_size - 1) * 512ul - code_start;
+            read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
             // make sure reloc_size is a multiple of 16.
             reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
             dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
-            dosheader.file_size = ( stub_len + 511 ) >> 9;  // round up.
+            dosheader.file_size = ( stub_len + 511 ) / 512;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
             PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
@@ -1205,8 +1195,6 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             stub_len = NullAlign( stub_align );
         }
         QClose( the_file, FmtData.u.os2.stub_file_name );
-        _LnkFree( FmtData.u.os2.stub_file_name );
-        FmtData.u.os2.stub_file_name = NULL;
     }
     return( stub_len );
 }

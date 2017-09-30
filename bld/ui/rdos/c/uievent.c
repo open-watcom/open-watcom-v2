@@ -31,7 +31,6 @@
 
 
 #include <rdos.h>
-#include <stdlib.h>
 #include <malloc.h>
 #include <dos.h>
 #include "uidef.h"

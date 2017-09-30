@@ -66,9 +66,11 @@ static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
 BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam )
 {
     char        buf[256];
+    int         len;
 
     lparam = lparam;
-    GetClassName( hwnd, buf, sizeof( buf ) );
+    len = GetClassName( hwnd, buf, sizeof( buf ) );
+    buf[len] = '\0';
     if( strcmp( buf, ClassName ) == 0 ) {
         GetWindowText( hwnd, buf, sizeof( buf ) );
         if( strncmp( buf, Caption, CaptionLen ) == 0 ) {

@@ -40,6 +40,33 @@
 extern msglist DDEMsgs[1];
 
 /*
+ * GetHexStr - convert a number to a hex string, padded out with 0's
+ */
+void GetHexStr( LPSTR res, ULONG_PTR num, size_t padlen )
+{
+    char        tmp[20];
+    size_t      i;
+    size_t      j,k;
+
+#ifdef _WIN64
+    i = sprintf( tmp, "%llx", num );
+#else
+    i = sprintf( tmp, "%lx", num );
+#endif
+    k = 0;
+    for( j = i; j < padlen; j++ ) {
+        res[k++] = '0';
+    }
+    for( j = 0; j < i; j++ ) {
+        res[k++] = tmp[j];
+    }
+    if( padlen == 0 ) {
+        res[k] = '\0';
+    }
+
+} /* GetHexStr */
+
+/*
  * LogHeader
  */
 void LogHeader( FILE *f )
@@ -54,16 +81,16 @@ void LogHeader( FILE *f )
     }
     buf[i] = '\0';
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
     RCsprintf( buf, STR_LOG_HEADER, asctime( localtime( &tm ) ) );
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
     for( i = 0; i < 80; i++ ) {
         buf[i] = '-';
     }
     buf[i] = '\0';
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
 
 } /* LogHeader */
 
@@ -84,6 +111,23 @@ void DumpHeader( FILE *fptr )
     fprintf( fptr, str );
 
 } /* DumpHeader */
+
+
+char *DumpLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}
 
 /*
  * InitGblStrings

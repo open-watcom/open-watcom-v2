@@ -1843,6 +1843,7 @@ TYPE AlignmentType( TYPE typ )
         case TYP_ARRAY:
             typ = typ->of;
             break;
+        case TYP_NULLPTR:
         case TYP_POINTER:
         case TYP_MEMBER_POINTER:
             return( GetBasicType( TYP_UINT ) );
@@ -2471,8 +2472,12 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
         spec->ms_declspec = MSDS_THREAD;
     } else if( strcmp( NameStr( name ), "naked" ) == 0 ) {
         spec->ms_declspec = MSDS_NAKED;
+    } else if( strcmp( NameStr( name ), "aborts" ) == 0 ) {
+        spec->ms_declspec = MSDS_ABORTS;
     } else if( strcmp( NameStr( name ), "noreturn" ) == 0 ) {
         spec->ms_declspec = MSDS_NORETURN;
+    } else if( strcmp( NameStr( name ), "farss" ) == 0 ) {
+        spec->ms_declspec = MSDS_FARSS;
     } else {
         PTreeErrorExprName( id, ERR_UNSUPPORTED_DECLSPEC, name );
     }
@@ -3369,8 +3374,18 @@ static TYPE makeMSDeclSpecType( DECL_SPEC *dspec )
         fnmod_type->of = type;
         type = fnmod_type;
     }
+    if( ms_declspec & MSDS_ABORTS ) {
+        fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_ABORTS );
+        fnmod_type->of = type;
+        type = fnmod_type;
+    }
     if( ms_declspec & MSDS_NORETURN ) {
         fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NORETURN );
+        fnmod_type->of = type;
+        type = fnmod_type;
+    }
+    if( ms_declspec & MSDS_FARSS ) {
+        fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_FARSS );
         fnmod_type->of = type;
         type = fnmod_type;
     }
@@ -3587,6 +3602,9 @@ static TYPE makeModifiedTypeOf( TYPE mod, TYPE of )
             if( of->flag & TF1_INTERRUPT ) {
                 /* interrupt implies default far */
                 mod->flag |= TF1_FAR;
+                if( !CompFlags.mfi_switch_used ) {
+                    mod->flag |= TF1_FARSS;
+                }
             }
         }
         mod->flag &= ~TF1_CV_MASK;
@@ -3874,6 +3892,9 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                     if( prev_type->flag & TF1_INTERRUPT ) {
                         /* interrupt implies default far */
                         prev_type = MakeModifiedType( prev_type, TF1_FAR );
+                        if( !CompFlags.mfi_switch_used ) {
+                            prev_type = MakeModifiedType( prev_type, TF1_FARSS );
+                        }
                     }
                 }
             }
@@ -3896,6 +3917,9 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
                 if( prev_type->flag & TF1_INTERRUPT ) {
                     /* interrupt implies default far */
                     prev_type = MakeModifiedType( prev_type, TF1_FAR );
+                    if( !CompFlags.mfi_switch_used ) {
+                        prev_type = MakeModifiedType( prev_type, TF1_FARSS );
+                    }
                 }
             }
         }
@@ -4407,8 +4431,8 @@ void PTypePop( DECL_SPEC *dspec )
     PTypeRelease( dspec );
 }
 
-TYPE MakePragma( char *name )
-/***************************/
+TYPE MakePragma( const char *name )
+/*********************************/
 {
     TYPE type;
     AUX_INFO *pragma;
@@ -4422,8 +4446,8 @@ TYPE MakePragma( char *name )
     return( type );
 }
 
-TYPE MakeIndexPragma( unsigned index )
-/************************************/
+TYPE MakeIndexPragma( magic_word_idx index )
+/******************************************/
 {
     TYPE type;
     AUX_INFO *pragma;
@@ -8368,6 +8392,7 @@ static void initBasicTypes( void )
         TYP_LONG_DOUBLE,
         TYP_VOID,
         TYP_DOT_DOT_DOT,
+        TYP_NULLPTR,
         TYP_MAX
     };
 

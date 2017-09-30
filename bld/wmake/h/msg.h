@@ -63,9 +63,9 @@ enum {
 extern size_t   FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
 #if !defined( NDEBUG )
-extern void     massert( const char *expr, const char *file, int line );
+NO_RETURN extern void     massert( const char *expr, const char *file, int line );
 #endif
-extern void     Usage( void );
+NO_RETURN extern void     Usage( void );
 extern bool     GetYes( enum MsgClass querymsg );
 extern void     LogInit( const char *logname );
 extern void     LogFini( void );

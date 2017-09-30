@@ -34,15 +34,14 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   template< class Type, class Allocator = allocator< Type >,
             int PageSize = 32 > //to do, assert/force power of 2
   class deque {
@@ -161,7 +160,7 @@ namespace std {
 
     explicit deque( const Allocator & = Allocator( ) );
     explicit deque( size_type n, const Type &value = Type( ), const Allocator & = Allocator( ) );
-    // copy ctor should probably be templated so it is possible to construct a 
+    // copy ctor should probably be templated so it is possible to construct a
     // deque from one with a different PageSize.
     deque( const deque &other );
    ~deque( );
@@ -223,7 +222,7 @@ namespace std {
     // 8. when cbuf empty head == wrap(tail+1)
     // 9. always at least one empty element empty (for end iterator to point to)
     // 9. buffer reallocated when an insert would cause chead == ctail,
-    //      or the last element would be used up, but not 
+    //      or the last element would be used up, but not
     //      first insert after container empty (see is_back/front_full() )
     //
     Allocator pmem;                     // (de)alloc pages of contained types
@@ -248,7 +247,7 @@ namespace std {
     inline static size_type get_pi( size_type i ) { return( i % PageSize ); }
     // pagesize and cbuf_length must be power of 2 for this to work
     size_type wrap( size_type i ) const { return( i & ( cbuf_length * PageSize - 1 ) ); }
-    
+
     // used by various insert functions
     // push [first, last) starting after tail
     // recommend allocate sufficient space first
@@ -261,7 +260,7 @@ namespace std {
             ++first;
         }
     }
-    
+
     // member templates - to be moved outside class when compiler supports this
   public:
     // overloaded helpers get called by insert(many) depending on iterator type
@@ -276,14 +275,15 @@ namespace std {
     // in order to count them)
     template< class It1, class It2 >
     void insert_helper( iterator pos, It1 first, It2 last, false_type )
-    {/*
+    {
+/*
         // if at begin
-        
+
         // if at end
-        
+
         // if nearer end
         // to do - test
-        
+
         // count elements
         size_type d = last-first;//= distance( first, last );
         // resize cbuf
@@ -299,7 +299,7 @@ namespace std {
         // calculate temp starting pos
         size_type tmp_fst = 0;
         if( distance_to_first( pos.i ) < PageSize ) {
-        
+
         // copy from start of page to pos
         // copy from first to last
         // copy pos to end
@@ -307,18 +307,15 @@ namespace std {
         // move new pages
         // update indexes
         // temp will clean up automatically
-        
-        
-        
         // if nearer begin
-        */
+*/
     }
   };
 
   // ===================================
   // Member functions of deque::iterator
   // ===================================
-  
+
   // operator*( )
   // *************
   template< class Type, class Allocator, int PageSize >
@@ -328,7 +325,7 @@ namespace std {
   {
     return( dp->cbuf[get_ci(i)][get_pi(i)] );
   }
-  
+
   // operator->( )
   // *************
   template< class Type, class Allocator, int PageSize >
@@ -338,7 +335,7 @@ namespace std {
   {
     return( &dp->cbuf[get_ci(i)][get_pi(i)] );
   }
-  
+
   // operator++( )
   // *************
   // ++pre
@@ -372,7 +369,7 @@ namespace std {
     i = dp->wrap( i - 1 );
     return( *this );
   }
-  
+
   // operator--( int )
   // *****************
   // post--
@@ -405,7 +402,7 @@ namespace std {
     i = dp->wrap( i - n );
     return( *this );
   }
-  
+
   // =========================================
   // Member functions of deque::const_iterator
   // =========================================
@@ -419,7 +416,7 @@ namespace std {
   {
     return( dp->cbuf[get_ci(i)][get_pi(i)] );
   }
-  
+
   // operator->( )
   // *************
   template< class Type, class Allocator, int PageSize >
@@ -459,7 +456,7 @@ namespace std {
     i = dp->wrap( i - 1 );
     return( *this );
   }
-  
+
   // operator--( int )
   // *****************
   template< class Type, class Allocator, int PageSize >
@@ -495,27 +492,27 @@ namespace std {
   // =========================
   // Member functions of deque
   // =========================
-  
+
   // dist_from_first( )
   // *************************
   template< class Type, class Allocator, int PageSize >
-  inline 
-  typename deque< Type, Allocator, PageSize >::size_type 
+  inline
+  typename deque< Type, Allocator, PageSize >::size_type
   deque< Type, Allocator, PageSize >::dist_from_first( size_type i ) const
   {
     return( wrap(i - head) );
   }
-  
+
   // dist_from_last( )
   // *************************
   template< class Type, class Allocator, int PageSize >
-  inline 
-  typename deque< Type, Allocator, PageSize >::size_type 
+  inline
+  typename deque< Type, Allocator, PageSize >::size_type
   deque< Type, Allocator, PageSize >::dist_from_last( size_type i ) const
   {
     return( wrap(i - tail) );
   }
-  
+
   // is_front_full( )
   // *************************
   // check push front wont overflow
@@ -528,7 +525,7 @@ namespace std {
             get_ci( wrap(head - n) ) == get_ci(tail)
             ) );
   }
-  
+
   // is_back_full( )
   // *************************
   // check push back wont overflow
@@ -541,7 +538,7 @@ namespace std {
             get_ci( wrap( tail + n ) ) == get_ci(head)
             ) );
   }
-  
+
   // grow_cbuf( )
   // *************************
   // allocate bigger circular buffer (must be power of 2) and move into place
@@ -552,7 +549,7 @@ namespace std {
     // new length must be power of 2 and bigger than cbuf_length
     cbuf_t result = cmem.allocate( new_length );
     size_type d, s;
-    
+
     try{
         // copy current contents to start of new buffer
         for( d = 0, s = get_ci(head); d < cbuf_length; ++d ){
@@ -567,7 +564,7 @@ namespace std {
         cmem.deallocate( result, new_length );
         throw;
     }
-    
+
     // remove original and update outputs only if allocation successful.
     cmem.deallocate( cbuf, cbuf_length );
     cbuf = result;
@@ -575,7 +572,7 @@ namespace std {
     head = get_pi(head); // new page 0 but same index into page
     tail = wrap( head + deq_used - 1 );
   }
-  
+
   // new_page( ci )
   // *************************
   // put a new/unused page at circular buffer location ci
@@ -588,7 +585,7 @@ namespace std {
     cbuf[ci] = page;
   }
 
-  
+
   // deque( const Allocator & )
   // **************************
   template< class Type, class Allocator, int PageSize >
@@ -614,7 +611,7 @@ namespace std {
     // find suitable buffer size
     cbuf_length = 2;
     while( cbuf_length*PageSize <= n ) cbuf_length *= 2;
-    
+
     // allocate buf and pages
     cbuf = cmem.allocate( cbuf_length );
     size_type i;
@@ -630,7 +627,7 @@ namespace std {
         cmem.deallocate( cbuf, cbuf_length );
         throw;
     }
-    // fill pages 
+    // fill pages
     try{
         for( i = 0; i < n; i++ ){
             pmem.construct( &cbuf[get_ci(i)][get_pi(i)], value );
@@ -670,13 +667,13 @@ namespace std {
                 cbuf[ get_ci(tail) ] = pmem.allocate( PageSize );
                 i++;
             }
-            
+
             pmem.construct( &cbuf[get_ci(tail)][get_pi(tail)], other.cbuf[get_ci(s)][get_pi(s)] );
             s = wrap(s+1);
             tail++;
         }
     }catch( ... ){
-        // unwind constructions 
+        // unwind constructions
         while( tail ){
             --tail;
             pmem.destroy( &cbuf[get_ci(tail)][get_pi(tail)] );
@@ -728,12 +725,12 @@ namespace std {
     }
     // head now == tail+1
     deq_used = 0;
-    
-    // but don't delete any pages or buffers ? 
+
+    // but don't delete any pages or buffers ?
     // is this good behaviour or should we dealloc too?
   }
-  
-  
+
+
   // begin( )
   // ********
   template< class Type, class Allocator, int PageSize >
@@ -862,14 +859,14 @@ namespace std {
     size_type temp = (new_capacity + PageSize - 1 ) / PageSize;
     size_type new_cbuf_len = cbuf_length;
     while( new_cbuf_len < temp ) new_cbuf_len *= 2;
-    
+
     if( new_cbuf_len <= cbuf_length ) return; // we currently don't do strinking
-    
+
     if( new_cbuf_len * PageSize > max_size( ) )
         throw length_error( "deque::reserve" );
 
     grow_cbuf( new_cbuf_len );
-    
+
     // reserve all the pages as well
     for( size_type i = 0; i < cbuf_length; i++ ){
         if( !cbuf[i] ) cbuf[i] = pmem.allocate( PageSize );
@@ -963,17 +960,17 @@ namespace std {
   void deque< Type, Allocator, PageSize >::push_front( const Type &item )
   {
     if( is_front_full() ) grow_cbuf( cbuf_length * 2 );
-      
+
     size_type temp_ci, temp_i; // For exception safety
-    
+
     temp_i = wrap( head - 1 );
     temp_ci = get_ci(temp_i);
-      
+
     if( !cbuf[temp_ci] ) new_page( temp_ci );
-    
+
     // attempt copy of item
     new ( static_cast<void *>( &cbuf[temp_ci][get_pi(temp_i)] ) ) Type( item );
-    
+
     // if success fix up container members
     head = temp_i;
     ++deq_used;
@@ -984,17 +981,17 @@ namespace std {
   void deque< Type, Allocator, PageSize >::push_back( const Type &item )
   {
     if( is_back_full() ) grow_cbuf( cbuf_length * 2 );
-    
+
     size_type temp_ci, temp_i; // For exception safety
-    
+
     temp_i = wrap( tail + 1 );
     temp_ci = get_ci(temp_i);
-      
+
     if( !cbuf[temp_ci] ) new_page( temp_ci );
-    
+
     // attempt copy of item
     new ( static_cast<void *>( &cbuf[temp_ci][get_pi(temp_i)] ) ) Type( item );
-    
+
     // if success fix up container members
     tail = temp_i;
     ++deq_used;
@@ -1035,7 +1032,7 @@ namespace std {
         push_back( x );
         return( iterator( this, tail ) );
     }
-    
+
     // to do - move from end if quicker
     size_type i, ins, dist, num_pages;
     // copy from begining
@@ -1061,8 +1058,11 @@ namespace std {
     }
     // is last page a full page or is end reached during it?
     size_type end;
-    if( get_ci(tail) == get_ci(ins) ) end = get_pi(tail);
-    else end = PageSize - 1;
+    if( get_ci(tail) == get_ci(ins) ) {
+        end = get_pi(tail);
+    } else {
+        end = PageSize - 1;
+    }
     try{
         // copy from end to insert point
         for( i = end; i > get_pi(ins); i-- ){
@@ -1113,11 +1113,11 @@ namespace std {
     //update pointers
     head = wrap( head - 1 );
     ++deq_used;
-    
+
     return( iterator( this, ins ) );
   }
-  
-  
+
+
   // erase( iterator )
   // *****************
   template< class Type, class Allocator, int PageSize >
@@ -1139,9 +1139,9 @@ namespace std {
         int i;
         // alloc temp pages
         size_type dist = dist_from_first( e.i ) - 1;
-        size_type num_pages = dist / PageSize + 1; 
+        size_type num_pages = dist / PageSize + 1;
         if( (dist % PageSize) > get_pi( e.i ) ) num_pages += 1;
-        
+
         cbuf_t temp_pages = cmem.allocate( num_pages );
         try{
             for( i = 0; i < num_pages; i++ ){
@@ -1156,9 +1156,11 @@ namespace std {
         }
         // copy from end of erased page to erased element
         // tail might be before PageSize-1 of this page
-        if( get_ci(e.i) == get_ci(tail) ) end = get_pi(tail);
-        else end = PageSize-1;
-        
+        if( get_ci(e.i) == get_ci(tail) ) {
+            end = get_pi(tail);
+        } else {
+            end = PageSize-1;
+        }
         try{
             for( i = end; i > get_pi( e.i ); i-- ){
                 pmem.construct( &temp_pages[num_pages-1][i], cbuf[ get_ci( e.i ) ][ i ] );
@@ -1202,20 +1204,20 @@ namespace std {
             j = ( j - 1 ) & ( cbuf_length - 1 );
         }
         // there may be a page freed up but we won't bother deleting it
-        
+
         // remove temp page array
         cmem.deallocate( temp_pages, num_pages );
         // update pointers
         --deq_used;
         head = wrap(head + 1);
-        
+
         return( e + 1 );
     //}else{
         //nearer to end
         // to do
     //}
   }
-  
+
   // _Sane( ) const
   // **************
   template< class Type, class Allocator, int PageSize >
@@ -1223,7 +1225,7 @@ namespace std {
   {
     if( cbuf_length == 0 ){
         //cout<<"buf len "<<cbuf_length<<"\n";
-        return( false ); 
+        return( false );
     }
     if( cbuf_length*PageSize < deq_used ){
         //cout<<"len*page"<<"\n";
@@ -1233,11 +1235,11 @@ namespace std {
     // Is cbuf_length a power of 2?
     size_type temp = cbuf_length;
     while( temp != 1 ) {
-        if( temp & 0x1 ){ 
+        if( temp & 0x1 ){
             //cout<<"p2"<<"\n";
-            return( false ); 
+            return( false );
         }
-        temp >>= 1; 
+        temp >>= 1;
     }
 
     // Check the head and tail indicies.
@@ -1253,11 +1255,11 @@ namespace std {
         //cout<<"bad empty h t ptrs"<<head<<", "<<tail<<"\n";
         return( false );
     }
-    
+
     // Check distance between indecies stacks up with deq_used
     if( wrap(1 + tail - head) != deq_used ){
         //cout<<"dist "<<wrap(1 + tail - head)<<" used "<<deq_used<<" head "<<head<<" tail "<<tail<<"\n";
-        return( false ); 
+        return( false );
     }
 
     return( true );
@@ -1354,7 +1356,6 @@ namespace std {
     x.swap( y );
   }
   #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

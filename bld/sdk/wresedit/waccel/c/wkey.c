@@ -178,9 +178,9 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
     key = einfo->key_info.key;
     skey = WMapShiftedKeyToKey( key );
     GetKeyboardState( kbstate );
-    cntl = (kbstate[VK_CONTROL] & 0x0080) != 0;
-    shift = (kbstate[VK_SHIFT] & 0x0080) != 0;
-    alt = (kbstate[VK_MENU] & 0x0080) != 0;
+    cntl = ( (kbstate[VK_CONTROL] & 0x80) != 0 );
+    shift = ( (kbstate[VK_SHIFT] & 0x80) != 0 );
+    alt = ( (kbstate[VK_MENU] & 0x80) != 0 );
 
     str = WGetVKeyFromID( key );
 

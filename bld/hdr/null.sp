@@ -9,18 +9,26 @@
 ::
 :: New code used after version 1.8
 ::
-#ifndef NULL
- #ifdef __cplusplus
-:segment DOS | QNX
-  #if !defined(_M_I86) || defined(__SMALL__) || defined(__MEDIUM__)
+:segment !CONLY
+:segment !CNAME
+#ifdef __cplusplus
 :endsegment
-   #define NULL 0
 :segment DOS | QNX
-  #else
-   #define NULL 0L
-  #endif 
+ #if !defined(_M_I86) || defined(__SMALL__) || defined(__MEDIUM__)
 :endsegment
+  #define NULL 0
+:segment DOS | QNX
  #else
-  #define NULL ((void *)0)
+  #define NULL 0L
  #endif
+:endsegment
+:segment !CNAME
+#else
+:endsegment
+:endsegment
+:segment !CNAME
+ #define NULL ((void *)0)
+:segment !CONLY
 #endif
+:endsegment
+:endsegment

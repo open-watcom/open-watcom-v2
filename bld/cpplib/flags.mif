@@ -1,7 +1,7 @@
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
-sw_c_common =-we-w8-zl-x-xx-zam-j-fhwe
+sw_c_common =-we-w8-zl-x-xx-zam-j
 # -xr has to be on in case the user uses -xr
 sw_c_common += -xr
 !ifeq release 0
@@ -178,3 +178,6 @@ plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
 
 plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
+
+pchflags   = -fhwe $(pch_flags) $(pch_flags_$[&)
+pchflags_x = -fhwe $(pch_flags_x) $(pch_flags_x_$[&)

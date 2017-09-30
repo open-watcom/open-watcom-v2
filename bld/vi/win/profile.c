@@ -179,7 +179,7 @@ static void writeInitialPosition( void )
     if( !EditFlags.SavePosition ) {
         memset( &RootRect, 0, sizeof( RECT ) );
     }
-    if( !IsIconic( root_window_id ) ){
+    if( !IsIconic( root_window_id ) ) {
         writeProfileRect( keyInitialPosition, &RootRect );
         writeProfileLong( keyInitialPositionState, RootState );
     }
@@ -196,9 +196,8 @@ static void getConfigFilePaths( void )
     char path[FILENAME_MAX];
 #ifdef __NT__
     HINSTANCE library = LoadLibrary( "shfolder.dll" );
-    if ( library ) {
-        GetFolderPath getpath = (GetFolderPath)GetProcAddress( library,
-                                                               "SHGetFolderPathA" );
+    if( library ) {
+        GetFolderPath getpath = (GetFolderPath)GetProcAddress( library, "SHGetFolderPathA" );
         if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0,
                                 path ) ) ) {
             if( strlen( path ) + strlen( "\\" CONFIG_DIR ) + 12 < FILENAME_MAX ) {

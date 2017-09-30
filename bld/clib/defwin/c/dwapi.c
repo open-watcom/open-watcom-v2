@@ -36,9 +36,9 @@
 #include <wdefwin.h>
 #include "defwin.h"
 
-_WCRTLINK int   _dwDeleteOnClose( int handle ) {
-//==============================================
-
+_WCRTLINK int   _dwDeleteOnClose( int handle )
+//============================================
+{
 #ifdef DEFAULT_WINDOWING
     LPWDATA     res;
 
@@ -55,13 +55,13 @@ _WCRTLINK int   _dwDeleteOnClose( int handle ) {
 }
 
 
-_WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text ) {
-//=====================================================================
-
+_WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text )
+//===================================================================
+{
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsSetAbout != NULL ) {
-        return( _WindowsSetAbout( (char *)title, (char *)text ) );
+        return( _WindowsSetAbout( title, text ) );
     }
 #else
     text = text;
@@ -71,13 +71,13 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text ) {
 }
 
 
-_WCRTLINK int   _dwSetAppTitle( const char *title ) {
-//===================================================
-
+_WCRTLINK int   _dwSetAppTitle( const char *title )
+//=================================================
+{
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsSetAppTitle != NULL ) {
-        return( _WindowsSetAppTitle( (char *)title ) );
+        return( _WindowsSetAppTitle( title ) );
     }
 #else
     title = title;
@@ -86,9 +86,9 @@ _WCRTLINK int   _dwSetAppTitle( const char *title ) {
 }
 
 
-_WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
-//===============================================================
-
+_WCRTLINK int   _dwSetConTitle( int handle, const char *title )
+//=============================================================
+{
 #ifdef DEFAULT_WINDOWING
 
     LPWDATA     res;
@@ -96,7 +96,7 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
     if( _WindowsSetAppTitle != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
         if( res ) {
-            return( _WindowsSetConTitle( res, (char *)title ) );
+            return( _WindowsSetConTitle( res, title ) );
         }
     }
 #else
@@ -107,9 +107,9 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
 }
 
 
-_WCRTLINK int   _dwYield( void ) {
-//================================
-
+_WCRTLINK int   _dwYield( void )
+//==============================
+{
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsYieldControl != NULL ) {
@@ -120,9 +120,9 @@ _WCRTLINK int   _dwYield( void ) {
 }
 
 
-_WCRTLINK int   _dwShutDown( void ) {
-//===================================
-
+_WCRTLINK int   _dwShutDown( void )
+//=================================
+{
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsShutDown != NULL ) {

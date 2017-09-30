@@ -113,7 +113,7 @@ void LogPut( const char *str )
 #endif
 
 
-static void OpenLog( open_access mode )
+static void OpenLog( obj_attrs oattrs )
 {
     const char  *start;
     size_t      len;
@@ -128,7 +128,7 @@ static void OpenLog( open_access mode )
         ReqEOC();
         memcpy( TxtBuff, start, len );
         TxtBuff[len] = NULLCHAR;
-        LogHndl = FileOpen( TxtBuff, mode );
+        LogHndl = FileOpen( TxtBuff, oattrs );
         if( LogHndl == NIL_HANDLE ) {
             Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), TxtBuff );
         }

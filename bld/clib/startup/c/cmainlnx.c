@@ -78,6 +78,6 @@ void __cdecl _LinuxMain( int argc, char **argv, char **arge )
     /* allocate alternate stack for F77 */
     __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
 
-    _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
     exit( main( argc, argv, arge ) );
+    // never return
 }

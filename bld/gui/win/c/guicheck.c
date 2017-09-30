@@ -38,21 +38,19 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     unsigned    ret;
 
-    ret = (unsigned)
-        GUISendDlgItemMessage( wnd->hwnd, id, BM_GETCHECK,
-                               (WPI_PARAM1)NULL, (WPI_PARAM2)NULL );
+    ret = (unsigned)GUISendDlgItemMessage( wnd->hwnd, id, BM_GETCHECK, (WPI_PARAM1)0, (WPI_PARAM2)0 );
 
     return( ret & 0x3 );
 }
 
 bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check )
 {
-    if( ( check == GUI_CHECKED ) && !( wnd->flags & IS_RES_DIALOG ) ) {
+    if( ( check == GUI_CHECKED ) && (wnd->flags & IS_RES_DIALOG) == 0 ) {
         if( GUIIsChecked( wnd, id ) != GUI_CHECKED ) {
             return( GUIProcessControlNotification( id, BN_CLICKED, wnd ) );
         }
     } else {
-        GUISendDlgItemMessage( wnd->hwnd, id, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)NULL );
+        GUISendDlgItemMessage( wnd->hwnd, id, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)0 );
     }
 
     return( true );

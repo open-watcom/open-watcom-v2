@@ -50,6 +50,14 @@ REM set OWDOSBOX=dosbox
 
 REM ###############################
 
+REM Subdirectory to be used for building OW build tools
+set OWOBJDIR=binbuild
+
+REM DOS4GW 1.97 
+set DOS4G=QUIET
+REM DOS4GW 2.0x 
+REM set DOS4G=STARTUPBANNER:1
+
 REM Invoke the batch file for the common environment
 call %OWROOT%\cmnvars.bat
 

@@ -34,10 +34,10 @@
 #include "poscc.h"
 
 
-static  char            FFSeq[] = { LF, FF };     // for form feeds
-static  char            SpcSeq[] = { LF,          // for single spacing
-                                     CR, LF,      // for double spacing
-                                     CR, LF };    // for triple spacing
+static  char            FFSeq[] = { CHAR_LF, CHAR_FF };     // for form feeds
+static  char            SpcSeq[] = { CHAR_LF,               // for single spacing
+                                     CHAR_CR, CHAR_LF,      // for double spacing
+                                     CHAR_CR, CHAR_LF };    // for triple spacing
 
 #define FF_SEQ_LEN      sizeof( FFSeq );
 #define SPC_SEQ_LEN     sizeof( SpcSeq );

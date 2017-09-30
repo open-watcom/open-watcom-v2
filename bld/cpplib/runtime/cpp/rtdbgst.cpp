@@ -35,28 +35,20 @@
 #undef __OBSCURE_STREAM_INTERNALS  // kludge! we need manipulate with FILE structure
 
 #include "cpplib.h"
-
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
+#include <cstdlib>
+#include <unistd.h>
 #include "rtexcept.h"
 #include "exc_pr.h"
+#include "clibsupp.h"
 
-extern "C" _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
 
 #define MX_FSTK         10
 #define default_file    "_CPPDBG_."
 
-#define STDOUT_FILENO 1
-
-static FILE* fstk[ MX_FSTK ];   // suspended files
-static unsigned index;          // top of files stack
-static int logging;             // true ==> logging at level 0
-
-static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
-
+extern "C" {
 
 enum FT                         // types of formatting
 {   FT_RW                       // - R/W header
@@ -77,6 +69,12 @@ enum FT                         // types of formatting
 ,   FT_END                      // - end
 };
 
+static std::FILE    *fstk[MX_FSTK]; // suspended files
+static unsigned     index;          // top of files stack
+static int          logging;        // true ==> logging at level 0
+static unsigned     indent = 1;     // # of indentations
+
+static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
 
 static void dumpTitle(          // DUMP A TITLE
     const char* title )         // - the title
@@ -84,16 +82,12 @@ static void dumpTitle(          // DUMP A TITLE
     printf( "%s\n\n", title );
 }
 
-
-static unsigned indent = 1;     // # of indentations
-
-
 static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
 {
-    va_list args;               // - for variable arguments
+    std::va_list args;          // - for variable arguments
     rboolean done;              // - true ==> done formatting
-    size_t blk_type;            // - type of block
+    std::size_t blk_type;       // - type of block
     RW_DTREG* rw;               // - R/W header
 
     va_start( args, ft );
@@ -270,7 +264,7 @@ static void dump(               // FORMATTED DUMP
           case FT_STATE :       // state table
           { RO_STATE* state;    // - current state
             DTOR_CMD* cmd;      // - command from state table
-            size_t index;       // - index
+            std::size_t index;  // - index
             state = va_arg( args, RO_STATE* );
             dump( FT_PTR, "STATE TABLE", state
                 , FT_END );
@@ -406,7 +400,7 @@ static void dumpDtorCmd(        // DUMP DTOR COMMAND
         break;
       case DTC_TRY :
         dump( FT_TEXT, "TRY"
-            , FT_OFF,  "state", cmd->try_cmd.state
+            , FT_OFF,  "state", cmd->try_cmd.state_var
             , FT_OFF,  "jmpbuf", cmd->try_cmd.jmp_buf
             , FT_PTR,  "addr", PointOffset( rw, cmd->try_cmd.jmp_buf )
             , FT_OFF,  "offset", cmd->try_cmd.offset
@@ -693,7 +687,6 @@ static void dumpExcs(           // DUMP EXCEPTIONS LIST
 }
 
 
-extern "C"
 void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
     void )
 {
@@ -715,7 +708,6 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
 }
 
 
-extern "C"
 void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
     void )
 {
@@ -735,7 +727,6 @@ void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
 
 #ifdef PD_REGISTRATION
 
-extern "C"
 void __DumpPdata()
 {
     PData* p = (PData*)0x430000;
@@ -766,12 +757,12 @@ void __DumpPdata()
 static void reDirSwitch         // SWITCH TWO FILE AREAS
     ( void )
 {
-    FILE temp;                  // - temporary area
-    FILE* fp;                   // - file
+    std::FILE temp;             // - temporary area
+    std::FILE *fp;              // - file
 
     fflush( __get_std_stream( STDOUT_FILENO ) );
     temp = *__get_std_stream( STDOUT_FILENO );
-    fp = fstk[ index ];
+    fp = fstk[index];
     *__get_std_stream( STDOUT_FILENO ) = *fp;
     *fp = temp;
 }
@@ -784,20 +775,20 @@ static void reDirBeg            // START REDIRECTION FOR A FILE
         fflush( __get_std_stream( STDOUT_FILENO ) );
     } else {
         char fname[32];
-        FILE* fp;
-        strcpy( fname, default_file );
-        itoa( index, &fname[ sizeof( default_file ) - 1 ], 10 );
-        fp =  fopen( fname, "wt" );
+        std::FILE *fp;
+        std::strcpy( fname, default_file );
+        itoa( index, &fname[sizeof( default_file ) - 1], 10 );
+        fp = std::fopen( fname, "wt" );
         if( NULL == fp ) {
             puts( "DBGIO -- failure to open file" );
             puts( fname );
-            fstk[ index ] = 0;
+            fstk[index] = NULL;
         } else {
-            fstk[ index ] = fp;
+            fstk[index] = fp;
             reDirSwitch();
         }
     }
-    ++ index;
+    ++index;
 }
 
 static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
@@ -808,16 +799,15 @@ static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
     } else {
         -- index;
         if( index < MX_FSTK ) {
-            FILE* fp = fstk[ index ];
-            if( fp != 0 ) {
+            std::FILE *fp = fstk[index];
+            if( fp != NULL ) {
                 reDirSwitch();
-                fclose( fstk[ index ] );
+                std::fclose( fstk[index] );
             }
         }
     }
 }
 
-extern "C"
 void DbgRedirectBeg             // START REDIRECTION
     ( void )
 {
@@ -827,7 +817,6 @@ void DbgRedirectBeg             // START REDIRECTION
     }
 }
 
-extern "C"
 int DbgRedirectEnd              // COMPLETE REDIRECTION
     ( void )
 {
@@ -842,7 +831,6 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
     return retn;
 }
 
-extern "C"
 void DbgLogBeg                  // START LOGGING
     ( void )
 {
@@ -852,7 +840,6 @@ void DbgLogBeg                  // START LOGGING
     reDirBeg();
 }
 
-extern "C"
 int DbgLogEnd                   // END LOGGING
     ( void )
 {
@@ -861,5 +848,7 @@ int DbgLogEnd                   // END LOGGING
     }
     return index;
 }
+
+} /* extern "C" */
 
 #endif

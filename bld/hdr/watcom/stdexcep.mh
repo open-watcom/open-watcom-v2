@@ -14,7 +14,7 @@
 :include readonly.sp
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 using std::logic_error;
 using std::domain_error;
@@ -28,7 +28,7 @@ using std::underflow_error;
 
 // All included names should also be in the global namespace.
 #ifndef _EXCEPTION_H_INCLUDED
- #include <exceptio.h>
+ #include <exception.h>
 #endif
 
 #endif
@@ -47,12 +47,12 @@ using std::underflow_error;
 #endif
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   namespace _ow {
+
     class _WPRTLINK str_exception : public exception {
       string message;
     public:
@@ -62,7 +62,8 @@ namespace std {
       virtual const char *what( ) const _WCTHROWS()
         { return message.c_str( ); }
     };
-  }
+
+  } // namespace _ow
 
   class _WPRTLINK logic_error : public _ow::str_exception {
   public:
@@ -117,8 +118,7 @@ namespace std {
     underflow_error( const string &what_arg ) _WCTHROWS()
       : runtime_error( what_arg ) { }
   };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

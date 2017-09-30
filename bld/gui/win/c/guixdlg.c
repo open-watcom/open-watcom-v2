@@ -79,7 +79,8 @@ void GUISetJapanese( void )
         newfont = "";
         FontPointSize = 0;
   #else
-        newfont = "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½";
+        /* following is DBCS text in Japanese "‚l‚r –¾’©" */
+        newfont = "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9";
         FontPointSize = 10;
   #endif
         if( Font != NULL ) {
@@ -112,7 +113,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
     case GUI_CHECK_BOX :
     case GUI_RADIO_BUTTON :
         if( item->checked ) {
-            GUISendMessage( ctrl, BM_SETCHECK, (WPI_PARAM1)true, 0 );
+            GUISendMessage( ctrl, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
         }
         break;
     case GUI_EDIT_COMBOBOX :
@@ -185,13 +186,13 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
                     GUICheckRadioButton( wnd, id );
                 } else {
                     cntl = _wpi_getdlgitem( wnd->hwnd, id );
-                    check = (unsigned)GUISendMessage( cntl, BM_GETCHECK, 0, 0 );
-                    if( item->style & GUI_CONTROL_3STATE ) {
-                        check = ( ( check & 3 ) + 1 ) % 3;
-                        GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)check, 0 );
+                    check = (unsigned)GUISendMessage( cntl, BM_GETCHECK, (WPI_PARAM1)0, (WPI_PARAM2)0 );
+                    if( check & BST_CHECKED ) {
+                        check &= ~BST_CHECKED;
                     } else {
-                        GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)!check, 0 );
+                        check |= BST_CHECKED;
                     }
+                    GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)0 );
                 }
             }
             /* fall through */
@@ -723,7 +724,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 
 void GUICloseDialog( gui_window * wnd )
 {
-    GUISendMessage( wnd->hwnd, WM_CLOSE, 0, 0 );
+    GUISendMessage( wnd->hwnd, WM_CLOSE, (WPI_PARAM1)0, (WPI_PARAM2)0 );
 }
 
 /****************************************************************************/

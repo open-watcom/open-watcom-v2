@@ -10,16 +10,16 @@ dll_libs = $+ &
     $-
 
 dll_def = $+ &
-    $(clib_dir)/library/$(__cifx__)/export.def &
+    $(clib_dir)/library/$(__cifx__)/export.gdf &
     $(clib_dir)/intel/export.def &
     $(clib_dir)/startup/export.def &
     $(clib_dir)/startup/$(convention).def &
 #    $(clib_dir)/startup/library/$(system).386/export.def &
-    $(mathlib_dir)/library/$(__mifx__)/export.def &
+    $(mathlib_dir)/library/$(__mifx__)/export.gdf &
     $(mathlib_dir)/export.387 &
     $(mathlib_dir)/$(convention).387 &
     $(cpplib_dir)/runtime/os2386.def &
-    $(cpplib_dir)/library/$(__pifx__).dll/exportx.def &
+    $(cpplib_dir)/library/$(__pifx__).dll/exportx.gdf &
     $-
 
 dll_objs = $+ &

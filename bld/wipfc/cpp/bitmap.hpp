@@ -98,7 +98,7 @@ private:
     void readHeader16( std::FILE* in );
     void readHeaderW32( std::FILE* in );
     void readHeaderOS2( std::FILE* in );
-    void findBlockSize( size_t width, size_t height, size_t bitsPerPixel );
+    void findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel );
     void compress( std::FILE* in );
 };
 

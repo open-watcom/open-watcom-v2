@@ -28,15 +28,14 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
-namespace std {
-
+:include nsstd.sp
 template<class Type, class Allocator = allocator< Type > >
 class vector {
 public:
@@ -140,7 +139,7 @@ public:
         }
         swap( temp );
     }
-    
+
     template< class InputIterator >
     void insert(iterator position, InputIterator first, InputIterator last )
     {
@@ -149,7 +148,7 @@ public:
                        last,
                        is_integral<InputIterator>::type( ) );
     }
-    
+
     template< class Integral >
     void helper_insert( iterator position,
                         Integral count,
@@ -160,7 +159,7 @@ public:
                 static_cast<size_type>( count ),
                 static_cast<const Type &>( value ) );
     }
-    
+
     template< class InputIterator >
     void helper_insert( iterator position,
                         InputIterator first,
@@ -450,12 +449,13 @@ typename vector< Type, Allocator>::size_type
 template< class Type, class Allocator >
 void vector< Type, Allocator >::resize( size_type n, Type c )
 {
-    if( n > vec_length )
+    if( n > vec_length ) {
         insert( end( ),
                 static_cast<size_type>(n - vec_length),
                 static_cast<const Type &>( c ) );
-    else if ( n < vec_length )
+    } else if( n < vec_length ) {
         erase( begin( ) + n, end( ) );
+    }
 }
 
 // capacity( ) const
@@ -857,7 +857,7 @@ bool vector< Type, Allocator >::_Sane( ) const
     size_type temp = buf_length;
     while( temp != 1 ) {
         if( temp & 0x1 ) return( false );
-        temp >>= 1; 
+        temp >>= 1;
     }
     return( true );
 }
@@ -955,7 +955,6 @@ void swap( vector< Type, Allocator > &x, vector< Type, Allocator > &y )
     x.swap( y );
 }
 #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

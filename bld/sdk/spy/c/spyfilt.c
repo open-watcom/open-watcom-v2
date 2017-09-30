@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,12 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
+
 
 /*
  * HandleMessage
  */
-void FAR HandleMessage( LPMSG pmsg )
+WINEXPORT void CALLBACK HandleMessage( LPMSG pmsg )
 {
     static char msg[80];
     static char class_name[80];
@@ -58,10 +58,11 @@ void FAR HandleMessage( LPMSG pmsg )
             return;
         }
     }
-    GetClassName( pmsg->hwnd, class_name, 80 );
+    i = GetClassName( pmsg->hwnd, class_name, sizeof( class_name ) );
+    class_name[i] = '\0';
     ProcessIncomingMessage( pmsg->message, class_name, msg );
     if( msg[0] != 0 ) {
-        SpyOut( msg, pmsg );
+        SpyOut( msg, pmsg, class_name );
     }
 
 } /* HandleMessage */

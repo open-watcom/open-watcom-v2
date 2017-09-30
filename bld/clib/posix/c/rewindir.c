@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <dirent.h>
 #include "lseek.h"

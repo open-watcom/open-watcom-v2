@@ -74,9 +74,10 @@ void PollMouse( int *status, windim *row, windim *col )
  */
 void InitMouse( void )
 {
-    int                 and_mask, or_mask;
-    unsigned short _FAR *vector;
-    unsigned char _FAR  *intrtn;
+    int             and_mask;
+    int             or_mask;
+    unsigned short  _FAR *vector;
+    unsigned char   _FAR *intrtn;
 
     if( !EditFlags.UseMouse ) {
         return;
@@ -86,13 +87,13 @@ void InitMouse( void )
     vector = MK_FP( 0, MOUSE_INT * 4 );
     intrtn = MK_FP( vector[1], vector[0] );
 #elif defined( __4G__ )
-    vector = (unsigned short *)(MOUSE_INT * 4);
-    intrtn = (unsigned char *)((((unsigned) vector[1]) << 4) + vector[0]);
+    vector = (unsigned short _FAR *)(MOUSE_INT * 4);
+    intrtn = (unsigned char _FAR *)((((unsigned)vector[1]) << 4) + vector[0]);
 #else
     vector = MK_FP( 0x34, MOUSE_INT * 4 );
     intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
 #endif
-    if( !((intrtn != NULL) && (*intrtn != 0xcf)) ) {
+    if( ( intrtn == NULL ) || ( *intrtn == 0xcf ) ) {
         EditFlags.UseMouse = false;
         return;
     }

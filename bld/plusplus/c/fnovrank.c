@@ -283,7 +283,7 @@ TYPE *CompareWP13332(
     return( better );
 }
 
-static bool fromConstZero( FNOV_CONV *conv )
+static bool fromZeroConstOrNull( FNOV_CONV *conv )
 /******************************************/
 {
     PTREE *pnode;
@@ -294,13 +294,17 @@ static bool fromConstZero( FNOV_CONV *conv )
         return( false );
     }
     node = *pnode;
-    if( node != NULL && NodeIsZeroIntConstant( node ) ) {
-        /* we don't want 0's that are cast to pointer types here */
-        if( IntegralType( conv->wsrc.basic ) ) {
-            conv->rank->rank = OV_RANK_STD_CONV;
-            conv->rank->u.no_ud.standard++;
-            return true;
-        }
+    if( node == NULL ) {
+        return false;
+    }
+
+    if( NodeIsNullptr( node )
+        /* we don't want 0's that are cast to pointer types */
+        || ( NodeIsZeroIntConstant( node ) && IntegralType( conv->wsrc.basic ) ) ) {
+
+        conv->rank->rank = OV_RANK_STD_CONV;
+        conv->rank->u.no_ud.standard++;
+        return true;
     }
     return false;
 }
@@ -552,7 +556,7 @@ static bool toPtrRank( FNOV_CONV *conv )
         tgt_final = conv->wtgt.final;
         // check for NULL to pointer
         if( ( src_basic->id != TYP_POINTER )
-          && fromConstZero( conv ) ) {
+          && fromZeroConstOrNull( conv ) ) {
             retb = true;
         // check for src pointer to void *
         } else if( rankPtrToVoid( conv ) ) {
@@ -595,7 +599,7 @@ static bool toMbrPtrFromMbrPtrRank( FNOV_CONV *conv )
         conv->rank->u.no_ud.not_exact = 1;
         retb = true;
     // check for NULL to member pointer
-    } else if( fromConstZero( conv ) ) {
+    } else if( fromZeroConstOrNull( conv ) ) {
         retb = true;
     // check for src MEMBER FUNCTION to tgt POINTER to MEMBER FUNCTION
     } else {
@@ -628,7 +632,7 @@ static bool toMbrPtrRank( FNOV_CONV *conv )
     tgt_basic = conv->wtgt.basic;
     if( tgt_basic->id == TYP_MEMBER_POINTER ) {
         src_basic = conv->wsrc.basic;
-        if( fromConstZero( conv ) ) {
+        if( fromZeroConstOrNull( conv ) ) {
             retb = true;
         // check for src MEMBER FUNCTION to tgt POINTER to MEMBER FUNCTION
         } else if( src_basic->id == TYP_FUNCTION ) {
@@ -1021,7 +1025,7 @@ static void clstoClsRank( FNOV_CONV *conv )
 static void rankFuncToPtr(          // RANK: FUNCTION --> PTR
     FNOV_CONV *conv )               // - conversion information
 {
-    if( fromConstZero( conv )
+    if( fromZeroConstOrNull( conv )
      || rankPtrToVoid( conv ) ) {
         // all done
     } else if( conv->wtgt.final->id == TYP_FUNCTION ) {
@@ -1090,7 +1094,7 @@ static void rankPtrToPtr(           // RANK: PTR --> PTR
         }
         if( retb )
             return;
-        if( ! fromConstZero( conv )
+        if( ! fromZeroConstOrNull( conv )
          && ! rankPtrToVoid( conv ) ) {
             // if the pointees are the same, okey dokey
             // if the pointees are different, check for class derivations
@@ -1326,51 +1330,31 @@ static void rankArithEnumToArith(   // RANK: Arith, Enum --> Arith
     }
 }
 
-
+//TODO: fix nullptr values
 static uint_8 rkdTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
-    ,  1, 10, 10, 14, 12,  1,  1,  0,  2,  0  // arithmetic
-    ,  1,  1,  3,  1, 18,  1,  1,  1,  2,  0  // enumeration
-    ,  1,  7,  7,  8, 17,  5,  1, 19,  2, 19  // pointer
-    ,  1, 16, 16, 15, 11, 16,  1, 15,  2, 15  // class
-    ,  1,  1,  1,  6, 18,  4,  1,  0,  2,  0  // function
-    ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // void
-    ,  1,  7,  7,  1, 17, 19,  1,  9,  2, 19  // member pointer
-    ,  1,  2,  2,  2,  2,  2,  1,  2,  3,  2  // ellipsis
-    ,  1,  0,  0,  0, 18,  0,  1,  0,  2,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
+    ,  1, 10, 10, 14, 12,  1,  1,  0,  2,  0,  1  // arithmetic
+    ,  1,  1,  3,  1, 18,  1,  1,  1,  2,  0,  1  // enumeration
+    ,  1,  7,  7,  8, 17,  5,  1, 19,  2, 19,  7  // pointer
+    ,  1, 16, 16, 15, 11, 16,  1, 15,  2, 15, 16  // class
+    ,  1,  1,  1,  6, 18,  4,  1,  0,  2,  0,  1  // function
+    ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // void
+    ,  1,  7,  7,  1, 17, 19,  1,  9,  2, 19,  7  // member pointer
+    ,  1,  2,  2,  2,  2,  2,  1,  2,  3,  2,  2  // ellipsis
+    ,  1,  0,  0,  0, 18,  0,  1,  0,  2,  0,  0  // generic
+    ,  1,  7,  1,  1,  1,  1,  1,  1,  1,  0,  7  // nullptr
     };
-
-#if 0
-
-Argument ranking combinations (stl)
-
-//               a                 c                 m           g
-//               r     e           l     f     v                 e
-//         e     i     n     p     a     u     o     p     .     n
-//         r     t     u     t     s     n     i     t     .     e
-//         r     h     m     r     s     c     d     r     .     r
-
-   0:      0     0     0     0     0     0     0     0     0     0
-   1:      0  5282    94  5841 15111  2088     0     0     0     3
-   2:      0     0     0     0     0     0     0     0     0     0
-   3:      0   837     8  5020  4759  1218     0     0     0     0
-   4:      0   301     0  1585 14968     0     0     0     0     0
-   5:      0     0     0     0     0     0     0     0     0     0
-   6:      0     0     0     0     0     0     0     0     0     0
-   7:      0     0     0     2   415     0     0     0     0     0
-   8:      0     0     0     0     0     0     0     0     0     0
-   9:      0    12     0   193   524     0     0     0     0   680
-
-#endif
 
 // values:
 //  0 ==> do a general check
@@ -1380,7 +1364,7 @@ Argument ranking combinations (stl)
 //  4 ==> result determined by functionsIdentical
 //  5 ==> rank func to ptr.
 //  6 ==> rank ptr to func.
-//  7 ==> OV_RANK_NO_MATCH unless src is 0 constant
+//  7 ==> OV_RANK_NO_MATCH unless src is 0 constant or nullptr
 //  8 ==> ptr to ptr
 //  9 ==> m.ptr to m.ptr
 // 10 ==> ( arith, enum ) --> arith
@@ -1437,7 +1421,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
     rkd_index = rkdTable[ rkd_tgt ][ rkd_src ];
     switch( rkd_index ) {
       case 7 :
-        if( fromConstZero( &conv ) ) return;
+        if( fromZeroConstOrNull( &conv ) ) return;
         // drops thru
       case 1 :
         conv.rank->rank = OV_RANK_NO_MATCH;

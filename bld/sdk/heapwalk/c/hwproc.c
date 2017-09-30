@@ -360,7 +360,7 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             WWinHelp( hwnd, "heapwalk.hlp", HELP_CONTENTS, 0 );
             break;
         case HEAPMENU_HELP_SRCH:
-            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             break;
         case HEAPMENU_HELP_ON_HELP:
             WWinHelp( hwnd, "winhelp.hlp", HELP_HELPONHELP, 0 );
@@ -461,13 +461,11 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             break;
         case HEAPMENU_FILE_SAVE:
             InitHeapList( info->list.box, TRUE );
-            SaveListBox( SLB_SAVE_TMP, PutOutGlobalHeader, Config.gfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, PutOutGlobalHeader, DumpGlobalLine, Config.gfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_FILE_SAVE_TO:
             InitHeapList( info->list.box, TRUE );
-            SaveListBox( SLB_SAVE_AS, PutOutGlobalHeader, Config.gfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, PutOutGlobalHeader, DumpGlobalLine, Config.gfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_SAVE_CONFIG:
             SaveConfigFile( TRUE );

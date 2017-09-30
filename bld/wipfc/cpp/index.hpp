@@ -52,7 +52,7 @@ public:
     void setText( std::wstring& t ) { text = t; };
     void setTOC( STD1::uint16_t t ) { hdr.tocPanelIndex = t; };
     void addSynonym( STD1::uint32_t t ) { synonyms.push_back( t ); };
-    size_t write( std::FILE* out );
+    std::size_t write( std::FILE* out );
     bool operator==( const IndexItem& rhs ) const;
     bool operator==( const std::wstring& rhs ) const;
     bool operator<( const IndexItem& rhs ) const;

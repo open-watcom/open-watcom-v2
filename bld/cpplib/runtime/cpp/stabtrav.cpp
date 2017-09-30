@@ -159,7 +159,7 @@ RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
                     DTOR_CMD* cmd = state->u.cmd_addr;
                     if( cmd->base.code == DTC_CATCH ) {
                         cmd = TryFromCatch( cmd );
-                        state_var = cmd->try_cmd.state;
+                        state_var = cmd->try_cmd.state_var;
                     } else {
                         -- state_var;
                     }

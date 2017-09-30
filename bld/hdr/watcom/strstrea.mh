@@ -8,13 +8,13 @@
 //              defines the necessary classes for strstream support.
 ///////////////////////////////////////////////////////////////////////////
 :segment !CNAME
-#ifndef _STRSTREA_H_INCLUDED
-#define _STRSTREA_H_INCLUDED
+#ifndef _STRSTREAM_H_INCLUDED
+#define _STRSTREAM_H_INCLUDED
 
 :include readonly.sp
 
-#ifndef _STRSTREA_INCLUDED
- #include <strstrea>
+#ifndef _STRSTREAM_INCLUDED
+ #include <strstream>
 #endif
 using std::strstreambuf;
 using std::strstreambase;
@@ -29,8 +29,8 @@ using std::strstream;
 
 #endif
 :elsesegment
-#ifndef _STRSTREA_INCLUDED
-#define _STRSTREA_INCLUDED
+#ifndef _STRSTREAM_INCLUDED
+#define _STRSTREAM_INCLUDED
 
 :include readonly.sp
 
@@ -42,8 +42,7 @@ using std::strstream;
  #include <iostream>
 #endif
 
-namespace std {
-
+:include nsstd.sp
   // **************************** STRSTREAMBUF *******************************
 
 :include pshpackl.sp
@@ -51,7 +50,7 @@ namespace std {
   public:
     strstreambuf();
     strstreambuf( streamsize __allocation_size );
-    strstreambuf( void *(*__alloc_fn)( long ), void (*__free_fn)( void * ) );
+    strstreambuf( void *(_WCCALLBACK *__alloc_fn)( long ), void (_WCCALLBACK *__free_fn)( void * ) );
     strstreambuf( char *__str, streamsize __size, char *__pstart = NULL );
    ~strstreambuf();
 
@@ -73,8 +72,8 @@ namespace std {
   private:
     void  __strstreambuf( char *, streamsize, char * );
 
-    void *(*__alloc_fn)( long );
-    void  (*__free_fn)( void * );
+    void *(_WCCALLBACK *__alloc_fn)( long );
+    void  (_WCCALLBACK *__free_fn)( void * );
     streamsize __allocation_size;
     int   __minbuf_size;
     unsigned  __frozen    : 1;
@@ -197,8 +196,7 @@ namespace std {
     __lock_it( __i_lock );
     return( rdbuf()->str() );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

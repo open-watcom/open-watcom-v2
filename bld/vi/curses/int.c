@@ -36,7 +36,8 @@
 #include <setjmp.h>
 #include "win.h"
 #include "pragmas.h"
-#if defined( __4G__ )
+
+#if defined( _M_I86 ) || defined( __4G__ )
     #define _FAR_   __far
 #else
     #define _FAR_
@@ -73,7 +74,7 @@ void __int24_handler( void );
         "iretd" ;
 #endif
 
-static void HandleInt24( void )
+static void _FAR_ HandleInt24( void )
 {
     __int24_handler();
 }

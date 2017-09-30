@@ -44,6 +44,6 @@ extern void             BufferHex( unsigned prec, dis_value value );
 extern void             BufferPrint( void );
 extern size_t           BufferMsg( int );
 extern void             BufferAlignToTab( unsigned );
-extern void             FmtHexNum( char *buff, unsigned prec, dis_value value, bool with_prefix );
+extern void             FmtHexNum( char *buff, unsigned prec, dis_value value );
 
 #endif

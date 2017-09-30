@@ -234,9 +234,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     }
 
 #ifndef __NT__
-    if( wofn.lpfnHook != NULL ) {
-        FreeProcInstance_OFNHOOK( wofn.lpfnHook );
-    }
+    FreeProcInstance_OFNHOOK( wofn.lpfnHook );
 #endif
 
     if( !ret ) {

@@ -1028,7 +1028,7 @@
 :option. wpx
 :target. any
 :internal.
-:usage. check prototypes defined already
+:usage. internal experimental option, check prototypes defined already
 :jusage.
 
 :option. wx

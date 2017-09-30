@@ -12,12 +12,7 @@ objs_asm = fshand.obj
 
 # .C files (in RUNTIME\C)
 
-
-!ifeq release 0
-objs_c = rtdbgst.obj rtdbgcom.obj
-!else
-objs_c =
-!endif
+dbg_objs_c = rtdbgst.obj rtdbgcom.obj
 
 # .CPP files (in RUNTIME\CPP)
 

@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\owstl.mif
+!include ../owstl.mif

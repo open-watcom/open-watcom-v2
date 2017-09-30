@@ -123,6 +123,9 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & PARMS_PREFER_REGS ) {
         state->attr |= ROUTINE_PREFER_REGS;
     }
+    if( cclass & FARSS ) {
+        state->attr |= ROUTINE_FARSS;
+    }
     if( state == &CurrProc->state ) {
         if( cclass & ( GENERATE_STACK_FRAME | PROLOG_HOOKS | EPILOG_HOOKS ) ) {
             CurrProc->prolog_state |= GENERATE_FAT_PROLOG;

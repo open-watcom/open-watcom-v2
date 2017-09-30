@@ -48,6 +48,7 @@
 .386p
 
 include xinit.inc
+include extender.inc
 
 comment @
         Modified for AutoLISP and protect mode ADI
@@ -189,8 +190,9 @@ YIE     ends
 
 _DATA   segment dword public 'DATA'
 
-__x386_zero_base_selector dw 0  ; base 0 selector for X-32VM
         public  __x386_zero_base_selector
+__x386_zero_base_selector dw 0  ; base 0 selector for X-32VM
+
 if      ACAD
 chkval  equ     1234            ; magic interface-compatibility code
 ifndef  ADS                     ; Avoid excess globals for ADS
@@ -238,7 +240,7 @@ STACK   ends
 
         assume  nothing
         public  _cstart_
-        public   __exit
+        public  __exit
 
         assume  cs:_TEXT
 
@@ -331,9 +333,9 @@ not_pharlap:                            ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
         mov     bx,17h                  ; - get writeable code segment for Ergo
-        cmp     al,0                    ; - ...
+        cmp     al,X_ERGO               ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
-        mov     al,1                    ; - indicate Rational 32-bit Extender
+        mov     al,X_RATIONAL           ; - indicate Rational 32-bit Extender
         xor     ah,ah                   ; - assume zero base subtype
         mov     ebx,ds                  ; - just use ds (FLAT model)
         mov     _psp,es                 ; - save segment address of PSP
@@ -375,7 +377,7 @@ noparm: sub     al,al
         mov     ds,edx                  ; restore ds
         push    ds                      ; save ds
 
-        cmp     byte ptr  _Extender,1   ; if OS/386 or Rational
+        cmp     byte ptr  _Extender,X_RATIONAL ; if OS/386 or Rational
         jg      short pharlap           ; then
           mov   dx,PSP_SEG              ; - get PSP segment descriptor
           mov   ds,edx                  ; - ... into ds

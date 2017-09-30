@@ -117,7 +117,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     HWND        lbox;
     WMenuEntry  *parent;
     WMenuEntry  *entry;
-    box_pos     pos;
+    LRESULT     pos;
     int         new_kids;
     bool        ok;
     bool        is_popup;
@@ -142,7 +142,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         if( insert_before ) {
             if( pos == 0 ) {
                 pos = LB_ERR;
@@ -151,9 +151,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
             }
         }
         if( pos != LB_ERR ) {
-            entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
-        } else {
-            pos = -1;
+            entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         }
     }
 
@@ -184,10 +182,10 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     }
 
     if( ok ) {
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR);
         if( ok ) {
             einfo->current_entry = NULL;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             WHandleSelChange( einfo );
         }
     }
@@ -201,25 +199,24 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     return( ok );
 }
 
-bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, box_pos *pos )
+bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, LRESULT *pos )
 {
     bool        ok;
 
     ok = ((lbox != (HWND)NULL) && pos != NULL);
 
-    while( entry != NULL && ok ) {
+    for( ; entry != NULL && ok; entry = entry->next ) {
         ok = WAddEditWinLBoxEntry( lbox, entry, *pos );
         *pos += 1;
         if( ok && entry->item->IsPopup ) {
             ok = WAddMenuEntriesToLBox( lbox, entry->child, pos );
         }
-        entry = entry->next;
     }
 
     return( ok );
 }
 
-bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, box_pos pos )
+bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
 {
     bool        ok;
     char        *text;
@@ -263,7 +260,7 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, box_pos pos )
             strcat( lbtext, "MENUITEM    \"" );
         }
         strcat( lbtext, text );
-        if( !(entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) ) {
+        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
             strcat( lbtext, "\"" );
         }
         lbtext1 = WConvertStringFrom( lbtext, "\t\x8\"\\", "ta\"\\" );

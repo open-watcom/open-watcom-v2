@@ -101,11 +101,10 @@ static vi_key getHotKey( const char *str )
     if( str == NULL ) {
         return( 0 );
     }
-    while( *str != '\0' ) {
+    for( ; *str != '\0'; str++ ) {
         if( *str == HOT_KEY_CHAR ) {
             return( toupper( *(str + 1) ) - 'A' + VI_KEY( ALT_A ) );
         }
-        str++;
     }
     return( 0 );
 
@@ -833,16 +832,11 @@ vi_rc MenuCommand( int menuid )
 
 static void tabs_to_slash_t( char *buffer, const char *text )
 {
-    while( *text != '\0' ) {
+    for( ; *text != '\0'; text++ ) {
         if( *text == '\t' ) {
-            *buffer = '\\';
-            buffer++;
-            *buffer = 't';
-        } else {
-            *buffer = *text;
+            *buffer++ = '\\';
         }
-        buffer++;
-        text++;
+        *buffer++ = *text;
     }
     *buffer = '\0';
 }
@@ -912,25 +906,23 @@ void BarfMenuData( FILE *f )
 static void purgeOldMenuBottom( menu *cmenu )
 {
     int         cnt;
-    item        *citem, *nitem;
+    item        *citem;
+    item        *next;
 
     /*
      * get rid of the old menu items
      */
     if( cmenu->orig_num_items > 0 ) {
-        cnt = 0;
         citem = cmenu->item_head;
-        while( cnt < cmenu->orig_num_items ) {
+        for( cnt = 0; cnt < cmenu->orig_num_items; cnt++ ) {
             citem = citem->next;
-            cnt++;
         }
-        while( cnt < cmenu->num_items ) {
-            nitem = citem->next;
+        for( ; cnt < cmenu->num_items; cnt++ ) {
+            next = citem->next;
             DeleteMenu( cmenu->menu_handle, cmenu->orig_num_items, MF_BYPOSITION );
             DeleteLLItem( (ss **)&cmenu->item_head, (ss **)&cmenu->item_tail, (ss *)citem );
             MemFree( citem );
-            citem = nitem;
-            cnt++;
+            citem = next;
         }
         cmenu->num_items = cmenu->orig_num_items;
     }
@@ -1106,11 +1098,9 @@ void ResetMenuBits( void )
 
     for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
         if( cmenu->menu_handle != NULL ) {
-            citem = cmenu->item_head;
-            while( citem != NULL ) {
+            for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                 citem->is_active = true;
                 citem->is_checked = false;
-                citem = citem->next;
             }
         }
     }
@@ -1227,7 +1217,7 @@ void SetMenuHelpString( const char *str )
 
 vi_rc DoWindowGadgetMenu( void )
 {
-    SendMessage( current_window_id, WM_SYSCOMMAND, 0xF100, 0x0000002DL );
+    SendMessage( current_window_id, WM_SYSCOMMAND, SC_KEYMENU, (LPARAM)'-' );
     return( ERR_NO_ERR );
 }
 

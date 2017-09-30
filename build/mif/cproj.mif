@@ -170,7 +170,7 @@ mode_cppflags = -DNDEBUG
 mode_cflags   = -oaxt -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
-mode_clflags  = $(cldebug_fmt)
+mode_clflags  = $(cldebug_fmt) -d1
 !ifdef $(proj_name)_distrib_lib
 mode_libflags = -s-t-zld
 !endif
@@ -691,7 +691,13 @@ rc              = $(noecho)*bwrc
 rcaui           = $(noecho)*bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
+!ifdef bootstrap
+rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+!else ifndef __WATCOM_TOOLS__
+rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+!else
 rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
+!endif
 
 # current project setup
 !ifeq sys_dll 1

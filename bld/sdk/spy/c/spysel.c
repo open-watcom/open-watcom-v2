@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "spy.h"
+#include <ctype.h>
 #include "wclbproc.h"
 
 
@@ -45,7 +42,7 @@ WINEXPORT INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARA
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
-static BOOL     tmpSpyAll;
+static bool     tmpSpyAll;
 
 /*
  * ClearSelectedWindows - get rid of all selected windows
@@ -84,19 +81,19 @@ void AddSelectedWindow( HWND hwnd )
 static void deleteSelectedWindow( HWND hwnd )
 {
     int         i, j;
-    BOOL        found;
+    bool        found;
 
     if( tmpWndCnt == 0 ) {
         return;
     }
-    found = FALSE;
+    found = false;
 
     for( i = 0; i < tmpWndCnt; i++ ) {
         if( tmpWndList[i] == hwnd ) {
             for( j = i; j < tmpWndCnt - 1; j++ ) {
                 tmpWndList[j] = tmpWndList[j + 1];
             }
-            found = TRUE;
+            found = true;
             break;
         }
     }
@@ -143,32 +140,35 @@ static void addFormattedWindow( HWND hwnd )
 {
     char        res[512];
     char        name[128];
-    char        tmp[5];
     char        lead_bl[128];
     int         i, len;
+    const char  *wmark;
+    char        hexstr[20];
+
     if( IsMyWindow( hwnd ) ) {
         return;
     }
     for( i = 0; i < indentLevel; i++ ) {
         lead_bl[i] = ' ';
     }
-    lead_bl[i] = 0;
+    lead_bl[i] = '\0';
 
-    name[0] = 0;
+    name[0] = '\0';
     len = GetWindowText( hwnd, name, sizeof( name ) );
-    name[len] = 0;
-    tmp[0] = ' ';
-    tmp[1] = 0;
+    name[len] = '\0';
+    wmark = " ";
     if( !tmpSpyAll ) {
         for( i = 0; i < tmpWndCnt; i++ ) {
             if( hwnd == tmpWndList[i] ) {
-                tmp[0] = '*';
+                wmark = "*";
                 break;
             }
         }
     }
-    sprintf( res, "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)(pointer_int)hwnd, tmp, name );
-    SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
+    GetHexStr( hexstr, (UINT_PTR)hwnd, HWND_HEX_LEN );
+    hexstr[HWND_HEX_LEN] = '\0';
+    sprintf( res, "%s%s%s %s", lead_bl, hexstr, wmark, name );
+    SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
 
 } /* addFormattedWindow */
 
@@ -227,7 +227,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
     DLGPROC     dlgproc;
 
     dlgproc = MakeProcInstance_DLG( ShowInfoDlgProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, dlgproc, (LPARAM)framed );
+    JDialogBoxParam( Instance, "PEEKWIN", hwnd, dlgproc, (LPARAM)framed );
     FreeProcInstance_DLG( dlgproc );
 
 } /* ShowFramedInfo */
@@ -241,7 +241,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
     const char  *errstr;
     char        *res;
     LRESULT     top;
-    int         sel;
+    LRESULT     sel;
     HWND        id;
     WORD        parm;
     static HWND framedHwnd;
@@ -277,9 +277,9 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
             tmpSpyAll = !tmpSpyAll;
             CheckDlgButton( hwnd, SELWIN_SPYALL, ( tmpSpyAll ) ? BST_CHECKED : BST_UNCHECKED );
             ctl = GetDlgItem( hwnd, SELWIN_ADD );
-            EnableWindow( ctl, !tmpSpyAll );
+            EnableWindow( ctl, ( tmpSpyAll ) ? FALSE : TRUE );
             ctl = GetDlgItem( hwnd, SELWIN_DELETE );
-            EnableWindow( ctl, !tmpSpyAll );
+            EnableWindow( ctl, ( tmpSpyAll ) ? FALSE : TRUE );
             setUpWindows();
             break;
         case SELWIN_LISTBOX:
@@ -296,7 +296,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
         case SELWIN_ADD:
         case SELWIN_DELETE:
         case SELWIN_SHOWINFO:
-            sel = (int)SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
+            sel = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( sel == LB_ERR ) {
                 if( parm != SELWIN_LISTBOX ) {
                     errstr = GetRCString( STR_NO_CUR_SELECTION );
@@ -305,7 +305,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             top = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTOPINDEX, 0, 0L );
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, sel, (LPARAM)(LPSTR)resdata );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, (WPARAM)sel, (LPARAM)(LPSTR)resdata );
             res = resdata;
             while( isspace( *res ) ) {
                 res++;
@@ -314,8 +314,8 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             ch = res[SPYOUT_HWND_LEN];
-            res[SPYOUT_HWND_LEN] = 0;
-            id = (HWND)strtol( res, NULL, 16 );
+            res[SPYOUT_HWND_LEN] = '\0';
+            id = (HWND)(ULONG_PTR)strtoul( res, NULL, 16 );
             if( parm == SELWIN_LISTBOX ) {
                 if( ch == '*' ) {
                     parm = SELWIN_DELETE;
@@ -342,8 +342,8 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             setUpWindows();
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETTOPINDEX, top, 0L );
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, sel, 0L );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETTOPINDEX, (WPARAM)top, 0L );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, (WPARAM)sel, 0L );
             break;
         case IDCANCEL:
             FrameAWindow( framedHwnd );
@@ -369,7 +369,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
 /*
  * DoShowSelectedDialog - start SELETEDWINS dialog
  */
-void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
+void DoShowSelectedDialog( HWND hwnd, bool *spyall )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;

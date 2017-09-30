@@ -22,7 +22,7 @@
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
 #ifndef _LIMITS_INCLUDED
@@ -30,15 +30,14 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
 #ifndef __META_H_INCLUDED
  #include <_meta.h>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     template< class T, class A  = allocator< T > >
     class forward_list{
     public:
@@ -210,16 +209,14 @@ namespace std {
                         nmem.deallocate( n, 1 );
                         --mSize;
                         p = n = first;
-                    }
-                    else {
+                    } else {
                         p->fwd = n->fwd;
                         nmem.destroy( n );
                         nmem.deallocate( n, 1 );
                         --mSize;
                         n = p->fwd;
                     }
-                }
-                else {
+                } else {
                     p = n;
                     n = n->fwd;
                 }
@@ -243,8 +240,7 @@ namespace std {
                     nmem.destroy( del );
                     nmem.deallocate( del, 1 );
                     --mSize;
-                }
-                else {
+                } else {
                     p = p->fwd;
                 }
                 n = p->fwd;
@@ -275,8 +271,7 @@ namespace std {
                 first = o;
                 m = o;
                 o = o->fwd;
-            }
-            else {
+            } else {
                 t = t->fwd;
             }
             // do main block
@@ -285,8 +280,7 @@ namespace std {
                     m->fwd = o;
                     m = m->fwd;
                     o = o->fwd;
-                }
-                else {
+                } else {
                     m->fwd = t;
                     m = m->fwd;
                     t = t->fwd;
@@ -332,7 +326,7 @@ namespace std {
         void sort( Compare cmp )
         {
             if( mSize < 2 ) return;
-            
+
             struct StackData {
                 n_ptr data;
                 int depth;
@@ -361,8 +355,7 @@ namespace std {
                         merged = b;
                         prev = b;
                         b = b->fwd;
-                    }
-                    else {
+                    } else {
                         merged = a;
                         prev = a;
                         a = a->fwd;
@@ -374,8 +367,7 @@ namespace std {
                             prev->fwd = b;
                             prev=prev->fwd;
                             b = b->fwd;
-                        }
-                        else {
+                        } else {
                             // move a into merged list
                             prev->fwd = a;
                             prev=prev->fwd;
@@ -390,8 +382,7 @@ namespace std {
                     stack[top-2].data = merged;
                     stack[top-2].depth++;
                     top--;
-                }
-                else { // top < 2 || stack[top].depth != stack[top-1].depth
+                } else { // top < 2 || stack[top].depth != stack[top-1].depth
                        // get another piece of sorted input data
                     n_ptr fst = input;
                     n_ptr next = input->fwd;
@@ -402,8 +393,7 @@ namespace std {
                             c++;
                             input = next;
                             next = next->fwd;
-                        }
-                        else if( c == 1 ) {
+                        } else if( c == 1 ) {
                             // swap two elements
                             fst = next;
                             temp = next->fwd;
@@ -416,16 +406,14 @@ namespace std {
                             break;
 #endif
 #ifdef _SLIST_do_place3
-                        }
-                        else if( c == 2 ) {
+                        } else if( c == 2 ) {
                             // only one more compare needed to insert third
                             // element in correct place so we might as well do it
                             temp = next->fwd;
                             if( !cmp( next->value, fst->value ) ) {
                                 next->fwd = input;
                                 fst->fwd = next;
-                            }
-                            else {
+                            } else {
                                 next->fwd = fst;
                                 fst = next;
                             }
@@ -433,8 +421,7 @@ namespace std {
                             break;
 #undef _SLIST_do_place3
 #endif
-                        }
-                        else { // input > next, finish sublist
+                        } else { // input > next, finish sublist
                             break;
                         }
                     }
@@ -538,8 +525,7 @@ namespace std {
             if( cit.self == first ) {
                 e->fwd = first;
                 first = n;
-            }
-            else {
+            } else {
                 n_ptr p = previous( cit.self );
                 p->fwd = n;
                 e->fwd = cit.self;
@@ -743,8 +729,7 @@ namespace std {
     {
         if( s == 0 ) {
             clear();
-        }
-        else if( s < mSize ) {
+        } else if( s < mSize ) {
             n_ptr del, p = first;
             int i;
             for( i = 1; i < s; i++ ) p = p->fwd;    // find previous to sth element
@@ -757,14 +742,12 @@ namespace std {
                 del = p;
             }
             mSize = s;
-        }
-        else { // s > size
+        } else { // s > size
             n_ptr n;
             make( s - mSize, t, n );  // alloc new nodes
             if( mSize == 0 ) {
                 first = n;
-            }
-            else {
+            } else {
                 // find last
                 n_ptr last = first;
                 while( last->fwd ) last = last->fwd;
@@ -828,10 +811,9 @@ namespace std {
         if( it.self == first ) {
             n->fwd = first;
             first = n;
-        }
-        else {
+        } else {
             n_ptr p = previous( it.self );
-            
+
             n->fwd = p->fwd;
             p->fwd = n;
         }
@@ -873,13 +855,12 @@ namespace std {
         if( s == 0 ) return;
         n_ptr n;
         n_ptr e = make( s, t, n );
-        
+
         n_ptr l = cit.self;
         if( l == first ) {
             e->fwd = first;
             first = n;
-        }
-        else {
+        } else {
             n_ptr p = previous( l );
             p->fwd = n;
             e->fwd = l;
@@ -904,7 +885,7 @@ namespace std {
         o->fwd = n;
         mSize += s;
     }
-    
+
     /* ------------------------------------------------------------------
      * erase( iterator )
      * NOTE this op is slow for sll
@@ -916,8 +897,7 @@ namespace std {
         if( it.self == first ) {
             first = it.self->fwd;
             ret = it.self->fwd;
-        }
-        else {
+        } else {
             n_ptr p = previous( it.self );
             p->fwd = (it.self)->fwd;
             ret = p->fwd;
@@ -963,8 +943,7 @@ namespace std {
                 del = first;
                 --mSize;
             }
-        }
-        else {
+        } else {
             b = previous( fit ).self;
             del = fit.self;
             while( del != lit.self ) {
@@ -1045,8 +1024,7 @@ namespace std {
         n_ptr n = it.self;
         if( n == first ) {
             first = that.first;
-        }
-        else { // n != first
+        } else { // n != first
             n_ptr p = previous( n );
             p->fwd = that.first;
         }
@@ -1057,7 +1035,7 @@ namespace std {
         e->fwd = n;
 
         mSize += that.mSize;
-        
+
         // remove links from that
         that.mSize = 0;
         that.first = 0;
@@ -1079,16 +1057,14 @@ namespace std {
         // unlink src from src container
         if( src.self == that.first ) {
             that.first = src.self->fwd;
-        }
-        else {
+        } else {
             that.previous( src.self )->fwd = src.self->fwd;
         }
 
         // link in new node
         if( dst.self == first ) {
             first = src.self;
-        }
-        else {
+        } else {
             previous( dst.self )->fwd = src.self;
         }
 
@@ -1120,7 +1096,7 @@ namespace std {
         n_ptr spliceme = src.self->fwd;
         n_ptr tail = dst.self->fwd;
         dst.self->fwd = spliceme;
-        
+
         // unlink ++src from src container ( can't be first node or end )
         src.self->fwd = src.self->fwd->fwd;
 
@@ -1179,16 +1155,14 @@ namespace std {
                     nmem.deallocate( n, 1 );
                     --mSize;
                     p = n = first;
-                }
-                else {
+                } else {
                     p->fwd = n->fwd;
                     nmem.destroy( n );
                     nmem.deallocate( n, 1 );
                     --mSize;
                     n = p->fwd;
                 }
-            }
-            else {
+            } else {
                 p = n;
                 n = n->fwd;
             }
@@ -1294,7 +1268,6 @@ namespace std {
     }
     //template< class T, class A> void swap( forward_list<T,A> const &&, forward_list<T,A> const & );
     //template< class T, class A> void swap( forward_list<T,A> const &, forward_list<T,A> const && );
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

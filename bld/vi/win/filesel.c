@@ -95,16 +95,16 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     OPENFILENAME        of;
     bool                rc;
     static long         filemask = 1;
-    bool                is_chicago = false;
+#if defined( __NT__ ) && !defined( _WIN64 )
+    bool                is_chicago;
+#endif
 
     /* unused parameters */ (void)mask; (void)want_all_dirs;
 
 #if defined( __NT__ ) && !defined( _WIN64 )
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
-        is_chicago = true;
-    }
+    is_chicago = ( (GetVersion() & 0x800000FF) >= 0x80000004 );
     /* -------------------------------------------------------- */
 #endif
 
@@ -119,22 +119,34 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     of.nMaxFile = FILENAME_MAX;
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = dir;
+#if defined( __NT__ ) && !defined( _WIN64 )
     if( is_chicago ) {
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
+#endif
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
         of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
+#if defined( __NT__ ) && !defined( _WIN64 )
     }
+#endif
     rc = GetOpenFileName( &of ) != 0;
-    filemask = of.nFilterIndex;
+#if defined( __NT__ ) && !defined( _WIN64 )
     if( !is_chicago ) {
+#endif
         FreeProcInstance_OFNHOOK( of.lpfnHook );
+#if defined( __NT__ ) && !defined( _WIN64 )
     }
+#endif
+    filemask = of.nFilterIndex;
     if( !rc && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
+#if defined( __NT__ ) && !defined( _WIN64 )
         if( !is_chicago ) {
+#endif
             MemFree( (char*)(of.lpstrFile) );
             *result = FileNameList;
+#if defined( __NT__ ) && !defined( _WIN64 )
         }
+#endif
 #if 0
         MyBeep();
         Message1( "Please open files in smaller groups" );
@@ -152,10 +164,18 @@ vi_rc SelectFileSave( char *result )
 {
     OPENFILENAME        of;
     int                 doit;
-    bool                is_chicago = false;
+#if defined( __NT__ ) && !defined( _WIN64 )
+    bool                is_chicago;
+#endif
 
     assert( CurrentFile != NULL );
 
+#if defined( __NT__ ) && !defined( _WIN64 )
+    /* added to get around chicago crashing in the fileopen dlg */
+    /* -------------------------------------------------------- */
+    is_chicago = ( (GetVersion() & 0x800000FF) >= 0x80000004 );
+    /* -------------------------------------------------------- */
+#endif
     strcpy( result, CurrentFile->name );
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -168,19 +188,23 @@ vi_rc SelectFileSave( char *result )
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = CurrentFile->home;
 #if defined( __NT__ ) && !defined( _WIN64 )
-    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 )
-        is_chicago = true;
-#endif
     if( is_chicago ) {
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
     } else {
+#endif
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
         of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
+#if defined( __NT__ ) && !defined( _WIN64 )
     }
+#endif
     doit = GetSaveFileName( &of );
+#if defined( __NT__ ) && !defined( _WIN64 )
     if( !is_chicago ) {
+#endif
         FreeProcInstance_OFNHOOK( of.lpfnHook );
+#if defined( __NT__ ) && !defined( _WIN64 )
     }
+#endif
     if( doit != 0 ) {
         UpdateCurrentDirectory();
         return( ERR_NO_ERR );
@@ -199,10 +223,8 @@ char *GetInitialFileName( void )
     char        *ptr;
     vi_rc       rc;
 
-    CloseStartupDialog();
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
-    ShowStartupDialog();
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
         ptr = DupString( path );
     } else {

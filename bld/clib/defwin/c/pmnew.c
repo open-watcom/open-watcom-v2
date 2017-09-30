@@ -33,20 +33,20 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 #include <limits.h>
 #define INCL_GPI
 #include "win.h"
 #include "pmmenu.h"
 
-#define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 
 extern void _CreateFont( LPWDATA w );
+
 static HWND menuHandle;
+
 /*
  * _NewWindow - create a new window
  */
-unsigned _NewWindow( char *name, ... )
+unsigned _NewWindow( const char *name, ... )
 {
     LPWDATA     w;
     MENUITEM    menus;
@@ -59,12 +59,12 @@ unsigned _NewWindow( char *name, ... )
 
     _GetWindowNameAndCoords( name, str, &x1, &x2, &y1, &y2 );
 
-    style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
-            FCF_VERTSCROLL;
+    style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX | FCF_VERTSCROLL;
     frame = WinCreateStdWindow( _MainWindow,
                 WS_VISIBLE | WS_CLIPSIBLINGS,
-                &style, _ClassName, str, 0, NULL, 0, &hwnd );
-    if( frame == 0 ) return( FALSE );
+                &style, _ClassName, str, 0, NULLHANDLE, 0, &hwnd );
+    if( frame == 0 )
+        return( FALSE );
     WinSetOwner( hwnd, _MainWindow );
 
     va_start( al, name );
@@ -81,22 +81,22 @@ unsigned _NewWindow( char *name, ... )
     _PositionScrollThumb( w );
     WinQueryWindowRect( _MainWindow, &rcl );
     WinSetWindowPos( frame, HWND_TOP,
-                x1*w->xchar,
-                (rcl.yTop - rcl.yBottom)-y1*w->ychar-y2*w->ychar,
-                x2*w->xchar,
-                y2*w->ychar,
+                x1 * w->xchar,
+                ( rcl.yTop - rcl.yBottom ) - y1 * w->ychar - y2 * w->ychar,
+                x2 * w->xchar,
+                y2 * w->ychar,
                 SWP_SIZE | SWP_MOVE | SWP_ZORDER );
 
     menus.iPosition = _MainWindowData->window_count - 1;
     menus.afStyle = MIS_TEXT;
     menus.afAttribute = 0;
     menus.id = DID_WIND_STDIO + w->handles[0];
-    menus.hwndSubMenu = NULL;
+    menus.hwndSubMenu = NULLHANDLE;
     menus.hItem = 0;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( menuHandle, ( ULONG )MM_INSERTITEM, MPFROMP( &menus ), MPFROMP( str ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( menuHandle, ( ULONG )MM_INSERTITEM, MPFROMP( &menus ), MPFROMP( str ) ) )
+        abort();
     temp = WinWindowFromID( frame, FID_SYSMENU );
-    WinSendMsg( temp, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, TRUE),
-                               MPFROMP((PSZ)&menus) );
+    WinSendMsg( temp, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, TRUE), MPFROMP((PSZ)&menus) );
     WinSendMsg( menus.hwndSubMenu, MM_DELETEITEM, MPFROM2SHORT( SC_CLOSE, TRUE ), 0 );
     WinUpdateWindow( hwnd );
     WinSetFocus( HWND_DESKTOP, hwnd );
@@ -115,12 +115,12 @@ void _ReleaseWindowResources( LPWDATA w )
 /*
  * _SetWinMenuHandle - Sets the internal submenu handle.
  */
-void _SetWinMenuHandle( HWND hmenu ) {
-
+void _SetWinMenuHandle( HWND hmenu )
+{
     menuHandle = hmenu;
 }
 
-HWND _GetWinMenuHandle( void ) {
-
+HWND _GetWinMenuHandle( void )
+{
     return( menuHandle );
 }

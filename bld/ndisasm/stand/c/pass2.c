@@ -165,7 +165,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
             value.u._32[I64LO32] = l_entry->offset;
-            FmtHexNum( temp, 0, value, true );
+            FmtHexNum( temp, 0, value );
             if( r_entry->frame == NULL && (flags & RFLAG_NO_FRAME) == 0 )
                 frame = "ds:";
             sprintf( buff, "%s%s[%s]", frame, frame_sep, temp);
@@ -190,7 +190,7 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
 
         case LTYP_ABSOLUTE:
             value.u._32[I64LO32] = l_entry->offset;
-            FmtHexNum( temp, 0, value, true );
+            FmtHexNum( temp, 0, value );
             if( *frame == '\0' && ( (flags & RFLAG_NO_FRAME) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s%s[%s]", int_pref, frame, frame_sep, temp);
@@ -385,7 +385,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             }
             value.u._32[I64HI32] = 0;
             value.u._32[I64LO32] = nvalue;
-            FmtHexNum( p, 0, value, true );
+            FmtHexNum( p, 0, value );
         }
     }
     *reference_entry = r_entry;
@@ -398,12 +398,10 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     unsigned            len;
     unsigned            i;
     dis_value           mask;
-    bool                with_prefix;
     dis_value           value;
 
     mask.u._32[I64HI32] = 0;
     mask.u._32[I64LO32] = 0;
-    with_prefix = true;
     value = ins->op[op_num].value;
     switch( ins->op[op_num].ref_type ) {
     case DRT_SPARC_BYTE:
@@ -482,7 +480,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     }
     value.u._32[I64HI32] &= mask.u._32[I64HI32];
     value.u._32[I64LO32] &= mask.u._32[I64LO32];
-    FmtHexNum( buff, size, value, with_prefix );
+    FmtHexNum( buff, size, value );
 }
 
 size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
@@ -525,12 +523,12 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
         } else if( op->value.s._32[I64LO32] > 0 ) {
-            FmtHexNum( buff, 0, op->value, true );
+            FmtHexNum( buff, 0, op->value );
         } else if( op->value.s._32[I64LO32] < 0 ) {
             buff[0] = '-';
             value.s._32[I64HI32] = 0;
             value.s._32[I64LO32] = -op->value.s._32[I64LO32];
-            FmtHexNum( &buff[1], 0, value, true );
+            FmtHexNum( &buff[1], 0, value );
         }
         break;
     case DO_IMMED:
@@ -555,12 +553,10 @@ static void processDataInCode( section_ptr section, unsigned_8 *contents, struct
 
     offset = data->loop + size;
     if( DFormat & DFF_ASM ) {
-        DumpASMDataFromSection( contents, data->loop, offset, l_entry,
-                                &(data->r_entry), section );
+        DumpASMDataFromSection( contents, data->loop, offset, l_entry, &(data->r_entry), section );
         BufferPrint();
     } else {
-        DumpDataFromSection( contents, data->loop, offset, l_entry,
-                             &(data->r_entry), section );
+        DumpDataFromSection( contents, data->loop, offset, l_entry, &(data->r_entry), section );
     }
     for( ; data->r_entry != NULL; data->r_entry = data->r_entry->next ) {
         if( data->r_entry->offset >= offset ) {

@@ -227,6 +227,7 @@ int main( int argc, char *argv[] )
     if(!hab) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
 
     hmq = WinCreateMsgQueue( hab, 0 );
@@ -234,12 +235,14 @@ int main( int argc, char *argv[] )
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         WinTerminate(hab);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
 
     if( !imgEditInit( hab ) ) {
         DosBeep(BEEP_WARN_FREQ, BEEP_WARN_DUR);
         WinTerminate(hab);
         DosExit(EXIT_PROCESS, RETURN_ERROR);
+        // never return
     }
 
     IEEnableMenuInput( TRUE );

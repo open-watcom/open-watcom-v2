@@ -15,7 +15,7 @@
 :include cpponly.sp
 
 #ifndef _ALGORITHM_INCLUDED
- #include <algorith>
+ #include <algorithm>
 #endif
 
 #ifndef _ITERATOR_INCLUDED
@@ -31,15 +31,14 @@
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
-namespace std {
-
+:include nsstd.sp
     template< class Type, class Allocator = allocator< Type > >
     class list {
     public:
@@ -68,7 +67,7 @@ namespace std {
         Allocator::rebind< node >::other node_allocator;
         Allocator::rebind< link >::other link_allocator;
         size_type item_count;
-    
+
     public:
 
         class iterator_base {
@@ -132,7 +131,7 @@ namespace std {
             sentinel->next = sentinel->previous = sentinel;
             helper_assign( first, last, is_integral<InputIterator>::type( ) );
         }
-    
+
         list( const list & );
        ~list( );
         list &operator=( const list & );
@@ -155,7 +154,7 @@ namespace std {
         reverse_iterator       rend( );
         const_reverse_iterator rbegin( ) const;
         const_reverse_iterator rend ( ) const;
-    
+
         size_type  size( )  const;
         size_type  max_size( )  const;
         void       resize( size_type n, const value_type &c );
@@ -177,7 +176,7 @@ namespace std {
         {
             helper_insert( it, first, last, is_integral<InputIterator>::type( ) );
         }
-    
+
         iterator erase( iterator it );
         iterator erase( iterator first, iterator last );
         void swap( list & );
@@ -190,11 +189,10 @@ namespace std {
             iterator first( begin( ) );
             iterator last ( end( ) );
 
-            while ( !(first == last) )
-            {
+            while( !(first == last) ) {
                 iterator next ( first );
                 ++next;
-                if ( pred( *first ) )
+                if( pred( *first ) )
                     erase( first );
                 first = next;
             }
@@ -207,24 +205,24 @@ namespace std {
         void reverse( );
         void unique( );
         void merge( list &other );
-        
+
         template< class BinaryPredicate >
         void unique( BinaryPredicate pred )
         {
             iterator first( begin( ) );
             iterator last ( end( ) );
 
-            if ( first == last )
+            if( first == last )
                 return;
 
             iterator next( first );
 
-            while ( !(++next == last) )
-            {
-                if ( pred( *first, *next ) )
+            while( !(++next == last) ) {
+                if( pred( *first, *next ) ) {
                     erase( next );
-                else
+                } else {
                     first = next;
+                }
                 next = first;
             }
         }
@@ -273,7 +271,7 @@ namespace std {
         // ******************************************************************
         template< class InputIterator >
         void helper_insert( iterator it, InputIterator first, InputIterator last, true_type )
-        { 
+        {
             for( size_type n = static_cast< size_type >( first ); n > 0; n-- ) {
                 push( static_cast< node * >( it.current ),
                       static_cast< value_type >( last ) );
@@ -325,7 +323,7 @@ namespace std {
                 link *middle         = first;
                 link *l2begin        = NULL;
                 size_type middle_position = distance / 2;
-            
+
                 // Moving throw links.
                 while( (middle_position >= 1) && (middle != last) ) {
                     middle = middle->next;
@@ -343,7 +341,7 @@ namespace std {
                         middle_position -= 1;
                     }
                 }
-    
+
                 if( distance > 0 ) {
                     // Two recursive calls for two subranges.
                     l2begin = middle->next;
@@ -357,7 +355,7 @@ namespace std {
                 merge_lists( first, middle, /*middle->next,*/ last, comp );
             }
         }
-    
+
         // merge_lists( link *, link *, link *, Compare )
         // **********************************************
         template< class Compare >
@@ -371,9 +369,9 @@ namespace std {
             link *list2       = middle->next;
             link *list2end    = last->next;
             link *temp_l2next = NULL;
-        
+
             if( first == last ) return; // Just guard for 1-element lists.
-            
+
             // Compare elements on both lists as long as possible.
             do {
                 while( !comp( static_cast< node * >( list2 )->value,
@@ -381,7 +379,7 @@ namespace std {
                     list1 = list1->next;
                     if( list1 == list2 ) return;
                 }
-            
+
                 // *list2 is less than *list1 move *list2 _before_ *list1.
                 temp_l2next = list2->next;         // Store list2 next value.
                 if( list1->next == list2 ) {       // Ajacent list elements.
@@ -471,7 +469,7 @@ namespace std {
     typename list< Type, Allocator >::iterator &
         list< Type, Allocator >::iterator::operator++( )
     {
-        current = current->next; 
+        current = current->next;
         return( *this );
     }
 
@@ -482,7 +480,7 @@ namespace std {
     typename list< Type, Allocator >::iterator &
         list< Type, Allocator >::iterator::operator--( )
     {
-        current = current->previous; 
+        current = current->previous;
         return( *this );
     }
 
@@ -494,7 +492,7 @@ namespace std {
         list< Type, Allocator >::iterator::operator++( int )
     {
         iterator it( *this );
-        current = current->next; 
+        current = current->next;
         return( it );
     }
 
@@ -506,7 +504,7 @@ namespace std {
         list< Type, Allocator >::iterator::operator--( int )
     {
         iterator it( *this );
-        current = current->previous; 
+        current = current->previous;
         return( it );
     }
 
@@ -608,7 +606,7 @@ namespace std {
 
     // list( size_type, Type, Allocator )
     // **********************************
-    template< class Type, class Allocator > 
+    template< class Type, class Allocator >
     list< Type, Allocator >::list( size_type n, const Type &value, const Allocator &a )
         : item_count( 0 ), node_allocator( a ), link_allocator( a )
     {
@@ -621,12 +619,12 @@ namespace std {
 
     // list( const list & )
     // ********************
-    template< class Type, class Allocator > 
+    template< class Type, class Allocator >
     list< Type, Allocator >::list( const list &other )
         : node_allocator( other.node_allocator ), link_allocator( other.link_allocator )
     {
         sentinel = link_allocator.allocate( 1 );
-        
+
         const link *other_current = other.sentinel;
         link *current = sentinel;
         item_count = 0;
@@ -786,13 +784,12 @@ namespace std {
     template< class Type, class Allocator >
     void list< Type, Allocator >::resize( size_type n, const value_type &c )
     {
-        if( n > item_count )
+        if( n > item_count ) {
             insert( end( ), n - item_count, c );
-        else if ( n < item_count )
-        {
+        } else if( n < item_count ) {
             iterator  it  = begin( );
             size_type len = 0;
-            for ( ; it != end() && len < n; ++it, ++len);
+            for( ; it != end() && len < n; ++it, ++len );
             erase( it, end( ) );
         }
     }
@@ -855,7 +852,7 @@ namespace std {
     template< class Type, class Allocator >
     inline void list< Type, Allocator >::pop_back( )
         { pop( static_cast< node * >( sentinel->previous ) ); }
-    
+
     // insert( iterator, const value_type & )
     // **************************************
     template< class Type, class Allocator >
@@ -865,7 +862,7 @@ namespace std {
         node *current = push( static_cast< node * >( it.current ), value );
         return iterator( current );
     }
-    
+
     // insert( iterator, size_type, const value_type & )
     // *************************************************
     template< class Type, class Allocator >
@@ -946,8 +943,11 @@ namespace std {
     {
         iterator it( begin( ) );
         while( it != end( ) ) {
-            if( *it == value ) it = erase( it );
-            else ++it;
+            if( *it == value ) {
+                it = erase( it );
+            } else {
+                ++it;
+            }
         }
     }
 
@@ -1019,9 +1019,9 @@ namespace std {
 
         // Fix up list sizes.
         item_count += count;
-        other.item_count -= count;    
+        other.item_count -= count;
     }
-    
+
     // reverse( )
     // **********
     template< class Type, class Allocator >
@@ -1037,7 +1037,7 @@ namespace std {
             current->previous = temp;
             current           = temp;
         }
-        
+
         // Reverse pointers in sentinel (to flip head and tail of list).
         temp               = sentinel->next;
         sentinel->next     = sentinel->previous;
@@ -1052,17 +1052,17 @@ namespace std {
         iterator first( begin( ) );
         iterator last ( end( ) );
 
-        if ( first == last )
+        if( first == last )
             return;
 
         iterator next( first );
 
-        while ( !(++next == last) )
-        {
-            if ( *first == *next )
+        while( !(++next == last) ) {
+            if( *first == *next ) {
                 erase( next );
-            else
+            } else {
                 first = next;
+            }
             next = first;
         }
     }
@@ -1093,8 +1093,7 @@ namespace std {
             if( !( static_cast< node * >( list2 )->value <
                    static_cast< node * >( list1 )->value ) ) {
                 list1 = list1->next;
-            }
-            else {
+            } else {
                 list1->previous->next     = list2;
                 temp_link                 = list1->previous;
                 list1->previous           = list2;
@@ -1129,10 +1128,10 @@ namespace std {
     {
         // Sentinel can't have null links.
         if( !sentinel->next || !sentinel->previous ) return( false );
-    
+
         link *d = sentinel->next;
         size_type count = 0;
-    
+
         while( d != sentinel ){
             count++;
             // If exceeded size, something is wrong so abort now.
@@ -1245,7 +1244,6 @@ namespace std {
     {
         return( !( y < x ) );
     }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

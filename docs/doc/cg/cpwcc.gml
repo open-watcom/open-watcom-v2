@@ -1621,6 +1621,8 @@ keyword:
 .ct ,
 .kwm noreturn
 .ct ,
+.kwm farss
+.ct ,
 .kwm dllimport
 .ct ,
 .kwm dllexport
@@ -1656,6 +1658,8 @@ The
 .kwm naked
 .ct ,
 .kwm noreturn
+.ct ,
+.kwm farss
 .ct ,
 .kwm __pragma
 .ct ,
@@ -2679,6 +2683,25 @@ The following declaration would be flagged in error.
 .exam begin
 __declspec(noreturn) static int data_object = 0;
 .exam end
+.endbull
+.*
+.note __declspec( farss )
+.*
+indicates to the C/C++ compiler that function suppose SS != DS.
+Function uses far pointer to access automatic variables on the stack.
+It is alternative to -zu compiler option and can be used per function.
+.exam begin
+__declspec( farss ) char * foo( char *s );
+.exam end
+.np
+The following rules apply to the use of the
+.kwm farss
+attribute.
+.begbull
+.bull
+The
+.kwm farss
+attribute cannot be used in a data declaration.
 .endbull
 .*
 .note __declspec( dllimport )

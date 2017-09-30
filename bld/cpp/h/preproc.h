@@ -30,138 +30,68 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "bool.h"
-
-#define PPBUFSIZE           8192
-#define HASH_SIZE           211
-
-#define PPTYPE_SIGNED       0
-#define PPTYPE_UNSIGNED     1
-
-#define PPFLAG_PREPROCESSING    0x0001
-#define PPFLAG_EMIT_LINE        0x0002
-#define PPFLAG_SKIP_COMMENT     0x0004
-#define PPFLAG_KEEP_COMMENTS    0x0008
-#define PPFLAG_IGNORE_INCLUDE   0x0010
-#define PPFLAG_DEPENDENCIES     0x0020
-#define PPFLAG_ASM_COMMENT      0x0040
-#define PPFLAG_IGNORE_CWD       0x0080
-#define PPFLAG_IGNORE_DEFDIRS   0x0100
-#define PPFLAG_DB_KANJI         0x0200
-#define PPFLAG_DB_CHINESE       0x0400
-#define PPFLAG_DB_KOREAN        0x0800
-#define PPFLAG_UTF8             0x1000
-#define PPFLAG_DONT_READ        0x4000
-#define PPFLAG_UNDEFINED_VAR    0x8000
-
-#define CC_ALPHA            1
-#define CC_DIGIT            2
+#define PPENTRY
 
 #define PPINCLUDE_USR       0
 #define PPINCLUDE_SYS       1
 #define PPINCLUDE_SRC       2
 
-#define IS_END_OF_MACRO(m)  ((m)->token == PPT_NULL && (m)->data[0] == 'Z')
-
 typedef enum {
-    PPT_NULL            = 0,
-    PPT_SHARP_SHARP     = 1,
-    PPT_LAST_TOKEN      = 2,
-    PPT_EOF             = 3,
-    PPT_SHARP           = '#',
-    PPT_LEFT_PAREN      = '(',
-    PPT_RIGHT_PAREN     = ')',
-    PPT_COMMA           = ',',
-    PPT_ID              = 'A',
-    PPT_TEMP_ID         = 'a',
-    PPT_SAVED_ID        = 'B',
-    PPT_COMMENT         = 'C',
-    PPT_MACRO_PARM      = 'P',
-    PPT_NUMBER          = '0',
-    PPT_LITERAL         = '\"',
-    PPT_WHITE_SPACE     = ' ',
-    PPT_OTHER           = '$',
-    PPT_MAXSIZE = 0xFFFF
-} ppt_token;
+    PPFLAG_PREPROCESSING    = 0x0001,
+    PPFLAG_EMIT_LINE        = 0x0002,
+    PPFLAG_SKIP_COMMENT     = 0x0004,
+    PPFLAG_KEEP_COMMENTS    = 0x0008,
+    PPFLAG_IGNORE_INCLUDE   = 0x0010,
+    PPFLAG_DEPENDENCIES     = 0x0020,
+    PPFLAG_ASM_COMMENT      = 0x0040,
+    PPFLAG_IGNORE_CWD       = 0x0080,
+    PPFLAG_IGNORE_DEFDIRS   = 0x0100,
+    PPFLAG_DB_KANJI         = 0x0200,
+    PPFLAG_DB_CHINESE       = 0x0400,
+    PPFLAG_DB_KOREAN        = 0x0800,
+    PPFLAG_UTF8             = 0x1000,
+    PPFLAG_DONT_READ        = 0x4000,
+    PPFLAG_UNDEFINED_VAR    = 0x8000
+} pp_flags;
 
-typedef struct macro_entry {
-    struct macro_entry *next;
-    char            *replacement_list;
-    unsigned char   parmcount;      /* 255 - indicates special macro */
-    char            name[1];
-} MACRO_ENTRY;
 #define PP_SPECIAL_MACRO        255
 
-typedef struct macro_token {
-    struct macro_token  *next;
-    ppt_token           token;
-    char                data[1];
-} MACRO_TOKEN;
+typedef struct macro_entry {
+    struct macro_entry  *next;
+    char                *replacement_list;
+    unsigned char       parmcount;      /* PP_SPECIAL_MACRO - indicates special macro */
+    char                name[1];
+} MACRO_ENTRY;
 
-typedef struct  file_list {
-    struct file_list *prev_file;
-    char             *prev_bufptr;
-    char             *filename;
-    FILE             *handle;
-    unsigned         linenum;
-    char             buffer[PPBUFSIZE+2];
-} FILELIST;
+#define PPTYPE_SIGNED       0
+#define PPTYPE_UNSIGNED     1
 
 typedef struct preproc_value {
-    int             type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
+    int                 type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
     union {
-        long int    ivalue;
-        unsigned long uvalue;
+        long int        ivalue;
+        unsigned long   uvalue;
     } val;
 } PREPROC_VALUE;
 
-typedef void        pp_callback(const char *, size_t len, const char *, int);
+typedef void        (* walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
 
-extern  int         PP_Init( const char *__filename, unsigned __flags, const char *__incpath);
-extern  int         PP_Init2( const char *filename, unsigned flags, const char *include_path, const char *leadbytes );
-extern  void        PP_Dependency_List(pp_callback *);
-extern  void        PP_SetLeadBytes( const char *bytes );
-extern  int         PP_Char(void);
-extern  int         PP_Class(char __c);
-extern  void        PP_Fini(void);
-extern  void        PP_Define( const char *__p );
-extern  MACRO_ENTRY *PP_AddMacro( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_MacroLookup( const char *__name, size_t len );
-extern  MACRO_ENTRY *PP_ScanMacroLookup( const char *__name );
-extern  const char  *PP_ScanToken( const char *__p, ppt_token *__token );
-extern  int         PP_ScanNextToken( ppt_token *__token );
-extern  const char  *PP_SkipWhiteSpace( const char *__p, bool *__white_space );
-extern  const char  *PP_ScanName( const char *__p );
-extern  int         PPEvalExpr( const char *__p, const char **__endptr, PREPROC_VALUE *__val );
-extern  void        PP_ConstExpr( PREPROC_VALUE * );
-extern  MACRO_TOKEN *PPNextToken(void);
-extern  MACRO_TOKEN *NextMToken(void);
-extern  void        DeleteNestedMacro(void);
-extern  void        DoMacroExpansion( MACRO_ENTRY *__me );
-extern  void        PP_AddIncludePath( const char *path_list );
-extern  void        PP_IncludePathInit( void );
-extern  void        PP_IncludePathFini( void );
-extern  int         PP_FindInclude( const char *filename, size_t len, char *fullfilename, int incl_type );
+extern  void        PPENTRY PP_Init( char c );
+extern  void        PPENTRY PP_Fini( void );
+extern  int         PPENTRY PP_FileInit( const char *filename, pp_flags flags, const char *incpath );
+extern  int         PPENTRY PP_FileInit2( const char *filename, pp_flags flags, const char *include_path, const char *leadbytes );
+extern  void        PPENTRY PP_FileFini( void );
+extern  void        PPENTRY PP_IncludePathInit( void );
+extern  void        PPENTRY PP_IncludePathFini( void );
+extern  void        PPENTRY PP_IncludePathAdd( const char *path_list );
+extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, int incl_type );
+extern  int         PPENTRY PP_Char( void );
+extern  void        PPENTRY PP_Define( const char *p );
+extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );
 
-extern  void        *PP_Malloc( size_t __size );
-extern  void        PP_Free( void *__ptr );
-extern  void        PP_OutOfMemory(void);
+// Application defined functions
 
-extern  const char  *PP_GetEnv( const char *__name );
-
-extern  void        PreprocVarInit( void );
-extern  void        PPMacroVarInit( void );
-
-extern  FILELIST    *PP_File;
-extern  unsigned    PPLineNumber;
-extern  const char  *PPTokenPtr;
-extern  const char  *PPNextTokenPtr;
-extern  MACRO_TOKEN *PPTokenList;
-extern  MACRO_TOKEN *PPCurToken;
-extern  unsigned    PPFlags;
-extern  char        PPSavedChar;    // saved char at end of token
-extern  char        PP_PreProcChar;
-extern  MACRO_ENTRY *PPHashTable[HASH_SIZE];
+extern  const char  * PPENTRY PP_GetEnv( const char *__name );
+extern  void        * PPENTRY PP_Malloc( size_t __size );
+extern  void        PPENTRY PP_Free( void *__ptr );
+extern  void        PPENTRY PP_OutOfMemory( void );

@@ -39,7 +39,7 @@ typedef struct VerBlockHeader {
     uint_16     Size;           // includes size of nested blocks
     uint_16     ValSize;        // size of the value array that follow header
     uint_16     Type;           // USED FOR NT ONLY 1 == string 0 == binary
-    char *      Key;
+    char        *Key;
 } VerBlockHeader;
 
 typedef struct VerValueItem {
@@ -73,10 +73,10 @@ typedef struct VerFixedInfo {
 #define VER_FIXED_SIGNATURE     0xfeef04bd
 #define VER_FIXED_STRUCT_VER    0x00010000
 
-extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, uint_8 os, WResFileID fid );
+extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, WResTargetOS res_os, WResFileID fid );
 extern bool     ResWriteVerValueItem( VerValueItem * item, bool use_unicode, WResFileID fid );
 extern bool     ResWriteVerFixedInfo( VerFixedInfo *, WResFileID fid );
-extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool use_unicode, uint_8 os );
+extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool use_unicode, WResTargetOS res_os );
 extern size_t   ResSizeVerValueItem( VerValueItem * item, bool use_unicode );
 
 #endif

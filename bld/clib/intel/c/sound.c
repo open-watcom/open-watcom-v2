@@ -35,7 +35,6 @@
 #ifndef __QNX__
     #include <dos.h>
 #endif
-#include "extender.h"
 
 
 _WCRTLINK void sound( unsigned frequency )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,6 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "wclbproc.h"
 
 
@@ -40,8 +38,8 @@
 WINEXPORT INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HWND     LastFramed;
-static BOOL     Cancelled;
-static BOOL     Picking;
+static bool     Cancelled = false;
+static bool     Picking = false;
 static HWND     PickDialogOK;
 static HWND     PickDialogIcon;
 static ctl_id   pickProcCmdId;
@@ -99,7 +97,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
         SetDlgItemText( dlg, PEEKMSG_PARENT, str );
 
         len = GetClassName( framedhwnd, name, sizeof( name ) );
-        name[len] = 0;
+        name[len] = '\0';
         SetDlgItemText( dlg, PEEKMSG_CLASS, name );
 
         if( framedhwnd != NULL ) {
@@ -122,15 +120,11 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 
     } else {
 
-#ifdef __NT__
-        GetHexStr( id, (DWORD)(pointer_int)framedhwnd, SPYOUT_HWND_LEN );
-#else
-        GetHexStr( id, (DWORD)(WORD)framedhwnd, SPYOUT_HWND_LEN );
-#endif
-        id[SPYOUT_HWND_LEN] = 0;
+        GetHexStr( id, (UINT_PTR)framedhwnd, SPYOUT_HWND_LEN );
+        id[SPYOUT_HWND_LEN] = '\0';
         SetDlgItemText( dlg, WINSEL_HWND, id );
         len = GetWindowText( framedhwnd, name, sizeof( name ) );
-        name[len] = 0;
+        name[len] = '\0';
         SetDlgItemText( dlg, WINSEL_NAME, name );
     }
 
@@ -139,7 +133,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 /*
  * GetWindowID - get window ID from mouse coordinates
  */
-static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
+static void GetWindowID( HWND hwnd, HWND *who, LPARAM lparam )
 {
     POINT       p;
     HWND        child;
@@ -188,7 +182,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         if( pickProcCmdId != SPY_PEEK_WINDOW ) {
             EnableWindow( PickDialogOK, FALSE );
         }
-        Picking = FALSE;
+        Picking = false;
         LastFramed = NULL;
         break;
 #ifndef NOUSE3D
@@ -199,7 +193,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDCANCEL:
-            Cancelled = TRUE;
+            Cancelled = true;
             EndDialog( hwnd, 0 );
             break;
         case IDOK:
@@ -213,7 +207,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         ClientToScreen( hwnd, &point );
         GetWindowRect( PickDialogIcon, &rect);
         if( PtInRect( &rect, point ) ) {
-            Picking = TRUE;
+            Picking = true;
             LastFramed = NULL;
             UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW) );
             SetCapture( hwnd );
@@ -248,7 +242,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         break;
     case WM_LBUTTONUP:
         if( Picking ) {
-            Picking = FALSE;
+            Picking = false;
             ReleaseCapture();
             if( LastFramed != NULL ) {
                 FrameAWindow( LastFramed );
@@ -273,7 +267,7 @@ HWND DoPickDialog( ctl_id cmdid )
     ShowWindow( SpyMainWindow, SW_MINIMIZE );
 
     LastFramed = NULL;
-    Cancelled = FALSE;
+    Cancelled = false;
 
     dlgproc = MakeProcInstance_DLG( PickDialogDlgProc, Instance );
     if( cmdid == SPY_PEEK_WINDOW ) {

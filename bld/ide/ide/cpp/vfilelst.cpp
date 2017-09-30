@@ -36,10 +36,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <wwindows.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
+#include <wwindows.h>
 #ifdef __WINDOWS__
 #include <commdlg.h>
 #endif
@@ -561,41 +561,42 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     of.lpstrFile = fname;
     of.nMaxFile = _MAX_PATH;
     of.lpstrTitle = caption;
-    of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK;
-#ifdef __WINDOWS__
-    of.lpfnHook = MakeProcInstance_OFNHOOK( AddSrcDlgProc, hinst );
-#else
-    of.lpfnHook = AddSrcDlgProc;
+    of.lCustData = (LPARAM)info;
+    of.lpstrInitialDir = newpath;
+#if defined( __NT__ )
+  #if !defined( _WIN64 )
+    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #endif
+        of.lpTemplateName = "ADD_SRC_DLG_95";
+        of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK | OFN_EXPLORER;
+        of.lpfnHook = AddSrcDlgProc95;
+  #if !defined( _WIN64 )
+    } else {
+  #endif
+#endif
+#if !defined( _WIN64 )
+        of.lpTemplateName = "ADD_SRC_DLG";
+        of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK;
+        of.lpfnHook = MakeProcInstance_OFNHOOK( AddSrcDlgProc, hinst );
 #endif
 #if defined( __NT__ )
   #if !defined( _WIN64 )
-    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
-        of.lpTemplateName = "ADD_SRC_DLG";
-    } else {
-  #endif
-        of.lpTemplateName = "ADD_SRC_DLG_95";
-        of.Flags |= OFN_EXPLORER;
-        of.lpfnHook = AddSrcDlgProc95;
-  #if !defined( _WIN64 )
     }
   #endif
-#else
-    of.lpTemplateName = "ADD_SRC_DLG";
 #endif
-    of.lCustData = (DWORD)info;
-    of.lpstrInitialDir = newpath;
     rc = GetOpenFileName( &of );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
     last_filter_index = of.nFilterIndex;
-#ifdef __NT__
+#if defined( __NT__ )
   #if !defined( _WIN64 )
-    if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
-        return( rc );
+    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #endif
+        return( info->ret_code );
+  #if !defined( _WIN64 )
     }
   #endif
-    return( info->ret_code );
-#else
-    return( rc );
 #endif
+    return( rc );
 }
 
 int GetNewFiles( WWindow *parent, WString *results, const char *caption,

@@ -82,7 +82,8 @@ VOID APIENTRY StopApplication( VOID )
     StopBuff.Cmd = DBG_C_Stop;
     Call32BitDosDebug( &StopBuff );
     DosSemClear( &StopDoneSem );
-    DosExit( 0, 0 );
+    DosExit( EXIT_THREAD, 0 );
+    // never return
 }
 
 static void CantDoIt( void )

@@ -32,7 +32,6 @@
 
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"

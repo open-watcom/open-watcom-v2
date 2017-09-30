@@ -1551,37 +1551,41 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
 
     /* If new type isn't smaller than old, assume conversion is safe. */
     if( TypeSize( newtyp ) < TypeSize( oldtyp ) ) {
+        is_safe = IsZero( src );
         /* Determine target pointer base. */
         new_flags = newtyp->u.p.decl_flags;
-        if( new_flags & FLAG_BASED ) {
-            switch( newtyp->u.p.based_kind ) {
-            case BASED_SEGNAME:
-                new_segid = newtyp->u.p.segid;
-                break;
-            /* NYI: This could be smarter and check other based types. */
-            default:
-                new_segid = SEG_UNKNOWN;
-            }
-        } else if( IsFuncPtr( newtyp ) ) {
-            new_segid = SEG_CODE;
-        } else {
-            new_segid = SEG_DATA;
-        }
-        /* Determine source pointer base. */
         old_flags = oldtyp->u.p.decl_flags;
-        if( old_flags & FLAG_BASED ) {
-            switch( oldtyp->u.p.based_kind ) {
-            case BASED_SEGNAME:
-                old_segid = oldtyp->u.p.segid;
-                break;
-            /* NYI: This could be smarter and check other based types. */
-            default:
-                old_segid = SEG_UNKNOWN;
+        if( (new_flags & FLAG_BASED) || (old_flags & FLAG_BASED) ) {
+            if( new_flags & FLAG_BASED ) {
+                switch( newtyp->u.p.based_kind ) {
+                case BASED_SEGNAME:
+                    new_segid = newtyp->u.p.segid;
+                    break;
+                /* NYI: This could be smarter and check other based types. */
+                default:
+                    new_segid = SEG_UNKNOWN;
+                }
+            } else if( IsFuncPtr( newtyp ) ) {
+                new_segid = SEG_CODE;
+            } else {
+                new_segid = SEG_DATA;
             }
-        } else {
-            old_segid = oldtyp->u.p.segid;
+            /* Determine source pointer base. */
+            old_flags = oldtyp->u.p.decl_flags;
+            if( old_flags & FLAG_BASED ) {
+                switch( oldtyp->u.p.based_kind ) {
+                case BASED_SEGNAME:
+                    old_segid = oldtyp->u.p.segid;
+                    break;
+                /* NYI: This could be smarter and check other based types. */
+                default:
+                    old_segid = SEG_UNKNOWN;
+                }
+            } else {
+                old_segid = oldtyp->u.p.segid;
+            }
+            is_safe |= ( old_segid == new_segid );
         }
-        is_safe = ( old_segid == new_segid ) || IsZero( src );
     }
     return( is_safe );
 }
@@ -1651,9 +1655,9 @@ convert:                                /* moved here */
             return( ErrorNode( opnd ) );
         } else if( cnv != NIL ) {
             if( cnv == P2P ) {
-                if( ( typ->u.p.decl_flags & MASK_ALL_MEM_MODELS )
-                    != ( newtyp->u.p.decl_flags & MASK_ALL_MEM_MODELS )
-                    || ( opnd_type == TYPE_ARRAY ) ) {
+                if( (typ->u.p.decl_flags & MASK_ALL_MEM_MODELS)
+                  != (newtyp->u.p.decl_flags & MASK_ALL_MEM_MODELS)
+                  || ( opnd_type == TYPE_ARRAY ) ) {
                     if( !IsPtrConvSafe( opnd, newtyp, typ ) ) {
                         if( cast_op ) {
                             CWarn1( WARN_CAST_POINTER_TRUNCATION, ERR_CAST_POINTER_TRUNCATION );

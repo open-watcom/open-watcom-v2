@@ -49,7 +49,7 @@ void UpdateLastFileList( char *fname )
     char                buff[FILENAME_MAX];
 
     // don't add viw-generated filenames
-    if( !strcmp( fname, "no_name" ) || !strncmp( fname, "untitled", 8 ) ) {
+    if( strcmp( fname, "no_name" ) == 0 || strncmp( fname, "untitled", 8 ) == 0 ) {
         return;
     }
 
@@ -62,7 +62,7 @@ void UpdateLastFileList( char *fname )
         if( *root == '\\' ) {
             root++;
         }
-        if( !strcmp( root, helpFiles[i] ) ) {
+        if( strcmp( root, helpFiles[i] ) == 0 ) {
             return;
         }
     }
@@ -72,8 +72,8 @@ void UpdateLastFileList( char *fname )
     // if name already in list, dont add it.
     h = &EditVars.LastFilesHist;
     for( i = 0; i < h->max; i++ ) {
-        if( h->data[i] ){
-            if( !stricmp( buff, h->data[i] ) ) {
+        if( h->data[i] ) {
+            if( stricmp( buff, h->data[i] ) == 0 ) {
                 return;
             }
         }

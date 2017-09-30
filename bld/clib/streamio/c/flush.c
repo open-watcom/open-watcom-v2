@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -38,7 +39,7 @@
 #include "fileacc.h"
 #include "qwrite.h"
 #include "lseek.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "thread.h"
 
 #if defined( __NETWARE__ ) && defined( _THIN_LIB )

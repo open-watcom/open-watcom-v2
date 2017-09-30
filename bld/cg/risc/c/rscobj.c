@@ -158,7 +158,7 @@ void    ObjInit( void )
             DFDefSegs();
             DFObjInitDbgInfo();
 #if 0 //save for jimr
-        } else if( _IsModel( NUMBERS ) ) {
+        } else if( _IsModel( DBG_NUMBERS ) ) {
             DFDefSegs();
             DFObjLineInitDbgInfo();
 #endif
@@ -350,7 +350,7 @@ void    ObjFini( void )
             DoDFSegRange();
             DFObjFiniDbgInfo( code_size );
 #if 0 // save for jimr
-        } else if( _IsModel( NUMBERS ) ) {
+        } else if( _IsModel( DBG_NUMBERS ) ) {
             DFObjLineFiniDbgInfo();
 #endif
         }

@@ -710,7 +710,7 @@ stack_item *PlantAppletBreak( stack_item *p, ExecEnv *ee )
 
     applet  = unhand((HString*)p[0].h);
     len = obj_length(applet->value);
-    buff = __alloca( len + 1 );
+    buff = walloca( len + 1 );
     dst = buff;
     src = unhand(applet->value)->body;
     while( *src ) {
@@ -770,7 +770,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
             ++parms;
             --len;
         }
-        args = __alloca( i * sizeof( *args ) );
+        args = walloca( i * sizeof( *args ) );
         parms = parm_start;
         len = GetTotalSize() - sizeof( *acc );
         i = 1;
@@ -791,7 +791,7 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = __alloca( ( i + 3 ) * sizeof( *args ) );
+        args = walloca( ( i + 3 ) * sizeof( *args ) );
         args[ SplitParms( parms, args + 1, len ) + 1 ] = NULL;
     }
     args[0] = parm_start;

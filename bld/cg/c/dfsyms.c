@@ -54,6 +54,7 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
+#define DWARF_CU_REC_NO_PCLO_PCHI   1
 
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  void            DataLong( unsigned_32 );
@@ -320,19 +321,20 @@ void    DFInitDbgInfo( void )
     CcuDef = false;
     Client = NULL;
 }
-#define MAX_LANG 4
+
 struct lang_map{
      uint       lang;
      char       name[10];
 };
 
-
-struct lang_map LangNames[MAX_LANG] = {
+struct lang_map LangNames[] = {
     {DWLANG_C,       "C"},
     {DWLANG_CPP,     "CPP"},
     {DWLANG_FORTRAN, "FORTRAN"},
     {DWLANG_FORTRAN, "FORTRAN77"},
 };
+
+#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
 
 static int SetLang( void )
 {
@@ -403,6 +405,42 @@ static  void    FiniLineSegBck( void )
     BEFreeBack( bck );
 }
 
+static int InitCU( dw_cu_info *cu )
+{
+    type_def        *tipe_addr;
+
+    cu->source_filename = FEAuxInfo( NULL, SOURCE_NAME );
+    cu->directory = "";
+    cu->inc_list = NULL;
+    cu->inc_list_len = 0;
+    tipe_addr = TypeAddress( TY_NEAR_POINTER );
+    cu->offset_size = tipe_addr->length;
+    cu->segment_size = 0;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    if( _IsntTargetModel( FLAT_MODEL ) ) {
+        cu->segment_size = 2;
+    }
+#endif
+    switch( GetMemModel() ) {
+    case 'h':
+        cu->model = DW_MODEL_HUGE;
+        break;
+    case 'l':
+        cu->model = DW_MODEL_LARGE;
+        break;
+    case 'f':
+        cu->model = DW_MODEL_FLAT;
+        break;
+    case 's':
+        cu->model = DW_MODEL_SMALL;
+        break;
+    default:
+        cu->model = DW_MODEL_NONE;
+        break;
+    }
+    return( 0 );
+}
+
 void    DFSymRange( cg_sym_handle sym, offset size )
 /**************************************************/
 // I don't see what this is good for. The aranges for any
@@ -447,20 +485,28 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
 {
     dw_cu_info      cu;
     back_handle     bck;
+#ifndef DWARF_CU_REC_NO_PCLO_PCHI
     segment_id      old;
-    type_def        *tipe_addr;
+#endif
+
+#ifndef DWARF_CU_REC_NO_PCLO_PCHI
+    /* unused parameters */ (void *)code;
+#endif
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
     }
     if( CcuDef ) {
-        cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
-        cu.directory = "";
+        InitCU( &cu );
         cu.dbg_pch = dbg_pch;
-        cu.inc_list = NULL;
-        cu.inc_list_len = 0;
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
+        Pc_Low = NULL;
+        Pc_High = NULL;
+        bck = NULL;
+        cu.flags = false;
+#else
         old = SetOP( code );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             bck = MakeLabel();
             OutLabel( bck->lbl );
@@ -474,43 +520,22 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             // disabled. The low/high pc attribs should probably be handled by
             // the linker.
             cu.flags = false;
-            cu.segment_size = 0;
         } else {
             bck = NULL;
             cu.flags = false;
             Pc_Low = NULL;
             Pc_High = NULL;
-            cu.segment_size = 2;
         }
-#else
+    #else
         bck = MakeLabel();
         OutLabel( bck->lbl );
         Pc_Low = bck;
         Pc_High = MakeLabel();
         cu.flags = true;
-        cu.segment_size = 0;
-#endif
+    #endif
         SetOP( old );
+#endif
         Comp_High = Pc_High;
-        tipe_addr = TypeAddress( TY_NEAR_POINTER );
-        cu.offset_size = tipe_addr->length;
-        switch( GetMemModel() ) {
-            case 'h':
-                cu.model = DW_MODEL_HUGE;
-                break;
-            case 'l':
-                cu.model = DW_MODEL_LARGE;
-                break;
-            case 'f':
-                cu.model = DW_MODEL_FLAT;
-                break;
-            case 's':
-                cu.model = DW_MODEL_SMALL;
-                break;
-            default:
-                cu.model = DW_MODEL_NONE;
-                break;
-        }
         DWBeginCompileUnit( Client, &cu );
         if( cu.flags ) {
             BEFreeBack( bck );
@@ -618,7 +643,6 @@ void    DFObjLineInitDbgInfo( void )
     };
     dw_init_info    info;
     dw_cu_info      cu;
-    type_def       *tipe_addr;
 
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
@@ -632,42 +656,21 @@ void    DFObjLineInitDbgInfo( void )
         if( Client == NULL ) {
             Zoiks( ZOIKS_107 ); /* Bad */
         }
-        cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
-        cu.directory = "";
+        InitCU( &cu );
         cu.dbg_pch = NULL;
-        cu.inc_list = NULL;
-        cu.inc_list_len = 0;
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
+        cu.flags = false;
+#else
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             cu.flags = true;
-            cu.segment_size = 0;
         } else {
             cu.flags = false;
-            cu.segment_size = 2;
         }
 #else
         cu.flags = true;
-        cu.segment_size = 0;
 #endif
-        tipe_addr = TypeAddress( TY_NEAR_POINTER );
-        cu.offset_size = tipe_addr->length;
-        switch( GetMemModel() ) {
-            case 'h':
-                cu.model = DW_MODEL_HUGE;
-                break;
-            case 'l':
-                cu.model = DW_MODEL_LARGE;
-                break;
-            case 'f':
-                cu.model = DW_MODEL_FLAT;
-                break;
-            case 's':
-                cu.model = DW_MODEL_SMALL;
-                break;
-            default:
-                cu.model = DW_MODEL_NONE;
-                break;
-        }
+#endif
         DWInitDebugLine( Client, &cu );
     } else {
         Zoiks( ZOIKS_107 ); /* Big Error */
@@ -794,23 +797,17 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
         flags = 0;
     }
     name = FEName( sym );
-    if( attr & FE_STATIC ) {
+    dw_segloc = NULL;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
-            dw_segloc = NULL;
-        } else {
+    if( attr & FE_STATIC ) {
+        if( _IsntTargetModel( FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
         }
-#else
-        dw_segloc = NULL;
-#endif
-    } else {
-        dw_segloc = NULL;
     }
+#endif
     dbtype = FEDbgType( sym ); /* causes name side effects */
     dw_loc = DBGLoc2DF( loc );
-    obj = DWVariable( Client, dbtype, dw_loc,
-                0, dw_segloc, name, 0, flags );
+    obj = DWVariable( Client, dbtype, dw_loc, 0, dw_segloc, name, 0, flags );
     if( attr &  FE_GLOBAL ) {
         name = FEName( sym );
         DWPubname( Client, obj, name );
@@ -1014,15 +1011,15 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     dw_retloc = RetLoc( rtn->ret_offset );
     dw_frameloc = FrameLoc();
-    if( _IsTargetModel( FLAT_MODEL ) ) {
-        dw_segloc = NULL;
-    } else {
-        dw_segloc = SegLoc( sym );
-    }
 #else
     dw_retloc = NULL;
     dw_frameloc = NULL;
+#endif
     dw_segloc = NULL;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    if( _IsntTargetModel( FLAT_MODEL ) ) {
+        dw_segloc = SegLoc( sym );
+    }
 #endif
     rtn->end_lbl = MakeLabel();
     Pc_Low  = FEBack( sym );

@@ -46,17 +46,23 @@
 #include "wstrdup.h"
 #include "preproc.h"
 
+
+typedef struct {
+    WRHashTable    *table;
+    bool            dup;
+} addsym_data;
+
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static jmp_buf SymEnv;
 
-void PP_OutOfMemory( void )
+void PPENTRY PP_OutOfMemory( void )
 {
     longjmp( SymEnv, 1 );
 }
 
-void *PP_Malloc( size_t size )
+void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
 
@@ -67,43 +73,34 @@ void *PP_Malloc( size_t size )
     return( p );
 }
 
-void PP_Free( void *p )
+void PPENTRY PP_Free( void *p )
 {
     WRMemFree( p );
 }
 
+static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    WRHashValue         value;
+
+    if( val->type == PPTYPE_SIGNED ) {
+        value = (WRHashValue)val->val.ivalue;
+    } else {
+        value = (WRHashValue)val->val.uvalue;
+    }
+    WRAddHashEntry( ((addsym_data *)cookie)->table, me->name, value, &(((addsym_data *)cookie)->dup), false, false );
+}
+
 static void addSymbols( WRHashTable *table )
 {
-    int                 hash;
-    MACRO_ENTRY         *me;
-    const char          *endptr;
-    PREPROC_VALUE       val;
-    WRHashValue         value;
-    WRHashEntry         *entry;
-    bool                dup;
+    addsym_data         data;
 
     if( table == NULL ) {
         return;
     }
+    data.dup = true;
+    data.table = table;
 
-    dup = true;
-
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-            if( me->parmcount == 0 && me->replacement_list != NULL ) {
-                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
-                    if( *endptr == '\0' ) {
-                        if( val.type == PPTYPE_SIGNED ) {
-                            value = (WRHashValue)val.val.ivalue;
-                        } else {
-                            value = (WRHashValue)val.val.uvalue;
-                        }
-                        entry = WRAddHashEntry( table, me->name, value, &dup, false, false );
-                    }
-                }
-            }
-        }
-    }
+    PP_MacrosWalk( addsym_func, &data );
 }
 
 char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
@@ -117,6 +114,8 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     bool                ok;
 
     name = NULL;
+
+    PP_Init( '#' );
 
     ok = (table != NULL);
 
@@ -146,14 +145,14 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         inc_path = NULL;
         ret = setjmp( SymEnv ) != 0;
         if( ret ) {
-            PP_Fini();
+            PP_FileFini();
             WDisplayErrorMsg( W_SYMOUTOFMEM );
             ok = false;
         }
     }
 
     if( ok ) {
-        ok = !PP_Init( name, flags, inc_path );
+        ok = !PP_FileInit( name, flags, inc_path );
         if( !ok ) {
             WDisplayErrorMsg( W_NOOPENSYMFILE );
         }
@@ -168,7 +167,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         }
         addSymbols( *table );
         WRMakeHashTableClean( *table );
-        PP_Fini();
+        PP_FileFini();
     }
 
     if( !ok ) {
@@ -177,6 +176,8 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
             name = NULL;
         }
     }
+
+    PP_Fini();
 
     WSetWaitCursor( parent, FALSE );
 

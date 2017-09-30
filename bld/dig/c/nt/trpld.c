@@ -30,10 +30,10 @@
 
 
 #include <stdio.h>
-#include <windows.h>
 #include <dos.h>
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"

@@ -158,8 +158,8 @@ _DATA   ends
 STACK   segment para stack 'STACK'
 STACK   ends
 
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 CONST   segment word public 'DATA'
 CONST   ends

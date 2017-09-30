@@ -177,8 +177,8 @@ extern  dbg_type _CGAPI DBForward( dbg_name name )
             /* do nothing */
         } else if( _IsModel( DBG_CV ) ) {
             CVDumpName( name, DBG_FWD_TYPE );
-        } else {
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+        } else {
             WVDumpName( name, DBG_FWD_TYPE );
 #endif
         }
@@ -203,8 +203,8 @@ extern  dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
            DFDumpName( name, tipe );
         } else if( _IsModel( DBG_CV ) ) {
            CVDumpName( name, tipe );
-        } else {
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+        } else {
            WVDumpName( name, tipe );
 #endif
         }
@@ -213,8 +213,8 @@ extern  dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
             DFBackRefType( name, tipe );
         } else if( _IsModel( DBG_CV ) ) {
             CVBackRefType( name, tipe );
-        } else {
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+        } else {
             WVBackRefType( name, tipe );
 #endif
         }

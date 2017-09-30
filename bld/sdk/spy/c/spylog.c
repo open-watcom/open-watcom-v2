@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,13 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <io.h>
-#include <fcntl.h>
 #include <time.h>
 
+
 /*
- * SpyLogTitle - write out spy log title
+ * LogSpyBoxHeader - write out spy log title
  */
-void SpyLogTitle( FILE *f )
+void LogSpyBoxHeader( FILE *f )
 {
     size_t      len;
     char        buff[128];
@@ -48,17 +45,17 @@ void SpyLogTitle( FILE *f )
 
     tod = time( NULL );
     strcpy( buff, ctime( &tod ) );
-    buff[strlen( buff ) - 1] = 0;
+    buff[strlen( buff ) - 1] = '\0';
 
     fwrite( SpyName, 1, strlen( SpyName ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
     fwrite( buff, 1, strlen( buff ), f );
-    fwrite( "\r\n", 1, 2, f );
-    fwrite( "\r\n", 1, 2, f );
-    len = strlen( TitleBar );
-    fwrite( TitleBar, 1, len, f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
+    fwrite( "\n", 1, 1, f );
+    fwrite( TitleBar, 1, TitleBarLen, f );
+    fwrite( "\n", 1, 1, f );
+    len = strlen( TitleBarULine );
     fwrite( TitleBarULine, 1, len, f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
 
-} /* SpyLogTitle */
+} /* LogSpyBoxHeader */

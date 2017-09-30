@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include "cover.h"
 
 BOOL PASCAL _CoverPrintDlg( LPPRINTDLG ppd )

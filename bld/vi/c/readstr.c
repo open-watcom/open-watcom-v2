@@ -337,7 +337,7 @@ static int searchHistory( input_buffer *input, char *str, int curr )
             curr = h->curr - 1;
         }
         index = curr % h->max;
-        if( !strnicmp( str, h->data[index], len ) ) {
+        if( strnicmp( str, h->data[index], len ) == 0 ) {
             strcpy( input->buffer, h->data[index] );
             endColumn( input );
             return( curr );

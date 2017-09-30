@@ -73,8 +73,7 @@
     #define LoadString( inst, id, value, len ) WinLoadString( \
                                 inst.hab, inst.mod_handle, (ULONG)id, (LONG)len, (PSZ)value )
 
-    #define GetClassName( hwnd, buf, size ) WinQueryClassName( \
-                                hwnd, (LONG)size, (PCH)buf )
+    #define GetClassName( hwnd, buf, size ) WinQueryClassName( hwnd, (LONG)size, (PCH)buf )
 
     #define SaveDC( pres ) GpiSavePS( pres )
 

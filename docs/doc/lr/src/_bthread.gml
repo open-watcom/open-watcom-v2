@@ -168,7 +168,7 @@ which is defined in
 .hdrfile stddef.h
 may be used by the executing thread to obtain its thread ID.
 In the 16-bit libraries,
-.kw __threadid
+.kw _threadid
 is a far pointer to an int.
 In the 32-bit libraries, it is a function that returns an int.
 .np

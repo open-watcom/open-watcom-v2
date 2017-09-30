@@ -25,7 +25,6 @@
 :include time_t.sp
 
 :include wchar_t.sp
-
 :include maxpath.sp
 
 :include access.sp

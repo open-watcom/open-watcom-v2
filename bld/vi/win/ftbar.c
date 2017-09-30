@@ -118,9 +118,9 @@ WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT FAR *lf, const TEXTMETRIC
      * a temp buffer in the flat address space.
      */
     _fstrcpy( faceName, elf->elfLogFont.lfFaceName );
-    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)faceName );
+    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)(LPSTR)faceName );
 #else
-    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)(elf->elfLogFont.lfFaceName) );
+    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)(LPSTR)(elf->elfLogFont.lfFaceName) );
 #endif
 
     return( TRUE );
@@ -163,8 +163,8 @@ WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR 
         */
         height = abs( elf->elfLogFont.lfHeight );
         sprintf( sbuf, "%d", height );
-        if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)sbuf ) == CB_ERR ) {
-            SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)sbuf );
+        if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)sbuf ) == CB_ERR ) {
+            SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)(LPSTR)sbuf );
         }
     }
     return( 1 );
@@ -222,10 +222,10 @@ static void fillFaceNamesBox( HWND hwnd )
 
 static void fillStyleBox( void )
 {
-    SendMessage( hwndStyle, LB_INSERTSTRING, 0, (LPARAM)"Regular" );
-    SendMessage( hwndStyle, LB_INSERTSTRING, 1, (LPARAM)"Italic" );
-    SendMessage( hwndStyle, LB_INSERTSTRING, 2, (LPARAM)"Bold" );
-    SendMessage( hwndStyle, LB_INSERTSTRING, 3, (LPARAM)"Bold Italic" );
+    SendMessage( hwndStyle, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)"Regular" );
+    SendMessage( hwndStyle, LB_INSERTSTRING, 1, (LPARAM)(LPCSTR)"Italic" );
+    SendMessage( hwndStyle, LB_INSERTSTRING, 2, (LPARAM)(LPCSTR)"Bold" );
+    SendMessage( hwndStyle, LB_INSERTSTRING, 3, (LPARAM)(LPCSTR)"Bold Italic" );
     Style[0].bold = false;
     Style[0].italic = false;
     Style[1].bold = false;
@@ -292,21 +292,21 @@ static void fillInfoBoxes( HWND hwnd )
         }
         for( index = 0; index < nelements; index++ ) {
             sprintf( size, "%d", vPitchSizes[index] );
-            if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)size ) == CB_ERR ) {
-                SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)size );
+            if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)size ) == CB_ERR ) {
+                SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)(LPSTR)size );
                 NSizes++;
             }
         }
     }
 
     if( oldStyle[0] != '\0' ) {
-        index = (int)SendMessage( hwndStyle, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldStyle );
+        index = (int)SendMessage( hwndStyle, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)(LPSTR)oldStyle );
         if( index == LB_ERR ) {
             SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
         }
     }
     if( oldSize[0] != '\0' ) {
-        index = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)oldSize );
+        index = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)(LPSTR)oldSize );
         if( index == CB_ERR ) {
             SendMessage( hwndSize, CB_SETCURSEL, 0, 0L );
         }
@@ -338,7 +338,7 @@ static void setDefaultSizeStyle( void )
     SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
 
     sprintf( buf, "%d", abs( FontlfHeight( SEType[SE_WHITESPACE].font ) ) );
-    i = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)buf );
+    i = (int)SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)(LPSTR)buf );
     if( i != CB_ERR ) {
         SendMessage( hwndSize, CB_SETCURSEL, i, 0L );
     }
@@ -347,13 +347,15 @@ static void setDefaultSizeStyle( void )
 static void initHwnds( HWND hwndDlg )
 {
     char    tmp[5];
+    int     len;
 
     hwndFaceName = GetDlgItem( hwndDlg, FT_FACENAME );
     hwndStyle = GetDlgItem( hwndDlg, FT_STYLE );
     hwndSize = GetDlgItem( hwndDlg, FT_SIZE );
     hwndPick = GetDlgItem( hwndDlg, FT_FTPICK );
     hwndSizeEdit = GetWindow( hwndSize, GW_CHILD );
-    GetClassName( hwndSizeEdit, tmp, 5 );
+    len = GetClassName( hwndSizeEdit, tmp, sizeof( tmp ) );
+    tmp[len] = '\0';
     if( stricmp( tmp, "edit" ) != 0 ) {
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }
@@ -502,7 +504,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             break;
         }
 
-        len = SendMessage( hwndSizeEdit, EM_GETLINE, 0, (LPARAM)str );
+        len = SendMessage( hwndSizeEdit, EM_GETLINE, 0, (LPARAM)(LPSTR)str );
         str[len] = '\0';
         GetWindowText( hwndSizeEdit, str, 5 );
         i = atoi( str );

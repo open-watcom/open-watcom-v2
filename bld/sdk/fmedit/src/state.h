@@ -55,13 +55,12 @@ typedef struct state {
     WORD            keystate;       /* Was shift pressed on mouse down?         */
     bool            showerror;      /* Show error message when we get it?       */
     char            *error;         /* Pending error string                     */
-    MOUSEACTION     *mouseaction;
-                                    /* Rtn to call on significant mouse actions */
+    MOUSEACTION     *mouseaction;   /* Rtn to call on significant mouse actions */
     unsigned        vresizegrid;    /* vertical resize grid increment           */
     unsigned        hresizegrid;    /* horizontal resize grid increment         */
     bool            show_eatoms;    /* new eatoms will show their movement rect */
     STATE_HDL       id;             /* state id                                 */
-};
+} state;
 
 #define STATE_INDEX 0
 

@@ -35,12 +35,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "watcom.h"
+#include "wrglbl.h"
 #include "global.h"     /* this is a WRC header file */
 #include "rcspawn.h"    /* this is a WRC header file */
 #include "rccore.h"     /* this is a WRC header file */
 #include "wresset2.h"
-#include "wrglbl.h"
 #include "wrsvres.h"
 #include "wrmsg.h"
 #include "wrsvexe.h"

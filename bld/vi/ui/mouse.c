@@ -155,7 +155,7 @@ vi_mouse_event GetMouseEvent( void )
         mouseOn = true;
     } else if( status & MOUSE_ANY_BUTTON_DOWN ) {
         button = getButton( status );
-        if( !mouseRepeat ){
+        if( !mouseRepeat ) {
             if( ClockTicks - mouseTime > EditVars.MouseRepeatStartDelay ) {
                 me = MOUSE_REPEAT;
                 mouseRepeat = true;

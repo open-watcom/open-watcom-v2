@@ -62,7 +62,7 @@ pStackBot       equ     000EH
         extrn   WAITEVENT       : far
         extrn   __AHSHIFT       : word
 
-        extrn   "C",exit        : far
+        extrn   "C",exit        : proc
         extrn   __FInitRtns     : far
         extrn   __FFiniRtns     : far
 
@@ -296,10 +296,10 @@ notprot:
         call    __FInitRtns             ; call initializer routines
 
         call    WINMAIN                 ; invoke user's program
-        call    exit                    ; exit
+        jmp     exit                    ; exit, never return
 _wstart_ endp
 
-__exit  proc near
+__exit  proc
         public  "C",__exit
 _error:
         push    ax                      ; save return code

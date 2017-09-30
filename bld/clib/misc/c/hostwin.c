@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #if defined(__WINDOWS__) || defined(__WINDOWS_386__) || defined(__NT__)
     #include <windows.h>
     #include "osver.h"

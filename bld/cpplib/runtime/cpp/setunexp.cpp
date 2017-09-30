@@ -30,23 +30,21 @@
 ****************************************************************************/
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <except.h>
 
 
 namespace std {
 
-  _WPRTLINK
-  PFV set_unexpected(                 // SET HANDLER FOR UNEXPECTED EXCEPTION
-      PFV handler )                   // - handler to be used
-  {
-    THREAD_CTL *thr;            // - thread control
-    PFV previous_handler;       // - previous handler
+    _WPRTLINK
+    unexpected_handler set_unexpected(  // SET HANDLER FOR UNEXPECTED EXCEPTION
+        unexpected_handler handler )    // - handler to be used
+    {
+        THREAD_CTL *thr;                // - thread control
+        unexpected_handler previous_handler;    // - previous handler
 
-    thr = &_RWD_ThreadData;
-    previous_handler = thr->unexpected;
-    thr->unexpected = handler;
-    return( previous_handler );
-  }
+        thr = &_RWD_ThreadData;
+        previous_handler = thr->unexpected;
+        thr->unexpected = handler;
+        return( previous_handler );
+    }
 
 }

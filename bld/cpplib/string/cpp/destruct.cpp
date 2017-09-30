@@ -58,6 +58,7 @@
 //  94/04/06    Greg Bentz      combine header files
 
 #include "strng.h"
+#include <cstdlib>
 
 #ifndef NDEBUG
     int _CStrAllocCount = 0;
@@ -72,6 +73,6 @@ String::~String() {
         _CStrAllocCount--;
     }
 #endif
-    ::free( __c_string );
+    std::free( __c_string );
     __FreeStringRep();
 }

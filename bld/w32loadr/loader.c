@@ -477,6 +477,7 @@ static void Fatal( char *what, PCONTEXTRECORD p )
         MsgFileHandle = 1;
     }
     DosExit( EXIT_PROCESS, 8 );
+    // never return
 }
 
 static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
@@ -486,6 +487,7 @@ static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
 {
     if( NestedException )
         DosExit( EXIT_PROCESS, 8 );
+        // never return
     NestedException = 1;
     switch( report->ExceptionNum ) {
     case XCPT_ACCESS_VIOLATION:
@@ -508,6 +510,7 @@ static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
          */
         if (BreakFlag == 1)
             DosExit(EXIT_PROCESS, 8);
+            // never return
         BreakFlag = 1;
         //DosAcknowledgeSignalException( report->ExceptionInfo[0] );
         break;
@@ -658,6 +661,7 @@ static void Fatal( char *what, PCONTEXT p )
         MsgFileHandle = 1;
     }
     ExitProcess( 8 );
+    // never return
 }
 
 static int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
@@ -679,8 +683,9 @@ static int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
          * If the BreakFlag is already set then the app is probably not
          * paying attention to it.  So, just die.
          */
-        if (BreakFlag == 1)
-            ExitProcess(1);
+        if( BreakFlag == 1 )
+            ExitProcess( 1 );
+            // never return
         BreakFlag = 1;
         return( ExceptionContinueExecution );
     case STATUS_ACCESS_VIOLATION:
@@ -726,8 +731,9 @@ static BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
          * If the BreakFlag is already set then the app is probably not
          * paying attention to it.  So, just die.
          */
-        if (BreakFlag == 1)
-            ExitProcess(1);
+        if( BreakFlag == 1 )
+            ExitProcess( 1 );
+            // never return
         BreakFlag = 1;
         h = __FileHandleIDs[ 0 ];
         for( ;; ) {
@@ -794,6 +800,7 @@ void __NTMain( void )
         /* The stub on the real executable will setup "$=program" in the */
         /* environment before spawning this program. */
         ExitProcess( LOADER_SUCCESS );
+        // never return
     }
     cmd = GetCommandLine();
     while( *cmd == ' ' || *cmd == '\t' )
@@ -822,6 +829,7 @@ void __NTMain( void )
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
+    // never return
 }
 #else
 /*
@@ -903,6 +911,7 @@ void __NTMain( void )
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
+    // never return
 }
 #endif
 

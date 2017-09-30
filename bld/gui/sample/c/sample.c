@@ -38,6 +38,8 @@
 #include "dlgdynam.h"
 #include "dlgtest.h"
 #include "guirmenu.h"
+#include "wresdefn.h"
+
 
 char *program_invocation_name = "sample";
 
@@ -309,8 +311,8 @@ static void HandlePopup( gui_window *gui, gui_rect *rect, gui_ctl_id id )
 static void SetFixedFloat( gui_window *gui )
 {
     if( GUIHasToolBar( gui ) ) {
-        if( GUIToolBarFixed( gui) ) {
-            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false);
+        if( GUIToolBarFixed( gui ) ) {
+            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false );
             GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FloatHelp );
         } else {
             GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Fix Toolbar", false );
@@ -1017,7 +1019,7 @@ static int GetStringIndent( int *indent, gui_ord hscroll,
     return( string_indent );
 }
 
-void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
+static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
                   int hscroll )
 {
     out_info            *out;

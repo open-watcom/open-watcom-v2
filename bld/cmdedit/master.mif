@@ -40,16 +40,21 @@ extra_a_flags_os2 = -D_OS=_OS2
 .asm: ..
 .c: ..
 
+common_cflags = -w8-we-x-wpx-xx-zam-j
+
 .c.obj:
-    $(cc) $(c_flags) $< -w3 $(extra_c_flags_$(host_os)) -d1 -fo=$@ $(inc_dirs_sys)
+    @%make echo_cc
+    $(cc) $(c_flags) $< $(common_cflags) $(extra_c_flags_$(host_os)) -d1 -fo=$@ $(inc_dirs_sys)
 
 .c{$(dll_subdir)}.obj:
     @if not exist $(dll_subdir) mkdir $(dll_subdir)
-    $(cc) $(c_flags) $< -w3 -oxs -d1 -fo=$@ -zu $(inc_dirs_sys)
+    @%make echo_cc
+    $(cc) $(c_flags) $< $(common_cflags) -oxs -d1 -fo=$@ -zu $(inc_dirs_sys)
 
 .c{cobjs}.obj:
     @if not exist cobjs mkdir cobjs
-    $(cc) $(c_flags) $< -w3 -oxs -d1 -fo=$@ -D__CMDSHELL__ $(inc_dirs_sys)
+    @%make echo_cc
+    $(cc) $(c_flags) $< $(common_cflags) -oxs -d1 -fo=$@ -D__CMDSHELL__ $(inc_dirs_sys)
 
 lnk = tmp.lnk
 
@@ -84,7 +89,7 @@ dcmdedit.exe: $(tstobjs) $(__MAKEFILES__)
 
 !ifeq host_os os2
 
-all: os2edit.dll os2edit.exe os22edit.exe #cmdshell.exe
+all: os2edit.dll os2edit.exe os22edit.exe #dos2edit.exe cmdshell.exe
 
 #
 # OS2EDIT.DLL
@@ -94,7 +99,7 @@ cmd2objs = cmdstart.obj $(os2zuobjs)
 os2edit.dll: $(cmd2objs) $(__MAKEFILES__)
     @%write d$(lnk) name os2edit lib clibs
     @%append d$(lnk) system os2_dll initinstance option manyautodata
-    @%append d$(lnk) option map=os2edid.map, nocaseex, dosseg, newfiles, symfile
+    @%append d$(lnk) option map=os2edid.map, dosseg, newfiles, symfile
     @%append d$(lnk) export OS2EDIT_
     @for %i in ($(cmd2objs)) do @%append d$(lnk) file %i
     @%make echo_link
@@ -119,7 +124,7 @@ cmdshellobjs = cobjs/cmdshell.obj cobjs/ftos.obj $(os2cmdshellobjs)
 
 cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
     @%write c$(lnk) debug all name cmdshell system os2 pmc
-    @%append c$(lnk) option map, dosseg, nocaseex
+    @%append c$(lnk) option map, dosseg
     @for %i in ($(cmdshellobjs)) do @%append c$(lnk) file %i
     @%make echo_link
     $(linker) @c$(lnk)
@@ -127,16 +132,21 @@ cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
 #
 # OS2EDIT.EXE
 #
+os2edit.obj: os2edit.c $(__MAKEFILES__)
+    @%make echo_cc
+    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 -fo=$@ $(inc_dirs_sys)
 
-os2edit.exe: os2edit.c $(__MAKEFILES__)
-    $(cc) $(c_flags) $[@ -ox -d1 $(inc_dirs_sys)
+os2edit.exe: os2edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file os2edit
+    $(linker) debug all op symfile, map sys os2 file $[@
 #
 # OS22EDIT.EXE
 #
-os22edit.exe: os22edit.c $(__MAKEFILES__)
-    $(cc) $(c_flags) $[@ -ox -d1 $(inc_dirs_sys)
+os22edit.obj: os22edit.c $(__MAKEFILES__)
+    @%make echo_cc
+    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 -fo=$@ $(inc_dirs_sys)
+
+os22edit.exe: os22edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file os22edit
+    $(linker) debug all op symfile, map sys os2 file $[@
 !endif

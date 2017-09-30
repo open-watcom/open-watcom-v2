@@ -52,7 +52,7 @@
 extern  int             __TlsIndex;
 
 typedef struct thread_args {
-    thread_fn   *rtn;
+    thread_fn   *start_addr;
     void        *argument;
     int         thread_handle;
     int         signal;
@@ -65,14 +65,14 @@ static void begin_thread_helper( void *param )
 /********************************************************/
 {
     thread_args         *td = (thread_args *)param;
-    thread_fn           *rtn;
+    __thread_fn         *start_addr;
     void                *arg;
     thread_data         *tdata;
     int                 thread_handle;
     REGISTRATION_RECORD rr;
 
     td->tid = RdosGetThreadHandle();    
-    rtn = td->rtn;
+    start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     thread_handle = td->thread_handle;
     RdosSetSignal( td->signal );
@@ -99,7 +99,7 @@ static void begin_thread_helper( void *param )
 
     __NewExceptionFilter( &rr );
     __sig_init_rtn(); // fills in a thread-specific copy of signal table
-    (*rtn)( arg );
+    (*start_addr)( arg );
     _endthread();
     RdosFreeMem(tdata);
     return;
@@ -129,7 +129,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
 
     wait_handle = RdosCreateWait();
 
-    td->rtn = start_addr;
+    td->start_addr = start_addr;
     td->argument = arglist;
     td->signal = RdosCreateSignal();
     RdosResetSignal( td->signal );

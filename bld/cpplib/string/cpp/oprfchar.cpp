@@ -61,13 +61,13 @@
 
 char String::__ref_char         = '\0';
 
-char &String::operator () ( size_t pos ) {
-/****************************************/
+char &String::operator () ( std::size_t pos )
+/*******************************************/
 // Reference-to-character operator: return a reference to the character
 // at position "pos".
 // If the String is not well-formed, or if pos is not valid,
 // return a reference to String::__ref_char:
-
+{
     if( __srep == NULL  ||  pos >= __slength ) {
         return( __ref_char );
     }
@@ -85,7 +85,7 @@ char &String::operator () ( size_t pos ) {
         return( __ref_char );
     }
     if( __slength > 0 ) {
-        ::memcpy( new_srep->__value, __srep->__value + __offset, __slength );
+        std::memcpy( new_srep->__value, __srep->__value + __offset, __slength );
     }
     __srep->__refcount--;
     __srep   = new_srep;

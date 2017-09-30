@@ -599,14 +599,14 @@ raw-data-item
     : string-constant
         {
             $$.IsString    = true;
-            $$.LongItem    = $1.lstring;
-            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = false;
+            $$.LongItem    = $1.lstring;
+            $$.StrLen      = $1.length;
             $$.Item.String = $1.string;
         }
     | constant-expression
-        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.LongItem = $1.longVal; $$.Item.Num = $1.Value; }
     ;
 
 raw-numeric-data-items
@@ -620,7 +620,7 @@ raw-numeric-data-items
 
 raw-numeric-data-item
     : constant-expression
-        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = false; }
+        { $$.IsString = false; $$.LongItem = false; $$.Item.Num = $1.Value; }
     ;
 
 rc-data-items
@@ -636,14 +636,14 @@ rc-data-item
     : string-constant
         {
             $$.IsString    = true;
-            $$.LongItem    = $1.lstring;
-            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = true;
+            $$.LongItem    = $1.lstring;
+            $$.StrLen      = $1.length;
             $$.Item.String = $1.string;
         }
     | constant-expression
-        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.LongItem = $1.longVal; $$.Item.Num = $1.Value; }
     ;
 
 rc-data-section

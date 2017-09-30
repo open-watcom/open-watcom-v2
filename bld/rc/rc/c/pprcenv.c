@@ -16,7 +16,7 @@
 #include "rccore.h"
 
 
-const char *PP_GetEnv( const char *name )
+const char * PPENTRY PP_GetEnv( const char *name )
 {
     return( RcGetEnv( name ) );
 }

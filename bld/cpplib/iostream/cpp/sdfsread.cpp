@@ -34,26 +34,26 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
-#include <stdiobuf>
+#include <stdiobuf.h>
 #endif
 #include "sdfhdr.h"
 
-int __stdiobuf_read( char *buf, size_t size, size_t len, FILE *fp ) {
+int __stdiobuf_read( char *buf, std::size_t size, std::size_t len, std::FILE *fp ) {
 
     int count;
 
     count = 0;
-    if( isatty( fileno( fp ) ) ) {
+    if( ::isatty( ::fileno( fp ) ) ) {
         int ch;
-        ch = fgetc( fp );
+        ch = std::fgetc( fp );
         if( ch != EOF ) {
             *buf = (char)ch;
             count = 1;
         }
     } else {
-        count = ::fread( buf, size, len, fp );
+        count = std::fread( buf, size, len, fp );
     }
     return( count );
 }

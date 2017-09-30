@@ -15,7 +15,6 @@
 :include size_t.sp
 
 :include wchar_t.sp
-
 :include null.sp
 
 :include nlserror.sp
@@ -213,7 +212,7 @@ _WCRTLINK extern int _setmbcp( int );
 _WCRTLINK extern int _getmbcp( void );
 
 /* Implement small functions as macros for speed */
-#if !defined(__FUNCTION_DATA_ACCESS)
+#ifndef __FUNCTION_DATA_ACCESS
  #ifndef _ismbblead
  #define _ismbblead(__b) ( __IsDBCS     \
                         ? ( __MBCSIsTable[(unsigned char)(__b)+1] & _MB_LEAD ) \

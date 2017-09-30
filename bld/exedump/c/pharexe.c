@@ -374,15 +374,12 @@ bool Dmp_phar_head( void )
         Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg );
         dmp_rex_reloc();
     }
-    if( Phar_head.signature == SIMPLE_SIGNATURE ||
-                            Phar_head.signature == REX_SIGNATURE ) {
+    if( Phar_head.signature == SIMPLE_SIGNATURE || Phar_head.signature == REX_SIGNATURE ) {
         if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
-            offset = Phar_head.reloc_offset + Phar_head.num_relocs *
-                                            sizeof( unsigned_32 );
+            offset = Phar_head.hdr_size * 16;
             Wdputslc( "\n" );
             Banner( "Segments" );
-            Dmp_seg_data( offset, Phar_head.mod_size + 512 *
-                                    (Phar_head.file_size-1) - offset );
+            Dmp_seg_data( offset, Phar_head.file_size * 0x200 - (-Phar_head.mod_size & 0x1ff) - offset );
         }
         return( true );
     }

@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "wio.h"
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
 #include "wrimg.h"

@@ -299,7 +299,7 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe ) {
             }
         }
     }
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
+    if( CurrProc->state.attr & ROUTINE_FARSS ) {
         TargetModel |= FLOATING_SS;
     }
 }

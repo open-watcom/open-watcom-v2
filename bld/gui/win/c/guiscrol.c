@@ -220,8 +220,7 @@ static void GUIHScroll( int diff, gui_window *wnd, gui_event gui_ev )
     }
 }
 
-void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                          WPI_PARAM2 lparam )
+void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         diff;
     WORD        param;

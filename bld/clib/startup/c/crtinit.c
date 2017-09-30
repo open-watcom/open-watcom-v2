@@ -33,7 +33,7 @@
 #include <windows.h>
 #include "crtinit.h"
 
-#if defined( __MAKE_DLL_CLIB ) || defined( __MAKE_DLL_WRTLIB )
+#if defined( __MAKE_DLL_CLIB ) || defined( _RTDLL )
 __declspec(dllexport)
 #endif
 BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved )

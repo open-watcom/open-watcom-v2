@@ -3,7 +3,6 @@
 #================================================================================
 !inject __87ldi2.obj      d16i      d32i      n32i      wini
 !inject __87ldi4.obj      d16i      d32i      n32i      wini
-!inject __mtherr.obj d16c d16i d32c d32i n32c n32i winc wini
 !inject _gr_cvt.obj  d16c d16i d32c d32i           winc wini
 !inject _gr_math.obj d16c d16i d32c d32i           winc wini
 !inject _matherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc

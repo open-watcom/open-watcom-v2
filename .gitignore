@@ -1,23 +1,40 @@
 *.$$$
-*.ch
 *.cop
 *.COP
 *.core
 *.d32
-*.dh
 *.dip
+*.dis
+# ignore *.dll files, but include *.dll subdirectories
 *.dll
+!*.dll/
 *.dSYM
 *.elf
 *.err
 *.exe
 *.exp
 *.ext
+# generated .asm source file
+*.gas
+# generated C source file
 *.gc
+# generated .ch source file
+*.gch
+# generated C++ source file
 *.gcp
+# generated .def file
+*.gdf
+# generated .dh source file
+*.gdh
+# generated .dlg source file (dialog resource)
 *.gdl
+# generated .h source file
 *.gh
+# generated .mif make file
+*.gmk
+# generated .cpp source file
 *.gpp
+# generated .rc source file
 *.grc
 *.i
 *.i0
@@ -45,6 +62,7 @@
 *.out
 *.pch
 *.pdb
+*.Po
 *.prs
 *.res
 *.rex
@@ -60,26 +78,30 @@
 *.trp
 *.u
 
+*ytab.*
+
 /*/
 !/bld/
 !/build/
+!/contrib/
 !/distrib/
 !/docs/
+!/travis/
 
-/contrib/*
-!/contrib/*
+!/contrib/**
 
-!/build/*.lnk
-/build/bin/*
-!/build/external/*
+/build/*/
+!/build/bwlink.lnk
+!/build/external/
+!/build/external/**
+!/build/mif/
+!/build/server/
 
 /distrib/ow/*/*
 
-!/docs/doc/whelp/*.cop
+!/docs/doc/**
+!/docs/gml/**
 /docs/dos/*
-!/docs/gml/dos/*.exe
-!/docs/gml/os2/*.exe
-!/docs/gml/syslibl/*.cop
 /docs/html/*
 /docs/htmlhelp/*
 /docs/nt/*
@@ -93,30 +115,14 @@
 /bld/as/*/*/*_in.y
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
-/bld/as/*/*/*ytab.*
 #
-/bld/aui/os2*/*.dlg
+/bld/awk/*/proctab.c
+!/bld/awk/c/proctab.c
+!/bld/awk/c/ytab.c
+!/bld/awk/h/ytab.h
 #
-/bld/awk/*/*
-!/bld/awk/c/*
-!/bld/awk/h/*
-#
-/bld/clib/alias/objs.mif
-/bld/clib/alias/a/*
-/bld/clib/library/*/*/*.def
-#
-/bld/clibtest/regress/*/lnx_3r
-/bld/clibtest/regress/*/lnx_3s
-#
-/bld/cpplib/library/*/*/*.def
-#
-/bld/ctest/*.sav
-/bld/ctest/*/*/*.dis
-/bld/ctest/*/*/*.sav
-#
-/bld/f77test/*.sav
-/bld/f77test/regress/nist/FOR*
-/bld/f77test/regress/nist/__wfc__.vm*
+/bld/f77test/nist/FOR*
+/bld/f77test/nist/__wfc__.vm*
 #
 /bld/graphlib/*/*/*.ref
 #
@@ -127,41 +133,25 @@
 #
 /bld/ide/cfg/*/*.cfg
 #
-/bld/mathlib/alias/objs.mif
-/bld/mathlib/alias/a/*
-/bld/mathlib/library/*/*/*.def
-#
 /bld/misc/*/unicode*
 #
 /bld/os2api/os2286/*/*
 /bld/os2api/os2386/*/*
 #
 /bld/pbide/cfg/*/*.cfg
-/bld/pbide/*/*/ytab.*
 #
-/bld/plusplus/*/*/ytab.*
+/bld/plustest/owstl/mmwin16.cpp
+/bld/plustest/owstl/mmwindef.cpp
+!/bld/plustest/re2c05/ytab.h
 #
-/bld/plustest/*.sav
-/bld/plustest/*/*/*.dis
-/bld/plustest/*/*/*.sav
-/bld/plustest/*/*/*/*.sav
-/bld/plustest/regress/owstl/mmwin16.cpp
-/bld/plustest/regress/owstl/mmwindef.cpp
+!/bld/re2c/h/ytab.h
 #
 /bld/rc/rc/*/*.uni
-/bld/rc/rc/*/*ytab.*
 #
 /bld/rcsdll/batch/*/*.bat
 /bld/rcsdll/batch/*/*.cmd
 #
-/bld/sdk/wr/*/*ytab.*
-#
-!/bld/src/dll/dll16.lnk
-!/bld/src/dll/dll32.lnk
-!/bld/src/dll/gen16.lnk
-!/bld/src/dll/gen32.lnk
-!/bld/src/os2/dll/dllsamp.lnk
-!/bld/src/os2/som/wps/owobject.lnk
+!/bld/src/**/*.lnk
 #
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini
@@ -175,51 +165,32 @@
 /bld/w32api/ntaxp/*
 !/bld/w32api/test/*
 #
-/bld/wasmtest/*.sav
 /bld/wasmtest/*/*.dib
-/bld/wasmtest/*/*.dis
-/bld/wasmtest/*/*.sav
 #
 !/bld/wattcp/inc/sys/*.err
 #
 /bld/wcl/owcc/*/*.owc
 #
-/bld/wgml/test/*.ops
-/bld/wgml/test/*.OPS
-/bld/wgml/test/*.nps
-/bld/wgml/test/*.old
-/bld/wgml/test/*.OLD
-/bld/wgml/test/*.new
-/bld/wgml/test/*.ntr
-/bld/wgml/test/testlib/*.bat
+/bld/wgml/test/testlib/*
 #
 /bld/win386/vxd/*.386
 /bld/win386/conv/win386/*
 #
-/bld/wipfc/.deps
-/bld/wipfc/autom4te.cache
-/bld/wipfc/config.h
-/bld/wipfc/config.status
-/bld/wipfc/Makefile
-/bld/wipfc/stamp-h1
-/bld/wipfc/wipfc
-#
-/bld/wipfc/linuxx64/.deps
-/bld/wipfc/linuxx64/config.h
-/bld/wipfc/linuxx64/config.status
-/bld/wipfc/linuxx64/Makefile
-/bld/wipfc/linuxx64/stamp-h1
+/bld/wipfc/autom4te.cache/
+/bld/wipfc/*/config.h
+/bld/wipfc/*/config.status
+/bld/wipfc/*/Makefile
+/bld/wipfc/*/stamp-h1
 #
 /bld/wmake/regress/cmds/*
 #
 /bld/wv/dbg/*/*.dbg
-/bld/wv/os2/*/*.dlg
 ###
 
 stderr.txt
 stdout.txt
-
-binbuild
+failures
 
 !makefile
 !afile
+!binmake

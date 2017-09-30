@@ -844,7 +844,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #define _INT            0xcd
 
-#if ( defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
+#if defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"
@@ -1392,7 +1392,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "pop ds"        \
         parm caller     [bx] [dx eax] [ecx] \
         value           [eax] \
-        modify exact    [eax];
+        modify exact    [eax edx];
 
 #pragma aux             _nTinyRead = \
         "mov ah,3Fh"    \
@@ -1414,7 +1414,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         "pop ds"        \
         parm caller     [bx] [dx eax] [ecx] \
         value           [eax] \
-        modify exact    [eax];
+        modify exact    [eax edx];
 
 #pragma aux             _TinyLSeek = \
         "mov ah,42h"    \
@@ -2628,7 +2628,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _SBB_DX_DX      \
         parm caller     [bx] [cx dx] [di si] \
         value           [dx ax] \
-        modify exact    [ax dx];
+        modify exact    [ax dx di si];
 
 #pragma aux             _TinyUnlock = \
         _XCHG_SI_DI     \
@@ -2637,7 +2637,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
         _SBB_DX_DX      \
         parm caller     [bx] [cx dx] [si di] \
         value           [dx ax] \
-        modify exact    [ax dx];
+        modify exact    [ax dx di si];
 
 #pragma aux             _TinyCreatePSP = \
         _PUSHF          \

@@ -195,7 +195,7 @@ void Bitmap::readHeader16( std::FILE* in )
 {
     bmih.read( in );
     if( bmih.bitsPerPixel <= 8 ) {
-        size_t rgbSize( 1 << bmih.bitsPerPixel );
+        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
         rgb.resize( rgbSize );
         if( std::fread( &rgb[0], sizeof( RGB ), rgbSize, in ) != rgbSize )
             throw FatalError( ERR_READ );
@@ -215,9 +215,9 @@ void Bitmap::readHeaderW32( std::FILE* in )
     bmfh.size -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
     bmfh.bitsOffset -= sizeof( BitmapInfoHeaderWin32 ) - sizeof( BitmapInfoHeader16 );
     if( bmih.bitsPerPixel <= 8 ) {
-        size_t rgbSize( 1 << bmih.bitsPerPixel );
+        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
         rgb.reserve( rgbSize );
-        for( size_t count1 = 0; count1 < rgbSize; ++count1 ) {
+        for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
             RGBA tmp1;
             tmp1.read( in );
             RGB tmp2( tmp1 );
@@ -250,21 +250,21 @@ void Bitmap::readHeaderOS2( std::FILE* in )
     bmfh.size -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
     bmfh.bitsOffset -= sizeof( BitmapInfoHeaderOS22x ) - sizeof( BitmapInfoHeader16 );
     if( bmih.bitsPerPixel <= 8 ) {
-        size_t rgbSize( 1 << bmih.bitsPerPixel );
+        std::size_t rgbSize( 1 << bmih.bitsPerPixel );
         rgb.reserve( rgbSize );
         if( bmihOS22x.usedColors ) {
-            for( size_t count1 = 0; count1 < bmihOS22x.usedColors; ++count1 ) {
+            for( std::size_t count1 = 0; count1 < bmihOS22x.usedColors; ++count1 ) {
                 RGBA tmp1;
                 tmp1.read( in );
                 RGB tmp2( tmp1 );
                 rgb.push_back( tmp2 );
             }
             RGB tmp;
-            for( size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 )
+            for( std::size_t count1 = bmihOS22x.usedColors; count1 < rgbSize; ++count1 )
                 rgb.push_back( tmp );
         }
         else {
-            for( size_t count1 = 0; count1 < rgbSize; ++count1 ) {
+            for( std::size_t count1 = 0; count1 < rgbSize; ++count1 ) {
                 RGBA tmp1;
                 tmp1.read( in );
                 RGB tmp2( tmp1 );
@@ -287,7 +287,7 @@ void Bitmap::readHeaderOS2( std::FILE* in )
 /***************************************************************************/
 // We pretend that the bitmap is unencoded and that each bitmap row is padded
 // to a dword boundary
-void Bitmap::findBlockSize( size_t width, size_t height, size_t bitsPerPixel )
+void Bitmap::findBlockSize( std::size_t width, std::size_t height, std::size_t bitsPerPixel )
 {
     switch( bitsPerPixel ) {
     case 1:

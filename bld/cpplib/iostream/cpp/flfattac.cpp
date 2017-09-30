@@ -32,9 +32,10 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <fstream.h>
+#include <fstream>
 #endif
-#include "ioutil.h"
+#include "clibsupp.h"
+
 
 namespace std {
 

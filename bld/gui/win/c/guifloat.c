@@ -144,9 +144,7 @@ void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     is_hilite = ( (GET_WM_MENUSELECT_FLAGS( wparam, lparam ) & MF_HILITE) != 0 );
 #else
     hmenu = (HMENU)lparam;
-    if( !menu_closed &&
-        !WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, true),
-                     MPFROMP(&mstate) ) ) {
+    if( !menu_closed && !WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT( id, true ), MPFROMP( &mstate ) ) ) {
         return;
     }
     is_hilite = ( (mstate.afAttribute & MF_HILITE) != 0 );

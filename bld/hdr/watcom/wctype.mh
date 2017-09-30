@@ -28,13 +28,13 @@
 // C99 types in wctype.h
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
-#define _WINT_T_DEFINED_
-using std::wint_t;
+ #define _WINT_T_DEFINED_
+ using std::wint_t;
 #endif
 #ifndef _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED_
-using std::wctype_t;
+ #define _WCTYPE_T_DEFINED_
+ using std::wctype_t;
 #endif
 
 // C99 functions in wctype.h
@@ -70,57 +70,28 @@ using std::iswblank;
 :include cpluspro.sp
 
 :endsegment
+:include weof.sp
+
 :include wint_t.sp
 
 :include wctype_t.sp
 
 :include wctranst.sp
 
-:segment CNAME
-#define WEOF ((std::wint_t)(-1))
-:elsesegment
-#define WEOF ((wint_t)(-1))
+:include wctype.sp
+
+:include ext.sp
+_WCRTLINK extern int        iswascii( __w_wint_t __wc );
+_WCRTLINK extern int        __iswcsymf( __w_wint_t __wc );
+_WCRTLINK extern int        __iswcsym( __w_wint_t __wc );
+#ifndef __FUNCTION_DATA_ACCESS
+:segment !CNAME
+#define iswascii(__c)       ((unsigned)(__c) < 0x80)
 :endsegment
-
-:segment CNAME
-namespace std {
-
-:endsegment
-_WCRTLINK extern int      iswalnum( wint_t __wc );
-_WCRTLINK extern int      iswalpha( wint_t __wc );
-_WCRTLINK extern int      iswascii( wint_t __wc );
-_WCRTLINK extern int      iswcntrl( wint_t __wc );
-_WCRTLINK extern int      iswdigit( wint_t __wc );
-_WCRTLINK extern int      iswgraph( wint_t __wc );
-_WCRTLINK extern int      iswlower( wint_t __wc );
-_WCRTLINK extern int      iswprint( wint_t __wc );
-_WCRTLINK extern int      iswpunct( wint_t __wc );
-_WCRTLINK extern int      iswspace( wint_t __wc );
-_WCRTLINK extern int      iswupper( wint_t __wc );
-_WCRTLINK extern int      iswxdigit( wint_t __wc );
-_WCRTLINK extern int      iswctype( wint_t __wc, wctype_t __desc );
-_WCRTLINK extern wctype_t wctype( const char *__property );
-_WCRTLINK extern wint_t   towctrans( wint_t __wc, wctrans_t __desc );
-_WCRTLINK extern wint_t   towlower( wint_t __wc );
-_WCRTLINK extern wint_t   towupper( wint_t __wc );
-_WCRTLINK extern wctrans_t wctrans( const char *__property );
-
-:: C99 functions in ctype.h that are currently considered extensions.
-:include extc99.sp
-_WCRTLINK extern int      iswblank( wint_t __wc );
+#define __iswcsymf(__c)     (iswalpha(__c) || ((__c)=='_'))
+#define __iswcsym(__c)      (iswalnum(__c) || ((__c)=='_'))
+#endif
 :include extepi.sp
-:segment CNAME
-
-} // namespace std
-:endsegment
-
-:segment CNAME
-_WCRTLINK extern int      __iswcsymf( std::wint_t __wc );
-_WCRTLINK extern int      __iswcsym( std::wint_t __wc );
-:elsesegment
-_WCRTLINK extern int      __iswcsymf( wint_t __wc );
-_WCRTLINK extern int      __iswcsym( wint_t __wc );
-:endsegment
 
 :segment CNAME
 :include cplusepi.sp

@@ -59,6 +59,7 @@
 .gitattributes text
 .gitignore text
 binmake text
+configure text
 gnumake text
 makefile text
 makeinit text

@@ -209,6 +209,7 @@ STATIC void checkCtrl( const char *p )
         if( !cisprint( *p ) ) {
             PrtMsg( FTL | CTRL_CHAR_IN_CMD, *p );
             ExitFatal();
+            // never return
         }
         ++p;
     }
@@ -233,9 +234,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
 #define CHK_OPTION(o)   options[(unsigned char)(o)]
 
     if( (p = argv[1]) != NULL ) {
-        if( strcmp( p, "?" ) == 0
-        || ((p[0] == '-' || p[0] == Glob.swchar) && strcmp( p + 1, "?" ) == 0) ) {
+        if( strcmp( p, "?" ) == 0 || ((p[0] == '-' || p[0] == Glob.swchar) && strcmp( p + 1, "?" ) == 0) ) {
             Usage();
+            // never return
         }
     }
 
@@ -247,7 +248,10 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         if( select == '-' || select == Glob.swchar ) {
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
                 switch( option ) {
-                case '?':   Usage();                break;
+                case '?':
+                    Usage();
+                    // never return
+                    break;
                 case 'a':   Glob.all       = true;  break;
                 case 'b':   Glob.block     = true;  break;
                 case 'c':   Glob.nocheck   = true;  break;
@@ -279,6 +283,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     if( (p = *++argv) == NULL ) {
                         PrtMsg( ERR | INVALID_FILE_OPTION, select, option );
                         Usage();
+                        // never return
                     }
                     checkCtrl( p );
                     if( option == 'f' ) {
@@ -287,6 +292,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                         } else if( (p[0] == '-') || (p[0] == Glob.swchar) ) {
                             PrtMsg( ERR | INVALID_FILE_OPTION, select, option );
                             Usage();
+                            // never return
                         }
                         new = MallocSafe( sizeof( *new ) );
                         new->name = (char *)p;
@@ -298,6 +304,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 default:
                     PrtMsg( ERR | INVALID_OPTION, select, option );
                     Usage();
+                    // never return
                     break;
                 }
                 SET_OPTION( option );
@@ -336,6 +343,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     if( Glob.compat_nmake && Glob.compat_unix ) {
         PrtMsg( ERR | INCOMPATIBLE__OPTIONS );
         Usage();
+        // never return
     }
 
     Glob.macreadonly = false;
@@ -518,6 +526,7 @@ STATIC RET_T doMusts( void )
     if( firstTargFound == NULL && mustTargs == NULL ) {
         PrtMsg( FTL | NO_TARGETS_SPECIFIED );
         ExitFatal();
+        // never return
     }
 
     UpdateInit();
@@ -560,6 +569,7 @@ STATIC void init( char const * const *argv )
     MemInit();          /* memory handlers          */
     if( !MsgInit() ) {
         exit( EXIT_FAILURE );
+        // never return
     }
     VecInit();          /* vector strings           */
     CacheInit();        /* directory cacheing       */
@@ -635,16 +645,19 @@ static int ExitSafe( int rc )
 NO_RETURN void ExitFatal( void )
 {
     exit( ExitSafe( EXIT_FATAL ) );
+    // never return
 }
 
 NO_RETURN void ExitError( void )
 {
     exit( ExitSafe( EXIT_ERROR ) );
+    // never return
 }
 
 NO_RETURN void ExitOK( void )
 {
     exit( ExitSafe( EXIT_OK ) );
+    // never return
 }
 
 int main( int argc, char **argv )

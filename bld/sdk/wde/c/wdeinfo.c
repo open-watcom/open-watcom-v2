@@ -638,15 +638,14 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     char                *str;
     WdeHashValue        value;
     bool                found;
-    int                 index;
-    int                 count;
+    LRESULT             index;
 
     if( WdeCurrentInfo.res_info->hash_table == NULL ) {
         return;
     }
 
-    count = (int)SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0L );
-    if( count == 0 || count == CB_ERR ) {
+    index = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0L );
+    if( index == 0 || index == CB_ERR ) {
         return;
     }
 
@@ -654,7 +653,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hWnd, IDB_INFO_IDSTR );
     } else {
-        index = (int)SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCURSEL, 0, 0L );
+        index = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hWnd, IDB_INFO_IDSTR, index );
         }

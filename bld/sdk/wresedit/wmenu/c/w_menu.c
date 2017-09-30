@@ -96,7 +96,7 @@ WMenuEditInfo *WAllocMenuEInfo( void )
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WMenuEditInfo ) );
-        einfo->current_pos = -1;
+        einfo->current_pos = LB_ERR;
     }
 
     return( einfo );
@@ -182,7 +182,7 @@ bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32
         text = (char *)(*data);
         text += msize;
     } else {
-        if( !(normal->ItemFlags & ~MENU_ENDMENU) && !normal->ItemID ) {
+        if( (normal->ItemFlags & ~MENU_ENDMENU) == 0 && normal->ItemID == 0 ) {
             (*new)->Item.Normal.ItemFlags |= MENU_SEPARATOR;
         }
         (*new)->Item.Normal.ItemID = normal->ItemID;
@@ -360,7 +360,7 @@ void *WInitDataFromMenu( WMenuEntry *entry, void *tdata )
     char                *item_text;
     char                *text;
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         word = (uint_16 *)tdata;
         if( entry->item->IsPopup ) {
             *word = entry->item->Item.Popup.ItemFlags & ~MENU_ENDMENU;
@@ -426,7 +426,6 @@ void *WInitDataFromMenu( WMenuEntry *entry, void *tdata )
                 tdata = WInitDataFromMenu( WDummyMenuEntry, tdata );
             }
         }
-        entry = entry->next;
     }
 
     return( tdata );
@@ -444,7 +443,7 @@ size_t WCalcMenuSize( WMenuEntry *entry )
 
     size = 0;
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         if( entry->item->IsPopup ) {
             size += sizeof( MenuFlags ) + 1;
             text = entry->item->Item.Popup.ItemText;
@@ -476,9 +475,7 @@ size_t WCalcMenuSize( WMenuEntry *entry )
                 tlen = 1;
             }
         }
-
         size += tlen;
-        entry = entry->next;
     }
 
     return( size );
@@ -494,15 +491,14 @@ void WFreeMenu( WMenu *menu )
 
 void WFreeMenuEntries( WMenuEntry *entry )
 {
-    WMenuEntry *e;
+    WMenuEntry *next;
 
-    while( entry != NULL ) {
-        e = entry;
-        entry = entry->next;
-        if( e->child != NULL ) {
-            WFreeMenuEntries( e->child );
+    for( ; entry != NULL; entry = next ) {
+        next = entry->next;
+        if( entry->child != NULL ) {
+            WFreeMenuEntries( entry->child );
         }
-        WFreeMenuEntry( e );
+        WFreeMenuEntry( entry );
     }
 }
 
@@ -592,12 +588,9 @@ int WGetMenuEntryDepth( WMenuEntry *entry )
     int depth;
 
     depth = -1;
-
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->parent ) {
         depth++;
-        entry = entry->parent;
     }
-
     return( depth );
 }
 
@@ -606,11 +599,9 @@ int WCountMenuChildren( WMenuEntry *entry )
     int count;
 
     count = 0;
-
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         count += WCountMenuChildren( entry->child );
         count++;
-        entry = entry->next;
     }
 
     return( count );
@@ -620,9 +611,7 @@ static bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     bool    ok;
 
-    ok = true;
-
-    while( ok && entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         entry->preview_id = einfo->first_preview_id;
         einfo->first_preview_id++;
         if( einfo->first_preview_id == LAST_PREVIEW_ID ) {
@@ -630,8 +619,10 @@ static bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
         }
         if( entry->child != NULL ) {
             ok = WResetPreviewID( einfo, entry->child );
+            if( !ok ) {
+                break;
+            }
         }
-        entry = entry->next;
     }
 
     return( ok );
@@ -713,14 +704,13 @@ static bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
     ok = (parent != (HMENU)NULL && entry != NULL);
 
     pos = 0;
-    while( ok && entry != NULL ) {
+    for( ; ok && entry != NULL; entry = entry->next ) {
         ok = WAddItemAtPos( parent, pos, entry );
         if( ok && entry->item->IsPopup ) {
             if( entry->child != NULL ) {
                 ok = WAddToPreviewMenu( entry->preview_popup, entry->child );
             }
         }
-        entry = entry->next;
         pos++;
     }
 
@@ -749,7 +739,7 @@ WMenuEntry *WFindEntryFromPreviewID( WMenuEntry *entry, WORD id )
 {
     WMenuEntry  *found;
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         if( entry->preview_id == id ) {
             return( entry );
         }
@@ -759,7 +749,6 @@ WMenuEntry *WFindEntryFromPreviewID( WMenuEntry *entry, WORD id )
                 return( found );
             }
         }
-        entry = entry->next;
     }
 
     return( NULL );
@@ -769,7 +758,7 @@ WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU popup )
 {
     WMenuEntry  *found;
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         if( entry->preview_popup == popup ) {
             return( entry );
         }
@@ -779,28 +768,26 @@ WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU popup )
                 return( found );
             }
         }
-        entry = entry->next;
     }
 
     return( NULL );
 }
 
-bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, box_pos *pos )
+bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, LRESULT *pos )
 {
-    while( start != NULL ) {
+    for( ; start != NULL; start = start->next ) {
         *pos = *pos + 1;
         if( start == entry ) {
-            return( TRUE );
+            return( true );
         }
         if( start->child != NULL ) {
             if ( WFindEntryLBPos( start->child, entry, pos ) ) {
-                return( TRUE );
+                return( true );
             }
         }
-        start = start->next;
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
@@ -826,12 +813,11 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     pos = -1;
-    while( start != NULL ) {
+    for( ; start != NULL; start = start->next ) {
         pos++;
         if( start == entry ) {
             break;
         }
-        start = start->next;
     }
 
     if( pos == -1 ) {
@@ -878,12 +864,11 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     pos = -1;
-    while( start != NULL ) {
+    for( ; start != NULL; start = start->next ) {
         pos++;
         if( start == entry ) {
             break;
         }
-        start = start->next;
     }
 
     if( pos == -1 ) {
@@ -977,12 +962,11 @@ bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
         return( FALSE );
     }
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         if( entry->child != NULL ) {
             WResolveEntries( entry->child, symbol_table );
         }
         WResolveEntrySymbol( entry, symbol_table );
-        entry = entry->next;
     }
 
     return( TRUE );
@@ -1046,12 +1030,11 @@ bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
         return( FALSE );
     }
 
-    while( entry != NULL ) {
+    for( ; entry != NULL; entry = entry->next ) {
         if( entry->child != NULL ) {
             WResolveSymIDs( entry->child, symbol_table );
         }
         WResolveEntrySymIDs( entry, symbol_table );
-        entry = entry->next;
     }
 
     return( TRUE );

@@ -152,7 +152,7 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)&mdinew );
+    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
 
     wd = DATA_FROM_ID( wid );
 
@@ -343,7 +343,7 @@ static void mouseButtonDown( window_id wid, int x, int y, bool shift )
 {
     int         row, col;
 
-    if (!EditFlags.WasOverstrike ) {
+    if( !EditFlags.WasOverstrike ) {
         ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
     } else {
         ClientToRowCol( wid, x, y, &row, &col, DIVIDE_BETWEEN );
@@ -550,13 +550,13 @@ void PositionVerticalScrollThumb( window_id wid, linenum top, linenum last )
     if( newlast > 1 ) {
         /* have enough lines to set position normally
         */
-        if( max != newlast ){
+        if( max != newlast ) {
             // always set position with range to avoid screen draws
             SetScrollRange( wid, SB_VERT, 1, newlast, FALSE );
             SetScrollPos( wid, SB_VERT, newtop, TRUE );
         } else {
             pos = GetScrollPos( wid, SB_VERT );
-            if( newtop != pos ){
+            if( newtop != pos ) {
                 SetScrollPos( wid, SB_VERT, newtop, TRUE );
             }
         }
@@ -649,7 +649,7 @@ static void doVScroll( window_id wid, WPARAM wparam, LPARAM lparam )
 
     text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     diff = LeftTopPos.line - oldTopOfPage;
-    if( diff != 0 ){
+    if( diff != 0 ) {
         if( abs( diff ) > text_lines / 2 ) {
             //  faster to redraw whole screen
             DCInvalidateAllLines();
@@ -845,7 +845,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         if( !EditFlags.HoldEverything ) {
             PushMode();
             wd = DATA_FROM_ID( wid );
-            SendMessage( edit_container_id, WM_MDIRESTORE, (UINT)wid, 0L );
+            SendMessage( edit_container_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
             BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
@@ -905,11 +905,11 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
 {
     window_data         *wd;
     char                class[MAX_STR];
+    int                 len;
 
     l = l;
-    class[0] = '\0';
-    GetClassName( wid, class, sizeof( class ) );
-    class[sizeof( class ) - 1] = '\0';
+    len = GetClassName( wid, class, sizeof( class ) );
+    class[len] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {
         return( TRUE );
     }

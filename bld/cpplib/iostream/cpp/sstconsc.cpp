@@ -32,8 +32,8 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 
 namespace std {
@@ -49,7 +49,7 @@ namespace std {
                      size,
                      ((str==0) ? 0 : (char *)str +
                             ((mode & (ios::atend|ios::append)) ?
-                                       ::strlen( (char *)str ) : 0) ) ) {
+                                       strlen( (char *)str ) : 0) ) ) {
   }
 
 }

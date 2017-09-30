@@ -33,10 +33,10 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 #include "rtinit.h"
 #include "iofhdr.h"
 #include "fltsupp.h"

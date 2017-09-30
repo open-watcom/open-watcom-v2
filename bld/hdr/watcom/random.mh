@@ -189,8 +189,7 @@ namespace _ow {
 } // namespace _ow
 
 
-namespace std {
-
+:include nsstd.sp
     template< class UIntType, UIntType a, UIntType c, UIntType m >
     class linear_congruential{
     public:
@@ -332,8 +331,7 @@ namespace std {
     typedef mersenne_twister< uint32_t,32,624,397,
                               31,0x9908b0df,11,7,0x9d2c5680,
                               15,0xefc60000,18>  mt19937;
-
-} // namespace std
+:include nsstdepi.sp
 
 namespace _watcom {
 

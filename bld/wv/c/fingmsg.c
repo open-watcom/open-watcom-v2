@@ -36,8 +36,9 @@
 #include "strutil.h"
 #include "fingmsg.h"
 
-char *AboutMessage[] = {
-    "", // constructed
+const char * const AboutMessage[] = {
+    "Open Watcom Debugger" STR_BITNESS,
+    banner1p2( _WD_VERSION_ ) ".", 
     banner2,
     banner2a( "1987" ),
     banner3,
@@ -75,7 +76,7 @@ int FingMessageSize = WHOLE_SIZE;
 int AboutSize = WHOLE_SIZE - BOLT_SIZE;
 
 #ifdef __DOS__
-char DOS4GOPTIONS[] =
+const char DOS4GOPTIONS[] =
         "[dos4g-global]\n"
         "Include=WDOPTS.INI\n"
         "[dos4g-kernel]\n"
@@ -85,14 +86,8 @@ char DOS4GOPTIONS[] =
 
 void InitAboutMessage( void )
 {
-    char *version = banner1( "", _WD_VERSION_ ) ".";
-    char *name = LIT_DUI( The_WATCOM_Debugger );
-    AboutMessage[0] = WndMustAlloc( strlen( version ) + strlen( name ) + 1 );
-    StrCopy( version, StrCopy( name, AboutMessage[0] ) );
 }
 
 void FiniAboutMessage( void )
 {
-    WndFree( AboutMessage[0] );
-    AboutMessage[0] = "";
 }

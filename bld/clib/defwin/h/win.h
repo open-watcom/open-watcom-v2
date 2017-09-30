@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 #include <stdarg.h>
+#include <string.h>
+#include <malloc.h>
 #ifdef __OS2__
 #define INCL_WIN
 #include <wos2.h>
@@ -168,7 +170,7 @@ typedef struct line_data {
 typedef line_data _WCI86FAR *LPLDATA;
 
 typedef struct window_data {
-    int             *handles;
+    int             _WCI86FAR *handles;
     int             handle_cnt;
     int             text_color;
     int             background_color;
@@ -184,7 +186,8 @@ typedef struct window_data {
     HBRUSH          brush;
 #endif
     HWND            hwnd;
-    LPLDATA         LineHead, LineTail;
+    LPLDATA         LineHead;
+    LPLDATA         LineTail;
     DWORD           LastLineNumber;
     DWORD           CurrentLineNumber;
     DWORD           TopLineNumber;
@@ -259,11 +262,18 @@ extern DWORD    _ColorMap[16];
  * function prototypes
  */
 
+/* windrvr.c/pmdrvr.c */
+extern int      _SetAboutDlg( const char *, const char * );
+
 #if defined( __OS2__ )
 /* pmdrvr.c */
 extern MRESULT EXPENTRY _MainDriver( HWND, USHORT, MPARAM, MPARAM );
-extern int      _SetAboutDlg( char *, char * );
+#else
+/* windrvr.c */
+extern long     CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+#endif
 
+#if defined( __OS2__ )
 /* pmmain.c */
 extern void     _SelectFont( HPS );
 #endif
@@ -277,15 +287,8 @@ extern void     _DisplayLineInWindow( LPWDATA, int, LPSTR );
 extern void     _ClearWindow( LPWDATA );
 
 /* windlg.c */
-extern void     _GetClearInterval( void );
+extern void     _GetAutoClearInterval( void );
 extern void     _DoAbout( void );
-extern BOOL     CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
-
-#if !defined( __OS2__ )
-/* windrvr.c */
-extern long     CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam );
-extern int      _SetAboutDlg( char *, char * );
-#endif
 
 /* wingen.c */
 extern LPWDATA  _GetWindowData( HWND );
@@ -294,9 +297,10 @@ extern void     _MakeWindowActive( LPWDATA w );
 extern LPWDATA  _IsWindowedHandle( int handle );
 extern void     _InitFunctionPointers( void );
 extern void     _InitMainWindowData( HANDLE );
+extern void     _FiniMainWindowData( void );
 extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list al );
-extern void     _DestroyAWindow( LPWDATA );
-extern void     _GetWindowNameAndCoords( char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
+extern void     _FreeWindowData( LPWDATA );
+extern void     _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
 extern void     _WindowsExit( void );
 extern int      _DestroyOnClose( LPWDATA );
 extern int      _YieldControl( void );
@@ -337,17 +341,15 @@ extern void     _Error( HWND hwndDlg, char *caption, char *msg );
 #endif
 extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
-extern void     _WCI86FAR *_MemAlloc( unsigned );
-extern void     _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size );
-extern void     _MemFree( void _WCI86FAR * );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );
-extern void     _SetInputMode( LPWDATA, BOOL );
+extern void     _SetInputMode( LPWDATA, int );
 extern void     _ShowWindowActive( LPWDATA w, LPWDATA last );
 extern void     _OutOfMemory( void );
+extern _WCNORETURN void _OutOfMemoryExit( void );
 extern void     _ExecutionComplete( void );
-extern int      _SetAppTitle( char * );
-extern int      _SetConTitle( LPWDATA, char *);
+extern int      _SetAppTitle( const char * );
+extern int      _SetConTitle( LPWDATA, const char *);
 extern int      _ShutDown( void );
 
 /* winmove.c */
@@ -358,7 +360,7 @@ extern void     _MoveLineDown( LPWDATA );
 extern void     _MoveToLine( LPWDATA, DWORD, BOOL );
 
 /* winnew.c/pmmnew.c */
-extern unsigned _NewWindow( char *name, ... );
+extern unsigned _NewWindow( const char *name, ... );
 extern int      _CloseWindow( LPWDATA );
 extern void     _ReleaseWindowResources( LPWDATA w );
 

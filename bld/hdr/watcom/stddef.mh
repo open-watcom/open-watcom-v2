@@ -27,13 +27,13 @@
 // C99 types in stddef.h
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 #ifndef _PTRDIFF_T_DEFINED
 #define _PTRDIFF_T_DEFINED
-#define _PTRDIFF_T_DEFIEND_
-using std::ptrdiff_t;
+ #define _PTRDIFF_T_DEFIEND_
+ using std::ptrdiff_t;
 #endif
 
 #else /* __cplusplus not defined */
@@ -45,24 +45,8 @@ using std::ptrdiff_t;
 :include cpluspro.sp
 
 :endsegment
-:include size_t.sp
-
-:segment !CNAME
-:include wchar_t.sp
-
-:endsegment
 :include null.sp
 
-:include ptrdifft.sp
-
-:segment !CNAME
-:include saferpro.sp
-
-:include rsize_t.sp
-
-:include saferepi.sp
-
-:endsegment
 :segment CNAME
 #define offsetof(__typ,__id) __offsetof(__typ,__id)
 :elsesegment
@@ -72,25 +56,42 @@ using std::ptrdiff_t;
 #define offsetof(__typ,__id) ((size_t)((char *)&(((__typ*)0)->__id) - (char *)0))
 :endsegment
 
-:segment QNX | LINUX
-#if defined(__386__)
- _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
- #define _threadid (__threadid())
-#endif
-:elsesegment DOS
+:include wchar_t.sp
+:include size_t.sp
+
+:include ptrdifft.sp
+
 :include ext.sp
-#if defined(_M_I86)
- _WCRTDATA extern int _WCFAR *_threadid;        /* pointer to thread id */
-#else
- _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
+
+:: Thread symbols section.
+:segment QNX | DOS
+#ifndef _M_I86
+:endsegment
  #define _threadid (__threadid())
- #if defined(__NT__)
+ _WCRTLINK extern int *__threadid( void ); /* pointer to thread id */
+:segment DOS
+ #ifdef __NT__
 :include thrdhndl.sp
  #endif
+#else
+ _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
+:endsegment
+:segment QNX | DOS
 #endif
-:include extepi.sp
 :endsegment
 
+:include extepi.sp
+
+::::::::: Safer C :::::::::
+:segment !CNAME
+:include saferpro.sp
+
+:include rsize_t.sp
+
+:include saferepi.sp
+
+:endsegment
+::::::::: Safer C :::::::::
 :segment CNAME
 :include cplusepi.sp
 :elsesegment

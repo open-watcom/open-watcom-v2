@@ -88,8 +88,7 @@ WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
     case XTYP_DISCONNECT:
     case XTYP_REQUEST:
     case XTYP_POKE:
-        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD)hconv,
-                   (DWORD)topicstrh, (DWORD)itemstrh, (DWORD)hmem );
+        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD)hconv, (DWORD)topicstrh, (DWORD)itemstrh, (DWORD)hmem );
         rc = SourceHookData( SRC_HOOK_DDE, tmp );
         if( rc != ERR_NO_ERR ) {
             DDERet = DdeCreateDataHandle( DDEInstId, (LPBYTE)"err", 4, 0, itemstrh, fmt, 0 );
@@ -154,13 +153,11 @@ void DeleteStringHandle( HSZ hdl )
 {
     hsz_list    *hlptr;
 
-    hlptr = hszHead;
-    while( hlptr != NULL ) {
+    for( hlptr = hszHead; hlptr != NULL; hlptr = hlptr->next ) {
         if( hlptr->hsz == hdl ) {
             deleteStringData( hlptr );
             break;
         }
-        hlptr = hlptr->next;
     }
 
 } /* DeleteStringHandle */
@@ -172,11 +169,9 @@ static void freeAllStringHandles( void )
 {
     hsz_list    *hlptr, *next;
 
-    hlptr = hszHead;
-    while( hlptr != NULL ) {
+    for( hlptr = hszHead; hlptr != NULL; hlptr = next ) {
         next = hlptr->next;
         deleteStringData( hlptr );
-        hlptr = next;
     }
 
 } /* freeAllStringHandles */

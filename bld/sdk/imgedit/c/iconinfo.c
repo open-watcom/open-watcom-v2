@@ -294,8 +294,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1
 
         case TARGETLISTBOX:
             if( HIWORD( wparam ) == LBN_DBLCLK ) {
-                mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX,
-                                                   LB_GETCURSEL, 0, 0L );
+                mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_GETCURSEL, 0, 0L );
                 index = _imgwpi_mresulttoint( mresult );
                 iconType = lbindex[index];
                 _wpi_enddialog( hwnd, DLGID_OK );
@@ -309,8 +308,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1
             index = 0;
             for( i = 0; i < NUM_OF_ICONS; i++ ) {
                 if( !iconInfo[i].exists ) {
-                    mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_INSERTSTRING, -1,
-                                                       (LPARAM)(LPCSTR)iconInfo[i].text );
+                    mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_INSERTSTRING, -1, (LPARAM)(LPCSTR)iconInfo[i].text );
                     index = _imgwpi_mresulttoint( mresult );
                     lbindex[index] = i;
                     ++index;
@@ -368,8 +366,7 @@ WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
 
         case TARGETLISTBOX:
             if( HIWORD( wparam ) == LBN_DBLCLK ) {
-                mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX,
-                                                   LB_GETCURSEL, 0, 0L );
+                mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_GETCURSEL, 0, 0L );
                 index = _imgwpi_mresulttoint( mresult );
                 iconType = lbindex[index];
                 _wpi_enddialog( hwnd, DLGID_OK );

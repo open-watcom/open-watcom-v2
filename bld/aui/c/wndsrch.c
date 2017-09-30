@@ -223,10 +223,10 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                     goto done;
                 }
             }
-            if( line.bitmap ) continue;
-            pos = line.text;
+            if( line.bitmap )
+                continue;
             endpos = NULL;
-            while( WndRXFind( rx, &pos, &endpos ) ) {
+            for( pos = line.text; WndRXFind( rx, &pos, &endpos ); pos++ ) {
                 curr.end = endpos - line.text;
                 curr.col = pos - line.text;
                 if( curr.piece < starting_pos.piece ) {
@@ -242,7 +242,6 @@ extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
                 } else if( curr.col < starting_pos.col ) {
                     prev_occurence = curr;
                 }
-                ++pos;
             }
         }
         if( direction < 0 ) {

@@ -13,8 +13,7 @@
 
 :include cpponly.sp
 
-namespace std {
-
+:include nsstd.sp
     template< class T, T v >
     struct integral_constant{
         static const T value = v;
@@ -117,7 +116,7 @@ namespace std {
      * is_arithmetic
      */
     template < class T >
-    struct is_arithmetic : public integral_constant< bool, 
+    struct is_arithmetic : public integral_constant< bool,
                                                      is_integral< T >::value ||
                                                      is_floating_point< T >::value > { };
 
@@ -125,7 +124,7 @@ namespace std {
      * is_fundamental
      */
     template < class T >
-    struct is_fundamental : public integral_constant< bool, 
+    struct is_fundamental : public integral_constant< bool,
                                                       is_integral< T >::value ||
                                                       is_floating_point< T >::value ||
                                                       is_void< T >::value > { };
@@ -210,8 +209,8 @@ namespace std {
      * remove_cv
      */
     template< typename T >
-    struct remove_cv {  
-        typedef remove_volatile< remove_const< T >::type >::type type; 
+    struct remove_cv {
+        typedef remove_volatile< remove_const< T >::type >::type type;
     };
 
     /* ------------------------------------------------------------------
@@ -304,9 +303,8 @@ namespace std {
     // ==================================================================
     // 4.8 other transformations
     /*
-      template <std::size_t Len, std::size_t Align> struct aligned_storage;
+      template <size_t Len, size_t Align> struct aligned_storage;
     */
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

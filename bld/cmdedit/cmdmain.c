@@ -32,64 +32,11 @@
 #include <string.h>
 #include "cmdedit.h"
 
-extern int      NonFileChar( char ch );
-extern char     far *GetEnv( char far *name, int len );
-extern char     far *InitAlias( char far * inname );
-extern int      ExpandDirCommand( void );
-extern int      LocateLeftWord( void );
-extern int      LocateRightWord( void );
-extern void     ToLastCmd( void );
-extern void     ToFirstCmd( void );
-extern void     BOL( void );
-extern void     BackSpace( void );
-extern void     Delete( void );
-extern void     DeleteBOW( void );
-extern void     DeleteEOW( void );
-extern void     DoDirCommand( void );
-extern void     DownScreen( void );
-extern void     EOL( void );
-extern void     EraseBOL( void );
-extern void     EraseEOL( void );
-extern void     EraseLine( void );
-extern void     FlipInsertMode( void );
-extern void     FlipScreenCursor( void );
-extern void     InitSave( char far *name );
-extern void     InsertChar( void );
-extern void     Left( void );
-extern void     LeftScreen( void );
-extern void     LeftWord( void );
-extern void     ListAliases( void );
-extern void     ListCommands( void );
-extern void     LookForAlias( void );
-extern void     MatchACommand( void (*advance)(char *), void (*retreat)(char *) );
-extern void     FiniFile( void );
-extern void     NextFile( void );
-extern void     OverlayChar( void );
-extern void     PFKey( void );
-extern void     PrevFile( void );
-extern void     PutChar( char ch );
-extern void     PutNL( void );
-extern void     PutString( char far * str );
-extern void     ReadScreen( int next_line );
-extern void     RestoreLine( void );
-extern void     RetrieveACommand( void (* advance)(char *) );
-extern void     Right( void );
-extern void     RightScreen( void );
-extern void     RightWord( void );
-extern void     SaveCmd( char *, unsigned );
-extern void     SaveLine( void );
-extern void     ScreenCursorOff( void );
-extern void     SetCursorType( void );
-extern void     UpScreen( void );
-extern void     NextCmd( char * );
-extern void     PrevCmd( char * );
-extern void     DelCmd( char * );
 
-
-void InitRetrieve( char far * inname )
-/************************************/
+void __near InitRetrieve( char __far *inname )
+/********************************************/
 {
-    char far *envname;
+    char    __far *envname;
 
     AppendSlash = FALSE;
     AlwaysSave = FALSE;
@@ -103,14 +50,16 @@ void InitRetrieve( char far * inname )
     CmdSeparator = '!';
     Insert = FALSE;
     envname = GetEnv( ALIAS_FILE, sizeof( ALIAS_FILE ) - 1 );
-    if( envname != 0 ) {
+    if( envname != NULL ) {
         inname = envname;
     }
     VioGetCurType( &Cur, 0 );
     CursorDiff = 2 * ( Cur.cEnd - Cur.yStart );
     for( ;; ) {
-        while( *inname == ' ' ) ++inname;
-        if( *inname != '-' ) break;
+        while( *inname == ' ' )
+            ++inname;
+        if( *inname != '-' )
+            break;
         ++inname;
         switch( *inname++ ) {
         case 'a':
@@ -149,7 +98,8 @@ void InitRetrieve( char far * inname )
         }
     }
     inname = InitAlias( inname );
-    while( *inname == ' ' ) ++inname;
+    while( *inname == ' ' )
+        ++inname;
     InitSave( inname );
 #ifndef DOS
     {
@@ -203,16 +153,16 @@ static void ConsolidateQuotes( void )
     int i;
 
     while( BubbleQuotes() );
-    for( i = 0; i < MaxCursor-1; ++i ) {
-        if( Line[i] == '"' && Line[i+1] == '"' ) {
-            memmove( Line+i, Line+i+2, MaxCursor - i - 1 );
-            MaxCursor-= 2;
+    for( i = 0; i < MaxCursor - 1; ++i ) {
+        if( Line[i] == '"' && Line[i + 1] == '"' ) {
+            memmove( Line + i, Line + i + 2, MaxCursor - i - 1 );
+            MaxCursor -= 2;
         }
     }
 }
 
-void CopyCmd( char far * userbuff, LENGTH far * l, int i )
-/********************************************************/
+static void CopyCmd( char __far * userbuff, LENGTH __far * l, int i )
+/*******************************************************************/
 {
     char ch;
     int j;
@@ -225,7 +175,7 @@ void CopyCmd( char far * userbuff, LENGTH far * l, int i )
         }
         userbuff[j] = ch = Line[i];
         if( ch == CmdSeparator ) {
-            if( Line[ i+1 ] == CmdSeparator ) {
+            if( Line[i+1] == CmdSeparator ) {
                 ++i;
             } else {
                 More = i + 1;
@@ -236,7 +186,7 @@ void CopyCmd( char far * userbuff, LENGTH far * l, int i )
         ++j;
     }
     l->output = j;
-    userbuff[ j ] = Kbd.chTurnAround;
+    userbuff[j] = Kbd.chTurnAround;
 }
 
 
@@ -277,8 +227,8 @@ static void DrawLine( int old_len, int old_base )
 }
 
 
-int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
-/******************************************************************************/
+int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int routine )
+/***************************************************************************************/
 {
     int     old_len,old_base;
     int     first_match;
@@ -291,13 +241,15 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
         WantAlias = want_alias;
     }
     if( More ) {
-        if( WantAlias ) LookForAlias();
+        if( WantAlias )
+            LookForAlias();
         CopyCmd( userbuff, l, More );
         return( 0 );
     }
     Kbd.cb = sizeof( KBDDESC );
     KbdGetStatus( &Kbd, 0 );
-    if( Kbd.fsMask & KBD_BINARY ) return( -1 );
+    if( Kbd.fsMask & KBD_BINARY )
+        return( -1 );
     RowOffset = 0;
 
     VioGetCurPos( &Row, &Col, 0 );
@@ -318,7 +270,7 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
     Edited = FALSE;
     Base = 0;
     ImmedCommand = FALSE;
-    PFChars = 0;
+    PFChars = NULL;
     FirstNextOrPrev = TRUE;
     first_match = TRUE;
 
@@ -327,21 +279,23 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
         StartDraw = Base;
         old_len = MaxCursor;
         old_base = Base;
-        if( PFChars != 0 ) {
+        if( PFChars != NULL ) {
             KbdChar.chChar = *PFChars++;
             if( KbdChar.chChar == '\r' ) {
-                if( ImmedCommand ) break;
-                PFChars = 0;
+                if( ImmedCommand )
+                    break;
+                PFChars = NULL;
             }
         }
-        if( PFChars == 0 ) {
+        if( PFChars == NULL ) {
             if( BuffOne == FALSE ) {
                 KbdCharIn( &KbdChar, 0, 0 );
             } else {
                 BuffOne = FALSE;
             }
         }
-        if( KbdChar.chChar == Kbd.chTurnAround ) break;
+        if( KbdChar.chChar == Kbd.chTurnAround )
+            break;
         if( ( KbdChar.chChar == 0 || KbdChar.chChar == 0xE0 ) ) {
             if( KbdChar.chScan != BACK_TAB ) {
                 FiniFile();
@@ -416,14 +370,16 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
                 break;
             case ALT_0:
             case ALT_HOME:
-                if( RowOffset == 0 ) break;
+                if( RowOffset == 0 )
+                    break;
                 while( ColOffset != -StartCol ) {
                     LeftScreen();
                 }
                 break;
             case ALT_2:
             case ALT_END:
-                if( RowOffset == 0 ) break;
+                if( RowOffset == 0 )
+                    break;
                 ReadScreen( 1 );
                 break;
             case ALT_N:
@@ -482,7 +438,8 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
                 PFKey();
                 break;
             case ALT_A:
-                if( WantAlias ) ListAliases();
+                if( WantAlias )
+                    ListAliases();
                 break;
             case ALT_H:
                 HideDirCmds = !HideDirCmds;
@@ -547,13 +504,16 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
     if( ( Edited || AlwaysSave ) && !ImmedCommand ) {
          SaveCmd( Line, MaxCursor );
     }
-    if( WantAlias ) LookForAlias();
+    if( WantAlias )
+        LookForAlias();
     ConsolidateQuotes();
-    if( ExpandDirCommand() ) DoDirCommand();
+    if( ExpandDirCommand() )
+        DoDirCommand();
     FiniFile();
     CopyCmd( userbuff, l, 0 );
     {
         static USHORT dummy;
+
         VioGetCurPos( &Row, &dummy, 0 );
     }
 #ifndef __CMDSHELL__
@@ -566,7 +526,7 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
         length = 2;
         VioReadCellStr( &buffer, &length, Row, StartCol+Cursor-Base, 0 );
         buffer[0] = ' ';
-        VioScrollUp( 0, 0, -1, -1, 1, &buffer, 0 );
+        VioScrollUp( 0, 0, -1, -1, 1, (PBYTE)&buffer, 0 );
         VioSetCurPos( Row, 0, 0 );
     }
 #endif

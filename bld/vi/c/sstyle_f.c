@@ -86,17 +86,17 @@ static int iscomment( int c )
 
 static int islogical( char *string )
 {
-    if( !strnicmp( string, ".ne.", 4 ) ||
-        !strnicmp( string, ".eq.", 4 ) ||
-        !strnicmp( string, ".ge.", 4 ) ||
-        !strnicmp( string, ".le.", 4 ) ||
-        !strnicmp( string, ".lt.", 4 ) ||
-        !strnicmp( string, ".gt.", 4 ) ||
-        !strnicmp( string, ".or.", 4 ) ){
+    if( strnicmp( string, ".ne.", 4 ) == 0 ||
+        strnicmp( string, ".eq.", 4 ) == 0 ||
+        strnicmp( string, ".ge.", 4 ) == 0 ||
+        strnicmp( string, ".le.", 4 ) == 0 ||
+        strnicmp( string, ".lt.", 4 ) == 0 ||
+        strnicmp( string, ".gt.", 4 ) == 0 ||
+        strnicmp( string, ".or.", 4 ) == 0 ) {
         return( 4 );
-    } else if ( !strnicmp( string, ".and.", 5 ) ||
-                !strnicmp( string, ".xor.", 5 ) ||
-                !strnicmp( string, ".not.", 5 ) ) {
+    } else if( strnicmp( string, ".and.", 5 ) == 0 ||
+                strnicmp( string, ".xor.", 5 ) == 0 ||
+                strnicmp( string, ".not.", 5 ) == 0 ) {
         return( 5 );
     } else {
         return( 0 );
@@ -261,7 +261,7 @@ static void getText( ss_block *ss_new, char *start )
         while( isspace( *text ) ) {
             text++;
         }
-        if( *text == '*' ){
+        if( *text == '*' ) {
             text++;
         } else {
             text = end;
@@ -527,7 +527,7 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
             return;
         }
         length = islogical( start );
-        if( length > 0 ){
+        if( length > 0 ) {
             getSymbol( ss_new, length );
             return;
         }

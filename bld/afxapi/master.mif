@@ -292,7 +292,7 @@ extra_cpp_flags += -D_AFXDLL
 
 extra_c_flags += -fhwe -xs
 
-additional_cleanup = *.h *.inl *.def
+additional_cleanup = *.h *.inl *.gdf
 
 all : $($(what_to_build)) .SYMBOLIC
     @%null
@@ -328,13 +328,13 @@ $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
 
 $(intname).lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) -z=tmp.def $(libflags) $(objs)
-    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
-    sort < tmp2.def > tmp3.def
-    uniq tmp3.def > export.def
-    @rm tmp.def
-    @rm tmp2.def
-    @rm tmp3.def
+    $(librarian) -z=tmp.gdf $(libflags) $(objs)
+    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.gdf > tmp2.gdf
+    sort < tmp2.gdf > tmp3.gdf
+    uniq tmp3.gdf > export.gdf
+    @rm tmp.gdf
+    @rm tmp2.gdf
+    @rm tmp3.gdf
 
 # systems where version resource must be added to .DLL
 version_res_dll_nt_386 = version.res
@@ -351,7 +351,7 @@ $(dllname).dll: $(intname).lib $(dllname).res $(version_res_dll_$(host_os)_$(hos
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags_dll)
     @%append $^&.lnk file $(intname).lib
-    @%append $^&.lnk export @export.def
+    @%append $^&.lnk export @export.gdf
     @%make echo_link
     $(linker) name $(dllname).dll @$^&.lnk
 !endif

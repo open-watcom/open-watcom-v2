@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 
 #define END_OF_MACRO_STR    "Z-<end of macro>"
 
@@ -47,9 +47,6 @@ typedef struct nested_macros {
     bool            rescanning;
     bool            substituting_parms;
 } NESTED_MACRO;
-
-extern  char    PP__DATE__[14];
-extern  char    PP__TIME__[11];
 
 extern void DumpMTokens( MACRO_TOKEN *mtok );
 extern void DumpNestedMacros( void );
@@ -878,4 +875,9 @@ void PPMacroVarInit( void )
 {
     NestedMacros = NULL;
     MacroDepth = 0;
+}
+
+void PPMacroVarFini( void )
+/*************************/
+{
 }

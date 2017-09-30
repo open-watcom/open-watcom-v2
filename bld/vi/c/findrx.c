@@ -91,7 +91,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             ++sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( !(flags & FINDFL_WRAP) ) {
+            if( (flags & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {
                 Message1( wrapMsg, "bottom" );
@@ -207,7 +207,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             --sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( !(flags & FINDFL_WRAP) ) {
+            if( (flags & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_TOP_OF_FILE );
             } else {
                 Message1( wrapMsg, "top" );

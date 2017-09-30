@@ -1,48 +1,163 @@
-language:
- - c
+language: c
 
-compiler:
- - clang
+compiler: gcc
 
-before_install:
-# install DOSEMU
- - sudo apt-get update
- - sudo apt-get install -y dosemu
+sudo: required
+
+dist: trusty
+
+env:
+  global:
+    - OWROOT=$TRAVIS_BUILD_DIR
+    - OWOBJDIR=binbuild
+    - OWDOCBUILD=0
+    - OWDOCQUIET=1
+#    - OWUSE_FILENAME_VERSION=1
+    - OWBRANCH=master
+    - OWBRANCH_COVERITY=coverity_scan
+    - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
+    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
+
+cache:
+  directories:
+    - build/$OWOBJDIR
+    - bld/watcom/$OWOBJDIR
+    - test
 
 before_script:
-# get clone of GitHub repository to return Travis CI OW build/log files
-# and compress GitHub repository if necessary to hold only a few last builds
- - sh gitget.sh
-# initialize OW build environment variables
- - export OWROOT=$TRAVIS_BUILD_DIR
- - export OWTOOLS=CLANG
- - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
- - export OWOBJDIR=binbuild
- - export OWDOCBUILD=0
- - export OWDOCQUIET=1
- - export USE_FILENAME_VERSION=1
- - export OWVERBOSE=0
- - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
- - . $OWROOT/cmnvars.sh
-
-script:
- - sh $OWROOT/build.sh rel
+   # initialize OW build environment variables
+ - . ./cmnvars.sh
+   # get clone of GitHub repository to return Travis CI OW build/log files
+ - travis/envinfo.sh
+ - travis/cacheinf.sh
 
 after_failure:
-# after failure transfer log files back to GitHub repository
- - sh gitupdf.sh
+   # after failure transfer log files back to GitHub repository
+ - travis/cacheinf.sh
+ - travis/gitupdf.sh
 
 after_success:
-# after success transfer OW build to GitHub repository
- - sh gitupds.sh
+   # after success transfer OW build to GitHub repository
+ - travis/cacheinf.sh
+ - travis/gitupds.sh
 
-#addons:
+jobs:
+  allow_failures:
+    - os: osx
+
+  include:
+    #################################
+    - stage: Initialize
+      os: linux
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
+      script: travis/tinit.sh
+    #################################
+    - stage: Bootstrap
+      os: linux
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=BOOTSTRAP
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=1
+      script: travis/build.sh boot
+#    - # ...
+#      os: osx
+#      install:
+#        - export OWTOOLS=GCC
+#        - export OWTRAVISJOB=BOOTSTRAP
+#        - export OWDOCBUILD=0
+#        - export OWVERBOSE=1
+#      script: travis/build.sh boot
+    #################################
+    - stage: Build
+      os: linux
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+          # install DOS Emulator
+        - sudo apt-get install -y dosemu
+      script: travis/build.sh build
+    - # ...
+      os: linux
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=DOCPDF
+        - export OWDOCBUILD=1
+        - export OWVERBOSE=0
+        - export OWGHOSTSCRIPTPATH=$PATH
+          # install DOS Emulator + Ghostscript
+        - sudo apt-get install -y dosemu ghostscript
+      script: travis/build.sh docpdf
+#    - # ...
+#      os: osx
+#      install:
+#        - export OWTRAVISJOB=BUILD
+#        - export OWDOCBUILD=0
+#        - export OWVERBOSE=0
+#          # install DOS Emulator
+#        - brew install dosbox
+#        - export OWDOSBOX=dosbox
+#      script: travis/build.sh build
+    #################################
+    - stage: Test1
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh
+    - stage: Test2
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh cpp
+    - stage: Test3
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh crtl
+    #################################
+    - stage: Finalize
+      os: linux
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
+      script: travis/tfini.sh
+#    - # ...
+#      os: osx
+#      before_script:
+#        - travis/envinfo.sh
+#        - travis/cacheinf.sh
+#      script: travis/tfini.sh
+
 #  coverity_scan:
 #    project:
-#      name: "open-watcom/open-watcom-v2"
+#      name: "$TRAVIS_REPO_SLUG"
 #      description: "Build submitted via Travis CI"
-
-#    notification_email:    malak.jiri@gmail.com
+#    notification_email:    "malak.jiri@gmail.com"
 #    build_command_prepend:
-#    build_command:         $OWROOT/build.sh
-#    branch_pattern:        master
+#    build_command:         "travis/build.sh scan"
+#    branch_pattern:        coverity_scan

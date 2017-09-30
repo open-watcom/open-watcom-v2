@@ -47,8 +47,10 @@
 #define READWRITE   2
 #define FROMEND     2
 
-file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
-char                    LclPathSep = { ';' };
+const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
+const char              LclPathSep = { ';' };
+
+static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 void LocalErrMsg( sys_error code, char *buff )
 {
@@ -88,7 +90,7 @@ void LocalErrMsg( sys_error code, char *buff )
     *d = NULLCHAR;
 }
 
-sys_handle LocalOpen( const char *name, open_access access )
+sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     HFILE       hdl;
     USHORT      action;
@@ -96,19 +98,19 @@ sys_handle LocalOpen( const char *name, open_access access )
     USHORT      openmode;
     USHORT      rc;
 
-    if( (access & OP_WRITE) == 0 ) {
+    if( (oattrs & OP_WRITE) == 0 ) {
         openmode = READONLY;
-        access &= ~(OP_CREATE|OP_TRUNC);
-    } else if( access & OP_READ ) {
+        oattrs &= ~(OP_CREATE | OP_TRUNC);
+    } else if( oattrs & OP_READ ) {
         openmode = READWRITE;
     } else {
         openmode = WRITEONLY;
     }
     openmode |= 0x20c0;
     openflags = 0;
-    if( access & OP_CREATE )
+    if( oattrs & OP_CREATE )
         openflags |= 0x10;
-    openflags |= (access & OP_TRUNC) ? 0x02 : 0x01;
+    openflags |= (oattrs & OP_TRUNC) ? 0x02 : 0x01;
     rc = DosOpen( (char *)name, /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
@@ -181,7 +183,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     unsigned long   new;
     USHORT          ret;
 
-    ret = DosChgFilePtr( hdl, len, method, &new );
+    ret = DosChgFilePtr( hdl, len, local_seek_method[method], &new );
     if( ret != 0 ) {
         StashErrCode( ret, OP_LOCAL );
         return( ERR_SEEK );

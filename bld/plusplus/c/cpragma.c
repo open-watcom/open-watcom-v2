@@ -1211,22 +1211,19 @@ void PragInit(
 }
 
 
-typedef struct magic_word {
-    char            *name;
-    AUX_INFO        *info;
-} MAGIC_WORD;
-
-static MAGIC_WORD magicWords[] = {
+static struct {
+    const char  *name;
+    AUX_INFO    *info;
+} magicWords[] = {
     #define pick( a, b, c ) { b , c },
     #include "auxinfo.h"
     #undef pick
 };
 
-
-static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
-    char *name )                // - name to be looked up
+static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
+    const char *name )                      // - name to be looked up
 {
-    int     i;
+    magic_word_idx  i;
 
     if( *name == '_' ) {
         ++name;
@@ -1234,29 +1231,31 @@ static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
             ++name;
         }
     }
-    for( i = 0; i < sizeof( magicWords ) / sizeof( magicWords[0] ) - 1; i++ ) {
-        if( strcmp( magicWords[i].name + 2, name ) == 0 ) break;
+    for( i = 0; i < M_UNKNOWN; i++ ) {
+        if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
+            break;
+        }
     }
     return( i );
 }
 
-static char *retrieveName( int m_type )
+static const char *retrieveName( magic_word_idx m_type )
 {
-    return( magicWords[ m_type ].name );
+    return( magicWords[m_type].name );
 }
 
 
 #if _INTEL_CPU
-static int MagicKeyword(                    // LOOKUP A MAGIC KEYWORD FROM BUFFER
+static magic_word_idx MagicKeyword( // LOOKUP A MAGIC KEYWORD FROM BUFFER
     void )
 {
-    return lookupMagicKeyword( Buffer );
+    return( lookupMagicKeyword( Buffer ) );
 }
 
-static AUX_INFO *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFER
+static AUX_INFO *MagicKeywordInfo(  // LOOKUP A MAGIC KEYWORD FROM BUFFER
     void )
 {
-    return( magicWords[ lookupMagicKeyword( Buffer ) ].info );
+    return( magicWords[lookupMagicKeyword( Buffer )].info );
 }
 #endif
 
@@ -1275,7 +1274,7 @@ void CreateAux(                 // CREATE AUX ID
 
 
 static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
-    unsigned m_type,            // - type to be set
+    magic_word_idx m_type,      // - type to be set
     bool create_new )           // - true if we want a new aux_info
 {
     bool found;
@@ -1292,8 +1291,8 @@ static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
     return( found );
 }
 
-bool PragmaName( AUX_INFO *pragma, char **id )
-/********************************************/
+bool PragmaName( AUX_INFO *pragma, const char **id )
+/**************************************************/
 {
     *id = NULL;
     if( pragma == &DefaultInfo ) {
@@ -1416,8 +1415,8 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 #endif
 
 
-AUX_INFO *PragmaLookup( char *name, unsigned index )
-/**************************************************/
+AUX_INFO *PragmaLookup( const char *name, magic_word_idx index )
+/**************************************************************/
 {
     AUX_ENTRY *ent;
 
@@ -1546,7 +1545,7 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 {
-    hw_reg_set  buff[ MAXIMUM_PARMSETS ];
+    hw_reg_set  buff[MAXIMUM_PARMSETS];
     int         i;
     hw_reg_set  list;
     hw_reg_set  *sets;
@@ -1560,7 +1559,7 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     }
     HW_CAsgn( buff[i], HW_EMPTY );
     i = ( i + 1 ) * sizeof( hw_reg_set );
-    sets = ( hw_reg_set * )CMemAlloc( i );
+    sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
     if( !IsAuxParmsBuiltIn( CurrInfo->parms ) ) {
         CMemFree( CurrInfo->parms );

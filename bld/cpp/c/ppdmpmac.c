@@ -29,31 +29,21 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 #include "ppdmpmac.h"
 
 
+static void dump_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
+{
+    printf( "#define %s %s ", me->name, me->replacement_list );
+    if( val->type == PPTYPE_SIGNED ) {
+        printf( "(value=%ld)\n", val->val.ivalue );
+    } else {
+        printf( "(value=%luUL)\n", val->val.uvalue );
+    }
+}
+
 void PP_Dump_Macros( void )
 {
-    int             hash;
-    const char      *endptr;
-    MACRO_ENTRY     *me;
-    PREPROC_VALUE   val;
-
-    for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
-            if( me->parmcount == 0 && me->replacement_list != NULL ) {
-                if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
-                    if( *endptr == '\0' ) {
-                        printf( "#define %s %s ", me->name, me->replacement_list );
-                        if( val.type == PPTYPE_SIGNED ) {
-                            printf( "(value=%ld)\n", val.val.ivalue );
-                        } else {
-                            printf( "(value=%luUL)\n", val.val.uvalue );
-                        }
-                    }
-                }
-            }
-        }
-    }
+    PP_MacrosWalk( dump_func, NULL );
 }

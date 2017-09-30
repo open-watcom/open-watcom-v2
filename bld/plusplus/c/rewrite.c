@@ -89,7 +89,7 @@
 #define MASK_ABS_LINE 0x80000000    // mask for absolute line
 #define MASK_DELTA_LINE 0x80        // mask for delta line
 
-#define REWRITE_EOT             (-1 << 8)
+#define REWRITE_EOT             (~255)
 
 static REWRITE *currRewrite;
 static TOKEN_LOCN *currLocn;

@@ -32,8 +32,8 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #endif
 #include "ioutil.h"
@@ -72,7 +72,7 @@ namespace std {
     if( flags() & ios::uppercase ) {
         strupr( buffer );
     }
-    size = ::strlen( buffer );
+    size = strlen( buffer );
 
     // Write the number:
     if( opfx() ) {

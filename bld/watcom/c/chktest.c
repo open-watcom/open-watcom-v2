@@ -164,6 +164,17 @@ static int IsPassLine( char *t ) {
     return( *p == '\0' && p != err );
 }
 
+static int IsFailLine( char *t ) {
+    char *p;
+
+    p = SkipStr( buff, "FAIL" );
+    if( *p == '\0' ) return( 0 );
+    p = SkipSequenceOf( p, ' ' );
+    if( *p == '\0' ) return( 0 );
+    p = SkipTestDir( p, t );
+    return( *p == '\0' && p != err );
+}
+
 static int IsTestLine( char *t ) {
     char *p;
 
@@ -194,6 +205,7 @@ int main( int argc, char **argv ) {
     int     retval;
     char    *curr_buff;
     char    *last_buff;
+    int     fail;
 
     if( argc != 2 ) {
         fatal( "usage: chktest <file>" );
@@ -203,8 +215,9 @@ int main( int argc, char **argv ) {
         fatal( "cannot open input file" );
     }
     line = 0;
-    state = 0;        // 0 - expecting cdsay, 1 - expecting TEST, 2 - expecting PASS
+    state = 0;        // 0 - expecting cdsay, 1 - expecting TEST, 2 - expecting PASS or FAIL
     retval = 0;
+    fail = 0;
     curr_buff = test0;
     last_buff = test1;
     for(;;) {
@@ -214,15 +227,19 @@ int main( int argc, char **argv ) {
         if( IsCdsayLine( curr_buff ) ) {
             if( state == 1 ) {
                 retval = 1;
-                tprintf( "line %u: '%s' test failed\n", line, last_buff );
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
             } else if( state == 2 ) {
                 retval = 1;
-                tprintf( "line %u: '%s' test failed\n", line, last_buff );
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
+            } else if( fail != 0 ) {
+                retval = 1;
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
             }
             p = last_buff;
             last_buff = curr_buff;
             curr_buff = p;
             state = 1;
+            fail = 0;
         } else if( IsTestLine( curr_buff ) ) {
             if( state == 0 ) {
                 tprintf( "line %u: mismatch - expecting cdsay\n", line );
@@ -238,6 +255,13 @@ int main( int argc, char **argv ) {
                 tprintf( "line %u: '%s' test passed without cdsay\n", line, curr_buff );
             }
             state = 0;
+        } else if( IsFailLine( curr_buff ) ) {
+            if( state == 0 ) {
+                retval = 1;
+                tprintf( "line %u: '%s' test failed without cdsay\n", line, curr_buff );
+            }
+            state = 0;
+            fail = 1;
         } else {
             retval = 1;
             if( state == 0 ) {
@@ -245,7 +269,7 @@ int main( int argc, char **argv ) {
             } else if( state == 1 ) {
                 tprintf( "line %u: '%s' invalid contents (expecting TEST)\n", line, buff );
             } else {
-                tprintf( "line %u: '%s' invalid contents (expecting PASS)\n", line, buff );
+                tprintf( "line %u: '%s' invalid contents (expecting PASS or FAIL)\n", line, buff );
             }
         }
     }
@@ -253,6 +277,9 @@ int main( int argc, char **argv ) {
         retval = 1;
         tprintf( "line %u: mismatch - expecting cdsay\n", line );
     } else if( state == 2 ) {
+        retval = 1;
+        tprintf( "line %u: '%s' test failed\n", line, last_buff );
+    } else if( fail != 0 ) {
         retval = 1;
         tprintf( "line %u: '%s' test failed\n", line, last_buff );
     }

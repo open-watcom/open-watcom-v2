@@ -49,7 +49,7 @@ objs = dipimp.obj $(imp_objs)
 .c: ../c;../../c;$(extra_srcs)
 
 extra_cpp_flags = -D__DIP__ $(extra_cppflags)
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 

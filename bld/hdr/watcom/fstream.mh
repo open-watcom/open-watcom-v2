@@ -45,8 +45,7 @@ using std::fstream;
 // POSIX file handle:
 typedef int filedesc;
 
-namespace std {
-
+:include nsstd.sp
   // **************************** FILEBUF ************************************
 
 :include pshpackl.sp
@@ -213,8 +212,7 @@ namespace std {
   inline void fstream::open( char const *__n, ios::openmode __m, int __p ) {
     fstreambase::open( __n, __m, __p );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

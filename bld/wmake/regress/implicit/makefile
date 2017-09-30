@@ -14,7 +14,7 @@ app : app.exe .symbolic
     @%null
 
 app.lnk : makefile
-    echo NAME app >app.lnk
+    if 1 == 1 echo NAME app >app.lnk
     for %i in ($(objs)) do echo FILE %i >>app.lnk
 
 app.exe : app.lnk $(objs)

@@ -469,7 +469,7 @@ unsigned MADIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
 
 mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
-    char        *buff = __alloca( len * 2 + 1 );
+    char        *buff = walloca( len * 2 + 1 );
     char        *to;
 
     /* unused parameters */ (void)mr;

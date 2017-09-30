@@ -29,8 +29,8 @@ using std::FILE;
 using std::fpos_t;
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 
 // C99 functions in stdio.h.
@@ -85,19 +85,19 @@ using std::vsnprintf;
 using std::vsscanf;
 :include extepi.sp
 
-:include ext.sp
 ::
 :: Begin of extension section
 ::
+:include ext.sp
 
 // C99 types that are not specified for stdio.h
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
-#define _WINT_T_DEFINED_
-using std::wint_t;
+ #define _WINT_T_DEFINED_
+ using std::wint_t;
 #endif
 
-:segment !NO_WIDECHAR
+:: Wide character version
 // C99 functions that are not specified for stdio.h
 using std::fgetwc;
 using std::fgetws;
@@ -121,11 +121,10 @@ using std::vwscanf;
 using std::wprintf;
 using std::wscanf;
 
-:endsegment
+:include extepi.sp
 ::
 :: End of extension section
 ::
-:include extepi.sp
 
 #else /* __cplusplus not defined */
 :: End of segment that is only in stdio.h
@@ -147,58 +146,30 @@ using std::wscanf;
 :endsegment
 :include pshpackl.sp
 
-:include size_t.sp
-
-:include ssize_t.sp
-
 :include null.sp
-
-:include valist.sp
 
 :segment QNX | LINUX
 #define _NFILES         16          /*  minimum guaranteed open files       */
 #define BUFSIZ          4096        /*  Default buffer size                 */
 :elsesegment
 #define _NFILES         20          /* number of files that can be handled */
-#if defined(_M_I86)
+#ifdef _M_I86
  #define BUFSIZ         512         /*  Default buffer size                 */
 #else
  #define BUFSIZ         4096        /*  Default buffer size                 */
 #endif
 :endsegment
+
 :keep FILENAME
 :include maxpath.sp
 :remove FILENAME
 
-:: This (strange?) technique keeps the name '__iobuf' in the global namespace.
-struct __stream_link;
-struct __iobuf;
-#if !defined(__OBSCURE_STREAM_INTERNALS)
-struct __iobuf {
-    unsigned char        *_ptr;         /* next character position */
-    int                   _cnt;         /* number of characters left */
-    struct __stream_link *_link;        /* location of associated struct */
-    unsigned              _flag;        /* mode of file access */
-    int                   _handle;      /* file handle */
-    unsigned              _bufsize;     /* size of buffer */
-    unsigned short        _ungotten;    /* used by ungetc and ungetwc */
-:segment QNX
-    struct __iobuf       *_unused;      /* spare entry */
-:endsegment
-};
-#endif
-
-:segment CNAME
-namespace std {
+:segment DOS
+:keep PATHMAX
+:include maxpath.sp
+:remove PATHMAX
 
 :endsegment
-typedef struct __iobuf FILE;
-typedef long           fpos_t;
-:segment CNAME
-
-}
-:endsegment
-
 :segment QNX | LINUX
 #define FOPEN_MAX   _NFILES
 :elsesegment
@@ -209,81 +180,6 @@ typedef long           fpos_t;
  #define FOPEN_MAX      (_NFILES-2)
 #endif /* extensions disabled */
 :endsegment
-:keep PATHMAX
-:segment DOS
-
-:include maxpath.sp
-:endsegment
-:remove PATHMAX
-
-:segment CNAME
-_WCRTLINK extern std::FILE  *__get_iob_ptr( void );
-:elsesegment
-_WCRTLINK extern FILE       *__get_iob_ptr( void );
-:endsegment
-#if defined(__FUNCTION_DATA_ACCESS)
- #define __iob          (*__get_iob_ptr())
-#elif defined(__SW_BR) || defined(_RTDLL)
- #define __iob          __iob_br
-#endif
-
-:segment CNAME
-_WCRTLINK extern std::FILE *__get_std_file(unsigned handle);
-:elsesegment
-_WCRTLINK extern FILE *__get_std_file(unsigned handle);
-:endsegment
-
-#if !defined(__OBSCURE_STREAM_INTERNALS)
-:segment CNAME
-_WCRTDATA extern std::FILE  _WCDATA __iob[];
-/*
- *  Define macros to access the three default file pointer (and descriptors)
- *  provided to each process by default. They will always occupy the
- *  first three file pointers in each processes' table.
- */
-#define stdin   ((std::FILE *)&__iob[0])     /* standard input file  */
-#define stdout  ((std::FILE *)&__iob[1])     /* standard output file */
-#define stderr  ((std::FILE *)&__iob[2])     /* standard error file  */
-:elsesegment
-_WCRTDATA extern FILE   _WCDATA __iob[];
-/*
- *  Define macros to access the three default file pointer (and descriptors)
- *  provided to each process by default. They will always occupy the
- *  first three file pointers in each processes' table.
- */
-#define stdin   ((FILE *)&__iob[0])     /* standard input file  */
-#define stdout  ((FILE *)&__iob[1])     /* standard output file */
-#define stderr  ((FILE *)&__iob[2])     /* standard error file  */
-:endsegment
-:segment DOS
-:include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
-:segment CNAME
-#define stdaux  ((std::FILE *)&__iob[3])     /* standard auxiliary file  */
-#define stdprn  ((std::FILE *)&__iob[4])     /* standard printer file  */
-:elsesegment
-#define stdaux  ((FILE *)&__iob[3])     /* standard auxiliary file  */
-#define stdprn  ((FILE *)&__iob[4])     /* standard printer file  */
-:endsegment
-#endif
-:include extepi.sp
-:endsegment
-
-#else /* __OBSCURE_STREAM_INTERNALS is defined */
-
-#define stdin   (__get_std_file(0))     /* standard input file  */
-#define stdout  (__get_std_file(1))     /* standard output file */
-#define stderr  (__get_std_file(2))     /* standard error file  */
-:segment DOS
-:include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__)
-#define stdaux  (__get_std_file(3))     /* standard auxiliary file  */
-#define stdprn  (__get_std_file(4))     /* standard printer file  */
-#endif
-:include extepi.sp
-:endsegment
-
-#endif /* __OBSCURE_STREAM_INTERNALS */
 
 :segment QNX | LINUX
 /* values for _flag field in FILE struct */
@@ -320,7 +216,7 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 #define _FILEEXT 0x8000 /* lseek with positive offset has been done */
 #define _COMMIT 0x0001  /* extended flag: commit OS buffers on flush */
 
-#define EOF         (-1)                /*  End of File/Error return code   */
+:include eof.sp
 
 :include seekpos.sp
 
@@ -343,251 +239,303 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 :endsegment
 #define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
 
-:: Declarations of standard C99 functions (but see below for more information).
-:segment CNAME
-namespace std {
+:include size_t.sp
 
-:endsegment
-_WCRTLINK extern void   clearerr( FILE *__fp );
-_WCRTLINK extern int    fclose( FILE *__fp );
-_WCRTLINK extern int    feof( FILE *__fp );
-_WCRTLINK extern int    ferror( FILE *__fp );
-_WCRTLINK extern int    fflush( FILE *__fp );
-_WCRTLINK extern int    fgetc( FILE *__fp );
-_WCRTLINK extern int    fgetpos( FILE *__fp, fpos_t *__pos );
-_WCRTLINK extern char   *fgets( char *__s, int __n, FILE *__fp );
-_WCRTLINK extern FILE   *fopen( const char *__filename, const char *__mode );
-_WCRTLINK extern int    fprintf( FILE *__fp, const char *__format, ... );
-_WCRTLINK extern int    fputc( int __c, FILE *__fp );
-_WCRTLINK extern int    fputs( const char *__s, FILE *__fp );
-_WCRTLINK extern size_t fread( void *__ptr, size_t __size, size_t __n, FILE *__fp );
-_WCRTLINK extern FILE   *freopen( const char *__filename, const char *__mode, FILE *__fp );
-_WCRTLINK extern int    fscanf( FILE*__fp, const char *__format, ... );
-_WCRTLINK extern int    fseek( FILE *__fp, long int __offset, int __whence );
-_WCRTLINK extern int    fsetpos( FILE *__fp, const fpos_t *__pos );
-_WCRTLINK extern long   ftell( FILE *__fp );
-_WCRTLINK extern size_t fwrite( const void *__ptr, size_t __size, size_t __n, FILE *__fp );
-_WCRTLINK extern int    getc( FILE *__fp );
-_WCRTLINK extern int    getchar( void );
-:include extposix.sp
-_WCRTLINK extern ssize_t getdelim( char **__ptr1, size_t *__ptr2, int __delim, FILE *__fp);
-_WCRTLINK extern ssize_t getline( char **__ptr1, size_t *__ptr2, FILE *__fp);
-:include extepi.sp
-_WCRTLINK extern char   *gets( char *__s );
-_WCRTLINK extern void   perror( const char *__s );
-_WCRTLINK extern int    printf( const char *__format, ... );
-_WCRTLINK extern int    putc( int __c, FILE *__fp );
-_WCRTLINK extern int    putchar( int __c );
-_WCRTLINK extern int    puts( const char *__s );
-_WCRTLINK extern int    remove( const char *__filename );
-_WCRTLINK extern int    rename( const char *__old, const char *__new );
-_WCRTLINK extern void   rewind( FILE *__fp );
-_WCRTLINK extern int    scanf( const char *__format, ... );
-_WCRTLINK extern void   setbuf( FILE *__fp, char *__buf );
-_WCRTLINK extern int    setvbuf( FILE *__fp, char *__buf, int __mode, size_t __size );
-_WCRTLINK extern int    sprintf( char *__s, const char *__format, ... );
-_WCRTLINK extern int    sscanf( const char *__s, const char *__format, ... );
-_WCRTLINK extern FILE   *tmpfile( void );
-_WCRTLINK extern char   *tmpnam( char *__s );
-_WCRTLINK extern int    ungetc( int __c, FILE *__fp );
-_WCRTLINK extern int    vfprintf( FILE *__fp, const char *__format, __va_list __arg );
-_WCRTLINK extern int    vprintf( const char *__format, __va_list __arg );
-_WCRTLINK extern int    vsprintf( char *__s, const char *__format, __va_list __arg );
+:include ssize_t.sp
 
-:: C99 functions in stdio.h that are currently considered extensions.
-:include extc99.sp
-_WCRTLINK extern int    snprintf( char *__buf, size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int    vfscanf( FILE *__fp, const char *__format, __va_list __arg );
-_WCRTLINK extern int    vscanf( const char *__format, __va_list __arg );
-_WCRTLINK extern int    vsnprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int    vsscanf( const char *__s, const char *__format, __va_list __arg );
-:include extepi.sp
+:include valist.sp
 
-:segment CNAME
-} // namespace std
+:keep DECLARE_STRUCT
+:include file.sp
+:remove DECLARE_STRUCT
 
-:: Implementation specific functions remain in the global namespace.
-_WCRTLINK extern int        _getw( std::FILE *__fp );
-_WCRTLINK extern int        _pclose( std::FILE *__fp );
-_WCRTLINK extern std::FILE  *_popen( const char *__command, const char *__mode );
-_WCRTLINK extern int        _putw( int __binint, std::FILE *__fp );
-:elsesegment
-_WCRTLINK extern int   _getw( FILE *__fp );
-_WCRTLINK extern int   _pclose( FILE *__fp );
-_WCRTLINK extern FILE  *_popen( const char *__command, const char *__mode );
-_WCRTLINK extern int   _putw( int __binint, FILE *__fp );
-:endsegment
-_WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
+:include fpos_t.sp
 
-:include ext.sp
 ::
 :: Begin of extension section
 ::
+:include ext.sp
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include wint_t.sp
 
-:segment CNAME
-#define WEOF  ((std::wint_t)(-1)) /*  EOF equivalent for wide chars   */
-:elsesegment
-#define WEOF  ((wint_t)(-1))      /*  EOF equivalent for wide chars   */
+:include extepi.sp
+::
+:: End of extension section
+::
+
+_WCRTLINK extern __w_FILE   *__get_iob_ptr( void );
+#ifdef __FUNCTION_DATA_ACCESS
+ #define __iob          (*__get_iob_ptr())
+#elif defined(__SW_BR) || defined(_RTDLL)
+ #define __iob          __iob_br
+#endif
+
+_WCRTLINK extern __w_FILE   *__get_std_file(unsigned handle);
+
+#ifndef __OBSCURE_STREAM_INTERNALS
+
+_WCRTDATA extern __w_FILE  _WCDATA __iob[];
+/*
+ *  Define macros to access the three default file pointer (and descriptors)
+ *  provided to each process by default. They will always occupy the
+ *  first three file pointers in each processes' table.
+ */
+#define stdin   ((__w_FILE *)&__iob[0])     /* standard input file  */
+#define stdout  ((__w_FILE *)&__iob[1])     /* standard output file */
+#define stderr  ((__w_FILE *)&__iob[2])     /* standard error file  */
+:segment DOS
+:include ext.sp
+#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
+#define stdaux  ((__w_FILE *)&__iob[3])     /* standard auxiliary file  */
+#define stdprn  ((__w_FILE *)&__iob[4])     /* standard printer file  */
+#endif
+:include extepi.sp
 :endsegment
 
-:segment !NO_WIDECHAR
-:segment CNAME
-namespace std {
+#else /* __OBSCURE_STREAM_INTERNALS is defined */
 
+#define stdin   (__get_std_file(0))     /* standard input file  */
+#define stdout  (__get_std_file(1))     /* standard output file */
+#define stderr  (__get_std_file(2))     /* standard error file  */
+:segment DOS
+:include ext.sp
+#if defined(__DOS__) || defined(__WINDOWS__)
+#define stdaux  (__get_std_file(3))     /* standard auxiliary file  */
+#define stdprn  (__get_std_file(4))     /* standard printer file  */
+#endif
+:include extepi.sp
 :endsegment
+
+#endif /* __OBSCURE_STREAM_INTERNALS */
+
+:: Declarations of standard C99 functions (but see below for more information).
+:include nsstd.sp
+_WCRTLINK extern void       clearerr( FILE *__fp );
+_WCRTLINK extern int        fclose( FILE *__fp );
+_WCRTLINK extern int        feof( FILE *__fp );
+_WCRTLINK extern int        ferror( FILE *__fp );
+_WCRTLINK extern int        fflush( FILE *__fp );
+_WCRTLINK extern int        fgetc( FILE *__fp );
+_WCRTLINK extern int        fgetpos( FILE *__fp, fpos_t *__pos );
+_WCRTLINK extern char       *fgets( char *__s, int __n, FILE *__fp );
+_WCRTLINK extern FILE       *fopen( const char *__filename, const char *__mode );
+_WCRTLINK extern int        fprintf( FILE *__fp, const char *__format, ... );
+_WCRTLINK extern int        fputc( int __c, FILE *__fp );
+_WCRTLINK extern int        fputs( const char *__s, FILE *__fp );
+_WCRTLINK extern size_t     fread( void *__ptr, size_t __size, size_t __n, FILE *__fp );
+_WCRTLINK extern FILE       *freopen( const char *__filename, const char *__mode, FILE *__fp );
+_WCRTLINK extern int        fscanf( FILE*__fp, const char *__format, ... );
+_WCRTLINK extern int        fseek( FILE *__fp, long int __offset, int __whence );
+_WCRTLINK extern int        fsetpos( FILE *__fp, const fpos_t *__pos );
+_WCRTLINK extern long       ftell( FILE *__fp );
+_WCRTLINK extern size_t     fwrite( const void *__ptr, size_t __size, size_t __n, FILE *__fp );
+_WCRTLINK extern int        getc( FILE *__fp );
+_WCRTLINK extern int        getchar( void );
+:include extposix.sp
+_WCRTLINK extern ssize_t    getdelim( char **__ptr1, size_t *__ptr2, int __delim, FILE *__fp);
+_WCRTLINK extern ssize_t    getline( char **__ptr1, size_t *__ptr2, FILE *__fp);
+:include extepi.sp
+_WCRTLINK extern char       *gets( char *__s );
+_WCRTLINK extern void       perror( const char *__s );
+_WCRTLINK extern int        printf( const char *__format, ... );
+_WCRTLINK extern int        putc( int __c, FILE *__fp );
+_WCRTLINK extern int        putchar( int __c );
+_WCRTLINK extern int        puts( const char *__s );
+_WCRTLINK extern int        remove( const char *__filename );
+_WCRTLINK extern int        rename( const char *__old, const char *__new );
+_WCRTLINK extern void       rewind( FILE *__fp );
+_WCRTLINK extern int        scanf( const char *__format, ... );
+_WCRTLINK extern void       setbuf( FILE *__fp, char *__buf );
+_WCRTLINK extern int        setvbuf( FILE *__fp, char *__buf, int __mode, size_t __size );
+_WCRTLINK extern int        sprintf( char *__s, const char *__format, ... );
+_WCRTLINK extern int        sscanf( const char *__s, const char *__format, ... );
+_WCRTLINK extern FILE       *tmpfile( void );
+_WCRTLINK extern char       *tmpnam( char *__s );
+_WCRTLINK extern int        ungetc( int __c, FILE *__fp );
+_WCRTLINK extern int        vfprintf( FILE *__fp, const char *__format, __va_list __arg );
+_WCRTLINK extern int        vprintf( const char *__format, __va_list __arg );
+_WCRTLINK extern int        vsprintf( char *__s, const char *__format, __va_list __arg );
+
+:: C99 functions in stdio.h that are currently considered extensions.
+:include extc99.sp
+_WCRTLINK extern int        snprintf( char *__buf, size_t __bufsize, const char *__fmt, ... );
+_WCRTLINK extern int        vfscanf( FILE *__fp, const char *__format, __va_list __arg );
+_WCRTLINK extern int        vscanf( const char *__format, __va_list __arg );
+_WCRTLINK extern int        vsnprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
+_WCRTLINK extern int        vsscanf( const char *__s, const char *__format, __va_list __arg );
+:include extepi.sp
+:include nsstdepi.sp
+
+::
+:: Begin of extension section
+::
+:include ext.sp
+
+:: Implementation specific functions remain in the global namespace.
+_WCRTLINK extern int        _getw( __w_FILE *__fp );
+_WCRTLINK extern int        _pclose( __w_FILE *__fp );
+_WCRTLINK extern __w_FILE   *_popen( const char *__command, const char *__mode );
+_WCRTLINK extern int        _putw( int __binint, __w_FILE *__fp );
+_WCRTLINK extern char       *_tempnam( const char *__dir, const char *__prefix );
+
+:: Wide character version
+:include nsstd.sp
 /* These names are not in stdio according to C99. */
-_WCRTLINK extern wint_t   getwc( FILE * );
-_WCRTLINK extern wint_t   getwchar( void );
-_WCRTLINK extern wint_t   fgetwc( FILE * );
-_WCRTLINK extern wchar_t  *fgetws( wchar_t *, int, FILE * );
-_WCRTLINK extern wint_t   fputwc( wint_t, FILE * );
-_WCRTLINK extern int      fputws( const wchar_t *, FILE * );
-_WCRTLINK extern int      fwprintf( FILE *, const wchar_t *, ... );
-_WCRTLINK extern int      fwscanf( FILE *, const wchar_t *, ... );
-_WCRTLINK extern wint_t   putwc( wint_t, FILE * );
-_WCRTLINK extern wint_t   putwchar( wint_t );
-_WCRTLINK extern int      swprintf( wchar_t *, size_t, const wchar_t *, ... );
-_WCRTLINK extern int      swscanf( const wchar_t *, const wchar_t *, ... );
-_WCRTLINK extern wint_t   ungetwc( wint_t, FILE * );
-_WCRTLINK extern int      vfwprintf( FILE *, const wchar_t *, __va_list );
-_WCRTLINK extern int      vfwscanf( FILE *, const wchar_t *, __va_list );
-_WCRTLINK extern int      vswprintf( wchar_t *, size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int      vswscanf( const wchar_t *, const wchar_t *, __va_list );
-_WCRTLINK extern int      vwprintf( const wchar_t *, __va_list );
-_WCRTLINK extern int      vwscanf( const wchar_t *, __va_list );
-_WCRTLINK extern int      wprintf( const wchar_t *, ... );
-_WCRTLINK extern int      wscanf( const wchar_t *, ... );
+_WCRTLINK extern wint_t     getwc( FILE * );
+_WCRTLINK extern wint_t     getwchar( void );
+_WCRTLINK extern wint_t     fgetwc( FILE * );
+_WCRTLINK extern wchar_t    *fgetws( wchar_t *, int, FILE * );
+_WCRTLINK extern wint_t     fputwc( wint_t, FILE * );
+_WCRTLINK extern int        fputws( const wchar_t *, FILE * );
+_WCRTLINK extern int        fwprintf( FILE *, const wchar_t *, ... );
+_WCRTLINK extern int        fwscanf( FILE *, const wchar_t *, ... );
+_WCRTLINK extern wint_t     putwc( wint_t, FILE * );
+_WCRTLINK extern wint_t     putwchar( wint_t );
+_WCRTLINK extern int        swprintf( wchar_t *, size_t, const wchar_t *, ... );
+_WCRTLINK extern int        swscanf( const wchar_t *, const wchar_t *, ... );
+_WCRTLINK extern wint_t     ungetwc( wint_t, FILE * );
+_WCRTLINK extern int        vfwprintf( FILE *, const wchar_t *, __va_list );
+_WCRTLINK extern int        vfwscanf( FILE *, const wchar_t *, __va_list );
+_WCRTLINK extern int        vswprintf( wchar_t *, size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int        vswscanf( const wchar_t *, const wchar_t *, __va_list );
+_WCRTLINK extern int        vwprintf( const wchar_t *, __va_list );
+_WCRTLINK extern int        vwscanf( const wchar_t *, __va_list );
+_WCRTLINK extern int        wprintf( const wchar_t *, ... );
+_WCRTLINK extern int        wscanf( const wchar_t *, ... );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
-:endsegment
 /* These names are not part of C89 or C99. */
-::
-:: The following is generated into cstdio
-:segment CNAME
-_WCRTLINK extern int           _fseeki64( std::FILE *__fp, long long int __offset, int __whence );
-_WCRTLINK extern long long     _ftelli64( std::FILE *__fp );
 
-_WCRTLINK extern int           flushall( void );
-:segment DOS
-_WCRTLINK extern std::FILE     *_fdopen( int __handle, const char *__mode );
-_WCRTLINK extern std::FILE     *fdopen( int __handle, const char *__mode );
-:endsegment
-_WCRTLINK extern int           _bprintf( char *__buf, std::size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int           _fgetchar( void );
-_WCRTLINK extern int           _fileno(std::FILE *);
-_WCRTLINK extern int           _fputchar( int __c );
-_WCRTLINK extern std::FILE     *_fsopen( const char *__filename, const char *__mode, int __shflag );
-_WCRTLINK extern int           _grow_handles( int __new_count );
-_WCRTLINK extern int           _snprintf( char *__buf, std::size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int           _vbprintf( char *__s, std::size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int           _vsnprintf( char *__s, std::size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int           fcloseall( void );
-_WCRTLINK extern int           fgetchar( void );
-_WCRTLINK extern int           fileno(std::FILE *);
-_WCRTLINK extern int           fputchar( int __c );
-
-:segment !NO_WIDECHAR
-/* These functions pertain to wide character handling. */
-_WCRTLINK extern int           _bwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
-_WCRTLINK extern wchar_t       *_getws( wchar_t * );
-_WCRTLINK extern std::wint_t   _fgetwchar( void );
-_WCRTLINK extern std::wint_t   _fputwchar( std::wint_t );
-_WCRTLINK extern int           _putws( const wchar_t * );
-_WCRTLINK extern int           _snwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
-_WCRTLINK extern int           snwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
-_WCRTLINK extern int           _swprintf( wchar_t *, const wchar_t *, ... );
-_WCRTLINK extern int           _vbwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int           _vsnwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int           vsnwprintf( wchar_t *, std::size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int           _vswprintf( wchar_t *, const wchar_t *, __va_list );
-_WCRTLINK extern std::FILE     *_wfdopen( int, const wchar_t * );
-_WCRTLINK extern std::FILE     *_wfopen( const wchar_t *, const wchar_t * );
-_WCRTLINK extern std::FILE     *_wfreopen( const wchar_t *, const wchar_t *, std::FILE * );
-_WCRTLINK extern std::FILE     *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
-_WCRTLINK extern void          _wperror( const wchar_t * );
-_WCRTLINK extern std::FILE     *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-_WCRTLINK extern int           _wremove( const wchar_t * );
-_WCRTLINK extern int           _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t       *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
-_WCRTLINK extern wchar_t       *_wtmpnam( wchar_t * );
-_WCRTLINK extern std::wint_t   fgetwchar( void );
-_WCRTLINK extern std::wint_t   fputwchar( std::wint_t );
-_WCRTLINK extern wchar_t       *getws( wchar_t * );
-_WCRTLINK extern int           putws( const wchar_t * );
-
-:endsegment
-::
-:: The following is generated into stdio.h
-:elsesegment
-_WCRTLINK extern int           _fseeki64( FILE *__fp, long long int __offset, int __whence );
-_WCRTLINK extern long long     _ftelli64( FILE *__fp );
-
-_WCRTLINK extern int      flushall( void );
-:segment DOS
-_WCRTLINK extern FILE     *_fdopen( int __handle, const char *__mode );
-_WCRTLINK extern FILE     *fdopen( int __handle, const char *__mode );
-:endsegment
-_WCRTLINK extern int      _bprintf( char *__buf, size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int      _fgetchar( void );
-_WCRTLINK extern int      _fileno(FILE *);
-_WCRTLINK extern int      _fputchar( int __c );
-_WCRTLINK extern FILE     *_fsopen( const char *__filename, const char *__mode, int __shflag );
-_WCRTLINK extern int      _grow_handles( int __new_count );
-_WCRTLINK extern int      _snprintf( char *__buf, size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int      _vbprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int      _vsnprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int      fcloseall( void );
-_WCRTLINK extern int      fgetchar( void );
-_WCRTLINK extern int      fileno(FILE *);
-_WCRTLINK extern int      fputchar( int __c );
+_WCRTLINK extern int        _fseeki64( __w_FILE *__fp, long long int __offset, int __whence );
+_WCRTLINK extern long long  _ftelli64( __w_FILE *__fp );
 
 :segment LINUX
-_WCRTLINK extern int      fseeko( FILE *__fp, off_t __offset, int __whence );
-_WCRTLINK extern off_t    ftello( FILE *__fp );
+_WCRTLINK extern int        fseeko( __w_FILE *__fp, off_t __offset, int __whence );
+_WCRTLINK extern off_t      ftello( __w_FILE *__fp );
 
 :endsegment
-:segment !NO_WIDECHAR
+_WCRTLINK extern int        flushall( void );
+:segment DOS
+_WCRTLINK extern __w_FILE   *_fdopen( int __handle, const char *__mode );
+_WCRTLINK extern __w_FILE   *fdopen( int __handle, const char *__mode );
+:endsegment
+_WCRTLINK extern int        _bprintf( char *__buf, __w_size_t __bufsize, const char *__fmt, ... );
+_WCRTLINK extern int        _fgetchar( void );
+_WCRTLINK extern int        _fileno( __w_FILE * );
+_WCRTLINK extern int        _fputchar( int __c );
+_WCRTLINK extern __w_FILE   *_fsopen( const char *__filename, const char *__mode, int __shflag );
+_WCRTLINK extern int        _grow_handles( int __new_count );
+_WCRTLINK extern int        _snprintf( char *__buf, __w_size_t __bufsize, const char *__fmt, ... );
+_WCRTLINK extern int        _vbprintf( char *__s, __w_size_t __bufsize, const char *__format, __va_list __arg );
+_WCRTLINK extern int        _vsnprintf( char *__s, __w_size_t __bufsize, const char *__format, __va_list __arg );
+_WCRTLINK extern int        fcloseall( void );
+_WCRTLINK extern int        fgetchar( void );
+_WCRTLINK extern int        fileno( __w_FILE * );
+_WCRTLINK extern int        fputchar( int __c );
+
+:: Wide character version
 /* These functions pertain to wide character handling. */
-_WCRTLINK extern int      _bwprintf( wchar_t *, size_t, const wchar_t *, ... );
-_WCRTLINK extern wint_t   _fgetwchar( void );
-_WCRTLINK extern wint_t   _fputwchar( wint_t );
-_WCRTLINK extern wchar_t  *_getws( wchar_t * );
-_WCRTLINK extern int      _putws( const wchar_t * );
-_WCRTLINK extern int      _snwprintf( wchar_t *, size_t, const wchar_t *, ... );
-_WCRTLINK extern int      snwprintf( wchar_t *, size_t, const wchar_t *, ... );
-_WCRTLINK extern int      _swprintf( wchar_t *, const wchar_t *, ... );
-_WCRTLINK extern FILE     *_wfdopen( int, const wchar_t * );
-_WCRTLINK extern FILE     *_wfopen( const wchar_t *, const wchar_t * );
-_WCRTLINK extern FILE     *_wfreopen( const wchar_t *, const wchar_t *, FILE * );
-_WCRTLINK extern FILE     *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
-_WCRTLINK extern void     _wperror( const wchar_t * );
-_WCRTLINK extern FILE     *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-_WCRTLINK extern int      _wremove( const wchar_t * );
-_WCRTLINK extern int      _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
-_WCRTLINK extern wchar_t  *_wtmpnam( wchar_t * );
-_WCRTLINK extern int      _vbwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int      _vsnwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int      vsnwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int      _vswprintf( wchar_t *, const wchar_t *, __va_list );
-_WCRTLINK extern wint_t   fgetwchar( void );
-_WCRTLINK extern wint_t   fputwchar( wint_t );
-_WCRTLINK extern wchar_t  *getws( wchar_t * );
-_WCRTLINK extern int      putws( const wchar_t * );
+_WCRTLINK extern int        _bwprintf( wchar_t *, __w_size_t, const wchar_t *, ... );
+_WCRTLINK extern __w_wint_t _fgetwchar( void );
+_WCRTLINK extern __w_wint_t _fputwchar( __w_wint_t );
+_WCRTLINK extern wchar_t    *_getws( wchar_t * );
+_WCRTLINK extern int        _putws( const wchar_t * );
+_WCRTLINK extern int        _snwprintf( wchar_t *, __w_size_t, const wchar_t *, ... );
+_WCRTLINK extern int        snwprintf( wchar_t *, __w_size_t, const wchar_t *, ... );
+_WCRTLINK extern int        _swprintf( wchar_t *, const wchar_t *, ... );
+_WCRTLINK extern __w_FILE   *_wfdopen( int, const wchar_t * );
+_WCRTLINK extern __w_FILE   *_wfopen( const wchar_t *, const wchar_t * );
+_WCRTLINK extern __w_FILE   *_wfreopen( const wchar_t *, const wchar_t *, __w_FILE * );
+_WCRTLINK extern __w_FILE   *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
+_WCRTLINK extern void       _wperror( const wchar_t * );
+_WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
+_WCRTLINK extern int        _wremove( const wchar_t * );
+_WCRTLINK extern int        _wrename( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
+_WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
+_WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
+_WCRTLINK extern int        _vswprintf( wchar_t *, const wchar_t *, __va_list );
+_WCRTLINK extern __w_wint_t fgetwchar( void );
+_WCRTLINK extern __w_wint_t fputwchar( __w_wint_t );
+_WCRTLINK extern wchar_t    *getws( wchar_t * );
+_WCRTLINK extern int        putws( const wchar_t * );
+
+:segment QNX
+#ifdef _this_belongs_in_a_private_qnx_header
+_WCRTDATA extern int        _input_line_max;        /* defaults to 20 */
+_WCRTLINK extern char       *input_line( __w_FILE *, char *, int );
+#endif
 
 :endsegment
+:include extepi.sp
+
+:segment QNX | LINUX
+:include extunix.sp
+_WCRTLINK extern char       *ctermid( char * );
+_WCRTLINK extern char       *cuserid( char * );
+
+_WCRTLINK extern __w_FILE   *fdopen( int __handle, const char *__mode );
+_WCRTLINK extern __w_FILE   *popen( const char *__filename, const char *__mode );
+_WCRTLINK extern int        pclose( __w_FILE *__stream );
+:include extepi.sp
+
 :endsegment
+::
+:: End of extension section
+::
+::
+:: Eliminate all macro versions of these functions from cstdio
+:: Eventually they can be re-introduced as proper in-line functions.
+:segment !CNAME
+#ifndef __OBSCURE_STREAM_INTERNALS
+#define clearerr(fp)    ((fp)->_flag &= ~(_SFERR|_EOF))
+#define feof(fp)        ((fp)->_flag & _EOF)
+#define ferror(fp)      ((fp)->_flag & _SFERR)
+#define fileno(fp)      ((fp)->_handle)
+#define _fileno(fp)     ((fp)->_handle)
+#endif
+::
+#if defined(__SW_BD) || defined(__SW_BM)
+#define getc(fp)        fgetc(fp)
+#define putc(c,fp)      fputc(c,fp)
+#else
+#ifndef __OBSCURE_STREAM_INTERNALS
+#define getc(fp) \
+        ((fp)->_cnt<=0 \
+:segment DOS
+        || (unsigned)((*(fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
+:endsegment
+        ? fgetc(fp) \
+        : ((fp)->_cnt--,*(fp)->_ptr++))
+::
+#define putc(c,fp) \
+        ((fp)->_flag&_IONBF \
+        || (fp)->_bufsize-(fp)->_cnt<=1 \
+        ? fputc(c,fp) \
+        : ((*(fp)->_ptr=(unsigned char)(c))=='\n') \
+        ? fputc('\n',fp) \
+        : ((fp)->_flag|=_DIRTY,(fp)->_cnt++,*(fp)->_ptr++))
+#endif
+#endif
+::
+#define getchar()       getc(stdin)
+#define putchar(c)      putc(c,stdout)
+
+:endsegment
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
+
+#define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
+
+:segment QNX | LINUX
+#define L_tmpnam_s  255             /* has to be same as L_tmpnam */
+:elsesegment
+#define L_tmpnam_s  13              /* has to be same as L_tmpnam */
+:endsegment
 
 :include rsize_t.sp
 
@@ -615,15 +563,7 @@ _WCRTLINK extern errno_t  freopen_s( FILE * __restrict * __restrict __newstreamp
 _WCRTLINK extern errno_t  tmpfile_s( FILE * __restrict * __restrict __streamptr);
 _WCRTLINK extern errno_t  tmpnam_s( char *__s, rsize_t __maxsize );
 
-#define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
-
-:segment QNX | LINUX
-#define L_tmpnam_s  255             /* has to be same as L_tmpnam */
-:elsesegment
-#define L_tmpnam_s  13              /* has to be same as L_tmpnam */
-:endsegment
-
-:segment !NO_WIDECHAR
+:: Wide character version
 /* These functions pertain to wide character handling. */
 _WCRTLINK extern errno_t _wfopen_s( FILE * __restrict * __restrict __streamptr, const wchar_t * __restrict __filename,
                                     const wchar_t * __restrict __mode);
@@ -631,80 +571,10 @@ _WCRTLINK extern errno_t _wfreopen_s( FILE * __restrict * __restrict __newstream
                                       const wchar_t * __restrict __mode, FILE * __restrict __stream );
 _WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
 
-:endsegment
 :include saferepi.sp
 
 :endsegment
-:segment QNX
-#ifdef _this_belongs_in_a_private_qnx_header
- extern int _input_line_max;            /* defaults to 20 */
-:segment CNAME
- char   *input_line( std::FILE *, char *, int );
-:elsesegment
- char   *input_line( FILE *, char *, int );
-:endsegment
-#endif
-
-:endsegment
-::
-:: End of extension section
-::
-:include extepi.sp
-
-:segment QNX | LINUX
-:include extunix.sp
-extern char       *ctermid( char * );
-extern char       *cuserid( char * );
-:segment CNAME
-_WCRTLINK extern std::FILE  *fdopen( int __handle, const char *__mode );
-_WCRTLINK extern std::FILE  *popen( const char *__filename, const char *__mode );
-_WCRTLINK extern int         pclose( std::FILE *__stream );
-:elsesegment
-_WCRTLINK extern FILE       *fdopen( int __handle, const char *__mode );
-_WCRTLINK extern FILE       *popen( const char *__filename, const char *__mode );
-_WCRTLINK extern int         pclose( FILE *__stream );
-:endsegment
-:include extepi.sp
-
-:endsegment
-:: Eliminate all macro versions of these functions from cstdio
-:: Eventually they can be re-introduced as proper in-line functions.
-:segment !CNAME
-#if !defined(__OBSCURE_STREAM_INTERNALS)
-#define clearerr(fp)    ((fp)->_flag &= ~(_SFERR|_EOF))
-#define feof(fp)        ((fp)->_flag & _EOF)
-#define ferror(fp)      ((fp)->_flag & _SFERR)
-#define fileno(fp)      ((fp)->_handle)
-#define _fileno(fp)     ((fp)->_handle)
-#endif
-::
-#if defined(__SW_BD) || defined(__SW_BM)
-#define getc(fp)        fgetc(fp)
-#define putc(c,fp)      fputc(c,fp)
-#else
-#if !defined(__OBSCURE_STREAM_INTERNALS)
-#define getc(fp) \
-        ((fp)->_cnt<=0 \
-:segment DOS
-        || (unsigned)((*(fp)->_ptr)-'\x0d')<=('\x1a'-'\x0d') \
-:endsegment
-        ? fgetc(fp) \
-        : ((fp)->_cnt--,*(fp)->_ptr++))
-::
-#define putc(c,fp) \
-        ((fp)->_flag&_IONBF \
-        || (fp)->_bufsize-(fp)->_cnt<=1 \
-        ? fputc(c,fp) \
-        : ((*(fp)->_ptr=(unsigned char)(c))=='\n') \
-        ? fputc('\n',fp) \
-        : ((fp)->_flag|=_DIRTY,(fp)->_cnt++,*(fp)->_ptr++))
-#endif
-#endif
-::
-#define getchar()       getc(stdin)
-#define putchar(c)      putc(c,stdout)
-
-:endsegment
+::::::::: Safer C :::::::::
 :include poppack.sp
 
 :segment CNAME
