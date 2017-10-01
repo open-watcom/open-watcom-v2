@@ -32,9 +32,10 @@
 
 #include <process.h>
 #include "uidef.h"
+#include "nw_clib.h"
+
 
 #define SWITCH_THRESHOLD    10
-
 
 void UIAPI uiyield( void )
 /*************************/
