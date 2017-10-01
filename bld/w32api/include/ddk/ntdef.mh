@@ -319,13 +319,7 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define OBJ_VALID_ATTRIBUTES    0x000007F2L
 
 /* Basic constants */
-#ifndef NULL
-    #ifdef __cplusplus
-        #define NULL    0
-    #else
-        #define NULL    ((void *)0)
-    #endif
-#endif
+:include null.sp
 #ifndef FALSE
     #define FALSE       0
 #endif
