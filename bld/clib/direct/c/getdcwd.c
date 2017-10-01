@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,12 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rterrno.h"
 #include "thread.h"
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_getdcwd,_wgetdcwd)( int drive, CHAR_TYPE *buffer, size_t maxlen )
 {

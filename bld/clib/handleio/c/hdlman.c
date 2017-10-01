@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,23 +40,24 @@
 #include <unistd.h>
 #if defined(__OS2__)
  #define INCL_DOSFILEMGR
+ #include <wos2.h>
 #elif defined(__WINDOWS__) || defined(__NT__)
  #include <windows.h>
 #elif defined(__UNIX__) && !defined(__QNX__)
  #include <sys/resource.h>
+#elif defined(__DOS__)
+ #include "tinyio.h"
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
-#if defined(__DOS__)
- #include "tinyio.h"
-#endif
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtinit.h"
 #include "seterrno.h"
 #include "handleio.h"
 #include "thread.h"
+
 
 #undef __getOSHandle
 

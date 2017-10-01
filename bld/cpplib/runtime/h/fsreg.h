@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,6 @@
 #ifndef __FSREG_H__
 #define __FSREG_H__
 
-#include "variety.h"
-
 //
 // 94/10/11 -- J.W.Welch            -- defined
 //
@@ -56,6 +55,8 @@
 //  FS_REGISTRATION_NT  -- NT
 //  FS_REGISTRATION_RW  -- system-independent, but using FS register
 
+struct DISPATCH_EXC;
+union  RW_DTREG;
 struct FsExcRec;
 
 #if defined( __NT__ ) && defined( __USE_FS )
@@ -64,9 +65,9 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #include <excpt.h>
+//    #define WIN32_LEAN_AND_MEAN
+//    #include <windows.h>
+//    #include <excpt.h>
 
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution
@@ -111,7 +112,7 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-    #include <wos2.h>
+//    #include <wos2.h>
 
     #define EXC_TYPE_UNWIND_EXIT   EH_EXIT_UNWIND
     #define EXC_TYPE_UNWIND_NORMAL EH_UNWINDING
@@ -187,8 +188,8 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-    #include <windows.h>
-    #include <excpt.h>
+//    #include <windows.h>
+//    #include <excpt.h>
 
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution

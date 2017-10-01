@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,16 +44,36 @@
   #define _WPRTDATA __declspec(__watcall)
 #endif
 
+#include <cstddef>
+#include <except.h>
+#include <new>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include <excpt.h>
+#endif
+
+#include "wcpp.h"
+
+#include "prtdata.h"
+
+#ifdef __SW_BM
+    #include "thread.h"
+    #include "lock.h"
+#endif
+
+#if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
+    #include "fsreg.h"
+#endif
+
 struct  ACTIVE_EXC;
 struct  DISPATCH_EXC;
 union   RW_DTREG;
 union   RO_DTREG;
 struct  THREAD_CTL;
 struct  _EXC_PR;
-
-#include <cstddef>
-#include <except.h>
-#include <new>
 
 #define PointUsingOffset( type, base, offset ) \
     ( (type*)( (char*)base + offset ) )
@@ -104,19 +125,6 @@ typedef int rboolean;
 #endif
 
 extern "C" {
-
-#include "wcpp.h"
-
-#include "prtdata.h"
-
-#ifdef __SW_BM
-    #include "thread.h"
-    #include "lock.h"
-#endif
-
-#if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
-    #include "fsreg.h"
-#endif
 
 #if defined( _M_I86 )
     // pad to 2-byte boundary

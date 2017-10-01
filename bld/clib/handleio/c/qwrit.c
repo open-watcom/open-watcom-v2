@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,12 @@
 #include <stdio.h>
 #if defined(__NT__)
     #include <windows.h>
-#endif
-#include "rterrno.h"
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
+#include "rterrno.h"
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtcheck.h"
@@ -47,6 +49,7 @@
 #include "defwin.h"
 #include "qwrite.h"
 #include "thread.h"
+
 
 /*
     Use caution when setting the file pointer in a multithreaded

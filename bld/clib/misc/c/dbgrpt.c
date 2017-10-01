@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,7 @@
 #include <string.h>
 #if defined(__NT__) || defined(__WINDOWS__)
     #include <windows.h>
-#endif
-#ifdef __OS2__
+#elif defined( __OS2__ )
     #define INCL_WIN
     #include <os2.h>
 #endif

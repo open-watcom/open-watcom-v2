@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,10 @@
 ****************************************************************************/
 
 
-#ifndef __OS2EXC_INCLUDED__
-#define __OS2EXC_INCLUDED__
+#ifndef OS2EXC_H_INCLUDED
+#define OS2EXC_H_INCLUDED
 
 #if !defined( _M_I86 )
-    #include <wos2.h>
-
     #define __EXCEPTION_RECORD EXCEPTIONREGISTRATIONRECORD
 #endif
 

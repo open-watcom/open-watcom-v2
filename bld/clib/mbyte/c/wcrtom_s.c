@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,9 @@
 #include "saferlib.h"
 #include <mbstring.h>
 #include <wchar.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "farfunc.h"
 #include "rterrno.h"
 #include "thread.h"

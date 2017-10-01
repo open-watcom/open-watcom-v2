@@ -30,6 +30,9 @@
 
 
 #include "ftnstd.h"
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"

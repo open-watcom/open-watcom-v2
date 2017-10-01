@@ -36,6 +36,9 @@
 
 #include "ftnstd.h"
 #include <stdlib.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtstack.h"
 #include "fthread.h"
 #include "thread.h"

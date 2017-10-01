@@ -31,7 +31,8 @@
 #include "ftnstd.h"
 #include <stdlib.h>
 #if defined( __OS2__ ) && defined( __386__ )
-  #define INCL_DOSPROCESS
+    #define INCL_DOSPROCESS
+    #include <wos2.h>
 #endif
 #include "rtstack.h"
 #include "frtdata.h"

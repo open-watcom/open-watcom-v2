@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,6 +34,9 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rterrno.h"
 #include "thread.h"
 
@@ -43,6 +46,7 @@
 #ifndef SSIZE_MAX
 #define SSIZE_MAX ((ssize_t)(SIZE_MAX / 2))
 #endif
+
 
 _WCRTLINK ssize_t getdelim( char **s, size_t *n, int delim, FILE *fp )
 {

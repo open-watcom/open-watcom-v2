@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
+#if defined( __NT__ )
+    #include <windows.h>
+#endif
 #include "ftextfun.h"
 #include "ftextvar.h"
 #include "posio.h"

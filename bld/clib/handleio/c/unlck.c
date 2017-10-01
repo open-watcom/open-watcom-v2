@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,12 @@
 #include "variety.h"
 #include <stddef.h>
 #include <io.h>
-#include "rterrno.h"
-#ifndef __OS2__
+#ifdef __OS2__
+    #include <wos2.h>
+#else
     #include "tinyio.h"
 #endif
+#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
@@ -61,7 +64,7 @@ _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
 #elif defined(__OS2_286__)
         APIRET  rc;
 /* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
-#ifdef INCL_16  
+#ifdef INCL_16
         FILELOCK        flock;
 
         __handle_check( handle, -1 );
@@ -75,7 +78,7 @@ _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
         unlock_block[0] = offset;
         unlock_block[1] = nbytes;
         rc = DosFileLocks( handle, unlock_block, NULL );
-#endif  
+#endif
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }

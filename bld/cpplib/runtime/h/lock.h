@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #define  __lock_second( __a, __b ) ((__a) > (__b) ? (__a) : (__b))
 
 #if defined( __cplusplus )
+
 class _WPRTLINK __lock {
 public:
     __lock();
@@ -60,7 +62,8 @@ private:
     __fn_lock( __fn_lock const & );
     void operator =( __fn_lock const & );
 };
-#endif
+
+#endif  /* __cplusplus */
 
 #endif  /* __SW_BM */
 

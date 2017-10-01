@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,6 @@
 #define _IOMODE_H_INCLUDED
 
 #if defined(__NT__)
-
-#include <stddef.h>
-#include <windows.h>
 
 #define NULL_HANDLE  (HANDLE)-1
 #define DUMMY_HANDLE (HANDLE)-2

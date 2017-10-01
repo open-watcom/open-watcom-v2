@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
-*    Portions Copyright (c) 2015 Open Watcom contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,6 +33,9 @@
 #include "variety.h"
 #include <stdio.h>
 #include <string.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtdata.h"
 #include "nextftok.h"
 #include "setbits.h"
@@ -46,7 +48,7 @@ _WCRTLINK char _WCFAR *_fstrtok_r( char _WCFAR *str, const char _WCFAR *charset,
     unsigned char   vector[ CHARVECTOR_SIZE ];
     char _WCFAR     *p1;
 
-    
+
     if( str == NULL ) {
         str = *ptr;            /* use previous value   */
         if( str == NULL ) return( NULL );

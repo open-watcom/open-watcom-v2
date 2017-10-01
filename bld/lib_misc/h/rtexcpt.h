@@ -25,34 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Operating System specific macro __XCPTHANDLER definition
 *
 ****************************************************************************/
 
+#ifndef _RTEXCPT_H_INCLUDED
+#define _RTEXCPT_H_INCLUDED
 
-#include "variety.h"
-#include <stdio.h>
-#include <unistd.h>
-#if defined(__NT__)
-    #include <windows.h>
-#elif defined( __OS2__ )
-    #include <wos2.h>
+#if !defined( _M_I86 )
+  #if defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
+    #ifdef __SW_BM
+      #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
+    #else
+      extern struct _EXCEPTIONREGISTRATIONRECORD *__XcptHandler;
+      #define __XCPTHANDLER   __XcptHandler
+    #endif
+  #endif
 #endif
-#include "rterrno.h"
-#include "seterrno.h"
-#include "iomode.h"
-#include "rtcheck.h"
-#include "close.h"
-#include "thread.h"
 
-
-_WCRTLINK int close( int handle )
-{
-    int         rc;
-
-    __handle_check( handle, -1 );
-
-    rc = __close( handle );
-    return( rc );
-}
+#endif

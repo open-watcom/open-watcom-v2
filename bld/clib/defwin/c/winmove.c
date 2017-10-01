@@ -31,6 +31,13 @@
 
 
 #include "variety.h"
+#if defined( __OS2__ )
+    #define INCL_WIN
+    #include <wos2.h>
+#else
+    #define INCLUDE_COMMDLG_H
+    #include <wwindows.h>
+#endif
 #include "win.h"
 
 /*

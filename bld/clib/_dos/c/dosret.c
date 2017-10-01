@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,10 @@
 #include "variety.h"
 #include <stdlib.h>
 #if defined(__NT__)
-#include <windows.h>
+    #include <windows.h>
 #elif defined(__OS2__)
-#define INCL_DOSERRORS
+    #define INCL_DOSERRORS
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "rterrno.h"

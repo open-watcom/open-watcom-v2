@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,8 @@
 #include <stdlib.h>
 #include <limits.h>
 #define INCL_GPI
+#define INCL_WIN
+#include <wos2.h>
 #include "win.h"
 #include "pmmenu.h"
 

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -206,7 +207,7 @@ notprot:
         mov     ax,0ffh         ; run all initializers
         call    __FInitRtns     ; call initializer routines
         call    LIBMAIN         ; invoke the 'C' routine (result in AX)
-        jmp     short exit      ; LibMain is responsible for stack clean up
+        jmp     short dll_exit  ; LibMain is responsible for stack clean up
 
 _error:
 
@@ -215,7 +216,7 @@ _error:
         pop     cx
         pop     ds
         pop     di
-        jmp     short exit
+        jmp     short dll_exit
 
 __exit:
         public  "C",__exit
@@ -228,7 +229,7 @@ __exit:
         mov     ah,04cH         ; DOS call to exit with return code
         int     021h            ; back to DOS
 
-exit:
+dll_exit:
         lea     sp,-2H[bp]
         pop     ds
         pop     bp

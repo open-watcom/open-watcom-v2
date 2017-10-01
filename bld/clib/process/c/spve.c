@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,8 @@
 #include <process.h>
 #ifdef __DOS__
     #include <dos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
@@ -48,6 +51,7 @@
 #include "_process.h"
 #include "thread.h"
 #include "pathmac.h"
+
 
 #ifdef __USE_POSIX_HANDLE_STRINGS
     #define _POSIX_HANDLE_CLEANUP   {                                   \

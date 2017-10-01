@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <process.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rterrno.h"
 #include "thread.h"
+
 
 extern char **_argv;    /* argument vector */
 
@@ -44,7 +49,7 @@ extern char **_argv;    /* argument vector */
 
 #include <mach-o/dyld.h>
 
-/* No procfs on Darwin, have to use special API */ 
+/* No procfs on Darwin, have to use special API */
 
 _WCRTLINK char *_cmdname( char *name )
 {

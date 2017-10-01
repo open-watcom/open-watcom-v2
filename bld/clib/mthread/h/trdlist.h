@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,27 +44,16 @@
   #include "nw_libc.h"
  #endif
 #elif defined( __NT__ )
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
-  #endif
-  #include <windows.h>
-  #include "ntext.h"
   extern DWORD                  __TlsIndex;
   #define TID                   DWORD
 #elif defined( __QNX__ )
-  #include <sys/types.h>
-  #include <unistd.h>
   #define TID                   pid_t
   #define GetCurrentThreadId()  (getpid())
 #elif defined( __LINUX__ )
-  #include <sys/types.h>
-  #include <process.h>
-  #include <unistd.h>
   extern sem_t                  __tls_sem;
   #define TID                   pid_t
   #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )
-  #include <rdos.h>
   #define TID                   int
   extern int                    __TlsIndex;
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
@@ -79,13 +69,9 @@
   #pragma aux __tls_set_value "*" parm [ecx] [eax] modify [edx];
   #pragma aux __create_thread "*" parm [edx] [ebx] [edi] [eax] [ecx];
 #elif defined( __RDOSDEV__ )
-  #include <rdos.h>
-  #include <rdosdev.h>
   #define TID                   int
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
 #elif defined( __OS2__ )
-  #define INCL_DOSSEMAPHORES
-  #define INCL_DOSPROCESS
   #if defined( __WARP__ )
     // OS/2 2.0
     #define GetCurrentThreadId()    (*__threadid())
@@ -123,4 +109,3 @@ void __FreeThreadDataList( void );
 #endif
 
 #endif
-

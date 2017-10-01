@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,13 @@
 #include <stddef.h>
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
-#endif
-#include "rterrno.h"
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    #include <wos2.h>
+#elif defined(__NT__)
+    #include <windows.h>
+#elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
+#include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"

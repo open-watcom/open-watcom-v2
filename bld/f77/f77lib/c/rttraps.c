@@ -38,6 +38,7 @@
 #endif
 #if defined( __OS2__ )
     #define INCL_DOSMISC
+    #include <wos2.h>
   #if defined( _M_I86 )
     #define __OS2_286__
   #else

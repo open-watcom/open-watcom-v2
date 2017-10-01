@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,16 @@
 
 #include "variety.h"
 #include <unistd.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#elif defined(__NT__)
+    #include <windows.h>
+#endif
 #include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "thread.h"
+
 
 // Note: there are no OS handles under anything other than Win32
 
@@ -44,15 +51,15 @@ _WCRTLINK long _get_osfhandle( int posix_handle )
     long os_handle;
 
     __handle_check( posix_handle, -1 );
-    #if defined(__NT__)
-        os_handle = (long) __getOSHandle( posix_handle );
-    #else
-        os_handle = posix_handle;
-    #endif
+#if defined(__NT__)
+    os_handle = (long)__getOSHandle( posix_handle );
+#else
+    os_handle = posix_handle;
+#endif
     return( os_handle );
 }
 
 _WCRTLINK int _os_handle( int posix_handle )
 {
-    return( (int) _get_osfhandle( posix_handle ) );
+    return( (int)_get_osfhandle( posix_handle ) );
 }

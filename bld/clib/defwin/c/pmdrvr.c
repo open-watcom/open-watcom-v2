@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <signal.h>
+#define INCL_WIN
+#include <wos2.h>
 #include "win.h"
 #include "pmmenu.h"
 #include "banner.h"
+
 
 static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
 

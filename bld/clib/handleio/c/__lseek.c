@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +33,16 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
-#if defined( __OS2__ )
+#if defined(__NT__)
+    #include <windows.h>
+#elif defined( __OS2__ )
     #define INCL_LONGLONG
-#endif
-#include "rterrno.h"
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    #include <wos2.h>
+    #include "os2fil64.h"
+#elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
+#include "rterrno.h"
 #include "i64.h"
 #include "iomode.h"
 #include "rtcheck.h"
@@ -46,9 +50,7 @@
 #include "lseek.h"
 #include "handleio.h"
 #include "thread.h"
-#if defined( __OS2__ )
-    #include "os2fil64.h"
-#endif
+
 
 #ifndef INVALID_SET_FILE_POINTER
     #define INVALID_SET_FILE_POINTER 0xFFFFFFFF
@@ -100,7 +102,7 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
         DWORD           rc;
         LONG            offset_hi;
         int             error;
-    
+
         offset_hi = HIDWORD( offset );
         rc = SetFilePointer( __getOSHandle( handle ), LODWORD( offset ), &offset_hi, origin );
         if( rc == INVALID_SET_FILE_POINTER ) {  // this might be OK so

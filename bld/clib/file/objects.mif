@@ -13,9 +13,9 @@
 !inject chmodos2.obj                                        o16 o32
 !inject chmodwnt.obj                     nt nta ntp
 !inject chmodrd.obj                                                                                 rdu rdk
-!inject findclos.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
-!inject findfirs.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
-!inject findnext.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
+!inject findclos.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi             rdu
+!inject findfirs.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi             rdu
+!inject findnext.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi             rdu
 !inject ft2timet.obj                     nt nta ntp
 !inject mkstemp.obj  d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
 !inject mktemp.obj   d16 d32             nt nta ntp         o16 o32         w16 w32 osi

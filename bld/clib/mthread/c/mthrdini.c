@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,26 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
+#if defined( __OS2__ )
+    #define INCL_DOSSEMAPHORES
+    #define INCL_DOSPROCESS
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include "ntext.h"
+#elif defined( __UNIX__ )
+    #include <sys/types.h>
+    #include <unistd.h>
+  #if defined( __LINUX__ )
+    #include <process.h>
+  #endif
+#elif defined( __RDOS__ )
+    #include <rdos.h>
+#elif defined( __RDOSDEV__ )
+    #include <rdos.h>
+    #include <rdosdev.h>
+#endif
 #include "rtdata.h"
 #include "stacklow.h"
 #include "liballoc.h"

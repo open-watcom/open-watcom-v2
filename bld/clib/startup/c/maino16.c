@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,7 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #define INCL_DOSMEMMGR
+#include <wos2.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtstack.h"

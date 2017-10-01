@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,7 @@
     #define INCL_DOSERRORS
     #define INCL_DOSMODULEMGR
     #define INCL_ORDINALS
+    #include <wos2.h>
     #include "_defwin.h"
   #endif
 #endif

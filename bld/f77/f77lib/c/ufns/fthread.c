@@ -33,6 +33,9 @@
 #include <process.h>
 #include <stdlib.h>
 #include <stddef.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "fthread.h"
 #include "xfflags.h"
 #include "rundat.h"

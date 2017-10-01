@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 *
 ****************************************************************************/
 
-#ifndef _THREAD_H_INCLUDED
-#define _THREAD_H_INCLUDED
+#ifndef THREAD_H_INCLUDED
+#define THREAD_H_INCLUDED
 
 #if !defined( __DOS__ ) && !defined( __WINDOWS__ )
 
@@ -44,7 +45,7 @@
 
 /* Per thread global items */
 
-#include "osthread.h"
+#include "osexcpt.h"
 
 #include "sigdefn.h"
 

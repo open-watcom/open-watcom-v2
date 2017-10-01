@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +31,14 @@
 
 
 #include "variety.h"
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtinit.h"
 #include "rtdata.h"
 #include "thread.h"
 #include "mthread.h"
+
 
 #if defined(__OS2_286__) || defined(__NETWARE__)
     #ifdef __SW_BM
@@ -52,7 +57,7 @@
     #elif defined(__LINUX__)
         if( __InitThreadProcessing() == 0 )
             return;
-    #elif defined(__RDOS__)            
+    #elif defined(__RDOS__)
         if( !__RdosThreadInit() )
             return;
     #endif

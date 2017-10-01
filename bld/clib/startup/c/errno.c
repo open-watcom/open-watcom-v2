@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,9 @@
 
 #include "variety.h"
 #if defined(__QNX__)
-#include <sys/magic.h>
+    #include <sys/magic.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rterrno.h"
 #include "thread.h"

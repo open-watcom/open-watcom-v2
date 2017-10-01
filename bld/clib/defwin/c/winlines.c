@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,17 @@
 ****************************************************************************/
 
 
-#define WIN32_NICE_AND_FAT
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
-#define INCLUDE_COMMDLG_H
+#if defined( __OS2__ )
+    #define INCL_WIN
+    #include <wos2.h>
+#else
+    #define WIN32_NICE_AND_FAT
+    #define INCLUDE_COMMDLG_H
+    #include <wwindows.h>
+#endif
 #include "win.h"
 
 #if defined(__WINDOWS__) && !defined(__386__)

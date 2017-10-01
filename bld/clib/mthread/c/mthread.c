@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,10 +36,29 @@
 #include <string.h>
 #include <stddef.h>
 #if defined( __QNX__ )
-  #include <sys/magic.h>
+    #include <sys/magic.h>
+#elif defined( __OS2__ )
+    #define INCL_DOSSEMAPHORES
+    #define INCL_DOSPROCESS
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include "ntext.h"
+#elif defined( __UNIX__ )
+    #include <sys/types.h>
+    #include <unistd.h>
+  #if defined( __LINUX__ )
+    #include <process.h>
+  #endif
+#elif defined( __RDOS__ )
+    #include <rdos.h>
+#elif defined( __RDOSDEV__ )
+    #include <rdos.h>
+    #include <rdosdev.h>
 #endif
 #if defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
+    #include "nw_libc.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -514,7 +532,7 @@ thread_data *__MultipleThread( void )
     tdata = (thread_data *)__LinuxGetThreadData( );
     if( tdata == NULL ) {
         tdata = __GetThreadData();
-    } 
+    }
     return( tdata );
 #elif defined( __RDOS__ )
     thread_data *tdata;
@@ -729,11 +747,11 @@ void __LinuxRemoveThread( void )
 /****************************/
 {
     thread_data *tdata;
-    
+
     tdata = __LinuxGetThreadData();
     if(tdata != NULL && tdata->__allocated )
         lib_free( tdata );
-        
+
     __LinuxSetThreadData( NULL );
 }
 
