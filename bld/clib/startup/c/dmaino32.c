@@ -149,10 +149,13 @@ unsigned _LibMain( unsigned hmod, unsigned termination )
             _atouni( _LpwPgmName, _LpPgmName );
         }
         __InitRtns( INIT_PRIORITY_THREAD );
-        if( __InitThreadProcessing() == NULL ) return( 0 );
+        if( __InitThreadProcessing() == NULL )
+            return( 0 );
         __OS2Init( TRUE, __AllocInitThreadData( NULL ) );
         for( i = 2; i <= __MaxThreads; i++ ) {
-            if( !__OS2AddThread( i, NULL ) ) return( 0 );
+            if( !__OS2AddThread( i, NULL ) ) {
+                return( 0 );
+            }
         }
         __InitRtns( INIT_PRIORITY_EXIT - 1 );
         __InitMultipleThread();

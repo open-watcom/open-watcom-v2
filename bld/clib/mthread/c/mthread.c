@@ -56,9 +56,13 @@
 #elif defined( __RDOSDEV__ )
     #include <rdos.h>
     #include <rdosdev.h>
-#endif
-#if defined (_NETWARE_LIBC)
+#elif defined( __NETWARE__ )
+  #if defined (_NETWARE_CLIB)
+    #include "nw_clib.h"
+  #else
     #include "nw_libc.h"
+  #endif
+    #include "nw_lib.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -102,7 +106,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #ifdef _M_IX86
 #pragma aux             __Sema4Fini "_*";
 #endif
-extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,60 +25,23 @@
 *
 *  ========================================================================
 *
-* Description:  Thread data size registration. Allows the caller to override
-*               the default. Used by the C++ runtime.
+* Description:  NetWare CLib common definitions
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stddef.h>
-#if defined( __OS2__ )
-    #define INCL_DOSSEMAPHORES
-    #define INCL_DOSPROCESS
-    #include <wos2.h>
-#elif defined( __NT__ )
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #include "ntext.h"
-#elif defined( __UNIX__ )
-    #include <sys/types.h>
-    #include <unistd.h>
-  #if defined( __LINUX__ )
-    #include <process.h>
-  #endif
-#elif defined( __RDOS__ )
-    #include <rdos.h>
-#elif defined( __RDOSDEV__ )
-    #include <rdos.h>
-    #include <rdosdev.h>
-#elif defined( __NETWARE__ )
-  #if defined( _NETWARE_CLIB )
-    #include "nw_clib.h"
-  #elif defined (_NETWARE_LIBC)
-    #include "nw_libc.h"
-  #endif
-    #include "nw_lib.h"
-#endif
-#include "rtdata.h"
-#include "thread.h"
-#include "trdlist.h"
-#include "trdlstac.h"
-#include "mthread.h"
+//#if defined( _NETWARE_CLIB )
+extern void     **__ThreadIDs;
 
+// Thread related functions
+extern void     ExitThread( int , int );
+extern int      BeginThread( void (*)( void * ), void *, unsigned, void * );
+extern void     ThreadSwitch( void );
 
-_WCRTLINK unsigned __RegisterThreadDataSize( unsigned size )
-/**********************************************************/
-{
-    unsigned    offset;
-
-    _AccessTDList();
-    offset = __ThreadDataSize;
-    __ThreadDataSize += size;
-#if !defined(__UNIX__) && !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__)
-    __ResizeThreadDataList();
-#endif
-    _ReleaseTDList();
-    return( offset );
-}
-
+// Semaphore related functions
+extern long     OpenLocalSemaphore( long );
+extern int      CloseLocalSemaphore( long );
+extern long     ExamineLocalSemaphore( long );
+extern int      SignalLocalSemaphore( long );
+extern int      WaitOnLocalSemaphore( long );
+//#endif

@@ -47,14 +47,13 @@
 
 #elif defined( __NETWARE__ )
 
+  #include "nw_clib.h"
+
   #define       _FSEM           long
   #define       _FTID           int
 
   #define       _FRequestMutexSem( sem, x )     WaitOnLocalSemaphore( sem )
   #define       _FReleaseMutexSem               SignalLocalSemaphore
-
-  extern int    WaitOnLocalSemaphore( long );
-  extern int    SignalLocalSemaphore( long );
 
 #elif defined( __NT__ )
 

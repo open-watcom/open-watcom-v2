@@ -55,7 +55,7 @@
     #elif defined(__QNX__)
     #elif defined(__WARP__)
     #elif defined(__LINUX__)
-        if( __InitThreadProcessing() == 0 )
+        if( __InitThreadProcessing() == NULL )
             return;
     #elif defined(__RDOS__)
         if( !__RdosThreadInit() )

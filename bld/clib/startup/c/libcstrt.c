@@ -44,12 +44,13 @@
 #include "fileacc.h"
 #include "initfini.h"
 #include "thread.h"
-#include "trdlist.h"
 #include "nw_libc.h"
+#include "nw_lib.h"
 #include "snglthrd.h"
 #include "mthread.h"
 #include "trdlstac.h"
 #include "wprelude.h"
+#include "trdlist.h"
 
 
 /*****************************************************************************

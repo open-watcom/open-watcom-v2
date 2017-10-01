@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,80 +32,23 @@
 #ifndef _NW_LIBC_MTHREAD_H
 #define _NW_LIBC_MTHREAD_H
 
-typedef int             NXThreadId_t;
-typedef int             NXKey_t;
-typedef struct NXSema_t NXSema_t;
-typedef void *          NXContext_t;
+#ifndef BOOL
+# define _BOOL
+#define BOOL unsigned int
+#endif
 
-unsigned long __GetSystemWideUniqueTID(
-    void
-    );
+#ifndef DWORD
+# define _DWORD
+#define DWORD   unsigned int
+#endif
 
-extern NXKey_t                __NXSlotID;
-#define GetCurrentThreadId()  __GetSystemWideUniqueTID()
-#define TID                   unsigned long 
-extern void                   __LibCThreadFini(void);
+#ifndef FALSE
+# define FALSE (0)
+#endif
 
-/* Key-value pairs (per-context data)... */
-extern int NXKeyCreate(
-    void        (*destructor)(void *), 
-    void *      value, 
-    NXKey_t *   key
-    );
-
-extern int NXKeyDelete(
-    NXKey_t     key
-    );
-
-extern int NXKeyGetValue(
-    NXKey_t     key, 
-    void **     value
-    );
-
-extern int NXKeySetValue(
-    NXKey_t     key, 
-    void *      value
-    );
-
-extern NXThreadId_t     NXThreadGetId(
-    void
-    );
-
-extern void             NXThreadYield(
-    void
-    );
-
-extern NXSema_t *       NXSemaAlloc(
-                            unsigned int    count, 
-                            void *          arg
-                            );
-extern void             NXSemaFree(
-                            NXSema_t *      sema
-                            );
-extern void             NXSemaPost(
-                            NXSema_t *      sema
-                            );
-extern void             NXSemaWait(
-                            NXSema_t *      sema
-                            );
-
-extern NXContext_t      NXContextAlloc(
-                            void            (*start_routine)(void *arg), 
-                            void *          arg,
-                            int             priority, 
-                            size_t          stackSize, 
-                            unsigned long   flags, 
-
-                            int *           error);
-int                     NXThreadCreate(
-                            NXContext_t     ctx, 
-                            unsigned long   flags,
-                            NXThreadId_t *  idp
-                            );
-
-void                    NXThreadExit(
-                            void *          status
-                            );
+#ifndef TRUE
+# define TRUE (1)
+#endif
 
 /*
 //  NKS data / functionality
@@ -133,32 +76,40 @@ void                    NXThreadExit(
 #define NX_THR_UNBOUND        0xFFFFFFFF
 
 /* return from NXThreadGetId indicating no-context or other error */
-#define NX_INVALID_THREAD_ID  ((NXThreadId_t) 0xFFFFFFFF)
+#define NX_INVALID_THREAD_ID  ((NXThreadId_t)0xFFFFFFFF)
 
 #define __SYS_ALLOCD_STACK    0
 
-#define GetLastError()      (*___errno())
-void    SetLastError(int error);
+typedef int             NXKey_t;
 
-#ifndef BOOL
-# define _BOOL
-#define BOOL unsigned int
-#endif
+extern NXKey_t          __NXSlotID;
 
-#ifndef DWORD
-# define _DWORD
-#define DWORD	unsigned int
-#endif
+/* Key-value pairs (per-context data)... */
+extern int              NXKeyCreate( void (*destructor)(void *), void *value, NXKey_t *key );
+extern int              NXKeyDelete( NXKey_t key );
+extern int              NXKeyGetValue( NXKey_t key, void **value );
+extern int              NXKeySetValue( NXKey_t key, void *value );
 
-#ifndef FALSE
-# define FALSE (0)
-#endif
+typedef void            *NXContext_t;
+typedef int             NXThreadId_t;
 
-#ifndef TRUE
-# define TRUE (1)
-#endif
+extern NXContext_t      NXContextAlloc( void (*start_routine)(void *arg), void *arg, int priority, size_t stackSize, unsigned long flags, int *error );
+int                     NXThreadCreate( NXContext_t ctx, unsigned long flags, NXThreadId_t *idp );
+extern NXThreadId_t     NXThreadGetId( void );
+extern void             NXThreadYield( void );
+void                    NXThreadExit( void *status );
 
-extern unsigned long __GetSystemWideUniqueTID(void);
+typedef struct NXSema_t NXSema_t;
 
+extern NXSema_t         *NXSemaAlloc( unsigned int count, void *arg );
+extern void             NXSemaFree( NXSema_t *sema );
+extern void             NXSemaPost( NXSema_t *sema );
+extern void             NXSemaWait( NXSema_t *sema );
+
+#define GetLastError()  (*___errno())
+extern void             SetLastError( int error );
+
+extern unsigned long    __GetSystemWideUniqueTID( void );
+extern void             __LibCThreadFini(void);
 
 #endif  /* _NW_LIBC_MTHREAD_H */

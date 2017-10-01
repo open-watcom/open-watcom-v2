@@ -51,6 +51,7 @@
 #include "trdlstac.h"
 #include "wprelude.h"
 #include "getds.h"
+#include "nw_clib.h"
 
 
 #define MAX_CMDLINE     500
@@ -69,7 +70,6 @@
 
 extern int                  main( int argc, char **argv );
 
-extern void                 ExitThread( int,int );
 extern void                 __Must_Have_Three_One_Or_Greater( void );
 extern int                  _TerminateNLM( void *, void *, int );
 extern int                  _SetupArgv( int (*)( int, char ** ) );
@@ -237,12 +237,9 @@ int __init_environment(void *  reserved)
         "OpenWATCOM CLIB Memory",
         AllocSignature );
 
-    if( __InitThreadProcessing() == NULL )
-    {
+    if( __InitThreadProcessing() == NULL ) {
         retcode = -1;
-    }
-    else
-    {
+    } else {
         __InitRtns( INIT_PRIORITY_THREAD );
         InitFiniLevel = INIT_PRIORITY_THREAD;
         __InitMultipleThread();

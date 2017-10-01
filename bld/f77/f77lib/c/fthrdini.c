@@ -36,6 +36,8 @@
   #include <wos2.h>
 #elif defined( __NT__ )
   #include <windows.h>
+#elif defined( __NETWARE__ )
+  #include "nw_clib.h"
 #endif
 #include "fthread.h"
 #include "ftextfun.h"
@@ -51,8 +53,6 @@ ULONG                   __fio_sem;
 #elif defined( __NETWARE__ )
 
 long                    __fio_sem;
-extern long             OpenLocalSemaphore( long );
-extern int              CloseLocalSemaphore( long );
 
 #elif defined( __NT__ )
 

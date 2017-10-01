@@ -40,10 +40,12 @@
 #include "stacklow.h"
 #include "exitwmsg.h"
 #include "thread.h"
-#include "trdlist.h"
 #include "mthread.h"
 #include "cthread.h"
 #include "snglthrd.h"
+#include "nw_libc.h"
+#include "nw_lib.h"
+#include "trdlist.h"
 
 #if !defined( _NETWARE_LIBC )
 #error This file is for the NetWare LibC based library only

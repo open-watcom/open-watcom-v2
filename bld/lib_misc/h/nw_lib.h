@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,49 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Fatal runtime error handler for NetWare.
+* Description:  NetWare CRTL common definitions
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <string.h>
-#include <io.h>
-#include "exitwmsg.h"
-#if defined (_NETWARE_CLIB)
-    #include "nw_clib.h"
-#elif defined (_NETWARE_LIBC)
-    #include "nw_libc.h"
-#endif
-
-
-_WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
-{
-    char    newline[2];
-
-    write( STDOUT_FILENO, msg, strlen( msg ) );
-    newline[0] = '\r';
-    newline[1] = '\n';
-    write( STDOUT_FILENO, &newline, 2 );
-#if defined (_NETWARE_CLIB)
-    ExitThread( 0, retcode );
-    // never return
-#else
-    NXThreadExit(&retcode);
-    // never return
-#endif
-}
-
-_WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
-{
-    if( __EnterWVIDEO( msg ) )
-#if defined (_NETWARE_CLIB)
-        ExitThread( 0, retcode );
-        // never return
-#else
-        NXThreadExit( &retcode );
-        // never return
-#endif
-    __exit_with_msg( msg, retcode );
-    // never return
-}
+extern void         *GetThreadID( void );

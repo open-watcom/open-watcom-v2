@@ -4,7 +4,7 @@ include_watcom = -I"$(watcom_dir)/h"
 # include_c_(system)
 !ifndef runtime_library_source
 include_c_msdos    = -I"$(hdr_dir)/dos"
-include_c_netware  = -I"$(hdr_dir)/dos"
+include_c_netware  = -I"$(hdr_dir)/dos" -I"$(lib_misc_dir)/h"
 include_c_os2_286  = -I"$(os2api_dir)/os2286/h"
 include_c_os2_386  = -I"$(os2api_dir)/os2386/h"
 include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"
@@ -15,7 +15,7 @@ include_c_windows  = -I"$(w16api_dir)/wini86" -I"$(hdr_dir)/dos"
 include_c_winnt    = -I"$(w32api_dir)/nt" -I"$(hdr_dir)/dos"
 !else
 include_c_msdos    = -I"$(%WATCOM)/h"
-include_c_netware  = -I"$(%WATCOM)/h"
+include_c_netware  = -I"$(%WATCOM)/h" -I"$(lib_misc_dir)/h"
 include_c_os2_286  = $(inc_dirs_sys_os2_i86)
 include_c_os2_386  = $(inc_dirs_sys_os2_386)
 include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"

@@ -38,10 +38,9 @@
  #if defined( _NETWARE_CLIB )
   #define TID                   int
   #define GetCurrentThreadId()  (*__threadid())
-  extern void                   ThreadSwitch( void );
-  extern void                   *GetThreadID( void );
- #elif defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
+ #elif defined( _NETWARE_LIBC )
+  #define TID                   unsigned long
+  #define GetCurrentThreadId()  __GetSystemWideUniqueTID()
  #endif
 #elif defined( __NT__ )
   extern DWORD                  __TlsIndex;
@@ -82,7 +81,11 @@
   #endif
 #endif
 
-#if !defined( __QNX__ ) && !defined(__RDOSDEV__)
+#if defined(_NETWARE_LIBC)
+void __RemoveAllThreadData( void );
+#endif
+
+#if !defined( __QNX__ ) && !defined(__RDOSDEV__) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
 
 // lookup thread data
@@ -93,10 +96,6 @@ int __AddThreadData( TID, thread_data * );
 
 // remove from list of thread data
 void __RemoveThreadData( TID );
-
-#if defined (_NETWARE_LIBC)
-void __RemoveAllThreadData( void );
-#endif
 
 // mark each entry in list of thread data for resize
 void __ResizeThreadDataList( void );
