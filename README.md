@@ -5,6 +5,15 @@ Open Watcom v2 Fork
 This document gives a quick description of the source tree layout. For more
 information about the project and build instructions see the GitHub wiki.
 
+Download
+------------------
+Snapshot builds from the official OW perforce repository, includes installers:
+https://efbe.musca.uberspace.de/
+
+Snapshot builds from this fork of OW (no installers):
+https://github.com/open-watcom/travis-ci-ow-builds/archive/master.zip
+https://github.com/open-watcom/travis-ci-ow-builds
+
 Source Tree Layout
 ------------------
 
