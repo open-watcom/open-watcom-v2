@@ -2305,7 +2305,7 @@ static bool genVFPtrInits( SCOPE scope, SYMBOL ctor )
 }
 
 
-static void testExtraParm(      // EMIT TEST OF EXTRA PARAMETER
+static void CgTestExtraParm(    // EMIT TEST OF EXTRA PARAMETER
     unsigned mask,              // - mask
     bool branch_on )            // - true ==> branch if on
 {
@@ -2377,7 +2377,7 @@ void CtorPrologue(              // GENERATE PROLOGUE FOR CTOR
     (*push_scope)();
     if( ScopeHasVirtualBases( scope ) ) {
         CgFrontCode( IC_CTOR_COMP_BEG );
-        testExtraParm( CTOR_COMPONENT, true );
+        CgTestExtraParm( CTOR_COMPONENT, true );
         genVBPtrInits( scope );
         ScopeWalkVirtualBases( scope, ctorPrologueBaseGen, &data );
         CgFrontCode( IC_CDARG_LABEL );
@@ -2423,7 +2423,7 @@ static void genDeleteVector(
         class_type = SymClass( dtor );
         if( ! TypeAbstract( class_type ) ) {
             CgFrontCode( IC_DTOR_DAR_BEG );
-            testExtraParm( DTOR_DELETE_VECTOR, false );
+            CgTestExtraParm( DTOR_DELETE_VECTOR, false );
             stmt = NodeUnary( CO_DELETE_ARRAY, NodeThis() );
             stmt->flags |= PTF_MEMORY_EXACT;
             stmt = AnalyseDelete( stmt, true );
@@ -2539,7 +2539,7 @@ static void genDeleteThis( SYMBOL dtor )
 
     if( ! TypeAbstract( SymClass( dtor ) ) && SymIsVirtual( dtor ) ) {
         CgFrontCode( IC_DTOR_DLT_BEG );
-        testExtraParm( DTOR_DELETE_THIS, false );
+        CgTestExtraParm( DTOR_DELETE_THIS, false );
         stmt = NodeUnary( CO_DELETE, NodeThis() );
         stmt->flags |= PTF_MEMORY_EXACT;
         stmt = AnalyseDelete( stmt, true );
