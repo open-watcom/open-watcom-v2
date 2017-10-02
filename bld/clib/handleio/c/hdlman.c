@@ -39,14 +39,14 @@
 #endif
 #include <unistd.h>
 #if defined(__OS2__)
- #define INCL_DOSFILEMGR
- #include <wos2.h>
+    #define INCL_DOSFILEMGR
+    #include <wos2.h>
 #elif defined(__WINDOWS__) || defined(__NT__)
- #include <windows.h>
+    #include <windows.h>
 #elif defined(__UNIX__) && !defined(__QNX__)
- #include <sys/resource.h>
+    #include <sys/resource.h>
 #elif defined(__DOS__)
- #include "tinyio.h"
+    #include "tinyio.h"
 #endif
 #include "rtdata.h"
 #include "rterrno.h"

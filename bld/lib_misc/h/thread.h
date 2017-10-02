@@ -104,8 +104,10 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
+#ifdef __SW_BM
+  #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
     __EXCEPTION_RECORD          *xcpt_handler;
+  #endif
 #endif
 #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __NETWARE__ )
     sigtab                      signal_table[__SIGLAST + 1];
@@ -170,4 +172,4 @@ _WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
 #pragma pack(__pop);
 #endif
 
-#endif
+#endif  /* _THREAD_H_INCLUDED */

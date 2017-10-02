@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ struct free_area                // FREE_AREA -- freed area in exception area
 {
     FREE_AREA *next;            // - next free block -- MUST BE FIRST FIELD
     std::size_t size;           // - size of free area
-#if 0   // removed since it is never used (AFS 12-19-97)
+#if 0   // removed since it is never used
 #ifdef __SW_BM
     __lock _semaphore;          // - semaphore for area
 #endif
@@ -89,9 +90,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
         fr->size = __EXC_AREA.size - sizeof( EXC_AREA );
         __EXC_AREA.freed = fr;
 #ifndef NDEBUG
-        std::memset( (char*)fr + sizeof(FREE_AREA)
-              , 0xEF
-              , fr->size - sizeof(FREE_AREA) );
+        std::memset( (char*)fr + sizeof(FREE_AREA), 0xEF, fr->size - sizeof(FREE_AREA) );
 #endif
     }
     sig = CPPLIB( ts_refed )( throw_ro->cnvs[0].signature );
@@ -188,9 +187,7 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
     done = (FREE_AREA*)( (char *)active - sizeof( std::size_t ) );
     done->size = *(std::size_t *)done;
 #ifndef NDEBUG
-    std::memset( (char*)done + sizeof(FREE_AREA)
-          , 0xEF
-          , done->size - sizeof(FREE_AREA) );
+    std::memset( (char*)done + sizeof(FREE_AREA), 0xEF, done->size - sizeof(FREE_AREA) );
 #endif
     for( owner = &exc_area->freed; ; owner = &fr->next ) {
         fr = *owner;

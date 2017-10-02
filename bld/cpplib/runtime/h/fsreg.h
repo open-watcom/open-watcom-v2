@@ -59,6 +59,8 @@ struct DISPATCH_EXC;
 union  RW_DTREG;
 struct FsExcRec;
 
+#if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
+
 #if defined( __NT__ ) && defined( __USE_FS )
 
   #ifdef __cplusplus
@@ -266,11 +268,11 @@ struct FsExcRec;
 struct FsExcRec {               // Exception record
     uint_32       code;         // - exception code
     uint_32       flags;        // - exception flags
-    FsExcRec*     rec;          // - stacked exception record
+    FsExcRec      *rec;         // - stacked exception record
     uint_32       addr;         // - exception address
     uint_32       parm_count;   // - # parameters
-    void*         object;       // - thrown object
-    DISPATCH_EXC* dispatch;     // - dispatching control
+    void          *object;      // - thrown object
+    DISPATCH_EXC  *dispatch;    // - dispatching control
 };
 
 #define EXC_TYPE_UNWINDING      ( EXC_TYPE_UNWIND_NORMAL | EXC_TYPE_UNWIND_EXIT )
@@ -331,5 +333,6 @@ FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
 #endif
 
 
-
 #endif
+
+#endif  /* __FSREG_H__ */

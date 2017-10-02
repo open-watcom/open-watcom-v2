@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +130,7 @@ static void __cloned_lnx_start_fn( void *thrvoiddata )
     __LinuxAddThread(NULL);
 
     thrdata = (struct __lnx_thread *)thrvoiddata;
-    thrdata->start_addr( thrdata->args );
+    (*thrdata->start_addr)( thrdata->args );
     free( thrvoiddata );
 
     _sys_exit( 0 );

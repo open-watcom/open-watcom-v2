@@ -51,6 +51,10 @@
 #include "rtexcpt.h"
 
 
+#ifndef __SW_BM
+__EXCEPTION_RECORD  *__XCPTHANDLER;
+#endif
+
 unsigned        char    __ExceptionHandled;
 
 #define XCPT_FPE        -1      /* trap all floating-point exceptions */
@@ -98,8 +102,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
     int                 sig;
     int                 fpe;
     unsigned char       *ip;
-    unsigned short      tw;
-    status_word         sw;
+    unsigned short      fp_tw;
+    status_word         fp_sw;
 
     registration = registration;
     unknown = unknown;
@@ -138,9 +142,9 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                 if( !(ip[0] & 0x01) ) {
                     if( (ip[1] & 0x30) == 0x30 ) {
                         // it's a "fdiv" or "fidiv" instruction
-                        tw = context->ctx_env[2] & 0x0000ffff;
-                        sw.sw = context->ctx_env[1] & 0x0000ffff;
-                        if( ((tw >> (sw.b.st << 1)) & 0x01) == 0x01 ) {
+                        fp_tw = context->ctx_env[2] & 0x0000ffff;
+                        fp_sw.sw = context->ctx_env[1] & 0x0000ffff;
+                        if( ((fp_tw >> (fp_sw.b.st << 1)) & 0x01) == 0x01 ) {
                             fpe = FPE_ZERODIVIDE;
                         }
                     }

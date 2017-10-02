@@ -39,6 +39,7 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 _WCRTLINK int _commit( int handle )
 {
     unsigned    iomode_flags;

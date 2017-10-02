@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +42,12 @@ void CPPLIB( raise_exception )  // RAISE EXCEPTION
     THREAD_CTL *thr;            // - thread control
     thr = PgmThread();
     for( rw = thr->registered; ; rw = rw->base.prev ) {
-        auto FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
+        FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
         handler = rw->base.handler;
         unsigned retn = (*handler)( excrec, rw, NULL, 0 );
-        if( retn != EXC_HAND_CONTINUE ) break;
+        if( retn != EXC_HAND_CONTINUE ) {
+            break;
+        }
     }
 }
 
@@ -60,10 +63,12 @@ void CPPLIB( unwind_global )    // GLOBAL UNWIND
     thr = PgmThread();
     excrec->flags |= EXC_TYPE_UNWIND_NORMAL;
     for( rw = thr->registered; rw != bound; rw = rw->base.prev ) {
-        auto FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
+        FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
         handler = rw->base.handler;
         unsigned retn = (*handler)( excrec, rw, NULL, 0 );
-        if( retn != EXC_HAND_CONTINUE ) break;
+        if( retn != EXC_HAND_CONTINUE ) {
+            break;
+        }
     }
     excrec->flags &= ~EXC_TYPE_UNWIND_NORMAL;
 }

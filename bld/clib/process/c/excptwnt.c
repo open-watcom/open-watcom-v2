@@ -60,6 +60,10 @@ int         (*__raise_func)( int )              = NULL;
 unsigned char   __ExceptionHandled;
 unsigned char   __ReportInvoked;
 
+#ifndef __SW_BM
+__EXCEPTION_RECORD  *__XCPTHANDLER;
+#endif
+
 static int _my_GetActiveWindow( void ) {
     HANDLE hdl;
     typedef HWND (__stdcall *gaw_type)( void );
@@ -326,8 +330,8 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
     int          fpe;
 #if defined( _M_IX86 )
     char        *eip;
-    status_word  sw;
-    DWORD        tw;
+    status_word  fp_sw;
+    DWORD        fp_tw;
 #endif
     EXCEPTION_POINTERS rec;
     LONG         rv;
@@ -400,10 +404,10 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
             }
             if( !( eip[0] & 0x01 ) ) {
                 if(( eip[1] & 0x30 ) == 0x30 ) {        // "fdiv" or "fidiv"
-                    tw    = context->FloatSave.TagWord & 0x0000ffff;
-                    sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
+                    fp_tw    = context->FloatSave.TagWord & 0x0000ffff;
+                    fp_sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
 
-                    if((( tw >> (sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
+                    if((( fp_tw >> (fp_sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
                         fpe = FPE_ZERODIVIDE;
                     }
                 }

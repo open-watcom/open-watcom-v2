@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -697,9 +698,8 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
     dumpDtorList( "\nStatic Initialization List:", _RWD_ModuleInit );
 #else
     printf( "\nStatic Initialization List:\n" );
-    RW_DTREG* list             // - list to be dumped
-        = _RWD_ModuleInit;
-    for( ; list != (void*)-1L; list = list->init_ls_st.base.prev ) {
+    // - list to be dumped
+    for( RW_DTREG *list = _RWD_ModuleInit; list != (void*)-1L; list = list->init_ls_st.base.prev ) {
         dumpRwRoBlk( list, list->base.ro );
     }
 #endif
