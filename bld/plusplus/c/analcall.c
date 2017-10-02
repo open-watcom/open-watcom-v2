@@ -1120,18 +1120,16 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         PTREE cdtor;            // - CDTOR node
         PTREE callnode;         // - call node
         PTREE retnnode;         // - return node (for struct return)
+
         callnode = expr;
-        if( this_node == NULL ) {
-            cdtor = NULL;
-        } else {
+        cdtor = NULL;
+        if( this_node != NULL ) {
             this_node = NodeArg( this_node );
             if( virtual_call ) {
                 this_node->flags |= PTF_ARG_THIS_VFUN;
             }
             if( sym != NULL && SymIsDtor( sym ) ) {
-                cdtor = NodeArg( NodeCDtorArg( DTOR_NULL ) );
-            } else {
-                cdtor = NULL;
+                cdtor = MakeNodeCDtorArg( DTOR_NULL );
             }
         }
         ftype = type;
@@ -1205,7 +1203,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     TYPE class_type,            // - class to be destructed
     PTREE this_node,            // - expression for address of class
-    target_offset_t extra )     // - constant for extra second parm
+    int dtor_parm_code )        // - constant for extra second parm
 {
     SEARCH_RESULT *result;      // - search results
     SYMBOL dtor_sym;            // - DTOR symbol
@@ -1233,7 +1231,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
                           , expr
                           , NULL
                           , this_node
-                          , NodeArg( NodeCDtorArg( extra ) )
+                          , MakeNodeCDtorArg( dtor_parm_code )
                           , NULL );
     if( virtual_call ) {
         expr->u.subtree[0] = VfnDecorateCall( expr->u.subtree[0], dtor_sym );

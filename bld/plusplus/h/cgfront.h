@@ -241,7 +241,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     TYPE class_type,            // - class to be destructed
     PTREE this_node,            // - expression for address of class
-    target_offset_t extra )     // - constant for extra second parm
+    int dtor_parm_code )        // - constant for extra second parm
 ;
 PTREE AnalyseInitExpr(          // ANALYZE AN INITIALIZATION EXPRESSION
     PTREE expr,                 // - expresion
@@ -948,8 +948,8 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
 bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
     PTREE node )                // - a call node
 ;
-PTREE NodeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
-    target_offset_t code )      // - the code
+PTREE MakeNodeCDtorArg(         // BUILD SINGLE CONSTANT ARGUMENT NODE FOR CDTOR EXTRA ARG
+    int cdtor_parm_code )       // - the code
 ;
 PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     void )
