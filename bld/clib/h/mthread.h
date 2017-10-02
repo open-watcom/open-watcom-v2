@@ -54,8 +54,14 @@
     extern int          __NTAddThread( thread_data * );
     extern void         __NTRemoveThread( int );
     extern void         (*_ThreadExitRtn)( void );
+  #elif defined( _NETWARE_CLIB )
+    extern void         **__ThreadIDs;
   #elif defined( _NETWARE_LIBC )
-    #include "nw_libc.h"
+    extern NXKey_t      __NXSlotID;
+    extern unsigned long __GetSystemWideUniqueTID( void );
+    extern int          __CreateFirstThreadData( void );
+    extern int          __RegisterFirstThreadData( thread_data *tdata );
+    extern int          __IsFirstThreadData( thread_data *tdata );
     extern int          __LibCThreadInit( void );
     extern void         __LibCThreadFini( void );
     extern int          __LibCAddThread( thread_data * );

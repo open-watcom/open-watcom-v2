@@ -38,11 +38,15 @@
 #else
     #include <stdlib.h>
 #endif
+#ifdef __NETWARE__
+    #include "nwlibmem.h"
+#endif
+
 
 #ifdef __NETWARE__
 
     /*
-    //  NetWare uses Alloc and Free because the heap will not have 
+    //  NetWare uses Alloc and Free because the heap will not have
     //  been initialised at _Prelude time...
     */
 
@@ -55,14 +59,6 @@
   #endif
     #define lib_calloc( x, y )      _NW_calloc( x, y )
 
-    extern void *_NW_calloc( size_t __n,size_t __size );
-    extern void *_NW_malloc( size_t );
-  #if defined (_NETWARE_CLIB)
-    extern void *_NW_realloc( void *ptr,size_t size,size_t old);
-  #else
-    extern void *_NW_realloc( void *ptr,size_t size);
-  #endif
-    extern void _NW_free( void *ptr );
 #elif defined(__RDOSDEV__)
     #define lib_malloc( x ) malloc( x )
     #define lib_free( x ) free( x )

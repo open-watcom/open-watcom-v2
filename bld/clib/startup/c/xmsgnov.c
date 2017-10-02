@@ -32,12 +32,8 @@
 #include "variety.h"
 #include <string.h>
 #include <io.h>
+#include "nw_lib.h"
 #include "exitwmsg.h"
-#if defined (_NETWARE_CLIB)
-    #include "nw_clib.h"
-#elif defined (_NETWARE_LIBC)
-    #include "nw_libc.h"
-#endif
 
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )

@@ -33,6 +33,8 @@
 #include "variety.h"
 #if defined( __OS2__ )
     #include <wos2.h>
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
 #endif
 #include "rtinit.h"
 #include "rtdata.h"
@@ -41,28 +43,28 @@
 
 
 #if defined(__OS2_286__) || defined(__NETWARE__)
-    #ifdef __SW_BM
+  #ifdef __SW_BM
         int __imthread;
-    #endif
+  #endif
 #else
     static void __imthread_fn( void ) {
-    #if defined(__NT__)
+  #if defined(__NT__)
         if( !__NTThreadInit() )
             return;
-    #elif defined(_NETWARE_LIB)
+  #elif defined(_NETWARE_LIB)
         if( !__LibCThreadInit() )
             return;
-    #elif defined(__QNX__)
-    #elif defined(__WARP__)
-    #elif defined(__LINUX__)
+  #elif defined(__QNX__)
+  #elif defined(__WARP__)
+  #elif defined(__LINUX__)
         if( __InitThreadProcessing() == NULL )
             return;
-    #elif defined(__RDOS__)
+  #elif defined(__RDOS__)
         if( !__RdosThreadInit() )
             return;
-    #endif
+  #endif
 
-    __InitMultipleThread();
+        __InitMultipleThread();
     }
 
     _WCRTDATA XI( __imthread, __imthread_fn, INIT_PRIORITY_RUNTIME + 1 )

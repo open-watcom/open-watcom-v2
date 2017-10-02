@@ -37,7 +37,7 @@
 
 
 
-_WCRTLINK extern int _NEARFAR(_mbsbtype,_fmbsbtype)( const unsigned char _FFAR *string, int nbyte )
+_WCRTLINK int _NEARFAR(_mbsbtype,_fmbsbtype)( const unsigned char _FFAR *string, int nbyte )
 {
     int                 ctype = _MBC_ILLEGAL;
 

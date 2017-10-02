@@ -43,7 +43,8 @@ extern  unsigned short  _SS( void );
 #pragma aux     _ES = 0x8C 0xC0 /* mov ax,es */ value [ax];
 #pragma aux     _SS = 0x8C 0xD0 /* mov ax,ss */ value [ax];
 #if defined(__386__)
-extern  unsigned short  _FS( void ), _GS( void );
+extern  unsigned short  _FS( void );
+extern  unsigned short  _GS( void );
 #pragma aux     _FS = 0x8C 0xE0 /* mov ax,fs */ value [ax];
 #pragma aux     _GS = 0x8C 0xE8 /* mov ax,gs */ value [ax];
 #endif

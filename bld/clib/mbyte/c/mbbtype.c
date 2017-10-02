@@ -38,7 +38,7 @@
 
 
 
-_WCRTLINK extern int _mbbtype( unsigned char c, int type )
+_WCRTLINK int _mbbtype( unsigned char c, int type )
 {
     if( __IsDBCS ) {
         if( __MBCodePage == 932 ) {

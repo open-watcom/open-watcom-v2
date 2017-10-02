@@ -57,11 +57,6 @@
     #include <rdos.h>
     #include <rdosdev.h>
 #elif defined( __NETWARE__ )
-  #if defined (_NETWARE_CLIB)
-    #include "nw_clib.h"
-  #else
-    #include "nw_libc.h"
-  #endif
     #include "nw_lib.h"
 #endif
 #include "rterrno.h"

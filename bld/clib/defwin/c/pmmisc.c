@@ -42,13 +42,13 @@
 
 
 extern HWND _GetWinMenuHandle( void );
+extern int  DoStdIO;
 
 int _MessageLoop( BOOL doexit )
 //=============================
 {
     QMSG        msg;
     int         rc;
-    extern int  DoStdIO;
 
     rc = 1;
     while( WinPeekMsg( _AnchorBlock, &msg, NULLHANDLE, 0, 0, PM_NOREMOVE ) ) {

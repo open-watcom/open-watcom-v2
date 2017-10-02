@@ -35,15 +35,15 @@
 #include <string.h>
 #include <malloc.h>
 #include <i86.h>
+#include "nw_lib.h"
 #include "rtstack.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "cthread.h"
+#include "mthread.h"
 #include "snglthrd.h"
 #include "maxthrds.h"
-#include "nw_clib.h"
-#include "nw_lib.h"
 
 #define EXIT_THREAD     0
 

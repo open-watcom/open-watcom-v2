@@ -32,7 +32,9 @@
 
 #include "variety.h"
 #include <time.h>
-#ifndef __NETWARE__
+#ifdef __NETWARE__
+ #include "nw_lib.h"
+#else
  #include <dos.h>
  #include <dosfunc.h>
  #include "tinyio.h"
@@ -42,8 +44,6 @@
 #ifdef __NETWARE__
 
 #define BUFF_SIZE       8
-
-extern void             GetFileServerDateAndTime( void * );
 
 int __getctime( struct tm *ti )
 {

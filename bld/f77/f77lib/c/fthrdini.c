@@ -37,7 +37,7 @@
 #elif defined( __NT__ )
   #include <windows.h>
 #elif defined( __NETWARE__ )
-  #include "nw_clib.h"
+  #include "nw_lib.h"
 #endif
 #include "fthread.h"
 #include "ftextfun.h"

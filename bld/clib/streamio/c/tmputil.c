@@ -37,12 +37,7 @@
 #include <string.h>
 #include <process.h>
 #if defined( __NETWARE__ )
- #if defined( _NETWARE_CLIB )
-  #include "nw_clib.h"
- #elif defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
- #endif
-  #include "nw_lib.h"
+    #include "nw_lib.h"
 #endif
 #include "rtdata.h"
 #include "tmpfname.h"

@@ -40,6 +40,8 @@
 #include "rtdata.h"
 
 
+extern void __sigstub();
+
 /*
  * This table is fished into by the kernel so do not change its
  * size or layout.
@@ -89,7 +91,6 @@ int sig;
 register const struct sigaction *act;
 register struct sigaction *oact;
 {
-    extern void __sigstub();
     static int  first = 1;
     union {
         struct _proc_signal         s;

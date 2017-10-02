@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,23 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  NetWare CLib common definitions
+* Description:  C run-time library Netware memory allocation/deallocation routines.
 *
 ****************************************************************************/
 
 
-//#if defined( _NETWARE_CLIB )
-extern void     **__ThreadIDs;
+#ifdef __NETWARE__
 
-// Thread related functions
-extern void     ExitThread( int , int );
-extern int      BeginThread( void (*)( void * ), void *, unsigned, void * );
-extern void     ThreadSwitch( void );
+extern void *_NW_calloc( size_t __n, size_t __size );
+extern void *_NW_malloc( size_t );
+extern void _NW_free( void *ptr );
 
-// Semaphore related functions
-extern long     OpenLocalSemaphore( long );
-extern int      CloseLocalSemaphore( long );
-extern long     ExamineLocalSemaphore( long );
-extern int      SignalLocalSemaphore( long );
-extern int      WaitOnLocalSemaphore( long );
-//#endif
+#if defined(_NETWARE_CLIB)
+extern void *_NW_realloc( void *ptr, size_t size, size_t old );
+#elif defined(_NETWARE_LIBC)
+extern void *_NW_realloc( void *ptr, size_t size );
+#endif
+
+#endif

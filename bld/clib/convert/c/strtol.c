@@ -42,6 +42,8 @@
 #include <limits.h>
 #if defined( __OS2__ )
     #include <wos2.h>
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
 #endif
 #include "bool.h"
 #include "rtdata.h"

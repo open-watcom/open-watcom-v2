@@ -59,6 +59,8 @@
     #include <windows.h>
   #elif defined(__OS2__)
     #include <wos2.h>
+  #elif defined(__NETWARE__)
+    #include "nw_lib.h"
   #endif
 #endif
 #include "rterrno.h"
@@ -84,10 +86,6 @@
 
 #if !defined( __NT__ ) && !defined( __NETWARE__ ) && !defined( __UNIX__ )
 #pragma on (check_stack);
-#endif
-
-#ifdef __NETWARE__
-extern char *ConvertNameToFullPath( const char *, char * );
 #endif
 
 #if defined(__QNX__)

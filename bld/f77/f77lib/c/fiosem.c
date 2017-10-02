@@ -47,7 +47,7 @@
 
 #elif defined( __NETWARE__ )
 
-  #include "nw_clib.h"
+  #include "nw_lib.h"
 
   #define       _FSEM           long
   #define       _FTID           int
