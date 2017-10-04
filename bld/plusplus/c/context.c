@@ -161,6 +161,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
     case CTX_INIT :
     case CTX_FINI :
     case CTX_CMDLN_VALID :
+    case CTX_PREINCL :
     case CTX_FORCED_INCS :
     case CTX_SOURCE :
     case CTX_CG_OPT :
@@ -198,9 +199,11 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
         buf = stxpcpy( buf, ": " );
         buf = stxpcpy( buf, CtxGetSwitchAddr() );
         break;
+      case CTX_PREINCL :
       case CTX_FORCED_INCS :
       case CTX_SOURCE :
-        if( location.src_file == NULL ) break;
+        if( location.src_file == NULL )
+            break;
         buf = stxpcpy( buf, ": " );
         buf = stxpcpy( buf, SrcFileName( location.src_file ) );
         buf = stxpcpy( buf, "(" );

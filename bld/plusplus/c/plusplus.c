@@ -228,7 +228,6 @@ static int makeExitStatus( int exit_status )
 
 static void openForceIncludeFile( void )
 {
-    CtxSetCurrContext( CTX_FORCED_INCS );
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
@@ -252,7 +251,6 @@ static bool openForcePreIncludeFile( void )
 {
     bool    ok;
 
-    CtxSetCurrContext( CTX_FORCED_INCS );
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
@@ -324,6 +322,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ExitPointAcquire( cpp_preproc_only );
                 CompFlags.cpp_output = false;
                 if( ForcePreInclude != NULL ) {
+                    CtxSetCurrContext( CTX_FORCED_PREINCL );
                     if( openForcePreIncludeFile() ) {
                         PpParse();
                         SrcFileClose( true );
@@ -332,6 +331,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.cpp_output = true;
                 if( ForceInclude != NULL ) {
                     EmitLine( 1, WholeFName );
+                    CtxSetCurrContext( CTX_FORCED_INCS );
                     openForceIncludeFile();
                     PpParse();
                     SrcFileClose( true );
@@ -348,6 +348,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CgFrontModInitInit();       // must be before pchdr read point
                 CompFlags.watch_for_pcheader = false;
                 if( ForcePreInclude != NULL ) {
+                    CtxSetCurrContext( CTX_FORCED_PREINCL );
                     openForcePreIncludeFile();
                 }
                 if( CompFlags.use_pcheaders ) {
@@ -357,6 +358,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     CompFlags.watch_for_pcheader = true;
                 }
                 if( ForceInclude != NULL ) {
+                    CtxSetCurrContext( CTX_FORCED_INCS );
                     openForceIncludeFile();
                     DbgVerify( !CompFlags.watch_for_pcheader,
                         "force include file wasn't used for PCH" );

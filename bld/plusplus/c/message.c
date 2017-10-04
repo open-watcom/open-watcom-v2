@@ -305,6 +305,7 @@ static void setMsgLocation      // SET LOCATION FOR MESSAGE
             break;
         }
         // drops thru
+      case CTX_PREINCL :
       case CTX_FORCED_INCS :
       case CTX_SOURCE :
         if( err_locn.src_file == NULL ) {
@@ -368,6 +369,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
                     fmt_inf_hdr_sym( inf_prefix, (SYMBOL)inf );
                 }
                 break;
+              case CTX_PREINCL :
               case CTX_FORCED_INCS :
               case CTX_SOURCE :
                 build_file_nesting();
@@ -391,7 +393,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
               , msg_locn );
     if( context_changed && !CompFlags.ew_switch_used
      && ( severity == IDEMSGSEV_ERROR || severity == IDEMSGSEV_WARNING )
-     && ( context == CTX_SOURCE || context == CTX_FORCED_INCS )
+     && ( context == CTX_PREINCL || context == CTX_SOURCE || context == CTX_FORCED_INCS )
       ) {
         build_file_nesting();
     }
