@@ -59,7 +59,7 @@ static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 
 #define ROUND_ASM_BLOCK(x)  ((x+ASM_BLOCK-1) & ~(ASM_BLOCK-1))
 
-static void pragmaInit(         // INITIALIZATION FOR PRAGMAS
+static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
 {
     /* unused parameters */ (void)defn;
@@ -100,7 +100,7 @@ static void freeInfo( AUX_INFO *info )
 }
 
 
-static void pragmaFini(         // FINISH PRAGMAS
+static void pragmasFini(        // FINISH PRAGMAS
     INITFINI* defn )            // - definition
 {
     AUX_ENTRY       *next;
@@ -150,7 +150,7 @@ static void pragmaFini(         // FINISH PRAGMAS
 }
 
 
-INITDEFN( pragmas, pragmaInit, pragmaFini )
+INITDEFN( pragmas, pragmasInit, pragmasFini )
 
 
 static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
@@ -195,8 +195,13 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
 #endif
 }
 
+static void assemblerFini(      // FINALIZATION OF ASSEMBLER
+    INITFINI* defn )            // - definition
+{
+    /* unused parameters */ (void)defn;
+}
 
-INITDEFN( assembler, assemblerInit, InitFiniStub )
+INITDEFN( assembler, assemblerInit, assemblerFini )
 
 
 static void AuxCopy(           // COPY AUX STRUCTURE
