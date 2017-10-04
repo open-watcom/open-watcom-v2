@@ -316,9 +316,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             } else {
                 BrinfInit( true );  /* must be before OpenPgmFile() */
             }
+            CompFlags.srcfile_compiled = true;
+            ExitPointAcquire( cpp_preproc );
             if( CompFlags.cpp_output ) {
                 CtxSetCurrContext( CTX_SOURCE );
-                ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_preproc_only );
                 CompFlags.cpp_output = false;
                 if( ForcePreInclude != NULL ) {
@@ -338,19 +339,19 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 OpenPgmFile();
                 PpParse();
+                ExitPointRelease( cpp_preproc_only );
             } else {
-                OpenPgmFile();
-                CtxSetCurrContext( CTX_SOURCE );
-                CompFlags.srcfile_compiled = true;
-                ExitPointAcquire( cpp_preproc );
-                ExitPointAcquire( cpp_object );
-                ExitPointAcquire( cpp_analysis );
-                CgFrontModInitInit();       // must be before pchdr read point
-                CompFlags.watch_for_pcheader = false;
                 if( ForcePreInclude != NULL ) {
                     CtxSetCurrContext( CTX_PREINCL );
                     openForcePreIncludeFile();
+                    NextToken();    /* process pre-include file, must not include any code or variable */
+                    SrcFileClose( true );
                 }
+                OpenPgmFile();
+                CtxSetCurrContext( CTX_SOURCE );
+                ExitPointAcquire( cpp_object );
+                ExitPointAcquire( cpp_analysis );
+                CgFrontModInitInit();       // must be before pchdr read point
                 if( CompFlags.use_pcheaders ) {
                     // getting the first token should involve opening
                     // the first #include if there are no definitions
@@ -404,6 +405,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_FINI );
                 ExitPointRelease( cpp_object );
             }
+            ExitPointRelease( cpp_preproc );
         }
     }
     exit_status = makeExitStatus( exit_status );

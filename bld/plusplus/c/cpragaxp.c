@@ -50,9 +50,6 @@ static void pragmasInit(        // INIT PRAGMAS
     /* unused parameters */ (void)defn;
 
     PragInit();
-    if( !CompFlags.dll_subsequent ) {
-        AsmInit();
-    }
     SetAuxDefaultInfo();
 }
 
@@ -61,14 +58,13 @@ static void pragmasFini(        // FINISH PRAGMAS
 {
     /* unused parameters */ (void)defn;
 
-    AsmFini();
     CgInfoFreeLibs();
     CgInfoFreeImports();
     CgInfoFreeImportsS();
 }
 
 
-INITDEFN( pragmas, pragmaInit, pragmaFini )
+INITDEFN( pragmas, pragmasInit, pragmasFini )
 
 
 static void assemblerInit(      // INIT ASSEMBLER
