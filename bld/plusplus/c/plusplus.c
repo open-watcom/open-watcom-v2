@@ -322,7 +322,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ExitPointAcquire( cpp_preproc_only );
                 CompFlags.cpp_output = false;
                 if( ForcePreInclude != NULL ) {
-                    CtxSetCurrContext( CTX_FORCED_PREINCL );
+                    CtxSetCurrContext( CTX_PREINCL );
                     if( openForcePreIncludeFile() ) {
                         PpParse();
                         SrcFileClose( true );
@@ -348,7 +348,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CgFrontModInitInit();       // must be before pchdr read point
                 CompFlags.watch_for_pcheader = false;
                 if( ForcePreInclude != NULL ) {
-                    CtxSetCurrContext( CTX_FORCED_PREINCL );
+                    CtxSetCurrContext( CTX_PREINCL );
                     openForcePreIncludeFile();
                 }
                 if( CompFlags.use_pcheaders ) {
