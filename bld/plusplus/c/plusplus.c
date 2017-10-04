@@ -153,9 +153,6 @@ bool OpenSrcFile(               // OPEN A SOURCE FILE
 
     is_lib = ( typ == FT_LIBRARY );
 
-    // See if there's an alias for this file name
-    filename = IAliasLookup( filename, is_lib );
-
     if( IoSuppOpenSrc( filename, typ ) ) {
         PpStartFile();
         return( true );

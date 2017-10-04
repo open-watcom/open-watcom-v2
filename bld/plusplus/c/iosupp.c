@@ -51,6 +51,7 @@
 #include "autodept.h"
 #include "iopath.h"
 #include "sysdep.h"
+#include "ialias.h"
 
 #include "clibext.h"
 
@@ -443,14 +444,24 @@ static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
 {
     const char  *ret;           // - ret
     char name[_MAX_PATH];       // - buffer for file name
+    const char *new_name;
 
     _makepath( name, nd->drv, nd->dir, nd->fnm, ext );
     /* so we can tell if the open worked */
     ret = (ext != NULL) ? ext : "";
-    if( ! openSrc( name, typ ) ) {
-        ret = NULL;
+    if( openSrc( name, typ ) ) {
+        return( ret );
     }
-    return( ret );
+    // See if there's an alias for this file name
+    _makepath( name, NULL, NULL, nd->fnm, ext );
+    new_name = IAliasLookup( name, typ == FT_LIBRARY );
+    if( new_name != name ) {
+        _makepath( name, nd->drv, nd->dir, new_name, NULL );
+        if( openSrc( name, typ ) ) {
+            return( ret );
+        }
+    }
+    return( NULL );
 }
 
 
