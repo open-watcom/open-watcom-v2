@@ -439,25 +439,12 @@ static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     struct path_descr *nd,      // - name descriptor
     src_file_type typ )         // - type of file being opened
 {
-    const char  *ret;           // - ret
     char name[_MAX_PATH];       // - buffer for file name
-    const char *new_name;
 
     _makepath( name, nd->drv, nd->dir, nd->fnm, ext );
     /* so we can tell if the open worked */
-    ret = (ext != NULL) ? ext : "";
-    if( openSrc( name, typ ) ) {
-        return( ret );
-    }
-    // See if there's an alias for this file name
-    _makepath( name, NULL, NULL, nd->fnm, ext );
-    new_name = IAliasLookup( name, typ == FT_LIBRARY );
-    if( new_name != name ) {
-        _makepath( name, nd->drv, nd->dir, new_name, NULL );
-        if( openSrc( name, typ ) ) {
-            return( ret );
-        }
-    }
+    if( openSrc( name, typ ) )
+        return( (ext != NULL) ? ext : "" );
     return( NULL );
 }
 
@@ -546,6 +533,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
+    struct path_descr *fa,      // - descriptor for alias file name
     src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
@@ -558,7 +546,11 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr idescr;   // - descriptor for included file
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[_MAX_PATH];    // - buffer for previous path
+    bool alias_abs;
+    bool alias_check;
 
+    alias_abs = false;
+    alias_check = false;
     retb = false;
     paths = NULL;
     switch( typ ) {
@@ -588,11 +580,18 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
+        alias_abs = fa != NULL && ( fa->drv[0] != '\0' || IS_DIR_SEP( fa->dir[0] ) );
         // have to look for absolute paths
         if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
             retb = openSrcPath( "", exts, fd, typ );
+            if( !retb && alias_abs ) {
+                retb = openSrcPath( "", exts, fa, typ );
+            }
+            alias_abs = false;
             break;
         }
+        /* if alias contains abs path then check it after last check for regular name */
+        alias_check = fa != NULL && fa->drv[0] == '\0' && !IS_DIR_SEP( fa->dir[0] );
         if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 bufpth[0] = '\0';
@@ -605,12 +604,24 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 if( retb ) {
                     break;
                 }
+                if( alias_check ) {
+                    retb = openSrcPath( bufpth, exts, fa, typ );
+                    if( retb ) {
+                        break;
+                    }
+                }
             } else {
                 if( !CompFlags.ignore_current_dir ) {
                     // check for current directory
                     retb = openSrcPath( "", exts, fd, typ );
                     if( retb ) {
                         break;
+                    }
+                    if( alias_check ) {
+                        retb = openSrcPath( "", exts, fa, typ );
+                        if( retb ) {
+                            break;
+                        }
                     }
                 }
                 /* check directories of currently included files */
@@ -625,6 +636,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                         retb = openSrcPath( bufpth, exts, fd, typ );
                         if( retb ) {
                             break;
+                        }
+                        if( alias_check ) {
+                            retb = openSrcPath( bufpth, exts, fa, typ );
+                            if( retb ) {
+                                break;
+                            }
                         }
                     }
                     curr = SrcFileIncluded( curr, &dummy );
@@ -643,6 +660,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             retb = openSrcPath( bufpth, exts, fd, typ );
             if( retb ) {
                 break;
+            }
+            if( alias_check ) {
+                retb = openSrcPath( bufpth, exts, fa, typ );
+                if( retb ) {
+                    break;
+                }
             }
         }
         if( retb ) {
@@ -671,7 +694,16 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             if( retb ) {
                 break;
             }
+            if( alias_check ) {
+                retb = openSrcPath( path, exts, fa, typ );
+                if( retb ) {
+                    break;
+                }
+            }
         }
+    }
+    if( !retb && alias_abs ) {
+        retb = openSrcPath( "", exts, fa, typ );
     }
     if( retb ) {
         switch( typ ) {
@@ -692,6 +724,9 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     src_file_type typ )         // - type of search path to use
 {
     struct path_descr   fd;     // - descriptor for file name
+    struct path_descr   fa;     // - descriptor for alias file name
+    struct path_descr   *fap;   // - pointer to descriptor for alias file name
+    const char          *alias_file_name;
 
 #ifdef OPT_BR
     if( NULL != file_name
@@ -710,11 +745,26 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     }
 #endif
     splitFileName( file_name, &fd );
-    if( doIoSuppOpenSrc( &fd, typ ) )
+    fap = NULL;
+    switch( typ ) {
+    case FT_HEADER:
+    case FT_HEADER_FORCED:
+    case FT_HEADER_PRE:
+    case FT_LIBRARY:
+        // See if there's an alias for this file name
+        alias_file_name = IAliasLookup( file_name, typ == FT_LIBRARY );
+        if( alias_file_name != file_name ) {
+            splitFileName( alias_file_name, &fa );
+            fap = &fa;
+        }
+        break;
+    }
+    if( doIoSuppOpenSrc( &fd, fap, typ ) ) {
         return( true );
+    }
     if( CompFlags.check_truncated_fnames && strlen( fd.fnm ) > 8 ) {
         fd.fnm[8] = '\0';
-        if( doIoSuppOpenSrc( &fd, typ ) ) {
+        if( doIoSuppOpenSrc( &fd, NULL, typ ) ) {
             return( true );
         }
     }
