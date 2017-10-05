@@ -711,17 +711,14 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
 #endif
     splitFileName( file_name, &fd );
     if( doIoSuppOpenSrc( &fd, typ ) )
-        return true;
-#if !defined( __DOS__ )
-    if( !CompFlags.check_truncated_fnames )
-        return false;
-    if( strlen( fd.fnm ) <= 8 )
-        return false;
-    fd.fnm[8] = '\0';
-    if( doIoSuppOpenSrc( &fd, typ ) )
-        return true;
-#endif
-    return false;
+        return( true );
+    if( CompFlags.check_truncated_fnames && strlen( fd.fnm ) > 8 ) {
+        fd.fnm[8] = '\0';
+        if( doIoSuppOpenSrc( &fd, typ ) ) {
+            return( true );
+        }
+    }
+    return( false );
 }
 
 static void tempFname( char *fname )
