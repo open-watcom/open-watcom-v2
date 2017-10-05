@@ -185,9 +185,6 @@ static const char* extsOut[] =        // extensions for output files
 
 #endif
 
-static const char* extsNo[] =        // no extensions
-    { NULL };
-
 static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
@@ -473,32 +470,29 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char *ext;            // - current extension
 
     if( nd->ext[0] == '\0' ) {
-        bool    doExt;
-
         ext = openSrcExt( NULL, nd, typ );
-
-        switch( typ ) {
-        case FT_SRC:
-            doExt = !(CompFlags.dont_autogen_ext_src);
-            break;
-        case FT_HEADER:
-        case FT_HEADER_FORCED:
-        case FT_HEADER_PRE:
-        case FT_LIBRARY:
-            doExt = !(CompFlags.dont_autogen_ext_inc);
-            break;
-        default:
-            doExt = false;
-            break;
-        }
-        if( ( ext == NULL ) && doExt ) {
-            for( ;; ) {
-                ext = *exts++;
-                if( ext == NULL )
-                    break;
-                ext = openSrcExt( ext, nd, typ );
-                if( ext != NULL ) {
-                    break;
+        if( ext == NULL ) {
+            switch( typ ) {
+            case FT_SRC:
+                if( CompFlags.dont_autogen_ext_src )
+                    exts = NULL;
+                break;
+            case FT_HEADER:
+            case FT_HEADER_FORCED:
+            case FT_HEADER_PRE:
+            case FT_LIBRARY:
+                if( CompFlags.dont_autogen_ext_inc )
+                    exts = NULL;
+                break;
+            default:
+                break;
+            }
+            if( exts != NULL ) {
+                while( (ext = *exts++) != NULL ) {
+                    ext = openSrcExt( ext, nd, typ );
+                    if( ext != NULL ) {
+                        break;
+                    }
                 }
             }
         }
@@ -668,7 +662,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         break;
     default:
-        exts = extsNo;
+        exts = NULL;
         break;
     }
     if( paths != NULL ) {
