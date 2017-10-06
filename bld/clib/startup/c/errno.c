@@ -44,13 +44,13 @@
 
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-#if defined(__386__)
+#if defined(_M_I86)
+    return( (int *)&__MAGIC.Errno );
+#else
     void        *err_ptr;
 
     __getmagicvar( &err_ptr, _m_errno_ptr );
     return( err_ptr );
-#else
-    return( (int *)&__MAGIC.Errno );
 #endif
 }
 

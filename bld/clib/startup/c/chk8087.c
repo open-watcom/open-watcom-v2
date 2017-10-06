@@ -93,7 +93,51 @@ extern unsigned char _WCI86NEAR __x87id( void );
 extern void __fsave( _87state * );
 extern void __frstor( _87state * );
 
-#if defined( __386__ )
+#if defined( _M_I86 )
+
+  #if defined( __BIG_DATA__ )
+    #pragma aux __fsave =   \
+    "push    bx"            \
+    "push    ds"            \
+    "mov     ds,dx"         \
+    "mov     bx,ax"         \
+    "fsave   [bx]"          \
+    "fwait"                 \
+    "pop     ds"            \
+    "pop     bx"            \
+    parm routine [dx ax];
+  #else
+    #pragma aux __fsave =   \
+    "push    bx"            \
+    "mov     bx,ax"         \
+    "fsave   [bx]"          \
+    "fwait"                 \
+    "pop     bx"            \
+    parm routine [ax];
+  #endif
+
+  #if defined( __BIG_DATA__ )
+    #pragma aux __frstor =  \
+    "push    bx"            \
+    "push    ds"            \
+    "mov     ds,dx"         \
+    "mov     bx,ax"         \
+    "frstor  [bx]"          \
+    "fwait"                 \
+    "pop     ds"            \
+    "pop     bx"            \
+    parm routine [dx ax];
+  #else
+    #pragma aux __frstor =  \
+    "push    bx"            \
+    "mov     bx,ax"         \
+    "frstor  [bx]"          \
+    "fwait"                 \
+    "pop     bx"            \
+    parm routine [ax];
+  #endif
+
+#else   /* !_M_I86 */
 
 #pragma aux __fsave =   \
     "fsave [eax]"       \
@@ -102,50 +146,6 @@ extern void __frstor( _87state * );
 #pragma aux __frstor =  \
     "frstor [eax]"      \
     parm routine [eax];
-
-#else   /* __286__ */
-
-  #if defined( __BIG_DATA__ )
-    #pragma aux __fsave =   \
-    "push    bx"            \
-    "push    ds"            \
-    "mov     ds,dx"         \
-    "mov     bx,ax"         \
-    "fsave   [bx]"          \
-    "fwait"                 \
-    "pop     ds"            \
-    "pop     bx"            \
-    parm routine [dx ax];
-  #else
-    #pragma aux __fsave =   \
-    "push    bx"            \
-    "mov     bx,ax"         \
-    "fsave   [bx]"          \
-    "fwait"                 \
-    "pop     bx"            \
-    parm routine [ax];
-  #endif
-
-  #if defined( __BIG_DATA__ )
-    #pragma aux __frstor =  \
-    "push    bx"            \
-    "push    ds"            \
-    "mov     ds,dx"         \
-    "mov     bx,ax"         \
-    "frstor  [bx]"          \
-    "fwait"                 \
-    "pop     ds"            \
-    "pop     bx"            \
-    parm routine [dx ax];
-  #else
-    #pragma aux __frstor =  \
-    "push    bx"            \
-    "mov     bx,ax"         \
-    "frstor  [bx]"          \
-    "fwait"                 \
-    "pop     bx"            \
-    parm routine [ax];
-  #endif
 
 #endif
 

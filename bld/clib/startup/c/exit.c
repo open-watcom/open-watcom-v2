@@ -33,7 +33,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
+#if defined(__WINDOWS__)
 #include <windows.h>
 #endif
 #if defined(__RDOS__)
@@ -59,7 +59,7 @@
   example, DOS version would call __int23_exit and __FPE_handler_exit)
 */
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
 void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
 void    (*__int23_exit)( void ) = __null_int23_exit;
 static void _null_exit_rtn( void ) {}
@@ -87,7 +87,7 @@ _WCRTLINK _WCNORETURN void exit( int status )
         _exit( status );
         // never return
     }
-#elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS__) && defined(_M_I86)
+#elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS_286__)
     (*__int23_exit)();
 #elif defined(__RDOS__)
     if( RdosIsForked() ) {
@@ -123,7 +123,7 @@ _WCRTLINK void _UnloadCLib( void )
 
 _WCRTLINK _WCNORETURN void _exit( int status )
 {
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
     (*__int23_exit)();
     (*__FPE_handler_exit)();
 #endif
