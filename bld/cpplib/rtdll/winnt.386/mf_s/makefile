@@ -3,7 +3,6 @@
 component  = plib
 processor  = 386
 model      = mf
-subdir     = mf_s
 system     = winnt
 convention = stack
 

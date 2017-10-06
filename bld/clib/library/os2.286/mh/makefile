@@ -3,6 +3,5 @@ processor=286
 model=mh
 system=os2
 linkage=static
-subdir=mh
 
 !include $(clib_dir)/mrglib.mif

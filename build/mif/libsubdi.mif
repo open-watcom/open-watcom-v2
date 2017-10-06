@@ -1,0 +1,36 @@
+libsubdir_16bit_086 = 1
+libsubdir_16bit_087 = 1
+libsubdir_16bit_286 = 1
+libsubdir_16bit_287 = 1
+
+libsubdir_register = _r
+libsubdir_stack    = _s
+
+!ifdef libsubdir_16bit_$(processor)
+!ifdef overlay
+libsubdir_suffix = _ov
+!else ifdef share
+libsubdir_suffix = _sh
+!else ifdef dll16
+libsubdir_suffix = _dll
+!else ifdef mthreaded
+libsubdir_suffix = _mt
+!endif
+!else
+!ifdef libsubdir_$(convention)
+libsubdir_suffix = $(libsubdir_$(convention))
+!else
+libsubdir_suffix = _s
+!endif
+!ifdef mthreaded
+libsubdir_suffix +=mt
+!endif
+!ifdef profile
+libsubdir_suffix +=p
+!endif
+!endif
+
+!ifeq release 0
+libsubdir_suffix +=d
+!endif
+libsubdir = $(model)$(libsubdir_suffix)

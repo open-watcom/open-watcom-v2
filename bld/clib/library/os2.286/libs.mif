@@ -1,5 +1,5 @@
 pfx__ =../../../
-__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+__sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)alias$(__sfx) &
@@ -35,7 +35,7 @@ libs += $+ &
     $-
 !endif
 
-!ifdef threading16
+!ifdef mthreaded
 libs += $+ &
     $(pfx__)mthread$(__sfx) &
     $-
@@ -45,5 +45,5 @@ pfx__ =
 __sfx =
 
 libs += $+ &
-    ../../../cgsupp/library/generic.$(processor)/$(subdir)/$(libname).lib &
+    ../../../cgsupp/library/generic.$(processor)/$(libsubdir)/$(libname).lib &
     $-

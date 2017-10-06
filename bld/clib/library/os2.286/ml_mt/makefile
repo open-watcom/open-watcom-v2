@@ -3,7 +3,6 @@ processor=286
 model=ml
 system=os2
 linkage=static
-threading16=1
-subdir=ml_mt
+mthreaded=1
 
 !include $(clib_dir)/mrglib.mif

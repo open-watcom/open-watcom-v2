@@ -1,6 +1,6 @@
-__cifx__ =$(system).axp/$(subdir)
-__mifx__ =$(system).axp/$(subdir).wdl
-__pifx__ =$(system).axp/mf_$(dllname_$(convention))mt
+__cifx__ =$(system).axp/$(libsubdir)
+__mifx__ =$(system).axp/$(libsubdir).wdl
+__pifx__ =$(system).axp/mf_$(dllname_$(convention))mt$(dllname_debug)
 
 !ifdef profile
 dll_libs = $+ &

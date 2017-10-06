@@ -2,7 +2,6 @@
 
 processor       = 387
 model           = mf
-subdir          = mf_rd
 system          = winnt
 convention      = register
 linkage         = dynamic

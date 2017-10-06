@@ -2,9 +2,7 @@
 processor  = 286
 system     = os2
 model      = ml
-convention =
 linkage    = static
 mthreaded  = 1
-subdir     = ml_mt
 
 !include $(cpplib_dir)/mrglib.mif

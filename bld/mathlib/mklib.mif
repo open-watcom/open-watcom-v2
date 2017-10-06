@@ -1,5 +1,4 @@
 !include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/librules.mif
 
 !include ../../../objects.mif
 

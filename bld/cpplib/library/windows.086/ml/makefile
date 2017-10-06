@@ -3,6 +3,5 @@ processor  = 086
 system     = windows
 model      = ml
 linkage    = static
-subdir     = ml
 
 !include $(cpplib_dir)/mrglib.mif

@@ -2,7 +2,6 @@
 
 processor  = 386
 model      = ms
-subdir     = ms_s
 system     = msdos
 linkage    = static
 convention = stack

@@ -1,6 +1,6 @@
-!include ../../../objects.mif
 !include $(clib_dir)/master.mif
-!include $(clib_dir)/librules.mif
+
+!include ../../../objects.mif
 
 .c   : ../../../c
 .asm .gas : ../../../a

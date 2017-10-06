@@ -67,7 +67,5 @@ ufulpath_opts = -I"$(clib_dir)/direct/h"
 ugtcd_opts    = -I"$(clib_dir)/direct/h"
 ustat_opts    = -I"$(clib_dir)/file/h" -I"$(clib_dir)/handleio/h"
 
-base_libname   = doslfn
-
 extra_clib_lib_flags = -zll
 

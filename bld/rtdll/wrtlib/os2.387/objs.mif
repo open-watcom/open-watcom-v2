@@ -1,6 +1,6 @@
-__cifx__ =$(system).386/$(subdir)
-__mifx__ =$(system).387/$(subdir).dll
-__pifx__ =$(system).386/mf_$(dllname_$(convention))mt
+__cifx__ =$(system).386/$(libsubdir)
+__mifx__ =$(system).387/$(libsubdir).dll
+__pifx__ =$(system).386/mf_$(dllname_$(convention))mt$(dllname_debug)
 
 dll_libs = $+ &
     $(clib_dir)/library/$(__cifx__)/clib3$(dllname_$(convention)).lib &

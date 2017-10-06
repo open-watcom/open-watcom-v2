@@ -1,4 +1,4 @@
-__cifx__ =$(system).$(processor)/$(subdir)
+__cifx__ =$(system).$(processor)/$(libsubdir)
 
 dll_libs = $+ &
     $(clib_dir)/library/$(__cifx__)/clib3$(dllname_$(convention)).lib &

@@ -1,7 +1,13 @@
-!include $(mathlib_dir)/lib.mif
+!ifdef export_only
+mlib_subdir_suffix_dynamic = .wdl
+!else
+mlib_subdir_suffix_dynamic = .dll
+!endif
+mlib_subdir_suffix_286_dynamic = $(mlib_subdir_suffix_dynamic)
+mlib_subdir_suffix_386_dynamic = $(mlib_subdir_suffix_dynamic)
 
 pfx__ =../../..
-__sfx =$(system).$(processor)/$(mlib_subdir)/$(libname).lib
+__sfx =$(system).$(processor)/$(libsubdir)$(mlib_subdir_suffix_$(mlib_$(processor))_$(linkage))/$(libname).lib
 
 libs = $+ &
     $(pfx__)/alias/library/$(__sfx) &

@@ -4,6 +4,5 @@ system     = generic
 model      = ms
 convention = register
 linkage    = static
-subdir     = ms_r
 
 !include $(cpplib_dir)/mrglib.mif

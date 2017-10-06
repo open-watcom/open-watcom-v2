@@ -3,7 +3,6 @@
 component  = wlib
 processor  = 387
 model      = mf
-subdir     = mf_s
 system     = os2
 convention = stack
 

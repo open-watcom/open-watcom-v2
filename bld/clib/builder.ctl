@@ -75,8 +75,8 @@ set PROJDIR=<CWD>
     <CCCMD> rtdll/os2.386/mf_r/clb*.lib                     <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_r/clb*.dll                     <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_r/clb*.sym                     <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/clb*.lib                    <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_rd/clb*.dll                    <OWRELROOT>/binp/dll/
+#    <CCCMD> rtdll/os2.386/mf_rd/clb*.lib                    <OWRELROOT>/lib386/os2/
+#    <CCCMD> rtdll/os2.386/mf_rd/clb*.dll                    <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/clb*.lib                     <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_s/clb*.dll                     <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/clb*.sym                     <OWRELROOT>/binp/dll/
@@ -105,8 +105,8 @@ set PROJDIR=<CWD>
     <CCCMD> rtdll/winnt.386/mf_r/clb*.lib                   <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_r/clb*.dll                   <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_r/clb*.sym                   <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_rd/clb*.lib                  <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_rd/clb*.dll                  <OWRELROOT>/binnt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/clb*.lib                  <OWRELROOT>/lib386/nt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/clb*.dll                  <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_rp/clb*.lib                  <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_rp/clb*.dll                  <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/clb*.lib                   <OWRELROOT>/lib386/nt/

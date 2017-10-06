@@ -6,4 +6,4 @@ system     = msdos
 convention = register
 linkage    = static
 
-!include $(clib_dir)/mklib.mif
+!include ../../doslfn.mif

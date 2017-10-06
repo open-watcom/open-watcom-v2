@@ -1,3 +1,6 @@
+prefix   = strg
+prefix_x = strx
+
 # files in STRING\CPP
 
 objs_cpp = &
@@ -77,10 +80,5 @@ pch_flags_x = -fh=pch01x.pch
 
 pch_flags_strsrch = -fh=pch02.pch
 pch_flags_x_strsrch = -fh=pch02x.pch
-
-!include $(cpplib_dir)/plibname.mif
-
-prefix = $(strg_n)
-prefix_x = $(strg_x)
 
 !include $(cpplib_dir)/mklib.mif

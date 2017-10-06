@@ -3,7 +3,6 @@
 component  = wlib
 processor  = 386
 model      = mf
-subdir     = mf_r
 system     = winnt
 convention = register
 

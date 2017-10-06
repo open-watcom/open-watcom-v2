@@ -4,6 +4,5 @@ system     = generic
 model      = mf
 convention = stack
 linkage    = static
-subdir     = mf_s
 
 !include $(cpplib_dir)/mrglib.mif

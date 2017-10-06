@@ -2,7 +2,6 @@
 
 processor  = 386
 model      = mf
-subdir     = mf_r
 system     = msdos
 linkage    = static
 convention = register

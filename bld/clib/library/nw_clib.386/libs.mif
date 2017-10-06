@@ -1,5 +1,5 @@
 pfx__ =../../../
-__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+__sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)alias$(__sfx) &
@@ -30,5 +30,5 @@ pfx__ =
 __sfx =
 
 libs += $+ &
-    ../../../cgsupp/library/generic.$(processor)/$(subdir)s/$(libname).lib &
+    ../../../cgsupp/library/generic.$(processor)/$(libsubdir)/$(libname).lib &
     $-

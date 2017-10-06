@@ -3,7 +3,6 @@
 component  = mlib
 processor  = 387
 model      = mf
-subdir     = mf_rp
 system     = winnt
 convention = register
 profile    = 1

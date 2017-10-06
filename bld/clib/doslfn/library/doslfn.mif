@@ -1,0 +1,3 @@
+base_libname = doslfn
+
+!include $(clib_dir)/mklib.mif

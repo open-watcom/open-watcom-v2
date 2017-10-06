@@ -2,51 +2,9 @@ proj_name = cpplib
 
 additional_cleanup = *.gdf
 
-!include $(cpplib_dir)/libtarg.mif
+!include $(cpplib_dir)/master.mif
 
-!include cproj.mif
-!include deftarg.mif
-
-!include $(cpplib_dir)/libflags.mif
-
-!include $(cpplib_dir)/plibname.mif
-
-!ifdef export_only
-subdir_suffix_dynamic = .wdl
-!else
-subdir_suffix_dynamic = .dll
-!endif
-subdir_suffix_086_dynamic = $(subdir_suffix_dynamic)
-subdir_suffix_286_dynamic = $(subdir_suffix_dynamic)
-subdir_suffix_386_dynamic = $(subdir_suffix_dynamic)
-plib_subdir = $(subdir)$(subdir_suffix_$(processor)_$(linkage))
-
-prefix = $(plib_n)
-
-libs = $(cpplib_dir)/runtime/$(system).$(processor)/$(plib_subdir)/$(plib_n)$(suffix).lib &
-	$(cpplib_dir)/iostream/$(system).$(processor)/$(plib_subdir)/$(iost_n)$(suffix).lib &
-	$(cpplib_dir)/string/$(system).$(processor)/$(plib_subdir)/$(strg_n)$(suffix).lib &
-	$(cpplib_dir)/contain/$(system).$(processor)/$(plib_subdir)/$(cont_n)$(suffix).lib
-
-prefix_x = $(plib_x)
-
-libsx = $(cpplib_dir)/runtime/$(system).$(processor)/$(plib_subdir)/$(plib_x)$(suffix).lib &
-	$(cpplib_dir)/iostream/$(system).$(processor)/$(plib_subdir)/$(iost_x)$(suffix).lib &
-	$(cpplib_dir)/string/$(system).$(processor)/$(plib_subdir)/$(strg_x)$(suffix).lib &
-	$(cpplib_dir)/contain/$(system).$(processor)/$(plib_subdir)/$(cont_x)$(suffix).lib
-
-target_lib = $(prefix)$(suffix).lib
-target_lib_x = $(prefix_x)$(suffix).lib
-
-plib_linkage_flags_086 = -z=export.tmp
-plib_linkage_flags_286 = -z=export.tmp
-plib_linkage_flags_386 = -z=export.tmp
-plib_linkage_flags = $(plib_linkage_flags_$(processor))
-
-plibx_linkage_flags_086 = -z=exportx.tmp
-plibx_linkage_flags_286 = -z=exportx.tmp
-plibx_linkage_flags_386 = -z=exportx.tmp
-plibx_linkage_flags = $(plibx_linkage_flags_$(processor))
+!include $(cpplib_dir)/libs.mif
 
 libs : .symbolic $(target_lib) $(target_lib_x)
     @%null

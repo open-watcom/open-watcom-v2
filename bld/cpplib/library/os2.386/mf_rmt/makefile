@@ -5,6 +5,5 @@ model      = mf
 convention = register
 linkage    = static
 mthreaded  = 1
-subdir     = mf_rmt
 
 !include $(cpplib_dir)/mrglib.mif

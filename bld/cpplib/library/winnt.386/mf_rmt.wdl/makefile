@@ -6,6 +6,5 @@ convention = register
 linkage    = dynamic
 export_only=1
 mthreaded  = 1
-subdir     = mf_rmt
 
 !include $(cpplib_dir)/mrglib.mif

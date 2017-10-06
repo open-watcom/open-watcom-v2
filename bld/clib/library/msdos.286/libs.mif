@@ -1,5 +1,5 @@
 pfx__ =../../../
-__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+__sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)bios$(__sfx) &

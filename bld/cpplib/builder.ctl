@@ -93,14 +93,14 @@ set PROJDIR=<CWD>
 
     <CCCMD> rtdll/winnt.386/mf_r/plb*.lib           <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.lib           <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.lib          <OWRELROOT>/lib386/nt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.lib          <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.lib          <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_r/plb*.dll           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_r/plb*.sym           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.dll           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.sym           <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.dll          <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.sym          <OWRELROOT>/binnt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.dll          <OWRELROOT>/binnt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.sym          <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.dll          <OWRELROOT>/binnt/
 
     <CCCMD> library/os2.386/mf_r/plib3r.lib         <OWRELROOT>/lib386/os2/
@@ -114,13 +114,13 @@ set PROJDIR=<CWD>
 
     <CCCMD> rtdll/os2.386/mf_r/plb*.lib             <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_s/plb*.lib             <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_r/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_r/plb*.sym             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.sym             <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.sym            <OWRELROOT>/binp/dll/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.sym            <OWRELROOT>/binp/dll/
 
     <CCCMD> library/generic.386/ms_s/plib3s.lib     <OWRELROOT>/lib386/netware/
     <CCCMD> library/generic.386/ms_s/plbx3s.lib     <OWRELROOT>/lib386/netware/

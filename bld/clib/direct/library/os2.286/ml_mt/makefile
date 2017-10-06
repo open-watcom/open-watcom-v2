@@ -3,7 +3,7 @@ processor=286
 model=ml
 system=os2
 linkage=static
-threading16=1
+mthreaded=1
 
 !include $(clib_dir)/mklib.mif
 !include ../../../deps.mif

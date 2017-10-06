@@ -1,4 +1,4 @@
-__cifx__ =$(system).$(processor)/$(subdir)
+__cifx__ =$(system).$(processor)/$(libsubdir)
 
 !ifdef profile
 dll_libs = $+ &

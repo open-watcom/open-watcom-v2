@@ -5,4 +5,4 @@ model     = mh
 system    = msdos
 linkage   = static
 
-!include $(clib_dir)/mklib.mif
+!include ../../doslfn.mif
