@@ -1,5 +1,5 @@
-prefix   = plib
-prefix_x = plbx
+prefix   = runt
+prefix_x = runx
 
 # dependencies:
 

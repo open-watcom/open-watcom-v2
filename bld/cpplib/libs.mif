@@ -8,12 +8,12 @@ dyn_ext_286_dynamic = $(dyn_ext_dynamic)
 dyn_ext_386_dynamic = $(dyn_ext_dynamic)
 dyn_ext = $(dyn_ext_$(processor)_$(linkage))
 
-libs = $(cpplib_dir)/runtime/$(system).$(processor)/$(libsubdir)$(dyn_ext)/plib$(suffix).lib &
+libs = $(cpplib_dir)/runtime/$(system).$(processor)/$(libsubdir)$(dyn_ext)/runt$(suffix).lib &
 	$(cpplib_dir)/iostream/$(system).$(processor)/$(libsubdir)$(dyn_ext)/iost$(suffix).lib &
 	$(cpplib_dir)/string/$(system).$(processor)/$(libsubdir)$(dyn_ext)/strg$(suffix).lib &
 	$(cpplib_dir)/contain/$(system).$(processor)/$(libsubdir)$(dyn_ext)/cont$(suffix).lib
 
-libsx = $(cpplib_dir)/runtime/$(system).$(processor)/$(libsubdir)$(dyn_ext)/plbx$(suffix).lib &
+libsx = $(cpplib_dir)/runtime/$(system).$(processor)/$(libsubdir)$(dyn_ext)/runx$(suffix).lib &
 	$(cpplib_dir)/iostream/$(system).$(processor)/$(libsubdir)$(dyn_ext)/iosx$(suffix).lib &
 	$(cpplib_dir)/string/$(system).$(processor)/$(libsubdir)$(dyn_ext)/strx$(suffix).lib &
 	$(cpplib_dir)/contain/$(system).$(processor)/$(libsubdir)$(dyn_ext)/conx$(suffix).lib
