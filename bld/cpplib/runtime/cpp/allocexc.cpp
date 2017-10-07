@@ -142,14 +142,14 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
         std::memcpy( active->data, object, sig->scalar.size );
         break;
       case THROBJ_CLASS :
-      { _EXC_PR_FREE marker( rtc, 0, EXCSTATE_CTOR, active );
+      { _EXC_PR_FREE marker( rtc, NULL, EXCSTATE_CTOR, active );
         (*sig->clss.copyctor)( active->data, object );
-        marker._exc = 0;
+        marker._exc = NULL;
       } break;
       case THROBJ_CLASS_VIRT :
-      { _EXC_PR_FREE marker( rtc, 0, EXCSTATE_CTOR, active );
+      { _EXC_PR_FREE marker( rtc, NULL, EXCSTATE_CTOR, active );
         (*sig->clss_v.copyctor)( active->data, CTOR_NULL, object );
-        marker._exc = 0;
+        marker._exc = NULL;
       } break;
       case THROBJ_PTR_CLASS :
       case THROBJ_PTR_SCALAR :
@@ -229,10 +229,10 @@ void CPPLIB( dtor_free_exc )    // DESTRUCT AND FREE EXCEPTION
          || sig->hdr.type == THROBJ_CLASS_VIRT ) {
             pFUNdtor dtor = sig->clss.dtor;
             if( dtor != NULL ) {
-                _EXC_PR_FREE marker( rtc, 0, EXCSTATE_DTOR, active );
+                _EXC_PR_FREE marker( rtc, NULL, EXCSTATE_DTOR, active );
                 active->state = EXCSTATE_DTOR;
                 (*dtor)( active->data, DTOR_NULL );
-                marker._exc = 0;
+                marker._exc = NULL;
             }
         }
         CPPLIB( free_exc )( rtc, active );

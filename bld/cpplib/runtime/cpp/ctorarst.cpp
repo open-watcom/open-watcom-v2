@@ -163,8 +163,8 @@ static void* ctor_array_storage     // CTOR ARRAY_STORAGE
 {
     void* array;                    // - array
 
-    if( base == 0 ) {
-        array = 0;
+    if( base == NULL ) {
+        array = NULL;
     } else {
         base->element_count = count;
         array = ctor_array( base->apparent_address

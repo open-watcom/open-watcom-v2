@@ -63,10 +63,10 @@ static unsigned fs_root_handler // HANDLER FOR FS ROOT
 // the C++ run-time system
 //
 static RW_DTREG_ROOT root_entry =// ROOT FS ENTRY
-    {   0
+    {   NULL
     ,   &fs_root_handler
     ,   &fs_root_handler
-    ,   0
+    ,   NULL
     };
 
 #endif

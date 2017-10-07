@@ -49,7 +49,7 @@ void CPPLIB( module_dtor )      // DTOR STATICS FOR PROGRAM
 
 
 #ifdef RW_REGISTRATION
-    inlined.base.handler = & CPPLIB( fs_handler_rtn );
+    inlined.base.handler = CPPLIB( fs_handler_rtn );
     thr = NULL;
 #else
     thr = &_RWD_ThreadData;

@@ -46,7 +46,7 @@ THREAD_CTL* CPPLIB( base_register )( // REGISTRATION OF BASE
     rw->base.state_var = state_var;
     thr = PgmThread();
 #ifdef RW_REGISTRATION
-    rw->base.handler = & CPPLIB( fs_handler_rtn );
+    rw->base.handler = CPPLIB( fs_handler_rtn );
 #endif
     return RwRegister( thr, rw );
 }

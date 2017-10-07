@@ -63,7 +63,7 @@ static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
     ThreadLookup( &dispatch->fs_last );
     dispatch->try_cmd = NULL;
     dispatch->exc = rtc->thr->excepts;
-    if( 0 == throw_ro ) {
+    if( NULL == throw_ro ) {
         dispatch->rethrow = true;
     } else {
         dispatch->rethrow = false;

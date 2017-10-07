@@ -44,7 +44,7 @@ namespace std {
 
         handler = rt_ctl.thr->unexpected;
         if( NULL == handler ) {
-            _EXC_PR exc_control( &rt_ctl, 0, EXCSTATE_TERMINATE );
+            _EXC_PR exc_control( &rt_ctl, NULL, EXCSTATE_TERMINATE );
             terminate();
             // never return
         }

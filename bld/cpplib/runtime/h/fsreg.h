@@ -67,10 +67,6 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-//    #define WIN32_LEAN_AND_MEAN
-//    #include <windows.h>
-//    #include <excpt.h>
-
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
@@ -107,14 +103,11 @@ struct FsExcRec;
     #define RW_REGISTRATION
 
 
-
 #elif defined( __OS2__ ) && defined( __USE_FS )
 
   #ifdef __cplusplus
     extern "C" {
   #endif
-
-//    #include <wos2.h>
 
     #define EXC_TYPE_UNWIND_EXIT   EH_EXIT_UNWIND
     #define EXC_TYPE_UNWIND_NORMAL EH_UNWINDING
@@ -145,7 +138,6 @@ struct FsExcRec;
     #define FSREGAPI _WPRTDATA __declspec(__syscall)
 
     #define RW_REGISTRATION
-
 
 
 #elif defined( __USE_RW )
@@ -181,7 +173,6 @@ struct FsExcRec;
     #define ThreadLookup CPPLIB( fs_lookup )
 
 
-
 #elif defined( __NT__ ) && defined( __USE_PD ) && defined( __AXP__ )
 
     // procedure-descriptor exception handling (alpha)
@@ -189,9 +180,6 @@ struct FsExcRec;
   #ifdef __cplusplus
     extern "C" {
   #endif
-
-//    #include <windows.h>
-//    #include <excpt.h>
 
     #define EXC_HAND_CONTINUE   ExceptionContinueSearch
     #define EXC_HAND_CATCH      ExceptionContinueExecution
@@ -207,9 +195,9 @@ struct FsExcRec;
                          , 0 )
 
     #define FS_RAISE_EXCEPTION( a )                                 \
-                RaiseException( (a)->code                       \
-                              , (a)->flags                      \
-                              , (a)->parm_count                 \
+                RaiseException( (a)->code                           \
+                              , (a)->flags                          \
+                              , (a)->parm_count                     \
                               , (DWORD const *)&((a)->object) )
 
     #define EXC_TYPE_UNWIND_EXIT   4    // can't find def'n
@@ -222,8 +210,8 @@ struct FsExcRec;
     #define RISC_MOV_SP_FP 0x47FE040F       // mov sp,fp
     #define RISC_REG_SIZE 8                 // size of risc register
 
-    struct PD_DISP_CTX          // Dispatcher context
-    {   void*    pc;            // - program ctr.
+    struct PD_DISP_CTX {        // Dispatcher context
+        void*    pc;            // - program ctr.
         PData*   pdata;         // - PDATA ptr
         void*    fp_entry;      // - fp, on routine entry
         PCONTEXT ctx;           // - context registers
@@ -234,8 +222,6 @@ struct FsExcRec;
     };
 
     #define ThreadLookup CPPLIB( pd_lookup )
-
-
 
   #ifdef __cplusplus
     };
@@ -249,6 +235,7 @@ struct FsExcRec;
     #define PD_REGISTRATION_RW
 
     #define FSREGAPI _WPRTDATA __declspec(__watcall)
+
 
 #else
 
@@ -333,6 +320,6 @@ FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
 #endif
 
 
-#endif
+#endif  /* defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD ) */
 
 #endif  /* __FSREG_H__ */

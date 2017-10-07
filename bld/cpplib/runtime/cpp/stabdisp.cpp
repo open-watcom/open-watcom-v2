@@ -112,8 +112,7 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
     DISPATCH_EXC *dispatch,     // - dispatch information
     RW_DTREG *rw )              // - current read/write
 {
-    _RTCTL rt_ctl               // - R/T control
-        ( dispatch->rtc->thr );
+    _RTCTL rt_ctl( dispatch->rtc->thr );    // - R/T control
     STAB_TRAVERSE traverse;     // - traversal control
     RO_STATE* state;            // - current state entry
     DISPATCHABLE retn;          // - return: dispatchability
@@ -183,7 +182,7 @@ DISPATCHABLE CPPLIB( dispatchable )(// TEST IF R/W BLOCK IS DISPATCHABLE
     DISPATCHABLE dispatch_type; // - type of dispatch
 
     // check if r/w on stack
-    if( rw == 0 ) {
+    if( rw == NULL ) {
         CPPLIB( corrupted_stack )();
         // never return
     }
@@ -215,8 +214,7 @@ static DISPATCHABLE catch_any(  // DETERMINE WHERE CATCH(...) WITHIN FUNCTION
     DISPATCH_EXC *dispatch,     // - dispatch information
     RW_DTREG *rw )              // - current read/write
 {
-    _RTCTL rt_ctl               // - R/T control
-        ( dispatch->rtc->thr );
+    _RTCTL rt_ctl( dispatch->rtc->thr );    // - R/T control
     STAB_TRAVERSE traverse;     // - traversal control
     RO_STATE* state;            // - current state entry
     DISPATCHABLE retn;          // - return: dispatchability
@@ -256,7 +254,7 @@ DISPATCHABLE CPPLIB( catch_any )// TEST IF R/W BLOCK IS DISPATCHABLE FOR ...
     DISPATCH_EXC dispatch;      // - dispatch control
 
     // check if r/w on stack
-    if( rw == 0 ) {
+    if( rw == NULL ) {
         CPPLIB( corrupted_stack )();
         // never return
     }

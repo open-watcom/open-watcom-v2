@@ -41,5 +41,9 @@ void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 {
-    __fatal_runtime_error( msg, code );
+    if( __EnterWVIDEO( msg ) )
+        std::exit( code );
+        // never return
+    __exit_with_msg( msg, code );
+    // never return
 }

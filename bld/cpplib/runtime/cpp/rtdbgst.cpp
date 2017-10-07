@@ -561,6 +561,14 @@ static void dumpPdata           // DUMP PDATA BLOCK
 #endif
 
 
+#ifndef RW_REGISTRATION
+#define LIST_END            ((void*)-1L)
+#elif defined( FS_REGISTRATION )
+#define LIST_END            ((void*)-1L)
+#else
+#define LIST_END            NULL
+#endif
+
 static void dumpDtorList        // DUMP REGISTRATION LIST
     ( const char* title         // - title
 #ifdef RW_REGISTRATION
@@ -572,8 +580,8 @@ static void dumpDtorList        // DUMP REGISTRATION LIST
     dumpTitle( title );
 #ifdef FS_REGISTRATION
     {
-        for( ; list != (void*)-1L; list = list->base.prev ) {
-            if( list->base.handler == & CPPLIB( fs_handler ) ) {
+        for( ; list != LIST_END; list = list->base.prev ) {
+            if( list->base.handler == CPPLIB( fs_handler ) ) {
                 dumpRwRoBlk( list, list->base.ro );
             } else {
                 dumpFsBlock( list );
@@ -586,7 +594,7 @@ static void dumpDtorList        // DUMP REGISTRATION LIST
     }
 #else
     {
-        for( ; list != NULL; list = list->base.prev ) {
+        for( ; list != LIST_END; list = list->base.prev ) {
             dumpRwRoBlk( list, list->base.ro );
         }
     }
@@ -699,7 +707,7 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
 #else
     printf( "\nStatic Initialization List:\n" );
     // - list to be dumped
-    for( RW_DTREG *list = _RWD_ModuleInit; list != (void*)-1L; list = list->init_ls_st.base.prev ) {
+    for( RW_DTREG *list = _RWD_ModuleInit; list != LIST_END; list = list->init_ls_st.base.prev ) {
         dumpRwRoBlk( list, list->base.ro );
     }
 #endif

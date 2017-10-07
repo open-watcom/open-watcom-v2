@@ -66,9 +66,9 @@ void fneDispatch(               // DISPATCH "unexpected"
             exc->fnexc_state = exc->state;
             exc->state = EXCSTATE_UNEXPECTED;
             _EXC_PR_FNEXC marker( dispatch->rtc
-                                , 0
+                                , NULL
                                 , dispatch->rw
-                                , dispatch->rethrow ? 0 : exc );
+                                , dispatch->rethrow ? NULL : exc );
             std::unexpected();
 //            marker._state = EXCSTATE_TERMINATE;
 //            CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
@@ -80,18 +80,18 @@ void fneDispatch(               // DISPATCH "unexpected"
                 // throw/rethrow did not get through fn-exc
                 exc->state = EXCSTATE_BAD_EXC;
                 _EXC_PR_FNEXC marker( dispatch->rtc
-                                    , 0
+                                    , NULL
                                     , dispatch->rw
-                                    , dispatch->rethrow ? 0 : exc );
+                                    , dispatch->rethrow ? NULL : exc );
                 throw std::bad_exception();
                 // never return
             }
             if( srch->state == EXCSTATE_BAD_EXC ) {
                 // throw of bad_exception did not get through fn-exc
                 _EXC_PR_DTOR marker( dispatch->rtc
-                                   , 0
+                                   , NULL
                                    , EXCSTATE_TERMINATE
-                                   , dispatch->rethrow ? 0 :exc );
+                                   , dispatch->rethrow ? NULL : exc );
                 CPPLIB( call_terminate )( RTMSG_FNEXC, ctl );
                 // never return
             }
@@ -230,7 +230,7 @@ void processThrow(              // PROCESS A THROW
             break;
         case EXCSTATE_UNWIND :
         {   CPPLIB( free_exc )( &rt_ctl, exc );
-            _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
+            _EXC_PR marker( &rt_ctl, NULL, EXCSTATE_TERMINATE );
             CPPLIB( call_terminate )( RTMSG_THROW_DTOR, rt_ctl.thr );
             // never return
         }
@@ -288,9 +288,9 @@ void processThrow(              // PROCESS A THROW
         switch( dispatch.srch_ctl->_state ) {
         case EXCSTATE_UNWIND :
         {   _EXC_PR_FREE marker( &rt_ctl
-                               , 0
+                               , NULL
                                , EXCSTATE_TERMINATE
-                               , dispatch.rethrow ? 0 : rt_ctl.thr->excepts );
+                               , dispatch.rethrow ? NULL : rt_ctl.thr->excepts );
             CPPLIB( call_terminate )( RTMSG_THROW_DTOR, rt_ctl.thr );
             // never return
         }
@@ -363,7 +363,7 @@ void processThrow(              // PROCESS A THROW
             CPPLIB( fatal_runtime_error )( RTMSG_RETHROW, 1 );
             // never return
         } else {
-            _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
+            _EXC_PR marker( &rt_ctl, NULL, EXCSTATE_TERMINATE );
             CPPLIB( call_terminate )( RTMSG_NO_HANDLER, rt_ctl.thr );
             // never return
         }

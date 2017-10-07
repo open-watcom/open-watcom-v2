@@ -88,7 +88,7 @@ _EXC_PR::_EXC_PR                // _EXC_PR CONSTRUCTOR
 #endif
 {
     rtc->thr->exc_pr = this;
-    if( 0 == rw ) {
+    if( NULL == rw ) {
 #ifdef RW_REGISTRATION
         _rw = FsTop();
 #else
@@ -131,7 +131,7 @@ _EXC_PR_FREE::~_EXC_PR_FREE     // _EXC_PR_FREE DESTRUCTOR
 {
     if( NULL != _exc ) {
         ACTIVE_EXC* exc = _exc;
-        _exc = 0;
+        _exc = NULL;
         CPPLIB( free_exc )( _rtc, exc );
     }
 }
@@ -162,7 +162,7 @@ _EXC_PR_DTOR::~_EXC_PR_DTOR     // _EXC_PR_DTOR DESTRUCTOR
 {
     ACTIVE_EXC* exc = _exc;
     CPPLIB( dtor_free_exc )( _exc, _rtc );
-    _exc = 0;
+    _exc = NULL;
 }
 
 
@@ -180,7 +180,7 @@ _EXC_PR_FNEXC::_EXC_PR_FNEXC    // _EXC_PR_FNEXC CONSTRUCTOR
     , RW_DTREG *fnexc_skip      // - skipping read/write
     , ACTIVE_EXC* exc )         // - exception to be destructed
     : _EXC_PR_DTOR( rtc, rw, EXCSTATE_UNEXPECTED, exc )
-    , _fnexc_skip( fnexc_skip == 0 ? _rw : fnexc_skip )
+    , _fnexc_skip( fnexc_skip == NULL ? _rw : fnexc_skip )
 {
 #ifndef NDEBUG
     _type = EXCPR_FNEXC;
