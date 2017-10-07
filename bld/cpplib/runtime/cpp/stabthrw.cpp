@@ -197,16 +197,17 @@ void catchDispatch(             // DISPATCH A CATCH BLOCK
 }
 
 // never return
-static _WCNORETURN
+static
+//_WCNORETURN
 void processThrow(              // PROCESS A THROW
     void *object,               // - address of object
     THROW_RO *throw_ro,         // - thrown R/O block
-    rboolean is_zero )          // - true ==> thrown object is zero constant
+    bool is_zero )              // - true ==> thrown object is zero constant
 {
     _RTCTL rt_ctl;              // - R/T control
     DISPATCH_EXC dispatch;      // - dispatch control
     FsExcRec excrec;            // - system exception record
-    volatile rboolean unwound;
+    volatile bool unwound;
     void __based(__segname("_STACK")) *force_this_routine_to_have_an_EBP_frame;
 //    void *force_this_routine_to_have_an_EBP_frame;
 
@@ -309,7 +310,7 @@ void processThrow(              // PROCESS A THROW
         }
       case DISPATCHABLE_FNEXC :
       case DISPATCHABLE_CATCH :
-        if( ! unwound ) {
+        if( !unwound ) {
             ACTIVE_EXC *active; // - saved exception
             unwound = true;
             if( dispatch.rethrow ) {
@@ -413,7 +414,7 @@ void CPPLIB( catch_done )(      // COMPLETION OF CATCH
 // never return
 extern "C"
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT (NOT CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
@@ -426,7 +427,7 @@ void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT (NOT CONST ZERO)
 // never return
 extern "C"
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
@@ -439,7 +440,7 @@ void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
 // never return
 extern "C"
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( rethrow )(        // RE-THROW AN EXCEPTION
     void )
 {

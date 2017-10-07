@@ -42,7 +42,7 @@ static std::size_t typesigIndex(     // FIND BASE-1 INDEX OF MATCHING TYPE SIGNA
 {
     std::size_t index;               // - base-1 index
     THROW_RO* throw_ro;              // - throw R/O block
-    rboolean zero_thrown;            // - true ==> zero was thrown
+    bool zero_thrown;                // - true ==> zero was thrown
     unsigned thr_ctr;                // - throw ctr.
     unsigned ctr;                    // - testing ctr.
     RT_TYPE_SIG tsig;                // - current type signature, in tsigs
@@ -71,31 +71,27 @@ done:
 }
 
 
-static rboolean dispatchableFnExc(// CHECK IF FUNCTION EXCEPTION SPEC. DISPATCH
+static bool dispatchableFnExc(  // CHECK IF FUNCTION EXCEPTION SPEC. DISPATCH
     DISPATCH_EXC *dispatch,     // - dispatch control
     DTOR_CMD* cmd )             // - DTOR_CMD_FN_EXC command
 {
-    std::size_t index = typesigIndex( dispatch
-                               , cmd->fn_exc.count
-                               , cmd->fn_exc.sigs );
-    rboolean retn = ( index == 0 ) || ( cmd->fn_exc.sigs[ index - 1 ] == NULL );
+    std::size_t index = typesigIndex( dispatch, cmd->fn_exc.count, cmd->fn_exc.sigs );
+    bool retn = ( index == 0 ) || ( cmd->fn_exc.sigs[index - 1] == NULL );
     if( retn ) {
         dispatch->try_cmd = cmd;
     }
-    return retn;
+    return( retn );
 }
 
 
-static rboolean dispatchableCatch(// CHECK IF DISPATCHABLE CATCH
+static bool dispatchableCatch(  // CHECK IF DISPATCHABLE CATCH
     DISPATCH_EXC *dispatch,     // - dispatch control
     DTOR_CMD* cmd )             // - DTOR_CMD_TRY command
 {
-    rboolean retn;              // - return: true ==> dispatachable
+    bool retn;                  // - return: true ==> dispatachable
     std::size_t index;          // - index of match catch (base-1)
 
-    index = typesigIndex( dispatch
-                        , cmd->try_cmd.count
-                        , cmd->try_cmd.sigs );
+    index = typesigIndex( dispatch, cmd->try_cmd.count, cmd->try_cmd.sigs );
     if( index == 0 ) {
         retn = false;
     } else {
@@ -104,7 +100,7 @@ static rboolean dispatchableCatch(// CHECK IF DISPATCHABLE CATCH
         dispatch->catch_no = index;
         retn = true;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -118,7 +114,7 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
     DISPATCHABLE retn;          // - return: dispatchability
     DTOR_CMD* cmd;              // - command pointer
     ACTIVE_EXC *exc;            // - active exception
-    rboolean rethrow;           // - true ==> re-throw from top block
+    bool rethrow;               // - true ==> re-throw from top block
 
     if( dispatch->rethrow ) {
         exc = dispatch->exc;
@@ -140,7 +136,8 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
             retn = DISPATCHABLE_NONE;
             break;
         }
-        if( state->dtor != NULL ) continue;
+        if( state->dtor != NULL )
+            continue;
         cmd = state->u.cmd_addr;
         switch( cmd->base.code ) {
           case DTC_CATCH :

@@ -87,12 +87,12 @@ static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
 {
     std::va_list args;          // - for variable arguments
-    rboolean done;              // - true ==> done formatting
+    bool done;                  // - true ==> done formatting
     std::size_t blk_type;       // - type of block
     RW_DTREG* rw;               // - R/W header
 
     va_start( args, ft );
-    for( done = false; ! done; ft = va_arg( args, enum FT ) ) {
+    for( done = false; !done; ft = va_arg( args, enum FT ) ) {
         switch( ft ) {
           case FT_RW :
           { const char* text;   // - text
@@ -272,7 +272,7 @@ static void dump(               // FORMATTED DUMP
             for( index = 1; ; ++state, ++index ) {
                 if( state->dtor == 0 ) {
                     cmd = state->u.cmd_addr;
-                    if( cmd == 0 ) break;
+                    if( cmd == NULL ) break;
                     dump( FT_OFF,    "index", index,
                           FT_PTR,    "cmd",   cmd,
                           FT_CONT );
@@ -738,7 +738,7 @@ void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
 void __DumpPdata()
 {
     PData* p = (PData*)0x430000;
-    PData* l = 0;
+    PData* l = NULL;
     printf( "PDATA at 430000\n\n" );
     for( ; p->BeginAddress < p->EndAddress; ++p ) {
         if( p <= l ) {

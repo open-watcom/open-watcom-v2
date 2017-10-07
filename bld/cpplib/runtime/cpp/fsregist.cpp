@@ -35,11 +35,11 @@
 #include "exc_pr.h"
 
 #ifdef FS_REGISTRATION
-static bool findWatcomHandler( uint_8 *h )
+static bool isWatcomHandler( uint_8 *h )
 {
     while( h[0] == 0xff && h[1] == 0x25 ) {
         // skip jmp [0xhhhhhhhh] instructions (these are injected by the linker)
-        h = (uint_8*)( **((void***)(h + 2)) );
+        h = (uint_8 *)( **((void***)(h + 2)) );
     }
     return( h[5] == 'W' && h[6] == 'A' && h[7] == 'T' && h[8] == 'C' && h[9] == 'O' && h[10] == 'M' );
 }
@@ -92,7 +92,7 @@ THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
     retn = NULL;
     for( ctl = FsTop(); ctl != LIST_END; ctl = ctl->base.prev ) {
 #ifdef FS_REGISTRATION
-        if( findWatcomHandler( (uint_8*)ctl->base.handler ) ) {
+        if( isWatcomHandler( (uint_8 *)ctl->base.handler ) ) {
 #endif
             if( EXC_HAND_CATCH == (*ctl->base.handler)( &excrec, NULL, NULL, 0 ) ) {
                 last = ctl;

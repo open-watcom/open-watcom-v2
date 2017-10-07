@@ -46,7 +46,7 @@ namespace std {
   ostrstream::ostrstream( char *str, int size, ios::openmode mode )
     : strstreambase( str,
                      size,
-                     ((str == 0) ? 0 : str +
+                     ((str == NULL) ? NULL : str +
                         ((mode & (ios::atend|ios::append)) ?
                                                    strlen( str ) : 0) ) ) {
   }

@@ -174,8 +174,8 @@ unsigned CPPLIB( pd_handler_rtn )  // HANDLER FOR FS REGISTRATIONS
     unsigned retn;              // - return code
     __EXC_INFO info;            // - procedure exception information
 
-    if( 0 == sp ) {
-        // sp == 0 only when called from pd_lookup
+    if( NULL == sp ) {
+        // sp == NULL only when called from pd_lookup
         THREAD_CTL* ctl = &_RWD_ThreadData;
         retn = unsigned( ctl );
     } else {
@@ -294,13 +294,15 @@ void CPPLIB( PdUnwind )         // UNWIND USING PROCEDURE DESCRIPTORS
 }
 
 
-static int isWatcomHandler      // FIGURE OUT IF WATCOM HANDLER
+static bool isWatcomHandler     // FIGURE OUT IF WATCOM HANDLER
     ( __EXC_INFO* info )        // - exception info
 {
-    int retn;
+    bool retn;
+
+    retn = false;
     if( info->in_func && 0 != info->dctx.pdata ) {
         unsigned* handler = (unsigned*)info->dctx.pdata->ExceptionHandler;
-        if( 0 != handler
+        if( NULL != handler
          && handler[1] == 0x2B544157           // "WAT+"
          && handler[2] == 0x4D4F432B ) {       // "+COM"
 #if 1
@@ -315,14 +317,10 @@ static int isWatcomHandler      // FIGURE OUT IF WATCOM HANDLER
 #endif
             info->dctx.fp_alternate = info->dctx.fp_actual;
             getProcInfo( info, &info->dctx );
-            retn = 1;
-        } else {
-            retn = 0;
+            retn = true;
         }
-    } else {
-        retn = 0;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -336,20 +334,20 @@ THREAD_CTL* CPPLIB( pd_lookup ) // LOOK THRU PD ENTRIES FOR LAST, THREAD_CTL
     THREAD_CTL* retn;           // - PGM THREAD (first WATCOM .EXE, .DLL active)
 
     initExcInfo( &info );
-    last = 0;
-    retn = 0;
+    last = NULL;
+    retn = NULL;
     for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             last = info.rw;
             p_handler handler = (p_handler)info.dctx.pdata->ExceptionHandler;
             base = (THREAD_CTL*)handler( 0, 0, 0, 0 );
-            if( retn == 0 || base->flags.executable ) {
+            if( retn == NULL || base->flags.executable ) {
                 retn = base;
             }
         }
     }
     *a_last = last;
-    if( retn == 0 ) {
+    if( retn == NULL ) {
         retn = &_RWD_ThreadData;
     }
     return retn;
@@ -364,7 +362,7 @@ RW_DTREG* CPPLIB( pd_top )      // LOOK THRU PD ENTRIES FOR FIRST R/W ENTRY
     RW_DTREG* first;            // - first entry
 
     initExcInfo( &info );
-    first = 0;
+    first = NULL;
     for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             first = info.rw;
@@ -390,8 +388,8 @@ void CPPLIB( pd_dump_rws )      // DEBUGGING -- DUMP R/W, R/O data structure
     RW_DTREG* first;            // - first entry
 
     initExcInfo( &info );
-    first = 0;
-    for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
+    first = NULL;
+    for( ; !lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             dump_rw( info.rw, info.ro );
         } else {
