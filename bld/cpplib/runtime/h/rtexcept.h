@@ -543,7 +543,7 @@ void CPPLIB( dtor_free_exc )    // DESTRUCT AND FREE EXCEPTION
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
     , THROW_RO* throw_ro        // - throw r/o block
-    , rboolean is_zero          // - true ==> thrown object is zero constant
+    , bool is_zero              // - true ==> thrown object is zero constant
     , _RTCTL* rt_ctl            // - R/T control
     , void* object              // - thrown object
     , FsExcRec* rec )           // - exception record

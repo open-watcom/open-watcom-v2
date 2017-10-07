@@ -54,7 +54,7 @@ inline
 static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
     DISPATCH_EXC *dispatch,     // - dispatch control
     THROW_RO *throw_ro,         // - thrown R/O block
-    rboolean is_zero,           // - true ==> thrown object is zero constant
+    bool is_zero,               // - true ==> thrown object is zero constant
     _RTCTL* rtc )               // - R/T control
 {
     dispatch->ro = throw_ro;
@@ -79,7 +79,7 @@ extern "C"
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
     , THROW_RO* throw_ro        // - throw r/o block
-    , rboolean is_zero          // - true ==> thrown object is zero constant
+    , bool is_zero              // - true ==> thrown object is zero constant
     , _RTCTL* rt_ctl            // - R/T control
     , void* object              // - thrown object
     , FsExcRec* rec )           // - exception record
