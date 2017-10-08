@@ -114,14 +114,16 @@ std::ios::iostate __getnumberint64( std::streambuf *sb,
         }
         if( is_digit ) {
             unsigned __int64 tmp_result = result;
-            overflow  |= (result & overFlowMasks[shift1]);
-            result   <<= shift1;
+            overflow |= (result & overFlowMasks[shift1]);
+            result <<= shift1;
             if( shift2 > 0 ) {
                 tmp_result <<= shift2;
-                if( result > (ULONGLONG_MAX - tmp_result) ) overflow = 1;
+                if( result > (ULONGLONG_MAX - tmp_result) )
+                    overflow = 1;
                 result += tmp_result;
             }
-            if( result > ULONGLONG_MAX - digit_value ) overflow = 1;
+            if( result > ULONGLONG_MAX - digit_value )
+                overflow = 1;
             result += digit_value;
             sb->sbumpc();
             offset++;

@@ -86,7 +86,7 @@ typedef int filedesc;
     filedesc      __file_handle;
     ios::openmode __file_mode;
     char          __unbuffered_get_area[ DEFAULT_PUTBACK_SIZE+1 ];
-    char          __attached : 1;
+    unsigned char __attached : 1;
     int           : 0;
   };
 :include poppack.sp

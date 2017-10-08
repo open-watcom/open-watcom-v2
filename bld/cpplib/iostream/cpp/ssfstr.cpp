@@ -82,7 +82,7 @@ namespace std {
             }
         }
     }
-    __frozen = 1;
+    __frozen = true;
     return( base() );
   }
 

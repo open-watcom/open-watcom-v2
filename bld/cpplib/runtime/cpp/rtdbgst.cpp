@@ -72,7 +72,7 @@ enum FT                         // types of formatting
 
 static std::FILE    *fstk[MX_FSTK]; // suspended files
 static unsigned     index;          // top of files stack
-static int          logging;        // true ==> logging at level 0
+static bool         logging;        // true ==> logging at level 0
 static unsigned     indent = 1;     // # of indentations
 
 static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
@@ -821,7 +821,7 @@ void DbgRedirectBeg             // START REDIRECTION
 {
     if( index == 0 ) {
         reDirBeg();
-        logging = 0;
+        logging = false;
     }
 }
 
@@ -843,7 +843,7 @@ void DbgLogBeg                  // START LOGGING
     ( void )
 {
     if( index == 0 ) {
-        logging = 1;
+        logging = true;
     }
     reDirBeg();
 }

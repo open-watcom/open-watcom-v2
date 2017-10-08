@@ -60,15 +60,15 @@ namespace std {
     char *eput;
 
     __lock_it( __b_lock );
-    __dynamic         = 0;
-    __unlimited       = 0;
-    __frozen          = 0;
+    __dynamic         = false;
+    __unlimited       = false;
+    __frozen          = false;
     __alloc_fn        = NULL;
     __free_fn         = NULL;
     __allocation_size = 32;
     __minbuf_size     = 0;
     if( ptr == NULL ) {                     // no buffer to set up?
-        __dynamic = 1;
+        __dynamic = true;
         return;
     }
     get = ptr;
@@ -77,7 +77,7 @@ namespace std {
     } else if( size == 0 ) {
         eget = get + strlen( get );         // use up NULLCHAR, too!
     } else {
-        __unlimited = 1;
+        __unlimited = true;
         eget = get + DEFAULT_MAINBUF_SIZE;
     }
     setb( get, eget, false );
