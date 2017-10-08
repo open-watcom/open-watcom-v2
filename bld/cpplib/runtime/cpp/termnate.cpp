@@ -38,7 +38,8 @@
 
 namespace std {
 
-    _WPRTLINK _WCNORETURN
+    _WPRTLINK
+    _WCNORETURN
     void terminate( void )          // HANDLE TERMINATE
     {
         terminate_handler handler;  // - NULL or handler set by "set_terminate"

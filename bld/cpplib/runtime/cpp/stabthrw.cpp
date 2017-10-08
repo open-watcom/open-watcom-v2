@@ -47,7 +47,8 @@
 #include "rtmsgs.h"
 
 
-static _WCNORETURN
+static
+//_WCNORETURN
 void fneDispatch(               // DISPATCH "unexpected"
     DISPATCH_EXC *dispatch )    // - dispatch control
 {
@@ -113,7 +114,8 @@ void fneDispatch(               // DISPATCH "unexpected"
 
 
 // never return
-static _WCNORETURN
+static
+//_WCNORETURN
 void catchDispatch(             // DISPATCH A CATCH BLOCK
     DISPATCH_EXC *dispatch )    // - dispatch control
 {

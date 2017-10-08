@@ -36,7 +36,8 @@
 
 namespace std {
 
-    _WPRTLINK _WCNORETURN
+    _WPRTLINK
+    _WCNORETURN
     void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
     {
         unexpected_handler handler;     // - current handler

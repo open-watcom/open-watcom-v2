@@ -604,19 +604,19 @@ RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
 ;
 
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
     void )
 ;

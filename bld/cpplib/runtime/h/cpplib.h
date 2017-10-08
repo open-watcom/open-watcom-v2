@@ -134,9 +134,6 @@ typedef void (*pFUNcopyV)                       // copy ctor
                 , unsigned                      // - ctor vbase flag
                 , void * );                     // - source
 
-// twits at Microsoft define "boolean" in their Win32 header files
-typedef int rboolean;
-
 extern "C" {
 
 #define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
