@@ -282,7 +282,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
 }
 
 
-static void set_buffering(       // SET BUFFERING FOR AN OPEN FILE
+static void set_buffering(      // SET BUFFERING FOR AN OPEN FILE
     FILE *fp,                   // - opened file
     size_t buf_size,            // - buffer size
     int mode )                  // - buffering mode

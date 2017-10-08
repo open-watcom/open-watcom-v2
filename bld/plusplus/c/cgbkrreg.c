@@ -43,15 +43,12 @@
 #if _CPU != _AXP
 
 typedef struct {                // OPT_DEFN -- optimization definition
-    SYMBOL sym;                 // - symbol for definition
-    char name[1];               // - name
+    SYMBOL      sym;            // - symbol for definition
+    const char  *name;          // - name
 } OPT_DEFN;
 
 
-static struct {
-    SYMBOL sym;
-    char name[];
-} optFuncReg = {   // OPT_DEFN for function registration
+OPT_DEFN optFuncReg = {   // OPT_DEFN for function registration
      NULL, "_wint_thread_data"
 };
 
@@ -159,7 +156,7 @@ void CgFunDeregister(           // DE-REGISTER A FUNCTION
         CgRtParam( expr, &def, TY_POINTER );
         CgRtCallExecDone( &def );
     } else {
-        opt_thr = pointOptSym( (OPT_DEFN *)&optFuncReg );
+        opt_thr = pointOptSym( &optFuncReg );
         if( opt_thr == NULL ) {
             CgRtCallExecNoArgs( RTF_DEREGISTER );
         } else {
@@ -193,20 +190,17 @@ void CgFunRegister(             // REGISTER A FUNCTION
         CgRtCallExecDone( &def );
         rw = registerHandler( rw, RTF_FS_HANDLER );
     } else {
-        opt_thr = pointOptSym( (OPT_DEFN *)&optFuncReg );
+        opt_thr = pointOptSym( &optFuncReg );
         if( opt_thr == NULL ) {
             rtRegister( rw, ro );
         } else {
             CompFlags.inline_fun_reg = true;
-            CgAssignPtr( CgSymbolPlusOffset( rw, 0 )
-                       , CgFetchPtr( opt_thr ) );
-            CgAssignPtr( CgSymbol( optFuncReg.sym )
-                       , CgAddrSymbol( rw ) );
+            CgAssignPtr( CgSymbolPlusOffset( rw, 0 ), CgFetchPtr( opt_thr ) );
+            CgAssignPtr( CgSymbol( optFuncReg.sym ), CgAddrSymbol( rw ) );
             rw = registerHandler( rw, RTF_FS_HANDLER_RTN );
         }
     }
-    CgAssignPtr( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand )
-               , CgAddrSymbol( ro ) );
+    CgAssignPtr( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr + CgbkInfo.size_fs_hand ), CgAddrSymbol( ro ) );
 #endif
     if( fctl->is_dtor ) {
         se = BlkPosnCurr();
