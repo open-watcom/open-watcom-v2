@@ -33,7 +33,6 @@
 #include "cgdefs.h"
 #include "feprotos.h"
 
-#include "clibext.h"
 
 /*
  * RISC platforms are likely to take a big hit for misaligned accesses.
@@ -132,7 +131,7 @@ static void AllocPermArea( void )
             blk->size = PermSize;
             Blks = blk;
             perm_area = (char *)blk + sizeof( mem_blk );
-            *(ssize_t *)(perm_area + PermSize) = -1;     /* null length tag */
+            *(size_t *)(perm_area + PermSize) = (size_t)-1;     /* null length tag */
             break;
         }
     }
