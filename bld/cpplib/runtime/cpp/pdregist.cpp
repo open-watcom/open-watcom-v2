@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,32 +55,32 @@ struct __EXC_INFO               // EXCEPTION INFORMATION
 };
 
 
-int lastPgmCtr                  // TEST IF LAST PROGRAM CTR WHEN WALKING STACK
+static bool lastPgmCtr          // TEST IF LAST PROGRAM CTR WHEN WALKING STACK
     ( void* pc )                // - program ctr
 {
-    long pcl =  (long)pc & 0xfffffffC;
-    return pcl == 0 || pcl == 0xfffffffC;
+    long pcl = (long)pc & 0xfffffffc;
+    return( pcl == 0 || pcl == 0xfffffffc );
 }
 
 
-static int procSetsFP           // TEST IF PROCEDURE SETS FP
+static bool procSetsFP          // TEST IF PROCEDURE SETS FP
     ( PData* pdata )            // - procedure descriptor
 {
-    int retn;                   // - return: 1 ==> fp used
+    bool retn;                  // - return: 1 ==> fp used
     RISC_INS* ins;              // - an instruction
 
     if( pdata->BeginAddress == pdata->PrologEndAddress ) {
-        retn = 0;
+        retn = false;
     } else {
         ins = (RISC_INS*)pdata->PrologEndAddress;
         ins = (RISC_INS*)( (char*)ins - RISC_INS_SIZE );
         if( *ins == RISC_MOV_SP_FP ) {
-            retn = 1;
+            retn = true;
         } else {
-            retn = 0;
+            retn = false;
         }
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -336,11 +337,11 @@ THREAD_CTL* CPPLIB( pd_lookup ) // LOOK THRU PD ENTRIES FOR LAST, THREAD_CTL
     initExcInfo( &info );
     last = NULL;
     retn = NULL;
-    for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
+    for( ; !lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             last = info.rw;
             p_handler handler = (p_handler)info.dctx.pdata->ExceptionHandler;
-            base = (THREAD_CTL*)handler( 0, 0, 0, 0 );
+            base = (THREAD_CTL*)handler( NULL, NULL, NULL, 0 );
             if( retn == NULL || base->flags.executable ) {
                 retn = base;
             }
@@ -363,7 +364,7 @@ RW_DTREG* CPPLIB( pd_top )      // LOOK THRU PD ENTRIES FOR FIRST R/W ENTRY
 
     initExcInfo( &info );
     first = NULL;
-    for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
+    for( ; !lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             first = info.rw;
             break;
