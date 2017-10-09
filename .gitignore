@@ -154,6 +154,8 @@
 #
 !/bld/src/**/*.lnk
 #
+!/bld/trap/**/*.trp/
+#
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini
 /bld/vi/*/*.vi
