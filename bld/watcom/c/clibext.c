@@ -196,7 +196,7 @@ static void copypart( char *buf, const char *p, int len, int maxlen )
             #else
                 len = _mbsnccnt( p, len );          /* # chars in len bytes */
                 _mbsncpy( buf, p, len );            /* copy the chars */
-                buf[ _mbsnbcnt(buf,len) ] = '\0';
+                buf[_mbsnbcnt( buf, len )] = '\0';
             #endif
     }
 }
@@ -365,8 +365,8 @@ static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const uns
 #else
     len = _mbsnccnt( b_src, len );          /* # chars in len bytes */
     _mbsncpy( dst, b_src, len );            /* copy the chars */
-    dst[ _mbsnbcnt(dst,len) ] = '\0';
-    return( dst + _mbsnbcnt(dst,len) + 1 );
+    dst[_mbsnbcnt( dst, len )] = '\0';
+    return( dst + _mbsnbcnt( dst, len ) + 1 );
 #endif
 }
 
@@ -585,7 +585,7 @@ extern void _makepath( char *path, const char *volume,
             do {
                 *path++ = *volume++;
             } while( *volume != '\0' );
-            if( path[ -1 ] != ':' ) {
+            if( path[-1] != ':' ) {
                 *path++ = ':';
             }
         }
@@ -664,16 +664,16 @@ void _makepath( char *path, const char *drive,
     if( dir != NULL ) {
         if( *dir != '\0' ) {
             do {
-                    ch = pickup( _mbsnextc(dir), &first_pc );
+                    ch = pickup( _mbsnextc( dir ), &first_pc );
                     _mbvtop( ch, path );
-                    path[_mbclen(path)] = '\0';
+                    path[_mbclen( path )] = '\0';
                     path = _mbsinc( path );
                     dir = _mbsinc( dir );
             } while( *dir != '\0' );
             /* if no path separator was specified then pick a default */
             if( first_pc == '\0' ) first_pc = PC;
             /* if dir did not end in '/' then put in a provisional one */
-                if( *(_mbsdec(pathstart,path)) == first_pc )
+                if( *(_mbsdec( pathstart, path )) == first_pc )
                     path--;
                 else
                     *path = first_pc;
@@ -684,15 +684,15 @@ void _makepath( char *path, const char *drive,
     if( first_pc == '\0' ) first_pc = PC;
     if( fname != NULL ) {
             ch = _mbsnextc( fname );
-            if( pickup(ch,&first_pc) != first_pc  &&  *path == first_pc )
+            if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
                 path++;
 
         while (*fname != '\0')
         {
         //do {
-                ch = pickup( _mbsnextc(fname), &first_pc );
+                ch = pickup( _mbsnextc( fname ), &first_pc );
                 _mbvtop( ch, path );
-                path[_mbclen(path)] = '\0';
+                path[_mbclen( path )] = '\0';
                 path = _mbsinc( path );
                 fname = _mbsinc( fname );
         } //while( *fname != '\0' );
@@ -701,8 +701,11 @@ void _makepath( char *path, const char *drive,
     }
     if( ext != NULL ) {
         if( *ext != '\0' ) {
-            if( *ext != '.' )  *path++ = '.';
-            while( *ext != '\0' ) *path++ = *ext++;     /* OK for MBCS */
+            if( *ext != '.' )
+                *path++ = '.';
+            while( *ext != '\0' ) {
+                *path++ = *ext++;     /* OK for MBCS */
+            }
         }
     }
     *path = '\0';
@@ -1583,18 +1586,23 @@ void _searchenv( const char *name, const char *env_var, char *buffer )
 
     prev_errno = errno;
     if( access( name, F_OK ) == 0 ) {
-        p = buffer;                                 /* JBS 90/3/30 */
-        len = 0;                                    /* JBS 04/1/06 */
+        p = buffer;
+        len = 0;
         for( ;; ) {
-            if( name[0] == PATH_SEPARATOR ) break;
-            if( name[0] == '.' ) break;
+            if( name[0] == PATH_SEPARATOR )
+                break;
+            if( name[0] == '.' )
+                break;
 #ifndef __UNIX__
-            if( name[0] == '/' ) break;
-            if( (name[0] != '\0') && (name[1] == ':') ) break;
+            if( name[0] == '/' )
+                break;
+            if( (name[0] != '\0') && (name[1] == ':') )
+                break;
 #endif
-            getcwd( buffer, _MAX_PATH );
+            if( getcwd( buffer, _MAX_PATH ) ==  NULL )
+                break;
             len = strlen( buffer );
-            p = &buffer[ len ];
+            p = &buffer[len];
             if( p[-1] != PATH_SEPARATOR ) {
                 if( len < (_MAX_PATH - 1) ) {
                     *p++ = PATH_SEPARATOR;
