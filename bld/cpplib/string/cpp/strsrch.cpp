@@ -90,9 +90,9 @@ extern "C" long StringSearch
         }
         std::memset( SkipTable, patlen, 256 );
         for( pat_index = 0; pat_index < patlen; ++pat_index ) {
-            int c;
+            unsigned char c;
 
-            c = (unsigned char) pattern[pat_index];
+            c = (unsigned char)pattern[pat_index];
             SkipTable[c] = (unsigned char)(patlen - pat_index - 1);
         }
 

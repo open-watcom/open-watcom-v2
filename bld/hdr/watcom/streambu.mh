@@ -245,7 +245,7 @@ using std::streambuf;
 
   inline streamsize streambuf::sgetn( char *__buf, streamsize __len ) {
     __lock_it( __b_lock );
-    if( __len < (int)(__get_end - __get_ptr) ) {
+    if( __len < (streamsize)(__get_end - __get_ptr) ) {
         memcpy( __buf, __get_ptr, __len );
         gbump( __len );
         return( __len );
@@ -281,7 +281,7 @@ using std::streambuf;
 
   inline streamsize streambuf::sputn( char const *__buf, streamsize __len ) {
     __lock_it( __b_lock );
-    if( __len < (int)(__put_end - __put_ptr) ) {
+    if( __len < (streamsize)(__put_end - __put_ptr) ) {
         memcpy( __put_ptr, __buf, __len );
         pbump( __len );
         return( __len );
