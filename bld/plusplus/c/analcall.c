@@ -1030,11 +1030,11 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             }
         } else {
             if( SymIsStaticFuncMember( sym ) ) {
-                #ifdef OLD_STATIC_MEMBER_ACCESS
-                    NodeFreeDupedExpr( this_node );
-                #else
-                    static_fn_this = this_node;
-                #endif
+#ifdef OLD_STATIC_MEMBER_ACCESS
+                NodeFreeDupedExpr( this_node );
+#else
+                static_fn_this = this_node;
+#endif
                 this_node = NULL;
             }
         }

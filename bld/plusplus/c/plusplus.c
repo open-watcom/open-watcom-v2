@@ -223,13 +223,16 @@ static int makeExitStatus( int exit_status )
     return( exit_status );
 }
 
-static void openForceIncludeFile( void )
+static bool openForceIncludeFile( void )
 {
+    bool    ok;
+
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
+    ok = OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     CMemFreePtr( &ForceInclude );
+    return( ok );
 }
 
 static void setForceIncludeFromEnv( void )
@@ -330,9 +333,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 if( ForceInclude != NULL ) {
                     EmitLine( 1, WholeFName );
                     CtxSetCurrContext( CTX_FORCED_INCS );
-                    openForceIncludeFile();
-                    PpParse();
-                    SrcFileClose( true );
+                    if( openForceIncludeFile() ) {
+                        PpParse();
+                        SrcFileClose( true );
+                    }
                 }
                 OpenPgmFile();
                 PpParse();
@@ -340,9 +344,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             } else {
                 if( ForcePreInclude != NULL ) {
                     CtxSetCurrContext( CTX_PREINCL );
-                    openForcePreIncludeFile();
-                    NextToken();    /* process pre-include file, must not include any code or variable */
-                    SrcFileClose( true );
+                    if( openForcePreIncludeFile() ) {
+                        NextToken();    /* process pre-include file, must not include any code or variable */
+                        SrcFileClose( true );
+                    }
                 }
                 OpenPgmFile();
                 CtxSetCurrContext( CTX_SOURCE );
@@ -357,9 +362,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 if( ForceInclude != NULL ) {
                     CtxSetCurrContext( CTX_FORCED_INCS );
-                    openForceIncludeFile();
-                    DbgVerify( !CompFlags.watch_for_pcheader,
-                        "force include file wasn't used for PCH" );
+                    if( openForceIncludeFile() ) {
+                        DbgVerify( !CompFlags.watch_for_pcheader,
+                            "force include file wasn't used for PCH" );
+                    }
                 }
                 NextToken();
                 CompFlags.watch_for_pcheader = false;
