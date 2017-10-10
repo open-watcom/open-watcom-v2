@@ -122,7 +122,7 @@ static void splitFini( INITFINI *d );
 #define EXIT_BEG( name )                    \
 struct EXIT_POINT_NAME( name ) {            \
     EXIT_POINT      *previous;              \
-    unsigned        subsequent :1;          \
+    bool            subsequent :1;          \
     INITFINI        *registered[ 0
 #define EXIT_REG( name )          +1
 #define SPLIT_INIT( name, fini )  +1
@@ -207,7 +207,7 @@ void ExitPointAcquireRtn(       // ESTABLISH EXIT_POINT
         ient = *iptr;
         (*ient->init_rtn)( ient );
     }
-    est->subsequent = 1;
+    est->subsequent = true;
 }
 
 
