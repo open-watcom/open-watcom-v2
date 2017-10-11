@@ -181,7 +181,8 @@ void FnovNumCandidatesSet(      // SET # CANDIDATES FROM LIST
     FNOV_LIST *candidates )     // - the candidates list
 ;
 int FnovRejectParm(             // GIVE PARM # OF FIRST REJECTED SYMBOL
-    FNOV_DIAG *fnov_diag )      // - diagnosis information
+    FNOV_DIAG *fnov_diag,       // - diagnosis information
+    unsigned *pidx )            // - parm #
 ;
 
 FNOV_DIAG *FnovInitDiag(        // INITIALIZE DIAGNOSIS LIST POINTERS TO NULL

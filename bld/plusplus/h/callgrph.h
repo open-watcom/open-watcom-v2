@@ -86,17 +86,17 @@ struct callgraph                // CALLGRAPH INFORMATION
     VSTK_CTL calls;             // - used to stack calls
     carve_t carve_nodes;        // - carving for nodes
     carve_t carve_edges;        // - carving for call edges
-    unsigned incr_refs;         // - amount to increment refs
-    unsigned incr_addrs;        // - amount to increment addrs
+    int incr_refs;              // - amount to increment refs
+    int incr_addrs;             // - amount to increment addrs
     unsigned depth;             // - current call depth
-    unsigned pruned     :1;     // - true ==> has been pruned
-    unsigned assumed_longjump:1;// - true ==> incomplete SF_LONGJUMP info
-    unsigned does_longjump  :1; // - true ==> does a longjump
-    unsigned scope_call_opt :1; // - true ==> scope-call optimization enabled
-    unsigned push_unresolved :1;// - true ==> push unresolved function
-    unsigned stmt_scope      :1;// - true == statement scope open
+    bool     pruned     :1;     // - true ==> has been pruned
+    bool     assumed_longjump:1;// - true ==> incomplete SF_LONGJUMP info
+    bool     does_longjump  :1; // - true ==> does a longjump
+    bool     scope_call_opt :1; // - true ==> scope-call optimization enabled
+    bool     push_unresolved :1;// - true ==> push unresolved function
+    bool     stmt_scope      :1;// - true == statement scope open
 #ifndef NDEBUG
-    unsigned doing_rescan    :1;// - true ==> (debug only) rescanning
+    bool     doing_rescan    :1;// - true ==> (debug only) rescanning
 #endif
     CALLNODE* curr_node;        // - current node being processed
     VSTK_CTL scopes;            // - used to stack scopes in routine
@@ -121,15 +121,15 @@ struct callnode                 // CALLNODE -- node in call graph
     UNR_USAGE* unresolved;      // - unresolved usages of function
     SCOPE_STATE stmt_state;     // - state for "statement" scope
     DT_METHOD dtor_method;      // - specified dtor method for function
-    uint_8 state_table      :1; // - true ==> state table for function
-    uint_8 calls_done       :1; // - true ==> fn has been scanned for calls
-    uint_8 is_vft           :1; // - true ==> represents VFT
-    uint_8 inline_fun       :1; // - true ==> is inline function
-    uint_8 inlineable       :1; // - true ==> able to be inlined
-    uint_8 inlineable_oe    :1; // - true ==> able to be -oe inlined
-    uint_8 rescan           :1; // - true ==> has to be re-scanned
-    uint_8 stab_gen         :1; // - true ==> need to generate state table
-    uint_8 flowed_recurse   :1; // - true ==> flowed a recursive call
+    bool   state_table      :1; // - true ==> state table for function
+    bool   calls_done       :1; // - true ==> fn has been scanned for calls
+    bool   is_vft           :1; // - true ==> represents VFT
+    bool   inline_fun       :1; // - true ==> is inline function
+    bool   inlineable       :1; // - true ==> able to be inlined
+    bool   inlineable_oe    :1; // - true ==> able to be -oe inlined
+    bool   rescan           :1; // - true ==> has to be re-scanned
+    bool   stab_gen         :1; // - true ==> need to generate state table
+    bool   flowed_recurse   :1; // - true ==> flowed a recursive call
     PAD_UNSIGNED
 };
 
@@ -144,7 +144,7 @@ struct calledge                 // CALLEDGE -- edge in call graph
 struct inlinee                  // INLINEE -- stacked inline reference
 {
     CALLNODE *callee;           // - function called
-    unsigned expanded   :1;     // - expanded the function
+    bool     expanded   :1;     // - expanded the function
 };
 
 // PROTOTYPES

@@ -1441,16 +1441,16 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
     TYPE fn_type;
     TYPE *curr_arg;
     arg_list *args;
-    unsigned arg_count;
+    unsigned num_args;
 
-    arg_count = 0;
+    num_args = 0;
     for(;;) {
         arg_type = va_arg( count_args, TYPE );
         if( arg_type == NULL ) break;
-        ++arg_count;
+        ++num_args;
     }
     va_end( count_args );
-    args = AllocArgListPerm( arg_count );
+    args = AllocArgListPerm( num_args );
     curr_arg = args->type_list;
     for(;;) {
         arg_type = va_arg( use_args, TYPE );
@@ -2959,7 +2959,7 @@ static PTREE nameOfId( PTREE id )
     return( id->u.subtree[1] );
 }
 
-static int scanDeclarator( TYPE declarator_list, unsigned *count )
+static int scanDeclarator( TYPE declarator_list, unsigned *num_args )
 {
     arg_list *args;
     int status;
@@ -2987,8 +2987,8 @@ static int scanDeclarator( TYPE declarator_list, unsigned *count )
             }
             status &= ~SM_SAW_CV_FUNCTION;
             args = declarator_list->u.f.args;
-            if( count != NULL ) {
-                *count = args->num_args;
+            if( num_args != NULL ) {
+                *num_args = args->num_args;
             }
             if( args->qualifier != TF1_NULL ) {
                 /* we have <declarator> ( <args> ) const/volatile */
@@ -3112,14 +3112,14 @@ static void checkUserConversion( TYPE return_type, int status, unsigned arg_cnt)
     }
 }
 
-static void checkDestructor( TYPE return_type, int status, unsigned arg_count )
+static void checkDestructor( TYPE return_type, int status, unsigned num_args )
 {
     if( status & SM_NOT_A_FUNCTION ) {
         CErr1( ERR_DESTRUCTOR_BAD_DECL );
     } else if( return_type != TypeGetCache( TYPC_DEFAULT_INT ) || (status & SM_RETURN_DECLARATOR) ) {
         CErr1( ERR_DESTRUCTOR_BAD_RETURN );
     }
-    if( status == SM_NULL && arg_count != 0 ) {
+    if( status == SM_NULL && num_args != 0 ) {
         CErr1( ERR_DESTRUCTOR_BAD_FUNC );
     }
 }
@@ -3654,7 +3654,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     TYPE fnmod_type;
     TYPE mod_type;
     TYPE leftover_type;
-    unsigned arg_count;
+    unsigned num_args;
     int status;
     MSG_NUM msg_num;
     type_flag mod_flags;
@@ -3679,7 +3679,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     curr_type = adjustModifiers( dspec, curr_type );
     prev_type = dspec->partial;
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
-    status = scanDeclarator( curr_type, &arg_count );
+    status = scanDeclarator( curr_type, &num_args );
     if( status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
@@ -3702,11 +3702,11 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     if( id_tree != NULL ) {
         switch( id_tree->cgop ) {
         case CO_NAME_CONVERT:
-            checkUserConversion( prev_type, status, arg_count );
+            checkUserConversion( prev_type, status, num_args );
             prev_type = id_tree->type;
             break;
         case CO_NAME_DTOR:
-            checkDestructor( prev_type, status, arg_count );
+            checkDestructor( prev_type, status, num_args );
             break;
         case CO_NAME_OPERATOR:
             checkOperator( prev_type, status, id );
@@ -5643,7 +5643,7 @@ PTREE TypeDeclarator( DECL_INFO *dinfo )
     return( PTreeType( type ) );
 }
 
-static TYPE functionReduce( TYPE type, unsigned arg_index )
+static TYPE functionReduce( TYPE type, unsigned num_args )
 {
     TYPE fn_type;
     TYPE new_fn_type;
@@ -5657,10 +5657,10 @@ static TYPE functionReduce( TYPE type, unsigned arg_index )
     TypeStripTdMod( fn_type );
     mod_list = removeModifiers( type, fn_type );
     old_args = fn_type->u.f.args;
-    args = AllocArgListPerm( arg_index );
+    args = AllocArgListPerm( num_args );
     args->except_spec = old_args->except_spec;
     args->qualifier = old_args->qualifier;
-    for( i = 0; i < arg_index; ++i ) {
+    for( i = 0; i < num_args; ++i ) {
         args->type_list[i] = old_args->type_list[i];
     }
     new_fn_type = MakeType( TYP_FUNCTION );
@@ -5757,7 +5757,7 @@ static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
         defaultProto    -- SC_DEFAULT sym with same name as function
         defaultValue    -- function that is { return expr; }
 */
-static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO *parm )
+static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned num_args, DECL_INFO *parm )
 {
     TYPE base_type;
     SYMBOL base_sym;
@@ -5772,7 +5772,7 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO 
     base_type = base_sym->sym_type;
     sym = AllocSymbol();
     sym->id = SC_DEFAULT;
-    sym->sym_type = functionReduce( base_type, arg_index );
+    sym->sym_type = functionReduce( base_type, num_args );
     sym->thread = base_sym;
     sym->u.defarg_info = NULL;
     SymbolLocnDefine( defarg_locn, sym );
@@ -5783,7 +5783,7 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO 
 static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
 {
     unsigned control;
-    unsigned arg_index;
+    unsigned num_args;
     bool is_template;
     DECL_INFO *curr;
     SYMBOL def_arg_sym;
@@ -5793,13 +5793,13 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
     control = DA_NULL;
     head = NULL;
     prev_arg = &head;
-    arg_index = 0;
+    num_args = 0;
     is_template = SymIsFunctionTemplateModel( dinfo->sym );
     RingIterBeg( dinfo->parms, curr ) {
         if( curr->type->id == TYP_DOT_DOT_DOT ) break;
         def_arg_sym = NULL;
         if( curr->has_defarg ) {
-            def_arg_sym = makeDefaultProto( dinfo, arg_index, curr );
+            def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
             if( ! defaultArgCantExist( scope, dinfo, def_arg_sym ) ) {
                 stripDefArg( curr );
                 def_arg_sym = NULL;
@@ -5815,7 +5815,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
             control |= DA_DEFARGS_PRESENT;
         } else {
             if( control & DA_DEFARGS_PRESENT ) {
-                def_arg_sym = makeDefaultProto( dinfo, arg_index, curr );
+                def_arg_sym = makeDefaultProto( dinfo, num_args, curr );
                 def_arg_sym = defaultArgMustExist( scope, dinfo, def_arg_sym );
             }
         }
@@ -5823,7 +5823,7 @@ static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
             *prev_arg = def_arg_sym;
             prev_arg = &(def_arg_sym->thread);
         }
-        ++arg_index;
+        ++num_args;
     } RingIterEnd( curr )
     *prev_arg = dinfo->sym;
     dinfo->proto_sym = head;

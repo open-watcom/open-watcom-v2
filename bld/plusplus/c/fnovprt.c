@@ -121,7 +121,7 @@ static void printScalar( FNOV_SCALAR *scalar, bool is_udc )
 static void printArgs( arg_list *args )
 /*************************************/
 {
-    int i;
+    unsigned i;
     VBUF prefix, suffix, flags;
 
     FormatTypeModFlags( args->qualifier, &flags );
@@ -129,16 +129,16 @@ static void printArgs( arg_list *args )
     VbufFree( &flags );
     for( i = 0 ; i < args->num_args ; i++ ) {
         FormatType( args->type_list[i], &prefix, &suffix );
-        printf( "    [%d]: '%s<id> %s'\n", i+1, VbufString( &prefix ), VbufString( &suffix ) );
+        printf( "    [%u]: '%s<id> %s'\n", i + 1, VbufString( &prefix ), VbufString( &suffix ) );
         VbufFree( &prefix );
         VbufFree( &suffix );
     }
 }
 
-static void printRank( int num_args, FNOV_RANK *rank, PRINT_RANK_FORMAT fmt )
-/***************************************************************************/
+static void printRank( unsigned num_args, FNOV_RANK *rank, PRINT_RANK_FORMAT fmt )
+/********************************************************************************/
 {
-    int i;
+    unsigned i;
 
     for( i = 0 ; i < num_args ; i++ ) {
         if( fmt == PRINT_THIS ) {
@@ -146,7 +146,7 @@ static void printRank( int num_args, FNOV_RANK *rank, PRINT_RANK_FORMAT fmt )
         } else if( fmt == PRINT_RETURN ) {
             printf( "    Return: %s ", rankNames[rank->rank] );
         } else {
-            printf( "    [%d]: %s ", i+1, rankNames[rank->rank] );
+            printf( "    [%u]: %s ", i + 1, rankNames[rank->rank] );
         }
         if( rank->userdef ) {
             printControl( rank->control );

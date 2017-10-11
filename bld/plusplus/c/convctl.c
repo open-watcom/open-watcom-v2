@@ -870,17 +870,16 @@ static void checkClassValue(    // CHECK THAT FUNC. ARG.S, RETURN ARE NOT CLASS
     PTREE expr,                 // - expression, in case of error
     MSG_NUM msg )               // - message to be used
 {
-    unsigned count;             // - number of args
+    unsigned i;                 // - number of args
     arg_list *alist;            // - function arguments
 
     if( NULL != StructType( ftype->of ) ) {
         PTreeWarnExpr( expr, msg );
     } else {
         alist = ftype->u.f.args;
-        for( count = alist->num_args; ; ) {
-            if( count == 0 ) break;
-            -- count;
-            if( StructType( alist->type_list[ count ] ) ) {
+        i = alist->num_args;
+        while( i-- > 0 ) {
+            if( StructType( alist->type_list[i] ) ) {
                 PTreeWarnExpr( expr, msg );
                 break;
             }

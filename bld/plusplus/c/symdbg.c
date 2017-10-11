@@ -387,7 +387,7 @@ static dbg_type  symbolicMethodType( SYMBOL curr, TYPE cls  ){
 /*************************************************************/
     dbg_proc    dp;
     arg_list    *alist;
-    int         i;
+    unsigned    i;
     TYPE        base;
     TYPE        type;
     TYPE        this_type;
@@ -920,7 +920,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
     case TYP_FUNCTION:
     {   dbg_proc    dp;
         arg_list    *alist;
-        int         i;
+        unsigned    i;
         dp = DBBegProc( CgTypeOutput( type ),
                         SymbolicDebugType( base->of,
                                            control^SD_DEREF ) );//XOR
@@ -1029,7 +1029,7 @@ static void symbolicDebugFundamentalType( void )
 static bool typedef_is_of_basic_types( TYPE type )
 /************************************************/
 {
-    int         i;
+    unsigned    i;
     arg_list    *alist;
 
     for(;;) {

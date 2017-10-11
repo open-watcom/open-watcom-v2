@@ -328,7 +328,7 @@ void TemplateDeclInit( TEMPLATE_DATA *data )
     CErrCheckpoint( &(data->errors) );
     data->all_generic = true;
     data->args = NULL;
-    data->nr_args = 0;
+    data->num_args = 0;
     data->spec_args = NULL;
     data->unbound_type = NULL;
     data->decl_scope = ScopeBegin( SCOPE_TEMPLATE_DECL );
@@ -364,14 +364,14 @@ void TemplateDeclAddArgument( DECL_INFO *new_dinfo )
     NAME name;
 
     currentTemplate->args = AddArgument( currentTemplate->args, new_dinfo );
-    currentTemplate->nr_args++;
+    currentTemplate->num_args++;
 
     name = new_dinfo->name;
     sym = new_dinfo->generic_sym;
 
     if( sym != NULL ) {
         /* template type parameter */
-        new_dinfo->type = setArgIndex( sym, currentTemplate->nr_args );
+        new_dinfo->type = setArgIndex( sym, currentTemplate->num_args );
         DbgAssert( name != NULL );
         sym = ScopeInsert( GetCurrScope(), sym, name );
     } else if( ( new_dinfo->type != NULL ) ) {
@@ -449,12 +449,12 @@ static TEMPLATE_SPECIALIZATION *newTemplateSpecialization(
     DECL_INFO *args;
     TEMPLATE_SPECIALIZATION *tspec;
     TEMPLATE_SPECIALIZATION *tprimary;
-    unsigned arg_count;
+    unsigned num_args;
 
     tinfo->nr_specs++;
 
     args = data->args;
-    arg_count = getArgList( args, NULL, NULL, NULL, true );
+    num_args = getArgList( args, NULL, NULL, NULL, true );
     tspec = CPermAlloc( sizeof( TEMPLATE_SPECIALIZATION ) );
     RingAppend( &tinfo->specializations, tspec );
     tprimary = RingFirst( tinfo->specializations );
@@ -462,11 +462,11 @@ static TEMPLATE_SPECIALIZATION *newTemplateSpecialization(
     tspec->tinfo = tinfo;
     tspec->instantiations = NULL;
     tspec->member_defns = NULL;
-    tspec->decl_scope = ( arg_count > 0 ) ? data->decl_scope : NULL;
+    tspec->decl_scope = ( num_args > 0 ) ? data->decl_scope : NULL;
     TokenLocnAssign( tspec->locn, data->locn );
-    tspec->num_args = arg_count;
-    tspec->type_list = CPermAlloc( arg_count * sizeof( TYPE ) );
-    tspec->arg_names = CPermAlloc( arg_count * sizeof( NAME ) );
+    tspec->num_args = num_args;
+    tspec->type_list = CPermAlloc( num_args * sizeof( TYPE ) );
+    tspec->arg_names = CPermAlloc( num_args * sizeof( NAME ) );
     tspec->spec_args = data->spec_args;
     data->spec_args = NULL;
     tspec->ordering = NULL;
@@ -484,11 +484,11 @@ static TEMPLATE_INFO *newTemplateInfo( TEMPLATE_DATA *data )
     DECL_INFO *args;
     TEMPLATE_INFO *tinfo;
     TEMPLATE_SPECIALIZATION *tprimary;
-    unsigned arg_count;
+    unsigned num_args;
 
     args = data->args;
-    arg_count = getArgList( args, NULL, NULL, NULL, true );
-    if( arg_count == 0 ) {
+    num_args = getArgList( args, NULL, NULL, NULL, true );
+    if( num_args == 0 ) {
         CErr1( ERR_TEMPLATE_MUST_HAVE_ARGS );
     }
 
@@ -500,13 +500,13 @@ static TEMPLATE_INFO *newTemplateInfo( TEMPLATE_DATA *data )
     /* RingFirst( tinfo->specializations ) is always the primary template */
 
     tinfo->sym = NULL;
-    tinfo->defarg_list = CPermAlloc( arg_count * sizeof( REWRITE * ) );
+    tinfo->defarg_list = CPermAlloc( num_args * sizeof( REWRITE * ) );
     tinfo->free = false;
 
     tprimary->defn = data->defn;
     tprimary->defn_found = data->defn_found;
 
-    memset( tinfo->defarg_list, 0, arg_count * sizeof( REWRITE * ) );
+    memset( tinfo->defarg_list, 0, num_args * sizeof( REWRITE * ) );
     getArgList( args, NULL, NULL, tinfo->defarg_list, true );
     return( tinfo );
 }
@@ -570,14 +570,14 @@ SYMBOL ClassTemplateLookup( SCOPE scope, NAME name )
 
 static bool templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
 {
-    unsigned curr_count;
+    unsigned num_args;
     unsigned i;
     DECL_INFO *curr;
     TEMPLATE_SPECIALIZATION *tprimary;
 
     tprimary = RingFirst( tinfo->specializations );
-    curr_count = getArgList( args, NULL, NULL, NULL, true );
-    if( curr_count != tprimary->num_args ) {
+    num_args = getArgList( args, NULL, NULL, NULL, true );
+    if( num_args != tprimary->num_args ) {
         return( false );
     }
     i = 0;
@@ -605,13 +605,13 @@ static bool sameArgNames( DECL_INFO *args, NAME *names )
 
 static NAME *getUniqueArgNames( DECL_INFO *args, TEMPLATE_SPECIALIZATION *tspec )
 {
-    unsigned    arg_count;
+    unsigned    num_args;
     NAME        *arg_names;
 
     arg_names = tspec->arg_names;
     if( !sameArgNames( args, arg_names ) ) {
-        arg_count = getArgList( args, NULL, NULL, NULL, true );
-        arg_names = CPermAlloc( arg_count * sizeof( NAME ) );
+        num_args = getArgList( args, NULL, NULL, NULL, true );
+        arg_names = CPermAlloc( num_args * sizeof( NAME ) );
         getArgList( args, NULL, arg_names, NULL, true );
     }
     return( arg_names );
@@ -988,7 +988,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
         tspec = RingFirst( tinfo->specializations );
         primary_specialization = true;
 
-        if( ( data->nr_args != tspec->num_args )
+        if( ( data->num_args != tspec->num_args )
          || ! templateArgListsSame( args, tinfo ) ) {
             CErr2p( ERR_CANT_OVERLOAD_CLASS_TEMPLATES, tinfo );
             return NULL;
@@ -1697,19 +1697,19 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     while( generated_fn != NULL ) {
         fn_type = FunctionDeclarationType( generated_fn->sym_type );
         if( fn_type != NULL ) {
-            int type_args;
+            unsigned num_args;
             arg_list *alist;
 
             alist = TypeArgList( fn_type );
-            type_args = alist->num_args;
+            num_args = alist->num_args;
 
-            if( type_args == args->num_args ) {
+            if( num_args == args->num_args ) {
                 return generated_fn;
             }
 
-            if( type_args != 0 ) {
-                if( type_args <= args->num_args+1 ) {
-                    if( alist->type_list[type_args-1]->id == TYP_DOT_DOT_DOT ) {
+            if( num_args != 0 ) {
+                if( num_args <= args->num_args + 1 ) {
+                    if( alist->type_list[num_args - 1]->id == TYP_DOT_DOT_DOT ) {
                         return generated_fn;
                     }
                 }
@@ -1914,7 +1914,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
     PTREE parm;
     TYPE arg_type;
     TEMPLATE_SPECIALIZATION *tprimary;
-    unsigned num_parms;
+    unsigned num_args;
     unsigned i;
     bool something_went_wrong;
     bool inside_decl_scope;
@@ -1927,14 +1927,14 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
     inside_decl_scope = ScopeType( save_scope, SCOPE_TEMPLATE_DECL )
                      && ( save_scope->ordered != NULL ) ;
 
-    parms = NodeReverseArgs( &num_parms, parms );
+    parms = NodeReverseArgs( &num_args, parms );
     tprimary = RingFirst( tinfo->specializations );
 
     if( tprimary->corrupted ) {
         something_went_wrong = true;
     }
     /* Check for argument overflow */
-    if( num_parms > tprimary->num_args ) {
+    if( num_args > tprimary->num_args ) {
         CErr2p( ERR_TOO_MANY_TEMPLATE_PARAMETERS, tinfo );
         something_went_wrong = true;
     } else if( ! something_went_wrong ) {
@@ -2659,7 +2659,7 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
     PTREE parms;
     SYMBOL curr;
     SYMBOL stop;
-    unsigned num_parms;
+    unsigned num_args;
 
     curr_type_arg = type_args ? type_args->type_list : NULL;
     parms = NULL;
@@ -2670,19 +2670,17 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
         if( curr == NULL ) break;
         if( curr->id == SC_TYPEDEF ) {
             if( curr_type_arg ) {
-                parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL,
-                                                     false ) );
+                parm = PTreeType( BindTemplateClass( *curr_type_arg, NULL, false ) );
                 ++curr_type_arg;
             } else {
-                parm = PTreeType( BindTemplateClass( curr->sym_type, NULL,
-                                                     false ) );
+                parm = PTreeType( BindTemplateClass( curr->sym_type, NULL, false ) );
             }
         } else {
             parm = fakeUpParm( curr );
         }
         parms = PTreeBinary( CO_LIST, parms, parm );
     }
-    parms = NodeReverseArgs( &num_parms, parms );
+    parms = NodeReverseArgs( &num_args, parms );
     return( parms );
 }
 

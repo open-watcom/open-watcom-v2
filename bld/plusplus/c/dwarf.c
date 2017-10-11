@@ -385,7 +385,7 @@ static void dwarfPumpArgTypes( TYPE type )
 /*************************************/
 { // force out types for args
     arg_list    *alist;
-    int         i;
+    unsigned    i;
     TYPE        p;
 
     alist = TypeArgList( type );
@@ -829,7 +829,7 @@ static dw_handle dwarfTypeFunction( TYPE type )
 {
     dw_handle   dh;
     arg_list    *alist;
-    int         i;
+    unsigned    i;
     uint        flags;
 
     type_reset( type );
@@ -2090,7 +2090,7 @@ static void dwarfPreUsedSymbol( SCOPE scope )
 static bool typedef_is_of_basic_types( TYPE type )
 /************************************************/
 {
-    int         i;
+    unsigned    i;
     arg_list    *alist;
 
     for(;;) {

@@ -338,10 +338,10 @@ static void dw_seek( dw_sectnum section, long offset, uint mode )
         dw_sections[section].length,
         offset );
 #endif
-    if( dw_sections[section].offset != offset ) {
+    if( dw_sections[section].offset != (unsigned long)offset ) {
         DwioSeek( dw_sections[section].file, offset );
         dw_sections[section].offset = offset;
-        if( dw_sections[section].offset > dw_sections[section].length ) {
+        if( dw_sections[section].length < dw_sections[section].offset ) {
             dw_sections[section].length = dw_sections[section].offset;
         }
     }

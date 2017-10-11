@@ -391,7 +391,7 @@ void DumpTemplateInfo( TEMPLATE_INFO *tinfo )
 {
     TEMPLATE_SPECIALIZATION *tprimary;
     VBUF prefix, suffix;
-    int i;
+    unsigned i;
     char delim;
 
     tprimary = RingFirst( tinfo->specializations );
