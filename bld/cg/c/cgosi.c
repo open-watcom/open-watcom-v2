@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "cg.h"
 #include "objio.h"
 #include "onexit.h"
 #include "qtimer.h"

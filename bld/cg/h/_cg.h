@@ -24,33 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Zoiks! Internal compiler error!
+* Description:  Common types and constants used by code generator interface.
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include "cgdefs.h"
-#include "coderep.h"
-#include "interrs.h"
-#include "feprotos.h"
+#ifndef __CG_H_INCLUDED
+#define __CG_H_INCLUDED
 
-extern  bool            WantZoiks2( void );
+#include "cg.h"
 
-static  int             Zoiks40 = { 0 };
-#define MAX_ZOIKS_40    0x1000
+typedef unsigned char   scale_typ;
 
-extern  void    Zoiks( int msg )
-/*******************************
-    put out an internal compiler error.  2 is chunks unfreed which we
-    may want to hide.  1 is unfreed code labels which we always hide.
-*/
-{
-    if( ( msg == ZOIKS_001 ) )
-        return;
-    if( ( msg == ZOIKS_002 ) && ( !WantZoiks2() ) )
-        return;
-    if( ( msg == ZOIKS_040 ) && ( ++Zoiks40 < MAX_ZOIKS_40 ) )
-        return;
-    FEMessage( MSG_BACK_END_ERROR, (pointer)(pointer_int)msg );
-}
+#endif

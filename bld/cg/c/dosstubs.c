@@ -31,7 +31,7 @@
 
 
 #include "cgstd.h"
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "onexit.h"
 #include "blips.h"

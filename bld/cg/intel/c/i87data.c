@@ -31,7 +31,7 @@
 
 
 #include "cgstd.h"
-#include "cg.h"
+#include "_cg.h"
 #include "hwreg.h"
 #include "typclass.h"
 #include "addrname.h"

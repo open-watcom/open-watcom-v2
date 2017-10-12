@@ -30,7 +30,6 @@
 
 
 #include "cgstd.h"
-#include "cg.h"
 #include "coderep.h"
 #include "model.h"
 #include "encode.h"

@@ -48,7 +48,7 @@ typedef struct sib_info {
     struct sib_info     *next;
     name                *reg;
     name                *index;
-    int                 scale;
+    scale_typ           scale;
     i_flags             flags;
     instruction         *ins;
 } sib_info;

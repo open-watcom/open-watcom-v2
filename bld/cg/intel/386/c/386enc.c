@@ -212,7 +212,7 @@ static  byte    DoIndex( hw_reg_set regs )
 
 
 static  byte    DoScaleIndex( hw_reg_set base_reg,
-                              hw_reg_set idx_reg, int scale )
+                              hw_reg_set idx_reg, scale_typ scale )
 /***********************************************************/
 {
     byte        sib;
@@ -275,7 +275,7 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 }
 
 
-static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
+static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                          signed_32 val, name *mem_loc, bool lea )
 /***************************************************************/
 {
@@ -385,7 +385,7 @@ extern  void    LayLeaRegOp( instruction *ins )
 {
     name        *left;
     name        *right;
-    int         shift = 0;
+    scale_typ   scale = 0;
     int         neg;
     signed_32   disp;
 
@@ -410,12 +410,12 @@ extern  void    LayLeaRegOp( instruction *ins )
         break;
     case OP_MUL:
         switch( right->c.lo.int_value ) {
-        case 3: shift = 1;  break;
-        case 5: shift = 2;  break;
-        case 9: shift = 3;  break;
+        case 3: scale = 1;  break;
+        case 5: scale = 2;  break;
+        case 9: scale = 3;  break;
         }
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        EA( left->r.reg, left->r.reg, shift, disp, NULL, true );
+        EA( left->r.reg, left->r.reg, scale, disp, NULL, true );
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */

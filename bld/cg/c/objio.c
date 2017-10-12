@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "cg.h"
+#include "_cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
 #include "system.h"

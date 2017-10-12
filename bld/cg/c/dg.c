@@ -34,7 +34,7 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "cgmem.h"
 #include "typclass.h"

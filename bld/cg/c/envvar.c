@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "cgdefs.h"
-#include "cg.h"
 #include "coderep.h"
 #include "utils.h"
 #include "feprotos.h"

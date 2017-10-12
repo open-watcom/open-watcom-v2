@@ -558,7 +558,7 @@ name    *AllocRegName( hw_reg_set regs )
 
 
 name    *ScaleIndex( name *index, name *base, type_length offset, type_class_def class,
-                                        type_length size, int scale, i_flags flags )
+                                        type_length size, scale_typ scale, i_flags flags )
 /*************************************************************************************/
 {
     name        *new_x;

@@ -50,7 +50,7 @@ extern name             *SAllocUserTemp( pointer symbol, type_class_def class, t
 extern name             *AllocUserTemp( pointer symbol, type_class_def class );
 extern name             *DeAlias( name *temp );
 extern name             *AllocRegName( hw_reg_set regs );
-extern name             *ScaleIndex( name *index, name *base, type_length offset, type_class_def class, type_length size, int scale, i_flags flags );
+extern name             *ScaleIndex( name *index, name *base, type_length offset, type_class_def class, type_length size, scale_typ scale, i_flags flags );
 extern name             *SAllocIndex( name *index, name *base, type_length offset, type_class_def class, type_length size );
 extern name             *AllocIndex( name *index, name *base, type_length offset, type_class_def class );
 extern void             InitNames( void );

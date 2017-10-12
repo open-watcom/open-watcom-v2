@@ -32,7 +32,7 @@
 
 #include <stdarg.h>
 #include "cgstd.h"
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
 #include "typedef.h"
