@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"

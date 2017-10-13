@@ -238,17 +238,13 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
 
 void FiniDebugLine( dw_client cli )
 {
-    char                        buf[sizeof( uint_32 )];
-    long                        size;
+    char        buf[3];
 
     buf[0] = 0;
     buf[1] = 1;
     buf[2] = DW_LNE_end_sequence;
     CLIWrite( cli, DW_DEBUG_LINE, buf, 3 );
-    size = CLITell( cli, DW_DEBUG_LINE ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_LINE];
-    WriteU32( buf, size );
-    CLISeek( cli, DW_DEBUG_LINE, cli->section_base[DW_DEBUG_LINE], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_LINE, buf, sizeof( uint_32 ) );
-    CLISeek( cli, DW_DEBUG_LINE, 0, DW_SEEK_END );
+    /* backpatch the section length */
+    SectionSizePatch( cli, DW_DEBUG_LINE );
     FreeChain( cli, cli->debug_line.files );
 }

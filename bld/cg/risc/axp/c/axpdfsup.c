@@ -40,7 +40,6 @@
 #include "cgaux.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "dw.h"
 #include "axpregn.h"

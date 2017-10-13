@@ -67,16 +67,9 @@ void FiniDebugPubnames(
     dw_client                   cli )
 {
     static char const   zeros[sizeof( uint_32 )] = {0};
-    char                buf[sizeof( debug_ref )];
-    debug_ref           offset;
 
     /* write the set terminator */
     CLIWrite( cli, DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
-
     /* backpatch the section length */
-    offset = CLITell( cli, DW_DEBUG_PUBNAMES ) - cli->section_base[DW_DEBUG_PUBNAMES] - sizeof( debug_ref );
-    WriteRef( buf, offset );
-    CLISeek( cli, DW_DEBUG_PUBNAMES, cli->section_base[DW_DEBUG_PUBNAMES], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, buf, sizeof( debug_ref ) );
-    CLISeek( cli, DW_DEBUG_PUBNAMES, 0, DW_SEEK_END );
+    SectionSizePatch( cli, DW_DEBUG_PUBNAMES );
 }

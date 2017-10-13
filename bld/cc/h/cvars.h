@@ -32,7 +32,6 @@
 #define BY_C_FRONT_END
 
 #include <stdio.h>
-#include <setjmp.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>

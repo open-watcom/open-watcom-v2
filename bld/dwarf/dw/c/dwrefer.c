@@ -173,14 +173,8 @@ void InitReferences( dw_client cli )
 
 void FiniReferences( dw_client cli )
 {
-    char                        buf[sizeof( uint_32 )];
-    long                        size;
-
-    size = CLITell( cli, DW_DEBUG_REF ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_REF];
-    WriteU32( buf, size );
-    CLISeek( cli, DW_DEBUG_REF, cli->section_base[DW_DEBUG_REF], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_REF, buf, sizeof( buf ) );
-    CLISeek( cli, DW_DEBUG_REF, 0, DW_SEEK_END );
+    /* backpatch the section length */
+    SectionSizePatch( cli, DW_DEBUG_REF );
 
     CarveDestroy( cli, cli->references.delay_carver );
 }

@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "cgdefs.h"
@@ -95,8 +94,8 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
     SetOP( old );
 }
 
-static long CLITell( dw_sectnum sect )
-/************************************/
+static dw_out_offset CLITell( dw_sectnum sect )
+/*********************************************/
 {
     sect_info           *curr;
     long_offset         off;
@@ -109,8 +108,8 @@ static long CLITell( dw_sectnum sect )
    return( off );
 }
 
-static void CLISeek( dw_sectnum sect, long offs, uint type )
-/**********************************************************/
+static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type )
+/******************************************************************/
 {
     sect_info           *curr;
     long_offset         from;

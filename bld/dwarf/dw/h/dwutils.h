@@ -40,9 +40,6 @@
 #define LEB128                  DW_LEB128
 #define ULEB128                 DW_ULEB128
 
-extern  uint_8 *LEB128( uint_8 *buf, dw_sconst value );
-extern  uint_8 *ULEB128( uint_8 *buf, dw_uconst value );
-
 #ifndef __BIG_ENDIAN__
 #define WriteU16( __p, __v )    ( *(uint_16 *)(__p) = (__v) )
 #define WriteU32( __p, __v )    ( *(uint_32 *)(__p) = (__v) )
@@ -51,5 +48,9 @@ extern  uint_8 *ULEB128( uint_8 *buf, dw_uconst value );
 #else
 #error "must define WriteU16/32 and WriteS16/32 functions"
 #endif
+
+extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
+extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
+extern void     SectionSizePatch( dw_client cli, dw_sectnum sect );
 
 #endif

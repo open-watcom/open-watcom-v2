@@ -140,15 +140,6 @@ void InitDebugInfo( dw_client cli )
 
 void FiniDebugInfo( dw_client cli )
 {
-    char            buf[sizeof( uint_32 )];
-    long            size;
-
-    /* patch in the length of the .debug_info section */
-    size = CLITell( cli, DW_DEBUG_INFO );
-    size -= sizeof( uint_32 );
-    size -= cli->section_base[DW_DEBUG_INFO];
-    CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
-    WriteU32( buf, size );
-    CLIWrite( cli, DW_DEBUG_INFO, buf, sizeof( uint_32 ) );
-    CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
+    /* backpatch the section length */
+    SectionSizePatch( cli, DW_DEBUG_INFO );
 }

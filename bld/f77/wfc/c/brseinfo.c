@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <setjmp.h>
 #include <malloc.h>
 #include "ftnstd.h"
 #include "errcod.h"

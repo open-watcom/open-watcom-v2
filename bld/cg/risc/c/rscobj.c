@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include <setjmp.h>
 #include <time.h>
 #include "cgdefs.h"
 #include "coderep.h"

@@ -31,10 +31,7 @@
 
 
 #include "plusplus.h"
-
-#include <setjmp.h>
 #include <assert.h>
-
 #include "preproc.h"
 #include "cgfront.h"
 #include "template.h"

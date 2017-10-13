@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include <setjmp.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
+#include "dwpriv.h"
 #include "dwutils.h"
 
 uint_8 *LEB128(
@@ -73,4 +73,17 @@ uint_8 *ULEB128(
     }
     *buf++ = byte;
     return( buf );
+}
+
+void SectionSizePatch( dw_client cli, dw_sectnum sect )
+/* backpatch the section length */
+{
+    debug_ref   size;
+    char        buf[sizeof( size )];
+
+    size = CLITell( cli, sect ) - cli->section_base[sect] - sizeof( size );
+    WriteRef( buf, size );
+    CLISeek( cli, sect, cli->section_base[sect], DW_SEEK_SET );
+    CLIWrite( cli, sect, buf, sizeof( size ) );
+    CLISeek( cli, sect, 0, DW_SEEK_END );
 }

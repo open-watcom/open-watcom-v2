@@ -35,9 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <setjmp.h>
-
-#include "watcom.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "errcod.h"
@@ -179,8 +176,8 @@ static void CLIZeroWrite( dw_sectnum sect, size_t size )
     FMemFree( btmp );
 }
 
-static void CLISeek( dw_sectnum sect, long offs, uint type )
-/**********************************************************/
+static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type )
+/******************************************************************/
 {
     section_data                *cur_sec;
     long                        temp;
@@ -231,9 +228,9 @@ static void CLISeek( dw_sectnum sect, long offs, uint type )
     cur_sec->cur_offset = new_off;
 }
 
-static long CLITell( dw_sectnum sect ) {
-/*********************************/
-
+static dw_out_offset CLITell( dw_sectnum sect )
+/*********************************************/
+{
     return( Sections[ sect ].cur_offset );
 }
 

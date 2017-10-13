@@ -32,8 +32,8 @@
 #ifndef DW_H_INCLUDED
 #define DW_H_INCLUDED
 
-#include <watcom.h>
-
+#include <setjmp.h>
+#include "watcom.h"
 #include "dwcnf.h"
 
 /*
@@ -62,6 +62,9 @@ typedef struct dw_loc_handle    *dw_loc_handle;
 /* an id for a debugging record */
 typedef uint_32                 dw_handle;
 typedef uint_16                 dw_defseg; // default size of a seg
+
+/* output data offset */
+typedef uint_32                 dw_out_offset;
 
 /*
     Constants
@@ -214,8 +217,8 @@ enum {
 typedef struct {
     void                (*cli_reloc)( dw_sectnum, dw_relocs, ... );
     void                (*cli_write)( dw_sectnum, const void *, size_t );
-    void                (*cli_seek)( dw_sectnum, long, uint );
-    long                (*cli_tell)( dw_sectnum );
+    void                (*cli_seek)( dw_sectnum, dw_out_offset, int );
+    dw_out_offset       (*cli_tell)( dw_sectnum );
     void *              (*cli_alloc)( size_t );
     void                (*cli_free)( void * );
 } dw_funcs;

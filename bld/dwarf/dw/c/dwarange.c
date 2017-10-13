@@ -69,16 +69,10 @@ void FiniDebugAranges(
     dw_client   cli )
 {
     static char const   zeros[sizeof( uint_32 )] = { 0 };
-    long                size;
-    char                buf[sizeof( uint_32 )];
 
     CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
     CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->segment_size  );
     CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
-
-    size = CLITell( cli, DW_DEBUG_ARANGES ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_ARANGES];
-    WriteU32( buf, size );
-    CLISeek( cli, DW_DEBUG_ARANGES, cli->section_base[DW_DEBUG_ARANGES], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_ARANGES, buf, sizeof( buf ) );
-    CLISeek( cli, DW_DEBUG_ARANGES, 0, DW_SEEK_END );
+    /* backpatch the section length */
+    SectionSizePatch( cli, DW_DEBUG_ARANGES );
 }

@@ -315,8 +315,8 @@ static void dw_write( dw_sectnum section, const void *block, size_t len )
     }
 }
 
-static long dw_tell( dw_sectnum section )
-/*********************************/
+static dw_out_offset dw_tell( dw_sectnum section )
+/************************************************/
 {
 #ifdef __DD__
     printf( "DW_TELL (%d:%d): %d\n", section,
@@ -327,7 +327,7 @@ static long dw_tell( dw_sectnum section )
 }
 
 static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
-/********************************************************/
+/*******************************************************************/
 {
     va_list         args;
     dw_targ_addr    targ_data;
@@ -374,8 +374,8 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
     va_end( args );
 }
 
-static void dw_seek( dw_sectnum section, long offset, uint mode )
-/*********************************************************/
+static void dw_seek( dw_sectnum section, dw_out_offset offset, int mode )
+/***********************************************************************/
 {
     unsigned long ofs = offset;
     switch( mode ) {

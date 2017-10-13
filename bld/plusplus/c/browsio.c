@@ -30,7 +30,6 @@
 
 
 #include "plusplus.h"
-#include <setjmp.h>
 #include <stdarg.h>
 #include <errno.h>
 #if defined(__UNIX__)
@@ -41,11 +40,11 @@
 #include "preproc.h"
 #include "memmgr.h"
 #include "srcfile.h"
+#include "dw.h"
 #include "dwio.h"
 #include "iosupp.h"
 #include "cgsegid.h"
 #include "hfile.h"
-#include "dw.h"
 #include "exeelf.h"
 #include "dwarfid.h"
 
@@ -237,7 +236,7 @@ static int createBrowseFile(FILE* browseFile,       /* target file */
         section_header_template.sh_size = inFile[fileNum]->length;
         mywrite( browseFile, (void *)&section_header_template, sizeof( section_header_template ) );
     }
-    return 0;
+    return( 0 );
 }
 //---------------------------------------------------------------------------
 
@@ -262,15 +261,15 @@ static void dw_write( dw_sectnum section, const void *block, size_t len )
     DwioWrite( dw_sections[section].file, (void *)block, len );
 }
 
-static long dw_tell( dw_sectnum section )
-/***************************************/
+static dw_out_offset dw_tell( dw_sectnum section )
+/************************************************/
 {
 #ifdef __DD__
     printf( "DW_TELL (%d:%d): %d\n", section,
         dw_sections[section].length,
         dw_sections[section].offset );
 #endif
-    return dw_sections[section].offset;
+    return( dw_sections[section].offset );
 }
 
 static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
@@ -319,8 +318,8 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
     va_end( args );
 }
 
-static void dw_seek( dw_sectnum section, long offset, uint mode )
-/***************************************************************/
+static void dw_seek( dw_sectnum section, dw_out_offset offset, int mode )
+/***********************************************************************/
 {
     switch( mode ) {
     case DW_SEEK_SET:
@@ -350,7 +349,7 @@ static void dw_seek( dw_sectnum section, long offset, uint mode )
 static void *dw_alloc( size_t size )
 /**********************************/
 {
-    return CMemAlloc( size );
+    return( CMemAlloc( size ) );
 }
 
 static void dw_free( void *ptr )
@@ -430,7 +429,8 @@ extern void DwarfFini( dw_client  client )
     char    *out_fname;
     FILE    *out_file;
 
-    if( !CompFlags.emit_browser_info ) return;
+    if( !CompFlags.emit_browser_info )
+        return;
 
     DWEndCompileUnit( client );
     DWFini( client );

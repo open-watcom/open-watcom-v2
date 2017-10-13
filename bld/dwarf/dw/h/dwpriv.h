@@ -34,9 +34,7 @@
 #define DWPRIV_H_INCLUDED
 
 #include <assert.h>
-#include <setjmp.h>
 #include <string.h>
-#include <watcom.h>
 #include "dw.h"
 #include "dwassert.h"
 #include "dwarf.h"
