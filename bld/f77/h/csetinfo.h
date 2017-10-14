@@ -40,7 +40,7 @@ typedef struct character_set {
     bool        (* is_double_byte_char)(char);
 #if !defined( __RT__ )
     byte        const __FAR *character_set;
-    const char  *initializer;
+    char        *initializer;
 #endif
 } character_set;
 

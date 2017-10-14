@@ -1874,7 +1874,7 @@ char    *GetFullSrcName( void ) {
     }
 }
 
-const pointer FEAuxInfo( pointer req_handle, int request )
+pointer FEAuxInfo( pointer req_handle, int request )
 //====================================================
 // Return specified auxiliary information for given auxiliary entry.
 {
