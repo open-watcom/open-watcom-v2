@@ -287,7 +287,7 @@ static  void    NmlOut( void ) {
                     Drop( ' ' );
                     scb.strptr += scb.len;
                 } else {
-                    pgm_memget( (byte *)(&IORslt), data, SizeVars[typ] );
+                    pgm_memget( &IORslt, data, SizeVars[typ] );
                     OutRtn[typ]();
                     data += SizeVars[typ];
                 }

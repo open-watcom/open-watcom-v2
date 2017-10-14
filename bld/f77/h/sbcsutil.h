@@ -25,30 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  double-byte character processing utilities
+* Description:  single-byte character processing utilities
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "csetinfo.h"
-#include "charset.h"
-#include "dbcsutil.h"
-
-
-int     ExtractTextDBCS( const char *string, int len )
-// Given a string of text, extract as much text as possible up to a maximum
-// of "len" bytes so that we don't split double-byte characters.
-{
-    int         str_len;
-    int         chr_len;
-
-    str_len = 0;
-    for( ;; ) {
-        chr_len = CharSetInfo.character_width( string + str_len );
-        if( str_len + chr_len > len )
-            break;
-        str_len += chr_len;
-    }
-    return( str_len );
-}
+extern int      ExtractTextSBCS( const char *string, int len );

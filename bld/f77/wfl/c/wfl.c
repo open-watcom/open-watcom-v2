@@ -933,16 +933,16 @@ static  void    FindPath( char *name, char *buf ) {
 }
 
 
-void    TOutNL( char *msg ) {
-//===========================
-
+void    TOutNL( const char *msg )
+//===============================
+{
     puts( msg );
 }
 
 
-void    TOut( char *msg ) {
-//===========================
-
+void    TOut( const char *msg )
+//=============================
+{
     fputs( msg, stdout );
 }
 

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextvar.h"
 #include "scangbl.h"
 #include "csetinfo.h"
 #include "charset.h"
+#include "sbcsutil.h"
 
 // Modified:    By:             Reason:
 // --------     ---             -------
@@ -222,54 +222,45 @@ static const byte __FAR CharSet[] = {
 
 #endif
 
-static  int     ExtractText( const char *string, int len ) {
-// Given a string of text, extract as much text as possible up to a maximum
-// of "len" bytes so that we don't split double-byte characters.
-
-    /* unused parameters */ (void)string;
-
-    return( len );
-}
-
-
-static  bool    IsDoubleByteBlank( const char *ptr ) {
+static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
-
+{
     /* unused parameters */ (void)ptr;
 
     return( false );
 }
 
 
-static  bool    IsDoubleByteChar( char ch ) {
+static  bool    IsDoubleByteChar( char ch )
 // Determine if character is a double-byte character.
-
+{
     /* unused parameters */ (void)ch;
 
     return( false );
 }
 
 
-static  int     CharacterWidth( const char PGM *ptr ) {
+static  int     CharacterWidth( const char PGM *ptr )
 // Determine character width.
-
+{
     /* unused parameters */ (void)ptr;
 
     return( 1 );
 }
 
 
-static  bool    IsForeign( char ch ) {
+static  bool    IsForeign( char ch )
 // Determine if character is a foreign character (i.e. non-ASCII).
-
+{
     /* unused parameters */ (void)ch;
 
     return( false );
 }
 
 
-void    __UseEnglishCharSet( void ) {
-    CharSetInfo.extract_text = &ExtractText;
+void    __UseEnglishCharSet( void )
+{
+    CharSetInfo.extract_text = &ExtractTextSBCS;
     CharSetInfo.is_double_byte_blank = &IsDoubleByteBlank;
     CharSetInfo.is_double_byte_char = &IsDoubleByteChar;
     CharSetInfo.character_width = &CharacterWidth;
