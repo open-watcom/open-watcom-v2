@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +38,12 @@
 #include "namelist.h"
 #include "rgtbl.h"
 #include "split.h"
+#include "x86objd.h"
 #include "insutil.h"
 #include "index.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "x86data.h"
 #include "feprotos.h"
 
 
@@ -52,7 +54,6 @@ extern  name            *Addressable(name*,type_class_def);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);
 extern  void            NoMemIndex(instruction*);
-extern  bool            FPCInCode( void );
 extern  void            ExpandThreadDataRef(instruction*);
 
 static  void            Merge( name **pname, instruction *ins );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe );
 extern  dbg_type        DFScalar( const char *name, cg_type tipe );
 extern  dbg_type        DFScope( const char *name );
+extern  char const      *DFScopeName( dbg_type scope );
 extern  void            DFDumpName( dbg_name name, dbg_type tipe );
 extern  void            DFBackRefType( dbg_name name, dbg_type tipe );
 extern  dbg_type        DFCharBlock( unsigned_32 len );
@@ -50,3 +52,7 @@ extern  void            DFBegStruct( dbg_struct st );
 extern  dbg_type        DFEndStruct( dbg_struct st );
 extern  dbg_type        DFEndEnum( dbg_enum en );
 extern  dbg_type        DFEndProc( dbg_proc pr );
+extern  dw_loc_id       DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
+extern  dw_loc_handle   DBGLocBase2DF( dbg_loc loc_seg );
+extern  dw_loc_handle   DBGLoc2DF( dbg_loc loc );
+

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,14 @@
 #include "regset.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "dbsupp.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
 
-extern  void            DoBigBckPtr(back_handle,offset);
-
-static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
-/**************************************************************/
-
+static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ )
+/************************************************************/
+{
     dbg_loc     new;
 
     new = CGAlloc( sizeof( location ) );
@@ -66,18 +65,17 @@ static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
     return( new );
 }
 
-extern  dbg_loc         LocReg( dbg_loc loc, name *reg) {
-/*******************************************************/
-
+dbg_loc         LocReg( dbg_loc loc, name *reg )
+/**********************************************/
+{
     loc = LocCreate( loc, LOC_REG );
     loc->u.be_sym = reg;
     return( loc );
 }
 
-extern dbg_loc          LocParm( dbg_loc loc, name *tmp ) {
-/*****************************************************************/
-
-
+dbg_loc          LocParm( dbg_loc loc, name *tmp )
+/************************************************/
+{
     if( tmp->n.class == N_REGISTER  ){
         loc = LocCreate( loc, LOC_REG );
         loc->u.be_sym = tmp;
@@ -89,9 +87,9 @@ extern dbg_loc          LocParm( dbg_loc loc, name *tmp ) {
     return( loc );
 }
 
-extern  dbg_loc         LocDupl( dbg_loc loc ) {
-/**********************************************/
-
+dbg_loc         LocDupl( dbg_loc loc )
+/************************************/
+{
     dbg_loc     first;
 
     first = loc;
@@ -101,9 +99,9 @@ extern  dbg_loc         LocDupl( dbg_loc loc ) {
     return( first );
 }
 
-extern  offset          LocSimpField( dbg_loc loc ) {
-/***************************************************/
-
+offset          LocSimpField( dbg_loc loc )
+/*****************************************/
+{
     if( loc == NULL )
         return( 0 );
     if( loc->class != LOC_OPER + LOP_ADD )
@@ -119,9 +117,9 @@ extern  offset          LocSimpField( dbg_loc loc ) {
 }
 
 
-extern  cg_sym_handle   LocSimpStatic( dbg_loc loc ) {
-/****************************************************/
-
+cg_sym_handle   LocSimpStatic( dbg_loc loc )
+/******************************************/
+{
     if( loc == NULL )
         return( NULL );
     if( loc->next != NULL )
@@ -132,8 +130,8 @@ extern  cg_sym_handle   LocSimpStatic( dbg_loc loc ) {
 }
 
 
-extern  dbg_loc  _CGAPI DBLocInit( void )
-/***************************************/
+dbg_loc  _CGAPI DBLocInit( void )
+/*******************************/
 {
 #ifndef NDEBUG
     dbg_loc retn;
@@ -147,8 +145,8 @@ extern  dbg_loc  _CGAPI DBLocInit( void )
 }
 
 
-extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym )
-/***************************************************************/
+dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym )
+/********************************************************/
 {
     fe_attr     attr;
     name        *tmp;
@@ -167,8 +165,8 @@ extern dbg_loc  _CGAPI DBLocSym( dbg_loc loc, cg_sym_handle sym )
 }
 
 
-extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
-/**************************************************************/
+dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
+/*******************************************************/
 {
     name        *tmp;
 
@@ -185,8 +183,8 @@ extern dbg_loc _CGAPI DBLocTemp( dbg_loc loc, temp_handle temp )
     return( loc );
 }
 
-extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
-/***************************************************************/
+dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
+/*******************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DBLocConst( %i, %i  )", loc, val );
@@ -201,8 +199,8 @@ extern  dbg_loc _CGAPI DBLocConst( dbg_loc loc, unsigned_32 val )
 }
 
 
-extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
-/**************************************************************************/
+dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
+/******************************************************************/
 {
     unsigned    stkop;
 
@@ -285,8 +283,8 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
 }
 
 
-extern  void _CGAPI DBLocFini( dbg_loc loc )
-/******************************************/
+void _CGAPI DBLocFini( dbg_loc loc )
+/**********************************/
 {
     dbg_loc     *owner;
     dbg_loc     curr;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,24 +41,9 @@
 #include "objout.h"
 #include "wvtypes.h"
 #include "dbsyms.h"
+#include "x86dbsup.h"
+#include "dbsupp.h"
 
-extern  uint            BuffLoc(void);
-extern  void            BuffByte(byte);
-extern  void            BuffWSLString(const char *);
-extern  void            DataShort(unsigned_16);
-extern  void            DataLong(unsigned_32);
-extern  void            DataBytes(unsigned_32,const void *);
-extern  void            BuffIndex(uint);
-extern  void            BuffForward(dbg_patch *);
-extern  void            BuffBack(back_handle, offset);
-extern  void            BuffString(uint,const char*);
-extern  void            BuffValue(unsigned_32,uint);
-extern  void            BuffWord(uint);
-extern  void            BuffDWord(unsigned_32);
-extern  void            BuffStart(temp_buff*,uint);
-extern  void            BuffEnd(segment_id);
-extern  void            LocDump( dbg_loc );
-extern  dbg_loc         LocDupl( dbg_loc );
 
 static  void            NewType( temp_buff *temp, uint ty_def );
 static  void            EndType( bool check_too_big );

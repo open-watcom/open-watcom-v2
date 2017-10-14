@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,25 +39,24 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "types.h"
+#include "x86objd.h"
 #include "wvdbg.h"
 #include "objout.h"
 #include "targetdb.h"
 #include "regset.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "x86data.h"
+#include "x86dbsup.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
 
-extern  void            DataBytes(unsigned,const void *);
-extern  void            DoBigBckPtr(back_handle,offset);
-
 static  temp_buff       *CurrBuff;
 
-extern  void    BuffStart( temp_buff *temp, uint def ) {
-/******************************************************/
-
-
+void    BuffStart( temp_buff *temp, uint def )
+/********************************************/
+{
     CurrBuff = temp;
     temp->buff[1] = def;
     temp->index = 2;
@@ -66,9 +65,9 @@ extern  void    BuffStart( temp_buff *temp, uint def ) {
 
 
 
-extern  void    BuffEnd( segment_id seg ) {
-/*****************************************/
-
+void    BuffEnd( segment_id seg )
+/*******************************/
+{
     segment_id          old;
     byte                *buff;
     type_def            *ptr_type;
@@ -110,24 +109,23 @@ extern  void    BuffEnd( segment_id seg ) {
 }
 
 
-extern  uint    BuffLoc( void ) {
-/*************************/
-
-
+uint    BuffLoc( void )
+/*********************/
+{
     return( CurrBuff->index );
 }
 
 
-extern  void    BuffPatch( byte val, uint loc ) {
-/***********************************************/
-
+void    BuffPatch( byte val, uint loc )
+/*************************************/
+{
     CurrBuff->buff[loc] = val;
 }
 
 
-extern  void    BuffByte( byte b ) {
-/**********************************/
-
+void    BuffByte( byte b )
+/************************/
+{
     if( CurrBuff->index < DB_BUFF_SIZE ) {
         CurrBuff->buff[CurrBuff->index++] = b;
         if( CurrBuff->index >= DB_BUFF_SIZE ) {
@@ -137,24 +135,24 @@ extern  void    BuffByte( byte b ) {
 }
 
 
-extern  void    BuffWord( uint w ) {
-/**********************************/
-
+void    BuffWord( uint w )
+/************************/
+{
     BuffByte( w & 0xff );
     BuffByte( w >> 8 );
 }
 
 
-extern  void    BuffDWord( unsigned_32 w ) {
-/******************************************/
-
+void    BuffDWord( unsigned_32 w )
+/********************************/
+{
     BuffWord( w & 0xffff );
     BuffWord( w >> 16 );
 }
 
 
-extern  void    BuffOffset( offset w )
-/************************************/
+void    BuffOffset( offset w )
+/****************************/
 {
 #if _TARG_INTEGER == 16
     BuffWord( w );
@@ -164,10 +162,9 @@ extern  void    BuffOffset( offset w )
 }
 
 
-extern  void    BuffValue( unsigned_32 val, uint class ) {
-/********************************************************/
-
-
+void    BuffValue( unsigned_32 val, uint class )
+/**********************************************/
+{
     switch( class ) {
     case 0:
         BuffByte( val );
@@ -183,9 +180,9 @@ extern  void    BuffValue( unsigned_32 val, uint class ) {
 }
 
 
-extern  void    BuffRelocatable( pointer ptr, fixup_kind type, offset off ) {
-/***************************************************************************/
-
+void    BuffRelocatable( pointer ptr, fixup_kind type, offset off )
+/*****************************************************************/
+{
     CurrBuff->fix[CurrBuff->fix_idx].pos = CurrBuff->index;
     CurrBuff->fix[CurrBuff->fix_idx].p = ptr;
     CurrBuff->fix[CurrBuff->fix_idx].type = type;
@@ -199,30 +196,30 @@ extern  void    BuffRelocatable( pointer ptr, fixup_kind type, offset off ) {
 }
 
 
-extern  void    BuffBack( pointer back, int off ) {
-/*************************************************/
-
+void    BuffBack( pointer back, int off )
+/***************************************/
+{
     BuffRelocatable( back, FIX_BACKHANDLE, off );
 }
 
 
-extern  void    BuffAddr( pointer sym ) {
-/***************************************/
-
+void    BuffAddr( pointer sym )
+/*****************************/
+{
     BuffRelocatable( sym, FIX_SYMBOL, 0 );
 }
 
 
-extern  void    BuffForward( dbg_patch *dpatch )
-/**********************************************/
+void    BuffForward( dbg_patch *dpatch )
+/**************************************/
 {
     BuffRelocatable( dpatch, FIX_FORWARD, 0 );
 }
 
 
-extern  void    BuffWSLString( const char *str ) {
-/************************************************/
-
+void    BuffWSLString( const char *str )
+/**************************************/
+{
     while( *str != NULLCHAR ) {
         BuffByte( *str );
         ++str;
@@ -230,9 +227,9 @@ extern  void    BuffWSLString( const char *str ) {
 }
 
 
-extern  void    BuffString( uint len, const char *str ) {
-/*******************************************************/
-
+void    BuffString( uint len, const char *str )
+/*********************************************/
+{
     while( len > 0 ) {
         BuffByte( *str );
         ++str;
@@ -241,12 +238,12 @@ extern  void    BuffString( uint len, const char *str ) {
 }
 
 
-extern  void    BuffIndex( uint tipe ) {
-/**************************************/
-
+void    BuffIndex( uint tipe )
+/****************************/
+{
     if( tipe < 0x80 ) {
         BuffByte( tipe );
-   } else {
+    } else {
         BuffByte( 0x80 | (tipe >> 8) );
         BuffByte( tipe & 0xff );
     }
@@ -270,10 +267,9 @@ static    hw_reg_set    HWRegValues[] = {
     HW_D( HW_FS ),  HW_D( HW_GS )
 };
 
-static  uint    RegNibble( hw_reg_set hw_reg ) {
-/***********************************************/
-
-
+static  uint    RegNibble( hw_reg_set hw_reg )
+/********************************************/
+{
     uint        ret;
 
     ret = REG_AL;
@@ -289,9 +285,9 @@ static  uint    RegNibble( hw_reg_set hw_reg ) {
 }
 
 
-static  uint    MultiReg( register_name *reg ) {
-/***********************************************/
-
+static  uint    MultiReg( register_name *reg )
+/********************************************/
+{
     hw_reg_set  hw_reg;
     hw_reg_set  tmp;
 
@@ -322,9 +318,9 @@ static  uint    MultiReg( register_name *reg ) {
     }
 }
 
-static  void    DoLocDump( dbg_loc loc ) {
-/****************************************/
-
+static  void    DoLocDump( dbg_loc loc )
+/**************************************/
+{
     int         offset;
     uint        reg;
     uint        patch;
@@ -402,9 +398,9 @@ static  void    DoLocDump( dbg_loc loc ) {
     }
 }
 
-extern  void    LocDump( dbg_loc loc ) {
-/**************************************/
-
+void    LocDump( dbg_loc loc )
+/****************************/
+{
     uint        patch;
 
     if( loc != NULL ) {

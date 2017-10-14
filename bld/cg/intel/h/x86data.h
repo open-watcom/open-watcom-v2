@@ -25,22 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  FIle I/O routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "fio.h"
-#include "posio.h"
-#include "poserr.h"
-#include "posdel.h"
-
-
-void    Scratchf( const char *fn )
-// Erase a file.
-{
-    if( unlink( fn ) != 0 ) {
-        FSetSysErr( NULL );
-    }
-}
+extern  void    DoBigBckPtr( back_handle bck, offset off );
+extern  void    DoBigLblPtr( cg_sym_handle sym );
+extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus );
+extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus );
+extern  bool    FPCInCode( void );
+extern  name    *GenConstData( const void *buffer, type_class_def class );

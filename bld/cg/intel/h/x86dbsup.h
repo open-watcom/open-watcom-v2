@@ -25,22 +25,26 @@
 *
 *  ========================================================================
 *
-* Description:  FIle I/O routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "fio.h"
-#include "posio.h"
-#include "poserr.h"
-#include "posdel.h"
-
-
-void    Scratchf( const char *fn )
-// Erase a file.
-{
-    if( unlink( fn ) != 0 ) {
-        FSetSysErr( NULL );
-    }
-}
+extern  void    BuffStart( temp_buff *temp, uint def );
+extern  void    BuffEnd( segment_id seg );
+extern  uint    BuffLoc( void );
+extern  void    BuffPatch( byte val, uint loc );
+extern  void    BuffByte( byte b );
+extern  void    BuffWord( uint w );
+extern  void    BuffDWord( unsigned_32 w );
+extern  void    BuffOffset( offset w );
+extern  void    BuffValue( unsigned_32 val, uint class );
+extern  void    BuffRelocatable( pointer ptr, fixup_kind type, offset off );
+extern  void    BuffBack( pointer back, int off );
+extern  void    BuffAddr( pointer sym );
+extern  void    BuffForward( dbg_patch *dpatch );
+extern  void    BuffWSLString( const char *str );
+extern  void    BuffString( uint len, const char *str );
+extern  void    BuffIndex( uint tipe );
+extern  void    LocDump( dbg_loc loc );

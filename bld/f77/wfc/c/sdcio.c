@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,16 +96,16 @@ void    SDSetAttr( file_attr attr ) {
 }
 
 
-void    SDScratch( char *name ) {
-//===============================
-
+void    SDScratch( const char *name )
+//===================================
+{
     Scratchf( name );
 }
 
 
-file_handle     SDOpen( char *name, int mode ) {
+file_handle SDOpen( const char *name, int mode )
 //==============================================
-
+{
     return( Openf( name, Modes[ mode ] | CurrAttrs ) );
 }
 

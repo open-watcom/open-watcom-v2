@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,8 @@
 ****************************************************************************/
 
 
+extern dw_client    Client;
+
 extern  void    DFInitDbgInfo( void );
 extern  void    DFFiniDbgInfo( void );
 extern  void    DFObjInitDbgInfo( void );
@@ -47,3 +50,4 @@ extern  void    DFDefSegs( void );
 extern  void    DFLineNum( cue_state *, offset );
 extern  void    DFSegRange( void );
 extern  void    DFSymRange( cg_sym_handle, offset );
+extern  void    DFSetSection( dw_sectnum  sect, back_handle bck, segment_id seg );

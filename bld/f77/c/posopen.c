@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +159,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     return( io );
 }
 
-b_file  *Openf( char *f, f_attrs attrs )
+b_file  *Openf( const char *f, f_attrs attrs )
 // Open a file.
 {
     int         retc;

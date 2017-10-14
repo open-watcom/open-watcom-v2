@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,16 +48,18 @@
 #include "hfile.h"
 #include "exeelf.h"
 #include "dwarfid.h"
+#include "browsio.h"
 
 #include "clibext.h"
 
 
-typedef struct cppdw_section {
+typedef struct cpp_dw_section {
     DWFILE          *file;
-    unsigned long   offset;
-    unsigned long   length;
-} CPPDW_SECTION;
-static CPPDW_SECTION dw_sections[DW_DEBUG_MAX];
+    dw_out_offset   offset;
+    dw_out_offset   length;
+} CPP_DW_SECTION;
+
+static CPP_DW_SECTION dw_sections[DW_DEBUG_MAX];
 
 // -- code to generate ELF output ------------------------------------------
 //
@@ -79,8 +82,7 @@ static CPPDW_SECTION dw_sections[DW_DEBUG_MAX];
 //
 
 static Elf32_Ehdr elf_header = {
-    { ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3,
-      ELFCLASS32, ELFDATA2LSB, EV_CURRENT },
+    { ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3, ELFCLASS32, ELFDATA2LSB, EV_CURRENT },
     ET_DYN,
     EM_386,
     EV_CURRENT,
@@ -111,6 +113,7 @@ static Elf32_Ehdr elf_header = {
 #define OFF_STR_DBG_LINE    (OFF_STR_DBG_REF + sizeof( STR_DBG_REF ) - 1)
 #define OFF_STR_DBG_MACINFO (OFF_STR_DBG_LINE + sizeof( STR_DBG_LINE ) - 1)
 #define OFF_STR_MAX         (OFF_STR_DBG_MACINFO + sizeof( STR_DBG_MACINFO ) - 1)
+
 static char const string_table[OFF_STR_MAX + 1] = {
     STR_NAME0
     STR_SHSTRTAB
@@ -120,6 +123,7 @@ static char const string_table[OFF_STR_MAX + 1] = {
     STR_DBG_LINE
     STR_DBG_MACINFO
 };
+
 static unsigned const string_table_offsets[] = {
     OFF_STR_DBG_ABBREV,
     OFF_STR_DBG_INFO,
@@ -158,83 +162,77 @@ static Elf32_Shdr section_header_template = {
     0
 };
 
-static void mywrite( FILE *fp, void *data, size_t len ) {
+static void mywrite( FILE *fp, const void *data, size_t len )
+{
     size_t wroteSize;
+
     wroteSize = fwrite( data, 1, len, fp );
-    if (wroteSize < len) {
+    if( wroteSize < len ) {
         puts( strerror( errno ) );
         CFatal( "error on write" );
     }
 }
 
-static int createBrowseFile(FILE* browseFile,       /* target file */
-                     CPPDW_SECTION* abbrevFile,     /* .debug_abbrev section */
-                     CPPDW_SECTION* debugFile,      /* .debug_info section */
-                     CPPDW_SECTION* referenceFile,  /* .WATCOM_reference section */
-                     CPPDW_SECTION* lineFile,       /* .debug_line section */
-                     CPPDW_SECTION* macroFile       /* .debug_macinfo section */
-                    )
+/* output DWARF sections in following order
+ * .debug_abbrev
+ * .debug_info
+ * .WATCOM_reference
+ * .debug_line
+ * .debug_macinfo
+ */
+static const dw_sectnum inSect[] = { DW_DEBUG_ABBREV, DW_DEBUG_INFO, DW_DEBUG_REF, DW_DEBUG_LINE, DW_DEBUG_MACINFO };
+#define SECTION_COUNT   (sizeof( inSect ) / sizeof( inSect[0] ))
+
+static int createBrowseFile( FILE *browseFile )
 {
-    char *ptr;
-    size_t readSize;
-    int fileNum;
-    CPPDW_SECTION* inFile[5];
-    unsigned long sectionSize;
-    unsigned long sectionOffset[5];
+    char            *ptr;
+    size_t          readSize;
+    int             fileNum;
+    dw_out_offset   sectionSize;
+    dw_out_offset   sectionOffset[SECTION_COUNT];
+
+    // calculate sections data size
+    elf_header.e_shoff = sizeof( Elf32_Ehdr ) + sizeof( string_table );
+    for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
+        elf_header.e_shoff += dw_sections[inSect[fileNum]].length;
+    }
 
     // write elf header
-    elf_header.e_shoff = sizeof( Elf32_Ehdr )
-                        + sizeof( string_table )
-                        + abbrevFile->length
-                        + debugFile->length
-                        + referenceFile->length
-                        + lineFile->length
-                        + macroFile->length;
-    mywrite( browseFile, (void *)&elf_header, sizeof( elf_header ) );
+    mywrite( browseFile, &elf_header, sizeof( elf_header ) );
 
     // write string table
-    mywrite( browseFile, (void *)string_table, sizeof( string_table ) );
+    mywrite( browseFile, string_table, sizeof( string_table ) );
 
-    // write each of the 5 sections, tracking offset
-    inFile[0] = abbrevFile;
-    inFile[1] = debugFile;
-    inFile[2] = referenceFile;
-    inFile[3] = lineFile;
-    inFile[4] = macroFile;
+    // calculate each of the sections, tracking offset
+    // write each of the sections
     sectionOffset[0] = sizeof( elf_header ) + sizeof( string_table );
-    sectionOffset[1] = sectionOffset[0] + inFile[0]->length;
-    sectionOffset[2] = sectionOffset[1] + inFile[1]->length;
-    sectionOffset[3] = sectionOffset[2] + inFile[2]->length;
-    sectionOffset[4] = sectionOffset[3] + inFile[3]->length;
-
-    for (fileNum=0;fileNum<5;fileNum++) {
-        DwioOpenInput( inFile[fileNum]->file );
-
-        readSize = 0;
-        sectionSize = inFile[fileNum]->length;
-        while( sectionSize ) {
-            ptr = DwioRead( inFile[fileNum]->file, &readSize );
-            if( sectionSize < readSize ) {
+    for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
+        if( fileNum > 0 )
+            sectionOffset[fileNum] = sectionOffset[fileNum - 1] + dw_sections[inSect[fileNum - 1]].length;
+        DwioOpenInput( dw_sections[inSect[fileNum]].file );
+        for( sectionSize = dw_sections[inSect[fileNum]].length; sectionSize > 0; sectionSize -= readSize ) {
+            readSize = 0;
+            ptr = DwioRead( dw_sections[inSect[fileNum]].file, &readSize );
+            if( readSize > sectionSize ) {
                 readSize = sectionSize;
             }
-            sectionSize -= readSize;
-            mywrite( browseFile, (void *)ptr, readSize );
+            mywrite( browseFile, ptr, readSize );
         }
-        DwioCloseInputFile( inFile[fileNum]->file );
+        DwioCloseInputFile( dw_sections[inSect[fileNum]].file );
     }
 
     // write section_header_index0
-    mywrite( browseFile, (void *)&section_header_index0, sizeof( section_header_index0 ) );
+    mywrite( browseFile, &section_header_index0, sizeof( section_header_index0 ) );
 
     // write section_header_string_table
-    mywrite( browseFile, (void *)&section_header_string_table, sizeof( section_header_string_table ) );
+    mywrite( browseFile, &section_header_string_table, sizeof( section_header_string_table ) );
 
     // write rest of section headers
-    for (fileNum=0;fileNum<5;fileNum++) {
-        section_header_template.sh_name = string_table_offsets[fileNum];
-        section_header_template.sh_offset = sectionOffset[fileNum];
-        section_header_template.sh_size = inFile[fileNum]->length;
-        mywrite( browseFile, (void *)&section_header_template, sizeof( section_header_template ) );
+    for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
+        section_header_template.sh_name     = string_table_offsets[fileNum];
+        section_header_template.sh_offset   = sectionOffset[fileNum];
+        section_header_template.sh_size     = dw_sections[inSect[fileNum]].length;
+        mywrite( browseFile, &section_header_template, sizeof( section_header_template ) );
     }
     return( 0 );
 }
@@ -245,17 +243,16 @@ static void dw_write( dw_sectnum section, const void *block, size_t len )
 {
 #ifdef __DD__
     //int i;
-    printf( "\nDW_WRITE(%d:%d): offset: %d len: %u ",
-        section,
-        dw_sections[section].length,
-        dw_sections[section].offset,
+    printf( "\nDW_WRITE(%d:%lu): offset: %lu len: %u ", section,
+        (unsigned long)dw_sections[section].length,
+        (unsigned long)dw_sections[section].offset,
         (unsigned)len );
     //for( i = 0 ; i < len; i++ ) {
     //    printf( "%02x ", (int)((char *)block)[i] );
     //}
 #endif
     dw_sections[section].offset += len;
-    if( dw_sections[section].offset > dw_sections[section].length ) {
+    if( dw_sections[section].length < dw_sections[section].offset ) {
         dw_sections[section].length = dw_sections[section].offset;
     }
     DwioWrite( dw_sections[section].file, (void *)block, len );
@@ -265,9 +262,9 @@ static dw_out_offset dw_tell( dw_sectnum section )
 /************************************************/
 {
 #ifdef __DD__
-    printf( "DW_TELL (%d:%d): %d\n", section,
-        dw_sections[section].length,
-        dw_sections[section].offset );
+    printf( "DW_TELL (%d:%lu): %lu\n", section,
+        (unsigned long)dw_sections[section].length,
+        (unsigned long)dw_sections[section].offset );
 #endif
     return( dw_sections[section].offset );
 }
@@ -279,7 +276,7 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
     dw_targ_addr    targ_data;
     dw_targ_seg     seg_data;
     uint_32         u32_data;
-    uint            sect;
+    dw_sectnum      sect;
     SYMBOL          sym;
 
     va_start( args, reloc_type );
@@ -321,25 +318,27 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
 static void dw_seek( dw_sectnum section, dw_out_offset offset, int mode )
 /***********************************************************************/
 {
+    dw_out_offset   new_offset;
+
+    new_offset = offset;
     switch( mode ) {
     case DW_SEEK_SET:
         break;
     case DW_SEEK_CUR:
-        offset = dw_sections[section].offset + offset;
+        new_offset = dw_sections[section].offset + offset;
         break;
     case DW_SEEK_END:
-        offset = dw_sections[section].length - offset;
+        new_offset = dw_sections[section].length - offset;
         break;
     }
 #ifdef __DD__
-    printf( "DW_SEEK (%d:%d): offset: %d\n",
-        section,
-        dw_sections[section].length,
-        offset );
+    printf( "DW_SEEK (%d:%lu): offset: %lu\n", section,
+        (unsigned long)dw_sections[section].length,
+        (unsigned long)new_offset );
 #endif
-    if( dw_sections[section].offset != (unsigned long)offset ) {
-        DwioSeek( dw_sections[section].file, offset );
-        dw_sections[section].offset = offset;
+    if( dw_sections[section].offset != new_offset ) {
+        DwioSeek( dw_sections[section].file, new_offset );
+        dw_sections[section].offset = new_offset;
         if( dw_sections[section].length < dw_sections[section].offset ) {
             dw_sections[section].length = dw_sections[section].offset;
         }
@@ -358,18 +357,18 @@ static void dw_free( void *ptr )
     CMemFree( ptr );
 }
 
-extern dw_client DwarfInit( void )
-/********************************/
+dw_client DwarfInit( void )
+/*************************/
 {
     dw_init_info    info;
     dw_cu_info      cu;
     char            dir[_MAX_PATH2];
     char            fname[_MAX_PATH];
     char            *full_fname;
-    int             i;
+    dw_sectnum      i;
     char            *incbuf = NULL;
     char            *inccurr;
-    unsigned        incsize;
+    size_t          incsize;
     dw_client       client;
     DWSetRtns( dw_cli_funcs, dw_reloc, dw_write, dw_seek, dw_tell, dw_alloc, dw_free );
 
@@ -384,9 +383,10 @@ extern dw_client DwarfInit( void )
     if( incsize != 0 ) {
         incbuf = CMemAlloc( incsize );
         inccurr = incbuf;
-        for(;;) {
+        for( ;; ) {
             HFileListNext( inccurr );
-            if( *inccurr == '\0' ) break;
+            if( *inccurr == '\0' )
+                break;
             inccurr = strend( inccurr ) + 1;
         }
         incsize = inccurr - incbuf;
@@ -421,13 +421,13 @@ extern dw_client DwarfInit( void )
     return( client );
 }
 
-extern void DwarfFini( dw_client  client )
-/****************************************/
+void DwarfFini( dw_client client )
+/********************************/
 {
-    int     i;
-    int     status;
-    char    *out_fname;
-    FILE    *out_file;
+    dw_sectnum  i;
+    int         status;
+    char        *out_fname;
+    FILE        *out_file;
 
     if( !CompFlags.emit_browser_info )
         return;
@@ -449,12 +449,7 @@ extern void DwarfFini( dw_client  client )
     }
 
     // concatenate files
-    if( createBrowseFile( out_file,
-                          &dw_sections[DW_DEBUG_ABBREV],
-                          &dw_sections[DW_DEBUG_INFO],
-                          &dw_sections[DW_DEBUG_REF],
-                          &dw_sections[DW_DEBUG_LINE],
-                          &dw_sections[DW_DEBUG_MACINFO] ) ) {
+    if( createBrowseFile( out_file ) ) {
         puts( strerror( errno ) );
         CFatal( "dwarf: error in merging browse files" );
     }

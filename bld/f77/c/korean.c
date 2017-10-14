@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +148,7 @@ static const byte __FAR CharSet[] = {
 
 #endif
 
-static  bool    IsDoubleByteBlank( char *ptr ) {
+static  bool    IsDoubleByteBlank( const char *ptr ) {
 // Determine if character is a double-byte blank character.
 
     return( ( (unsigned char)*ptr == 0x81 ) && ( (unsigned char)*(ptr + 1) == 0x40 ) );
@@ -161,7 +162,7 @@ static  bool    IsDoubleByteChar( char ch ) {
 }
 
 
-static  int     CharacterWidth( char PGM *ptr ) {
+static  int     CharacterWidth( const char PGM *ptr ) {
 // Determine character width.
 
     unsigned char   ch;

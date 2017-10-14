@@ -2,6 +2,7 @@
 *
 *                Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ extern void        CloseDeleteFile( ftnfile * );
 extern void        DfltInq( void );
 extern void        DoFreeIn( void );
 extern void        ExtractInfo( char *, ftnfile * );
-extern int         ExtractText( char *, int );
+extern int         ExtractText( const char *, int );
 extern void        FEmByte( int );
 extern void        FEmChar(char PGM *);
 extern void        FEmCode( int );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,33 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef _F77_BROWSE_2_ELF_GENERATOR_
-#define _F77_BROWSE_2_ELF_GENERATOR_
-
-typedef struct section_data {
-    char                sec_type;
-    unsigned_32         cur_offset;
-    unsigned_32         max_offset;
-    union {
-        file_handle     *fp;
-        long            size;
-    } u1;
-    union {
-        char            *data;
-        char            *filename;
-    } u2;
-    unsigned_32         sec_number;
-} section_data;
-
-#define MEM_INCREMENT   10240
-
-int CreateBrowseFile(FILE         *browseFile,   /*target file */
-                     section_data *abbrevFile,   /*.debug_abbrev section*/
-                     section_data *debugFile,    /*.debug_info section*/
-                     section_data *referenceFile,/*.WATCOM_reference section */
-                     section_data *lineFile,     /*.debug_line section */
-                     section_data *macroFile,    /*.debug_macinfo section*/
-                     int          (*sect_read)( char *buf, int size, int sec),
-                     char         *filename      /* name of browse file */
-                    );
-#endif
+extern dbg_loc          LocReg( dbg_loc loc, name *reg );
+extern dbg_loc          LocParm( dbg_loc loc, name *tmp );
+extern dbg_loc          LocDupl( dbg_loc loc );
+extern offset           LocSimpField( dbg_loc loc );
+extern cg_sym_handle    LocSimpStatic( dbg_loc loc );

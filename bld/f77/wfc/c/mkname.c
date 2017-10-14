@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,9 @@
 #include "clibext.h"
 
 
-int     CopyMaxStr( char *str, char *buff, int max_len ) {
-//========================================================
-
+int     CopyMaxStr( const char *str, char *buff, int max_len )
+//============================================================
+{
     int         len;
 
     len = strlen( str );
@@ -52,13 +53,13 @@ int     CopyMaxStr( char *str, char *buff, int max_len ) {
         len = max_len;
     }
     memcpy( buff, str, len );
-    buff[ len ] = NULLCHAR;
+    buff[len] = NULLCHAR;
     return( len );
 }
 
-int     MakeName( char *fn, char *extn, char *buff ) {
-//====================================================
-
+int     MakeName( const char *fn, const char *extn, char *buff )
+//==============================================================
+{
     int         len;
 
     len = CopyMaxStr( fn, buff, _MAX_PATH - 1 );

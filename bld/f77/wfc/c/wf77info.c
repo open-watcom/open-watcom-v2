@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1873,11 +1874,10 @@ char    *GetFullSrcName( void ) {
     }
 }
 
-pointer FEAuxInfo( pointer req_handle, int request ) {
+const pointer FEAuxInfo( pointer req_handle, int request )
 //====================================================
-
 // Return specified auxiliary information for given auxiliary entry.
-
+{
     uint_16     flags;
 #if _CPU == 8086 || _CPU == 386
     int         idx;

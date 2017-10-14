@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +45,10 @@
 
 
 extern  void            TellOptimizerByPassed( void );
-extern  void            IterBytes( offset, byte );
 
-extern  void    DataAlign( unsigned_32 align ) {
-/**********************************************/
-
+void    DataAlign( unsigned_32 align )
+/************************************/
+{
     offset      curr_loc;
     uint        modulus;
 
@@ -64,24 +63,24 @@ extern  void    DataAlign( unsigned_32 align ) {
     }
 }
 
-extern  void    DataBytes( unsigned_32 len, const void *src ) {
-/*************************************************************/
-
+void    DataBytes( unsigned_32 len, const void *src )
+/***************************************************/
+{
     TellOptimizerByPassed();
     ObjBytes( src, len );
     TellByPassOver();
 }
 
-extern  void    DataShort( unsigned_16 val )
-/******************************************/
+void    DataShort( unsigned_16 val )
+/**********************************/
 {
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
     TellByPassOver();
 }
 
-extern  void    DataLong( unsigned_32 val )
-/*****************************************/
+void    DataLong( unsigned_32 val )
+/*********************************/
 {
     TellOptimizerByPassed();
     ObjBytes( &val, sizeof( val ) );
@@ -92,8 +91,8 @@ extern  void    DataLong( unsigned_32 val )
 #define MAX_HACK_LEN    ( 8 * 1024 )
 static byte     Buffer[MAX_HACK_LEN];
 
-extern  void    IterBytes( offset len, byte pat )
-/***********************************************/
+void    IterBytes( offset len, byte pat )
+/***************************************/
 {
     TellOptimizerByPassed();
     if( len > MAX_HACK_LEN ) {
@@ -110,8 +109,8 @@ extern  void    IterBytes( offset len, byte pat )
     TellByPassOver();
 }
 
-extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
-/*************************************************************************************/
+void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
+/*****************************************************************************/
 {
     /* unused parameters */ (void)seg; (void)tipe;
 
@@ -122,8 +121,8 @@ extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def 
     TellByPassOver();
 }
 
-extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
-/***************************************************************************/
+void    BackPtrBigOffset( back_handle bck, segment_id seg, offset plus )
+/**********************************************************************/
 {
     /* unused parameters */ (void)seg;
 
@@ -133,8 +132,8 @@ extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( back_handle bck, segment_id seg )
-/************************************************************/
+void    BackPtrBase( back_handle bck, segment_id seg )
+/****************************************************/
 {
     TellOptimizerByPassed();
     OutSegReloc( bck->lbl, seg );
@@ -142,9 +141,9 @@ extern  void    BackPtrBase( back_handle bck, segment_id seg )
     TellByPassOver();
 }
 
-extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
-/*******************************************************************/
-
+void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
+/*************************************************************/
+{
     /* unused parameters */  (void)tipe;
 
     assert( tipe->length == 4 );
@@ -154,8 +153,9 @@ extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
-/***************************************************************/
+void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
+/********************************************************/
+{
     back_handle     bck;
 //    segment_id          seg;
 
@@ -170,8 +170,8 @@ extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBase( cg_sym_handle sym )
-/*****************************************/
+void    FEPtrBase( cg_sym_handle sym )
+/************************************/
 {
     segment_id          seg;
 
@@ -183,16 +183,17 @@ extern  void    FEPtrBase( cg_sym_handle sym )
 }
 
 
-extern  void    DataLabel( label_handle lbl ) {
-/*********************************************/
+void    DataLabel( label_handle lbl )
+/***********************************/
+{
     TellOptimizerByPassed();
     OutLabel( lbl );
     TellByPassOver();
 }
 
-static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
-/************************************************************************/
-
+static constant_defn    *GetI64Const( name *cons, type_class_def class )
+/**********************************************************************/
+{
     static constant_defn i64Defn = { NULL, NULL, { 0, 0, 0, 0 }, I8 };
 
     i64Defn.label = NULL;
@@ -204,9 +205,9 @@ static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
     return( &i64Defn );
 }
 
-extern  name    *GenFloat( name *cons, type_class_def class ) {
-/*************************************************************/
-
+name    *GenFloat( name *cons, type_class_def class )
+/***************************************************/
+{
     constant_defn       *defn;
     segment_id          old;
     name                *result;

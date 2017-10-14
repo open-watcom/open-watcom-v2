@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,12 +60,6 @@ extern void         TellObjNewProc( cg_sym_handle proc );
 extern void         IncLocation( offset by );
 extern bool         AskNameROM( pointer h, cg_class c );
 extern void         OutLineNum( cg_linenum line, bool label_line );
-extern void         BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe );
-extern void         BackPtrBase( back_handle bck, segment_id seg );
-extern void         BackBigOffset( back_handle bck, segment_id seg, offset plus );
-extern void         FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
-extern void         FEPtrBaseOffset( cg_sym_handle sym, offset plus );
-extern void         FEPtrBase( cg_sym_handle sym );
 extern bool         FreeObjCache( void );
 extern char         GetMemModel( void );
 extern void         ChkDbgSegSize( offset max, bool typing );
@@ -74,3 +68,18 @@ extern void         DoOutObjectName( cg_sym_handle sym, void (*outputter)( const
 extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );
 extern bool         CodeHasAbsPatch( oc_entry *code );
+
+extern void         BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe );
+extern void         BackPtrBase( back_handle bck, segment_id seg );
+extern void         BackPtrBigOffset( back_handle bck, segment_id seg, offset plus );
+extern void         FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
+extern void         FEPtrBaseOffset( cg_sym_handle sym, offset plus );
+extern void         FEPtrBase( cg_sym_handle sym );
+
+extern void         DataAlign( unsigned_32 align );
+extern void         DataBytes( unsigned_32 len, const void *src );
+extern void         DataShort( unsigned_16 val );
+extern void         DataLong( unsigned_32 val );
+extern void         IterBytes( offset len, byte pat );
+extern void         DataLabel( label_handle lbl );
+extern name         *GenFloat( name *cons, type_class_def class );

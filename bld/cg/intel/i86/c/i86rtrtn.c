@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "convins.h"
 #include "data.h"
 #include "rtrtn.h"
+#include "x86objd.h"
 #include "objout.h"
 #include "namelist.h"
 #include "regalloc.h"
@@ -50,10 +51,9 @@
 #include "inssegs.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "x86data.h"
 
 
-extern  name            *GenFloat( name *, type_class_def );
-extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,9 +70,9 @@ static  lib_handle FindSrcFile( char *fname ) {
 }
 
 
-static lib_handle SearchPath( char *path_list, char *name ) {
-//===========================================================
-
+static lib_handle SearchPath( char *path_list, const char *name )
+//===============================================================
+{
     char        *p;
     lib_handle  lp;
     char        buff[2 * _MAX_PATH];
@@ -99,11 +100,10 @@ static lib_handle SearchPath( char *path_list, char *name ) {
     return( lp );
 }
 
-lib_handle      IncSearch( char *name ) {
+lib_handle  IncSearch( const char *name )
 //=======================================
-
 // Search for a library member.
-
+{
     lib_handle  lp;
 
     lp = NULL;

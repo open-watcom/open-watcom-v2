@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,7 @@
 #include "blktrim.h"
 #include "tree.h"
 #include "treefold.h"
+#include "x86data.h"
 #include "feprotos.h"
 
 
@@ -80,8 +81,6 @@ extern  void            GCondFwait( void );
 extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
-
-extern  void            OutLblPatch( label_handle, fix_class, offset );
 
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );

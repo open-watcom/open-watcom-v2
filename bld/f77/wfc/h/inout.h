@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,18 +36,18 @@ extern  void    FiniComIO( void );
 extern  void    OpenSrc( void );
 extern  void    IOPurge( void );
 extern  void    ReadSrc( void );
-extern  void    Include( char *inc_name );
+extern  void    Include( const char *inc_name );
 extern  bool    SetLst( bool new );
-extern  void    SrcInclude( char *name );
+extern  void    SrcInclude( const char *name );
 extern  void    Conclude( void );
 extern  void    OpenErr( void );
 extern  void    CompErr( uint msg );
-extern  void    PrintErr( char *string );
+extern  void    PrintErr( const char *string );
 extern  void    PrtErrNL( void );
-extern  void    JustErr( char *string );
+extern  void    JustErr( const char *string );
 extern  void    CloseErr( void );
-extern  void    TOutNL( char *string );
-extern  void    TOut( char *string );
+extern  void    TOutNL( const char *string );
+extern  void    TOut( const char *string );
 extern  void    OpenLst( void );
 extern  void    ReOpenLst( void );
 extern  void    ChkPntLst( void );
@@ -58,8 +59,8 @@ extern  void    GetTrademark( char *buff );
 extern  void    GetMoreInfo( char *buff );
 extern  void    PrtBanner( void );
 extern  void    GetLstName( char *buffer );
-extern  void    PrtLstNL( char *string );
-extern  void    PrtLst( char *string );
+extern  void    PrtLstNL( const char *string );
+extern  void    PrtLst( const char *string );
 extern  void    CloseLst( void );
 extern  void    LFEndSrc( void );
 extern  void    LFNewPage( void );

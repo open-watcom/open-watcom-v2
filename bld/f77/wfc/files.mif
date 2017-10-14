@@ -228,8 +228,7 @@ tdovl2 = &
 #
 comovl1 += &
     brseinfo.obj &
-    browscli.obj &
-    writ_elf.obj &
+    browscli.obj
 
 comovl2 += &
     fcalloc.obj &

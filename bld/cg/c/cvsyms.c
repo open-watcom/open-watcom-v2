@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,30 +48,20 @@
 #include "cvsyms.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "dbsupp.h"
+#include "cvtypes.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-
-extern  void            DataLong( unsigned_32 );
-extern  void            DataBytes(unsigned,const void *);
-extern  void            DoBigLblPtr(cg_sym_handle);
-extern  void            CVPutStr( cv_out *, const char * );
-extern  void            CVPutINum( cv_out *out, signed_32 num );
-extern  void            CVPutINum64( cv_out *out, signed_64 num );
-extern  void            CVPutNullStr( cv_out * );
-extern  void            CVEndType( cv_out *out );
-extern  cg_sym_handle   LocSimpStatic(dbg_loc);
-
-// global variables
-segment_id              CVSyms;
-segment_id              CVTypes;
-
-static  void            DumpLocals( dbg_local *local );
 
 struct sf_info {
     char       size;
     s_values   code;
 } sf_info;
+
+// global variables
+segment_id              CVSyms;
+segment_id              CVTypes;
 
 static struct sf_info SInfo[SG_LAST] = {
     #define SLMAC( n, N, c )    { sizeof( s_##n ), c },
@@ -163,8 +153,8 @@ static  void    EndSym( cv_out *out )
     com->length = len - sizeof( com->length );  /*don't count length field */
 }
 
-extern  void    CVInitDbgInfo( void )
-/***********************************/
+void    CVInitDbgInfo( void )
+/***************************/
 /* called after ObjInit */
 {
     TypeIdx   = CV_FIRST_USER_TYPE-1;
@@ -219,8 +209,8 @@ static  void    InitSegBck( void )
 }
 
 
-extern  void    CVObjInitDbgInfo( void )
-/**************************************/
+void    CVObjInitDbgInfo( void )
+/******************************/
 /* called by objinit to init segments and for codeview */
 {
     cv_out      out[1];
@@ -284,14 +274,14 @@ extern  void    CVObjInitDbgInfo( void )
 }
 
 
-extern  void    CVFiniDbgInfo( void )
-/***********************************/
+void    CVFiniDbgInfo( void )
+/***************************/
 {
 }
 
 
-extern  void    CVObjFiniDbgInfo( void )
-/**************************************/
+void    CVObjFiniDbgInfo( void )
+/******************************/
 {
 }
 
@@ -321,8 +311,8 @@ static void LabelReloc( segment_id seg, back_handle bck, offset disp )
     SetOP( old );
 }
 
-extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, dbg_type tipe )
-/*** Put a back sym out***********************************************************/
+void    CVOutBck( cv_out *out, back_handle bck, offset add, dbg_type tipe )
+/*** Put a back sym out***************************************************/
 {
     cs_ldata    *ptr;
     void        *ptr1;
@@ -368,8 +358,8 @@ static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
 #endif
 }
 
-extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
-/*** Put a sym in out ********************************/
+void    CVOutSym( cv_out *out, cg_sym_handle sym )
+/*** Put a sym in out ***************************/
 {
     dbg_type    tipe;
     fe_attr     attr;
@@ -398,8 +388,8 @@ extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
     }
 }
 
-extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
-/******************************************************************/
+void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
+/*************************************************************/
 {
     dbg_type    tipe;
     cv_out      out[1];
@@ -439,8 +429,8 @@ extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
 }
 
 
-extern  void    CVTypedef( const char *nm, dbg_type tipe )
-/*** emit UDT********************************************/
+void    CVTypedef( const char *nm, dbg_type tipe )
+/*** emit UDT ***********************************/
 {
     cv_out      out[1];
     cs_udt       *ptr;
@@ -453,8 +443,8 @@ extern  void    CVTypedef( const char *nm, dbg_type tipe )
     buffEnd( out );
 }
 
-extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe )
-/*** Put a const sym to out*******************************************************/
+void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe )
+/*** Put a const sym to out **********************************************/
 {
     cs_constant *ptr;
     void        *ptr1;
@@ -471,8 +461,8 @@ extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tip
     buffEnd( out );
 }
 
-extern  void    CVSymIConst( const char *nm, int val, dbg_type tipe )
-/*** emit UDT********************************************************/
+void    CVSymIConst( const char *nm, int val, dbg_type tipe )
+/*** emit UDT **********************************************/
 {
     cv_out      out[1];
     cs_constant *ptr;
@@ -487,8 +477,8 @@ extern  void    CVSymIConst( const char *nm, int val, dbg_type tipe )
 
 }
 
-extern  void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe )
-/*** emit UDT***************************************************************/
+void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe )
+/*** emit UDT ******************************************************/
 {
     cv_out      out[1];
     cs_constant *ptr;
@@ -503,8 +493,8 @@ extern  void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe )
 
 }
 
-extern  void    CVSetBase( void )
-/*******************************/
+void    CVSetBase( void )
+/*****************************/
 /* don't know about this yet */
 {
 }
@@ -513,8 +503,8 @@ extern  void    CVSetBase( void )
 /* Coming out of optimizer queue*/
 /**/
 
-extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc )
-/*************************************************/
+void    CVRtnBeg( dbg_rtn *rtn, offset lc )
+/*****************************************/
 {
     /* unused parameters */ (void)rtn; (void)lc;
 }
@@ -589,8 +579,45 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
 #endif
 }
 
-extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
-/*************************************************/
+
+static  void    DumpLocals( dbg_local *local )
+/********************************************/
+{
+    dbg_local   *next;
+    type_length offset;
+    cv_out      out[1];
+    dbg_type    tipe;
+    name        *t;
+
+    for( ; local != NULL; local = next ) {
+        next = local->link;
+        switch( local->kind ) {
+        case DBG_SYM_VAR:
+            tipe = FEDbgType( local->sym );
+            t = LocSymBP( local->loc );
+            if( t != NULL ) {
+                offset = NewBase( t );
+                NewBuff( out, CVSyms );
+                FrameVar( out, FEName( local->sym ), tipe, offset );
+                buffEnd( out );
+            } else {
+                CVGenStatic( local->sym, local->loc, false );
+            }
+            break;
+        case DBG_SYM_TYPE:
+            break;
+        case DBG_SYM_TYPEDEF:
+            tipe = FEDbgType( local->sym );
+            CVTypedef( FEName( local->sym ), tipe );
+            break;
+        }
+        DBLocFini( local->loc );
+        CGFree( local );
+    }
+}
+
+void    CVProEnd( dbg_rtn *rtn, offset lc )
+/*****************************************/
 {
     cg_sym_handle       sym;
     dbg_type            tipe;
@@ -647,8 +674,8 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     DumpLocals( rtn->rtn_blk->locals );
 }
 
-extern  void    CVBlkBeg( dbg_block *blk, offset lc )
-/***************************************************/
+void    CVBlkBeg( dbg_block *blk, offset lc )
+/*******************************************/
 {
     block_patch        *bpatch;
     dbg_patch          *dpatch;
@@ -682,8 +709,8 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc )
     DumpLocals( blk->locals );
 }
 
-extern  void    CVBlkEnd( dbg_block *blk, offset lc )
-/***************************************************/
+void    CVBlkEnd( dbg_block *blk, offset lc )
+/*******************************************/
 {
     fsize               length;
     long_offset         here;
@@ -706,14 +733,14 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
     CGFree( blk->patches );
 }
 
-extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc )
-/*************************************************/
+void    CVEpiBeg( dbg_rtn *rtn, offset lc )
+/*****************************************/
 {
     /* unused parameters */ (void)rtn; (void)lc;
 }
 
-extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
-/*************************************************/
+void    CVRtnEnd( dbg_rtn *rtn, offset lc )
+/*****************************************/
 {
     cv_out              out[1];
     fsize               proc_length;
@@ -740,45 +767,8 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
 }
 
 
-static  void    DumpLocals( dbg_local *local )
-/********************************************/
-{
-    dbg_local   *next;
-    type_length offset;
-    cv_out      out[1];
-    dbg_type    tipe;
-    name        *t;
-
-    for( ; local != NULL; local = next ) {
-        next = local->link;
-        switch( local->kind ) {
-        case DBG_SYM_VAR:
-            tipe = FEDbgType( local->sym );
-            t = LocSymBP( local->loc );
-            if( t != NULL ) {
-                offset = NewBase( t );
-                NewBuff( out, CVSyms );
-                FrameVar( out, FEName( local->sym ), tipe, offset );
-                buffEnd( out );
-            } else {
-                CVGenStatic( local->sym, local->loc, false );
-            }
-            break;
-        case DBG_SYM_TYPE:
-            break;
-        case DBG_SYM_TYPEDEF:
-            tipe = FEDbgType( local->sym );
-            CVTypedef( FEName( local->sym ), tipe );
-            break;
-        }
-        DBLocFini( local->loc );
-        CGFree( local );
-    }
-}
-
-
-extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe )
-/*** Put a local back sym out**********************************************/
+void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe )
+/*** Put a local back sym out *************************************/
 {
     type_length offset;
     void        *ptr1;

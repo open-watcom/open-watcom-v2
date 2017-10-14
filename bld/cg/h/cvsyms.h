@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,3 +44,9 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc );
 extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
 extern  void    CVDefSegs( void );
+extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe );
+extern  void    CVOutSym( cv_out *out, cg_sym_handle sym );
+extern  void    CVOutBck( cv_out *out, back_handle bck, offset add,  dbg_type tipe );
+extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
+extern  void    CVSymIConst( const char *nm, int val, dbg_type tipe );
+extern  void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );

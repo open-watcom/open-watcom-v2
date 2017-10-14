@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,7 +222,7 @@ static const byte __FAR CharSet[] = {
 
 #endif
 
-static  int     ExtractText( char *string, int len ) {
+static  int     ExtractText( const char *string, int len ) {
 // Given a string of text, extract as much text as possible up to a maximum
 // of "len" bytes so that we don't split double-byte characters.
 
@@ -231,7 +232,7 @@ static  int     ExtractText( char *string, int len ) {
 }
 
 
-static  bool    IsDoubleByteBlank( char *ptr ) {
+static  bool    IsDoubleByteBlank( const char *ptr ) {
 // Determine if character is a double-byte blank character.
 
     /* unused parameters */ (void)ptr;
@@ -249,7 +250,7 @@ static  bool    IsDoubleByteChar( char ch ) {
 }
 
 
-static  int     CharacterWidth( char PGM *ptr ) {
+static  int     CharacterWidth( const char PGM *ptr ) {
 // Determine character width.
 
     /* unused parameters */ (void)ptr;
