@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #ifndef _F77_DATTYP_H_
 #define _F77_DATTYP_H_
 
@@ -112,5 +113,7 @@ typedef union ftn_type {
 
 typedef     unsigned    label_id;
 typedef     obj_ptr     warp_label;
+
+typedef     unsigned_32 recnum_type;
 
 #endif
