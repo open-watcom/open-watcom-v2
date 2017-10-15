@@ -33,15 +33,12 @@
 #define _F77_EXTERNAL_FUNCS_H 1
 
 #include "fio.h"
-#include "ftnio.h"
 #include "errrtns.h"
 #include "symdefs.h"
 
 extern bool        __Add( intstar4 *arg1, intstar4 *arg2 );
 extern bool        __Mul( intstar4 *arg1, intstar4 *arg2 );
 extern bool        __Sub( intstar4 *arg1, intstar4 *arg2 );
-extern ftnfile     *_InitStandardInput( void );
-extern ftnfile     *_InitStandardOutput( void );
 extern void        _R_FError( int );
 extern void        _R_FExtension( int );
 extern bool        AddIOFlo(intstar4 *,intstar4 *);
@@ -49,10 +46,8 @@ extern void        ArrayIOType( void );
 extern void        Blanks( void );
 extern void        BumpComma( void );
 extern void        CheckEor( void );
-extern void        CloseDeleteFile( ftnfile * );
 extern void        DfltInq( void );
 extern void        DoFreeIn( void );
-extern void        ExtractInfo( char *, ftnfile * );
 extern int         ExtractText( const char *, int );
 extern void        FEmByte( int );
 extern void        FEmChar(char PGM *);
@@ -62,15 +57,10 @@ extern bool        FindFName( void );
 extern void        FreeIn( void );
 extern void        FreeOut( void );
 extern intstar4    GetNum( void );
+extern bool        GetReal( extended *value );
 extern void        GetStr( string *str, char *res );
-extern int         InqDir( ftnfile * );
 extern void        InqExList( void );
-extern int         InqFmtd( ftnfile * );
 extern void        InqOdList( void );
-extern int         InqSeq( ftnfile * );
-extern int         InqUnFmtd( ftnfile * );
-extern pointer     LocFile( char * );
-extern pointer     LocUnit( int );
 extern bool        MulIOFlo( intstar4 *, intstar4 * );
 extern void        NextRec( void );
 extern void        OutIntCG( void );
@@ -108,11 +98,9 @@ extern void        R_NewRec( void );
 extern bool        RecEOS( void );
 extern void        SetIOCB( void );
 extern void        SetMaxPrec( int );
-extern bool        Scrtched( ftnfile * );
 extern bool        SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
 extern void        TrimStr( string PGM *src, string *res );
 extern void        UnFmtIn( void );
 extern void        UnFmtOut( void );
-extern bool        GetReal( extended *value );
 
 #endif

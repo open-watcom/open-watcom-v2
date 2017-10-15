@@ -35,6 +35,7 @@
 #include "pgmacc.h"
 #include "rtsysutl.h"
 #include "rtutls.h"
+#include "sysinq.h"
 
 #include <string.h>
 

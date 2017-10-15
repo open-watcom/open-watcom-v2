@@ -42,6 +42,8 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "fdutil.h"
+#include "fstdio.h"
 
 #include <string.h>
 

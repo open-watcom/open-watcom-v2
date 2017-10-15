@@ -36,6 +36,7 @@
 #include "runmain.h"
 #include "rtutls.h"
 #include "rtsysutl.h"
+#include "fstdio.h"
 
 #include <stdio.h>
 #include <stdlib.h>

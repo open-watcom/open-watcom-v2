@@ -24,37 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  initialize standard i/o
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "source.h"
-#include "argument.h"
-#include "symbol.h"
-#include "stmtno.h"
-#include "rememb.h"
-#include "csdefn.h"
-#include "fmtstg.h"
-#include "itdefn.h"
-#include "impl.h"
-#include "lex.h"
-#include "scangbl.h"
-#include "token.h"
-#include "cioconst.h"
-#include "fmtdef.h"
-
-// The following files have been ordered so that variables are aligned on
-// an even address.  Be careful when you change them!
-
-#define gbl_defn
-#include "fmtdefn.h"
-#include "fcdatad.h"
-#include "prdefn.h"
-#include "progsw.h"
-#include "segsw.h"
-#include "stmtsw.h"
-#include "extnsw.h"
-#include "gbldat.h"
+extern ftnfile *_InitStandardInput( void );
+extern ftnfile *_InitStandardOutput( void );
