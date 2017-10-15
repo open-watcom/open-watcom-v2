@@ -33,6 +33,7 @@
 #include "ftnstd.h"
 #include "sdfile.h"
 
+
 char    FFCtrlSeq[] = { "1" };
 char    SkipCtrlSeq[] = { "0" };
 char    NormalCtrlSeq[] = { " " };

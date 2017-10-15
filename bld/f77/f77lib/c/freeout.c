@@ -38,37 +38,36 @@
 #include "wrutils.h"
 #include "freeout.h"
 #include "unfmtutl.h"
-
 #include <string.h>
 
 
-static  void    OutReal( void ) {
-//=========================
-
+static  void    OutReal( void )
+//==============================
+{
     FmtRealRtn( IOCB->buffer, &IORslt.single );
     F_SendData( IOCB->buffer, REAL_IO_WINDOW );
 }
 
 
-static  void    OutDble( void ) {
-//=========================
-
+static  void    OutDble( void )
+//=============================
+{
     FmtDoubleRtn( IOCB->buffer, &IORslt.dble );
     F_SendData( IOCB->buffer, DOUBLE_IO_WINDOW );
 }
 
 
-static  void    OutXtnd( void ) {
-//=========================
-
+static  void    OutXtnd( void )
+//=============================
+{
     FmtExtendedRtn( IOCB->buffer, &IORslt.extended );
     F_SendData( IOCB->buffer, EXTENDED_IO_WINDOW );
 }
 
 
-static  void    OutCplx( void ) {
-//=========================
-
+static  void    OutCplx( void )
+//=============================
+{
     char        *buff;
 
     buff = IOCB->buffer;
@@ -84,9 +83,9 @@ static  void    OutCplx( void ) {
 }
 
 
-static  void    OutDbcx( void ) {
-//=========================
-
+static  void    OutDbcx( void )
+//=============================
+{
     char        *buff;
 
     buff = IOCB->buffer;
@@ -102,9 +101,9 @@ static  void    OutDbcx( void ) {
 }
 
 
-static  void    OutXtcx( void ) {
-//=========================
-
+static  void    OutXtcx( void )
+//=============================
+{
     char        *buff;
 
     buff = IOCB->buffer;

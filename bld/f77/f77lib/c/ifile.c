@@ -38,20 +38,18 @@
 #include "pgmacc.h"
 #include "ifile.h"
 
+
 #define _Normalize( ptr, offset ) ((char PGM *)((char HPGM *)ptr + offset))
 
-
-void    SendIFBuff( char *buffer, int len, unsigned_32 recnum,
-                    string PGM *ifile ) {
-//============================================================
-
-    pgm_memput( _Normalize( ifile->strptr, (recnum-1)*len ), buffer, len );
+void    SendIFBuff( char *buffer, int len, unsigned_32 recnum, string PGM *ifile )
+//===============================================================================
+{
+    pgm_memput( _Normalize( ifile->strptr, ( recnum - 1 ) * len ), buffer, len );
 }
 
 
-void    NextIFBuff( char *buffer, int len, unsigned_32 recnum,
-                    string PGM *ifile ) {
-//============================================================
-
-    pgm_memget( buffer, _Normalize( ifile->strptr, (recnum-1)*len ), len );
+void    NextIFBuff( char *buffer, int len, unsigned_32 recnum, string PGM *ifile )
+//===============================================================================
+{
+    pgm_memget( buffer, _Normalize( ifile->strptr, ( recnum - 1 ) * len ), len );
 }

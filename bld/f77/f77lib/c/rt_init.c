@@ -48,7 +48,6 @@
 #include "thread.h"
 #include "rttraps.h"
 #include "rt_init.h"
-#include "clibint.h"
 
 
 // C run-time library internal variable

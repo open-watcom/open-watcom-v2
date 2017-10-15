@@ -54,8 +54,9 @@ typedef struct f_procs {
     void        (*routine)(void);
 } f_procs;
 
-void    R_FDoSpec( void ) {
+void    R_FDoSpec( void )
 // Process a complete format specification.
+{
     FSkipSpaces();
     if( *Fmt_charptr != '(' ) {
         R_FError( PC_NO_OPENPAREN );
