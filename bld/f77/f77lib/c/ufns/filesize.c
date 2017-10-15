@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,8 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
-#include "fio.h"
 #include "ftnapi.h"
+#include "fio.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -50,16 +51,12 @@ intstar4        __fortran FILESIZE( intstar4 *unit ) {
 
     ftnfile     *fcb;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) return( -1 );
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
-            if( fcb->fileptr == NULL ) {
-                return( -1 );
-            } else {
-                return( filelength( ((a_file *)(fcb->fileptr))->handle ) );
-            }
+            if( fcb->fileptr != NULL )
+                return( filelength( fcb->fileptr->handle ) );
+            break;
         }
-        fcb = fcb->link;
     }
+    return( -1 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,8 @@
 #include "rtspawn.h"
 #include "rt_init.h"
 #include "rstdio.h"
+#include "rterr.h"
 
-
-extern  void            FlushStdUnit(void);
 
 // this is used by the load and go debugger in _SA_LIBRARY
 

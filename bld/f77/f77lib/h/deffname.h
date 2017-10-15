@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,9 @@
 *
 ****************************************************************************/
 
-#define     UNIT_OFFSET     3       // offset to unit digit in file name
-#define     DFLT_FNAME_LEN  7       // includes NULLCHAR
-#define     MAX_UNIT_DIGITS 3       // number of digits in unit number
+
+#define UNIT_OFFSET     3       // offset to unit digit in file name
+#define DFLT_FNAME_LEN  7       // includes NULLCHAR
+#define MAX_UNIT_DIGITS 3       // number of digits in unit number
+
+extern char             DefFName[];

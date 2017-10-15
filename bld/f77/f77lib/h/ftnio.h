@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,16 +32,6 @@
 #ifndef _F77_FTNIO_H
 #define _F77_FTNIO_H 1
 
-#ifdef __SW_BM
-    extern      void    (*_AccessFIO)( void );
-    extern      void    (*_ReleaseFIO)( void );
-    extern      void    (*_PartialReleaseFIO)( void );
-#else
-    #define     _AccessFIO()
-    #define     _ReleaseFIO()
-    #define     _PartialReleaseFIO()
-#endif
-
 #if _CPU == 8086
     #define _BadUnit( x )       ( ( x <  0 ) || ( x > 32727 ) )
     #define _BadRecl( x )       ( ( x <= 0 ) || ( x > 65535 ) )
@@ -52,14 +43,6 @@
 #endif
     #define _BadRec( x )        ( x <= 0 )
 
-// In order to avoid hitting every runtime file we do this before prototyping
-#if !defined( SetIOCB )
-  #if !defined( _M_IX86 ) && defined( __RT__ )
-    #define SetIOCB     __RT_SetIOCB
-  #endif
-#endif
-
-extern  void            SetIOCB( void );
 #define _SetIOCB()    SetIOCB();
 
 // UNCOMMENT_TOKEN

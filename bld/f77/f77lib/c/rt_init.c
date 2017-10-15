@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,6 @@
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "fapptype.h"
@@ -48,7 +48,11 @@
 #include "thread.h"
 #include "rttraps.h"
 #include "rt_init.h"
+#include "clibint.h"
 
+
+// C run-time library internal variable
+extern char *_LpPgmName;
 
 #if defined( __WINDOWS__ )
   #if defined( __386__ )

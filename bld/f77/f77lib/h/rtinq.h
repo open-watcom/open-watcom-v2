@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,18 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  INQUIRE statement processor
 *
 ****************************************************************************/
 
 
-//
-// FLT86    : 8086 floating point constants
-//
-
-#include "ftnstd.h"
-
-
-const double __FAR      P1d100 = { 0.1e100 };
-const double __FAR      P1d_99 = { 0.1e-99 };
+extern bool    FindFName( void );
+extern void    DfltInq( void );
+extern void    InqExList( void );
+extern void    InqOdList( void );

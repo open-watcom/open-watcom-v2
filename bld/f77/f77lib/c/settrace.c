@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #endif
 #include "frtdata.h"
 #include "fthread.h"
-#include "ftextvar.h"
 #include "rundat.h"
 #include "rtenv.h"
 #include "errcod.h"
@@ -44,6 +44,7 @@
 #include "errutil.h"
 #include "rt_init.h"
 #include "rstdio.h"
+#include "rterr.h"
 
 
 static  void    TraceInfo( char *buff ) {

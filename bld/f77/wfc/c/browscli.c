@@ -60,7 +60,7 @@ typedef struct f77_dw_section {
     dw_out_offset       offset;
     dw_out_offset       length;
     union {
-        file_handle     *fp;
+        file_handle     fp;
         size_t          size;
     } u1;
     union {
@@ -175,8 +175,8 @@ static Elf32_Shdr section_header_template = {
     0
 };
 
-static void mywrite( FILE *fp, const void *data, size_t len, const char *filename )
-/*********************************************************************************/
+static void mywrite( file_handle fp, const void *data, size_t len, const char *filename )
+/***************************************************************************************/
 {
     char        err_msg[ERR_BUFF_SIZE+1];
 
@@ -227,8 +227,8 @@ static size_t CLIRead( char *buf, size_t size, dw_sectnum sect )
 static const dw_sectnum inSect[] = { DW_DEBUG_ABBREV, DW_DEBUG_INFO, DW_DEBUG_REF, DW_DEBUG_LINE, DW_DEBUG_MACINFO };
 #define SECTION_COUNT   (sizeof( inSect ) / sizeof( inSect[0] ))
 
-static int createBrowseFile( FILE *browseFile, const char *filename )
-/*******************************************************************/
+static int createBrowseFile( file_handle browseFile, const char *filename )
+/*************************************************************************/
 {
     size_t          readSize;
     int             fileNum;

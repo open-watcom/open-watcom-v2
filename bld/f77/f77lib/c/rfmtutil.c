@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +31,13 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "fmtdef.h"
 #include "intcnv.h"
 #include "target.h"
 #include "pgmacc.h"
-#include "undefrtn.h"
+#include "undefcg.h"
 #include "fltcnv.h"
 #include "fmath.h"
 #include "rmemmgr.h"
@@ -48,7 +48,11 @@
 #include "cctrl.h"
 #include "wrutils.h"
 #include "fmtcnvt.h"
-
+#include "fmtrtns.h"
+#include "rfmtutil.h"
+#include "rfmtlog.h"
+#include "rdutils.h"
+#include "fltconst.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <limits.h>
@@ -58,13 +62,8 @@
 /* Forward declarations */
 static  void    HexFlip( char *src, int len );
 static  void    OutInt( uint width, uint min );
-void    ChkBuffLen( uint width );
-void    R_FOHex( void );
-    
-#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 
-extern  const double __FAR      P1d100;
-extern  const double __FAR      P1d_99;
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 
 typedef union bit_extended {
     byte            pattern[16];

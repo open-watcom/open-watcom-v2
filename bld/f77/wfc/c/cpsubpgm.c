@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +64,8 @@
 #include "rstmgr.h"
 #include "fcodes.h"
 #include "gflow.h"
+#include "brseinfo.h"
 
-
-extern  void            BIStartRBorEP( sym_id );
-extern  void            BIStartBlockData( sym_id );
-extern  void            BIStartSubroutine( void );
 
 /* forward declarations */
 static void CkSubEnd( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
-#include "fio.h"
 #include "ftnapi.h"
 #include "posflush.h"
 
@@ -48,13 +48,12 @@ intstar4        __fortran FLUSHUNIT( intstar4 *unit ) {
 
     ftnfile     *fcb;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) return( -1 );
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
-            if( fcb->fileptr == NULL ) return( -1 );
+            if( fcb->fileptr == NULL )
+                break;
             return( FlushBuffer( fcb->fileptr ) );
         }
-        fcb = fcb->link;
     }
+    return( -1 );
 }

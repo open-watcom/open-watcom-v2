@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "units.h"
@@ -52,6 +52,7 @@
 #include "posdel.h"
 #include "postrunc.h"
 #include "posback.h"
+#include "posdat.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -67,22 +68,15 @@
 #endif
 
 
-/* Forward declarations */
-static  void    SysIOInfo( ftnfile *fcb );
-static  void    ChkDisk( ftnfile *fcb );
-
-/*
-extern  file_handle     FStdIn;
-extern  file_handle     FStdOut;
-extern  file_handle     FStdErr;
-*/
-
 #define SYS_DFLT_RECSIZE        1024;
 
 #define INFO_DEV                0x80    // indicates file is a device
 #define INFO_VALID_DRIVE        0x40    // indicates valid drive letter
 #define INFO_DRIVE              0x3f    // mask for drive number
 
+/* Forward declarations */
+static  void    SysIOInfo( ftnfile *fcb );
+static  void    ChkDisk( ftnfile *fcb );
 
 void    GetSysIOInfo( ftnfile *fcb ) {
 //====================================
@@ -92,7 +86,7 @@ void    GetSysIOInfo( ftnfile *fcb ) {
     SysIOInfo( fcb );
     // if standard output device is carriage control (/cc option)
     if( fcb->cctrl == CC_YES ) {
-        ((a_file *)(fcb->fileptr))->attrs |= CARRIAGE_CONTROL;
+        fcb->fileptr->attrs |= CARRIAGE_CONTROL;
     }
 }
 
@@ -163,15 +157,15 @@ static  void    SysIOInfo( ftnfile *fcb ) {
     fcb->device = 0;
     if( fcb->fileptr != NULL ) { // file is open
 #if defined( __NETWARE__ )
-        if( ( ((a_file *)(fcb->fileptr))->handle == STDIN_FILENO ) ||
-            ( ((a_file *)(fcb->fileptr))->handle == STDOUT_FILENO ) ||
-            ( ((a_file *)(fcb->fileptr))->handle == STDERR_FILENO ) ) {
+        if( ( fcb->fileptr->handle == STDIN_FILENO ) ||
+            ( fcb->fileptr->handle == STDOUT_FILENO ) ||
+            ( fcb->fileptr->handle == STDERR_FILENO ) ) {
             fcb->device |= INFO_DEV;
         } else {
 #endif
         // for stdin, don't use file name "CON" since information will always
         // indicate it's a device even if stdin is redirected
-            if( fstat( ((a_file *)(fcb->fileptr))->handle, &info ) == -1 ) {
+            if( fstat( fcb->fileptr->handle, &info ) == -1 ) {
                 FSetSysErr( fcb->fileptr );
                 IOErr( IO_FILE_PROBLEM );
                 return;
@@ -244,7 +238,7 @@ void    OpenAction( ftnfile *fcb ) {
     SetIOBufferSize( fcb->blocksize );
     fcb->fileptr = Openf( fcb->filename, _FileAttrs( fcb ) );
     if( fcb->fileptr != NULL ) {
-        if( ((a_file *)(fcb->fileptr))->attrs & CHAR_DEVICE ) {
+        if( fcb->fileptr->attrs & CHAR_DEVICE ) {
             // In dos box under NT we do not get correct information
             // about a device until we actually open it (a bug in the NT
             // dos box
@@ -328,17 +322,20 @@ void    CloseFile( ftnfile *fcb ) {
 
     file_handle         fh;
 
-    if( fcb->fileptr == NULL ) return;
-    if( fcb->fileptr == FStdIn ) return;
+    if( fcb->fileptr == NULL )
+        return;
+    if( fcb->fileptr == FStdIn )
+        return;
     if( fcb->fileptr == FStdOut ) {
         // check if standard output device redirected to a disk file
-        if( ((a_file *)(fcb->fileptr))->attrs & BUFFERED ) {
+        if( fcb->fileptr->attrs & BUFFERED ) {
             FlushBuffer( fcb->fileptr );
             ChkIOErr( fcb );
         }
         return;
     }
-    if( fcb->fileptr == FStdErr ) return;
+    if( fcb->fileptr == FStdErr )
+        return;
     Closef( fcb->fileptr );
     // save file handle
     fh = fcb->fileptr;
@@ -374,7 +371,7 @@ void    CloseDeleteFile( ftnfile *fcb ) {
 #if defined( __IS_WINDOWED__ )
     if( fcb->fileptr ) {
 
-        win_con = _dwDeleteOnClose( ((a_file *)(fcb->fileptr))->handle );
+        win_con = _dwDeleteOnClose( fcb->fileptr->handle );
     }
 #endif
     CloseFile( fcb );
@@ -408,16 +405,16 @@ void    FPutBuff( ftnfile *fcb ) {
 // Write a record to a file.
 
     if( IOCB->flags & IOF_NOCR ) {
-        ((a_file *)fcb->fileptr)->attrs |= CC_NOCR;
+        fcb->fileptr->attrs |= CC_NOCR;
     }
     if( fcb->flags & FTN_LOGICAL_RECORD ) {
-        ((a_file *)fcb->fileptr)->attrs |= LOGICAL_RECORD;
+        fcb->fileptr->attrs |= LOGICAL_RECORD;
     }
     FPutRec( fcb->fileptr, fcb->buffer, fcb->col );
     if( IOCB->flags & IOF_NOCR ) {
-        ((a_file *)fcb->fileptr)->attrs &= ~CC_NOCR;
+        fcb->fileptr->attrs &= ~CC_NOCR;
     }
-    ((a_file *)fcb->fileptr)->attrs &= ~( TRUNC_ON_WRITE | LOGICAL_RECORD );
+    fcb->fileptr->attrs &= ~( TRUNC_ON_WRITE | LOGICAL_RECORD );
 }
 
 
@@ -464,7 +461,7 @@ void    SysClearEOF( ftnfile *fcb ) {
     if( ( fcb->fileptr == FStdIn ) && IsDevice( fcb ) ) {
         // DOS bug: if a read from stdin causes eof, all subsequent reads
         // will also cause eof unless we write to stdout
-        write( ((a_file *)FStdOut)->handle, 0, 0 );
+        write( FStdOut->handle, 0, 0 );
     }
 #endif
 }
@@ -491,7 +488,7 @@ void    Rewindf( ftnfile *fcb ) {
     if( fcb->fileptr != NULL ) {
         ChkDisk( fcb );
         FRewind( fcb->fileptr );
-        ((a_file *)fcb->fileptr)->attrs |= TRUNC_ON_WRITE;
+        fcb->fileptr->attrs |= TRUNC_ON_WRITE;
     }
 }
 
@@ -541,7 +538,7 @@ void    BackSpacef( ftnfile *fcb ) {
     if( fcb->fileptr != NULL ) {
         ChkDisk( fcb );
         FBackspace( fcb->fileptr, fcb->bufflen );
-        ((a_file *)fcb->fileptr)->attrs |= TRUNC_ON_WRITE;
+        fcb->fileptr->attrs |= TRUNC_ON_WRITE;
     }
 }
 
@@ -553,7 +550,7 @@ void    EndFilef( ftnfile *fcb ) {
 
     if( fcb->fileptr != NULL ) {
         FTruncate( fcb->fileptr );
-        ((a_file *)fcb->fileptr)->attrs &= ~TRUNC_ON_WRITE;
+        fcb->fileptr->attrs &= ~TRUNC_ON_WRITE;
     }
 }
 

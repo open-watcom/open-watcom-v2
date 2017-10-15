@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,13 +55,9 @@
 #include "gsubprog.h"
 #include "tdinit.h"
 #include "rstmgr.h"
+#include "brseinfo.h"
 
 
-extern  void    BIInit( void );
-extern  void    BIEnd( void );
-extern  void    BIStartSubProg( void );
-extern  void    BIResolveUndefTypes( void );
-extern  void    BIEndSubProg( void );
 extern  bool    TBreak( void );
 
 static bool CompSProg( void )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,12 @@
 #include "optr.h"
 #include "errcod.h"
 #include "global.h"
-#include "rtenv.h"
 #include "ferror.h"
 #include "usfold.h"
-#include "lexcmp.h"
-#include "ftextfun.h"
+#include "lexstcmp.h"
 #include "upscan.h"
 #include "binops.h"
+#include "intarith.h"
 
 
 extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);

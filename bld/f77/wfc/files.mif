@@ -141,7 +141,7 @@ comovl1 += &
     hexcnv.obj &
     japanese.obj &
     korean.obj &
-    lexcmp.obj &
+    lexstcmp.obj &
     sbcsutil.obj
 
 !ifdef incl_errmsgs

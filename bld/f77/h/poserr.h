@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,11 @@
 ****************************************************************************/
 
 
-extern int     Errorf( b_file *io );
-extern bool    EOFile( b_file *io );
-extern char    *ErrorMsg( b_file *io );
-extern void    FSetTrunc( b_file *io );
-extern void    FSetSysErr( b_file *io );
-extern void    FSetErr( int error, b_file *io );
-extern void    FSetEof( b_file *io );
-extern void    IOOk( b_file *io );
+extern int     Errorf( file_handle fp );
+extern bool    EOFile( file_handle fp );
+extern char    *ErrorMsg( file_handle fp );
+extern void    FSetTrunc( file_handle fp );
+extern void    FSetSysErr( file_handle fp );
+extern void    FSetErr( int error, file_handle fp );
+extern void    FSetEof( file_handle fp );
+extern void    IOOk( file_handle fp );

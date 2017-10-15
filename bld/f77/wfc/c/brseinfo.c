@@ -88,7 +88,7 @@ static void             BISetHandle(sym_id,dw_handle);
 static char *           BIMKFullPath(const char *);
 static void             BIInitBaseTypes(void);
 
-extern char             BrowseExtn[];
+static char             BrowseExtn[] = { "mbr" };
 
 static dw_client        cBIId;
 static dw_loc_handle    justJunk;

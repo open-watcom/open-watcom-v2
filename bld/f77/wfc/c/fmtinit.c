@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +48,11 @@
 #include "fmtemit.h"
 #include "fcodes.h"
 #include "gflow.h"
+#include "fmtscan.h"
+#include "cfmttab.h"
 
 
-extern  void            R_FDoSpec(void);
-
-extern  const FmtElements CFmtStruct;
-
-
-static  void    FInit( uint fmt_length, char *fmt_string ) 
+static  void    FInit( uint fmt_length, char *fmt_string )
 //========================================================
 {
     Fmt_start = fmt_string;
@@ -66,7 +64,7 @@ static  void    FInit( uint fmt_length, char *fmt_string )
 }
 
 
-static  void    FFinish( void ) 
+static  void    FFinish( void )
 //=============================
 {
     if( StmtProc == PR_FMT ) {
@@ -81,7 +79,7 @@ static  void    FFinish( void )
     }
 }
 
-void    FScan( uint fmt_length, char *fmt_string, cs_label fmt_label ) 
+void    FScan( uint fmt_length, char *fmt_string, cs_label fmt_label )
 //====================================================================
 // FORMAT statement parsing (only compile-time).
 {

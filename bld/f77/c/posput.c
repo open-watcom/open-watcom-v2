@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextvar.h"
+#include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
 #include "poscc.h"
@@ -37,6 +38,7 @@
 #include "posseek.h"
 #include "poserr.h"
 #include "posflush.h"
+#include "posdat.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -108,7 +110,7 @@ static  void    PutTextRec( b_file *io, const char *b, int len )
 
     cc_len = 0;
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( (a_file *)io, *b, &cc );
+        cc_len = FSetCC( io, *b, &cc );
         b++;    // skip carriage control character
         len--;  // ...
     }

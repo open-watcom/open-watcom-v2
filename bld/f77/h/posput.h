@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,9 @@
 ****************************************************************************/
 
 
-extern void     FPutRec( b_file *io, const char *b, int len );
+extern void     FPutRec( file_handle fp, const char *b, int len );
 #if defined( __RT__ )
-extern void     ChopFile( b_file *io );
+extern void     ChopFile( file_handle fp );
 #endif
-extern uint     writebytes( b_file *io, const char *buff, uint len );
-extern int      SysWrite( b_file *io, const char *b, uint len );
+extern uint     writebytes( file_handle fp, const char *buff, uint len );
+extern int      SysWrite( file_handle fp, const char *b, uint len );

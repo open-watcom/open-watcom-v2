@@ -36,7 +36,6 @@
 #include "global.h"
 #include "fio.h"
 #include "posio.h"
-#include "ftextfun.h"
 #include "blips.h"
 #include "posopen.h"
 #include "posget.h"
@@ -46,11 +45,10 @@
 #include "poserr.h"
 #include "sdcio.h"
 #include "posdel.h"
+#include "posdat.h"
 
 #include <string.h>
 
-
-extern  file_handle             FStdOut;
 
 static  int             Modes[] = { RDONLY,
                                     WRONLY,
@@ -58,20 +56,6 @@ static  int             Modes[] = { RDONLY,
                                     RDWR };
 
 static  file_attr       CurrAttrs = { REC_TEXT };
-
-file_attr       DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       ErrAttr = { REC_TEXT };
-char            LstExtn[] = { "lst" };
-char            ErrExtn[] = { "err" };
-char            ForExtn[] = { "for" };
-char            BrowseExtn[] = { "mbr" };
-#if defined( __UNIX__ )
-  char          ObjExtn[] = { "o" };
-#else
-  char          ObjExtn[] = { "obj" };
-#endif
 
 
 void    SDInitIO(void) {

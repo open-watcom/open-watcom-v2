@@ -162,6 +162,7 @@ both += &
     japanese.obj &
     korean.obj &
     lexcmp.obj &
+    lexstcmp.obj &
     rtspawn.obj &
     sbcsutil.obj
 
@@ -177,7 +178,7 @@ both += &
 dep_rt += &
     deffname.obj &
     fdutil.obj &
-    flt86.obj &
+    fltconst.obj &
     initeng.obj &
     initchi.obj &
     initjap.obj &
@@ -350,6 +351,8 @@ ifns += &
     ifcqabs.obj &
     iflen.obj &
     iflentrm.obj
+
+#ifderf_postopts = -pcl -fo=.i
 
 # The following intrinsic functions are generated in-line by the front end
 # but are required because they define the X... versions which are

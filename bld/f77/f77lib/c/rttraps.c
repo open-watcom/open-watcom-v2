@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -329,8 +330,7 @@ void    R_TrapFini( void ) {
 }
 
 #if 0
-extern void             (*_ExceptionInit)( void );
-extern void             (*_ExceptionFini)( void );
+#include "rt_init.h"
 
 void    __InitExceptionVectors( void ) {
 //================================

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,17 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  vectors for no undefined checking i/o routines
+* Description:  set "i/o statement" in IOCB
 *
 ****************************************************************************/
 
-extern  void    (*FmtRealRtn)(char *,single *);
-extern  void    (*FmtDoubleRtn)(char *,double *);
-extern  void    (*FmtExtendedRtn)(char *,extended *);
-extern  void    (*SendStrRtn)(char PGM *,uint);
-extern  bool    (*UndefRealRtn)(single *);
-extern  bool    (*UndefDoubleRtn)(double *);
-extern  bool    (*UndefExtendedRtn)(extended *);
-extern  bool    (*UndefLogRtn)(void);
-extern  bool    (*UndefIntRtn)(uint);
-extern  bool    (*GetRealRtn)(double *,uint);
+
+#if 0
+// In order to avoid hitting every runtime file we do this before prototyping
+#if !defined( SetIOCB )
+  #if !defined( _M_IX86 ) && defined( __RT__ )
+    #define SetIOCB     __RT_SetIOCB
+  #endif
+#endif
+#endif
+
+extern void     SetIOCB( void );

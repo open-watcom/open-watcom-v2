@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,9 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  compare 2 strings
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern int     LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 );
+extern void    UnFmtIn( void );

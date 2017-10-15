@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,6 @@
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
-#include "fio.h"
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "inout.h"
@@ -52,6 +52,7 @@
 #include "kwlookup.h"
 #include "symtab.h"
 #include "auxlook.h"
+#include "fio.h"
 
 #include "clibext.h"
 
@@ -490,7 +491,7 @@ void    AddDependencyInfo( source_t *fi ) {
                 return;
             }
         }
-        if( fstat( ((a_file *)(fi->fileptr))->handle, &stat_info ) != -1 ) {
+        if( fstat( fi->fileptr->handle, &stat_info ) != -1 ) {
             new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
             new_dep->link = NULL;
             strcpy( new_dep->fn, p );

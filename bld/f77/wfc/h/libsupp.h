@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern lib_handle   IncSearch( const char *name );
-extern int          LibRead( lib_handle lp );
-extern bool         LibEof( lib_handle lp );
-extern bool         LibError( lib_handle lp, char *buff );
-extern void         IncMemClose( lib_handle lp );
+extern file_handle  IncSearch( const char *name );
+extern int          LibRead( file_handle fp );
+extern bool         LibEof( file_handle fp );
+extern bool         LibError( file_handle fp, char *buff );
+extern void         IncMemClose( file_handle fp );

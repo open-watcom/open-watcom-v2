@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,6 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
-#include "fio.h"
-#include "ftextfun.h"
 #include "ftnapi.h"
 #include "posget.h"
 #include "poserr.h"
@@ -50,15 +49,16 @@ intstar4        __fortran FNEXTRECL( intstar4 *unit ) {
     signed_32   size;
 
 
-    fcb = Files;
-    while( fcb && ( *unit != fcb->unitid ) ) {
-        fcb = fcb->link;
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
+        if( *unit == fcb->unitid ) {
+            break;
+        }
     }
 
     // Lots of error checks
     if( ( fcb == NULL ) || ( fcb->fileptr == NULL ) ||
-        !_LogicalRecordOrganization( fcb ) ||
-        ( IOCB && (IOCB->flags & IOF_ACTIVE) && (IOCB->fileinfo == fcb) ) ) {
+      !_LogicalRecordOrganization( fcb ) ||
+      ( IOCB && (IOCB->flags & IOF_ACTIVE) && (IOCB->fileinfo == fcb) ) ) {
         return( -1 );
     }
 

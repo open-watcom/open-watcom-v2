@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,16 @@
 #include "trcback.h"
 
 #ifdef __SW_BM
+    extern      void    (*_AccessFIO)( void );
+    extern      void    (*_ReleaseFIO)( void );
+    extern      void    (*_PartialReleaseFIO)( void );
+#else
+    #define     _AccessFIO()
+    #define     _ReleaseFIO()
+    #define     _PartialReleaseFIO()
+#endif
+
+#ifdef __SW_BM
 
 // Thread-specific data:
 // =====================
@@ -52,7 +63,7 @@ extern  unsigned        __FThreadDataOffset;
 
 #define THREADPTR2FTHREADPTR(p) ((fthread_data *)(((char *)(p)) + __FThreadDataOffset))
 
-#define __FTHREADDATAPTR 	THREADPTR2FTHREADPTR( __THREADDATAPTR )
+#define __FTHREADDATAPTR        THREADPTR2FTHREADPTR( __THREADDATAPTR )
 
 extern void             __FiniFThreadProcessing( void );
 extern int              __InitFThreadProcessing( void );

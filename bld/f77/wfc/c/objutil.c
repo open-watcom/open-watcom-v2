@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,16 +43,15 @@
 #include "omodes.h"
 #include "cioconst.h"
 #include "fcodes.h"
-#include "fio.h"
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
-#include "ftextfun.h"
 #include "posio.h"
 #include "poserr.h"
 #include "sdcio.h"
+#include "fio.h"
 
 #include "clibext.h"
 

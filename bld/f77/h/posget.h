@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,12 @@
 ****************************************************************************/
 
 
-extern size_t       readbytes( b_file *io, char *buff, size_t len );
-extern size_t       SysRead( b_file *io, char *b, size_t len );
-extern size_t       FGetRec( b_file *io, char *b, size_t len );
+extern size_t       readbytes( file_handle fp, char *buff, size_t len );
+extern size_t       SysRead( file_handle fp, char *b, size_t len );
+extern size_t       FGetRec( file_handle fp, char *b, size_t len );
 extern char         GetStdChar( void );
 #if defined( __RT__ )
-extern int          FCheckLogical( b_file *io );
-extern int          FSkipLogical( b_file *io );
-extern signed_32    FGetVarRecLen( b_file *io );
+extern int          FCheckLogical( file_handle fp );
+extern int          FSkipLogical( file_handle fp );
+extern signed_32    FGetVarRecLen( file_handle fp );
 #endif

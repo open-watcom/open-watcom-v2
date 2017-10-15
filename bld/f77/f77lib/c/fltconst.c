@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,49 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  Declaration of external vars for f77 compiler & lib
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#ifndef _F77_EXTERNAL_VARS_H
-#define _F77_EXTERNAL_VARS_H 1
 
-#include "csetinfo.h"
-#include "fio.h"
-#include "fmttab.h"
-#include "charset.h"
+//
+// FLT86    : floating point constants
+//
 
-
-extern  b_file           *FStdErr;
-extern  b_file           *FStdIn;
-extern  b_file           *FStdOut;
-//conflicting from rstdio.c; file_handle is effectively void
-// above versions pass f77/regress tests
-//extern  file_handle     FStdIn;
-//extern  file_handle     FStdOut;
-extern  char            *_LpPgmName;
-extern  char            DefFName[];
-extern  char            NormalCtrlSeq[];
-extern  char            SDTermOut[];
-extern  char            SDTermIn[];
-extern  char            *SpecId[];
-extern  const char      __FAR ErrWord[];
-extern  const unsigned char __FAR GrpCodes[];
-extern  const unsigned char __FAR * const __FAR GroupTable[];
-extern  const byte      __FAR SizeVars[];
-
-extern  void            (*FmtRoutine)( void );
-extern  void            (*TraceRoutine)( char * );
-extern  void            (*_ExceptionInit)( void );
-extern  void            (*_ExceptionFini)( void );
-extern  void            (*_AccessFIO)( void );
-extern  void            (*_ReleaseFIO)( void );
-extern  void            (*_PartialReleaseFIO)( void );
-// eliminate const as freeout.c says so
-extern  void            (* /*const*/ __FAR OutRtn[])( void );
-
-extern const            FmtElements RFmtStruct;
+#include "ftnstd.h"
+#include "fltconst.h"
 
 
-
-#endif
+const double __FAR      P1d100 = { 0.1e100 };
+const double __FAR      P1d_99 = { 0.1e-99 };

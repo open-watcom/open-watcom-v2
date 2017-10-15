@@ -54,6 +54,10 @@
 #include "wf77auxd.h"
 #include "wf77aux.h"
 #include "errutil.h"
+#include "sdfile.h"
+#include "brseinfo.h"
+#include "fio.h"
+#include "posdat.h"
 
 #include "clibext.h"
 
@@ -70,38 +74,28 @@
     #error Unknown System
 #endif
 
-extern  void            BISetSrcFile( void );
+static file_attr        DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        ErrAttr = { REC_TEXT };
 
-extern  char            FFCtrlSeq[];
-extern  char            SkipCtrlSeq[];
-extern  char            NormalCtrlSeq[];
-extern  char            SDTermOut[];
-#if ! defined( __UNIX__ )
-extern  char            SDPrtName[];
-#endif
-extern  char            ForExtn[];
-extern  char            ErrExtn[];
-extern  char            LstExtn[];
-extern  file_attr       DskAttr;
-extern  file_attr       PrtAttr;
-extern  file_attr       TrmAttr;
-extern  file_attr       ErrAttr;
-extern  file_handle     FStdOut;
+static char             ErrExtn[] = { "err" };
+static char             LstExtn[] = { "lst" };
 
-static char           *ListBuff;      // listing file buffer
-static file_handle    ListFile;       // file pointer for the listing file
-static int            ListCursor;     // offset into "ListBuff"
+static char             *ListBuff;      // listing file buffer
+static file_handle      ListFile;       // file pointer for the listing file
+static int              ListCursor;     // offset into "ListBuff"
 
-static byte           ListCount;      // # of lines printed to listing file
-static byte           ListFlag;       // flag for listing file
+static byte             ListCount;      // # of lines printed to listing file
+static byte             ListFlag;       // flag for listing file
 
-static char           *ErrBuff;       // error file buffer
-static file_handle    ErrFile;        // file pointer for the error file
-static int            ErrCursor;      // offset into "ErrBuff"
+static char             *ErrBuff;       // error file buffer
+static file_handle      ErrFile;        // file pointer for the error file
+static int              ErrCursor;      // offset into "ErrBuff"
 
-static char           *TermBuff;      // terminal file buffer
-static file_handle    TermFile;       // file pointer for terminal
-static int            TermCursor;     // offset into "TermBuff"
+static char             *TermBuff;      // terminal file buffer
+static file_handle      TermFile;       // file pointer for terminal
+static int              TermCursor;     // offset into "TermBuff"
 
 /* Forward declarations */
 static  void    SendRec( void );

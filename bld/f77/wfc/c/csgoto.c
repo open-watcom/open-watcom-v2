@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,11 +56,9 @@
 #include "cgmagic.h"
 #include "fcodes.h"
 #include "gflow.h"
-
+#include "brseinfo.h"
 #include <ctype.h>
 
-
-extern  void            BIOutSymbol( sym_id );
 
 static void UnCondGoto( void )
 {

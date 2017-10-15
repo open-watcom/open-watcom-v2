@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,4 +35,3 @@ gbl_defn ftnfile        *Files;                 // list of open files
 gbl_defn ftn_type       IORslt;                 // for i/o items
 gbl_defn char           *FmtBuff;
 #include "iotype.h"
-gbl_defn void           (*FmtRoutine)(void);        // formatting routine

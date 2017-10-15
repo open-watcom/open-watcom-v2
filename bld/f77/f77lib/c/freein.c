@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "intcnv.h"
@@ -41,6 +41,9 @@
 #include "rtspawn.h"
 #include "ioerr.h"
 #include "fmtcnvt.h"
+#include "arrayio.h"
+#include "freein.h"
+#include "rdutils.h"
 
 #include <ctype.h>
 

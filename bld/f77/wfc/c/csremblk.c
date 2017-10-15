@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,11 +50,8 @@
 #include "cgmagic.h"
 #include "fcodes.h"
 #include "gflow.h"
+#include "brseinfo.h"
 
-
-extern void             BIOutSymbol( sym_id ste_ptr );
-extern void             BIStartRBorEP( sym_id ste_ptr );
-extern void             BIEndRBorEP( void );
 
 #define RB_FLAGS (SY_USAGE | SY_SUBPROGRAM | SY_REMOTE_BLOCK)
 

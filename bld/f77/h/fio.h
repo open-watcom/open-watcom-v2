@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,35 +31,6 @@
 
 #ifndef _F77_FIO_H
 #define _F77_FIO_H 1
-
-typedef unsigned_16     f_attrs;        // file attributes
-
-typedef struct a_file {                 // file with no buffered i/o
-    f_attrs     attrs;                  // file attributes
-    int         handle;                 // DOS handle
-    int         stat;                   // error status
-    long int    phys_offset;            // physical position in file
-} a_file;
-
-#define MIN_BUFFER    128
-#if _CPU == 8086
-#define IO_BUFFER     4*1024
-#else
-#define IO_BUFFER     16*1024
-#endif
-
-typedef struct b_file {                 // file with buffered i/o
-    f_attrs         attrs;                  // file attributes
-    /* unsigned_16     attrs;                  // file attributes */
-    int             handle;                 // DOS handle
-    int             stat;                   // error status
-    unsigned long   phys_offset;            // physical offset in file
-    size_t          read_len;               // amount read from buffer
-    size_t          b_curs;                 // position in buffer
-    size_t          high_water;             // highest byte written to in buffer
-    size_t          buff_size;              // size of buffer
-    char            buffer[MIN_BUFFER];     // read buffer (must be last field since
-} b_file;                               // bigger buffer may be allocated)
 
 #define REC_TEXT                0x0001  // text records (terminated with CR/LF)
 #define REC_FIXED               0x0002  // fixed records
@@ -99,5 +71,27 @@ typedef struct b_file {                 // file with buffered i/o
 #define CHAR_CTRL_Z             0x1a    // Ctrl/Z character (EOF marker)
 
 #define READ_ERROR      ((size_t)-1)    // read error indicator
+
+#define MIN_BUFFER      128
+#if _CPU == 8086
+#define IO_BUFFER       4*1024
+#else
+#define IO_BUFFER       16*1024
+#endif
+
+typedef unsigned_16     f_attrs;        // file attributes
+
+typedef struct b_file {                 // file common
+    f_attrs         attrs;                  // file attributes
+    int             handle;                 // DOS handle
+    int             stat;                   // error status
+    long            phys_offset;            // physical offset in file
+                                        // file with buffered i/o
+    size_t          read_len;               // amount read from buffer
+    size_t          b_curs;                 // position in buffer
+    size_t          high_water;             // highest byte written to in buffer
+    size_t          buff_size;              // size of buffer
+    char            buffer[MIN_BUFFER];     // read buffer (must be last field since
+} b_file;                               // bigger buffer may be allocated)
 
 #endif

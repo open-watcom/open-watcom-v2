@@ -96,7 +96,6 @@ extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
 extern  cgflags_t       CGFlags;
 extern  char            ProgName[];
-extern  char            ObjExtn[];
 extern  default_lib     *DefaultLibs;
 extern  dep_info        *DependencyInfo;
 
@@ -105,6 +104,12 @@ static  void            DefDbgStruct( sym_id sym );
 #define CS_SUFF_LEN             5
 #define G_DATA_LEN              6
 #define BLANK_COM_LEN           6
+
+#if defined( __UNIX__ )
+static  char            ObjExtn[] = { "o" };
+#else
+static  char            ObjExtn[] = { "obj" };
+#endif
 
 static  char            GData[] = { "GDATA@" };
 #if _CPU == 8086 || _CPU == 386
