@@ -352,8 +352,6 @@ ifns += &
     iflen.obj &
     iflentrm.obj
 
-#ifderf_postopts = -pcl -fo=.i
-
 # The following intrinsic functions are generated in-line by the front end
 # but are required because they define the X... versions which are
 # referenced if the intrinsic function passed as an argument.

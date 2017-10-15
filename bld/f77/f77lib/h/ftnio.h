@@ -32,7 +32,7 @@
 #ifndef _F77_FTNIO_H
 #define _F77_FTNIO_H 1
 
-#if _CPU == 8086
+#ifdef _M_I86
     #define _BadUnit( x )       ( ( x <  0 ) || ( x > 32727 ) )
     #define _BadRecl( x )       ( ( x <= 0 ) || ( x > 65535 ) )
     #define _BadBlockSize( x )  ( ( x <= 0 ) || ( x > 65535 ) )
