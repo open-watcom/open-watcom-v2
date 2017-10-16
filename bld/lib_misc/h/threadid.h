@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,38 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of set errno routines called from assembled modules.
+* Description:  Define _TID OS specific macro for thread ID variable type
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdlib.h>
-#if defined( __NT__ )
-    #include <windows.h>
+#if defined( __NETWARE__ )
+ #if defined( _NETWARE_CLIB )
+  #define _TID                  int
+ #elif defined( _NETWARE_LIBC )
+  #define _TID                  unsigned long
+ #endif
+#elif defined( __NT__ )
+  #define _TID                  DWORD
+#elif defined( __UNIX__ )
+  #define _TID                  pid_t
+#elif defined( __RDOS__ )
+  #define _TID                  int
+#elif defined( __RDOSDEV__ )
+  #define _TID                  int
 #elif defined( __OS2__ )
-    #include <wos2.h>
-#elif defined( __NETWARE__ )
-    #include "nw_lib.h"
+  #define _TID                  TID
 #endif
-#include "rterrno.h"
-#include "clibsupp.h"
-#include "seterrno.h"
-#include "thread.h"
-
-
-_WCRTLINK void __set_EDOM( void )
-{
-    _RWD_errno = EDOM;
-}
-
-_WCRTLINK void __set_ERANGE( void )
-{
-    _RWD_errno = ERANGE;
-}
-
-int __set_EINVAL( void )
-{
-    _RWD_errno = EINVAL;
-    return( -1 );
-}

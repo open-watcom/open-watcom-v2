@@ -67,7 +67,7 @@
 
 ULONG                   __iosemaphore[_NFILES];
 int                     __iosemcount[_NFILES];
-TID                     __iothreadid[_NFILES];
+_TID                    __iothreadid[_NFILES];
 
 #else
 

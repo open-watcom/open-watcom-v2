@@ -34,26 +34,22 @@
 #ifndef _TRDLIST_H_INCLUDED
 #define _TRDLIST_H_INCLUDED
 
+#include "threadid.h"
+
 #if defined( __NETWARE__ )
  #if defined( _NETWARE_CLIB )
-  #define TID                   int
   #define GetCurrentThreadId()  (*__threadid())
  #elif defined( _NETWARE_LIBC )
-  #define TID                   unsigned long
   #define GetCurrentThreadId()  __GetSystemWideUniqueTID()
  #endif
 #elif defined( __NT__ )
   extern DWORD                  __TlsIndex;
-  #define TID                   DWORD
 #elif defined( __QNX__ )
-  #define TID                   pid_t
   #define GetCurrentThreadId()  (getpid())
 #elif defined( __LINUX__ )
   extern sem_t                  __tls_sem;
-  #define TID                   pid_t
   #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )
-  #define TID                   int
   extern int                    __TlsIndex;
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
   extern int __tls_alloc();
@@ -68,7 +64,6 @@
   #pragma aux __tls_set_value "*" parm [ecx] [eax] modify [edx];
   #pragma aux __create_thread "*" parm [edx] [ebx] [edi] [eax] [ecx];
 #elif defined( __RDOSDEV__ )
-  #define TID                   int
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
 #elif defined( __OS2__ )
   #if defined( __WARP__ )
@@ -92,10 +87,10 @@ void __RemoveAllThreadData( void );
 thread_data *__GetThreadData( void );
 
 // add to list of thread data
-int __AddThreadData( TID, thread_data * );
+int __AddThreadData( _TID, thread_data * );
 
 // remove from list of thread data
-void __RemoveThreadData( TID );
+void __RemoveThreadData( _TID );
 
 // mark each entry in list of thread data for resize
 void __ResizeThreadDataList( void );

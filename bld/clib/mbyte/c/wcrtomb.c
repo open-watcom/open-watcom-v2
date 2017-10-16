@@ -35,7 +35,9 @@
 #include <mbstring.h>
 #include <stdlib.h>
 #include <wchar.h>
-#if defined( __OS2__ )
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
     #include <wos2.h>
 #endif
 #include "rterrno.h"

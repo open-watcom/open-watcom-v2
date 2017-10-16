@@ -154,7 +154,7 @@ typedef struct {
     thread_fn           *start_addr;
     void                *arglist;
     void                *stack_bottom;
-    TID                 tid;
+    _TID                tid;
     NXSema_t            *semaphore;
     NXThreadId_t        nxtid;      /* NKS TID */
     NXContext_t         cx;         /* NKS Context */
@@ -167,7 +167,7 @@ static void begin_thread_helper( void *the_arg )
     void                *stack_bottom;
 
     thread_data         *tdata;
-    TID                 newtid;
+    _TID                newtid;
     begin_thread_data   *data = the_arg;
 
     tdata = alloca( __ThreadDataSize );

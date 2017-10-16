@@ -93,7 +93,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                     unsigned stack_size, void *arglist )
 /******************************************************/
 {
-    TID         tid;
+    _TID        tid;
     APIRET      rc;
     thread_args td;
 

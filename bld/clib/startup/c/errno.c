@@ -31,7 +31,9 @@
 
 
 #include "variety.h"
-#if defined(__QNX__)
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined(__QNX__)
     #include <sys/magic.h>
 #elif defined( __OS2__ )
     #include <wos2.h>

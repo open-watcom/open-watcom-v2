@@ -38,7 +38,9 @@
 #include <io.h>
 #include <string.h>
 #include <process.h>
-#ifdef __DOS__
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __DOS__ )
     #include <dos.h>
 #elif defined( __OS2__ )
     #include <wos2.h>

@@ -38,6 +38,8 @@
 #elif defined(__RDOSDEV__)
 #include "rdosdev.h"
 #endif
+#include "threadid.h"
+#include "sema4typ.h"
 
 /* Make sure these are in C linkage */
 #ifdef __cplusplus
@@ -49,19 +51,9 @@ extern "C" {
  * also updating the C++ runtime file prwdata.asm
  */
 typedef struct  semaphore_object {
-  #if defined(__NT__)
-        void            *semaphore;
-  #elif defined(__UNIX__)
-        sem_t           semaphore;
-  #elif defined(__RDOS__)
-        int             semaphore; // RDOS only have critical sections, which should work
-  #elif defined(__RDOSDEV__)
-        struct TKernelSection semaphore;
-  #else
-        unsigned long   semaphore;
-  #endif
+        _SEM            semaphore;
         unsigned        initialized;
-        unsigned long   owner;
+        _TID            owner;
         unsigned        count;
 } semaphore_object;
 

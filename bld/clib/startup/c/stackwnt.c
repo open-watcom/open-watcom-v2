@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <alloca.h>
+#include <windows.h>
 #include "rtstack.h"
 #include "stacklow.h"
 #include "exitwmsg.h"

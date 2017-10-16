@@ -39,7 +39,9 @@
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
-  #if !defined( _M_I86 )
+  #if defined( _M_I86 )
+    #include <wos2.h>
+  #else
     #define INCL_DOSPROCESS
     #define INCL_WINDIALOGS
     #define INCL_DOSERRORS

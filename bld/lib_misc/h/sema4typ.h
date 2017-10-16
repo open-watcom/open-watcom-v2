@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,38 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of set errno routines called from assembled modules.
+* Description:  Define _SEM OS specific macro for semaphore variable type
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdlib.h>
 #if defined( __NT__ )
-    #include <windows.h>
+ #ifdef __RT__
+  #define       _SEM           HANDLE
+ #else
+  #define       _SEM           LPCRITICAL_SECTION
+ #endif
 #elif defined( __OS2__ )
-    #include <wos2.h>
+  #define       _SEM           ULONG
 #elif defined( __NETWARE__ )
-    #include "nw_lib.h"
+  #define       _SEM           long
+#elif defined( __UNIX__ )
+  #define       _SEM           sem_t
+#elif defined(__RDOS__)
+  #define       _SEM           int
+#elif defined(__RDOSDEV__)
+  #define       _SEM           struct TKernelSection
 #endif
-#include "rterrno.h"
-#include "clibsupp.h"
-#include "seterrno.h"
-#include "thread.h"
-
-
-_WCRTLINK void __set_EDOM( void )
-{
-    _RWD_errno = EDOM;
-}
-
-_WCRTLINK void __set_ERANGE( void )
-{
-    _RWD_errno = ERANGE;
-}
-
-int __set_EINVAL( void )
-{
-    _RWD_errno = EINVAL;
-    return( -1 );
-}

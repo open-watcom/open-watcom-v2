@@ -81,7 +81,7 @@ _WCRTLINK int _WCFAR _beginthread( thread_fn *start_addr,
                             void _WCFAR *arglist )
 /*****************************************************/
 {
-    TID         tid;
+    _TID        tid;
     APIRET      rc;
 
     DosSemRequest( &data_sem, -1L );

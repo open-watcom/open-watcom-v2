@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <process.h>
+#include <windows.h>
 #include "rterrno.h"
 #include "thread.h"
 

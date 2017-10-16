@@ -34,7 +34,9 @@
 #include "variety.h"
 #include <mbstring.h>
 #include <stdio.h>
-#if defined( __OS2__ )
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
     #include <wos2.h>
 #endif
 #include "farfunc.h"
