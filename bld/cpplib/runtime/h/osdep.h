@@ -3,6 +3,7 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,21 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  Define _TID OS specific macro for thread ID variable type
+* Description:  OS and dependent header files
 *
 ****************************************************************************/
 
 
-#if defined( __NETWARE__ )
-  #define _TID                  int
+#if defined( __OS2__ )
+    #include <wos2.h>
 #elif defined( __NT__ )
-  #define _TID                  DWORD
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include <excpt.h>
 #elif defined( __UNIX__ )
-  #define _TID                  pid_t
-#elif defined( __RDOS__ )
-  #define _TID                  int
-#elif defined( __RDOSDEV__ )
-  #define _TID                  int
-#elif defined( __OS2__ )
-  #define _TID                  TID
+    #include <sys/types.h>
 #endif

@@ -66,10 +66,7 @@ void fneDispatch(               // DISPATCH "unexpected"
             exc->dispatch = dispatch;
             exc->fnexc_state = exc->state;
             exc->state = EXCSTATE_UNEXPECTED;
-            _EXC_PR_FNEXC marker( dispatch->rtc
-                                , NULL
-                                , dispatch->rw
-                                , dispatch->rethrow ? NULL : exc );
+            _EXC_PR_FNEXC marker( dispatch->rtc, NULL, dispatch->rw, dispatch->rethrow ? NULL : exc );
             std::unexpected();
 //            marker._state = EXCSTATE_TERMINATE;
 //            CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
@@ -80,19 +77,13 @@ void fneDispatch(               // DISPATCH "unexpected"
             if( srch->state == EXCSTATE_UNEXPECTED ) {
                 // throw/rethrow did not get through fn-exc
                 exc->state = EXCSTATE_BAD_EXC;
-                _EXC_PR_FNEXC marker( dispatch->rtc
-                                    , NULL
-                                    , dispatch->rw
-                                    , dispatch->rethrow ? NULL : exc );
+                _EXC_PR_FNEXC marker( dispatch->rtc, NULL, dispatch->rw, dispatch->rethrow ? NULL : exc );
                 throw std::bad_exception();
                 // never return
             }
             if( srch->state == EXCSTATE_BAD_EXC ) {
                 // throw of bad_exception did not get through fn-exc
-                _EXC_PR_DTOR marker( dispatch->rtc
-                                   , NULL
-                                   , EXCSTATE_TERMINATE
-                                   , dispatch->rethrow ? NULL : exc );
+                _EXC_PR_DTOR marker( dispatch->rtc, NULL, EXCSTATE_TERMINATE, dispatch->rethrow ? NULL : exc );
                 CPPLIB( call_terminate )( RTMSG_FNEXC, ctl );
                 // never return
             }
@@ -210,8 +201,7 @@ void processThrow(              // PROCESS A THROW
     DISPATCH_EXC dispatch;      // - dispatch control
     FsExcRec excrec;            // - system exception record
     volatile bool unwound;
-    void __based(__segname("_STACK")) *force_this_routine_to_have_an_EBP_frame;
-//    void *force_this_routine_to_have_an_EBP_frame;
+    void __based(__segname("_STACK")) *force_this_routine_to_have_an_EBP_frame = NULL;
 
 //  CPPLIB( DbgRtDumpAutoDtor )();
 
@@ -259,13 +249,7 @@ void processThrow(              // PROCESS A THROW
 // Setup for dispatch
 //
     rt_ctl.thr->abort_msg = NULL;
-    CPPLIB( exc_setup )( &dispatch
-                       , throw_ro
-                       , is_zero
-                       , &rt_ctl
-                       , object
-                       , &excrec );
-    force_this_routine_to_have_an_EBP_frame = alloca(16);
+    CPPLIB( exc_setup )( &dispatch, throw_ro, is_zero, &rt_ctl, object, &excrec );
     unwound = false;
 //
 // raising exception locates the catch/fn-exception to be dispatched
@@ -290,10 +274,8 @@ void processThrow(              // PROCESS A THROW
         }
         switch( dispatch.srch_ctl->_state ) {
         case EXCSTATE_UNWIND :
-        {   _EXC_PR_FREE marker( &rt_ctl
-                               , NULL
-                               , EXCSTATE_TERMINATE
-                               , dispatch.rethrow ? NULL : rt_ctl.thr->excepts );
+        {
+            _EXC_PR_FREE marker( &rt_ctl, NULL, EXCSTATE_TERMINATE, dispatch.rethrow ? NULL : rt_ctl.thr->excepts );
             CPPLIB( call_terminate )( RTMSG_THROW_DTOR, rt_ctl.thr );
             // never return
         }
@@ -324,9 +306,7 @@ void processThrow(              // PROCESS A THROW
                     active->rw = dispatch.rw;
                 }
             } else {
-                active = CPPLIB( alloc_exc )( object
-                                            , dispatch.ro
-                                            , &rt_ctl );
+                active = CPPLIB( alloc_exc )( object, dispatch.ro, &rt_ctl );
                 dispatch.exc = active;
                 active->cat_try = dispatch.try_cmd;
                 active->rw = dispatch.rw;

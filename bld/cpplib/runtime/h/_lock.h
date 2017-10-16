@@ -3,6 +3,7 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,21 +25,38 @@
 *
 *  ========================================================================
 *
-* Description:  Define _TID OS specific macro for thread ID variable type
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#if defined( __NETWARE__ )
-  #define _TID                  int
-#elif defined( __NT__ )
-  #define _TID                  DWORD
-#elif defined( __UNIX__ )
-  #define _TID                  pid_t
-#elif defined( __RDOS__ )
-  #define _TID                  int
-#elif defined( __RDOSDEV__ )
-  #define _TID                  int
-#elif defined( __OS2__ )
-  #define _TID                  TID
+#ifndef __LOCK_H_INCLUDED
+#define __LOCK_H_INCLUDED
+
+#include "sema4.h"
+
+#define  __lock_first( __a, __b )  ((__a) < (__b) ? (__a) : (__b))
+#define  __lock_second( __a, __b ) ((__a) > (__b) ? (__a) : (__b))
+
+class _WPRTLINK __lock {
+public:
+    __lock();
+    ~__lock();
+    void p( void );
+    void v( void );
+private:
+    semaphore_object locksem;
+};
+
+class _WPRTLINK __fn_lock {
+public:
+    __fn_lock( __lock * );
+    ~__fn_lock();
+private:
+    __lock *fn_lock;
+    __fn_lock( __fn_lock const & );
+    void operator =( __fn_lock const & );
+};
+
 #endif

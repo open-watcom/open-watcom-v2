@@ -47,21 +47,14 @@
 #include <cstddef>
 #include <except.h>
 #include <new>
-#if defined( __OS2__ )
-    #include <wos2.h>
-#elif defined( __NT__ )
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #include <excpt.h>
-#endif
 
+#include "osdep.h"
 #include "wcpp.h"
-
 #include "prtdata.h"
 
 #ifdef __SW_BM
     #include "thread.h"
-    #include "lock.h"
+    #include "_lock.h"
 #endif
 
 #if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )

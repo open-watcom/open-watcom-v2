@@ -36,34 +36,8 @@
 
 #ifdef __SW_BM
 
-#include "sema4.h"
-
-#define  __lock_first( __a, __b )  ((__a) < (__b) ? (__a) : (__b))
-#define  __lock_second( __a, __b ) ((__a) > (__b) ? (__a) : (__b))
-
-#if defined( __cplusplus )
-
-class _WPRTLINK __lock {
-public:
-    __lock();
-    ~__lock();
-    void p( void );
-    void v( void );
-private:
-    semaphore_object locksem;
-};
-
-class _WPRTLINK __fn_lock {
-public:
-    __fn_lock( __lock * );
-    ~__fn_lock();
-private:
-    __lock *fn_lock;
-    __fn_lock( __fn_lock const & );
-    void operator =( __fn_lock const & );
-};
-
-#endif  /* __cplusplus */
+#include "osdep.h"
+#include "_lock.h"
 
 #endif  /* __SW_BM */
 
