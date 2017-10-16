@@ -45,13 +45,12 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
+#include "boot77.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-
-extern  char    *SkipBlanks( char * );
 
 static void Comment( void )
 {

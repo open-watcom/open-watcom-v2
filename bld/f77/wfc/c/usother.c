@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,10 +43,8 @@
 #include "upscan.h"
 #include "usother.h"
 #include "exprutil.h"
-
-
-extern  void            GCallNoArgs(void);
-extern  void            GCallWithArgs(void);
+#include "prmcodes.h"
+#include "gsubprog.h"
 
 
 void    EndExpr( void ) {

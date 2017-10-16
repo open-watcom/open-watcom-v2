@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +39,8 @@
 #include "global.h"
 #include "cpopt.h"
 #include "sdcline.h"
+#include "boot77.h"
 
-
-extern  char            *SkipBlanks(char *);
 
 #if defined( __UNIX__ )
   #define _IsSwitchChar( ch )     ( ch == '-' )

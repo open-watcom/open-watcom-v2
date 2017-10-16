@@ -31,7 +31,9 @@
 
 #include "ftnstd.h"
 #include <stdlib.h>
-#if defined( __OS2__ ) && defined( __386__ )
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
     #define INCL_DOSPROCESS
     #include <wos2.h>
 #endif

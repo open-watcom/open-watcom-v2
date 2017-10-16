@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,49 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  list of FORTRAN statement keywords
 *
 ****************************************************************************/
 
 
-//
-// FSPAWN       : execute a program
-//
-
-#include "ftnstd.h"
-#include "ftnapi.h"
-
-#include <malloc.h>
-#include <stddef.h>
-#include <string.h>
-#include <process.h>
-#include <pgmacc.h>
-
-
-intstar4        __fortran FSPAWN( string PGM *cmd, string PGM *args )
-//===================================================================
-{
-    uint        len;
-    uint        arg_len;
-    char        *local_cmd;
-    char        *local_args;
-
-    for( len = cmd->len; len > 0; --len ) {
-        if( cmd->strptr[len - 1] != ' ' ) {
-            local_cmd = alloca( len + 1 );
-            pgm_memget( local_cmd, cmd->strptr, len );
-            local_cmd[len] = NULLCHAR;
-            for( arg_len = args->len; arg_len > 0; --arg_len ) {
-                if( args->strptr[arg_len - 1] != ' ' ) {
-                    break;
-                }
-            }
-            local_args = alloca( arg_len + 1 );
-            pgm_memget( local_args, args->strptr, arg_len );
-            local_args[arg_len] = NULLCHAR;
-            return( spawnlp( P_WAIT, local_cmd, local_cmd, local_args, NULL ) );
-        }
-    }
-    return( -1 );
-}
+extern char    *StmtKeywords[];

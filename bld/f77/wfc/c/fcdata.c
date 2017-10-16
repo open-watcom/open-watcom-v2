@@ -35,6 +35,7 @@
 #include "fcgbls.h"
 #include "wf77defs.h"
 #include "cg.h"
+#include "cgflags.h"
 #include "errcod.h"
 #include "types.h"
 #include "typclass.h"
@@ -50,6 +51,7 @@
 #include "wf77info.h"
 #include "substr.h"
 #include "subscr.h"
+#include "kwlist.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
 
@@ -66,10 +68,6 @@
 #include "fltcnv.h"
 #include <string.h>
 
-
-extern  void            (* __FAR FCJmpTab[])( void );
-extern  void            (* __FAR DataJmpTab[])( void );
-extern  char            *StmtKeywords[];
 
 /* Forward declarations */
 static  void    InitStructArr( sym_id fd, act_dim_list *dim );

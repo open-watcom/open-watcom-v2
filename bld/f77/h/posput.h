@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
-extern void     FPutRec( file_handle fp, const char *b, int len );
+#define SYSIOERROR  ((size_t)-1)
+
+extern void     FPutRec( file_handle fp, const char *b, size_t len );
 #if defined( __RT__ )
 extern void     ChopFile( file_handle fp );
 #endif
-extern uint     writebytes( file_handle fp, const char *buff, uint len );
+extern size_t   writebytes( file_handle fp, const char *buff, size_t len );
 extern int      SysWrite( file_handle fp, const char *b, uint len );

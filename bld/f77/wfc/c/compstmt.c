@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,14 +58,12 @@
 #include "symtab.h"
 #include "gdbginfo.h"
 #include "tdinit.h"
-
+#include "kwlist.h"
+#include "proctbl.h"
+#include "cftable.h"
 #include <string.h>
 #include <ctype.h>
 
-
-extern  char    *StmtKeywords[];
-extern  void    (* const __FAR ProcTable[])( void );
-extern  const unsigned_16   __FAR CFTable[];
 
 /* forward declarations */
 static void     SetCtrlFlgs( void );

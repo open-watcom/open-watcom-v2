@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,11 +60,9 @@
 #include "proctbl.h"
 #include "declare.h"
 #include "implicit.h"
-
+#include "kwlist.h"
 #include <string.h>
 
-
-extern  char            *StmtKeywords[];
 
 #define ERR_MASK                (SY_DATA_INIT | SY_CLASS | SY_USAGE)
 #define SSB_CONSTANT            0    // lo/hi subscript bound is constant

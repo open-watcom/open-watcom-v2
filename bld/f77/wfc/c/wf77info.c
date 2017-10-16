@@ -65,6 +65,7 @@
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fcstack.h"
+#include "fcgmain.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -94,7 +95,6 @@ extern  char            *STGetName(sym_id,char *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
-extern  cgflags_t       CGFlags;
 extern  char            ProgName[];
 extern  default_lib     *DefaultLibs;
 extern  dep_info        *DependencyInfo;

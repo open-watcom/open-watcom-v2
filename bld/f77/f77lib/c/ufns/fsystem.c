@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,21 +44,21 @@
 #include "ftnapi.h"
 
 
-intstar4        __fortran FSYSTEM( string PGM *command ) {
+intstar4        __fortran FSYSTEM( string PGM *command )
 //======================================================
-
+{
     char        *buff;
-    int         len;
+    uint        len;
 
-    len = command->len;
-    for(;;) {
-        if( len == 0 ) return( -1 );
-        if( command->strptr[len - 1] != ' ' ) break;
-        --len;
+    for( len = command->len; len > 0; --len ) {
+        if( command->strptr[len - 1] != ' ' ) {
+            buff = alloca( len + sizeof( char ) );
+            if( buff == NULL )
+                break;
+            pgm_memget( buff, command->strptr, len );
+            buff[len] = NULLCHAR;
+            return( system( buff ) );
+        }
     }
-    buff = alloca( len + sizeof( char ) );
-    if( buff == NULL ) return( -1 );
-    pgm_memget( buff, command->strptr, len );
-    buff[len] = NULLCHAR;
-    return( system( buff ) );
+    return( -1 );
 }

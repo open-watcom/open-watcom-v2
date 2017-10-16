@@ -53,11 +53,10 @@
 #include "symtab.h"
 #include "auxlook.h"
 #include "fio.h"
+#include "boot77.h"
 
 #include "clibext.h"
 
-
-extern  char            *SkipBlanks(char *);
 
 static  aux_info        *CurrAux;
 static  char            *TokStart;

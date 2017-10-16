@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "fio.h"
 #include "posio.h"
@@ -302,7 +303,7 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
     unsigned_32 tag;
     unsigned_32 save_tag;
 
-    if( SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) ) == READ_ERROR ) {
+    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR ) {
         return( 0 );
     }
     save_tag = tag;
@@ -320,7 +321,7 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
             return( 0 );
         len = tag_len;
     }
-    if( SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) ) == READ_ERROR )
+    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR )
         return( 0 );
     if( tag != save_tag ) {
         FSetErr( IO_BAD_RECORD, io );
@@ -354,8 +355,8 @@ size_t FGetRec( b_file *io, char *b, size_t len )
 }
 
 #if 0
-uint    GetRec( char *b, uint len )
-//=================================
+size_t  GetRec( char *b, size_t len )
+//===================================
 // Get a record from standard input device.
 {
     return( FGetRec( FStdIn, b, len ) );
@@ -395,7 +396,7 @@ int     FCheckLogical( b_file *io )
     unsigned_32 tag;
     size_t      rc;
 
-    rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
+    rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
     if( rc == READ_ERROR ) {
         if( io->stat != IO_EOF )
             return( -1 );
@@ -421,7 +422,7 @@ int     FSkipLogical( b_file *io )
     size_t      rc;
 
     for(;;) {
-        rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
+        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR ) {
             if( io->stat != IO_EOF )
                 return( -1 );
@@ -435,7 +436,7 @@ int     FSkipLogical( b_file *io )
         tag &= 0x7fffffff;
         if( SysSeek( io, tag, SEEK_CUR ) < 0 )
             return( -1 );
-        rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
+        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR )
             return( -1 );
         if( tag != save_tag ) {
@@ -460,7 +461,7 @@ signed_32       FGetVarRecLen( b_file *io )
 
     pos = FGetFilePos( io );
     for( ;; ) {
-        rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
+        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR ) {
             if( io->stat != IO_EOF )
                 return( -1 );
@@ -484,7 +485,7 @@ signed_32       FGetVarRecLen( b_file *io )
         size += tag;
         if( SysSeek( io, tag, SEEK_CUR ) < 0 )
             return( -1 );
-        rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
+        rc = SysRead( io, (char *)(&tag), sizeof( tag ) );
         if( rc == READ_ERROR )
             return( -1 );
         if( tag != save_tag ) {

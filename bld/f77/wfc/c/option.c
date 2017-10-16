@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +47,13 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
+#include "boot77.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 
 
-extern  char            *SkipBlanks( char * );
 extern  void            ProcPragma( char * );
 
 extern  uint            DataThreshold;

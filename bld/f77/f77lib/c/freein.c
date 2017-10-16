@@ -59,10 +59,6 @@ static  void    InCplx( void );
 static  void    InLog( void );
 static  void    FreeIOErr( uint err );
 
-void    BumpComma( void );
-void    Blanks( void );
-void    CheckEor( void );
-
 
 static const char *GetDelim( const char *start, const char *buff_end )
 //====================================================================

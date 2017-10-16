@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +45,7 @@
 #include "proctbl.h"
 #include "union.h"
 #include "declare.h"
-
-
-extern  char            *StmtKeywords[];
+#include "kwlist.h"
 
 
 static  sym_id  StructName( void ) {

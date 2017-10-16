@@ -31,7 +31,12 @@
 
 
 #include "ftnstd.h"
-#if defined( __OS2__ )
+#if defined( __NT__ )
+    #include <windows.h>
+  #ifdef SetForm
+    #undef SetForm
+  #endif
+#elif defined( __OS2__ )
     #include <wos2.h>
 #endif
 #include "frtdata.h"

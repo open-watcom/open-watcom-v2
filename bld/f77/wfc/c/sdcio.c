@@ -94,23 +94,23 @@ file_handle SDOpen( const char *name, int mode )
 }
 
 
-void    SDClose( file_handle fp ) {
-//=================================
-
+void    SDClose( file_handle fp )
+//===============================
+{
     Closef( fp );
 }
 
 
-uint    SDRead( file_handle fp, void *buff, uint len ) {
+uint    SDRead( file_handle fp, void *buff, size_t len )
 //======================================================
-
+{
     return( FGetRec( fp, buff, len ) );
 }
 
 
-void    SDWrite( file_handle fp, const void *buff, int len ) {
-//======================================================
-
+void    SDWrite( file_handle fp, const void *buff, size_t len )
+//=============================================================
+{
     if( fp == FStdOut ) {
         CheckBlips();
     }
@@ -118,30 +118,30 @@ void    SDWrite( file_handle fp, const void *buff, int len ) {
 }
 
 
-void    SDSeek( file_handle fp, int rec_num, int rec_size ) {
-//===========================================================
-
+void    SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size )
+//===================================================================
+{
     FSeekRec( fp, rec_num, rec_size );
 }
 
 
-void    SDRewind( file_handle fp ) {
-//==================================
-
+void    SDRewind( file_handle fp )
+//================================
+{
     FRewind( fp );
 }
 
 
-bool    SDEof( file_handle fp ) {
-//===============================
-
+bool    SDEof( file_handle fp )
+//=============================
+{
     return( EOFile( fp ) );
 }
 
 
-bool    SDError( file_handle fp, char *buff ) {
-//=============================================
-
+bool    SDError( file_handle fp, char *buff )
+//===========================================
+{
     int         err;
 
     err = Errorf( fp );

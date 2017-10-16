@@ -36,6 +36,7 @@
 #include "rmemmgr.h"
 #include "rt_init.h"
 #include "fdll.h"
+#include "rt_init.h"
 
 
 static void NullTrapRtn( void ) {
