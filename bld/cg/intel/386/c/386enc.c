@@ -428,7 +428,7 @@ extern  void    LayLeaRegOp( instruction *ins )
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, right->c.lo.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.int_value, disp, NULL, true );
         }
         break;
     }
@@ -553,7 +553,7 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
-            DoSegRef( op->c.lo.int_value );
+            DoSegRef( (segment_id)op->c.lo.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }

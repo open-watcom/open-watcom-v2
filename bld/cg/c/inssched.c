@@ -763,7 +763,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     opcnt       i;
     scale_typ   scale_adj;
 
-    bias = adj->operands[1]->c.lo.int_value;
+    bias = (type_length)adj->operands[1]->c.lo.int_value;
     if( adj->head.opcode == OP_SUB )
         bias = -bias;
     if( forward )

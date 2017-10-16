@@ -413,7 +413,6 @@ dw_client DwarfInit( void )
     cu.inc_list_len    = incsize;
     cu.dbg_pch         = NULL;
 
-
     DWBeginCompileUnit( client, &cu );
     if( incsize != 0 ) {
         CMemFree( incbuf );

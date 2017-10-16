@@ -41,16 +41,14 @@
 
 #define C_DWARF_BUFSIZE 4096
 
-extern  FILE        *OpenBrowseFile( void );        /* ccmain */
-
-static uint_32      relocValues[DW_W_MAX];
-
 typedef struct c_dw_section {
     unsigned        bufcount;
     char            **bufptrs;
     dw_out_offset   offset;
     dw_out_offset   length;
 } C_DW_SECTION;
+
+static uint_32      relocValues[DW_W_MAX];
 
 static C_DW_SECTION dw_sections[DW_DEBUG_MAX];
 
