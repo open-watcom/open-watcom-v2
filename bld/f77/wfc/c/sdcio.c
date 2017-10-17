@@ -101,8 +101,8 @@ void    SDClose( file_handle fp )
 }
 
 
-uint    SDRead( file_handle fp, void *buff, size_t len )
-//======================================================
+size_t    SDRead( file_handle fp, void *buff, size_t len )
+//========================================================
 {
     return( FGetRec( fp, buff, len ) );
 }

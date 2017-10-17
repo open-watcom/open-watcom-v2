@@ -37,4 +37,4 @@ extern void     FPutRec( file_handle fp, const char *b, size_t len );
 extern void     ChopFile( file_handle fp );
 #endif
 extern size_t   writebytes( file_handle fp, const char *buff, size_t len );
-extern int      SysWrite( file_handle fp, const char *b, uint len );
+extern int      SysWrite( file_handle fp, const char *b, size_t len );
