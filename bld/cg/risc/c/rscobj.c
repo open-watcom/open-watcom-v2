@@ -372,19 +372,19 @@ void    ObjFini( void )
 static  int PutBytes( owl_client_file f, const char *buffer, size_t len )
 /***********************************************************************/
 {
-    /* unused parameters */ (void)handle;
-
 #ifndef NDEBUG
     // enable OWL logging
-    if( handle == NULL ) {
+    if( f == NULL ) {
         PutObjBytes( buffer, len );
     } else {
         fwrite( buffer, 1, len, OWLF2FILE( f ) );
     }
 #else
+    /* unused parameters */ (void)f;
+
     PutObjBytes( buffer, len );
 #endif
-    return( len );
+    return( 0 );
 }
 
 
