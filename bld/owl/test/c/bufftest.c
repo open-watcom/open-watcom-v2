@@ -38,22 +38,45 @@
 #include <io.h>
 #include <fcntl.h>
 
+#include "clibext.h"
+
+
 #define BUFFER_SIZE     1024
+
+#define OWLF2FH(f)      (((int)(pointer_int)(f)) - 1)
+#define FH2OWLF(fh)     ((owl_client_file)(pointer_int)((fh) + 1))
+
+static int owl_write( owl_client_file f, const char *buff, size_t size )
+{
+    posix_write( OWLF2FH( f ), buff, size );
+    return( 0 );
+}
+
+static long owl_tell( owl_client_file f )
+{
+    return( tell( OWLF2FH( f ) ) );
+}
+
+static long owl_seek( owl_client_file f, long offset, int where )
+{
+    return( lseek( OWLF2FH( f ), offset, where ) );
+}
 
 void main( int argc, char *argv[] ) {
 
     owl_handle          owl;
     owl_file_handle     file;
-    owl_client_funcs    funcs = { write, tell, lseek, malloc, free };
+    owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, malloc, free };
     owl_buffer_handle   buffer;
     char                data[ BUFFER_SIZE ];
 
     owl = OWLInit( &funcs, OWL_CPU_PPC );
-    file = OWLFileInit( owl, (owl_client_file)STDOUT_FILENO, OWL_FORMAT_ELF, OWL_FILE_OBJECT );
+    file = OWLFileInit( owl, "test", FH2OWLF( STDOUT_FILENO ), OWL_FORMAT_ELF, OWL_FILE_OBJECT );
     buffer = OWLBufferInit( file );
     while( 1 ) {
         memset( data, 0, BUFFER_SIZE );
-        if( fgets( data, BUFFER_SIZE, stdin ) == NULL ) break;
+        if( fgets( data, BUFFER_SIZE, stdin ) == NULL ) 
+            break;
         OWLBufferWrite( buffer, data, strlen( data ) );
     }
     OWLBufferEmit( buffer );

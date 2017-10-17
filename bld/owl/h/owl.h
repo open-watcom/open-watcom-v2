@@ -134,9 +134,9 @@ typedef enum {
     OWL_WKSYM_ALIAS             = 0x0002,   // alias symbol
 } owl_wksym_flags;
 
-typedef uint_32         owl_line_num;
-typedef int_32          owl_offset;
-typedef owl_offset      owl_alignment;
+typedef uint_32                 owl_line_num;
+typedef int_32                  owl_offset;
+typedef owl_offset              owl_alignment;
 
 typedef struct owl_info         *owl_handle;
 typedef struct owl_file_info    *owl_file_handle;
@@ -148,7 +148,7 @@ typedef void *owl_client_file;
 
 // if you add a field, update owl@copyClientFuncs
 typedef struct {
-    int                 (*write)( owl_client_file, const char *, uint );
+    int                 (*write)( owl_client_file, const char *, size_t );
     long                (*tell)( owl_client_file );
     long                (*lseek)( owl_client_file, long int, int );
     void *              (*alloc)( size_t );
@@ -170,7 +170,7 @@ extern owl_symbol_handle OWLENTRY OWLSymbolInit( owl_file_handle file, const cha
 extern void OWLENTRY OWLSymbolFini( owl_symbol_handle );
 
 extern void OWLENTRY OWLEmitLabel( owl_section_handle section, owl_symbol_handle sym, owl_sym_type type, owl_sym_linkage linkage );
-extern void OWLENTRY OWLEmitData( owl_section_handle section, const char *buffer, int size );
+extern void OWLENTRY OWLEmitData( owl_section_handle section, const char *buffer, size_t size );
 extern void OWLENTRY OWLEmitReloc( owl_section_handle section, owl_offset offset, owl_symbol_handle sym, owl_reloc_type type );
 extern void OWLENTRY OWLEmitMetaReloc( owl_section_handle section, owl_offset offset, void *data, owl_reloc_type type );
 extern void OWLENTRY OWLEmitRelocAddend( owl_section_handle section, owl_reloc_type type, owl_offset addend );
@@ -185,7 +185,7 @@ extern owl_offset OWLENTRY OWLTellLocation( owl_section_handle section );
 extern owl_offset OWLENTRY OWLTellSize( owl_section_handle section );
 extern owl_section_type OWLENTRY OWLTellSectionType( owl_section_handle section );
 extern owl_sym_linkage OWLENTRY OWLTellSymbolLinkage( owl_file_handle file, owl_symbol_handle name );
-extern void OWLENTRY OWLTellData( owl_section_handle section, owl_offset location, char *dst, owl_offset len );
+extern void OWLENTRY OWLTellData( owl_section_handle section, owl_offset location, char *dst, size_t len );
 
 extern owl_func_handle OWLENTRY OWLDebugFuncBegin( owl_section_handle, owl_symbol_handle, owl_line_num, owl_offset  );
 extern void OWLENTRY OWLDebugFuncLine( owl_func_handle, owl_line_num, owl_offset );

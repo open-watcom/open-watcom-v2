@@ -62,8 +62,8 @@
 #include "feprotos.h"
 
 
-#define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
-#define OWL_TO_HANDLE(x)    ((FILE *)x)
+#define FILE2OWLF(x)    ((owl_file_handle)(x))
+#define OWLF2FILE(x)    ((FILE *)(x))
 
 #if _TARGET & _TARG_PPC
 extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
@@ -369,8 +369,8 @@ void    ObjFini( void )
 }
 
 
-static  int PutBytes( void *handle, const char *buffer, unsigned len )
-/********************************************************************/
+static  int PutBytes( owl_client_file f, const char *buffer, size_t len )
+/***********************************************************************/
 {
     /* unused parameters */ (void)handle;
 
@@ -379,7 +379,7 @@ static  int PutBytes( void *handle, const char *buffer, unsigned len )
     if( handle == NULL ) {
         PutObjBytes( buffer, len );
     } else {
-        fwrite( buffer, 1, len, OWL_TO_HANDLE( handle ) );
+        fwrite( buffer, 1, len, OWLF2FILE( f ) );
     }
 #else
     PutObjBytes( buffer, len );
@@ -473,7 +473,7 @@ void    InitSegDefs( void )
 
     owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
     if( _IsTargetModel( OWL_LOGGING ) ) {
-        OWLLogEnable( owlFile, HANDLE_TO_OWL( stdout ) );
+        OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
 
     codeSection = BACKSEGS;

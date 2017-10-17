@@ -30,56 +30,60 @@
 ****************************************************************************/
 
 
+#include "owlpriv.h"
+#include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
-#include "owlpriv.h"
+
+#include "clibext.h"
+
 
 #define BUFFER_SIZE     1024
 
+#define OWLF2FH(f)      (((int)(pointer_int)(f)) - 1)
+#define FH2OWLF(fh)     ((owl_client_file)(pointer_int)((fh) + 1))
 
-static void addStrings( owl_string_table *table, char *buffer ) {
+static int owl_write( owl_client_file f, const char *buff, size_t size )
+{
+    posix_write( OWLF2FH( f ), buff, size );
+    return( 0 );
+}
 
-    char                *s;
-    char                *last;
+static long owl_tell( owl_client_file f )
+{
+    return( tell( OWLF2FH( f ) ) );
+}
 
-    last = buffer;
-    for( s = buffer; *s; ) {
-        if( isspace( *s ) ) {
-            *s++ = 0;
-            printf( "Inserting: '%s'\n", last );
-            OWLStringAdd( table, last );
-            while( isspace( *s ) ) s++;
-            last = s;
-        } else {
-            s++;
-        }
-    }
+static long owl_seek( owl_client_file f, long offset, int where )
+{
+    return( lseek( OWLF2FH( f ), offset, where ) );
 }
 
 void main( int argc, char *argv[] ) {
 
-    char                buffer[ BUFFER_SIZE ];
     owl_handle          owl;
     owl_file_handle     file;
-    owl_string_table    *table;
-    owl_client_funcs    funcs = { write, tell, lseek, malloc, free };
-    char                *t_buff;
+    owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, malloc, free };
+    owl_buffer          *buffer;
+    unsigned            i, test_size;
 
     owl = OWLInit( &funcs, OWL_CPU_PPC );
-    file = OWLFileInit( owl, (owl_client_file)NULL, OWL_FORMAT_ELF, OWL_FILE_OBJECT );
-    table = OWLStringInit( file );
-    while( fgets( buffer, BUFFER_SIZE, stdin ) != NULL ) {
-        addStrings( table, buffer );
-        OWLStringDump( table );
+    file = OWLFileInit( owl, "test", FH2OWLF( STDOUT_FILENO ), OWL_FORMAT_ELF, OWL_FILE_OBJECT );
+    buffer = OWLBufferInit( file );
+    test_size = ( ( argc > 1 ) ? atoi( argv[ 1 ] ) : 8192 ) / sizeof( i );
+    for( i = 0; i < test_size; i++ ) {
+        OWLBufferWrite( buffer, &i, sizeof( i ) );
     }
-    t_buff = malloc( OWLStringTableSize( table ) + 1 );
-    OWLStringEmit( table, t_buff );
-    write( STDOUT_FILENO, t_buff, OWLStringTableSize( table ) );
-    free( t_buff );
-    OWLStringFini( table );
-    OWLFileFini( file );
-    OWLFini( owl );
+    OWLBufferEmit( buffer );
+    write( STDOUT_FILENO, "PASS2", strlen( "PASS2" ) );
+    for( i = 0; i < test_size; i++ ) {
+        OWLBufferPatch( buffer, i * 4, i );
+    }
+    OWLBufferEmit( buffer );
+    OWLBufferFini( buffer );
+    // OWLFileFini( file );
+    // OWLFini( owl );
 }
