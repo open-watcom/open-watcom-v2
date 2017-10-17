@@ -30,11 +30,16 @@
 ****************************************************************************/
 
 
+#if defined( __NT__ )
+#define _SEM    HANDLE
+#else
 #include "sema4typ.h"
+#endif
 
 
-extern _SEM    __fio_sem;
+extern _SEM     __fio_sem;
 
-extern void    __AccessFIO( void );
-extern void    __ReleaseFIO( void );
-extern void    __PartialReleaseFIO( void );
+extern void     __AccessFIO( void );
+extern void     __ReleaseFIO( void );
+extern void     __PartialReleaseFIO( void );
+

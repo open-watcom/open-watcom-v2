@@ -30,11 +30,7 @@
 
 
 #if defined( __NT__ )
- #ifdef __RT__
-  #define       _SEM           HANDLE
- #else
   #define       _SEM           LPCRITICAL_SECTION
- #endif
 #elif defined( __OS2__ )
   #define       _SEM           ULONG
 #elif defined( __NETWARE__ )
