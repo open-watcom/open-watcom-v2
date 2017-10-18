@@ -206,6 +206,7 @@ common_objs = &
     $(_subdir_)pathlist.obj &
 # fe_misc files
     $(_subdir_)intlload.obj &
+    $(_subdir_)unicode.obj &
 # in-line assembler files
     $(_subdir_)asmalloc.obj &
     $(_subdir_)asmmsg.obj

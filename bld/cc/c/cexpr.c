@@ -221,15 +221,16 @@ static TREEPTR ConstLeaf( void )
     leaf->op.u1.const_type = ConstType;
     switch( ConstType ) {
     case TYPE_WCHAR:
-        if( sizeof( wchar_t ) == sizeof( unsigned short ) ) {
-            leaf->op.u1.const_type = TYPE_USHORT;
-        } else {
-            leaf->op.u1.const_type = TYPE_CHAR;
-        }
+#if TARGET_WCHAR == TARGET_UINT
+        leaf->op.u1.const_type = TYPE_UINT;
+#else
+        leaf->op.u1.const_type = TYPE_USHORT;
+#endif
         leaf->op.u2.long_value = Constant;
         break;
     case TYPE_CHAR:
         leaf->op.u1.const_type = TYPE_INT;
+        // fall through
     case TYPE_INT:
         leaf->op.u2.long_value = Constant;
         break;

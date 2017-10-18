@@ -42,9 +42,9 @@
 
 static target_size  CLitLength;         /* length of string literal */
 
-static int OpenUnicodeFile( const char *filename )
+static FILE *OpenUnicodeFile( const char *filename )
 {
-    int         handle;
+    FILE        *fp;
     char        fullpath[_MAX_PATH];
 
 #if defined(__QNX__)
@@ -57,19 +57,19 @@ static int OpenUnicodeFile( const char *filename )
 #else
     _searchenv( filename, "PATH", fullpath );
 #endif
-    handle = -1;
+    fp = NULL;
     if( fullpath[0] != '\0' ) {
-        handle = open( fullpath, O_RDONLY | O_BINARY );
+        fp = fopen( fullpath, "r" );
     }
-    return( handle );
+    return( fp );
 }
 
-static void ReadUnicodeFile( int handle )
+static void ReadUnicodeFile( FILE *fp )
 {
     int             i;
-    unsigned short  unicode_table[256];
+    unicode_type    unicode_table[256];
 
-    read( handle, unicode_table, 256 * sizeof( unsigned short ) );
+    fread( unicode_table, sizeof( unicode_type ), 256, fp );
     /* UniCode might be a FAR table */
     for( i = 0; i < 256; i++ ) {
         UniCode[i] = unicode_table[i];
@@ -78,7 +78,7 @@ static void ReadUnicodeFile( int handle )
 
 void LoadUnicodeTable( unsigned codePage )
 {
-    int         handle;
+    FILE        *fp;
     char        filename[20];
 
     sprintf( filename, "unicode.%3.3u", codePage );
@@ -86,10 +86,10 @@ void LoadUnicodeTable( unsigned codePage )
         filename[7] = filename[8];
         filename[8] = '.';
     }
-    handle = OpenUnicodeFile( filename );
-    if( handle != -1 ) {
-        ReadUnicodeFile( handle );
-        close( handle );
+    fp = OpenUnicodeFile( filename );
+    if( fp != NULL ) {
+        ReadUnicodeFile( fp );
+        fclose( fp );
     } else {
         CBanner();
         CErr2p( ERR_CANT_OPEN_FILE, filename );

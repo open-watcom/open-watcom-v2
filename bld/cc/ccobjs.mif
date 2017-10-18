@@ -83,7 +83,8 @@ common_objs = &
     $(_subdir_)exprtree.obj &
     $(_subdir_)treewalk.obj &
     $(_subdir_)pathlist.obj &
-    $(_subdir_)mngless.obj
+    $(_subdir_)mngless.obj &
+    $(_subdir_)unicode.obj
 
 !ifeq release 0
 cc_debug_objs = $(_subdir_)cfedump.obj
