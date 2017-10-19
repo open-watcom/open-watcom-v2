@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+// debugger internal variable dbg$os relate to this definition
+// don't change existing items value, only add new one after last
+
 //          enum           desc
 pick_mad( MAD_OS_IDUNNO,    "Unknown" )
 pick_mad( MAD_OS_DOS,       "DOS" )
@@ -41,8 +44,8 @@ pick_mad( MAD_OS_RATIONAL,  "DOS/4G or compatible" )
 pick_mad( MAD_OS_WINDOWS,   "Windows 3.x" )
 pick_mad( MAD_OS_PENPOINT,  "PenPoint" )
 pick_mad( MAD_OS_NT,        "Win32" )
-pick_mad( MAD_OS_NT64,      "Win64" )
 pick_mad( MAD_OS_AUTOCAD,   "Autocad" )
 pick_mad( MAD_OS_NEUTRINO,  "QNX 6.x Neutrino" )
 pick_mad( MAD_OS_LINUX,     "Linux" )
 pick_mad( MAD_OS_FREEBSD,   "Free BSD" )
+pick_mad( MAD_OS_NT64,      "Win64" )
