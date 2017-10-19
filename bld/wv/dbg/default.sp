@@ -68,6 +68,9 @@ hook progstart {
         elseif ?@@winmain {
             go/until/noflip @@winmain
         }
+        elseif ?@@`winmain@16` {
+            go/until/noflip @@`winmain@16`
+        }
         elseif _dbg@dbg$os == 12 && ?@main {
             go/until/noflip @main
         }
