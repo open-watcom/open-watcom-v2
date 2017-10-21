@@ -87,3 +87,11 @@ void SectionSizePatch( dw_client cli, dw_sectnum sect )
     CLIWrite( cli, sect, buf, sizeof( size ) );
     CLISeek( cli, sect, 0, DW_SEEK_END );
 }
+
+void SectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
+{
+    // the zeros array length must be big enought for all calls, now 16 bytes is OK
+    static const uint_8     zeros[16] = { 0 };
+
+    CLIWrite( cli, sect, zeros, len );
+}

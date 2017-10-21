@@ -68,11 +68,7 @@ void InitDebugAranges(
 void FiniDebugAranges(
     dw_client   cli )
 {
-    static char const   zeros[sizeof( uint_32 )] = { 0 };
-
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->segment_size  );
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
+    SectionWriteZeros( cli, DW_DEBUG_ARANGES, cli->segment_size + 2 * cli->offset_size );
     /* backpatch the section length */
     SectionSizePatch( cli, DW_DEBUG_ARANGES );
 }

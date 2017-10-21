@@ -178,7 +178,5 @@ void InitDebugMacInfo( dw_client cli )
 
 void FiniDebugMacInfo( dw_client cli )
 {
-    static char const   buf[1] = { 0 };
-
-    CLIWrite( cli, DW_DEBUG_MACINFO, buf, 1 );
+    SectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
 }

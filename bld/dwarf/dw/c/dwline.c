@@ -212,8 +212,6 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
         }
     };
 
-    static uint_8 const terminators[] = {0,0};
-
     prol.prologue_length += inc_list_len + 2;   // +2 for 2 list terminators
     cli->debug_line.files = NULL;
     cli->debug_line.addr = 0;
@@ -229,8 +227,7 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
         CLIWrite( cli, DW_DEBUG_LINE, inc_list, inc_list_len );
     }
 
-    CLIWrite( cli, DW_DEBUG_LINE, terminators, sizeof( terminators ) );
-
+    SectionWriteZeros( cli, DW_DEBUG_LINE, 2 );
     /* and put out the source filename */
     GetFileNumber( cli, source_filename );
 }

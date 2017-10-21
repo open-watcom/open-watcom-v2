@@ -59,8 +59,6 @@ static const struct {
 };
 
 
-static const uint_8 zeros[] = { 0, 0 };
-
 /*
     Read the comments in dwmakeab.c for more information on the
     meaning of some of these variables.
@@ -183,7 +181,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     }
 
     /* and the zero terminators */
-    CLIWrite( cli, DW_DEBUG_ABBREV, zeros, 2 );
+    SectionWriteZeros( cli, DW_DEBUG_ABBREV, 2 );
     return( code );
 }
 
@@ -196,7 +194,7 @@ void InitDebugAbbrev( dw_client cli )
 
 void FiniDebugAbbrev( dw_client cli )
 {
-    CLIWrite( cli, DW_DEBUG_ABBREV, zeros, 1 );
+    SectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
 }
 
 void  GenAllAbbrev( dw_client  cli )

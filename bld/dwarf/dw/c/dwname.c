@@ -66,10 +66,8 @@ void InitDebugPubnames(
 void FiniDebugPubnames(
     dw_client                   cli )
 {
-    static char const   zeros[sizeof( uint_32 )] = {0};
-
     /* write the set terminator */
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
+    SectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );
     /* backpatch the section length */
     SectionSizePatch( cli, DW_DEBUG_PUBNAMES );
 }

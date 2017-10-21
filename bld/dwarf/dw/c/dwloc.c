@@ -629,14 +629,12 @@ void DWENTRY DWListEntryOut( dw_client cli, dw_list_id id, dw_sym_handle begin, 
 
 dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
 {
-    static char  const zeros[2 * sizeof( dw_targ_addr )] = {0};
-
     if( id->hdl.is_expr == LOC_LIST_REF ) {
-        CLIWrite( cli, DW_DEBUG_LOC, zeros, sizeof( zeros ) );
+        SectionWriteZeros( cli, DW_DEBUG_LOC, 2 * sizeof( dw_targ_addr ) );
     } else {
         id->hdl.x.list = ReverseChain( id->hdl.x.list );
     }
-    return( (dw_loc_handle) id );
+    return( (dw_loc_handle)id );
 }
 
 
@@ -664,7 +662,6 @@ void DWENTRY DWLocTrash( dw_client cli, dw_loc_handle loc )
 
 uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
 {
-    static char const   zeros[2 * sizeof( dw_targ_addr )] = {0};
     list_entry          *cur;
     uint_32             bytes_written;
 
@@ -677,8 +674,8 @@ uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
         CLIReloc4( cli, sect, DW_W_LOC_RANGE, cur->begin, cur->end );
         bytes_written += EmitLocExpr( cli, sect, sizeof( uint_16 ), loc );
     }
-    CLIWrite( cli, sect, zeros, sizeof( zeros ) );
-    return( bytes_written + sizeof( zeros ) );
+    SectionWriteZeros( cli, sect, 2 * sizeof( dw_targ_addr ) );
+    return( bytes_written + 2 * sizeof( dw_targ_addr ) );
 }
 
 

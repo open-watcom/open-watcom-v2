@@ -52,5 +52,6 @@
 extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
 extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
 extern void     SectionSizePatch( dw_client cli, dw_sectnum sect );
+extern void     SectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len );
 
 #endif
