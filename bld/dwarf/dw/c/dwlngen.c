@@ -63,9 +63,9 @@ unsigned DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr,
 
     /* calculate the opcode with overflow checks */
     line_incr -= DWLINE_BASE;
-    opcode = DWLINE_RANGE * addr_incr;
-    if( opcode < addr_incr )
+    if( DWLINE_RANGE * addr_incr < addr_incr )
         goto overflow;
+    opcode = DWLINE_RANGE * addr_incr;
     if( opcode + line_incr < opcode )
         goto overflow;
     opcode += line_incr;

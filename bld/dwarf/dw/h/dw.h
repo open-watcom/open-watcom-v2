@@ -63,6 +63,8 @@ typedef struct dw_loc_handle    *dw_loc_handle;
 typedef uint_32                 dw_handle;
 typedef uint_16                 dw_defseg; // default size of a seg
 
+#define GET_SEGMENT_SIZE(c)     (((c)->segment_size == 0) ? 2 : (c)->segment_size)
+
 /* output data offset */
 typedef uint_32                 dw_out_offset;
 

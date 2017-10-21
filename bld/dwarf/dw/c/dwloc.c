@@ -61,7 +61,7 @@ struct dw_loc_id {
     loc_op                      *first;
     loc_op                      *last;
     dw_loc_label                labels;
-    uint                        num_syms;       // number of DWLocStatic's
+    uint_16                     num_syms;       // number of DWLocStatic's
     uint_16                     addr;
 };
 
@@ -218,11 +218,7 @@ void DWENTRY DWLocSym( dw_client cli, dw_loc_id loc, dw_sym_handle sym, dw_reloc
     reloc_info->kind = kind;
 
     if( kind == DW_W_SEGMENT || kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
-        if( cli->segment_size != 0 ) {
-            ADD_ADDR( cli, loc, cli->segment_size );
-        } else {
-            ADD_ADDR( cli, loc, sizeof( dw_defseg ) );
-        }
+        ADD_ADDR( cli, loc, GET_SEGMENT_SIZE( cli ) );
     } else {
         ADD_ADDR( cli, loc, cli->offset_size );
     }
@@ -232,7 +228,6 @@ void DWENTRY DWLocSegment( dw_client cli, dw_loc_id loc, dw_sym_handle sym )
 {
     loc_op                      *op;
     dw_sym_reloc                *reloc_info;
-    uint_16                     segment_size;
 
     op = nextOp( cli, loc, DW_OP_addr, sizeof( *reloc_info ) );
     /*
@@ -243,12 +238,7 @@ void DWENTRY DWLocSegment( dw_client cli, dw_loc_id loc, dw_sym_handle sym )
     reloc_info = (dw_sym_reloc *)op->data;
     reloc_info->sym = sym;
     reloc_info->kind = DW_W_SEGMENT;
-    if( cli->segment_size == 0 ) {  //TODO not hardwire seg size
-        segment_size = sizeof( dw_defseg );
-    } else {
-        segment_size = cli->segment_size;
-    }
-    ADD_ADDR( cli, loc, segment_size ); // size of info written u2
+    ADD_ADDR( cli, loc, GET_SEGMENT_SIZE( cli ) ); // size of info written u2
 }
 
 
@@ -455,16 +445,11 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
         case DW_OP_addr:
             *(uint_16 *)base_of_block = (uint_16)( ( p - base_of_block ) - sizeof( uint_16 ) );
             reloc_info = (dw_sym_reloc *)cur_op->data;
-            if( reloc_info->kind == DW_W_SEGMENT
-              || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
+            if( reloc_info->kind == DW_W_SEGMENT || reloc_info->kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
                 /* it was a DWLocSegment() */
                 int segment_size;
 
-                if( cli->segment_size == 0 ) {  //TODO fix flat with segref
-                   segment_size = sizeof( dw_defseg );
-                } else {
-                   segment_size = cli->segment_size;
-                }
+                segment_size = GET_SEGMENT_SIZE( cli );
                 switch( segment_size ) {
                 case 1:
                     p[-1] = DW_OP_const1u;
@@ -507,27 +492,8 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
 
 void EmitLocExprNull( dw_client cli, uint sect, size_t size )
 {
-    union {
-        char     buf[sizeof( uint_32 )];
-        uint_8   u8;
-        uint_16  u16;
-        uint_32  u32;
-    } len_form;
-
-    /* ensure that this is really an expression */
     _Assert( size == 1 || size == 2 || size == 4 );
-    switch( size ) {
-    case 1: // block_8
-        len_form.u8 = 0;
-        break;
-    case 2:   // block_16
-        len_form.u16 = 0;
-        break;
-    case 4:   // block_32
-        len_form.u32 = 0;
-        break;
-    }
-    CLIWrite( cli, sect, len_form.buf, size );
+    SectionWriteZeros( cli, sect, size );
 }
 
 uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
@@ -543,27 +509,28 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
     unsigned                    size_of_block;
     uint                        syms_left;
     dw_sym_reloc                *reloc_info;
+    uint_32                     expr_size;
 
     /* ensure that this is really an expression */
     _Assert( loc->is_expr == LOC_EXPR );
     _Assert( size == 1 || size == 2 || size == 4 );
+    expr_size = loc->x.expr.size;
     switch( size ) {
     case 1: // block_8
-        _Assert( loc->x.expr.size <= 0xff );
-        len_form.u8 = (uint_8)loc->x.expr.size;
+        _Assert( expr_size <= 0xff );
+        len_form.u8 = (uint_8)expr_size;
         break;
     case 2:   // block_16
-        // x.expr.size is a uint_16
-        //_Assert( loc->x.expr.size <= 0xffff );
-        len_form.u16 = (uint_16)loc->x.expr.size;
+        _Assert( expr_size <= 0xffff );
+        len_form.u16 = (uint_16)expr_size;
         break;
     case 4:   // block_32
-        len_form.u32 = loc->x.expr.size;
+        len_form.u32 = expr_size;
         break;
     }
     CLIWrite( cli, sect, len_form.buf, size );
     syms_left = loc->x.expr.num_syms;
-    bytes_left = loc->x.expr.size;
+    bytes_left = expr_size;
     p = loc->x.expr.expr;
     while( bytes_left ) {
         size_of_block = *(uint_16 *)p;
@@ -575,20 +542,15 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
             reloc_info = (dw_sym_reloc *)p;
             p += sizeof( *reloc_info );
             CLIReloc3( cli, sect, reloc_info->kind, reloc_info->sym );
-            if( reloc_info->kind ==  DW_W_SEGMENT
-              || reloc_info->kind == DW_W_LABEL_SEG ) { //TODO :better linkage
-                if( cli->segment_size == 0 ) {          //TODO fix flat with segref
-                   bytes_left -= sizeof( dw_defseg );
-                } else {
-                   bytes_left -= cli->segment_size;
-                }
+            if( reloc_info->kind == DW_W_SEGMENT || reloc_info->kind == DW_W_LABEL_SEG ) { //TODO :better linkage
+                bytes_left -= GET_SEGMENT_SIZE( cli );
             } else {
                 bytes_left -= cli->offset_size;
             }
             --syms_left;
         }
     }
-    return( (uint_32)( size + loc->x.expr.size ) );
+    return( (uint_32)( size + expr_size ) );
 }
 
 
