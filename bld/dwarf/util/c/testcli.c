@@ -37,10 +37,13 @@
 #include <stdarg.h>
 
 #include "watcom.h"
+#include "bool.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "testcli.h"
 
+
+bool            byte_swap = false;
 
 dw_client       Client;
 
@@ -50,7 +53,7 @@ uint_32         RelocValues[DW_W_MAX];
 uint_32         SymHandles[20];
 
 
-void CLIWrite( dw_sectnum sect, const void *block, size_t size )
+static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 {
     memcpy( &Sections[sect].data[Sections[sect].cur_offset], block, size );
     Sections[sect].cur_offset += size;
@@ -60,11 +63,11 @@ void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 }
 
 
-void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
+static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
 {
     static char                 zeros[] = { 0, 0 };
     dw_sym_handle               sym;
-    uint                        section;
+    dw_sectnum                  sect_no;
     va_list                     args;
 
     va_start( args, reloc_type );
@@ -81,8 +84,8 @@ void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         CLIWrite( sect, &RelocValues[reloc_type], sizeof( uint_32 ) );
         break;
     case DW_W_SECTION_POS:
-        section = va_arg( args, uint );
-        CLIWrite( sect, &Sections[section].cur_offset, sizeof( uint_32 ) );
+        sect_no = va_arg( args, dw_sectnum );
+        CLIWrite( sect, &Sections[sect_no].cur_offset, sizeof( uint_32 ) );
         break;
     case DW_W_STATIC:
         sym = va_arg( args, dw_sym_handle );
@@ -102,7 +105,7 @@ void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
 }
 
 
-void CLISeek( dw_sectnum sect, long offs, uint type ) {
+static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type ) {
 
     switch( type ) {
     case DW_SEEK_CUR:
@@ -117,18 +120,18 @@ void CLISeek( dw_sectnum sect, long offs, uint type ) {
     }
 }
 
-long CLITell( dw_sectnum sect ) {
+static dw_out_offset CLITell( dw_sectnum sect ) {
 
     return( Sections[sect].cur_offset );
 }
 
 
-void *CLIAlloc( size_t size ) {
+static void *CLIAlloc( size_t size ) {
 
     void        *p;
 
     p = malloc( size );
-    if( p == NULL && size != NULL ) {
+    if( p == NULL && size != 0 ) {
         fputs( "out of memory!\n", stderr );
         exit( 1 );
     }
@@ -136,7 +139,7 @@ void *CLIAlloc( size_t size ) {
 }
 
 
-void CLIFree( void *p ) {
+static void CLIFree( void *p ) {
 
     free( p );
 }

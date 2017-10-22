@@ -34,11 +34,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-
 #include "watcom.h"
 #include "dw.h"
 #include "dwarf.h"
 #include "testcli.h"
+
 
 dw_handle       FundamentalTypes[DW_FT_MAX];
 dw_handle       ConstantFundamentalTypes[DW_FT_MAX];
@@ -46,8 +46,7 @@ dw_handle       ConstantFundamentalTypes[DW_FT_MAX];
 dw_handle       ConstCharStar;
 dw_handle       EnumColours;
 
-
-void TestMacInfo( void )
+static void TestMacInfo( void )
 {
     dw_macro                    macro;
 
@@ -70,7 +69,7 @@ void TestMacInfo( void )
 }
 
 
-void TestTypedef( void )
+static void TestTypedef( void )
 {
     dw_handle   name_ptr;
     dw_handle   volatile_name;
@@ -94,7 +93,7 @@ void TestTypedef( void )
 }
 
 
-void TestPointer( void )
+static void TestPointer( void )
 {
     /* const char * far *p */
     DWDeclPos( Client, 36, 12 );
@@ -105,7 +104,7 @@ void TestPointer( void )
 }
 
 
-void TestString( void )
+static void TestString( void )
 {
     dw_loc_handle               string_length;
     dw_handle                   string_hdl;
@@ -128,11 +127,11 @@ void TestString( void )
     DWLocOp( Client, id, DW_LOC_fbreg, -8 );
     a_loc = DWLocFini( Client, id );
     DWDeclPos( Client, 50, 16 );
-    DWVariable( Client, string_hdl, a_loc, NULL, NULL, "A", 0, 0 );
+    DWVariable( Client, string_hdl, a_loc, 0, NULL, "A", 0, 0 );
     DWLocTrash( Client, a_loc );
 }
 
-void TestArray( void )
+static void TestArray( void )
 {
 #if 0
     dw_dim_info         dim_info;
@@ -150,12 +149,12 @@ void TestArray( void )
     dim_info.hi_data = 79;
     DWArrayDimension( Client, &dim_info );
     DWEndArray( Client );
-    SymHandles[3] = 0x1234bul;
+    SymHandles[3] = 0x1234bUL;
     id = DWLocInit( Client );
-    DWLocStatic( Client, id, 3 );
+    DWLocStatic( Client, id, (dw_sym_handle)3 );
     buf_loc = DWLocFini( Client, id );
     DWDeclPos( Client, 55, 80 );
-    DWVariable( Client, array_hdl, buf_loc, NULL, NULL, "buf", 0, DW_FLAG_GLOBAL );
+    DWVariable( Client, array_hdl, buf_loc, 0, NULL, "buf", 0, DW_FLAG_GLOBAL );
     DWLocTrash( Client, buf_loc );
 
     /* INTEGER*4 A(1:N) */
@@ -173,7 +172,7 @@ void TestArray( void )
 #endif
 }
 
-void TestEnum( void )
+static void TestEnum( void )
 {
     dw_uconst                       value;
 
@@ -197,7 +196,7 @@ void TestEnum( void )
 }
 
 
-void TestStruct1( void )
+static void TestStruct1( void )
 {
     dw_handle           struct_div_t;
     dw_loc_handle       field_loc;
@@ -256,7 +255,7 @@ void TestStruct1( void )
 }
 
 
-void TestStruct2( void )
+static void TestStruct2( void )
 {
     dw_loc_handle               field_loc;
     dw_loc_id                   id;
@@ -279,7 +278,7 @@ void TestStruct2( void )
 }
 
 
-void TestStruct3( void )
+static void TestStruct3( void )
 {
     dw_handle           class_1;
     dw_handle           class_2;
@@ -301,8 +300,8 @@ void TestStruct3( void )
     DWEndStruct( Client );
 
     id = DWLocInit( Client );
-    SymHandles[5] = 0x666ul;
-    DWLocStatic( Client, id, 5 );
+    SymHandles[5] = 0x666UL;
+    DWLocStatic( Client, id, (dw_sym_handle)5 );
     field_hdl = DWLocFini( Client, id );
     DWVariable( Client, FundamentalTypes[DW_FT_SIGNED], field_hdl, class_1, NULL, "a", 0, 0 );
     DWLocTrash( Client, field_hdl );
@@ -322,7 +321,7 @@ void TestStruct3( void )
 }
 
 
-void TestSubroutineType( void )
+static void TestSubroutineType( void )
 {
     dw_handle                   sub_type;
 
@@ -333,7 +332,7 @@ void TestSubroutineType( void )
 }
 
 
-void TestLexicalBlock( void )
+static void TestLexicalBlock( void )
 {
     DWBeginLexicalBlock( Client, NULL, "FOOBAR" );
     TestTypedef();
@@ -341,21 +340,21 @@ void TestLexicalBlock( void )
 }
 
 
-void TestCommonBlock( void )
+static void TestCommonBlock( void )
 {
     dw_handle                   common_block;
     dw_loc_id                   id;
     dw_loc_handle               loc;
 
     id = DWLocInit( Client );
-    DWLocStatic( Client, id, 5 );
+    DWLocStatic( Client, id, (dw_sym_handle)5 );
     loc = DWLocFini( Client, id );
     common_block = DWBeginCommonBlock( Client, loc, NULL, "DATA", 0 );
     DWLocTrash( Client, loc );
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     loc = DWLocFini( Client, id );
-    DWVariable( Client, FundamentalTypes[DW_FT_UNSIGNED_CHAR], loc, NULL, NULL, "UNCLE", 0, 0 );
+    DWVariable( Client, FundamentalTypes[DW_FT_UNSIGNED_CHAR], loc, 0, NULL, "UNCLE", 0, 0 );
     DWLocTrash( Client, loc );
     DWEndCommonBlock( Client );
 
@@ -363,12 +362,12 @@ void TestCommonBlock( void )
 }
 
 
-void TestSubroutine( void )
+static void TestSubroutine( void )
 {
-    dw_handle                   inline_sub;
+    dw_handle   inline_sub;
 
     inline_sub = DWBeginSubroutine( Client, DW_SB_NEAR_CALL,
-        ConstCharStar, NULL, NULL, NULL, NULL, NULL, "inline_me_baby", 0,
+        ConstCharStar, NULL, NULL, NULL, 0, NULL, "inline_me_baby", 0,
         DW_FLAG_DECLARATION | DW_FLAG_PROTOTYPED | DW_FLAG_DECLARED_INLINE );
     TestTypedef();
     DWEndSubroutine( Client );
@@ -379,7 +378,7 @@ void TestSubroutine( void )
 }
 
 
-void TestLine( void )
+static void TestLine( void )
 {
     /* try varying the column */
     DWLineNum( Client, DW_LN_STMT, 1, 1, 0 );
@@ -400,14 +399,14 @@ void TestLine( void )
 }
 
 
-void TestAranges( void )
+static void TestAranges( void )
 {
     RelocValues[DW_W_ARANGE_ADDR] = 0x5555;
     DWAddress( Client, 511 );
 }
 
 
-void TestPubnames( void )
+static void TestPubnames( void )
 {
     DWPubname( Client, ConstCharStar, "foobar" );
 }
