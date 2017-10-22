@@ -260,14 +260,14 @@ dw_handle DWENTRY DWBeginSubroutine(
     Info8( cli, (flags & DW_FLAG_VIRTUAL_MASK) >> DW_FLAG_VIRTUAL_SHIFT );
     /* AT_artificial */
     Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
-    if( flags & DW_FLAG_DECLARATION ){
+    if( flags & DW_FLAG_DECLARATION ) {
         /* AT_declaration */
         Info8( cli, 1 );
-    }else{
+    } else {
         /* AT_return_addr */
-        if( return_addr_loc != NULL ){
+        if( return_addr_loc != NULL ) {
             EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ),return_addr_loc );
-        }else{
+        } else {
             EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
         }
         /* AT_low_pc */
@@ -303,8 +303,10 @@ dw_handle DWENTRY DWBeginEntryPoint(
     _Validate( name != NULL );
     new = GetHandle( cli );
     abbrev = AB_ENTRY_POINT;
-    if( segment ) abbrev |= AB_SEGMENT;
-    if( return_addr_loc ) abbrev |= AB_RETURN_ADDR;
+    if( segment )
+        abbrev |= AB_SEGMENT;
+    if( return_addr_loc )
+        abbrev |= AB_RETURN_ADDR;
     if( return_type != 0 ){
         abbrev |= AB_TYPE;
     }
@@ -355,11 +357,7 @@ static void MemFuncCommon(
     /* AT_name */
     InfoString( cli, name );
     /* AT_declaration */
-    if( flags & DW_FLAG_DECLARATION ){
-        Info8( cli, 1 );
-    }else{
-        Info8( cli, 0 );
-    }
+    Info8( cli, (flags & DW_FLAG_DECLARATION) != 0 );
     /* AT_inline */
     Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
 }
@@ -418,9 +416,9 @@ dw_handle DWENTRY DWBeginVirtMemFuncDecl(
     /* AT_virtuality  */
     Info8( cli, 1 );
     /* AT_vtable_location */
-    if( vtable_loc != NULL ){
+    if( vtable_loc != NULL ) {
         EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), vtable_loc );
-    }else{
+    } else {
         EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     EndDIE( cli );
@@ -565,9 +563,12 @@ dw_handle DWENTRY DWVariable(
     _Validate( name !=NULL );
     new = LabelNewHandle( cli );
     abbrev = AB_VARIABLE;
-    if( member_of ) abbrev |= AB_MEMBER;
-    if( segment ) abbrev |= AB_SEGMENT;
-    if( flags & DW_FLAG_DECLARATION ) abbrev |= AB_DECLARATION;
+    if( member_of )
+        abbrev |= AB_MEMBER;
+    if( segment )
+        abbrev |= AB_SEGMENT;
+    if( flags & DW_FLAG_DECLARATION )
+        abbrev |= AB_DECLARATION;
     StartDIE( cli, abbrev );
     if( flags & DW_FLAG_DECLARATION ) {
         Info8( cli, 1 );
@@ -589,7 +590,7 @@ dw_handle DWENTRY DWVariable(
     /* AT_location */
     if( loc ) {
         EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8 ), loc );
-    }else{
+    } else {
         EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8 ) );
     }
     /* AT_type */

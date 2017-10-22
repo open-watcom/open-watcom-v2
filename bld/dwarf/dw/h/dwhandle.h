@@ -113,18 +113,18 @@ typedef union handle_extra {
 #define HandleWriteOffset       DW_HandleWriteOffset
 
 
-void InitHandles( dw_client );
-void FiniHandles( dw_client );
-dw_handle NewHandle( dw_client );
-handle_common *GetCommon( dw_client, dw_handle );
-handle_extra *CreateExtra( dw_client, dw_handle );
-void DestroyExtra( dw_client, dw_handle );
-handle_extra *GetExtra( dw_client, dw_handle );
-dw_handle LabelNewHandle( dw_client );
-dw_handle GetHandle( dw_client cli );
-void SetHandleLocation( dw_client, dw_handle );
-void HandleReference( dw_client, dw_handle, uint );
-void HandleWriteOffset( dw_client, dw_handle, uint );
+extern void             InitHandles( dw_client );
+extern void             FiniHandles( dw_client );
+extern dw_handle        NewHandle( dw_client );
+extern handle_common    *GetCommon( dw_client, dw_handle );
+extern handle_extra     *CreateExtra( dw_client, dw_handle );
+extern void             DestroyExtra( dw_client, dw_handle );
+extern handle_extra     *GetExtra( dw_client, dw_handle );
+extern dw_handle        LabelNewHandle( dw_client );
+extern dw_handle        GetHandle( dw_client cli );
+extern void             SetHandleLocation( dw_client, dw_handle );
+extern void             HandleReference( dw_client, dw_handle, dw_sectnum );
+extern void             HandleWriteOffset( dw_client, dw_handle, dw_sectnum );
 
 
 #endif

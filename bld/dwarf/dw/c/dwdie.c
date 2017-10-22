@@ -89,8 +89,7 @@ void EndChildren( dw_client cli )
 
     /* move up a level in the tree */
     cli->die.tree = FreeLink( cli, cli->die.tree );
-
-    Info8( cli, 0 );
+    SectionWriteZeros( cli, DW_DEBUG_INFO, 1 );
 }
 
 
