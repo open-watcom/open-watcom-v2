@@ -66,7 +66,7 @@ void InitDebugPubnames(
 void FiniDebugPubnames(
     dw_client                   cli )
 {
-    /* write the set terminator */
+    /* write the terminator */
     SectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );
     /* backpatch the section length */
     SectionSizePatch( cli, DW_DEBUG_PUBNAMES );

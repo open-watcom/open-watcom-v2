@@ -64,9 +64,9 @@ void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name )
 
 void DWENTRY DWMacEndFile( dw_client cli )
 {
-    static char const   buf[1] = { DW_MACINFO_end_file };
+    static char const   buf[] = { DW_MACINFO_end_file };
 
-    CLIWrite( cli, DW_DEBUG_MACINFO, buf, 1 );
+    CLIWrite( cli, DW_DEBUG_MACINFO, buf, sizeof( buf ) );
 }
 
 
@@ -108,6 +108,7 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     uint_8              buf[1 + MAX_LEB128];
     uint_8              *end;
     dw_parm             *parm;
+    static const char   parms_term[] = { ' ' };
 
     _Validate( mac != NULL );
 
@@ -117,26 +118,28 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     CLIWrite( cli, DW_DEBUG_MACINFO, mac->name, mac->len );
     parm = mac->parms;
     if( parm != NULL ) {
+        static const char   parms_start[] = { '(' };
+        static const char   parms_end[] = { ')' };
         /* parms are in the linked list in reverse order */
         parm = ReverseChain( parm );
-        CLIWrite( cli, DW_DEBUG_MACINFO, "(", 1 );
+        CLIWrite( cli, DW_DEBUG_MACINFO, parms_start, sizeof( parms_start ) );
         while( parm->next != NULL ) {
+            static const char   parm_sep[] = { ',' };
             CLIWrite( cli, DW_DEBUG_MACINFO, parm->name, parm->len );
-            CLIWrite( cli, DW_DEBUG_MACINFO, ",", 1 );
+            CLIWrite( cli, DW_DEBUG_MACINFO, parm_sep, sizeof( parm_sep ) );
             parm = FreeLink( cli, parm );
         }
         CLIWrite( cli, DW_DEBUG_MACINFO, parm->name, parm->len );
-        CLIWrite( cli, DW_DEBUG_MACINFO, ") ", 2 );
+        CLIWrite( cli, DW_DEBUG_MACINFO, parms_end, sizeof( parms_end ) );
         CLIFree( cli, parm );
-    } else {
-        CLIWrite( cli, DW_DEBUG_MACINFO, " ", 1 );
     }
+    CLIWrite( cli, DW_DEBUG_MACINFO, parms_term, sizeof( parms_term ) );
     CLIFree( cli, mac );
-    if( def == NULL ) {
-        CLIWrite( cli, DW_DEBUG_MACINFO, "", 1 );
-    } else {
-        CLIWrite( cli, DW_DEBUG_MACINFO, def, strlen( def ) + 1 );
+    if( def != NULL ) {
+        CLIWrite( cli, DW_DEBUG_MACINFO, def, strlen( def ) );
     }
+    /* write macro definition terminator */
+    SectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
 }
 
 
@@ -178,5 +181,6 @@ void InitDebugMacInfo( dw_client cli )
 
 void FiniDebugMacInfo( dw_client cli )
 {
+    /* write the terminator */
     SectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
 }

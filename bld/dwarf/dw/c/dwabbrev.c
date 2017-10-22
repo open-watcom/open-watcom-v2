@@ -126,12 +126,12 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 
     /* emit the child byte */
     if( *abbrev & AB_SIBLING ) {
-        buf[0] = DW_CHILDREN_yes;
-        CLIWrite( cli, DW_DEBUG_ABBREV, buf, 1 );
+        static const uint_8 buf[] = { DW_CHILDREN_yes };
+        CLIWrite( cli, DW_DEBUG_ABBREV, buf, sizeof( buf ) );
         CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     } else {
-        buf[0] = DW_CHILDREN_no;
-        CLIWrite( cli, DW_DEBUG_ABBREV, buf, 1 );
+        static const uint_8 buf[] = { DW_CHILDREN_no };
+        CLIWrite( cli, DW_DEBUG_ABBREV, buf, sizeof( buf ) );
     }
 
     /* AT_decl_file and AT_decl_line must occur here */
@@ -162,9 +162,11 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     /* now do the AB_SUBR_DECLARATION kludge */
     if( data->valid_mask & AB_SUBR_DECLARATION ) {
         if( *abbrev & AB_SUBR_DECLARATION ) {
-            buf[0] = DW_AT_declaration;
-            buf[1] = DW_FORM_flag;
-            CLIWrite( cli, DW_DEBUG_ABBREV, buf, 2 );
+            static const uint_8 subr_attrs[] = {
+                DW_AT_declaration,
+                DW_FORM_flag
+            };
+            CLIWrite( cli, DW_DEBUG_ABBREV, subr_attrs, sizeof( subr_attrs ) );
         } else {
             static const uint_8 subr_attrs[] = {
                 DW_AT_return_addr,      DW_FORM_block1,
@@ -194,6 +196,7 @@ void InitDebugAbbrev( dw_client cli )
 
 void FiniDebugAbbrev( dw_client cli )
 {
+    /* the zero terminator */
     SectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
 }
 

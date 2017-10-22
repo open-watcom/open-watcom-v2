@@ -75,7 +75,7 @@ uint_8 *ULEB128(
     return( buf );
 }
 
-void SectionSizePatch( dw_client cli, dw_sectnum sect )
+void    SectionSizePatch( dw_client cli, dw_sectnum sect )
 /* backpatch the section length */
 {
     debug_ref   size;

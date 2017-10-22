@@ -92,7 +92,6 @@ void StartRef( dw_client cli )
 void EndRef( dw_client cli )
 {
     struct delayed_ref *        this;
-    char                        buf[1];
 
     /*
         We have to check if we actually emitted a REF_START_REF
@@ -103,7 +102,7 @@ void EndRef( dw_client cli )
     if( this != NULL && this->scope == cli->references.scope ) {
         cli->references.delayed = CarveFreeLink( cli->references.delay_carver, this );
     } else {
-        buf[0] = REF_END_SCOPE;
+        static const uint_8 buf[] = { REF_END_SCOPE };
         CLIWrite( cli, DW_DEBUG_REF, buf, sizeof( buf ) );
     }
 }

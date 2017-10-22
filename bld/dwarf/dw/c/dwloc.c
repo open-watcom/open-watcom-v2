@@ -643,36 +643,40 @@ uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
 
 uint_32 EmitLoc( dw_client cli, uint sect, dw_loc_handle loc )
 {
-    char                        buf[1];
-
     switch( loc->is_expr ) {
     case LOC_LIST:
-        buf[0] = DW_FORM_data4;
-        CLIWrite( cli, sect, buf, 1 );
-        CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-        EmitLocList( cli, DW_DEBUG_LOC, loc );
-        return( 1 + sizeof( debug_ref ) );
+        {
+            static const uint_8 buf[] = { DW_FORM_data4 };
+            CLIWrite( cli, sect, buf, sizeof( buf ) );
+            CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
+            EmitLocList( cli, DW_DEBUG_LOC, loc );
+            return( 1 + sizeof( debug_ref ) );
+        }
     case LOC_LIST_REF:
-        buf[0] = DW_FORM_data4;
-        CLIWrite( cli, sect, buf, 1 );
-        CLISeek( cli, DW_DEBUG_LOC, loc->x.ref, DW_SEEK_SET );
-        CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-        CLISeek( cli, DW_DEBUG_LOC, 0, DW_SEEK_END );
-        return( 1 + sizeof( debug_ref ) );
+        {
+            static const uint_8 buf[] = { DW_FORM_data4 };
+            CLIWrite( cli, sect, buf, sizeof( buf ) );
+            CLISeek( cli, DW_DEBUG_LOC, loc->x.ref, DW_SEEK_SET );
+            CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
+            CLISeek( cli, DW_DEBUG_LOC, 0, DW_SEEK_END );
+            return( 1 + sizeof( debug_ref ) );
+        }
     case LOC_EXPR:
-        buf[0] = DW_FORM_block2;
-        CLIWrite( cli, sect, buf, 1 );
-        return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
+        {
+            static const uint_8 buf[] = { DW_FORM_block2 };
+            CLIWrite( cli, sect, buf, sizeof( buf ) );
+            return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
+        }
     }
     return( 0 );
 }
 
 uint_32 EmitLocNull( dw_client cli, uint sect )
 {
-    static char const zero[2] = {DW_FORM_block1, 0};
+    static char const loc_null[] = {DW_FORM_block1, 0};
 
-    CLIWrite( cli, sect, zero, sizeof( zero ) );
-    return( sizeof( zero ) );
+    CLIWrite( cli, sect, loc_null, sizeof( loc_null ) );
+    return( sizeof( loc_null ) );
 }
 
 void InitDebugLoc( dw_client cli )
