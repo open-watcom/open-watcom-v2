@@ -36,7 +36,7 @@
 /* this is used to represent a chain of relocations */
 typedef struct reloc_chain {
     struct reloc_chain  *next;
-    debug_ref           offset;         /* CLISeek() offset */
+    dw_sect_offs        offset;         /* CLISeek() offset */
     dw_sectnum          section;        /* section to seek in */
 } reloc_chain;
 
@@ -60,7 +60,7 @@ enum {
 typedef struct {
     struct {
         union {
-            debug_ref       offset;
+            dw_sect_offs    offset;
             reloc_chain     *chain;
         } u;
     } reloc;

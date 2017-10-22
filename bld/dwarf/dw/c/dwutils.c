@@ -78,8 +78,8 @@ uint_8 *ULEB128(
 void    SectionSizePatch( dw_client cli, dw_sectnum sect )
 /* backpatch the section length */
 {
-    debug_ref   size;
-    char        buf[sizeof( size )];
+    dw_sect_offs    size;
+    char            buf[sizeof( size )];
 
     size = CLITell( cli, sect ) - cli->section_base[sect] - sizeof( size );
     WriteRef( buf, size );

@@ -59,7 +59,7 @@ void            InfoLEB128( dw_client, dw_sconst );
 void            InfoULEB128( dw_client, dw_uconst );
 void            InfoBytes( dw_client, const void *, size_t );
 void            InfoString( dw_client, const char * );
-debug_ref       InfoSkip( dw_client, long );
-void            InfoPatch( dw_client, debug_ref, const void *, size_t );
+dw_sect_offs    InfoSkip( dw_client, dw_sect_offs );
+void            InfoPatch( dw_client, dw_sect_offs, const void *, size_t );
 
 #endif

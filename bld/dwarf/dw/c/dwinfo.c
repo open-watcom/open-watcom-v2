@@ -102,27 +102,26 @@ void InfoString( dw_client cli, const char *str )
 }
 
 
-debug_ref InfoSkip( dw_client cli, long amt )
+dw_sect_offs InfoSkip( dw_client cli, dw_sect_offs skip )
 {
-    debug_ref       ret;
+    dw_sect_offs    offset;
 
-    ret = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    CLISeek( cli, DW_DEBUG_INFO, amt, DW_SEEK_CUR );
-    return( ret );
+    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    CLISeek( cli, DW_DEBUG_INFO, skip, DW_SEEK_CUR );
+    return( offset );
 }
 
 
-void InfoPatch( dw_client cli, debug_ref offs, const void *value, size_t len )
+void InfoPatch( dw_client cli, dw_sect_offs offset, const void *buff, size_t len )
 {
-    CLISeek( cli, DW_DEBUG_INFO, offs + cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_INFO, value, len );
+    CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO] + offset, DW_SEEK_SET );
+    CLIWrite( cli, DW_DEBUG_INFO, buff, len );
     CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
 }
 
 
 void InitDebugInfo( dw_client cli )
 {
-
     /* leave room for the length field */
     CLISeek( cli, DW_DEBUG_INFO, sizeof( uint_32 ), DW_SEEK_CUR );
     Info16( cli, 2 );   /* dwarf version */

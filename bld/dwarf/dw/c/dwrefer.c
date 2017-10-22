@@ -44,9 +44,9 @@
 */
 
 struct delayed_ref {
-    struct delayed_ref          *next;
-    debug_ref                   offset;
-    uint                        scope;
+    struct delayed_ref      *next;
+    dw_sect_offs            offset;
+    uint                    scope;
 };
 
 
@@ -60,7 +60,7 @@ static void emitDelayed( dw_client cli )
     for( cur = ReverseChain( cli->references.delayed ); cur != NULL; cur = CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
         WriteRef( buf + 1, cur->offset );
-        CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( debug_ref ) );
+        CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( dw_sect_offs ) );
     }
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {

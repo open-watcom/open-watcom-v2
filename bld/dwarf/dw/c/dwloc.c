@@ -96,12 +96,12 @@ struct dw_loc_handle {
             uint_16             num_syms;
             char                expr[1];
         }                       expr;
-        debug_ref               ref;
+        dw_out_offset           ref;
         list_entry              *list;
 
-    } x;  // possible variable size so nothing can follow this
+    } u;  // possible variable size so nothing can follow this
 };
-#define BASE_HANDLE_SIZE        offsetof( struct dw_loc_handle, x )
+#define BASE_HANDLE_SIZE        offsetof( struct dw_loc_handle, u )
 
 
 struct dw_list_id {
@@ -420,12 +420,12 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
     result->next = cli->debug_loc.handles;
     cli->debug_loc.handles = result;
     result->is_expr = LOC_EXPR;
-    result->x.expr.size = loc->addr;
-    result->x.expr.num_syms = loc->num_syms;
+    result->u.expr.size = loc->addr;
+    result->u.expr.num_syms = loc->num_syms;
 
     addr = 0;
     cur_op = loc->first;
-    base_of_block = result->x.expr.expr;
+    base_of_block = result->u.expr.expr;
     p = base_of_block + sizeof( uint_16 );
     while( cur_op ) {
         *p++ = cur_op->op_code;
@@ -490,13 +490,13 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
     return( result );
 }
 
-void EmitLocExprNull( dw_client cli, uint sect, size_t size )
+void EmitLocExprNull( dw_client cli, dw_sectnum sect, size_t size )
 {
     _Assert( size == 1 || size == 2 || size == 4 );
     SectionWriteZeros( cli, sect, size );
 }
 
-uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
+uint_32 EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle loc )
 {
     union {
         char     buf[sizeof( uint_32 )];
@@ -514,7 +514,7 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
     /* ensure that this is really an expression */
     _Assert( loc->is_expr == LOC_EXPR );
     _Assert( size == 1 || size == 2 || size == 4 );
-    expr_size = loc->x.expr.size;
+    expr_size = loc->u.expr.size;
     switch( size ) {
     case 1: // block_8
         _Assert( expr_size <= 0xff );
@@ -529,9 +529,9 @@ uint_32 EmitLocExpr( dw_client cli, uint sect, size_t size, dw_loc_handle loc )
         break;
     }
     CLIWrite( cli, sect, len_form.buf, size );
-    syms_left = loc->x.expr.num_syms;
+    syms_left = loc->u.expr.num_syms;
     bytes_left = expr_size;
-    p = loc->x.expr.expr;
+    p = loc->u.expr.expr;
     while( bytes_left ) {
         size_of_block = *(uint_16 *)p;
         p += sizeof( uint_16 );
@@ -562,7 +562,7 @@ dw_list_id DWENTRY DWListInit( dw_client cli )
     id->hdl.next = cli->debug_loc.handles;
     cli->debug_loc.handles = (dw_loc_handle)id;
     id->hdl.is_expr = LOC_LIST;
-    id->hdl.x.list = NULL;
+    id->hdl.u.list = NULL;
     return( id );
 }
 
@@ -572,8 +572,8 @@ void DWENTRY DWListEntry( dw_client cli, dw_list_id id, dw_sym_handle begin, dw_
     list_entry *                new;
 
     new = CLIAlloc( cli, sizeof( struct list_entry ) );
-    new->next = id->hdl.x.list;
-    id->hdl.x.list = new;
+    new->next = id->hdl.u.list;
+    id->hdl.u.list = new;
     new->begin = begin;
     new->end = end;
     new->loc = loc;
@@ -582,7 +582,7 @@ void DWENTRY DWListEntry( dw_client cli, dw_list_id id, dw_sym_handle begin, dw_
 void DWENTRY DWListEntryOut( dw_client cli, dw_list_id id, dw_sym_handle begin, dw_sym_handle end, dw_loc_handle loc )
 {
     if( id->hdl.is_expr == LOC_LIST ) {
-        id->hdl.x.ref = CLITell( cli, DW_DEBUG_LOC );
+        id->hdl.u.ref = CLITell( cli, DW_DEBUG_LOC );
         id->hdl.is_expr = LOC_LIST_REF;
     }
     CLIReloc4( cli, DW_DEBUG_LOC, DW_W_LOC_RANGE, begin, end );
@@ -594,7 +594,7 @@ dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
     if( id->hdl.is_expr == LOC_LIST_REF ) {
         SectionWriteZeros( cli, DW_DEBUG_LOC, 2 * sizeof( dw_targ_addr ) );
     } else {
-        id->hdl.x.list = ReverseChain( id->hdl.x.list );
+        id->hdl.u.list = ReverseChain( id->hdl.u.list );
     }
     return( (dw_loc_handle)id );
 }
@@ -603,7 +603,7 @@ dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
 static void trash( dw_client cli, dw_loc_handle loc )
 {
     if( loc->is_expr == LOC_LIST ) {
-        FreeChain( cli, loc->x.list );
+        FreeChain( cli, loc->u.list );
     }
     CLIFree( cli, loc );
 }
@@ -622,7 +622,7 @@ void DWENTRY DWLocTrash( dw_client cli, dw_loc_handle loc )
 }
 
 
-uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
+uint_32 EmitLocList( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
 {
     list_entry          *cur;
     uint_32             bytes_written;
@@ -631,7 +631,7 @@ uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
     _Assert( loc->is_expr == LOC_LIST );
 
     bytes_written = 0;
-    for( cur = loc->x.list; cur != NULL; cur = cur->next ) {
+    for( cur = loc->u.list; cur != NULL; cur = cur->next ) {
         bytes_written += 2 * sizeof( dw_targ_addr );
         CLIReloc4( cli, sect, DW_W_LOC_RANGE, cur->begin, cur->end );
         bytes_written += EmitLocExpr( cli, sect, sizeof( uint_16 ), loc );
@@ -641,7 +641,7 @@ uint_32 EmitLocList( dw_client cli, uint sect, dw_loc_handle loc )
 }
 
 
-uint_32 EmitLoc( dw_client cli, uint sect, dw_loc_handle loc )
+uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
 {
     switch( loc->is_expr ) {
     case LOC_LIST:
@@ -650,16 +650,16 @@ uint_32 EmitLoc( dw_client cli, uint sect, dw_loc_handle loc )
             CLIWrite( cli, sect, buf, sizeof( buf ) );
             CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
             EmitLocList( cli, DW_DEBUG_LOC, loc );
-            return( 1 + sizeof( debug_ref ) );
+            return( 1 + sizeof( dw_sect_offs ) );
         }
     case LOC_LIST_REF:
         {
             static const uint_8 buf[] = { DW_FORM_data4 };
             CLIWrite( cli, sect, buf, sizeof( buf ) );
-            CLISeek( cli, DW_DEBUG_LOC, loc->x.ref, DW_SEEK_SET );
+            CLISeek( cli, DW_DEBUG_LOC, loc->u.ref, DW_SEEK_SET );
             CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
             CLISeek( cli, DW_DEBUG_LOC, 0, DW_SEEK_END );
-            return( 1 + sizeof( debug_ref ) );
+            return( 1 + sizeof( dw_sect_offs ) );
         }
     case LOC_EXPR:
         {
@@ -671,7 +671,7 @@ uint_32 EmitLoc( dw_client cli, uint sect, dw_loc_handle loc )
     return( 0 );
 }
 
-uint_32 EmitLocNull( dw_client cli, uint sect )
+uint_32 EmitLocNull( dw_client cli, dw_sectnum sect )
 {
     static char const loc_null[] = {DW_FORM_block1, 0};
 

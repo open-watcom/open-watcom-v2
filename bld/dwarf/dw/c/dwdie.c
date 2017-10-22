@@ -70,8 +70,8 @@ void StartChildren( dw_client cli )
 
 static void doTheSiblingThing( dw_client cli )
 {
-    debug_ref       sibling;
-    char            buf[sizeof( debug_ref )];
+    dw_sect_offs    sibling;
+    char            buf[sizeof( sibling )];
 
     sibling = cli->die.tree->sibling;
     if( sibling == 0 )
@@ -114,7 +114,7 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
     /* AT_sibling reference */
     if( haskids ) {
-        cli->die.tree->sibling = InfoSkip( cli, sizeof( debug_ref ) );
+        cli->die.tree->sibling = InfoSkip( cli, sizeof( dw_sect_offs ) );
     } else {
         cli->die.tree->sibling = 0;
     }
