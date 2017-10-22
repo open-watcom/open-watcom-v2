@@ -357,7 +357,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 // Types are not the same
                 // if extensions are enabled, then we can do a compatible struct test
                 if( CompFlags.extensions_enabled ) {
-                    if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK) {
+                    if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
                         if( ptr_indir_level > 0 ) {
                             if( ret_val != PW ) {
                                 ret_val = PM;

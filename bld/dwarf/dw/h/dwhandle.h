@@ -37,7 +37,7 @@
 typedef struct reloc_chain {
     struct reloc_chain  *next;
     debug_ref           offset;         /* CLISeek() offset */
-    uint_8              section;        /* section to seek in */
+    dw_sectnum          section;        /* section to seek in */
 } reloc_chain;
 
 #ifdef _M_I86
@@ -53,13 +53,16 @@ enum {
 #define IS_FUNDAMENTAL( __h )   ( (__h) < DW_FT_MAX )
 #define GET_FUNDAMENTAL( __h )  ( __h )
 
+#define GET_HANDLE_LOCATION(__c)        (((__c)->reloc.u.offset & 1) ? (__c)->reloc.u.offset >> 1 : 0)
+#define SET_HANDLE_LOCATION(__c,__o)    (__c)->reloc.u.offset = (1 | (__o << 1))
+#define IS_FORWARD_LOCATION(__c)        (((__c)->reloc.u.offset & 1) == 0)
 
-#define RELOC_OFFSET            0x1
-#define RELOC_OFFSET_SHIFT      1
 typedef struct {
-    union {
-        debug_ref       offset;
-        reloc_chain *   chain;
+    struct {
+        union {
+            debug_ref       offset;
+            reloc_chain     *chain;
+        } u;
     } reloc;
 } handle_common;
 
