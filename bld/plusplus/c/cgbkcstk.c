@@ -143,8 +143,6 @@ void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     CALL_STK* cstk;             // - top of call stack
     SYMBOL virt_fun;            // - dummy symbol for virtual call
 
-    /* unused parameters */ (void)vfunc;
-
     if( is_virtual ) {
         virt_fun = ind_call_stack;
         virt_fun->id = SC_VIRTUAL_FUNCTION;
