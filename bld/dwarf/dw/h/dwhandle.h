@@ -36,7 +36,7 @@
 /* this is used to represent a chain of relocations */
 typedef struct reloc_chain {
     struct reloc_chain  *next;
-    dw_sect_offs        offset;         /* CLISeek() offset */
+    dw_out_offset       offset;         /* CLISeek() offset */
     dw_sectnum          section;        /* section to seek in */
 } reloc_chain;
 

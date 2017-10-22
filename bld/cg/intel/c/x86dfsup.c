@@ -210,7 +210,7 @@ extern  void   DFOutRegInd( dw_loc_id locid, name *reg )
     dw_regs     regnum;
 
     regnum = DFRegMap(  reg->r.reg );
-    DWLocOp( Client,locid,DW_LOC_breg, regnum, 0 );
+    DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
 extern uint DFStkReg( void )

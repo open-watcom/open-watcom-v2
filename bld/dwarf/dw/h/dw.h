@@ -36,6 +36,9 @@
 #include "watcom.h"
 #include "dwcnf.h"
 
+
+#define GET_SEGMENT_SIZE(c)     (((c)->segment_size == 0) ? 2 : (c)->segment_size)
+
 /*
     Types
 */
@@ -63,10 +66,10 @@ typedef struct dw_loc_handle    *dw_loc_handle;
 typedef uint_32                 dw_handle;
 typedef uint_16                 dw_defseg; // default size of a seg
 
-#define GET_SEGMENT_SIZE(c)     (((c)->segment_size == 0) ? 2 : (c)->segment_size)
-
 /* output data offset */
 typedef uint_32                 dw_out_offset;
+
+typedef uint_32                 dw_sect_offs;
 
 /*
     Constants
@@ -165,13 +168,13 @@ enum {
 
 
 /* operation codes for location expressions */
-enum {
-#define DW_LOC_OP( __n, __v )   DW_LOC_##__n,
-#include "dwlocop.h"
-#undef DW_LOC_OP
+typedef enum {
+    #define DW_LOC_OP( __n, __v )   DW_LOC_##__n,
+    #include "dwlocop.h"
+    #undef DW_LOC_OP
     DW_LOC_breg,
     DW_LOC_max
-};
+} dw_loc_op;
 
 
 /* the debugging sections */
@@ -204,7 +207,7 @@ typedef enum {
     DW_W_LOC_RANGE,
     DW_W_EXT_REF,
     DW_W_MAX
-} dw_relocs;
+} dw_reloc_type;
 
 
 /* seek methods for CLISeek */
@@ -214,10 +217,17 @@ enum {
     DW_SEEK_END
 };
 
+/* structure types */
+typedef enum {                  // Kind of Structure
+    DW_ST_NONE,
+    DW_ST_CLASS,
+    DW_ST_STRUCT,
+    DW_ST_UNION,
+} dw_struct_type;
 
 /* the client supplied functions */
 typedef struct {
-    void                (*cli_reloc)( dw_sectnum, dw_relocs, ... );
+    void                (*cli_reloc)( dw_sectnum, dw_reloc_type, ... );
     void                (*cli_write)( dw_sectnum, const void *, size_t );
     void                (*cli_seek)( dw_sectnum, dw_out_offset, int );
     dw_out_offset       (*cli_tell)( dw_sectnum );
@@ -336,17 +346,15 @@ void            DWENTRY DWLocPiece( dw_client, dw_loc_id __loc,
 void            DWENTRY DWLocStatic( dw_client, dw_loc_id __loc,
                             dw_sym_handle __sym );
 void            DWENTRY DWLocSym( dw_client, dw_loc_id,
-                            dw_sym_handle, dw_relocs );
+                            dw_sym_handle, dw_reloc_type );
 void            DWENTRY DWLocSegment( dw_client, dw_loc_id __loc,
                             dw_sym_handle __sym );
 void            DWENTRY DWLocConstU( dw_client, dw_loc_id __loc,
                             dw_uconst __constant_value );
 void            DWENTRY DWLocConstS( dw_client, dw_loc_id __loc,
                             dw_sconst __constant_value );
-void            DWENTRY DWLocOp0( dw_client, dw_loc_id __loc,
-                            uint __op );
-void            DWENTRY DWLocOp( dw_client, dw_loc_id __loc,
-                            uint __op, ... );
+void            DWENTRY DWLocOp0( dw_client, dw_loc_id __loc, dw_loc_op __op );
+void            DWENTRY DWLocOp( dw_client, dw_loc_id __loc, dw_loc_op __op, ... );
 dw_loc_handle   DWENTRY DWLocFini( dw_client, dw_loc_id __loc );
 
 /* Location Lists */
@@ -362,8 +370,9 @@ void            DWENTRY DWListEntryOut(
                       dw_loc_handle               loc );
 dw_loc_handle   DWENTRY DWListFini( dw_client, dw_list_id __list );
 void            DWENTRY DWLocTrash( dw_client, dw_loc_handle __loc );
+
 /* debug info handle refs */
-dw_handle DWENTRY DWHandle( dw_client cli, uint kind );
+dw_handle DWENTRY DWHandle( dw_client cli, dw_struct_type kind );
 void DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl );
 
 /* typing information */
@@ -410,15 +419,7 @@ void            DWENTRY DWArrayDimension( dw_client, const dw_dim_info *__info);
 void            DWENTRY DWArrayVarDim( dw_client, const dw_vardim_info * );
 void            DWENTRY DWEndArray( dw_client );
 
-/* structure types */
-typedef enum {                  // Kind of Structure
-    DW_ST_NONE,
-    DW_ST_CLASS,
-    DW_ST_STRUCT,
-    DW_ST_UNION,
-} dw_st;
-
-dw_handle       DWENTRY DWStruct( dw_client, uint __kind );
+dw_handle       DWENTRY DWStruct( dw_client, dw_struct_type __kind );
 void            DWENTRY DWBeginStruct( dw_client, dw_handle __struct_hdl,
                             dw_size_t __size, char const *__name,
                             dw_addr_offset __scope, uint __flags );
@@ -537,10 +538,9 @@ void            DWENTRY DWEndNameList( dw_client cli );
 void            DWENTRY DWAddress( dw_client, uint_32 );
 
 /* public names */
-void            DWENTRY DWPubname( dw_client, dw_handle __hdl,
-                            char const *__name );
+void            DWENTRY DWPubname( dw_client, dw_handle __hdl, char const *__name );
 /* util used for PCH */
-uint_32         DWENTRY DWDebugRefOffset( dw_client cli, dw_handle hdl );
+dw_sect_offs    DWENTRY DWGetHandleLocation( dw_client cli, dw_handle hdl );
 dw_handle       DWENTRY DWRefPCH( dw_client cli, uint_32 ref );
 
 #endif

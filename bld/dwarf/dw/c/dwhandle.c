@@ -31,7 +31,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "dwpriv.h"
 #include "dwmem.h"
 #include "dwcarve.h"
@@ -49,13 +49,12 @@ typedef struct handle_blk   handle_blk;
 
 struct handle_blk {
     handle_common       data[BLOCK_SIZE];
-    dw_index_t          index;  /* data[0] is the (index*BLOCK_SIZE)th elt */
+    dw_index_t          index;  /* data[0] is the (index * BLOCK_SIZE)th elt */
     uint_16             height; /* height of this node */
-    handle_blk *        next[1];
+    handle_blk          *next[1];
 };
 
 #ifndef NDEBUG
-#include <stdio.h>
 
 static struct {
     unsigned    dump_handle : 1;
@@ -108,8 +107,8 @@ void InitHandles( dw_client cli )
 
 void FiniHandles( dw_client cli )
 {
-    handle_blk *                cur;
-    handle_blk *                next;
+    handle_blk      *cur;
+    handle_blk      *next;
 
     _Assert(  cli->handles.forward == 0 );
     for( cur = cli->handles.block_head[0]; cur != NULL; cur = next ) {
@@ -123,9 +122,9 @@ void FiniHandles( dw_client cli )
 
 static handle_blk *newBlock( dw_client cli )
 {
-    handle_blk *                new;
-    uint                        height;
-    uint                        i;
+    handle_blk      *new;
+    uint            height;
+    uint            i;
 
     /*
         FIXME: we use the power of two distribution... should we use a
@@ -155,12 +154,12 @@ static handle_blk *newBlock( dw_client cli )
 
 dw_handle NewHandle( dw_client cli )
 {
-    uint_32                     elm_num;
-    dw_handle                   h;
+    uint_32         elm_num;
+    dw_handle       h;
 
     elm_num = cli->handles.num_handles;
-    if( elm_num % BLOCK_SIZE == 0 ) { /* time to allocate a new block */
-        if( elm_num >= BLOCK_SIZE * ( 1ul << 8 * sizeof( dw_index_t ) ) ) {
+    if( ( elm_num % BLOCK_SIZE ) == 0 ) { /* time to allocate a new block */
+        if( elm_num >= BLOCK_SIZE * ( 1UL << ( 8 * sizeof( dw_index_t ) ) ) ) {
             _Abort( ABORT_TOO_MANY_HANDLES );
         }
         newBlock( cli );
@@ -175,9 +174,9 @@ dw_handle NewHandle( dw_client cli )
 
 static handle_blk *getIndex( dw_client cli, dw_index_t index )
 {
-    int                         i;
-    handle_blk *                blk;
-    handle_blk **               left_edge;
+    int             i;
+    handle_blk      *blk;
+    handle_blk      **left_edge;
 
     _Assert( index * BLOCK_SIZE <= cli->handles.num_handles );
     _Assert( cli->handles.max_height > 0 );
@@ -187,8 +186,8 @@ static handle_blk *getIndex( dw_client cli, dw_index_t index )
     */
     left_edge = &cli->handles.block_head[0];
     i = cli->handles.max_height - 1;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             blk = left_edge[i];
             if( blk->index == index )
                 return( blk );
@@ -207,15 +206,15 @@ handle_common *GetCommon( dw_client cli, dw_handle hdl )
 {
     uint_32                     elm_num;
 
-    elm_num = ( hdl & HANDLE_MASK ) - FIRST_HANDLE;
+    elm_num = (hdl & HANDLE_MASK) - FIRST_HANDLE;
     _Assert( elm_num < cli->handles.num_handles );
-    return( getIndex( cli, elm_num/BLOCK_SIZE )->data + elm_num%BLOCK_SIZE );
+    return( getIndex( cli, elm_num / BLOCK_SIZE )->data + ( elm_num % BLOCK_SIZE ) );
 }
 
 
 handle_extra *CreateExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra *              new;
+    handle_extra    *new;
 
     new = CarveAlloc( cli, cli->handles.extra_carver );
     new->base.handle = hdl;
@@ -227,8 +226,8 @@ handle_extra *CreateExtra( dw_client cli, dw_handle hdl )
 
 void DestroyExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra **             walk;
-    handle_extra *              delete;
+    handle_extra    **walk;
+    handle_extra    *delete;
 
     for( walk = &cli->handles.extra_list; *walk != NULL; walk = &(*walk)->base.next ) {
         if( (*walk)->base.handle == hdl ) {
@@ -243,7 +242,7 @@ void DestroyExtra( dw_client cli, dw_handle hdl )
 
 handle_extra *GetExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra *              walk;
+    handle_extra    *walk;
 
     for( walk = cli->handles.extra_list; walk != NULL; walk = walk->base.next ) {
         if( walk->base.handle == hdl ) {
@@ -256,16 +255,16 @@ handle_extra *GetExtra( dw_client cli, dw_handle hdl )
 
 void HandleReference( dw_client cli, dw_handle hdl, dw_sectnum sect )
 {
-    if( ( cli->compiler_options & DW_CM_BROWSER) && sect == DW_DEBUG_INFO ) {
+    if( (cli->compiler_options & DW_CM_BROWSER) && sect == DW_DEBUG_INFO ) {
         DWReference( cli, cli->decl.line, cli->decl.column, hdl );
     }
     HandleWriteOffset( cli, hdl, sect );
 }
 
 void HandleWriteOffset( dw_client cli, dw_handle hdl, dw_sectnum sect )
-{
 // always do a write so I know if the
 // handle got updated
+{
     handle_common   *c;
     reloc_chain     *chain;
     dw_sect_offs    offset;
@@ -273,6 +272,7 @@ void HandleWriteOffset( dw_client cli, dw_handle hdl, dw_sectnum sect )
     c = GetCommon( cli, hdl );
     offset = GET_HANDLE_LOCATION( c );
     if( IS_FORWARD_LOCATION( c ) ) {
+        /* add forward reference */
         chain = CarveAlloc( cli, cli->handles.chain_carver );
         chain->section = sect;
         chain->offset = CLITell( cli, sect );
@@ -298,8 +298,10 @@ void SetHandleLocation( dw_client cli, dw_handle hdl )
     offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
     WriteRef( &offset, offset );
     SET_HANDLE_LOCATION( c, offset );
+    /* if forward references exist, update them */
     if( cur != NULL ) {
         memset( used, 0, sizeof( used ) );
+        /* update forward references */
         for( ; cur != NULL; cur = CarveFreeLink( cli->handles.chain_carver, cur ) ) {
             used[cur->section] = 1;
             CLISeek( cli, cur->section, cur->offset, DW_SEEK_SET );
@@ -313,9 +315,9 @@ void SetHandleLocation( dw_client cli, dw_handle hdl )
     }
 }
 
-uint_32 DWDebugRefOffset( dw_client cli, dw_handle hdl )
+dw_sect_offs DWGetHandleLocation( dw_client cli, dw_handle hdl )
 {
-    handle_common *             c;
+    handle_common   *c;
 
     c = GetCommon( cli, hdl );
     return( GET_HANDLE_LOCATION( c ) );

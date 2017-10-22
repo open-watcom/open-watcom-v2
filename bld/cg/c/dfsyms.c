@@ -155,16 +155,16 @@ static void DoSegLblReloc( back_handle bck )
     BackPtrBase( bck, id );
 }
 
-static void DoSectOffset( dw_sectnum section )
-/********************************************/
+static void DoSectOffset( dw_sectnum sect )
+/*****************************************/
 {
     back_handle bck;
     long        pos;
     segment_id  id;
 
-    pos = CLITell( section );
-    bck = DwarfSegs[section].bck;
-    id = DwarfSegs[section].seg;
+    pos = CLITell( sect );
+    bck = DwarfSegs[sect].bck;
+    id = DwarfSegs[sect].seg;
     BackPtrBigOffset( bck, id, pos );
 
 }
@@ -181,8 +181,8 @@ typedef struct {
     int_32       disp;
 }loc_range;
 
-static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
-/****************************************************************/
+static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
+/********************************************************************/
 {
     static uint_32 const    zero  = 0;
     sect_info               *curr;
@@ -190,7 +190,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
     dw_sym_handle           bck;
     loc_range               *low;
     loc_range               *high;
-    dw_sectnum              section;
+    dw_sectnum              sect_no;
     va_list                 args;
     segment_id              old;
 //    long_offset             off;
@@ -252,8 +252,8 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         DataBytes( sizeof( zero ), &zero );
         break;
     case DW_W_SECTION_POS:
-        section = va_arg( args, uint );
-        DoSectOffset( section );
+        sect_no = va_arg( args, dw_sectnum );
+        DoSectOffset( sect_no );
         break;
     case DW_W_EXT_REF:
       {
@@ -1119,8 +1119,8 @@ void    DFRtnEnd( dbg_rtn *rtn, offset lc )
     DWEndSubroutine( Client );
 }
 
-void    DFSetSection( dw_sectnum  sect, back_handle bck, segment_id seg )
-/***********************************************************************/
+void    DFSetSection( dw_sectnum sect, back_handle bck, segment_id seg )
+/**********************************************************************/
 {
     DwarfSegs[sect].seg = seg;
     DwarfSegs[sect].bck = bck;

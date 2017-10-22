@@ -39,7 +39,6 @@
 #include "dwassert.h"
 #include "dwarf.h"
 
-typedef uint_32                 dw_sect_offs;
 #define WriteRef                WriteU32
 
 #include "dwabort.h"

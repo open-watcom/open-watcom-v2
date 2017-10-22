@@ -238,45 +238,45 @@ static int createBrowseFile( FILE *browseFile )
 }
 //---------------------------------------------------------------------------
 
-static void dw_write( dw_sectnum section, const void *block, size_t len )
-/***********************************************************************/
+static void dw_write( dw_sectnum sect, const void *block, size_t len )
+/********************************************************************/
 {
 #ifdef __DD__
     //int i;
-    printf( "\nDW_WRITE(%d:%lu): offset: %lu len: %u ", section,
-        (unsigned long)dw_sections[section].length,
-        (unsigned long)dw_sections[section].offset,
+    printf( "\nDW_WRITE(%d:%lu): offset: %lu len: %u ", sect,
+        (unsigned long)dw_sections[sect].length,
+        (unsigned long)dw_sections[sect].offset,
         (unsigned)len );
     //for( i = 0 ; i < len; i++ ) {
     //    printf( "%02x ", (int)((char *)block)[i] );
     //}
 #endif
-    dw_sections[section].offset += len;
-    if( dw_sections[section].length < dw_sections[section].offset ) {
-        dw_sections[section].length = dw_sections[section].offset;
+    dw_sections[sect].offset += len;
+    if( dw_sections[sect].length < dw_sections[sect].offset ) {
+        dw_sections[sect].length = dw_sections[sect].offset;
     }
-    DwioWrite( dw_sections[section].file, (void *)block, len );
+    DwioWrite( dw_sections[sect].file, (void *)block, len );
 }
 
-static dw_out_offset dw_tell( dw_sectnum section )
-/************************************************/
+static dw_out_offset dw_tell( dw_sectnum sect )
+/*********************************************/
 {
 #ifdef __DD__
-    printf( "DW_TELL (%d:%lu): %lu\n", section,
-        (unsigned long)dw_sections[section].length,
-        (unsigned long)dw_sections[section].offset );
+    printf( "DW_TELL (%d:%lu): %lu\n", sect,
+        (unsigned long)dw_sections[sect].length,
+        (unsigned long)dw_sections[sect].offset );
 #endif
-    return( dw_sections[section].offset );
+    return( dw_sections[sect].offset );
 }
 
-static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
-/*******************************************************************/
+static void dw_reloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
+/********************************************************************/
 {
     va_list         args;
     dw_targ_addr    targ_data;
     dw_targ_seg     seg_data;
     uint_32         u32_data;
-    dw_sectnum      sect;
+    dw_sectnum      sect_no;
     SYMBOL          sym;
 
     va_start( args, reloc_type );
@@ -286,37 +286,37 @@ static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
     case DW_W_ARANGE_ADDR:
     case DW_W_LOW_PC:
         u32_data = 0;   // NOTE: assumes little-endian byte order
-        dw_write( section, &u32_data, TARGET_NEAR_POINTER );
+        dw_write( sect, &u32_data, TARGET_NEAR_POINTER );
         break;
     case DW_W_HIGH_PC:
         u32_data = 1;   // NOTE: assumes little-endian byte order
-        dw_write( section, &u32_data, TARGET_NEAR_POINTER );
+        dw_write( sect, &u32_data, TARGET_NEAR_POINTER );
         break;
     case DW_W_UNIT_SIZE:
         u32_data = 1;
-        dw_write( section, &u32_data, sizeof( u32_data ) );
+        dw_write( sect, &u32_data, sizeof( u32_data ) );
         break;
     case DW_W_STATIC:
         sym = va_arg( args, SYMBOL );
         targ_data = 0;
-        dw_write( section, &targ_data, sizeof( targ_data ) );
+        dw_write( sect, &targ_data, sizeof( targ_data ) );
         break;
     case DW_W_SEGMENT:
         sym = va_arg( args, SYMBOL );
         seg_data = CgSegId( sym );
-        dw_write( section, &seg_data, sizeof( seg_data ) );
+        dw_write( sect, &seg_data, sizeof( seg_data ) );
         break;
     case DW_W_SECTION_POS:
-        sect = va_arg( args, uint );
-        u32_data = dw_tell( sect );
-        dw_write( section, &u32_data, sizeof( u32_data ) );
+        sect_no = va_arg( args, dw_sectnum );
+        u32_data = dw_tell( sect_no );
+        dw_write( sect, &u32_data, sizeof( u32_data ) );
         break;
     }
     va_end( args );
 }
 
-static void dw_seek( dw_sectnum section, dw_out_offset offset, int mode )
-/***********************************************************************/
+static void dw_seek( dw_sectnum sect, dw_out_offset offset, int mode )
+/********************************************************************/
 {
     dw_out_offset   new_offset;
 
@@ -325,22 +325,22 @@ static void dw_seek( dw_sectnum section, dw_out_offset offset, int mode )
     case DW_SEEK_SET:
         break;
     case DW_SEEK_CUR:
-        new_offset = dw_sections[section].offset + offset;
+        new_offset = dw_sections[sect].offset + offset;
         break;
     case DW_SEEK_END:
-        new_offset = dw_sections[section].length - offset;
+        new_offset = dw_sections[sect].length - offset;
         break;
     }
 #ifdef __DD__
-    printf( "DW_SEEK (%d:%lu): offset: %lu\n", section,
-        (unsigned long)dw_sections[section].length,
+    printf( "DW_SEEK (%d:%lu): offset: %lu\n", sect,
+        (unsigned long)dw_sections[sect].length,
         (unsigned long)new_offset );
 #endif
-    if( dw_sections[section].offset != new_offset ) {
-        DwioSeek( dw_sections[section].file, new_offset );
-        dw_sections[section].offset = new_offset;
-        if( dw_sections[section].length < dw_sections[section].offset ) {
-            dw_sections[section].length = dw_sections[section].offset;
+    if( dw_sections[sect].offset != new_offset ) {
+        DwioSeek( dw_sections[sect].file, new_offset );
+        dw_sections[sect].offset = new_offset;
+        if( dw_sections[sect].length < dw_sections[sect].offset ) {
+            dw_sections[sect].length = dw_sections[sect].offset;
         }
     }
 }
@@ -365,7 +365,7 @@ dw_client DwarfInit( void )
     char            dir[_MAX_PATH2];
     char            fname[_MAX_PATH];
     char            *full_fname;
-    dw_sectnum      i;
+    dw_sectnum      sect;
     char            *incbuf = NULL;
     char            *inccurr;
     size_t          incsize;
@@ -373,10 +373,10 @@ dw_client DwarfInit( void )
     DWSetRtns( dw_cli_funcs, dw_reloc, dw_write, dw_seek, dw_tell, dw_alloc, dw_free );
 
     DwioInit();
-    for( i = 0 ; i < DW_DEBUG_MAX ; i++ ) {
-        dw_sections[i].file = DwioCreateFile();
-        dw_sections[i].offset = 0;
-        dw_sections[i].length = 0;
+    for( sect = 0 ; sect < DW_DEBUG_MAX ; sect++ ) {
+        dw_sections[sect].file = DwioCreateFile();
+        dw_sections[sect].offset = 0;
+        dw_sections[sect].length = 0;
     }
     HFileListStart();
     incsize = HFileListSize();
@@ -423,7 +423,7 @@ dw_client DwarfInit( void )
 void DwarfFini( dw_client client )
 /********************************/
 {
-    dw_sectnum  i;
+    dw_sectnum  sect;
     int         status;
     char        *out_fname;
     FILE        *out_file;
@@ -435,8 +435,8 @@ void DwarfFini( dw_client client )
     DWFini( client );
 
     // close after writing
-    for( i = 0 ; i < DW_DEBUG_MAX ; i++ ) {
-        DwioCloseOutputFile( dw_sections[i].file );
+    for( sect = 0 ; sect < DW_DEBUG_MAX ; sect++ ) {
+        DwioCloseOutputFile( dw_sections[sect].file );
     }
 
     out_fname = IoSuppOutFileName( OFT_MBR );
@@ -461,8 +461,8 @@ void DwarfFini( dw_client client )
     }
 
     // delete
-    for( i = 0 ; i < DW_DEBUG_MAX ; i++ ) {
-        DwioFreeFile( dw_sections[i].file );
+    for( sect = 0 ; sect < DW_DEBUG_MAX ; sect++ ) {
+        DwioFreeFile( dw_sections[sect].file );
     }
     DwioFini();
 }

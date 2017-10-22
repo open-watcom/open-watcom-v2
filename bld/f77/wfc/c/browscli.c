@@ -178,7 +178,7 @@ static Elf32_Shdr section_header_template = {
 static void mywrite( file_handle fp, const void *data, size_t len, const char *filename )
 /***************************************************************************************/
 {
-    char        err_msg[ERR_BUFF_SIZE+1];
+    char            err_msg[ERR_BUFF_SIZE+1];
 
     SDWrite( fp, data, len );
     if( SDError( fp, err_msg ) ) {
@@ -280,7 +280,7 @@ static int createBrowseFile( file_handle browseFile, const char *filename )
 
 static void _SDWrite( file_handle fp, const void *buffer, size_t size )
 {
-    unsigned    amount;
+    unsigned        amount;
 
     amount = INT_MAX;
     while( size > 0 ) {
@@ -296,7 +296,7 @@ static void _SDWrite( file_handle fp, const void *buffer, size_t size )
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
 {
-    char        *temp;
+    char            *temp;
 
     if( dw_sections[sect].sec_type == DEFAULT_SECTION ) {
         if( ( initial_section_type == DEFAULT_SECTION ) || ( initial_section_type == FILE_SECTION ) ) {
@@ -339,12 +339,13 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 }
 
 
-static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
-/****************************************************************/
-    static char                 zeros[] = { 0, 0 };
-    dw_sectnum                  section;
-    va_list                     args;
-    unsigned_32                 u32_data;
+static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
+/********************************************************************/
+{
+    static char     zeros[] = { 0, 0 };
+    dw_sectnum      sect_no;
+    va_list         args;
+    unsigned_32     u32_data;
 
     va_start( args, reloc_type );
     switch( reloc_type ) {
@@ -364,8 +365,8 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
         CLIWrite( sect, &u32_data, sizeof( uint_32 ) );
         break;
     case DW_W_SECTION_POS:
-        section = va_arg( args, uint );
-        u32_data = dw_sections[section].offset;
+        sect_no = va_arg( args, dw_sectnum );
+        u32_data = dw_sections[sect_no].offset;
         CLIWrite( sect, &u32_data, sizeof( uint_32 ) );
         break;
     case DW_W_STATIC:
@@ -387,7 +388,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ) {
 static void CLIZeroWrite( dw_sectnum sect, size_t size )
 /******************************************************/
 {
-    char        *btmp;
+    char            *btmp;
 
     btmp = FMemAlloc( size + 1 );
     memset( btmp, 0, size );
@@ -398,8 +399,8 @@ static void CLIZeroWrite( dw_sectnum sect, size_t size )
 static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
 /********************************************************************/
 {
-    size_t              temp;
-    dw_out_offset       new_offset;
+    size_t          temp;
+    dw_out_offset   new_offset;
 
     new_offset = offset;
     switch( type ) {
@@ -449,7 +450,7 @@ static dw_out_offset CLITell( dw_sectnum sect )
 static void *CLIAlloc( size_t size )
 /**********************************/
 {
-    void        *p;
+    void            *p;
 
     p = FMemAlloc( size );
     if( p == NULL && size > 0 ) {
@@ -474,25 +475,25 @@ static void CLILock( void )
 static void CLIRewind( void )
 /***************************/
 {
-    dw_sectnum      x;
+    dw_sectnum      sect;
 
-    for( x = 0; x < DW_DEBUG_MAX; x++ ) {
-        CLISeek( x, 0, DW_SEEK_SET );
+    for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
+        CLISeek( sect, 0, DW_SEEK_SET );
     }
 }
 
 void CLIInit( dw_funcs *cfuncs, sect_typ is_type )
 /************************************************/
 {
-    dw_sectnum  x;
+    dw_sectnum      sect;
 
     DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
     if( cfuncs == NULL )
         return;
     *cfuncs = dw_cli_funcs;
     initial_section_type = is_type;
-    for( x = 0; x < DW_DEBUG_MAX; x++ ) {
-        dw_sections[x].sec_number = x;
+    for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
+        dw_sections[sect].sec_number = sect;
     }
 }
 
@@ -513,18 +514,18 @@ void CLIDump( const char *filename )
 void CLIFini( void )
 /******************/
 {
-    dw_sectnum      x;
+    dw_sectnum      sect;
 
-    for( x = 0; x < DW_DEBUG_MAX; x++ ) {
-        if( ( dw_sections[x].sec_type == FILE_SECTION ) && dw_sections[x].u1.fp != NULL ) {
-            SDClose( dw_sections[x].u1.fp );
-            if( dw_sections[x].u2.filename != NULL ) {
-                SDScratch( dw_sections[x].u2.filename );
-                FMemFree( dw_sections[x].u2.filename );
+    for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
+        if( ( dw_sections[sect].sec_type == FILE_SECTION ) && dw_sections[sect].u1.fp != NULL ) {
+            SDClose( dw_sections[sect].u1.fp );
+            if( dw_sections[sect].u2.filename != NULL ) {
+                SDScratch( dw_sections[sect].u2.filename );
+                FMemFree( dw_sections[sect].u2.filename );
             }
-        } else if( ( dw_sections[x].sec_type == MEM_SECTION ) && dw_sections[x].u2.data != NULL ) {
-            FMemFree( dw_sections[x].u2.data );
+        } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
+            FMemFree( dw_sections[sect].u2.data );
         }
-        memset( &dw_sections[x], 0, sizeof( F77_DW_SECTION ) );
+        memset( &dw_sections[sect], 0, sizeof( F77_DW_SECTION ) );
     }
 }

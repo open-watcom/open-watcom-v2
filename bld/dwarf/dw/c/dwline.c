@@ -123,21 +123,21 @@ void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column
 
     /* set the basic_block register properly */
     if( info & DW_LN_BLK ) {
-        static const uint_8 bufx[] = { DW_LNS_set_basic_block };
-        CLIWrite( cli, DW_DEBUG_LINE, bufx, sizeof( bufx ) );
+        static const uint_8 block_attrs[] = { DW_LNS_set_basic_block };
+        CLIWrite( cli, DW_DEBUG_LINE, block_attrs, sizeof( block_attrs ) );
     }
 
     /* set the is_stmt register properly */
     if( info & DW_LN_STMT ) {
         if( !cli->debug_line.is_stmt ) {
-            static const uint_8 bufx[] = { DW_LNS_negate_stmt };
+            static const uint_8 stmt_attr[] = { DW_LNS_negate_stmt };
             cli->debug_line.is_stmt = 1;
-            CLIWrite( cli, DW_DEBUG_LINE, bufx, sizeof( bufx ) );
+            CLIWrite( cli, DW_DEBUG_LINE, stmt_attr, sizeof( stmt_attr ) );
         }
     } else if( cli->debug_line.is_stmt ) {
-        static const uint_8 bufx[] = { DW_LNS_negate_stmt };
+        static const uint_8 stmt_attr[] = { DW_LNS_negate_stmt };
         cli->debug_line.is_stmt = 0;
-        CLIWrite( cli, DW_DEBUG_LINE, bufx, sizeof( bufx ) );
+        CLIWrite( cli, DW_DEBUG_LINE, stmt_attr, sizeof( stmt_attr ) );
     }
 
     if( column != cli->debug_line.column ) {

@@ -32,11 +32,10 @@
 #include "dwpriv.h"
 #include "dwutils.h"
 
-uint_8 *LEB128(
-    uint_8                      *buf,
-    dw_sconst                   value )
+
+uint_8 *LEB128( uint_8 *buf, dw_sconst value )
 {
-    uint_8                      byte;
+    uint_8          byte;
 
     /* we can only handle an arithmetic right shift */
     if( value >= 0 ) {
@@ -59,11 +58,9 @@ uint_8 *LEB128(
 }
 
 
-uint_8 *ULEB128(
-    uint_8                      *buf,
-    dw_uconst                   value )
+uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
 {
-    uint_8                      byte;
+    uint_8          byte;
 
     for( ;; ) {
         byte = value & 0x7f;
@@ -75,7 +72,7 @@ uint_8 *ULEB128(
     return( buf );
 }
 
-void    SectionSizePatch( dw_client cli, dw_sectnum sect )
+void SectionSizePatch( dw_client cli, dw_sectnum sect )
 /* backpatch the section length */
 {
     dw_sect_offs    size;
@@ -84,7 +81,7 @@ void    SectionSizePatch( dw_client cli, dw_sectnum sect )
     size = CLITell( cli, sect ) - cli->section_base[sect] - sizeof( size );
     WriteRef( buf, size );
     CLISeek( cli, sect, cli->section_base[sect], DW_SEEK_SET );
-    CLIWrite( cli, sect, buf, sizeof( size ) );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
     CLISeek( cli, sect, 0, DW_SEEK_END );
 }
 

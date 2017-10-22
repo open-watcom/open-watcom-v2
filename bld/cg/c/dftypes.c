@@ -400,8 +400,8 @@ dbg_type        DFPtr( cg_type ptr_type, dbg_type base )
 void      DFBegStruct( dbg_struct st )
 /************************************/
 {
-    dbg_type    ret;
-    uint        class;
+    dbg_type        ret;
+    dw_struct_type  class;
 
     if( st->is_struct ){
         class = DW_ST_STRUCT;
@@ -425,7 +425,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state )
 {
     type_length     offset;
     dw_loc_id       locid;
-    uint            dref_op;
+    dw_loc_op       dref_op;
     uint            size;
     dw_sym_handle   sym;
 
@@ -463,7 +463,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state )
         if( HW_CEqual( loc->u.be_sym->r.reg, HW_EMPTY ) ) {
             //NYI: structured return value on the stack. Have to do something
             //       suitable. For now, output a no location.
-            DWLocOp( Client,locid,DW_LOC_breg, 0, 0 );
+            DWLocOp( Client, locid, DW_LOC_breg, 0, 0 );
         } else {
             DFOutRegInd( locid, loc->u.be_sym );
         }
@@ -472,14 +472,14 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state )
         switch( loc->class & 0x0f ) {
         case LOP_IND_2:
         case LOP_IND_4:
-            if( state->addr_seg ){
+            if( state->addr_seg ) {
                 dref_op =  DW_LOC_xderef_size;
-            }else{
+            } else {
                 dref_op =  DW_LOC_deref_size;
             }
-            if( (loc->class & 0x0f) == LOP_IND_2 ){
+            if( (loc->class & 0x0f) == LOP_IND_2 ) {
                 size = 2;
-            }else{
+            } else {
                 size = 4;
             }
             DWLocOp( Client, locid, dref_op, size );
@@ -487,9 +487,9 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state )
             break;
         case LOP_IND_ADDR_16:
         case LOP_IND_ADDR_32:
-            if( (loc->class & 0x0f) == LOP_IND_ADDR_16 ){
+            if( (loc->class & 0x0f) == LOP_IND_ADDR_16 ) {
                 size = 2;
-            }else{
+            } else {
                 size = 4;
             }
             if( state->addr_seg ){
