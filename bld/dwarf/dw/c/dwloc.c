@@ -494,7 +494,7 @@ void EmitLocExprNull( dw_client cli, dw_sectnum sect, size_t size )
 {
     /* ensure that size is correct value */
     _Assert( size == 1 || size == 2 || size == 4 );
-    SectionWriteZeros( cli, sect, size );
+    CLISectionWriteZeros( cli, sect, size );
 }
 
 uint_32 EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle loc )
@@ -597,7 +597,7 @@ void DWENTRY DWListEntryOut( dw_client cli, dw_list_id id, dw_sym_handle begin, 
 dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
 {
     if( id->hdl.is_expr == LOC_LIST_REF ) {
-        SectionWriteZeros( cli, DW_DEBUG_LOC, 2 * sizeof( dw_targ_addr ) );
+        CLISectionWriteZeros( cli, DW_DEBUG_LOC, 2 * sizeof( dw_targ_addr ) );
     } else {
         id->hdl.u.list = ReverseChain( id->hdl.u.list );
     }
@@ -641,7 +641,7 @@ uint_32 EmitLocList( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
         CLIReloc4( cli, sect, DW_W_LOC_RANGE, cur->begin, cur->end );
         bytes_written += EmitLocExpr( cli, sect, sizeof( uint_16 ), loc );
     }
-    SectionWriteZeros( cli, sect, 2 * sizeof( dw_targ_addr ) );
+    CLISectionWriteZeros( cli, sect, 2 * sizeof( dw_targ_addr ) );
     return( bytes_written + 2 * sizeof( dw_targ_addr ) );
 }
 

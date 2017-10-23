@@ -182,7 +182,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     }
 
     /* and the zero terminators */
-    SectionWriteZeros( cli, DW_DEBUG_ABBREV, 2 );
+    CLISectionWriteZeros( cli, DW_DEBUG_ABBREV, 2 );
     return( code );
 }
 
@@ -196,7 +196,7 @@ void InitDebugAbbrev( dw_client cli )
 void FiniDebugAbbrev( dw_client cli )
 {
     /* the zero terminator */
-    SectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
+    CLISectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
 }
 
 void  GenAllAbbrev( dw_client  cli )

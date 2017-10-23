@@ -50,14 +50,11 @@ void DWENTRY DWPubname(
 }
 
 
-void InitDebugPubnames(
-    dw_client                   cli )
+void InitDebugPubnames( dw_client cli )
 {
-    static uint_16  const version = 2;
-
     /* write the set header */
-    CLISeek( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ), DW_SEEK_CUR );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, &version, sizeof( version ) );
+    CLISectionReserveSize( cli, DW_DEBUG_PUBNAMES );
+    CLIWriteU16( cli, DW_DEBUG_PUBNAMES, 2 );   /* section version */
     CLIReloc3( cli, DW_DEBUG_PUBNAMES, DW_W_SECTION_POS, DW_DEBUG_INFO );
     CLIReloc2( cli, DW_DEBUG_PUBNAMES, DW_W_UNIT_SIZE );
 }
@@ -67,7 +64,7 @@ void FiniDebugPubnames(
     dw_client                   cli )
 {
     /* write the terminator */
-    SectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );
+    CLISectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );
     /* backpatch the section length */
-    SectionSizePatch( cli, DW_DEBUG_PUBNAMES );
+    CLISectionSetSize( cli, DW_DEBUG_PUBNAMES );
 }

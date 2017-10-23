@@ -71,15 +71,16 @@ void StartChildren( dw_client cli )
 static void doTheSiblingThing( dw_client cli )
 {
     dw_sect_offs    sibling;
-    char            buf[sizeof( sibling )];
+    dw_sect_offs    offset;
 
     sibling = cli->die.tree->sibling;
-    if( sibling == 0 )
-        return;  /* no previous sibling */
-
-    /* relocate previous sibling */
-    WriteRef( buf, InfoSkip( cli, 0 ) );
-    InfoPatch( cli, sibling, buf, sizeof( buf ) );
+    if( sibling ) {
+        /* relocate previous sibling */
+        offset = CLISectionOffset( cli, DW_DEBUG_INFO );
+        CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO] + sibling, DW_SEEK_SET );
+        CLIWriteU32( cli, DW_DEBUG_INFO, offset );
+        CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
+    }
 }
 
 
@@ -89,7 +90,7 @@ void EndChildren( dw_client cli )
 
     /* move up a level in the tree */
     cli->die.tree = FreeLink( cli, cli->die.tree );
-    SectionWriteZeros( cli, DW_DEBUG_INFO, 1 );
+    CLISectionWriteZeros( cli, DW_DEBUG_INFO, 1 );
 }
 
 
@@ -113,7 +114,8 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
     /* AT_sibling reference */
     if( haskids ) {
-        cli->die.tree->sibling = InfoSkip( cli, sizeof( dw_sect_offs ) );
+        cli->die.tree->sibling = CLISectionOffset( cli, DW_DEBUG_INFO );
+        CLISeek( cli, DW_DEBUG_INFO, sizeof( dw_sect_offs ), DW_SEEK_CUR );
     } else {
         cli->die.tree->sibling = 0;
     }

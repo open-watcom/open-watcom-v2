@@ -49,9 +49,14 @@
 #error "must define WriteU16/32 and WriteS16/32 functions"
 #endif
 
+#define CLISectionOffset(c,s)       (CLITell( c, s ) - (c)->section_base[s])
+#define CLISectionReserveSize(c,s)  CLISeek( c, s, sizeof( uint_32 ), DW_SEEK_CUR )
+
 extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
 extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
-extern void     SectionSizePatch( dw_client cli, dw_sectnum sect );
-extern void     SectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len );
+extern void     CLISectionSetSize( dw_client cli, dw_sectnum sect );
+extern void     CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len );
+extern void     CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data );
+extern void     CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data );
 
 #endif

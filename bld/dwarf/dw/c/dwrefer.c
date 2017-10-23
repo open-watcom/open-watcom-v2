@@ -59,8 +59,8 @@ static void emitDelayed( dw_client cli )
     /* delayed_refs are stacked up; we want to emit them in FIFO order */
     for( cur = ReverseChain( cli->references.delayed ); cur != NULL; cur = CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
-        WriteRef( buf + 1, cur->offset );
-        CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( dw_sect_offs ) );
+        CLIWrite( cli, DW_DEBUG_REF, buf, 1 );
+        CLIWriteU32( cli, DW_DEBUG_REF, cur->offset );
     }
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {
@@ -83,7 +83,7 @@ void StartRef( dw_client cli )
     new = CarveAlloc( cli, cli->references.delay_carver );
     new->next = cli->references.delayed;
     cli->references.delayed = new;
-    new->offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    new->offset = CLISectionOffset( cli, DW_DEBUG_INFO );
     new->scope = cli->references.scope;
     ++cli->references.scope;
 }
@@ -166,14 +166,14 @@ void InitReferences( dw_client cli )
     cli->references.scope = 0;
     cli->references.delayed_file = 0;
 
-    CLISeek( cli, DW_DEBUG_REF, sizeof( uint_32 ), DW_SEEK_CUR );
+    CLISectionReserveSize( cli, DW_DEBUG_REF );
 }
 
 
 void FiniReferences( dw_client cli )
 {
     /* backpatch the section length */
-    SectionSizePatch( cli, DW_DEBUG_REF );
+    CLISectionSetSize( cli, DW_DEBUG_REF );
 
     CarveDestroy( cli, cli->references.delay_carver );
 }

@@ -38,9 +38,6 @@
 #include "dw.h"
 #include "dwassert.h"
 #include "dwarf.h"
-
-#define WriteRef                WriteU32
-
 #include "dwabort.h"
 #include "dwline.h"
 #include "dwdie.h"

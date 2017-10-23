@@ -72,23 +72,37 @@ uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
     return( buf );
 }
 
-void SectionSizePatch( dw_client cli, dw_sectnum sect )
+void CLISectionSetSize( dw_client cli, dw_sectnum sect )
 /* backpatch the section length */
 {
     dw_sect_offs    size;
-    char            buf[sizeof( size )];
 
-    size = CLITell( cli, sect ) - cli->section_base[sect] - sizeof( size );
-    WriteRef( buf, size );
+    size = CLISectionOffset( cli, sect ) - sizeof( size );
     CLISeek( cli, sect, cli->section_base[sect], DW_SEEK_SET );
-    CLIWrite( cli, sect, buf, sizeof( buf ) );
+    CLIWriteU32( cli, sect, size );
     CLISeek( cli, sect, 0, DW_SEEK_END );
 }
 
-void SectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
+void CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
 {
     // the zeros array length must be big enought for all calls, now 16 bytes is OK
     static const uint_8     zeros[16] = { 0 };
 
     CLIWrite( cli, sect, zeros, len );
+}
+
+void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
+{
+    char            buf[sizeof( uint_32 )];
+
+    WriteU32( buf, data );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
+}
+
+void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
+{
+    char            buf[sizeof( uint_16 )];
+
+    WriteU16( buf, data );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
 }

@@ -138,7 +138,7 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
         CLIWrite( cli, DW_DEBUG_MACINFO, def, strlen( def ) );
     }
     /* write macro definition terminator */
-    SectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
+    CLISectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
 }
 
 
@@ -181,5 +181,5 @@ void InitDebugMacInfo( dw_client cli )
 void FiniDebugMacInfo( dw_client cli )
 {
     /* write the terminator */
-    SectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
+    CLISectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
 }

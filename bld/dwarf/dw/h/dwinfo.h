@@ -44,8 +44,6 @@
 #define InfoULEB128             DW_InfoULEB128
 #define InfoBytes               DW_InfoBytes
 #define InfoString              DW_InfoString
-#define InfoSkip                DW_InfoSkip
-#define InfoPatch               DW_InfoPatch
 
 
 void            InitDebugInfo( dw_client );
@@ -59,7 +57,5 @@ void            InfoLEB128( dw_client, dw_sconst );
 void            InfoULEB128( dw_client, dw_uconst );
 void            InfoBytes( dw_client, const void *, size_t );
 void            InfoString( dw_client, const char * );
-dw_sect_offs    InfoSkip( dw_client, dw_sect_offs );
-void            InfoPatch( dw_client, dw_sect_offs, const void *, size_t );
 
 #endif

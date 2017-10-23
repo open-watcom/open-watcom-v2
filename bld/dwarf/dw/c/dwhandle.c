@@ -279,7 +279,7 @@ void HandleWriteOffset( dw_client cli, dw_handle hdl, dw_sectnum sect )
         chain->next = c->reloc.u.chain;
         c->reloc.u.chain = chain;
     }
-    CLIWrite( cli, sect, &offset, sizeof( offset ) );
+    CLIWriteU32( cli, sect, offset );
 }
 
 
@@ -295,8 +295,7 @@ void SetHandleLocation( dw_client cli, dw_handle hdl )
     cur = c->reloc.u.chain;
     dbgDefineHandle( hdl );
     --cli->handles.forward;
-    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    WriteRef( &offset, offset );
+    offset = CLISectionOffset( cli, DW_DEBUG_INFO );
     SET_HANDLE_LOCATION( c, offset );
     /* if forward references exist, update them */
     if( cur != NULL ) {
@@ -305,7 +304,7 @@ void SetHandleLocation( dw_client cli, dw_handle hdl )
         for( ; cur != NULL; cur = CarveFreeLink( cli->handles.chain_carver, cur ) ) {
             used[cur->section] = 1;
             CLISeek( cli, cur->section, cur->offset, DW_SEEK_SET );
-            CLIWrite( cli, cur->section, &offset, sizeof( offset ) );
+            CLIWriteU32( cli, cur->section, offset );
         }
         for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
             if( used[sect] ) {
@@ -326,14 +325,9 @@ dw_sect_offs DWGetHandleLocation( dw_client cli, dw_handle hdl )
 dw_handle LabelNewHandle( dw_client cli )
 {
     dw_handle       new;
-    handle_common   *c;
-    dw_sect_offs    offset;
 
     new = NewHandle( cli );
-    c = GetCommon( cli, new );
-    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    WriteRef( &offset, offset );
-    SET_HANDLE_LOCATION( c, offset );
+    SET_HANDLE_LOCATION( GetCommon( cli, new ), CLISectionOffset( cli, DW_DEBUG_INFO ) );
     dbgDefineHandle( new );
     --cli->handles.forward;
     return( new );

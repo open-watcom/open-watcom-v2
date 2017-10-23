@@ -51,19 +51,13 @@ void Info8( dw_client cli, uint_8 value )
 
 void Info16( dw_client cli, uint_16 value )
 {
-    char            buf[sizeof( uint_16 )];
-
-    WriteU16( buf, value );
-    CLIWrite( cli, DW_DEBUG_INFO, &buf, sizeof( buf ) );
+    CLIWriteU16( cli, DW_DEBUG_INFO, value );
 }
 
 
 void Info32( dw_client cli, uint_32 value )
 {
-    char            buf[sizeof( uint_32 )];
-
-    WriteU32( buf, value );
-    CLIWrite( cli, DW_DEBUG_INFO, &buf, sizeof( buf ) );
+    CLIWriteU32( cli, DW_DEBUG_INFO, value );
 }
 
 
@@ -102,29 +96,11 @@ void InfoString( dw_client cli, const char *str )
 }
 
 
-dw_sect_offs InfoSkip( dw_client cli, dw_sect_offs skip )
-{
-    dw_sect_offs    offset;
-
-    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    CLISeek( cli, DW_DEBUG_INFO, skip, DW_SEEK_CUR );
-    return( offset );
-}
-
-
-void InfoPatch( dw_client cli, dw_sect_offs offset, const void *buff, size_t len )
-{
-    CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO] + offset, DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_INFO, buff, len );
-    CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
-}
-
-
 void InitDebugInfo( dw_client cli )
 {
     /* leave room for the length field */
-    CLISeek( cli, DW_DEBUG_INFO, sizeof( uint_32 ), DW_SEEK_CUR );
-    Info16( cli, 2 );   /* dwarf version */
+    CLISectionReserveSize( cli, DW_DEBUG_INFO );
+    Info16( cli, 2 );   /* section version */
     /* abbrev start */
     if( cli->compiler_options & DW_CM_ABBREV_PRE ) {
         CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
@@ -140,5 +116,5 @@ void InitDebugInfo( dw_client cli )
 void FiniDebugInfo( dw_client cli )
 {
     /* backpatch the section length */
-    SectionSizePatch( cli, DW_DEBUG_INFO );
+    CLISectionSetSize( cli, DW_DEBUG_INFO );
 }

@@ -187,8 +187,8 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
 {
     stmt_prologue prol = {
         0,
-        DWARF_IMPL_VERSION,
-        sizeof( stmt_prologue ) - offsetof( stmt_prologue, minimum_instruction_length ),
+        0,
+        0,
         DW_MIN_INSTR_LENGTH,
         0,
         DWLINE_BASE,
@@ -211,7 +211,9 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
         }
     };
 
-    prol.prologue_length += inc_list_len + 2;   // +2 for 2 list terminators
+    WriteU16( &prol.version, DWARF_IMPL_VERSION );
+    WriteU32( &prol.prologue_length,
+        sizeof( stmt_prologue ) - offsetof( stmt_prologue, minimum_instruction_length ) + inc_list_len + 2 ); // +2 for 2 list terminators
     cli->debug_line.files = NULL;
     cli->debug_line.addr = 0;
     cli->debug_line.line = 1;
@@ -227,7 +229,7 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
     }
 
     /* and put out the terminators */
-    SectionWriteZeros( cli, DW_DEBUG_LINE, 2 );
+    CLISectionWriteZeros( cli, DW_DEBUG_LINE, 2 );
     /* and put out the source filename */
     GetFileNumber( cli, source_filename );
 }
@@ -239,6 +241,6 @@ void FiniDebugLine( dw_client cli )
 
     CLIWrite( cli, DW_DEBUG_LINE, buf, sizeof( buf ) );
     /* backpatch the section length */
-    SectionSizePatch( cli, DW_DEBUG_LINE );
+    CLISectionSetSize( cli, DW_DEBUG_LINE );
     FreeChain( cli, cli->debug_line.files );
 }
