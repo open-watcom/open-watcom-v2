@@ -160,8 +160,8 @@ void main( void )
         info.funcs = dw_cli_funcs;
 
         RelocValues[DW_W_LOW_PC] = 0x135;
-        RelocValues[DW_W_HIGH_PC] = 0x34561ul;
-        RelocValues[DW_W_UNIT_SIZE] = 0x34561ul - 0x135;
+        RelocValues[DW_W_HIGH_PC] = 0x34561UL;
+        RelocValues[DW_W_UNIT_SIZE] = 0x34561UL - 0x135;
         Client = DWInit( &info );
         if( Client == NULL ) {
             fputs( "error in DWInit()\n", stderr );

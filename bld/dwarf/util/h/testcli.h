@@ -33,9 +33,9 @@
 #define MAX_SECTION_DATA 4096
 
 struct section_data {
-    dw_out_offset       cur_offset;
-    dw_out_offset       max_offset;
-    char                data[MAX_SECTION_DATA];
+    dw_out_offset   cur_offset;
+    dw_out_offset   max_offset;
+    uint_8          data[MAX_SECTION_DATA];
 };
 
 extern struct section_data Sections[];

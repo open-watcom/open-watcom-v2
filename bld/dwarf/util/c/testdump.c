@@ -40,7 +40,7 @@
 #include "bool.h"
 #include "dw.h"
 #include "dwarf.h"
-#include "client.h"
+#include "testcli.h"
 
 extern bool byte_swap;
 
