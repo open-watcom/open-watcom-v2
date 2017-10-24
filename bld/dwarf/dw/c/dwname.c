@@ -46,7 +46,7 @@ void DWENTRY DWPubname(
     const char *                name )
 {
     HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, name, strlen( name ) + 1 );
+    CLIWriteString( cli, DW_DEBUG_PUBNAMES, name );
 }
 
 

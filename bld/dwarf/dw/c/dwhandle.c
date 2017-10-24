@@ -90,7 +90,7 @@ static void dbgDefineHandle( dw_handle h )
 
 void InitHandles( dw_client cli )
 {
-    int i;
+    int     i;
 
     cli->handles.num_handles = 0;
     cli->handles.forward = 0;
@@ -204,7 +204,7 @@ static handle_blk *getIndex( dw_client cli, dw_index_t index )
 
 handle_common *GetCommon( dw_client cli, dw_handle hdl )
 {
-    uint_32                     elm_num;
+    uint_32         elm_num;
 
     elm_num = (hdl & HANDLE_MASK) - FIRST_HANDLE;
     _Assert( elm_num < cli->handles.num_handles );
@@ -333,7 +333,7 @@ dw_handle LabelNewHandle( dw_client cli )
 
 dw_handle GetHandle( dw_client cli )
 {
-    dw_handle   new_hdl;
+    dw_handle       new_hdl;
 
     if( cli->defset == 0 ) {
         new_hdl = LabelNewHandle( cli );

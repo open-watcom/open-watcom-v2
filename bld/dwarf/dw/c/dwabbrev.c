@@ -146,7 +146,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     }
 
     /* now emit the extra attributes */
-    for( i = 0; i < sizeof(bitEncodings) / sizeof(bitEncodings[0]); ++i ) {
+    for( i = 0; i < sizeof( bitEncodings ) / sizeof( bitEncodings[0] ); ++i ) {
         if( *abbrev & bitEncodings[i].bit ) {
             CLIWrite( cli, DW_DEBUG_ABBREV, bitEncodings[i].data, 2 );
         }

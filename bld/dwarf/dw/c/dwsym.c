@@ -328,7 +328,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
         InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
-        InfoReloc( cli, DW_W_LOW_PC );
+    InfoReloc( cli, DW_W_LOW_PC );
     /* AT_address_class */
     Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
     /* AT_name */

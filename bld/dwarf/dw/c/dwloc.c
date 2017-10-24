@@ -696,7 +696,7 @@ void FiniDebugLoc( dw_client cli )
     dw_loc_handle   cur;
     dw_loc_handle   next;
 
-    for( cur = cli->debug_loc.handles; cur; cur = next ) {
+    for( cur = cli->debug_loc.handles; cur != NULL; cur = next ) {
         next = cur->next;
         trash( cli, cur );
     }

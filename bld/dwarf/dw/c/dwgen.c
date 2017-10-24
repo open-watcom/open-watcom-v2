@@ -130,7 +130,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
     } else {  // 0 no pch
         Info32( cli, 0  );
     }
-   /* AT_WATCOM_memory_model */
+    /* AT_WATCOM_memory_model */
     Info8( cli, cu->model );
     /* AT_WATCOM_references_start */
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_REF );

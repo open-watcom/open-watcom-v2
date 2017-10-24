@@ -165,7 +165,7 @@ void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name )
     end = ULEB128( buf + 1, line );
     *end++ = 1;
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
-    CLIWrite( cli, DW_DEBUG_MACINFO, name, strlen( name ) );
+    CLIWriteString( cli, DW_DEBUG_MACINFO, name );
 }
 
 
