@@ -76,10 +76,10 @@ static void doTheSiblingThing( dw_client cli )
     sibling = cli->die.tree->sibling;
     if( sibling ) {
         /* relocate previous sibling */
-        offset = CLISectionOffset( cli, DW_DEBUG_INFO );
-        CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO] + sibling, DW_SEEK_SET );
-        CLIWriteU32( cli, DW_DEBUG_INFO, offset );
-        CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
+        offset = InfoSectionOffset( cli );
+        CLISectionSeekOffset( cli, DW_DEBUG_INFO, sibling );
+        Info32( cli, offset );
+        CLISectionSeekEnd( cli, DW_DEBUG_INFO );
     }
 }
 
@@ -114,8 +114,9 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
     /* AT_sibling reference */
     if( haskids ) {
-        cli->die.tree->sibling = CLISectionOffset( cli, DW_DEBUG_INFO );
-        CLISeek( cli, DW_DEBUG_INFO, sizeof( dw_sect_offs ), DW_SEEK_CUR );
+        cli->die.tree->sibling = InfoSectionOffset( cli );
+        /* reserve space (skip over) */
+        InfoSkip( cli, sizeof( dw_sect_offs ) );
     } else {
         cli->die.tree->sibling = 0;
     }

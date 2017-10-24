@@ -57,6 +57,13 @@ uint_8 *LEB128( uint_8 *buf, dw_sconst value )
     return( buf );
 }
 
+void CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )
+{
+    uint_8              buf[MAX_LEB128];
+
+    CLIWrite( cli, sect, buf, LEB128( buf, value ) - buf );
+}
+
 
 uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
 {
@@ -72,15 +79,22 @@ uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
     return( buf );
 }
 
+void CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value )
+{
+    uint_8              buf[MAX_LEB128];
+
+    CLIWrite( cli, sect, buf, ULEB128( buf, value ) - buf );
+}
+
 void CLISectionSetSize( dw_client cli, dw_sectnum sect )
 /* backpatch the section length */
 {
     dw_sect_offs    size;
 
     size = CLISectionOffset( cli, sect ) - sizeof( size );
-    CLISeek( cli, sect, cli->section_base[sect], DW_SEEK_SET );
+    CLISectionSeekOffset( cli, sect, 0 );
     CLIWriteU32( cli, sect, size );
-    CLISeek( cli, sect, 0, DW_SEEK_END );
+    CLISectionSeekEnd( cli, sect );
 }
 
 void CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
@@ -91,12 +105,9 @@ void CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
     CLIWrite( cli, sect, zeros, len );
 }
 
-void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
+void CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data )
 {
-    char            buf[sizeof( uint_32 )];
-
-    WriteU32( buf, data );
-    CLIWrite( cli, sect, buf, sizeof( buf ) );
+    CLIWrite( cli, sect, &data, sizeof( data ) );
 }
 
 void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
@@ -105,4 +116,17 @@ void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
 
     WriteU16( buf, data );
     CLIWrite( cli, sect, buf, sizeof( buf ) );
+}
+
+void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
+{
+    char            buf[sizeof( uint_32 )];
+
+    WriteU32( buf, data );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
+}
+
+void CLIWriteString( dw_client cli, dw_sectnum sect, const char *str )
+{
+    CLIWrite( cli, sect, str, strlen( str ) + 1 );
 }

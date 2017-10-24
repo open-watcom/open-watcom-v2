@@ -362,7 +362,7 @@ static void dw_seek( dw_sectnum sect, dw_out_offset offset, int mode )
         new_offset = dw_sections[sect].offset + offset;
         break;
     case DW_SEEK_END:
-        new_offset = dw_sections[sect].length - offset;
+        new_offset = dw_sections[sect].length + offset;
         break;
     }
 #ifdef __DD__

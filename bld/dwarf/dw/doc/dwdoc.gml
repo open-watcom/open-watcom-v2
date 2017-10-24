@@ -185,9 +185,9 @@ of the low_pc and high_pc.
 :LI.DW_W_UNIT_SIZE
 :eSL.
 
-:H2.void DWENTRY DWEndCompilationUnit( dw_client cli );
-:P.This function pairs up with :hp2.DWBeginCompilationUnit:ehp2..
-After this, until the next :hp2.DWBeginCompilationUnit:ehp2., the
+:H2.void DWENTRY DWEndCompileUnit( dw_client cli );
+:P.This function pairs up with :hp2.DWBeginCompileUnit:ehp2..
+After this, until the next :hp2.DWBeginCompileUnit:ehp2., the
 only valid calls are those made to location expression routines
 (or :hp2.DWFini:ehp2.).
 
@@ -341,7 +341,7 @@ of :hp2.sym:ehp2. on the stack.
 :H2.void DWENTRY DWLocConstS( dw_client cli, dw_loc_id loc, dw_sconst value );
 :P.Pushes an atom which is has a signed constant value :HP2.value:eHP2..
 
-:H2.void DWENTRY DWLocOp0( dw_client cli, dw_loc_id loc, dw_optype op );
+:H2.void DWENTRY DWLocOp0( dw_client cli, dw_loc_id loc, dw_loc_op op );
 :p.Performs one of the operations listed below.
 :DL tsize=24 break.
 :DTHD.Operation
@@ -429,7 +429,7 @@ The size of data retrieved is an addressing unit.
 EXCLUSIVE-OR operation on them, and pushes the result.
 :eDL.
 
-:H2.void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_optype op, ... );
+:H2.void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op op, ... );
 :p.Performs one of the following operations:
 :DL tsize=24 break.
 :DTHD.Operation

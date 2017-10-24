@@ -115,7 +115,7 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type ) {
         Sections[sect].cur_offset = offs;
         break;
     case DW_SEEK_END:
-        Sections[sect].cur_offset = Sections[sect].max_offset - offs;
+        Sections[sect].cur_offset = Sections[sect].max_offset + offs;
         break;
     }
 }

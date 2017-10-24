@@ -50,13 +50,25 @@
 #endif
 
 #define CLISectionOffset(c,s)       (CLITell( c, s ) - (c)->section_base[s])
-#define CLISectionReserveSize(c,s)  CLISeek( c, s, sizeof( uint_32 ), DW_SEEK_CUR )
+#define CLISectionAbs(c,s)          CLITell( c, s )
+#define CLISectionSkip(c,s,l)       CLISeek( c, s, l, DW_SEEK_CUR )
+#define CLISectionSeekOffset(c,s,o) CLISeek( c, s, (c)->section_base[s] + (o), DW_SEEK_SET )
+#define CLISectionSeekAbs(c,s,o)    CLISeek( c, s, (o), DW_SEEK_SET )
+#define CLISectionSeekEnd(c,s)      CLISeek( c, s, 0, DW_SEEK_END )
+
+#define CLISectionReserveSize(c,s)  CLISectionSkip( c, s, sizeof( uint_32 ) )
+#define InfoSkip(c,l)               CLISectionSkip( c, DW_DEBUG_INFO, l )
+#define InfoSectionOffset(c)        CLISectionOffset( c, DW_DEBUG_INFO )
 
 extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
 extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
+extern void     CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value );
 extern void     CLISectionSetSize( dw_client cli, dw_sectnum sect );
+extern void     CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value );
 extern void     CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len );
+extern void     CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data );
 extern void     CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data );
 extern void     CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data );
+extern void     CLIWriteString( dw_client cli, dw_sectnum sect, const char *str );
 
 #endif

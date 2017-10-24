@@ -44,13 +44,13 @@
 
 static void writeFileName( dw_client cli, const char *name, size_t len ) // len of name including terminator
 {
-    uint_8                      buf[1 + MAX_LEB128 + 1 + _MAX_PATH + 1 + MAX_LEB128 * 3];
+    uint_8                      buf[1 + MAX_LEB128 + 1 + _MAX_PATH + 1 + 3 * MAX_LEB128];
     uint_8                      attribBuf[MAX_LEB128];
     uint_8                      *end;
     size_t                      bufSize = 0;
 
-    buf[0] = 0;         // identifies extended opcode
-    bufSize = 2 + len;  // size of sub-opcode, name+terminator, & path size
+    // calculate full size
+    bufSize = 1 + len + 1;      // size of sub-opcode, name+terminator, & path size
 
     // find out size of file time/size leb128's:
     end = ULEB128( attribBuf, 0 );  //NYI: replace 0 with time/date stamp of file
@@ -58,10 +58,11 @@ static void writeFileName( dw_client cli, const char *name, size_t len ) // len 
     end = ULEB128( attribBuf, 0 );  //NYI: replace 0 with file size
     bufSize += end - attribBuf;     // add on size of file size val
 
+    // write output data
+    buf[0] = 0;                 // identifies extended opcode
     end = ULEB128( buf + 1, (dw_uconst)bufSize );   // write the opcode size
 
-    *end = DW_LNE_define_file;      // write in the sub-opcode
-    end++;
+    *end++ = DW_LNE_define_file;      // write in the sub-opcode
 
     end = (uint_8 *)strncpy( (char *)end, name, len ); // write the filename
     end += len;
@@ -160,8 +161,7 @@ void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
 
     buf[0] = 0;  //extended
     end = ULEB128( buf + 1, 1 + cli->offset_size ); // write the opcode size
-    *end = DW_LNE_set_address;
-    ++end;
+    *end++ = DW_LNE_set_address;
     CLIWrite( cli, DW_DEBUG_LINE, buf, end - buf );
     CLIReloc3( cli, DW_DEBUG_LINE, DW_W_LABEL, sym );
     cli->debug_line.addr = addr;
@@ -169,15 +169,14 @@ void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
 
 void DWLineSeg( dw_client cli, dw_sym_handle sym )
 {
-    uint_8                      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
+    uint_8                      buf[1 + MAX_LEB128 + 1];
     uint_8                      *end;
 
     if( cli->segment_size != 0 ) {
         buf[0] = 0;  //extended
         end = ULEB128( buf + 1, 1 + cli->segment_size ); // write the opcode size
-        *end = DW_LNE_WATCOM_set_segment_OLD;
-//        *end = DW_LNE_WATCOM_set_segment;
-        ++end;
+        *end++ = DW_LNE_WATCOM_set_segment_OLD;
+//        *end++ = DW_LNE_WATCOM_set_segment;
         CLIWrite( cli, DW_DEBUG_LINE, buf, end - buf );
         CLIReloc3( cli, DW_DEBUG_LINE, DW_W_LABEL_SEG, sym );
     }
@@ -224,7 +223,7 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
     /* write the prologue */
     CLIWrite( cli, DW_DEBUG_LINE, (char *)&prol, sizeof( prol ) );
 
-    if( inc_list != 0 ) {       // write the include list
+    if( inc_list != NULL ) {    // write the include list
         CLIWrite( cli, DW_DEBUG_LINE, inc_list, inc_list_len );
     }
 

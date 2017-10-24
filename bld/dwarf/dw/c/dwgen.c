@@ -59,7 +59,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
             if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ) {
                 cli->section_base[sect] = 0;
             } else {
-                cli->section_base[sect] = CLITell( cli, sect );
+                cli->section_base[sect] = CLISectionAbs( cli, sect );
             }
         }
     }
@@ -207,7 +207,7 @@ void DWInitDebugLine( dw_client cli, dw_cu_info *cu )
     cli->segment_size = cu->segment_size;
     cli->dbg_pch = cu->dbg_pch;
     cli->defset = 0;
-    cli->section_base[DW_DEBUG_LINE] = CLITell( cli, DW_DEBUG_LINE );
+    cli->section_base[DW_DEBUG_LINE] = CLISectionAbs( cli, DW_DEBUG_LINE );
     InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
 }
 

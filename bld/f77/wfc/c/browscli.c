@@ -410,7 +410,7 @@ static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
     case DW_SEEK_SET:
         break;
     case DW_SEEK_END:
-        new_offset = dw_sections[sect].length - offset;
+        new_offset = dw_sections[sect].length + offset;
         break;
     }
     if( dw_sections[sect].sec_type == MEM_SECTION ) {

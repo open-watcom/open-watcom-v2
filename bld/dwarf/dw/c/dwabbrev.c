@@ -88,9 +88,6 @@ static uint mapFromWToX( abbrev_code abbrev )
 
 unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 {
-    static const uint_8         sibling_attr[] = {
-        DW_AT_sibling,          DW_FORM_ref4
-    };
     uint                        index;
     uint                        code;
     uint_8                      bit;
@@ -126,12 +123,16 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 
     /* emit the child byte */
     if( *abbrev & AB_SIBLING ) {
-        static const uint_8 sibling[] = { DW_CHILDREN_yes };
-        CLIWrite( cli, DW_DEBUG_ABBREV, sibling, sizeof( sibling ) );
+        static const uint_8 sibling_attr[] = {
+            DW_CHILDREN_yes,
+            DW_AT_sibling,          DW_FORM_ref4
+        };
         CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     } else {
-        static const uint_8 sibling[] = { DW_CHILDREN_no };
-        CLIWrite( cli, DW_DEBUG_ABBREV, sibling, sizeof( sibling ) );
+        static const uint_8 sibling_attr[] = {
+            DW_CHILDREN_no
+        };
+        CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     }
 
     /* AT_decl_file and AT_decl_line must occur here */

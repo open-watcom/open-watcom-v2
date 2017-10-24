@@ -587,8 +587,8 @@ void DWENTRY DWListEntry( dw_client cli, dw_list_id id, dw_sym_handle begin, dw_
 void DWENTRY DWListEntryOut( dw_client cli, dw_list_id id, dw_sym_handle begin, dw_sym_handle end, dw_loc_handle loc )
 {
     if( id->hdl.is_expr == LOC_LIST ) {
-        id->hdl.u.ref = CLITell( cli, DW_DEBUG_LOC );
         id->hdl.is_expr = LOC_LIST_REF;
+        id->hdl.u.ref = CLISectionAbs( cli, DW_DEBUG_LOC );
     }
     CLIReloc4( cli, DW_DEBUG_LOC, DW_W_LOC_RANGE, begin, end );
     EmitLocExpr( cli, DW_DEBUG_LOC, sizeof( uint_16 ), loc );
@@ -661,9 +661,9 @@ uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
         {
             static const uint_8 buf[] = { DW_FORM_data4 };
             CLIWrite( cli, sect, buf, sizeof( buf ) );
-            CLISeek( cli, DW_DEBUG_LOC, loc->u.ref, DW_SEEK_SET );
+            CLISectionSeekAbs( cli, DW_DEBUG_LOC, loc->u.ref );
             CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-            CLISeek( cli, DW_DEBUG_LOC, 0, DW_SEEK_END );
+            CLISectionSeekEnd( cli, DW_DEBUG_LOC );
             return( sizeof( buf ) + sizeof( dw_sect_offs ) );
         }
     case LOC_EXPR:

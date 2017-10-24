@@ -34,6 +34,7 @@
 #include "dwabbrev.h"
 #include "dwmem.h"
 #include "dwcnf.h"
+#include "dwloc.h"
 #include "dwinfo.h"
 
 
@@ -45,7 +46,7 @@ void InfoReloc( dw_client cli, uint reloc_type )
 
 void Info8( dw_client cli, uint_8 value )
 {
-    CLIWrite( cli, DW_DEBUG_INFO, &value, sizeof( uint_8 ) );
+    CLIWriteU8( cli, DW_DEBUG_INFO, value );
 }
 
 
@@ -63,21 +64,13 @@ void Info32( dw_client cli, uint_32 value )
 
 void InfoLEB128( dw_client cli, dw_sconst value )
 {
-    uint_8          buf[MAX_LEB128];
-    uint_8          *end;
-
-    end = LEB128( buf, value );
-    CLIWrite( cli, DW_DEBUG_INFO, buf, end - buf );
+    CLIWriteLEB128( cli, DW_DEBUG_INFO, value );
 }
 
 
 void InfoULEB128( dw_client cli, dw_uconst value )
 {
-    uint_8          buf[MAX_LEB128];
-    uint_8          *end;
-
-    end = ULEB128( buf, value );
-    CLIWrite( cli, DW_DEBUG_INFO, buf, end - buf );
+    CLIWriteULEB128( cli, DW_DEBUG_INFO, value );
 }
 
 
@@ -89,10 +82,30 @@ void InfoBytes( dw_client cli, const void *buf, size_t size )
 
 void InfoString( dw_client cli, const char *str )
 {
-    size_t          len;
+    CLIWriteString( cli, DW_DEBUG_INFO, str );
+}
 
-    len = strlen( str );
-    InfoBytes( cli, str, len + 1 );
+void InfoEmitLocExprNull( dw_client cli, size_t size )
+{
+    EmitLocExprNull( cli, DW_DEBUG_INFO, size );
+}
+
+uint_32 InfoEmitLocExpr( dw_client cli, size_t size, dw_loc_handle loc )
+{
+    return( EmitLocExpr( cli, DW_DEBUG_INFO, size, loc ) );
+}
+
+void InfoHandleWriteOffset( dw_client cli, dw_handle hdl )
+{
+    HandleWriteOffset( cli, hdl, DW_DEBUG_INFO );
+}
+
+void InfoHandleReference( dw_client cli, dw_handle hdl )
+{
+    if( cli->compiler_options & DW_CM_BROWSER ) {
+        DWReference( cli, cli->decl.line, cli->decl.column, hdl );
+    }
+    InfoHandleWriteOffset( cli, hdl );
 }
 
 
@@ -105,9 +118,9 @@ void InitDebugInfo( dw_client cli )
     if( cli->compiler_options & DW_CM_ABBREV_PRE ) {
         CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
     } else {
-        CLISeek( cli, DW_DEBUG_ABBREV, 0, DW_SEEK_SET );
+        CLISectionSeekAbs( cli, DW_DEBUG_ABBREV, 0 );
         CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_ABBREV );
-        CLISeek( cli, DW_DEBUG_ABBREV, 0, DW_SEEK_END );
+        CLISectionSeekEnd( cli, DW_DEBUG_ABBREV );
     }
     Info8( cli, cli->offset_size );
 }

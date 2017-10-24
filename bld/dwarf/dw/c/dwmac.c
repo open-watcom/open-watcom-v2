@@ -134,11 +134,9 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     /* write parms terminator */
     CLIWrite( cli, DW_DEBUG_MACINFO, parms_term, sizeof( parms_term ) );
     CLIFree( cli, mac );
-    if( def != NULL ) {
-        CLIWrite( cli, DW_DEBUG_MACINFO, def, strlen( def ) );
-    }
-    /* write macro definition terminator */
-    CLISectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );
+    if( def == NULL )
+        def = "";
+    CLIWriteString( cli, DW_DEBUG_MACINFO, def );
 }
 
 
@@ -152,7 +150,7 @@ void DWENTRY DWMacUnDef( dw_client cli, dw_linenum line, const char *name )
     buf[0] = DW_MACINFO_undef;
     end = ULEB128( buf + 1, line );
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
-    CLIWrite( cli, DW_DEBUG_MACINFO, name, strlen( name ) + 1 );
+    CLIWriteString( cli, DW_DEBUG_MACINFO, name );
 }
 
 

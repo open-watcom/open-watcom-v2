@@ -39,7 +39,7 @@
 
 void EmitTypeRef( dw_client cli, dw_handle hdl )
 {
-    HandleReference( cli, hdl, DW_DEBUG_INFO );
+    InfoHandleReference( cli, hdl );
 }
 
 dw_handle DWENTRY DWHandle( dw_client cli, dw_struct_type kind )
@@ -98,7 +98,7 @@ dw_handle DWENTRY DWModifier( dw_client cli, dw_handle hdl, uint modifiers )
         }
         new_hdl = GetHandle( cli );
         StartDIE( cli, abbrev );
-        HandleWriteOffset( cli, hdl, DW_DEBUG_INFO );
+        InfoHandleWriteOffset( cli, hdl );
         if( abbrev == AB_ADDR_CLASS_TYPE ) {
             Info8( cli, modifiers );
             modifiers = 0;
@@ -186,12 +186,14 @@ dw_handle DWENTRY DWPointer( dw_client cli, dw_handle base_type, uint flags )
     _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
-    if( flags & DW_FLAG_REFERENCE ) abbrev = AB_REFERENCE_TYPE;
+    if( flags & DW_FLAG_REFERENCE )
+        abbrev = AB_REFERENCE_TYPE;
     flags &= ~DW_FLAG_REFERENCE;
-    if( flags ) abbrev |= AB_ADDRESS_CLASS;
+    if( flags )
+        abbrev |= AB_ADDRESS_CLASS;
     StartDIE( cli, abbrev );
     WriteAddressClass( cli, flags );
-    HandleWriteOffset( cli, base_type, DW_DEBUG_INFO );
+    InfoHandleWriteOffset( cli, base_type );
     EndDIE( cli );
     return( new_hdl );
 }
@@ -209,10 +211,10 @@ dw_handle DWENTRY DWBasedPointer( dw_client cli, dw_handle base_type, dw_loc_han
     if( flags ) abbrev |= AB_ADDRESS_CLASS;
     StartDIE( cli, abbrev );
     if( seg ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), seg );
+        InfoEmitLocExpr( cli, sizeof( uint_8), seg );
     }
     WriteAddressClass( cli, flags );
-    HandleWriteOffset( cli, base_type, DW_DEBUG_INFO );
+    InfoHandleWriteOffset( cli, base_type );
     EndDIE( cli );
     return( new_hdl );
 }
@@ -346,7 +348,7 @@ void DWENTRY DWBeginStruct( dw_client cli, dw_handle struct_hdl, dw_size_t size,
 void DWENTRY DWAddFriend( dw_client cli, dw_handle friend )
 {
     StartDIE( cli, AB_FRIEND );
-    HandleReference( cli, friend, DW_DEBUG_INFO );
+    InfoHandleReference( cli, friend );
     EndDIE( cli );
 }
 
@@ -362,9 +364,9 @@ dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_lo
     EmitAccessFlags( cli, flags );
     /* AT_location */
     if( loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        InfoEmitLocExprNull( cli, sizeof( uint_8) );
     }
     /* AT_virtual */
     if( flags & DW_FLAG_VIRTUAL ) {
@@ -373,7 +375,7 @@ dw_handle DWENTRY DWAddInheritance( dw_client cli, dw_handle ancestor_hdl, dw_lo
         Info8( cli, DW_VIRTUALITY_none );
     }
     /* AT_type */
-    HandleReference( cli, ancestor_hdl, DW_DEBUG_INFO );
+    InfoHandleReference( cli, ancestor_hdl );
     EndDIE( cli );
     return( new_hdl );
 }
@@ -411,9 +413,9 @@ dw_handle DWENTRY DWAddField( dw_client cli, dw_handle field_hdl, dw_loc_handle 
     InfoString( cli, name );
     /* AT_data_member_location */
     if( loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        InfoEmitLocExprNull( cli, sizeof( uint_8) );
     }
     /* AT_type */
     EmitTypeRef( cli, field_hdl );
@@ -451,9 +453,9 @@ dw_handle DWENTRY DWAddBitField( dw_client cli, dw_handle field_hdl, dw_loc_hand
     InfoString( cli, name );
     /* AT_data_member_location */
     if( loc ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), loc );
+        InfoEmitLocExpr( cli, sizeof( uint_8), loc );
     }else{
-        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+        InfoEmitLocExprNull( cli, sizeof( uint_8) );
     }
     /* AT_type  */
     EmitTypeRef( cli, field_hdl );
@@ -585,7 +587,7 @@ dw_handle DWENTRY DWString( dw_client cli, dw_loc_handle string_length, dw_size_
     }
     /* AT_string_length */
     if( string_length ) {
-        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8), string_length );
+        InfoEmitLocExpr( cli, sizeof( uint_8), string_length );
     }
     EndDIE( cli );
     return( new_hdl );
@@ -610,9 +612,9 @@ dw_handle DWENTRY DWMemberPointer( dw_client cli, dw_handle struct_type, dw_loc_
     /* AT_type */
     EmitTypeRef( cli, base_type );
     /* AT_containing_type */
-    HandleReference( cli, struct_type, DW_DEBUG_INFO );
+    InfoHandleReference( cli, struct_type );
     /* AT_use_location */
-    EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_16), loc );
+    InfoEmitLocExpr( cli, sizeof( uint_16), loc );
     EndDIE( cli );
     return( new_hdl );
 }

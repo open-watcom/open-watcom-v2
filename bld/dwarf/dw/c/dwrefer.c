@@ -59,8 +59,8 @@ static void emitDelayed( dw_client cli )
     /* delayed_refs are stacked up; we want to emit them in FIFO order */
     for( cur = ReverseChain( cli->references.delayed ); cur != NULL; cur = CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
-        CLIWrite( cli, DW_DEBUG_REF, buf, 1 );
-        CLIWriteU32( cli, DW_DEBUG_REF, cur->offset );
+        WriteU32( buf + 1, cur->offset );
+        CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( uint_32 ) );
     }
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {
@@ -83,7 +83,7 @@ void StartRef( dw_client cli )
     new = CarveAlloc( cli, cli->references.delay_carver );
     new->next = cli->references.delayed;
     cli->references.delayed = new;
-    new->offset = CLISectionOffset( cli, DW_DEBUG_INFO );
+    new->offset = InfoSectionOffset( cli );
     new->scope = cli->references.scope;
     ++cli->references.scope;
 }
@@ -113,7 +113,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
 {
     dw_linenum_delta            line_delta;
     dw_column_delta             column_delta;
-    uint_8                      buf[1 + MAX_LEB128];
+    uint_8                      buf[1 + MAX_LEB128 + 1 + MAX_LEB128 + 1];
     uint_8                      *end;
 
     /*
@@ -124,10 +124,10 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
 
     line_delta = line - cli->references.line;
     cli->references.line = line;
+    end = buf;
     if( line_delta < 0 || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
-        buf[0] = REF_ADD_LINE;
-        end = LEB128( buf + 1, line_delta );
-        CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
+        *end++ = REF_ADD_LINE;
+        end = LEB128( end, line_delta );
         cli->references.column = 0;
         line_delta = 0;
     } else if( line_delta != 0 ) {
@@ -136,17 +136,16 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     column_delta = column - cli->references.column;
     cli->references.column = column;
     if( column_delta < 0 || column_delta >= REF_COLUMN_RANGE ) {
-        buf[0] = REF_ADD_COLUMN;
-        end = LEB128( buf + 1, column_delta );
-        CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
+        *end++ = REF_ADD_COLUMN;
+        end = LEB128( end, column_delta );
         column_delta = 0;
     }
     _Assert( line_delta >= 0
         && line_delta * REF_COLUMN_RANGE <= 255 - REF_CODE_BASE-REF_COLUMN_RANGE
         && column_delta >= 0
         && column_delta < REF_COLUMN_RANGE );
-    buf[0] = REF_CODE_BASE + line_delta * REF_COLUMN_RANGE + column_delta;
-    CLIWrite( cli, DW_DEBUG_REF, buf, 1 );
+    *end++ = REF_CODE_BASE + line_delta * REF_COLUMN_RANGE + column_delta;
+    CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
     HandleReference( cli, dependant, DW_DEBUG_REF );
 }
 
