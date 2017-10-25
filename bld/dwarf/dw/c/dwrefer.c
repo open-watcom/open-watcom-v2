@@ -102,8 +102,7 @@ void EndRef( dw_client cli )
     if( this != NULL && this->scope == cli->references.scope ) {
         cli->references.delayed = CarveFreeLink( cli->references.delay_carver, this );
     } else {
-        static const uint_8 buf[] = { REF_END_SCOPE };
-        CLIWrite( cli, DW_DEBUG_REF, buf, sizeof( buf ) );
+        CLIWriteU8( cli, DW_DEBUG_REF, REF_END_SCOPE );
     }
 }
 

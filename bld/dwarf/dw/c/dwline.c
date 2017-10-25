@@ -118,38 +118,34 @@ void DWENTRY DWSetFile( dw_client cli, const char *filename )
 
 void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column column, dw_addr_offset addr )
 {
-    uint_8              buf[3 + 2 * MAX_LEB128];
+    uint_8              buf[3 + LEB128 + 3 + 2 * MAX_LEB128];
     uint_8              *end;
-    size_t              size;
 
+    end = buf;
     /* set the basic_block register properly */
     if( info & DW_LN_BLK ) {
-        static const uint_8 block_attrs[] = { DW_LNS_set_basic_block };
-        CLIWrite( cli, DW_DEBUG_LINE, block_attrs, sizeof( block_attrs ) );
+        *end++ = DW_LNS_set_basic_block;
     }
 
     /* set the is_stmt register properly */
     if( info & DW_LN_STMT ) {
         if( !cli->debug_line.is_stmt ) {
-            static const uint_8 stmt_attr[] = { DW_LNS_negate_stmt };
+            *end++ = DW_LNS_negate_stmt;
             cli->debug_line.is_stmt = 1;
-            CLIWrite( cli, DW_DEBUG_LINE, stmt_attr, sizeof( stmt_attr ) );
         }
     } else if( cli->debug_line.is_stmt ) {
-        static const uint_8 stmt_attr[] = { DW_LNS_negate_stmt };
+        *end++ = DW_LNS_negate_stmt;
         cli->debug_line.is_stmt = 0;
-        CLIWrite( cli, DW_DEBUG_LINE, stmt_attr, sizeof( stmt_attr ) );
     }
 
     if( column != cli->debug_line.column ) {
         cli->debug_line.column = column;
-        buf[0] = DW_LNS_set_column;
-        end = LEB128( buf + 1, column );
-        CLIWrite( cli, DW_DEBUG_LINE, buf, end - buf );
+        *end++ = DW_LNS_set_column;
+        end = LEB128( end, column );
     }
 
-    size = DWLineGen( line_num - cli->debug_line.line, addr - cli->debug_line.addr, buf );
-    CLIWrite( cli, DW_DEBUG_LINE, buf, size );
+    end = DWLineGen( line_num - cli->debug_line.line, addr - cli->debug_line.addr, end );
+    CLIWrite( cli, DW_DEBUG_LINE, buf, end - buf );
     cli->debug_line.addr = addr;
     cli->debug_line.line = line_num;
 }
@@ -236,9 +232,9 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
 
 void FiniDebugLine( dw_client cli )
 {
-    static const uint_8     buf[] = { 0, 1, DW_LNE_end_sequence };
+    static const uint_8     end_seq[] = { 0, 1, DW_LNE_end_sequence };
 
-    CLIWrite( cli, DW_DEBUG_LINE, buf, sizeof( buf ) );
+    CLIWrite( cli, DW_DEBUG_LINE, end_seq, sizeof( end_seq ) );
     /* backpatch the section length */
     CLISectionSetSize( cli, DW_DEBUG_LINE );
     FreeChain( cli, cli->debug_line.files );

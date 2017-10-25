@@ -273,7 +273,7 @@ static void DwarfAddLines( lineinfo *info )
         }
         prevline.linnum += linedelta;
         prevline.off += addrdelta;
-        dwsize += DWLineGen( linedelta, addrdelta, buff );
+        dwsize += DWLineGen( linedelta, addrdelta, buff ) - buff;
         lineptr = (void *)( (char *)lineptr + item_size );
     }
     CurrMod->d.d->dasi.size += dwsize;
@@ -606,7 +606,7 @@ void DwarfGenLines( lineinfo *info )
         }
         prevline.linnum += linedelta;
         prevline.off += addrdelta;
-        dwsize = DWLineGen( linedelta, addrdelta, buff );
+        dwsize = DWLineGen( linedelta, addrdelta, buff ) - buff;
         PutInfo( vmem_addr, buff, dwsize );
         vmem_addr += dwsize;
         lineptr = (void *)( (char *)lineptr + item_size );

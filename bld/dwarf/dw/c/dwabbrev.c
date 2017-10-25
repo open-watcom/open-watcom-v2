@@ -129,10 +129,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
         };
         CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     } else {
-        static const uint_8 sibling_attr[] = {
-            DW_CHILDREN_no
-        };
-        CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
+        CLIWriteU8( cli, DW_DEBUG_ABBREV, DW_CHILDREN_no );
     }
 
     /* AT_decl_file and AT_decl_line must occur here */
@@ -148,7 +145,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     /* now emit the extra attributes */
     for( i = 0; i < sizeof( bitEncodings ) / sizeof( bitEncodings[0] ); ++i ) {
         if( *abbrev & bitEncodings[i].bit ) {
-            CLIWrite( cli, DW_DEBUG_ABBREV, bitEncodings[i].data, 2 );
+            CLIWrite( cli, DW_DEBUG_ABBREV, bitEncodings[i].data, sizeof( bitEncodings[0].data ) );
         }
     }
 

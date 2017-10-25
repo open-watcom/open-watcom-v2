@@ -64,9 +64,7 @@ void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name )
 
 void DWENTRY DWMacEndFile( dw_client cli )
 {
-    static const uint_8 buf[] = { DW_MACINFO_end_file };
-
-    CLIWrite( cli, DW_DEBUG_MACINFO, buf, sizeof( buf ) );
+    CLIWriteU8( cli, DW_DEBUG_MACINFO, DW_MACINFO_end_file );
 }
 
 
@@ -108,7 +106,6 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     uint_8              buf[1 + MAX_LEB128];
     uint_8              *end;
     dw_parm             *parm;
-    static const char   parms_term[] = { ' ' };
 
     _Validate( mac != NULL );
 
@@ -118,21 +115,18 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     CLIWrite( cli, DW_DEBUG_MACINFO, mac->name, mac->len );
     parm = mac->parms;
     if( parm != NULL ) {
-        static const char   parms_start[] = { '(' };
-        static const char   parms_end[] = { ')' };
-        CLIWrite( cli, DW_DEBUG_MACINFO, parms_start, sizeof( parms_start ) );
+        CLIWriteU8( cli, DW_DEBUG_MACINFO, '(' );
         /* parms are in the linked list in reverse order */
         for( parm = ReverseChain( parm ); parm->next != NULL; parm = FreeLink( cli, parm ) ) {
-            static const char   parm_sep[] = { ',' };
             CLIWrite( cli, DW_DEBUG_MACINFO, parm->name, parm->len );
-            CLIWrite( cli, DW_DEBUG_MACINFO, parm_sep, sizeof( parm_sep ) );
+            CLIWriteU8( cli, DW_DEBUG_MACINFO, ',' );
         }
         CLIWrite( cli, DW_DEBUG_MACINFO, parm->name, parm->len );
-        CLIWrite( cli, DW_DEBUG_MACINFO, parms_end, sizeof( parms_end ) );
+        CLIWriteU8( cli, DW_DEBUG_MACINFO, ')' );
         CLIFree( cli, parm );
     }
     /* write parms terminator */
-    CLIWrite( cli, DW_DEBUG_MACINFO, parms_term, sizeof( parms_term ) );
+    CLIWriteU8( cli, DW_DEBUG_MACINFO, ' ' );
     CLIFree( cli, mac );
     if( def == NULL )
         def = "";

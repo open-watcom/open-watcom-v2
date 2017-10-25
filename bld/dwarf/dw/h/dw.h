@@ -328,7 +328,7 @@ void            DWLineSeg(  dw_client  cli, dw_sym_handle sym );
 void            DWENTRY DWDeclFile( dw_client, char const *__fname );
 void            DWENTRY DWDeclPos( dw_client, dw_linenum, dw_column );
 
-unsigned        DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
+uint_8          * DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
 
 /* reference declarations */
 void            DWENTRY DWReference( dw_client, dw_linenum,

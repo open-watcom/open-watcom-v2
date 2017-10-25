@@ -514,24 +514,15 @@ uint_32 EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle 
     case 1: // block_8
         // value is a uint_8
         _Assert( expr_size <= 0xff );
-        {
-            uint_8   u8 = (uint_8)expr_size;
-            CLIWrite( cli, sect, &u8, sizeof( u8 ) );
-        }
+        CLIWriteU8( cli, sect, (uint_8)expr_size );
         break;
     case 2:   // block_16
         // value is a uint_16
         _Assert( expr_size <= 0xffff );
-        {
-            uint_16  u16 = (uint_16)expr_size;
-            CLIWrite( cli, sect, &u16, sizeof( u16 ) );
-        }
+        CLIWriteU16( cli, sect, (uint_16)expr_size );
         break;
     case 4:   // block_32
-        {
-            uint_32  u32 = expr_size;
-            CLIWrite( cli, sect, &u32, sizeof( u32 ) );
-        }
+        CLIWriteU32( cli, sect, expr_size );
         break;
     }
     syms_left = loc->u.expr.num_syms;
@@ -651,26 +642,23 @@ uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
     switch( loc->is_expr ) {
     case LOC_LIST:
         {
-            static const uint_8 buf[] = { DW_FORM_data4 };
-            CLIWrite( cli, sect, buf, sizeof( buf ) );
+            CLIWriteU8( cli, sect, DW_FORM_data4 );
             CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
             EmitLocList( cli, DW_DEBUG_LOC, loc );
-            return( sizeof( buf ) + sizeof( dw_sect_offs ) );
+            return( 1 + sizeof( dw_sect_offs ) );
         }
     case LOC_LIST_REF:
         {
-            static const uint_8 buf[] = { DW_FORM_data4 };
-            CLIWrite( cli, sect, buf, sizeof( buf ) );
+            CLIWriteU8( cli, sect, DW_FORM_data4 );
             CLISectionSeekAbs( cli, DW_DEBUG_LOC, loc->u.ref );
             CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
             CLISectionSeekEnd( cli, DW_DEBUG_LOC );
-            return( sizeof( buf ) + sizeof( dw_sect_offs ) );
+            return( 1 + sizeof( dw_sect_offs ) );
         }
     case LOC_EXPR:
         {
-            static const uint_8 buf[] = { DW_FORM_block2 };
-            CLIWrite( cli, sect, buf, sizeof( buf ) );
-            return( sizeof( buf ) + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
+            CLIWriteU8( cli, sect, DW_FORM_block2 );
+            return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
         }
     }
     return( 0 );
