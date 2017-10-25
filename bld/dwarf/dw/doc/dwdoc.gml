@@ -1,10 +1,72 @@
+:set symbol="headtxt0$" value="The DWARF writing library".
+:set symbol="headtxt1$" value="The DWARF writing library".
+:set symbol="headtext$" value="The DWARF writing library".
 :PSC proc='rita'.
 **RTA**wgmlstd.rta
 :ePSC.
 :LAYOUT.
 :HEADING
 threshold = 3
-:eLAYOUT.
+:PAGE
+        top_margin = '.3i'
+        left_margin = '1.25i'
+        right_margin = '7.25i'
+        depth = '8.5i'
+:DEFAULT
+        justify = no
+:WIDOW
+        threshold = 5
+:FIG
+        font = 4
+:XMP
+        pre_skip = 1
+        font = 4
+:H1
+        pre_top_skip = 2
+        post_skip = 1
+        number_form = none
+        page_eject = no
+:H2
+        pre_top_skip = 1
+        pre_skip = 0
+        post_skip = 1
+        font = 2
+        number_form = none
+:H3
+        pre_top_skip = 1
+        pre_skip = 0
+        post_skip = 1
+        font = 1
+        number_font = 3
+        number_form = none
+:DT
+        font = 0
+:DD
+        line_left = '1.5i'
+        font = 0
+:DDHD
+        font = 3
+:INDEX
+        columns = 2
+:TOC
+        toc_levels = 2
+:APPENDIX
+        columns = 2
+:SL
+        left_indent = '0.3i'
+        skip = 0
+:OL
+        left_indent = '0.3i'
+        align = '0.3i'
+:UL
+        left_indent = '0.3i'
+        skip = 0
+        align = 1
+:DL
+        left_indent = '0.25i'
+        skip = 0
+        align = '1i'
+:eLAYOUT
 :GDOC.
 :FRONTM.
 :TITLEP.
@@ -52,9 +114,8 @@ numbers passed to :hp2.DWLineNum:ehp2. or :hp2.DWReference:ehp2..
 :DT.dw_column
 :DD.A column number.  It must be an unsigned integer type.
 :DT.dw_column_delta
-:DD.dw_column_delta is a type that can hold the largest possible
-difference between two adjacent column numbers
-passed to :hp2.DWReference:ehp2..
+:DD.Type that can hold the largest possible difference between two 
+adjacent column numbers passed to :hp2.DWReference:ehp2..
 :DT.dw_size_t
 :DD.Used for sizes of various things such as block constants
 (i.e. for DWAddConstant) and the :hp2.size:ehp2. parameter to
@@ -65,6 +126,14 @@ unsigned integer constant.
 :DT.dw_sconst
 :DD.A signed integer type that can hold the largest possible
 signed integer constant.
+:DT.dw_sectnum
+:DD.Enumerated type that can hold all defined Dwarf sections, 
+passed to client functions
+:DT.dw_out_offset
+:DD.A integer type that can hold the largest possible section offset 
+passed to :hp2.CLISeek:ehp2. and returned by :hp2.CLITell:ehp2.
+:DT.dw_reloc_type
+:DD.A integer type that can hold the all relocation type
 :edl.
 
 :H1.Initialization and Finalization
@@ -90,20 +159,20 @@ the call to DWInit.
 :XMP.
 :SF font=4.
 typedef struct {
-    void		(*reloc)( uint, uint, ... );
-    void		(*write)( uint, const void *, dw_size_t );
-    void		(*seek)( uint, long, uint );
-    long		(*tell)( uint );
-    void *		(*alloc)( size_t );
-    void		(*free)( void * );
+    void          (*reloc)( dw_sectnum, uint, ... );
+    void          (*write)( dw_sectnum, const void *, dw_size_t );
+    void          (*seek)( dw_sectnum, dw_out_offset, int );
+    dw_out_offset (*tell)( dw_sectnum );
+    void          *(*alloc)( size_t );
+    void          (*free)( void * );
 } dw_funcs;
 
 typedef struct {
-    dw_lang		language;
-    uint_8		compiler_options;
-    const char *	producer_name;
-    jmp_buf		exception_handler;
-    dw_funcs		funcs;
+    dw_lang       language;
+    uint_8        compiler_options;
+    const char    *producer_name;
+    jmp_buf       exception_handler;
+    dw_funcs      funcs;
 } dw_init_info;
 :eSF.
 :eXMP.
