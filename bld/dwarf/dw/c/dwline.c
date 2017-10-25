@@ -118,7 +118,7 @@ void DWENTRY DWSetFile( dw_client cli, const char *filename )
 
 void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column column, dw_addr_offset addr )
 {
-    uint_8              buf[3 + LEB128 + 3 + 2 * MAX_LEB128];
+    uint_8              buf[3 + MAX_LEB128 + 3 + 2 * MAX_LEB128];
     uint_8              *end;
 
     end = buf;
