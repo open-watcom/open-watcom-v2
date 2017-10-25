@@ -293,19 +293,13 @@ dw_handle       DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu );
 void            DWENTRY DWEndCompileUnit( dw_client );
 
 /* macro definitions */
-void            DWENTRY DWMacStartFile( dw_client, dw_linenum __line,
-                            char const *__file_name );
+void            DWENTRY DWMacStartFile( dw_client, dw_linenum __line, char const *__file_name );
 void            DWENTRY DWMacEndFile( dw_client );
-dw_macro        DWENTRY DWMacDef( dw_client, dw_linenum __line,
-                            char const *__macro_name );
-void            DWENTRY DWMacParam( dw_client, dw_macro __macro,
-                            char const *__parm_name );
-void            DWENTRY DWMacFini( dw_client, dw_macro __macro,
-                            char const *__definition );
-void            DWENTRY DWMacUnDef( dw_client, dw_linenum __line,
-                            char const *__macro_name );
-void            DWENTRY DWMacUse( dw_client, dw_linenum __line,
-                            char const *__macro_name );
+dw_macro        DWENTRY DWMacDef( dw_client, dw_linenum __line, char const *__macro_name );
+void            DWENTRY DWMacParam( dw_client, dw_macro __macro, char const *__parm_name );
+void            DWENTRY DWMacFini( dw_client, dw_macro __macro, char const *__definition );
+void            DWENTRY DWMacUnDef( dw_client, dw_linenum __line, char const *__macro_name );
+void            DWENTRY DWMacUse( dw_client, dw_linenum __line, char const *__macro_name );
 
 /* file/line number management */
 
@@ -320,39 +314,27 @@ enum {
     DW_LN_STMT                  = 0x01,
     DW_LN_BLK                   = 0x02
 };
-void            DWENTRY DWLineNum( dw_client, uint __info,
-                            dw_linenum __line_num, dw_column __column,
-                            dw_addr_offset __addr );
-void DWLineAddr(  dw_client  cli, dw_sym_handle sym, dw_addr_offset addr );
-void            DWLineSeg(  dw_client  cli, dw_sym_handle sym );
+void            DWENTRY DWLineNum( dw_client, uint __info, dw_linenum __line_num,
+                            dw_column __column, dw_addr_offset __addr );
+void            DWLineAddr( dw_client  cli, dw_sym_handle sym, dw_addr_offset addr );
+void            DWLineSeg( dw_client  cli, dw_sym_handle sym );
 void            DWENTRY DWDeclFile( dw_client, char const *__fname );
 void            DWENTRY DWDeclPos( dw_client, dw_linenum, dw_column );
 
-uint_8          * DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
-
 /* reference declarations */
-void            DWENTRY DWReference( dw_client, dw_linenum,
-                            dw_column, dw_handle );
+void            DWENTRY DWReference( dw_client, dw_linenum, dw_column, dw_handle );
 
 /* Location expressions */
 dw_loc_id       DWENTRY DWLocInit( dw_client );
 dw_loc_label    DWENTRY DWLocNewLabel( dw_client, dw_loc_id __loc );
-void            DWENTRY DWLocSetLabel( dw_client, dw_loc_id __loc,
-                            dw_loc_label __label );
-void            DWENTRY DWLocReg( dw_client, dw_loc_id __loc,
-                            uint __reg );
-void            DWENTRY DWLocPiece( dw_client, dw_loc_id __loc,
-                            uint __size );
-void            DWENTRY DWLocStatic( dw_client, dw_loc_id __loc,
-                            dw_sym_handle __sym );
-void            DWENTRY DWLocSym( dw_client, dw_loc_id,
-                            dw_sym_handle, dw_reloc_type );
-void            DWENTRY DWLocSegment( dw_client, dw_loc_id __loc,
-                            dw_sym_handle __sym );
-void            DWENTRY DWLocConstU( dw_client, dw_loc_id __loc,
-                            dw_uconst __constant_value );
-void            DWENTRY DWLocConstS( dw_client, dw_loc_id __loc,
-                            dw_sconst __constant_value );
+void            DWENTRY DWLocSetLabel( dw_client, dw_loc_id __loc, dw_loc_label __label );
+void            DWENTRY DWLocReg( dw_client, dw_loc_id __loc, uint __reg );
+void            DWENTRY DWLocPiece( dw_client, dw_loc_id __loc, uint __size );
+void            DWENTRY DWLocStatic( dw_client, dw_loc_id __loc, dw_sym_handle __sym );
+void            DWENTRY DWLocSym( dw_client, dw_loc_id, dw_sym_handle, dw_reloc_type );
+void            DWENTRY DWLocSegment( dw_client, dw_loc_id __loc, dw_sym_handle __sym );
+void            DWENTRY DWLocConstU( dw_client, dw_loc_id __loc, dw_uconst __constant_value );
+void            DWENTRY DWLocConstS( dw_client, dw_loc_id __loc, dw_sconst __constant_value );
 void            DWENTRY DWLocOp0( dw_client, dw_loc_id __loc, dw_loc_op __op );
 void            DWENTRY DWLocOp( dw_client, dw_loc_id __loc, dw_loc_op __op, ... );
 dw_loc_handle   DWENTRY DWLocFini( dw_client, dw_loc_id __loc );
@@ -517,8 +499,7 @@ enum {          // Kind of format for default value
 };
 dw_handle       DWENTRY DWFormalParameter( dw_client, dw_handle __parm_type,
                             dw_loc_handle __parm_loc, dw_loc_handle __aseg,
-                            char const *__name, uint __default_value_type,
-                            ... );
+                            char const *__name, uint __default_value_type, ... );
 dw_handle       DWENTRY DWEllipsis( dw_client );
 dw_handle       DWENTRY DWLabel( dw_client, dw_loc_handle __aseg,
                             char const *__name, dw_addr_offset __start_scope );
@@ -539,7 +520,11 @@ void            DWENTRY DWAddress( dw_client, uint_32 );
 
 /* public names */
 void            DWENTRY DWPubname( dw_client, dw_handle __hdl, char const *__name );
-/* util used for PCH */
+
+/* functions used by linker */
+uint_8          * DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
+
+/* functions used for PCH */
 dw_sect_offs    DWENTRY DWGetHandleLocation( dw_client cli, dw_handle hdl );
 dw_handle       DWENTRY DWRefPCH( dw_client cli, uint_32 ref );
 
