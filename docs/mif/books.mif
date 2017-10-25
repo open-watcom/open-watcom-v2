@@ -20,6 +20,7 @@
 !inject devguide                                                   docpdf
 !inject drnt                 html  htmlhelp  nt                win
 !inject drwatcom             html  htmlhelp  nt                win
+!inject dwdoc                                                      docpdf
 !inject ebooks                               nt
 !inject editor               html  htmlhelp  nt                win
 !inject f77graph        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
@@ -594,6 +595,13 @@ book_title=$(company) $(bld_ver_str) Code Generator
 book_objs=$(objs_cgdoc)
 book_incs=$(incs_cgdoc)
 book_src=cgdoc
+
+!else ifeq hbook dwdoc
+# cgdoc
+book_title=$(company) $(bld_ver_str) DWARF Writer
+book_objs=$(objs_dwdoc)
+book_incs=$(incs_dwdoc)
+book_src=dwdoc
 
 !else ifeq hbook wddoc
 # wddoc
