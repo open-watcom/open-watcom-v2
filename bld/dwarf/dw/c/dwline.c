@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,10 @@
 #endif
 
 #include "dwpriv.h"
+#include "dwcliuti.h"
 #include "dwutils.h"
 #include "dwmem.h"
+#include "dwlngen.h"
 #include "dwline.h"
 
 static void writeFileName( dw_client cli, const char *name, size_t len ) // len of name including terminator

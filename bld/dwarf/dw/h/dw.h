@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -520,9 +521,6 @@ void            DWENTRY DWAddress( dw_client, uint_32 );
 
 /* public names */
 void            DWENTRY DWPubname( dw_client, dw_handle __hdl, char const *__name );
-
-/* functions used by linker */
-uint_8          * DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
 
 /* functions used for PCH */
 dw_sect_offs    DWENTRY DWGetHandleLocation( dw_client cli, dw_handle hdl );

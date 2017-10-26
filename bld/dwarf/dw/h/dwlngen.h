@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,49 +25,16 @@
 *
 *  ========================================================================
 *
-* Description:  Client independent utility functions.
+* Description:  Generate line information.
 *
 ****************************************************************************/
 
 
-#include "dwpriv.h"
-#include "dwutils.h"
+#ifndef DWLNGEN_H_INCLUDED
+#define DWLNGEN_H_INCLUDED
 
+#include "dwcnf.h"
 
-uint_8 *LEB128( uint_8 *buf, dw_sconst value )
-{
-    uint_8          byte;
+extern uint_8 *DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end );
 
-    /* we can only handle an arithmetic right shift */
-    if( value >= 0 ) {
-        for( ;; ) {
-            byte = value & 0x7f;
-            value >>= 7;
-            if( value == 0 && ( byte & 0x40 ) == 0 ) break;
-            *buf++ = byte | 0x80;
-        }
-    } else {
-        for( ;; ) {
-            byte = value & 0x7f;
-            value >>= 7;
-            if( value == -1 && ( byte & 0x40 ) ) break;
-            *buf++ = byte | 0x80;
-        }
-    }
-    *buf++ = byte;
-    return( buf );
-}
-
-uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
-{
-    uint_8          byte;
-
-    for( ;; ) {
-        byte = value & 0x7f;
-        value >>= 7;
-        if( value == 0 ) break;
-        *buf++ = byte | 0x80;
-    }
-    *buf++ = byte;
-    return( buf );
-}
+#endif

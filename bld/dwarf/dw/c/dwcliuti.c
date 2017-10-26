@@ -34,40 +34,62 @@
 #include "dwutils.h"
 
 
-uint_8 *LEB128( uint_8 *buf, dw_sconst value )
+void CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )
 {
-    uint_8          byte;
+    uint_8              buf[MAX_LEB128];
 
-    /* we can only handle an arithmetic right shift */
-    if( value >= 0 ) {
-        for( ;; ) {
-            byte = value & 0x7f;
-            value >>= 7;
-            if( value == 0 && ( byte & 0x40 ) == 0 ) break;
-            *buf++ = byte | 0x80;
-        }
-    } else {
-        for( ;; ) {
-            byte = value & 0x7f;
-            value >>= 7;
-            if( value == -1 && ( byte & 0x40 ) ) break;
-            *buf++ = byte | 0x80;
-        }
-    }
-    *buf++ = byte;
-    return( buf );
+    CLIWrite( cli, sect, buf, LEB128( buf, value ) - buf );
 }
 
-uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
-{
-    uint_8          byte;
 
-    for( ;; ) {
-        byte = value & 0x7f;
-        value >>= 7;
-        if( value == 0 ) break;
-        *buf++ = byte | 0x80;
-    }
-    *buf++ = byte;
-    return( buf );
+void CLIWriteULEB128( dw_client cli, dw_sectnum sect, dw_uconst value )
+{
+    uint_8              buf[MAX_LEB128];
+
+    CLIWrite( cli, sect, buf, ULEB128( buf, value ) - buf );
+}
+
+void CLISectionSetSize( dw_client cli, dw_sectnum sect )
+/* backpatch the section length */
+{
+    dw_sect_offs    size;
+
+    size = CLISectionOffset( cli, sect ) - sizeof( size );
+    CLISectionSeekOffset( cli, sect, 0 );
+    CLIWriteU32( cli, sect, size );
+    CLISectionSeekEnd( cli, sect );
+}
+
+void CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len )
+{
+    // the zeros array length must be big enought for all calls, now 16 bytes is OK
+    static const uint_8     zeros[16] = { 0 };
+
+    CLIWrite( cli, sect, zeros, len );
+}
+
+void CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data )
+{
+    CLIWrite( cli, sect, &data, sizeof( data ) );
+}
+
+void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
+{
+    char            buf[sizeof( uint_16 )];
+
+    WriteU16( buf, data );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
+}
+
+void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
+{
+    char            buf[sizeof( uint_32 )];
+
+    WriteU32( buf, data );
+    CLIWrite( cli, sect, buf, sizeof( buf ) );
+}
+
+void CLIWriteString( dw_client cli, dw_sectnum sect, const char *str )
+{
+    CLIWrite( cli, sect, str, strlen( str ) + 1 );
 }

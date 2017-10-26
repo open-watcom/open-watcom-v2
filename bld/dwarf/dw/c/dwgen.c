@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "dwinfo.h"
 #include "dwline.h"
 #include "dwmac.h"
-#include "dwutils.h"
+#include "dwcliuti.h"
 #include "dwabbrev.h"
 #include "dwtype.h"
 #include "dwdie.h"

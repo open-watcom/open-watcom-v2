@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,10 @@
 #include "dwpriv.h"
 #include "dwutils.h"
 #include "dwline.h"
+#include "dwlngen.h"
 
 
-uint_8 * DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end )
+uint_8 * DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end )
 {
     uint                opcode;
     dw_addr_delta       addr;
