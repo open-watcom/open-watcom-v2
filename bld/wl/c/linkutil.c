@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -547,22 +548,27 @@ void FiniEnvVars( void )
     }
 }
 
-f_handle FindPath( const char *name )
-/***********************************/
+f_handle FindPath( const char *name, char *fullname )
+/***************************************************/
 {
     const char  *path_list;
     f_handle    file;
     char        fullpath[PATH_MAX];
 
-    file = QObjOpen( name );
+
+    strcpy( fullpath, name );
+    file = QObjOpen( fullpath );
     if( file == NIL_FHANDLE && ExePath != NULL ) {
         for( path_list = ExePath; *path_list != '\0'; ) {
             strcpy( MakePath( fullpath, &path_list ), name );
             file = QObjOpen( fullpath );
             if( file != NIL_FHANDLE ) {
-                return( file );
+                break;
             }
         }
+    }
+    if( file != NIL_FHANDLE && fullname != NULL ) {
+        strcpy( fullname, fullpath );
     }
     return( file );
 }

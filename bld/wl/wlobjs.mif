@@ -46,6 +46,7 @@ common_objs = &
     $(_subdir_)dbginfo.obj &
     $(_subdir_)debug.obj &
     $(_subdir_)distrib.obj &
+    $(_subdir_)dosstub.obj &
     $(_subdir_)global.obj &
     $(_subdir_)hash.obj &
     $(_subdir_)ideentry.obj &

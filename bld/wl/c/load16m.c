@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "linkstd.h"
 #include "alloc.h"
 #include "msg.h"
@@ -47,6 +49,8 @@
 #include "objcalc.h"
 #include "dbgall.h"
 #include "ring.h"
+
+#include "clibext.h"
 
 
 /* Notes:
@@ -257,13 +261,19 @@ static unsigned_32 WriteStubProg( void )
 {
     unsigned_32 size;
     f_handle    fhandle;
+    char        fullname[PATH_MAX];
+    size_t      len;
 
     size = 0;
     if( FmtData.u.d16m.stub != NULL ) {
-        fhandle = FindPath( FmtData.u.d16m.stub );
+        fhandle = FindPath( FmtData.u.d16m.stub, fullname );
         if( fhandle == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
         } else {
+            _LnkFree( FmtData.u.d16m.stub );
+            len = strlen( fullname ) + 1;
+            _ChkAlloc( FmtData.u.d16m.stub, len );
+            memcpy( FmtData.u.d16m.stub, fullname, len );
             size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
             QClose( fhandle, FmtData.u.d16m.stub );
         }

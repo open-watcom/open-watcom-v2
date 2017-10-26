@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include <string.h>
+#include <stdio.h>
 #include <ctype.h>
 #include "wio.h"
 #include "linkstd.h"
@@ -62,9 +64,11 @@
 #include "wres.h"
 #include "rcstrblk.h"
 #include "rcstr.h"
+#include "dosstub.h"
 #include "loados2.h"
 
 #include "clibext.h"
+
 
 #define STUB_ALIGN 16
 
@@ -96,19 +100,6 @@ typedef struct ResTable {
     StringsBlock    Str;
 } ResTable;
 
-
-static unsigned_8       DosStub[] = {
-    0x4D, 0x5A, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
-    0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
-    0x0E, 0x1F, 0xBA, 0x0E, 0x00, 0xB4, 0x09, 0xCD,
-    0x21, 0xB8, 0x01, 0x4C, 0xCD, 0x21
-};
 
 static unsigned long WriteOS2Relocs( group_entry *group )
 /*******************************************************/
@@ -850,7 +841,7 @@ void FiniOS2LoadFile( void )
     WResFileID          res_fid;        // Handle for resources file
     ResTable            outRes;         // Resources to go out
 
-    stub_len = Write_Stub_File( STUB_ALIGN );
+    stub_len = WriteStubFile( STUB_ALIGN );
     temp = sizeof( os2_exe_header );
     exe_head.segment_off = temp;
     SeekLoad( stub_len + sizeof( os2_exe_header ) );
@@ -1061,76 +1052,8 @@ void FreeImpNameTab( void )
     FmtData.u.os2.imp_tab_list = NULL;
 }
 
-static size_t DoExeName( void )
-/*****************************/
-/* make up the "program is %f" string, and put it in tokbuff.*/
-{
-    char        rc_buff[RESOURCE_MAX_SIZE];
-    size_t      msgsize;
-
-    Msg_Get( MSG_IS_A_EXE, rc_buff );
-    msgsize = FmtStr( TokBuff, TokSize, rc_buff );
-    TokBuff[msgsize++] = '\r';
-    TokBuff[msgsize++] = '\n';
-    TokBuff[msgsize] = '$';     /* end of string for int 21 fn. 9 */
-    return( msgsize + 1 );
-}
-
-unsigned_32 GetStubSize( void )
-/*****************************/
-/* return the size of the stub file (unaligned) */
-{
-    unsigned_32     stub_len = 0;
-    f_handle        the_file;
-    dos_exe_header  dosheader;
-    unsigned_32     read_len;
-    unsigned_32     reloc_size;
-    unsigned_32     code_start;
-
-    if( FmtData.u.os2.no_stub ) {
-        return( 0 );
-    }
-    stub_len = sizeof( DosStub ) + DoExeName();
-    if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
-        the_file = FindPath( FmtData.u.os2.stub_file_name );
-        if( the_file == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
-        } else {
-            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
-            if( dosheader.signature == DOS_SIGNATURE ) {
-                code_start = dosheader.hdr_size * 16ul;
-                read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
-                // make sure reloc_size is a multiple of 16.
-                reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
-                dosheader.hdr_size = 4 + reloc_size / 16;
-                stub_len = read_len + dosheader.hdr_size * 16ul;
-            }
-            QClose( the_file, FmtData.u.os2.stub_file_name );
-        }
-    }
-    return( stub_len );
-}
-
-static unsigned_32 WriteDefStub( unsigned_32 stub_align )
-/*******************************************************/
-/* write the default stub to the executable file */
-{
-    size_t              msgsize;
-    unsigned_32         fullsize;
-    unsigned_32         *stubend;
-
-    msgsize = DoExeName();
-    fullsize = ROUND_UP( msgsize + sizeof( DosStub ), stub_align );
-    stubend = (unsigned_32 *)( DosStub + NH_OFFSET );
-    *stubend = fullsize;
-    WriteLoad( DosStub, sizeof( DosStub ) );
-    WriteLoad( TokBuff, msgsize );
-    PadLoad( fullsize - msgsize - sizeof( DosStub ) );
-    return( fullsize );
-}
-
-unsigned_32 Write_Stub_File( unsigned_32 stub_align )
-/***************************************************/
+unsigned_32 WriteStubFile( unsigned_32 stub_align )
+/*************************************************/
 {
     unsigned_32     stub_len;
     f_handle        the_file;
@@ -1141,24 +1064,30 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
     unsigned_16     num_relocs;
     unsigned_32     the_reloc;
     unsigned_32     code_start;
+    char            fullname[PATH_MAX];
+    size_t          len;
 
     if( FmtData.u.os2.no_stub ) {
         stub_len = 0;
     } else if( FmtData.u.os2.stub_file_name == NULL ) {
-        stub_len = WriteDefStub( stub_align );
+        stub_len = WriteDOSDefStub( stub_align );
     } else if( stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) == 0 ) {
         LnkMsg( ERR+MSG_STUB_SAME_AS_LOAD, NULL );
-        stub_len = WriteDefStub( stub_align );
+        stub_len = WriteDOSDefStub( stub_align );
     } else {
-        the_file = FindPath( FmtData.u.os2.stub_file_name );
+        the_file = FindPath( FmtData.u.os2.stub_file_name, fullname );
         if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
-            return( WriteDefStub( stub_align ) );   // NOTE: <== a return here.
+            return( WriteDOSDefStub( stub_align ) );   // NOTE: <== a return here.
         }
+        _LnkFree( FmtData.u.os2.stub_file_name );
+        len = strlen( fullname ) + 1;
+        _ChkAlloc( FmtData.u.os2.stub_file_name, len );
+        memcpy( FmtData.u.os2.stub_file_name, fullname, len );
         QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
         if( dosheader.signature != DOS_SIGNATURE ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
-            stub_len = WriteDefStub( stub_align );
+            stub_len = WriteDOSDefStub( stub_align );
         } else {
             QSeek( the_file, dosheader.reloc_offset, FmtData.u.os2.stub_file_name );
             dosheader.reloc_offset = 0x40;

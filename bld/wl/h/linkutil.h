@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ extern void             LinkList( void *, void * );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
-extern f_handle         FindPath( const char * );
+extern f_handle         FindPath( const char *, char *fullname );
 extern name_list        *AddNameTable( const char *, size_t, bool, name_list ** );
 extern unsigned_16      blog_16( unsigned_16 );
 extern unsigned_16      blog_32( unsigned_32 );

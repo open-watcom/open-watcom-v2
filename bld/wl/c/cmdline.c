@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -223,10 +224,10 @@ void DoCmdFile( char *fname )
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
     }
     namelnk = GetEnvString( INIT_FILE_ENV );
-    file = ( namelnk != NULL ) ? FindPath( namelnk ) : NIL_FHANDLE;
+    file = ( namelnk != NULL ) ? FindPath( namelnk, NULL ) : NIL_FHANDLE;
     if( file == NIL_FHANDLE ) {
         namelnk = INIT_FILE_NAME;
-        file = FindPath( namelnk );
+        file = FindPath( namelnk, NULL );
     }
     if( file != NIL_FHANDLE ) {
         fname = ChkStrDup( namelnk );
@@ -337,7 +338,7 @@ static void Crash( bool check_file )
     f_handle    fp;
 
     if( check_file ) {
-        fp = FindPath( HELP_FILE_NAME );
+        fp = FindPath( HELP_FILE_NAME, NULL );
         if( fp != NIL_FHANDLE ) {
             WLPrtBanner();
             for( ; (len = QRead( fp, buff, 80, HELP_FILE_NAME )) != 0; ) {

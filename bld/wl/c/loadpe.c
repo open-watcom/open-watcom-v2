@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "exeos2.h"
 #include "loados2.h"
 #include "exepe.h"
+#include "exedos.h"
 #include "reloc.h"
 #include "specials.h"
 #include "pcobj.h"
@@ -66,6 +68,7 @@
 #include "sharedio.h"
 #include "exeutil.h"
 #include "newmem.h"
+#include "dosstub.h"
 
 #include "clibext.h"
 
@@ -1152,7 +1155,7 @@ void FiniPELoadFile( void )
         PE64( h ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
-        stub_len = Write_Stub_File( STUB_ALIGN );
+        stub_len = WriteStubFile( STUB_ALIGN );
         _ChkAlloc( object, num_objects * sizeof( pe_object ) );
         memset( object, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
@@ -1301,7 +1304,7 @@ void FiniPELoadFile( void )
         PE32( h ).num_tables = PE_TBL_NUMBER;
         CurrSect = Root;
         SeekLoad( 0 );
-        stub_len = Write_Stub_File( STUB_ALIGN );
+        stub_len = WriteStubFile( STUB_ALIGN );
         _ChkAlloc( object, num_objects * sizeof( pe_object ) );
         memset( object, 0, num_objects * sizeof( pe_object ) );
         /* leave space for the header and object table */
@@ -1409,6 +1412,47 @@ void FiniPELoadFile( void )
     _LnkFree( object );
 }
 
+static unsigned_32 getStubSize( void )
+/************************************/
+/* return the size of the stub file (unaligned) */
+{
+    unsigned_32     stub_len = 0;
+    f_handle        the_file;
+    dos_exe_header  dosheader;
+    unsigned_32     read_len;
+    unsigned_32     reloc_size;
+    unsigned_32     code_start;
+    char            fullname[PATH_MAX];
+    size_t          len;
+
+    if( FmtData.u.os2.no_stub ) {
+        return( 0 );
+    }
+    stub_len = GetDOSDefStubSize();
+    if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
+        the_file = FindPath( FmtData.u.os2.stub_file_name, fullname );
+        if( the_file == NIL_FHANDLE ) {
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
+        } else {
+            _LnkFree( FmtData.u.os2.stub_file_name );
+            len = strlen( fullname ) + 1;
+            _ChkAlloc( FmtData.u.os2.stub_file_name, len );
+            memcpy( FmtData.u.os2.stub_file_name, fullname, len );
+            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
+            if( dosheader.signature == DOS_SIGNATURE ) {
+                code_start = dosheader.hdr_size * 16ul;
+                read_len = dosheader.file_size * 512ul - (-dosheader.mod_size & 0x1ff) - code_start;
+                // make sure reloc_size is a multiple of 16.
+                reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
+                dosheader.hdr_size = 4 + reloc_size / 16;
+                stub_len = read_len + dosheader.hdr_size * 16ul;
+            }
+            QClose( the_file, FmtData.u.os2.stub_file_name );
+        }
+    }
+    return( stub_len );
+}
+
 unsigned long GetPEHeaderSize( void )
 /******************************************/
 {
@@ -1416,7 +1460,7 @@ unsigned long GetPEHeaderSize( void )
     unsigned            num_objects;
 
     num_objects = FindNumObjects();
-    size = ROUND_UP( GetStubSize(), STUB_ALIGN ) + num_objects * sizeof( pe_object );
+    size = ROUND_UP( getStubSize(), STUB_ALIGN ) + num_objects * sizeof( pe_object );
     if( LinkState & HAVE_X64_CODE ) {
         size += sizeof( pe_header64 );
     } else {
