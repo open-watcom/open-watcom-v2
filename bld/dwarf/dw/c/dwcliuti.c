@@ -32,6 +32,7 @@
 
 #include "dwpriv.h"
 #include "dwutils.h"
+#include "dwcliuti.h"
 
 
 void CLIWriteLEB128( dw_client cli, dw_sectnum sect, dw_sconst value )

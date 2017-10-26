@@ -12,6 +12,7 @@ objs = &
 dwabbrev.obj &
 dwarange.obj &
 dwcarve.obj &
+dwcliuti.obj &
 dwdie.obj &
 dwdecl.obj &
 dwgen.obj &
