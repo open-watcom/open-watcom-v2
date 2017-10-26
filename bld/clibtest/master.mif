@@ -597,12 +597,12 @@ lnx_3s.exe : $(srcfile)
 
 # Run 16-bit DOS executables
 $+$(t_rundos)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run CauseWay 32-bit DOS extended executables
 $+$(t_runcw)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run DOS/4G 32-bit DOS extended executables
@@ -615,48 +615,48 @@ $+$(t_rund4g)$- : .symbolic
 !else
     @set PATH=$(%WATCOM)\binw
 !endif
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @set PATH=$(%OPATH)
     @set OPATH=
 
 # Run PharLap 386|DOS 32-bit DOS extended executables
 $+$(t_runpls)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Windows 3.x 16-bit executables
 $+$(t_runw16)$- : .symbolic
     @rm -f tmp.log
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
 
 # Run Windows 3.x 32-bit executables (Win386)
 $+$(t_runw386)$- : .symbolic
     @rm -f tmp.log
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
 
 # Run OS/2 16-bit executables
 $+$(t_runos2)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run OS/2 32-bit executables
 $+$(t_runos3)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Windows NT (Win32) executables
 $+$(t_runwnt)$- : .symbolic
-    -$@.exe
+    -$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Linux executables
 $+$(t_runlnx)$- : .symbolic
-    -./$@.exe
+    -./$@.exe $(extra_run)
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 clean global : .procedure
