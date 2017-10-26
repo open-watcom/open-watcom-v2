@@ -1,4 +1,4 @@
-#pmake: build lcl os_nt cpu_x64 trap x86
+#pmake: nobuild lcl os_nt cpu_x64 trap x86
 
 host_os  = nt
 host_cpu = x64
