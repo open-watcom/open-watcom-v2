@@ -4,7 +4,7 @@
 !else ifeq host_cpu arm
 !undef __WATCOM_TOOLS__
 !else
-!define __WATCOM_TOOLS__
+__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
 !endif
 !endif
 
@@ -191,9 +191,11 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
-!if !defined( bootstrap ) || ( $(watcom_ver) > 1300 )
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) > 1290
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
+!endif
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -360,10 +362,10 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!if !defined( bootstrap ) || ( $(watcom_ver) > 1290 )
+!ifdef __WATCOM_TOOLS__
+!if $(__WATCOM_TOOLS__) > 1290
 c_flags          = -za99
-!else
-c_flags          =
+!endif
 !endif
 
 !ifdef __WATCOM_TOOLS__

@@ -8,6 +8,7 @@
 # Set the version numbers
 export OWBLDVER=20
 export OWBLDVERSTR=2.0
+export OWBLDVERTOOL=1300
 
 # Subdirectory to be used for building OW build tools
 if [ -z "$OWOBJDIR" ]; then export OWOBJDIR=binbuild; fi
@@ -32,13 +33,13 @@ export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
 if [ -n "$OWDEFINCLUDE" ]; then export INCLUDE=$OWDEFINCLUDE; fi
 if [ -n "$OWDEFWATCOM" ]; then export WATCOM=$OWDEFWATCOM; fi
 
-# Set Watcom tool chain version to WATCOMVER variable
-export WATCOMVER=0
+# Set the toolchain version to OWTOOLSVER variable
+export OWTOOLSVER=0
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    echo export WATCOMVER=__WATCOMC__>watcom.gc
-    wcc386 -p watcom.gc >watcom.sh
-    . ./watcom.sh
-    rm watcom.*
+    echo export OWTOOLSVER=__WATCOMC__>getversi.gc
+    wcc386 -p getversi.gc >getversi.sh
+    . ./getversi.sh
+    rm getversi.*
 fi
 
 echo Open Watcom build environment

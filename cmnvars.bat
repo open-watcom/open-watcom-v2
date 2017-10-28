@@ -8,6 +8,7 @@ REM       file at the end.
 REM Set the version numbers
 set OWBLDVER=20
 set OWBLDVERSTR=2.0
+set OWBLDVERTOOL=1300
 
 REM Set up default path information variables
 if not "%OWDEFPATH%" == "" goto defpath_set
@@ -33,13 +34,13 @@ set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 
-REM Set Watcom tool chain version to WATCOMVER variable
-set WATCOMVER=0
+REM Set the toolchain version to OWTOOLSVER variable
+set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
-echo set WATCOMVER=__WATCOMC__>watcom.gc
-wcc386 -p watcom.gc >watcom.bat
-call watcom.bat
-del watcom.*
+echo set OWTOOLSVER=__WATCOMC__>getversi.gc
+wcc386 -p getversi.gc >getversi.bat
+call getversi.bat
+del getversi.*
 :no_watcom
 
 REM OS specifics
