@@ -1,19 +1,37 @@
-!ifndef bootstrap
-!ifeq host_cpu x64
-!undef __WATCOM_TOOLS__
-!else ifeq host_cpu arm
-!undef __WATCOM_TOOLS__
-!else
-__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
-!endif
-!endif
-
 # Perform basic sanity checks
 !ifeq host_os #nothing
 !error The host_os macro must be defined!
 !endif
 !ifeq host_cpu #nothing
 !error The host_cpu macro must be defined!
+!endif
+
+# use native tools for x64 cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .SYMBOLIC
+!else ifndef bld64host_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+# use native tools for arm cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!else ifeq host_cpu arm
+!ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+# supported architectures
+# set __WATCOM_TOOLS__ for OW build
+!else
+!ifndef bootstrap
+__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
+!endif
 !endif
 
 # define OW build windows version for Win32 platform
