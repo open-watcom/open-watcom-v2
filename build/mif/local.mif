@@ -364,7 +364,7 @@ bld_ldflags_dll_cxx = -lc++
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else ifdef __GCC_TOOLS__
-!if ( $(__GCC_TOOLS__) < 7 )
+!if $(__GCC_TOOLS__) < 7
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else
