@@ -41,14 +41,17 @@ set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
 wcc386 -p getversi.gc >getversi.bat
-getversi.bat
-del getversi.*
+goto toolsver
 :no_watcom
+:toolsver
+if not exists getversi.bat goto no_toolsver
+call getversi.bat
+del getversi.*
+:no_toolsver
 
 REM OS specifics
 
 REM Ensure COMSPEC points to CMD.EXE
 set COMSPEC=CMD.EXE
 
-echo Open Watcom compiler build environment
-
+echo Open Watcom build environment (OWTOOLSVER=%OWTOOLSVER%)

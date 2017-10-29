@@ -38,8 +38,16 @@ export OWTOOLSVER=0
 if [ "$OWTOOLS" = "WATCOM" ]; then
     echo export OWTOOLSVER=__WATCOMC__>getversi.gc
     wcc386 -p getversi.gc >getversi.sh
+elif [ "$OWTOOLS" = "CLANG" ]; then
+    echo export OWTOOLSVER=__clang_major__>getversi.gc
+    clang -x c -E getversi.gc -o getversi.sh
+elif [ "$OWTOOLS" = "GCC" ]; then
+    echo export OWTOOLSVER=__GNUC__>getversi.gc
+    gcc -x c -E getversi.gc -o getversi.sh
+fi
+if [ -f ./getversi.sh ]; then
     . ./getversi.sh
     rm getversi.*
 fi
 
-echo Open Watcom build environment
+echo "Open Watcom build environment (OWTOOLSVER=${OWTOOLSVER})"

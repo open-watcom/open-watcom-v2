@@ -39,9 +39,23 @@ set OWTOOLSVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
 wcc386 -p getversi.gc >getversi.bat
+goto toolsver
+:no_watcom
+if not '%OWTOOLS%' == 'VISUALC' goto no_visualc
+echo set OWTOOLSVER=_MSC_VER>getversi.gc
+cl -nologo -P -Fi getversi.bat getversi.gc
+goto toolsver
+:no_visualc
+if not '%OWTOOLS%' == 'INTEL' goto no_intel
+echo set OWTOOLSVER=__INTEL_COMPILER>getversi.gc
+icl -nologo -P -Fi getversi.bat getversi.gc
+goto toolsver
+:no_intel
+:toolsver
+if not exists getversi.bat goto no_toolsver
 call getversi.bat
 del getversi.*
-:no_watcom
+:no_toolsver
 
 REM OS specifics
 
@@ -52,4 +66,4 @@ set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
 :no_windows_nt
 
-echo Open Watcom build environment
+echo Open Watcom build environment ( OWTOOLSVER=%OWTOOLSVER% )

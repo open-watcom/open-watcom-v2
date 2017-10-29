@@ -28,6 +28,14 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 !endif
 
+# define newowtools macro to use new OW features
+#
+!ifdef __WATCOM_TOOLS__
+!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
+newowtools = 1
+!endif
+!endif
+
 !ifdef bootstrap
 objs_subdir = $(bin_subdir)
 !else
@@ -191,11 +199,9 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
-!ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) > 1290
+!ifdef newowtools
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
-!endif
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -362,10 +368,8 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!ifdef __WATCOM_TOOLS__
-!if $(__WATCOM_TOOLS__) > 1290
+!ifdef newowtools
 c_flags          = -za99
-!endif
 !endif
 
 !ifdef __WATCOM_TOOLS__
