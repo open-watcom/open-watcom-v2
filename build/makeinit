@@ -34,6 +34,9 @@ mif_path      = $(build_dir)/mif
 
 !ifeq %OWTOOLS WATCOM
 __WATCOM_TOOLS__ = $(%OWTOOLSVER)
+!if %OWTOOLSVER >= 1300
+bldnewowtools = 1
+!endif
 !else ifeq %OWTOOLS VISUALC
 __MSVC_TOOLS__ = $(%OWTOOLSVER)
 !else ifeq %OWTOOLS GCC
