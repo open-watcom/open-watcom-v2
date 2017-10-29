@@ -52,7 +52,7 @@ icl -nologo -P -Fi getversi.bat getversi.gc
 goto toolsver
 :no_intel
 :toolsver
-if not exists getversi.bat goto no_toolsver
+if not exist getversi.bat goto no_toolsver
 call getversi.bat
 del getversi.*
 :no_toolsver

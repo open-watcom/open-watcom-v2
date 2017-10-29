@@ -44,7 +44,7 @@ wcc386 -p getversi.gc >getversi.bat
 goto toolsver
 :no_watcom
 :toolsver
-if not exists getversi.bat goto no_toolsver
+if not exist getversi.bat goto no_toolsver
 call getversi.bat
 del getversi.*
 :no_toolsver
