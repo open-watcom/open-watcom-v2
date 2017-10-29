@@ -43,12 +43,12 @@ goto toolsver
 :no_watcom
 if not '%OWTOOLS%' == 'VISUALC' goto no_visualc
 echo set OWTOOLSVER=_MSC_VER>getversi.gc
-cl -nologo -P -Fi getversi.bat getversi.gc
+cl -nologo -EP getversi.gc>getversi.bat
 goto toolsver
 :no_visualc
 if not '%OWTOOLS%' == 'INTEL' goto no_intel
 echo set OWTOOLSVER=__INTEL_COMPILER>getversi.gc
-icl -nologo -P -Fi getversi.bat getversi.gc
+icl -nologo -EP getversi.gc>getversi.bat
 goto toolsver
 :no_intel
 :toolsver
