@@ -66,4 +66,4 @@ set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
 :no_windows_nt
 
-echo Open Watcom build environment ( OWTOOLSVER=%OWTOOLSVER% )
+echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%)

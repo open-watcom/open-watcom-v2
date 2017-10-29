@@ -54,4 +54,4 @@ REM OS specifics
 REM Ensure COMSPEC points to CMD.EXE
 set COMSPEC=CMD.EXE
 
-echo Open Watcom build environment (OWTOOLSVER=%OWTOOLSVER%)
+echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%)

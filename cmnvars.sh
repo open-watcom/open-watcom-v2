@@ -50,4 +50,4 @@ if [ -f ./getversi.sh ]; then
     rm getversi.*
 fi
 
-echo "Open Watcom build environment (OWTOOLSVER=${OWTOOLSVER})"
+echo "Open Watcom build environment (${OWTOOLS} version=${OWTOOLSVER})"
