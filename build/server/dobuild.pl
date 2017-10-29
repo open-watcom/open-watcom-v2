@@ -180,35 +180,35 @@ sub batch_output_build_wmake_builder
     print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd wmake';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/wmake';
+        print BATCH 'rm -f $OWBINDIR/wmake >>$OWBINDIR/bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ../wmake clean';
-            print BATCH 'wmake -h -f ../wmake';
+            print BATCH 'wmake -h -f ../wmake clean >>$OWBINDIR/bootx.log 2>&1';
+            print BATCH 'wmake -h -f ../wmake >>$OWBINDIR/bootx.log 2>&1';
         } else {
-            print BATCH 'make -f ../posmake clean';
-            print BATCH 'make -f ../posmake';
+            print BATCH 'make -f ../posmake clean >>$OWBINDIR/bootx.log 2>&1';
+            print BATCH 'make -f ../posmake >>$OWBINDIR/bootx.log 2>&1';
         }
     } else {
-        print BATCH 'if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe';
+        print BATCH 'if exist %OWBINDIR%\\wmake.exe del %OWBINDIR%\\wmake.exe >>%OWBINDIR%\\bootx.log 2>&1';
         if ($TOOLS eq 'WATCOM') {
-            print BATCH 'wmake -h -f ..\wmake clean';
-            print BATCH 'wmake -h -f ..\wmake';
+            print BATCH 'wmake -h -f ..\\wmake clean >>%OWBINDIR%\\bootx.log 2>&1';
+            print BATCH 'wmake -h -f ..\\wmake >>%OWBINDIR%\\bootx.log 2>&1';
         } else {
-            print BATCH 'nmake -nologo -f ..\nmake clean';
-            print BATCH 'nmake -nologo -f ..\nmake';
+            print BATCH 'nmake -nologo -f ..\\nmake clean >>%OWBINDIR%\\bootx.log 2>&1';
+            print BATCH 'nmake -nologo -f ..\\nmake >>%OWBINDIR%\\bootx.log 2>&1';
         }
     }
     # Create new builder tool, previous clean removed it.
     print BATCH "cd $OW"; print BATCH 'cd bld'; print BATCH 'cd builder';
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
-        print BATCH 'rm -f $OWBINDIR/builder';
-        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 clean';
-        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder.exe';
+        print BATCH 'rm -f $OWBINDIR/builder >>$OWBINDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 clean >>$OWBINDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/wmake -h -f ../binmake bootstrap=1 builder.exe >>$OWBINDIR/bootx.log 2>&1';
     } else {
-        print BATCH 'if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe';
-        print BATCH '%OWBINDIR%\wmake -h -f ..\binmake bootstrap=1 clean';
-        print BATCH '%OWBINDIR%\wmake -h -f ..\binmake bootstrap=1 builder.exe';
+        print BATCH 'if exist %OWBINDIR%\\builder.exe del %OWBINDIR%\\builder.exe >>%OWBINDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 clean >>%OWBINDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\wmake -h -f ..\\binmake bootstrap=1 builder.exe >>%OWBINDIR%\\bootx.log 2>&1';
     }
 }
 
@@ -231,6 +231,11 @@ sub make_boot_batch
     # Add additional commands to do the build.
     print BATCH "$setenv OWDOCBUILD=0";
     print BATCH "$setenv OWDOCQUIET=1";
+    if ($OStype eq 'UNIX') {
+        print BATCH 'if [ -f $OWBINDIR/bootx.log ]; then rm $OWBINDIR/bootx.log; fi';
+    } else {
+        print BATCH "if exist %OWBINDIR%\\bootx.log del %OWBINDIR%\\bootx.log";
+    }
     # Create fresh builder tools, to prevent lockup build server
     # if builder tools from previous build are somehow broken
     batch_output_build_wmake_builder();
