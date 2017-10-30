@@ -53,6 +53,17 @@
                             fflush( stdout );                               \
                             NumErrors++;                                    \
                             exit( -1 );                                     \
+                        }
+
+#define VERIFYX( exp )  if( !(exp) ) {                                      \
+                            fprintf( stdout,                                \
+                                "%s: ***FAILURE*** at line %d of %s.\n",    \
+                                    ProgramName, __LINE__,                  \
+                                    strlwr(__FILE__) );                     \
+                            fprintf( stdout, "%s\n", strerror(errno) );     \
+                            fflush( stdout );                               \
+                            NumErrors++;                                    \
+                            exit( -1 );                                     \
                         } else {                                            \
                             fprintf( stdout, "%s: OK at line %d of %s.\n",  \
                                     ProgramName, __LINE__,                  \
@@ -341,22 +352,22 @@ void TestLocking( void )
     int                 status;
 
     handle = open( "iotest.tmp", O_RDWR );
-    VERIFY( handle != -1 );
+    VERIFYX( handle != -1 );
 
     status = lock( handle, 0, 16384 );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 
     status = locking( handle, LK_LOCK, 16385 );
-    VERIFY( status == -1 );
+    VERIFYX( status == -1 );
 
     status = unlock( handle, 0, 16384 );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 
     status = locking( handle, LK_UNLCK, 16385 );
-    VERIFY( status == -1 );
+    VERIFYX( status == -1 );
 
     status = close( handle );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 }
 
 
