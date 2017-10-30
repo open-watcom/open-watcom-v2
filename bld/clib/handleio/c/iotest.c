@@ -45,12 +45,19 @@
 #endif
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
+                            fprintf( stdout,                                \
+                                "%s: ***FAILURE*** at line %d of %s.\n",    \
                                     ProgramName, __LINE__,                  \
                                     strlwr(__FILE__) );                     \
-                            printf( "%s\n", strerror(errno) );              \
+                            fprintf( stdout, "%s\n", strerror(errno) );     \
+                            fflush( stdout );                               \
                             NumErrors++;                                    \
                             exit( -1 );                                     \
+                        } else {                                            \
+                            fprintf( stdout, "%s: OK at line %d of %s.\n",  \
+                                    ProgramName, __LINE__,                  \
+                                    strlwr(__FILE__) );                     \
+                            fflush( stdout );                               \
                         }
 
 void TestOpenClose( void );
@@ -99,17 +106,19 @@ int main( int argc, char *argv[] )
 
     /*** Print a pass/fail message and quit ***/
     if( NumErrors!=0 ) {
-        printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        fprintf( stdout, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        fflush( stdout );
         return( EXIT_FAILURE );
     }
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
+    fprintf( stdout, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fflush( stdout );
+#ifdef __SW_BW
     {
         fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
         fclose( my_stdout );
         _dwShutDown();
     }
-    #endif
+#endif
     return( 0 );
 }
 
