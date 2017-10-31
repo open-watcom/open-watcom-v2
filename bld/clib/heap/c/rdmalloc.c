@@ -34,16 +34,17 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include "extfunc.h"
 #include "heapacc.h"
 #include "heap.h"
 #include "rtinit.h"
 #include "rdosdev.h"
 
+
 _WCRTLINK void *malloc( size_t amount )
 {
-    if( amount >= 0x800 )
+    if( amount >= 0x800 ) {
         return( RdosAllocateBigGlobalMem( amount ) );
-    else
+    } else {
         return( RdosAllocateSmallGlobalMem( amount ) );
+    }
 }
