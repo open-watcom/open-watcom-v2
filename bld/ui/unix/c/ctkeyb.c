@@ -29,10 +29,24 @@
 ****************************************************************************/
 
 
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
 #include <term.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include "uidef.h"
+#include "uishift.h"
+#include "unxuiext.h"
+#include "trie.h"
+#include "tixparse.h"
+#include "uivirt.h"
+#include "qdebug.h"
 #include "ctkeyb.h"
 
-unsigned short   ct_shift_state;
+
+#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
 enum {
     EV_STICKY_FUNC      = 0xff0,
@@ -42,18 +56,23 @@ enum {
     S_FUNC              = S_CAPS
 };
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
-
 struct an_in_term_info {
     EVENT               ev;
     char                *str;
 };
 
+static int ck_shift_state( void );
+
+static unsigned short   shift_state;
+
+static struct termios   SaveTermSet;
+static pid_t            SavePGroup;
+
 #define NUM_IN_TERM_INFO_MAPPINGS 74
 struct an_in_term_info InTerminfo[NUM_IN_TERM_INFO_MAPPINGS];
 
-bool init_interminfo( void )
-/**************************/
+static bool init_interminfo( void )
+/*********************************/
 {
     struct an_in_term_info      *entry;
 
@@ -243,11 +262,11 @@ static const event_shift_map ShiftMap[] = {
 
 void intern clear_shift( void )
 {
-    ct_shift_state = 0;
+    shift_state = 0;
 }
 
-void intern ck_arm( void )
-/************************/
+static void intern ck_arm( void )
+/*******************************/
 {
 }
 
@@ -281,8 +300,8 @@ int nextc( int n )      // delay in 0.1 seconds -- not to exceed 9
     return( ch );
 }
 
-void nextc_unget( unsigned char *str, int n )
-/*******************************************/
+void nextc_unget( char *str, size_t n )
+/*************************************/
 {
     UnreadPos -= n;
     //assert( UnreadPos >= 0 );
@@ -309,9 +328,9 @@ EVENT ck_keyboardevent( void )
 
     ev = TrieRead();
     ck_shift_state();
-    if( ct_shift_state != ( real_shift | sticky ) ) {
+    if( shift_state != ( real_shift | sticky ) ) {
         /* did it change? */
-        real_shift = ct_shift_state;
+        real_shift = shift_state;
     }
     switch( ev ) {
     case EV_STICKY_FUNC:
@@ -415,19 +434,19 @@ EVENT ck_keyboardevent( void )
                 break;
             }
         }
-        ct_shift_state = sticky | real_shift;
+        shift_state = sticky | real_shift;
         sticky = 0;
 
         #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
 
-        if( ct_shift_state & S_MASK ) {
+        if( shift_state & S_MASK ) {
             search_ev = tolower( ev );
             entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
                                 sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
-                if( ct_shift_state & S_SHIFT ) {
+                if( shift_state & S_SHIFT ) {
                     ev = entry->shift;
-                } else if( ct_shift_state & S_CTRL ) {
+                } else if( shift_state & S_CTRL ) {
                     ev = entry->ctrl;
                 } else { /* must be ALT */
                     ev = entry->alt;
@@ -439,7 +458,7 @@ EVENT ck_keyboardevent( void )
         }
         return( ev );
     }
-    ct_shift_state = real_shift;
+    shift_state = real_shift;
     if( ev ) {
         UIDebugPrintf1( "UI: Something read: %4.4X", ev );
     }
@@ -459,8 +478,8 @@ EVENT tk_keyboardevent( void )
 }
 
 
-int init_trie( void )
-/*******************/
+static int init_trie( void )
+/**************************/
 {
     const char  *str;
     char        buff[2];
@@ -499,3 +518,127 @@ int init_trie( void )
     }
     return( true );
 }
+
+static int ck_unevent( EVENT ev )
+/*******************************/
+
+// Somebody wants us to pretend that the specified event has occurred
+// (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press
+// event will be generated for the next keystroke (if that shift key
+// is pressed).
+
+{
+    /* unused parameters */ (void)ev;
+
+#if 0 //Don't think this does anything under QNX
+    switch( ev ) {
+    case EV_SHIFT_RELEASE:
+        shift_state &= ~S_SHIFT;
+        break;
+    case EV_CTRL_RELEASE:
+        shift_state &= ~S_CTRL;
+        break;
+    case EV_ALT_RELEASE:
+        shift_state &= ~S_ALT;
+        break;
+    }
+#endif
+    return( 0 );
+}
+
+static int ck_stop( void )
+/************************/
+{
+    return( 0 );
+}
+
+static int ck_flush( void )
+/*************************/
+{
+    tcflush( UIConHandle, TCIFLUSH );
+    return( 0 );
+}
+
+static int ck_shift_state( void )
+/*******************************/
+{
+// FIXME: This is nonsense - the two should not be defined at the same time
+#if defined( __LINUX__ ) && !defined( __FreeBSD__ )
+    /* read the shift state on the Linux console. Works only locally. */
+    /* and WARNING: see console_ioctl(4)                              */
+    char ioctl_shift_state = 6;
+    if( ioctl( 0, TIOCLINUX, &ioctl_shift_state ) >= 0 ) {
+        /* Linux console modifiers */
+        shift_state &= ~(S_SHIFT|S_CTRL|S_ALT);
+        if( ioctl_shift_state & 1 )
+            shift_state |= S_SHIFT;
+        if( ioctl_shift_state & ( 2 | 8 ) )
+            shift_state |= S_ALT;
+        if( ioctl_shift_state & 4 ) {
+            shift_state |= S_CTRL;
+        }
+    }
+#endif
+    return( shift_state );
+}
+
+static int ck_restore( void )
+/***************************/
+{
+    struct termios  new;
+
+    new = SaveTermSet;
+    new.c_iflag &= ~(IXOFF | IXON);
+    new.c_oflag &= ~OPOST;
+    new.c_lflag &= ~(ECHO | ICANON | NOFLSH);
+    new.c_lflag |= ISIG;
+    new.c_cc[VMIN] = 1;
+    new.c_cc[VTIME] = 0;
+    while( tcsetattr( UIConHandle, TCSADRAIN, &new ) == -1 && errno == EINTR )
+        ;
+    return( 0 );
+}
+
+static int ck_init( void )
+/************************/
+{
+    tcgetattr( UIConHandle, &SaveTermSet );
+
+    if( !init_trie() )
+        return( false );
+
+    if( !ti_read_tix( GetTermType() ) )
+        return( false );
+
+    SavePGroup = tcgetpgrp( UIConHandle );
+    tcsetpgrp( UIConHandle, UIPGroup );
+    restorekeyb();
+    return( true );
+}
+
+static int ck_fini( void )
+/************************/
+{
+    savekeyb();
+    tcsetpgrp( UIConHandle, SavePGroup );
+    return( 0 );
+}
+
+static int ck_save( void )
+/************************/
+{
+    tcsetattr( UIConHandle, TCSADRAIN, &SaveTermSet );
+    return( 0 );
+}
+
+Keyboard ConsKeyboard = {
+    ck_init,
+    ck_fini,
+    ck_arm,
+    ck_save,
+    ck_restore,
+    ck_flush,
+    ck_stop,
+    ck_shift_state,
+    ck_unevent
+};

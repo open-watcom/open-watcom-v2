@@ -229,11 +229,11 @@ static int child_comp( const int *pkey, const eNode *pbase )
 EVENT TrieRead( void )
 {
     eTrie           *trie;
-    unsigned char   *buf;
+    char            *buf;
     int             c;
-    int             cpos = 0;
+    size_t          cpos = 0;
     EVENT           ev = EV_UNUSED;
-    int             ev_pos = 0;
+    size_t          ev_pos = 0;
     eNode           *node;
     int             timeout;
 
@@ -266,7 +266,7 @@ EVENT TrieRead( void )
         timeout = 3;
     }
     if( ev == EV_UNUSED ) {
-        ev = buf[0];
+        ev = (unsigned char)buf[0];
         ev_pos = 1;
     }
 
@@ -276,7 +276,7 @@ EVENT TrieRead( void )
     // in a terminfo keysequence as they are all nul-terminated.)
 
     if( cpos > ev_pos ) {
-        nextc_unget( &buf[ev_pos], cpos-ev_pos );
+        nextc_unget( &buf[ev_pos], cpos - ev_pos );
     }
     return( ev );
 }

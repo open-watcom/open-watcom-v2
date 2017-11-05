@@ -1433,7 +1433,7 @@ static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 }
 
 
-EVENT td_event( void )
+static EVENT td_event( void )
 {
     EVENT       ev;
 

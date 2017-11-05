@@ -29,8 +29,11 @@
 ****************************************************************************/
 
 
+#include <sys/time.h>
+#include "uidef.h"
+#include "unxuiext.h"
 #include "ctkeyb.h"
-extern int UIMouseHandle;
+
 
 int kb_wait( int secs, int usecs )
 /********************************/
