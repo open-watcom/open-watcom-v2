@@ -62,7 +62,7 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "ctkeyb.h"
-
+#include "tdisp.h"
 #include "tixparse.h"
 
 
@@ -1514,13 +1514,8 @@ static int ti_refresh( int must )
 static int new_attr( int nattr, int oattr )
 {
     union {
-        unsigned char       attr;
-        struct {
-            unsigned char   fore:3;
-            unsigned char   bold:1;
-            unsigned char   back:3;
-            unsigned char   blink:1;
-        };
+        unsigned char   attr;
+        attr_bits       bits;
     } nval, oval;
 
     nval.attr = nattr;
@@ -1529,26 +1524,26 @@ static int new_attr( int nattr, int oattr )
         oval.attr = ~nval.attr;
     }
     if( TermIsQNXTerm ) {
-        if( nval.bold != oval.bold || nval.blink != oval.blink ) {
-            if( nval.bold ) {
+        if( _attr_bold( nval ) != _attr_bold( oval ) || _attr_blink( nval ) != _attr_blink( oval ) ) {
+            if( _attr_bold( nval ) ) {
                 QNX_BOLD();
             } else {
                 QNX_NOBOLD();
             }
-            if( nval.blink ) {
+            if( _attr_blink( nval ) ) {
                 QNX_BLINK();
             } else {
                 QNX_NOBLINK();
             }
         }
-        if( nval.fore != oval.fore || nval.back != oval.back ) {
-            QNXDebugPrintf2( "colour[%d, %d]\n", nval.fore, nval.back );
-            QNX_SETCOLOUR( nval.fore, nval.back );
+        if( _attr_fore( nval ) != _attr_fore( oval ) || _attr_back( nval ) != _attr_back( oval ) ) {
+            QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
+            QNX_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
         }
     } else {
-        if( nval.bold != oval.bold || nval.blink != oval.blink ) {
-            TIABold = nval.bold;
-            TIABlink = nval.blink;
+        if( _attr_bold( nval ) != _attr_bold( oval ) || _attr_blink( nval ) != _attr_blink( oval ) ) {
+            TIABold = _attr_bold( nval );
+            TIABlink = _attr_blink( nval );
             // Note: the TI_SETCOLOUR below has to set the attributes
             // anyways, so we've just set the flags here
         }
@@ -1556,11 +1551,11 @@ static int new_attr( int nattr, int oattr )
         // if the colours *or* the attributs have changed we have to
         // redo the colours. This is *necessary* for terms like VT's
         // which reset the colour when the attributes are changed
-        if( nval.bold != oval.bold ||
-            nval.blink != oval.blink ||
-            nval.fore != oval.fore ||
-            nval.back != oval.back ) {
-            TI_SETCOLOUR( nval.fore, nval.back );
+        if( _attr_bold( nval ) != _attr_bold( oval ) ||
+            _attr_blink( nval ) != _attr_blink( oval ) ||
+            _attr_fore( nval ) != _attr_fore( oval ) ||
+            _attr_back( nval ) != _attr_back( oval ) ) {
+            TI_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
         }
     }
     return( nattr );

@@ -24,35 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Terminal keyboard definitions.
 *
 ****************************************************************************/
 
 
-/*
-        Client overridable aspects of the TIX support.
+extern int          UIMouseHandle;
 
-        ui_tix_path     is the last chance directory for finding TIX files
-                        (the trailing slash is required).
-
-        ui_tix_missing  is called when UI can not find the appropriate TIX
-                        file. The parm is the name of the TIX file being
-                        looked for (minus the trailing ".tix"). If the
-                        function returns zero, the UI library initialization
-                        will fail (uiinit will return false). Returning a
-                        non-zero value will allow UI library initialization
-                        to succeed (assuming nothing else goes wrong).
-*/
-
-#include <stdio.h>
-#include "bool.h"
-#include "tixparse.h"
-
-char ui_tix_path[] = "/usr/watcom/tix/";
-
-int ui_tix_missing( const char *name )
-{
-    name = name;
-    return( 1 );
-}
+extern void         clear_shift( void );
+extern int          nextc( int n );
+extern void         nextc_unget( char *, size_t );
+extern EVENT        ck_keyboardevent( void );
+extern EVENT        tk_keyboardevent( void );
+extern EVENT        td_event( void );
+extern void         tm_saveevent( void );
+extern int          kb_wait( int secs, int usecs );

@@ -39,16 +39,20 @@
 #include <sys/kernel.h>
 #include <sys/osinfo.h>
 #include <sys/dev.h>
+#include <time.h>
+#include <i86.h>
 #include "uidef.h"
 #include "uimouse.h"
-
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 
 
-#define MOUSE_SCALE             8
+#define MOUSE_SCALE         8
+#define TIMEOFDAY           0
 
+extern void     reltimer( timer_t, struct itimerspec *, struct itimerspec * );
+extern timer_t  mktimer( int, int, struct itimercb * );
+extern void     rmtimer( timer_t );
 
 extern ORD                  MouseRow;
 extern ORD                  MouseCol;

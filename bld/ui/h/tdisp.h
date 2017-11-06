@@ -24,35 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Terminal display attributes data declaration.
 *
 ****************************************************************************/
 
 
-/*
-        Client overridable aspects of the TIX support.
+#ifdef _AIX
+    #define _HAS_NO_CHAR_BIT_FIELDS
+#endif
 
-        ui_tix_path     is the last chance directory for finding TIX files
-                        (the trailing slash is required).
+#if defined( _HAS_NO_CHAR_BIT_FIELDS )
+    #define _attr_blink( a ) (((a).blink_back_bold_fore >> 7) & 1)
+    #define _attr_back( a )  (((a).blink_back_bold_fore >> 4) & 7)
+    #define _attr_bold( a )  (((a).blink_back_bold_fore >> 3) & 1)
+    #define _attr_fore( a )  ( (a).blink_back_bold_fore       & 7)
+#else
+    #define _attr_blink( a ) ((a).bits.blink)
+    #define _attr_back( a )  ((a).bits.back)
+    #define _attr_bold( a )  ((a).bits.bold)
+    #define _attr_fore( a )  ((a).bits.fore)
+#endif
 
-        ui_tix_missing  is called when UI can not find the appropriate TIX
-                        file. The parm is the name of the TIX file being
-                        looked for (minus the trailing ".tix"). If the
-                        function returns zero, the UI library initialization
-                        will fail (uiinit will return false). Returning a
-                        non-zero value will allow UI library initialization
-                        to succeed (assuming nothing else goes wrong).
-*/
-
-#include <stdio.h>
-#include "bool.h"
-#include "tixparse.h"
-
-char ui_tix_path[] = "/usr/watcom/tix/";
-
-int ui_tix_missing( const char *name )
-{
-    name = name;
-    return( 1 );
-}
+typedef struct {
+#if defined( _HAS_NO_CHAR_BIT_FIELDS )
+    unsigned char   blink_back_bold_fore;
+#elif defined( __BIG_ENDIAN__ )
+    unsigned char   blink:1;
+    unsigned char   back:3;
+    unsigned char   bold:1;
+    unsigned char   fore:3;
+#else
+    unsigned char   fore:3;
+    unsigned char   bold:1;
+    unsigned char   back:3;
+    unsigned char   blink:1;
+#endif
+} attr_bits;

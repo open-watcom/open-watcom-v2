@@ -38,11 +38,11 @@
 #include <sys/kernel.h>
 #include <sys/osinfo.h>
 #include <sys/dev.h>
+#include <i86.h>
 #include "uidef.h"
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "ctkeyb.h"

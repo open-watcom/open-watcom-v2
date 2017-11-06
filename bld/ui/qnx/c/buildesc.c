@@ -34,7 +34,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "tixparse.h"
+
 
 typedef enum {
     TT_CODE,
@@ -52,11 +54,11 @@ static void tix_error( const char *str )
 }
 
 
-static void trieAdd( unsigned code, const char *input )
+static void trieAdd( int code, const char *input )
 {
-    fprintf( out_file, "0x%2.2x, 0x%2.2x,    ", code & 0xff, code >> 8 );
+    fprintf( out_file, "'\\x%2.2x', '\\x%2.2x',    ", code & 0xff, (code >> 8) & 0xff );
     for( ;; ) {
-        fprintf( out_file, "0x%2.2x, ", *input );
+        fprintf( out_file, "'\\x%2.2x', ", *(unsigned char *)input );
         if( *input == '\0' )
             break;
         ++input;
@@ -70,20 +72,26 @@ static tix_token get_tix_token( char *buff )
     char        *p;
     char        *end;
     unsigned    num;
-    char        endc;
+    int         endc;
 
     for( ;; ) {
         c = getc( in_file );
-        if( c == EOF ) return( TT_EOF );
+        if( c == EOF )
+            return( TT_EOF );
         if( c == '#' ) {
             /* eat a comment */
             for( ;; ) {
                 c = getc( in_file );
-                if( c == EOF ) return( TT_EOF );
-                if( c == '\n' ) break;
+                if( c == EOF )
+                    return( TT_EOF );
+                if( c == '\n' ) {
+                    break;
+                }
             }
         }
-        if( !isspace( c ) ) break;
+        if( !isspace( c ) ) {
+            break;
+        }
     }
     p = buff;
     if( c == '\'' || c == '\"' ) {
@@ -91,13 +99,18 @@ static tix_token get_tix_token( char *buff )
         endc = c;
         for( ;; ) {
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( c == '\r' ) break;
-            if( c == '\n' ) break;
-            if( c == endc ) break;
+            if( c == EOF )
+                break;
+            if( c == '\r' )
+                break;
+            if( c == '\n' )
+                break;
+            if( c == endc )
+                break;
             if( c == '\\' ) {
                 c = getc( in_file );
-                if( c == EOF ) break;
+                if( c == EOF )
+                    break;
                 switch( c ) {
                 case 'a':
                     c = '\a';
@@ -127,7 +140,8 @@ static tix_token get_tix_token( char *buff )
                     num = 0;
                     for( ;; ) {
                         c = getc( in_file );
-                        if( c == EOF ) break;
+                        if( c == EOF )
+                            break;
                         if( isdigit( c ) ) {
                             c = c - '0';
                         } else if( c >= 'A' && c <= 'F' ) {
@@ -152,8 +166,10 @@ static tix_token get_tix_token( char *buff )
         for( ;; ) {
             *p++ = c;
             c = getc( in_file );
-            if( c == EOF ) break;
-            if( isspace( c ) ) break;
+            if( c == EOF )
+                break;
+            if( isspace( c ) )
+                break;
             if( c == '#' ) {
                 ungetc( c, in_file );
                 break;
@@ -161,7 +177,8 @@ static tix_token get_tix_token( char *buff )
         }
         *p = '\0';
         num = strtoul( buff, &end, 0 );
-        if( end != p ) return( TT_STRING );
+        if( end != p )
+            return( TT_STRING );
         buff[0] = num & 0xff;
         buff[1] = num >> 8;
         return( TT_CODE );
@@ -174,7 +191,7 @@ static int get_tix_code( char *buff )
         tix_error( "expecting code" );
         return( -1 );
     }
-    return( buff[0] + (buff[1] << 8) );
+    return( (unsigned char)buff[0] + ((unsigned char)buff[1] << 8) );
 }
 
 static const char acs_default[] =
@@ -183,42 +200,49 @@ static const char acs_default[] =
 static char find_acs_map( char c, const char *acs )
 {
     for( ;; ) {
-        if( acs[0] == '\0' ) break;
-        if( acs[0] == c ) return( acs[1] );
+        if( acs[0] == '\0' )
+            break;
+        if( acs[0] == c )
+            return( acs[1] );
         ++acs;
-        if( acs[0] == '\0' ) break;
+        if( acs[0] == '\0' )
+            break;
         ++acs;
     }
     return( '\0' );
 }
 
-static tix_status do_parse()
+static tix_status do_parse( void )
 {
     char        buff[80];
     char        input[80];
     tix_token   tok;
     int         code;
-    char        c;
 
     tok = get_tix_token( buff );
     for( ;; ) {
-        if( tok == TT_EOF ) break;
+        if( tok == TT_EOF )
+        	break;
         if( tok != TT_STRING ) {
             tix_error( "expecting directive" );
             return( TIX_FAIL );
         }
         if( stricmp( buff, "display" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 ) return( 0 );
+            if( code == -1 )
+            	return( TIX_FAIL );
             tok = get_tix_token( buff );
-            if( tok == TT_EOF ) break;
+            if( tok == TT_EOF )
+            	break;
             if( tok == TT_STRING ) {
                 if( stricmp( buff, "alt" ) != 0 ) {
                     tix_error( "expecting alt" );
                     return( TIX_FAIL );
                 }
                 tok = get_tix_token( buff );
-                if( tok == TT_EOF ) break;
+                if( tok == TT_EOF ) {
+                	break;
+                }
             }
             if( tok != TT_CODE ) {
                 tix_error( "expecting display code" );
@@ -227,11 +251,13 @@ static tix_status do_parse()
             tok = get_tix_token( buff );
         } else if( stricmp( buff, "key" ) == 0 ) {
             code = get_tix_code( buff );
-            if( code == -1 ) return( TIX_FAIL );
+            if( code == -1 )
+                return( TIX_FAIL );
             input[0] = '\0';
             for( ;; ) {
                 tok = get_tix_token( buff );
-                if( tok != TT_CODE ) break;
+                if( tok != TT_CODE )
+                    break;
                 strcat( input, buff );
             }
             trieAdd( code, input );
@@ -262,7 +288,8 @@ int main( int argc, char *argv[] )
     }
     fprintf( out_file, "\n\n\t// File generated by BUILDESC.C\n\n" );
     fprintf( out_file, "const char ConEscapes[] = {\n" );
-    if( do_parse() == TIX_FAIL ) return( 1 );
+    if( do_parse() == TIX_FAIL )
+        return( 1 );
     fprintf( out_file, "};\n" );
     return( 0 );
 }

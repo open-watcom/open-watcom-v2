@@ -214,7 +214,7 @@ bool intern initmonitor( void )
 /* update the physical screen with contents of virtual copy */
 
 static void my_console_write( struct _console_ctrl *cc, int console, unsigned offset,
-         unsigned char __FAR *buf, int nbytes, int row, int col, int type)
+         LP_STRING buf, int nbytes, int row, int col, int type)
 {
         struct _mxfer_entry sx[2];
         struct _mxfer_entry rx;
@@ -338,7 +338,7 @@ static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
     return( 0 );
 }
 
-EVENT cd_event( void )
+static EVENT cd_event( void )
 {
     EVENT       ev;
 

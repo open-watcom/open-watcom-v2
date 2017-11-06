@@ -49,11 +49,11 @@
 #include <ctype.h>
 #include "uidef.h"
 #include "uishift.h"
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "trie.h"
 #include "ctkeyb.h"
+#include "walloca.h"
 
 
 /* The following types are for use with the keymap-trie. The keymap trie
@@ -235,11 +235,11 @@ static int child_comp( const void *pkey, const void *pbase )
 EVENT TrieRead( void )
 {
     eTrie           *trie;
-    unsigned char   *buf;
+    char            *buf;
     int             c;
-    int             cpos = 0;
+    size_t          cpos = 0;
     EVENT           ev = EV_UNUSED;
-    int             ev_pos = 0;
+    size_t          ev_pos = 0;
     eNode           *node;
     int             timeout;
 
@@ -279,7 +279,7 @@ EVENT TrieRead( void )
     // in a terminfo keysequence as they are all nul-terminated.)
 
     if( cpos > ev_pos ) {
-        nextc_unget( &buf[ev_pos], cpos-ev_pos );
+        nextc_unget( &buf[ev_pos], cpos - ev_pos );
     }
     return( ev );
 }

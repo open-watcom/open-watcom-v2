@@ -36,13 +36,11 @@
 #include <string.h>
 #include <termios.h>
 #include <term.h>
-
 #include <sys/uio.h>
 #include <unistd.h>
-
+#include "bool.h"
 #include "stdui.h"
 #include "qnxuiext.h"
-
 #include "tixparse.h"
 #include "trie.h"
 
@@ -68,7 +66,7 @@ extern char     ui_tix_path[];
 
 extern int      ui_tix_missing( const char *name );
 
-unsigned char   ti_char_map[256];
+char            ti_char_map[256];
 unsigned char   _ti_alt_map[32];
 
 static FILE     *in_file= NULL;
