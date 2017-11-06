@@ -77,10 +77,10 @@ static enum {
 #endif
 } MouseType;
 
-#define MAXBUF    30
-static char buf[ MAXBUF + 1 ];
-static int  new_sample;
-int         UIMouseHandle = -1;
+#define MAXBUF  30
+static char     buf[ MAXBUF + 1 ];
+static int      new_sample;
+static int      UIMouseHandle = -1;
 
 #define ANSI_HDR        "\x1b["
 
@@ -369,6 +369,12 @@ static int tm_set_speed( unsigned speed )
     return 0;
 }
 
+static int tm_wait_mouse( void )
+/******************************/
+{
+    return( UIMouseHandle );
+}
+
 void tm_saveevent( void )
 /***********************/
 {
@@ -418,4 +424,5 @@ Mouse TermMouse = {
     tm_set_speed,
     tm_stop,
     tm_check,
+    tm_wait_mouse
 };

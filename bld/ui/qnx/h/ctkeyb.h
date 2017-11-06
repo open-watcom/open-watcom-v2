@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-extern int          UIMouseHandle;
-
 extern void         clear_shift( void );
 extern int          nextc( int n );
 extern void         nextc_unget( char *, size_t );
@@ -38,4 +36,3 @@ extern EVENT        ck_keyboardevent( void );
 extern EVENT        tk_keyboardevent( void );
 extern EVENT        td_event( void );
 extern void         tm_saveevent( void );
-extern int          kb_wait( int secs, int usecs );

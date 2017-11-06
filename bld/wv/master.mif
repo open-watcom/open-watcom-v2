@@ -132,7 +132,7 @@ lnk2 = wv2.lnk
 # lflags
 #########
 
-extra_link_res_qnx = wvqnx.u
+extra_link_res_qnx = $(rdir)/qnx/wvqnx.u
 
 lflags_win_i86 += memory font
 

@@ -24,14 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Terminal keyboard definitions.
+* Description:  wait for a keyboard or mouse event
 *
 ****************************************************************************/
 
 
-extern void         clear_shift( void );
-extern int          nextc( int n );
-extern void         nextc_unget( char *, size_t );
-extern EVENT        ck_keyboardevent( void );
-extern EVENT        tk_keyboardevent( void );
-extern void         tm_saveevent( void );
+extern int kb_wait( int secs, int usecs );

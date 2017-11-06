@@ -282,6 +282,12 @@ static int tm_set_speed( unsigned speed )
     return( 0 );
 }
 
+static int tm_wait_mouse( void )
+/******************************/
+{
+    return( -1 );
+}
+
 void tm_saveevent( void )
 /***********************/
 {
@@ -349,4 +355,5 @@ Mouse TermMouse = {
     tm_set_speed,
     tm_stop,
     tm_check,
+    tm_wait_mouse
 };

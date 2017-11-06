@@ -44,6 +44,7 @@
 #include "uivirt.h"
 #include "qdebug.h"
 #include "ctkeyb.h"
+#include "kbwait.h"
 
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
@@ -631,6 +632,11 @@ static int ck_save( void )
     return( 0 );
 }
 
+static int ck_wait_keyb( int secs, int usecs )
+{
+    return( kb_wait( secs, usecs ) );
+}
+
 Keyboard ConsKeyboard = {
     ck_init,
     ck_fini,
@@ -640,5 +646,6 @@ Keyboard ConsKeyboard = {
     ck_flush,
     ck_stop,
     ck_shift_state,
-    ck_unevent
+    ck_unevent,
+    ck_wait_keyb
 };
