@@ -3,7 +3,7 @@
 
 ctkeyb.obj : ctkeyb.c conesc.gh
 
-inc_dirs += -I.
+inc_dirs += -I. -I"../../unix/h"
 
 conesc.gh : ./buildesc.exe ../tix/qnx.tix
     $[@ ../tix/qnx.tix conesc.gh
