@@ -31,7 +31,7 @@
 
 
 
-extern int      TrieInit( void );
+extern bool     TrieInit( void );
 extern void     TrieFini( void );
-extern int      TrieAdd( EVENT event, const char *str );
+extern bool     TrieAdd( EVENT event, const char *str );
 extern EVENT    TrieRead( void );

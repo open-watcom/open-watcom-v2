@@ -78,7 +78,7 @@ int             KeyTrieDepth = 1;
 
 static eTrie    KeyTrie;
 
-int TrieInit( void )
+bool TrieInit( void )
 {
 
     KeyTrie.child = uimalloc( TRIE_TOP * sizeof( eNode ) );
@@ -151,7 +151,7 @@ static int child_search( char key, eTrie *trie )
  * to improve the performance, but I think any improvements would be slight,
  * as this function is only called at initialization.
  */
-int TrieAdd( EVENT event, const char *str )
+bool TrieAdd( EVENT event, const char *str )
 {
     eTrie       *trie = &KeyTrie;
     int         i;

@@ -85,7 +85,7 @@ struct eTrie{
 static eTrie    KeyTrie;
 int             KeyTrieDepth = 1;
 
-int TrieInit( void )
+bool TrieInit( void )
 {
     KeyTrie.child = malloc( TRIE_TOP * sizeof( eNode ) );
     if( KeyTrie.child == NULL )
@@ -157,7 +157,7 @@ static int child_search( char key, eTrie *trie )
  * to improve the performance, but I think any improvements would be slight,
  * as this function is only called at initialization.
  */
-int TrieAdd( EVENT event, const char *str )
+bool TrieAdd( EVENT event, const char *str )
 {
     eTrie       *trie = &KeyTrie;
     int         i;
