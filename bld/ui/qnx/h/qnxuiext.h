@@ -41,8 +41,8 @@
 #define uiwrite(s)      write( UIConHandle, s, strlen( s ) )
 #define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
 
-extern unsigned         UIConsole;
-extern unsigned         UIConHandle;
+extern int              UIConsole;
+extern int              UIConHandle;
 extern pid_t            UIProxy;
 extern pid_t            UILocalProxy;
 extern pid_t            UIRemProxy;
