@@ -70,7 +70,7 @@ typedef struct Keyboard {
 typedef struct Mouse {
         int (*init)( int install );
         int (*fini)( void );
-        int (*set_speed)( int speed );
+        int (*set_speed)( unsigned speed );
         int (*stop)( void );        /* clear input, disable events */
         int (*check)( unsigned short *status, unsigned short *row,
                          unsigned short *col, unsigned long *time );

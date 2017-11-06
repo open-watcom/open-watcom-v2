@@ -161,7 +161,7 @@ void uimousespeed( unsigned speed )
 /* set speed of mouse. 0 is fastest; the higher the number the slower
    it goes */
 {
-    if( (int)speed <= 0 ) {
+    if( speed == 0 ) {
         speed = 1;
     }
 

@@ -267,8 +267,8 @@ static int tm_fini( void )
     return( 0 );
 }
 
-static int tm_set_speed( int speed )
-/**********************************/
+static int tm_set_speed( unsigned speed )
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
@@ -277,7 +277,8 @@ static int tm_set_speed( int speed )
  * For now, 10 will be fastest and 1 will be slowest.
  */
 {
-    speed = speed;
+    /* unused parameters*/  (void)speed;
+
     return( 0 );
 }
 

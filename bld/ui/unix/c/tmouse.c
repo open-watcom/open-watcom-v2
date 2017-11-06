@@ -415,7 +415,7 @@ void tm_saveevent( void )
 Mouse TermMouse = {
     tm_init,
     tm_fini,
-    (int (*)(int))tm_set_speed,
+    tm_set_speed,
     tm_stop,
     tm_check,
 };

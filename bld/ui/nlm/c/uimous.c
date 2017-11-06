@@ -59,7 +59,7 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol,
 void uimousespeed( unsigned speed )
 /*********************************/
 {
-    speed = speed;
+    /* unused parameters */ (void)speed;
 }
 
 int UIAPI initmouse( int install )

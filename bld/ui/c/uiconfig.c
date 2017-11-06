@@ -94,7 +94,8 @@ bool uiconfig( char *fn, char **envvars )
                 } else if( blen > 9 && memicmp( "SNOWCHECK", buffer, 9 ) == 0 ) {
                     UIData->no_snow = ( buffer[ 10 ] == '0' );
                 } else if( blen > 11 && memicmp( "MOUSE_SPEED", buffer, 11 ) == 0 ) {
-                    uimousespeed( strtol( &buffer[ 12 ], NULL, 10 ) );
+                    long speed = strtol( &buffer[ 12 ], NULL, 10 );
+                    uimousespeed( ( speed < 0 ) ? 0 : (unsigned)speed );
                 } else if( blen > 8 && memicmp( "GRAPHICS", buffer, 8 ) == 0 ) {
                     UIData->no_graphics = ( buffer[ 9 ] == '0' );
                 }
