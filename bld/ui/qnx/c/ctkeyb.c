@@ -50,12 +50,10 @@
 #include <signal.h>
 #include "uidef.h"
 #include "uishift.h"
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "qdebug.h"
 #include "ctkeyb.h"
-
 #include "trie.h"
 #include "tixparse.h"
 #include "kbwait.h"
@@ -641,6 +639,7 @@ static int ck_save( void )
 }
 
 static int ck_wait_keyb( int secs, int usecs )
+/********************************************/
 {
     return( kb_wait( secs, usecs ) );
 }
@@ -674,14 +673,14 @@ static int init_trie( void )
 }
 
 Keyboard ConsKeyboard = {
-        ck_init,
-        ck_fini,
-        ck_arm,
-        ck_save,
-        ck_restore,
-        ck_flush,
-        ck_stop,
-        ck_shift_state,
-        ck_unevent,
-        ck_wait_keyb
+    ck_init,
+    ck_fini,
+    ck_arm,
+    ck_save,
+    ck_restore,
+    ck_flush,
+    ck_stop,
+    ck_shift_state,
+    ck_unevent,
+    ck_wait_keyb
 };

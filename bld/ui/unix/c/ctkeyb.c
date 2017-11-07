@@ -287,7 +287,7 @@ int nextc( int n )      // delay in 0.1 seconds -- not to exceed 9
         return( UnreadBuffer[UnreadPos++] );
 
     n *= 100000;
-    fds = kb_wait( n / 1000000, n % 1000000 );
+    fds = _uiwaitkeyb( n / 1000000, n % 1000000 );
     if( fds == 1 ) {                    // Console has input
         test = read( UIConHandle, &ch, 1 );
         if( test == -1 ) {
@@ -633,6 +633,7 @@ static int ck_save( void )
 }
 
 static int ck_wait_keyb( int secs, int usecs )
+/********************************************/
 {
     return( kb_wait( secs, usecs ) );
 }

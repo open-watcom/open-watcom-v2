@@ -277,7 +277,7 @@ static int tm_set_speed( unsigned speed )
  * For now, 10 will be fastest and 1 will be slowest.
  */
 {
-    /* unused parameters*/  (void)speed;
+    /* unused parameters */ (void)speed;
 
     return( 0 );
 }

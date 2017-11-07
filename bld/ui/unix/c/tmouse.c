@@ -31,30 +31,27 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #if defined( __UNIX__ )
-
 #ifndef HP
     #include <curses.h>
 #else
     #include <stdarg.h>
     #include <curses.h>
 #endif
-
+#endif
+#ifdef __LINUX__
+    #include <sys/socket.h>
+    #include <sys/un.h>
 #endif
 #include <term.h>
 #include "uidef.h"
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-
 #include "uivirt.h"
 #include "unxuiext.h"
 #include "ctkeyb.h"
-#include <time.h>
-#ifdef __LINUX__
-#include <sys/socket.h>
-#include <sys/un.h>
-#endif
 
 
 #ifdef __LINUX__
@@ -355,7 +352,7 @@ static int tm_fini( void )
 }
 
 static int tm_set_speed( unsigned speed )
-/****************************************/
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
