@@ -47,7 +47,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <i86.h>
-#include <term.h>
+#include <sys/term.h>
 #include "uidef.h"
 #include "uivirt.h"
 #include "qnxuiext.h"

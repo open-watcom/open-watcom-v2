@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include <term.h>
+#include <sys/term.h>
 #include <sys/uio.h>
 #include <unistd.h>
 #include "bool.h"

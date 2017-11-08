@@ -45,7 +45,7 @@
 #include <sys/console.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <term.h>
+#include <sys/term.h>
 #include <ctype.h>
 #include <signal.h>
 #include "uidef.h"

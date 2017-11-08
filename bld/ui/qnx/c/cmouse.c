@@ -48,11 +48,6 @@
 
 
 #define MOUSE_SCALE         8
-#define TIMEOFDAY           0
-
-extern void     reltimer( timer_t, struct itimerspec *, struct itimerspec * );
-extern timer_t  mktimer( int, int, struct itimercb * );
-extern void     rmtimer( timer_t );
 
 extern ORD                  MouseRow;
 extern ORD                  MouseCol;

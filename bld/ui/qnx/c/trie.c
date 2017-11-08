@@ -45,7 +45,6 @@
 #include <sys/console.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <term.h>
 #include <ctype.h>
 #include "uidef.h"
 #include "uishift.h"
