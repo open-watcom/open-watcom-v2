@@ -20,7 +20,6 @@
 !inject bitset           noext hcpp
 !inject cassert          noext hcpp
 !inject cctype           noext hcpp
-!inject cdrom.h                               hqnx
 !inject cerrno           noext hcpp
 !inject cfloat           noext hcpp
 !inject chrono           noext hcpp
@@ -51,7 +50,6 @@
 !inject cwctype          noext hcpp
 !inject cwchar           noext hcpp
 !inject deque            noext hcpp
-!inject dir.h                                 hqnx
 !inject direct.h                    hdos
 !inject dirent.h                         hlnx hqnx
 !inject dos.h                       hdos
@@ -167,6 +165,7 @@
 !inject strstrea         noext hcpp
 !inject strstrea.h             hcpp
 !inject sys/_lfndos.h               hdos
+!inject sys/cdrom.h                           hqnx
 !inject sys/con_msg.h                         hqnx
 !inject sys/console.h                         hqnx
 !inject sys/debug.h                           hqnx
@@ -225,6 +224,7 @@
 !inject sys/sysi86.h                          hqnx
 !inject sys/sysinfo.h                    hlnx
 !inject sys/sysmips.h                    hlnx
+!inject sys/term.h                            hqnx
 !inject sys/termio.h                          hqnx
 !inject sys/time.h                  hdos hlnx hqnx
 !inject sys/timeb.h                 hdos hlnx hqnx
