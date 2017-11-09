@@ -37,6 +37,7 @@
 #include <stddef.h>
 #if defined( __QNX__ )
     #include <sys/magic.h>
+    #include <process.h>
 #elif defined( __OS2__ )
     #define INCL_DOSSEMAPHORES
     #define INCL_DOSPROCESS

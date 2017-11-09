@@ -40,12 +40,12 @@
 #define _CONST32
 #endif
 
-_WCRTLINK int (__send)( pid, msg1, msg2, nbytes1, nbytes2 )
-pid_t                   pid;
-_CONST32 void _WCI86FAR *msg1;
-void _WCI86FAR          *msg2;
-unsigned                nbytes1;
-unsigned                nbytes2;
+_WCRTLINK int (__send)( 
+    pid_t                   pid,
+    _CONST32 void _WCI86FAR *msg1,
+    void _WCI86FAR          *msg2,
+    unsigned                nbytes1,
+    unsigned                nbytes2 )
 {
     struct _mxfer_entry xmsg1;
     struct _mxfer_entry xmsg2;
@@ -56,12 +56,12 @@ unsigned                nbytes2;
     return( __sendmx( pid, 1, 1, &xmsg1, &xmsg2 ) );
 }
 
-_WCRTLINK int (__sendfd)( fd, msg1, msg2, nbytes1, nbytes2 )
-unsigned                fd;
-_CONST32 void _WCI86FAR *msg1;
-void _WCI86FAR          *msg2;
-unsigned                nbytes1;
-unsigned                nbytes2;
+_WCRTLINK int (__sendfd)(
+    int                     fd,
+    _CONST32 void _WCI86FAR *msg1,
+    void _WCI86FAR          *msg2,
+    unsigned                nbytes1,
+    unsigned                nbytes2 )
 {
     struct _mxfer_entry xmsg1;
     struct _mxfer_entry xmsg2;

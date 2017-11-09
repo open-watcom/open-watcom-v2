@@ -38,6 +38,7 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 #include "rtdata.h"
+#include "rterrno.h"
 
 
 extern void __sigstub();
@@ -86,10 +87,10 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
-_WCRTLINK int sigaction(sig, act, oact)
-int sig;
-register const struct sigaction *act;
-register struct sigaction *oact;
+_WCRTLINK int sigaction(
+    int                             sig,
+    register const struct sigaction *act,
+    register struct sigaction       *oact )
 {
     static int  first = 1;
     union {
