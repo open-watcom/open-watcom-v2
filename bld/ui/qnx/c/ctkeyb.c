@@ -45,9 +45,9 @@
 #include <sys/console.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <sys/term.h>
 #include <ctype.h>
 #include <signal.h>
+#include "wtermqnx.h"
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirt.h"
@@ -71,6 +71,11 @@ enum {
     S_INTRO             = S_KANJI_LOCK
 };
 
+struct an_in_term_info {
+    EVENT               ev;
+    char                *str;
+};
+
 extern struct _console_ctrl *UIConCtrl;
 
 static struct termios   SaveTermSet;
@@ -85,87 +90,8 @@ static unsigned short   real_shift;
 static int              ck_fini( void );
 static int              init_trie( void );
 
-#define evmap( ev, f )  { EV_##ev, offsetof( struct _strs, f ) },
-
-static const struct {
-    EVENT               ev;
-    unsigned short      offset;
-} InTerminfo[] = {
-    evmap( RUB_OUT,             _ky_backspace )
-    evmap( RUB_OUT,             _ky_clear )
-    evmap( DELETE,              _ky_dc )
-    evmap( CURSOR_DOWN,         _ky_down )
-    evmap( INSERT,              _ky_ic )
-    evmap( F1,                  _ky_f1 )
-    evmap( F2,                  _ky_f2 )
-    evmap( F3,                  _ky_f3 )
-    evmap( F4,                  _ky_f4 )
-    evmap( F5,                  _ky_f5 )
-    evmap( F6,                  _ky_f6 )
-    evmap( F7,                  _ky_f7 )
-    evmap( F8,                  _ky_f8 )
-    evmap( F9,                  _ky_f9 )
-    evmap( F10,                 _ky_f10 )
-    evmap( F11,                 _ky_f11 )
-    evmap( F12,                 _ky_f12 )
-    evmap( SHIFT_F1,            _ky_f13 )
-    evmap( SHIFT_F2,            _ky_f14 )
-    evmap( SHIFT_F3,            _ky_f15 )
-    evmap( SHIFT_F4,            _ky_f16 )
-    evmap( SHIFT_F5,            _ky_f17 )
-    evmap( SHIFT_F6,            _ky_f18 )
-    evmap( SHIFT_F7,            _ky_f19 )
-    evmap( SHIFT_F8,            _ky_f20 )
-    evmap( SHIFT_F9,            _ky_f21 )
-    evmap( SHIFT_F10,           _ky_f22 )
-    evmap( SHIFT_F11,           _ky_f23 )
-    evmap( SHIFT_F12,           _ky_f24 )
-    evmap( CTRL_F1,             _ky_f25 )
-    evmap( CTRL_F2,             _ky_f26 )
-    evmap( CTRL_F3,             _ky_f27 )
-    evmap( CTRL_F4,             _ky_f28 )
-    evmap( CTRL_F5,             _ky_f29 )
-    evmap( CTRL_F6,             _ky_f30 )
-    evmap( CTRL_F7,             _ky_f31 )
-    evmap( CTRL_F8,             _ky_f32 )
-    evmap( CTRL_F9,             _ky_f33 )
-    evmap( CTRL_F10,            _ky_f34 )
-    evmap( CTRL_F11,            _ky_f35 )
-    evmap( CTRL_F12,            _ky_f36 )
-    evmap( ALT_F1,              _ky_f37 )
-    evmap( ALT_F2,              _ky_f38 )
-    evmap( ALT_F3,              _ky_f39 )
-    evmap( ALT_F4,              _ky_f40 )
-    evmap( ALT_F5,              _ky_f41 )
-    evmap( ALT_F6,              _ky_f42 )
-    evmap( ALT_F7,              _ky_f43 )
-    evmap( ALT_F8,              _ky_f44 )
-    evmap( ALT_F9,              _ky_f45 )
-    evmap( ALT_F10,             _ky_f46 )
-    evmap( ALT_F11,             _ky_f47 )
-    evmap( ALT_F12,             _ky_f48 )
-    evmap( HOME,                _ky_home )
-    evmap( CURSOR_LEFT,         _ky_left )
-    evmap( PAGE_DOWN,           _ky_npage )
-    evmap( PAGE_UP,             _ky_ppage )
-    evmap( CURSOR_RIGHT,        _ky_right )
-    evmap( SCROLL_LINE_DOWN,    _ky_sf )
-    evmap( SCROLL_LINE_UP,      _ky_sr )
-    evmap( CURSOR_UP,           _ky_up )
-    evmap( HOME,                _ky_beg )
-    evmap( ESCAPE,              _ky_cancel )
-    evmap( END,                 _ky_end )
-    evmap( ENTER,               _ky_enter )
-    evmap( TAB_FORWARD,         _ky_next )
-    evmap( TAB_BACKWARD,        _ky_previous )
-    evmap( SHIFT_HOME,          _ky_sbeg )
-    evmap( SHIFT_END,           _ky_send )
-    evmap( SHIFT_CURSOR_LEFT,   _ky_sleft )
-    evmap( TAB_BACKWARD,        _ky_snext )
-    evmap( TAB_FORWARD,         _ky_sprevious )
-    evmap( SHIFT_CURSOR_RIGHT,  _ky_sright )
-    evmap( TAB_BACKWARD,        _ky_btab )
-};
+#define NUM_IN_TERM_INFO_MAPPINGS 74
+struct an_in_term_info InTerminfo[NUM_IN_TERM_INFO_MAPPINGS];
 
 static const struct {
     EVENT       ev;
@@ -263,6 +189,96 @@ static const event_shift_map ShiftMap[] = {
     FUNC_MAP( F11 ),
     FUNC_MAP( F12 ),
 };
+
+#define evmap( code, terminfo_code )            \
+    entry->ev = EV_##code;                      \
+    entry->str = terminfo_code;                 \
+    ++entry;
+
+static bool init_interminfo( void )
+{
+    struct an_in_term_info      *entry;
+
+    entry = InTerminfo;
+
+    evmap( RUB_OUT,             key_backspace );
+    evmap( RUB_OUT,             key_clear );
+    evmap( DELETE,              key_dc );
+    evmap( CURSOR_DOWN,         key_down );
+    evmap( INSERT,              key_ic );
+    evmap( F1,                  key_f1 );
+    evmap( F2,                  key_f2 );
+    evmap( F3,                  key_f3 );
+    evmap( F4,                  key_f4 );
+    evmap( F5,                  key_f5 );
+    evmap( F6,                  key_f6 );
+    evmap( F7,                  key_f7 );
+    evmap( F8,                  key_f8 );
+    evmap( F9,                  key_f9 );
+    evmap( F10,                 key_f10 );
+    evmap( F11,                 key_f11 );
+    evmap( F12,                 key_f12 );
+    evmap( SHIFT_F1,            key_f13 );
+    evmap( SHIFT_F2,            key_f14 );
+    evmap( SHIFT_F3,            key_f15 );
+    evmap( SHIFT_F4,            key_f16 );
+    evmap( SHIFT_F5,            key_f17 );
+    evmap( SHIFT_F6,            key_f18 );
+    evmap( SHIFT_F7,            key_f19 );
+    evmap( SHIFT_F8,            key_f20 );
+    evmap( SHIFT_F9,            key_f21 );
+    evmap( SHIFT_F10,           key_f22 );
+    evmap( SHIFT_F11,           key_f23 );
+    evmap( SHIFT_F12,           key_f24 );
+    evmap( CTRL_F1,             key_f25 );
+    evmap( CTRL_F2,             key_f26 );
+    evmap( CTRL_F3,             key_f27 );
+    evmap( CTRL_F4,             key_f28 );
+    evmap( CTRL_F5,             key_f29 );
+    evmap( CTRL_F6,             key_f30 );
+    evmap( CTRL_F7,             key_f31 );
+    evmap( CTRL_F8,             key_f32 );
+    evmap( CTRL_F9,             key_f33 );
+    evmap( CTRL_F10,            key_f34 );
+    evmap( CTRL_F11,            key_f35 );
+    evmap( CTRL_F12,            key_f36 );
+    evmap( ALT_F1,              key_f37 );
+    evmap( ALT_F2,              key_f38 );
+    evmap( ALT_F3,              key_f39 );
+    evmap( ALT_F4,              key_f40 );
+    evmap( ALT_F5,              key_f41 );
+    evmap( ALT_F6,              key_f42 );
+    evmap( ALT_F7,              key_f43 );
+    evmap( ALT_F8,              key_f44 );
+    evmap( ALT_F9,              key_f45 );
+    evmap( ALT_F10,             key_f46 );
+    evmap( ALT_F11,             key_f47 );
+    evmap( ALT_F12,             key_f48 );
+    evmap( HOME,                key_home );
+    evmap( CURSOR_LEFT,         key_left );
+    evmap( PAGE_DOWN,           key_npage );
+    evmap( PAGE_UP,             key_ppage );
+    evmap( CURSOR_RIGHT,        key_right );
+    evmap( SCROLL_LINE_DOWN,    key_sf );
+    evmap( SCROLL_LINE_UP,      key_sr );
+    evmap( CURSOR_UP,           key_up );
+    evmap( HOME,                key_beg );
+    evmap( ESCAPE,              key_cancel );
+    evmap( END,                 key_end );
+    evmap( ENTER,               key_enter );
+    evmap( TAB_FORWARD,         key_next );
+    evmap( TAB_BACKWARD,        key_previous );
+    evmap( SHIFT_HOME,          key_sbeg );
+    evmap( SHIFT_END,           key_send );
+    evmap( SHIFT_CURSOR_LEFT,   key_sleft );
+    evmap( TAB_BACKWARD,        key_snext );
+    evmap( TAB_FORWARD,         key_sprevious );
+    evmap( SHIFT_CURSOR_RIGHT,  key_sright );
+    evmap( TAB_BACKWARD,        key_btab );
+
+    // Check to see that the correct number of events were added
+    return( NUM_ELTS( InTerminfo ) == NUM_IN_TERM_INFO_MAPPINGS );
+}
 
 void intern clear_shift( void )
 {
@@ -646,11 +662,13 @@ static int ck_wait_keyb( int secs, int usecs )
 
 static int init_trie( void )
 {
-    charoffset  *coffs;         // start of char-offset table
     char        buff[2];
     int         i;
 
     if( !TrieInit() )
+        return( false );
+
+    if( !init_interminfo() )
         return( false );
 
     buff[1] = '\0';
@@ -661,10 +679,8 @@ static int init_trie( void )
             return( false );
         }
     }
-    for( i = 0; i < NUM_ELTS( InTerminfo ); ++i ) {
-        coffs = (charoffset *)&__cur_term->_strs;
-        coffs = (void *)((char *)coffs + InTerminfo[i].offset );
-        if( !TrieAdd( InTerminfo[i].ev, __cur_term->_strtab + *coffs ) ) {
+    for( i = 0; i < NUM_IN_TERM_INFO_MAPPINGS; ++i ) {
+        if( !TrieAdd( InTerminfo[i].ev, InTerminfo[i].str ) ) {
             TrieFini();
             return( false );
         }

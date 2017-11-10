@@ -35,9 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include <sys/term.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include "wtermqnx.h"
 #include "bool.h"
 #include "stdui.h"
 #include "qnxuiext.h"
@@ -74,7 +74,7 @@ static FILE     *in_file= NULL;
 static void tix_error( const char *str )
 {
     uiwritec( "\nError in " );
-    uiwrite( __cur_term->_termname );
+    uiwrite( GetTermType() );
     uiwritec( ": " );
     uiwrite( str );
     uiwritec( "\n" );
@@ -384,14 +384,14 @@ tix_status ti_read_tix( bool use_default )
     for( i = 0; i < sizeof( ti_char_map ); i++ )
         ti_char_map[i] = i;
 
-    ret = init_tix_scanner( __cur_term->_termname, use_default );
+    ret = init_tix_scanner( GetTermType(), use_default );
     switch( ret ) {
     case TIX_FAIL:
         return( ret );
     case TIX_NOFILE:
         if( !use_default )
             return( ret );
-        return( ui_tix_missing( __cur_term->_termname ) ? TIX_OK : TIX_FAIL );
+        return( ui_tix_missing( GetTermType() ) ? TIX_OK : TIX_FAIL );
     }
     if( do_parse() == TIX_FAIL )
         ret = TIX_FAIL;

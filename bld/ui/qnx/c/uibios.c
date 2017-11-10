@@ -47,7 +47,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <i86.h>
-#include <sys/term.h>
+#include "wtermqnx.h"
 #include "uidef.h"
 #include "uivirt.h"
 #include "qnxuiext.h"
@@ -130,14 +130,14 @@ bool intern initbios( void )
         p1 = GetTermType();
         p2 = malloc( strlen( p1 ) + 1 );
         strcpy( p2, p1 );
-        __setupterm( p2, UIConHandle, &error );
+        setupterm( p2, UIConHandle, &error );
         free( p2 );
     }
     if( error != 1 )
         return( false );
     // Check to make sure terminal is suitable
     if( (cursor_address[0] == '\0') || hard_copy ) {
-        __del_curterm( __cur_term );
+        del_curterm( cur_term );
         return( false );
     }
 
@@ -157,7 +157,7 @@ bool intern initbios( void )
 void intern finibios( void )
 {
     _uibiosfini();
-    __del_curterm( __cur_term );
+    del_curterm( cur_term );
 }
 
 static unsigned RefreshForbid = 0;

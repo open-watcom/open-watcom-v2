@@ -51,9 +51,7 @@
 
 #include <sys/qnx_glob.h>
 #include <process.h>
-#include <sys/term.h>
-
-#define tparm __tparm
+#include "wtermqnx.h"
 
 #include "uidef.h"
 #include "uiattrs.h"
@@ -212,7 +210,7 @@ static void QNX_SETCOLOUR( int f, int b )
 
 // This is basically a rewrite of the putp that's supposed to appear in
 // term.h, except it uses our "mini buffered IO code" from above
-static void putp( char *s )
+static void _putp( char *s )
 {
     int         c;
     int         pad;
@@ -290,57 +288,57 @@ static bool TIAACS =    false;  // alternate character set
 static bool TI_FillColourSet = false;
 
 // Macros for various terminfo capabilities
-#define TI_CURSOR_OFF()         putp( cursor_invisible )
-#define TI_CURSOR_NORMAL()      putp( cursor_normal )
-#define TI_CURSOR_BOLD()        putp( cursor_visible )
+#define TI_CURSOR_OFF()         _putp( cursor_invisible )
+#define TI_CURSOR_NORMAL()      _putp( cursor_normal )
+#define TI_CURSOR_BOLD()        _putp( cursor_visible )
 
-#define TI_BOLD()               ( TIABold = 1, putp( enter_bold_mode ) )
+#define TI_BOLD()               ( TIABold = 1, _putp( enter_bold_mode ) )
 #define TI_NOBOLD()             ( TIABold = 0, TI_SETATTR() )
 #define TI_REVERSE()            ( TIARev = 1, TI_SETATTR() )
 #define TI_NOREVERSE()          ( TIARev = 0, TI_SETATTR() )
-#define TI_BLINK()              ( TIABlink = 1, putp( enter_blink_mode ) )
+#define TI_BLINK()              ( TIABlink = 1, _putp( enter_blink_mode ) )
 #define TI_NOBLINK()            ( TIABlink = 0, TI_SETATTR() )
-#define TI_ULINE()              ( TIAULine = 1, putp( enter_underline_mode ) )
-#define TI_NOULINE()            ( TIAULine = 0, putp( exit_underline_mode ) )
-#define TI_ACS_ON()             ( TIAACS = 1, putp( enter_alt_charset_mode ) )
+#define TI_ULINE()              ( TIAULine = 1, _putp( enter_underline_mode ) )
+#define TI_NOULINE()            ( TIAULine = 0, _putp( exit_underline_mode ) )
+#define TI_ACS_ON()             ( TIAACS = 1, _putp( enter_alt_charset_mode ) )
 #define TI_ACS_OFF()            ( TIAACS = 0, \
                                     ((exit_alt_charset_mode[0] != '\0')\
-                                    ?(void)( putp( exit_alt_charset_mode ) )\
+                                    ?(void)( _putp( exit_alt_charset_mode ) )\
                                     :(void)(TI_SETATTR()) ))
-#define TI_WRAP()               putp( enter_am_mode )
-#define TI_NOWRAP()             putp( exit_am_mode )
-#define TI_CA_ENABLE()          putp( enter_ca_mode )
-#define TI_CA_DISABLE()         putp( exit_ca_mode )
+#define TI_WRAP()               _putp( enter_am_mode )
+#define TI_NOWRAP()             _putp( exit_am_mode )
+#define TI_CA_ENABLE()          _putp( enter_ca_mode )
+#define TI_CA_DISABLE()         _putp( exit_ca_mode )
 
 #define TI_RESTORE_ATTR()       ( TIAACS = TIABold = TIABlink = TIAULine = 0, \
-                                                putp( exit_attribute_mode ) )
-#define TI_RESTORE_COLOUR()     ( putp( ( orig_pair[0] == '\0' )\
+                                                _putp( exit_attribute_mode ) )
+#define TI_RESTORE_COLOUR()     ( _putp( ( orig_pair[0] == '\0' )\
                                         ? orig_colors : orig_pair ) )
 
-#define TI_ENABLE_ACS()         putp( ena_acs )
+#define TI_ENABLE_ACS()         _putp( ena_acs )
 
 #define TI_HOME()               TI_CURSOR_MOVE( 0, 0 );
 // This weird "do...while" thing is so that TI_CLS acts like a statement
 #define TI_CLS()                        \
     do {                                \
         if( clear_screen[0] != '\0' ) { \
-            putp( clear_screen );       \
+            _putp( clear_screen );       \
             OldRow = OldCol = 0;        \
         } else {                        \
             TI_HOME();                  \
-            putp( clr_eos );            \
+            _putp( clr_eos );            \
         }                               \
     } while( 0 )
 
-#define TI_INIT1_STRING()       putp( init_1string )
-#define TI_INIT2_STRING()       putp( init_2string )
-#define TI_INIT3_STRING()       putp( init_3string )
+#define TI_INIT1_STRING()       _putp( init_1string )
+#define TI_INIT2_STRING()       _putp( init_2string )
+#define TI_INIT3_STRING()       _putp( init_3string )
 
-#define TI_RESET1_STRING()      putp( reset_1string )
-#define TI_RESET2_STRING()      putp( reset_2string )
-#define TI_RESET3_STRING()      putp( reset_3string )
+#define TI_RESET1_STRING()      _putp( reset_1string )
+#define TI_RESET2_STRING()      _putp( reset_2string )
+#define TI_RESET3_STRING()      _putp( reset_3string )
 
-#define TI_CLEAR_MARGINS()      putp( clear_margins )
+#define TI_CLEAR_MARGINS()      _putp( clear_margins )
 
 /* Terminal Capabilities
 */
@@ -391,21 +389,21 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
       && x == ( UIData->width - n )
       && (len = strlen( clr_eol )) > 0
       && n > len ) {
-        putp( clr_eol );
+        _putp( clr_eol );
     } else if( blank
       && x == 0
       && clr_bol[0] != '\0'
       && n > (len = (strlen( cparm_right = tparm( parm_right_cursor, n )) + strlen( clr_bol ) ))
       && len > 0 ) {
-        putp( cparm_right );
-        putp( clr_bol );
+        _putp( cparm_right );
+        _putp( clr_bol );
     } else {
         if( a ) {
             TI_ACS_ON();
         }
 
         if( n >= TI_repeat_cutoff ) {
-            putp( tparm( repeat_char, c, n ) );
+            _putp( tparm( repeat_char, c, n ) );
         } else {
             for( ; n > 0; n-- ) {
                 __putchar( c );
@@ -455,7 +453,7 @@ static void TI_CURSOR_MOVE( int c, int r )
 
     // Just use cursor_address if we're not supposed to optimize
     if( !OptimizeTerminfo ) {
-        putp( tparm( cursor_address, r, c ) );
+        _putp( tparm( cursor_address, r, c ) );
         OldRow = r;
         OldCol = c;
         return;
@@ -515,22 +513,22 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            putp( tparm( column_address, c ) );
+            _putp( tparm( column_address, c ) );
             break;
         case rel_parm_plus:
-            putp( tparm( parm_right_cursor, c - OldCol ) );
+            _putp( tparm( parm_right_cursor, c - OldCol ) );
             break;
         case relative_plus:
             for( i = 0; i < c - OldCol; i++ ) {
-                putp( cursor_right );
+                _putp( cursor_right );
             }
             break;
         case rel_parm_minus:
-            putp( tparm( parm_left_cursor, OldCol - c ));
+            _putp( tparm( parm_left_cursor, OldCol - c ));
             break;
         case relative_minus:
             for( i = 0; i < OldCol - c; i++ ) {
-                putp( cursor_left );
+                _putp( cursor_left );
             }
             break;
         }
@@ -539,31 +537,31 @@ static void TI_CURSOR_MOVE( int c, int r )
         case none:
             break;
         case absolute:
-            putp( tparm( row_address, r ) );
+            _putp( tparm( row_address, r ) );
             break;
         case rel_parm_plus:
-            putp( tparm( parm_down_cursor, r - OldRow ) );
+            _putp( tparm( parm_down_cursor, r - OldRow ) );
             break;
         case relative_plus:
             for( i = 0; i < r - OldRow; i++ ) {
-                putp( cursor_down );
+                _putp( cursor_down );
             }
             break;
         case rel_parm_minus:
-            putp( tparm( parm_up_cursor, OldRow - r ) );
+            _putp( tparm( parm_up_cursor, OldRow - r ) );
             break;
         case relative_minus:
             for( i = 0; i < OldRow - r; i++ ) {
-                putp( cursor_up );
+                _putp( cursor_up );
             }
             break;
         }
     } else if( r == 0 && c == 0
       && cursor_home[0] != '\0'
       && strlen( cursor_home ) <= strlen( tparm( cursor_address, r, c ) ) ) {
-        putp( cursor_home );
+        _putp( cursor_home );
     } else {
-        putp( tparm( cursor_address, r, c ) );
+        _putp( tparm( cursor_address, r, c ) );
     }
 
     OldCol = c;
@@ -594,11 +592,11 @@ static void TI_SETCOLOUR( int f, int b )
         TI_FillColourSet = ( b == 0 ) || back_color_erase;
         // If we can set a colour pair then do so
         if( set_color_pair[0] != '\0' ) {
-            putp( tparm( set_color_pair, f * 10 + b ) );
+            _putp( tparm( set_color_pair, f * 10 + b ) );
         } else {
             // else try to set colors individually
-            putp( tparm( set_background, b ) );
-            putp( tparm( set_foreground, f ) );
+            _putp( tparm( set_background, b ) );
+            _putp( tparm( set_foreground, f ) );
         }
     }
 }
@@ -607,12 +605,12 @@ static void TI_SETATTR( void )
 {
     // we have to reset attributes as some terminals can't turn off
     // attributes with "set_attribues"
-    putp( exit_attribute_mode );
+    _putp( exit_attribute_mode );
 
     if( set_attributes[0] != '\0' ) {
         char    *x;
 
-        putp( x = tparm( set_attributes,
+        _putp( x = tparm( set_attributes,
                 0,              // standout
                 TIAULine,       // underline
                 TIARev,         // reverse
@@ -630,15 +628,15 @@ QNXDebugPrintf0("[~~~~~~]\n");
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
         if( TIAULine )
-            putp( enter_underline_mode );
+            _putp( enter_underline_mode );
         if( TIARev )
-            putp( enter_reverse_mode );
+            _putp( enter_reverse_mode );
         if( TIABlink )
-            putp( enter_blink_mode );
+            _putp( enter_blink_mode );
         if( TIABold )
-            putp( enter_bold_mode );
+            _putp( enter_bold_mode );
         if( TIAACS ) {
-            putp( enter_alt_charset_mode );
+            _putp( enter_alt_charset_mode );
         }
     }
 }
@@ -1443,7 +1441,7 @@ static int ti_refresh( int must )
             if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
-                putp( clr_eos );
+                _putp( clr_eos );
                 ca_valid = true;
                 //assert( dirty_area.col0==0 && dirty_area.col1==UIData->width );
             }
@@ -1478,7 +1476,7 @@ static int ti_refresh( int must )
                     if( TI_FillColourSet ) {
                         // Dump before blank to end of screen...
                         TI_DUMPCHARS();
-                        putp( clr_eos );
+                        _putp( clr_eos );
                         update_shadow();
                         return( 0 );
                     } else {
