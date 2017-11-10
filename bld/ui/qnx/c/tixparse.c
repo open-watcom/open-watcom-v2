@@ -35,9 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
+#include <term.h>
 #include <sys/uio.h>
 #include <unistd.h>
-#include "wtermqnx.h"
 #include "bool.h"
 #include "stdui.h"
 #include "qnxuiext.h"

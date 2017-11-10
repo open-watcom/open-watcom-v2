@@ -45,9 +45,9 @@
 #include <sys/console.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <term.h>
 #include <ctype.h>
 #include <signal.h>
-#include "wtermqnx.h"
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirt.h"

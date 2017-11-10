@@ -51,7 +51,7 @@
 
 #include <sys/qnx_glob.h>
 #include <process.h>
-#include "wtermqnx.h"
+#include <term.h>
 
 #include "uidef.h"
 #include "uiattrs.h"
