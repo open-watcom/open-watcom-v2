@@ -35,8 +35,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <wchar.h>
-#include "farsupp.h"
-#include "printf.h"
 #include "fprtf_s.h"
 
 
