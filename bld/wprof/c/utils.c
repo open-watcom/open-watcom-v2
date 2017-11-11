@@ -254,8 +254,8 @@ void InitPaths( void )
 
 #define MAX_QNX_TRANSFER (0x8000 - 512)
 
-ssize_t BigRead( int fh, void *buffer, size_t size )
-/**************************************************/
+size_t BigRead( int fh, void *buffer, size_t size )
+/*************************************************/
 {
 
 /*
@@ -273,7 +273,7 @@ ssize_t BigRead( int fh, void *buffer, size_t size )
             amount = (unsigned)size;
         read_len = read( fh, buffer, amount );
         if( read_len == (unsigned)-1 ) {
-            return( -1 );
+            return( (size_t)-1 );
         }
         total += read_len;
         if( read_len != amount ) {
@@ -285,8 +285,8 @@ ssize_t BigRead( int fh, void *buffer, size_t size )
     return( total );
 }
 
-ssize_t BigWrite( int fh, const void *buffer, size_t size )
-/*********************************************************/
+size_t BigWrite( int fh, const void *buffer, size_t size )
+/********************************************************/
 {
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
@@ -301,9 +301,9 @@ ssize_t BigWrite( int fh, const void *buffer, size_t size )
     while( size > 0 ) {
         if( amount > size )
             amount = (unsigned)size;
-        write_len = write( DFH2PH( fid ), buffer, amount );
+        write_len = write( fh, buffer, amount );
         if( write_len == (unsigned)-1 ) {
-            return( -1 );
+            return( (size_t)-1 );
         }
         total += write_len;
         if( write_len != amount ) {
