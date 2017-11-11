@@ -43,9 +43,8 @@
 #include "semapsx.h"
 #include "cthread.h"
 #include "rterrno.h"
+#include "owqnx.h"
 
-
-_WCNORETURN extern void     __qnx_exit( int __status );
 
 typedef struct thread_args {
     thread_fn   *start_addr;
