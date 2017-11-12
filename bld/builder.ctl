@@ -135,12 +135,12 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/w16api/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/w32api/builder.ctl ]
 # Continue with runtime libraries.
-[ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
 # Start with DOS4GW DOS extender stub.
