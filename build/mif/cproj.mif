@@ -6,6 +6,9 @@
 !error The host_cpu macro must be defined!
 !endif
 
+###################################
+# HANDLING OF NON-WATCOM PLATFORMS
+######
 # use native tools for x64 cpu
 # skip build for unsupported platforms
 # undefine __WATCOM_TOOLS__ for OW build
@@ -33,6 +36,16 @@ skip_build: .SYMBOLIC
 __WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
 !endif
 !endif
+###################################
+
+#
+# define newowtools macro to use new OW features
+#
+!ifdef __WATCOM_TOOLS__
+!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
+newowtools = 1
+!endif
+!endif
 
 # define OW build windows version for Win32 platform
 # Now it is setup to 0x400
@@ -43,14 +56,6 @@ __WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
 win32ver = $($(proj_name)_win32ver)
 !else
 win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
-!endif
-!endif
-
-# define newowtools macro to use new OW features
-#
-!ifdef __WATCOM_TOOLS__
-!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
-newowtools = 1
 !endif
 !endif
 
@@ -414,35 +419,35 @@ clflags_all  = $(mode_clflags) $(cl_model_switch) -j
 cl_fpu_flags = $(fpu_flags)
 
 # generic application macros
-clflags_nt_386     = -l=nt
-clflags_nt_axp     = -l=ntaxp
-clflags_win_i86    = -l=windows
-clflags_win_386    = -l=win386
-clflags_os2_i86    = -l=os2
-clflags_os2_386    = -l=os2v2
-clflags_qnx_i86    = -l=qnx
-clflags_qnx_386    = -l=qnx
-clflags_osi_386    = -l=osi
+clflags_nt_386      = -l=nt
+clflags_nt_axp      = -l=ntaxp
+clflags_win_i86     = -l=windows
+clflags_win_386     = -l=win386
+clflags_os2_i86     = -l=os2
+clflags_os2_386     = -l=os2v2
+clflags_qnx_i86     = -l=qnx
+clflags_qnx_386     = -l=qnx
+clflags_osi_386     = -l=osi
 !ifdef __UNIX__
-clflags_dos_i86    = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
-clflags_dos_386    = -l=dos4g -\"lib doslfn3r.lib\"
+clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
+clflags_dos_386     = -l=dos4g -\"lib doslfn3r.lib\"
 !else
-clflags_dos_i86    = -l=dos -"lib doslfn$(memory_model_i86).lib"
-clflags_dos_386    = -l=dos4g -"lib doslfn3r.lib"
+clflags_dos_i86     = -l=dos -"lib doslfn$(memory_model_i86).lib"
+clflags_dos_386     = -l=dos4g -"lib doslfn3r.lib"
 !endif
-clflags_zdos_386   = -l=zdos
-clflags_rdos_386   = -l=rdos
-clflags_rdosdev_386= -l=rdosdev
-clflags_nov_386    = -l=netware
-clflags_linux_386  = -l=linux
-clflags_linux_ppc  = -l=linuxppc
-clflags_linux_mps  = -l=linuxmips
+clflags_zdos_386    = -l=zdos
+clflags_rdos_386    = -l=rdos
+clflags_rdosdev_386 = -l=rdosdev
+clflags_nov_386     = -l=netware
+clflags_linux_386   = -l=linux
+clflags_linux_ppc   = -l=linuxppc
+clflags_linux_mps   = -l=linuxmips
 
 # windowed application macros
-clflags_wind_nt_386   = -l=nt_win
-clflags_wind_nt_axp   = -l=ntaxp_win
-clflags_wind_os2_386  = -l=os2v2_pm
-clflags_wind_os2_i86  = -l=os2_pm
+clflags_wind_nt_386  = -l=nt_win
+clflags_wind_nt_axp  = -l=ntaxp_win
+clflags_wind_os2_386 = -l=os2v2_pm
+clflags_wind_os2_i86 = -l=os2_pm
 
 # DLL application macros
 !ifdef __UNIX__
