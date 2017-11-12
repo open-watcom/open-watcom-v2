@@ -90,7 +90,7 @@ void SetMouseSpeed( int speed )
 /*
  * SetMousePosition - set the mouse position
  */
-void SetMousePosition( int row, int col )
+void SetMousePosition( windim row, windim col )
 {
     lastRow = MouseRow = row;
     lastCol = MouseCol = col;
@@ -100,7 +100,7 @@ void SetMousePosition( int row, int col )
 /*
  * PollMouse - poll the mouse for it's state
  */
-void PollMouse( int *status, int *row, int *col )
+void PollMouse( int *status, windim *row, windim *col )
 {
     struct mouse_event  event;
     struct itimerspec   timer;
@@ -146,7 +146,7 @@ void PollMouse( int *status, int *row, int *col )
             timer.it_value.tv_nsec = 0;
         } else {
             timer.it_value.tv_sec = 0;
-            timer.it_value.tv_nsec = MouseRepeatDelay * 1000000UL;
+            timer.it_value.tv_nsec = EditVars.MouseRepeatDelay * 1000000UL;
             if( timer.it_value.tv_nsec == 0 ) {
                 timer.it_value.tv_nsec = 1;
             }
@@ -195,7 +195,7 @@ void InitMouse( void )
     sysTime = MK_FP( osinfo.timesel, 0 );
 
     SetMousePosition( EditVars.WindMaxWidth / 2 - 1, EditVars.WindMaxHeight / 2 - 1 );
-    SetMouseSpeed( MouseSpeed );
+    SetMouseSpeed( EditVars.MouseSpeed );
     PollMouse( &MouseStatus, &MouseRow, &MouseCol );
     StopMouse();
 

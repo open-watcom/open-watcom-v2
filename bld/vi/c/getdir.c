@@ -59,7 +59,7 @@ static bool skipEntry( struct dirent *dire )
 static bool isDirectory( struct dirent *dire )
 {
 #if defined( __QNX__ )
-    return( S_ISDIR( dire->d_stat.st_mode );
+    return( S_ISDIR( dire->d_stat.st_mode ) );
 #elif defined( __UNIX__ )
     struct stat st;
 

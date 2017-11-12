@@ -38,11 +38,11 @@
 #include "getspcmd.h"
 
 
-const char _NEAR * _NEAR InternalCommands[] = { "" };
+const char _NEAR * _NEAR InternalCommands[] = { (const char _NEAR *)"" };
 
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( InternalCommands[0] );
 
-const char _NEAR * _NEAR ExeExtensions[] = { "" };
+const char _NEAR * _NEAR ExeExtensions[] = { (const char _NEAR *)"" };
 
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( ExeExtensions[0] );
 

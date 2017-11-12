@@ -170,6 +170,6 @@ void MyDelay( int ms ) {}
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */

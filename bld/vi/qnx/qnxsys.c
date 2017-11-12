@@ -39,7 +39,7 @@
 #include <sys/psinfo.h>
 #include <sys/name.h>
 #include <sys/vc.h>
-
+#include "vibios.h"
 #include "win.h"
 #include "dosx.h"
 
@@ -270,6 +270,6 @@ void MyDelay( int ms )
  */
 void SetCursorBlinkRate( int cbr )
 {
-    CursorBlinkRate = cbr;
+    EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
