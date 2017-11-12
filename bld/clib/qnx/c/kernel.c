@@ -41,7 +41,7 @@
 #define _CONST32
 #endif
 
-_WCRTLINK int (__send)( 
+_WCRTLINK int (__send)(
     pid_t                   pid,
     _CONST32 void _WCI86FAR *msg1,
     void _WCI86FAR          *msg2,
@@ -109,7 +109,7 @@ _WCRTLINK pid_t (__creceive)(
     return( __creceivemx( pid, 1, &xmsg ) );
 }
 
-_WCRTLINK unsigned (__readmsg)( pid, offset, msg, nbytes )
+_WCRTLINK unsigned (__readmsg)(
     pid_t           pid,
     unsigned        offset,
     void _WCI86FAR  *msg,
