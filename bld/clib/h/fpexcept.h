@@ -29,17 +29,15 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "rtfpehdl.h"
-#include "fpexcept.h"
-
-
 /*
     __FPE_exception is called from machine language with parm in EAX/AX
     (see "fstatus" module in CGSUPP)
+    it is also used by FPU emulator
 */
 
-void __FPE_exception( int fpe_type )
-{
-    _RWD_FPE_handler( fpe_type );
-}
+extern void __FPE_exception( int fpe_type );
+#if defined(_M_I86)
+#pragma aux __FPE_exception "*_" parm caller [ax];
+#else
+#pragma aux __FPE_exception "*_" parm caller [eax];
+#endif
