@@ -45,13 +45,15 @@
 #endif
 
 #if defined(__QNX__)
-    #if defined(__386__)
-        #define __SLIB_CALLBACK _WCFAR
-        #pragma aux slib_callback_t __far parm [eax] [edx] modify [eax edx];
-    #elif defined( __SMALL_DATA__ )
+    #if defined(_M_I86)
+      #if defined( __SMALL_DATA__ )
         #define __SLIB_CALLBACK _WCFAR __loadds
+      #else
+        #define __SLIB_CALLBACK _WCFAR
+      #endif
     #else
         #define __SLIB_CALLBACK _WCFAR
+        #pragma aux slib_callback_t __far parm [eax] [edx] modify [eax edx];
     #endif
 #else
     #define __SLIB_CALLBACK
@@ -67,44 +69,26 @@ typedef void (__SLIB_CALLBACK slib_callback_t)( SPECS __SLIB *, OUTC_PARM );
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
 
-#ifdef __WIDECHAR__
-extern int __wprtf_s(
+extern int __F_NAME(__prtf_s,__wprtf_s)(
     void __SLIB     *dest,                  /* parm for use by out_putc    */
-    const wchar_t   * __restrict format,    /* pointer to format string    */
+    const CHAR_TYPE * __restrict format,    /* pointer to format string    */
     va_list         args,                   /* pointer to pointer to args  */
     const char      **errmsg,               /* constraint violation msg    */
     slib_callback_t *out_putc );            /* character output routine    */
-#else
-extern int __prtf_s(
-    void __SLIB     *dest,                  /* parm for use by out_putc    */
-    const char      * __restrict format,    /* pointer to format string    */
-    va_list         args,                   /* pointer to pointer to args  */
-    const char      **errmsg,               /* constraint violation msg    */
-    slib_callback_t *out_putc );            /* character output routine    */
-#endif
 
 #else
 
-#ifdef __WIDECHAR__
-extern int __wprtf(
+extern int __F_NAME(__prtf,__wprtf)(
     void __SLIB     *dest,          /* parm for use by out_putc    */
-    const wchar_t   *format,        /* pointer to format string    */
+    const CHAR_TYPE *format,        /* pointer to format string    */
     va_list         args,           /* pointer to pointer to args  */
     slib_callback_t *out_putc );    /* character output routine    */
-#else
-extern int __prtf(
-    void __SLIB     *dest,          /* parm for use by out_putc    */
-    const char      *format,        /* pointer to format string    */
-    va_list         args,           /* pointer to pointer to args  */
-    slib_callback_t *out_putc );    /* character output routine    */
-#endif
 
 #ifdef __QNX__
   #if defined(IN_SLIB)
-
-extern int __prtf_slib(
+extern int __F_NAME(__prtf_slib,__wprtf_slib)(
     void __SLIB     *dest,          /* parm for use by out_putc    */
-    const char      *format,        /* pointer to format string    */
+    const CHAR_TYPE *format,        /* pointer to format string    */
     char            **args,         /* pointer to pointer to args  */
     slib_callback_t *out_putc,      /* character output routine    */
     int             ptr_size );     /* size of pointer in bytes    */
