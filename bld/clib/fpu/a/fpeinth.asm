@@ -48,8 +48,8 @@ endif
 
         datasegment
 
-        extrn   __FPE_exception_: proc
-        extrn   "C",_STACKLOW   : dword
+        extrn   __FPE_exception_    : proc
+        extrn   "C",_STACKLOW       : dword
 
 TInf    db 00h,00h,00h,00h,00h,00h,00h,80h,0ffh,7fh
 F8Inf   db 0ffh,0ffh,0ffh,0ffh,0ffh,0ffh,0efh,7fh

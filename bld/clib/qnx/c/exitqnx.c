@@ -35,6 +35,7 @@
 #include <sys/proc_msg.h>
 #include "owqnx.h"
 
+
 void __qnx_exit( int status )
 {
     struct _proc_terminate msg;
@@ -42,6 +43,6 @@ void __qnx_exit( int status )
     msg.type = _PROC_TERMINATE;
     msg.signum = 0;
     msg.xstatus = (long)status;
-    Send( PROC_PID, &msg, &msg, sizeof(msg), 0 );
-    /* The send will NOT return */
+    Send( PROC_PID, &msg, &msg, sizeof( msg ), 0 );
+    /* The Send will NOT return */
 }

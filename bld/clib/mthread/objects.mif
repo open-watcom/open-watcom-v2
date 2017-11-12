@@ -32,4 +32,3 @@
 mthread_opts  =-D__RUNTIME_CHECKS__
 trdlist_opts  =-D__RUNTIME_CHECKS__
 !endif
-

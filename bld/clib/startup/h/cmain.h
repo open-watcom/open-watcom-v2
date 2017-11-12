@@ -31,7 +31,7 @@
 
 #if defined( __QNX__ )
   #if defined( _M_I86 )
-    extern void _CMain( void __near *free, unsigned short n, struct _proc_spawn __near *cmd, unsigned short stk_bot, pid_t pid );
+    extern void _CMain( void __near *free, unsigned short n, struct _proc_spawn __near *cmd, unsigned short stk_bot, pid_t my_pid );
     #pragma aux _CMain "_*" parm [bx] [cx] [di] [dx] [ax];
   #else
     extern void _CMain( int argc, char **argv, char **arge );

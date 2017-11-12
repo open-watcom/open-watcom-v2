@@ -30,7 +30,7 @@
 
 
 #include "vi.h"
-#include "curses.h"
+#include <curses.h>
 #include "win.h"
 #include "stdui.h"
 #include "vibios.h"

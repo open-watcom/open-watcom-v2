@@ -34,6 +34,7 @@
 #include <sys/kernel.h>
 #include <i86.h>
 
+
 #if defined(__386__)
 #define _CONST32 const
 #else
@@ -72,10 +73,10 @@ _WCRTLINK int (__sendfd)(
     return( __sendfdmx( fd, 1, 1, &xmsg1, &xmsg2 ) );
 }
 
-_WCRTLINK pid_t (__receive)( pid, msg, nbytes )
-pid_t           pid;
-void _WCI86FAR  *msg;
-unsigned        nbytes;
+_WCRTLINK pid_t (__receive)(
+    pid_t           pid,
+    void _WCI86FAR  *msg,
+    unsigned        nbytes )
 {
     struct _mxfer_entry xmsg;
 
@@ -84,10 +85,10 @@ unsigned        nbytes;
     return( __receivemx( pid, 1, &xmsg ) );
 }
 
-_WCRTLINK int (__reply)( pid, msg, nbytes )
-pid_t                   pid;
-_CONST32 void _WCI86FAR *msg;
-unsigned                nbytes;
+_WCRTLINK int (__reply)(
+    pid_t                   pid,
+    _CONST32 void _WCI86FAR *msg,
+    unsigned                nbytes )
 {
     struct _mxfer_entry xmsg;
 
@@ -96,10 +97,10 @@ unsigned                nbytes;
     return( __replymx( pid, 1, &xmsg ) );
 }
 
-_WCRTLINK pid_t (__creceive)( pid, msg, nbytes )
-pid_t           pid;
-void _WCI86FAR  *msg;
-unsigned        nbytes;
+_WCRTLINK pid_t (__creceive)(
+    pid_t           pid,
+    void _WCI86FAR  *msg,
+    unsigned        nbytes )
 {
     struct _mxfer_entry xmsg;
 
@@ -109,10 +110,10 @@ unsigned        nbytes;
 }
 
 _WCRTLINK unsigned (__readmsg)( pid, offset, msg, nbytes )
-pid_t           pid;
-unsigned        offset;
-void _WCI86FAR  *msg;
-unsigned        nbytes;
+    pid_t           pid,
+    unsigned        offset,
+    void _WCI86FAR  *msg,
+    unsigned        nbytes )
 {
     struct _mxfer_entry xmsg;
 
@@ -121,11 +122,11 @@ unsigned        nbytes;
     return( __readmsgmx( pid, offset, 1, &xmsg ) );
 }
 
-_WCRTLINK unsigned (__writemsg)( pid, offset, msg, nbytes )
-pid_t                   pid;
-unsigned                offset;
-_CONST32 void _WCI86FAR *msg;
-unsigned                nbytes;
+_WCRTLINK unsigned (__writemsg)(
+    pid_t                   pid,
+    unsigned                offset,
+    _CONST32 void _WCI86FAR *msg,
+    unsigned                nbytes )
 {
     struct _mxfer_entry xmsg;
 
