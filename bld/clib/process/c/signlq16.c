@@ -113,7 +113,6 @@ _WCRTLINK int sigaction(
         msg.s.zero1 = 0;
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
         first = 0;
-
         _RWD_abort = __sigabort;           /* change the abort rtn address */
     }
 
@@ -142,7 +141,6 @@ _WCRTLINK int sigaction(
 
     if( act ) {
         Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
-
         if( msg.r.status != EOK ) {
             _RWD_errno = msg.r.status;
             return( -1 );
