@@ -26,6 +26,7 @@ extra_c_flags = -s -fpc
 extra_c_flags_dos = -zl -zls
 extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
 extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
 
 extra_link_res_qnx = usage.u
 

@@ -48,6 +48,7 @@ extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
 
 extra_c_flags_hook8087 = -i"../h"
 extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
 
 objs_dos = initemu.obj emu8087.obj dosinit.obj
 objs_os2 = initemu2.obj emu8087.obj hook8087.obj
@@ -59,8 +60,8 @@ extra_link_res_qnx = usage.u
 
 .c : ../../c
 
-objs_16 = emu86_16 emu86
-objs_32 = emu86_32
+objs_16 = emu86_16.exe emu86.exe
+objs_32 = emu86_32.exe
 
 all: $(objs_$(cpu_size)) .SYMBOLIC
 
