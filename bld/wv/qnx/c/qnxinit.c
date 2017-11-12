@@ -47,14 +47,13 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgcmdln.h"
+#include "owqnx.h"
 
 #include "clibint.h"
 
 
 unsigned char   _8087 = 0;
 unsigned char   _real87 = 0;
-
-_WCNORETURN extern void     __qnx_exit( int );
 
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
