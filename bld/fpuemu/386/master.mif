@@ -33,7 +33,7 @@ extra_link_res_qnx = usage.u
 
 objs = emu387.obj 386inite.obj
 
-emu387.lib: noemu387.lib $(objs) $(__MAKEFILES__)
+emu387.lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) $(objs)
 
