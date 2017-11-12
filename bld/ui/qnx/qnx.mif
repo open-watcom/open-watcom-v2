@@ -3,7 +3,11 @@
 
 ctkeyb.obj : ctkeyb.c conesc.gh
 
-conesc.gh : ../c/buildesc.c ../tix/qnx.tix
+inc_dirs += -I. -I"../../unix/h"
+
+conesc.gh : ./buildesc.exe ../tix/qnx.tix
+    $[@ ../tix/qnx.tix conesc.gh
+
+./buildesc.exe : ../c/buildesc.c
     @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) -I"$(lang_root)/qh" $(bld_ldflags)
-    buildesc ../tix/qnx.tix conesc.gh
+    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)

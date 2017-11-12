@@ -842,7 +842,8 @@ int main(               // MAIN-LINE
                     continue;
                 }
 
-                fgets( st, sizeof( st ), f );
+                if( fgets( st, sizeof( st ), f ) == NULL )
+                    Error( "Unable to read indirect argument file" );
                 fclose( f );
             }
             len = strlen( st );

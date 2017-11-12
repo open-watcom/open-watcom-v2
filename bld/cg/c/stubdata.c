@@ -33,7 +33,7 @@
 // 93/12/20 (jww) force re-compile
 
 #include "cgstd.h"
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
 #include "typedef.h"
@@ -43,6 +43,7 @@
 #include "cgstub.h"
 #define extern
 #include "stubdata.h"
+
 cg_type CGIntTypes[] = {
     TY_UINT_1,
     TY_INT_1,

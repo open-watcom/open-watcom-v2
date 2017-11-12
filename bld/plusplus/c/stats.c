@@ -287,11 +287,11 @@ static void extraRptTypeUsage   // TYPE USAGE
             extraRptTypeUsage( type->u.mp.host );
             continue;
           case TYP_FUNCTION :
-          { arg_list* args = type->u.f.args;
-            int count = args->num_args;
-            for( ; count > 0; ) {
-                -- count;
-                extraRptTypeUsage( args->type_list[count] );
+          {
+            arg_list *args = type->u.f.args;
+            unsigned i = args->num_args;
+            while( i-- > 0 ) {
+                extraRptTypeUsage( args->type_list[i] );
             }
           }
           // drops thru

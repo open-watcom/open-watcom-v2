@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,8 +29,9 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextvar.h"
+#include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
 #include "poscc.h"
@@ -37,18 +39,22 @@
 #include "posseek.h"
 #include "poserr.h"
 #include "posflush.h"
+#include "posdat.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
+#include "clibext.h"
+
 
 /* forward declarations */
-static  void    PutTextRec( b_file *io, const char *b, int len );
-static  void    PutVariableRec( b_file *io, const char *b, uint len );
-static  void    PutFixedRec( b_file *io, const char *b, uint len );
+static  void    PutTextRec( b_file *io, const char *b, size_t len );
+static  void    PutVariableRec( b_file *io, const char *b, size_t len );
+static  void    PutFixedRec( b_file *io, const char *b, size_t len );
 
-void    FPutRec( b_file *io, const char *b, int len )
+void    FPutRec( b_file *io, const char *b, size_t len )
+//======================================================
 // Put a record to a file.
 {
     IOOk( io );
@@ -92,14 +98,15 @@ void    ChopFile( b_file *io )
 #endif
 
 #if 0
-void    PutRec( const char *b, int len )
+void    PutRec( const char *b, size_t len )
 // Put a record to standard output device.
 {
     FPutRec( FStdOut, b, len );
 }
 #endif
 
-static  void    PutTextRec( b_file *io, const char *b, int len )
+static  void    PutTextRec( b_file *io, const char *b, size_t len )
+//=================================================================
 // Put a record to a file with "text" records.
 {
     int         cc_len;
@@ -108,7 +115,7 @@ static  void    PutTextRec( b_file *io, const char *b, int len )
 
     cc_len = 0;
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( (a_file *)io, *b, &cc );
+        cc_len = FSetCC( io, *b, &cc );
         b++;    // skip carriage control character
         len--;  // ...
     }
@@ -139,7 +146,8 @@ static  void    PutTextRec( b_file *io, const char *b, int len )
 }
 
 
-static  void    PutVariableRec( b_file *io, const char *b, uint len )
+static  void    PutVariableRec( b_file *io, const char *b, size_t len )
+//=====================================================================
 // Put a record to a file with "variable" records.
 {
     unsigned_32 tag;
@@ -148,36 +156,39 @@ static  void    PutVariableRec( b_file *io, const char *b, uint len )
     if( io->attrs & LOGICAL_RECORD ) {
         tag |= 0x80000000;
     }
-    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 )
+    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 )
         return;
     if( SysWrite( io, b, len ) == -1 )
         return;
-    if( SysWrite( io, (char *)(&tag), sizeof( unsigned_32 ) ) == -1 ) {
+    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 ) {
         return;
     }
 }
 
 
-static  void    PutFixedRec( b_file *io, const char *b, uint len )
+static  void    PutFixedRec( b_file *io, const char *b, size_t len )
+//==================================================================
 // Put a record to a file with "fixed" records.
 {
-    if( SysWrite( io, b, len ) == -1 ) return;
+    if( SysWrite( io, b, len ) == -1 ) {
+        return;
+    }
 }
 
 
-uint    writebytes( b_file *io, const char *buff, uint len )
+size_t  writebytes( b_file *io, const char *buff, size_t len )
 {
-    int         written;
-    uint        total;
-    uint        amt;
+    size_t      written;
+    size_t      total;
+    size_t      amt;
 
     total = 0;
     amt = MAX_SYSIO_SIZE;
-    while( len != 0 ) {
-        if( len < amt )
+    while( len ) {
+        if( amt > len )
             amt = len;
-        written = write( io->handle, buff, amt );
-        if( written < 0 ) {
+        written = posix_write( io->handle, buff, amt );
+        if( written == (size_t)-1 ) {
             FSetSysErr( io );
             return( 0 );
         }
@@ -195,9 +206,9 @@ uint    writebytes( b_file *io, const char *buff, uint len )
 }
 
 
-int SysWrite( b_file *io, const char *b, uint len )
+int SysWrite( b_file *io, const char *b, size_t len )
 {
-    uint        amt;
+    size_t      amt;
 
     if( len == 0 )
         return( 0 );
@@ -207,7 +218,7 @@ int SysWrite( b_file *io, const char *b, uint len )
         if( amt > len ) {
             amt = len;
         }
-        memcpy( &io->buffer[ io->b_curs ], b, amt );
+        memcpy( &io->buffer[io->b_curs], b, amt );
         io->attrs |= DIRTY_BUFFER;
         io->b_curs += amt;
         if( io->b_curs > io->high_water ) {

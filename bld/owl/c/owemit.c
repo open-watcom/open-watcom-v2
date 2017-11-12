@@ -67,10 +67,10 @@ void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_sy
     }
 }
 
-void OWLENTRY OWLEmitData( owl_section_handle section, const char *buffer, int size ) {
-//*************************************************************************************
-
-    _Log(( section->file, "OWLEmitData( %x, %x, %x )\n", section, buffer, size ));
+void OWLENTRY OWLEmitData( owl_section_handle section, const char *buffer, size_t size )
+//**************************************************************************************
+{
+    _Log(( section->file, "OWLEmitData( %x, %x, %lx )\n", section, buffer, (unsigned long)size ));
     section->location += size;
     if( section->location > section->size ) {
         section->size = section->location;
@@ -210,9 +210,10 @@ owl_sym_linkage OWLENTRY OWLTellSymbolLinkage( owl_file_handle file, owl_symbol_
     return( OWL_SYM_UNDEFINED );
 }
 
-void OWLENTRY OWLTellData( owl_section_handle section, owl_offset location, char *dst, owl_offset len ) {
-//*******************************************************************************************************
-
-    _Log(( section->file, "OWLTellData( %x, %x, %x, %x )\n", section, location, dst, len ));
+void OWLENTRY OWLTellData( owl_section_handle section, owl_offset location, char *dst, size_t len )
+//*************************************************************************************************
+{
+    _Log(( section->file, "OWLTellData( %lx, %lx, %lx, %lx )\n",
+        (unsigned long)section, (unsigned long)location, (unsigned long)dst, (unsigned long)len ));
     OWLBufferRead( section->buffer, location, dst, len );
 }

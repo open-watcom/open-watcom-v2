@@ -189,7 +189,6 @@
 !inject zmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
 
 !include $(mathlib_dir)/objlist.mif
-!include $(mathlib_dir)/libs.mif
 
 atan087__flags=-fpi87
 atan387__flags=-fpi87

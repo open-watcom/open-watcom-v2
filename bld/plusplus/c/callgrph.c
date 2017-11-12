@@ -124,11 +124,11 @@ static void changeNodeReference(// INCREMENT REFERENCE COUNT FOR AN EDGE
 {
     CALLNODE *node;             // - node referenced by edge
 
-    edge->refs += incr_refs;
-    edge->addrs += incr_addrs;
+    edge->refs = edge->refs + incr_refs;
+    edge->addrs = edge->addrs + incr_addrs;
     node = (CALLNODE*)edge->base.target;
-    node->refs += incr_refs;
-    node->addrs += incr_addrs;
+    node->refs = node->refs + incr_refs;
+    node->addrs = node->addrs + incr_addrs;
 }
 
 
@@ -174,7 +174,7 @@ static void cgrfPruneEdge(      // PRUNE AN EDGE
 {
     /* unused parameters */ (void)ctl;
 
-    changeNodeReference( -edge->refs, -edge->addrs, edge );
+    changeNodeReference( -(int)edge->refs, -(int)edge->addrs, edge );
 }
 
 

@@ -35,6 +35,8 @@
 #ifdef __NT__
     #include <ctype.h>
 #endif
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include "win.h"
 #include "strdup.h"
 #include "initarg.h"

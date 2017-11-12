@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,8 @@
 #include <direct.h>
 #include <string.h>
 #define INCL_LONGLONG
+#include <wos2.h>
+#include "os2fil64.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "fileacc.h"
@@ -51,7 +54,6 @@
 #include "seterrno.h"
 #include "defwin.h"
 #include "thread.h"
-#include "os2fil64.h"
 
 
 static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )

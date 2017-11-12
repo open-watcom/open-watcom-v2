@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,7 @@
 #include "blktrim.h"
 #include "tree.h"
 #include "treefold.h"
+#include "x86data.h"
 #include "feprotos.h"
 
 
@@ -80,8 +81,6 @@ extern  void            GCondFwait( void );
 extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
-
-extern  void            OutLblPatch( label_handle, fix_class, offset );
 
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );
@@ -212,7 +211,7 @@ static  byte    DoIndex( hw_reg_set regs )
 
 
 static  byte    DoScaleIndex( hw_reg_set base_reg,
-                              hw_reg_set idx_reg, int scale )
+                              hw_reg_set idx_reg, scale_typ scale )
 /***********************************************************/
 {
     byte        sib;
@@ -275,7 +274,7 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 }
 
 
-static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
+static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                          signed_32 val, name *mem_loc, bool lea )
 /***************************************************************/
 {
@@ -385,7 +384,7 @@ extern  void    LayLeaRegOp( instruction *ins )
 {
     name        *left;
     name        *right;
-    int         shift = 0;
+    scale_typ   scale = 0;
     int         neg;
     signed_32   disp;
 
@@ -410,12 +409,12 @@ extern  void    LayLeaRegOp( instruction *ins )
         break;
     case OP_MUL:
         switch( right->c.lo.int_value ) {
-        case 3: shift = 1;  break;
-        case 5: shift = 2;  break;
-        case 9: shift = 3;  break;
+        case 3: scale = 1;  break;
+        case 5: scale = 2;  break;
+        case 9: scale = 3;  break;
         }
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        EA( left->r.reg, left->r.reg, shift, disp, NULL, true );
+        EA( left->r.reg, left->r.reg, scale, disp, NULL, true );
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
@@ -429,7 +428,7 @@ extern  void    LayLeaRegOp( instruction *ins )
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, right->c.lo.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.int_value, disp, NULL, true );
         }
         break;
     }
@@ -554,7 +553,7 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
-            DoSegRef( op->c.lo.int_value );
+            DoSegRef( (segment_id)op->c.lo.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }

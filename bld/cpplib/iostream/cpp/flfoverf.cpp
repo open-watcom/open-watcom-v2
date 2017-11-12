@@ -47,8 +47,8 @@ namespace std {
   // them to the POSIX device found in handle. Also send the character
   // "c", unless it's EOF.
 
-  int filebuf::overflow( int c ) {
-
+  int filebuf::overflow( int c )
+  {
     unsigned int    waiting;
     int             written;
     streamoff       offset;
@@ -91,7 +91,7 @@ namespace std {
         if( offset < 0 ) {
             return( EOF );
         }
-        if( ::lseek( fd(), 0, ios::end ) < 0 ) {
+        if( ::lseek( fd(), 0, SEEK_END ) == -1 ) {
             return( EOF );
         }
     }
@@ -130,7 +130,7 @@ namespace std {
 
     // if appending, restore current offset
     if( __file_mode & ios::app ) {
-        if( ::lseek( fd(), offset, ios::beg ) < 0 ) {
+        if( ::lseek( fd(), offset, SEEK_SET ) == -1 ) {
             return( EOF );
         }
     }

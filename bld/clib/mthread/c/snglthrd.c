@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,11 @@
 #include "variety.h"
 #include <stddef.h>
 #if defined( __NT__ )
-#include <windows.h>
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
 #endif
 #include "rtstack.h"
 #include "thread.h"

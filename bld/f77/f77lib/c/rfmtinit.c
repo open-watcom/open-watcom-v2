@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,15 +29,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
 #include "rundat.h"
 #include "format.h"
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "rtenv.h"
 #include "fmttab.h"
+#include "rfmtemit.h"
+#include "fmtscan.h"
+#include "setiocb.h"
+#include "rfmttab.h"
+
 
 static  void    FInit( string *fmt ) {
 //====================================

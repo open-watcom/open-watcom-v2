@@ -31,10 +31,7 @@
 
 
 #include "plusplus.h"
-
-#include <setjmp.h>
 #include <assert.h>
-
 #include "preproc.h"
 #include "cgfront.h"
 #include "template.h"
@@ -208,7 +205,7 @@ static SYMBOL dwarfDebugSymAlias( SYMBOL sym )
 static dw_loc_handle dwarfDebugStaticLoc( SYMBOL sym )
 /***********************************************/
 {
-    TYPE        pt;
+    TYPE            pt;
     dw_loc_id       locid;
     dw_loc_handle   dl;
 
@@ -385,7 +382,7 @@ static void dwarfPumpArgTypes( TYPE type )
 /*************************************/
 { // force out types for args
     arg_list    *alist;
-    int         i;
+    unsigned    i;
     TYPE        p;
 
     alist = TypeArgList( type );
@@ -685,7 +682,7 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
     if( type->dbgflag & TF2_DWARF ) {
         dh = type->dbg.handle;
     } else {
-        uint    kind;
+        dw_struct_type  kind;
         if( type->flag & TF1_UNION ) {
             kind = DW_ST_UNION;
         } else if( type->flag & TF1_STRUCT ) {
@@ -829,7 +826,7 @@ static dw_handle dwarfTypeFunction( TYPE type )
 {
     dw_handle   dh;
     arg_list    *alist;
-    int         i;
+    unsigned    i;
     uint        flags;
 
     type_reset( type );
@@ -889,7 +886,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
     TYPE            btype;
     SYMBOL          sym;
     dw_handle       dh;
-    int             dref;
+    dw_loc_op       dref;
 
     locid = DWLocInit( Client );
     btype = BasedType( type->of );
@@ -1233,7 +1230,8 @@ static void dwarf_define_parm( SYMBOL sym )
     dw_handle   dh;
     char        *name;
 
-    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return;
+    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 )
+        return;
     if( IsCppNameInterestingDebug( sym ) ) {
         name = CppNameDebug( sym );
     } else {
@@ -1269,9 +1267,12 @@ static void dwarf_block_open( SYMBOL sym )
     dw_handle   dh;
 
     sym_reset( sym );
-    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return;
-    if( sym->flag2 & SF2_DW_HANDLE ) return;
-    if( !dwarfValidateSymbol( sym ) ) return;
+    if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 )
+        return;
+    if( sym->flag2 & SF2_DW_HANDLE )
+        return;
+    if( !dwarfValidateSymbol( sym ) )
+        return;
 
     if( SymIsClassDefinition( sym ) ) {
         dh = dwarfSymbol( sym, DC_DEFINE );
@@ -1320,24 +1321,25 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
     CgioOpenInput( file_ctl );
     line = 0;
     column = 0;
-    for( ; ; ) {
+    for( ;; ) {
         ins = CgioReadICMask( file_ctl, ICOPM_DWARF );
-        if( ins->opcode == IC_EOF ) break;
+        if( ins->opcode == IC_EOF )
+            break;
         ins_value = ins->value;
         // The following comment is a trigger for the ICMASK program to start
         // scanning for case IC_* patterns.
         // ICMASK BEGIN DWARF (do not remove)
         switch( ins->opcode ) {
 
-          case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
+        case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
             DbgNever();
             break;
 
 //
 //          SYMBOL REFERENCES
 //
-          case IC_LEAF_NAME_FRONT :         // LEAF: FRONT-END SYMBOL
-          case IC_VIRT_FUNC :               // MARK INDIRECT AS VIRTUAL CALL
+        case IC_LEAF_NAME_FRONT :         // LEAF: FRONT-END SYMBOL
+        case IC_VIRT_FUNC :               // MARK INDIRECT AS VIRTUAL CALL
             if( dwarfValidateSymbol( ins_value.pvalue ) ) {
                 dh = dwarfSymbol( ins_value.pvalue, DC_DEFAULT );
                 if( dh != 0 ) {
@@ -1349,11 +1351,11 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
 //
 //          PROCEDURE DECLARATIONS
 //
-          case IC_FUNCTION_ARGS :           // DEFINE FUNCTION ARG.S
+        case IC_FUNCTION_ARGS :           // DEFINE FUNCTION ARG.S
             ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_define_parm );
             break;
 
-          case IC_BLOCK_OPEN :              // OPEN BLOCK SCOPE (LIVE CODE)
+        case IC_BLOCK_OPEN :              // OPEN BLOCK SCOPE (LIVE CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
 //              ScopeWalkSymbols( ins_value.pvalue, &dwarf_block_open );
@@ -1361,7 +1363,7 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
             }
             break;
 
-          case IC_BLOCK_DEAD :              // OPEN BLOCK SCOPE (DEAD CODE)
+        case IC_BLOCK_DEAD :              // OPEN BLOCK SCOPE (DEAD CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
 //              ScopeWalkSymbols( ins_value.pvalue, &dwarf_block_open );
@@ -1369,35 +1371,35 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
             }
             break;
 
-          case IC_BLOCK_END :               // CLOSE BLOCK SCOPE
+        case IC_BLOCK_END :               // CLOSE BLOCK SCOPE
             DWEndLexicalBlock( Client );
             break;
 
 //
 //          DEBUGGING -- for program
 //
-          case IC_DBG_LINE :                // SET LINE NUMBER
+        case IC_DBG_LINE :                // SET LINE NUMBER
             line = ins_value.uvalue;
             break;
 
 //
 //          EXCEPTION HANDLING
 //
-          case IC_TRY :                     // START A TRY BLOCK
+        case IC_TRY :                     // START A TRY BLOCK
             dh = dwarfSymbol( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
             break;
 
-          case IC_CATCH_VAR :               // SET TRY_VAR FOR CATCH
+        case IC_CATCH_VAR :               // SET TRY_VAR FOR CATCH
             dh = dwarfSymbol( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
             break;
 
-          case IC_CATCH :                   // SET TYPE OF A CATCH
+        case IC_CATCH :                   // SET TYPE OF A CATCH
             if( ins_value.pvalue != 0 ) {
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
                 if( dh != 0 ) {
@@ -1406,7 +1408,7 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
             }
             break;
 
-          case IC_EXCEPT_SPEC :             // FUNCTION EXCEPTION SPEC.
+        case IC_EXCEPT_SPEC :             // FUNCTION EXCEPTION SPEC.
             if( ins_value.pvalue != NULL ) { // not throw()
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
                 if( dh != 0 ) {
@@ -1415,14 +1417,14 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
             }
             break;
 
-          case IC_THROW_RO_BLK :            // SET THROW R/O BLOCK
+        case IC_THROW_RO_BLK :            // SET THROW R/O BLOCK
             dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
             break;
 
-          default:
+        default:
             DbgNever();
         }
         // ICMASK END (do not remove)
@@ -1580,7 +1582,7 @@ static dw_handle dwarfData( SYMBOL sym )
 }
 
 static dw_handle dwarfDebugStatic( SYMBOL sym )
-/**************************************/
+/*********************************************/
 {
     dw_handle dh;
     dw_handle class_dh;
@@ -1652,16 +1654,20 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
     }
     return( dh );
 }
+
 static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
 /************************************************************/
 {
     dw_handle       dh = 0;
 
     if( !InDebug ) {
-        if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) return( 0 );
+        if( (sym->flag2 & SF2_TOKEN_LOCN) == 0 ) {
+            return( 0 );
+        }
     };
     sym_reset( sym );
-    if( sym->flag2 & SF2_DW_HANDLE_DEF ) return( sym->locn->u.dwh );
+    if( sym->flag2 & SF2_DW_HANDLE_DEF )
+        return( sym->locn->u.dwh );
 
     if( !InDebug ) {
         dwarfLocation( sym );
@@ -1858,8 +1864,9 @@ extern void DwarfDebugFini( void )
     }
 }
 
-static int dwarfTempScope(  SCOPE scope ) {
-/*****************************************/
+static int dwarfTempScope(  SCOPE scope )
+/***************************************/
+{
     SYMBOL stop;
     SYMBOL curr;
 
@@ -2039,7 +2046,7 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
 static void dwarfPreUsedSymbol( SCOPE scope );
 
 static void dwarfPreUsedNameSpace( SYMBOL curr )
-/***************************************/
+/**********************************************/
 {
 
     if( !curr->u.ns->u.s.unnamed ){
@@ -2052,7 +2059,7 @@ static void dwarfPreUsedNameSpace( SYMBOL curr )
 }
 
 static void dwarfPreUsedSymbol( SCOPE scope )
-/************************************/
+/*******************************************/
 {
     TYPE type;
     SYMBOL stop;
@@ -2061,7 +2068,7 @@ static void dwarfPreUsedSymbol( SCOPE scope )
     stop = ScopeOrderedStart( scope );
     curr = ScopeOrderedNext( stop, NULL );
     while( curr != NULL ) {
-        if( ! SymIsFunctionTemplateModel( curr ) &&
+        if( !SymIsFunctionTemplateModel( curr ) &&
             ( curr->flag & (SF_INITIALIZED ) ) &&
             SymIsData( curr ) &&
             !SymIsEnumeration( curr) &&
@@ -2090,7 +2097,7 @@ static void dwarfPreUsedSymbol( SCOPE scope )
 static bool typedef_is_of_basic_types( TYPE type )
 /************************************************/
 {
-    int         i;
+    unsigned    i;
     arg_list    *alist;
 
     for(;;) {
@@ -2112,7 +2119,7 @@ static bool typedef_is_of_basic_types( TYPE type )
 }
 
 static void doDwarfDebugNamedType( TYPE type, void *data )
-/***********************************************************/
+/********************************************************/
 {
     data = data;
     if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) &&
@@ -2122,8 +2129,8 @@ static void doDwarfDebugNamedType( TYPE type, void *data )
         }
     }
 }
-static void dwarfDebugNamedType()
-/**********************************/
+static void dwarfDebugNamedType( void )
+/*************************************/
 {
     int    data;
 
@@ -2132,7 +2139,7 @@ static void dwarfDebugNamedType()
 }
 #endif
 extern void DwarfDebugEmit( void )
-/****************************/
+/********************************/
 {
     if( GenSwitches & DBG_TYPES ) {
         dwarfEmitFundamentalType();
@@ -2145,7 +2152,7 @@ extern void DwarfDebugEmit( void )
 }
 
 static void dwarfDebugTemplateParm( TYPE p )
-/*************************************/
+/******************************************/
 { // force out types for args
 
     while( p != NULL ) {
@@ -2207,9 +2214,9 @@ extern void DwarfSymDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
     DBLocFini( dl );
 }
 
-extern void DwarfDebugNameSpaceEnclosed( SYMBOL sym ) {
-/*************************************************/
-
+extern void DwarfDebugNameSpaceEnclosed( SYMBOL sym )
+/***************************************************/
+{
     SCOPE scope;
     NAME_SPACE *ns;
 
@@ -2226,7 +2233,8 @@ extern void DwarfDebugMemberFunc( SYMBOL func, SYMBOL this_sym )
     DBObject( DwarfDebugType( SymClass( func ) ), NULL, TY_DEFAULT );
 }
 
-extern uint_32 DwarfDebugOffset( uint_32 handle ) {
-/************************************************/
-    return( DWDebugRefOffset( Client, handle ) );
+extern uint_32 DwarfDebugOffset( uint_32 handle )
+/***********************************************/
+{
+    return( DWGetHandleLocation( Client, handle ) );
 }

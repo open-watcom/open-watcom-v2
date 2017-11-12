@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,19 +49,18 @@
 #include "x86enc2.h"
 #include "encode.h"
 #include "x86obj.h"
+#include "x86data.h"
 #include "feprotos.h"
 
 
 extern  bool            UseImportForm( fe_attr );
-extern  void            IterBytes( offset len, byte pat );
 
-extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
 static  void            DoLblPtr( label_handle lbl, segment_id seg, fix_class class, offset plus );
 
 
-extern  void    DataAlign( unsigned_32 align ) {
-/**********************************************/
-
+void    DataAlign( unsigned_32 align )
+/************************************/
+{
     offset      curr_loc;
     uint        modulus;
 
@@ -76,9 +75,9 @@ extern  void    DataAlign( unsigned_32 align ) {
     }
 }
 
-extern  void    DataBytes( unsigned len, const void *src ) {
-/**********************************************************/
-
+void    DataBytes( unsigned len, const void *src )
+/************************************************/
+{
     if( len != 0 ){
         TellOptimizerByPassed();
         SetUpObj( true );
@@ -88,8 +87,8 @@ extern  void    DataBytes( unsigned len, const void *src ) {
 }
 
 
-extern  void    DataShort( unsigned_16 val )
-/******************************************/
+void    DataShort( unsigned_16 val )
+/**********************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );
@@ -97,8 +96,8 @@ extern  void    DataShort( unsigned_16 val )
     TellByPassOver();
 }
 
-extern  void    DataLong( unsigned_32 val )
-/*****************************************/
+void    DataLong( unsigned_32 val )
+/*********************************/
 {
     TellOptimizerByPassed();
     SetUpObj( true );
@@ -107,9 +106,9 @@ extern  void    DataLong( unsigned_32 val )
 }
 
 
-extern  void    IterBytes( offset len, byte pat ) {
-/***********************************************/
-
+void    IterBytes( offset len, byte pat )
+/***************************************/
+{
     TellOptimizerByPassed();
     SetUpObj( true );
     OutIBytes( pat, len );
@@ -117,11 +116,10 @@ extern  void    IterBytes( offset len, byte pat ) {
 }
 
 
-extern  void    DoBigBckPtr( back_handle bck, offset off ) {
-/********************************************************/
-
+void    DoBigBckPtr( back_handle bck, offset off )
+/*****************************************************/
 /* Careful! Make sure a DGLabel has been done first! */
-
+{
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, bck->seg, F_PTR, off );
     TellByPassOver();
@@ -137,9 +135,9 @@ static  void    DoLblPtr( label_handle lbl, segment_id seg, fix_class class, off
 }
 
 
-extern  void    DoBigLblPtr( cg_sym_handle sym ) {
-/*********************************************/
-
+void    DoBigLblPtr( cg_sym_handle sym )
+/**************************************/
+{
     TellOptimizerByPassed();
     DoLblPtr( FEBack( sym )->lbl, FESegID( sym ), F_PTR, 0 );
     TellByPassOver();
@@ -147,9 +145,9 @@ extern  void    DoBigLblPtr( cg_sym_handle sym ) {
 
 
 
-static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus ) {
-/***********************************************************************/
-
+static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus )
+/*************************************************************************/
+{
     SetUpObj( true );
     OutImport( sym, class, false );
     if( F_CLASS( class ) == F_BASE ) {
@@ -162,8 +160,9 @@ static  void    DoImpPtr( cg_sym_handle sym, fix_class class, offset plus ) {
     }
 }
 
-extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus ) {
-/************************************************************************/
+void    BackImpPtr( const char *nm, back_handle bck, offset plus )
+/****************************************************************/
+{
     fix_class const class = F_OFFSET;
 
     SetUpObj( true );
@@ -178,8 +177,8 @@ extern  void    BackImpPtr( const char *nm, back_handle bck, offset plus ) {
     }
 }
 
-extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
-/***************************************************************************/
+void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
+/*******************************************************************/
 {
     offset      val;
 
@@ -203,9 +202,9 @@ extern  void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
 }
 
 
-extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
-/*******************************************************************/
-
+void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
+/*************************************************************/
+{
     fe_attr     attr;
     fix_class   class;
 
@@ -231,9 +230,9 @@ extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
-/***************************************************************/
-
+void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus )
+/********************************************************/
+{
     fe_attr     attr;
 
     TellOptimizerByPassed();
@@ -246,9 +245,9 @@ extern  void    FEPtrBaseOffset( cg_sym_handle sym,  offset plus ) {
     TellByPassOver();
 }
 
-extern  void    FEPtrBase( cg_sym_handle sym ) {
-/*******************************************/
-
+void    FEPtrBase( cg_sym_handle sym )
+/************************************/
+{
     fe_attr     attr;
 
     TellOptimizerByPassed();
@@ -262,8 +261,8 @@ extern  void    FEPtrBase( cg_sym_handle sym ) {
 }
 
 
-extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
-/*************************************************************************************/
+void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
+/*****************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {
@@ -274,31 +273,31 @@ extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def 
     TellByPassOver();
 }
 
-extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
-/***************************************************************************/
+void    BackPtrBigOffset( back_handle bck, segment_id seg, offset plus )
+/**********************************************************************/
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, seg, F_BIG_OFFSET, plus );
     TellByPassOver();
 }
 
-extern  void    BackPtrBase( back_handle bck, segment_id seg )
-/**********************************************************/
+void    BackPtrBase( back_handle bck, segment_id seg )
+/****************************************************/
 {
     TellOptimizerByPassed();
     DoLblPtr( bck->lbl, seg, F_BASE, 0 );
     TellByPassOver();
 }
 
-extern  bool    FPCInCode( void ) {
-/*********************************/
-
+bool    FPCInCode( void )
+/***********************/
+{
     return( _IsTargetModel( CONST_IN_CODE ) || ( _IsTargetModel( FLOATING_DS ) && _IsTargetModel( FLOATING_SS ) ) );
 }
 
-static  cg_class ConstDataClass( void ) {
-/***************************************/
-
+static  cg_class ConstDataClass( void )
+/*************************************/
+{
     if( FPCInCode() ) {
         return( CG_CLB );
     } else {
@@ -306,8 +305,8 @@ static  cg_class ConstDataClass( void ) {
     }
 }
 
-extern  name    *GenConstData( const void *buffer, type_class_def class )
-/***********************************************************************/
+name    *GenConstData( const void *buffer, type_class_def class )
+/***************************************************************/
 {
     segment_id          old;
     cg_class            cgclass;
@@ -340,9 +339,9 @@ extern  name    *GenConstData( const void *buffer, type_class_def class )
     return( result );
 }
 
-extern  name    *GenFloat( name *cons, type_class_def class ) {
-/*************************************************************/
-
+name    *GenFloat( name *cons, type_class_def class )
+/***************************************************/
+{
     constant_defn       *defn;
     name                *result;
 
@@ -357,9 +356,9 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
 }
 
 
-extern  void    DataLabel( label_handle lbl ) {
-/*********************************************/
-
+void    DataLabel( label_handle lbl )
+/***********************************/
+{
     TellObjNewLabel( AskForLblSym( lbl ) );
     TellOptimizerByPassed();
     SetUpObj( true );

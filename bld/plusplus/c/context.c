@@ -155,12 +155,13 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
     void const *data;           // - current data
 
     *a_context = context;
-    *a_prefix = ctx_names[ context ];
+    *a_prefix = ctx_names[context];
     data = NULL;
     switch( context ) {
     case CTX_INIT :
     case CTX_FINI :
     case CTX_CMDLN_VALID :
+    case CTX_PREINCL :
     case CTX_FORCED_INCS :
     case CTX_SOURCE :
     case CTX_CG_OPT :
@@ -191,16 +192,18 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
 {
     char *buf;                  // - points into buffer
 
-    buf = stxpcpy( CompilerContext, ctx_names[ context ] );
+    buf = stxpcpy( CompilerContext, ctx_names[context] );
     switch( context ) {
       case CTX_CMDLN_ENV :
       case CTX_CMDLN_PGM :
         buf = stxpcpy( buf, ": " );
         buf = stxpcpy( buf, CtxGetSwitchAddr() );
         break;
+      case CTX_PREINCL :
       case CTX_FORCED_INCS :
       case CTX_SOURCE :
-        if( location.src_file == NULL ) break;
+        if( location.src_file == NULL )
+            break;
         buf = stxpcpy( buf, ": " );
         buf = stxpcpy( buf, SrcFileName( location.src_file ) );
         buf = stxpcpy( buf, "(" );

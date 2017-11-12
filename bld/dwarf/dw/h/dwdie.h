@@ -38,7 +38,7 @@
 
 typedef struct die_tree {
     struct die_tree     *parent;        // parent of this DIE
-    debug_ref           sibling;        // previous AT_sibling
+    dw_sect_offs        sibling;        // previous AT_sibling
 } die_tree;
 
 #define InitDIE                 DW_InitDIE

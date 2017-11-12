@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,3 +51,11 @@ extern  dbg_type        CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc
 extern  dbg_type        CVEndStruct( dbg_struct st );
 extern  dbg_type        CVEndEnum( dbg_enum en );
 extern  dbg_type        CVEndProc( dbg_proc pr );
+
+extern  void            CVPutStr( cv_out *, const char * );
+extern  void            CVPutINum( cv_out *out, signed_32 num );
+extern  void            CVPutINum64( cv_out *out, signed_64 num );
+extern  void            CVPutNullStr( cv_out * );
+extern  void            CVEndType( cv_out *out );
+
+extern char const       *CVScopeName( dbg_type scope );

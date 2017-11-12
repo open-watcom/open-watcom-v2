@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,13 +29,15 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "undef.h"
 #include "rundat.h"
 #include "pgmacc.h"
 #include "rtsysutl.h"
 #include "rtutls.h"
+#include "sysinq.h"
+#include "rtinq.h"
 
 #include <string.h>
 
@@ -124,18 +127,15 @@ bool    FindFName( void ) {
 
     ConnectFile();
     fname = IOCB->fileinfo->filename;
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL )
-            return( false );
-        if( ( IOCB->fileinfo != fcb ) && SameFile( fname, fcb->filename ) )
-            break;
-        fcb = fcb->link;
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
+        if( ( IOCB->fileinfo != fcb ) && SameFile( fname, fcb->filename ) ) {
+            // file already connected
+            DiscoFile( IOCB->fileinfo );
+            IOCB->fileinfo = fcb;
+            return( true );
+        }
     }
-    // file already connected
-    DiscoFile( IOCB->fileinfo );
-    IOCB->fileinfo = fcb;
-    return( true );
+    return( false );
 }
 
 

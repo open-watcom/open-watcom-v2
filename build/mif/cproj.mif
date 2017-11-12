@@ -1,19 +1,50 @@
-!ifndef bootstrap
-!ifeq host_cpu x64
-!undef __WATCOM_TOOLS__
-!else ifeq host_cpu arm
-!undef __WATCOM_TOOLS__
-!else
-!define __WATCOM_TOOLS__
-!endif
-!endif
-
 # Perform basic sanity checks
 !ifeq host_os #nothing
 !error The host_os macro must be defined!
 !endif
 !ifeq host_cpu #nothing
 !error The host_cpu macro must be defined!
+!endif
+
+###################################
+# HANDLING OF NON-WATCOM PLATFORMS
+######
+# use native tools for x64 cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!ifeq host_cpu x64
+!ifneq bld_cpu x64
+skip_build: .SYMBOLIC
+!else ifndef bld64host_$(host_os)
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+# use native tools for arm cpu
+# skip build for unsupported platforms
+# undefine __WATCOM_TOOLS__ for OW build
+!else ifeq host_cpu arm
+!ifneq bld_cpu arm
+skip_build: .SYMBOLIC
+!else ifndef bootstrap
+!undef __WATCOM_TOOLS__
+!endif
+# supported architectures
+# set __WATCOM_TOOLS__ for OW build
+!else
+!ifndef bootstrap
+__WATCOM_TOOLS__ = $(%OWBLDVERTOOL)
+!endif
+!endif
+###################################
+
+#
+# define newowtools macro to use new OW features
+#
+!ifdef __WATCOM_TOOLS__
+!ifeq __WATCOM_TOOLS__ $(%OWBLDVERTOOL)
+newowtools = 1
+!endif
 !endif
 
 # define OW build windows version for Win32 platform
@@ -191,7 +222,7 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x-wpx
 mode_clflags += -x-wpx
 !endif
-!if !defined( bootstrap ) || ( $(watcom_ver) > 1300 )
+!ifdef newowtools
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
@@ -360,12 +391,14 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-!if !defined( bootstrap ) || ( $(watcom_ver) > 1290 )
+!ifdef newowtools
 c_flags          = -za99
-!else
-c_flags          =
 !endif
-cxx_flags        = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+
+!ifdef __WATCOM_TOOLS__
+cxx_all          = -fzh -fzs
+!endif
+cxx_flags        = $(cxx_all) $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
 cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
@@ -386,35 +419,35 @@ clflags_all  = $(mode_clflags) $(cl_model_switch) -j
 cl_fpu_flags = $(fpu_flags)
 
 # generic application macros
-clflags_nt_386     = -l=nt
-clflags_nt_axp     = -l=ntaxp
-clflags_win_i86    = -l=windows
-clflags_win_386    = -l=win386
-clflags_os2_i86    = -l=os2
-clflags_os2_386    = -l=os2v2
-clflags_qnx_i86    = -l=qnx
-clflags_qnx_386    = -l=qnx
-clflags_osi_386    = -l=osi
+clflags_nt_386      = -l=nt
+clflags_nt_axp      = -l=ntaxp
+clflags_win_i86     = -l=windows
+clflags_win_386     = -l=win386
+clflags_os2_i86     = -l=os2
+clflags_os2_386     = -l=os2v2
+clflags_qnx_i86     = -l=qnx
+clflags_qnx_386     = -l=qnx
+clflags_osi_386     = -l=osi
 !ifdef __UNIX__
-clflags_dos_i86    = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
-clflags_dos_386    = -l=dos4g -\"lib doslfn3r.lib\"
+clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
+clflags_dos_386     = -l=dos4g -\"lib doslfn3r.lib\"
 !else
-clflags_dos_i86    = -l=dos -"lib doslfn$(memory_model_i86).lib"
-clflags_dos_386    = -l=dos4g -"lib doslfn3r.lib"
+clflags_dos_i86     = -l=dos -"lib doslfn$(memory_model_i86).lib"
+clflags_dos_386     = -l=dos4g -"lib doslfn3r.lib"
 !endif
-clflags_zdos_386   = -l=zdos
-clflags_rdos_386   = -l=rdos
-clflags_rdosdev_386= -l=rdosdev
-clflags_nov_386    = -l=netware
-clflags_linux_386  = -l=linux
-clflags_linux_ppc  = -l=linuxppc
-clflags_linux_mps  = -l=linuxmips
+clflags_zdos_386    = -l=zdos
+clflags_rdos_386    = -l=rdos
+clflags_rdosdev_386 = -l=rdosdev
+clflags_nov_386     = -l=netware
+clflags_linux_386   = -l=linux
+clflags_linux_ppc   = -l=linuxppc
+clflags_linux_mps   = -l=linuxmips
 
 # windowed application macros
-clflags_wind_nt_386   = -l=nt_win
-clflags_wind_nt_axp   = -l=ntaxp_win
-clflags_wind_os2_386  = -l=os2v2_pm
-clflags_wind_os2_i86  = -l=os2_pm
+clflags_wind_nt_386  = -l=nt_win
+clflags_wind_nt_axp  = -l=ntaxp_win
+clflags_wind_os2_386 = -l=os2v2_pm
+clflags_wind_os2_i86 = -l=os2_pm
 
 # DLL application macros
 !ifdef __UNIX__

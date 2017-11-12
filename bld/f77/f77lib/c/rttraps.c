@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,11 @@
 #elif defined( _M_IX86 )
   #include <i86.h>
 #endif
-#if defined( __OS2__ )
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
     #define INCL_DOSMISC
+    #include <wos2.h>
   #if defined( _M_I86 )
     #define __OS2_286__
   #else
@@ -328,8 +332,7 @@ void    R_TrapFini( void ) {
 }
 
 #if 0
-extern void             (*_ExceptionInit)( void );
-extern void             (*_ExceptionFini)( void );
+#include "rt_init.h"
 
 void    __InitExceptionVectors( void ) {
 //================================

@@ -46,8 +46,8 @@ namespace std {
   // happen since input is flushed when output is started and vice
   // versa.
 
-  int filebuf::sync() {
-
+  int filebuf::sync()
+  {
     __lock_it( __b_lock );
 
     // Flush any output to the file:
@@ -76,7 +76,7 @@ namespace std {
         } else {
             offset = (__huge_ptr_int)(gptr() - egptr());
         }
-        if( ::lseek( fd(), offset, ios::cur ) < 0 ) {
+        if( ::lseek( fd(), offset, SEEK_CUR ) == -1 ) {
             return( EOF );
         }
         setg( NULL, NULL, NULL );

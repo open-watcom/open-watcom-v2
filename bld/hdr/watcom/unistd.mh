@@ -21,14 +21,14 @@
 :include cpluspro.sp
 
 :segment DOS
-#if defined(__OS2__) && defined(__386__) && defined(__TCPIP_HEADERS)
+#if defined(__OS2__) && !defined(_M_I86) && defined(__TCPIP_HEADERS)
  #include <tcpustd.h>  /* unistd.h conflicts with OS/2 TCP/IP headers */
 #endif
 
 :endsegment
-:segment QNX | LINUX
 :include null.sp
 
+:segment QNX | LINUX
 :include access.sp
 
 /* Symbolic constants for the lseek() function */

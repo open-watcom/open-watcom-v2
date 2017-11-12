@@ -258,7 +258,7 @@ usr="wpperrs.inf" conda="cplusplus" where="c jc" desc="Help file for C++ compile
 # PDF help files
 usr="c_readme.pdf"
 usr="cguide.pdf"
-usr="cguideq.pdf"
+#usr="cguideq.pdf"
 usr="clib.pdf"
 usr="clr.pdf"
 usr="cpplib.pdf"

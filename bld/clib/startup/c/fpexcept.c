@@ -37,10 +37,10 @@
     (see "fstatus" module in CGSUPP)
 */
 
-#if defined(__386__)
-    #define parmreg eax
-#else
+#if defined(_M_I86)
     #define parmreg ax
+#else
+    #define parmreg eax
 #endif
 
 void __FPE_exception( int fpe_type );

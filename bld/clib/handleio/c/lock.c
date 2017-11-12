@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,11 @@
 #include <stddef.h>
 #include <io.h>
 #include "rtdata.h"
-#ifndef __OS2__
+#ifdef __OS2__
+    #include <wos2.h>
+#elif defined(__NT__)
+    #include <windows.h>
+#else
     #include "tinyio.h"
 #endif
 #include "rterrno.h"
@@ -72,7 +77,7 @@ _WCRTLINK int lock( int handle, unsigned long offset, unsigned long nbytes )
     lock_block[0] = offset;
     lock_block[1] = nbytes;
     rc = DosFileLocks( handle, NULL, &lock_block );
-  #endif  
+  #endif
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }

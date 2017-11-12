@@ -12,6 +12,7 @@ objs = &
 dwabbrev.obj &
 dwarange.obj &
 dwcarve.obj &
+dwcliuti.obj &
 dwdie.obj &
 dwdecl.obj &
 dwgen.obj &
@@ -51,10 +52,3 @@ dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     $(noecho)$[@
 
 dwabbrev.obj : dwabbrev.c dwabinfo.gh
-
-test_objs = testcli.obj testtest.obj testdump.obj
-test_libs = dwarfw.lib
-
-testcli.exe : $(test_objs) $(test_lib) $(__MAKEFILES__)
-    @%make echo_link
-    $(linker) name $@ $(lflags) file {$(test_objs)} lib {$(test_libs)}

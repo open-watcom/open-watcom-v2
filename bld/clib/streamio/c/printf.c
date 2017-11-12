@@ -33,8 +33,6 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "farsupp.h"
-#include "printf.h"
 #include "fprtf.h"
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,33 +52,31 @@
 #include "clibext.h"
 
 
-extern  char            ForExtn[];
-
-static  lib_handle FindSrcFile( char *fname ) {
+static  file_handle FindSrcFile( char *fname ) {
 //=============================================
 
 // Find a source file.
 
-    lib_handle  lp;
+    file_handle  fp;
 
     MakeName( fname, SDSrcExtn( fname ), fname );
-    lp = SDOpen( fname, READ_FILE );
-    if( lp != NULL ) {
+    fp = SDOpen( fname, READ_FILE );
+    if( fp != NULL ) {
         SrcInclude( fname );
     }
-    return( lp );
+    return( fp );
 }
 
 
-static lib_handle SearchPath( char *path_list, char *name ) {
-//===========================================================
-
+static file_handle SearchPath( char *path_list, const char *name )
+//===============================================================
+{
     char        *p;
-    lib_handle  lp;
+    file_handle fp;
     char        buff[2 * _MAX_PATH];
     char        c;
 
-    lp = NULL;
+    fp = NULL;
     while( (c = *path_list) != '\0' ) {
         p = buff;
         do {
@@ -91,63 +90,61 @@ static lib_handle SearchPath( char *path_list, char *name ) {
             *p++ = DIR_SEP;
         }
         strcpy( p, name );
-        lp = FindSrcFile( buff );
-        if( lp != NULL ) {
+        fp = FindSrcFile( buff );
+        if( fp != NULL ) {
             break;
         }
     }
-    return( lp );
+    return( fp );
 }
 
-lib_handle      IncSearch( char *name ) {
+file_handle IncSearch( const char *name )
 //=======================================
-
 // Search for a library member.
+{
+    file_handle fp;
 
-    lib_handle  lp;
-
-    lp = NULL;
+    fp = NULL;
     if( IncludePath != NULL ) {
-        lp = SearchPath( IncludePath, name );
+        fp = SearchPath( IncludePath, name );
     }
-    if( lp == NULL && FIncludePath != NULL ) {
-        lp = SearchPath( FIncludePath, name );
+    if( fp == NULL && FIncludePath != NULL ) {
+        fp = SearchPath( FIncludePath, name );
     }
-    return( lp );
+    return( fp );
 }
 
 
-int     LibRead( lib_handle lp ) {
+int     LibRead( file_handle fp ) {
 //================================
 
 // Read a record from a library member (source only).
 
-    return( SDRead( lp, SrcBuff, SRCLEN ) );
+    return( SDRead( fp, SrcBuff, SRCLEN ) );
 }
 
 
-bool    LibEof( lib_handle lp ) {
+bool    LibEof( file_handle fp )
 //===============================
-
 // Check for EOF on library read (source only).
-
-    return( SDEof( lp ) );
+{
+    return( SDEof( fp ) );
 }
 
 
-bool    LibError( lib_handle lp, char *buff ) {
+bool    LibError( file_handle fp, char *buff ) {
 //=============================================
 
 // Check for error on library read (source only).
 
-    return( SDError( lp, buff ) );
+    return( SDError( fp, buff ) );
 }
 
 
-void    IncMemClose( lib_handle lp ) {
+void    IncMemClose( file_handle fp ) {
 //====================================
 
 // Close a library member that was included (source only).
 
-    SDClose( lp );
+    SDClose( fp );
 }

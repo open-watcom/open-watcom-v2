@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-extern void    InitStd( void );
-extern void    SetIOBufferSize( uint buff_size );
-extern b_file  *_AllocFile( int h, f_attrs attrs, long int fpos );
-extern b_file  *Openf( char *f, f_attrs attrs );
-extern void    Closef( b_file *io );
+extern void         InitStd( void );
+extern void         SetIOBufferSize( uint buff_size );
+extern file_handle  _AllocFile( int h, f_attrs attrs, long int fpos );
+extern file_handle  Openf( const char *f, f_attrs attrs );
+extern void         Closef( file_handle fp );

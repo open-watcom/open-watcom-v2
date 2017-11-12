@@ -126,9 +126,7 @@ EXIT_BEG( cpp_preproc )         // pre-processing generally
   EXIT_REG( pragmas )
   EXIT_REG( pragma_extref )
   EXIT_REG( ppexpn )
-#if _INTEL_CPU
   EXIT_REG( assembler )
-#endif
 EXIT_END
 
 EXIT_BEG( cpp_preproc_only )    // pre-processing only

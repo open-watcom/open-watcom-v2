@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,6 @@
 #include "fmemmgr.h"
 #include "gsegs.h"
 
-global_seg              *GlobalSeg;
-
-static  global_seg      *CurrGSeg;
-
 
 #if _CPU == 8086
   #define MAX_SEG_SIZE  0x10000
@@ -50,23 +47,24 @@ static  global_seg      *CurrGSeg;
   #define MAX_SEG_SIZE  0xffffffff
 #endif
 
+global_seg              *GlobalSeg;
 
-void    InitGlobalSegs( void ) {
-//========================
+static  global_seg      *CurrGSeg;
 
+void    InitGlobalSegs( void )
+//============================
 // Initialize global segment processing.
-
+{
     GlobalSeg  = NULL;
     CurrGSeg   = NULL;
     MaxSegSize = MAX_SEG_SIZE;
 }
 
 
-void    FreeGlobalSegs( void ) {
-//========================
-
+void    FreeGlobalSegs( void )
+//============================
 // Free global segment list.
-
+{
     global_seg  *curr_seg;
 
     while( GlobalSeg != NULL ) {
@@ -77,11 +75,10 @@ void    FreeGlobalSegs( void ) {
 }
 
 
-static  void    NewGlobalSeg( void ) {
-//==============================
-
+static  void    NewGlobalSeg( void )
+//==================================
 // Allocate a new global segment.
-
+{
     global_seg  *new_seg;
 
     new_seg = FMemAlloc( sizeof( global_seg ) );
@@ -95,16 +92,15 @@ static  void    NewGlobalSeg( void ) {
     CurrGSeg = new_seg;
 }
 
-segment_id      AllocGlobal( unsigned_32 g_size, bool init ) {
-//============================================================
-
+segment_id      AllocGlobal( unsigned_32 g_size, bool init )
+//==========================================================
 // Allocate space in global data area and return the global segment.
-
+{
     segment_id  seg_id;
 
-    if( ProgSw & PS_ERROR ) return( SEG_FREE );
+    if( ProgSw & PS_ERROR )
+        return( SEG_FREE );
     if( ( CurrGSeg != NULL ) && ( CurrGSeg->size + g_size <= MaxSegSize ) ) {
-
         // object will fit in current segment
 #if _CPU == 8086  || _CPU == 386
         if( ( init == CurrGSeg->initialized ) || !_SmallDataModel( CGOpts ) ) {
@@ -141,4 +137,3 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init ) {
     }
     return( seg_id );
 }
-

@@ -2,7 +2,6 @@
 
 processor  = 387
 model      = mf
-subdir     = mf_r
 system     = os2
 convention = register
 linkage    = dynamic

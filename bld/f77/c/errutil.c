@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,13 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextvar.h"
 #include "blderr.h"
 #include "errrtns.h"
 #include "errutil.h"
+#include "errdat.h"
 
 
-const unsigned char  __FAR *PGrpCodes = GrpCodes;
+static const unsigned char __FAR    *PGrpCodes = GrpCodes;
 
 void    BldErrCode( unsigned int error_num, char *buffer )
 // Build error code.
@@ -57,8 +58,7 @@ void    BldErrCode( unsigned int error_num, char *buffer )
 
 #if !defined( __RT__ ) && !defined( __WFL__ )
 
-extern const unsigned char  __FAR CaretTable[];
-const unsigned char         __FAR *PCaretTable = CaretTable;
+static const unsigned char __FAR    *PCaretTable = CaretTable;
 
 uint    CarrotType( uint error_num )
 // Return the type of caret.

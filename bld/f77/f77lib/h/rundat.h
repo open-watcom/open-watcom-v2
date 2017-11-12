@@ -35,3 +35,4 @@
 
 #define gbl_defn extern
 #include "rundefn.h"
+#undef gbl_defn

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#if defined(__OS2__)
- #define INCL_DOSFILEMGR
+#if defined(__NT__)
+    #include <windows.h>
+#elif defined(__OS2__)
+    #define INCL_DOSFILEMGR
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "liballoc.h"
 #include "fileacc.h"
 #include "rtinit.h"
 #include "iomode.h"
+
 
 unsigned __NFiles   = _NFILES;          /* maximum # of files we can open */
 

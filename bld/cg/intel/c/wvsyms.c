@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,25 +43,13 @@
 #include "objout.h"
 #include "wvsyms.h"
 #include "objio.h"
+#include "x86dbsup.h"
+#include "dbsupp.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
+
 extern  void            SetUpObj(bool);
-extern  void            DataShort(unsigned_16);
-extern  void            BuffIndex(uint);
-extern  void            BuffForward(dbg_patch *);
-extern  void            BuffBack(back_handle, offset);
-extern  void            BuffWord(uint);
-extern  void            BuffByte( byte );
-extern  void            BuffOffset( offset );
-extern  void            BuffAddr( pointer );
-extern  void            BuffWSLString( const char * );
-extern  void            BuffStart(temp_buff*,uint);
-extern  void            BuffEnd(segment_id);
-extern  void            LocDump(dbg_loc);
-extern  dbg_loc         LocDupl(dbg_loc);
-extern  cg_sym_handle   LocSimpStatic(dbg_loc);
-extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  void            WVSrcCueLoc( void  );
 
 /* forward declarations */

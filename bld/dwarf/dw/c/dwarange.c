@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,33 +32,26 @@
 
 
 #include "dwpriv.h"
-#include "dwutils.h"
+#include "dwcliuti.h"
 #include "dwarange.h"
 
-void DWENTRY DWAddress(
-    dw_client   cli,
-    uint_32     len )
+void DWENTRY DWAddress( dw_client cli, uint_32 len )
 {
-    char    buf[sizeof( uint_32 )];
-
     CLIReloc2( cli, DW_DEBUG_ARANGES, DW_W_ARANGE_ADDR );
-    if( cli->offset_size == sizeof( uint_32 ) ){
-        WriteU32( buf, len );
-    }else{
-        WriteU16( buf, len );
+    if( cli->offset_size == sizeof( uint_32 ) ) {
+        CLIWriteU32( cli, DW_DEBUG_ARANGES, len );
+    } else {
+        CLIWriteU16( cli, DW_DEBUG_ARANGES, len );
     }
-    CLIWrite( cli, DW_DEBUG_ARANGES, buf, cli->offset_size );
 }
 
 
-void InitDebugAranges(
-    dw_client   cli )
+void InitDebugAranges( dw_client cli )
 {
-    char    buf[sizeof( uint_16 )];
+    uint_8      buf[2];
 
-    CLISeek( cli, DW_DEBUG_ARANGES, sizeof( uint_32 ), DW_SEEK_CUR );
-    WriteU16( buf, 2 );
-    CLIWrite( cli, DW_DEBUG_ARANGES, buf, sizeof( uint_16 ) );
+    CLISectionReserveSize( cli, DW_DEBUG_ARANGES );
+    CLIWriteU16( cli, DW_DEBUG_ARANGES, 2 );    /* section version */
     CLIReloc3( cli, DW_DEBUG_ARANGES, DW_W_SECTION_POS, DW_DEBUG_INFO );
     buf[0] = cli->offset_size;
     buf[1] = cli->segment_size;
@@ -65,20 +59,9 @@ void InitDebugAranges(
 }
 
 
-void FiniDebugAranges(
-    dw_client   cli )
+void FiniDebugAranges( dw_client cli )
 {
-    static char const   zeros[sizeof( uint_32 )] = { 0 };
-    long                size;
-    char                buf[sizeof( uint_32 )];
-
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->segment_size  );
-    CLIWrite( cli, DW_DEBUG_ARANGES, zeros, cli->offset_size );
-
-    size = CLITell( cli, DW_DEBUG_ARANGES ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_ARANGES];
-    WriteU32( buf, size );
-    CLISeek( cli, DW_DEBUG_ARANGES, cli->section_base[DW_DEBUG_ARANGES], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_ARANGES, buf, sizeof( buf ) );
-    CLISeek( cli, DW_DEBUG_ARANGES, 0, DW_SEEK_END );
+    CLISectionWriteZeros( cli, DW_DEBUG_ARANGES, cli->segment_size + 2 * cli->offset_size );
+    /* backpatch the section length */
+    CLISectionSetSize( cli, DW_DEBUG_ARANGES );
 }

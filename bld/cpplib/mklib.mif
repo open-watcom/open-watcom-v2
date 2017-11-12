@@ -4,6 +4,8 @@ x_subdir = xobjs
 
 additional_cleanup_subdir = $(x_subdir)
 
+!include $(cpplib_dir)/master.mif
+
 # make targets for libraries
 #
 # source-dependent targets are found in macros:
@@ -20,20 +22,6 @@ files = $+ $(static_objs) $-
 .cpp : ../../cpp
 
 .asm : ../../a;../../inc
-
-!include $(cpplib_dir)/libtarg.mif
-
-!include cproj.mif
-!include deftarg.mif
-
-!include $(cpplib_dir)/flags.mif
-!include $(cpplib_dir)/libflags.mif
-!include $(cpplib_dir)/librules.mif
-
-target_lib = $(prefix)$(suffix).lib
-!ifdef prefix_x
-target_lib_x = $(prefix_x)$(suffix).lib
-!endif
 
 !ifeq release 0
 objs += $(dbg_objs_c)

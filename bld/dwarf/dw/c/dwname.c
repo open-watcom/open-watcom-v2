@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 */
 
 #include "dwpriv.h"
-#include "dwutils.h"
+#include "dwcliuti.h"
 #include "dwhandle.h"
 #include "dwname.h"
 
@@ -46,18 +47,15 @@ void DWENTRY DWPubname(
     const char *                name )
 {
     HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, name, strlen( name ) + 1 );
+    CLIWriteString( cli, DW_DEBUG_PUBNAMES, name );
 }
 
 
-void InitDebugPubnames(
-    dw_client                   cli )
+void InitDebugPubnames( dw_client cli )
 {
-    static uint_16  const version = 2;
-
     /* write the set header */
-    CLISeek( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ), DW_SEEK_CUR );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, &version, sizeof( version ) );
+    CLISectionReserveSize( cli, DW_DEBUG_PUBNAMES );
+    CLIWriteU16( cli, DW_DEBUG_PUBNAMES, 2 );   /* section version */
     CLIReloc3( cli, DW_DEBUG_PUBNAMES, DW_W_SECTION_POS, DW_DEBUG_INFO );
     CLIReloc2( cli, DW_DEBUG_PUBNAMES, DW_W_UNIT_SIZE );
 }
@@ -66,17 +64,8 @@ void InitDebugPubnames(
 void FiniDebugPubnames(
     dw_client                   cli )
 {
-    static char const   zeros[sizeof( uint_32 )] = {0};
-    char                buf[sizeof( debug_ref )];
-    debug_ref           offset;
-
-    /* write the set terminator */
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
-
+    /* write the terminator */
+    CLISectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );
     /* backpatch the section length */
-    offset = CLITell( cli, DW_DEBUG_PUBNAMES ) - cli->section_base[DW_DEBUG_PUBNAMES] - sizeof( debug_ref );
-    WriteRef( buf, offset );
-    CLISeek( cli, DW_DEBUG_PUBNAMES, cli->section_base[DW_DEBUG_PUBNAMES], DW_SEEK_SET );
-    CLIWrite( cli, DW_DEBUG_PUBNAMES, buf, sizeof( debug_ref ) );
-    CLISeek( cli, DW_DEBUG_PUBNAMES, 0, DW_SEEK_END );
+    CLISectionSetSize( cli, DW_DEBUG_PUBNAMES );
 }

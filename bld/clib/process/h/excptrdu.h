@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,19 +40,20 @@
 
 #define APP_ERR "Application Error: "
 
-unsigned int sw;
 #define FMT_STRING wsprintf
 
-extern long GetFromFS(long off);
+unsigned int sw;
+
+extern long  GetFromFS(long off);
 extern void  PutToFS(long value, long off);
 extern void  *GetFromSS( long *esp );
 
 #pragma aux GetFromFS = \
-    "mov        eax,fs:[eax]" \
+    "mov eax,fs:[eax]" \
     parm[eax] value[eax];
 
 #pragma aux PutToFS = \
-    "mov        fs:[edx], eax" \
+    "mov fs:[edx], eax" \
     parm[eax] [edx];
 
 #pragma aux GetFromSS = \

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include <float.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
+#include <wos2.h>
 #include "rtdata.h"
 #include "liballoc.h"
 #include "thread.h"
@@ -48,7 +50,7 @@
 #include "initarg.h"
 #include "cthread.h"
 #include "itsto32.h"
-#include "trdlist.h"
+#include "rtexcpt.h"
 
 
 typedef struct thread_args {
@@ -91,7 +93,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                     unsigned stack_size, void *arglist )
 /******************************************************/
 {
-    TID         tid;
+    _TID        tid;
     APIRET      rc;
     thread_args td;
 

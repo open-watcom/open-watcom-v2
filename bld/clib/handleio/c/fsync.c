@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,12 @@
 
 #include "variety.h"
 #include <unistd.h>
-#if defined(__DOS__) || defined(__WINDOWS__)
+#if defined(__NT__)
+    #include <windows.h>
+#elif defined(__DOS__) || defined(__WINDOWS__)
     #include <dos.h>
+#elif defined(__OS2__)
+    #include <wos2.h>
 #elif defined(__NETWARE__)
     #if defined (_NETWARE_CLIB)
         #include <owfileng.h>
@@ -60,20 +65,20 @@ _WCRTLINK int fsync( int handle )
     #if defined(__DOS__) || defined(__WINDOWS__)
     ret = _dos_commit( handle );
     #elif defined(__NT__)
-    if( !FlushFileBuffers( __getOSHandle( handle ) ) ) 
+    if( !FlushFileBuffers( __getOSHandle( handle ) ) )
     {
         __set_errno_nt();
         ret = -1;
     }
     #elif defined(__OS2__)
-    if( DosBufReset( handle ) != 0 ) 
+    if( DosBufReset( handle ) != 0 )
     {
         _RWD_errno = EBADF;
         ret = -1;
     }
     #elif defined(__NETWARE__)
 
-    if( FEFlushWrite( handle ) != 0 ) 
+    if( FEFlushWrite( handle ) != 0 )
     {
         _RWD_errno = EBADF;
         ret = -1;

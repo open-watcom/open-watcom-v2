@@ -141,7 +141,8 @@ comovl1 += &
     hexcnv.obj &
     japanese.obj &
     korean.obj &
-    lexcmp.obj
+    lexstcmp.obj &
+    sbcsutil.obj
 
 !ifdef incl_errmsgs
 comovl1 += errincl.obj
@@ -228,8 +229,7 @@ tdovl2 = &
 #
 comovl1 += &
     brseinfo.obj &
-    browscli.obj &
-    writ_elf.obj &
+    browscli.obj
 
 comovl2 += &
     fcalloc.obj &

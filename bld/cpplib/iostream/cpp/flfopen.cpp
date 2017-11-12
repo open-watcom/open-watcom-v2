@@ -85,7 +85,7 @@ namespace std {
         return( NULL );
     }
     __file_mode = p_mode;
-    __attached = 0;
+    __attached = false;
 
     // If "atend" was specified, then seek to the end:
     if( p_mode & ios::atend ) {

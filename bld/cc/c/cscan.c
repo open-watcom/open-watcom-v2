@@ -35,10 +35,10 @@
 #include "asciiout.h"
 #include "i64.h"
 #include "kwhash.h"
+#include "unicode.h"
 
 
 extern  unsigned char   TokValue[];
-extern  unsigned short  UniCode[];
 
 enum scan_class {
     #define pick(e,p) e,

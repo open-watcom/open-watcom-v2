@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +33,6 @@
 
 #ifndef _FINDdotH
 #define _FINDdotH
-
-#if defined( __NT__ )
-    #include <windows.h>
-#elif defined( __OS2__ )
-#elif defined( __RDOS__ )
-    #include <rdos.h>
-#else
-    #include <dos.h>
-#endif
 
 
 #define FIND_ATTR (_A_NORMAL | _A_SUBDIR | _A_ARCH | _A_HIDDEN | _A_RDONLY | _A_SYSTEM)

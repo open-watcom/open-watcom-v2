@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +43,17 @@
 #elif defined( __OS2__ )
     #define INCL_LONGLONG
     #include <wos2.h>
+    #include "os2fil64.h"
 #elif defined( __RDOS__ )
     #include <rdos.h>
+#else
+    #include <dos.h>
 #endif
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntext.h"
     #include "timetwnt.h"
 #elif defined( __OS2__ )
-    #include "os2fil64.h"
     #include "d2ttime.h"
 #elif defined( __RDOS__ )
     #include "liballoc.h"

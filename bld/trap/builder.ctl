@@ -79,32 +79,32 @@ set PROJDIR=<CWD>
     <CCCMD> vdm/win.srv/vdmservw.exe                <OWRELROOT>/binw/
     <CCCMD> lcl/win/int32/wint32.dll                <OWRELROOT>/binw/
 
-    <CCCMD> lcl/nt/std/std*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> lcl/nt/std/std*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> net/nt.trp/net*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> net/nt.trp/net*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> net/nt.srv/netserv.exe                  <OWRELROOT>/binnt/
-    <CCCMD> net/nt.srv/netserv.sym                  <OWRELROOT>/binnt/
-#    <CCCMD> nmp/nt.trp/nmp*.dll                     <OWRELROOT>/binnt/
-#    <CCCMD> nmp/nt.trp/nmp*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> nov/nt.trp/nov*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> nov/nt.trp/nov*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> nov/nt.srv/novserv.exe                  <OWRELROOT>/binnt/
-    <CCCMD> nov/nt.srv/novserv.sym                  <OWRELROOT>/binnt/
-    <CCCMD> par/nt.trp/par*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> par/nt.trp/par*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> par/nt.srv/parserv.exe                  <OWRELROOT>/binnt/
-    <CCCMD> par/nt.srv/parserv.sym                  <OWRELROOT>/binnt/
-    <CCCMD> ser/nt.trp/ser*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> ser/nt.trp/ser*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> ser/nt.srv/serserv.exe                  <OWRELROOT>/binnt/
-    <CCCMD> ser/nt.srv/serserv.sym                  <OWRELROOT>/binnt/
-    <CCCMD> tcp/nt.trp/tcp*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> tcp/nt.trp/tcp*.sym                     <OWRELROOT>/binnt/
-    <CCCMD> tcp/nt.srv/tcpserv.exe                  <OWRELROOT>/binnt/
-    <CCCMD> tcp/nt.srv/tcpserv.sym                  <OWRELROOT>/binnt/
-    <CCCMD> vdm/nt.trp/vdm*.dll                     <OWRELROOT>/binnt/
-    <CCCMD> vdm/nt.trp/vdm*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> lcl/nt/std386/std*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> lcl/nt/std386/std*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> net/nt386.trp/net*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> net/nt386.trp/net*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> net/nt386.srv/netserv.exe                  <OWRELROOT>/binnt/
+    <CCCMD> net/nt386.srv/netserv.sym                  <OWRELROOT>/binnt/
+#    <CCCMD> nmp/nt386.trp/nmp*.dll                     <OWRELROOT>/binnt/
+#    <CCCMD> nmp/nt386.trp/nmp*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> nov/nt386.trp/nov*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> nov/nt386.trp/nov*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> nov/nt386.srv/novserv.exe                  <OWRELROOT>/binnt/
+    <CCCMD> nov/nt386.srv/novserv.sym                  <OWRELROOT>/binnt/
+    <CCCMD> par/nt386.trp/par*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> par/nt386.trp/par*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> par/nt386.srv/parserv.exe                  <OWRELROOT>/binnt/
+    <CCCMD> par/nt386.srv/parserv.sym                  <OWRELROOT>/binnt/
+    <CCCMD> ser/nt386.trp/ser*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> ser/nt386.trp/ser*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> ser/nt386.srv/serserv.exe                  <OWRELROOT>/binnt/
+    <CCCMD> ser/nt386.srv/serserv.sym                  <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt386.trp/tcp*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt386.trp/tcp*.sym                     <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt386.srv/tcpserv.exe                  <OWRELROOT>/binnt/
+    <CCCMD> tcp/nt386.srv/tcpserv.sym                  <OWRELROOT>/binnt/
+    <CCCMD> vdm/nt386.trp/vdm*.dll                     <OWRELROOT>/binnt/
+    <CCCMD> vdm/nt386.trp/vdm*.sym                     <OWRELROOT>/binnt/
 # NT parallel port device driver and installer
     <CCCMD> par/ntsupp/dbgport.sys                  <OWRELROOT>/binnt/
     <CCCMD> par/ntsupp/dbginst.exe                  <OWRELROOT>/binnt/

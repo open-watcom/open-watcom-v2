@@ -152,7 +152,7 @@ static EVENT MouseEventProc( void )
     ORD stat = 0;
     int row;
     int col;
-    
+
     if( RdosGetLeftButton() )
         stat |= MOUSE_PRESS;
 
@@ -164,21 +164,21 @@ static EVENT MouseEventProc( void )
     if( stat != currMouseStatus ) {
         if( !(stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) )
             RdosGetLeftButtonReleasePosition( &col, &row );
-    
+
         if( !(stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) )
             RdosGetRightButtonReleasePosition( &col, &row );
-    
+
         if( (stat & MOUSE_PRESS) && !(currMouseStatus & MOUSE_PRESS) )
             RdosGetLeftButtonPressPosition( &col, &row );
-    
+
         if( (stat & MOUSE_PRESS_RIGHT) && !(currMouseStatus & MOUSE_PRESS_RIGHT) )
             RdosGetRightButtonPressPosition( &col, &row );
     }
     currMouseRow = row;
     currMouseCol = col;
     currMouseStatus = stat;
-    
-    return mouseevent();        
+
+    return mouseevent();
 }
 
 bool intern initkeyboard( void )
@@ -190,7 +190,7 @@ bool intern initkeyboard( void )
         RdosAddWaitForKeyboard( WaitHandle, (int)(&KeyEventProc) );
     }
     KeyInstalled = true;
-    
+
     return( true );
 }
 
@@ -231,9 +231,7 @@ void intern mousespawnend( void )
 
 void uimousespeed( unsigned speed )
 {
-    if( (int)speed <= 0 ) {
-        speed = 1;
-    }
+    /* unused parameters */ (void)speed;
 }
 
 int UIAPI initmouse( int install )
@@ -296,7 +294,7 @@ unsigned char UIAPI uicheckshift( void )
 {
     unsigned char   kst = 0;
     int             state = RdosGetKeyboardState();
-    
+
     if( state & KEY_NUM_ACTIVE )
         kst |= 0x20;
 

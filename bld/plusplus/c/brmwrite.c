@@ -159,8 +159,8 @@ static BRI_SymbolID symbolIDForClass( CLASSINFO *c )
 
 // NOTE:  the following static data is initialized and de-initialized
 //        by brinfWriteFileContents().
-static uint_32 *        type_ops=NULL;
-static int              type_ops_size=0;
+static uint_32 *        type_ops = NULL;
+static unsigned         num_type_ops = 0;
 
 static BRI_TypeID writeType     // DUMP A TYPE
     ( TYPE dtype )              // - type to dump
@@ -168,8 +168,8 @@ static BRI_TypeID writeType     // DUMP A TYPE
     BRI_TypeID  result = (BRI_TypeID) TypeGetIndex( dtype );
     BRI_TypeID  sub_type;
     BRI_TypeID  host_type;
-    int         num_ops;
-    int         i;
+    unsigned    num_ops;
+    unsigned    i;
 
     if( dtype == NULL ) {
         return (BRI_TypeID) 0;
@@ -256,15 +256,15 @@ static BRI_TypeID writeType     // DUMP A TYPE
             break;
 
             case TYP_FUNCTION:
-                num_ops = 1 + dtype->u.f.args->num_args;
-                if( num_ops > type_ops_size ){
+                num_ops = dtype->u.f.args->num_args + 1;
+                if( num_ops > num_type_ops ){
                     CMemFree( type_ops );
-                    type_ops_size = num_ops;
-                    type_ops = CMemAlloc( type_ops_size * sizeof(uint_32) );
+                    num_type_ops = num_ops;
+                    type_ops = CMemAlloc( num_type_ops * sizeof(uint_32) );
                 }
                 type_ops[0] = writeType( dtype->of );
-                for( i=1; i<num_ops; i++ ) {
-                    type_ops[i] = writeType(dtype->u.f.args->type_list[i-1]);
+                for( i = 1; i < num_ops; i++ ) {
+                    type_ops[i] = writeType( dtype->u.f.args->type_list[i - 1] );
                 }
                 BRIVAddType( bri_handle
                            , result
@@ -513,8 +513,8 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
     TOKEN_LOCN locn_ref = {NULL, 0, 0};
 
     // Initialize static data used by writeType
-    type_ops_size = 4;
-    type_ops = (uint_32 *) CMemAlloc( type_ops_size * sizeof( uint_32 ) );
+    num_type_ops = 4;
+    type_ops = (uint_32 *) CMemAlloc( num_type_ops * sizeof( uint_32 ) );
 
     for( ; ; ) {
     // The following comment is a trigger for the ICMASK program to start
@@ -854,7 +854,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
     // Free static data used by writeType
     CMemFree( type_ops );
     type_ops = NULL;
-    type_ops_size = 0;
+    num_type_ops = 0;
 }
 
 

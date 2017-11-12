@@ -449,7 +449,7 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
     tm_control control )        // - control mask
 {
     TYPE *aptr;                 // - arg.s structure
-    unsigned acount;            // - arguments count
+    unsigned i;                 // - arguments count
     type_flag flags;            // - look ahead flags
     void *base;                 // - look ahead base
 
@@ -557,9 +557,9 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
                 appendTypeFlags( flags );
             }
             appendChar( IN_FUNCTION );
-            acount = type->u.f.args->num_args;
             aptr = type->u.f.args->type_list;
-            for( ; acount > 0; --acount ) {
+            i = type->u.f.args->num_args;
+            while( i-- > 0 ) {
                 appendTypeContinue( *aptr++, NULL, TM_NULL );
             }
             appendChar( IN_FUNCTION_END );

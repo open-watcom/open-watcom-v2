@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,18 +59,15 @@
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "cgcli.h"
+#include "fcjmptab.h"
+#include "gsegs.h"
 
 
-extern  void            FreeGlobalSegs(void);
-
-extern  void            (* __FAR FCJmpTab[])(void);
+cgflags_t               CGFlags = { 0 };
 
 /* Forward declarations */
 static  void    CGStart( void );
 static  void    InitCG( void );
-
-
-cgflags_t               CGFlags = { 0 };
 
 
 static  void    CGProgFini( void ) {

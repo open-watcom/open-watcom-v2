@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "cgdefs.h"
@@ -49,37 +48,24 @@
 #include "dbsyms.h"
 #include "dfsyms.h"
 #include "dfsupp.h"
+#include "dftypes.h"
 #include "targetdb.h"
 #include "namelist.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
+
 #define DWARF_CU_REC_NO_PCLO_PCHI   1
 
-extern  void            DoBigBckPtr(back_handle,offset);
-extern  void            DataLong( unsigned_32 );
-extern  void            DataBytes(unsigned,const void *);
-extern  void            IterBytes( offset len, byte pat );
-extern  void            DataLabel( label_handle );
-extern  void            DoBigLblPtr(cg_sym_handle);
-extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
-extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
-extern void             DFFEPtrRef( cg_sym_handle sym );
-
-extern  void            DFBlkBeg( dbg_block *blk, offset lc );
-static  void            DumpLocals( dbg_local *local );
-
 dw_client               Client;
+
 static short            CurrFNo;
 static bool             CcuDef;
-
-
-sect_info DwarfSegs[DW_DEBUG_MAX];
-
-static back_handle Pc_High;
-static back_handle Pc_Low;
-static back_handle Comp_High;
-static back_handle ARange;
+static back_handle      Pc_High;
+static back_handle      Pc_Low;
+static back_handle      Comp_High;
+static back_handle      ARange;
+static sect_info        DwarfSegs[DW_DEBUG_MAX];
 
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
@@ -95,8 +81,8 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
     SetOP( old );
 }
 
-static long CLITell( dw_sectnum sect )
-/************************************/
+static dw_out_offset CLITell( dw_sectnum sect )
+/*********************************************/
 {
     sect_info           *curr;
     long_offset         off;
@@ -109,29 +95,27 @@ static long CLITell( dw_sectnum sect )
    return( off );
 }
 
-static void CLISeek( dw_sectnum sect, long offs, uint type )
-/**********************************************************/
+static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
+/********************************************************************/
 {
     sect_info           *curr;
-    long_offset         from;
     segment_id          old;
+    dw_out_offset       new_offset;
 
-    from = 0;
     curr = &DwarfSegs[sect];
     old = SetOP( curr->seg );
+    new_offset = offset;
     switch( type ) {
     case DW_SEEK_CUR:
-        from = AskBigLocation();
+        new_offset = AskBigLocation() + offset;
         break;
     case DW_SEEK_SET:
-        from = 0;
         break;
     case DW_SEEK_END:
-        from = AskBigMaxSize();
+        new_offset = AskBigMaxSize() + offset;
         break;
     }
-    offs += from;
-    SetBigLocation( offs );
+    SetBigLocation( new_offset );
     SetOP( old );
 }
 
@@ -171,17 +155,17 @@ static void DoSegLblReloc( back_handle bck )
     BackPtrBase( bck, id );
 }
 
-static void DoSectOffset( dw_sectnum section )
-/********************************************/
+static void DoSectOffset( dw_sectnum sect )
+/*****************************************/
 {
     back_handle bck;
     long        pos;
     segment_id  id;
 
-    pos = CLITell( section );
-    bck = DwarfSegs[section].bck;
-    id = DwarfSegs[section].seg;
-    BackBigOffset( bck, id, pos );
+    pos = CLITell( sect );
+    bck = DwarfSegs[sect].bck;
+    id = DwarfSegs[sect].seg;
+    BackPtrBigOffset( bck, id, pos );
 
 }
 
@@ -197,8 +181,8 @@ typedef struct {
     int_32       disp;
 }loc_range;
 
-static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
-/****************************************************************/
+static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
+/********************************************************************/
 {
     static uint_32 const    zero  = 0;
     sect_info               *curr;
@@ -206,7 +190,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
     dw_sym_handle           bck;
     loc_range               *low;
     loc_range               *high;
-    dw_sectnum              section;
+    dw_sectnum              sect_no;
     va_list                 args;
     segment_id              old;
 //    long_offset             off;
@@ -268,8 +252,8 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         DataBytes( sizeof( zero ), &zero );
         break;
     case DW_W_SECTION_POS:
-        section = va_arg( args, uint );
-        DoSectOffset( section );
+        sect_no = va_arg( args, dw_sectnum );
+        DoSectOffset( sect_no );
         break;
     case DW_W_EXT_REF:
       {
@@ -960,6 +944,33 @@ static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
 static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
 #endif
 
+
+
+static  void    DumpLocals( dbg_local *local )
+/********************************************/
+{
+    dbg_local   *next;
+    dbg_type    tipe;
+
+    for( ; local != NULL; local = next ) {
+        next = local->link;
+        switch( local->kind ) {
+        case DBG_SYM_VAR:
+            DFGenStatic( local->sym, local->loc );
+            DBLocFini( local->loc );
+            break;
+        case DBG_SYM_TYPE:
+            tipe = FEDbgType( local->sym );
+            break;
+        case DBG_SYM_TYPEDEF:
+            tipe = FEDbgType( local->sym );
+            DFTypedef( FEName( local->sym ), tipe );
+            break;
+        }
+        CGFree( local );
+    }
+}
+
 void    DFProEnd( dbg_rtn *rtn, offset lc )
 /*****************************************/
 {
@@ -1108,30 +1119,9 @@ void    DFRtnEnd( dbg_rtn *rtn, offset lc )
     DWEndSubroutine( Client );
 }
 
-
-
-static  void    DumpLocals( dbg_local *local )
-/********************************************/
+void    DFSetSection( dw_sectnum sect, back_handle bck, segment_id seg )
+/**********************************************************************/
 {
-    dbg_local   *next;
-    dbg_type    tipe;
-
-    for( ; local != NULL; local = next ) {
-        next = local->link;
-        switch( local->kind ) {
-        case DBG_SYM_VAR:
-            DFGenStatic( local->sym, local->loc );
-            DBLocFini( local->loc );
-            break;
-        case DBG_SYM_TYPE:
-            tipe = FEDbgType( local->sym );
-            break;
-        case DBG_SYM_TYPEDEF:
-            tipe = FEDbgType( local->sym );
-            DFTypedef( FEName( local->sym ), tipe );
-            break;
-        }
-        CGFree( local );
-    }
+    DwarfSegs[sect].seg = seg;
+    DwarfSegs[sect].bck = bck;
 }
-

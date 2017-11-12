@@ -53,13 +53,13 @@ namespace std {
     if( (buf == NULL) || (ebuf <= buf) ) {
         __reserve_base     = NULL;
         __reserve_end      = NULL;
-        __delete_reserve   = 0;
-        __unbuffered_state = 1;
+        __delete_reserve   = false;
+        __unbuffered_state = true;
     } else {
         __reserve_base     = buf;
         __reserve_end      = ebuf;
-        __delete_reserve   = (char)(autodelete ? 1 : 0);
-        __unbuffered_state = 0;
+        __delete_reserve   = ( autodelete ) ? true : false;
+        __unbuffered_state = false;
     }
   }
 

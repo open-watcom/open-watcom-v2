@@ -48,7 +48,7 @@ typedef struct sib_info {
     struct sib_info     *next;
     name                *reg;
     name                *index;
-    int                 scale;
+    scale_typ           scale;
     i_flags             flags;
     instruction         *ins;
 } sib_info;
@@ -127,7 +127,7 @@ bool FoldIntoIndex( instruction * ins ) {
                     break;
                 sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE ); /* flip base and index */
             }
-            sib.scale = cons->c.lo.int_value + sib.index->i.scale;
+            sib.scale = (scale_typ)cons->c.lo.int_value + sib.index->i.scale;
             if( sib.scale > 3 )
                 break;
             if( ins->operands[0] == ins->result ) {

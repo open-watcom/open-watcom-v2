@@ -37,6 +37,8 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "nw_lib.h"
+#include "nwlibmem.h"
 #include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
@@ -44,12 +46,11 @@
 #include "fileacc.h"
 #include "initfini.h"
 #include "thread.h"
-#include "trdlist.h"
-#include "nw_libc.h"
 #include "snglthrd.h"
 #include "mthread.h"
 #include "trdlstac.h"
 #include "wprelude.h"
+#include "trdlist.h"
 
 
 /*****************************************************************************
@@ -60,7 +61,6 @@ NXKey_t     __NXSlotID;
 #ifdef __cplusplus
 extern "C" {
 #endif
-    extern int      __CreateFirstThreadData( void );
     /*
     //  Called from LibC startup / termination code in libcpre.obj
     */
@@ -73,16 +73,6 @@ extern "C" {
     char *      getnlmloadpath( char *loadpath );
     void *      getnlmhandle( void );
     char *      getnlmname( void *handle, char *name );
-
-    /*
-    //  NW386 Server exported functions
-    */
-    #define     AllocSignature  0x54524C41
-    extern long AllocateResourceTag( void *__NLMHandle,
-                    char *__descriptionString, long __resourceType );
-    extern void *Alloc( long __numberOfBytes, long __resourceTag );
-    extern long SizeOfAllocBlock( void * );
-    extern void Free( void *__address );
 
     /*
     //  module level functions

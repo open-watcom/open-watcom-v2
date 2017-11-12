@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,9 +29,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
+#if defined( __NT__ )
+    #include <windows.h>
+#endif
+#include "fio.h"
 #include "posio.h"
 #include "sopen.h"
 #include "poscc.h"
@@ -39,6 +43,8 @@
 #include "poserr.h"
 #include "posflush.h"
 #include "iomode.h"
+#include "posdat.h"
+
 #if defined( __RT__ )
 #include "runmain.h"
 #include "rmemmgr.h"
@@ -119,7 +125,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     }
     attrs &= ~CREATION_MASK;
     if( S_ISCHR( info.st_mode ) ) {
-        io = FMEM_ALLOC( sizeof( a_file ) );
+        io = FMEM_ALLOC( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
         attrs &= ~TRUNC_ON_WRITE;
@@ -155,7 +161,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     return( io );
 }
 
-b_file  *Openf( char *f, f_attrs attrs )
+b_file  *Openf( const char *f, f_attrs attrs )
 // Open a file.
 {
     int         retc;
@@ -209,7 +215,7 @@ void    Closef( b_file *io )
     const char  *cc;
 
     if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( (a_file *)io, ' ', &cc );
+        cc_len = FSetCC( io, ' ', &cc );
         if( SysWrite( io, cc, cc_len ) == -1 ) {
             return;
         }

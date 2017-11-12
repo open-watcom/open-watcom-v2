@@ -33,6 +33,8 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdarg.h>
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include "win.h"
 
 /*

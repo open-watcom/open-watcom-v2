@@ -3,7 +3,6 @@
 component  = clib
 processor  = 386
 model      = mf
-subdir     = mf_r
 system     = os2
 convention = register
 

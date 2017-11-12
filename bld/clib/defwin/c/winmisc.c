@@ -33,7 +33,11 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include "win.h"
+
+
 /*
  * _SetMyDC - set display context for windows
  */

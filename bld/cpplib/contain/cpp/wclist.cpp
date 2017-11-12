@@ -44,17 +44,18 @@
 //  position is at the end of the list.
 //
 
-_WPRTLINK WCSLink * WCIsvListBase::base_next( const WCSLink * curr, WCbool reset ) const {
+_WPRTLINK WCSLink * WCIsvListBase::base_next( const WCSLink * curr, WCbool reset ) const
+{
     if( reset ) {
         curr = tail;
-        if( curr == 0 ) {
-            return( 0 );
+        if( curr == NULL ) {
+            return( NULL );
         }
     } else if( curr == tail ) {
-        return( 0 );
+        return( NULL );
     }
     return( curr->link );
-};
+}
 
 
 
@@ -62,8 +63,9 @@ _WPRTLINK WCSLink * WCIsvListBase::base_next( const WCSLink * curr, WCbool reset
 //  This defines the single list base insert operation.
 //
 
-_WPRTLINK void WCIsvListBase::base_insert( WCSLink * datum ) {
-    if( tail == 0 ) {
+_WPRTLINK void WCIsvListBase::base_insert( WCSLink * datum )
+{
+    if( tail == NULL ) {
         datum->link = datum;
         tail = datum;
     } else {
@@ -71,7 +73,7 @@ _WPRTLINK void WCIsvListBase::base_insert( WCSLink * datum ) {
         tail->link = datum;
     };
     entry_count++;
-};
+}
 
 
 
@@ -83,7 +85,8 @@ _WPRTLINK void WCIsvListBase::base_insert( WCSLink * datum ) {
 //  have not been enabled, then a value 0 or -1 is returned.
 //
 
-_WPRTLINK int WCIsvListBase::base_index_check( int index ) const {
+_WPRTLINK int WCIsvListBase::base_index_check( int index ) const
+{
     int entry_index = entry_count - 1;
     if( index < 0 || index > entry_index ) {
         if( entry_count == 0 ) {
@@ -97,7 +100,7 @@ _WPRTLINK int WCIsvListBase::base_index_check( int index ) const {
         };
     }
     return( index );
-};
+}
 
 
 
@@ -107,14 +110,15 @@ _WPRTLINK int WCIsvListBase::base_index_check( int index ) const {
 //  If there are no elements in the list, NULL is returned.
 //
 
-_WPRTLINK WCSLink * WCIsvListBase::base_bfind( int index ) const {
+_WPRTLINK WCSLink * WCIsvListBase::base_bfind( int index ) const
+{
     index = base_index_check( index );
     WCSLink * ret_val = tail;
     while( index-- > 0 ) {
         ret_val = ret_val->link;
     }
     return( ret_val );
-};
+}
 
 
 
@@ -123,13 +127,14 @@ _WPRTLINK WCSLink * WCIsvListBase::base_bfind( int index ) const {
 //  If there are no elements in the list, NULL is returned.
 //
 
-_WPRTLINK WCSLink * WCIsvListBase::base_sfind( int index ) const {
+_WPRTLINK WCSLink * WCIsvListBase::base_sfind( int index ) const
+{
     WCSLink * prev = base_bfind( index );
-    if( prev == 0 ) {
-        return( 0 );
+    if( prev == NULL ) {
+        return( NULL );
     }
     return( prev->link );
-};
+}
 
 
 
@@ -138,7 +143,8 @@ _WPRTLINK WCSLink * WCIsvListBase::base_sfind( int index ) const {
 //  If there are no elements in the list, NULL is returned.
 //
 
-_WPRTLINK WCDLink * WCIsvListBase::base_dfind( int index ) const {
+_WPRTLINK WCDLink * WCIsvListBase::base_dfind( int index ) const
+{
     int entry_index = entry_count - 1;
     if( index <= (entry_index / 2) + 1 ) {
         return( (WCDLink *)base_sfind( index ) );
@@ -151,7 +157,7 @@ _WPRTLINK WCDLink * WCIsvListBase::base_dfind( int index ) const {
         ret_val = (WCDLink *)ret_val->prev.link;
     }
     return( ret_val );
-};
+}
 
 
 
@@ -160,14 +166,15 @@ _WPRTLINK WCDLink * WCIsvListBase::base_dfind( int index ) const {
 //  in the list, NULL is returned.
 //
 
-_WPRTLINK WCSLink * WCIsvListBase::base_sget( int index ) {
+_WPRTLINK WCSLink * WCIsvListBase::base_sget( int index )
+{
     WCSLink * ret_prev = base_bfind( index );
-    if( ret_prev == 0 ) {       // no element in list, base_bfind can throw
-        return( 0 );            // exception
-    };
+    if( ret_prev == NULL ) {       // no element in list, base_bfind can throw
+        return( NULL );            // exception
+    }
     WCSLink * ret_val = ret_prev->link;
     if( ret_val == ret_prev ) {
-        tail = 0;
+        tail = NULL;
     } else {
         ret_prev->link = ret_val->link;
         if( ret_val == tail ) {
@@ -176,7 +183,7 @@ _WPRTLINK WCSLink * WCIsvListBase::base_sget( int index ) {
     };
     entry_count--;
     return( ret_val );
-};
+}
 
 
 
@@ -185,14 +192,15 @@ _WPRTLINK WCSLink * WCIsvListBase::base_sget( int index ) {
 //  If there are no elements in the list, NULL is returned.
 //
 
-_WPRTLINK WCDLink * WCIsvListBase::base_dget( int index ) {
+_WPRTLINK WCDLink * WCIsvListBase::base_dget( int index )
+{
     WCDLink * ret_val = base_dfind( index );
-    if( ret_val == 0 ) {
-        return( 0 );
+    if( ret_val == NULL ) {
+        return( NULL );
     }
     WCDLink * ret_prev = (WCDLink *)ret_val->prev.link;
     if( ret_val == ret_prev ) {
-        tail = 0;
+        tail = NULL;
     } else {
         ret_prev->link = ret_val->link;
         ((WCDLink *)ret_val->link)->prev.link = ret_prev;
@@ -202,7 +210,7 @@ _WPRTLINK WCDLink * WCIsvListBase::base_dget( int index ) {
     };
     entry_count--;
     return( ret_val );
-};
+}
 
 
 
@@ -217,12 +225,13 @@ _WPRTLINK WCDLink * WCIsvListBase::base_dget( int index ) {
 //  within the link.
 //
 
-_WPRTLINK int WCIsvListBase::base_index( const WCSLink * datum ) const {
+_WPRTLINK int WCIsvListBase::base_index( const WCSLink * datum ) const
+{
     WCSLink * rover;
     int index = 0;
 
     rover = base_next( rover, true );
-    while( rover != 0 ) {
+    while( rover != NULL ) {
         if( rover == datum ) {
             return( index );
         }
@@ -230,7 +239,7 @@ _WPRTLINK int WCIsvListBase::base_index( const WCSLink * datum ) const {
         index++;
     }
     return( -1 );
-};
+}
 
 
 
@@ -240,10 +249,11 @@ _WPRTLINK int WCIsvListBase::base_index( const WCSLink * datum ) const {
 //  this routine is finished.  The list element objects are not cleared.
 //
 
-_WPRTLINK void WCIsvListBase::base_clear( void ) {
-    tail = 0;
+_WPRTLINK void WCIsvListBase::base_clear( void )
+{
+    tail = NULL;
     entry_count = 0;
-};
+}
 
 
 
@@ -258,18 +268,19 @@ _WPRTLINK void WCIsvListBase::base_clear( void ) {
 //  by the user.
 //
 
-_WPRTLINK void WCIsvListBase::base_destroy( void ) {
+_WPRTLINK void WCIsvListBase::base_destroy( void )
+{
     WCSLink * rover;
     WCSLink * next_link;
 
     rover = base_next( rover, true );
-    while( rover != 0 ) {
+    while( rover != NULL ) {
         next_link = base_next( rover, false );
         WCListDelete( rover );
         rover = next_link;
     }
     base_clear();
-};
+}
 
 
 
@@ -285,13 +296,14 @@ _WPRTLINK void WCIsvListBase::base_destroy( void ) {
 //  cleared.
 //
 
-WCIsvListBase::~WCIsvListBase() {
-    if( tail != 0 ) {
+WCIsvListBase::~WCIsvListBase()
+{
+    if( tail != NULL ) {
         base_throw_not_empty();
         // we can't do a destroy here (list elements may not be newed)
         // base_destroy is done in WCValListBase
     }
-};
+}
 
 
 
@@ -300,11 +312,12 @@ WCIsvListBase::~WCIsvListBase() {
 //  class.
 //
 
-_WPRTLINK WCSLink * WCListIterBase::base_advance( int adv_amount ) {
-    if( ( curr_list == 0 )||( outside_list&after_last ) ) {
+_WPRTLINK WCSLink * WCListIterBase::base_advance( int adv_amount )
+{
+    if( ( curr_list == NULL )||( outside_list & after_last ) ) {
         // no list is associated, or we are after the end of the list already
         base_throw_undef_iter();
-        return( 0 );
+        return( NULL );
     }
     if( adv_amount < 1 ) {
         base_throw_iter_range();
@@ -314,15 +327,15 @@ _WPRTLINK WCSLink * WCListIterBase::base_advance( int adv_amount ) {
     WCSLink * list_tail = curr_list->tail;
     // if we had iterated to the last element in the list already
     if( list_item == list_tail ) {
-        curr_item = 0;
+        curr_item = NULL;
         // now we are after the last element in the list
         outside_list = after_last;
         if( adv_amount > 1 ) {
             base_throw_iter_range();
         }
-        return( 0 );
+        return( NULL );
     }
-    if( list_item == 0 ) {
+    if( list_item == NULL ) {
         // we were before the first element in the list
         list_item = list_tail;
         outside_list = 0;
@@ -334,13 +347,13 @@ _WPRTLINK WCSLink * WCListIterBase::base_advance( int adv_amount ) {
             if( adv_amount > 0 ) {
                 // we are iterating past the end of the list
                 outside_list = after_last;
-                curr_item = 0;
+                curr_item = NULL;
                 if( adv_amount > 1 ) {
                     // we are iterating more than one element past the end
                     // of the list
                     base_throw_iter_range();
                 }
-                return( 0 );
+                return( NULL );
             }
         }
     }
@@ -355,12 +368,13 @@ _WPRTLINK WCSLink * WCListIterBase::base_advance( int adv_amount ) {
 //  class.
 //
 
-_WPRTLINK WCDLink * WCListIterBase::base_retreat( int adv_amount ) {
+_WPRTLINK WCDLink * WCListIterBase::base_retreat( int adv_amount )
+{
     // if there was no list associated or we were already before the first
     // element
-    if( ( curr_list == 0 )||( outside_list&before_first ) ) {
+    if( ( curr_list == NULL )||( outside_list & before_first ) ) {
         base_throw_undef_iter();
-        return( 0 );
+        return( NULL );
     }
     if( adv_amount < 1 ) {
         base_throw_iter_range();
@@ -368,18 +382,18 @@ _WPRTLINK WCDLink * WCListIterBase::base_retreat( int adv_amount ) {
     }
     WCSLink * list_item = curr_item;
     WCSLink * list_tail = curr_list->tail;
-    if( ( list_tail == 0 )
+    if( ( list_tail == NULL )
       ||( list_item == list_tail->link ) ) {
         // the list is empty or we were at the first element in the list
-        curr_item = 0;
+        curr_item = NULL;
         // now we are before the first element in the list
         outside_list = before_first;
         if( adv_amount > 1 ) {
             base_throw_iter_range();
         }
-        return( 0 );
+        return( NULL );
     }
-    if( list_item == 0 ) {
+    if( list_item == NULL ) {
         // was after_last and list is non empty
         // new one after end (the beginning)
         list_item = list_tail->link;
@@ -392,11 +406,11 @@ _WPRTLINK WCDLink * WCListIterBase::base_retreat( int adv_amount ) {
             if( adv_amount > 0 ) {
                 // retreat before the first element in the list
                 outside_list = before_first;
-                curr_item = 0;
+                curr_item = NULL;
                 if( adv_amount > 1 ) {
                     base_throw_iter_range();
                 }
-                return( 0 );
+                return( NULL );
             }
         }
     }
@@ -413,10 +427,11 @@ _WPRTLINK WCDLink * WCListIterBase::base_retreat( int adv_amount ) {
 //  equal to the current item.
 //
 
-_WPRTLINK WCSLink * WCListIterBase::base_tail_hit( WCSLink * new_tail ) {
+_WPRTLINK WCSLink * WCListIterBase::base_tail_hit( WCSLink * new_tail )
+{
     WCSLink * list_tail = curr_list->tail;
-    if( list_tail == new_tail || new_tail == 0 ) {
-        list_tail = 0;
+    if( list_tail == new_tail || new_tail == NULL ) {
+        list_tail = NULL;
     } else {
         curr_list->tail = new_tail;
     }
@@ -432,8 +447,9 @@ _WPRTLINK WCSLink * WCListIterBase::base_tail_hit( WCSLink * new_tail ) {
 //  equal to the current item.
 //
 
-_WPRTLINK void WCListIterBase::base_tail_unhit( WCSLink * old_tail ) {
-    if( old_tail != 0 ) {
+_WPRTLINK void WCListIterBase::base_tail_unhit( WCSLink * old_tail )
+{
+    if( old_tail != NULL ) {
         curr_list->tail = old_tail;
     }
 }

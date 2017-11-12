@@ -31,7 +31,8 @@
 
 #include "vi.h"
 #include "stdui.h"
-#include "ctkeyb.h"
+#include "uidef.h"
+#include "uivirt.h"
 #include "getspcmd.h"
 
 

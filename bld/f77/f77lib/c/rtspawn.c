@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,14 @@
 #else
   #include <setjmp.h>
 #endif
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "frtdata.h"
 #include "fthread.h"
 #include "thread.h"
-#include "ftextfun.h"
 #include "rtspawn.h"
 
 

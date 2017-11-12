@@ -38,6 +38,9 @@
     #include <unistd.h>
 #else
     #include <io.h>
+  #if defined( _MSC_VER )
+    #include <stdio.h>
+  #endif
 
     #if !defined( STDIN_FILENO )
     #define STDIN_FILENO  _fileno( stdin )

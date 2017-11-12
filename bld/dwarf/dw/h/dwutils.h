@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,7 @@
 #define LEB128                  DW_LEB128
 #define ULEB128                 DW_ULEB128
 
-extern  uint_8 *LEB128( uint_8 *buf, dw_sconst value );
-extern  uint_8 *ULEB128( uint_8 *buf, dw_uconst value );
-
-#ifndef __BIG_ENDIAN__
-#define WriteU16( __p, __v )    ( *(uint_16 *)(__p) = (__v) )
-#define WriteU32( __p, __v )    ( *(uint_32 *)(__p) = (__v) )
-#define WriteS16( __p, __v )    ( *(uint_16 *)(__p) = (__v) )
-#define WriteS32( __p, __v )    ( *(uint_32 *)(__p) = (__v) )
-#else
-#error "must define WriteU16/32 and WriteS16/32 functions"
-#endif
+extern uint_8   *LEB128( uint_8 *buf, dw_sconst value );
+extern uint_8   *ULEB128( uint_8 *buf, dw_uconst value );
 
 #endif

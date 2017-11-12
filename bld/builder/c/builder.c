@@ -328,7 +328,7 @@ static void PushInclude( const char *name )
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
     }
-    getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    (void)getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
 }
 
 static bool PopInclude( void )
@@ -349,7 +349,7 @@ static bool PopInclude( void )
 static bool GetALine( char *line )
 {
     for( ;; ) {
-        fgets( line, MAX_LINE, IncludeStk->fp );
+        (void)fgets( line, MAX_LINE, IncludeStk->fp );
         if( ferror( IncludeStk->fp ) ) {
             Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno + 1, strerror( errno ) );
         }

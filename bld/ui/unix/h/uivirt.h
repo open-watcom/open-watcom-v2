@@ -44,36 +44,38 @@
 
 
 typedef struct Display {
-        int (*init)( void );  /* setup */
-        int (*fini)( void );  /* tear down */
-        int (*update)(SAREA *area);     /* change screen */
-        int (*refresh)(int noopt);      /* force redraw of screen */
-        /*- cursor */
-        int (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, int *attr);
-        int (*setcur)(ORD row, ORD col, CURSOR_TYPE type, int attr);
-        EVENT   (*event)( void );
+    int     (*init)( void );            /* setup */
+    int     (*fini)( void );            /* tear down */
+    int     (*update)(SAREA *area);     /* change screen */
+    int     (*refresh)(int noopt);      /* force redraw of screen */
+    /*- cursor */
+    int     (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, int *attr);
+    int     (*setcur)(ORD row, ORD col, CURSOR_TYPE type, int attr);
+    EVENT   (*event)( void );
 } Display;
 
 
 typedef struct Keyboard {
-        int (*init)( void );  /* set initial modes, etc... */
-        int (*fini)( void );  /* restore saved modes, etc... */
-        void (*arm)( void );  /* arm for next character */
-        int (*save)( void );  /* save current mode, restore original mode */
-        int (*restore)( void );       /* set into raw mode */
-        int (*flush)( void ); /* clear look-ahead */
-        int (*stop)( void );  /* clear look-ahead, disable keyboard events */
-        int (*shift_state)( void );   /* shift status */
-        int (*un_event)(EVENT event); /* allow modify of next event */
+    int     (*init)( void );            /* set initial modes, etc... */
+    int     (*fini)( void );            /* restore saved modes, etc... */
+    void    (*arm)( void );             /* arm for next character */
+    int     (*save)( void );            /* save current mode, restore original mode */
+    int     (*restore)( void );         /* set into raw mode */
+    int     (*flush)( void );           /* clear look-ahead */
+    int     (*stop)( void );            /* clear look-ahead, disable keyboard events */
+    int     (*shift_state)( void );     /* shift status */
+    int     (*un_event)(EVENT event);   /* allow modify of next event */
+    int     (*wait_keyb)( int, int );   /* wait for keyboard event */
 } Keyboard;
 
 typedef struct Mouse {
-        int     (*init)( int install );
-        int     (*fini)( void );
-        int     (*set_speed)( int speed );
-        int     (*stop)( void );      /* clear input, disable events */
-        int     (*check)( unsigned short *status, MOUSEORD *row,
-                         MOUSEORD *col, unsigned long *time );
+    int     (*init)( int install );
+    int     (*fini)( void );
+    int     (*set_speed)( unsigned speed );
+    int     (*stop)( void );            /* clear input, disable events */
+    int     (*check)( unsigned short *status, MOUSEORD *row,
+                     MOUSEORD *col, unsigned long *time );
+    int     (*wait_mouse)( void );      /* wait for mouse event */
 } Mouse;
 
 typedef struct {
@@ -111,12 +113,14 @@ extern VirtDisplay      UIVirt;
 #define _uicheckshift   (*UIVirt.keyb->shift_state)
 #define _checkshift     _uicheckshift
 #define _uishiftrelease (*UIVirt.keyb->un_event)
+#define _uiwaitkeyb     (*UIVirt.keyb->wait_keyb)
 
 #define _initmouse      (*UIVirt.mouse->init)
 #define _finimouse      (*UIVirt.mouse->fini)
 #define _checkmouse     (*UIVirt.mouse->check)
 #define _stopmouse      (*UIVirt.mouse->stop)
 #define _uimousespeed   (*UIVirt.mouse->set_speed)
+#define _uiwaitmouse    (*UIVirt.mouse->wait_mouse)
 
 /*-
  The modules for each type....

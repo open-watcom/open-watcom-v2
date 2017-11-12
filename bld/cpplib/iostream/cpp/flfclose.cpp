@@ -53,7 +53,7 @@ namespace std {
     sync_ret      = sync();
     old_handle    = __file_handle;
     __file_handle = EOF;
-    __attached    = 0;
+    __attached = false;
     if( ::close( old_handle ) != 0 ) {
         return( NULL );
     }

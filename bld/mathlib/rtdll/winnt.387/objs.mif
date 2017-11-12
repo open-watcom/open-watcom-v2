@@ -1,9 +1,9 @@
-__mifx__ =$(system).$(processor)/$(subdir).dll
-__cifx__ =$(system).386/$(subdir)
+__mifx__ =$(system).$(processor)/$(libsubdir).dll
+__cifx__ =$(system).386/$(libsubdir)
 
 dll_libs = $+ &
     $(mathlib_dir)/library/$(__mifx__)/math387$(dllname_$(convention)).lib &
-    $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(clib_dir)/rtdll/$(__cifx__)/clb$(dllname_$(convention))dll$(dllname_profile).lib &
     $-
 
 dll_def = $+ &

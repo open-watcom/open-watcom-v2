@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,9 @@
 ****************************************************************************/
 
 
-extern void    FlushStdUnit( void );
-extern void    WriteErr( int errcode, va_list args );
-extern void    RTErrHandler( int errcode, va_list args );
-extern void    RTErr( int errcode, ... );
+extern void     (*TraceRoutine)( char * );
+
+extern void     FlushStdUnit( void );
+extern void     WriteErr( int errcode, va_list args );
+extern void     RTErrHandler( int errcode, va_list args );
+extern void     RTErr( int errcode, ... );

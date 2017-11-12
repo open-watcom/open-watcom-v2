@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,17 @@
 
 
 #include "ftnstd.h"
-#include "ftextvar.h"
 #include "errincl.h"
 #include "blderr.h"
 #include "errrtns.h"
+#include "errdat.h"
 
 
 #define CARET_SHIFT  6
 #define LENGTH_MASK  (1 << CARET_SHIFT) - 1
 
-const unsigned char __FAR * const __FAR *PGroupTable = GroupTable;
-const char          __FAR *PErrWord = ErrWord;
+static const unsigned char __FAR * const __FAR  *PGroupTable = GroupTable;
+static const char __FAR                         *PErrWord = ErrWord;
 
 static const unsigned char  __FAR *GetMsg( unsigned int err )
 // Get pointer to message.

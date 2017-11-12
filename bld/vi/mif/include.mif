@@ -9,6 +9,8 @@ inc_dirs_bsd   = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 inc_dirs_osx   = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 inc_dirs_haiku = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 
+inc_dirs_qnx   = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
+
 winstuff = -I"$(vi_dir)/win/ctl" -I"$(ideact_dir)" $(wpi_inc_dirs) $(commonui_inc_dirs)
 
 !ifeq sys_windowed 1

@@ -31,10 +31,7 @@
 
 
 #include "plusplus.h"
-
-#include <sys/types.h>
-#include "wio.h"
-
+#include "dw.h"
 #include "memmgr.h"
 #include "iosupp.h"
 #include "dwiobuff.h"
@@ -253,7 +250,7 @@ DWIOBUFF *DwioBuffWrite(        // WRITE A RECORD
 DWIOBUFF *DwioBuffSeek(         // POSITION TO SPECIFIED OFFSET FROM START
     DWIOBUFF *ctl,              // - current buffer control
     DISK_ADDR block,            // - starting disk address
-    size_t offset )             // - where to position to
+    dw_out_offset offset )      // - where to position to
 {
     DWIOBUFF *next;             // - next buffer control
     size_t required_block;

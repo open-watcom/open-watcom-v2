@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include <setjmp.h>
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
@@ -51,26 +50,22 @@
 #endif
 #include "dw.h"
 #include "dfsyms.h"
-#include "cv4.h"
+#include "cvdbg.h"
 #include "cvsyms.h"
 #include "namelist.h"
 #include "makeblk.h"
+#include "dbsupp.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
 
-extern  bool            DBNested( bool nested );
-extern  dbg_loc         LocDupl(dbg_loc);
-extern  dbg_loc         LocReg(dbg_loc,name*);
-extern  dbg_loc         LocParm(dbg_loc,name*);
+cue_ctl     LineInfo;
+fname_ctl   DBFiles;
 
 static opcode_entry     DbgInfo[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE( _None(                         ), V_NO,           RG_,          G_DEBUG,        FU_NO )
 };
-
-cue_ctl     LineInfo;
-fname_ctl   DBFiles;
 
 static  void    SrcFileNoInit( void )
 /***********************************/
@@ -90,8 +85,8 @@ static  void    DBSrcFileFini( void )
     }
 }
 
-extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
-/*************************************************/
+uint    _CGAPI DBSrcFile( cchar_ptr fname )
+/*****************************************/
 {
     uint        index;
     size_t      len;
@@ -124,8 +119,8 @@ extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
     return( index );
 }
 
-extern  char *SrcFNoFind( uint fno )
-/**********************************/
+char *SrcFNoFind( uint fno )
+/**************************/
 {
     uint        index;
     fname_lst   *curr;
@@ -170,8 +165,8 @@ static void  SourceCueInit( cue_ctl *ctl )
     ctl->count = 0;
 }
 
-extern cue_idx CueAdd( int fno, int line, int col )
-/*************************************************/
+cue_idx CueAdd( int fno, int line, int col )
+/******************************************/
 {
     enum {
         EQUAL    = 0x00,
@@ -217,8 +212,8 @@ extern cue_idx CueAdd( int fno, int line, int col )
     return( ctl->state.cue + PRIMARY_RANGE );
 }
 
-extern bool CueFind( cue_idx cue, cue_state *ret )
-/************************************************/
+bool CueFind( cue_idx cue, cue_state *ret )
+/*****************************************/
 {
     cue_ctl     *ctl;
     cue_blk     *blk;
@@ -290,7 +285,7 @@ static void CueLen( cue_ctl *ctl )
 // the cue guy has seen all the cues and no cue numbers have been
 // released
 static cue_idx  CueFMap( cue_ctl *ctl, int fno, cue_idx map )
-/***************************/
+/***********************************************************/
 //Map cues with same file together
 {
     cue_ctl    *ctl;
@@ -324,8 +319,8 @@ static cue_idx  CueFMap( cue_ctl *ctl, int fno, cue_idx map )
     return( map );
 }
 
-extern void CueMap( cue_ctl *ctl, cue_state *base )
-/*************************************************/
+void CueMap( cue_ctl *ctl, cue_state *base )
+/******************************************/
 //Add a map number so cues from the same file
 //can be re-written on a continueum
 {
@@ -345,7 +340,7 @@ extern void CueMap( cue_ctl *ctl, cue_state *base )
 }
 #endif
 #if 0
-extern DmpCue( cue_idx cue  )
+void DmpCue( cue_idx cue  )
 {
     cue_state   state;
     char        *fname;
@@ -371,8 +366,8 @@ static void SourceCueFini( cue_ctl *ctl )
     ctl->head = NULL;
 }
 
-extern  void    InitDbgInfo( void )
-/*********************************/
+void    InitDbgInfo( void )
+/*************************/
 {
 //    cue_idx     idx;
     uint        fno;
@@ -396,8 +391,8 @@ extern  void    InitDbgInfo( void )
 }
 
 
-extern  void    FiniDbgInfo( void )
-/*********************************/
+void    FiniDbgInfo( void )
+/*************************/
 {
     DBSrcFileFini();
     SourceCueFini( &LineInfo );
@@ -413,8 +408,8 @@ extern  void    FiniDbgInfo( void )
 }
 
 
-extern  void    _CGAPI DBLineNum( uint no )
-/*****************************************/
+void    _CGAPI DBLineNum( uint no )
+/*********************************/
 {
 #ifndef NDEBUG
     EchoAPI( "\nDBLineNum( %i )\n", no );
@@ -422,8 +417,8 @@ extern  void    _CGAPI DBLineNum( uint no )
     SrcLine = no;
 }
 
-extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
-/***************************************************************/
+void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
+/*******************************************************/
 {
     cue_idx     idx;
     bool        hasxcue;
@@ -445,8 +440,8 @@ extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
     }
 }
 
-extern  void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
-/***********************************************************/
+void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
+/******************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DBGenStMem( %s,%i)\n", sym, loc );
@@ -485,8 +480,8 @@ static  dbg_block *MkBlock( void )
 }
 
 
-extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
-/*********************************************************************/
+void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
+/****************************************************************/
 {
     fe_attr     attr;
     dbg_local   *lcl;
@@ -528,8 +523,8 @@ extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
 }
 
 
-extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
-/*****************************************************************/
+void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
+/************************************************************/
 {
     fe_attr     attr;
     dbg_loc     loc;
@@ -555,8 +550,8 @@ extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 }
 
 
-extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
-/**************************************************************************/
+void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
+/******************************************************************/
 {
     /* unused parameters */ (void)ptr_type;
 
@@ -578,14 +573,14 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 
 
 
-extern  void    DBAllocReg( name *reg, name *temp )
-/*************************************************/
+void    DBAllocReg( name *reg, name *temp )
+/*****************************************/
 {
     /* unused parameters */ (void)reg; (void)temp;
 }
 
-extern void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
-/*********************************************************/
+void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
+/**************************************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DBTypeDef( %c, %t )\n", nm, tipe );
@@ -598,8 +593,8 @@ extern void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
     }
 }
 
-extern  void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
-/*******************************************************************/
+void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
+/**************************************************************/
 {
     fe_attr     attr;
     dbg_loc     loc;
@@ -621,7 +616,7 @@ extern  void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
 }
 
 void    _CGAPI DBLocalType( cg_sym_handle sym, bool kind )
-/*****************************************************/
+/********************************************************/
 {
     dbg_local   *lcl;
 
@@ -659,8 +654,8 @@ static  void    AddBlockInfo( dbg_block *blk, bool start )
 }
 
 
-extern  dbg_block *DoDBBegBlock( int fast_codegen )
-/*************************************************/
+dbg_block *DoDBBegBlock( int fast_codegen )
+/*****************************************/
 {
     dbg_block   *blk;
 
@@ -674,8 +669,8 @@ extern  dbg_block *DoDBBegBlock( int fast_codegen )
     return( blk );
 }
 
-extern  void _CGAPI     DBBegBlock( void )
-/****************************************/
+void _CGAPI     DBBegBlock( void )
+/********************************/
 {
 #ifndef NDEBUG
     EchoAPI( "DBBegBlock()\n" );
@@ -684,8 +679,8 @@ extern  void _CGAPI     DBBegBlock( void )
 }
 
 
-extern  void    DoDBEndBlock( int fast_codegen )
-/**********************************************/
+void    DoDBEndBlock( int fast_codegen )
+/**************************************/
 {
     dbg_block   *blk;
 
@@ -701,15 +696,15 @@ extern  void    DoDBEndBlock( int fast_codegen )
     }
 }
 
-extern  void _CGAPI     DBEndBlock( void )
-/****************************************/
+void _CGAPI     DBEndBlock( void )
+/********************************/
 {
     DoDBEndBlock( 0 );
 }
 
 
-extern  void    DbgSetBase( void )
-/********************************/
+void    DbgSetBase( void )
+/************************/
 {
     if( _IsModel( DBG_DF ) ) {
         /* nothing */
@@ -723,8 +718,8 @@ extern  void    DbgSetBase( void )
 }
 
 
-extern  void    DbgParmLoc( name *parm, cg_sym_handle sym )
-/******************************************************/
+void    DbgParmLoc( name *parm, cg_sym_handle sym )
+/*************************************************/
 // sym is NULL if no front end sym
 {
     dbg_local       *lcl;
@@ -745,8 +740,8 @@ extern  void    DbgParmLoc( name *parm, cg_sym_handle sym )
 }
 
 
-extern  void    DbgRetLoc( void )
-/*******************************/
+void    DbgRetLoc( void )
+/***********************/
 {
     dbg_loc loc;
 
@@ -772,8 +767,8 @@ extern  void    DbgRetLoc( void )
 /**/
 
 
-extern  void    DbgRetOffset( type_length offset )
-/************************************************/
+void    DbgRetOffset( type_length offset )
+/****************************************/
 {
     CurrProc->targ.debug->ret_offset = offset;
 }
@@ -792,22 +787,22 @@ static  void    EmitDbg( oc_class class, pointer ptr )
 }
 
 
-extern  void    EmitRtnBeg( void )
-/********************************/
+void    EmitRtnBeg( void )
+/************************/
 {
     EmitDbg( INFO_DBG_RTN_BEG, CurrProc->targ.debug );
 }
 
 
-extern  void    EmitProEnd( void )
-/********************************/
+void    EmitProEnd( void )
+/************************/
 {
     EmitDbg( INFO_DBG_PRO_END, CurrProc->targ.debug );
 }
 
 
-extern  void    EmitDbgInfo( instruction *ins )
-/*********************************************/
+void    EmitDbgInfo( instruction *ins )
+/*************************************/
 {
     if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
         EmitDbg( INFO_DBG_BLK_BEG, ins->operands[0] );
@@ -817,15 +812,15 @@ extern  void    EmitDbgInfo( instruction *ins )
 }
 
 
-extern  void    EmitEpiBeg( void )
-/********************************/
+void    EmitEpiBeg( void )
+/************************/
 {
     EmitDbg( INFO_DBG_EPI_BEG, CurrProc->targ.debug );
 }
 
 
-extern  void    EmitRtnEnd( void )
-/********************************/
+void    EmitRtnEnd( void )
+/************************/
 {
     segment_id      old;
 
@@ -841,8 +836,8 @@ extern  void    EmitRtnEnd( void )
 /**/
 
 
-extern  void    DbgRtnBeg( dbg_rtn *rtn,  offset lc )
-/***************************************************/
+void    DbgRtnBeg( dbg_rtn *rtn,  offset lc )
+/*******************************************/
 {
     rtn->rtn_blk->start = lc;
     if( _IsModel( DBG_CV ) ) {
@@ -851,8 +846,8 @@ extern  void    DbgRtnBeg( dbg_rtn *rtn,  offset lc )
 }
 
 
-extern  void    DbgProEnd( dbg_rtn *rtn, offset lc )
-/**************************************************/
+void    DbgProEnd( dbg_rtn *rtn, offset lc )
+/******************************************/
 {
     rtn->pro_size = lc - rtn->rtn_blk->start;
     if( _IsModel( DBG_DF ) ) {
@@ -863,8 +858,8 @@ extern  void    DbgProEnd( dbg_rtn *rtn, offset lc )
 }
 
 
-extern  void    DbgBlkBeg( dbg_block *blk, offset lc )
-/****************************************************/
+void    DbgBlkBeg( dbg_block *blk, offset lc )
+/********************************************/
 {
     blk->start = lc;
     if( _IsModel( DBG_DF ) ) {
@@ -874,8 +869,8 @@ extern  void    DbgBlkBeg( dbg_block *blk, offset lc )
     }
 }
 
-extern  void    DbgBlkEnd( dbg_block *blk, offset lc )
-/****************************************************/
+void    DbgBlkEnd( dbg_block *blk, offset lc )
+/********************************************/
 {
     if( _IsModel( DBG_DF ) ) {
         DFBlkEnd( blk, lc );
@@ -890,8 +885,8 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc )
 }
 
 
-extern  void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
-/**************************************************/
+void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
+/******************************************/
 {
     rtn->epi_start = lc;
     if( _IsModel( DBG_DF ) ) {
@@ -902,8 +897,8 @@ extern  void    DbgEpiBeg( dbg_rtn *rtn, offset lc )
 }
 
 
-extern  void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
-/**************************************************/
+void    DbgRtnEnd( dbg_rtn *rtn, offset lc )
+/******************************************/
 {
     if( _IsModel( DBG_DF ) ) {
         DFRtnEnd( rtn, lc );

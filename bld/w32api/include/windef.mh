@@ -154,13 +154,7 @@ typedef HICON       HCURSOR;
 
 /* Basic constants */
 #define MAX_PATH        260
-#ifndef NULL
-    #ifdef __cplusplus
-        #define NULL    0
-    #else
-        #define NULL    ((void *)0)
-    #endif
-#endif
+:include null.sp
 #ifndef FALSE
     #define FALSE       0
 #endif

@@ -76,7 +76,7 @@ class WFile : public WObject {
 
         int WEXPORT read( char* buffer, int length );
         int WEXPORT write( const char* buffer, int length );
-        long WEXPORT lseek( long offset, int org=0 );
+        long WEXPORT lseek( long offset, int org=SEEK_SET );
     protected:
         virtual char getByte();
         virtual bool putByte( char ch );

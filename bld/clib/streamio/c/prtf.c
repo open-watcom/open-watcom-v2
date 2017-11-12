@@ -51,6 +51,8 @@
 #include "prtscncf.h"
 #include "fixpoint.h"
 #include "fltsupp.h"
+#include "printf.h"
+
 
 #define BUF_SIZE    72  /* 64-bit ints formatted as binary can get big */
 #define TRUE        1
@@ -83,6 +85,9 @@
 #endif
 
 
+#if defined( __QNX__ ) && defined( _M_I86 ) && !defined( IN_SLIB ) && !defined( __WIDECHAR__ )
+#else
+
 /* forward references */
 static const CHAR_TYPE *evalflags( const CHAR_TYPE *, SPECS __SLIB * );
 static FAR_STRING formstring( CHAR_TYPE *, my_va_list *, SPECS __SLIB *, CHAR_TYPE * );
@@ -94,6 +99,8 @@ static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs, slib_callba
 
 #ifdef SAFE_PRINTF
 int __F_NAME(__prtf_s,__wprtf_s)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, const char **msg, slib_callback_t *out_putc )
+#elif defined( IN_SLIB )
+int __F_NAME(__prtf_slib,__wprtf_slib)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc, int ptr_size )
 #else
 int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_list args, slib_callback_t *out_putc )
 #endif
@@ -139,6 +146,10 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
 #else
                 FAR_INT         iptr;
 
+                /*
+                   For the shared library, all pointers are FAR unless
+                   explicitly set NEAR (the shared library use big_data model).
+                */
 #if defined( __FAR_SUPPORT__ )
                 if( specs._flags & SPF_FAR ) {
                     iptr = va_arg( args, int _WCFAR * );
@@ -737,8 +748,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
             long_value = va_arg( pargs->v, unsigned long );
         } else {
             long_value = va_arg( pargs->v, unsigned );
-            if( specs->_flags & SPF_SHORT ) {    /* JBS 92/02/12 */
-                long_value = (unsigned short) long_value;
+            if( specs->_flags & SPF_SHORT ) {
+                long_value = (unsigned short)long_value;
             } else if( specs->_flags & SPF_CHAR ) {
                 long_value = (unsigned char)long_value;
             }
@@ -757,7 +768,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
             long_value = va_arg( pargs->v, long );
         } else {
             long_value = va_arg( pargs->v, int );
-            if( specs->_flags & SPF_SHORT ) {    /* JBS 92/02/12 */
+            if( specs->_flags & SPF_SHORT ) {
                 long_value = (short) long_value;
             } else if( specs->_flags & SPF_CHAR ) {
                 long_value = (signed char)long_value;
@@ -782,9 +793,12 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
 #if defined( __LONG_LONG_SUPPORT__ )
                 if( specs->_flags & SPF_LONG_LONG ) {
                     long_long_value = -long_long_value;
-                } else
+                } else {
 #endif
-                long_value = - long_value;
+                    long_value = -long_value;
+#if defined( __LONG_LONG_SUPPORT__ )
+                }
+#endif
             } else if( specs->_flags & SPF_FORCE_SIGN ) {
                 buffer[specs->_n0++] = STRING( '+' );
             } else if( specs->_flags & SPF_BLANK ) {
@@ -975,7 +989,7 @@ processNumericTypes:
     case STRING( 'P' ):
 #if defined( __FAR_SUPPORT__ )
     #if defined( __BIG_DATA__ )
-        if( !( specs->_flags & (SPF_NEAR|SPF_FAR) ) ) {
+        if( (specs->_flags & (SPF_NEAR | SPF_FAR)) == 0 ) {
             specs->_flags |= SPF_FAR;
         }
         if( specs->_fld_width == 0 ) {
@@ -999,12 +1013,12 @@ processNumericTypes:
             specs->_fld_width = sizeof( unsigned ) * 2;
         }
 #endif
-        specs->_flags &= ~( SPF_BLANK | SPF_FORCE_SIGN );
+        specs->_flags &= ~(SPF_BLANK | SPF_FORCE_SIGN);
         int_value = va_arg( pargs->v, unsigned );               /* offset */
 #if defined( __FAR_SUPPORT__ )
         if( specs->_flags & SPF_FAR ) {
             seg_value = va_arg( pargs->v, unsigned ) & 0xFFFF; /* segment */
-            /* use "unsigned short" for 386 instead of "unsigned" 21-jul-89 */
+            /* use "unsigned short" for 386 instead of "unsigned" */
             fmt4hex( seg_value, buffer, 4 );
             buffer[4] = STRING( ':' );
             fmt4hex( int_value, buffer + 4 + 1, sizeof( unsigned ) * 2 );
@@ -1083,3 +1097,5 @@ processNumericTypes:
     SetZeroPad( specs );
     return( arg );
 }
+
+#endif

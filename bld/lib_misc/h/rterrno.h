@@ -39,7 +39,6 @@
     // What does NETWARE do?
   #if defined( _NETWARE_LIBC )
     #undef errno
-    extern int              *___errno( void );
     #define _RWD_errno      (*___errno())       /* get LibC errno */
   #else
     #define _RWD_errno      errno

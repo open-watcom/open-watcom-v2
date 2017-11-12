@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +72,7 @@ enum FT                         // types of formatting
 
 static std::FILE    *fstk[MX_FSTK]; // suspended files
 static unsigned     index;          // top of files stack
-static int          logging;        // true ==> logging at level 0
+static bool         logging;        // true ==> logging at level 0
 static unsigned     indent = 1;     // # of indentations
 
 static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
@@ -86,12 +87,12 @@ static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
 {
     std::va_list args;          // - for variable arguments
-    rboolean done;              // - true ==> done formatting
+    bool done;                  // - true ==> done formatting
     std::size_t blk_type;       // - type of block
     RW_DTREG* rw;               // - R/W header
 
     va_start( args, ft );
-    for( done = false; ! done; ft = va_arg( args, enum FT ) ) {
+    for( done = false; !done; ft = va_arg( args, enum FT ) ) {
         switch( ft ) {
           case FT_RW :
           { const char* text;   // - text
@@ -271,7 +272,7 @@ static void dump(               // FORMATTED DUMP
             for( index = 1; ; ++state, ++index ) {
                 if( state->dtor == 0 ) {
                     cmd = state->u.cmd_addr;
-                    if( cmd == 0 ) break;
+                    if( cmd == NULL ) break;
                     dump( FT_OFF,    "index", index,
                           FT_PTR,    "cmd",   cmd,
                           FT_CONT );
@@ -560,6 +561,14 @@ static void dumpPdata           // DUMP PDATA BLOCK
 #endif
 
 
+#ifndef RW_REGISTRATION
+#define LIST_END            ((void*)-1L)
+#elif defined( FS_REGISTRATION )
+#define LIST_END            ((void*)-1L)
+#else
+#define LIST_END            NULL
+#endif
+
 static void dumpDtorList        // DUMP REGISTRATION LIST
     ( const char* title         // - title
 #ifdef RW_REGISTRATION
@@ -571,8 +580,8 @@ static void dumpDtorList        // DUMP REGISTRATION LIST
     dumpTitle( title );
 #ifdef FS_REGISTRATION
     {
-        for( ; list != (void*)-1L; list = list->base.prev ) {
-            if( list->base.handler == & CPPLIB( fs_handler ) ) {
+        for( ; list != LIST_END; list = list->base.prev ) {
+            if( list->base.handler == CPPLIB( fs_handler ) ) {
                 dumpRwRoBlk( list, list->base.ro );
             } else {
                 dumpFsBlock( list );
@@ -585,7 +594,7 @@ static void dumpDtorList        // DUMP REGISTRATION LIST
     }
 #else
     {
-        for( ; list != NULL; list = list->base.prev ) {
+        for( ; list != LIST_END; list = list->base.prev ) {
             dumpRwRoBlk( list, list->base.ro );
         }
     }
@@ -697,9 +706,8 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
     dumpDtorList( "\nStatic Initialization List:", _RWD_ModuleInit );
 #else
     printf( "\nStatic Initialization List:\n" );
-    RW_DTREG* list             // - list to be dumped
-        = _RWD_ModuleInit;
-    for( ; list != (void*)-1L; list = list->init_ls_st.base.prev ) {
+    // - list to be dumped
+    for( RW_DTREG *list = _RWD_ModuleInit; list != LIST_END; list = list->init_ls_st.base.prev ) {
         dumpRwRoBlk( list, list->base.ro );
     }
 #endif
@@ -730,7 +738,7 @@ void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
 void __DumpPdata()
 {
     PData* p = (PData*)0x430000;
-    PData* l = 0;
+    PData* l = NULL;
     printf( "PDATA at 430000\n\n" );
     for( ; p->BeginAddress < p->EndAddress; ++p ) {
         if( p <= l ) {
@@ -813,7 +821,7 @@ void DbgRedirectBeg             // START REDIRECTION
 {
     if( index == 0 ) {
         reDirBeg();
-        logging = 0;
+        logging = false;
     }
 }
 
@@ -835,7 +843,7 @@ void DbgLogBeg                  // START LOGGING
     ( void )
 {
     if( index == 0 ) {
-        logging = 1;
+        logging = true;
     }
     reDirBeg();
 }

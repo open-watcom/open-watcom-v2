@@ -6,7 +6,6 @@ model      = mf
 convention = register
 linkage    = static
 mthreaded  = 1
-subdir     = mf_rmtd
 
 cpplib_release = 0
 

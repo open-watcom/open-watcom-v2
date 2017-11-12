@@ -3,7 +3,6 @@ processor=286
 model=mm
 system=qnx
 linkage=static
-subdir=mm
 qlib=qlibm.lib
 
 !include $(clib_dir)/mrglib.mif

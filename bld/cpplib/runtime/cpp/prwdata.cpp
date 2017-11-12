@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,17 @@
 
 
 #include "variety.h"
-#include "watcom.h"
+#include <cstddef>
 #include "lock.h"
 
 extern "C" {
+
 #ifdef __SW_BM
-    char _wint_static_init_sema[ sizeof( __lock ) ] = {0};  // it is hack,
-                       // to prevent to call constructor for static __lock
+    // this is hack, to prevent to call constructor for static __lock
+    char    _wint_static_init_sema[sizeof( __lock )] = { 0 };
 #endif
-uint_16 _wint_pure_error_flag   = 0;
-uint_16 _wint_undef_vfun_flag   = 0;
-void*   _wint_module_init       = 0;
+    short   _wint_pure_error_flag   = 0;
+    short   _wint_undef_vfun_flag   = 0;
+    void    *_wint_module_init      = NULL;
+
 };

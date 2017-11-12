@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,17 @@
 
 #include "ftnstd.h"
 #include <string.h>
+#if defined( __NT__ )
+    #include <windows.h>
+  #ifdef SetForm
+    #undef SetForm
+  #endif
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "ftextvar.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "cioconst.h"
@@ -46,6 +54,7 @@
 #include "rterr.h"
 #include "rstdio.h"
 #include "posflush.h"
+#include "posdat.h"
 #include "errutil.h"
 
 
@@ -74,13 +83,12 @@ void    FlushStdUnit( void ) {
 
     ftnfile     *fcb;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) return;
-        if( fcb->fileptr == FStdOut ) break;
-        fcb = fcb->link;
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
+        if( fcb->fileptr == FStdOut ) {
+            FlushBuffer( FStdOut );
+            break;
+        }
     }
-    FlushBuffer( FStdOut );
 }
 
 void    WriteErr( int errcode, va_list args ) {

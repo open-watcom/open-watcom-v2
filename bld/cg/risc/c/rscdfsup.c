@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"
@@ -47,13 +46,12 @@
 #include "dfdbg.h"
 #include "objout.h"
 #include "rscobj.h"
+#include "dbsyms.h"
+#include "dfsyms.h"
 #include "cgprotos.h"
 
 
 extern  void            OutBckExport( const char *name, bool is_export );
-
-
-extern  dw_client       Client;
 
 struct dbg_seg_names {
     char        *seg_name;
@@ -72,22 +70,17 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern sect_info DwarfSegs[DW_DEBUG_MAX];
-
-
-
-extern  void    DFDefSegs( void ){
-/*************************************************/
-    int         i;
+extern  void    DFDefSegs( void )
+/*******************************/
+{
+    dw_sectnum  i;
 
     if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
         for( i = 0; i < DW_DEBUG_MAX; ++i ){
-            DwarfSegs[i].seg = DbgSegDef( DwarfSegNames[i].seg_name );
-            DwarfSegs[i].bck = NULL;
+            DFSetSection( i, NULL, DbgSegDef( DwarfSegNames[i].seg_name ) );
         }
     } else if( _IsModel( DBG_NUMBERS ) ) {
-        DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name );
-        DwarfSegs[DW_DEBUG_LINE].bck = NULL;
+        DFSetSection( DW_DEBUG_LINE, NULL, DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name ) );
     }
 }
 

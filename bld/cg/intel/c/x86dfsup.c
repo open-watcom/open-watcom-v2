@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"
@@ -51,12 +50,11 @@
 #include "x86obj.h"
 #include "regset.h"
 #include "rgtbl.h"
+#include "dbsyms.h"
+#include "dfsyms.h"
+#include "x86data.h"
 #include "cgprotos.h"
 
-
-extern  void            BackImpPtr( const char *nm, back_handle bck, offset plus );
-
-extern  dw_client       Client;
 
 struct dbg_seg_names {
     char        *seg_name;
@@ -64,39 +62,29 @@ struct dbg_seg_names {
 };
 
 static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
-    { ".debug_info", "DWARF" },
-    { ".debug_pubnames",   "DWARF" },
-    { ".debug_aranges",   "DWARF" },
-    { ".debug_line",   "DWARF" },
-    { ".debug_loc",   "DWARF" },
-    { ".debug_abbrev",   "DWARF" },
-    { ".debug_macinfo",   "DWARF" },
-    { ".debug_str",   "DWARF" },
+    { ".debug_info",        "DWARF" },
+    { ".debug_pubnames",    "DWARF" },
+    { ".debug_aranges",     "DWARF" },
+    { ".debug_line",        "DWARF" },
+    { ".debug_loc",         "DWARF" },
+    { ".debug_abbrev",      "DWARF" },
+    { ".debug_macinfo",     "DWARF" },
+    { ".debug_str",         "DWARF" },
     { ".WATCOM_references", "DWARF" }
 };
 
 
-extern sect_info DwarfSegs[DW_DEBUG_MAX];
-
-
-
-extern  void    DFDefSegs( void ){
-/********************************/
-
+extern  void    DFDefSegs( void )
+/*******************************/
+{
     if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-        int         i;
+        dw_sectnum  i;
 
-        for( i = 0; i < DW_DEBUG_MAX; ++i ){
-            DwarfSegs[i].seg = DbgSegDef( DwarfSegNames[i].seg_name,
-                                     DwarfSegNames[i].class_name,
-                                     SEG_COMB_NORMAL+SEG_USE_32 );
-            DwarfSegs[i].bck = NULL;
+        for( i = 0; i < DW_DEBUG_MAX; ++i ) {
+            DFSetSection( i, NULL, DbgSegDef( DwarfSegNames[i].seg_name, DwarfSegNames[i].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
         }
-    }else if( _IsModel( DBG_NUMBERS ) ){
-            DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name,
-                                     DwarfSegNames[DW_DEBUG_LINE].class_name,
-                                     SEG_COMB_NORMAL+SEG_USE_32 );
-            DwarfSegs[DW_DEBUG_LINE].bck = NULL;
+    } else if( _IsModel( DBG_NUMBERS ) ) {
+        DFSetSection( DW_DEBUG_LINE, NULL, DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name, DwarfSegNames[DW_DEBUG_LINE].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
     }
 }
 
@@ -222,7 +210,7 @@ extern  void   DFOutRegInd( dw_loc_id locid, name *reg )
     dw_regs     regnum;
 
     regnum = DFRegMap(  reg->r.reg );
-    DWLocOp( Client,locid,DW_LOC_breg, regnum, 0 );
+    DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
 }
 
 extern uint DFStkReg( void )

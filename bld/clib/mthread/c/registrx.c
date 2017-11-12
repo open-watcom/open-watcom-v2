@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <process.h>
+#include <windows.h>
 #include "thread.h"
 #include "cthread.h"
 

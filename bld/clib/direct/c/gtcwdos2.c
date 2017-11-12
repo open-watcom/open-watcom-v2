@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #ifdef __WIDECHAR__
     #include <mbstring.h>
 #endif
+#include <wos2.h>
 #include "rterrno.h"
 #include "thread.h"
 #include "seterrno.h"
@@ -66,9 +68,9 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
         return( NULL );
     }
     DosQCurDisk( &drive, &drive_map );
-    path[ 0 ] = drive + 'A' - 1;
-    path[ 1 ] = ':';
-    path[ 2 ] = '\\';
+    path[0] = drive + 'A' - 1;
+    path[1] = ':';
+    path[2] = '\\';
     if( buf == NULL ) {
         if( (buf = malloc( max(size,pathlen+4)*CHARSIZE )) == NULL ) {
             _RWD_errno = ENOMEM;
@@ -78,12 +80,11 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     }
 
     /*** Copy the pathname into a buffer and quit ***/
-    #ifndef __WIDECHAR__
-        return( strncpy( buf, path, size ) );
-    #else
-        if( mbstowcs( buf, path, size ) != (size_t)-1 )
-            return( buf );
-        else
-            return( NULL );
-    #endif
+#ifndef __WIDECHAR__
+    return( strncpy( buf, path, size ) );
+#else
+    if( mbstowcs( buf, path, size ) != (size_t)-1 )
+        return( buf );
+    return( NULL );
+#endif
 }

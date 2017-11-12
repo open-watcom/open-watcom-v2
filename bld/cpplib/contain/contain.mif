@@ -1,3 +1,6 @@
+prefix   = cont
+prefix_x = conx
+
 # C++ files in CPP directory
 
 objs_cpp = &
@@ -8,10 +11,5 @@ objs_cpp = &
 
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=pch01x.pch
-
-!include $(cpplib_dir)/plibname.mif
-
-prefix = $(cont_n)
-prefix_x = $(cont_x)
 
 !include $(cpplib_dir)/mklib.mif

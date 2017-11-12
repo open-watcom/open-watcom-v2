@@ -41,7 +41,7 @@ typedef struct {                // DIAG_INFO -- diagnostic information
     TYPE bad_src;               // - source type
     TYPE bad_tgt;               // - target type
     SYMBOL bad_fn;              // - function to be listed
-    int bad_parm;               // - index (base 1) of arg. in error
+    unsigned bad_parm;          // - index (base 1) of arg. in error
 } DIAG_INFO;
 
 
@@ -51,9 +51,10 @@ void CallDiagnoseRejects(       // DIAGNOSE FUNCTIONS IN REJECT LIST
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     PTreeErrorExpr( expr, msg );
-    for( ; ; ) {
+    for( ;; ) {
         SYMBOL reject = FnovNextRejectEntry( fnov_diag );
-        if( reject == NULL ) break;
+        if( reject == NULL )
+            break;
         InfSymbolRejected( reject );
     }
 }
@@ -81,14 +82,15 @@ static SYMBOL pickCorrectFunction(// FIND FUNCTION SYMBOL WITH CORRECT # PARMS
 
 static PTREE diagnoseArg(       // GET ARGUMENT TO BE DIAGNOSED
     PTREE expr,                 // - CTOR or call expression
-    int index )                 // - expression index
+    unsigned bad_parm )         // - expression index
 {
     PTREE arg;                  // - error argument
 
-    for( arg = expr->u.subtree[1]
-       ; index > 0
-       ; arg = arg->u.subtree[0], -- index );
-    return arg;
+    arg = expr->u.subtree[1];
+    while( bad_parm-- > 0 ) {
+        arg = arg->u.subtree[0];
+    }
+    return( arg );
 }
 
 
@@ -98,9 +100,10 @@ void CallDiagAmbiguous(         // DIAGNOSE AMBIGUOUS CALL
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
     PTreeErrorExpr( expr, msg );
-    for( ; ; ) {
+    for( ;; ) {
         SYMBOL reject = FnovNextAmbiguousEntry( fnov_diag );
-        if( reject == NULL ) break;
+        if( reject == NULL )
+            break;
         InfSymbolAmbiguous( reject );
     }
 }
@@ -109,7 +112,7 @@ void CallDiagAmbiguous(         // DIAGNOSE AMBIGUOUS CALL
 static void buildDiagInfo(      // BUILD DIAG_INFO FOR ARGUMENT
     DIAG_INFO *diag,            // - diagnostic information
     PTREE arg,                  // - expression for argument
-    int bad_parm,               // - index of erroneous parameter
+    unsigned bad_parm,          // - index of erroneous parameter
     SYMBOL fun )                // - function for argument
 {
     arg_list* alist;            // - function args
@@ -119,14 +122,14 @@ static void buildDiagInfo(      // BUILD DIAG_INFO FOR ARGUMENT
     alist = SymFuncArgList( fun );
     num_args = alist->num_args;
     if( bad_parm >= num_args ) {
-        TYPE last_arg = alist->type_list[ num_args - 1 ];
+        TYPE last_arg = alist->type_list[num_args - 1];
         if( last_arg->id == TYP_DOT_DOT_DOT ) {
             diag->bad_tgt = last_arg;
         } else {
             diag->bad_tgt = NULL;
         }
     } else {
-        diag->bad_tgt = alist->type_list[ bad_parm ];
+        diag->bad_tgt = alist->type_list[bad_parm];
     }
     PTreeExtractLocn( arg, &diag->location );
     if( PointerToFuncEquivalent( arg->type ) ) {
@@ -195,7 +198,7 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
 {
     DIAG_INFO diag;             // - diagnostic information
     PTREE arg;                  // - argument that didn't match
-    int bad_parm;               // - index of bad argument
+    unsigned bad_parm;          // - index of bad argument
 
     switch( fnov_diag->num_candidates ) {
       case 0 :
@@ -206,9 +209,8 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
         }
         break;
       case 1 :
-        if( ! SymIsFunctionTemplateModel( orig ) ) {
-            bad_parm = FnovRejectParm( fnov_diag );
-            if( bad_parm == -1 ) {
+        if( !SymIsFunctionTemplateModel( orig ) ) {
+            if( FnovRejectParm( fnov_diag, &bad_parm ) < 0 ) {
                 diag.bad_parm = 0;
                 diag.bad_src = NodeType( this_node );
                 diag.bad_tgt = TypeThisForCall( this_node, orig );
@@ -233,7 +235,7 @@ void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
     MSG_NUM msg_none,           // - message: no CTOR's
     FNOV_DIAG *fnov_diag )      // - overload diagnosis information
 {
-    int bad_parm;
+    unsigned bad_parm;
     SYMBOL orig;
     PTREE arg;
     DIAG_INFO diag;
@@ -243,7 +245,7 @@ void CtorDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CTOR
         PTreeErrorExpr( expr, msg_none );
         break;
       case 1 :
-        bad_parm = FnovRejectParm( fnov_diag );    // must be before FnovNextRejectEntry
+        FnovRejectParm( fnov_diag, &bad_parm );    // must be before FnovNextRejectEntry
         orig = FnovNextRejectEntry( fnov_diag );
         if( orig == NULL ) {
             /* no fns matched at all but there happened to be one */

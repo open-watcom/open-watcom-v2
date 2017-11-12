@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,7 @@
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fcstack.h"
+#include "fcgmain.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -93,9 +95,7 @@ extern  char            *STGetName(sym_id,char *);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
-extern  cgflags_t       CGFlags;
 extern  char            ProgName[];
-extern  char            ObjExtn[];
 extern  default_lib     *DefaultLibs;
 extern  dep_info        *DependencyInfo;
 
@@ -104,6 +104,12 @@ static  void            DefDbgStruct( sym_id sym );
 #define CS_SUFF_LEN             5
 #define G_DATA_LEN              6
 #define BLANK_COM_LEN           6
+
+#if defined( __UNIX__ )
+static  char            ObjExtn[] = { "o" };
+#else
+static  char            ObjExtn[] = { "obj" };
+#endif
 
 static  char            GData[] = { "GDATA@" };
 #if _CPU == 8086 || _CPU == 386
@@ -1873,11 +1879,10 @@ char    *GetFullSrcName( void ) {
     }
 }
 
-pointer FEAuxInfo( pointer req_handle, int request ) {
+pointer FEAuxInfo( pointer req_handle, int request )
 //====================================================
-
 // Return specified auxiliary information for given auxiliary entry.
-
+{
     uint_16     flags;
 #if _CPU == 8086 || _CPU == 386
     int         idx;

@@ -621,7 +621,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     PTREE ptlist[2];            // - PT list for all but call
     PTREE zero_node;            // - , 0 ) parm for @++ and @-- overloading
     FNOV_RESULT ovret;          // - overload return
-    unsigned count;             // - # of arguments
+    unsigned num_args;          // - # of arguments
     SYMBOL fun;                 // - overloaded function to use
     struct                      // - arg.list
     {   arg_list    base;       // - - hdr, entry[1]
@@ -652,27 +652,27 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         if( olinf->mask & OPM_ASSIGN ) {
             ptlist[1] = olinf->right.operand;
             alist.base.type_list[ 1 ] = olinf->right.node_type;
-            count = 2;
+            num_args = 2;
         } else if( olinf->mask & OPM_LT ) {
-            count = 1;
+            num_args = 1;
         } else {
             if( ( olinf->mask & OPM_SUB ) && ( olinf->result_mem != NULL ) ) {
                 olinf->scalars = NULL;
             }
             ptlist[1] = olinf->right.operand;
             alist.base.type_list[ 1 ] = olinf->right.node_type;
-            count = 2;
+            num_args = 2;
         }
     } else if( olinf->mask & OPM_POST ) {
         zero_node = NodeZero();
         setupOVOP( olinf, zero_node, &olinf->right );
         ptlist[1] = olinf->right.operand;
         alist.base.type_list[ 1 ] = olinf->right.node_type;
-        count = 2;
+        num_args = 2;
     } else {
-        count = 1;
+        num_args = 1;
     }
-    alist.base.num_args = count;
+    alist.base.num_args = num_args;
     // this qualifier is handled explicitly by the first entry in the arg_list
     ovret = OpOverloadedDiag( &fun
                         , olinf->result_mem

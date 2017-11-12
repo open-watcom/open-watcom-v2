@@ -34,6 +34,9 @@
 #include "saferlib.h"
 #include <string.h>
 #include <wchar.h>
+#if defined( __NETWARE__ )
+    #include "nw_lib.h"
+#endif
 #include "errstr.h"
 
 

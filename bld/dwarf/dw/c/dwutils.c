@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,14 +30,13 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
+#include "dwpriv.h"
 #include "dwutils.h"
 
-uint_8 *LEB128(
-    uint_8                      *buf,
-    dw_sconst                   value )
+
+uint_8 *LEB128( uint_8 *buf, dw_sconst value )
 {
-    uint_8                      byte;
+    uint_8          byte;
 
     /* we can only handle an arithmetic right shift */
     if( value >= 0 ) {
@@ -58,12 +58,9 @@ uint_8 *LEB128(
     return( buf );
 }
 
-
-uint_8 *ULEB128(
-    uint_8                      *buf,
-    dw_uconst                   value )
+uint_8 *ULEB128( uint_8 *buf, dw_uconst value )
 {
-    uint_8                      byte;
+    uint_8          byte;
 
     for( ;; ) {
         byte = value & 0x7f;

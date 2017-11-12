@@ -38,6 +38,7 @@
 
 
 void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
+//==========================================================
 // Seek to specified record in file.
 {
     IOOk( io );

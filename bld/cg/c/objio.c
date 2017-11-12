@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "cg.h"
+#include "_cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
 #include "system.h"
@@ -65,8 +65,8 @@ typedef struct buf {
     struct buf  *nextbuf;
     char        *bufptr;        // current position within buffer
     char        *buf;           // start of buffer
-    uint        bytes_left;     // number of bytes remaining in buffer
-    uint        bytes_written;  // number of bytes written to buffer
+    size_t      bytes_left;     // number of bytes remaining in buffer
+    size_t      bytes_written;  // number of bytes written to buffer
 } buf;
 
 
@@ -109,7 +109,7 @@ static  void    EraseStream( const char *name )
 
 static void cleanupLastBuffer( buf *pbuf )
 {
-    uint amt_used;
+    size_t  amt_used;
 
     amt_used = IOBUFSIZE - pbuf->bytes_left;
     if( pbuf->bytes_written < amt_used ) {
@@ -191,10 +191,10 @@ static  objhandle   Offset( objoffset offset )
 }
 
 
-static  void    PutStream( handle h, const byte *b, uint len )
-/************************************************************/
+static  void    PutStream( handle h, const byte *b, size_t len )
+/**************************************************************/
 {
-    uint        n;
+    size_t      n;
 
     /* unused parameters */ (void)h;
 
@@ -225,10 +225,10 @@ static  void    PutStream( handle h, const byte *b, uint len )
 }
 
 
-static  void    GetStream( handle h, byte *b, uint len )
-/******************************************************/
+static  void    GetStream( handle h, byte *b, size_t len )
+/********************************************************/
 {
-    uint        n;
+    size_t           n;
 
     /* unused parameters */ (void)h;
 
@@ -291,8 +291,8 @@ objhandle       AskObjHandle( void )
     return( Offset( ObjOffset ) );
 }
 
-void    PutObjBytes( const void *buff, uint len )
-/***********************************************/
+void    PutObjBytes( const void *buff, size_t len )
+/*************************************************/
 {
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
@@ -377,12 +377,12 @@ static void FlushBuffers( handle h )
 /**********************************/
 {
     buf         *pbuf;
-    int         retc;
+    size_t      retc;
 
     for( ; (pbuf = BufList) != NULL; ) {
         BufList = pbuf->nextbuf;
         retc = fwrite( pbuf->buf, 1, pbuf->bytes_written, h );
-        if( (unsigned_16)retc != pbuf->bytes_written ) {
+        if( retc != pbuf->bytes_written ) {
             FatalError( "Error writing object file" );
         }
         CGFree( pbuf->buf );

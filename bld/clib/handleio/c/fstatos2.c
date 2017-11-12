@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include <sys/stat.h>
 #include <direct.h>
 #define INCL_LONGLONG
+#include <wos2.h>
+#include "os2fil64.h"
 #include "rterrno.h"
 #include "i64.h"
 #include "iomode.h"
@@ -44,7 +47,7 @@
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "thread.h"
-#include "os2fil64.h"
+
 
 #if defined( _M_I86 )
     #define FF_LEVEL        1

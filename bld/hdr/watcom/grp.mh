@@ -29,7 +29,7 @@ struct group {
  *  POSIX 1003.1 Prototypes.
  */
 _WCRTLINK extern struct group *getgrnam( const char *__name );
-_WCRTLINK extern struct group *getgruid( gid_t __gid );
+_WCRTLINK extern struct group *getgrgid( gid_t __gid );
 _WCRTLINK extern struct group *getgrent( void );
 _WCRTLINK extern int          setgrent( void );
 _WCRTLINK extern int          endgrent( void );

@@ -11,27 +11,31 @@ mlib_axp = axp
 mlib_mps = mps
 mlib_ppc = ppc
 
-clib_host_cpu_086 = i86
-clib_host_cpu_286 = i86
-clib_host_cpu_386 = 386
-clib_host_cpu_axp = axp
-clib_host_cpu_ppc = ppc
-clib_host_cpu_mps = mps
-host_cpu = $(clib_host_cpu_$(mlib_$(processor)))
+mlib_host_cpu_086 = i86
+mlib_host_cpu_286 = i86
+mlib_host_cpu_386 = 386
+mlib_host_cpu_axp = axp
+mlib_host_cpu_ppc = ppc
+mlib_host_cpu_mps = mps
+host_cpu = $(mlib_host_cpu_$(mlib_$(processor)))
 
-clib_host_os_generic = dos
-clib_host_os_msdos   = dos
-clib_host_os_netware = nov
-clib_host_os_os2     = os2
-clib_host_os_osi     = osi
-clib_host_os_qnx     = qnx
-clib_host_os_windows = win
-clib_host_os_winnt   = nt
-clib_host_os_linux   = linux
-clib_host_os_rdos    = rdos
-clib_host_os_rdosdev = rdosdev
-host_os = $(clib_host_os_$(system))
+mlib_host_os_generic = dos
+mlib_host_os_msdos   = dos
+mlib_host_os_netware = nov
+mlib_host_os_os2     = os2
+mlib_host_os_osi     = osi
+mlib_host_os_qnx     = qnx
+mlib_host_os_windows = win
+mlib_host_os_winnt   = nt
+mlib_host_os_linux   = linux
+mlib_host_os_rdos    = rdos
+mlib_host_os_rdosdev = rdosdev
+host_os = $(mlib_host_os_$(system))
 
 !include cproj.mif
+!include libsubdi.mif
 
 !include $(mathlib_dir)/flags.mif
+!include $(mathlib_dir)/include.mif
+!include $(mathlib_dir)/librules.mif
+!include $(mathlib_dir)/lib.mif

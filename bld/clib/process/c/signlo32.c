@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include <signal.h>
 #include <dos.h>
 #include <float.h>
+#include <wos2.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rterrno.h"
@@ -46,7 +48,12 @@
 #include "sigtab.h"
 #include "initsig.h"
 #include "exitwmsg.h"
+#include "rtexcpt.h"
 
+
+#ifndef __SW_BM
+__EXCEPTION_RECORD  *__XCPTHANDLER;
+#endif
 
 unsigned        char    __ExceptionHandled;
 
@@ -95,8 +102,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
     int                 sig;
     int                 fpe;
     unsigned char       *ip;
-    unsigned short      tw;
-    status_word         sw;
+    unsigned short      fp_tw;
+    status_word         fp_sw;
 
     registration = registration;
     unknown = unknown;
@@ -135,9 +142,9 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                 if( !(ip[0] & 0x01) ) {
                     if( (ip[1] & 0x30) == 0x30 ) {
                         // it's a "fdiv" or "fidiv" instruction
-                        tw = context->ctx_env[2] & 0x0000ffff;
-                        sw.sw = context->ctx_env[1] & 0x0000ffff;
-                        if( ((tw >> (sw.b.st << 1)) & 0x01) == 0x01 ) {
+                        fp_tw = context->ctx_env[2] & 0x0000ffff;
+                        fp_sw.sw = context->ctx_env[1] & 0x0000ffff;
+                        if( ((fp_tw >> (fp_sw.b.st << 1)) & 0x01) == 0x01 ) {
                             fpe = FPE_ZERODIVIDE;
                         }
                     }

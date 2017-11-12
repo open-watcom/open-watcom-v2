@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +31,19 @@
 
 
 #include "ftnstd.h"
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
-#include "fio.h"
 #include "rundat.h"
 #include "rmemmgr.h"
 #include "thread.h"
 #include "runmain.h"
+#include "fio.h"
 #include "posopen.h"
 #include "rtspawn.h"
 #include "rtsysutl.h"

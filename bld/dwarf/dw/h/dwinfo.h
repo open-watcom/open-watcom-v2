@@ -44,22 +44,25 @@
 #define InfoULEB128             DW_InfoULEB128
 #define InfoBytes               DW_InfoBytes
 #define InfoString              DW_InfoString
-#define InfoSkip                DW_InfoSkip
-#define InfoPatch               DW_InfoPatch
+#define InfoEmitLocExpr         DW_InfoEmitLocExpr
+#define InfoEmitLocExprNull     DW_InfoEmitLocExprNull
+#define InfoHandleWriteOffset   DW_InfoHandleWriteOffset
+#define InfoHandleReference     DW_InfoHandleReference
 
+extern void         InitDebugInfo( dw_client );
+extern void         FiniDebugInfo( dw_client );
 
-void            InitDebugInfo( dw_client );
-void            FiniDebugInfo( dw_client );
-
-void            InfoReloc( dw_client, uint );
-void            Info8( dw_client, uint_8 );
-void            Info16( dw_client, uint_16 );
-void            Info32( dw_client, uint_32 );
-void            InfoLEB128( dw_client, dw_sconst );
-void            InfoULEB128( dw_client, dw_uconst );
-void            InfoBytes( dw_client, const void *, size_t );
-void            InfoString( dw_client, const char * );
-debug_ref       InfoSkip( dw_client, long );
-void            InfoPatch( dw_client, debug_ref, const void *, size_t );
+extern void         InfoReloc( dw_client, uint );
+extern void         Info8( dw_client, uint_8 );
+extern void         Info16( dw_client, uint_16 );
+extern void         Info32( dw_client, uint_32 );
+extern void         InfoLEB128( dw_client, dw_sconst );
+extern void         InfoULEB128( dw_client, dw_uconst );
+extern void         InfoBytes( dw_client, const void *, size_t );
+extern void         InfoString( dw_client, const char * );
+extern uint_32      InfoEmitLocExpr( dw_client, size_t, dw_loc_handle );
+extern void         InfoEmitLocExprNull( dw_client, size_t );
+extern void         InfoHandleWriteOffset( dw_client cli, dw_handle hdl );
+extern void         InfoHandleReference( dw_client cli, dw_handle hdl );
 
 #endif

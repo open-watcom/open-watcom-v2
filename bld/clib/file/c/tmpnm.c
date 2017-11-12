@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#elif defined(__NETWARE__)
+    #include "nw_lib.h"
+#endif
 #include "rtdata.h"
 #include "rterrno.h"
 #include "fileacc.h"
@@ -60,10 +68,9 @@
 */
 
 #if defined(__NETWARE__)
- #define getpid()       GetThreadID()
- extern int             GetThreadID( void );
+    #define getpid()       (unsigned)GetThreadID()
 #elif defined(__UNIX__)
- extern char *__tmpdir( char * );
+    extern char *__tmpdir( char * );
 #endif
 
 static CHAR_TYPE *__F_NAME(putbits,_wputbits)( CHAR_TYPE *p, unsigned val )

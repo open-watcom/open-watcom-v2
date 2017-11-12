@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,9 +29,12 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "fio.h"
 #include "posio.h"
+#include "posdat.h"
+
 
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #define STDIN   STDIN_FILENO
@@ -67,6 +71,6 @@ static  b_file          _FStdErr = { WRONLY | REC_TEXT,
                                      0,
                                      MIN_BUFFER };
 
-b_file                  *FStdIn = { &_FStdIn };
-b_file                  *FStdOut = { &_FStdOut };
-b_file                  *FStdErr = { &_FStdErr };
+file_handle     FStdIn = { &_FStdIn };
+file_handle     FStdOut = { &_FStdOut };
+file_handle     FStdErr = { &_FStdErr };

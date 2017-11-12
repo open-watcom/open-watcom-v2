@@ -37,9 +37,9 @@
 #include "uivirt.h"
 
         /* console number */
-unsigned         UIConsole = 0;
+int              UIConsole = 0;
         /* filedescriptor */
-unsigned         UIConHandle = 0;
+int              UIConHandle = 0;
         /* proxy for all events */
 pid_t            UIProxy;
         /* remote proxy if nec.. */

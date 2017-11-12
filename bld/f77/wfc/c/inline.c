@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@
 #include "wf77info.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-
+#include "fcgmain.h"
 #include <string.h>
 
 
@@ -59,8 +60,6 @@ extern  void            DoPragma(char *);
 
 
 #if _CPU == 386 || _CPU == 8086
-
-extern  cgflags_t       CGFlags;
 
 #if _CPU == 386
 

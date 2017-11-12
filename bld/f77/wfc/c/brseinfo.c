@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <setjmp.h>
 #include <malloc.h>
 #include "ftnstd.h"
 #include "errcod.h"
@@ -88,7 +88,7 @@ static void             BISetHandle(sym_id,dw_handle);
 static char *           BIMKFullPath(const char *);
 static void             BIInitBaseTypes(void);
 
-extern char             BrowseExtn[];
+static char             BrowseExtn[] = { "mbr" };
 
 static dw_client        cBIId;
 static dw_loc_handle    justJunk;
@@ -169,7 +169,7 @@ void    BIEnd( void ) {
     DWLocTrash( cBIId, justJunk );
     DWFini( cBIId );
     CLIDump( fn );
-    CLIClear();
+    CLIFini();
 }
 
 void    BIStartSubProg( void ) {

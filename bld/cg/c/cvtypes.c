@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,9 @@
 #include "types.h"
 #include "utils.h"
 #include "objout.h"
+#include "cvsyms.h"
 #include "cvtypes.h"
+#include "dbsupp.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -54,21 +56,6 @@ static struct lf_info LFInfo[LFG_LAST] = {
     #include "cv4types.h"
     #undef _LFMAC
 };
-
-extern  void        DataShort(unsigned_16);
-extern  void        LocDump( dbg_loc );
-extern  dbg_loc     LocDupl( dbg_loc );
-extern  offset      LocSimpField( dbg_loc );
-extern  void        DataBytes(unsigned,const void *);
-extern  void        CVSymIConst( const char *nm, int val, dbg_type tipe );
-extern  void        CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe );
-extern  void        CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe );
-extern  void        CVOutSym( cv_out *out, cg_sym_handle sym );
-extern  void        CVOutBck( cv_out *out, back_handle bck, offset add,  dbg_type tipe );
-extern  void        CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe );
-
-extern  segment_id  CVTypes;
-
 
 static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
@@ -132,7 +119,7 @@ static  void  *AlignBuff( cv_out *out )
 
 
 static  void    SegReloc( segment_id seg, cg_sym_handle sym )
-/*********************************************************/
+/***********************************************************/
 {
     segment_id  old;
 
@@ -208,8 +195,8 @@ static  long_offset   EndTypeString( cv_out *out )
     return( here );
 }
 
-extern  void    CVEndType( cv_out *out )
-/**************************************/
+void    CVEndType( cv_out *out )
+/******************************/
 {
     int     len;
 
@@ -259,7 +246,7 @@ static void PutFldSized( cv_out *out, int size, unsigned_32 val )
 }
 
 static void PutLFInt( cv_out *out, cv_psize size, unsigned_32 val )
-/**********************************************************************/
+/*****************************************************************/
 {
     switch( size ) {
     case CV_IB1:
@@ -299,8 +286,8 @@ static lf_values   LFIntType( int size )
     return( itipe );
 }
 
-extern void CVPutINum( cv_out *out, signed_32 num )
-/*************************************************/
+void CVPutINum( cv_out *out, signed_32 num )
+/******************************************/
 {
     byte       *ptr;
 #define LC( what, to )   *((to *)&what)
@@ -331,8 +318,8 @@ extern void CVPutINum( cv_out *out, signed_32 num )
 #undef LC
 }
 
-extern  void        CVPutINum64( cv_out *out, signed_64 val )
-/***********************************************************/
+void        CVPutINum64( cv_out *out, signed_64 val )
+/***************************************************/
 {
     byte       *ptr;
 #define LC( what, to )   *((to *)&what)
@@ -348,8 +335,9 @@ extern  void        CVPutINum64( cv_out *out, signed_64 val )
     }
 #undef LC
 }
-extern  void        CVPutStr( cv_out *out, const char *str )
-/**********************************************************/
+
+void        CVPutStr( cv_out *out, const char *str )
+/**************************************************/
 {
     size_t      len;
 
@@ -361,8 +349,8 @@ extern  void        CVPutStr( cv_out *out, const char *str )
     out->ptr += len;
 }
 
-extern  void        CVPutNullStr( cv_out *out )
-/*********************************************/
+void        CVPutNullStr( cv_out *out )
+/*************************************/
 {
     *(out->ptr++) = 0;
 }
@@ -404,8 +392,8 @@ static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi )
     return( index.s );
 }
 
-extern  dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
-/******************************************************************/
+dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
+/**********************************************************/
 {
     unsigned        size;
     cv_primitive    index;
@@ -435,8 +423,8 @@ static char const RealNames[MAX_REAL_NAME][17] = {
     "signed __int64",
 };
 
-extern  dbg_type    CVScalar( const char *name, cg_type tipe )
-/************************************************************/
+dbg_type    CVScalar( const char *name, cg_type tipe )
+/****************************************************/
 {
     type_def          *tipe_addr;
     int                length;
@@ -516,13 +504,13 @@ static char const ScopeNames[SCOPE_MAX][7] = {
     "class"
 };
 
-extern char const *CVScopeName( dbg_type scope )
+char const *CVScopeName( dbg_type scope )
 {
     return( ScopeNames[scope] );
 }
 
-extern  dbg_type    CVScope( const char *name )
-/*********************************************/
+dbg_type    CVScope( const char *name )
+/*************************************/
 {
     enum scope_name index;
 
@@ -535,8 +523,8 @@ extern  dbg_type    CVScope( const char *name )
 }
 
 
-extern  void    CVDumpName( dbg_name name, dbg_type tipe )
-/********************************************************/
+void    CVDumpName( dbg_name name, dbg_type tipe )
+/************************************************/
 {
     cv_out          out[1];
     ct_modifier     *mod;
@@ -559,8 +547,8 @@ extern  void    CVDumpName( dbg_name name, dbg_type tipe )
     name->refno = tipe;
 }
 
-extern void CVBackRefType( dbg_name name, dbg_type tipe )
-/*******************************************************/
+void CVBackRefType( dbg_name name, dbg_type tipe )
+/************************************************/
 {
     long_offset     here;
     segment_id      old;
@@ -574,8 +562,8 @@ extern void CVBackRefType( dbg_name name, dbg_type tipe )
     name->refno = tipe;
 }
 
-extern  dbg_type    CVArray( dbg_type dims, dbg_type base )
-/*********************************************************/
+dbg_type    CVArray( dbg_type dims, dbg_type base )
+/*************************************************/
 {
     cv_out          out[1];
     ct_dimarray     *array;
@@ -592,8 +580,8 @@ extern  dbg_type    CVArray( dbg_type dims, dbg_type base )
     return( ret );
 }
 
-extern  dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
-/***************************************************************************/
+dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
+/*******************************************************************/
 {
     cv_out      out[1];
     ct_array    *array;
@@ -630,8 +618,8 @@ static  lf_values   ArrayDim( unsigned_32  hi )
     return( ret );
 }
 
-extern  dbg_type    CVCharBlock( unsigned_32 len )
-/************************************************/
+dbg_type    CVCharBlock( unsigned_32 len )
+/****************************************/
 {
     return( CVArraySize( len, len, LF_TRCHAR ) );
 }
@@ -658,8 +646,8 @@ static dbg_type  OutBckCon( int val, dbg_type tipe )
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
-/****************************************************************************/
+dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
+/**********************************************************************/
 {
     dbg_type        itipe;
     dbg_type        symref;
@@ -791,8 +779,8 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
     return( false );
 }
 
-extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
-/*****************************************************************/
+dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
+/*********************************************************/
 {
     dbg_type        itipe;
     dbg_type        symref;
@@ -827,10 +815,9 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     return( ret );
 }
 
-extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                    cg_type num_elts_tipe, int off,
-                    dbg_type base )
-/**********************************************************************/
+dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
+                 cg_type num_elts_tipe, int off, dbg_type base )
+/**************************************************************/
 {
     dbg_type        itipe;
     dbg_type        symref[2];
@@ -859,8 +846,8 @@ extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
 
 
-extern  dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
-/*************************************************************/
+dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
+/*****************************************************/
 {
     cv_out          out[1];
     ct_dimarray     *array;
@@ -980,8 +967,8 @@ static  dbg_type    CVDimConLU( dbg_array ar )
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVEndArray( dbg_array ar )
-/********************************************/
+dbg_type    CVEndArray( dbg_array ar )
+/************************************/
 {
     dbg_type        dims;
 
@@ -993,8 +980,8 @@ extern  dbg_type    CVEndArray( dbg_array ar )
     return( CVArray( dims, ar->base ) );
 }
 
-extern  dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/************************************************************************/
+dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/****************************************************************/
 /* not supported by CV */
 {
     /* unused parameters */ (void)base;
@@ -1003,7 +990,7 @@ extern  dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 }
 
 static  cv_ptrtype  PtrClass( cg_type ptr_type )
-/****************************************************/
+/**********************************************/
 {
     type_def        *tipe_addr;
     cv_ptrtype      ret = 0;
@@ -1051,14 +1038,14 @@ static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, cv_ptrmode mode )
     return( ret );
 }
 
-extern  dbg_type    CVDereference( cg_type ptr_type, dbg_type base )
-/******************************************************************/
+dbg_type    CVDereference( cg_type ptr_type, dbg_type base )
+/**********************************************************/
 {
     return( MkPtr( ptr_type, base, CV_REF ) );
 }
 
-extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
-/**********************************************************/
+dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
+/**************************************************/
 {
     dbg_type        ret;
     cv_primitive    index;
@@ -1095,8 +1082,8 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
 
 
 static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
-                                 cg_sym_handle sym, cv_based_kind kind )
-/*******************************************************************/
+                            cg_sym_handle sym, cv_based_kind kind )
+/*****************************************************************/
 {
     cv_out          out[1];
     dbg_type        ret;
@@ -1292,9 +1279,8 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
     }
 }
 
-extern  dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base,
-                    dbg_loc loc_segment )
-/**************************************************************/
+dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
+/****************************************************************************/
 {
     based_expr     expr;
     uint           based_kind;
@@ -1694,8 +1680,8 @@ static int  FlistCount( field_any *field )
     return( count );
 }
 
-extern  dbg_type    CVEndStruct( dbg_struct st )
-/**********************************************/
+dbg_type    CVEndStruct( dbg_struct st )
+/**************************************/
 {
     lf_values        flisti;
     lf_values        hd;
@@ -1765,8 +1751,8 @@ static  const_entry  *RevEnums( const_entry *cons )
     return( head );
 }
 
-extern  dbg_type    CVEndEnum( dbg_enum en )
-/******************************************/
+dbg_type    CVEndEnum( dbg_enum en )
+/**********************************/
 {
     const_entry     *cons;
     const_entry     *next;
@@ -1818,8 +1804,8 @@ extern  dbg_type    CVEndEnum( dbg_enum en )
 }
 
 
-extern  dbg_type    CVEndProc( dbg_proc pr )
-/******************************************/
+dbg_type    CVEndProc( dbg_proc pr )
+/**********************************/
 {
     parm_entry  *parm;
     parm_entry  *next;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,17 +31,13 @@
 ****************************************************************************/
 
 
-enum {
-        DEFAULT_SECTION,
-        MEM_SECTION,
-        FILE_SECTION,
-        MAX_SECTION
-};
+typedef enum {
+    DEFAULT_SECTION,
+    MEM_SECTION,
+    FILE_SECTION,
+    MAX_SECTION
+} sect_typ;
 
-extern void     CLIInit( dw_funcs *cfuncs, int is_type );
-extern void     CLIDump( char *filename );
-extern void     CLIClear( void );
-extern void     CLIEnd( void );
-extern void     CLIRewind( void );
-extern void     CLILock( void );
-extern int      CLIRead( char *buf, int size, int sec );
+extern void     CLIInit( dw_funcs *cfuncs, sect_typ is_type );
+extern void     CLIDump( const char *filename );
+extern void     CLIFini( void );

@@ -1,3 +1,6 @@
+prefix   = runt
+prefix_x = runx
+
 # dependencies:
 
 # allocexc.obj : ..\cpp\allocexc.cpp ..\h\rtexcept.h
@@ -154,10 +157,5 @@ pch_flags_x_stablcl = -fh=pch07x.pch
 pch_flags_x_undefmbd = -fh=pch07x.pch
 pch_flags_rtdbgst = -fh=pch08.pch
 pch_flags_x_rtdbgst = -fh=pch08x.pch
-
-!include $(cpplib_dir)/plibname.mif
-
-prefix = $(plib_n)
-prefix_x = $(plib_x)
 
 !include $(cpplib_dir)/mklib.mif

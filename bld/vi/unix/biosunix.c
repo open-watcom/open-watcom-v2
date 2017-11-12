@@ -31,7 +31,8 @@
 
 #include "vi.h"
 #include "win.h"
-#include "ctkeyb.h"
+#include "uidef.h"
+#include "uivirt.h"
 #include "vibios.h"
 
 extern int      PageCnt;
@@ -237,7 +238,7 @@ bool BIOSKeyboardHit( void )
     _uigetcursor( &row, &col, &type, &attr );
     _uisetcursor( row, col, C_NORMAL, attr );
     _ui_refresh( 0 );
-    return( ( kb_wait( 0, 0 ) != 0 ) );
+    return( _uiwaitkeyb( 0, 0 ) != 0 );
 
 } /* BIOSKeyboardHit */
 

@@ -34,7 +34,7 @@
 /*       Internal code representation */
 
 #include "hwreg.h"
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
 #include "blocknum.h"

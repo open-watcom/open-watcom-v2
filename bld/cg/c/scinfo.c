@@ -50,15 +50,13 @@ static  bool    ScoreSame( score_info *x, score_info *y ) {
         return( false );
     if( x->index_reg != y->index_reg )
         return( false );
-    if( x->class == N_TEMP
-     && x->symbol.t->v.id == y->symbol.t->v.id )
+    if( x->class == N_TEMP && x->symbol.t->v.id == y->symbol.t->v.id )
         return( true );
     if( x->class == N_VOLATILE )
         return( false );
     if( x->class == N_INITIAL )
         return( false );
-    if( x->class == N_INDEXED
-     && x->scale != y->scale )
+    if( x->class == N_INDEXED && x->scale != y->scale )
         return( false );
     if( x->symbol.p == y->symbol.p )
         return( true );

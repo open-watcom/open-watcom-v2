@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef _SIGDEFN_H_INCLUDED
-#define _SIGDEFN_H_INCLUDED
+#ifndef SIGDEFN_H_INCLUDED
+#define SIGDEFN_H_INCLUDED
 
 #if defined(__QNX__)
 #elif defined(__LINUX__)
@@ -46,13 +47,12 @@
 
 // note that __NT__ and __NETWARE__ are always 32bit
   #if defined( __OS2_286__ )
-    #include <wos2.h>
     // 16 bit OS/2 1.x
     typedef struct      sigtab {
-        __sig_func      func;       /* user signal handler */
-        VOID (_WCI86FAR PASCAL *os_func)(USHORT, USHORT);
-        USHORT  prev_action;        /* previous action */
-        int     os_sig_code;        /* OS/2 1.x signal code */
+        __sig_func      func;           /* user signal handler */
+        void (_WCI86FAR __pascal *os_func)(unsigned short, unsigned short);
+        unsigned short  prev_action;    /* previous action */
+        int             os_sig_code;    /* OS/2 1.x signal code */
     } sigtab;
   #elif defined(__NETWARE__)
     typedef __sig_func sigtab;

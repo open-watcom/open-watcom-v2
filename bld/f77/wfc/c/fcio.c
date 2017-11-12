@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -608,7 +609,7 @@ void    FCEndIO( void ) {
     }
 }
 
-static  void            (*OutRtn[])(void) = {
+static  void            (*outRtn[])(void) = {
     #define ONLY_BASE_TYPES
     #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) outfun,
     #include "ptypdefn.h"
@@ -616,7 +617,7 @@ static  void            (*OutRtn[])(void) = {
     #undef ONLY_BASE_TYPES
 };
 
-static  void            (*InpRtn[])(void) = {
+static  void            (*inpRtn[])(void) = {
     #define ONLY_BASE_TYPES
     #define pick(id,type,dbgtype,cgtype,inpfun,outfun,typnam) inpfun,
     #include "ptypdefn.h"
@@ -629,7 +630,7 @@ void    FCOutStruct( void ) {
 
 // Output a structure.
 
-    IORtnTable = OutRtn;
+    IORtnTable = outRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
     StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
 }
@@ -691,7 +692,7 @@ static  void    StructIOItem( sym_id fd ) {
                                      TY_POINTER ),
                            TY_POINTER ) );
     } else {
-        if( IORtnTable == OutRtn ) {
+        if( IORtnTable == outRtn ) {
             rtn = RT_PRT_ARRAY;
         } else {
             rtn = RT_INP_ARRAY;
@@ -735,7 +736,7 @@ static  void    StructArrayIO( void ) {
 void    FCPrtStructArray( void ) {
 //==========================
 
-    IORtnTable = OutRtn;
+    IORtnTable = outRtn;
     StructArrayIO();
 }
 
@@ -743,7 +744,7 @@ void    FCPrtStructArray( void ) {
 void    FCInpStructArray( void ) {
 //==========================
 
-    IORtnTable = InpRtn;
+    IORtnTable = inpRtn;
     StructArrayIO();
 }
 
@@ -753,7 +754,7 @@ void    FCInpStruct( void ) {
 
 // Input a structure.
 
-    IORtnTable = InpRtn;
+    IORtnTable = inpRtn;
     TmpStructPtr = MkTmp( XPop(), TY_POINTER );
     StructIO( ((sym_id)GetPtr())->u.sd.fl.fields );
 }

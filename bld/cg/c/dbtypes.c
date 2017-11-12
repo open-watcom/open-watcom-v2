@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,15 +47,15 @@
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
 #include "wvtypes.h"
 #endif
+#include "dw.h"
 #include "dftypes.h"
-#include "cv4.h"
+#include "cvdbg.h"
 #include "cvtypes.h"
+#include "dbsupp.h"
 #include "cgprotos.h"
 
-#define MAX_TYPE_SIZE  (1024 * 16)
 
-extern  dbg_loc         LocDupl( dbg_loc );
-extern  offset          LocSimpField( dbg_loc );
+#define MAX_TYPE_SIZE  (1024 * 16)
 
 static bool Nested;     /* set when types are nested by others */
 
@@ -64,7 +64,7 @@ static bool Nested;     /* set when types are nested by others */
   by any format WV, DW and CV.
   figure how fundamental types are done
 */
-extern  dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
+dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
 /********************************************************************/
 {
     dbg_type ret;
@@ -90,7 +90,7 @@ extern  dbg_type _CGAPI DBFtnType( cchar_ptr name, dbg_ftn_type tipe )
 }
 
 
-extern  dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
+dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
 /**************************************************************/
 {
     dbg_type ret;
@@ -117,7 +117,7 @@ extern  dbg_type _CGAPI DBScalar( cchar_ptr name, cg_type tipe )
 
 
 
-extern  dbg_type _CGAPI DBScope( cchar_ptr name )
+dbg_type _CGAPI DBScope( cchar_ptr name )
 /***********************************************/
 {
     dbg_type ret;
@@ -144,7 +144,7 @@ extern  dbg_type _CGAPI DBScope( cchar_ptr name )
 
 
 
-extern  dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
+dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
 /***************************************************************/
 {
     dbg_name    name;
@@ -166,7 +166,7 @@ extern  dbg_name _CGAPI DBBegName( cchar_ptr nm, dbg_type scope )
 }
 
 
-extern  dbg_type _CGAPI DBForward( dbg_name name )
+dbg_type _CGAPI DBForward( dbg_name name )
 /************************************************/
 {
 #ifndef NDEBUG
@@ -190,7 +190,7 @@ extern  dbg_type _CGAPI DBForward( dbg_name name )
 }
 
 
-extern  dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
+dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
 /***************************************************************/
 {
     dbg_type    retv;
@@ -228,7 +228,7 @@ extern  dbg_type _CGAPI DBEndName( dbg_name name, dbg_type tipe )
 }
 
 
-extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len )
+dbg_type _CGAPI DBCharBlock( unsigned_32 len )
 /****************************************************/
 {
     dbg_type ret;
@@ -250,7 +250,7 @@ extern  dbg_type _CGAPI DBCharBlock( unsigned_32 len )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
+dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
 /*************************************************************************/
 {
     dbg_type ret;
@@ -272,7 +272,7 @@ extern  dbg_type _CGAPI DBCharBlockNamed( cchar_ptr name, unsigned_32 len )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int off )
+dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int off )
 /**********************************************************************************/
 {
     dbg_type ret;
@@ -297,7 +297,7 @@ extern  dbg_type _CGAPI DBIndCharBlock( back_handle len, cg_type len_type, int o
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
+dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
 /*********************************************************************/
 {
     dbg_type ret;
@@ -324,7 +324,7 @@ extern  dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
 }
 
 
-extern  dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
+dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
                                     cg_type num_elts_tipe, int off,
                                     dbg_type base )
 /***************************************************************************/
@@ -353,7 +353,7 @@ extern  dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
+dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
 /************************************************************/
 {
     dbg_type ret;
@@ -378,7 +378,7 @@ extern  dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
     return( ret );
 }
 
-extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
+dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
 /************************************************************************************/
 {
     dbg_array   ar;
@@ -421,7 +421,7 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
     ar->num++;
 }
 
-extern  void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_32 hi )
+void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_32 hi )
 /************************************************************************************/
 {
     dim_con *dim;
@@ -437,7 +437,7 @@ extern  void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_3
     AddDim( ar, (dim_any *)dim );
 }
 
-extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
+void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
                         cg_type lo_bound_tipe,
                         cg_type num_elts_tipe )
 /*************************************************/
@@ -457,7 +457,7 @@ extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
     ar->is_variable = true;
 }
 
-extern  dbg_type _CGAPI DBEndArray( dbg_array ar )
+dbg_type _CGAPI DBEndArray( dbg_array ar )
 /************************************************/
 {
     dbg_type ret;
@@ -483,7 +483,7 @@ extern  dbg_type _CGAPI DBEndArray( dbg_array ar )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
+dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
 /*****************************************************************/
 {
     dbg_type ret;
@@ -508,7 +508,7 @@ extern  dbg_type _CGAPI DBIntArray( unsigned_32 hi, dbg_type base )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
+dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type base )
 /*********************************************************************************/
 {
     dbg_type          ret;
@@ -535,7 +535,7 @@ extern  dbg_type _CGAPI DBIntArrayCG( cg_type tipe, unsigned_32 hi, dbg_type bas
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 /*****************************************************************************/
 {
     dbg_type ret;
@@ -561,7 +561,7 @@ extern  dbg_type _CGAPI DBSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 }
 
 
-extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
+dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
 /**********************************************************************/
 {
     dbg_type ret;
@@ -588,7 +588,7 @@ extern  dbg_type _CGAPI DBDereference( cg_type ptr_type, dbg_type base )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
+dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
 /**************************************************************/
 {
     dbg_type ret;
@@ -613,7 +613,7 @@ extern  dbg_type _CGAPI DBPtr( cg_type ptr_type, dbg_type base )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
+dbg_type _CGAPI DBBasedPtr( cg_type ptr_type, dbg_type base,
                                         dbg_loc loc_segment )
 /****************************************************************/
 {
@@ -737,7 +737,7 @@ static  void    AddField( dbg_struct st, field_any *field )
 }
 
 
-extern  void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
+void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
                                         byte len, cchar_ptr nm, dbg_type base )
 /*****************************************************************************/
 {
@@ -753,7 +753,7 @@ extern  void _CGAPI DBAddBitField( dbg_struct st, unsigned_32 off, byte strt,
 }
 
 
-extern  void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
+void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
                                    cchar_ptr nm, dbg_type  base )
 /***************************************************************/
 {
@@ -764,7 +764,7 @@ extern  void _CGAPI DBAddField( dbg_struct st, unsigned_32 off,
 }
 
 
-extern  void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
+void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
                          byte strt, byte len, cchar_ptr nm, dbg_type base )
 /*************************************************************************/
 {
@@ -786,7 +786,7 @@ extern  void _CGAPI DBAddLocField( dbg_struct st, dbg_loc loc, uint attr,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsigned_32 attr, dbg_type base )
+void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsigned_32 attr, dbg_type base )
 /***********************************************************************************************************/
 {
     uint          n_len;
@@ -805,7 +805,7 @@ extern  void _CGAPI DBAddStField( dbg_struct st, dbg_loc loc, cchar_ptr nm, unsi
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddMethod( dbg_struct st, dbg_loc loc, uint attr,
+void _CGAPI DBAddMethod( dbg_struct st, dbg_loc loc, uint attr,
                                  uint kind, cchar_ptr nm, dbg_type base )
 /***********************************************************************/
 {
@@ -827,7 +827,7 @@ extern  void _CGAPI DBAddMethod( dbg_struct st, dbg_loc loc, uint attr,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base )
+void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base )
 /*******************************************************************************/
 {
     uint          n_len;
@@ -846,7 +846,7 @@ extern  void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base 
 }
 
 
-extern  void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
+void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
                                   uint attr, uint kind,  dbg_loc loc )
 /**********************************************************************/
 {
@@ -865,7 +865,7 @@ extern  void _CGAPI DBAddInheritance( dbg_struct st, dbg_type inherit,
     AddField( st, (field_any *) field );
 }
 
-extern  void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
+void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
                                               dbg_type vtbl, cg_type ptr_type )
 /********************************************************************************/
 {
@@ -879,7 +879,7 @@ extern  void _CGAPI DBAddBaseInfo( dbg_struct st, unsigned_32 vb_off, int esize,
 }
 
 
-extern  void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
+void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
                                         int size, cg_type vft_cgtype )
 /********************************************************************/
 {
@@ -897,7 +897,7 @@ extern  void _CGAPI DBAddVFuncInfo( dbg_struct st, unsigned_32 vfptr_off,
     AddField( st, (field_any *) field );
 }
 
-extern  dbg_type _CGAPI DBEndStruct( dbg_struct st )
+dbg_type _CGAPI DBEndStruct( dbg_struct st )
 /**************************************************/
 {
     dbg_type ret;
@@ -923,7 +923,7 @@ extern  dbg_type _CGAPI DBEndStruct( dbg_struct st )
     return( ret );
 }
 
-extern  dbg_type _CGAPI DBStructForward( dbg_struct st )
+dbg_type _CGAPI DBStructForward( dbg_struct st )
 /******************************************************/
 {
 #ifndef NDEBUG
@@ -933,7 +933,7 @@ extern  dbg_type _CGAPI DBStructForward( dbg_struct st )
     return( st->me );
 }
 
-extern  dbg_enum _CGAPI DBBegEnum( cg_type tipe )
+dbg_enum _CGAPI DBBegEnum( cg_type tipe )
 /***********************************************/
 {
     dbg_enum    en;
@@ -991,7 +991,7 @@ void _CGAPI DBAddConst64( dbg_enum en, cchar_ptr nm, signed_64  val )
     en->num++;
 }
 
-extern  dbg_type _CGAPI DBEndEnum( dbg_enum en )
+dbg_type _CGAPI DBEndEnum( dbg_enum en )
 /**********************************************/
 {
     dbg_type ret;
@@ -1018,7 +1018,7 @@ extern  dbg_type _CGAPI DBEndEnum( dbg_enum en )
 }
 
 
-extern  dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
+dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
 /*******************************************************************/
 {
     dbg_proc    pr;
@@ -1039,7 +1039,7 @@ extern  dbg_proc _CGAPI DBBegProc( cg_type call_type, dbg_type  ret )
     return(pr);
 }
 
-extern  void  _CGAPI DBAddMethParms( dbg_proc pr, dbg_type cls, dbg_type this )
+void  _CGAPI DBAddMethParms( dbg_proc pr, dbg_type cls, dbg_type this )
 /*****************************************************************************/
 {
 #ifndef NDEBUG
@@ -1049,7 +1049,7 @@ extern  void  _CGAPI DBAddMethParms( dbg_proc pr, dbg_type cls, dbg_type this )
     pr->this = this;
 }
 
-extern  void _CGAPI DBAddParm( dbg_proc pr, dbg_type tipe )
+void _CGAPI DBAddParm( dbg_proc pr, dbg_type tipe )
 /*********************************************************/
 {
     parm_entry  *parm;
@@ -1069,7 +1069,7 @@ extern  void _CGAPI DBAddParm( dbg_proc pr, dbg_type tipe )
 }
 
 
-extern  dbg_type _CGAPI DBEndProc( dbg_proc pr )
+dbg_type _CGAPI DBEndProc( dbg_proc pr )
 /**********************************************/
 {
     dbg_type ret;

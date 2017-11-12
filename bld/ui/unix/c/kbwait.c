@@ -29,8 +29,12 @@
 ****************************************************************************/
 
 
-#include "ctkeyb.h"
-extern int UIMouseHandle;
+#include <sys/time.h>
+#include "uidef.h"
+#include "uivirt.h"
+#include "unxuiext.h"
+#include "kbwait.h"
+
 
 int kb_wait( int secs, int usecs )
 /********************************/
@@ -39,22 +43,28 @@ int kb_wait( int secs, int usecs )
     fd_set              readfds;
     struct timeval      timeout;
     int                 res;
+    int                 mouse_events;
 
     timeout.tv_sec      = secs;
     timeout.tv_usec     = usecs;
+
     FD_ZERO( &readfds );
     FD_SET( UIConHandle, &readfds );
 
     numfds = UIConHandle;
-    if( UIMouseHandle != -1 ) {
-        if( UIMouseHandle > numfds ) numfds = UIMouseHandle;
-        FD_SET( UIMouseHandle, &readfds );
+    mouse_events = _uiwaitmouse();
+    if( mouse_events != -1 ) {
+        if( mouse_events > numfds )
+            numfds = mouse_events;
+        FD_SET( mouse_events, &readfds );
     }
     numfds++;
     res = select( numfds, &readfds, NULL, NULL, &timeout );
-    if( res <= 0 ) return res;
-    if( FD_ISSET( UIConHandle, &readfds ) ) return 1;
+    if( res <= 0 )
+        return( res );
+    if( FD_ISSET( UIConHandle, &readfds ) )
+        return( 1 );
     /* must be a mouse event */
-    return 2;
+    return( 2 );
 }
 

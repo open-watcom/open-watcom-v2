@@ -10,13 +10,14 @@ dir="binl"      usr="cwc"           conda="lnxhost"
 dir="binl64"    usr="cwc"           conda="lnx64host"                   keys="lx64"
 
 [ DEFAULT cond="dostarg" type="e" where="c jc f77 jf77" desc="Causeway DOS extender stub program" ]
-dir="binw"      usr="cwstub.exe"    conda="doshost winhost |"
-dir="binp"      usr="cwstub.exe"    conda="os2host"
-dir="binnt"     usr="cwstub.exe"    conda="wnthost"
-dir="binnt64"   usr="cwstub.exe"    conda="wnt64host"                   keys="ntx64"
-dir="axpnt"     usr="cwstub.exe"    conda="alphahost"   where="ac"
-dir="binl"      usr="cwstub.exe"    conda="lnxhost"
-dir="binl64"    usr="cwstub.exe"    conda="lnx64host"                   keys="lx64"
+dir="binw"      usr="cwstub.exe"
+#dir="binw"      usr="cwstub.exe"    conda="doshost winhost |"
+#dir="binp"      usr="cwstub.exe"    conda="os2host"
+#dir="binnt"     usr="cwstub.exe"    conda="wnthost"
+#dir="binnt64"   usr="cwstub.exe"    conda="wnt64host"                   keys="ntx64"
+#dir="axpnt"     usr="cwstub.exe"    conda="alphahost"   where="ac"
+#dir="binl"      usr="cwstub.exe"    conda="lnxhost"
+#dir="binl64"    usr="cwstub.exe"    conda="lnx64host"                   keys="lx64"
 
 [ DEFAULT cond="dostarg" rel="." where="c jc f77 jf77 ac" ]
 type="l" dir="lib386/dos"   usr="cwdll.lib"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,34 +43,34 @@
 #include "omodes.h"
 #include "cioconst.h"
 #include "fcodes.h"
-#include "fio.h"
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
-#include "ftextfun.h"
 #include "posio.h"
 #include "poserr.h"
+#include "posseek.h"
 #include "sdcio.h"
+#include "fio.h"
 
 #include "clibext.h"
 
 
 #if defined( __386__ )
-  #define WFC_PAGE_SIZE     (16 * 1024)
+  #define WFC_PAGE_SIZE     ((obj_ptr)(16 * 1024))
 #else
-  #define WFC_PAGE_SIZE     (1 * 1024)
+  #define WFC_PAGE_SIZE     ((obj_ptr)(1 * 1024))
 #endif
 #define _PageNumber( v_ptr ) ((v_ptr) / WFC_PAGE_SIZE)
-#define _PageOffset( v_ptr ) (ObjCode + ( (v_ptr) - ( (v_ptr) / WFC_PAGE_SIZE ) * WFC_PAGE_SIZE ))
-#define _MakeVirtual( page, obj_ptr ) ((page) * WFC_PAGE_SIZE + ( (obj_ptr) - ObjCode ))
+#define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
+#define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
 static  file_attr       PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
 static  char            PageFileBuff[_MAX_PATH];
-static  int             CurrPage;
-static  int             MaxPage;
+static  unsigned_32     CurrPage;
+static  unsigned_32     MaxPage;
 static  unsigned_8      PageFlags;
 static  file_handle     PageFile;
 static  char            *ObjPtr;
@@ -175,11 +176,10 @@ static  void    DumpCurrPage( void ) {
     }
 }
 
-static  void    LoadPage( unsigned_16 page ) {
-//============================================
-
+static  void    LoadPage( unsigned_32 page )
+//=========================================
 // Load a page into memory.
-
+{
     if( page != CurrPage ) {
         DumpCurrPage();
         SDSeek( PageFile, page, WFC_PAGE_SIZE );
@@ -211,42 +211,32 @@ static  void    NewPage( void ) {
     ObjPtr = ObjCode;
 }
 
-obj_ptr ObjTell( void ) {
-//=======================
-
+obj_ptr ObjTell( void )
+//=====================
 // Return pointer to next F-Code.
-
-    obj_ptr     curr_obj;
-
-    curr_obj = CurrPage;
-    return( _MakeVirtual( curr_obj, ObjPtr ) );
+{
+    return( _MakeVirtual( CurrPage, ObjPtr ) );
 }
 
 
-obj_ptr ObjSeek( obj_ptr new_obj ) {
-//==================================
-
+obj_ptr ObjSeek( obj_ptr new_obj )
+//================================
 // Seek to specifed location in F-Code stream.
-
+{
     obj_ptr     curr_obj;
 
-    curr_obj = CurrPage;
-    curr_obj = _MakeVirtual( curr_obj, ObjPtr );
+    curr_obj = _MakeVirtual( CurrPage, ObjPtr );
     LoadPage( _PageNumber( new_obj ) );
     ObjPtr = _PageOffset( new_obj );
     return( curr_obj );
 }
 
 
-unsigned_16     ObjOffset( obj_ptr prev_obj ) {
-//=============================================
-
+unsigned_16 ObjOffset( obj_ptr prev_obj )
+//=======================================
 // Return offset from ObjPtr to given pointer.
-
-    obj_ptr     curr_obj;
-
-    curr_obj = CurrPage;
-    return( _MakeVirtual( curr_obj, ObjPtr ) - prev_obj );
+{
+    return( _MakeVirtual( CurrPage, ObjPtr ) - prev_obj );
 }
 
 
@@ -528,8 +518,7 @@ obj_ptr FCodeSeek( obj_ptr new_obj ) {
 
     obj_ptr     curr_obj;
 
-    curr_obj = CurrPage;
-    curr_obj = _MakeVirtual( curr_obj, ObjPtr );
+    curr_obj = _MakeVirtual( CurrPage, ObjPtr );
     LoadPage( _PageNumber( new_obj ) );
     ObjPtr = _PageOffset( new_obj );
     return( curr_obj );
@@ -543,12 +532,10 @@ obj_ptr FCodeTell( int offset ) {
 
     obj_ptr     new_obj;
 
-    new_obj = CurrPage;
     if( ObjEnd - ObjPtr < offset ) {
-        new_obj = _MakeVirtual( new_obj + 1,
-                                 ObjCode + offset - ( ObjEnd - ObjPtr ) );
+        new_obj = _MakeVirtual( CurrPage + 1, ObjCode + offset - ( ObjEnd - ObjPtr ) );
     } else {
-        new_obj = _MakeVirtual( new_obj, ObjPtr + offset );
+        new_obj = _MakeVirtual( CurrPage, ObjPtr + offset );
     }
     return( new_obj );
 }

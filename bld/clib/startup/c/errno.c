@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,12 @@
 
 
 #include "variety.h"
-#if defined(__QNX__)
-#include <sys/magic.h>
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined(__QNX__)
+    #include <sys/magic.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rterrno.h"
 #include "thread.h"
@@ -41,13 +46,13 @@
 
 _WCRTLINK int (*__get_errno_ptr( void ))
 {
-#if defined(__386__)
+#if defined(_M_I86)
+    return( (int *)&__MAGIC.Errno );
+#else
     void        *err_ptr;
 
     __getmagicvar( &err_ptr, _m_errno_ptr );
     return( err_ptr );
-#else
-    return( (int *)&__MAGIC.Errno );
 #endif
 }
 

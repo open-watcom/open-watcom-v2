@@ -1,1 +1,20 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: initiali
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _INITIALIZER_LIST_INCLUDED
+#define _INITIALIZER_LIST_INCLUDED
 
+:include readonly.sp
+
+:include cpponly.sp
+
+:include nsstd.sp                                                                                  -
+:include nyi.sp                                                                                    -
+:include nsstdepi.sp
+
+#endif

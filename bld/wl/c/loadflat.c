@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -416,7 +417,7 @@ void FiniOS2FlatLoadFile( void )
     unsigned            last_page;
 
     memset( &exe_head, 0, sizeof( exe_head ) ); /* zero all header fields */
-    stub_len = Write_Stub_File( STUB_ALIGN );
+    stub_len = WriteStubFile( STUB_ALIGN );
     curr_loc  = sizeof(os2_flat_header);
     SeekLoad( stub_len + sizeof(os2_flat_header) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );

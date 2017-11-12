@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,10 @@ void    __LineFeedWithFormFeed( void ) {
 }
 
 
-int     FSetCC( a_file *io, char asa, const char **cc ) {
-//=======================================================
-
+int     FSetCC( b_file *io, char asa, const char **cc )
+//=====================================================
 // Output ASA carriage control character to a file.
-
+{
     uint        cc_len;
 
     cc_len = 0;

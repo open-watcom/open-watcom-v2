@@ -41,8 +41,8 @@ namespace std {
 
   // Handle attempt to put back off the begining of the get area.
 
-  int filebuf::pbackfail( int c ) {
-
+  int filebuf::pbackfail( int c )
+  {
     char *ptr;
     int  offset;
 
@@ -71,7 +71,7 @@ namespace std {
     } else {
         offset = -1;
     }
-    if( ::lseek( fd(), offset, ios::cur ) < 0 ) {
+    if( ::lseek( fd(), offset, SEEK_CUR ) == -1 ) {
         return( EOF );
     }
     return( c );

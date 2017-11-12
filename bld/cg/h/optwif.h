@@ -33,7 +33,7 @@
 
 #include "cgstd.h"
 #include "cgmem.h"
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "ocentry.h"
 #include "optlbl.h"

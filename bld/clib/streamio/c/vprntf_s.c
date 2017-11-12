@@ -35,13 +35,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <wchar.h>
-#include "farsupp.h"
-#include "printf.h"
 #include "fprtf_s.h"
 
 
-_WCRTLINK int __F_NAME(vprintf_s,vwprintf_s)( const CHAR_TYPE * __restrict format,
-                                                va_list arg )
+_WCRTLINK int __F_NAME(vprintf_s,vwprintf_s)( const CHAR_TYPE * __restrict format, va_list arg )
 {
     return( __F_NAME(__fprtf_s,__fwprtf_s)( stdout, format, arg ) );
 }

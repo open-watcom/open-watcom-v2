@@ -35,26 +35,18 @@
 #include <string.h>
 #include <malloc.h>
 #include <i86.h>
+#include "nw_lib.h"
 #include "rtstack.h"
 #include "liballoc.h"
 #include "exitwmsg.h"
 #include "thread.h"
 #include "cthread.h"
+#include "mthread.h"
 #include "snglthrd.h"
 #include "maxthrds.h"
 
 #define EXIT_THREAD     0
 
-extern void             *GetThreadID( void );
-extern long             OpenLocalSemaphore( long );
-extern int              CloseLocalSemaphore( long );
-extern long             ExamineLocalSemaphore( long );
-extern int              SignalLocalSemaphore( long );
-extern int              WaitOnLocalSemaphore( long );
-extern void             ExitThread( int , int );
-extern int              BeginThread( void (*)( void * ), void *, unsigned, void * );
-
-extern  void            **__ThreadIDs;
 
 static  int             CurrThrdID = 1;
 

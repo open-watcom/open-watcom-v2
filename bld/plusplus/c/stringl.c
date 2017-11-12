@@ -40,9 +40,8 @@
 #include "pcheader.h"
 #include "preproc.h"
 #include "carve.h"
-
-#define DEFINE_UNICODE
 #include "unicode.h"
+
 
 static STRING_CONSTANT  uniqueStrings;
 static STRING_CONSTANT  trashedStrings;

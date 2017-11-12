@@ -180,9 +180,7 @@ void intern mousespawnend( void )
 
 void uimousespeed( unsigned speed )
 {
-    if( (int)speed <= 0 ) {
-        speed = 1;
-    }
+    /* unused parameters */ (void)speed;
 }
 
 int UIAPI initmouse( int install )

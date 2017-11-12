@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 //
 // Target dependent data structures.
 //
+struct b_file;
 
 typedef char            *targ_addr;
 
@@ -40,5 +42,4 @@ typedef unsigned_32     obj_ptr;
 typedef unsigned_32     seg_offset;
 
 typedef int             file_attr;      // file attributes
-typedef void            *file_handle;   // file handle
-typedef void            *lib_handle;    // library handle
+typedef struct b_file   *file_handle;   // file handle

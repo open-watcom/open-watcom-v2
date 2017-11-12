@@ -124,19 +124,21 @@ static void deleteRank( FNOV_RANK *rank, unsigned n )
     }
 }
 
-static void initRankVector( FNOV_CONTROL control, FNOV_RANK *rv, int num_args )
-/***************************************************************************/
+static void initRankVector( FNOV_CONTROL control, FNOV_RANK *rv, unsigned num_args )
+/**********************************************************************************/
 // initialize vector of rank information
 {
-    int        i;
-    FNOV_RANK *rank;
+    unsigned    i;
+    FNOV_RANK   *rank;
 
-    if( num_args == 0 ) num_args = 1;
+    if( num_args == 0 )
+        num_args = 1;
     rank = rv;
     memset( rank, 0, sizeof( *rank ) * num_args );
-    for( i = num_args ; i > 0 ; i--, rank++ ) {
+    for( i = num_args ; i > 0 ; i-- ) {
         rank->rank = OV_RANK_INVALID;
         rank->control = control;
+        rank++;
     }
     // for member functions, don't check u-d conversion on this ptr
     if( control & FNC_MEMBER ) {
@@ -167,13 +169,13 @@ static void addRankVector( FNOV_LIST *candidate, FNOV_CONTROL control )
 
 static bool hasOneArg( arg_list *arg )
 {
-    if( arg->num_args > 0 && (arg->type_list[arg->num_args-1])->id  == TYP_DOT_DOT_DOT ) {
-        return (arg->num_args == 2 || arg->num_args == 1);
+    if( arg->num_args > 0 && (arg->type_list[arg->num_args - 1])->id == TYP_DOT_DOT_DOT ) {
+        return( arg->num_args == 2 || arg->num_args == 1 );
         // ellipsis args take up space in array, but we want to match
         // fns with one real arg plus ellipsis args as having one arg
         // also, fns with just ellipsis args can match as having one arg
     }
-    return (arg->num_args == 1);
+    return( arg->num_args == 1 );
 }
 
 static void udcRankCtor( FNOV_LIST *list, TYPE src, TYPE tgt,
@@ -437,12 +439,12 @@ SYMBOL FnovNextRejectEntry( FNOV_DIAG *fnov_diag )
     return getNextDiagnosticEntry( &fnov_diag->diag_reject );
 }
 
-int FnovRejectParm( FNOV_DIAG *fnov_diag )
-/****************************************/
+int FnovRejectParm( FNOV_DIAG *fnov_diag, unsigned *pidx )
+/********************************************************/
 {
     FNOV_RANK   *rank;
-    int         index;
-    int         num_args;
+    unsigned    i;
+    unsigned    num_args;
 
     if( ( fnov_diag != NULL ) && ( fnov_diag->diag_reject != NULL ) ) {
         rank = fnov_diag->diag_reject->rankvector;
@@ -450,10 +452,12 @@ int FnovRejectParm( FNOV_DIAG *fnov_diag )
         if( ( num_args == 0 ) || (rank->control & FNC_RANK_RETURN) ) {
             num_args = 1;
         }
-        for( index = 0; index < num_args ; index++, rank++ ) {
+        for( i = 0; i < num_args ; i++ ) {
             if( rank->rank >= OV_RANK_NO_MATCH ) {
-                return( index );
+                *pidx = i;
+                return( 0 );
             }
+            rank++;
         }
         if( fnov_diag->diag_reject->member != 0 ) {
             if( fnov_diag->diag_reject->thisrank.rank >= OV_RANK_NO_MATCH ) {
@@ -468,22 +472,22 @@ int FnovRejectParm( FNOV_DIAG *fnov_diag )
 // General Support
 //--------------------------------------------------------------------
 
-static bool isEllipsisCandidate( TYPE type, int num_args )
-/********************************************************/
+static bool isEllipsisCandidate( TYPE type, unsigned num_args )
+/*************************************************************/
 // determine if type is a candidate based on:
 //      type having more than zero arguments
 //      type having fewer or as many arguments as num_args+1 and
 //              last argument is ellipsis
 {
     TYPE        argtype;
-    int         type_num_args;
+    unsigned    type_num_args;
     arg_list    *alist;
 
     type = FunctionDeclarationType( type );
     if( type != NULL ) {
         alist = TypeArgList( type );
         type_num_args = alist->num_args;
-        if( type_num_args != 0 ) {
+        if( type_num_args > 0 ) {
             if( type_num_args <= num_args + 1 ) {
                 argtype = alist->type_list[type_num_args - 1];
                 if( argtype->id == TYP_DOT_DOT_DOT ) {
@@ -495,8 +499,8 @@ static bool isEllipsisCandidate( TYPE type, int num_args )
     return( false );
 }
 
-static bool isMemberCandidate( TYPE type, int num_args )
-/******************************************************/
+static bool isMemberCandidate( TYPE type, unsigned num_args )
+/***********************************************************/
 // determine if sym is a candidate based on the number of arguments
 // including a this pointer
 {
@@ -505,11 +509,10 @@ static bool isMemberCandidate( TYPE type, int num_args )
         arg_list *a_list = TypeArgList( type );
 
         if( ( a_list->num_args + 1 ) == num_args ) {
-            unsigned int i = 0;
+            unsigned int i;
 
             for( i = 0; i < a_list->num_args; i++ ) {
-                a_list->type_list[i] =
-                    BoundTemplateClass( a_list->type_list[i] );
+                a_list->type_list[i] = BoundTemplateClass( a_list->type_list[i] );
             }
 
             return( true );
@@ -519,8 +522,8 @@ static bool isMemberCandidate( TYPE type, int num_args )
 }
 
 
-static bool isSimpleCandidate( TYPE type, int num_args )
-/******************************************************/
+static bool isSimpleCandidate( TYPE type, unsigned num_args )
+/***********************************************************/
 // determine if sym is a candidate based on the number of arguments
 {
     type = FunctionDeclarationType( type );
@@ -528,7 +531,7 @@ static bool isSimpleCandidate( TYPE type, int num_args )
         arg_list *a_list = TypeArgList( type );
 
         if( a_list->num_args == num_args ) {
-            unsigned int i = 0;
+            unsigned int i;
 
             for( i = 0; i < a_list->num_args; i++ ) {
                 a_list->type_list[i] =
@@ -548,7 +551,7 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
     arg_list *mock_args = NULL;
     arg_list *func_args;
     TYPE sym_type = sym->sym_type;
-    int num_args = ( info->alist != NULL ) ? info->alist->num_args : 0;
+    unsigned num_args = ( info->alist != NULL ) ? info->alist->num_args : 0;
 
     if( (control & FNC_NO_DEALIAS) == 0 ) {
         sym = SymDeAlias( sym );
@@ -1109,7 +1112,7 @@ static OV_RESULT compareFunction(
 //       OV_CMP_BETTER_SECOND
 //       OV_CMP_SAME
 {
-    int         index;
+    unsigned    i;
     FNOV_RANK   *first_arg;
     FNOV_RANK   *second_arg;
     OV_RESULT   result;
@@ -1118,12 +1121,12 @@ static OV_RESULT compareFunction(
     TYPE        *second_type;
 
     retn = OV_CMP_UNDEFINED;
-    index = first->num_args;
     first_arg  = first->rankvector;
     second_arg = second->rankvector;
     first_type = first->alist->type_list;
     second_type = second->alist->type_list;
-    while( ( retn != OV_CMP_SAME ) && ( index != 0 ) ) {
+    i = first->num_args;
+    while( ( retn != OV_CMP_SAME ) && ( i > 0 ) ) {
         result = compareArgument( first_arg
                                 , first_type
                                 , second_arg
@@ -1151,7 +1154,7 @@ static OV_RESULT compareFunction(
             }
             break;
         }
-        index--;
+        i--;
         first_arg++;
         second_arg++;
         first_type++;
@@ -1192,16 +1195,16 @@ static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 // see if rank of entry is all <= level
 // if so, return true, else false
 {
-    int             index;
+    unsigned        i;
     FNOV_RANK       *rank;
     bool            retb;
 
     retb = true;
     rank = entry->rankvector;
-    index = entry->num_args;
-    while( retb && ( index != 0 ) ) {
+    i = entry->num_args;
+    while( retb && ( i > 0 ) ) {
         retb = ( rank->rank <= level );
-        index--;
+        i--;
         rank++;
     }
     if( retb ) {
@@ -1530,7 +1533,7 @@ static bool computeFunctionRank( FNOV_INFO* info )
 // fill in rankvector, ranking of conversion of arg_list to func arguments
 // if function is a candidate, return true, else false
 {
-    int         index;
+    unsigned    i;
     TYPE        *tgt;
     TYPE        *src;
     FNOV_RANK   *rank;
@@ -1538,15 +1541,14 @@ static bool computeFunctionRank( FNOV_INFO* info )
     PTREE       *ptlist;
     FNOV_LIST   *func;
 
-    index = info->alist->num_args;
     src   = info->alist->type_list;
     func  = info->candfunc;
     tgt   = func->alist->type_list;
     rank  = func->rankvector;
     ptlist = info->plist;
-    while( index != 0 ) {
-        if( ( rank->control & FNC_MEMBER )
-          && ( index == info->alist->num_args ) ) {
+    i = info->alist->num_args;
+    while( i > 0 ) {
+        if( ( rank->control & FNC_MEMBER ) && ( i == info->alist->num_args ) ) {
             // see 13.3.1 [over.match.funcs] (5):
             // even if the implicit object parameter is not
             // const-qualified, an rvalue temporary can be bound to
@@ -1576,7 +1578,7 @@ static bool computeFunctionRank( FNOV_INFO* info )
         if( rank->rank == OV_RANK_NO_MATCH ) {
             return( false );
         }
-        index--;
+        i--;
         tgt++;
         src++;
         if( ptlist != NULL )
@@ -1763,7 +1765,7 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
     FNOV_INFO   info;
     FNOV_LIST   *match;
     FNOV_RESULT result;
-    int         i;
+    unsigned    i;
 
     for( i = 0; i < alist->num_args; i++ ) {
         alist->type_list[i] = BindTemplateClass( alist->type_list[i],
@@ -1870,7 +1872,7 @@ static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *mem
     FNOV_LIST       *candidates = NULL;
     SYMBOL          sym;
     FNOV_INFO       info;
-    int             i;
+    unsigned        i;
 
     for( i = 0; i < alist->num_args; i++ ) {
         alist->type_list[i] = BindTemplateClass( alist->type_list[i],
@@ -2156,6 +2158,7 @@ SYMBOL ActualNonOverloadedFunc( // GET SYMBOL FOR ACTUAL NON-OVERLOADED FUNC.
     bool        done;
 
     retn = NULL;
+    udc_retn = NULL;
     isUDC = SymIsUDC( sym );
     if( isUDC ) {
         udc_retn = SymFuncReturnType( sym );

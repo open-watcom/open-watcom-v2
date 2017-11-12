@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "posdel.h"
 
 
-void    Scratchf( char *fn )
+void    Scratchf( const char *fn )
 // Erase a file.
 {
     if( unlink( fn ) != 0 ) {

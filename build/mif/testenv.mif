@@ -1136,10 +1136,11 @@ targ_lnk_os2axp = system ntaxp
 targ_lnk_lnxppc = system linuxppc
 targ_lnk_lnxmps = system linuxmips
 
+wpp_any = -fzh -fzs
 !ifndef noisy
 was_any = -zq
 wcc_any = -zq
-wpp_any = -zq
+wpp_any += -zq
 wcl_any = -zq
 wfc_any = -Quiet
 lnk_any = option noundefsok, map, quiet
@@ -1336,5 +1337,5 @@ echo_clean : .PROCEDURE .EXPLICIT
 !endif
 
 common_clean : .PROCEDURE .EXPLICIT
-    -$(noecho)rm -f *.?bj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst
+    -$(noecho)rm -f *.obj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst
     -$(noecho)rm -f *.tmp *.lbc *.gdf *.dll *.pdb *.pch *.lib *.res *.exe

@@ -543,7 +543,7 @@ void CPPLIB( dtor_free_exc )    // DESTRUCT AND FREE EXCEPTION
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
     , THROW_RO* throw_ro        // - throw r/o block
-    , rboolean is_zero          // - true ==> thrown object is zero constant
+    , bool is_zero              // - true ==> thrown object is zero constant
     , _RTCTL* rt_ctl            // - R/T control
     , void* object              // - thrown object
     , FsExcRec* rec )           // - exception record
@@ -604,19 +604,19 @@ RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
 ;
 
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
     void )
 ;

@@ -618,11 +618,11 @@ static void typeUsage           // TYPE USAGE
                 brinfIcReference( IC_BR_REF_TYPE, type->u.mp.host, locn );
                 continue;
               case TYP_FUNCTION :
-              { arg_list* args = type->u.f.args;
-                int count = args->num_args;
-                for( ; count > 0; ) {
-                    -- count;
-                    typeUsage( args->type_list[count], locn );
+              {
+                arg_list *args = type->u.f.args;
+                unsigned i = args->num_args;
+                while( i-- > 0 ) {
+                    typeUsage( args->type_list[i], locn );
                 }
               }
               // drops thru
@@ -678,8 +678,8 @@ static long brinfLSeek          // LSEEK CALLBACK FUNCTION
     , long offset               // - seek offset
     , int whence )              // - seek direction, see b_write.h
 {
-    fseek((FILE *)cookie), offset, whence);
-    return ftell(fp);
+    fseek( (FILE *)cookie, offset, whence );
+    return( ftell( (FILE *)cookie ) );
 }
 
 

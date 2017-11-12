@@ -172,7 +172,7 @@ static void CaseHandler( void )
     }
     multi_case = false;
     ReqOpenParen();
-    for(;;) {
+    for( ;; ) {
         if( _IsTypeLogical( CSHead->cs_info.cases->sel_type ) ) {
             // no range allowed for LOGICAL select expressions
             case_ok = ConstExpr( CSHead->cs_info.cases->sel_type );

@@ -32,7 +32,6 @@
 
 #include "cvars.h"
 #include <stddef.h>
-#include "cgstd.h"
 
 
 MEPTR CreateMEntry( const char *name, size_t len )

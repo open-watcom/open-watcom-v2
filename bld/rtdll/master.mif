@@ -28,6 +28,7 @@ host_os=$(rtdll_host_os_$(system))
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
+!include libsubdi.mif
 
 !include $(rtdll_dir)/dllname.mif
 

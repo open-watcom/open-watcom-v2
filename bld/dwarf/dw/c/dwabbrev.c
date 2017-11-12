@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include "dwpriv.h"
+#include "dwcliuti.h"
 #include "dwutils.h"
 #include "dwabbrev.h"
 #include "dwdecl.h"
@@ -58,8 +60,6 @@ static const struct {
     { AB_VTABLE_LOC,            { DW_AT_vtable_elem_location, DW_FORM_block1 } }
 };
 
-
-static const uint_8 zeros[] = { 0, 0 };
 
 /*
     Read the comments in dwmakeab.c for more information on the
@@ -90,9 +90,6 @@ static uint mapFromWToX( abbrev_code abbrev )
 
 unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 {
-    static const uint_8         sibling_attr[] = {
-        DW_AT_sibling,          DW_FORM_ref4
-    };
     uint                        index;
     uint                        code;
     uint_8                      bit;
@@ -128,12 +125,13 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 
     /* emit the child byte */
     if( *abbrev & AB_SIBLING ) {
-        buf[0] = DW_CHILDREN_yes;
-        CLIWrite( cli, DW_DEBUG_ABBREV, buf, 1 );
+        static const uint_8 sibling_attr[] = {
+            DW_CHILDREN_yes,
+            DW_AT_sibling,          DW_FORM_ref4
+        };
         CLIWrite( cli, DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     } else {
-        buf[0] = DW_CHILDREN_no;
-        CLIWrite( cli, DW_DEBUG_ABBREV, buf, 1 );
+        CLIWriteU8( cli, DW_DEBUG_ABBREV, DW_CHILDREN_no );
     }
 
     /* AT_decl_file and AT_decl_line must occur here */
@@ -147,9 +145,9 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     }
 
     /* now emit the extra attributes */
-    for( i = 0; i < sizeof(bitEncodings) / sizeof(bitEncodings[0]); ++i ) {
+    for( i = 0; i < sizeof( bitEncodings ) / sizeof( bitEncodings[0] ); ++i ) {
         if( *abbrev & bitEncodings[i].bit ) {
-            CLIWrite( cli, DW_DEBUG_ABBREV, bitEncodings[i].data, 2 );
+            CLIWrite( cli, DW_DEBUG_ABBREV, bitEncodings[i].data, sizeof( bitEncodings[0].data ) );
         }
     }
 
@@ -164,9 +162,10 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     /* now do the AB_SUBR_DECLARATION kludge */
     if( data->valid_mask & AB_SUBR_DECLARATION ) {
         if( *abbrev & AB_SUBR_DECLARATION ) {
-            buf[0] = DW_AT_declaration;
-            buf[1] = DW_FORM_flag;
-            CLIWrite( cli, DW_DEBUG_ABBREV, buf, 2 );
+            static const uint_8 subr_attrs[] = {
+                DW_AT_declaration, DW_FORM_flag
+            };
+            CLIWrite( cli, DW_DEBUG_ABBREV, subr_attrs, sizeof( subr_attrs ) );
         } else {
             static const uint_8 subr_attrs[] = {
                 DW_AT_return_addr,      DW_FORM_block1,
@@ -183,7 +182,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     }
 
     /* and the zero terminators */
-    CLIWrite( cli, DW_DEBUG_ABBREV, zeros, 2 );
+    CLISectionWriteZeros( cli, DW_DEBUG_ABBREV, 2 );
     return( code );
 }
 
@@ -196,7 +195,8 @@ void InitDebugAbbrev( dw_client cli )
 
 void FiniDebugAbbrev( dw_client cli )
 {
-    CLIWrite( cli, DW_DEBUG_ABBREV, zeros, 1 );
+    /* the zero terminator */
+    CLISectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
 }
 
 void  GenAllAbbrev( dw_client  cli )

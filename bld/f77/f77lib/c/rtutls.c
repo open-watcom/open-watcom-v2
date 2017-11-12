@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
 #include "units.h"
 #include "rundat.h"
 #include "errcod.h"
@@ -42,6 +41,9 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
+#include "fdutil.h"
+#include "fstdio.h"
+#include "stracc.h"
 
 #include <string.h>
 
@@ -49,17 +51,14 @@
 static ftnfile *SearchFtnFile( int unit ) {
 //=========================================
 
-    ftnfile     *ffile;
+    ftnfile     *fcb;
 
-    ffile = Files;
-    for(;;) {
-        if( ffile == NULL ) break;
-        if( unit == ffile->unitid ) {
-            return( ffile );
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
+        if( unit == fcb->unitid ) {
+            break;
         }
-        ffile = ffile->link;
     }
-    return( NULL );
+    return( fcb );
 }
 
 

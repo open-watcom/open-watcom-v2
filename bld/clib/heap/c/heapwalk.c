@@ -114,7 +114,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
             if( frl_next <= frl )
                 return( _HEAPBADNODE );
             frl = frl_next;
-            if( HEAP( seg )->heaplen != 0 && frl->len > HEAP( seg )->heaplen ) {
+            if( HEAP( seg )->heaplen != 0 && (tag)frl > HEAP( seg )->heaplen ) {
                 return( _HEAPBADNODE );
             }
         }

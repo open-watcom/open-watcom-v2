@@ -49,37 +49,51 @@
 
 #define MAX_SECS    255
 
-bool    byte_swap = false;
-
-struct section_data Sections[DR_DEBUG_NUM_SECTS];
-
 typedef struct _dump_options {
     int         sections;
 } dump_options;
 
-static dump_options dump = { 0 };
+typedef struct buff_entry {
+    struct buff_entry   *next;
+    char                buff[1];
+} buff_entry, *buff_list;
 
-typedef struct buff_entry   *buff_list;
-struct buff_entry {
-    buff_list   next;
-    char        buff[1];
+static dw_out_offset   sectsizes[DR_DEBUG_NUM_SECTS];
+unsigned_8      *sections[DR_DEBUG_NUM_SECTS];
+
+bool            byte_swap = false;
+
+static const char *secNames[] = {
+    ".debug_info",
+    ".debug_abbrev",
+    ".debug_line",
+    ".debug_macinfo",
+    ".WATCOM_references",
+    ".debug_str",
+    ".debug_aranges"
 };
+
+struct section_data Sections[DR_DEBUG_NUM_SECTS];
+
+static dump_options dump = { 0 };
 
 static buff_list    buffList = NULL;
 
-static int sectionFound = 0;
+static int          sectionFound = 0;
 
-orl_return DoSection( orl_sec_handle o_shnd )
+static orl_return DoSection( orl_sec_handle o_shnd )
 /*******************************************/
 {
     return( ORL_OKAY );
 }
 
+#if 0
 orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
 /*************************************************/
 {
     return( ORL_OKAY );
 }
+#endif
 
 static void *objRead( orl_file_id fid, size_t len )
 /*************************************************/
@@ -102,7 +116,7 @@ static long objSeek( orl_file_id fid, long pos, int where )
     return( lseek( ORL_FID2PH( fid ), pos, where ) );
 }
 
-void freeBuffList( void )
+static void freeBuffList( void )
 /***********************/
 {
     buff_list   next;
@@ -114,56 +128,43 @@ void freeBuffList( void )
     }
 }
 
-char *secNames[] = {
-    ".debug_info",
-    ".debug_abbrev",
-    ".debug_line",
-    ".debug_macinfo",
-    ".WATCOM_references",
-    ".debug_str",
-    ".debug_aranges"
-};
-
-unsigned long   sectsizes[DR_DEBUG_NUM_SECTS];
-unsigned_8      *sections[DR_DEBUG_NUM_SECTS];
-
-orl_return ReadDbgInfoSec( orl_sec_handle o_shnd )
-/************************************************/
+static orl_return ReadDbgInfoSec( orl_sec_handle o_shnd )
+/*******************************************************/
 {
     sectsizes[DW_DEBUG_INFO] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_INFO] ));
 }
 
-orl_return ReadAbbrevSec( orl_sec_handle o_shnd )
-/***********************************************/
+static orl_return ReadAbbrevSec( orl_sec_handle o_shnd )
+/******************************************************/
 {
     sectsizes[DW_DEBUG_ABBREV] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_ABBREV] ));
 }
 
-orl_return ReadLineSec( orl_sec_handle o_shnd )
-/*********************************************/
+static orl_return ReadLineSec( orl_sec_handle o_shnd )
+/****************************************************/
 {
     sectsizes[DW_DEBUG_LINE] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_LINE] ));
 }
 
-orl_return ReadMacinfoSec( orl_sec_handle o_shnd )
-/************************************************/
+static orl_return ReadMacinfoSec( orl_sec_handle o_shnd )
+/*******************************************************/
 {
     sectsizes[DW_DEBUG_MACINFO] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_MACINFO] ));
 }
 
-orl_return ReadRefSec( orl_sec_handle o_shnd )
-/********************************************/
+static orl_return ReadRefSec( orl_sec_handle o_shnd )
+/***************************************************/
 {
     sectsizes[DW_DEBUG_REF] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_REF] ));
 }
 
-orl_return ReadStrSec( orl_sec_handle o_shnd )
-/********************************************/
+static orl_return ReadStrSec( orl_sec_handle o_shnd )
+/***************************************************/
 {
     sectsizes[DW_DEBUG_STR] = ORLSecGetSize( o_shnd );
     if( sectsizes[DW_DEBUG_STR] == 0 )
@@ -172,8 +173,8 @@ orl_return ReadStrSec( orl_sec_handle o_shnd )
         return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_STR] ));
 }
 
-orl_return ReadARSec( orl_sec_handle o_shnd )
-/*******************************************/
+static orl_return ReadARSec( orl_sec_handle o_shnd )
+/**************************************************/
 {
     sectsizes[DW_DEBUG_ARANGES] = ORLSecGetSize( o_shnd );
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_ARANGES] ));

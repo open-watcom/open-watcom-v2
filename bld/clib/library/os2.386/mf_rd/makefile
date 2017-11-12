@@ -5,7 +5,6 @@ convention = register
 model      = mf
 system     = os2
 linkage    = dynamic
-subdir     = mf_rd
 
 clib_release = 0
 

@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
-*    Portions Copyright (c) 2015 Open Watcom contributors.
-*    All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,6 +34,11 @@
 #include "variety.h"
 #include <mbstring.h>
 #include <stdio.h>
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "farfunc.h"
 #include "rtdata.h"
 #ifdef __FARFUNC__

@@ -115,7 +115,7 @@ void BrinfMacroRelease          // RELEASE BROWSE MACRO-ING WHEN NO BROWSING
 }
 
 
-INITDEFN (browse_macros, brinfMacInit, brinfMacFini );
+INITDEFN( browse_macros, brinfMacInit, brinfMacFini );
 
 
 static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES

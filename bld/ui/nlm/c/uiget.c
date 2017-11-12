@@ -34,6 +34,7 @@
 #include <process.h>
 #include "uidef.h"
 #include "uiforce.h"
+#include "nw_clib.h"
 
 
 // be very careful about setting this true

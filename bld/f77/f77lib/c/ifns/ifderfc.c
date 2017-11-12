@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,21 +39,7 @@
 
 #include "ftnstd.h"
 #include "ifenv.h"
-
-extern const struct {
-    double p[5];
-    double q[4];
-    double p1[9];
-    double q1[8];
-    double p2[6];
-    double q2[5];
-    double xmin;
-    double xlarge;
-    double xbig;
-    double sqrpi;
-    double pt477;
-    double _4pt0;
-} __FAR __derfdat;      // defined in ifderfdt.c
+#include "ifderfdt.h"
 
 
 double  DERFC( double arg ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,12 @@
 #include "variety.h"
 #include <io.h>
 #include <dos.h>
+#include <wos2.h>
 #include "rterrno.h"
 #include "iomode.h"
 #include "seterrno.h"
 #include "thread.h"
+
 
 _WCRTLINK int _commit( int handle )
 {

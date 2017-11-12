@@ -1,6 +1,6 @@
-__cifx__ =$(system).386/$(subdir)
-__mifx__ =$(system).386/$(subdir).wdl
-__pifx__ =$(system).386/mf_$(dllname_$(convention))mt
+__cifx__ =$(system).386/$(libsubdir)
+__mifx__ =$(system).386/$(libsubdir).wdl
+__pifx__ =$(system).386/mf_$(dllname_$(convention))mt$(dllname_debug)
 
 !ifdef profile
 dll_libs = $+ &

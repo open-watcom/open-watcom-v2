@@ -43,7 +43,6 @@
 #include "lex.h"
 #include "scangbl.h"
 #include "token.h"
-#include "ftnio.h"
 #include "cioconst.h"
 #include "fmtdef.h"
 

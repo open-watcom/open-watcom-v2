@@ -36,6 +36,8 @@
 #include <string.h>
 #include <process.h>
 #include <io.h>
+#include "nw_lib.h"
+#include "nwlibmem.h"
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
@@ -55,59 +57,6 @@
 
 #define MAX_CMDLINE     500
 
-#if defined (_THIN_LIB)
-    extern int      __init_environment(
-        void *  reserved
-        );
-    extern int     __deinit_environment(
-        void *  reserved
-        );
-    extern void * GetNLMHandle(
-        void
-        );
-#endif
-
-extern int                  main( int argc, char **argv );
-
-extern void                 ExitThread( int,int );
-extern void                 __Must_Have_Three_One_Or_Greater( void );
-extern int                  _TerminateNLM( void *, void *, int );
-extern int                  _SetupArgv( int (*)( int, char ** ) );
-extern long                 _StartNLM( void *, void *, unsigned char *,
-                                       unsigned char *, long, long,
-                                       long __cdecl (*)(), long, long, void **,
-                                       int (*)() );
-static void                 InitStackLow( void );
-
-extern int                  _edata;
-extern int                  _end;
-#if !defined(_THIN_LIB)
-int                         __ReturnCode = 5; /* TERM_BY_UNLOAD */
-int                         _argc;
-char                        **_argv;
-
-static void                 *NCSp;
-#endif
-static unsigned short       _saved_DS;
-#if !defined(_THIN_LIB)
-static char                 CommandLine[ MAX_CMDLINE ];
-#endif
-static int                  InitFiniLevel = 0;
-
-#define AllocSignature      0x54524C41
-
-long AllocRTag;
-
-extern void *Alloc( long __numberOfBytes, long __resourceTag );
-extern long SizeOfAllocBlock( void* );
-
-extern void Free( void *__address );
-
-
-extern long AllocateResourceTag( void *__NLMHandle,
-                                 char *__descriptionString,
-                                 long  __resourceType );
-
 #if !defined(_THIN_LIB)
 extern unsigned __SP( void );
 #pragma aux __SP =      \
@@ -119,6 +68,42 @@ extern unsigned short __DS( void );
 #pragma aux __DS =      \
     "mov ax, ds"        \
     value [ ax ];
+
+#if defined (_THIN_LIB)
+    extern int      __init_environment( void *reserved );
+    extern int      __deinit_environment( void *reserved );
+    extern void     *GetNLMHandle( void );
+#endif
+
+extern int                  main( int argc, char **argv );
+
+extern void                 __Must_Have_Three_One_Or_Greater( void );
+extern int                  _TerminateNLM( void *, void *, int );
+extern int                  _SetupArgv( int (*)( int, char ** ) );
+extern long                 _StartNLM( void *, void *, unsigned char *,
+                                       unsigned char *, long, long,
+                                       long __cdecl (*)(), long, long, void **,
+                                       int (*)() );
+
+extern int                  _edata;
+extern int                  _end;
+
+#if !defined(_THIN_LIB)
+int                         __ReturnCode = 5; /* TERM_BY_UNLOAD */
+int                         _argc;
+char                        **_argv;
+#endif
+
+long AllocRTag;
+
+static void                 InitStackLow( void );
+
+#if !defined(_THIN_LIB)
+static void                 *NCSp;
+static char                 CommandLine[ MAX_CMDLINE ];
+#endif
+static unsigned short       _saved_DS;
+static int                  InitFiniLevel = 0;
 
 static void __NullSema4Rtn(semaphore_object *p) { p = p; }
 
@@ -151,7 +136,7 @@ static void __FiniMultipleThread(void)
 } /* FiniMultipleThread() */
 
 
-void *_NW_calloc( size_t num,size_t size )
+void *_NW_calloc( size_t num, size_t size )
 {
     void *ptr;
     long to_alloc;
@@ -237,12 +222,9 @@ int __init_environment(void *  reserved)
         "OpenWATCOM CLIB Memory",
         AllocSignature );
 
-    if( __InitThreadProcessing() == NULL )
-    {
+    if( __InitThreadProcessing() == NULL ) {
         retcode = -1;
-    }
-    else
-    {
+    } else {
         __InitRtns( INIT_PRIORITY_THREAD );
         InitFiniLevel = INIT_PRIORITY_THREAD;
         __InitMultipleThread();

@@ -20,7 +20,6 @@
 !inject getopt.obj   d16 d32             nt nta ntp                 o16 o32         w16 w32 osi l32 lpc lmp rdu
 !inject hostwin.obj                      nt                                         w16 w32
 !inject ignorhnd.obj d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
-!inject kernel.obj                                                          q16 q32
 !inject lfntosfn.obj d16 d32
 !inject locale.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject localeco.obj d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu

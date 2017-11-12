@@ -50,15 +50,20 @@
 #include "cmain.h"
 #include "cinit.h"
 #include "rtdata.h"
+#include "fltsupp.h"
 
+
+#if defined( _M_I86 )
+#define __FAR __far
+#else
+#define __FAR
+#endif
 
 extern int main( int, char **, char ** );
 #if defined( _M_I86 )
 #pragma aux main modify [sp];
-#define __FAR __far
 #else
 #pragma aux main modify [esp];
-#define __FAR
 #endif
 
 void    __near *_endheap;                   /* temporary work-around */
@@ -212,9 +217,11 @@ static char __far *CALLBACK _s_getenv( const char __far *p )
 }
 
 static char __far *CALLBACK _s_EFG_printf(
-    char __far *buffer, char __far * __far *args, void __far *specs )
+    char __far      *buffer,
+    char __far *    __far *args,
+    void __far      *specs )
 {
-    return( (*__EFG_printf)( (char *)buffer, (char **)args, (void *)specs ) );
+    return( (*__EFG_printf)( (char *)buffer, (struct my_va_list *)args, (void *)specs ) );
 }
 
 static void setup_slib()
@@ -271,9 +278,12 @@ void _CMain( free, n, cmd, stk_bot, pid )
 #else
 
 #pragma aux _s_EFG_printf __far parm [eax] [edx] [ebx]
-static char *_s_EFG_printf( char *buffer, char **args, void *specs )
+static char *_s_EFG_printf(
+    char    *buffer,
+    char    **args,
+    void    *specs )
 {
-    return (*__EFG_printf)( buffer, args, specs );
+    return (*__EFG_printf)( buffer, (struct my_va_list *)args, specs );
 }
 
 extern unsigned short   _cs(void);

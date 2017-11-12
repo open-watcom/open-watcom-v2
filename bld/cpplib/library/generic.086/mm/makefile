@@ -3,6 +3,5 @@ processor  = 086
 system     = generic
 model      = mm
 linkage    = static
-subdir     = mm
 
 !include $(cpplib_dir)/mrglib.mif

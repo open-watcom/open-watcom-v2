@@ -38,6 +38,8 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 #include "rtdata.h"
+#include "rterrno.h"
+#include "owqnx.h"
 
 
 /*
@@ -66,7 +68,7 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     } else if( func == SIG_HOLD ) {
         act.sa_handler = __FAR_SIG_HOLD;
     } else {
-        act.sa_handler = func;
+        act.sa_handler = (void (__far *)(int))func;
     }
 #else
     act.sa_handler = func;
@@ -75,8 +77,12 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     act.sa_flags = 0;
 
     if( sigaction(sig, &act, &act) )
-        return SIG_ERR;
+        return( SIG_ERR );
+#if defined( __SMALL_CODE__ )
     return( (void (*)(int))act.sa_handler );
+#else
+    return( act.sa_handler );
+#endif
 }
 
 static void __sigabort( void )
@@ -84,12 +90,11 @@ static void __sigabort( void )
     raise( SIGABRT );
 }
 
-_WCRTLINK int sigaction(sig, act, oact)
-int sig;
-register const struct sigaction *act;
-register struct sigaction *oact;
+_WCRTLINK int sigaction(
+    int                             sig,
+    register const struct sigaction *act,
+    register struct sigaction       *oact )
 {
-    extern void __sigstub();
     static int  first = 1;
     union {
         struct _proc_signal         s;
@@ -100,7 +105,7 @@ register struct sigaction *oact;
      * Tell the process manager the address of our signal table.
      */
     if( first ) {
-        _SignalTable.stub = &__sigstub;
+        _SignalTable.stub = (void (__far *)())&__sigstub;
         msg.s.type = _PROC_SIGNAL;
         msg.s.subtype = _SIGTABLE;
         msg.s.segment = FP_SEG( &_SignalTable );
@@ -112,7 +117,7 @@ register struct sigaction *oact;
         _RWD_abort = __sigabort;           /* change the abort rtn address */
     }
 
-    if( (sig < _SIGMIN)  ||  (sig > _SIGMAX) ) {
+    if( (sig < _SIGMIN) || (sig > _SIGMAX) ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }

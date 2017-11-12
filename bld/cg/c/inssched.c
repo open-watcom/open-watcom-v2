@@ -720,8 +720,8 @@ extern int StallCost( instruction *ins, instruction *top )
 }
 
 
-static int ScaleAdjust( name *op, hw_reg_set reg )
-/*************************************************
+static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
+/************************************************************************
     Figure out if we have to adjust this operand, and what the
     scale factor is.
 */
@@ -729,21 +729,16 @@ static int ScaleAdjust( name *op, hw_reg_set reg )
     hw_reg_set  idx_reg;
 
     if( op->n.class != N_INDEXED )
-        return( -1 );
+        return( false );
     idx_reg = op->i.index->r.reg;
     if( !HW_Ovlap( idx_reg, reg ) )
-        return( -1 );
-    if( op->i.index_flags & X_HIGH_BASE ) {
-        if( HW_Ovlap( HighReg( idx_reg ), reg ) ) {
-            return( 0 );
-        }
+        return( false );
+    *scale_adj = op->i.scale;
+    if( (op->i.index_flags & X_HIGH_BASE) && HW_Ovlap( HighReg( idx_reg ), reg )
+        || (op->i.index_flags & X_LOW_BASE) && HW_Ovlap( LowReg( idx_reg ), reg ) ) {
+        *scale_adj = 0;
     }
-    if( op->i.index_flags & X_LOW_BASE ) {
-        if( HW_Ovlap( LowReg( idx_reg ), reg ) ) {
-            return( 0 );
-        }
-    }
-    return( op->i.scale );
+    return( true );
 }
 
 
@@ -766,9 +761,9 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     type_length bias;
     hw_reg_set  reg;
     opcnt       i;
-    int         scale;
+    scale_typ   scale_adj;
 
-    bias = adj->operands[1]->c.lo.int_value;
+    bias = (type_length)adj->operands[1]->c.lo.int_value;
     if( adj->head.opcode == OP_SUB )
         bias = -bias;
     if( forward )
@@ -799,20 +794,18 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         }
         for( i = chk->num_operands; i-- > 0; ) {
             op = chk->operands[i];
-            scale = ScaleAdjust( op, reg );
-            if( scale >= 0 ) {
+            if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->operands[i] = ScaleIndex( op->i.index, op->i.base,
-                              op->i.constant + (bias << scale),
+                              op->i.constant + (bias << scale_adj),
                               op->n.name_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }
         }
         op = chk->result;
         if( op != NULL ) {
-            scale = ScaleAdjust( op, reg );
-            if( scale >= 0 ) {
+            if( ScaleAdjust( op, reg, &scale_adj ) ) {
                 chk->result = ScaleIndex( op->i.index, op->i.base,
-                              op->i.constant + (bias << scale),
+                              op->i.constant + (bias << scale_adj),
                               op->n.name_class, op->n.size,
                               op->i.scale, op->i.index_flags );
             }

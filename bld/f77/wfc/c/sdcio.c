@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 #include "global.h"
 #include "fio.h"
 #include "posio.h"
-#include "ftextfun.h"
 #include "blips.h"
 #include "posopen.h"
 #include "posget.h"
@@ -45,11 +45,10 @@
 #include "poserr.h"
 #include "sdcio.h"
 #include "posdel.h"
+#include "posdat.h"
 
 #include <string.h>
 
-
-extern  file_handle             FStdOut;
 
 static  int             Modes[] = { RDONLY,
                                     WRONLY,
@@ -57,20 +56,6 @@ static  int             Modes[] = { RDONLY,
                                     RDWR };
 
 static  file_attr       CurrAttrs = { REC_TEXT };
-
-file_attr       DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-file_attr       ErrAttr = { REC_TEXT };
-char            LstExtn[] = { "lst" };
-char            ErrExtn[] = { "err" };
-char            ForExtn[] = { "for" };
-char            BrowseExtn[] = { "mbr" };
-#if defined( __UNIX__ )
-  char          ObjExtn[] = { "o" };
-#else
-  char          ObjExtn[] = { "obj" };
-#endif
 
 
 void    SDInitIO(void) {
@@ -95,37 +80,37 @@ void    SDSetAttr( file_attr attr ) {
 }
 
 
-void    SDScratch( char *name ) {
-//===============================
-
+void    SDScratch( const char *name )
+//===================================
+{
     Scratchf( name );
 }
 
 
-file_handle     SDOpen( char *name, int mode ) {
+file_handle SDOpen( const char *name, int mode )
 //==============================================
-
+{
     return( Openf( name, Modes[ mode ] | CurrAttrs ) );
 }
 
 
-void    SDClose( file_handle fp ) {
-//=================================
-
+void    SDClose( file_handle fp )
+//===============================
+{
     Closef( fp );
 }
 
 
-uint    SDRead( file_handle fp, void *buff, uint len ) {
-//======================================================
-
+size_t    SDRead( file_handle fp, void *buff, size_t len )
+//========================================================
+{
     return( FGetRec( fp, buff, len ) );
 }
 
 
-void    SDWrite( file_handle fp, const void *buff, int len ) {
-//======================================================
-
+void    SDWrite( file_handle fp, const void *buff, size_t len )
+//=============================================================
+{
     if( fp == FStdOut ) {
         CheckBlips();
     }
@@ -133,30 +118,30 @@ void    SDWrite( file_handle fp, const void *buff, int len ) {
 }
 
 
-void    SDSeek( file_handle fp, int rec_num, int rec_size ) {
-//===========================================================
-
+void    SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size )
+//===================================================================
+{
     FSeekRec( fp, rec_num, rec_size );
 }
 
 
-void    SDRewind( file_handle fp ) {
-//==================================
-
+void    SDRewind( file_handle fp )
+//================================
+{
     FRewind( fp );
 }
 
 
-bool    SDEof( file_handle fp ) {
-//===============================
-
+bool    SDEof( file_handle fp )
+//=============================
+{
     return( EOFile( fp ) );
 }
 
 
-bool    SDError( file_handle fp, char *buff ) {
-//=============================================
-
+bool    SDError( file_handle fp, char *buff )
+//===========================================
+{
     int         err;
 
     err = Errorf( fp );

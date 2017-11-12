@@ -100,7 +100,7 @@ test.lnk : makefile
     @%append $^@ LIBPATH ../nt386u.dll
 
 save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+    @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav
 
 global : .symbolic
     @%make common_clean

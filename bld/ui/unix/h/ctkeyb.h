@@ -29,42 +29,9 @@
 ****************************************************************************/
 
 
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <assert.h>
-#include <ctype.h>
-#include "uidef.h"
-#include "uishift.h"
-#include "uivirt.h"
-#include "unxuiext.h"
-#include "qdebug.h"
-#include "trie.h"
-#include "tixparse.h"
-
-extern unsigned short   ct_shift_state;
-
 extern void         clear_shift( void );
 extern int          nextc( int n );
-extern void         nextc_unget( unsigned char *, int );
+extern void         nextc_unget( char *, size_t );
 extern EVENT        ck_keyboardevent( void );
 extern EVENT        tk_keyboardevent( void );
-extern EVENT        td_event( void );
 extern void         tm_saveevent( void );
-
-extern int          ck_init( void );
-extern int          ck_fini( void );
-extern void         ck_arm( void );
-extern int          ck_save( void );
-extern int          ck_restore( void );
-extern int          ck_flush( void );
-extern int          ck_stop( void );
-extern int          ck_shift_state( void );
-extern int          ck_unevent( EVENT ev );
-extern bool         init_interminfo( void );
-extern int          init_trie( void );
-extern int          kb_wait( int secs, int usecs );

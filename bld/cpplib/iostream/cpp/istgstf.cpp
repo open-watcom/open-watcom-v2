@@ -65,7 +65,7 @@ namespace std {
             }
             break;
         }
-        if( c == (int)(unsigned char)delim ) {
+        if( c == __char_to_int( delim ) ) {
             break;
         }
         ++offset;

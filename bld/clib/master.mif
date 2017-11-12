@@ -27,5 +27,9 @@ clib_host_os_linux      =linux
 host_os=$(clib_host_os_$(system))
 
 !include cproj.mif
+!include libsubdi.mif
 
 !include $(clib_dir)/flags.mif
+!include $(clib_dir)/include.mif
+!include $(clib_dir)/librules.mif
+!include $(clib_dir)/lib.mif

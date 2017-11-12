@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,21 +39,7 @@
 
 #include "ftnstd.h"
 #include "ifenv.h"
-
-extern const struct {
-    extended p[5];
-    extended q[4];
-    extended p1[9];
-    extended q1[8];
-    extended p2[6];
-    extended q2[5];
-    extended xmin;
-    extended xlarge;
-    extended xbig;
-    extended sqrpi;
-    extended pt477;
-    extended _4pt0;
-} __FAR __qerfdat;      // defined in ifderfdt.c
+#include "ifqerfdt.h"
 
 
 extended  QERFC( extended arg ) {

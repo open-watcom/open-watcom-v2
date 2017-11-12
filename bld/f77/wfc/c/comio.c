@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +45,12 @@
 #include "charset.h"
 #include "fmacros.h"
 #include "option.h"
+#include "boot77.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-
-extern  char    *SkipBlanks( char * );
 
 static void Comment( void )
 {
@@ -212,7 +212,7 @@ void ProcInclude( void )
     SrcRecNum = old_srcrecnum;
 }
 
-static void PrintLineInfo( char *buffer )
+static void PrintLineInfo( const char *buffer )
 {
     PrtLst( buffer );
     if( CurrFile->link == NULL ) {

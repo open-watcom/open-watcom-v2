@@ -69,18 +69,18 @@ extern char *dep_path;    /* Current sufsuf dependent path */
  * $<
  * as well as modifiers D,B,F,R
  */
-#define sismsspecial(__c)     ((__c) == '@'\
-                            || (__c) == '*'\
-                            || (__c) == '?'\
-                            || (__c) == '<')
-#define sismsmodifier(__c)    ((__c) == 'D'\
-                            || (__c) == 'd'\
-                            || (__c) == 'B'\
-                            || (__c) == 'b'\
-                            || (__c) == 'F'\
-                            || (__c) == 'f'\
-                            || (__c) == 'R'\
-                            || (__c) == 'r' )
+#define sismsspecial(__s)     ((__s) == '@'\
+                            || (__s) == '*'\
+                            || (__s) == '?'\
+                            || (__s) == '<')
+#define sismsmodifier(__s)    ((__s) == 'D'\
+                            || (__s) == 'd'\
+                            || (__s) == 'B'\
+                            || (__s) == 'b'\
+                            || (__s) == 'F'\
+                            || (__s) == 'f'\
+                            || (__s) == 'R'\
+                            || (__s) == 'r' )
 
 #define cismsspecial(__c)   sismsspecial((byte)(__c))
 #define cismsmodifier(__c)  sismsmodifier((byte)(__c))

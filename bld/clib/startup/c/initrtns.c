@@ -67,13 +67,15 @@ typedef void (*pfn)(void);
 typedef void (_WCI86FAR * _WCI86FAR fpfn)(void);
 typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
 
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    #define __GETDS()
-    #define save_ds()
-    #define restore_ds()
+#if defined( _M_I86 )
+    extern void save_dx( void );
+    #pragma aux save_dx = modify exact [dx];
+    extern void save_ds( void );
+    #pragma aux save_ds = "push ds" modify exact [sp];
+    extern void restore_ds( void );
+    #pragma aux restore_ds = "pop ds" modify exact [sp];
     #define save_es()
     #define restore_es()
-    #define setup_es()
 #elif defined(__WINDOWS_386__)
     #define __GETDS()
     #define save_ds()
@@ -81,7 +83,7 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
     #define save_es()
     #define restore_es()
     #define setup_es()
-#elif defined(__386__)
+#elif defined(_M_IX86)
     #define __GETDS()
     #define save_ds()
     #define restore_ds()
@@ -100,15 +102,13 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
                 "pop es" \
                 modify exact [es];
   #endif
-#elif defined( _M_I86 )
-    extern void save_dx( void );
-    #pragma aux save_dx = modify exact [dx];
-    extern void save_ds( void );
-    #pragma aux save_ds = "push ds" modify exact [sp];
-    extern void restore_ds( void );
-    #pragma aux restore_ds = "pop ds" modify exact [sp];
+#elif defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    #define __GETDS()
+    #define save_ds()
+    #define restore_ds()
     #define save_es()
     #define restore_es()
+    #define setup_es()
 #else
     #error unsupported platform
 #endif

@@ -64,6 +64,4 @@ typedef enum charset_flags {
 #define HEX_BASE        'a'
 #endif
 
-extern unsigned JIS2Unicode( unsigned );
-
 extern charset_flags CharSet[];

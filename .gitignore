@@ -129,6 +129,7 @@
 /bld/hdr/dos/*
 /bld/hdr/linux/*
 /bld/hdr/qnx/*
+/bld/hdr/quantum/*
 /bld/hdr/regress/*
 #
 /bld/ide/cfg/*/*.cfg
@@ -152,6 +153,8 @@
 /bld/rcsdll/batch/*/*.cmd
 #
 !/bld/src/**/*.lnk
+#
+!/bld/trap/**/*.trp/
 #
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini

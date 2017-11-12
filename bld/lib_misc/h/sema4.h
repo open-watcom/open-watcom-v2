@@ -1,15 +1,49 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  Semaphore related declarations for locking.
+*
+****************************************************************************/
+
+
 #ifndef _SEMA4_H_INCLUDED
 #define _SEMA4_H_INCLUDED
-
-/* Make sure these are in C linkage */
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #if defined(__UNIX__)
 #include <semaphore.h>
 #elif defined(__RDOSDEV__)
 #include "rdosdev.h"
+#endif
+#include "threadid.h"
+#include "sema4typ.h"
+
+/* Make sure these are in C linkage */
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*
@@ -17,19 +51,9 @@ extern "C" {
  * also updating the C++ runtime file prwdata.asm
  */
 typedef struct  semaphore_object {
-  #if defined(__NT__)
-        void            *semaphore;
-  #elif defined(__UNIX__)
-        sem_t           semaphore;
-  #elif defined(__RDOS__)
-        int             semaphore; // RDOS only have critical sections, which should work
-  #elif defined(__RDOSDEV__)
-        struct TKernelSection semaphore;
-  #else
-        unsigned long   semaphore;
-  #endif
+        _SEM            semaphore;
         unsigned        initialized;
-        unsigned long   owner;
+        _TID            owner;
         unsigned        count;
 } semaphore_object;
 

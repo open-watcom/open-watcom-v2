@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@
 //  94/04/22    Kevin Hui       Added range check
 
 #include "strng.h"
-#include "strsrch.def"
+#include "strsrch.h"
 
 int String::index( const String &searchstr, std::size_t pos ) const
 /*****************************************************************/

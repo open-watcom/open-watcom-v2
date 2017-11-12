@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +107,6 @@ extern void             ChkOS2Exports( void );
 extern void             PhoneyStack( void );
 extern void             FiniOS2LoadFile( void );
 extern void             FreeImpNameTab( void );
-extern unsigned_32      GetStubSize( void );
-extern unsigned_32      Write_Stub_File( unsigned_32 );
+extern unsigned_32      WriteStubFile( unsigned_32 );
 
 #endif

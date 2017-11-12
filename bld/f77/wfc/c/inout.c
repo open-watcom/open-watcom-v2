@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +54,10 @@
 #include "wf77auxd.h"
 #include "wf77aux.h"
 #include "errutil.h"
+#include "sdfile.h"
+#include "brseinfo.h"
+#include "fio.h"
+#include "posdat.h"
 
 #include "clibext.h"
 
@@ -69,50 +74,38 @@
     #error Unknown System
 #endif
 
-extern  void            BISetSrcFile( void );
+static file_attr        DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static file_attr        ErrAttr = { REC_TEXT };
 
-extern  char            FFCtrlSeq[];
-extern  char            SkipCtrlSeq[];
-extern  char            NormalCtrlSeq[];
-extern  char            SDTermOut[];
-#if ! defined( __UNIX__ )
-extern  char            SDPrtName[];
-#endif
-extern  char            ForExtn[];
-extern  char            ErrExtn[];
-extern  char            LstExtn[];
-extern  file_attr       DskAttr;
-extern  file_attr       PrtAttr;
-extern  file_attr       TrmAttr;
-extern  file_attr       ErrAttr;
-extern  file_handle     FStdOut;
+static char             ErrExtn[] = { "err" };
+static char             LstExtn[] = { "lst" };
 
-static char           *ListBuff;      // listing file buffer
-static file_handle    ListFile;       // file pointer for the listing file
-static int            ListCursor;     // offset into "ListBuff"
+static char             *ListBuff;      // listing file buffer
+static file_handle      ListFile;       // file pointer for the listing file
+static int              ListCursor;     // offset into "ListBuff"
 
-static byte           ListCount;      // # of lines printed to listing file
-static byte           ListFlag;       // flag for listing file
+static byte             ListCount;      // # of lines printed to listing file
+static byte             ListFlag;       // flag for listing file
 
-static char           *ErrBuff;       // error file buffer
-static file_handle    ErrFile;        // file pointer for the error file
-static int            ErrCursor;      // offset into "ErrBuff"
+static char             *ErrBuff;       // error file buffer
+static file_handle      ErrFile;        // file pointer for the error file
+static int              ErrCursor;      // offset into "ErrBuff"
 
-static char           *TermBuff;      // terminal file buffer
-static file_handle    TermFile;       // file pointer for terminal
-static int            TermCursor;     // offset into "TermBuff"
+static char             *TermBuff;      // terminal file buffer
+static file_handle      TermFile;       // file pointer for terminal
+static int              TermCursor;     // offset into "TermBuff"
 
 /* Forward declarations */
 static  void    SendRec( void );
 static  void    SetCtrlSeq( void );
-static  void    PutLst( char *string );
+static  void    PutLst( const char *string );
 static  void    ChkErrErr( void );
-static  void    ErrOut( char *string );
+static  void    ErrOut( const char *string );
 static  void    ErrNL( void );
 static  void    ChkLstErr( void );
 static  void    Erase( char *extn );
-static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
-                          file_handle fp, void (*err_rtn)( void ) );
 
 
 //========================================================================
@@ -270,15 +263,17 @@ void    ReadSrc( void ) {
 }
 
 
-static  bool    AlreadyOpen( char *name ) {
+static bool AlreadyOpen( const char *name )
 //=========================================
-
+{
     source_t    *src;
 
     src = CurrFile;
-    for(;;) {
-        if( src == NULL ) return( false );
-        if( strcmp( name, src->name ) == 0 ) break;
+    for( ;; ) {
+        if( src == NULL )
+            return( false );
+        if( strcmp( name, src->name ) == 0 )
+            break;
         src = src->link;
     }
     InfoError( CO_ALREADY_OPEN, name );
@@ -286,9 +281,9 @@ static  bool    AlreadyOpen( char *name ) {
 }
 
 
-void    Include( char *inc_name ) {
-//=================================
-
+void    Include( const char *inc_name )
+//=====================================
+{
     file_handle fp;
     char        bld_name[_MAX_PATH];
     char        err_msg[ERR_BUFF_SIZE+1];
@@ -341,9 +336,9 @@ bool    SetLst( bool new ) {
 }
 
 
-void    SrcInclude( char *name ) {
-//================================
-
+void    SrcInclude( const char *name )
+//====================================
+{
     source_t    *src;
 
     src = FMemAlloc( sizeof( source_t ) );
@@ -449,9 +444,9 @@ void    CompErr( uint msg ) {
 }
 
 
-void    PrintErr( char *string ) {
-//================================
-
+void    PrintErr( const char *string )
+//====================================
+{
     JustErr( string );
     PrtLst( string );
 }
@@ -460,9 +455,10 @@ void    PrintErr( char *string ) {
 static  bool    ErrToTerm( void ) {
 //=================================
 
-    if( ( Options & OPT_TERM ) == 0 ) return( false );
-    if( ( Options & OPT_TYPE ) &&
-        ( ListFile != NULL ) ) return( false );
+    if( ( Options & OPT_TERM ) == 0 )
+        return( false );
+    if( ( Options & OPT_TYPE ) && ( ListFile != NULL ) )
+        return( false );
     return( true );
 }
 
@@ -478,9 +474,9 @@ void    PrtErrNL( void ) {
 }
 
 
-void    JustErr( char *string ) {
-//===============================
-
+void    JustErr( const char *string )
+//===================================
+{
     if( ErrToTerm() ) {
         TOut( string );
     }
@@ -525,12 +521,32 @@ void    ChkErrFile( void ) {
 }
 
 
-static  void    ErrOut( char *string ) {
-//======================================
+static  void    SendBuff( const char *str, char *buff, int buff_size, int *cursor,
+                          file_handle fp, void (*err_rtn)( void ) ) {
+//==========================================================================
 
+    int         len;
+
+    for( ; fp != NULL; ) {
+        len = buff_size - 1 - *cursor;
+        len = CharSetInfo.extract_text( str, len );
+        len = CopyMaxStr( str, &buff[*cursor], len );
+        *cursor += len;
+        str += len;
+        if( *str == NULLCHAR )
+            break;
+        SDWrite( fp, buff, *cursor );
+        err_rtn();
+        *cursor = 0;
+    }
+}
+
+
+static  void    ErrOut( const char *string )
+//==========================================
+{
     if( ErrFile != NULL ) {
-        SendBuff( string, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile,
-                  &ChkErrErr );
+        SendBuff( string, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile, &ChkErrErr );
     }
 }
 
@@ -538,10 +554,12 @@ static  void    ErrOut( char *string ) {
 void    CloseErr( void ) {
 //========================
 
-    if( ErrFile == NULL ) return;
+    if( ErrFile == NULL )
+        return;
     SDClose( ErrFile );
     ErrFile = NULL;
-    if( ErrBuff == NULL ) return;
+    if( ErrBuff == NULL )
+        return;
     FMemFree( ErrBuff );
     ErrBuff = NULL;
 }
@@ -559,18 +577,18 @@ static  void    ChkTermErr( void ) {
 }
 
 
-void    TOutNL( char *string ) {
-//==============================
-
+void    TOutNL( const char *string )
+//==================================
+{
     TOut( string );
     SDWrite( TermFile, TermBuff, TermCursor );
     TermCursor = 0;
 }
 
 
-void    TOut( char *string ) {
-//============================
-
+void    TOut( const char *string )
+//================================
+{
     SendBuff( string, TermBuff, TERM_BUFF_SIZE, &TermCursor, TermFile, &ChkTermErr );
 }
 
@@ -713,20 +731,22 @@ void    GetLstName( char *buffer ) {
 }
 
 
-void    PrtLstNL( char *string ) {
-//================================
-
+void    PrtLstNL( const char *string )
+//====================================
+{
     ListFlag |= LF_NEW_LINE;
     PrtLst( string );
     ListFlag &= LF_OFF;
 }
 
 
-void    PrtLst( char *string ) {
-//==============================
-
-    if( ListFlag & LF_QUIET ) return;
-    if( ListFile == NULL ) return;
+void    PrtLst( const char *string )
+//==================================
+{
+    if( ListFlag & LF_QUIET )
+        return;
+    if( ListFile == NULL )
+        return;
     PutLst( string );
 }
 
@@ -734,10 +754,12 @@ void    PrtLst( char *string ) {
 void    CloseLst( void ) {
 //========================
 
-    if( ListFile == NULL ) return;
+    if( ListFile == NULL )
+        return;
     SDClose( ListFile );
     ListFile = NULL;
-    if( ListBuff == NULL ) return;
+    if( ListBuff == NULL )
+        return;
     FMemFree( ListBuff );
     ListBuff = NULL;
 }
@@ -771,15 +793,14 @@ void    LFSkip( void ) {
 }
 
 
-static  void    PutLst( char *string ) {
-//======================================
-
+static  void    PutLst( const char *string )
+//==========================================
+{
     int         len;
     bool        newline;
 
     newline = ( ListFlag & LF_NEW_LINE );
-    for(;;) {
-        if( ListFile == NULL ) break;
+    for( ; ListFile != NULL; ) {
         if( ListCursor == 0 ) {
             SetCtrlSeq();
         }
@@ -788,7 +809,8 @@ static  void    PutLst( char *string ) {
         len = CopyMaxStr( string, &ListBuff[ ListCursor ], len );
         ListCursor += len;
         string += len;
-        if( *string == NULLCHAR ) break;
+        if( *string == NULLCHAR )
+            break;
         SendRec();
     }
     if( newline ) {
@@ -857,26 +879,5 @@ static  void    Erase( char *extn ) {
 
     MakeName( SDFName( SrcName ), extn, buffer );
     SDScratch( buffer );
-}
-
-
-static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
-                          file_handle fp, void (*err_rtn)( void ) ) {
-//==========================================================================
-
-    int         len;
-
-    for(;;) {
-        if( fp == NULL ) break;
-        len = buff_size - 1 - *cursor;
-        len = CharSetInfo.extract_text( str, len );
-        len = CopyMaxStr( str, &buff[ *cursor ], len );
-        *cursor += len;
-        str += len;
-        if( *str == NULLCHAR ) break;
-        SDWrite( fp, buff, *cursor );
-        err_rtn();
-        *cursor = 0;
-    }
 }
 

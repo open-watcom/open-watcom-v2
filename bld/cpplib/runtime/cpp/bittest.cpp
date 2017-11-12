@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,34 +33,35 @@
 
 #include "cpplib.h"
 
+
+extern "C" {
+
 static uint_8 mask_on[]         // bits mask for byte (set,test)
     = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 
 static uint_8 mask_off[]        // bits mask for byte (reset)
     = { 0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F };
 
-
-extern "C"
 uint_8 CPPLIB( bit_test )(      // TEST IF BIT IS ON
     uint_8* bits,               // - bits
     offset_t bit_no )           // - bit_no
 {
-    std::size_t offset;         // - offset within "bits"
+    offset_t    offset;         // - offset within "bits"
 
     offset = bit_no / 8;
     bit_no -= ( offset * 8 );
-    return (uint_8)( mask_on[ bit_no ] & bits[ offset ] );
+    return (uint_8)( mask_on[bit_no] & bits[offset] );
 }
 
-
-extern "C"
 void CPPLIB( bit_off )(         // TURN BIT OFF
     uint_8* bits,               // - bits
     offset_t bit_no )           // - bit_no
 {
-    std::size_t offset;         // - offset within "bits"
+    offset_t    offset;         // - offset within "bits"
 
     offset = bit_no / 8;
     bit_no -= ( offset * 8 );
-    bits[ offset ] &= mask_off[ bit_no ];
+    bits[offset] &= mask_off[bit_no];
 }
+
+};

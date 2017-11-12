@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,8 @@
 #include "ftnstd.h"
 #include "ctrlflgs.h"
 #include "global.h"
+#include "cftable.h"
+
 
 #define BD      CF_BAD_DO_ENDING
 #define NS      CF_NOT_SIMPLE_STMT

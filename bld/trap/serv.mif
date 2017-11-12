@@ -112,9 +112,3 @@ SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
 SERVER_remote_objs += $(os_prefix)noth.obj
-
-!ifdef resource_file
-$(serv_basename).res : wserver.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
-!endif

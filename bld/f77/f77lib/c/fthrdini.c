@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,39 +37,23 @@
   #include <wos2.h>
 #elif defined( __NT__ )
   #include <windows.h>
+#elif defined( __NETWARE__ )
+  #include "nw_lib.h"
+#elif defined( __UNIX__ )
+  #include <semaphore.h>
 #endif
 #include "fthread.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
 #include "errcod.h"
 #include "fiosem.h"
+#include "ftnio.h"
 
 
-#if defined( __OS2__ )
+_SEM        __fio_sem;
 
-ULONG                   __fio_sem;
-
-#elif defined( __NETWARE__ )
-
-long                    __fio_sem;
-extern long             OpenLocalSemaphore( long );
-extern int              CloseLocalSemaphore( long );
-
-#elif defined( __NT__ )
-
-HANDLE                  __fio_sem;
-
-#elif defined( __LINUX__ )
-
-// TODO: semaphore support for Linux!
-
-#endif
-
-int     __InitFThreadProcessing( void ) {
-//=======================================
-
+int     __InitFThreadProcessing( void )
+//=====================================
 // Setup for multiple threads.
-
+{
 #if defined( __OS2__ )
     DosCreateMutexSem( NULL, &__fio_sem, 0, false );
 #elif defined( __NETWARE__ )
@@ -76,24 +61,18 @@ int     __InitFThreadProcessing( void ) {
 #elif defined( __NT__ )
     __fio_sem = CreateMutex( NULL, false, NULL );
 #elif defined( __LINUX__ )
-// TODO: semaphore support for Linux!
+    sem_init( &__fio_sem, 0, 1 );
 #endif
-#if defined( __LINUX__ )
-// TODO: temporary disabled until full multithreaded
-//    support will be in CRTL
-    return( 1 );
-#else
     _AccessFIO  = &__AccessFIO;
     _ReleaseFIO = &__ReleaseFIO;
     _PartialReleaseFIO = &__PartialReleaseFIO;
     __InitMultiThreadIO();
     return( 0 );
-#endif
 }
 
-void            __FiniFThreadProcessing( void ) {
-//===============================================
-
+void    __FiniFThreadProcessing( void )
+//=====================================
+{
 #if defined( __OS2__ )
     DosCloseMutexSem( __fio_sem );
 #elif defined( __NETWARE__ )
@@ -101,6 +80,6 @@ void            __FiniFThreadProcessing( void ) {
 #elif defined( __NT__ )
     CloseHandle( __fio_sem );
 #elif defined( __LINUX__ )
-// TODO: semaphore support for Linux!
+    sem_destroy( &__fio_sem );
 #endif
 }

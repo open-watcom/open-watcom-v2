@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,13 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "target.h"
-#include "ftextfun.h"
 #include "expchk.h"
 #include "chrutils.h"
 #include "wrutils.h"
+#include "fmtrtns.h"
+#include "rfmtutil.h"
+#include "rfmtlog.h"
+#include "undefcg.h"
 
 #include <stdlib.h>
 #include <string.h>

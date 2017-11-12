@@ -687,7 +687,6 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     SYMBOL sym;                 // - symbol for delete routine
     CLASSINFO *info;            // - info part of delete type
     TOKEN_LOCN err_locn;        // - error location
-    unsigned dtor_code;         // - code for DTOR routine
     unsigned num_args;          // - # of args for "op delete"
     struct {
       unsigned test_null:1;     // - true ==> test for 0 address
@@ -773,15 +772,10 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     } else {
         if( ! flag.inside_dtor && info->needs_vdtor ) {
             // call virtual dtor
-            if( flag.array_delete ) {
-                dtor_code = DTOR_DELETE_VECTOR;
-            } else {
-                dtor_code = DTOR_DELETE_THIS;
-            }
             flag.test_null = true;
             dup = data;
             data = NodeDupExpr( &dup );
-            expr = AnalyseDtorCall( cltype, data, dtor_code );
+            expr = AnalyseDtorCall( cltype, data, flag.array_delete ? DTOR_DELETE_VECTOR : DTOR_DELETE_THIS );
         } else {
             target_size_t elem_size;    // - size of an element
 
@@ -839,8 +833,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                         data = PtdDltDtorSize( data, elem_size );
                     }
                     data = PtdDltDtorElm( data, sym );
-                    dtor_code = DTOR_NULL;
-                    expr = AnalyseDtorCall( cltype, data, dtor_code );
+                    expr = AnalyseDtorCall( cltype, data, DTOR_NULL );
                     expr = PtdDltDtorEnd( expr );
                 }
             } else {

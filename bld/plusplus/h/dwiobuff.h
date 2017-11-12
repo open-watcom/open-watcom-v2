@@ -89,7 +89,7 @@ DWIOBUFF *DwioBuffRead(         // READ A RECORD
 DWIOBUFF *DwioBuffSeek(         // POSITION TO SPECIFIED OFFSET FROM START
     DWIOBUFF *ctl,              // - current buffer control
     DISK_ADDR block,            // - starting disk address
-    size_t offset )             // - where to position to
+    dw_out_offset offset )      // - where to position to
 ;
 void DwioBuffWrClose(           // RELEASE BUFFER AFTER WRITING
     DWIOBUFF *ctl )             // - buffer control

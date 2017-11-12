@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +40,14 @@
 #include "cgaux.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "dw.h"
 #include "axpregn.h"
 #include "dwarf.h"
+#include "dbsyms.h"
 #include "dfdbg.h"
 #include "dfsupp.h"
+#include "dfsyms.h"
 #include "regset.h"
 #include "rgtbl.h"
 #include "cgprotos.h"
@@ -60,8 +61,6 @@ typedef enum {
     DW_REG( MAX )
     #undef DW_REG
 } dw_regs;
-
-extern  dw_client       Client;
 
 static dw_regs  DFRegMap( hw_reg_set hw_reg )
 /*******************************************/

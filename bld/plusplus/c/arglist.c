@@ -55,8 +55,8 @@ arg_list *InitArgList( arg_list *args )
 }
 
 
-arg_list *AllocArgListPerm( int num_args )
-/****************************************/
+arg_list *AllocArgListPerm( unsigned num_args )
+/*********************************************/
 {
     size_t      amt;
     arg_list    *retn;
@@ -72,8 +72,8 @@ arg_list *AllocArgListPerm( int num_args )
 }
 
 
-arg_list *AllocArgListTemp( int num_args )
-/****************************************/
+arg_list *AllocArgListTemp( unsigned num_args )
+/*********************************************/
 {
     size_t      amt;
     arg_list    *retn;
@@ -91,22 +91,22 @@ arg_list *AllocArgListTemp( int num_args )
 
 arg_list* ArgListTempAlloc(     // ALLOCATE TEMPORARY ARG LIST
     TEMP_ARG_LIST* default_args,// - default args
-    unsigned count )            // - # arguments
+    unsigned num_args )         // - # arguments
 {
     arg_list* retn;             // - arg_list to be used
 
-    if( count <= AUTO_ARG_MAX ) {
+    if( num_args <= AUTO_ARG_MAX ) {
         retn = (arg_list*)default_args;
     } else {
         temp_arg_list* temp;
-        temp = (temp_arg_list*)CMemAlloc( count * sizeof( TYPE )
+        temp = (temp_arg_list*)CMemAlloc( num_args * sizeof( TYPE )
                                         - sizeof( TYPE )
                                         + sizeof( temp_arg_list ) );
         retn = &temp->real;
         RingAppend( &tempList, temp );
     }
     retn = InitArgList( retn );
-    retn->num_args = count;
+    retn->num_args = num_args;
     return retn;
 }
 
@@ -126,9 +126,9 @@ void ArgListTempFreeMem(        // FREE TEMPORARY ARG LIST
 #if 0
 void ArgListTempFree(           // FREE TEMPORARY ARG LIST
     arg_list* used,             // - used list
-    unsigned count )            // - # arguments
+    unsigned num_args )         // - # arguments
 {
-    if( count > AUTO_ARG_MAX ) {
+    if( num_args > AUTO_ARG_MAX ) {
         CMemFree( used );
     }
 }
@@ -138,14 +138,14 @@ void ArgListTempFree(           // FREE TEMPORARY ARG LIST
 #if 0
 PTREE* PtListAlloc(             // ALLOCATE PTREE LIST (TEMPORARILY)
     PTREE* default_list,        // - default list
-    unsigned count )            // - # arguments
+    unsigned num_args )         // - # arguments
 {
     PTREE* retn;                // - PTREE list to be used
 
-    if( count <= AUTO_ARG_MAX ) {
+    if( num_args <= AUTO_ARG_MAX ) {
         retn = default_list;
     } else {
-        retn = (PTREE*)CMemAlloc( count * sizeof( PTREE ) );
+        retn = (PTREE*)CMemAlloc( num_args * sizeof( PTREE ) );
     }
     return retn;
 }
@@ -155,17 +155,17 @@ PTREE* PtListAlloc(             // ALLOCATE PTREE LIST (TEMPORARILY)
 #if 0
 void PtListFree(                // FREE PTREE LIST
     PTREE* actual_list,         // - list used
-    unsigned count )            // - # arguments
+    unsigned num_args )         // - # arguments
 {
-    if( count > AUTO_ARG_MAX ) {
+    if( num_args > AUTO_ARG_MAX ) {
         CMemFree( actual_list );
     }
 }
 #endif
 
 
-arg_list *MakeMemberArgList( SYMBOL sym, int num_args )
-/*****************************************************/
+arg_list *MakeMemberArgList( SYMBOL sym, unsigned num_args )
+/**********************************************************/
 // allocate and initialize an argument list with num_args entries.
 // designed for member functions that need a this_ptr inserted
 // at the start of the arg list
@@ -187,14 +187,14 @@ arg_list *MakeMemberArgList( SYMBOL sym, int num_args )
 }
 
 
-arg_list *MakeMockArgList( TYPE type, int num_args )
-/**************************************************/
+arg_list *MakeMockArgList( TYPE type, unsigned num_args )
+/*******************************************************/
 // allocate and initialize an argument list with num_args entries.
 // handle cases where list is shorter because it has an ellipsis
 // or where list is longer by one because it has an ellipsis
 // this is a temporary structure used by fnovload.c
 {
-    int       i;
+    unsigned i;
     arg_list *mocklist;
     TYPE     *src, *dst;        // for copying
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 *
 ****************************************************************************/
 
-#ifndef _THREAD_H_INCLUDED
-#define _THREAD_H_INCLUDED
+#ifndef THREAD_H_INCLUDED
+#define THREAD_H_INCLUDED
 
 #if !defined( __DOS__ ) && !defined( __WINDOWS__ )
 
@@ -39,12 +40,13 @@
   #include <stdio.h>
 #endif
 
+#include "threadid.h"
 #include "cvtbuf.h"
 #include "maxchtyp.h"
 
 /* Per thread global items */
 
-#include "osthread.h"
+#include "osexcpt.h"
 
 #include "sigdefn.h"
 
@@ -103,20 +105,20 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
+#ifdef __SW_BM
+  #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 )
     __EXCEPTION_RECORD          *xcpt_handler;
+  #endif
 #endif
 #if defined( __NT__ ) || defined( __RDOS__ ) || defined( __OS2__ ) && !defined( _M_I86 ) || defined( __NETWARE__ )
     sigtab                      signal_table[__SIGLAST + 1];
 #endif
     char _WCFAR                 *__nextftokP;
     MAX_CHAR_TYPE               __cvt_buffer[__FPCVT_BUFFERLEN + 1];
-#if defined(__NT__) || defined(_NETWARE_LIBC)
-    unsigned long               thread_id;
-#elif defined(__UNIX__)
-    pid_t                       thread_id;
-#elif defined(__RDOS__)
-    int                         thread_id;
+#if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__UNIX__) || defined(__RDOS__)
+    _TID                        thread_id;
+#endif
+#if defined(__RDOS__)
     char                        thread_name[256];
 #endif
 #if defined(__NT__)
@@ -169,4 +171,4 @@ _WCRTDATA extern thread_data    *(*__GetThreadPtr)( void );
 #pragma pack(__pop);
 #endif
 
-#endif
+#endif  /* _THREAD_H_INCLUDED */

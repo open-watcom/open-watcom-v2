@@ -126,11 +126,13 @@ using std::free;
 using std::malloc;
 using std::realloc;
 
+:segment DOS
 #if defined(__OS2__) && !defined(_M_I86)
 using std::_use_os2_high_mem;
 using std::_os2lmalloc;
 using std::_os2hmalloc;
 #endif
+:endsegment
 #endif
 
 :segment DOS | QNX

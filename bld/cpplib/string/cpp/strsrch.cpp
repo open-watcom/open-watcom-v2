@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,12 @@
 ****************************************************************************/
 
 
-
 #include "variety.h"
 #include <cstring>
-#include "strsrch.def"
+#include "strsrch.h"
+
 
 #define NOT_FOUND (-1)
-
 
 extern "C" long StringSearch
     ( const char *  str
@@ -90,9 +90,9 @@ extern "C" long StringSearch
         }
         std::memset( SkipTable, patlen, 256 );
         for( pat_index = 0; pat_index < patlen; ++pat_index ) {
-            int c;
+            unsigned char c;
 
-            c = (unsigned char) pattern[pat_index];
+            c = (unsigned char)pattern[pat_index];
             SkipTable[c] = (unsigned char)(patlen - pat_index - 1);
         }
 

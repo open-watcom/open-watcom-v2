@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,10 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#include <conio.h>
 #define INCL_16
 #define INCL_SUB
 #include <wos2.h>
-#include <conio.h>
 #include "rtdata.h"
 #include "defwin.h"
 

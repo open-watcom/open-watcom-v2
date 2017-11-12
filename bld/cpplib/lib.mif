@@ -1,0 +1,29 @@
+!ifdef prefix
+
+target_lib = $(prefix)$(suffix).lib
+!ifdef prefix_x
+target_lib_x = $(prefix_x)$(suffix).lib
+!endif
+
+!else
+
+target_lib = plib$(suffix).lib
+target_lib_x = plbx$(suffix).lib
+
+!endif
+
+!ifeq release 0
+plib_lib_flags = -b-c-n-pa
+!else
+plib_lib_flags = -b-c-n-pa-s-t-zld
+!endif
+
+plib_linkage_flags_086 = -z=export.tmp
+plib_linkage_flags_286 = -z=export.tmp
+plib_linkage_flags_386 = -z=export.tmp
+plib_linkage_flags = $(plib_linkage_flags_$(processor))
+
+plibx_linkage_flags_086 = -z=exportx.tmp
+plibx_linkage_flags_286 = -z=exportx.tmp
+plibx_linkage_flags_386 = -z=exportx.tmp
+plibx_linkage_flags = $(plibx_linkage_flags_$(processor))

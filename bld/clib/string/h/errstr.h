@@ -30,8 +30,6 @@
 
 #ifdef __NETWARE__
 
-extern int      sys_nerr;
-extern char     *sys_errlist[];
 #define _sys_nerr       sys_nerr
 #define _sys_errlist    sys_errlist
 

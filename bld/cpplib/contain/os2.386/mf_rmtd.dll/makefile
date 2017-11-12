@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_os2 dynamic debug
+#pmake: build debug flat cpu_386 os_os2 dynamic
 #
 # contmt3r.lib -- register based multi-thread 32-bit CONTAINER library
 #
@@ -9,6 +9,7 @@ convention = register
 linkage    = dynamic
 mthreaded  = 1
 fs_registration = yes
+
 cpplib_release = 0
 
 !include $(cpplib_dir)/contain/contain.mif

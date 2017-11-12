@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,11 @@
 
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "dwpriv.h"
 #include "dwmem.h"
 #include "dwcarve.h"
-#include "dwutils.h"
+#include "dwcliuti.h"
 #include "dwhandle.h"
 
 /* first handle we ever return */
@@ -49,13 +50,12 @@ typedef struct handle_blk   handle_blk;
 
 struct handle_blk {
     handle_common       data[BLOCK_SIZE];
-    dw_index_t          index;  /* data[0] is the (index*BLOCK_SIZE)th elt */
+    dw_index_t          index;  /* data[0] is the (index * BLOCK_SIZE)th elt */
     uint_16             height; /* height of this node */
-    handle_blk *        next[1];
+    handle_blk          *next[1];
 };
 
 #ifndef NDEBUG
-#include <stdio.h>
 
 static struct {
     unsigned    dump_handle : 1;
@@ -91,7 +91,7 @@ static void dbgDefineHandle( dw_handle h )
 
 void InitHandles( dw_client cli )
 {
-    int i;
+    int     i;
 
     cli->handles.num_handles = 0;
     cli->handles.forward = 0;
@@ -108,8 +108,8 @@ void InitHandles( dw_client cli )
 
 void FiniHandles( dw_client cli )
 {
-    handle_blk *                cur;
-    handle_blk *                next;
+    handle_blk      *cur;
+    handle_blk      *next;
 
     _Assert(  cli->handles.forward == 0 );
     for( cur = cli->handles.block_head[0]; cur != NULL; cur = next ) {
@@ -123,9 +123,9 @@ void FiniHandles( dw_client cli )
 
 static handle_blk *newBlock( dw_client cli )
 {
-    handle_blk *                new;
-    uint                        height;
-    uint                        i;
+    handle_blk      *new_hdl;
+    uint            height;
+    uint            i;
 
     /*
         FIXME: we use the power of two distribution... should we use a
@@ -138,46 +138,46 @@ static handle_blk *newBlock( dw_client cli )
         cli->handles.max_height = height;
 
     /* allocate the new node */
-    new = CLIAlloc( cli, sizeof( handle_blk ) + ( height - 1 ) * sizeof( handle_blk * ) );
-    memset( new, 0, sizeof( handle_blk ) );
-    new->height = height;
-    new->index = cli->handles.num_handles / BLOCK_SIZE;
+    new_hdl = CLIAlloc( cli, sizeof( handle_blk ) + ( height - 1 ) * sizeof( handle_blk * ) );
+    memset( new_hdl, 0, sizeof( handle_blk ) );
+    new_hdl->height = height;
+    new_hdl->index = cli->handles.num_handles / BLOCK_SIZE;
 
     /* link the node into all the lists */
     for( i = 0; i < height; ++i ) {
-        new->next[i] = NULL;
-        *cli->handles.block_tail[i] = new;
-        cli->handles.block_tail[i] = &new->next[i];
+        new_hdl->next[i] = NULL;
+        *cli->handles.block_tail[i] = new_hdl;
+        cli->handles.block_tail[i] = &new_hdl->next[i];
     }
-    return( new );
+    return( new_hdl );
 }
 
 
 dw_handle NewHandle( dw_client cli )
 {
-    uint_32                     elm_num;
-    dw_handle                   h;
+    uint_32         elm_num;
+    dw_handle       new_hdl;
 
     elm_num = cli->handles.num_handles;
-    if( elm_num % BLOCK_SIZE == 0 ) { /* time to allocate a new block */
-        if( elm_num >= BLOCK_SIZE * ( 1ul << 8 * sizeof( dw_index_t ) ) ) {
+    if( ( elm_num % BLOCK_SIZE ) == 0 ) { /* time to allocate a new block */
+        if( elm_num >= BLOCK_SIZE * ( 1UL << ( 8 * sizeof( dw_index_t ) ) ) ) {
             _Abort( ABORT_TOO_MANY_HANDLES );
         }
         newBlock( cli );
     }
     ++cli->handles.num_handles;
     ++cli->handles.forward;
-    h = elm_num + FIRST_HANDLE;
-    dbgAllocHandle( h );
-    return( h );
+    new_hdl = elm_num + FIRST_HANDLE;
+    dbgAllocHandle( new_hdl );
+    return( new_hdl );
 }
 
 
 static handle_blk *getIndex( dw_client cli, dw_index_t index )
 {
-    int                         i;
-    handle_blk *                blk;
-    handle_blk **               left_edge;
+    int             i;
+    handle_blk      *blk;
+    handle_blk      **left_edge;
 
     _Assert( index * BLOCK_SIZE <= cli->handles.num_handles );
     _Assert( cli->handles.max_height > 0 );
@@ -187,8 +187,8 @@ static handle_blk *getIndex( dw_client cli, dw_index_t index )
     */
     left_edge = &cli->handles.block_head[0];
     i = cli->handles.max_height - 1;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             blk = left_edge[i];
             if( blk->index == index )
                 return( blk );
@@ -205,30 +205,30 @@ static handle_blk *getIndex( dw_client cli, dw_index_t index )
 
 handle_common *GetCommon( dw_client cli, dw_handle hdl )
 {
-    uint_32                     elm_num;
+    uint_32         elm_num;
 
-    elm_num = ( hdl & HANDLE_MASK ) - FIRST_HANDLE;
+    elm_num = (hdl & HANDLE_MASK) - FIRST_HANDLE;
     _Assert( elm_num < cli->handles.num_handles );
-    return( getIndex( cli, elm_num/BLOCK_SIZE )->data + elm_num%BLOCK_SIZE );
+    return( getIndex( cli, elm_num / BLOCK_SIZE )->data + ( elm_num % BLOCK_SIZE ) );
 }
 
 
 handle_extra *CreateExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra *              new;
+    handle_extra    *new_hdl;
 
-    new = CarveAlloc( cli, cli->handles.extra_carver );
-    new->base.handle = hdl;
-    new->base.next = cli->handles.extra_list;
-    cli->handles.extra_list = new;
-    return( new );
+    new_hdl = CarveAlloc( cli, cli->handles.extra_carver );
+    new_hdl->base.handle = hdl;
+    new_hdl->base.next = cli->handles.extra_list;
+    cli->handles.extra_list = new_hdl;
+    return( new_hdl );
 }
 
 
 void DestroyExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra **             walk;
-    handle_extra *              delete;
+    handle_extra    **walk;
+    handle_extra    *delete;
 
     for( walk = &cli->handles.extra_list; *walk != NULL; walk = &(*walk)->base.next ) {
         if( (*walk)->base.handle == hdl ) {
@@ -243,7 +243,7 @@ void DestroyExtra( dw_client cli, dw_handle hdl )
 
 handle_extra *GetExtra( dw_client cli, dw_handle hdl )
 {
-    handle_extra *              walk;
+    handle_extra    *walk;
 
     for( walk = cli->handles.extra_list; walk != NULL; walk = walk->base.next ) {
         if( walk->base.handle == hdl ) {
@@ -254,100 +254,87 @@ handle_extra *GetExtra( dw_client cli, dw_handle hdl )
 }
 
 
-void HandleReference( dw_client cli, dw_handle hdl, uint section )
+void HandleReference( dw_client cli, dw_handle hdl, dw_sectnum sect )
 {
-    if( ( cli->compiler_options & DW_CM_BROWSER) && section == DW_DEBUG_INFO ) {
-        DWReference( cli, cli->decl.line, cli->decl.column, hdl );
-    }
-    HandleWriteOffset( cli, hdl, section );
+    HandleWriteOffset( cli, hdl, sect );
 }
 
-void HandleWriteOffset( dw_client cli, dw_handle hdl, uint section )
-{
+
+void HandleWriteOffset( dw_client cli, dw_handle hdl, dw_sectnum sect )
 // always do a write so I know if the
 // handle got updated
-    handle_common *             c;
-    reloc_chain *               chain;
-    debug_ref                   offset;
+{
+    handle_common   *c;
+    reloc_chain     *chain;
+    dw_sect_offs    offset;
 
     c = GetCommon( cli, hdl );
-    if( c->reloc.offset & RELOC_OFFSET ) {
-        offset = c->reloc.offset >> 1;
-    } else {
-        offset = 0;
+    offset = GET_HANDLE_LOCATION( c );
+    if( IS_FORWARD_LOCATION( c ) ) {
+        /* add forward reference */
         chain = CarveAlloc( cli, cli->handles.chain_carver );
-        chain->section = section;
-        chain->offset = CLITell( cli, section );
-        chain->next = c->reloc.chain;
-        c->reloc.chain = chain;
-//        CLISeek( cli, section, sizeof( debug_ref ), DW_SEEK_CUR );
+        chain->section = sect;
+        chain->offset = CLISectionAbs( cli, sect );
+        chain->next = c->reloc.u.chain;
+        c->reloc.u.chain = chain;
     }
-    CLIWrite( cli, section, &offset, sizeof( debug_ref ) );
+    CLIWriteU32( cli, sect, offset );
 }
 
 
 void SetHandleLocation( dw_client cli, dw_handle hdl )
 {
-    handle_common *             c;
-    reloc_chain *               cur;
-    char                        used[DW_DEBUG_MAX];
-    uint                        u;
-    debug_ref                   offset;
+    handle_common   *c;
+    reloc_chain     *cur;
+    char            used[DW_DEBUG_MAX];
+    dw_sectnum      sect;
+    dw_sect_offs    offset;
 
     c = GetCommon( cli, hdl );
-    cur = c->reloc.chain;
+    cur = c->reloc.u.chain;
     dbgDefineHandle( hdl );
     --cli->handles.forward;
-    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    WriteRef( &offset, offset );
-    c->reloc.offset = RELOC_OFFSET | ( offset << RELOC_OFFSET_SHIFT );
-    memset( used, 0, sizeof( used ) );
-    while( cur != NULL ) {
-        used[cur->section] = 1;
-        CLISeek( cli, cur->section, cur->offset, DW_SEEK_SET );
-        CLIWrite( cli, cur->section, &offset, sizeof( debug_ref ) );
-        cur = CarveFreeLink( cli->handles.chain_carver, cur );
-    }
-    for( u = 0; u < DW_DEBUG_MAX; ++u ) {
-        if( used[u] ) {
-            CLISeek( cli, u, 0, DW_SEEK_END );
+    offset = InfoSectionOffset( cli );
+    SET_HANDLE_LOCATION( c, offset );
+    /* if forward references exist, update them */
+    if( cur != NULL ) {
+        memset( used, 0, sizeof( used ) );
+        /* update forward references */
+        for( ; cur != NULL; cur = CarveFreeLink( cli->handles.chain_carver, cur ) ) {
+            used[cur->section] = 1;
+            CLISectionSeekAbs( cli, cur->section, cur->offset );
+            CLIWriteU32( cli, cur->section, offset );
+        }
+        for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
+            if( used[sect] ) {
+                CLISectionSeekEnd( cli, sect );
+            }
         }
     }
 }
 
-uint_32 DWDebugRefOffset( dw_client cli, dw_handle hdl )
+dw_sect_offs DWGetHandleLocation( dw_client cli, dw_handle hdl )
 {
-    handle_common *             c;
-    debug_ref                   offset;
+    handle_common   *c;
 
     c = GetCommon( cli, hdl );
-    if( c->reloc.offset & RELOC_OFFSET ) {
-        offset = c->reloc.offset >> 1;
-    } else {
-        offset = 0;
-    }
-    return( offset );
+    return( GET_HANDLE_LOCATION( c ) );
 }
 
 dw_handle LabelNewHandle( dw_client cli )
 {
-    dw_handle                   new;
-    handle_common *             c;
-    debug_ref                   offset;
+    dw_handle       new_hdl;
 
-    new = NewHandle( cli );
-    c = GetCommon( cli, new );
-    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    WriteRef( &offset, offset );
-    c->reloc.offset = RELOC_OFFSET | ( offset << RELOC_OFFSET_SHIFT );
-    dbgDefineHandle( new );
+    new_hdl = NewHandle( cli );
+    SET_HANDLE_LOCATION( GetCommon( cli, new_hdl ), InfoSectionOffset( cli ) );
+    dbgDefineHandle( new_hdl );
     --cli->handles.forward;
-    return( new );
+    return( new_hdl );
 }
 
 dw_handle GetHandle( dw_client cli )
 {
-    dw_handle   new_hdl;
+    dw_handle       new_hdl;
 
     if( cli->defset == 0 ) {
         new_hdl = LabelNewHandle( cli );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,8 @@
     #include <windows.h>
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     #include <rdos.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
 #include "rtdata.h"
 #include "rterrno.h"
@@ -119,12 +122,12 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     handle = RdosOpenProcessEnv();
     RdosDeleteEnvVar( handle, name );
     RdosAddEnvVar( handle, name, value );
-    RdosCloseEnv( handle );        
+    RdosCloseEnv( handle );
   #elif defined( __RDOSDEV__ )
     handle = RdosOpenSysEnv();
     RdosDeleteEnvVar( handle, name );
     RdosAddEnvVar( handle, name, value );
-    RdosCloseEnv( handle );        
+    RdosCloseEnv( handle );
   #endif
     lib_free( name );
     lib_free( value );

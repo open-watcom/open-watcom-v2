@@ -79,8 +79,9 @@
 #include "uivirt.h"
 #include "unxuiext.h"
 #include "ctkeyb.h"
-
 #include "tixparse.h"
+#include "tdisp.h"
+
 #include "walloca.h"
 
 
@@ -902,31 +903,7 @@ static int new_attr( int nattr, int oattr )
 {
     union {
         unsigned char   attr;
-        struct {
-#if defined( _HAS_NO_CHAR_BIT_FIELDS )
-            unsigned char   blink_back_bold_fore;
-    #define _attr_blink( a ) (((a).blink_back_bold_fore >> 7) & 1)
-    #define _attr_back( a )  (((a).blink_back_bold_fore >> 4) & 7)
-    #define _attr_bold( a )  (((a).blink_back_bold_fore >> 3) & 1)
-    #define _attr_fore( a )  ( (a).blink_back_bold_fore       & 7)
-#else
-    #if defined( __BIG_ENDIAN__ )
-            unsigned char   blink:1;
-            unsigned char   back:3;
-            unsigned char   bold:1;
-            unsigned char   fore:3;
-    #else
-            unsigned char   fore:3;
-            unsigned char   bold:1;
-            unsigned char   back:3;
-            unsigned char   blink:1;
-    #endif
-    #define _attr_blink( a ) ((a).blink)
-    #define _attr_back( a )  ((a).back)
-    #define _attr_bold( a )  ((a).bold)
-    #define _attr_fore( a )  ((a).fore)
-#endif
-        } bits;
+        attr_bits       bits;
     } nval, oval;
     nval.attr = nattr;
     oval.attr = oattr;
@@ -934,10 +911,10 @@ static int new_attr( int nattr, int oattr )
     if( oattr == -1 ) {
         oval.attr = ~nval.attr;
     }
-    if( _attr_bold( nval.bits ) != _attr_bold( oval.bits )
-      || _attr_blink( nval.bits ) != _attr_blink( oval.bits ) ) {
-        TIABold  = _attr_bold( nval.bits );
-        TIABlink = _attr_blink( nval.bits );
+    if( _attr_bold( nval ) != _attr_bold( oval )
+      || _attr_blink( nval ) != _attr_blink( oval ) ) {
+        TIABold  = _attr_bold( nval );
+        TIABlink = _attr_blink( nval );
         // Note: the TI_SETCOLOUR below has to set the attributes
         // anyways, so we've just set the flags here
     }
@@ -946,7 +923,7 @@ static int new_attr( int nattr, int oattr )
     // redo the colours. This is *necessary* for terms like VT's
     // which reset the colour when the attributes are changed
     if( nval.attr != oval.attr ) {
-        TI_SETCOLOUR( _attr_fore( nval.bits ), _attr_back( nval.bits ) );
+        TI_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
     }
     return( nattr );
 }
@@ -1433,7 +1410,7 @@ static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 }
 
 
-EVENT td_event( void )
+static EVENT td_event( void )
 {
     EVENT       ev;
 

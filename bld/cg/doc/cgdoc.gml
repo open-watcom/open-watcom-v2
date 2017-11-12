@@ -70,7 +70,7 @@
 :include file='&book..tbl'
 :include file='&book..kw'
 .do end
-.chap General
+.chap Introduction
 :P.The code generator (back end) interface is a set of procedure calls.
 These are divided into following category of routines.
 :SL.
@@ -80,6 +80,7 @@ These are divided into following category of routines.
 :LI.Front end supplied (FE)
 :LI.Debugger information (DB)
 :eSL.
+.chap General
 .section cg_init_info BEInit( cg_switches switches, cg_target_switches targ_switches, uint optsize, proc_revision proc )
 :I1.BEInit
 :P.Initialize the code generator.
@@ -3241,6 +3242,49 @@ segment.
 :LI.HW_E4
 :eSL.
 .do end
+.*
+.chap Debugging Open Watcom Code Generator
+:P.If you want to use vc.dbg command, make sure you have a tmp directory in
+root of used filesystem (see bld/cg/dumpio.c for details). 
+:P.Note: make a s:\tmp to facilitate debugging in s:\brad :) Yeah, it's a cheap
+and sleazy hack...
+:P.If you need to dump something and don't know the routine to call,
+try :HP2."e/s Dump":eHP2. and see what pops up...
+.*
+.section Instructions
+:P.You can get a dump of instructions for current function via :HP3.DumpRange:eHP3. anytime between :HP3.FixEdges:eHP3. and start of :HP3.GenObject:eHP3..
+:P.You can dump an individual instruction via :HP3.DumpIns:eHP3.
+:P.If you need live info for a basic block, find address and call :HP3.DumpABlk( block ):eHP3..
+.*
+.section Symbols
+If you need to see a list of symbols, use :HP3.DumpSymTab:eHP3..
+To look at one symbol, use :HP3.DumpSym:eHP3..
+.*
+.section Tree Problems
+Find the line number of a piece of source near the problem.
+Do a :HP2."bif { edx == LINENUMBER }:eHP2. :HP3.DBSrcCue:eHP3.:HP2.":eHP2. to stop near that
+Go to :HP3.CGDone:eHP3. in order to see what resulting tree is (:HP3.DumpTree:eHP3.)
+If there is a problem with tree, but not with API calls, do to :HP3.DBSrcCue:eHP3. as above and then break on next appropriate CG API call.
+.*
+.section Optimization Problems (Loopopts at all)
+Find the ordinal of the problem function in the file (ie 4th function)
+Do a :HP2."bcnt 4:eHP2. :HP3.FixEdges:eHP3.:HP2.":eHP2. in order to stop on 4th call (for example) to :HP3.FixEdges:eHP3.
+Dump instructions (using :HP3.DumpRange:eHP3.) and see if problem is in trees
+If not, go to :HP3.RegAlloc:eHP3. and see if problem shows up yet
+If so, binary search between :HP3.FixEdges:eHP3. and :HP3.RegAlloc:eHP3. to find optimization at fault.
+.*
+.section Instruction Select Problems
+Go to :HP3.RegAlloc:eHP3. for appropriate function (called once per function when not -od)
+Find address of instruction which gets translated or handled improperly. (Look in results of :HP3.DumpRange:eHP3. for this address).
+Do a :HP2."bif { eax == address }:eHP2. :HP3.ExpandIns:eHP3.:HP2.":eHP2. to look at what we do to this instruction (trace through).
+.*
+.section Register Allocation Problem
+.*
+.section Instruction Encoding Problem
+Go to :HP3.RegAlloc:eHP3. invocation for routine in question.
+Go to :HP3.GenObject:eHP3. and call :HP3.DumpRange:eHP3..
+Find address of instruction that gets encoded incorrectly, and do a :HP2."bif { eax == address }:eHP2. :HP3.GenObjCode:eHP3.:HP2.":eHP2.
+Trace into :HP3.GenObjCode:eHP3. at appropriate time.
 .*
 .if &e'&dohelp eq 0 .do begin
 :BACKM.

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,10 +45,6 @@
 #include "cbsize.h"
 #include "comdump.h"
 
-
-extern  void            BIStartComBlock( sym_id ste_ptr );
-extern  void            BIOutComSymbol( sym_id ste_ptr );
-extern  void            BIEndComBlock( void );
 
 #define CT_MIXED        0
 #define CT_CHAR         1

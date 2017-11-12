@@ -28,7 +28,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntaxp/wprof.exe      <OWRELROOT>/axpnt/
     <CCCMD> linux386/wprof.exe   <OWRELROOT>/binl/wprof
     <CCCMD> linux386/wprof.sym   <OWRELROOT>/binl/
-    <CCCMD> qnx386/wprof.qnx     <OWRELROOT>/qnx/binq/wprof
+    <CCCMD> qnx386/wprof.exe     <OWRELROOT>/qnx/binq/wprof
     <CCCMD> qnx386/wprof.sym     <OWRELROOT>/qnx/sym/
 
     <CCCMD> ntx64/wprof.exe      <OWRELROOT>/binnt64/

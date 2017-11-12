@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,7 @@
 #include "thread.h"
 #include "initsig.h"
 #include "_xtoa.h"
+#include "rtexcpt.h"
 
 
 int __ReportException( EXCEPTION_POINTERS *rec );
@@ -248,8 +250,8 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
     int          sig;
     int          fpe;
     char        *eip;
-    status_word  sw;
-    long         tw;
+    status_word  fp_sw;
+    long         fp_tw;
     EXCEPTION_POINTERS rec;
 
     /*
@@ -310,10 +312,10 @@ int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
             }
             if( !( eip[0] & 0x01 ) ) {
                 if(( eip[1] & 0x30 ) == 0x30 ) {        // "fdiv" or "fidiv"
-                    tw    = context->FloatSave.TagWord & 0x0000ffff;
-                    sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
+                    fp_tw    = context->FloatSave.TagWord & 0x0000ffff;
+                    fp_sw.sw = context->FloatSave.StatusWord & 0x0000ffff;
 
-                    if((( tw >> (sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
+                    if((( fp_tw >> (fp_sw.b.st << 1) ) & 0x01 ) == 0x01 ) {
                         fpe = FPE_ZERODIVIDE;
                     }
                 }

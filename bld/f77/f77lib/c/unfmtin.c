@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,22 +43,18 @@
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
-#include "ftextfun.h"
+#include "unfmtin.h"
+#include "rdutils.h"
+#include "unfmtutl.h"
 
 #include <string.h>
 
-
-extern  void                    NextRec(void);
 
 /* Forward declarations */
 static  void    StreamUnFmtIn( void );
 static  void    RecordUnFmtIn( void );
 static  void    IUnString( void );
 static  void    IUnArray( void );
-
-
-extern  const byte __FAR        SizeVars[];
-
 
 void    UnFmtIn( void ) {
 //=================

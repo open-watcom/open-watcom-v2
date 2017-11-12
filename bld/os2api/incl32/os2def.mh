@@ -12,9 +12,7 @@
 
 :include cpluspro.sp
 
-#ifndef NULL
 :include null.sp
-#endif
 
 #ifndef TRUE
 #define TRUE  1

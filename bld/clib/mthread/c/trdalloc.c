@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,28 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
+#if defined( __OS2__ )
+    #define INCL_DOSSEMAPHORES
+    #define INCL_DOSPROCESS
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include "ntext.h"
+#elif defined( __UNIX__ )
+    #include <sys/types.h>
+    #include <unistd.h>
+  #if defined( __LINUX__ )
+    #include <process.h>
+  #endif
+#elif defined( __RDOS__ )
+    #include <rdos.h>
+#elif defined( __RDOSDEV__ )
+    #include <rdos.h>
+    #include <rdosdev.h>
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
+#endif
 #include "rtdata.h"
 #include "thread.h"
 #include "trdlist.h"
@@ -63,9 +86,9 @@ void *__InitThreadProcessing( void )
 
     __MaxThreads = __GetMaxThreads();
     __ThreadData = lib_calloc( __MaxThreads + 1, sizeof( *__ThreadData ) );
-  #ifdef __NETWARE__
+  #ifdef _NETWARE_CLIB
     if( __ThreadData != NULL ) {
-        __ThreadIDs = lib_calloc( __MaxThreads + 1, sizeof( int ) );
+        __ThreadIDs = lib_calloc( __MaxThreads + 1, sizeof( void * ) );
         if( __ThreadIDs == NULL ) {
             lib_free( __ThreadData );
         }

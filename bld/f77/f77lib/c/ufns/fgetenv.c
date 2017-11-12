@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,15 +50,15 @@ intstar4        __fortran FGETENV( string PGM *env_var, string PGM *value ) {
 
     char        *buff;
     char        *ptr;
-    int         len;
+    uint        len;
 
-    len = 0;
-    for(;;) {
-        if( len == env_var->len ) break;
-        if( env_var->strptr[ len ] == ' ' ) break;
-        ++len;
+    for( len = 0; len < env_var->len; ++len ) {
+        if( env_var->strptr[ len ] == ' ' ) {
+            break;
+        }
     }
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
     buff = alloca( len + sizeof( char ) );
     if( buff != NULL ) {
         pgm_memget( buff, env_var->strptr, len );

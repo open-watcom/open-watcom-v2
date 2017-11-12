@@ -51,18 +51,18 @@ int main( int argc, char * argv[] )
 
     if( argc != 2 ) {
         fprintf( stderr, "Usage: %s <filename>", argv[0] );
-        exit( 1 );
+        return( 1 );
     }
 
     in = fopen( argv[1], "wb" );
     assert( in != NULL );
 
-    createBrowseFile( in, "info.dw", "ref.dw", "abbrev.dw", "line.dw",
-                      "macinfo.dw" );
-    return 0;
+    createBrowseFile( in );
+    return( 0 );
 }
 
-void CFatal( char * msg ) {
+void CFatal( char * msg )
+{
     fprintf( stderr, msg );
     exit( 1 );
 }
@@ -80,59 +80,58 @@ void CFatal( char * msg ) {
         left open, positioned at the end of the file
 */
 
-int createBrowseFile(FILE* browseFile,      /* target file */
-                      char* debugFile,      /* .debug_info section */
-                      char* referenceFile,   /* .WATCOM_reference section */
-                      char* abbrevFile,     /* .debug_abbrev section */
-                      char* lineFile,       /* .debug_line section */
-                      char* macroFile       /* .debug_macinfo section */
-                      )
-{
-    const unsigned int wbrHeaderSignature = 0xcbcb;
-    const char* wbrHeaderString = "WBROWSE";
-    const char wbrHeaderVersion = '1';
-    const long bufSize = 1024;
-    char buf[1024];
-    size_t trySize,wroteSize,readSize;
-    int fileNum, i;
-    long startSectionDesc;
-    char* inFileNames[5];
-    FILE* inFiles[5];
-    unsigned long sectionSize[5];
-    unsigned long sectionOffset[5];
+/* output DWARF sections in following order
+ * .debug_info
+ * .WATCOM_reference
+ * .debug_abbrev
+ * .debug_line
+ * .debug_macinfo
+ */
+static const char *inFileNames[] = { "info.dw", "ref.dw", "abbrev.dw", "line.dw", "macinfo.dw" };
+#define SECTION_COUNT   (sizeof( inFileNames ) / sizeof( inFileNames[0] ))
 
-    rewind(browseFile);
+int createBrowseFile( FILE *browseFile )
+{
+    const unsigned char wbrHeaderSignature[] = { 0xcb, 0xcb };
+    const char          *wbrHeaderString = "WBROWSE";
+    const char          wbrHeaderVersion = '1';
+    const long          bufSize = 1024;
+    char                buf[1024];
+    size_t              trySize,wroteSize,readSize;
+    int                 fileNum, i;
+    long                startSectionDesc;
+    FILE                *inFiles[SECTION_COUNT];
+    unsigned long       sectionSize[SECTION_COUNT];
+    unsigned long       sectionOffset[SECTION_COUNT];
+
+    rewind( browseFile );
 
     // insert signature (lsb first)
-    if (fputc((unsigned char)wbrHeaderSignature,browseFile) == EOF) {
-        return errno;
+    if( fputc( wbrHeaderSignature[0], browseFile ) == EOF ) {
+        return( errno );
     }
-    if (fputc((unsigned char)(wbrHeaderSignature>>8),browseFile) == EOF) {
-        return errno;
+    if( fputc( wbrHeaderSignature[1], browseFile ) == EOF ) {
+        return( errno );
     }
 
     // insert readable string and version
-    sprintf(buf,"%s%c" ,wbrHeaderString ,wbrHeaderVersion );
-    trySize = strlen(buf);
-    wroteSize = fwrite(buf,1,trySize,browseFile);
-    if (wroteSize < trySize) return errno;
+    sprintf( buf, "%s%c", wbrHeaderString, wbrHeaderVersion );
+    trySize = strlen( buf );
+    wroteSize = fwrite( buf, 1, trySize, browseFile );
+    if( wroteSize < trySize )
+        return( errno );
 
-    startSectionDesc = ftell(browseFile);
+    startSectionDesc = ftell( browseFile );
 
     // leave space for adding section offsets and sizes later
-    sprintf(buf,"1111aaaa2222bbbb3333cccc4444dddd5555eeee");
-    trySize = strlen(buf);
-    wroteSize = fwrite(buf,1,trySize,browseFile);
-    if (wroteSize < trySize) return errno;
+    sprintf( buf, "1111aaaa2222bbbb3333cccc4444dddd5555eeee" );
+    trySize = strlen( buf );
+    wroteSize = fwrite( buf, 1, trySize, browseFile );
+    if( wroteSize < trySize )
+        return( errno );
 
     // write each of the 5 sections, tracking size and offset
-    inFileNames[0] = debugFile;
-    inFileNames[1] = referenceFile;
-    inFileNames[2] = abbrevFile;
-    inFileNames[3] = lineFile;
-    inFileNames[4] = macroFile;
-
-    for (fileNum=0;fileNum<5;fileNum++) {
+    for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
         inFiles[fileNum] = fopen( inFileNames[fileNum], "rb" );
         if( inFiles[fileNum] == NULL ) {
             puts( strerror( errno ) );
@@ -140,16 +139,17 @@ int createBrowseFile(FILE* browseFile,      /* target file */
             CFatal( "dwarf: unable to open file for concatenate" );
         }
         sectionSize[fileNum] = 0;
-        sectionOffset[fileNum] = ftell(browseFile);
+        sectionOffset[fileNum] = ftell( browseFile );
         rewind(inFiles[fileNum]);
 
         do {
-            readSize = fread(buf, 1, bufSize, inFiles[fileNum]);
+            readSize = fread( buf, 1, bufSize, inFiles[fileNum] );
             sectionSize[fileNum] += readSize;
-            wroteSize = fwrite(buf,1,readSize,browseFile);
-        } while (readSize == bufSize && wroteSize == readSize);
+            wroteSize = fwrite( buf, 1, readSize, browseFile );
+        } while( readSize == bufSize && wroteSize == readSize );
 
-        if (readSize > wroteSize) return errno;
+        if( readSize > wroteSize )
+            return( errno );
         if( fclose( inFiles[fileNum] ) ) {
             puts( strerror( errno ) );
             puts( inFileNames[fileNum] );
@@ -158,23 +158,23 @@ int createBrowseFile(FILE* browseFile,      /* target file */
     }
 
     // go back and fill in section offsets and sizes
-    fseek(browseFile, startSectionDesc, SEEK_SET /*from start of file*/);
-    for (fileNum=0;fileNum<5;fileNum++) {
-        for (i=0; i<4; i++) {
-            if (fputc((unsigned char)sectionOffset[fileNum],browseFile) == EOF) {
-                return errno;
-            } else {
-                sectionOffset[fileNum] >>= 8;
+    fseek( browseFile, startSectionDesc, SEEK_SET /*from start of file*/);
+    for( fileNum = 0; fileNum < SECTION_COUNT; fileNum++ ) {
+        unsigned char   *p;
+
+        p = (unsigned char *)&sectionOffset[fileNum];
+        for( i = 0; i < 4; i++ ) {
+            if( fputc( *p++, browseFile ) == EOF ) {
+                return( errno );
             }
         }
-        for (i=0; i<4; i++) {
-            if (fputc((unsigned char)sectionSize[fileNum],browseFile) == EOF) {
-                return errno;
-            } else {
-                sectionSize[fileNum] >>= 8;
+        p = (unsigned char *)&sectionSize[fileNum];
+        for( i = 0; i < 4; i++ ) {
+            if( fputc( *p++, browseFile ) == EOF ) {
+                return( errno );
             }
         }
     }
-    return 0;
+    return( 0 );
 }
 //---------------------------------------------------------------------------

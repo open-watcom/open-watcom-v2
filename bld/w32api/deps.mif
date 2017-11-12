@@ -266,7 +266,7 @@ winbase.h : ../include/winbase.mh $(owhdr) $(cplus)
 winber.h : ../include/winber.mh $(owhdr) $(cplus)
 wincon.h : ../include/wincon.mh $(owhdr) $(cplus)
 wincrypt.h : ../include/wincrypt.mh $(owhdr) $(cplus) ../include/algid.sp
-windef.h : ../include/windef.mh $(owhdr) $(cplus)
+windef.h : ../include/windef.mh $(owhdr) $(cplus) $(hdr_dir)/null.sp
 windns.h : ../include/windns.mh $(owhdr) $(cplus)
 windot11.h : ../include/windot11.mh $(owhdr) $(cplus)
 windows.h : ../include/windows.mh $(owhdr)
@@ -355,7 +355,7 @@ ddk/ntddtape.h : ../include/ddk/ntddtape.mh $(owhdr) $(cplus)
 ddk/ntddtdi.h : ../include/ddk/ntddtdi.mh $(owhdr) $(cplus)
 ddk/ntddvdeo.h : ../include/ddk/ntddvdeo.mh $(owhdr) $(cplus)
 ddk/ntddvol.h : ../include/ddk/ntddvol.mh $(owhdr) $(cplus)
-ddk/ntdef.h : ../include/ddk/ntdef.mh $(owhdr) $(cplus) ../include/stdapi.sp ../include/secstat.sp
+ddk/ntdef.h : ../include/ddk/ntdef.mh $(owhdr) $(cplus) ../include/stdapi.sp ../include/secstat.sp $(hdr_dir)/null.sp
 ddk/ntifs.h : ../include/ddk/ntifs.mh $(owhdr) $(cplus)
 ddk/ntiologc.h : ../include/ddk/ntiologc.mh $(owhdr) $(cplus)
 ddk/ntnls.h : ../include/ddk/ntnls.mh $(owhdr) $(cplus)

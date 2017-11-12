@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,38 +34,22 @@
 #ifndef _TRDLIST_H_INCLUDED
 #define _TRDLIST_H_INCLUDED
 
+#include "threadid.h"
+
 #if defined( __NETWARE__ )
  #if defined( _NETWARE_CLIB )
-  #define TID                   int
   #define GetCurrentThreadId()  (*__threadid())
-  extern void                   ThreadSwitch( void );
-  extern void                   *GetThreadID( void );
- #elif defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
+ #elif defined( _NETWARE_LIBC )
+  #define GetCurrentThreadId()  __GetSystemWideUniqueTID()
  #endif
 #elif defined( __NT__ )
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
-  #endif
-  #include <windows.h>
-  #include "ntext.h"
   extern DWORD                  __TlsIndex;
-  #define TID                   DWORD
 #elif defined( __QNX__ )
-  #include <sys/types.h>
-  #include <unistd.h>
-  #define TID                   pid_t
   #define GetCurrentThreadId()  (getpid())
 #elif defined( __LINUX__ )
-  #include <sys/types.h>
-  #include <process.h>
-  #include <unistd.h>
   extern sem_t                  __tls_sem;
-  #define TID                   pid_t
   #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )
-  #include <rdos.h>
-  #define TID                   int
   extern int                    __TlsIndex;
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
   extern int __tls_alloc();
@@ -79,13 +64,8 @@
   #pragma aux __tls_set_value "*" parm [ecx] [eax] modify [edx];
   #pragma aux __create_thread "*" parm [edx] [ebx] [edi] [eax] [ecx];
 #elif defined( __RDOSDEV__ )
-  #include <rdos.h>
-  #include <rdosdev.h>
-  #define TID                   int
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
 #elif defined( __OS2__ )
-  #define INCL_DOSSEMAPHORES
-  #define INCL_DOSPROCESS
   #if defined( __WARP__ )
     // OS/2 2.0
     #define GetCurrentThreadId()    (*__threadid())
@@ -96,21 +76,21 @@
   #endif
 #endif
 
-#if !defined( __QNX__ ) && !defined(__RDOSDEV__)
+#if defined(_NETWARE_LIBC)
+void __RemoveAllThreadData( void );
+#endif
+
+#if !defined( __QNX__ ) && !defined(__RDOSDEV__) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
 
 // lookup thread data
 thread_data *__GetThreadData( void );
 
 // add to list of thread data
-int __AddThreadData( TID, thread_data * );
+int __AddThreadData( _TID, thread_data * );
 
 // remove from list of thread data
-void __RemoveThreadData( TID );
-
-#if defined (_NETWARE_LIBC)
-void __RemoveAllThreadData( void );
-#endif
+void __RemoveThreadData( _TID );
 
 // mark each entry in list of thread data for resize
 void __ResizeThreadDataList( void );
@@ -123,4 +103,3 @@ void __FreeThreadDataList( void );
 #endif
 
 #endif
-

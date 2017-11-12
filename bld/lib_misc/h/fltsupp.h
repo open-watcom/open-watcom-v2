@@ -34,7 +34,7 @@
 #include "xfloat.h"
 #include "myvalist.h"
 #include "farsupp.h"
-#include "printf.h"
+#include "specs.h"
 
 
 #if defined( __MAKE_DLL_MATHLIB )

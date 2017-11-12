@@ -1,0 +1,52 @@
+# remap fpu to processor
+plib_086 = 086
+plib_087 = 086 
+plib_286 = 286
+plib_287 = 286
+plib_386 = 386
+plib_387 = 386
+plib_axp = axp
+plib_mps = mps
+plib_ppc = ppc
+
+plib_host_cpu_086 = i86
+plib_host_cpu_286 = i86
+plib_host_cpu_386 = 386
+plib_host_cpu_axp = axp
+host_cpu = $(plib_host_cpu_$(plib_$(processor)))
+
+plib_host_os_generic = generic
+plib_host_os_winnt   = nt
+plib_host_os_windows = win
+plib_host_os_os2     = os2
+plib_host_os_qnx     = qnx
+plib_host_os_netware = nov
+plib_host_os_linux   = linux
+host_os = $(plib_host_os_$(system))
+
+plib_suffix_ms       = s
+plib_suffix_mc       = c
+plib_suffix_mm       = m
+plib_suffix_ml       = l
+plib_suffix_mh       = h
+plib_suffix_stack    = 3s
+plib_suffix_register = 3r
+plib_suffix_086      = $(plib_suffix_$(model))
+plib_suffix_087      = 7$(plib_suffix_$(model))
+plib_suffix_286      = $(plib_suffix_$(model))
+plib_suffix_287      = 7$(plib_suffix_$(model))
+plib_suffix_386      = $(plib_suffix_$(convention))
+plib_suffix_387      = 7$(plib_suffix_$(convention))
+!ifdef mthreaded
+suffix = mt$(plib_suffix_$(processor))
+!else
+suffix = $(plib_suffix_$(processor))
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include libsubdi.mif
+
+!include $(cpplib_dir)/flags.mif
+!include $(cpplib_dir)/librules.mif
+!include $(cpplib_dir)/lib.mif

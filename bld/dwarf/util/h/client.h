@@ -32,16 +32,17 @@
 #define MAX_SECTION_DATA 4096
 
 struct section_data {
-    uint        cur_offset;
-    uint        max_offset;
-    unsigned_8  *data;
+    dw_out_offset   cur_offset;
+    dw_out_offset   max_offset;
+    unsigned_8      *data;
 };
+
 extern struct section_data Sections[];
 
-extern uint_32 RelocValues[DW_W_MAX];
-extern uint_32 SymHandles[20];
-extern dw_handle FundamentalTypes[DW_FT_MAX];
-extern dw_client Client;
+extern uint_32      RelocValues[DW_W_MAX];
+extern uint_32      SymHandles[20];
+extern dw_handle    FundamentalTypes[DW_FT_MAX];
+extern dw_client    Client;
 
-extern void Test( void );
-extern void DumpSections( void );
+extern void         Test( void );
+extern void         DumpSections( void );

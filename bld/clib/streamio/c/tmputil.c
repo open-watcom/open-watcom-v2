@@ -36,6 +36,9 @@
 #include <direct.h>
 #include <string.h>
 #include <process.h>
+#if defined( __NETWARE__ )
+    #include "nw_lib.h"
+#endif
 #include "rtdata.h"
 #include "tmpfname.h"
 #include "pathmac.h"
@@ -94,8 +97,7 @@ static char __hex( int num )
 }
 
 #if defined( __NETWARE__ )
-    extern int              GetThreadID( void );
-    #define getuniqueid()   GetThreadID()
+    #define getuniqueid()   (unsigned)GetThreadID()
 #elif defined( __NT__ )
     #define getuniqueid()   ((getpid() << 12) + *_threadid)
 #elif defined( __OS2__ )

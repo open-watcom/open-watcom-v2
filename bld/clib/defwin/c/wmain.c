@@ -31,6 +31,8 @@
 
 
 #include "variety.h"
+#define INCLUDE_COMMDLG_H
+#include <wwindows.h>
 #include "win.h"
 
 extern int main( int, char ** );

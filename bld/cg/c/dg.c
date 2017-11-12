@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include "cg.h"
+#include "_cg.h"
 #include "bckdef.h"
 #include "cgmem.h"
 #include "typclass.h"
@@ -47,6 +48,8 @@
 #include "stubdata.h"
 #include "dbsyms.h"
 #include "feprotos.h"
+#include "cgprotos.h"
+
 
 extern  unsigned_16     TypeIdx;
 
@@ -1045,7 +1048,7 @@ extern  dbg_type        DBEndStruct( struct_list *st ) {
         case FIELD_OFFSET:
             {
                 field_member *field = curr;
-    
+
                 toff = field->u.off;
                 TypDbg( "    '%s' base==%d, offset==%d", field->name, field->base, toff );
                 if( field->len != 0 ) {
@@ -1056,7 +1059,7 @@ extern  dbg_type        DBEndStruct( struct_list *st ) {
         case FIELD_LOC:
             {
                 field_member *field = curr;
-    
+
                 TypDbg( "    '%s' base==%d, attr==%h, location==%s", field->name, field->base,
                          field->attr, Location( field->u.loc ) );
                 if( field->len != 0 ) {
@@ -1067,7 +1070,7 @@ extern  dbg_type        DBEndStruct( struct_list *st ) {
         case FIELD_INHERIT:
             {
                 field_bclass *field = curr;
-    
+
                 TypDbg( "    inherit base==%d, adjust==%s", field->base,
                          Location( field->u.adjustor ) );
             }

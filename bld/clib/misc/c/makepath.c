@@ -127,7 +127,7 @@ static char pickup( char c, char *pc_of_choice )
     return( c );
 }
 
-_WCRTLINK extern void _makepath( char *path, const char *volume,
+_WCRTLINK void _makepath( char *path, const char *volume,
                 const char *dir, const char *fname, const char *ext )
 {
     char first_pc = NULLCHAR;

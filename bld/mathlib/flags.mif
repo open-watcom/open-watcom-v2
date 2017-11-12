@@ -121,6 +121,3 @@ a_dbg_flags += -D$(debug)
 c_dbg_flags = -DNDEBUG
 a_dbg_flags = -DNDEBUG
 !endif
-
-!include $(mathlib_dir)/include.mif
-!include $(mathlib_dir)/lib.mif

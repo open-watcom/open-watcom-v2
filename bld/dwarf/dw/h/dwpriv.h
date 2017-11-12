@@ -34,16 +34,10 @@
 #define DWPRIV_H_INCLUDED
 
 #include <assert.h>
-#include <setjmp.h>
 #include <string.h>
-#include <watcom.h>
 #include "dw.h"
 #include "dwassert.h"
 #include "dwarf.h"
-
-typedef uint_32                 debug_ref;
-#define WriteRef                WriteU32
-
 #include "dwabort.h"
 #include "dwline.h"
 #include "dwdie.h"
@@ -88,8 +82,8 @@ struct debug_abbrev_private {
 };
 
 struct types_private {
-    dw_size_t   byte_size;      // these used in enumerations.
-    debug_ref   offset;
+    dw_size_t           byte_size;      // these used in enumerations.
+    dw_sect_offs        offset;
 };
 
 struct die_private {
@@ -119,12 +113,12 @@ struct references_private {
 
 #include "pushpck4.h"
 struct dw_client {
-    jmp_buf             exception_handler;
-    dw_funcs            funcs;
-    char *              producer_name;
-    uint_8              compiler_options;
-    uint_8              language;
-    debug_ref           section_base[DW_DEBUG_MAX];
+    jmp_buf                     exception_handler;
+    dw_funcs                    funcs;
+    char                        *producer_name;
+    uint_8                      compiler_options;
+    uint_8                      language;
+    dw_out_offset               section_base[DW_DEBUG_MAX];
     struct handles_private      handles;
     struct debug_line_private   debug_line;
     struct debug_abbrev_private debug_abbrev;

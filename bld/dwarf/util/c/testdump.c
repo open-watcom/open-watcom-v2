@@ -40,13 +40,13 @@
 #include "bool.h"
 #include "dw.h"
 #include "dwarf.h"
-#include "client.h"
+#include "testcli.h"
 
 extern bool byte_swap;
 
 typedef struct {
     uint_32     value;
-    char *      name;
+    char        *name;
 } readable_name;
 
 #include "pushpck1.h"
@@ -62,7 +62,7 @@ typedef struct arange_header {
 #define table( x )      { x, #x }
 
 static readable_name readableTAGs[] = {
-    table( DW_TAG_padding ),
+    table( DW_TAG_WATCOM_padding ),
     table( DW_TAG_array_type ),
     table( DW_TAG_class_type ),
     table( DW_TAG_entry_point ),
@@ -274,7 +274,8 @@ static uint_16  getU16( uint_16 *src )
     }
 }
 
-static int compareTable( const void *_a, const void *_b ) {
+static int compareTable( const void *_a, const void *_b )
+{
     readable_name *a = (readable_name *)_a;
     readable_name *b = (readable_name *)_b;
 
@@ -287,31 +288,32 @@ static int compareTable( const void *_a, const void *_b ) {
 }
 
 
-static void sortTables( void ) {
-
+static void sortTables( void )
+{
     qsort( readableTAGs, NUM_TAGS, sizeof( readable_name ), compareTable );
     qsort( readableFORMs, NUM_FORMS, sizeof( readable_name ), compareTable );
     qsort( readableATs, NUM_ATS, sizeof( readable_name ), compareTable );
 }
 
 
-static char *getName( uint_32 value, readable_name *table, size_t size ) {
-
+static char *getName( uint_32 value, readable_name *table, size_t size )
+{
     readable_name       dummy;
-    readable_name *     result;
+    readable_name       *result;
 
     dummy.value = value;
     result = bsearch( &dummy, table, size, sizeof( readable_name ),
         compareTable );
-    if( result == NULL ) return( NULL );
+    if( result == NULL )
+        return( NULL );
     return( result->name );
 }
 
 
-static char *getTAG( uint_32 value ) {
-
+static char *getTAG( uint_32 value )
+{
     static char                 buf[30];
-    char *                      result;
+    char                        *result;
 
     result = getName( value, readableTAGs, NUM_TAGS );
     if( result == NULL ) {
@@ -322,10 +324,10 @@ static char *getTAG( uint_32 value ) {
 }
 
 
-static char *getFORM( uint_32 value ) {
-
+static char *getFORM( uint_32 value )
+{
     static char                 buf[30];
-    char *                      result;
+    char                        *result;
 
     result = getName( value, readableFORMs, NUM_FORMS );
     if( result == NULL ) {
@@ -336,10 +338,10 @@ static char *getFORM( uint_32 value ) {
 }
 
 
-static char *getAT( uint_32 value ) {
-
+static char *getAT( uint_32 value )
+{
     static char                 buf[30];
-    char *                      result;
+    char                        *result;
 
     result = getName( value, readableATs, NUM_ATS );
     if( result == NULL ) {
@@ -366,32 +368,32 @@ static void dumpHex( const unsigned_8 *input, uint length, int offsets )
     }
 
     offset = 0;
-    for(;;) {
+    for( ;; ) {
         i = 0;
         p = hex;
         old_offset = offset;
-        for(;;) {
-            if( offset == length ) break;
-            if( i > 0xf ) break;
-            if( i == 0x8 ) {
+        for( ; offset != length; ++offset ) {
+            if( i > 15 )
+                break;
+            if( i == 8 )
                 *p++ = ' ';
-            }
             ch = input[offset];
             p += sprintf( p, " %02x", ch );
             printable[i] = isprint( ch ) ? ch : '.';
             ++i;
-            ++offset;
         }
         *p = 0;
         printable[i] = 0;
         printf( "%08x:%-49s <%s>\n", old_offset, hex, printable );
         p = printable;
         i = 0;
-        if( offset == length ) break;
+        if( offset == length ) {
+            break;
+        }
     }
 }
 
-uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value ) {
+static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value ) {
 
     uint_32     result;
     uint        shift;
@@ -399,10 +401,11 @@ uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value ) {
 
     result = 0;
     shift = 0;
-    for(;;) {
+    for( ;; ) {
         byte = *input++;
         result |= ( byte & 0x7f ) << shift;
-        if( ( byte & 0x80 ) == 0 ) break;
+        if( ( byte & 0x80 ) == 0 )
+            break;
         shift += 7;
     }
     *value = result;
@@ -410,7 +413,7 @@ uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value ) {
 }
 
 
-uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value ) {
+static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value ) {
 
     int_32      result;
     uint        shift;
@@ -418,11 +421,13 @@ uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value ) {
 
     result = 0;
     shift = 0;
-    for(;;) {
+    for( ;; ) {
         byte = *input++;
         result |= ( byte & 0x7f ) << shift;
         shift += 7;
-        if( ( byte & 0x80 ) == 0 ) break;
+        if( ( byte & 0x80 ) == 0 ) {
+            break;
+        }
     }
     if( ( shift < 32 ) && ( byte & 0x40 ) ) {
         result |= - ( 1 << shift );
@@ -431,8 +436,8 @@ uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value ) {
     return( (uint_8 *)input );
 }
 
-uint_8 *findAbbrev( uint_32 code, uint_32 start ) {
-
+static uint_8 *findAbbrev( uint_32 code, uint_32 start )
+{
     uint_8      *p;
     uint_8      *stop;
     uint_32     tmp;
@@ -440,29 +445,36 @@ uint_8 *findAbbrev( uint_32 code, uint_32 start ) {
 
     p = Sections[DW_DEBUG_ABBREV].data + start;
     stop = p + Sections[DW_DEBUG_ABBREV].max_offset;
-    for(;;) {
-        if( p >= stop ) return( NULL );
+    for( ;; ) {
+        if( p >= stop )
+            return( NULL );
         p = DecodeULEB128( p, &tmp );
-        if( tmp == code ) return( p );
-        if( p >= stop ) return( NULL );
+        if( tmp == code )
+            return( p );
+        if( p >= stop )
+            return( NULL );
         p = DecodeULEB128( p, &tmp );
-        if( p >= stop ) return( NULL );
+        if( p >= stop )
+            return( NULL );
         p++;
-        for(;;) {
+        for( ;; ) {
             p = DecodeULEB128( p, &attr );
-            if( p >= stop ) return( NULL );
+            if( p >= stop )
+                return( NULL );
             p = DecodeULEB128( p, &tmp );
-            if( p >= stop ) return( NULL );
-            if( attr == 0 ) break;
+            if( p >= stop )
+                return( NULL );
+            if( attr == 0 ) {
+                break;
+            }
         }
     }
 }
 
-static void printf_debug_str( unsigned int offset )
+static void printf_debug_str( dw_out_offset offset )
 {
     if( offset > Sections[DW_DEBUG_STR].max_offset ) {
-        printf( "\tstring @ .debug_str+%u (invalid offset)\n",
-               offset );
+        printf( "\tstring @ .debug_str+%lu (invalid offset)\n", (unsigned long)offset );
     } else {
         printf( "\t\"%s\"\n", Sections[DW_DEBUG_STR].data + offset );
     }
@@ -488,29 +500,32 @@ static void dumpInfo( const uint_8 *input, uint length ) {
     while( p - input < length ) {
         unit_length = getU32( (uint_32 *)p );
         unit_base = p + sizeof( uint_32 );
-        address_size = *(p+10);
-        abbrev_offset = getU32( (uint_32 *)(p+6) );
+        address_size = *(p + 10);
+        abbrev_offset = getU32( (uint_32 *)(p + 6) );
         printf( "Length: %08lx\nVersion: %04x\nAbbrev: %08lx\nAddress Size %02x\n",
-            unit_length, getU16( (uint_16 *)(p+4) ), abbrev_offset, address_size );
+            unit_length, getU16( (uint_16 *)(p + 4) ), abbrev_offset, address_size );
         p += 11;
         while( p - unit_base < unit_length ) {
             printf( "offset %08x: ", p - input );
             p = DecodeULEB128( p, &abbrev_code );
             printf( "Code: %08lx\n", abbrev_code );
-            if( abbrev_code == 0 ) continue;
+            if( abbrev_code == 0 )
+                continue;
             abbrev = findAbbrev( abbrev_code, abbrev_offset );
             if( abbrev == NULL ) {
                 printf( "can't find abbreviation %08lx\n", abbrev_code );
                 break;
             }
-            if( p >= input + length ) break;
+            if( p >= input + length )
+                break;
             abbrev = DecodeULEB128( abbrev, &tag );
             printf( "\t%s\n", getTAG( tag ) );
             abbrev++;
-            for(;;) {
+            for( ;; ) {
                 abbrev = DecodeULEB128( abbrev, &attr );
                 abbrev = DecodeULEB128( abbrev, &form );
-                if( attr == 0 ) break;
+                if( attr == 0 )
+                    break;
                 printf( "\t%-20s", getAT( attr ) );
     decode_form:
                 switch( form ) {
@@ -588,7 +603,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     p += strlen( (const char *)p ) + 1;
                     break;
                 case DW_FORM_strp:  /* 4 byte index into .debug_str */
-                    printf_debug_str( getU32( (unsigned long *)p ) );
+                    printf_debug_str( getU32( (uint_32 *)p ) );
                     p += 4;
                     break;
                 case DW_FORM_udata:
@@ -597,7 +612,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     printf( "\t%08lx\n", tmp );
                     break;
                 case DW_FORM_ref_addr:  //KLUDGE should really check addr_size
-                    printf( "\t%08lx\n", getU32( ((uint_32 *)p) ) );
+                    printf( "\t%08lx\n", getU32( (uint_32 *)p ) );
                     p += sizeof(uint_32);
                     break;
                 default:
@@ -610,7 +625,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
 }
 
 
-void dumpAbbrevs( const unsigned_8 *input, uint length ) {
+static void dumpAbbrevs( const unsigned_8 *input, uint length ) {
 
     const uint_8 *p;
     uint_32     tmp;
@@ -620,12 +635,15 @@ void dumpAbbrevs( const unsigned_8 *input, uint length ) {
         return;
 
     p = input;
-    for(;;) {
-        if( p > input + length ) break;
+    for( ;; ) {
+        if( p > input + length )
+            break;
         p = DecodeULEB128( p, &tmp );
         printf( "Code: %08lx\n", tmp );
-    if( tmp == 0 ) continue;
-        if( p >= input + length ) break;
+        if( tmp == 0 )
+            continue;
+        if( p >= input + length )
+            break;
         p = DecodeULEB128( p, &tmp );
         printf( "\t%s\n", getTAG( tmp ) );
         if( *p == DW_CHILDREN_yes ) {
@@ -634,14 +652,16 @@ void dumpAbbrevs( const unsigned_8 *input, uint length ) {
             printf( "childless\n" );
         }
         p++;
-        for(;;) {
-            if( p > input + length ) break;
+        for( ; p <= input + length; ) {
             p = DecodeULEB128( p, &attr );
             printf( "\t%-20s", getAT( attr ) );
-            if( p > input + length ) break;
+            if( p > input + length )
+                break;
             p = DecodeULEB128( p, &tmp );
             printf( "\t%-15s\n", getFORM( tmp ) );
-            if( attr == 0 ) break;
+            if( attr == 0 ) {
+                break;
+            }
         }
     }
 }
@@ -671,8 +691,8 @@ typedef struct {
 } state_info;
 
 
-static void initState( state_info *state, int default_is_stmt ) {
-
+static void initState( state_info *state, int default_is_stmt )
+{
     state->address = 0;
     state->file = 1;
     state->line = 1;
@@ -683,43 +703,44 @@ static void initState( state_info *state, int default_is_stmt ) {
 }
 
 
-static void dumpState( state_info *state ) {
-
+static void dumpState( state_info *state )
+{
     printf( "-- file %d addr %08lx line %d column %d",
         state->file, state->address, state->line, state->column );
-    if( state->is_stmt ) printf( " is_stmt" );
-    if( state->basic_block ) printf( " basic_block" );
-    if( state->end_sequence ) printf( " end_sequence" );
+    if( state->is_stmt )
+        printf( " is_stmt" );
+    if( state->basic_block )
+        printf( " basic_block" );
+    if( state->end_sequence )
+        printf( " end_sequence" );
     printf( "\n" );
 }
 
 
-static void dumpLines(
-    const uint_8 *              input,
-    uint                        length )
+static void dumpLines( const uint_8 *input, uint length )
 {
-    const uint_8 *              p;
-    uint                        opcode_base;
-    uint *                      opcode_lengths;
-    uint                        u;
-    uint                        file_index;
-    const uint_8 *              name;
-    uint_32                     dir_index;
-    uint_32                     mod_time;
-    uint_32                     file_length;
-    uint_32                     directory;
-    uint_8                      op_code;
-    uint_8                      op_len;
-    uint_32                     tmp;
-    uint_16                     tmp_seg;
-    uint                        line_range;
-    int                         line_base;
-    int_32                      itmp;
-    int                         default_is_stmt;
-    state_info                  state;
-    uint                        min_instr;
-    uint_32                     unit_length;
-    const uint_8 *              unit_base;
+    const uint_8    *p;
+    uint            opcode_base;
+    uint            *opcode_lengths;
+    uint            u;
+    uint            file_index;
+    const uint_8    *name;
+    uint_32         dir_index;
+    uint_32         mod_time;
+    uint_32         file_length;
+    uint_32         directory;
+    uint_8          op_code;
+    uint_8          op_len;
+    uint_32         tmp;
+    uint_16         tmp_seg;
+    uint            line_range;
+    int             line_base;
+    int_32          itmp;
+    int             default_is_stmt;
+    state_info      state;
+    uint            min_instr;
+    uint_32         unit_length;
+    const uint_8    *unit_base;
 
     p = input;
     while( p - input < length ) {
@@ -728,7 +749,7 @@ static void dumpLines(
         unit_base = p;
 
         printf( "total_length: 0x%08lx (%u)\n", unit_length, unit_length );
-        
+
         printf( "=== unit dump start ===\n" );
         dumpHex( unit_base - sizeof( uint_32 ), unit_length + sizeof (uint_32 ), 1 );
         printf( "=== unit dump end ===\n" );
@@ -768,7 +789,8 @@ static void dumpLines(
 
         printf( "-- current_offset = %08x\n", p - input );
 
-        if( p - input >= length ) return;
+        if( p - input >= length )
+            return;
 
         printf( "-- start include paths --\n");
         file_index = 0;
@@ -777,7 +799,9 @@ static void dumpLines(
             name = p;
             p += strlen( (const char *)p ) + 1;
             printf( "path %u: '%s'\n", file_index, name );
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                return;
+            }
         }
         printf( "-- end include paths --\n");
         p++;
@@ -792,7 +816,9 @@ static void dumpLines(
             p = DecodeULEB128( p, &file_length );
             printf( "file %u: '%s' dir_index %08lx mod_time %08lx length %08lx\n",
                 file_index, name, dir_index, mod_time, file_length );
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                return;
+            }
         }
         printf( "-- end files --\n");
         p++;
@@ -852,12 +878,12 @@ static void dumpLines(
                 default:
                     printf( "** unknown extended opcode: %02x - %u bytes\n", op_code, op_len );
                     printf( "** losing %u bytes\n", unit_length - ( p - unit_base ));
-                    
+
                     dumpHex( p-3, (unit_length - ( p - unit_base )) + 3, 1 );
-                    
+
                     p = unit_base + unit_length;
-                    goto hacky;                    
-                    return;
+                    goto hacky;
+//                    return;
                 }
             } else if( op_code < opcode_base ) {
                 printf( "%s", getStandardOp( op_code ) );
@@ -932,8 +958,8 @@ hacky:
 
 static char *getReferenceOp( uint_8 value ) {
 
-    static char                 buf[30];
-    char *                      result;
+    static char     buf[30];
+    char            *result;
 
     result = getName( value, readableReferenceOps, NUM_REFERENCE_OPS );
     if( result == NULL ) {
@@ -944,16 +970,14 @@ static char *getReferenceOp( uint_8 value ) {
 }
 
 
-static void dumpRef(
-    const uint_8 *              input,
-    uint                        length )
+static void dumpRef( const uint_8 *input, uint length )
 {
-    const uint_8 *              p;
-    uint_8                      op_code;
-    uint_32                     tmp;
-    int_32                      itmp;
-    uint_32                     unit_length;
-    const uint_8 *              unit_base;
+    const uint_8    *p;
+    uint_8          op_code;
+    uint_32         tmp;
+    int_32          itmp;
+    uint_32         unit_length;
+    const uint_8    *unit_base;
 
     p = input;
 
@@ -1003,9 +1027,9 @@ static void dumpRef(
 
 static const uint_8 *dumpSegAddr( const uint_8 *input, uint_8 addrsize, uint_8 segsize )
 {
-    const uint_8 *          p;
-    uint_32                 addr;
-    uint_32                 seg;
+    const uint_8    *p;
+    uint_32         addr;
+    uint_32         seg;
 
     p = input;
 
@@ -1056,14 +1080,14 @@ static const uint_8 *dumpSegAddr( const uint_8 *input, uint_8 addrsize, uint_8 s
 
 static void dumpARanges( const uint_8 *input, uint length )
 {
-    const uint_8 *              p;
-    const uint_8 *              q;
-    const uint_8 *              cu_ar_end;
-    uint_32                     cu;
-    uint_32                     tmp;
-    uint_32                     tuple_size;
-    uint_32                     padding;
-    arange_header               ar_header;
+    const uint_8    *p;
+    const uint_8    *q;
+    const uint_8    *cu_ar_end;
+    uint_32         cu;
+    uint_32         tmp;
+    uint_32         tuple_size;
+    uint_32         padding;
+    arange_header   ar_header;
 
     p = input;
 
@@ -1119,13 +1143,13 @@ static void dumpARanges( const uint_8 *input, uint length )
                 return;
             }
             /* padding is missing! */
-            if( tmp )
+            if( tmp ) {
                 padding = 0;
+            }
         }
 
         p += padding;
-        cu_ar_end = p - sizeof( ar_header ) + sizeof( ar_header.len )
-            + ar_header.len - padding;
+        cu_ar_end = p - sizeof( ar_header ) + sizeof( ar_header.len ) + ar_header.len - padding;
 
         while( p < cu_ar_end ) {
             /* range address */
@@ -1154,13 +1178,14 @@ static void dumpARanges( const uint_8 *input, uint length )
 }
 
 
-void DumpSections( void ) {
-
-    uint        sect;
+void DumpSections( void )
+{
+    dw_sectnum  sect;
 
     sortTables();
-    sect = 0;
-    for(;;) {
+    for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
+        if( sect > 0 )
+            printf( "\n" );
         printf( "%s:\n", sectionNames[sect] );
         switch( sect ) {
         case DW_DEBUG_ABBREV:
@@ -1185,8 +1210,5 @@ void DumpSections( void ) {
             dumpHex( Sections[sect].data, Sections[sect].max_offset, 0 );
             break;
         }
-        ++sect;
-        if( sect == DW_DEBUG_MAX ) break;
-        printf( "\n" );
     }
 }

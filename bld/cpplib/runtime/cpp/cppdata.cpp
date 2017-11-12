@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,23 +35,23 @@
 #include "rtexcept.h"
 #include "rtinit.h"
 
+extern "C" {
+
 //************************************************************************
 // Per Thread Data
 // Storage is allocated in in cppdata.obj for non multi-thread or
 // by the clib BeginThread() routine for multi-thread.
 //************************************************************************
 #ifndef __SW_BM
-_WPRTLINK THREAD_CTL    _wint_thread_data;
+    _WPRTLINK THREAD_CTL    _wint_thread_data;
 #elif defined( _M_I86 )
 #else
-_WPRTLINK unsigned      _wint_thread_data_offset;
+    _WPRTLINK unsigned      _wint_thread_data_offset;
 #endif
 
 #if defined( __SW_BM ) && defined( __386__ )
-extern "C" AXI( CPPLIB( multi_thread_init ), INIT_PRIORITY_THREAD )
+    AXI( CPPLIB( multi_thread_init ), INIT_PRIORITY_THREAD )
 #endif
-
-extern "C" {
 
 #ifndef NDEBUG
 

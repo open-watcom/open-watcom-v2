@@ -44,32 +44,49 @@
 
 static byte_seq *AuxCodeDup( byte_seq *code );
 
-static void pragmaInit(         // INIT PRAGMAS
+static void pragmasInit(        // INIT PRAGMAS
     INITFINI* defn )            // - definition
 {
     /* unused parameters */ (void)defn;
 
     PragInit();
-    if( !CompFlags.dll_subsequent ) {
-        AsmInit();
-    }
     SetAuxDefaultInfo();
 }
 
-static void pragmaFini(         // FINISH PRAGMAS
+static void pragmasFini(        // FINISH PRAGMAS
     INITFINI* defn )            // - definition
 {
     /* unused parameters */ (void)defn;
 
-    AsmFini();
     CgInfoFreeLibs();
     CgInfoFreeImports();
     CgInfoFreeImportsS();
 }
 
 
-INITDEFN( pragmas, pragmaInit, pragmaFini )
+INITDEFN( pragmas, pragmasInit, pragmasFini )
 
+
+static void assemblerInit(      // INIT ASSEMBLER
+    INITFINI* defn )            // - definition
+{
+    /* unused parameters */ (void)defn;
+
+    if( !CompFlags.dll_subsequent ) {
+        AsmInit();
+    }
+}
+
+static void assemblerFini(      // FINISH ASSEMBLER
+    INITFINI* defn )            // - definition
+{
+    /* unused parameters */ (void)defn;
+
+    AsmFini();
+}
+
+
+INITDEFN( assembler, assemblerInit, assemblerFini )
 
 void PragAux(                   // #PRAGMA AUX ...
     void )

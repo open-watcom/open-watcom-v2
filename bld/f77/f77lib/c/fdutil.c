@@ -31,7 +31,7 @@
 #include "ftnstd.h"
 #include "ftnio.h"
 #include "rtutls.h"
-#include "ftextfun.h"
+#include "fdutil.h"
 
 #include <string.h>
 #include <stdio.h>

@@ -29,8 +29,9 @@
 *
 ****************************************************************************/
 
-#if !defined(_F77_DATTYP_H_)
-#define _F77_DATTYP_H_ 1
+
+#ifndef _F77_DATTYP_H_
+#define _F77_DATTYP_H_
 
 typedef struct adv_entry {
     signed_32   lo_bound;
@@ -39,33 +40,33 @@ typedef struct adv_entry {
 
 #include "tddattyp.h"
 
-typedef    signed_8     logstar1;       // 8-bit logical
-typedef    signed_32    logstar4;       // 32-bit logical
-typedef    signed_8     intstar1;       // 8-bit integer
-typedef    signed_16    intstar2;       // 16-bit integer
-typedef    signed_32    intstar4;       // 32-bit integer
-typedef    real         single;         // single precision
-typedef    long double  extended;       // extended precision
+typedef     signed_8    logstar1;   // 8-bit logical
+typedef     signed_32   logstar4;   // 32-bit logical
+typedef     signed_8    intstar1;   // 8-bit integer
+typedef     signed_16   intstar2;   // 16-bit integer
+typedef     signed_32   intstar4;   // 32-bit integer
+typedef     real        single;     // single precision
+typedef     long double extended;   // extended precision
 
 #if _CPU == 8086
-    typedef    intstar2     inttarg;    // target integer
+typedef     intstar2    inttarg;    // target integer
 #else
-    typedef    intstar4     inttarg;    // target integer
+typedef     intstar4    inttarg;    // target integer
 #endif
 
-typedef    unsigned_32  ftnoption;
+typedef     unsigned_32 ftnoption;
 
-typedef struct scomplex {        // single precision complex
+typedef struct scomplex {           // single precision complex
     single      realpart;
     single      imagpart;
 } scomplex;
 
-typedef struct dcomplex {        // double precision complex
+typedef struct dcomplex {           // double precision complex
     double      realpart;
     double      imagpart;
 } dcomplex;
 
-typedef struct xcomplex {        // extended precision complex
+typedef struct xcomplex {           // extended precision complex
     extended    realpart;
     extended    imagpart;
 } xcomplex;
@@ -79,7 +80,7 @@ typedef struct arr_desc {
 
 #include "scb.h"
 
-#define MAX_INT_SIZE    11       //  buffer for 32-bit integer strings
+#define MAX_INT_SIZE    11          //  buffer for 32-bit integer strings
 
 typedef struct symbol   *sym_id;
 
@@ -106,11 +107,13 @@ typedef union ftn_type {
     struct {
         sym_id          field_id;       // structure name of fields
         sym_id          ss_id;          // substrung symbol
-        uint            ss_size;        // length of substrung/subscripted
-                                        // character string
+        uint            ss_size;        // length of substrung/subscripted character string
     } st;
 } ftn_type;
 
-    typedef     unsigned int    label_id;
-    typedef     obj_ptr         warp_label;
+typedef     unsigned    label_id;
+typedef     obj_ptr     warp_label;
+
+typedef     unsigned_32 recnum_type;
+
 #endif

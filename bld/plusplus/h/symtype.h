@@ -480,15 +480,14 @@ typedef enum {
 
 PCH_struct friend_list {
     FRIEND              *next;          // - next in ring
-    union {
+    union {                             // LSB is flag: 0=symbol, 1=type
         SYMBOL          sym;            // - friendly symbol
         TYPE            type;           // - friendly type
-        unsigned int    is_type : 1;    // - flag: 0=symbol, 1=type
     } u;
 };
 
-#define FriendIsSymbol( friend )        (!(friend)->u.is_type)
-#define FriendIsType( friend )          ((friend)->u.is_type)
+#define FriendIsSymbol( friend )        (((pointer_int)(friend)->u.type & 1)==0)
+#define FriendIsType( friend )          (((pointer_int)(friend)->u.type & 1)!=0)
 #define FriendGetSymbol( friend )       (friend)->u.sym
 #define FriendGetType( friend )         (TYPE)((pointer_int)(friend)->u.type & ~1)
 #define FriendSetSymbol( friend, sym )  (friend)->u.sym = sym
@@ -584,67 +583,67 @@ typedef PCH_struct {
 
     int             : 0;
 
-    unsigned        defined : 1;    // class is defined fully
-    unsigned        opened : 1;     // class defn has been started
-    unsigned        unnamed : 1;    // cannot have ctors, dtors, etc.
-    unsigned        corrupted : 1;  // errors occurred during declaration!
-    unsigned        abstract : 1;   // contains pure virtual functions
-    unsigned        abstract_OK : 1;// abstract flag is set properly
-    unsigned        anonymous : 1;  // class is an anonymous union/struct
-    unsigned        has_def_opeq : 1; // has an explicit default operator=
+    bool            defined : 1;    // class is defined fully
+    bool            opened : 1;     // class defn has been started
+    bool            unnamed : 1;    // cannot have ctors, dtors, etc.
+    bool            corrupted : 1;  // errors occurred during declaration!
+    bool            abstract : 1;   // contains pure virtual functions
+    bool            abstract_OK : 1;// abstract flag is set properly
+    bool            anonymous : 1;  // class is an anonymous union/struct
+    bool            has_def_opeq : 1; // has an explicit default operator=
 
-    unsigned        has_ctor : 1;   // has an explicit constructor
-    unsigned        has_dtor : 1;   // has an explicit dtor
-    unsigned        has_pure : 1;   // has an explicit pure fn
-    unsigned        has_vfptr : 1;  // has a vfptr field
-    unsigned        has_vbptr : 1;  // has a vbptr field
-    unsigned        has_data : 1;   // contains non-static data members
-    unsigned        has_vfn : 1;    // contains virtual functions
-    unsigned        has_vcdtor : 1; // contains an explicit ctor/dtor in
+    bool            has_ctor : 1;   // has an explicit constructor
+    bool            has_dtor : 1;   // has an explicit dtor
+    bool            has_pure : 1;   // has an explicit pure fn
+    bool            has_vfptr : 1;  // has a vfptr field
+    bool            has_vbptr : 1;  // has a vbptr field
+    bool            has_data : 1;   // contains non-static data members
+    bool            has_vfn : 1;    // contains virtual functions
+    bool            has_vcdtor : 1; // contains an explicit ctor/dtor in
                                     // the presence of virtual functions
 
-    unsigned        ctor_defined :1;// default ctor defined
-    unsigned        copy_defined :1;// default copy ctor defined
-    unsigned        dtor_defined :1;// default dtor defined
-    unsigned        assign_defined:1;// default assignment defined
-    unsigned        ctor_gen : 1;   // default ctor generated
-    unsigned        copy_gen : 1;   // default copy ctor generated
-    unsigned        dtor_gen : 1;   // default dtor generated
-    unsigned        assign_gen : 1; // default assign generated
+    bool            ctor_defined :1;// default ctor defined
+    bool            copy_defined :1;// default copy ctor defined
+    bool            dtor_defined :1;// default dtor defined
+    bool            assign_defined:1;// default assignment defined
+    bool            ctor_gen : 1;   // default ctor generated
+    bool            copy_gen : 1;   // default copy ctor generated
+    bool            dtor_gen : 1;   // default dtor generated
+    bool            assign_gen : 1; // default assign generated
 
-    unsigned        ctor_user_code : 1;   // ctor has user code
-    unsigned        copy_user_code : 1;   // copy has user code
-    unsigned        dtor_user_code : 1;   // dtor has user code
-    unsigned        assign_user_code : 1; // assign has user code
-    unsigned        ctor_user_code_checked : 1; // ctor_user_code was checked
-    unsigned        copy_user_code_checked : 1; // copy_user_code was checked
-    unsigned        dtor_user_code_checked : 1; // dtor_user_code was checked
-    unsigned        assign_user_code_checked: 1;// assign_user_code was checked
+    bool            ctor_user_code : 1;   // ctor has user code
+    bool            copy_user_code : 1;   // copy has user code
+    bool            dtor_user_code : 1;   // dtor has user code
+    bool            assign_user_code : 1; // assign has user code
+    bool            ctor_user_code_checked : 1; // ctor_user_code was checked
+    bool            copy_user_code_checked : 1; // copy_user_code was checked
+    bool            dtor_user_code_checked : 1; // dtor_user_code was checked
+    bool            assign_user_code_checked: 1;// assign_user_code was checked
 
-    unsigned        needs_ctor : 1; // must be constructed
-    unsigned        needs_dtor : 1; // must be destructed
-    unsigned        needs_vdtor : 1;// must have a virtual destructor
-    unsigned        needs_assign : 1;// must be assigned with op=
-    unsigned        const_copy : 1; // copy ctor takes const C &
-    unsigned        const_assign :1;// assignment takes const C &
-    unsigned        const_ref : 1;  // contains a const or reference member
-    unsigned        zero_array : 1; // contains a zero sized array as last member
+    bool            needs_ctor : 1; // must be constructed
+    bool            needs_dtor : 1; // must be destructed
+    bool            needs_vdtor : 1;// must have a virtual destructor
+    bool            needs_assign : 1;// must be assigned with op=
+    bool            const_copy : 1; // copy ctor takes const C &
+    bool            const_assign :1;// assignment takes const C &
+    bool            const_ref : 1;  // contains a const or reference member
+    bool            zero_array : 1; // contains a zero sized array as last member
 
-    unsigned        free : 1;       // used for precompiled headers
-    unsigned        lattice : 1;    // more than one direct ref to a vbase
-    unsigned        passed_ref : 1; // class value is passed as a reference
-    unsigned        has_def_ctor :1;// has an explicit default constructor
-    unsigned        vftable_done :1;// vftable has been collected already
-    unsigned        vbtable_done :1;// vbtable has been collected already
-    unsigned        has_udc : 1;    // has a user-defined conversion declared
-    unsigned        common : 1;     // used when searching for common bases
+    bool            free : 1;       // used for precompiled headers
+    bool            lattice : 1;    // more than one direct ref to a vbase
+    bool            passed_ref : 1; // class value is passed as a reference
+    bool            has_def_ctor :1;// has an explicit default constructor
+    bool            vftable_done :1;// vftable has been collected already
+    bool            vbtable_done :1;// vbtable has been collected already
+    bool            has_udc : 1;    // has a user-defined conversion declared
+    bool            common : 1;     // used when searching for common bases
 
-    unsigned        has_comp_info:1;// has compiler generated info inside
-    unsigned        has_mutable : 1;// has a mutable data member
-    unsigned        empty : 1;      // class has zero size
-    unsigned        has_fn : 1;     // has any member function
+    bool            has_comp_info:1;// has compiler generated info inside
+    bool            has_mutable : 1;// has a mutable data member
+    bool            empty : 1;      // class has zero size
+    bool            has_fn : 1;     // has any member function
 
-    int : 0;
+    unsigned : 0;
 } CLASSINFO;
 
 // kludge alert:
@@ -1606,8 +1605,8 @@ extern void InsertArgs( DECL_INFO ** );
 extern PTREE TypeDeclarator( DECL_INFO * );
 extern PTREE MakeConstructorId( DECL_SPEC * );
 extern arg_list *InitArgList( arg_list * );
-extern arg_list *AllocArgListPerm( int );
-extern arg_list *AllocArgListTemp( int );
+extern arg_list *AllocArgListPerm( unsigned );
+extern arg_list *AllocArgListTemp( unsigned );
 extern TYPE MakeFnType( DECL_INFO **, specifier_t, PTREE );
 extern TYPE MakeSimpleFunction( TYPE, ... );
 extern TYPE MakeSimpleFlagFunction( type_flag, TYPE, ... );

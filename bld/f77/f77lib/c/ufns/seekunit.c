@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
-#include "fio.h"
 #include "ftnapi.h"
 #include "posseek.h"
 
@@ -48,20 +48,17 @@ intstar4        __fortran SEEKUNIT( intstar4 *unit, intstar4 *offset, intstar4 *
 
     ftnfile     *fcb;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) return( -1 );
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
-            if( fcb->fileptr == NULL ) return( -1 );
-            if( _NoRecordOrganization( fcb ) ) {
-                if( SysSeek( fcb->fileptr, *offset, *origin ) == -1 ) {
-                    return( -1 );
-                } else {
-                    return( FGetFilePos( fcb->fileptr ) );
+            if( fcb->fileptr != NULL ) {
+                if( _NoRecordOrganization( fcb ) ) {
+                    if( SysSeek( fcb->fileptr, *offset, *origin ) != -1 ) {
+                        return( FGetFilePos( fcb->fileptr ) );
+                    }
                 }
             }
-            return( -1 );
+            break;
         }
-        fcb = fcb->link;
     }
+    return( -1 );
 }

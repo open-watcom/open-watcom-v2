@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@
 intstar4        __fortran FGETCMD( string PGM *args ) {
 //===================================================
 
-    int         len;
+    uint        len;
 
     len = _bgetcmd( args->strptr, args->len );
     /* pad with blanks if required */

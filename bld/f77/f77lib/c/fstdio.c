@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,26 +29,19 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
 #include "units.h"
 #include "rundat.h"
 #include "runmain.h"
 #include "rtutls.h"
 #include "rtsysutl.h"
-
+#include "fstdio.h"
+#include "posdat.h"
+#include "sdfile.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*
-BartoszP
-These declarations conflicts with all other modules
-file_handle is effectively void *
-extern  file_handle     FStdIn;
-extern  file_handle     FStdOut;
-*/
 
 
 static ftnfile *_GetFtnFile( int unit, int mode, void *fp, char *fname ) {

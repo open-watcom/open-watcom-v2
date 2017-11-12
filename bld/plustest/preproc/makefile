@@ -62,8 +62,8 @@ zap_output : .procedure
 
 gen_input: .procedure ./geninput.exe
     $[@
-    @rm *.exe
-    @rm *.obj
+    @if exist *.obj @rm *.obj
+    @if exist *.exe @rm *.exe
 
 ./geninput.exe : geninput.c
     @%make echo_bldcl

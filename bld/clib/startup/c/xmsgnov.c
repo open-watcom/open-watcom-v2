@@ -32,14 +32,8 @@
 #include "variety.h"
 #include <string.h>
 #include <io.h>
+#include "nw_lib.h"
 #include "exitwmsg.h"
-
-#if defined (_NETWARE_CLIB)
-extern void             ExitThread( int,int );
-#endif
-#if defined (_NETWARE_LIBC)
-extern void             NXThreadExit( void *);
-#endif
 
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )

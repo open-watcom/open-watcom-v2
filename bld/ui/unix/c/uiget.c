@@ -36,7 +36,6 @@
 #include "uivirt.h"
 #include "unxuiext.h"
 
-extern int   kb_wait( int secs, int usecs );
 
 void UIAPI uiflush( void )
 /*************************/
@@ -69,7 +68,7 @@ static EVENT doget( bool update )
                 return( EV_SINK );
             }
         }
-        kb_wait( 60, 0 );
+        _uiwaitkeyb( 60, 0 );
     }
     ReturnIdle = 1;
     if( ev==EV_REDRAW_SCREEN ){

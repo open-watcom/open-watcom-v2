@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +32,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <malloc.h>
-#ifdef __OS2__
-#define INCL_WIN
-#include <wos2.h>
-#else
-#define INCLUDE_COMMDLG_H
-#include <wwindows.h>
-#endif
 #include "_defwin.h"
 /*
  * Define the _MBCS macro to compile defwin stuff with multibyte support.

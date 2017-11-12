@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,21 +44,53 @@
   #define _WPRTDATA __declspec(__watcall)
 #endif
 
+#include <cstddef>
+#include <except.h>
+#include <new>
+
+#include "osdep.h"
+#include "wcpp.h"
+#include "prtdata.h"
+
+#ifdef __SW_BM
+    #include "thread.h"
+    #include "_lock.h"
+#endif
+
+#if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
+    #include "fsreg.h"
+#endif
+
+
+// set up indication of -xs
+
+#if defined( __SW_XS ) || defined( __SW_XSS ) || defined( __SW_XST )
+#define RT_EXC_ENABLED
+#endif
+
+#if defined( _M_I86 )
+    // pad to 2-byte boundary
+    #define AlignPad1 char padding[1];
+    #define AlignPad2 ;
+#elif defined( __ALPHA__ ) || defined( __386__ )
+    // pad to 4-byte boundary
+    #define AlignPad1 char padding[3];
+    #define AlignPad2 char padding[2];
+#else
+    #error bad target
+#endif
+
+#define PointUsingOffset( type, base, offset ) \
+    ( (type*)( (char*)base + offset ) )
+#define PointOffset( base, offset ) \
+    PointUsingOffset( void, base, offset )
+
 struct  ACTIVE_EXC;
 struct  DISPATCH_EXC;
 union   RW_DTREG;
 union   RO_DTREG;
 struct  THREAD_CTL;
 struct  _EXC_PR;
-
-#include <cstddef>
-#include <except.h>
-#include <new>
-
-#define PointUsingOffset( type, base, offset ) \
-    ( (type*)( (char*)base + offset ) )
-#define PointOffset( base, offset ) \
-    PointUsingOffset( void, base, offset )
 
 // this is necessary to avoid unnecessary overhead on pointer arithmetic
 #ifdef __HUGE__
@@ -94,41 +127,7 @@ typedef void (*pFUNcopyV)                       // copy ctor
                 , unsigned                      // - ctor vbase flag
                 , void * );                     // - source
 
-// twits at Microsoft define "boolean" in their Win32 header files
-typedef int rboolean;
-
-// set up indication of -xs
-
-#if defined( __SW_XS ) || defined( __SW_XSS ) || defined( __SW_XST )
-#define RT_EXC_ENABLED
-#endif
-
 extern "C" {
-
-#include "wcpp.h"
-
-#include "prtdata.h"
-
-#ifdef __SW_BM
-    #include "thread.h"
-    #include "lock.h"
-#endif
-
-#if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )
-    #include "fsreg.h"
-#endif
-
-#if defined( _M_I86 )
-    // pad to 2-byte boundary
-    #define AlignPad1 char padding[1];
-    #define AlignPad2 ;
-#elif defined( __ALPHA__ ) || defined( __386__ )
-    // pad to 4-byte boundary
-    #define AlignPad1 char padding[3];
-    #define AlignPad2 char padding[2];
-#else
-    #error bad target
-#endif
 
 #define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
 
@@ -265,9 +264,9 @@ _WPRTLINK extern unsigned   _wint_thread_data_offset;
 #ifndef __SW_BM
   #define _ThreadData       _wint_thread_data
 #elif defined( _M_I86 )
-  #define _ThreadData (*((THREAD_CTL*)&(__THREADDATAPTR->_wint_thread_data)))
+  #define _ThreadData       (*((THREAD_CTL*)&(__THREADDATAPTR->_wint_thread_data)))
 #else
-  #define _ThreadData (*((THREAD_CTL*)(((char *)__THREADDATAPTR)+_wint_thread_data_offset)))
+  #define _ThreadData       (*((THREAD_CTL*)(((char *)__THREADDATAPTR)+_wint_thread_data_offset)))
 #endif
 
 //************************************************************************
@@ -276,7 +275,7 @@ _WPRTLINK extern unsigned   _wint_thread_data_offset;
 //************************************************************************
 extern short                _wint_pure_error_flag;
 extern short                _wint_undef_vfun_flag;
-extern RW_DTREG*            _wint_module_init;
+extern RW_DTREG             *_wint_module_init;
 #define _PureErrorFlag      _wint_pure_error_flag
 #define _UndefVfunFlag      _wint_undef_vfun_flag
 #define _ModuleInit         _wint_module_init
@@ -380,10 +379,10 @@ void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 ;
-rboolean CPPLIB( ts_equiv )(        // TEST IF TYPE SIG.S ARE EQUIVALENT
+bool CPPLIB( ts_equiv )(            // TEST IF TYPE SIG.S ARE EQUIVALENT
     RT_TYPE_SIG tgt,                // - target type signature
     RT_TYPE_SIG src,                // - source type signature
-    rboolean zero_thrown )          // - true ==> zero was thrown
+    bool zero_thrown )              // - true ==> zero was thrown
 ;
 RT_TYPE_SIG CPPLIB( ts_pnted )(     // POINT PAST POINTER TYPE-SIG
     RT_TYPE_SIG sig )               // - the signature

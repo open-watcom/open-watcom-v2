@@ -55,7 +55,7 @@ namespace std {
         return( NULL );
     }
     __file_handle = fd;
-    __attached    = 1;
+    __attached = true;
     return( this );
   }
 

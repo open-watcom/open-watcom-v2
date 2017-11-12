@@ -33,7 +33,7 @@ bld_gen_cflags  = -za99-d2-w8-j-fo=.obj
 !else
 bld_gen_cflags  = -za99-ox-w8-j-fo=.obj
 !endif
-!if $(watcom_ver) > 1300
+!ifdef bldnewowtools
 bld_gen_cflags  += -xx-zam
 !endif
 

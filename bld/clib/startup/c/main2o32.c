@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include <string.h>
 #include <malloc.h>
 #define INCL_DOSPROCESS
+#include <wos2.h>
 #include "initfini.h"
 #include "thread.h"
 #include "initsig.h"
@@ -46,6 +48,8 @@
 #include "cmain.h"
 #include "cominit.h"
 #include "procfini.h"
+#include "rtexcpt.h"
+
 
 #ifdef __SW_BR
     extern      int     main( int, char ** );

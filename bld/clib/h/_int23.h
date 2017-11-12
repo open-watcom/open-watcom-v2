@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS_286__)
 extern void     (*__int23_exit)( void );
 extern void     __null_int23_exit( void );
 extern void     __grab_int23( void );

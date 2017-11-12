@@ -42,10 +42,8 @@ else
 SEGM_PRFX   equ ds:
 endif
 
-ifdef __386__
 ifdef __OS2__
         xrefp   DosUnwindException
-endif
 endif
 ifdef __NT__
         xrefp   _RtlUnwind@16
@@ -92,11 +90,9 @@ ifdef __NT__
         push    fs:[0]                  ; get exception chain
         pop     SEGM_PRFX [eax+44]      ; ...
 endif
-ifdef __386__
 ifdef __OS2__
         push    fs:[0]                  ; get exception chain
         pop     SEGM_PRFX [eax+44]      ; ...
-endif
 endif
 if _MODEL and _BIG_DATA
         mov     es,SEGM_PRFX [eax+32]   ; restore es register
@@ -149,7 +145,6 @@ done_unwind:
         mov     eax,[ebp]
         mov     edx,[ebp+4]
 endif
-ifdef __386__
 ifdef __OS2__
         push    eax             ; save address offset of jmp_buf
         push    0
@@ -161,7 +156,6 @@ ifdef __OS2__
         call    DosUnwindException
 unwind: add     esp,12
         pop     eax             ; restore address offset of jmp_buf
-endif
 endif
         push    eax                     ; save parm regs
         push    edx                     ; ...

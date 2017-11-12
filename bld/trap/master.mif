@@ -229,6 +229,12 @@ dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) +$[@
 
+!ifdef resource_file
+$(resource_file) : wserver.rc
+    @%make echo_rc
+    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
+!endif
+
 inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov

@@ -35,15 +35,16 @@
 #include <string.h>
 #include <malloc.h>
 #include <i86.h>
+#include "nw_lib.h"
 #include "liballoc.h"
 #include "rtstack.h"
 #include "stacklow.h"
 #include "exitwmsg.h"
 #include "thread.h"
-#include "trdlist.h"
 #include "mthread.h"
 #include "cthread.h"
 #include "snglthrd.h"
+#include "trdlist.h"
 
 #if !defined( _NETWARE_LIBC )
 #error This file is for the NetWare LibC based library only
@@ -58,8 +59,7 @@ static void __LibCKeyValueDestructor( void * pPerThreadData )
 
     thread_data *tdata = (thread_data *)pPerThreadData;
 
-    if( NULL != tdata )
-    {
+    if( NULL != tdata ) {
         __RemoveThreadData( tdata->thread_id );
     }
 }
@@ -68,22 +68,20 @@ int __LibCThreadInit( void )
 /**************************/
 {
     int err = 0;
-    if( __NXSlotID == NO_INDEX )
-    {
+
+    if( __NXSlotID == NO_INDEX ) {
         err = NXKeyCreate( __LibCKeyValueDestructor, NULL, &__NXSlotID );
     }
-    if( ( 0 != err ) || ( __NXSlotID == NO_INDEX ) )
-    {
+    if( ( 0 != err ) || ( __NXSlotID == NO_INDEX ) ) {
         return( FALSE );
     }
     return( TRUE );
 }
 
-extern void __LibCThreadFini( void )
-/********************************/
+void __LibCThreadFini( void )
+/***************************/
 {
-    if( __NXSlotID != NO_INDEX )
-    {
+    if( __NXSlotID != NO_INDEX ) {
         NXKeyDelete( __NXSlotID );
         __NXSlotID = NO_INDEX;
     }
@@ -92,23 +90,19 @@ extern void __LibCThreadFini( void )
 int __LibCAddThread( thread_data *tdata )
 /***************************************/
 {
-    if( __NXSlotID == NO_INDEX )
-    {
+    if( __NXSlotID == NO_INDEX ) {
         return( FALSE );
     }
 
     tdata = __AllocInitThreadData( tdata );
-    if( tdata == NULL )
-    {
+    if( tdata == NULL ) {
         return( FALSE );
     }
-    if( !__AddThreadData( tdata->thread_id, tdata ) )
-    {
+    if( !__AddThreadData( tdata->thread_id, tdata ) ) {
         lib_free( tdata );
         return( FALSE );
     }
-    if( 0 != NXKeySetValue( __NXSlotID, tdata ) )
-    {
+    if( 0 != NXKeySetValue( __NXSlotID, tdata ) ) {
         lib_free( tdata );
         return( FALSE );
     }
@@ -118,12 +112,11 @@ int __LibCAddThread( thread_data *tdata )
 
 
 void __LibCRemoveThread( int close_handle )
-/***************************************/
+/*****************************************/
 {
     thread_data *tdata = NULL;
 
-    if( __NXSlotID != NO_INDEX )
-    {
+    if( __NXSlotID != NO_INDEX ) {
         int ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
         if( 0 != ccode ) {
             return;
@@ -161,7 +154,7 @@ typedef struct {
     thread_fn           *start_addr;
     void                *arglist;
     void                *stack_bottom;
-    TID                 tid;
+    _TID                tid;
     NXSema_t            *semaphore;
     NXThreadId_t        nxtid;      /* NKS TID */
     NXContext_t         cx;         /* NKS Context */
@@ -174,13 +167,12 @@ static void begin_thread_helper( void *the_arg )
     void                *stack_bottom;
 
     thread_data         *tdata;
-    TID                 newtid;
+    _TID                newtid;
     begin_thread_data   *data = the_arg;
 
     tdata = alloca( __ThreadDataSize );
     newtid = __GetSystemWideUniqueTID();
-    if( 0 != newtid )
-    {
+    if( 0 != newtid ) {
         data->tid       = newtid;
         start_addr      = (__thread_fn *)data->start_addr;
         arglist         = data->arglist;
@@ -195,15 +187,13 @@ static void begin_thread_helper( void *the_arg )
         _RWD_stacklow = FP_OFF( stack_bottom );
         (*start_addr)( arglist );
         _endthread();
-    }
-    else
-    {
+    } else {
         data->tid = -1;
         NXSemaPost( data->semaphore );
     }
 }
 
-extern int __CBeginThread(
+int __CBeginThread(
     thread_fn       *start_addr,
     void            *stack_bottom,
     unsigned        stack_size,
@@ -242,7 +232,7 @@ extern int __CBeginThread(
     return( data.tid );
 }
 
-extern void __CEndThread( void )
+void __CEndThread( void )
 {
 #pragma message ("TODO: Allow real return codes")
     __LibCRemoveThread( TRUE );
@@ -250,17 +240,16 @@ extern void __CEndThread( void )
 }
 #endif
 
-/*
-//  CurrentProcess() is a THREADS.NLM (CLIB) export though it returns the
-//  underlying NetWare TCO pointer. As unique as I can get on NetWare currently
-*/
-extern unsigned long CurrentProcess( void );
-extern unsigned long __GetSystemWideUniqueTID( void )
+unsigned long __GetSystemWideUniqueTID( void )
 {
+    /*
+     * CurrentProcess() is a THREADS.NLM (CLIB) export though it returns the
+     * underlying NetWare TCO pointer. As unique as I can get on NetWare currently
+     */
     return( CurrentProcess() );
 }
 
-extern int __CreateFirstThreadData( void )
+int __CreateFirstThreadData( void )
 {
     thread_data * tdata = lib_calloc( 1, __ThreadDataSize );
 
@@ -273,13 +262,13 @@ extern int __CreateFirstThreadData( void )
     return( 1 );
 }
 
-extern int __RegisterFirstThreadData( thread_data * tdata )
+int __RegisterFirstThreadData( thread_data * tdata )
 {
     __FirstThreadData = tdata;
     return( 0 );
 }
 
-extern int __IsFirstThreadData( thread_data * tdata )
+int __IsFirstThreadData( thread_data * tdata )
 {
     return( __FirstThreadData == tdata );
 }

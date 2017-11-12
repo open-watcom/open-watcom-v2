@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,17 +30,16 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
 #include "intcnv.h"
 #include "fltcnv.h"
-
+#include "fmtcnvt.h"
+#include "intarith.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 #include <float.h>
-#include "fmtcnvt.h"
 
 
 static void AddDig( canon_form *canon, char ch )

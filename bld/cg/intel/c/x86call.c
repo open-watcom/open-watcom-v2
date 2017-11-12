@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,6 @@
 
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *NearSegment(void);
-extern  void            DataLabel(label_handle);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  name            *BGNewTemp( type_def *tipe );
 extern  void            BGDone( an );

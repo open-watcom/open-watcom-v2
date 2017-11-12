@@ -62,12 +62,12 @@ RT_TYPE_SIG CPPLIB( ts_pnted )( // POINT PAST POINTER TYPE-SIG
 
 
 extern "C"
-rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
+bool CPPLIB( ts_equiv )(        // TEST IF TYPE SIG.S ARE EQUIVALENT
     RT_TYPE_SIG tgt,            // - target type signature
     RT_TYPE_SIG src,            // - source type signature
-    rboolean zero_thrown )      // - true ==> zero was thrown
+    bool zero_thrown )          // - true ==> zero was thrown
 {
-    rboolean retn;              // - true ==> conversion possible
+    bool retn;                  // - true ==> conversion possible
 
     if( tgt == NULL ) {
         retn = true;
@@ -83,7 +83,7 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
                 break;
             }
         }
-        if( ! retn ) {
+        if( !retn ) {
             src = CPPLIB( ts_refed )( src );
             if( src == tgt ) {
                 retn = true;
@@ -134,5 +134,5 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
             }
         }
     }
-    return retn;
+    return( retn );
 }

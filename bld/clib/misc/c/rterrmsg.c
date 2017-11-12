@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,15 @@
 #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __OS2__ )
-  #if !defined( _M_I86 )
+  #if defined( _M_I86 )
+    #include <wos2.h>
+  #else
     #define INCL_DOSPROCESS
     #define INCL_WINDIALOGS
     #define INCL_DOSERRORS
     #define INCL_DOSMODULEMGR
     #define INCL_ORDINALS
+    #include <wos2.h>
     #include "_defwin.h"
   #endif
 #endif

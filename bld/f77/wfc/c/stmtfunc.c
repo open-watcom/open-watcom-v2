@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +45,8 @@
 #include "rstmgr.h"
 #include "fcodes.h"
 #include "gflow.h"
+#include "brseinfo.h"
 
-
-extern  void            BIEndSF( sym_id ste_ptr );
 
 void    SFPrologue( void ) {
 //====================

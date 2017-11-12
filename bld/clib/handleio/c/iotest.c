@@ -45,12 +45,30 @@
 #endif
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
-                            printf( "%s: ***FAILURE*** at line %d of %s.\n",\
+                            fprintf( stdout,                                \
+                                "%s: ***FAILURE*** at line %d of %s.\n",    \
                                     ProgramName, __LINE__,                  \
                                     strlwr(__FILE__) );                     \
-                            printf( "%s\n", strerror(errno) );              \
+                            fprintf( stdout, "%s\n", strerror(errno) );     \
+                            fflush( stdout );                               \
                             NumErrors++;                                    \
                             exit( -1 );                                     \
+                        }
+
+#define VERIFYX( exp )  if( !(exp) ) {                                      \
+                            fprintf( stdout,                                \
+                                "%s: ***FAILURE*** at line %d of %s.\n",    \
+                                    ProgramName, __LINE__,                  \
+                                    strlwr(__FILE__) );                     \
+                            fprintf( stdout, "%s\n", strerror(errno) );     \
+                            fflush( stdout );                               \
+                            NumErrors++;                                    \
+                            exit( -1 );                                     \
+                        } else {                                            \
+                            fprintf( stdout, "%s: OK at line %d of %s.\n",  \
+                                    ProgramName, __LINE__,                  \
+                                    strlwr(__FILE__) );                     \
+                            fflush( stdout );                               \
                         }
 
 void TestOpenClose( void );
@@ -99,17 +117,19 @@ int main( int argc, char *argv[] )
 
     /*** Print a pass/fail message and quit ***/
     if( NumErrors!=0 ) {
-        printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        fprintf( stdout, "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        fflush( stdout );
         return( EXIT_FAILURE );
     }
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
+    fprintf( stdout, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fflush( stdout );
+#ifdef __SW_BW
     {
         fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
         fclose( my_stdout );
         _dwShutDown();
     }
-    #endif
+#endif
     return( 0 );
 }
 
@@ -332,22 +352,22 @@ void TestLocking( void )
     int                 status;
 
     handle = open( "iotest.tmp", O_RDWR );
-    VERIFY( handle != -1 );
+    VERIFYX( handle != -1 );
 
     status = lock( handle, 0, 16384 );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 
     status = locking( handle, LK_LOCK, 16385 );
-    VERIFY( status == -1 );
+    VERIFYX( status == -1 );
 
     status = unlock( handle, 0, 16384 );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 
     status = locking( handle, LK_UNLCK, 16385 );
-    VERIFY( status == -1 );
+    VERIFYX( status == -1 );
 
     status = close( handle );
-    VERIFY( status == 0 );
+    VERIFYX( status == 0 );
 }
 
 

@@ -56,8 +56,8 @@ namespace std {
     __put_base         = NULL;
     __put_end          = NULL;
     __put_ptr          = NULL;
-    __delete_reserve   = 0;
-    __unbuffered_state = 0;
+    __delete_reserve   = false;
+    __unbuffered_state = false;
   }
 
 }

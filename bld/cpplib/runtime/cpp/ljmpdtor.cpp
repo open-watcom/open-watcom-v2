@@ -66,29 +66,26 @@ longjmpDtoring                  // longjmp INTERFACE
     //              after the setjmp to ensure the state is always the
     //              state before the setjmp)
     //
-    CPPLIB( exc_setup )( &dispatch, 0, false, &rt_ctl, 0, &excrec );
-    rw = rt_ctl.thr->registered;
-    last = rw;
-    for( ; ; rw = rw->base.prev ) {
-        if( rw == NULL ) {
-            if( NULL == last ) {
-                // nothing registered
-                return;
-            } else {
-                // everything must be popped
-                last = rw;
-                dispatch.state_var = 0;
-                break;
-            }
-        }
+    CPPLIB( exc_setup )( &dispatch, NULL, false, &rt_ctl, NULL, &excrec );
+    last = rt_ctl.thr->registered;
+    for( rw = last; rw != NULL; rw = rw->base.prev ) {
         last = rw;
         if( rw >= stack_bound ) {
             // unwindStack will do nothing for last
             dispatch.state_var = last->base.state_var;
+            dispatch.rw = last;
             break;
         }
     }
-    dispatch.rw = last;
+    if( rw == NULL ) {
+        if( last == NULL ) {
+            // nothing registered
+            return;
+        }
+        // everything must be popped
+        dispatch.state_var = 0;
+        dispatch.rw = NULL;
+    }
     FS_UNWIND_GLOBAL( dispatch.rw, NULL, &excrec );
 }
 

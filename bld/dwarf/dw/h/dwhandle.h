@@ -36,8 +36,8 @@
 /* this is used to represent a chain of relocations */
 typedef struct reloc_chain {
     struct reloc_chain  *next;
-    debug_ref           offset;         /* CLISeek() offset */
-    uint_8              section;        /* section to seek in */
+    dw_out_offset       offset;         /* CLISeek() offset */
+    dw_sectnum          section;        /* section to seek in */
 } reloc_chain;
 
 #ifdef _M_I86
@@ -53,13 +53,16 @@ enum {
 #define IS_FUNDAMENTAL( __h )   ( (__h) < DW_FT_MAX )
 #define GET_FUNDAMENTAL( __h )  ( __h )
 
+#define GET_HANDLE_LOCATION(__c)        (((__c)->reloc.u.offset & 1) ? (__c)->reloc.u.offset >> 1 : 0)
+#define SET_HANDLE_LOCATION(__c,__o)    (__c)->reloc.u.offset = (1 | (__o << 1))
+#define IS_FORWARD_LOCATION(__c)        (((__c)->reloc.u.offset & 1) == 0)
 
-#define RELOC_OFFSET            0x1
-#define RELOC_OFFSET_SHIFT      1
 typedef struct {
-    union {
-        debug_ref       offset;
-        reloc_chain *   chain;
+    struct {
+        union {
+            dw_sect_offs    offset;
+            reloc_chain     *chain;
+        } u;
     } reloc;
 } handle_common;
 
@@ -110,18 +113,18 @@ typedef union handle_extra {
 #define HandleWriteOffset       DW_HandleWriteOffset
 
 
-void InitHandles( dw_client );
-void FiniHandles( dw_client );
-dw_handle NewHandle( dw_client );
-handle_common *GetCommon( dw_client, dw_handle );
-handle_extra *CreateExtra( dw_client, dw_handle );
-void DestroyExtra( dw_client, dw_handle );
-handle_extra *GetExtra( dw_client, dw_handle );
-dw_handle LabelNewHandle( dw_client );
-dw_handle GetHandle( dw_client cli );
-void SetHandleLocation( dw_client, dw_handle );
-void HandleReference( dw_client, dw_handle, uint );
-void HandleWriteOffset( dw_client, dw_handle, uint );
+extern void             InitHandles( dw_client );
+extern void             FiniHandles( dw_client );
+extern dw_handle        NewHandle( dw_client );
+extern handle_common    *GetCommon( dw_client, dw_handle );
+extern handle_extra     *CreateExtra( dw_client, dw_handle );
+extern void             DestroyExtra( dw_client, dw_handle );
+extern handle_extra     *GetExtra( dw_client, dw_handle );
+extern dw_handle        LabelNewHandle( dw_client );
+extern dw_handle        GetHandle( dw_client cli );
+extern void             SetHandleLocation( dw_client, dw_handle );
+extern void             HandleReference( dw_client, dw_handle, dw_sectnum );
+extern void             HandleWriteOffset( dw_client, dw_handle, dw_sectnum );
 
 
 #endif

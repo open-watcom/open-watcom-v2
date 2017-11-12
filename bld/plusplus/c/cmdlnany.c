@@ -572,9 +572,9 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     }
 }
 
-static int openUnicodeFile( char *filename )
+static FILE *openUnicodeFile( char *filename )
 {
-    int fh;
+    FILE *fp;
     char fullpath[ _MAX_PATH ];
 
 #if defined(__QNX__)
@@ -587,17 +587,16 @@ static int openUnicodeFile( char *filename )
 #else
     _searchenv( filename, "PATH", fullpath );
 #endif
-    fh = -1;
+    fp = NULL;
     if( fullpath[0] != '\0' ) {
-        fh = open( fullpath, O_RDONLY | O_BINARY );
+        fp = fopen( fullpath, "r" );
     }
-    return( fh );
+    return( fp );
 }
 
 static void loadUnicodeTable( unsigned code_page )
 {
-    unsigned amt;
-    int fh;
+    FILE *fp;
     char filename[ 20 ];
 
     sprintf( filename, "unicode.%3.3u", code_page );
@@ -605,13 +604,12 @@ static void loadUnicodeTable( unsigned code_page )
         filename[ 7 ] = filename[ 8 ];
         filename[ 8 ] = '.';
     }
-    fh = openUnicodeFile( filename );
-    if( fh != -1 ) {
-        amt = 256 * sizeof( unsigned short );
-        if( (unsigned)read( fh, UniCode, amt ) != amt ) {
+    fp = openUnicodeFile( filename );
+    if( fp != NULL ) {
+        if( fread( UniCode, sizeof( unicode_type ), 256, fp ) != 256 ) {
             CErr( ERR_IO_ERR, filename, strerror( errno ) );
         }
-        close( fh );
+        fclose( fp );
     } else {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }

@@ -43,13 +43,13 @@
 #define EmitLoc                 DW_EmitLoc
 #define EmitLocNull             DW_EmitLocNull
 
-void            InitDebugLoc( dw_client );
-void            FiniDebugLoc( dw_client );
-int             IsLocExpr( dw_client, dw_loc_handle );
-uint_32         EmitLocExpr( dw_client, uint, size_t, dw_loc_handle );
-void            EmitLocExprNull( dw_client, uint, size_t );
-uint_32         EmitLoc( dw_client, uint, dw_loc_handle );
-uint_32         EmitLocList( dw_client, uint, dw_loc_handle );
-uint_32         EmitLocNull( dw_client cli, uint sect);
+extern void         InitDebugLoc( dw_client );
+extern void         FiniDebugLoc( dw_client );
+extern int          IsLocExpr( dw_client, dw_loc_handle );
+extern uint_32      EmitLocExpr( dw_client, dw_sectnum, size_t, dw_loc_handle );
+extern void         EmitLocExprNull( dw_client, dw_sectnum, size_t );
+extern uint_32      EmitLoc( dw_client, dw_sectnum, dw_loc_handle );
+extern uint_32      EmitLocList( dw_client, dw_sectnum, dw_loc_handle );
+extern uint_32      EmitLocNull( dw_client cli, dw_sectnum sect );
 
 #endif

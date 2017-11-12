@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include "coderep.h"
 #include "typedef.h"
@@ -45,20 +45,17 @@
 #include "dw.h"
 #include "dwarf.h"
 #include "utils.h"
+#include "dbsyms.h"
 #include "dftypes.h"
 #include "dfsupp.h"
+#include "dfsyms.h"
 #include "targetdb.h"
 #include "cgprotos.h"
 
 
-extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
-
-
-extern  dw_client       Client;
-
-extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe ) {
-/************************************************************************/
-
+dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe )
+/**************************************************************/
+{
     dbg_type    ret;
     unsigned    size;
 
@@ -68,28 +65,29 @@ extern  dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe ) {
 }
 
 
-extern  dbg_type        DFScalar( const char *name, cg_type tipe ) {
-/******************************************************************/
+dbg_type        DFScalar( const char *name, cg_type tipe )
+/********************************************************/
+{
     type_def    *tipe_addr;
     int          class;
     dbg_type     ret;
 
     tipe_addr = TypeAddress( tipe );
-    if( tipe_addr->attr & TYPE_FLOAT ){
+    if( tipe_addr->attr & TYPE_FLOAT ) {
         class = DW_FT_FLOAT;
-    }else if( strcmp( "char", name ) == 0 ){
-        if( tipe_addr->attr & TYPE_SIGNED ){
+    } else if( strcmp( "char", name ) == 0 ) {
+        if( tipe_addr->attr & TYPE_SIGNED ) {
             class = DW_FT_SIGNED_CHAR;
-        }else{
+        } else {
             class = DW_FT_UNSIGNED_CHAR;
         }
-    }else if( strcmp( "unsigned char", name ) == 0 ){
+    } else if( strcmp( "unsigned char", name ) == 0 ) {
         class = DW_FT_UNSIGNED_CHAR;
-    }else if( strcmp( "signed char", name ) == 0 ){
+    } else if( strcmp( "signed char", name ) == 0 ) {
         class = DW_FT_SIGNED_CHAR;
-    }else if( tipe_addr->attr & TYPE_SIGNED ){
+    } else if( tipe_addr->attr & TYPE_SIGNED ) {
         class = DW_FT_SIGNED;
-    }else{
+    } else {
         class = DW_FT_UNSIGNED;
     }
 
@@ -105,6 +103,7 @@ enum scope_name {
     SCOPE_CLASS   = 4,
     SCOPE_MAX
 };
+
 static char const ScopeNames[SCOPE_MAX][7] = {
     "",
     "struct",
@@ -113,16 +112,17 @@ static char const ScopeNames[SCOPE_MAX][7] = {
     "class"
 };
 
-extern char const *DFScopeName( dbg_type scope ){
+char const *DFScopeName( dbg_type scope )
+{
     return( ScopeNames[scope] );
 }
 
-extern  dbg_type        DFScope( const char *name ) {
-/***************************************************/
-
+dbg_type        DFScope( const char *name )
+/*****************************************/
+{
     enum scope_name index;
 
-    for( index = 0; index < SCOPE_MAX; ++index ){
+    for( index = 0; index < SCOPE_MAX; ++index ) {
         if( strcmp( name, ScopeNames[index] ) == 0 ) {
             break;
         }
@@ -131,45 +131,44 @@ extern  dbg_type        DFScope( const char *name ) {
 }
 
 
-extern  void    DFDumpName( dbg_name name, dbg_type tipe )
-/***********************************************************/
+void    DFDumpName( dbg_name name, dbg_type tipe )
+/************************************************/
 {
-    if( name->scope == SCOPE_TYPEDEF ){
+    if( name->scope == SCOPE_TYPEDEF ) {
         tipe = DWTypedef( Client, tipe, name->name, 0, 0 );
     }
-   name->refno = tipe; /* link in  typedef sym to type */
+    name->refno = tipe; /* link in  typedef sym to type */
 }
 
-extern void DFBackRefType( dbg_name name, dbg_type tipe )
-/*******************************************************/
+void DFBackRefType( dbg_name name, dbg_type tipe )
+/************************************************/
 {
     /* unused parameters */ (void)name; (void)tipe;
 
     Zoiks( ZOIKS_108 );
 }
 
-extern  dbg_type        DFCharBlock( unsigned_32 len ) {
-/******************************************************/
-
+dbg_type        DFCharBlock( unsigned_32 len )
+/********************************************/
+{
     dbg_type    ret;
 
     ret = DWString( Client, NULL, len, NULL, 0, 0 );
     return( ret );
 }
 
-extern  dbg_type    DFCharBlockNamed( const char *name, unsigned_32 len ) {
-/*************************************************************************/
-
+dbg_type    DFCharBlockNamed( const char *name, unsigned_32 len )
+/***************************************************************/
+{
     dbg_type    ret;
 
     ret = DWString( Client, NULL, len, name, 0, 0 );
     return( ret );
 }
 
-extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
-                                        int off ) {
-/************************************************************************/
-
+dbg_type    DFIndCharBlock( back_handle len, cg_type len_type, int off )
+/**********************************************************************/
+{
     dbg_type    ret;
     dw_loc_id   len_locid;
     dw_loc_handle   len_loc;
@@ -185,8 +184,9 @@ extern  dbg_type        DFIndCharBlock( back_handle len, cg_type len_type,
     return( ret );
 }
 
-extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type ) {
-/***********************************************************************/
+dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type )
+/*************************************************************/
+{
     dw_loc_handle   len_loc;
     type_def    *tipe_addr;
     dbg_type    ret;
@@ -202,9 +202,9 @@ extern  dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type ) {
 }
 
 
-extern  dbg_type        DFArray( dbg_type idx, dbg_type base ) {
-/**************************************************************/
-
+dbg_type        DFArray( dbg_type idx, dbg_type base )
+/****************************************************/
+{
     dbg_type    ret;
     dw_dim_info info;
 
@@ -218,16 +218,17 @@ extern  dbg_type        DFArray( dbg_type idx, dbg_type base ) {
     return( ret );
 }
 
-extern  dbg_type        DFIntArray( unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-
+dbg_type        DFIntArray( unsigned_32 hi, dbg_type base )
+/*********************************************************/
+{
     dbg_type    ret;
 
     ret = DWSimpleArray( Client, base, hi+1 );
     return( ret );
 }
 
-static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
+static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe )
+{
     dw_loc_id       locid;
     dw_loc_handle   dw_loc;
     dw_loc_handle   dw_segloc;
@@ -254,8 +255,8 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     return( obj );
 }
 
-extern  dbg_type    DFEndArray( dbg_array ar )
-/********************************************/
+dbg_type    DFEndArray( dbg_array ar )
+/************************************/
 {
     dw_dim_info    info;
     dw_vardim_info varinfo;
@@ -299,11 +300,10 @@ extern  dbg_type    DFEndArray( dbg_array ar )
     return( ret );
 }
 
-extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
-                                    dbg_type base ) {
-/***************************************************************************/
-
+dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
+                            cg_type num_elts_tipe, int off, dbg_type base )
+/*************************************************************************/
+{
     dw_vardim_info varinfo;
     dbg_type       lo_tipe;
     dbg_type       count_tipe;
@@ -323,8 +323,8 @@ extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type DFSubRange( signed_32 lo, signed_32 hi, dbg_type base )
-/***************************************************/
+dbg_type DFSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/**************************************************************/
 /* need some dwarflib support */
 {
     /* unused parameters */ (void)lo; (void)hi; (void)base;
@@ -374,8 +374,9 @@ static  uint   DFPtrClass( cg_type ptr_type )
 }
 
 
-extern  dbg_type        DFDereference( cg_type ptr_type, dbg_type base ) {
-/************************************************************************/
+dbg_type        DFDereference( cg_type ptr_type, dbg_type base )
+/**************************************************************/
+{
     dbg_type    ret;
     uint        flags;
 
@@ -384,8 +385,9 @@ extern  dbg_type        DFDereference( cg_type ptr_type, dbg_type base ) {
     return( ret );
 }
 
-extern  dbg_type        DFPtr( cg_type ptr_type, dbg_type base ) {
-/****************************************************************/
+dbg_type        DFPtr( cg_type ptr_type, dbg_type base )
+/******************************************************/
+{
     dbg_type    ret;
     uint        flags;
 
@@ -395,15 +397,15 @@ extern  dbg_type        DFPtr( cg_type ptr_type, dbg_type base ) {
 }
 
 
-extern  void      DFBegStruct( dbg_struct st )
-/********************************************/
+void      DFBegStruct( dbg_struct st )
+/************************************/
 {
-    dbg_type    ret;
-    uint        class;
+    dbg_type        ret;
+    dw_struct_type  class;
 
     if( st->is_struct ){
         class = DW_ST_STRUCT;
-    }else{
+    } else {
         class = DW_ST_UNION;
     }
     ret = DWStruct( Client, class );
@@ -418,12 +420,12 @@ typedef struct {
     unsigned        offset  :1;
 }loc_state;
 
-static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
-/****************************************/
-
+static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state )
+/***********************************************************/
+{
     type_length     offset;
     dw_loc_id       locid;
-    uint            dref_op;
+    dw_loc_op       dref_op;
     uint            size;
     dw_sym_handle   sym;
 
@@ -461,7 +463,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
         if( HW_CEqual( loc->u.be_sym->r.reg, HW_EMPTY ) ) {
             //NYI: structured return value on the stack. Have to do something
             //       suitable. For now, output a no location.
-            DWLocOp( Client,locid,DW_LOC_breg, 0, 0 );
+            DWLocOp( Client, locid, DW_LOC_breg, 0, 0 );
         } else {
             DFOutRegInd( locid, loc->u.be_sym );
         }
@@ -470,14 +472,14 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
         switch( loc->class & 0x0f ) {
         case LOP_IND_2:
         case LOP_IND_4:
-            if( state->addr_seg ){
+            if( state->addr_seg ) {
                 dref_op =  DW_LOC_xderef_size;
-            }else{
+            } else {
                 dref_op =  DW_LOC_deref_size;
             }
-            if( (loc->class & 0x0f) == LOP_IND_2 ){
+            if( (loc->class & 0x0f) == LOP_IND_2 ) {
                 size = 2;
-            }else{
+            } else {
                 size = 4;
             }
             DWLocOp( Client, locid, dref_op, size );
@@ -485,9 +487,9 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
             break;
         case LOP_IND_ADDR_16:
         case LOP_IND_ADDR_32:
-            if( (loc->class & 0x0f) == LOP_IND_ADDR_16 ){
+            if( (loc->class & 0x0f) == LOP_IND_ADDR_16 ) {
                 size = 2;
-            }else{
+            } else {
                 size = 4;
             }
             if( state->addr_seg ){
@@ -544,10 +546,10 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
     return( locid );
 }
 
-static  dbg_loc     SkipMkFP( dbg_loc loc ) {
+static  dbg_loc     SkipMkFP( dbg_loc loc )
 /*****************************************/
 //skip a MkFP and operand
-
+{
     if( (loc->class & 0xf0) == LOC_OPER ) {
         if( (loc->class & 0x0f) == LOP_MK_FP  ){
             loc = loc->next;  /* skip MK_FP */
@@ -557,11 +559,12 @@ static  dbg_loc     SkipMkFP( dbg_loc loc ) {
     return( loc );
 }
 
-extern dw_loc_id DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid ){
+dw_loc_id DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid )
 /*****************************************/
 /* Convert Brian to a dwarf              */
 /* in a continious fasion                */
 /*****************************************/
+{
     loc_state       state;
 
     state.seg = false;
@@ -574,10 +577,12 @@ extern dw_loc_id DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid ){
     return( df_locid );
 
 }
-extern dw_loc_handle DBGLoc2DF( dbg_loc loc ){
+
+dw_loc_handle DBGLoc2DF( dbg_loc loc )
 /*****************************************/
-/* Convert Brian to a dwarf                */
+/* Convert Brian to a dwarf              */
 /*****************************************/
+{
     dw_loc_id       df_locid;
     dw_loc_handle   df_loc;
     loc_state       state;
@@ -597,10 +602,11 @@ extern dw_loc_handle DBGLoc2DF( dbg_loc loc ){
 
 }
 
-extern dw_loc_handle DBGLocBase2DF( dbg_loc loc_seg ){
+dw_loc_handle DBGLocBase2DF( dbg_loc loc_seg )
 /*****************************************/
-/* Convert Brian to a dwarf                */
+/* Convert Brian to a dwarf              */
 /*****************************************/
+{
     dw_loc_id       df_locid;
     dw_loc_handle   df_loc;
     loc_state       state;
@@ -620,10 +626,12 @@ extern dw_loc_handle DBGLocBase2DF( dbg_loc loc_seg ){
     return( df_loc );
 
 }
-extern  dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
-                                        dbg_loc loc_segment ) {
-/****************************************************************/
+
+dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
+                                        dbg_loc loc_segment )
+/***********************************************************/
 /* need support to get segment value */
+{
     dbg_type        ret;
     uint            flags;
     dw_loc_handle   dw_segloc;
@@ -637,7 +645,8 @@ extern  dbg_type        DFBasedPtr( cg_type ptr_type, dbg_type base,
     return( ret );
 }
 
-static int WVDFAccess( uint attr ){
+static int WVDFAccess( uint attr )
+{
     int ret;
 
     if( attr & FIELD_INTERNAL ){
@@ -660,8 +669,8 @@ static int WVDFAccess( uint attr ){
     return( ret );
 }
 
-extern  dbg_type        DFEndStruct( dbg_struct st )
-/**************************************************/
+dbg_type        DFEndStruct( dbg_struct st )
+/******************************************/
 {
     field_any      *field;
     dbg_type        ret;
@@ -741,8 +750,8 @@ extern  dbg_type        DFEndStruct( dbg_struct st )
 }
 
 
-extern  dbg_type        DFEndEnum( dbg_enum en )
-/**********************************************/
+dbg_type        DFEndEnum( dbg_enum en )
+/**************************************/
 {
     dbg_type    ret;
     type_def    *tipe_addr;
@@ -769,8 +778,8 @@ extern  dbg_type        DFEndEnum( dbg_enum en )
 }
 
 
-extern  dbg_type        DFEndProc( dbg_proc pr )
-/**********************************************/
+dbg_type        DFEndProc( dbg_proc pr )
+/**************************************/
 {
     parm_entry  *parm;
     dbg_type    proc_type;
@@ -795,5 +804,3 @@ extern  dbg_type        DFEndProc( dbg_proc pr )
     DWEndSubroutineType( Client );
     return( proc_type );
 }
-
-

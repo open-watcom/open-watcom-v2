@@ -60,27 +60,10 @@ set PROJDIR=<CWD>
     <CCCMD> library/generic.386/mf_r/plbx3r.lib     <OWRELROOT>/lib386/
     <CCCMD> library/generic.386/mf_s/plib3s.lib     <OWRELROOT>/lib386/
     <CCCMD> library/generic.386/mf_s/plbx3s.lib     <OWRELROOT>/lib386/
-    <CCCMD> library/generic.386/mf_rmt/plibmt3r.lib <OWRELROOT>/lib386/
-    <CCCMD> library/generic.386/mf_rmt/plbxmt3r.lib <OWRELROOT>/lib386/
-    <CCCMD> library/generic.386/mf_smt/plibmt3s.lib <OWRELROOT>/lib386/
-    <CCCMD> library/generic.386/mf_smt/plbxmt3s.lib <OWRELROOT>/lib386/
     <CCCMD> complex/generic.386/mf_r/cplx3r.lib     <OWRELROOT>/lib386/
     <CCCMD> complex/generic.386/mf_s/cplx3s.lib     <OWRELROOT>/lib386/
     <CCCMD> complex/generic.387/mf_r/cplx73r.lib    <OWRELROOT>/lib386/
     <CCCMD> complex/generic.387/mf_s/cplx73s.lib    <OWRELROOT>/lib386/
-
-    <CCCMD> library/generic.386/ms_r/plib3r.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_r/plbx3r.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_s/plib3s.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_s/plbx3s.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_rmt/plibmt3r.lib <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_rmt/plbxmt3r.lib <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_smt/plibmt3s.lib <OWRELROOT>/lib386/dos/
-    <CCCMD> library/generic.386/ms_smt/plbxmt3s.lib <OWRELROOT>/lib386/dos/
-    <CCCMD> complex/generic.386/ms_r/cplx3r.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> complex/generic.386/ms_s/cplx3s.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> complex/generic.387/ms_r/cplx73r.lib    <OWRELROOT>/lib386/dos/
-    <CCCMD> complex/generic.387/ms_s/cplx73s.lib    <OWRELROOT>/lib386/dos/
 
     <CCCMD> library/winnt.386/mf_r/plib3r.lib       <OWRELROOT>/lib386/nt/
     <CCCMD> library/winnt.386/mf_r/plbx3r.lib       <OWRELROOT>/lib386/nt/
@@ -93,14 +76,14 @@ set PROJDIR=<CWD>
 
     <CCCMD> rtdll/winnt.386/mf_r/plb*.lib           <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.lib           <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.lib          <OWRELROOT>/lib386/nt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.lib          <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.lib          <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_r/plb*.dll           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_r/plb*.sym           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.dll           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_s/plb*.sym           <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.dll          <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plb*.sym          <OWRELROOT>/binnt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.dll          <OWRELROOT>/binnt/
+#    <CCCMD> rtdll/winnt.386/mf_rd/plb*.sym          <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.dll          <OWRELROOT>/binnt/
 
     <CCCMD> library/os2.386/mf_r/plib3r.lib         <OWRELROOT>/lib386/os2/
@@ -114,16 +97,14 @@ set PROJDIR=<CWD>
 
     <CCCMD> rtdll/os2.386/mf_r/plb*.lib             <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_s/plb*.lib             <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
     <CCCMD> rtdll/os2.386/mf_r/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_r/plb*.sym             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.sym             <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.sym            <OWRELROOT>/binp/dll/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
+#    <CCCMD> rtdll/os2.386/mf_rd/plb*.sym            <OWRELROOT>/binp/dll/
 
-    <CCCMD> library/generic.386/ms_s/plib3s.lib     <OWRELROOT>/lib386/netware/
-    <CCCMD> library/generic.386/ms_s/plbx3s.lib     <OWRELROOT>/lib386/netware/
     <CCCMD> library/generic.386/ms_smt/plibmt3s.lib <OWRELROOT>/lib386/netware/
     <CCCMD> library/generic.386/ms_smt/plbxmt3s.lib <OWRELROOT>/lib386/netware/
     <CCCMD> complex/netware.386/ms_s/cplx3s.lib     <OWRELROOT>/lib386/netware/
@@ -139,6 +120,9 @@ set PROJDIR=<CWD>
     <CCCMD> complex/winnt.axp/_s/cplx.lib           <OWRELROOT>/libaxp/cplx.lib
     <CCCMD> library/winnt.axp/_smt/plibmt.lib       <OWRELROOT>/libaxp/nt/plibmt.lib
     <CCCMD> library/winnt.axp/_smt/plbxmt.lib       <OWRELROOT>/libaxp/nt/plbxmt.lib
+
+    <CCCMD> library/linux.386/mf_rmt/plb*.lib       <OWRELROOT>/lib386/linux/
+    <CCCMD> library/linux.386/mf_smt/plb*.lib       <OWRELROOT>/lib386/linux/
 
 [ BLOCK . . ]
 

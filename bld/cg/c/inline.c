@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "makeblk.h"
 #include "namelist.h"
 #include "typemap.h"
+#include "inline.h"
 #include "feprotos.h"
 
 
@@ -66,9 +67,9 @@ extern  an              BGAssign(an,an,type_def*);
 
 static inline_stack     *InlineStack = NULL; // fix this!
 
-extern  void    BGStartInline( cg_sym_handle proc_sym ) {
-/*******************************************************/
-
+void    BGStartInline( cg_sym_handle proc_sym )
+/*********************************************/
+{
     inline_stack        *stk;
 
     stk = CGAlloc( sizeof( *stk ) );
@@ -81,9 +82,9 @@ extern  void    BGStartInline( cg_sym_handle proc_sym ) {
 }
 
 
-extern  void    BGAddInlineParm( an addr ) {
-/******************************************/
-
+void    BGAddInlineParm( an addr )
+/********************************/
+{
     inline_parm *parm;
 
     parm = CGAlloc( sizeof( *parm ) );
@@ -93,9 +94,9 @@ extern  void    BGAddInlineParm( an addr ) {
 }
 
 
-extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
-/******************************************************************/
-
+an      BGStopInline( call_handle handle, type_def *tipe )
+/********************************************************/
+{
     // works if we're in the middle of a conditional???
 
     label_handle    lbl;
@@ -131,18 +132,18 @@ static bool NotEquiv( type_def *a, type_def *b )
 }
 
 
-extern  void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe ) {
-/**********************************************************************/
-
+void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe )
+/************************************************************/
+{
     if( InlineStack->proc_sym != proc_sym || NotEquiv( InlineStack->tipe, tipe ) ) {
         _Zoiks( ZOIKS_072 );
     }
 }
 
 
-extern  void    BGParmInline( cg_sym_handle sym, type_def *tipe ) {
-/**************************************************************/
-
+void    BGParmInline( cg_sym_handle sym, type_def *tipe )
+/*******************************************************/
+{
     name                *temp;
     name                *parm_value;
     inline_parm         *parm;
@@ -161,9 +162,9 @@ extern  void    BGParmInline( cg_sym_handle sym, type_def *tipe ) {
 }
 
 
-extern  void    BGRetInline( an addr, type_def *tipe ) {
-/********************************************************/
-
+void    BGRetInline( an addr, type_def *tipe )
+/********************************************/
+{
     an  tempaddr;
 
     if( NotEquiv( tipe, InlineStack->tipe ) ) {
@@ -179,15 +180,15 @@ extern  void    BGRetInline( an addr, type_def *tipe ) {
 }
 
 
-extern  bool    BGInInline() {
-/****************************/
-
+bool    BGInInline( void )
+/************************/
+{
     return( InlineStack != NULL );
 }
 
-extern  int     BGInlineDepth() {
-/*******************************/
-
+int     BGInlineDepth( void )
+/***************************/
+{
     int                 depth;
     inline_stack        *curr;
 

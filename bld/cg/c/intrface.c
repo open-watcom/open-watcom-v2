@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,6 +60,7 @@
 #include "bldcall.h"
 #include "generate.h"
 #include "bckptr.h"
+#include "inline.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -78,14 +79,6 @@ extern  void            BGFiniLabel(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  an              TGen(tn,type_def*);
 extern  an              BGSave(an);
-extern  void            DataLabel(label_handle);
-extern  void            DataBytes(unsigned,const void *);
-extern  void            IterBytes(offset,byte);
-extern  bool            BGInInline(void);
-extern  void            BGParmInline(cg_sym_handle,type_def*);
-extern  void            BGRetInline(an,type_def*);
-extern  void            BGProcInline(cg_sym_handle,type_def*);
-extern  void            DataAlign( unsigned_32 );
 
 #ifdef QNX_FLAKEY
 unsigned        OrigModel;

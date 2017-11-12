@@ -324,7 +324,7 @@ common_set_result : .procedure .EXPLICIT
     -diff -b $(sav_file) exec.chk >$(nulldevice)
 !endif
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(log_file) $(%ERROR_MSG)
+    %append $(log_file) $(%ERROR_MSG)
 
 common_set_result_display : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -338,7 +338,7 @@ common_set_result_display : .procedure .EXPLICIT
     -diff -b $(sav_file) exec.chk
 !endif
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(log_file) $(%ERROR_MSG)
+    %append $(log_file) $(%ERROR_MSG)
 
 common_set_result_check : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -346,7 +346,7 @@ common_set_result_check : .procedure .EXPLICIT
     $(noecho)%make __save_sav
     $(noecho)%make check_result
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(log_file) $(%ERROR_MSG)
+    %append $(log_file) $(%ERROR_MSG)
 
 full_set_result : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -354,8 +354,8 @@ full_set_result : .procedure .EXPLICIT
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     -$]@ $(log_file) >$(nulldevice)
     @if not errorlevel 1 @set ERROR_MSG=PASS $(%__CWD__)
-    %append $(log_file) TEST
-    $(noecho)%append $(log_file) $(%ERROR_MSG)
+    @%append $(log_file) TEST
+    %append $(log_file) $(%ERROR_MSG)
 
 set_result_check : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -363,4 +363,4 @@ set_result_check : .procedure .EXPLICIT
     $(noecho)%make save_sav
     $(noecho)%make check_result
     @if not errorlevel 1 $(noecho)%make set_pass
-    $(noecho)%append $(log_file) $(%ERROR_MSG)
+    %append $(log_file) $(%ERROR_MSG)

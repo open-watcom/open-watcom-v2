@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,13 @@
 
 
 #include "ftnstd.h"
-#include "ftextvar.h"
 #include "rundat.h"
 #include "errcod.h"
 #include "rtsysutl.h"
 #include "rtutls.h"
 #include "ioerr.h"
 #include "rdwr.h"
+#include "sdfile.h"
 
 #include <string.h>
 

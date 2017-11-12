@@ -396,10 +396,10 @@ static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 {
     if( class != INF ) {
         if( logFH != -1 ) {
-            posix_write( logFH, buff, len );
+            (void)posix_write( logFH, buff, len );
         }
     }
-    posix_write( fh, buff, len );
+    (void)posix_write( fh, buff, len );
 }
 
 #ifdef __WATCOMC__

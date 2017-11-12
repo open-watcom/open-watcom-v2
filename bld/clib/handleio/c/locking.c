@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,17 @@
 #endif
 #include <time.h>
 #include <sys/locking.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#elif defined(__NT__)
+    #include <windows.h>
+#endif
 #include "rterrno.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"
+
 
 #ifdef __UNIX__
 _WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )

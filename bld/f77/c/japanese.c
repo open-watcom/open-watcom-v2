@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,10 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "ftextfun.h"
-#include "ftextvar.h"
 #include "scangbl.h"
 #include "csetinfo.h"
 #include "charset.h"
+#include "dbcsutil.h"
 
 
 // Double-byte characters are represented as follows:
@@ -149,10 +149,10 @@ static const byte __FAR CharSet[] = {
 
 #endif
 
-static  bool    IsDoubleByteBlank( char *ptr )
+static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
 {
-    return( ( (unsigned char)*ptr == 0x81 ) && ( (unsigned char)*(ptr + 1) == 0x40 ) );
+    return( ( *(unsigned char *)ptr == 0x81 ) && ( *(unsigned char *)(ptr + 1) == 0x40 ) );
 }
 
 
@@ -167,13 +167,13 @@ static  bool    IsDoubleByteChar( char ch )
 }
 
 
-static  int     CharacterWidth( char PGM *ptr )
+static  int     CharacterWidth( const char PGM *ptr )
 // Determine character width.
 {
     unsigned char   ch;
 
     if( IsDoubleByteChar( *ptr ) ) {
-        ch = (unsigned char)ptr[1];
+        ch = *(unsigned char *)(ptr + 1);
         if( ( 0x40 <= ch ) && ( ch <= 0xfc ) ) {
             if( ch == 0x7f) {
                 return( 1 );
@@ -185,9 +185,9 @@ static  int     CharacterWidth( char PGM *ptr )
 }
 
 
-static  bool    IsForeign( char ch ) {
+static  bool    IsForeign( char ch )
 // Determine if character is a foreign character (i.e. non-ASCII).
-
+{
     if( IsDoubleByteChar( ch ) )
         return( true );
     if( ( 0xa0 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xdf ) )
@@ -196,8 +196,9 @@ static  bool    IsForeign( char ch ) {
 }
 
 
-void    __UseJapaneseCharSet( void ) {
-    CharSetInfo.extract_text = &ExtractText;
+void    __UseJapaneseCharSet( void )
+{
+    CharSetInfo.extract_text = &ExtractTextDBCS;
     CharSetInfo.is_double_byte_blank = &IsDoubleByteBlank;
     CharSetInfo.is_double_byte_char = &IsDoubleByteChar;
     CharSetInfo.character_width = &CharacterWidth;

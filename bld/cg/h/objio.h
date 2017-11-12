@@ -38,5 +38,5 @@ extern  void            ScratchObj( void );
 extern  void            PatchObj(objhandle,uint,const byte *,uint);
 extern  void            GetFromObj(objhandle,uint,byte*,uint);
 extern  objhandle       AskObjHandle( void );
-extern  void            PutObjBytes( const void *buff, uint len );
+extern  void            PutObjBytes( const void *buff, size_t len );
 extern  void            PutObjOMFRec( byte class, const void *buff, uint len );

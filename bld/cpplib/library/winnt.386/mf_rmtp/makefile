@@ -6,6 +6,5 @@ convention = register
 linkage    = static
 mthreaded  = 1
 profile    = 1
-subdir     = mf_rmtp
 
 !include $(cpplib_dir)/mrglib.mif

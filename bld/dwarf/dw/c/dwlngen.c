@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,48 +33,48 @@
 #include "dwpriv.h"
 #include "dwutils.h"
 #include "dwline.h"
+#include "dwlngen.h"
 
 
-unsigned DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *buf )
+uint_8 * DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr, uint_8 *end )
 {
     uint                opcode;
-    unsigned            size;
-    uint_8              *end;
     dw_addr_delta       addr;
 
-    size = 0;
     if( line_incr < DWLINE_BASE || line_incr > DWLINE_BASE + DWLINE_RANGE - 1 ) {
         /* line_incr is out of bounds... emit standard opcode */
-        buf[0] = DW_LNS_advance_line;
-        size = LEB128( buf + 1, line_incr ) - buf;
+        *end++ = DW_LNS_advance_line;
+        end = LEB128( end, line_incr );
         line_incr = 0;
     }
 
     if( addr_incr < 0 ) {
-        buf[size] = DW_LNS_advance_pc;
-        size = LEB128( buf + size + 1, addr_incr ) - buf;
+        *end++ = DW_LNS_advance_pc;
+        end = LEB128( end, addr_incr );
         addr_incr = 0;
     } else {
         addr_incr /= DW_MIN_INSTR_LENGTH;
     }
     if( addr_incr == 0 && line_incr == 0 ) {
-        buf[size] = DW_LNS_copy;
-        return( size + 1 );
+        *end++ = DW_LNS_copy;
+        return( end );
     }
 
     /* calculate the opcode with overflow checks */
     line_incr -= DWLINE_BASE;
-    opcode = DWLINE_RANGE * addr_incr;
-    if( opcode < addr_incr )
+    if( DWLINE_RANGE * addr_incr < addr_incr )
         goto overflow;
+
+    opcode = DWLINE_RANGE * addr_incr;
     if( opcode + line_incr < opcode )
         goto overflow;
+
     opcode += line_incr;
 
     /* can we use a special opcode? */
     if( opcode <= 255 - DWLINE_OPCODE_BASE ) {
-        buf[size] = opcode + DWLINE_OPCODE_BASE;
-        return( size + 1 );
+        *end++ = opcode + DWLINE_OPCODE_BASE;
+        return( end );
     }
 
     /*
@@ -85,10 +86,9 @@ unsigned DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr,
 #define MAX_ADDR_INCR   ( ( 255 - DWLINE_OPCODE_BASE ) / DWLINE_RANGE )
 
     if( addr_incr < 2 * MAX_ADDR_INCR ) {
-        buf[size] = DW_LNS_const_add_pc;
-        size++;
-        buf[size] = opcode - MAX_ADDR_INCR * DWLINE_RANGE + DWLINE_OPCODE_BASE;
-        return( size + 1 );
+        *end++ = DW_LNS_const_add_pc;
+        *end++ = opcode - MAX_ADDR_INCR * DWLINE_RANGE + DWLINE_OPCODE_BASE;
+        return( end );
     }
 
     /*
@@ -99,7 +99,7 @@ unsigned DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr,
         of DWLINE_RANGE.
     */
 overflow:
-    buf[size] = DW_LNS_advance_pc;
+    *end++ = DW_LNS_advance_pc;
     if( line_incr == 0 - DWLINE_BASE ) {
         opcode = DW_LNS_copy;
     } else {
@@ -107,7 +107,7 @@ overflow:
         addr_incr -= addr;
         opcode = line_incr + ( DWLINE_RANGE * addr ) + DWLINE_OPCODE_BASE;
     }
-    end = LEB128( buf + size + 1, addr_incr );
+    end = LEB128( end, addr_incr );
     *end++ = opcode;
-    return( end - buf );
+    return( end );
 }

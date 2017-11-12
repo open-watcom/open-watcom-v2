@@ -15,18 +15,13 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> stub386/noemu387.lib <OWRELROOT>/lib386/noemu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/osi/emu387.lib
-    <CCCMD> dos386/emu387.lib    <OWRELROOT>/lib386/dos/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/win/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/os2/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/nt/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/linux/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/netware/emu387.lib
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/rdos/emu387.lib
-# Libs not built by default
-    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/qnx/emu387.lib
-    <CCCMD> qnx386/emu387        <OWRELROOT>/qnx/binq/emu387
+    <CCCMD> stub386/emu387.lib   <OWRELROOT>/lib386/
+    <CCCMD> stub386/noemu387.lib <OWRELROOT>/lib386/
+
+    <CCCMD> dos386/emu387.lib    <OWRELROOT>/lib386/dos/
+
+# QNX emulator setup programs
+    <CCCMD> qnx386/emu387.exe    <OWRELROOT>/qnx/binq/emu387
 
 [ BLOCK . . ]
 

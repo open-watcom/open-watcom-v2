@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,10 @@
     #include "ntext.h"
 #elif defined( __OS2__ )
     #include <wos2.h>
+#elif defined( __RDOS__ )
+    #include <rdos.h>
+#else
+    #include <dos.h>
 #endif
 #include "find.h"
 #include "seterrno.h"

@@ -83,20 +83,20 @@ _WCRTLINK void _WCI86FAR __sigfpe_handler( int fpe_type )
 {
     __sig_func  func;
 #if defined( __WINDOWS_286__ )
-    unsigned int  sw;
+    unsigned int  fp_sw;
 
-    sw = win87em_get_sw();
-    if( sw & EM_INVALID ) {
+    fp_sw = win87em_get_sw();
+    if( fp_sw & EM_INVALID ) {
         fpe_type = FPE_INVALID;
-    } else if( sw & EM_DENORMAL ) {
+    } else if( fp_sw & EM_DENORMAL ) {
         fpe_type = FPE_DENORMAL;
-    } else if( sw & EM_ZERODIVIDE ) {
+    } else if( fp_sw & EM_ZERODIVIDE ) {
         fpe_type = FPE_ZERODIVIDE;
-    } else if( sw & EM_OVERFLOW ) {
+    } else if( fp_sw & EM_OVERFLOW ) {
         fpe_type = FPE_OVERFLOW;
-    } else if( sw & EM_UNDERFLOW ) {
+    } else if( fp_sw & EM_UNDERFLOW ) {
         fpe_type = FPE_UNDERFLOW;
-    } else if( sw & EM_INEXACT ) {
+    } else if( fp_sw & EM_INEXACT ) {
         fpe_type = FPE_INEXACT;
     }
 #endif

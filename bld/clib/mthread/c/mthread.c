@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. 
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2016-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,10 +36,29 @@
 #include <string.h>
 #include <stddef.h>
 #if defined( __QNX__ )
-  #include <sys/magic.h>
-#endif
-#if defined (_NETWARE_LIBC)
-  #include "nw_libc.h"
+    #include <sys/magic.h>
+    #include <process.h>
+#elif defined( __OS2__ )
+    #define INCL_DOSSEMAPHORES
+    #define INCL_DOSPROCESS
+    #include <wos2.h>
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #include "ntext.h"
+#elif defined( __UNIX__ )
+    #include <sys/types.h>
+    #include <unistd.h>
+  #if defined( __LINUX__ )
+    #include <process.h>
+  #endif
+#elif defined( __RDOS__ )
+    #include <rdos.h>
+#elif defined( __RDOSDEV__ )
+    #include <rdos.h>
+    #include <rdosdev.h>
+#elif defined( __NETWARE__ )
+    #include "nw_lib.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -84,7 +102,6 @@ extern  int             __Sema4Fini;            // in finalizer segment
 #ifdef _M_IX86
 #pragma aux             __Sema4Fini "_*";
 #endif
-extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
 
@@ -203,7 +220,7 @@ _WCRTLINK void __CloseSemaphore( semaphore_object *obj )
 
 _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
 {
-    TID tid;
+    _TID tid;
 
     tid = GetCurrentThreadId();
 #if defined( _NETWARE_CLIB )
@@ -272,7 +289,7 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
 
 _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
 {
-    TID tid;
+    _TID tid;
 
     tid = GetCurrentThreadId();
 #if defined( _NETWARE_CLIB )
@@ -363,25 +380,25 @@ void    __ReleaseFHeap( void )
   #if !defined (_THIN_LIB)
 
 static void    __AccessIOB( void )
-/*************************/
+/********************************/
 {
     __AccessSemaphore( &IOBSemaphore );
 }
 
 static void    __ReleaseIOB( void )
-/**************************/
+/*********************************/
 {
     __ReleaseSemaphore( &IOBSemaphore );
 }
 
 static void __AccessFileH( int handle )
-/******************************/
+/*************************************/
 {
     __AccessSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
 static void __ReleaseFileH( int handle )
-/*******************************/
+/**************************************/
 {
     __ReleaseSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
@@ -391,25 +408,25 @@ static void __ReleaseFileH( int handle )
   #if !defined( __NETWARE__ )
 
 static void    __AccessNHeap( void )
-/***************************/
+/**********************************/
 {
     __AccessSemaphore( &NHeapSemaphore );
 }
 
 static void    __ReleaseNHeap( void )
-/****************************/
+/***********************************/
 {
     __ReleaseSemaphore( &NHeapSemaphore );
 }
 
 static void    __AccessFHeap( void )
-/***************************/
+/**********************************/
 {
     __AccessSemaphore( &FHeapSemaphore );
 }
 
 static void    __ReleaseFHeap( void )
-/****************************/
+/***********************************/
 {
     __ReleaseSemaphore( &FHeapSemaphore );
 }
@@ -431,13 +448,13 @@ void    __ReleaseTDList( void )
   #if defined( __NT__ )
 
 static void    __AccessFList( void )
-/***************************/
+/**********************************/
 {
     __AccessSemaphore( &FListSemaphore );
 }
 
 static void    __ReleaseFList( void )
-/****************************/
+/***********************************/
 {
     __ReleaseSemaphore( &FListSemaphore );
 }
@@ -484,7 +501,7 @@ thread_data *__MultipleThread( void )
     return( tdata );
 #elif defined( __WARP__ )
     // 32 bit OS/2
-    TID         tid;
+    _TID        tid;
     thread_data *tdata = NULL;
 
     tid = GetCurrentThreadId();
@@ -514,7 +531,7 @@ thread_data *__MultipleThread( void )
     tdata = (thread_data *)__LinuxGetThreadData( );
     if( tdata == NULL ) {
         tdata = __GetThreadData();
-    } 
+    }
     return( tdata );
 #elif defined( __RDOS__ )
     thread_data *tdata;
@@ -547,7 +564,7 @@ thread_data *__AllocInitThreadData( thread_data *tdata )
 }
 
 void __FreeInitThreadData( thread_data *tdata )
-/******************************************************/
+/*********************************************/
 {
     if( tdata != NULL ) {
         if( tdata->__allocated == 1 ) {
@@ -643,8 +660,8 @@ static void __ThreadExit( void )
 
   #elif defined( __OS2__ )
 
-int __OS2AddThread( TID tid, thread_data *tdata )
-/***********************************************/
+int __OS2AddThread( _TID tid, thread_data *tdata )
+/************************************************/
 {
     tdata = __AllocInitThreadData( tdata );
     if( tdata == NULL )
@@ -670,7 +687,7 @@ int __OS2AddThread( TID tid, thread_data *tdata )
 void __OS2RemoveThread( void )
 /****************************/
 {
-    TID     tid;
+    _TID    tid;
 
     tid = *_threadid;
     if( tid <= __MaxThreads ) {
@@ -717,7 +734,7 @@ void __QNXRemoveThread( void )
   #elif defined( __LINUX__ )
 
 thread_data *__LinuxAddThread( thread_data *tdata )
-/***********************************************/
+/*************************************************/
 {
     void    *tmp;
     tdata = __AllocInitThreadData( tdata );
@@ -726,14 +743,14 @@ thread_data *__LinuxAddThread( thread_data *tdata )
 }
 
 void __LinuxRemoveThread( void )
-/****************************/
+/******************************/
 {
     thread_data *tdata;
-    
+
     tdata = __LinuxGetThreadData();
     if(tdata != NULL && tdata->__allocated )
         lib_free( tdata );
-        
+
     __LinuxSetThreadData( NULL );
 }
 

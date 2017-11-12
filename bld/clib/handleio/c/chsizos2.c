@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include <wos2.h>
 #include "rterrno.h"
 #include "fileacc.h"
 #include "iomode.h"

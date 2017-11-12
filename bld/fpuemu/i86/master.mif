@@ -26,11 +26,6 @@ fpu_flags_qnx_386 = -fpc
 .asm : ../asm
 
 aflag_386 =
-!ifeq host_cpu i86
-cpu_size =16
-!else
-cpu_size =32
-!endif
 
 extra_a_flags = -ms
 extra_a_flags_os2 = -d__PROTMODE__
@@ -52,30 +47,32 @@ extra_c_flags_win = -zl -zls
 extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
 
 extra_c_flags_hook8087 = -i"../h"
-extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
 
 objs_dos = initemu.obj emu8087.obj dosinit.obj
 objs_os2 = initemu2.obj emu8087.obj hook8087.obj
 objs_win = initemuw.obj
 
+extra_link_res_qnx = usage.u
+
 !ifeq host_os qnx
 
 .c : ../../c
 
-!ifeq host_cpu i86
+objs_16 = emu86_16 emu86
+objs_32 = emu86_32
 
-all: emu86_$(cpu_size) emu86
+all: $(objs_$(cpu_size)) .SYMBOLIC
 
-emu86 : usage.u qemu87.obj $(__MAKEFILES__)
+emu86.exe : $(extra_link_res_qnx) qemu87.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) opt res=usage.u file {qemu87.obj}
-!endif
+    $(linker) name $^@ $(lflags) opt res=$(extra_link_res_qnx) file {qemu87.obj}
 
 objs = qnxemu87.obj emu8087.obj fpeqnx.obj
 
-emu86_$(cpu_size): usage.u $(objs) $(__MAKEFILES__)
+emu86_$(cpu_size).exe: $(extra_link_res_qnx) $(objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ $(lflags) opt priv=0,long,res=usage.u file {$(objs)}
+    $(linker) name $^@ $(lflags) opt priv=0,long,res=$(extra_link_res_qnx) file {$(objs)}
 
 usage.u : ../../usage.sp
     @%make echo_wsplice
@@ -85,7 +82,7 @@ usage.u : ../../usage.sp
 
 objs = emustub.obj
 
-noemu87.lib: $(objs) $(__MAKEFILES__)
+emu87.lib noemu87.lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) $(objs)
 

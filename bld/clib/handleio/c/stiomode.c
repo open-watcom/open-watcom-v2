@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,10 @@
 #include <unistd.h>
 #include <string.h>
 #if defined(__OS2__)
- #define INCL_DOSFILEMGR
+    #define INCL_DOSFILEMGR
+    #include <wos2.h>
+#elif defined(__NT__)
+    #include <windows.h>
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -44,6 +48,7 @@
 #include "iomode.h"
 #include "handleio.h"
 #include "thread.h"
+
 
 #if defined(__NETWARE__)
 #error NO IO MODE MANAGER UNDER NETWARE

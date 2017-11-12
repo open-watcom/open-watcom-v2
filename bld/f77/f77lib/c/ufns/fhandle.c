@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
-#include "ftextfun.h"
 #include "fio.h"
 #include "posio.h"
 #include "units.h"
@@ -56,24 +56,20 @@ intstar2        __fortran SYSHANDLE( intstar4 *unit ) {
 
     ftnfile     *fcb;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) {
-            if( *unit == PRE_STANDARD_INPUT ) {
-                return( fileno( stdin ) );
-            } else if( *unit == PRE_STANDARD_OUTPUT ) {
-                return( fileno( stdout ) );
-            } else {
-                return( -1 );
-            }
-        }
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
             if( fcb->fileptr == NULL ) {
                  return( -1 );
             }
-            return( ((a_file *)(fcb->fileptr))->handle );
+            return( fcb->fileptr->handle );
         }
-        fcb = fcb->link;
+    }
+    if( *unit == PRE_STANDARD_INPUT ) {
+        return( fileno( stdin ) );
+    } else if( *unit == PRE_STANDARD_OUTPUT ) {
+        return( fileno( stdout ) );
+    } else {
+        return( -1 );
     }
 }
 
@@ -84,27 +80,23 @@ intstar4        __fortran SETSYSHANDLE( intstar4 *unit, intstar2 *handle ) {
     ftnfile     *fcb;
     struct stat stat_buff;
 
-    fcb = Files;
-    for(;;) {
-        if( fcb == NULL ) return( -1 );
+    for( fcb = Files; fcb != NULL; fcb = fcb->link ) {
         if( *unit == fcb->unitid ) {
-            if( fstat( *handle, &stat_buff ) == -1 ) {
-                 return( -1 );
-            }
+            if( fstat( *handle, &stat_buff ) == -1 )
+                break;
             if( fcb->fileptr != NULL ) {
                 Closef( fcb->fileptr );
                 if( Errorf( NULL ) != IO_OK ) {
-                    return( -1 );
+                    break;
                 }
             }
             fcb->fileptr = _AllocFile( *handle, _FileAttrs( fcb ), 0 );
-            if( fcb->fileptr == NULL ) {
-                return( -1 );
-            } else {
+            if( fcb->fileptr != NULL ) {
                 _AllocBuffer( fcb );
                 return( 0 );
             }
+            break;
         }
-        fcb = fcb->link;
     }
+    return( -1 );
 }

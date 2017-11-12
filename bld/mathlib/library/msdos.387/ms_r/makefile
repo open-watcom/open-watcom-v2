@@ -2,7 +2,6 @@
 
 processor  = 387
 model      = ms
-subdir     = ms_r
 system     = msdos
 linkage    = static
 convention = register

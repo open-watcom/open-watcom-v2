@@ -35,13 +35,13 @@
 #include "exc_pr.h"
 
 #ifdef FS_REGISTRATION
-uint_8 *findHandler( uint_8 *h )
+static bool isWatcomHandler( uint_8 *h )
 {
     while( h[0] == 0xff && h[1] == 0x25 ) {
         // skip jmp [0xhhhhhhhh] instructions (these are injected by the linker)
-        h = (uint_8*)( **((void***)(h + 2)) );
+        h = (uint_8 *)( **((void***)(h + 2)) );
     }
-    return( h );
+    return( h[5] == 'W' && h[6] == 'A' && h[7] == 'T' && h[8] == 'C' && h[9] == 'O' && h[10] == 'M' );
 }
 #endif
 
@@ -53,12 +53,12 @@ void CPPLIB( dispatch_dummy )   // CREATE DUMMY DISPATCH BLOCK
 {
     dispatch->rtc = rtc;
     dispatch->zero = false;
-    dispatch->rethrow = 0;
-    dispatch->non_watcom = 0;
-    dispatch->ro = 0;
-    dispatch->try_cmd = 0;
-    dispatch->exc = 0;
-    dispatch->fs_last = 0;
+    dispatch->rethrow = false;
+    dispatch->non_watcom = false;
+    dispatch->ro = NULL;
+    dispatch->try_cmd = NULL;
+    dispatch->exc = NULL;
+    dispatch->fs_last = NULL;
 }
 
 
@@ -66,7 +66,7 @@ extern "C"
 THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
     ( RW_DTREG** a_last )       // - addr[ ptr to last WATCOM entry ]
 {
-    _RTCTL rt_ctl( 0 );         // - fake R/T control
+    _RTCTL rt_ctl( NULL );      // - fake R/T control
     FsExcRec excrec;            // - system exception record
     DISPATCH_EXC dispatch;      // - dispatch control
     RW_DTREG* last;             // - last WATCOM R/W block
@@ -88,20 +88,13 @@ THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
     excrec.parm_count = EXCREC_PARM_COUNT;
     excrec.object = 0;
     excrec.dispatch = &dispatch;
-    last = 0;
-    retn = 0;
+    last = NULL;
+    retn = NULL;
     for( ctl = FsTop(); ctl != LIST_END; ctl = ctl->base.prev ) {
 #ifdef FS_REGISTRATION
-        uint_8* handler = findHandler( (uint_8*)ctl->base.handler );
-        if( handler[5]  == 'W'
-         && handler[6]  == 'A'
-         && handler[7]  == 'T'
-         && handler[8]  == 'C'
-         && handler[9]  == 'O'
-         && handler[10] == 'M' ) {
+        if( isWatcomHandler( (uint_8 *)ctl->base.handler ) ) {
 #endif
-            if( EXC_HAND_CATCH
-                    == (*ctl->base.handler)( &excrec, 0, 0, 0 ) ) {
+            if( EXC_HAND_CATCH == (*ctl->base.handler)( &excrec, NULL, NULL, 0 ) ) {
                 last = ctl;
                 base = dispatch.rtc->thr;
                 if( base->flags.executable ) {
@@ -112,9 +105,9 @@ THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
         }
 #endif
     }
-    if( retn == 0 ) {
+    if( retn == NULL ) {
         retn = dispatch.rtc->thr;
-        if( retn == 0 ) {
+        if( retn == NULL ) {
             retn = &_RWD_ThreadData;
         }
     }
@@ -134,8 +127,8 @@ FSREGAPI unsigned CPPLIB( fs_handler_rtn ) // HANDLER FOR FS REGISTRATIONS
     unsigned retn;              // - return code
 
 #ifdef RT_EXC_ENABLED
-    if( 0 == rw ) {
-        // rw == 0 only when called from pgm_thread
+    if( NULL == rw ) {
+        // rw == NULL only when called from pgm_thread
         THREAD_CTL* ctl = &_RWD_ThreadData;
         rec_exc->dispatch->rtc->thr = ctl;
         retn = EXC_HAND_CATCH;
@@ -227,10 +220,9 @@ void CPPLIB( unwind_global )    // GLOBAL UNWIND ROUTINE
 
     excrec->flags = EXC_TYPE_UNWIND_NORMAL;
     ctl = excrec->dispatch->rtc->thr;
-    for( curr = ctl->registered; curr != rw; ) {
+    for( curr = ctl->registered; curr != rw; curr = curr->base.prev ) {
         CPPLIB( fs_handler_rtn )( excrec, curr, NULL, 0 );
-        curr = curr->base.prev;
-        ctl->registered = curr;
+        ctl->registered = curr->base.prev;
     }
 }
 
@@ -242,12 +234,12 @@ void CPPLIB( raise_exception )  // RAISE AN EXCEPTION
 {
     RW_DTREG* curr;             // - current R/W block
     THREAD_CTL* ctl;            // - thread control
-    unsigned retn;              // - search return
 
     ctl = excrec->dispatch->rtc->thr;
     for( curr = ctl->registered; ; curr = curr->base.prev ) {
-        retn = CPPLIB( fs_handler_rtn )( excrec, curr, NULL, 0 );
-        if( retn != EXC_HAND_CONTINUE ) break;
+        if( CPPLIB( fs_handler_rtn )( excrec, curr, NULL, 0 ) != EXC_HAND_CONTINUE ) {
+            break;
+        }
     }
 }
 

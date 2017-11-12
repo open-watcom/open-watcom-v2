@@ -15,14 +15,14 @@
 #define EMU16_32        "/bin/emu87_32"
 #define EMU32_32        "/bin/emu387"
 
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     struct  _osinfo     info;
     unsigned            i;
 
     if( argc > 1 && argv[1][0] == '?' ) {
         Msg( USAGE );
-        exit( 0 );
+        return( 0 );
     }
     /* ignore everything */
     for( i = _SIGMIN; i < _SIGMAX; ++i ) {
@@ -31,15 +31,15 @@ main( int argc, char *argv[] )
     qnx_osinfo( 0, &info );
     if( info.sflags & _PSF_32BIT ) {
         argv[0] = EMU32_32;
-        if( spawnv( P_NOWAIT, argv[0], argv ) == -1 ) {
+        if( spawnv( P_NOWAIT, argv[0], (const char * const *)argv ) == -1 ) {
             Msg( "can not spawn 32-bit emulator\n" );
         }
         argv[0] = EMU16_32;
     } else {
         argv[0] = EMU16_16;
     }
-    if( spawnv( P_NOWAIT, argv[0], argv ) == -1 ) {
+    if( spawnv( P_NOWAIT, argv[0], (const char * const *)argv ) == -1 ) {
         Msg( "can not spawn 16-bit emulator\n" );
     }
-    exit( 0 );
+    return( 0 );
 }

@@ -18,15 +18,6 @@ mlib_lib_flags = -b-c-n-pa
 mlib_lib_flags = -b-c-n-pa-s-t-zld
 !endif
 
-!ifdef export_only
-subdir_suffix_dynamic = .wdl
-!else
-subdir_suffix_dynamic = .dll
-!endif
-subdir_suffix_286_dynamic = $(subdir_suffix_dynamic)
-subdir_suffix_386_dynamic = $(subdir_suffix_dynamic)
-mlib_subdir = $(subdir)$(subdir_suffix_$(mlib_$(processor))_$(linkage))
-
 mlib_linkage_flags_286_static  = -z
 mlib_linkage_flags_286_dynamic = -z=export.tmp
 mlib_linkage_flags_386_static  = -z

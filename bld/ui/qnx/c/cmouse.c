@@ -39,16 +39,15 @@
 #include <sys/kernel.h>
 #include <sys/osinfo.h>
 #include <sys/dev.h>
+#include <time.h>
+#include <i86.h>
 #include "uidef.h"
 #include "uimouse.h"
-
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 
 
-#define MOUSE_SCALE             8
-
+#define MOUSE_SCALE         8
 
 extern ORD                  MouseRow;
 extern ORD                  MouseCol;
@@ -201,8 +200,8 @@ static int cm_fini( void )
     return 0;
 }
 
-static int cm_set_speed( int speed )
-/**********************************/
+static int cm_set_speed( unsigned speed )
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
@@ -215,12 +214,12 @@ static int cm_set_speed( int speed )
 
     if( MouseInstalled ) {
         if( mouse_param( MouseCtrl, 0, &mparam ) == 0 ) {
-            if( speed <= 0 ) {
+            if( speed == 0 ) {
                 mparam.gain = 10;
-            } else if( speed > 10 ) {
-                mparam.gain = 1;
+            } else if( speed < 11 ) {
+                mparam.gain = (int)( 11 - speed );
             } else {
-                mparam.gain = 11 - speed;
+                mparam.gain = 1;
             }
             mouse_param( MouseCtrl, 1, &mparam );
         }

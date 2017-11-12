@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,23 +49,24 @@ void CPPLIB( module_dtor )      // DTOR STATICS FOR PROGRAM
 
 
 #ifdef RW_REGISTRATION
-    inlined.base.handler = & CPPLIB( fs_handler_rtn );
-    thr = 0;
+    inlined.base.handler = CPPLIB( fs_handler_rtn );
+    thr = NULL;
 #else
     thr = &_RWD_ThreadData;
 #endif
-    for( ; ; ) {
+    for( ;; ) {
 #ifdef __SW_BM
         _RWD_StaticInitSema.p();
 #endif
         rw = _RWD_ModuleInit;
-        if( rw != 0 ) {
+        if( rw != NULL ) {
             _RWD_ModuleInit = rw->base_st.prev;
         }
 #ifdef __SW_BM
         _RWD_StaticInitSema.v();
 #endif
-        if( rw == 0) break;
+        if( rw == NULL )
+            break;
         RO_STATE* state = &rw->base_st.ro->init_ls.state_table[0];
         (*state->dtor)( state->u.data_addr, DTOR_NULL );
     }
@@ -127,7 +129,7 @@ extern "C" XI( CPPLIBDATA( stab_init_mod ), init, INIT_PRIORITY_RUNTIME )
 
 extern "C"
 void CPPLIB( mod_register )(    // REGISTRATION FOR MODULE INITIALIZED OBJECTS
-    RW_DTREG* rw )              // - R/W block
+    RW_DTREG *rw )              // - R/W block
 {
 #ifdef __SW_BM
     _RWD_StaticInitSema.p();

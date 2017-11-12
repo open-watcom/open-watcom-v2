@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,11 +51,10 @@
 #include "rststruc.h"
 #include "symtab.h"
 #include "rstmgr.h"
+#include "brseinfo.h"
 
 #include <string.h>
 
-
-extern  void            BIOutSymbol( sym_id ste_ptr );
 
 /* Forward declarations */
 static  void    CkFieldNoList( void );

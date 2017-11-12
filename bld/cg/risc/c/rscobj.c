@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include <setjmp.h>
 #include <time.h>
 #include "cgdefs.h"
 #include "coderep.h"
@@ -48,6 +47,7 @@
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
+#include "cvdbg.h"
 #include "cvsyms.h"
 #include "dw.h"
 #include "dfsyms.h"
@@ -62,8 +62,8 @@
 #include "feprotos.h"
 
 
-#define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
-#define OWL_TO_HANDLE(x)    ((FILE *)x)
+#define FILE2OWLF(x)    ((owl_file_handle)(x))
+#define OWLF2FILE(x)    ((FILE *)(x))
 
 #if _TARGET & _TARG_PPC
 extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
@@ -369,22 +369,22 @@ void    ObjFini( void )
 }
 
 
-static  int PutBytes( void *handle, const char *buffer, unsigned len )
-/********************************************************************/
+static  int PutBytes( owl_client_file f, const char *buffer, size_t len )
+/***********************************************************************/
 {
-    /* unused parameters */ (void)handle;
-
 #ifndef NDEBUG
     // enable OWL logging
-    if( handle == NULL ) {
+    if( f == NULL ) {
         PutObjBytes( buffer, len );
     } else {
-        fwrite( buffer, 1, len, OWL_TO_HANDLE( handle ) );
+        fwrite( buffer, 1, len, OWLF2FILE( f ) );
     }
 #else
+    /* unused parameters */ (void)f;
+
     PutObjBytes( buffer, len );
 #endif
-    return( len );
+    return( 0 );
 }
 
 
@@ -473,7 +473,7 @@ void    InitSegDefs( void )
 
     owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
     if( _IsTargetModel( OWL_LOGGING ) ) {
-        OWLLogEnable( owlFile, HANDLE_TO_OWL( stdout ) );
+        OWLLogEnable( owlFile, FILE2OWLF( stdout ) );
     }
 
     codeSection = BACKSEGS;

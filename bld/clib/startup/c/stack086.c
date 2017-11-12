@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <alloca.h>
+#if defined( __OS2__ )
+    #include <wos2.h>
+#endif
 #include "rtstack.h"
 #include "stacklow.h"
 #include "thread.h"

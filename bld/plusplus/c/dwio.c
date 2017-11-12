@@ -31,6 +31,7 @@
 
 
 #include "plusplus.h"
+#include "dw.h"
 #include "dwio.h"
 #include "memmgr.h"
 #include "ring.h"
@@ -116,7 +117,7 @@ void DwioCloseInputFile(        // CLOSE VIRTUAL FILE AFTER INPUT PHASE
 
 void DwioSeek(                  // POSITION TO BYTE OFFSET IN FILE
     DWFILE *ctl,                // - control for the file
-    size_t offset )             // - offset to seek to
+    dw_out_offset offset )      // - offset to seek to
 {
     ctl->buffer = DwioBuffSeek( ctl->buffer, ctl->first, offset );
 }

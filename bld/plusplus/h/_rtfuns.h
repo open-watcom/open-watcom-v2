@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,9 +117,9 @@
 , RTFNP( RTD_TS_OS2,            __compiled_under_OS2     )  // - checker xref: OS/2
 , RTFNP( RTD_TS_NT,             __compiled_under_NT      )  // - checker xref: NT
 #if _CPU == _AXP
-, RTFUN( RTF_PD_HANDLER_RTN,    pd_handler_rtn )            //- fs handler (actual)
+, RTFUN( RTF_PD_HANDLER_RTN,    pd_handler_rtn )            // - fs handler (actual)
 #else
-, RTFUN( RTF_FS_HANDLER_RTN,    fs_handler_rtn )            //- fs handler (actual)
+, RTFUN( RTF_FS_HANDLER_RTN,    fs_handler_rtn )            // - fs handler (actual)
 #endif
 
 // RTTI run-time support

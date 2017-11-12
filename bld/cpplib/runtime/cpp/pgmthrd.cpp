@@ -46,7 +46,7 @@ THREAD_CTL* CPPLIB( pgm_thread )// LOCATE THREAD_CTL FOR PROGRAM (.EXE)
     retn = &_RWD_ThreadData;
     if( ! retn->flags.executable ) {
         retn = retn->call_base;
-        if( retn == 0 || ! retn->flags.executable ) {
+        if( retn == NULL || ! retn->flags.executable ) {
             RW_DTREG* not_used;
             retn = ThreadLookup( &not_used );
         }

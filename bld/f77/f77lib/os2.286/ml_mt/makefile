@@ -4,5 +4,6 @@ system     = os2
 model      = ml
 convention = register
 linkage    = static
-threading16= 1
+mthreaded  = 1
+
 !include ../../master.mif

@@ -41,12 +41,6 @@
   #define cdecl
 #endif
 
-#ifndef HP
-    #ifndef MAXINT
-        #define         MAXINT                  0x7fff
-    #endif
-#endif
-
 #define         P_UNBUFFERED            0
 #define         P_DIALOGUE              1
 #define         P_MENU                  2

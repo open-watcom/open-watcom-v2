@@ -46,6 +46,7 @@
 */
 
 #include <stdio.h>
+#include "bool.h"
 #include "tixparse.h"
 
 char ui_tix_path[] = "/usr/watcom/tix/";

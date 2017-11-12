@@ -43,6 +43,9 @@
   #define OBJ_EXT        ".obj"
 #endif
 
+#define OWLF2FH(f)      (((int)(pointer_int)(f)) - 1)
+#define FH2OWLF(fh)     ((owl_client_file)(pointer_int)((fh) + 1))
+
 extern int              ExitStatus;
 
 owl_handle              OwlHandle;
@@ -106,16 +109,26 @@ void ObjSwitchSection( reserved_section section ) {
     }
 }
 
+static int owl_write( owl_client_file f, const char *buff, size_t size )
+{
+    posix_write( OWLF2FH( f ), buff, size );
+    return( 0 );
+}
+
+static long owl_tell( owl_client_file f )
+{
+    return( tell( OWLF2FH( f ) ) );
+}
+
+static long owl_seek( owl_client_file f, long offset, int where )
+{
+    return( lseek( OWLF2FH( f ), offset, where ) );
+}
+
 bool ObjInit( char *fname ) {
 //***************************
 
-    owl_client_funcs    funcs = {
-        (int (*)( owl_client_file, const char *, uint ))write,
-        (long (*)( owl_client_file ))tell,
-        (long (*)( owl_client_file, long, int ))lseek,
-        MemAlloc,
-        MemFree
-    };
+    owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
     char                name[ _MAX_FNAME ];
     owl_format          obj_format;
 
@@ -147,7 +160,7 @@ bool ObjInit( char *fname ) {
     ErrorFile = fopen( errorFilename, "wt" );
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
     obj_format = ( _IsOption( OBJ_COFF ) ? OWL_FORMAT_COFF : OWL_FORMAT_ELF );
-    OwlFile = OWLFileInit( OwlHandle, fname, (owl_client_file)(pointer_int)objFile, obj_format, OWL_FILE_OBJECT );
+    OwlFile = OWLFileInit( OwlHandle, fname, FH2OWLF( objFile ), obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( true );

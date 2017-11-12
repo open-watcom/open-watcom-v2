@@ -41,8 +41,8 @@ ARRAY_STORAGE * CPPLIB( dtor_array_store )( // CALL DTORS FOR ARRAY_STORAGE
 {
     ARRAY_STORAGE *base;
 
-    if( array == 0 ) {
-        base = 0;
+    if( array == NULL ) {
+        base = NULL;
     } else {
         base = ArrayStorageFromArray( array );
         CPPLIB( dtor_array )( array, base->element_count, sig );

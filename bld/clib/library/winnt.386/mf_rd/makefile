@@ -5,7 +5,6 @@ convention = register
 model      = mf
 system     = winnt
 linkage    = dynamic
-subdir     = mf_rd
 
 clib_release = 0
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,38 +31,32 @@
 
 
 #include "ftnstd.h"
-#include "fiosem.h"
-
-#include <stddef.h>
-
 #if defined( __OS2__ )
-
   #define INCL_DOSSEMAPHORES
   #include <wos2.h>
+#elif defined( __NETWARE__ )
+  #include "nw_lib.h"
+#elif defined( __NT__ )
+  #include <windows.h>
+#elif defined( __UNIX__ )
+  #include <semaphore.h>
+  #include <sys/types.h>
+#endif
+#include "threadid.h"
+#include "fiosem.h"
 
-  #define       _FSEM           ULONG
-  #define       _FTID           TID
+
+#if defined( __OS2__ )
 
   #define       _FRequestMutexSem       DosRequestMutexSem
   #define       _FReleaseMutexSem       DosReleaseMutexSem
 
 #elif defined( __NETWARE__ )
 
-  #define       _FSEM           long
-  #define       _FTID           int
-
   #define       _FRequestMutexSem( sem, x )     WaitOnLocalSemaphore( sem )
   #define       _FReleaseMutexSem               SignalLocalSemaphore
 
-  extern int    WaitOnLocalSemaphore( long );
-  extern int    SignalLocalSemaphore( long );
-
 #elif defined( __NT__ )
-
-  #include <windows.h>
-
-  #define       _FSEM           HANDLE
-  #define       _FTID           DWORD
 
   #define       _FRequestMutexSem       WaitForSingleObject
   #define       _FReleaseMutexSem       ReleaseMutex
@@ -70,27 +65,22 @@
 
 #elif defined( __LINUX__ )
 
-// TODO: semaphore support for Linux !
-
-  #define       _FSEM           long
-  #define       _FTID           int
-
-  #define       _FRequestMutexSem( sem, x )
-  #define       _FReleaseMutexSem( sem )
+  #define       _FRequestMutexSem( sem, x )      sem_wait( &sem )
+  #define       _FReleaseMutexSem( sem )         sem_post( &sem )
 
   #define       SEM_INDEFINITE_WAIT     -1
 
 #endif
 
-extern  _FSEM           __fio_sem;
-static  _FTID           __fio_owner = { 0 };
+
+static  _TID            __fio_owner = { 0 };
 static  int             __fio_count = { 0 };
 
 
 void    __AccessFIO( void ) {
 //===========================
 
-    _FTID       tid;
+    _TID        tid;
 
     tid = *_threadid;
     if( __fio_owner != tid ) {

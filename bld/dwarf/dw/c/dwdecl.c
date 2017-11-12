@@ -36,39 +36,30 @@
 #include "dwdecl.h"
 #include "dwrefer.h"
 
-void DWENTRY DWDeclFile(
-    dw_client                   cli,
-    const char *                name )
+
+void DWENTRY DWDeclFile( dw_client cli, const char *name )
 {
     cli->decl.file = GetFileNumber( cli, name );
     cli->decl.changed = 1;
     SetReferenceFile( cli, cli->decl.file );
 }
 
-
-void DWENTRY DWDeclPos(
-    dw_client                   cli,
-    dw_linenum                  line,
-    dw_column                   column )
+void DWENTRY DWDeclPos( dw_client cli, dw_linenum line, dw_column column )
 {
     cli->decl.line = line;
     cli->decl.column = column;
     cli->decl.changed = 1;
 }
 
-
-abbrev_code CheckDecl(
-    dw_client                   cli,
-    abbrev_code                 abbrev )
+abbrev_code CheckDecl( dw_client cli, abbrev_code abbrev )
 {
-    if( cli->decl.changed && abbrev & AB_DECL ) return( AB_DECL );
+    if( cli->decl.changed && (abbrev & AB_DECL) )
+        return( AB_DECL );
     cli->decl.changed = 0;
     return( 0 );
 }
 
-
-void EmitDecl(
-    dw_client                   cli )
+void EmitDecl( dw_client cli )
 {
     if( cli->decl.changed ) {
         /* AT_decl_file */
@@ -81,9 +72,7 @@ void EmitDecl(
     }
 }
 
-
-void InitDecl(
-    dw_client                   cli )
+void InitDecl( dw_client cli )
 {
     cli->decl.file = 1;
     cli->decl.line = 0;
@@ -91,9 +80,7 @@ void InitDecl(
     cli->decl.changed = 0;
 }
 
-
-void FiniDecl(
-    dw_client                   cli )
+void FiniDecl( dw_client cli )
 {
     /* unused parameters */ (void)cli;
 }

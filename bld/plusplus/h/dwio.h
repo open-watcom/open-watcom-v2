@@ -80,7 +80,7 @@ void *DwioRead(                 // READ A BYTE STREAM
 ;
 void DwioSeek(                  // POSITION TO BYTE OFFSET IN FILE
     DWFILE *ctl,                // - control for the file
-    size_t offset )             // - offset to seek to
+    dw_out_offset offset )      // - offset to seek to
 ;
 void DwioWrite(                 // WRITE BYTE STREAM TO VIRTUAL FILE
     DWFILE *ctl,                // - control for the file

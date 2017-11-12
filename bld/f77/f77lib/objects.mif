@@ -162,7 +162,9 @@ both += &
     japanese.obj &
     korean.obj &
     lexcmp.obj &
-    rtspawn.obj
+    lexstcmp.obj &
+    rtspawn.obj &
+    sbcsutil.obj
 
 
 #                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
@@ -176,7 +178,7 @@ both += &
 dep_rt += &
     deffname.obj &
     fdutil.obj &
-    flt86.obj &
+    fltconst.obj &
     initeng.obj &
     initchi.obj &
     initjap.obj &

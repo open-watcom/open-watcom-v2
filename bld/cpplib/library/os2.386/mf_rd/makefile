@@ -4,7 +4,6 @@ system     = os2
 model      = mf
 convention = register
 linkage    = static
-subdir     = mf_rd
 
 cpplib_release = 0
 

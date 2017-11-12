@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,6 +71,7 @@
 #include "conflict.h"
 #include "scmain.h"
 #include "generate.h"
+#include "inline.h"
 #include "feprotos.h"
 
 
@@ -101,7 +102,6 @@ extern  void            FixBreak( void );
 extern  void            RemoveBreak( void );
 extern  instruction     *NeedIndex( instruction * );
 extern  void            SetInOut( block * );
-extern  bool            BGInInline( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 

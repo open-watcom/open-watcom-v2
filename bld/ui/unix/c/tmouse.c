@@ -31,30 +31,27 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #if defined( __UNIX__ )
-
 #ifndef HP
     #include <curses.h>
 #else
     #include <stdarg.h>
     #include <curses.h>
 #endif
-
+#endif
+#ifdef __LINUX__
+    #include <sys/socket.h>
+    #include <sys/un.h>
 #endif
 #include <term.h>
 #include "uidef.h"
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-
 #include "uivirt.h"
 #include "unxuiext.h"
 #include "ctkeyb.h"
-#include <time.h>
-#ifdef __LINUX__
-#include <sys/socket.h>
-#include <sys/un.h>
-#endif
 
 
 #ifdef __LINUX__
@@ -77,10 +74,10 @@ static enum {
 #endif
 } MouseType;
 
-#define MAXBUF    30
-static char buf[ MAXBUF + 1 ];
-static int  new_sample;
-int         UIMouseHandle = -1;
+#define MAXBUF  30
+static char     buf[ MAXBUF + 1 ];
+static int      new_sample;
+static int      UIMouseHandle = -1;
 
 #define ANSI_HDR        "\x1b["
 
@@ -355,7 +352,7 @@ static int tm_fini( void )
 }
 
 static int tm_set_speed( unsigned speed )
-/****************************************/
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
@@ -367,6 +364,12 @@ static int tm_set_speed( unsigned speed )
     /* unused parameters */ (void)speed;
 
     return 0;
+}
+
+static int tm_wait_mouse( void )
+/******************************/
+{
+    return( UIMouseHandle );
 }
 
 void tm_saveevent( void )
@@ -415,7 +418,8 @@ void tm_saveevent( void )
 Mouse TermMouse = {
     tm_init,
     tm_fini,
-    (int (*)(int))tm_set_speed,
+    tm_set_speed,
     tm_stop,
     tm_check,
+    tm_wait_mouse
 };

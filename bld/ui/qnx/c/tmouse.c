@@ -38,11 +38,11 @@
 #include <sys/kernel.h>
 #include <sys/osinfo.h>
 #include <sys/dev.h>
+#include <i86.h>
 #include "uidef.h"
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "ctkeyb.h"
@@ -267,8 +267,8 @@ static int tm_fini( void )
     return( 0 );
 }
 
-static int tm_set_speed( int speed )
-/**********************************/
+static int tm_set_speed( unsigned speed )
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
@@ -277,8 +277,15 @@ static int tm_set_speed( int speed )
  * For now, 10 will be fastest and 1 will be slowest.
  */
 {
-    speed = speed;
+    /* unused parameters */ (void)speed;
+
     return( 0 );
+}
+
+static int tm_wait_mouse( void )
+/******************************/
+{
+    return( -1 );
 }
 
 void tm_saveevent( void )
@@ -348,4 +355,5 @@ Mouse TermMouse = {
     tm_set_speed,
     tm_stop,
     tm_check,
+    tm_wait_mouse
 };

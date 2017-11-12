@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "dwmem.h"
 #include "dwdecl.h"
 #include "dwrefer.h"
-#include "dwutils.h"
+#include "dwcliuti.h"
 #include "dwdie.h"
 
 
@@ -70,16 +71,17 @@ void StartChildren( dw_client cli )
 
 static void doTheSiblingThing( dw_client cli )
 {
-    debug_ref       sibling;
-    char            buf[sizeof( debug_ref )];
+    dw_sect_offs    sibling;
+    dw_sect_offs    offset;
 
     sibling = cli->die.tree->sibling;
-    if( sibling == 0 )
-        return;  /* no previous sibling */
-
-    /* relocate previous sibling */
-    WriteRef( buf, InfoSkip( cli, 0 ) );
-    InfoPatch( cli, sibling, buf, sizeof( buf ) );
+    if( sibling ) {
+        /* relocate previous sibling */
+        offset = InfoSectionOffset( cli );
+        CLISectionSeekOffset( cli, DW_DEBUG_INFO, sibling );
+        Info32( cli, offset );
+        CLISectionSeekEnd( cli, DW_DEBUG_INFO );
+    }
 }
 
 
@@ -89,8 +91,7 @@ void EndChildren( dw_client cli )
 
     /* move up a level in the tree */
     cli->die.tree = FreeLink( cli, cli->die.tree );
-
-    Info8( cli, 0 );
+    CLISectionWriteZeros( cli, DW_DEBUG_INFO, 1 );
 }
 
 
@@ -114,7 +115,9 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
     /* AT_sibling reference */
     if( haskids ) {
-        cli->die.tree->sibling = InfoSkip( cli, sizeof( debug_ref ) );
+        cli->die.tree->sibling = InfoSectionOffset( cli );
+        /* reserve space (skip over) */
+        InfoSkip( cli, sizeof( dw_sect_offs ) );
     } else {
         cli->die.tree->sibling = 0;
     }

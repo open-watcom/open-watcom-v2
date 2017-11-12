@@ -41,7 +41,7 @@ void SetMouseSpeed( int speed ) {}
 /*
  * PollMouse - poll the mouse for it's state
  */
-void PollMouse( int *status, int *row, int *col ) {}
+void PollMouse( int *status, windim *row, windim *col ) {}
 
 /*
  * InitMouse - initialize the mouse

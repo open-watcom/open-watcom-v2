@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <stdlib.h>
+#if defined( __NETWARE__ )
+    #include "nw_lib.h"
+#endif
 #include "rtdata.h"
 #include "errstr.h"
 

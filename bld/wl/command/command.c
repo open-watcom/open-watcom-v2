@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
 extern void             InitCmdFile( void );
-extern f_handle         FindPath( const char * );
+extern f_handle         FindPath( const char *, char * );
 extern int              Spawn( void (*)() );
 extern void             BurnSystemList( void );
 extern void             Burn( void );
@@ -293,7 +294,7 @@ static void ProcessInfo( void )
 
     Root = NewSection();
     SetUpCommands();
-    file = FindPath( INIT_FILE_NAME );
+    file = FindPath( INIT_FILE_NAME, NULL );
     if( file == NIL_FHANDLE )
         return;   /* NO WLINK.LNK */
     _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );

@@ -5,7 +5,6 @@ convention = register
 model      = mf
 system     = linux
 linkage    = static
-subdir     = mf_rd
 
 clib_release = 0
 
