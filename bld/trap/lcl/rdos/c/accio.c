@@ -46,8 +46,8 @@ trap_retval ReqFile_get_config( void )
     ret->file.drv_separator = ':';
     ret->file.path_separator[0] = '\\';
     ret->file.path_separator[1] = '/';
-    ret->file.newline[0] = '\r';
-    ret->file.newline[1] = '\n';
+    ret->file.line_eol[0] = '\r';
+    ret->file.line_eol[1] = '\n';
     return( sizeof( *ret ) );
 }
 
