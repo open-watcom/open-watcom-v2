@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <unistd.h>
 
 #if defined(__WATCOMC__)
     #include <sys/ioctl.h>
@@ -51,10 +53,9 @@
     #undef bool
 #else
     #include <curses.h>
-#include <term.h>
+    #include "wterm.h"
 #endif
 
-#include <unistd.h>
 
 #include "stdui.h"
 #include "unxuiext.h"

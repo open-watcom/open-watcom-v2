@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include <term.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include "wterm.h"
 #include "bool.h"
 #include "stdui.h"
 #include "qnxuiext.h"

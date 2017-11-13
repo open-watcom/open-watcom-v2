@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +46,9 @@
 #include <sys/console.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <term.h>
 #include <ctype.h>
 #include <signal.h>
+#include "wterm.h"
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirt.h"

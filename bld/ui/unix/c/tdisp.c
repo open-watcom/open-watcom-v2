@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,12 +67,11 @@
 #endif
 
 #include <curses.h>
-#include <term.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
 #include <sys/ioctl.h>
-
+#include "wterm.h"
 #include "uidef.h"
 #include "uiattrs.h"
 #include "qdebug.h"
