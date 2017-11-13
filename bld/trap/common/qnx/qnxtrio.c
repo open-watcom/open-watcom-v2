@@ -196,7 +196,7 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     bool            has_path;
     const char      *ptr;
     const char      *endptr;
-    char            trpfile[MAX_PATH + 1];
+    char            trpfile[PATH_MAX + 1];
     int             fd;
 
     result = result; max_result = max_result;
