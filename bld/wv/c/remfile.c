@@ -372,7 +372,7 @@ size_t RemoteWriteConsoleNL( void )
     if( SuppFileId == 0 )
         return( 0 );
 
-    return( doWriteConsole( RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
+    return( doWriteConsole( RemFile.line_eol, ( RemFile.line_eol[1] != NULLCHAR ) ? 2 : 1 ) );
 }
 
 static size_t doRead( sys_handle hdl, void *buff, size_t len )

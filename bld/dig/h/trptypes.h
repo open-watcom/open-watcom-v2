@@ -93,7 +93,7 @@ typedef struct {
     char            ext_separator;
     char            drv_separator;
     char            path_separator[2];
-    char            newline[2];
+    char            line_eol[2];
 } file_components;
 #include "poppck.h"
 

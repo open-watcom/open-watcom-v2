@@ -189,9 +189,9 @@ size_t WriteNL( file_handle fh )
     const char      *nl;
 
     if( ISREMOTE( fh ) ) {
-        nl = RemFile.newline;
+        nl = RemFile.line_eol;
     } else {
-        nl = LclFile.newline;
+        nl = LclFile.line_eol;
     }
     return( WriteStream( fh, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
 }
