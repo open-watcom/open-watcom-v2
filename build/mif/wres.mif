@@ -13,23 +13,27 @@ name_model_conv = m$(memory_model_386)_s/wres.lib
 name_model_conv = m$(memory_model_386)_r/wres.lib
 !endif
 
-name_i86_s = $(wres_dir)/dosi86/ms/wres.lib
-name_i86_m = $(wres_dir)/dosi86/mm/wres.lib
-name_i86_c = $(wres_dir)/dosi86/mc/wres.lib
-!ifeq host_os win
+!ifeq host_os qnx
+wres_i86_dir = qnxi86
+!else ifeq host_os win
 !ifdef WINDOWS
-name_i86_c = $(wres_dir)/wini86.gui/mc/wres.lib
-name_i86_l = $(wres_dir)/wini86.gui/ml/wres.lib
+wres_i86_dir = wini86.gui
 !else
-name_i86_c = $(wres_dir)/wini86/mc/wres.lib
-name_i86_l = $(wres_dir)/wini86/ml/wres.lib
+wres_i86_dir = wini86
 !endif
+!else ifeq host_os os2
+wres_i86_dir = os2i86
 !else ifdef pegged
-name_i86_l = $(wres_dir)/os2i86/ml/wres.lib
+wres_i86_dir = os2i86
 !else
-name_i86_l = $(wres_dir)/dosi86/ml/wres.lib
+wres_i86_dir = dosi86
 !endif
-name_i86_h = $(wres_dir)/dosi86/mh/wres.lib
+
+name_i86_s = $(wres_dir)/$(wres_i86_dir)/ms/wres.lib
+name_i86_m = $(wres_dir)/$(wres_i86_dir)/mm/wres.lib
+name_i86_c = $(wres_dir)/$(wres_i86_dir)/mc/wres.lib
+name_i86_l = $(wres_dir)/$(wres_i86_dir)/ml/wres.lib
+name_i86_h = $(wres_dir)/$(wres_i86_dir)/mh/wres.lib
 
 name_386_dos      = $(wres_dir)/dos386/$(name_model_conv)
 name_386_zdos     = $(wres_dir)/osi386/$(name_model_conv)
