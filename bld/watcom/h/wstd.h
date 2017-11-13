@@ -394,14 +394,6 @@ typedef unsigned_8      sbit;
     #define NULLCHAR    '\0'
 #endif
 
-#if !defined( _unused )
-    #if defined( THINK_C )
-        #define _unused( v )
-    #else
-        #define _unused( v ) (v = v)
-    #endif
-#endif
-
 #if !defined( NULL )
     #if defined( THINK_C )  ||  defined( __SC__ )
       #if defined( __cplusplus )

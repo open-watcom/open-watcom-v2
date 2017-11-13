@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -550,7 +550,7 @@ static void vscroll_fields( a_field **ht, SAREA use, int incr )
 
 static a_tab_field *help_next_field( a_field *fld, a_field *table )
 {
-    _unused( table );
+    /* unused parameters */ (void)table;
     if( fld != NULL ) {
         fld = fld->next;
     }
@@ -618,8 +618,8 @@ void Free_Stack( void )
 
 static unsigned help_in_tab( a_field *fld, void *dummy )
 {
-    _unused( fld );
-    _unused( dummy );
+    /* unused parameters */ (void)fld; (void)dummy;
+
     return( true );
 }
 

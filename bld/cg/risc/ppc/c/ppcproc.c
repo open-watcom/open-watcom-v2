@@ -86,8 +86,6 @@ void    AddCacheRegs( void )
     }
 }
 
-#define _unused( x )    ( (x) = (x) )
-
 static  void    initParmCache( stack_record *pc, type_length *offset )
 /********************************************************************/
 {
@@ -106,13 +104,13 @@ static  void    initParmCache( stack_record *pc, type_length *offset )
 static  void    emitParmCacheProlog( stack_record *pc )
 /*****************************************************/
 {
-    _unused( pc );
+    /* unused parameters */ (void)pc;
 }
 
 static  void    emitParmCacheEpilog( stack_record *pc )
 /*****************************************************/
 {
-    _unused( pc );
+    /* unused parameters */ (void)pc;
 }
 
 static  void    initLocals( stack_record *locals, type_length *offset )
@@ -126,13 +124,13 @@ static  void    initLocals( stack_record *locals, type_length *offset )
 static  void    emitLocalProlog( stack_record *locals )
 /*****************************************************/
 {
-    _unused( locals );
+    /* unused parameters */ (void)locals;
 }
 
 static  void    emitLocalEpilog( stack_record *locals )
 /*****************************************************/
 {
-    _unused( locals );
+    /* unused parameters */ (void)locals;
 }
 
 static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
@@ -308,7 +306,8 @@ static  void    emitVarargsProlog( stack_record *varargs )
     type_length         offset;
     int                 i;
 
-    _unused( varargs );
+    /* unused parameters */ (void)varargs;
+
     if( CurrProc->state.attr & ROUTINE_HAS_VARARGS ) {
         // save our registers in our caller's context - uhg!
         offset = CurrProc->targ.frame_size + STACK_HEADER_SIZE;
@@ -322,7 +321,7 @@ static  void    emitVarargsEpilog( stack_record *varargs )
 /********************************************************/
 {
     // NB see FrameSaveEpilog below
-    _unused( varargs );
+    /* unused parameters */ (void)varargs;
 }
 
 static  void    initSlop( stack_record *slop, type_length *offset )
@@ -342,13 +341,13 @@ static  void    initSlop( stack_record *slop, type_length *offset )
 static  void    emitSlopProlog( stack_record *fs )
 /************************************************/
 {
-    _unused( fs );
+    /* unused parameters */ (void)fs;
 }
 
 static  void    emitSlopEpilog( stack_record *fs )
 /************************************************/
 {
-    _unused( fs );
+    /* unused parameters */ (void)fs;
 }
 
 static  void    initStackHeader( stack_record *stk, type_length *offset )
@@ -362,13 +361,13 @@ static  void    initStackHeader( stack_record *stk, type_length *offset )
 static  void    emitStackHeaderProlog( stack_record *stk )
 /********************************************************/
 {
-    _unused( stk );
+    /* unused parameters */ (void)stk;
 }
 
 static  void    emitStackHeaderEpilog( stack_record *stk )
 /********************************************************/
 {
-    _unused( stk );
+    /* unused parameters */ (void)stk;
 }
 
 

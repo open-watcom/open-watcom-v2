@@ -165,7 +165,8 @@ void WEXPORT WControl::getRectangle( WRect& r, bool absolute ) {
 
     gui_rect    rr;
 
-    _unused( absolute );
+    /* unused parameters */ (void)absolute;
+
     GUIGetControlRect( parent()->handle(), controlId(), &rr );
     r.x( rr.x );
     r.y( rr.y );
