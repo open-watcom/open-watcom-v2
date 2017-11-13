@@ -57,10 +57,13 @@
 #include <string.h>
 #include "trpimp.h"
 #include "trperr.h"
+#include "trpcomm.h"
 #include "qnxcomm.h"
 #include "miscx87.h"
 #include "mad.h"
 #include "madregs.h"
+#include "walloca.h"
+
 
 typedef unsigned short  USHORT;
 typedef unsigned long   ULONG;
@@ -212,7 +215,7 @@ static thread_info *find_thread(pid_t tid)
 
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
         if( thread->tid == tid ) {
-            if( tid == 0 ) thread->dying = FALSE;
+            if( tid == 0 ) thread->dying = false;
             return( thread );
         }
     }
@@ -339,7 +342,7 @@ struct _slib_register_reply {
 #define _SLIB_NAME "qnx/syslib"
 #define _SLIB_REGISTER  0x1000
 
-addr48_ptr GetSLibTable( bool is_32 )
+static addr48_ptr GetSLibTable( bool is_32 )
 {
     addr48_ptr          slib;
     addr32_ptr          slib16;
@@ -785,7 +788,7 @@ trap_retval ReqProg_load( void )
     char                        *parms;
     char                        *parm_start;
     int                         i;
-    char                        exe_name[255];
+    char                        exe_name[PATH_MAX + 1];
     struct _osinfo              info;
     struct _psinfo              proc;
     struct _debug_psinfo        off_info;
@@ -807,12 +810,12 @@ trap_retval ReqProg_load( void )
     ProcInfo.sig  = -1;
     ProcInfo.proc = PROC_PID;
     ProcInfo.sflags = 0;
-    ProcInfo.at_end = FALSE;
-    ProcInfo.dbg32  = FALSE;
-    ProcInfo.proc32 = FALSE;
-    ProcInfo.flat   = FALSE;
-    ProcInfo.fpu32  = FALSE;
-    ProcInfo.fork   = FALSE;
+    ProcInfo.at_end = false;
+    ProcInfo.dbg32  = false;
+    ProcInfo.proc32 = false;
+    ProcInfo.flat   = false;
+    ProcInfo.fpu32  = false;
+    ProcInfo.fork   = false;
     memset( ProcInfo.thread, 0, sizeof( ProcInfo.thread[0] ) * ProcInfo.max_threads );
     parms = (char *)GetInPtr( sizeof( *acc ) );
     parm_start = parms;
@@ -839,7 +842,7 @@ trap_retval ReqProg_load( void )
             ++parms;
             --len;
         }
-        args[ i-1 ] = NULL;
+        args[i - 1] = NULL;
     } else {
         while( *parms != '\0' ) {
             ++parms;
@@ -848,16 +851,16 @@ trap_retval ReqProg_load( void )
         ++parms;
         --len;
         i = SplitParms( parms, NULL, len );
-        args = walloca( (i+2) * sizeof( *args ) );
-        args[ SplitParms( parms, &args[1], len ) + 1 ] = NULL;
+        args = walloca( ( i + 2 ) * sizeof( *args ) );
+        args[SplitParms( parms, (const char **)&args[1], len ) + 1] = NULL;
     }
     args[0] = parm_start;
     ProcInfo.pid = RunningProc( &nid, args[0], &proc, &name );
     if( ProcInfo.pid != 0 ) {
-        ProcInfo.loaded_proc = FALSE;
+        ProcInfo.loaded_proc = false;
     } else {
         args[0] = name;
-        if( FindFilePath( TRUE, args[0], exe_name ) == 0 ) {
+        if( FindFilePath( true, args[0], exe_name ) == 0 ) {
             exe_name[0] = '\0';
         }
         save_pgrp = getpgrp();
@@ -869,7 +872,7 @@ trap_retval ReqProg_load( void )
         if( ProcInfo.pid != -1 ) {
             qnx_psinfo( PROC_PID, ProcInfo.pid, &proc, 0, 0 );
         }
-        ProcInfo.loaded_proc = TRUE;
+        ProcInfo.loaded_proc = true;
     }
     ret->flags = 0;
     if( ProcInfo.pid != -1 ) {
@@ -884,7 +887,7 @@ trap_retval ReqProg_load( void )
             qnx_psinfo( ProcInfo.proc, ProcInfo.pid, &proc, 0, 0 );
         }
         if( proc.flags & _PPF_32BIT ) {
-            ProcInfo.dbg32 = TRUE;
+            ProcInfo.dbg32 = true;
             ret->flags |= LD_FLAG_IS_BIG;
         }
         ProcInfo.priv_level = proc.ss_reg & PRIV_MASK;
@@ -910,35 +913,35 @@ trap_retval ReqProg_load( void )
             ret->flags |= LD_FLAG_IS_PROT;
         }
         if( info.sflags & _PSF_32BIT ) {
-            ProcInfo.proc32 = TRUE;
+            ProcInfo.proc32 = true;
         }
-        has_flat = FALSE;
+        has_flat = false;
         if( __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_PSINFO,
                             &off_info, sizeof( off_info ), 0, 0 ) != -1 ) {
             if( proc.flags & _PPF_FLAT ) {
-                ProcInfo.flat = TRUE;
+                ProcInfo.flat = true;
                 ProcInfo.code_offset = off_info.codeoff;
                 ProcInfo.data_offset = off_info.codeoff + off_info.codesize;
             }
-            has_flat = TRUE;
+            has_flat = true;
         }
         if( ForceFpu32 < 0 ) {
-            ProcInfo.fpu32 = FALSE;
+            ProcInfo.fpu32 = false;
         } else if( ForceFpu32 > 0 ) {
-            ProcInfo.fpu32 = TRUE;
+            ProcInfo.fpu32 = true;
         } else if( ProcInfo.dbg32 ) {
-            ProcInfo.fpu32 = TRUE;
+            ProcInfo.fpu32 = true;
         } else if( info.sflags & _PSF_EMU16_INSTALLED ) {
             /* 16-bit emulator always writes out 16-bit state */
-            ProcInfo.fpu32 = FALSE;
+            ProcInfo.fpu32 = false;
         } else if( !ProcInfo.proc32 ) {
-            ProcInfo.fpu32 = FALSE;
+            ProcInfo.fpu32 = false;
         } else if( has_flat ) {
             /* Proc32's that support flat model save 16-bit floating point
                state as the full 32-bit form */
-            ProcInfo.fpu32 = TRUE;
+            ProcInfo.fpu32 = true;
         } else {
-            ProcInfo.fpu32 = FALSE;
+            ProcInfo.fpu32 = false;
         }
 
         ProcInfo.thread[0].tid = ProcInfo.pid;
@@ -978,7 +981,7 @@ trap_retval ReqProg_kill( void )
     }
     ProcInfo.sig = -1;
     ProcInfo.sflags = 0;
-    ProcInfo.at_end = FALSE;
+    ProcInfo.at_end = false;
     ProcInfo.save_in = -1;
     ProcInfo.save_out = -1;
     ret->err = 0;
@@ -1045,7 +1048,7 @@ trap_retval ReqClear_watch( void )
 static void RunHandler( int sig )
 {
     sig = sig;
-    ProcInfo.stopped = TRUE;
+    ProcInfo.stopped = true;
     /* Running this signal handler will cause the Receive to terminate */
 }
 
@@ -1059,12 +1062,12 @@ static int RunIt( unsigned step )
     thread_info         *new;
     unsigned            i;
 
-    ProcInfo.stopped = TRUE;
+    ProcInfo.stopped = true;
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
         if( thread->tid && thread->fork && !thread->frozen ) {
             __qnx_debug_cont( ProcInfo.proc, thread->tid, 0 );
             thread->tid = 0;
-            ProcInfo.stopped = FALSE;
+            ProcInfo.stopped = false;
         }
     }
     if( !ProcInfo.stopped ) {
@@ -1075,7 +1078,7 @@ static int RunIt( unsigned step )
         if( step == 0 || thread->tid == ProcInfo.pid ) {
             if( !thread->frozen ) {
                 if( __qnx_debug_cont( ProcInfo.proc, thread->tid, step ) == 0 ) {
-                    ProcInfo.stopped = FALSE;
+                    ProcInfo.stopped = false;
                 }
             }
         }
@@ -1141,20 +1144,20 @@ static int RunIt( unsigned step )
                     }
                     break;
                 case _DEBUG_STATE_DEAD:
-                    thread->dying = TRUE;
+                    thread->dying = true;
                     if( ( pid = next_thread( 0, THREAD_THAWED ) ) || ( pid = next_thread( 0, THREAD_FROZEN ) ) ) {
                         __qnx_debug_detach( ProcInfo.proc, thread->tid );
                         thread->tid = 0;
-                        find_thread(pid)->frozen = FALSE;
+                        find_thread(pid)->frozen = false;
                         ProcInfo.pid = pid;
                         ret |= COND_THREAD;
                     } else {
-                        thread->dying = FALSE;
+                        thread->dying = false;
                         if( pid != ProcInfo.pid ) {
                             ProcInfo.pid = pid;
                             ret |= COND_THREAD;
                         }
-                        ProcInfo.at_end = TRUE;
+                        ProcInfo.at_end = true;
                         ret |= COND_TERMINATE;
                     }
                     break;
@@ -1172,8 +1175,8 @@ static int RunIt( unsigned step )
                     ProcInfo.son = info.messenger;
                     if( new = find_thread( 0 ) ) {
                         new->tid = ProcInfo.son;
-                        new->frozen = TRUE;
-                        new->fork = TRUE;
+                        new->frozen = true;
+                        new->fork = true;
                         ret |= COND_THREAD;
                     }
                     ret |= COND_MESSAGE;
@@ -1183,7 +1186,7 @@ static int RunIt( unsigned step )
                     if( new = find_thread( 0 ) ) {
                         if( __qnx_debug_attach( ProcInfo.proc, ProcInfo.son, ProcInfo.mid ) == 0 ) {
                             new->tid = ProcInfo.son;
-                            new->frozen = FALSE;
+                            new->frozen = false;
                         }
                     }
                     ret |= COND_THREAD;
@@ -1193,7 +1196,7 @@ static int RunIt( unsigned step )
         }
         return( ret );
     }
-    ProcInfo.at_end = TRUE;
+    ProcInfo.at_end = true;
     return( COND_TERMINATE );
 }
 
@@ -1246,12 +1249,12 @@ static unsigned ProgRun( bool step )
 
 trap_retval ReqProg_step( void )
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 trap_retval ReqProg_go( void )
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 #define STK_ALIGN( v, type )    ((v)+(sizeof(type)-1) & ~(sizeof(type)-1))
@@ -1272,7 +1275,7 @@ static unsigned_16 Redir32( bool input )
     if( ProcInfo.pid == 0 ) {
         return( sizeof( *ret ) );
     }
-    slib = GetSLibTable( TRUE );
+    slib = GetSLibTable( true );
     if( slib.segment == 0 ) {
         return( sizeof( *ret ) );
     }
@@ -1332,7 +1335,7 @@ static unsigned_16 Redir32( bool input )
 }
 
 
-unsigned Redir16( bool input )
+static unsigned Redir16( bool input )
 {
     struct  _reg_struct save, new;
     addr48_ptr          slib;
@@ -1348,7 +1351,7 @@ unsigned Redir16( bool input )
     if( ProcInfo.pid == 0 ) {
         return( sizeof( *ret ) );
     }
-    slib = GetSLibTable( FALSE );
+    slib = GetSLibTable( false );
     if( slib.offset == 0 && slib.segment == 0 ) {
         return( sizeof( *ret ) );
     }
@@ -1407,18 +1410,18 @@ unsigned Redir16( bool input )
 trap_retval ReqRedirect_stdin( void )
 {
     if( ProcInfo.dbg32 ) {
-        return( Redir32( TRUE ) );
+        return( Redir32( true ) );
     } else {
-        return( Redir16( TRUE ) );
+        return( Redir16( true ) );
     }
 }
 
 trap_retval ReqRedirect_stdout( void )
 {
     if( ProcInfo.dbg32 ) {
-        return( Redir32( FALSE ) );
+        return( Redir32( false ) );
     } else {
-        return( Redir16( FALSE ) );
+        return( Redir16( false ) );
     }
 }
 
@@ -1442,7 +1445,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
-    exe = ( acc->file_type == TF_TYPE_EXE ) ? TRUE : FALSE;
+    exe = ( acc->file_type == TF_TYPE_EXE ) ? true : false;
     if( exe ) {
         pid = RunningProc( &nid, name, &proc, &name );
     }
@@ -1499,7 +1502,7 @@ trap_retval ReqGet_message_text( void )
     ret = GetOutPtr( 0 );
     err_txt = GetOutPtr( sizeof(*ret) );
     if( ProcInfo.fork ) {
-        ProcInfo.fork = FALSE;
+        ProcInfo.fork = false;
         strcpy( err_txt, TRP_QNX_PROC_FORK );
         ret->flags = MSG_NEWLINE | MSG_WARNING;
     } else {
@@ -1691,7 +1694,7 @@ trap_retval ReqThread_freeze( void )
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     if( thread = find_thread( req->thread ) ) {
-        thread->frozen = TRUE;
+        thread->frozen = true;
         ret->err = 0;
     } else {
         ret->err = EINVAL;
@@ -1708,7 +1711,7 @@ trap_retval ReqThread_thaw( void )
     req = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     if( thread = find_thread( req->thread ) ) {
-        thread->frozen = FALSE;
+        thread->frozen = false;
         ret->err = 0;
     } else {
         ret->err = EINVAL;
@@ -1767,8 +1770,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     StdPos.err = lseek( 2, 0, SEEK_CUR );
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
-    //ver.is_32 = FALSE;
+    ver.remote = false;
+    //ver.is_32 = false;
     OrigPGrp = getpgrp();
     MID = qnx_proxy_attach( 0, 0, 0, 0 );
     if( MID == 0 ) {

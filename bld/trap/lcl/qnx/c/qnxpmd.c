@@ -54,6 +54,7 @@
 #include <sys/dev.h>
 #include <sys/name.h>
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "qnxcomm.h"
 #include "miscx87.h"
 #include "mad.h"
@@ -198,7 +199,7 @@ struct _slib_register_reply {
 #define _SLIB_NAME "qnx/syslib"
 #define _SLIB_REGISTER  0x1000
 
-addr48_ptr GetSLibTable( bool is_32 )
+static addr48_ptr GetSLibTable( bool is_32 )
 {
     addr48_ptr          slib;
     union {
@@ -301,7 +302,7 @@ trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-#pragma aux ver_read =  ".286p"         \
+#pragma aux ver_read =  ".386p"         \
                         "verr   ax"     \
                         "jz     L1"     \
                         "xor    ax,ax"  \
@@ -440,17 +441,19 @@ trap_retval ReqWrite_regs( void )
 static bool LoadPmdHeader( char *name )
 {
     struct stat     tmp;
-    char            result[256];
+    char            result[PATH_MAX + 1];
 
-    if( TryOnePath( ":/usr/dumps", &tmp, name, result ) == 0 ) return( FALSE );
+    if( TryOnePath( ":/usr/dumps", &tmp, name, result ) == 0 )
+        return( false );
     PmdInfo.fd = open( result, O_RDONLY );
-    if( PmdInfo.fd < 0 ) return( FALSE );
+    if( PmdInfo.fd < 0 )
+        return( false );
     if( read( PmdInfo.fd, &PmdInfo.hdr, sizeof( PmdInfo.hdr ) )
             != sizeof( PmdInfo.hdr ) ) {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
-        return( FALSE );
+        return( false );
     }
     if( PmdInfo.hdr.signature != DUMP_SIGNATURE
      || PmdInfo.hdr.version != DUMP_VERSION
@@ -458,9 +461,9 @@ static bool LoadPmdHeader( char *name )
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
         errno = ENOEXEC;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void ReadSegData()
@@ -503,8 +506,8 @@ trap_retval ReqProg_load( void )
     char                *argv;
     struct _osinfo      info;
 
-    PmdInfo.dbg32 = FALSE;
-    PmdInfo.mapping_shared = FALSE;
+    PmdInfo.dbg32 = false;
+    PmdInfo.mapping_shared = false;
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     argv = GetInPtr( sizeof( *acc ) );
@@ -531,16 +534,16 @@ trap_retval ReqProg_load( void )
     }
     if( PmdInfo.hdr.psdata.flags & _PPF_32BIT ) {
         ret->flags |= LD_FLAG_IS_BIG;
-        PmdInfo.dbg32 = TRUE;
+        PmdInfo.dbg32 = true;
     }
     if( PmdInfo.hdr.psdata.flags & _PPF_32BIT ) {
-        PmdInfo.fpu32 = TRUE;
+        PmdInfo.fpu32 = true;
     } else if( PmdInfo.hdr.osdata.sflags & _PSF_EMU16_INSTALLED ) {
-        PmdInfo.fpu32 = FALSE;
+        PmdInfo.fpu32 = false;
     } else if( PmdInfo.hdr.osdata.sflags & _PSF_32BIT ) {
-        PmdInfo.fpu32 = TRUE;
+        PmdInfo.fpu32 = true;
     } else {
-        PmdInfo.fpu32 = FALSE;
+        PmdInfo.fpu32 = false;
     }
     qnx_osinfo( 0, &info );
     if( info.version == PmdInfo.hdr.osdata.version
@@ -548,14 +551,14 @@ trap_retval ReqProg_load( void )
      && (info.sflags & _PSF_32BIT) == (PmdInfo.hdr.osdata.sflags & _PSF_32BIT) ) {
         PmdInfo.read_gdts = PmdInfo.enable_read_gdts;
     } else if( PmdInfo.force_read_gdts ) {
-        PmdInfo.read_gdts = TRUE;
+        PmdInfo.read_gdts = true;
     } else {
-        PmdInfo.read_gdts = FALSE;
+        PmdInfo.read_gdts = false;
     }
     ret->task_id = PmdInfo.hdr.psdata.pid;
     ret->err = errno;
     if( errno == 0 ) {
-        PmdInfo.loaded = TRUE;
+        PmdInfo.loaded = true;
     } else {
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
@@ -568,12 +571,12 @@ trap_retval ReqProg_kill( void )
     prog_kill_ret       *ret;
 
     if( PmdInfo.loaded ) {
-        PmdInfo.loaded = FALSE;
+        PmdInfo.loaded = false;
         free( PmdInfo.segs );
         close( PmdInfo.fd );
         PmdInfo.fd = NO_FILE;
     }
-    PmdInfo.mapping_shared = FALSE;
+    PmdInfo.mapping_shared = false;
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -667,9 +670,9 @@ trap_retval ReqFile_string_to_fullpath( void )
     fullname[0] = '\0';
     len = 0;
     if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( FALSE, name, fullname );
+        len = FindFilePath( false, name, fullname );
     } else if( PmdInfo.mapping_shared ) {
-        len = FindFilePath( TRUE, name, fullname );
+        len = FindFilePath( true, name, fullname );
     } else {
         save_handle = PmdInfo.fd;
         if( LoadPmdHeader( name ) ) {
@@ -703,13 +706,13 @@ static bool AddrIs32( addr_seg seg )
     bool                is_32;
     struct _seginfo     info;
 
-    is_32 = FALSE;
+    is_32 = false;
     index = seg >> 3;
     if( (seg & 0x04) == 0 ) {
         if( PmdInfo.read_gdts
          && qnx_segment_info(PROC_PID,PROC_PID,seg,&info)!=-1 ) {
             if( info.flags & _PMF_DBBIT ) {
-                is_32 = TRUE;
+                is_32 = true;
             }
          }
     } else if( PmdInfo.loaded && index < PmdInfo.hdr.numsegs ) {
@@ -769,7 +772,7 @@ trap_retval ReqGet_lib_name( void )
     default:
         return( sizeof( *ret ) );
     }
-    PmdInfo.mapping_shared = TRUE;
+    PmdInfo.mapping_shared = true;
     return( sizeof( *ret ) + 1 + strlen( name ) );
 }
 
@@ -832,21 +835,21 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     remote = remote;
     PmdInfo.fd = NO_FILE;
-    PmdInfo.enable_read_gdts = TRUE;
-    PmdInfo.force_read_gdts  = FALSE;
+    PmdInfo.enable_read_gdts = true;
+    PmdInfo.force_read_gdts  = false;
     while( *parms != '\0' ) {
         switch( *parms ) {
         case 'I':
         case 'i':
-            PmdInfo.ignore_timestamp = TRUE;
+            PmdInfo.ignore_timestamp = true;
             break;
         case 'G':
         case 'g':
-            PmdInfo.force_read_gdts = TRUE;
+            PmdInfo.force_read_gdts = true;
             break;
         case 'd':
         case 'D':
-            PmdInfo.enable_read_gdts = FALSE;
+            PmdInfo.enable_read_gdts = false;
             break;
         }
         ++parms;
@@ -854,7 +857,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     return( ver );
 }
 

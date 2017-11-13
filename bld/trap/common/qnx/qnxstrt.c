@@ -31,10 +31,11 @@
 
 #include <stdlib.h>
 #include <malloc.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "qnxcomm.h"
 #include "qnxstrt.h"
 
 void                        *_slib_func[2];

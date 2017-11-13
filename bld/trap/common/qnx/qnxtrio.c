@@ -123,12 +123,11 @@ int WantUsage( const char *ptr )
     setegid( getgid() );
     seteuid( getuid() );
     if( *ptr == '?' )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name,
-                         char *result )
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -191,27 +190,27 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
 {
     bool            has_ext;
     bool            has_path;
-    char            *ptr;
+    const char      *ptr;
     const char      *endptr;
-    char            trpfile[256];
+    char            trpfile[MAX_PATH + 1];
     int             fd;
 
     result = result; max_result = max_result;
-    has_ext = FALSE;
-    has_path = FALSE;
+    has_ext = false;
+    has_path = false;
     endptr = name + name_len;
     for( ptr = name; ptr != endptr; ++ptr ) {
         switch( *ptr ) {
         case '.':
-            has_ext = TRUE;
+            has_ext = true;
             break;
         case '/':
-            has_ext = FALSE;
-            has_path = TRUE;
+            has_ext = false;
+            has_path = true;
             /* fall through */
             break;
         }

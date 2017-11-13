@@ -39,7 +39,9 @@
 #include <sys/osinfo.h>
 #include <sys/dev.h>
 #include <sys/kernel.h>
+#include "bool.h"
 #include "serial.h"
+#include "serlink.h"
 #include "trpimp.h"
 #include "trperr.h"
 
@@ -113,16 +115,18 @@ int WaitByte( unsigned ticks )
     unsigned            timeout;
 
     timeout = (ticks * MILLISEC_PER_TICK) / 100;
-    if( ticks > 0 && timeout == 0 ) timeout = 1;
+    if( ticks > 0 && timeout == 0 )
+        timeout = 1;
 
     if( dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 ) != 1 ) {
         return( SDATA_NO_DATA );
     }
     if( data == 0xff ) {
         dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
-        if( data == 0xff ) return( data );
+        if( data == 0xff )
+            return( data );
         /* a transmission error has occured */
-        HadError = TRUE;
+        HadError = true;
         dev_read( ComPort, &data, 1, 0, timeout, 0, 0, 0 );
         return( SDATA_NO_DATA );
     }
@@ -152,18 +156,21 @@ bool Baud( int index )
 {
     speed_t     temp;
 
-    if( index == MIN_BAUD ) return( TRUE );
-    if( index == CurrentBaud ) return( TRUE );
+    if( index == MIN_BAUD )
+        return( true );
+    if( index == CurrentBaud )
+        return( true );
     temp = Rate[index];
-    if( temp == B0 ) return( FALSE );
+    if( temp == B0 )
+        return( false );
 
     cfsetispeed( &CurrPort, temp );
     cfsetospeed( &CurrPort, temp );
     if( tcsetattr( ComPort, TCSADRAIN, &CurrPort ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     CurrentBaud = index;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -173,54 +180,62 @@ char *ParsePortSpec( const char **spec )
     int         nid;
     char        ch;
     const char  *parm;
-    const char  *start;
-    static char name[] = "//___/dev/ser__";
+    char        *start;
+    static char name[PATH_MAX + 1];
 
     parm = (spec == NULL) ? "" : *spec;
     nid = 0;
     port = 0;
     if( *parm == '/' ) {
-        start = parm;
+        start = name;
         do {
-            ch = *++parm;
+            *start++ = *parm++;
+            ch = *parm;
         } while( ch != '.' && ch != '\0' );
-        *parm = '\0';
+        *start = '\0';
         if( ComPort != 0 ) {
             DonePort();
         }
-        ComPort = open( start, O_RDWR );
-        *parm = ch;
-        if( spec != NULL ) *spec = parm;
+        ComPort = open( name, O_RDWR );
+        if( spec != NULL ) {
+            *spec = parm;
+        }
     } else {
         for( ;; ) {
             ch = *parm;
-            if( ch < '0' || ch > '9' ) break;
-            port = port * 10 + (ch-'0');
+            if( ch < '0' || ch > '9' )
+                break;
+            port = port * 10 + ( ch - '0' );
             ++parm;
         }
         if( ch == ',' ) {
             nid = port;
-            if( nid > 255 ) return( TRP_QNX_invalid_node_number );
+            if( nid > 255 )
+                return( TRP_QNX_invalid_node_number );
             port = 0;
             for( ;; ) {
                 ++parm;
                 ch = *parm;
-                if( ch < '0' || ch > '9' ) break;
+                if( ch < '0' || ch > '9' )
+                    break;
                 port = port * 10 + (ch-'0');
             }
         }
-        if( port == 0 ) port = 1;
-        if( port > 99 ) return( TRP_ERR_invalid_serial_port_number );
-        if( spec != NULL ) *spec = parm;
+        if( port == 0 )
+            port = 1;
+        if( port > 99 )
+            return( TRP_ERR_invalid_serial_port_number );
+        if( spec != NULL )
+            *spec = parm;
+        strcpy( name, "//___/dev/ser__" );
         name[4] = nid % 10 + '0';
         nid /= 10;
         name[3] = nid % 10 + '0';
         nid /= 10;
         name[2] = nid % 10 + '0';
-
-        name[ sizeof( name ) - 3 ] = port / 10 + '0';
-        name[ sizeof( name ) - 2 ] = port % 10 + '0';
         if( ComPort != 0 ) {
+        name[14] = port % 10 + '0';
+        name[13] = port / 10 + '0';
             DonePort();
         }
         ComPort = open( name, O_RDWR );
@@ -258,7 +273,7 @@ bool CheckPendingError()
     bool    ret;
 
     ret = HadError;
-    HadError = FALSE;
+    HadError = false;
     return( ret );
 }
 
@@ -272,10 +287,10 @@ void Wait( unsigned timer_ticks )
 {
     unsigned    wait_time;
 
-    if( timer_ticks < 0 ) return;
-
     wait_time = WaitCount() + timer_ticks;
-    while( WaitCount() < wait_time ) Yield();
+    while( WaitCount() < wait_time ) {
+        Yield();
+    }
 }
 
 
