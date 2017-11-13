@@ -50,7 +50,9 @@ bool uiconfig( char *fn, char **envvars )
     char        *s;
     ATTR        attr;
 
-    _unused( envvars );
+#if defined( __NETWARE__ )
+    /* unused parameters */ (void)envvars;
+#endif
 
     UIData->no_snow = true;
     uiattrs();
@@ -64,15 +66,15 @@ bool uiconfig( char *fn, char **envvars )
         colour = "ATTR_COL";
         slen = 8;
     }
-    #if !defined( __NETWARE__ )
-        for( ; envvars != NULL  &&  *envvars != NULL; ++envvars ) {
-            _searchenv( fn, *envvars, buffer );
-            if( buffer[0] != '\0' ) {
-                break;
-            }
+#if !defined( __NETWARE__ )
+    for( ; envvars != NULL  &&  *envvars != NULL; ++envvars ) {
+        _searchenv( fn, *envvars, buffer );
+        if( buffer[0] != '\0' ) {
+            break;
         }
-        fn = buffer;
-    #endif
+    }
+    fn = buffer;
+#endif
     if( fn != NULL && fn[0] != '\0' ) {
         config = fopen( fn, "r" );
         if( config != NULL ) {

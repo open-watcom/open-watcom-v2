@@ -295,7 +295,8 @@ static int ck_unevent( EVENT ev )
 // is pressed).
 
 {
-    ev = ev;
+    /* unused parameters */ (void)ev;
+
     return( 0 );
 }
 
@@ -574,7 +575,8 @@ static int ck_restore( void )
 
 static void term_handler( int signo )
 {
-    signo = signo;
+    /* unused parameters */ (void)signo;
+
     ck_fini();
     _exit( 0 );
 }

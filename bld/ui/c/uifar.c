@@ -133,7 +133,8 @@ intern void cdecl farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
         }
     }
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
+
     for( i = 0 ; i < len ; ++i ) {
         *start++ = fill;
     }
@@ -156,7 +157,8 @@ intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
         _fmemmove( dst, src, len*sizeof(PIXEL) );
     }
 #elif defined( __386__ ) && !defined( __UNIX__ )
-    _unused( snow );
+    /* unused parameters */ (void)snow;
+
     #if defined( __NETWARE__ )
         // Netware compiled with "far" defined, but pointers aren't really
         // far, and there is no _fmemmove function, and we were getting
@@ -166,7 +168,8 @@ intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
         _fmemmove( dst, src, len*sizeof(PIXEL) );
     #endif
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
+
     memmove( dst, src, len*sizeof(PIXEL) );
 #endif
 }
@@ -190,7 +193,7 @@ intern void cdecl farstring( LP_PIXEL start, int attr, size_t len,
         }
     } else
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
     {
         for( i = 0 ; i < len ; ++i ) {
@@ -224,7 +227,7 @@ intern void cdecl farattrib( LP_PIXEL start, int attr, size_t len, bool snow )
         }
     } else
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
     {
         for( i = 0 ; i < len ; ++i ) {
@@ -250,7 +253,7 @@ intern void cdecl farattrflip( LP_PIXEL start, size_t len, bool snow )
         }
     } else
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
     {
         for( i = 0 ; i < len ; ++i ) {

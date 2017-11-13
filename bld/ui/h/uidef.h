@@ -31,9 +31,8 @@
 
 #ifndef _UIDEF_H_
 #define _UIDEF_H_
-#include <stddef.h>
 #include <stdlib.h>
-#include "bool.h"
+#include "stdui.h"
 
 #if defined( __WATCOMC__ )
   #define cdecl __cdecl
@@ -46,11 +45,6 @@
 #define         P_MENU                  2
 #define         P_VSCREEN               3
 #define         P_BACKGROUND            4
-
-#ifdef _unused
-   #undef _unused
-#endif
-#define _unused(var)        var=var
 
 #if defined( TSR )
 
@@ -76,8 +70,6 @@
 
 #endif
 
-
-#include "stdui.h"
 
 #define         UIAPI
 #define         intern          /* near */

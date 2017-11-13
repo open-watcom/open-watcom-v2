@@ -130,7 +130,8 @@ static volatile int     StatePending;
 static void state_handler( int signo )
 /************************************/
 {
-    signo = signo;
+    /* unused parameters */ (void)signo;
+
     StatePending = 1;
 }
 
@@ -305,9 +306,10 @@ static int cd_update( SAREA *area )
     return( 0 );
 }
 
-static int cd_refresh(int must)
+static int cd_refresh( int must )
 {
-    must = must;
+    /* unused parameters */ (void)must;
+
     return( 0 );
 }
 
@@ -325,7 +327,8 @@ static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 /*****************************************************************/
 {
-    attr = attr;
+    /* unused parameters */ (void)attr;
+
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
         ( col != UIData->cursor_col ) ) {

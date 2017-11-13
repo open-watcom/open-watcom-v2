@@ -105,7 +105,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 
     WORD roww, colw;
 
-    attr = attr;
+    /* unused parameters */ (void)attr;
 
     colw = wherex();
     roww = wherey();
