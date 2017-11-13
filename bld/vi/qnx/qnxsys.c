@@ -273,3 +273,18 @@ void SetCursorBlinkRate( int cbr )
     EditVars.CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
+
+vi_key GetKeyboard( void )
+{
+    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, false ) );
+}
+
+bool KeyboardHit( void )
+{
+    return( BIOSKeyboardHit() );
+}
+
+void MyVioShowBuf( size_t offset, unsigned nchars )
+{
+    BIOSUpdateScreen( offset, nchars );
+}
