@@ -39,7 +39,7 @@ ifndef NDEBUG
 endif
 ifndef __WIN387__
         extrn   __GETDS : near
-        extrn   __FPE_exception_  : proc
+        extrn   "C",__FPE_exception : proc
 endif
 
 ifndef NDEBUG
@@ -943,7 +943,7 @@ ifndef __WIN387__
           cld                           ; - make sure forward direction
           rep   movsd                   ; - copy it
           movzx EAX,AH                  ; - get exception code
-          call  __FPE_exception_        ; - jump to SIGFPE handler rtn
+          call  __FPE_exception         ; - jump to SIGFPE handler rtn
           mov   CX,DS                   ; - set ES=DS
           mov   ES,CX                   ; - ...
           mov   CX,SS                   ; - set DS=SS

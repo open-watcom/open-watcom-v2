@@ -36,8 +36,6 @@
 */
 
 extern void __FPE_exception( int fpe_type );
-#if defined(_M_I86)
-#pragma aux __FPE_exception "*_" parm caller [ax];
-#else
+#ifdef __SW_3S
 #pragma aux __FPE_exception "*_" parm caller [eax];
 #endif

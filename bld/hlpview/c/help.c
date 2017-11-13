@@ -551,6 +551,7 @@ static void vscroll_fields( a_field **ht, SAREA use, int incr )
 static a_tab_field *help_next_field( a_field *fld, a_field *table )
 {
     /* unused parameters */ (void)table;
+
     if( fld != NULL ) {
         fld = fld->next;
     }

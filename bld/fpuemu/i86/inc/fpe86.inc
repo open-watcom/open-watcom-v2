@@ -35,7 +35,7 @@ ENV_SIZE        equ     14
 
 include fpubits.inc
 
-        extrn   __FPE_exception_  : proc
+        extrn   "C",__FPE_exception : proc
 
 _DATA segment word public 'DATA'
 ifndef __QNX__
@@ -319,7 +319,7 @@ __Exception_HNDLR proc  near
 ;          call  __GETDS                 ; - point DS to DGROUP
           mov   AL,AH                   ; - get exception code
           mov   AH,0                    ; - ...
-          call  __FPE_exception_        ; - jump to SIGFPE handler rtn
+          call  __FPE_exception         ; - jump to SIGFPE handler rtn
           mov   cx,ds                   ; - set ES=DS
           mov   es,cx                   ; - ...
           mov   cx,ss                   ; - set DS=SS
