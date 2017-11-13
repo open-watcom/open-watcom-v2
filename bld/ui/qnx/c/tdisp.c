@@ -891,8 +891,8 @@ static bool td_initconsole( void )
     return( true );
 }
 
-bool initmonitor( void )
-/**********************/
+static bool initmonitor( void )
+/*****************************/
 {
     UIData->colour = M_VGA;
     /* notify if screen size changes */

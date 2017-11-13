@@ -58,7 +58,7 @@ bool UIAPI uiset80col( void )
     return( true );
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     WORD height, width;

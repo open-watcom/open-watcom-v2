@@ -882,7 +882,7 @@ static bool ti_initconsole( void )
 #define SA_RESTART 0
 #endif
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     struct sigaction sa;

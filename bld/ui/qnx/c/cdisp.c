@@ -171,7 +171,7 @@ static EVENT cd_sizeevent( void )
     return( EV_BACKGROUND_RESIZE );
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     struct _osinfo      info;

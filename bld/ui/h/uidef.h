@@ -116,7 +116,6 @@ void            intern          frontwindow( UI_WINDOW * );
 unsigned int    intern          getkey( void );
 bool            intern          initbios( void );
 bool            intern          initkeyboard( void );
-bool            intern          initmonitor( void );
 bool            intern          installed( int );
 bool            intern          isdialogue( VSCREEN * );
 bool            intern          isscreen( BUFFER * );

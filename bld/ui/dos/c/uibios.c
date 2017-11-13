@@ -363,7 +363,7 @@ static int IsTextMode( void )
     return( text_mode );
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     register    bool                    ega;

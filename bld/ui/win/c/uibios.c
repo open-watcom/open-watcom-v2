@@ -68,7 +68,7 @@ void UIAPI win_uisetcolor( int clr )
         VIDPort = VIDCOLRINDXREG;
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     if( UIData == NULL ) {

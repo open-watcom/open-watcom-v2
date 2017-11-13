@@ -65,7 +65,7 @@ bool UIAPI uiset80col( void )
 }
 
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     struct      _VIOMODEINFO            vioMode;
