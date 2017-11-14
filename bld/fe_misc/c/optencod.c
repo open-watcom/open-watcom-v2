@@ -102,7 +102,7 @@ typedef enum cvt_name {
     CVT_USAGE
 } cvt_name;
 
-typedef void process_line_fn( bool );
+typedef void process_line_fn( const char *, bool );
 
 typedef struct target TARGET;
 struct target {
@@ -198,7 +198,7 @@ static FILE         *bfp;
 static char         ibuff[BUFF_SIZE];
 static char         tagbuff[BUFF_SIZE];
 static char         tokbuff[BUFF_SIZE];
-static char         enumbuff[BUFF_SIZE];
+static char         tmpbuff[BUFF_SIZE];
 static char         hdrbuff[BUFF_SIZE];
 static char         maxusgbuff[BUFF_SIZE];
 
@@ -265,12 +265,16 @@ static uint_8 const langMaxChar[] = {
 static const char *usageMsg[] = {
     "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
     "where:",
+    "  -i create international file with non-english data",
+    "  -l <lang-n> is the language(number) used for output data",
+    "  -n zero terminated items",
+    "  -q quiet operation",
+    "  -u <usage-u> is the output file for the QNX usage file",
+    "",
     "    <gml-file> is the tagged input GML file",
     "    <parse-c> is the output file for the command line parser code",
     "    <parse-h> is the output file for the command line parser data declaration",
     "    <usage-h> is the output file for the usage string file",
-    "    <usage-u> is the output file for the QNX usage file",
-    "    <lang-n> is the language(number) used for output data",
     "    <target> can be chosen from:",
     NULL
 };
@@ -474,13 +478,13 @@ static NAME *addEnumerator( const char *enumerate, const char *field_name )
 {
     NAME *n;
 
-    strcpy( enumbuff, "OPT_" );
-    strcat( enumbuff, enumerate );
-    strcat( enumbuff, "_" );
-    strcat( enumbuff, field_name );
-    n = findName( &enumeratorList, enumbuff );
+    strcpy( tmpbuff, "OPT_" );
+    strcat( tmpbuff, enumerate );
+    strcat( tmpbuff, "_" );
+    strcat( tmpbuff, field_name );
+    n = findName( &enumeratorList, tmpbuff );
     if( n == NULL ) {
-        n = addName( &enumeratorList, enumbuff );
+        n = addName( &enumeratorList, tmpbuff );
     }
     return( n );
 }
@@ -2056,33 +2060,35 @@ static bool usageValid( OPTION *o, unsigned language )
     return( true );
 }
 
-static void emitUsageH( bool page_flag )
+static void emitUsageH( const char *str, bool page_flag )
 {
     size_t len;
-    char *q;
-    char *s;
+    const char *q;
+    const char *s;
 
-    len = strlen( tokbuff );
-    if( len > maxUsageLen ) {
+    len = strlen( str );
+    if( maxUsageLen < len ) {
         maxUsageLen = len;
-        strcpy( maxusgbuff, tokbuff );
+        strcpy( maxusgbuff, str );
     }
     if( mfp != NULL && !page_flag ) {
-        fprintf( mfp, "%s\n", tokbuff );
+        fprintf( mfp, "%s\n", str );
     }
     if( ufp != NULL ) {
         fprintf( ufp, "\"" );
-        for( s = tokbuff; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
+        for( s = str; (q = strchr( s, '"' )) != NULL; s = q + 1 ) {
             // replace " with \"
-            *q = '\0';
-            fprintf( ufp, "%s\\\"", s );
+            len = q - s;
+            memcpy( tmpbuff, s, len );
+            tmpbuff[len] = '\0';
+            fprintf( ufp, "%s\\\"", tmpbuff );
         }
         fprintf( ufp, "%s%s\"\n", s, ( optFlag.zero_term ) ? "\\0" : "" );
     }
 
 }
 
-static void createChainHeader( OPTION **o, unsigned language, size_t max )
+static char *createChainHeader( OPTION **o, unsigned language, size_t max )
 {
     char    *usage;
     CHAIN   *cn;
@@ -2103,16 +2109,23 @@ static void createChainHeader( OPTION **o, unsigned language, size_t max )
             ++len;
         }
     }
-    strcat( hdrbuff, "} " );
-    len = strlen( hdrbuff );
-    if( max > len )
-        fillOutSpaces( hdrbuff, max - len );
     usage = cn->Usage[language];
     if( usage == NULL || *usage == '\0' ) {
         usage = cn->Usage[LANG_English];
     }
-    strcat( hdrbuff, usage );
-    strcpy( tokbuff, hdrbuff );
+    strcat( hdrbuff, "} " );
+    len = strlen( hdrbuff );
+    if( len >= max ) {
+        tokbuff[0] = '\0';
+        fillOutSpaces( tokbuff, max/2 );
+        strcat( tokbuff, usage );
+        return( hdrbuff );
+    } else {
+        fillOutSpaces( hdrbuff, max - len );
+        strcat( hdrbuff, usage );
+        strcpy( tokbuff, hdrbuff );
+        return( NULL );
+    }
 }
 
 static void createUsageHeader( unsigned language, process_line_fn *process_line )
@@ -2145,7 +2158,7 @@ static void createUsageHeader( unsigned language, process_line_fn *process_line 
                 }
             }
             *d = '\0';
-            process_line( false );
+            process_line( tokbuff, false );
         }
     }
 }
@@ -2169,6 +2182,7 @@ static void processUsage( unsigned language, process_line_fn *process_line )
     OPTION      **t;
     OPTION      **c;
     const char  *page;
+    char        *str;
 
     maxUsageLen = 0;
     max = 0;
@@ -2177,7 +2191,7 @@ static void processUsage( unsigned language, process_line_fn *process_line )
         if( usageValid( o, language ) ) {
             ++count;
             len = genOptionUsageStart( o );
-            if( len > max ) {
+            if( max < len ) {
                 max = len;
             }
         }
@@ -2198,7 +2212,7 @@ static void processUsage( unsigned language, process_line_fn *process_line )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
-        process_line( true );
+        process_line( tokbuff, true );
     }
     createUsageHeader( language, process_line );
     clearChainUsage();
@@ -2206,18 +2220,21 @@ static void processUsage( unsigned language, process_line_fn *process_line )
         o = t[i];
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = true;
-            createChainHeader( &t[i], language, max );
-            process_line( false );
+            str = createChainHeader( &t[i], language, max );
+            process_line( tokbuff, false );
+            if( str != NULL ) {
+                process_line( str, false );
+            }
         }
         tokbuff[0] = '\0';
         len = genOptionUsageStart( o );
-        if( max > len )
+        if( len < max )
             fillOutSpaces( tokbuff, max - len );
         if( o->chain != NULL ) {
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-        process_line( false );
+        process_line( tokbuff, false );
     }
     free( t );
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
@@ -2230,17 +2247,17 @@ static void outputUsageH( void )
     processUsage( optFlag.lang, emitUsageH );
 }
 
-static void emitUsageB( bool page_flag )
+static void emitUsageB( const char *str, bool page_flag )
 {
     size_t len;
 
     /* unused parameters */ (void)page_flag;
 
-    len = strlen( tokbuff ) + 1;
-    fwrite( tokbuff, len, 1, bfp );
-    if( len > maxUsageLen ) {
+    len = strlen( str ) + 1;
+    fwrite( str, len, 1, bfp );
+    if( maxUsageLen < len ) {
         maxUsageLen = len;
-        strcpy( maxusgbuff, tokbuff );
+        strcpy( maxusgbuff, str );
     }
 }
 
