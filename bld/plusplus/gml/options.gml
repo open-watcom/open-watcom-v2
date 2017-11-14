@@ -17,10 +17,10 @@
 :cmt    :path.                                  =<path> req'd
 :cmt    :special. <fn> [<arg_usage_text>]       call <fn> to parse option
 :cmt    :optional.                              value is optional
-:cmt    :noequal.                               args can't have option '='
-:cmt    :argequal. <char>                       args use <char> instead of '='
 :cmt    :internal.                              option is undocumented
 :cmt    :prefix.                                prefix of a :special. option
+:cmt    :usagegrp. <option> <usage text>        group of options that start with <option>
+:cmt                                            they are chained together in usage text only
 :cmt    :usage. <text>                          English usage text
 :cmt    :jusage. <text>                         Japanese usage text
 :cmt    :title.                                 English title usage text
@@ -30,6 +30,12 @@
 :cmt    :timestamp.                             kludge to record "when" an option
 :cmt                                            is set so that dependencies
 :cmt                                            between options can be simulated
+:cmt
+:cmt Global macros
+:cmt
+:cmt    :noequal.                               args can't have option '='
+:cmt    :argequal. <char>                       args use <char> instead of '='
+:cmt
 
 :cmt    where:
 :cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc, haiku
@@ -63,7 +69,7 @@
 :page. (Press return to continue)
 :jusage. (続行するために何かキーを押して下さい)
 
-:chain. p preprocess source file
+:chain. p Preprocess source file
 :jusage. p ソースファイルを前処理します
 :chain. o optimization
 :jusage. o 最適化
@@ -158,10 +164,59 @@
 :usage. Pentium Pro stack calling conventions
 :jusage. Pentium Pro スタック呼び出し規約
 
+:usagegrp. ad Make Dependency info
+
+:option. ad
+:target. any
+:file.
+:optional.
+:usage. generate make style automatic dependency file
+:jusage. generate make style automatic dependency file
+
+:option. adbs
+:target. any
+:usage. force path separators to '\\' in auto-depend file
+:jusage. force path separators to '\\' in auto-depend file
+
+:option. adfs
+:target. any
+:usage. force path separators to '/' in auto-depend file
+:jusage. force path separators to '/' in auto-depend file
+
+:option. add
+:target. any
+:file.
+:optional.
+:usage. specify first dependency in make style auto-depend file
+:jusage. specify first dependency in make style auto-depend file
+
+:option. adhp
+:target. any
+:file.
+:optional.
+:usage. specify default path for headers without one
+:jusage. specify default path for headers without one
+
+:option. adt
+:target. any
+:file.
+:optional.
+:usage. specify target in make style auto-depend file
+:jusage. specify target in make style auto-depend file
+
 :option. as
 :target. axp
 :usage. assume short integers are aligned
 :jusage. short 整数が整列していると仮定します
+
+:option. bt
+:target. any
+:id.
+:optional.
+:usage. build target is operating system <id>
+:jusage. 構築ターゲットはオペレーティング･システム <id>
+
+:usagegrp. b Application type
 
 :option. bc
 :target. any
@@ -193,12 +248,19 @@
 :usage. build target is a default windowing application
 :jusage. 構築ターゲットはデフォルト･ウィンドウ･アプリケーションです
 
-:option. bt
+:option. d
 :target. any
-:id.
-:optional.
-:usage. build target is operating system <id>
-:jusage. 構築ターゲットはオペレーティング･システム <id>
+:special. scanDefine <name>[=text]
+:usage. same as #define name [text] before compilation
+:jusage. コンパイル前の #define name [text] と同じ
+
+:option. d+
+:target. any
+:special. scanDefinePlus
+:usage. allow extended -d macro definitions
+:jusage. 拡張された -d マクロ定義を許可します
+
+:usagegrp. d Debugging information
 
 :option. d0
 :target. any
@@ -263,23 +325,13 @@
 :usage. -d3 and debug inlines; emit inlines as statics
 :jusage. インライン関数の展開なしの-d3;インライン関数はstaticとして出力
 
-:option. d+
-:target. any
-:special. scanDefinePlus
-:usage. allow extended -d macro definitions
-:jusage. 拡張された -d マクロ定義を許可します
-
 :option. db
 :target. any
 :prefix.
 :usage. generate browsing information
 :jusage. ブラウズ情報を生成します
 
-:option. d
-:target. any
-:special. scanDefine <name>[=text]
-:usage. same as #define name [text] before compilation
-:jusage. コンパイル前の #define name [text] と同じ
+:usagegrp. ec Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -533,6 +585,8 @@
 :usage. inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
 
+:usagegrp. fp Generate Floating-point code
+
 :option. fpc
 :target. i86 386
 :enumerate. intel_fpu_model
@@ -590,6 +644,8 @@
 :id.
 :usage. set code group name
 :jusage. コード･グループ名を設定します
+
+:usagegrp. h Debugging Information Format
 
 :option. hw
 :target. i86 386 
@@ -650,46 +706,49 @@
 :jusage. OWLリストを出力します
 :internal.
 
+:usagegrp. m Memory model
+:jusage. メモリ・モデル
+
 :option. mc
 :target. i86 386
 :enumerate. mem_model
-:usage. compact memory model (small code/large data)
+:usage. compact - small code/large data
 :jusage. コンパクト･メモリ･モデル(スモール･コード/ラージ･データ)
 
 :option. mf
 :target. 386
 :enumerate. mem_model
-:usage. flat memory model (small code/small data assuming CS=DS=SS=ES)
+:usage. flat - small code/small data assuming CS=DS=SS=ES
 :jusage. フラット･メモリ･モデル(スモール･コード/CS=DS=SS=ESを仮定したスモール･データ)
 
 :option. mfi
 :target. 386
 :enumerate. mem_model
-:usage. flat memory model (interrupt functions will assume flat model)
+:usage. flat - interrupt functions will assume flat model
 :jusage. フラ;ト･メモリ･モ?ル(割り込み関数もフラ;トモ?ルであると仮定する)
 
 :option. mh
 :target. i86
 :enumerate. mem_model
-:usage. huge memory model (large code/huge data)
+:usage. huge - large code/huge data
 :jusage. ヒュージ･メモリ･モデル(ラージ･コード/ヒュージ･データ)
 
 :option. ml
 :target. i86 386
 :enumerate. mem_model
-:usage. large memory model (large code/large data)
+:usage. large - large code/large data
 :jusage. ラージ･メモリ･モデル(ラージ･コード/ラージ･データ)
 
 :option. mm
 :target. i86 386
 :enumerate. mem_model
-:usage. medium memory model (large code/small data)
+:usage. medium - large code/small data
 :jusage. ミディアム･メモリ･モデル(ラージ･コード/スモール･データ)
 
 :option. ms
 :target. i86 386
 :enumerate. mem_model
-:usage. small memory model (small code/small data)
+:usage. small - small code/small data (default)
 :jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
 
 :option. nc
@@ -840,44 +899,6 @@
 :usage. NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
 
-:option. ad
-:target. any
-:file.
-:optional.
-:usage. generate make style automatic dependency file
-:jusage. generate make style automatic dependency file
-
-:option. adbs
-:target. any
-:usage. force path separators to '\\' in auto-depend file
-:jusage. force path separators to '\\' in auto-depend file
-
-:option. adfs
-:target. any
-:usage. force path separators to '/' in auto-depend file
-:jusage. force path separators to '/' in auto-depend file
-
-:option. add
-:target. any
-:file.
-:optional.
-:usage. specify first dependency in make style auto-depend file
-:jusage. specify first dependency in make style auto-depend file
-
-:option. adhp
-:target. any
-:file.
-:optional.
-:usage. specify default path for headers without one
-:jusage. specify default path for headers without one
-
-:option. adt
-:target. any
-:file.
-:optional.
-:usage. specify target in make style auto-depend file
-:jusage. specify target in make style auto-depend file
-
 :option. pil
 :target. any
 :nochain.
@@ -999,6 +1020,8 @@
 :usage. VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
+:usagegrp. w Warning control
+
 :option. w
 :target. any
 :enumerate. warn_level
@@ -1010,14 +1033,14 @@
 :target. any
 :number.
 :multiple.
-:usage. warning control: disable warning message <num>
+:usage. disable warning message <num>
 :jusage. 警告制御: 警告メッセージ<num>を禁止します
 
 :option. wce
 :target. any
 :number.
 :multiple.
-:usage. warning control: enable warning message <num>
+:usage. enable warning message <num>
 :jusage. 警告制御: 警告メッセージ <num> の表示をします
 
 :option. we
@@ -1234,6 +1257,8 @@
 :target. dbg
 :usage. dump informational statistics to stdout
 :jusage. 情報として統計値をstdoutに出力します
+
+:usagegrp. zk Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

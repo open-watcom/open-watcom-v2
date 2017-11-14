@@ -78,13 +78,14 @@
 :page. (Press return to continue)
 :jusage. (リターンを押すと，続行します)
 
-:chain. p preprocess source file
+:chain. p Preprocess source file
 :jusage. p ソースファイルを前処理します
-:chain. o optimization
+:chain. o Optimization
 :jusage. o 最適化
 
 :option. h ?
 :target. any
+:nochain.
 :usage. print this message
 :jusage. このメッセージを表示します
 
@@ -183,7 +184,7 @@
 :usage. allow non const initializers for local aggregates or unions
 :jusage.
 
-:usagegrp. ad Dependency information
+:usagegrp. ad Make Dependency Information
 
 :option. ad
 :target. any
@@ -278,7 +279,7 @@
 :usage. build target is a default windowing application
 :jusage. 構築ターゲットはデフォルト･ウィンドウ･アプリケーションです
 
-:usagegrp. d Debugging information
+:usagegrp. d Debugging Information
 
 :option. d0
 :target. any
@@ -536,7 +537,7 @@
 :usage. print informational message when opening include file
 :jusage.
 
-:usagegrp. fp Generate floating-point code
+:usagegrp. fp Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -562,25 +563,25 @@
 :option. fp2 fp287
 :target. i86 386
 :enumerate. intel_fpu_level
-:usage. 80287 floating-point code
+:usage. 80287 FPU code
 :jusage. 80287浮動小数点コードを生成します
 
 :option. fp3 fp387
 :target. i86 386
 :enumerate. intel_fpu_level
-:usage. 80387 floating-point code
+:usage. 80387 FPU code
 :jusage. 80387浮動小数点コードを生成します
 
 :option. fp5
 :target. i86 386
 :enumerate. intel_fpu_level
-:usage. 80387 floating-point code optimize for Pentium
+:usage. 80387 FPU code optimize for Pentium
 :jusage.
 
 :option. fp6
 :target. i86 386
 :enumerate. intel_fpu_level
-:usage. 80387 floating-point code optimize for Pentium Pro
+:usage. 80387 FPU code optimize for Pentium Pro
 :jusage.
 
 :option. fpr
@@ -600,6 +601,8 @@
 :id.
 :usage. set code group name
 :jusage. コード･グループ名を設定します
+
+:usagegrp. h Debugging Information format
 
 :option. hw
 :target. i86 386 
@@ -636,37 +639,37 @@
 :option. mc
 :target. i86 386
 :enumerate. mem_model
-:usage. compact (small code/large data)
+:usage. compact - small code/large data
 :jusage. コンパクト･メモリ･モデル(スモール･コード/ラージ･データ)
 
 :option. mf
 :target. 386
 :enumerate. mem_model
-:usage. flat (small code/small data assuming CS=DS=SS=ES)
+:usage. flat - small code/small data assuming CS=DS=SS=ES
 :jusage. フラット･メモリ･モデル(スモール･コード/CS=DS=SS=ESを仮定したスモール･データ)
 
 :option. mh
 :target. i86
 :enumerate. mem_model
-:usage. huge (large code/huge data)
+:usage. huge - large code/huge data
 :jusage. ヒュージ･メモリ･モデル(ラージ･コード/ヒュージ･データ)
 
 :option. ml
 :target. i86 386
 :enumerate. mem_model
-:usage. large (large code/large data)
+:usage. large - large code/large data
 :jusage. ラージ･メモリ･モデル(ラージ･コード/ラージ･データ)
 
 :option. mm
 :target. i86 386
 :enumerate. mem_model
-:usage. medium (large code/small data)
+:usage. medium - large code/small data
 :jusage. ミディアム･メモリ･モデル(ラージ･コード/スモール･データ)
 
 :option. ms
 :target. i86 386
 :enumerate. mem_model
-:usage. small (small code/small data)
+:usage. small - small code/small data (defaul)
 :jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
 
 :option. nc
