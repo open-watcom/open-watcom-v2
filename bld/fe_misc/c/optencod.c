@@ -263,7 +263,7 @@ static uint_8 const langMaxChar[] = {
 };
 
 static const char *usageMsg[] = {
-    "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
+    "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
     "where:",
     "  -i create international file with non-english data",
     "  -l <lang-n> is the language(number) used for output data",
@@ -272,8 +272,8 @@ static const char *usageMsg[] = {
     "  -u <usage-u> is the output file for the QNX usage file",
     "",
     "    <gml-file> is the tagged input GML file",
-    "    <parse-c> is the output file for the command line parser code",
-    "    <parse-h> is the output file for the command line parser data declaration",
+    "    <parser-h> is the output file for the command line parser data declaration",
+    "    <parser-c> is the output file for the command line parser code",
     "    <usage-h> is the output file for the usage string file",
     "    <target> can be chosen from:",
     NULL
