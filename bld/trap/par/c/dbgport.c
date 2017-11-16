@@ -195,6 +195,8 @@
 #if defined( __WATCOMC__ )
 typedef __int64 _int64;
 #define PORTSTDCALL __stdcall
+#else
+#define PORTSTDCALL
 #endif
 
 #ifdef TRUE
@@ -332,11 +334,11 @@ typedef struct _DEVICE_EXTENSION {
     // Points to the device object that contains
     // this device extension.
     PDEVICE_OBJECT                  DeviceObject;
-    
+
     // Points to the port device object that this class device is
     // connected to.
     PDEVICE_OBJECT                  PortDeviceObject;
-    
+
     // This holds the result of the get parallel port info
     // request to the port driver.
     PHYSICAL_ADDRESS                OriginalController;
@@ -345,13 +347,13 @@ typedef struct _DEVICE_EXTENSION {
     PPARALLEL_FREE_ROUTINE          FreePort;
     PPARALLEL_TRY_ALLOCATE_ROUTINE  TryAllocatePort;
     PVOID                           AllocFreePortContext;
-    
+
     // Records whether we actually created the symbolic link name
     // at driver load time and the symbolic link itself.  If we didn't
     // create it, we won't try to destroy it when we unload.
     BOOLEAN                         CreatedSymbolicLink;
     UNICODE_STRING                  SymbolicLinkName;
-    
+
     // Internal variables used by the driver
     unsigned                        DataPort;
     unsigned                        CtlPort1;
@@ -394,12 +396,12 @@ void PORTSTDCALL Ke386IoSetAccessProcess(PEPROCESS, int);
 
 void NTAPI ZwYieldExecution(void);
 
-void NothingToDo(void)
+static void NothingToDo(void)
 {
     ZwYieldExecution();
 }
 
-unsigned long Ticks(void)
+static unsigned long Ticks(void)
 {
     _int64 ticks;
 
@@ -417,7 +419,7 @@ static int DataGet(
     unsigned long wait )
 {
     UCHAR                data;
-    
+
     switch( ext->CableType ) {
     case WATCOM_VAL:
         RaiseCtl2();            /* Hi, I'm ready to read */
@@ -582,14 +584,14 @@ static int DataPut(
     return( 0 );
 }
 
-unsigned RemoteGet(
+static unsigned RemoteGet(
     PDEVICE_EXTENSION ext,
     char *data,
     unsigned len )
 {
     unsigned    get_len;
     unsigned    i;
-    
+
     get_len = DataGet( ext, RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( ext, KEEP );
@@ -601,13 +603,13 @@ unsigned RemoteGet(
     return( get_len );
 }
 
-unsigned RemotePut(
+static unsigned RemotePut(
     PDEVICE_EXTENSION ext,
     char *data,
     unsigned len )
 {
     unsigned    count;
-    
+
     if( len >= 0x80 ) {
         DataPut( ext, ((len >> 8) | 0x80), RELINQUISH );
     }
@@ -646,7 +648,7 @@ static bool CountTwidle(
     PDEVICE_EXTENSION ext)
 {
     UCHAR                type;
-    
+
     type = ReadData();
     if( !ext->TwidleOn ) {
         if( type == WATCOM_VAL ||
@@ -680,7 +682,7 @@ static bool Twidle(
 {
     unsigned            i;
     unsigned long       time;
-    
+
     for( i = 20; i != 0; i-- ) {
         WriteData( TWIDLE_ON );
         time = Ticks() + TWIDLE_TIME;
@@ -722,7 +724,7 @@ static bool LineTestServer(
     unsigned            send;
     unsigned long       time;
     unsigned            ret;
-    
+
     for( send = 1; send != 256; send *= 2 ) {
         time = Ticks() + LINE_TEST_WAIT;
         if( time == RELINQUISH ) time ++;
@@ -755,7 +757,7 @@ static bool LineTestClient(
 {
     unsigned            send;
     unsigned long       time;
-    
+
     send = 0;
     for( ;; ) {
         time = Ticks() + LINE_TEST_WAIT;
@@ -773,12 +775,12 @@ static bool LineTestClient(
     return( TRUE );
 }
 
-int RemoteConnectServer(
+static int RemoteConnectServer(
     PDEVICE_EXTENSION ext)
 {
     unsigned long       time;
     bool                got_twidles;
-    
+
     if( !CountTwidle(ext) ) return( 0 );
     got_twidles = Twidle( ext, FALSE );
     switch( ext->CableType ) {
@@ -809,11 +811,11 @@ int RemoteConnectServer(
     return( TRUE );
 }
 
-int RemoteConnectClient(
+static int RemoteConnectClient(
     PDEVICE_EXTENSION ext)
 {
     unsigned long       time;
-    
+
     if( !Twidle( ext, TRUE ) )
         return( FALSE );
     switch( ext->CableType ) {
@@ -842,11 +844,11 @@ int RemoteConnectClient(
     return( TRUE );
 }
 
-void RemoteDisco(
+static void RemoteDisco(
     PDEVICE_EXTENSION ext)
 {
     unsigned long       time;
-    
+
     time = Ticks() + TWIDLE_TIME;
     while( time > Ticks() ) { /* delay while other side catches up */ }
     WriteData( TWIDLE_OFF );            /* initialize control ports */
@@ -856,7 +858,7 @@ void RemoteDisco(
     ext->TwidleOn = FALSE;
 }
 
-void RemoteLink(
+static void RemoteLink(
     PDEVICE_EXTENSION ext)
 {
     ext->DataPort = 0;
@@ -883,7 +885,7 @@ REMARKS:
 This routine generates the names \Device\ParallelPortN and
 \Device\ParallelDebugN, \DosDevices\DBGPORTn.
 ****************************************************************************/
-BOOLEAN ParMakeNames(
+static BOOLEAN ParMakeNames(
     IN  ULONG           ParallelPortNumber,
     OUT PUNICODE_STRING PortName,
     OUT PUNICODE_STRING ClassName,
@@ -893,7 +895,7 @@ BOOLEAN ParMakeNames(
     WCHAR           digitsBuffer[10], linkDigitsBuffer[10];
     UNICODE_STRING  portSuffix, classSuffix, linkSuffix;
     NTSTATUS        status;
-    
+
     // Put together local variables for constructing names.
     RtlInitUnicodeString(&prefix, L"\\Device\\");
     RtlInitUnicodeString(&linkPrefix, L"\\DosDevices\\");
@@ -912,7 +914,7 @@ BOOLEAN ParMakeNames(
     status = RtlIntegerToUnicodeString(ParallelPortNumber + 1, 10, &linkDigits);
     if (!NT_SUCCESS(status))
         return FALSE;
-    
+
     // Make the port name.
     PortName->Length = 0;
     PortName->MaximumLength = prefix.Length + portSuffix.Length + digits.Length + sizeof(WCHAR);
@@ -923,7 +925,7 @@ BOOLEAN ParMakeNames(
     RtlAppendUnicodeStringToString(PortName, &prefix);
     RtlAppendUnicodeStringToString(PortName, &portSuffix);
     RtlAppendUnicodeStringToString(PortName, &digits);
-    
+
     // Make the class name.
     ClassName->Length = 0;
     ClassName->MaximumLength = prefix.Length + classSuffix.Length + digits.Length + sizeof(WCHAR);
@@ -936,7 +938,7 @@ BOOLEAN ParMakeNames(
     RtlAppendUnicodeStringToString(ClassName, &prefix);
     RtlAppendUnicodeStringToString(ClassName, &classSuffix);
     RtlAppendUnicodeStringToString(ClassName, &digits);
-    
+
     // Make the link name.
     LinkName->Length = 0;
     LinkName->MaximumLength = linkPrefix.Length + linkSuffix.Length + linkDigits.Length + sizeof(WCHAR);
@@ -964,7 +966,7 @@ REMARKS:
 This routine will request the port information from the port driver
 and fill it in the device extension.
 ****************************************************************************/
-NTSTATUS ParGetPortInfoFromPortDevice(
+static NTSTATUS ParGetPortInfoFromPortDevice(
     IN OUT  PDEVICE_EXTENSION   Extension)
 {
     KEVENT                      event;
@@ -972,7 +974,7 @@ NTSTATUS ParGetPortInfoFromPortDevice(
     PARALLEL_PORT_INFORMATION   portInfo;
     IO_STATUS_BLOCK             ioStatus;
     NTSTATUS                    status;
-    
+
     KeInitializeEvent(&event, NotificationEvent, FALSE);
     irp = IoBuildDeviceIoControlRequest(IOCTL_INTERNAL_GET_PARALLEL_PORT_INFO,
         Extension->PortDeviceObject,
@@ -1008,7 +1010,7 @@ This routine is called for every parallel port in the system.  It
 will create a class device upon connecting to the port device
 corresponding to it.
 ****************************************************************************/
-VOID ParInitializeDeviceObject(
+static VOID ParInitializeDeviceObject(
     IN  PDRIVER_OBJECT  DriverObject,
     IN  ULONG           ParallelPortNumber)
 {
@@ -1017,11 +1019,11 @@ VOID ParInitializeDeviceObject(
     PDEVICE_OBJECT      deviceObject;
     PDEVICE_EXTENSION   ext;
     PFILE_OBJECT        fileObject;
-    
+
     // Cobble together the port and class device names.
     if (!ParMakeNames(ParallelPortNumber, &portName, &className, &linkName))
         return;
-    
+
     // Create the device object.
     status = IoCreateDevice(DriverObject, sizeof(DEVICE_EXTENSION),
         &className, FILE_DEVICE_PARALLEL_PORT, 0, TRUE,
@@ -1030,7 +1032,7 @@ VOID ParInitializeDeviceObject(
         ExFreePool(linkName.Buffer);
         goto Cleanup;
     }
-    
+
     // Now that the device has been created,
     // set up the device extension.
     ext = deviceObject->DeviceExtension;
@@ -1047,7 +1049,7 @@ VOID ParInitializeDeviceObject(
     }
     ObDereferenceObject(fileObject);
     ext->DeviceObject->StackSize = ext->PortDeviceObject->StackSize + 1;
-    
+
     // Get the port information from the port device object.
     status = ParGetPortInfoFromPortDevice(ext);
     if (!NT_SUCCESS(status)) {
@@ -1055,7 +1057,7 @@ VOID ParInitializeDeviceObject(
         ExFreePool(linkName.Buffer);
         goto Cleanup;
     }
-    
+
     // Set up the symbolic link for windows apps.
     status = IoCreateSymbolicLink(&linkName, &className);
     if (!NT_SUCCESS(status)) {
@@ -1063,12 +1065,12 @@ VOID ParInitializeDeviceObject(
         ExFreePool(linkName.Buffer);
         goto Cleanup;
     }
-    
+
     // We were able to create the symbolic link, so record this
     // value in the extension for cleanup at unload time.
     ext->CreatedSymbolicLink = TRUE;
     ext->SymbolicLinkName = linkName;
-    
+
 Cleanup:
     ExFreePool(portName.Buffer);
     ExFreePool(className.Buffer);
@@ -1081,7 +1083,7 @@ is given full I/O access.  Our IOPM_local[] array is all zeros, so
 the IOPM will be all zeros.  If OnFlag is 1, the process is given I/O
 access.  If it is 0, access is removed.
 ****************************************************************************/
-VOID SetIOPermissionMap( int OnFlag )
+static VOID SetIOPermissionMap( int OnFlag )
 {
     if (OnFlag) {
         /* Enable I/O for the process */
@@ -1107,19 +1109,20 @@ STATUS_NOT_A_DIRECTORY  - This device is not a directory.
 REMARKS:
 This routine is the dispatch for create requests.
 ****************************************************************************/
-NTSTATUS PORTSTDCALL ParCreate(
+DRIVER_DISPATCH ParCreate;
+NTSTATUS ParCreate(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
     PIO_STACK_LOCATION  irpSp;
     NTSTATUS            status;
     PDEVICE_EXTENSION   ext;
-    
+
     // Give the debugger process full I/O port access. Ideally we should
     // restrict this to the actual I/O ports in use, and this can be done
     // in the future if desired.
     SetIOPermissionMap(1);
-    
+
     // Now create the parallel port extension device
     ext = DeviceObject->DeviceExtension;
     irpSp = IoGetCurrentIrpStackLocation(Irp);
@@ -1143,6 +1146,7 @@ Irp             - Supplies the I/O request packet.
 REMARKS:
 This is the cancel routine for this driver.
 ****************************************************************************/
+DRIVER_CANCEL ParCancel;
 VOID ParCancel(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
@@ -1157,7 +1161,8 @@ Irp             - Supplies the I/O request packet.
 REMARKS:
 This is the IOCtl routine for this driver.
 ****************************************************************************/
-NTSTATUS PORTSTDCALL ParIOCTL(
+DRIVER_DISPATCH ParIOCTL;
+NTSTATUS ParIOCTL(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
@@ -1165,13 +1170,13 @@ NTSTATUS PORTSTDCALL ParIOCTL(
     NTSTATUS            status;
     PDEVICE_EXTENSION   ext;
     DBGPORT_IO                      *IOBuffer;
-    
+
     status = STATUS_SUCCESS;
     Irp->IoStatus.Information = sizeof( *IOBuffer );
     ext = DeviceObject->DeviceExtension;
     irpSp = IoGetCurrentIrpStackLocation(Irp);
     IOBuffer = (DBGPORT_IO *)Irp->AssociatedIrp.SystemBuffer;
-    
+
     // NT copies inbuf here before entry and copies this to outbuf after
     // return, for METHOD_BUFFERED IOCTL's.
     switch (irpSp->Parameters.DeviceIoControl.IoControlCode) {
@@ -1229,7 +1234,8 @@ Irp             - Supplies the I/O request packet.
 REMARKS:
 This is the cleanup routine for this driver.
 ****************************************************************************/
-NTSTATUS PORTSTDCALL ParCleanup(
+DRIVER_DISPATCH ParCleanup;
+NTSTATUS ParCleanup(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
@@ -1247,15 +1253,16 @@ Irp             - Supplies the I/O request packet.
 REMARKS:
 This is the close routine for this driver.
 ****************************************************************************/
-NTSTATUS PORTSTDCALL ParClose(
+DRIVER_DISPATCH ParClose;
+NTSTATUS ParClose(
     IN  PDEVICE_OBJECT  DeviceObject,
     IN  PIRP            Irp)
 {
     PDEVICE_EXTENSION   ext;
-    
+
     // Restore the original I/O port mappings
     SetIOPermissionMap(0);
-    
+
     ext = DeviceObject->DeviceExtension;
     ext->FreePort(ext->AllocFreePortContext);
     Irp->IoStatus.Status = STATUS_SUCCESS;
@@ -1272,12 +1279,13 @@ REMARKS:
 This routine loops through the device list and cleans up after
 each of the devices.
 ****************************************************************************/
-VOID PORTSTDCALL ParUnload(
+DRIVER_UNLOAD ParUnload;
+VOID ParUnload(
     IN  PDRIVER_OBJECT  DriverObject)
 {
     PDEVICE_OBJECT          currentDevice;
     PDEVICE_EXTENSION   ext;
-    
+
     while (currentDevice = DriverObject->DeviceObject) {
         ext = currentDevice->DeviceExtension;
         if (ext->CreatedSymbolicLink) {
@@ -1286,7 +1294,7 @@ VOID PORTSTDCALL ParUnload(
         }
         IoDeleteDevice(currentDevice);
     }
-    
+
     // Free the local IOPM table if allocated
     if (IOPM_local)
         MmFreeNonCachedMemory(IOPM_local, sizeof(IOPM));
@@ -1304,17 +1312,18 @@ REMARKS:
 This routine is called at system initialization time to initialize
 this driver.
 ****************************************************************************/
-NTSTATUS PORTSTDCALL DriverEntry(
+DRIVER_INITIALIZE DriverEntry;
+NTSTATUS DriverEntry(
     IN  PDRIVER_OBJECT  DriverObject,
     IN  PUNICODE_STRING RegistryPath)
 {
     ULONG       i;
-    
+
     // TODO: We should be able to re-code this driver to use a call-gate
     //               to give the calling process full IOPL access, without needing
     //               the gross IOPM hack we currently use. This would make it
     //               slightly faster also.
-    
+
     // Allocate a buffer for the local IOPM and zero it.
     IOPM_local = MmAllocateNonCachedMemory(sizeof(IOPM));
     IOPM_saved = MmAllocateNonCachedMemory(sizeof(IOPM));
@@ -1322,13 +1331,13 @@ NTSTATUS PORTSTDCALL DriverEntry(
         return STATUS_INSUFFICIENT_RESOURCES;
     RtlZeroMemory(IOPM_local, sizeof(IOPM));
     Ke386QueryIoAccessMap(1,IOPM_saved);
-    
+
     // Initialise all the device objects
     for (i = 0; i < IoGetConfigurationInformation()->ParallelCount; i++)
         ParInitializeDeviceObject(DriverObject, i);
     if (!DriverObject->DeviceObject)
         return STATUS_NO_SUCH_DEVICE;
-    
+
     // Initialize the Driver Object with driver's entry points
     DriverObject->MajorFunction[IRP_MJ_CREATE] = ParCreate;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = ParClose;
