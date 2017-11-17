@@ -54,6 +54,7 @@
 #include "../qnx/h/qnxuiext.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "gui.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbgprog.h"
