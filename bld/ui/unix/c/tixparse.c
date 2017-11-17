@@ -60,6 +60,7 @@
 #include "stdui.h"
 #include "unxuiext.h"
 #include "tixparse.h"
+#include "tixsupp.h"
 #include "trie.h"
 
 
@@ -70,10 +71,6 @@ typedef enum {
     TT_STRING,
     TT_EOF
 } tix_token;
-
-extern int      ui_tix_missing( const char *name );
-
-extern char     ui_tix_path[];
 
 char            ti_char_map[256][4];
 unsigned char   _ti_alt_map[32];
@@ -124,7 +121,6 @@ FILE *ti_fopen( const char *fnam )
     }
 
     // finally, look in /usr/watcom/tix/<name>
-//    strcpy( fpath, TIX_PATH_NAME );
     strcpy( fpath, ui_tix_path );
     strcat( fpath, fnam );
     res = fopen( fpath, "r" );

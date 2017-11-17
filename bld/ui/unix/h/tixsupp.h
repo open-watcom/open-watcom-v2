@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,29 +31,6 @@
 ****************************************************************************/
 
 
-/*
-        Client overridable aspects of the TIX support.
+extern char     ui_tix_path[];
 
-        ui_tix_path     is the last chance directory for finding TIX files
-                        (the trailing slash is required).
-
-        ui_tix_missing  is called when UI can not find the appropriate TIX
-                        file. The parm is the name of the TIX file being
-                        looked for (minus the trailing ".tix"). If the
-                        function returns zero, the UI library initialization
-                        will fail (uiinit will return false). Returning a
-                        non-zero value will allow UI library initialization
-                        to succeed (assuming nothing else goes wrong).
-*/
-
-#include <stdio.h>
-#include "bool.h"
-#include "tixparse.h"
-
-char ui_tix_path[] = "/usr/watcom/tix/";
-
-int ui_tix_missing( const char *name )
-{
-    name = name;
-    return( 1 );
-}
+extern int      ui_tix_missing( const char *name );

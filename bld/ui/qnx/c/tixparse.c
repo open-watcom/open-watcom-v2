@@ -43,6 +43,7 @@
 #include "stdui.h"
 #include "qnxuiext.h"
 #include "tixparse.h"
+#include "tixsupp.h"
 #include "trie.h"
 
 
@@ -62,10 +63,6 @@ typedef enum {
     TT_STRING,
     TT_EOF,
 } tix_token;
-
-extern char     ui_tix_path[];
-
-extern int      ui_tix_missing( const char *name );
 
 char            ti_char_map[256];
 unsigned char   _ti_alt_map[32];

@@ -1,9 +1,11 @@
 
 !include ../../ui.mif
 
-ctkeyb.obj : ctkeyb.c conesc.gh
+.c: ../../unix/c
 
 inc_dirs += -I. -I"../../unix/h"
+
+ctkeyb.obj : ctkeyb.c conesc.gh
 
 conesc.gh : ./buildesc.exe ../tix/qnx.tix
     $[@ ../tix/qnx.tix conesc.gh
