@@ -80,6 +80,7 @@
 #include "unxuiext.h"
 #include "ctkeyb.h"
 #include "tixparse.h"
+#include "tixsupp.h"
 #include "tdisp.h"
 
 #include "walloca.h"

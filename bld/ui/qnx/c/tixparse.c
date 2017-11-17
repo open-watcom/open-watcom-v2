@@ -78,56 +78,6 @@ static void tix_error( const char *str )
     uiwritec( "\n" );
 }
 
-#define TIX_PATH_NAME   "/usr/watcom/tix/"
-#define TIX_PATH_LEN    ( sizeof( TIX_PATH_NAME ) )
-
-static FILE *ti_fopen( const char *fnam )
-{
-    FILE        *res;
-    char        *fpath;
-    const char  *homeDir;
-    unsigned    size;
-    unsigned    len;
-
-    if( fnam == NULL || fnam[0] == '\0' ) {
-        return( NULL );
-    }
-
-    // first look in current directory
-    res = fopen( fnam, "r" );
-    if( res != NULL )
-        return( res );
-
-    // if it's not there, look in the user's home directory
-    homeDir = getenv( "HOME" );
-    if( homeDir == NULL )
-        homeDir = "";
-    size = strlen( homeDir ) + 1;
-    len = strlen( ui_tix_path );
-    if( len > size )
-        size = len;
-    fpath = alloca( size + strlen( fnam ) + 1 );
-    if( fpath == NULL )
-        return( NULL );
-
-    if( homeDir[0] != '\0' ) {
-        strcpy( fpath, homeDir );
-        strcat( fpath, "/" );
-        strcat( fpath, fnam );
-
-        res = fopen( fpath, "r" );
-        if( res != NULL ) {
-            return( res );
-        }
-    }
-
-    // finally, look in /usr/watcom/tix/<name>
-    strcpy( fpath, ui_tix_path );
-    strcat( fpath, fnam );
-    res= fopen( fpath, "r" );
-    return( res );
-}
-
 static tix_status init_tix_scanner( const char *name, bool use_default )
 {
     char        tix_name[19];

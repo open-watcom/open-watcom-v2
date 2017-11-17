@@ -90,43 +90,6 @@ static void tix_error( const char *str )
     uiwritec( "\n" );
 }
 
-FILE *ti_fopen( const char *fnam )
-/********************************/
-{
-    FILE        *res;
-    const char  *homeDir;
-    char        fpath[FILENAME_MAX + 1];
-
-    if( fnam == NULL || fnam[0] == '\0' ) {
-        return( NULL );
-    }
-
-    // first look in current directory
-    res = fopen( fnam, "r" );
-    if( res != NULL ) {
-        return( res );
-    }
-
-    // if it's not there, look in the user's home directory
-    homeDir = getenv( "HOME" );
-    if( homeDir != NULL && homeDir[0] != '\0' ) {
-        strcpy( fpath, homeDir );
-        strcat( fpath, "/" );
-        strcat( fpath, fnam );
-
-        res = fopen( fpath, "r" );
-        if( res != NULL ) {
-            return( res );
-        }
-    }
-
-    // finally, look in /usr/watcom/tix/<name>
-    strcpy( fpath, ui_tix_path );
-    strcat( fpath, fnam );
-    res = fopen( fpath, "r" );
-    return( res );
-}
-
 static int init_tix_scanner( const char *name )
 /*********************************************/
 {

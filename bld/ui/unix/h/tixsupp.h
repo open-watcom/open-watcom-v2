@@ -34,3 +34,4 @@
 extern char     ui_tix_path[];
 
 extern int      ui_tix_missing( const char *name );
+extern FILE     *ti_fopen( const char *fnam );

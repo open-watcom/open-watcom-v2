@@ -58,8 +58,9 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "ctkeyb.h"
-#include "tdisp.h"
 #include "tixparse.h"
+#include "tixsupp.h"
+#include "tdisp.h"
 
 
 #ifdef __386__
