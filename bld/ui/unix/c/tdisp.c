@@ -71,6 +71,7 @@
 #include <process.h>
 #endif
 #include <sys/ioctl.h>
+#include "walloca.h"
 #include "wterm.h"
 #include "uidef.h"
 #include "uiattrs.h"
@@ -82,8 +83,6 @@
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "tdisp.h"
-
-#include "walloca.h"
 
 
 #define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
@@ -702,7 +701,7 @@ static int TI_EXEC_PROG( char *pnam )
 
     if( pnam != NULL && pnam[0] != '\0' ) {
         // get full path name of program
-        ppath = (char *)alloca( TI_PATH_LEN + strlen( pnam ) );
+        ppath = walloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
             return( false );
         }

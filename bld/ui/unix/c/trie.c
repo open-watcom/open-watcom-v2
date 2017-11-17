@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "walloca.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -39,9 +38,9 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <ctype.h>
+#include "walloca.h"
 #include "uidef.h"
 #include "uishift.h"
-
 #include "uivirt.h"
 #include "unxuiext.h"
 #include "trie.h"
@@ -237,7 +236,7 @@ EVENT TrieRead( void )
     eNode           *node;
     int             timeout;
 
-    buf = alloca( KeyTrieDepth + 1 );
+    buf = walloca( KeyTrieDepth + 1 );
 
     trie = &KeyTrie;
     buf[0] = '\0';

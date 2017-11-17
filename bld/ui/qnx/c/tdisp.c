@@ -51,6 +51,7 @@
 #include <ctype.h>
 #include <sys/qnx_glob.h>
 #include <process.h>
+#include "walloca.h"
 #include "wterm.h"
 #include "uidef.h"
 #include "uiattrs.h"
@@ -676,7 +677,7 @@ static int TI_EXEC_PROG( char *pnam )
 
     if( pnam != NULL && pnam[0] != '\0' ) {
         // get full path name of program
-        ppath = alloca( TI_PATH_LEN + strlen( pnam ) );
+        ppath = walloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
             return( false );
         }
