@@ -54,7 +54,6 @@
 #include "qnxuiext.h"
 #include "qdebug.h"
 #include "uiproxy.h"
-#include "ctkeyb.h"
 
 
 extern PossibleDisplay      DisplayList[];
@@ -137,22 +136,18 @@ bool intern initbios( void )
     if( error != 1 )
         return( false );
     // Check to make sure terminal is suitable
-    if( (cursor_address[0] == '\0') || hard_copy ) {
+    if( ( cursor_address[0] == '\0' ) || hard_copy ) {
         del_curterm( cur_term );
         return( false );
     }
 
-    curr = DisplayList;
-
-    for( ;; ) {
-        if( curr->check == NULL )
-            return( false );
-        if( curr->check() )
-            break;
-        ++curr;
+    for( curr = DisplayList; curr->check != NULL; curr++ ) {
+        if( curr->check() ) {
+            UIVirt = curr->virt;
+            return( _uibiosinit() );
+        }
     }
-    UIVirt = curr->virt;
-    return( _uibiosinit() );
+    return( false );
 }
 
 void intern finibios( void )
@@ -170,10 +165,10 @@ void forbid_refresh( void )
 
 void permit_refresh( void )
 {
-    if( RefreshForbid ){
+    if( RefreshForbid ) {
         RefreshForbid--;
     }
-    if( !RefreshForbid ){
+    if( !RefreshForbid ) {
         _ui_refresh( 0 );
     }
 }
@@ -181,7 +176,7 @@ void permit_refresh( void )
 void intern physupdate( SAREA *area )
 {
     _physupdate( area );
-    if( !RefreshForbid ){
+    if( !RefreshForbid ) {
         _ui_refresh( 0 );
     }
 }
@@ -191,7 +186,7 @@ void intern physupdate( SAREA *area )
 #include <stdio.h>
 #include <stdarg.h>
 
-void QNXDebugPrintf(const char *f, ...)
+void QNXDebugPrintf( const char *f, ... )
 {
     static FILE *file = NULL;
     va_list vargs;

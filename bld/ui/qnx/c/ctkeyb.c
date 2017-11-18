@@ -320,25 +320,25 @@ static void intern ck_arm( void )
 
 #define PUSHBACK_SIZE   32
 
-static char     UnreadBuffer[ PUSHBACK_SIZE ];
+static char     UnreadBuffer[PUSHBACK_SIZE];
 static int      UnreadPos = sizeof( UnreadBuffer );
 
-int nextc(int n)
-/**************/
+int nextc( int n )
+/****************/
 {
     unsigned char       ch;
     unsigned            least;
 
     if( UnreadPos < sizeof( UnreadBuffer ) )
-        return( UnreadBuffer[ UnreadPos++ ] );
+        return( UnreadBuffer[UnreadPos++] );
 
-    least = (n != 0) ? 1 : 0;
+    least = ( n != 0 ) ? 1 : 0;
 
     dev_arm( UIConHandle, _DEV_DISARM, _DEV_EVENT_INPUT );
-    if (dev_read( UIConHandle, &ch, 1, least ,0, n, 0, 0 ) <= 0 ) {
-            return -1;
+    if( dev_read( UIConHandle, &ch, 1, least ,0, n, 0, 0 ) <= 0 ) {
+        return( -1 );
     }
-    return ch;
+    return( ch );
 }
 
 void nextc_unget( char *str, size_t n )
@@ -495,7 +495,7 @@ EVENT ck_keyboardevent( void )
         }
         shift_state = sticky | real_shift;
         sticky = 0;
-        #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
+        #define S_MASK  (S_SHIFT | S_CTRL | S_ALT)
         if( shift_state & S_MASK ) {
             search_ev = tolower( ev );
             entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
@@ -535,7 +535,7 @@ static int ck_stop( void )
     dev_read( UIConHandle, NULL, 0, 0, 0, 0, 0, 0 );
     while( Creceive( UILocalProxy, 0, 0 ) > 0 )
         {}
-    return 0;
+    return( 0 );
 }
 
 
@@ -543,7 +543,7 @@ static int ck_flush( void )
 /*************************/
 {
     tcflush( UIConHandle, TCIFLUSH );
-    return 0;
+    return( 0 );
 }
 
 static int ck_shift_state( void )
@@ -573,7 +573,7 @@ static int ck_restore( void )
         console_protocol( UIConCtrl, 0, _CON_PROT_QNX4 );
         console_ctrl( UIConCtrl, 0, CONSOLE_SCANMODE, CONSOLE_SCANMODE );
     }
-    return 0;
+    return( 0 );
 }
 
 static void term_handler( int signo )
@@ -644,7 +644,7 @@ static int ck_fini( void )
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     signal( SIGTERM, SIG_DFL );
-    return 0;
+    return( 0 );
 }
 
 static int ck_save( void )
@@ -656,7 +656,7 @@ static int ck_save( void )
         /* There might be a KEY-UP event stuck in the buffer */
         tcflush( UIConHandle, TCIFLUSH );
     }
-    return 0;
+    return( 0 );
 }
 
 static int ck_wait_keyb( int secs, int usecs )

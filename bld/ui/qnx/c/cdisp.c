@@ -52,6 +52,7 @@
 #include "qnxuiext.h"
 #include "ctkeyb.h"
 
+
 static MONITOR ui_data = {
     25,
     80,
@@ -147,7 +148,7 @@ static EVENT cd_sizeevent( void )
         return( EV_NO_EVENT );
     StatePending = 0;
     state = console_state( UIConCtrl, UIConsole, 0,
-                (_CON_EVENT_ACTIVE|_CON_EVENT_INACTIVE|_CON_EVENT_SIZE) );
+                (_CON_EVENT_ACTIVE | _CON_EVENT_INACTIVE | _CON_EVENT_SIZE) );
     arm = 0;
     if( state & _CON_EVENT_INACTIVE ) {
         clear_shift();
@@ -156,7 +157,7 @@ static EVENT cd_sizeevent( void )
         arm = _CON_EVENT_INACTIVE;
     }
     console_arm( UIConCtrl, UIConsole, 0, arm | _CON_EVENT_SIZE );
-    if( !(state & _CON_EVENT_SIZE) )
+    if( (state & _CON_EVENT_SIZE) == 0 )
         return( EV_NO_EVENT );
     if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
@@ -206,7 +207,7 @@ static bool initmonitor( void )
     /* notify if screen size changes */
     signal( SIGDEV, &state_handler );
     console_arm( UIConCtrl, UIConsole, 0,
-            _CON_EVENT_SIZE|_CON_EVENT_ACTIVE|_CON_EVENT_SIZE );
+            _CON_EVENT_SIZE | _CON_EVENT_ACTIVE | _CON_EVENT_SIZE );
 
     return( true );
 }
@@ -214,8 +215,15 @@ static bool initmonitor( void )
 
 /* update the physical screen with contents of virtual copy */
 
-static void my_console_write( struct _console_ctrl *cc, int console, unsigned offset,
-         LP_STRING buf, int nbytes, int row, int col, int type)
+static void my_console_write(
+    struct _console_ctrl    *cc,
+    int                     console,
+    unsigned                offset,
+    LP_STRING               buf,
+    int                     nbytes,
+    int                     row,
+    int                     col,
+    int                     type )
 {
         struct _mxfer_entry sx[2];
         struct _mxfer_entry rx;
@@ -234,7 +242,7 @@ static void my_console_write( struct _console_ctrl *cc, int console, unsigned of
         msg.write.nbytes = nbytes;
 
         _setmx( &sx[1], buf, nbytes );
-        _setmx( &sx[0], &msg.write, sizeof(msg.write)-sizeof(msg.write.data) );
+        _setmx( &sx[0], &msg.write, sizeof( msg.write ) - sizeof( msg.write.data ) );
 
         _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 
@@ -245,7 +253,7 @@ static void my_console_write( struct _console_ctrl *cc, int console, unsigned of
 static int cd_init( void )
 /************************/
 {
-    int                 initialized;
+    int         initialized;
 
     initialized = false;
     if( UIData == NULL ) {
@@ -296,10 +304,10 @@ static int cd_update( SAREA *area )
                         row, col, type );
     } else {
         count = area->width * sizeof( PIXEL );
-        for( i = area->row; i < (area->row + area->height); i++ ) {
+        for( i = area->row; i < ( area->row + area->height ); i++ ) {
             offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
             my_console_write( UIConCtrl, UIConsole, offset,
-                            offset + (LP_STRING)UIData->screen.origin, count,
+                            (LP_STRING)UIData->screen.origin + offset, count,
                             row, col, type );
         }
     }

@@ -82,7 +82,7 @@ const char *SetTermType( const char *new_term )
 
 bool intern initbios( void )
 {
-    PossibleDisplay             *curr;
+    PossibleDisplay     *curr;
 
     if( UIConFile == NULL ) {
         const char  *tty;
@@ -117,17 +117,13 @@ bool intern initbios( void )
         return( false );
     }
 
-    curr = DisplayList;
-
-    for( ;; ) {
-        if( curr->check == NULL )
-            return( false );
-        if( curr->check() )
-            break;
-        ++curr;
+    for( curr = DisplayList; curr->check != NULL; curr++ ) {
+        if( curr->check() ) {
+            UIVirt = curr->virt;
+            return( _uibiosinit() );
+        }
     }
-    UIVirt = curr->virt;
-    return( _uibiosinit() );
+    return( false );
 }
 
 void intern finibios( void )
@@ -145,32 +141,34 @@ void forbid_refresh( void )
 
 void permit_refresh( void )
 {
-    if( RefreshForbid ){
+    if( RefreshForbid ) {
         RefreshForbid--;
     }
-    if( !RefreshForbid ){
-        _ui_refresh(0);
+    if( !RefreshForbid ) {
+        _ui_refresh( 0 );
     }
 }
 
 void intern physupdate( SAREA *area )
 {
-    _physupdate(area);
-    if( !RefreshForbid ){
-        _ui_refresh(0);
+    _physupdate( area );
+    if( !RefreshForbid ) {
+        _ui_refresh( 0 );
     }
 }
 
 #if defined( UI_DEBUG )
+
 #include <stdio.h>
 #include <stdarg.h>
+
 void UIDebugPrintf( const char *f, ... )
 {
-    static FILE     *file = 0;
+    static FILE     *file = NULL;
     va_list         vargs;
 
-    if (!file) {
-        if( (file = fopen( "UI.Debug", "w" )) == 0 ) {
+    if( file == NULL ) {
+        if( (file = fopen( "UI.Debug", "w" )) == NULL ) {
             return;
         }
     }
