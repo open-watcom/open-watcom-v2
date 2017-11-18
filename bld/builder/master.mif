@@ -14,6 +14,7 @@ all_commands    = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe $(all
 !ifndef bootstrap
 all_commands    += builder.exe
 !endif
+#all_commands    += wgrep.exe
 
 !ifndef __WATCOM_TOOLS__
 !ifdef bootstrap
@@ -42,6 +43,7 @@ sweep_objs   = sweep.obj $(cl_extra_objs_gen)
 wsplice_objs = wsplice.obj $(cl_extra_objs_gen)
 diff_objs    = diff.obj $(cl_extra_objs_gen)
 cdsay_objs   = cdsay.obj equals.obj
+wgrep_objs   = wgrep.obj $(cl_extra_objs_gen)
 
 extra_cpp_flags = -DSTANDALONE_RX
 
@@ -53,6 +55,7 @@ sweep.exe :   $(sweep_objs)
 wsplice.exe : $(wsplice_objs)
 diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
+wgrep.exe :   $(wgrep_objs)
 
 builder.exe : $(builder_objs) $(__MAKEFILES__)
     @%make echo_link
