@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bool.h"
-#include "tixparse.h"
 
 
 static FILE     *out_file= NULL;

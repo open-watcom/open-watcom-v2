@@ -82,12 +82,7 @@ static int init_tix_scanner( const char *name )
                 return( 1 );
             }
         }
-        if( strstr( name, "qnx" ) != 0 ) {
-            in_file = ti_fopen( "qnx.tix" );
-            if( in_file != NULL ) {
-                return( 1 );
-            }
-        } else if( strstr( name, "ansi" ) != 0 ) {
+        if( strstr( name, "ansi" ) != 0 ) {
             in_file = ti_fopen( "ansi.tix" );
             if( in_file != NULL ) {
                 return( 1 );
@@ -248,7 +243,7 @@ int ti_read_tix( const char *termname )
     }
 
 #if 0
-    /* do not play woth utf8 mode setting: all VT are already configured
+    /* do not play with utf8 mode setting: all VT are already configured
        as needed. With this code on there is a problem with line drawing
        on the linux console (framebuffer mode) */
 

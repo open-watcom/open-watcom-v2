@@ -253,11 +253,7 @@ bool do_parse( void )
     unsigned    code;
 
     tok = get_tix_token( buff );
-    while( tok != TT_EOF ) {
-        if( tok != TT_STRING ) {
-            tix_error( "expecting directive" );
-            return( false );
-        }
+    while( tok == TT_STRING ) {
         if( stricmp( buff, "display" ) == 0 ) {
             code = get_tix_code( buff );
             if( code == TC_ERROR )
@@ -306,6 +302,10 @@ bool do_parse( void )
             tix_error( "unknown directive" );
             return( false );
         }
+    }
+    if( tok == TT_CODE ) {
+        tix_error( "expecting directive" );
+        return( false );
     }
     return( true );
 }
