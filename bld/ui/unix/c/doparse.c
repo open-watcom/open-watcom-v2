@@ -53,6 +53,9 @@
 
 #define TC_ERROR    ((unsigned)-1)
 
+#define CODE2BUFF( __b, __c )   __b[0] = __c & 0xff; __b[1] = (__c >> 8) & 0xff;
+#define BUFF2CODE( __b )        (*(unsigned char *)__b + (*(unsigned char *)(__b + 1) << 8 ))
+
 typedef enum {
     TT_CODE,
     TT_STRING,
@@ -230,8 +233,7 @@ static tix_token get_tix_token( char *buff )
         num = strtoul( buff, &end, 0 );
         if( end != p )
             return( TT_STRING );
-        buff[0] = num & 0xff;
-        buff[1] = num >> 8;
+        CODE2BUFF( buff, num );
     }
     return( TT_CODE );
 }
@@ -242,7 +244,7 @@ static unsigned get_tix_code( char *buff )
         tix_error( "expecting code" );
         return( TC_ERROR );
     }
-    return( *(unsigned char *)buff + ( *(unsigned char *)( buff + 1 ) << 8 ) );
+    return( BUFF2CODE( buff ) );
 }
 
 bool do_parse( void )

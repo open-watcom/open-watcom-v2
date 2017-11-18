@@ -1081,8 +1081,23 @@ static int ti_hwcursor( void )
 
 // Dumps all characters we've slurped. Will use repeat_char capability if
 // there are multiple chars
-#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol );\
-                        rcount = 0;}
+#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol ); rcount = 0;}
+
+#define TI_SLURPCHAR( __ch ) \
+{ \
+    unsigned char __c = __ch; \
+    if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map( __c ) ) ) \
+        TI_DUMPCHARS(); \
+    rcol = ( rcount == 0 ) ? j : rcol; \
+    rcount++; \
+    if( ti_char_map[__c][1] ) { \
+         /* a UTF-8 string: write it immediately, 1-byte repeats unlikely */ \
+         fputs( ti_char_map[__c], UIConFile ); \
+         rcount = 0; \
+    } \
+    rchar = ti_char_map[__c][0]; \
+    ralt = ti_alt_map( __c ); \
+}
 
 static void update_shadow( void )
 /*******************************/
@@ -1350,18 +1365,7 @@ static int ti_refresh( int must )
                                             || ( i != UIData->height - 1 ) ) {
                     // Slurp up the char to be output. Will dump existing
                     // chars if new char is different.
-                    unsigned c = bufp[j].ch;
-                    if( rcount != 0 && ( rchar != ti_char_map[c][0] || ralt != ti_alt_map( c ) ) )
-                         TI_DUMPCHARS();
-                    rcol = ( rcount == 0 ) ? j : rcol;
-                    rcount++;
-                    if( ti_char_map[c][1] ) {
-                         /* a UTF-8 string: write it immediately, 1-byte repeats unlikely */
-                         fputs( ti_char_map[c], UIConFile );
-                         rcount = 0;
-                    }
-                    rchar = ti_char_map[c][0];
-                    ralt = ti_alt_map( c );
+                    TI_SLURPCHAR( bufp[j].ch );
                     OldCol++;
 
                     // if we walk off the edge our position is undefined

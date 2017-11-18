@@ -1181,20 +1181,20 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 
 // Dumps all characters we've slurped. Will use repeat_char capability if
 // there are multiple chars
-#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol );\
-                        rcount = 0;}
+#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol ); rcount = 0;}
 
 // Slurps a char to be output. Will dump existing chars if new char is
 // different.
-#define TI_SLURPCHAR( c )       \
-    {                           \
-        if( rcount != 0 && ( rchar != ti_char_map[c] || ralt != ti_alt_map( c ) ) ) \
-            TI_DUMPCHARS();     \
-        rcol = (rcount == 0) ? j : rcol; \
-        rcount++;               \
-        rchar = ti_char_map[c]; \
-        ralt = ti_alt_map(c);   \
-    }
+#define TI_SLURPCHAR( __ch )  \
+{                             \
+    unsigned char __c = __ch; \
+    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map( __c ) ) ) \
+        TI_DUMPCHARS();       \
+    rcol = (rcount == 0) ? j : rcol; \
+    rcount++;                 \
+    rchar = ti_char_map[__c]; \
+    ralt = ti_alt_map( __c ); \
+}
 
 
 #define NonBlankEnd(b,n,c) (((c).ch == ' ')?(asmNonBlankEnd((b),(n),(c))):(b))

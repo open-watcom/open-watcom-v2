@@ -60,7 +60,9 @@
 #include "kbwait.h"
 
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
+#define NUM_ELTS( a )       (sizeof( a ) / sizeof( a[0] ))
+
+#define BUFF2CODE( __b )    (*(unsigned char *)__b + (*(unsigned char *)(__b + 1) << 8 ))
 
 enum {
     EV_STICKY_FUNC      = 0xff0,
@@ -615,7 +617,7 @@ static int ck_init( void )
     case TIX_NOFILE:
         if( UIConCtrl != NULL ) {
             for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
-                ev = ConEscapes[i + 0] + (ConEscapes[i + 1] << 8);
+                ev = BUFF2CODE( ConEscapes );
                 i += 2;
                 if( !TrieAdd( ev, ConEscapes + i ) ) {
                     return( false );
