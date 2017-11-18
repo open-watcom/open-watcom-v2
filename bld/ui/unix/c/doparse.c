@@ -49,6 +49,9 @@
 #include "tixparse.h"
 #include "doparse.h"
 
+#if !defined( __WATCOMC__ )
+#include "clibext.h"
+#endif
 #endif
 
 #define TC_ERROR    ((unsigned)-1)
