@@ -31,7 +31,9 @@
 ****************************************************************************/
 
 
-// array of char mappings (up to 3 UTF-8 characters followed by a 0)
-extern char     ti_char_map[256][4];
+#include "tixstatu.h"
 
-extern int      ti_read_tix( const char *termname );
+// array of char mappings (up to 3 UTF-8 characters followed by a 0)
+extern char         ti_char_map[256][4];
+
+extern tix_status   ti_read_tix( const char *termname );

@@ -111,7 +111,7 @@ tix_status ti_read_tix( bool use_default )
             return( ret );
         return( ui_tix_missing( GetTermType() ) ? TIX_OK : TIX_FAIL );
     }
-    if( do_parse() == TIX_FAIL )
+    if( !do_parse() )
         ret = TIX_FAIL;
     close_tix_scanner();
     return( ret );

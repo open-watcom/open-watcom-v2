@@ -67,8 +67,8 @@
 
 char            ti_char_map[256][4];
 
-static int init_tix_scanner( const char *name )
-/*********************************************/
+static tix_status init_tix_scanner( const char *name )
+/****************************************************/
 {
     char        tix_name[19];
 
@@ -79,26 +79,28 @@ static int init_tix_scanner( const char *name )
             strcat( tix_name, ".tix" );
             in_file = ti_fopen( tix_name );
             if( in_file != NULL ) {
-                return( 1 );
+                return( TIX_OK );
             }
         }
         if( strstr( name, "ansi" ) != 0 ) {
             in_file = ti_fopen( "ansi.tix" );
             if( in_file != NULL ) {
-                return( 1 );
+                return( TIX_OK );
             }
         } else if( strstr( name, "xterm" ) != 0 ) {
             in_file = ti_fopen( "xterm.tix" );
             if( in_file != NULL )
-                return( 1 );
+                return( TIX_OK );
             in_file = ti_fopen( "ansi.tix" );
             if( in_file != NULL ) {
-                return( 1 );
+                return( TIX_OK );
             }
         }
     }
     in_file = ti_fopen( "default.tix" );
-    return( in_file != NULL );
+    if( in_file != NULL )
+        return( TIX_DEFAULT );
+    return( TIX_NOFILE );
 }
 
 static void close_tix_scanner( void )
@@ -207,11 +209,11 @@ static int do_default( void )
 }
 
 
-int ti_read_tix( const char *termname )
-/*************************************/
+tix_status ti_read_tix( const char *termname )
+/********************************************/
 {
     int         i;
-    int         ret;
+    tix_status  ret;
     const char  *s;
     int         utf8_mode = 0;
 
@@ -220,11 +222,17 @@ int ti_read_tix( const char *termname )
     for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ )
         ti_char_map[i][0] = i;
 
-    if( !init_tix_scanner( termname ) ) {
-        ret = do_default();
-    } else {
-        ret = do_parse();
+    ret = init_tix_scanner( termname );
+    switch( ret ) {
+    case TIX_NOFILE:
+        do_default();
+        ret = TIX_DEFAULT;
+        break;
+    case TIX_OK:
+        if( !do_parse() )
+            ret = TIX_FAIL;
         close_tix_scanner();
+        break;
     }
 
     if( ( (s = getenv( "LC_ALL" )) != NULL && *s != '\0' ) ||

@@ -31,14 +31,9 @@
 ****************************************************************************/
 
 
+#include "tixstatu.h"
+
 // array of char mappings
 extern char         ti_char_map[256];
-
-typedef enum {
-    TIX_FAIL,
-    TIX_NOFILE,
-    TIX_DEFAULT,
-    TIX_OK
-} tix_status;
 
 extern tix_status   ti_read_tix( bool );

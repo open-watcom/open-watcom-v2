@@ -34,8 +34,7 @@
 /*
         Client overridable aspects of the TIX support.
 
-        ui_tix_path     is the last chance directory for finding TIX files
-                        (the trailing slash is required).
+        ui_tix_path     is the last chance directory for finding TIX files.
 
         ui_tix_missing  is called when UI can not find the appropriate TIX
                         file. The parm is the name of the TIX file being
@@ -51,6 +50,7 @@
 #include <string.h>
 #include "walloca.h"
 #include "tixsupp.h"
+
 
 char ui_tix_path[] = "/usr/watcom/tix";
 

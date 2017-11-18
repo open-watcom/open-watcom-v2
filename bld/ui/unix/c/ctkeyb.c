@@ -609,9 +609,10 @@ static int ck_init( void )
     if( !init_trie() )
         return( false );
 
-    if( !ti_read_tix( GetTermType() ) )
+    switch( ti_read_tix( GetTermType() ) ) {
+    case TIX_FAIL:
         return( false );
-
+    }
     SavePGroup = tcgetpgrp( UIConHandle );
     tcsetpgrp( UIConHandle, UIPGroup );
     restorekeyb();
