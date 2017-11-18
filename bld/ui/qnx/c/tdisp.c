@@ -61,6 +61,7 @@
 #include "ctkeyb.h"
 #include "tixparse.h"
 #include "tixsupp.h"
+#include "doparse.h"
 #include "tdisp.h"
 
 

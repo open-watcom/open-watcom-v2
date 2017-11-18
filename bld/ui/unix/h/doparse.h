@@ -31,14 +31,13 @@
 ****************************************************************************/
 
 
-// array of char mappings
-extern char         ti_char_map[256];
+// macros for getting/setting bits in alt-char map
+#define ti_alt_map( x )     ( _ti_alt_map[( x ) / 8] != 0 && (( _ti_alt_map[( x ) / 8] >> ( ( x ) % 8 ) ) & 1) )
 
-typedef enum {
-    TIX_FAIL,
-    TIX_NOFILE,
-    TIX_DEFAULT,
-    TIX_OK
-} tix_status;
+// array of bits set for chars in alternate char-set
+extern unsigned char    _ti_alt_map[32];
 
-extern tix_status   ti_read_tix( bool );
+extern FILE             *in_file;
+
+extern bool             do_parse( void );
+extern char             set_ti_alt_map( unsigned i, char c );

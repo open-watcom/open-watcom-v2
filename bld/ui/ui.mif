@@ -60,6 +60,7 @@ objs = &
 !inject cmouse.obj                        qnx
 !inject charmap.obj   dos
 !inject ctkeyb.obj                        qnx  unix
+!inject doparse.obj                       qnx  unix
 !inject gmouse.obj    dos
 !inject kbwait.obj                             unix
 !inject tdisp.obj                         qnx  unix

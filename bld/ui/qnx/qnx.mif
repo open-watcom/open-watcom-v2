@@ -12,4 +12,4 @@ conesc.gh : ./buildesc.exe ../tix/qnx.tix
 
 ./buildesc.exe : ../c/buildesc.c
     @%make echo_bldcl
-    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" $(bld_clflags) $(bld_ldflags)
