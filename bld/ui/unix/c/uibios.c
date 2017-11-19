@@ -103,10 +103,10 @@ bool intern initbios( void )
         char        *p2;
 
         p1 = GetTermType();
-        p2 = malloc( strlen( p1 ) + 1 );
+        p2 = uimalloc( strlen( p1 ) + 1 );
         strcpy( p2, p1 );
         setupterm( p2, UIConHandle, NULL );
-        free( p2 );
+        uifree( p2 );
     }
     /* will report an error message and exit if any
        problem with a terminfo */

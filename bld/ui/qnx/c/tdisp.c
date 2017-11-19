@@ -118,7 +118,7 @@ static struct ostream _con_out;
 
 static bool ostream_init( int f )
 {
-    if( (_con_out.sbuf = malloc( 2048 )) == NULL ) {
+    if( (_con_out.sbuf = uimalloc( 2048 )) == NULL ) {
         return( false );
     }
     _con_out.ebuf = _con_out.sbuf + 2048;
@@ -772,11 +772,11 @@ static bool setupscrnbuff( int srows, int scols )
     num = UIData->width * UIData->height * 2;
     scrn = UIData->screen.origin;
 #if defined( __386__ )
-    scrn = realloc( scrn, num );
+    scrn = uirealloc( scrn, num );
     if( scrn == NULL )
         return( false );
-    if( (shadow = realloc( shadow, num )) == NULL ) {
-        free( scrn );
+    if( (shadow = uirealloc( shadow, num )) == NULL ) {
+        uifree( scrn );
         return( false );
     }
 #else

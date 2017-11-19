@@ -63,14 +63,14 @@ bool intern initbios( void )
     UIData->colour = M_VGA;
     RdosGetTextSize(&UIData->height, &UIData->width);
 
-    UIData->screen.origin = malloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+    UIData->screen.origin = uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
 
     bufptr = (short int *)UIData->screen.origin;
     for( i = 0; i < UIData->width * UIData->height; i++ ) {
         *bufptr = 0x720;
         bufptr++;
     }
-            
+
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
@@ -104,7 +104,7 @@ void intern physupdate( SAREA *area )
         pos = UIData->width * (i + area->row) + area->col;
         bufptr = (short int *)UIData->screen.origin + pos;
         RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
-    }    
+    }
 }
 
 int UIAPI uiisdbcs( void )

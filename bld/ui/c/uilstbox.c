@@ -79,7 +79,7 @@ void uipaintlistbox( a_list *list )
     }
 
     length = list->box->area.width + 1;
-    buf = ( char * )uimalloc( length );
+    buf = (char *)uimalloc( length );
 
     for( i = 0 ; i < list->box->area.height ; ++i ) {
         attr = ATTR_NORMAL;
@@ -90,7 +90,7 @@ void uipaintlistbox( a_list *list )
         if( ok ) {
             uitextfield( list->box->vs, list->box->area.row + i,
                          list->box->area.col, list->box->area.width,
-                         UIData->attrs[ attr ], buf, strlen( buf ) );
+                         UIData->attrs[attr], buf, strlen( buf ) );
         } else {
             break;
         }
@@ -98,7 +98,7 @@ void uipaintlistbox( a_list *list )
     for( ; i < list->box->area.height; ++i ) {
         uitextfield( list->box->vs, list->box->area.row + i,
                      list->box->area.col, list->box->area.width,
-                     UIData->attrs[ ATTR_NORMAL ], "", 0 );
+                     UIData->attrs[ATTR_NORMAL], "", 0 );
     }
     uifree( buf );
 }

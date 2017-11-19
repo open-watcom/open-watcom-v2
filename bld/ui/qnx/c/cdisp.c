@@ -99,7 +99,7 @@ static bool setupscrnbuff( void )
     num = UIData->width * UIData->height * 2;
     scrn = UIData->screen.origin;
 #if defined( __386__ )
-    scrn = realloc( scrn, num );
+    scrn = uirealloc( scrn, num );
     if( scrn == NULL )
         return( false );
 #else

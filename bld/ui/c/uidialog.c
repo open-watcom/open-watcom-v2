@@ -321,8 +321,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
             radio->hotkey = hotkey;
         }
     } else {
-        uitextfield( vs, area->row, area->col, area->width, attr,
-                     ctrlbuf, length );
+        uitextfield( vs, area->row, area->col, area->width, attr, ctrlbuf, length );
     }
 }
 
