@@ -39,13 +39,26 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <ctype.h>
+#ifdef __QNX__
+#include <sys/kernel.h>
+#include <sys/dev.h>
+#include <sys/sidinfo.h>
+#include <sys/psinfo.h>
+#include <sys/proxy.h>
+#include <sys/qioctl.h>
+#include <sys/console.h>
+#endif
 #include "walloca.h"
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirt.h"
-#include "unxuiext.h"
-#include "trie.h"
 #include "ctkeyb.h"
+#ifdef __QNX__
+#include "qnxuiext.h"
+#else
+#include "unxuiext.h"
+#endif
+#include "trie.h"
 
 
 /* The following types are for use with the keymap-trie. The keymap trie
@@ -54,7 +67,7 @@
  * key-lookup.
  */
 
-#define EV_UNUSED ((EVENT)-1)
+#define EV_UNUSED               ((EVENT)-1)
 
 #define TRIE_ARRAY_GROWTH       4
 
@@ -134,7 +147,7 @@ static int child_search( char key, eTrie *trie )
         return( 0 );
 
     ary = trie->child;
-    if( key > ary[num - 1].c )
+    if( key>ary[num - 1].c )
         return( num );
 
     for( x = 0; x < num; x++ ) {
@@ -183,7 +196,7 @@ bool TrieAdd( EVENT event, const char *str )
             if( i < ( trie->num_child - 1 ) ) {
                 // We're in the middle of the list, so clear a spot
                 memmove( &(trie->child[i + 1]), &(trie->child[i]),
-                                ( trie->num_child - i - 1 ) * sizeof( eNode ) );
+                                (trie->num_child-i-1)*sizeof(eNode) );
             }
 
             trie->child[i].c = *str;
@@ -243,11 +256,13 @@ EVENT TrieRead( void )
     buf[0] = '\0';
     timeout = 0;
     for( ;; ) {
-        c = nextc( timeout );
+        c = nextc(timeout);
         if( c <= 0 )
             break;
+#ifdef __UNIX__
         if( c == 256 )
             return( EV_MOUSE_PRESS );
+#endif
         buf[cpos++] = c;
 
         if( trie->num_child == 0 )
