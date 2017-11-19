@@ -115,7 +115,7 @@ ResLocation SemCopyRawFile( const char *filename )
     bool            error;
 
     error = false;
-    fid = WRES_NIL_HANDLE;
+    fid = NULL;
     buffer = RESALLOC( BUFFER_SIZE );
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
@@ -127,7 +127,7 @@ ResLocation SemCopyRawFile( const char *filename )
 
     if( !error ) {
         fid = RcIoOpenInput( full_filename, false );
-        if( fid == WRES_NIL_HANDLE ) {
+        if( fid == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
         }
@@ -154,7 +154,7 @@ ResLocation SemCopyRawFile( const char *filename )
     } else {
         loc.len = SemEndResource( loc.start );
     }
-    if( fid != WRES_NIL_HANDLE ) {
+    if( fid != NULL ) {
         RESCLOSE( fid );
     }
     RESFREE( buffer );

@@ -64,14 +64,14 @@ bool WRLoadBitmapFile( WRInfo *info )
     WResID              *name;
     WResLangType        def_lang;
 
-    fid = WRES_NIL_HANDLE;
+    fid = NULL;
     def_lang.sublang = DEF_LANG;
     def_lang.lang = DEF_SUBLANG;
 
     ok = ( info != NULL );
 
     if( ok ) {
-        ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
+        ok = ( (fid = ResOpenFileRO( info->file_name )) != NULL );
     }
     if( ok ) {
         ok = !RESSEEK( fid, 0, SEEK_END );
@@ -102,7 +102,7 @@ bool WRLoadBitmapFile( WRInfo *info )
                                info->dir, &def_lang, NULL );
     }
 
-    if( fid != WRES_NIL_HANDLE ) {
+    if( fid != NULL ) {
         ResCloseFile( fid );
     }
 
@@ -303,8 +303,8 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     bool                use_rename;
     WResLangNode        *lnode;
 
-    src_fid = WRES_NIL_HANDLE;
-    dst_fid = WRES_NIL_HANDLE;
+    src_fid = NULL;
+    dst_fid = NULL;
     lnode = NULL;
 
     ok = ( info != NULL && tnode != NULL );
@@ -318,12 +318,12 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 
     if( ok ) {
         if( info->file_name != NULL ) {
-            ok = ( (src_fid = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE );
+            ok = ( (src_fid = ResOpenFileRO( info->tmp_file )) != NULL );
         }
     }
 
     if( ok ) {
-        ok = ( (dst_fid = ResOpenNewFile( info->save_name )) != WRES_NIL_HANDLE );
+        ok = ( (dst_fid = ResOpenNewFile( info->save_name )) != NULL );
     }
 
     if( ok ) {
@@ -341,16 +341,16 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
         }
     }
 
-    if( src_fid != WRES_NIL_HANDLE ) {
+    if( src_fid != NULL ) {
         ResCloseFile( src_fid );
     }
 
-    if( dst_fid != WRES_NIL_HANDLE ) {
+    if( dst_fid != NULL ) {
         ResCloseFile( dst_fid );
     }
 
     if( !ok ) {
-        if( dst_fid != WRES_NIL_HANDLE ) {
+        if( dst_fid != NULL ) {
             WRDeleteFile( info->save_name );
         }
     }

@@ -96,7 +96,7 @@ int main( int argc, char **argv ) {
     }
 
     fp = fopen( argv[1], "rb" );
-    if ( fp == WRES_NIL_HANDLE ) {
+    if ( fp == NULL ) {
         puts("Error opening file");
         exit( 1 );
     }

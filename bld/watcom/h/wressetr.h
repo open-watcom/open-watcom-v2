@@ -49,10 +49,6 @@
 #define WRES_FID2PH(fid)    ((int)((unsigned long)(fid) - 1))
 #define WRES_PH2FID(ph)     ((FILE *)((unsigned long)(ph) + 1))
 #endif
-#define WRES_FID2FH(fid)    (fid)
-#define WRES_FH2FID(fh)     (fh)
-
-#define WRES_NIL_HANDLE     NULL
 
 typedef FILE                *WResFileID;
 #if defined( _WIN64 )

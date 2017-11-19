@@ -43,7 +43,7 @@ bool OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file )
 {
     hinfo->status = 0;
     hinfo->fid = ResOpenFileRO( filename );
-    if( hinfo->fid == WRES_NIL_HANDLE )
+    if( hinfo->fid == NULL )
         return( false );
     hinfo->status++;
     if( FindResourcesX( hinfo, res_file ) )
@@ -78,7 +78,7 @@ bool CloseResFile( PHANDLE_INFO hinfo )
         /* fall throught */
     case 1:
         ok = !ResCloseFile( hinfo->fid );
-        hinfo->fid = WRES_NIL_HANDLE;
+        hinfo->fid = NULL;
         hinfo->status = 0;
         /* fall throught */
     case 0:

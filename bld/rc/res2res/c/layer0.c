@@ -52,7 +52,7 @@ WResFileID res_open( const char *file_name, wres_open_mode omode )
         fp = fopen( file_name, "wb" );
         break;
     }
-    if( fp == WRES_NIL_HANDLE ) {
+    if( fp == NULL ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
     return( fp );

@@ -751,10 +751,10 @@ static WResFileID InitNEResources( WResDir *inRes, ResTable *outRes )
     bool        error;
 
     dir = NULL;
-    res_fid = WRES_NIL_HANDLE;
+    res_fid = NULL;
     if( FmtData.resource != NULL ) {
         res_fid = WRES_PH2FID( QOpenR( FmtData.resource ) );
-        if( res_fid != WRES_NIL_HANDLE ) {
+        if( res_fid != NULL ) {
             dir = WResInitDir();
             if( dir != NULL ) {
                 error = WResReadDir( res_fid, dir, &dup_discarded );
@@ -794,7 +794,7 @@ static void FiniNEResources( WResFileID res_fid, WResDir inRes, ResTable *outRes
         }
         WResFreeDir( inRes );
     }
-    if( res_fid != WRES_NIL_HANDLE ) {
+    if( res_fid != NULL ) {
         QClose( WRES_FID2PH( res_fid ), FmtData.resource );
     }
 }

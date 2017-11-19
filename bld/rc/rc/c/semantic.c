@@ -66,7 +66,7 @@ SemOffset SemStartResource( void )
         /* put the temporary file in the same location as the output RES file */
         MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
         CurrResFile.fid = ResOpenNewFile( MSFormatTmpFile );
-        if( CurrResFile.fid == WRES_NIL_HANDLE ) {
+        if( CurrResFile.fid == NULL ) {
             CurrResFile.fid = save_fid;
             ResCloseFile( save_fid );
             remove( save_name );
@@ -148,7 +148,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         RESFREE( ms_head.Type );
         RESFREE( ms_head.Name );
         tmp_fid = ResOpenFileRO( MSFormatTmpFile );
-        if( tmp_fid == WRES_NIL_HANDLE ) {
+        if( tmp_fid == NULL ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = true;
             return;
@@ -252,6 +252,6 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
 void SemanticInitStatics( void )
 /******************************/
 {
-    save_fid = WRES_NIL_HANDLE;
+    save_fid = NULL;
     MSFormatTmpFile = NULL;
 }

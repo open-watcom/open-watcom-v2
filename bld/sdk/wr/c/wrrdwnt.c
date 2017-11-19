@@ -88,13 +88,13 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     WResFileID  fid;
     bool        ok;
 
-    ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
+    ok = ( (fid = ResOpenFileRO( info->file_name )) != NULL );
 
     if( ok ) {
         ok = WRLoadWResDirFromWinNTEXE( fid, &info->dir );
     }
 
-    if( fid != WRES_NIL_HANDLE ) {
+    if( fid != NULL ) {
         ResCloseFile( fid );
     }
 
@@ -109,7 +109,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
 
     old_pos = false;
 
-    ok = ( fid != WRES_NIL_HANDLE && header != NULL );
+    ok = ( fid != NULL && header != NULL );
 
     if( ok ) {
         ok = old_pos = !RESSEEK( fid, 0x18, SEEK_SET );
@@ -248,7 +248,7 @@ bool WRLoadWResDirFromWinNTEXE( WResFileID fid, WResDir *dir )
     bool                ok;
     unsigned_32         resource_rva;
 
-    ok = ( fid != WRES_NIL_HANDLE );
+    ok = ( fid != NULL );
 
     if( ok ) {
         ok = ( (*dir = WResInitDir()) != NULL );

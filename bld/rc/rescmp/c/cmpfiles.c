@@ -45,17 +45,17 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
     int         error;
 
     *fid1 = ResOpenFileRO( CmdLineParms.FileName1 );
-    if( *fid1 == WRES_NIL_HANDLE ) {
+    if( *fid1 == NULL ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName1 );
-        *fid2 = WRES_NIL_HANDLE;
+        *fid2 = NULL;
         return( true );
     }
 
     *fid2 = ResOpenFileRO( CmdLineParms.FileName2 );
-    if( *fid2 == WRES_NIL_HANDLE ) {
+    if( *fid2 == NULL ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName2 );
         ResCloseFile( *fid1 );
-        *fid1 = WRES_NIL_HANDLE;
+        *fid1 = NULL;
         return( true );
     }
 
@@ -77,10 +77,10 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
 static void CloseFiles( WResFileID fid1, WResFileID fid2 )
 /********************************************************/
 {
-    if( fid1 != WRES_NIL_HANDLE ) {
+    if( fid1 != NULL ) {
         ResCloseFile( fid1 );
     }
-    if( fid2 != WRES_NIL_HANDLE ) {
+    if( fid2 != NULL ) {
         ResCloseFile( fid2 );
     }
 }

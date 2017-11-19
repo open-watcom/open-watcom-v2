@@ -85,7 +85,7 @@ typedef struct RcBuffer {
 
 typedef struct RcFileEntry {
     bool        HasRcBuffer;
-    WResFileID  fid;            // If WRES_NIL_HANDLE, entry is unused
+    WResFileID  fid;            // If NULL, entry is unused
     RcBuffer    *Buffer;        // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
 
@@ -117,7 +117,7 @@ static void RegisterOpenFile( WResFileID fid )
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] == WRES_NIL_HANDLE ) {
+        if( openFileList[i] == NULL ) {
             openFileList[i] = fid;
             break;
         }
@@ -131,7 +131,7 @@ static void UnRegisterOpenFile( WResFileID fid )
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         if( openFileList[i] == fid ) {
-            openFileList[i] = WRES_NIL_HANDLE;
+            openFileList[i] = NULL;
             break;
         }
     }
@@ -159,7 +159,7 @@ void CloseAllFiles( void )
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] != WRES_NIL_HANDLE ) {
+        if( openFileList[i] != NULL ) {
             res_close( openFileList[i] );
         }
     }
@@ -181,7 +181,7 @@ WResFileID res_open( const char *file_name, wres_open_mode omode )
         fp = fopen( file_name, "wb" );
         break;
     }
-    if( fp != WRES_NIL_HANDLE ) {
+    if( fp != NULL ) {
         RegisterOpenFile( fp );
         if( !RcIoNoBuffer ) {
             for( i = 0; i < RC_MAX_FILES; i++ ) {
@@ -230,7 +230,7 @@ bool res_close( WResFileID fid )
         }
         RcMemFree( buff );
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].fid = WRES_NIL_HANDLE;
+        RcFileList[i].fid = NULL;
         RcFileList[i].Buffer = NULL;
     }
     UnRegisterOpenFile( fid );
@@ -466,9 +466,9 @@ void Layer0InitStatics( void )
 
     for( i = 0; i < RC_MAX_FILES; i++ ) {
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].fid = WRES_NIL_HANDLE;
+        RcFileList[i].fid = NULL;
     }
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        openFileList[i] = WRES_NIL_HANDLE;
+        openFileList[i] = NULL;
     }
 }

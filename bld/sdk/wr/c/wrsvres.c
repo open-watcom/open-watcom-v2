@@ -308,8 +308,8 @@ static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name,
     bool        use_rename;
     WRFileType  save_type;
 
-    src_fid = WRES_NIL_HANDLE;
-    dst_fid = WRES_NIL_HANDLE;
+    src_fid = NULL;
+    dst_fid = NULL;
 
     ok = true;
 
@@ -338,14 +338,14 @@ static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name,
 
     if( ok ) {
         if( file_name != NULL ) {
-            ok = ((src_fid = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE);
+            ok = ((src_fid = ResOpenFileRO( info->tmp_file )) != NULL);
         }
     }
 
     is_wres = (save_type == WR_WIN16W_RES || save_type == WR_WINNTW_RES);
 
     if( ok ) {
-        ok = ((dst_fid = ResOpenNewFile( save_name )) != WRES_NIL_HANDLE);
+        ok = ((dst_fid = ResOpenNewFile( save_name )) != NULL);
         if( ok && is_wres ) {
             ok = !WResFileInit( dst_fid );
         }
@@ -359,16 +359,16 @@ static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name,
         }
     }
 
-    if( src_fid != WRES_NIL_HANDLE ) {
+    if( src_fid != NULL ) {
         ResCloseFile( src_fid );
     }
 
-    if( dst_fid != WRES_NIL_HANDLE ) {
+    if( dst_fid != NULL ) {
         ResCloseFile( dst_fid );
     }
 
     if( !ok ) {
-        if( dst_fid != WRES_NIL_HANDLE ) {
+        if( dst_fid != NULL ) {
             WRDeleteFile( save_name );
         }
     }
@@ -417,7 +417,7 @@ bool WRCopyResFromFileToFile( WResFileID src_fid, uint_32 offset, uint_32 length
     size = 0;
     buf = NULL;
 
-    ok = (src_fid != WRES_NIL_HANDLE && dst_fid != WRES_NIL_HANDLE);
+    ok = (src_fid != NULL && dst_fid != NULL);
 
     ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
 

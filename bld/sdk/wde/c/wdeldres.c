@@ -116,7 +116,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     bool                        ok;
 
     dlg_info = NULL;
-    fid = WRES_NIL_HANDLE;
+    fid = NULL;
     file_name = NULL;
     memset( &h32ex, 0, sizeof( h32ex ) );
     memset( &h32, 0, sizeof( h32 ) );
@@ -139,7 +139,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        ok = ( (fid = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE );
+        ok = ( (fid = ResOpenFileRO( file_name )) != NULL );
     }
 
     if( ok ) {
@@ -276,7 +276,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
         }
     }
 
-    if( fid != WRES_NIL_HANDLE ) {
+    if( fid != NULL ) {
         ResCloseFile( fid );
     }
 

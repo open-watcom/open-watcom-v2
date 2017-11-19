@@ -97,13 +97,13 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     WResFileID  fid;
     bool        ok;
 
-    ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
+    ok = ( (fid = ResOpenFileRO( info->file_name )) != NULL );
 
     if( ok ) {
         ok = WRLoadWResDirFromWin16EXE( fid, &info->dir );
     }
 
-    if( fid != WRES_NIL_HANDLE ) {
+    if( fid != NULL ) {
         ResCloseFile( fid );
     }
 
@@ -118,7 +118,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
 
     old_pos = -1;
 
-    ok = ( fid != WRES_NIL_HANDLE && header != NULL );
+    ok = ( fid != NULL && header != NULL );
 
     if( ok ) {
         ok = old_pos = !RESSEEK( fid, 0x18, SEEK_SET );
@@ -195,7 +195,7 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
     uint_32         num_leftover;
     bool            ok;
 
-    ok = ( fid != WRES_NIL_HANDLE );
+    ok = ( fid != NULL );
 
     if( ok ) {
         ok = ( (*dir = WResInitDir()) != NULL );
