@@ -177,6 +177,14 @@ system begin pharlap_linux
     format phar ^
 end
 
+system begin pharlap_qnx
+    option osname='QNX 32-bit PharLap'
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/clib/library/qnx.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    format pharlap rex ^
+end
+
 system begin os2
     option osname='OS/2 16-bit'
     library os2.lib

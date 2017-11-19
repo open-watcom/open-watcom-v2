@@ -27,6 +27,8 @@ fpu_flags_dos_i86 = -fpc
 fpu_flags_dos_386 = -fpc
 fpu_flags_os2_i86 = -fpc
 fpu_flags_os2_386 = -fpc
+fpu_flags_qnx_i86 = -fpc
+fpu_flags_qnx_386 = -fpc
 fpu_flags_win_i86 = -fpc
 
 template = &
