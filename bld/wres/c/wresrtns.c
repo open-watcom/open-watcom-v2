@@ -45,43 +45,43 @@ static WResFileID res_open( const char *name, wres_open_mode omode )
     fp = fopen( name, "rb" );
     if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    return( WRES_FH2FID( fp ) );
+    return( fp );
 }
 
 static bool res_close( WResFileID fid )
 {
-    return( fclose( WRES_FID2FH( fid ) ) != 0 );
+    return( fclose( fid ) != 0 );
 }
 
 static size_t res_read( WResFileID fid, void *buf, size_t size )
 {
-    return( fread( buf, 1, size, WRES_FID2FH( fid ) ) );
+    return( fread( buf, 1, size, fid ) );
 }
 
 static size_t res_write( WResFileID fid, const void *buf, size_t size )
 {
-    return( fwrite( buf, 1, size, WRES_FID2FH( fid ) ) );
+    return( fwrite( buf, 1, size, fid ) );
 }
 
 static bool res_seek( WResFileID fid, WResFileOffset pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
-        return( fseek( WRES_FID2FH( fid ), pos + WResFileShift, where ) != 0 );
+        return( fseek( fid, pos + WResFileShift, where ) != 0 );
     }
-    return( fseek( WRES_FID2FH( fid ), pos, where ) != 0 );
+    return( fseek( fid, pos, where ) != 0 );
 }
 
 static WResFileOffset res_tell( WResFileID fid )
 {
-    return( ftell( WRES_FID2FH( fid ) ) );
+    return( ftell( fid ) );
 }
 
 static bool res_ioerr( WResFileID fid, size_t rc )
 {
     /* unused parameters */ (void)rc;
 
-    return( ferror( WRES_FID2FH( fid ) ) != 0 );
+    return( ferror( fid ) != 0 );
 }
 
 WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, malloc, free );

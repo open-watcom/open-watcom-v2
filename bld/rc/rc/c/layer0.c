@@ -168,35 +168,33 @@ void CloseAllFiles( void )
 WResFileID res_open( const char *file_name, wres_open_mode omode )
 /****************************************************************/
 {
-    WResFileID  fid;
     int         i;
+    FILE        *fp;
 
     switch( omode ) {
     default:
     case WRES_OPEN_RO:
-        fid = WRES_PH2FID( open( file_name, O_BINARY | O_RDONLY ) );
+        fp = fopen( file_name, "rb" );
         break;
     case WRES_OPEN_RW:
-        fid = WRES_PH2FID( open( file_name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) );
-        break;
     case WRES_OPEN_NEW:
-        fid = WRES_PH2FID( open( file_name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) );
+        fp = fopen( file_name, "wb" );
         break;
     }
-    if( fid != WRES_NIL_HANDLE ) {
-        RegisterOpenFile( fid );
+    if( fp != WRES_NIL_HANDLE ) {
+        RegisterOpenFile( fp );
         if( !RcIoNoBuffer ) {
             for( i = 0; i < RC_MAX_FILES; i++ ) {
                 if( !RcFileList[i].HasRcBuffer ) {
                     RcFileList[i].HasRcBuffer = true;
-                    RcFileList[i].fid = fid;
+                    RcFileList[i].fid = fp;
                     RcFileList[i].Buffer = NewRcBuffer();
                     break;
                 }
             }
         }
     }
-    return( fid );
+    return( fp );
 }
 
 static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
@@ -206,7 +204,7 @@ static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
 
     error = false;
     if( buff->IsDirty ) {
-        error = ( (size_t)posix_write( WRES_FID2PH( fid ), buff->Buffer, buff->Count ) != buff->Count );
+        error = ( fwrite( buff->Buffer, 1, buff->Count, fid ) != buff->Count );
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
     buff->IsDirty = false;
@@ -236,7 +234,7 @@ bool res_close( WResFileID fid )
         RcFileList[i].Buffer = NULL;
     }
     UnRegisterOpenFile( fid );
-    return( close( WRES_FID2PH( fid ) ) != 0 );
+    return( fclose( fid ) != 0 );
 }
 
 size_t res_write( WResFileID fid, const void *out_buff, size_t size )
@@ -249,7 +247,7 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
 
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( posix_write( WRES_FID2PH( fid ), out_buff, size ) );
+        return( fwrite( out_buff, 1, size, fid ) );
     }
 
     buff = RcFileList[i].Buffer;
@@ -286,7 +284,7 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
 static size_t FillRcBuffer( WResFileID fid, RcBuffer *buff )
 /**********************************************************/
 {
-    buff->Count = posix_read( WRES_FID2PH( fid ), buff->Buffer, RC_BUFFER_SIZE );
+    buff->Count = fread( buff->Buffer, 1, RC_BUFFER_SIZE, fid );
     if( buff->Count == RESIOERROR ) {
         buff->Count = 0;
         buff->BytesRead = 0;
@@ -307,11 +305,11 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
     size_t          bytes_added;        /* return value of FillRcBuffer */
 
     if( hInstance.fid == fid ) {
-        return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
+        return( fread( in_buff, 1, size, fid ) );
     }
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
+        return( fread( in_buff, 1, size, fid ) );
     }
 
     buff = RcFileList[i].Buffer;
@@ -358,13 +356,13 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
 
     if( hInstance.fid == fid ) {
         if( where == SEEK_SET ) {
-            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, SEEK_SET ) == -1 );
+            return( fseek( fid, amount + WResFileShift, SEEK_SET ) != 0 );
         }
-        return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
+        return( fseek( fid, amount, where ) != 0 );
     }
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
+        return( fseek( fid, amount, where ) != 0 );
     }
 
     buff = RcFileList[i].Buffer;
@@ -383,7 +381,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( fid, buff ) )
                     return( true );
-                return( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 );
+                return( fseek( fid, amount, SEEK_SET ) != 0 );
             } else {
                 diff = amount - currpos;
                 /* add here because Count is chars to left of NextChar */
@@ -395,7 +393,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
                 return( true );
-            return( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 );
+            return( fseek( fid, amount, SEEK_END ) != 0 );
         default:
             return( true );
         }
@@ -410,7 +408,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( fid, buff ) )
                     return( true );
-                return( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 );
+                return( fseek( fid, amount, SEEK_SET ) != 0 );
             } else {
                 diff = amount - currpos;
                 /* subtract here because Count is chars to right of NextChar */
@@ -422,7 +420,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
                 return( true );
-            return( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 );
+            return( fseek( fid, amount, SEEK_END ) != 0 );
         default:
             return( true );
         }
@@ -437,28 +435,28 @@ WResFileOffset res_tell( WResFileID fid )
     int         i;
 
     if( hInstance.fid == fid ) {
-        return( tell( WRES_FID2PH( fid ) ) );
+        return( ftell( fid ) );
     }
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( tell( WRES_FID2PH( fid ) ) );
+        return( ftell( fid ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        return( tell( WRES_FID2PH( fid ) ) + (WResFileOffset)buff->Count );
+        return( ftell( fid ) + (WResFileOffset)buff->Count );
     } else {
-        return( tell( WRES_FID2PH( fid ) ) - (WResFileOffset)buff->Count );
+        return( ftell( fid ) - (WResFileOffset)buff->Count );
     }
 }
 
 bool res_ioerr( WResFileID fid, size_t rc )
 /*****************************************/
 {
-    /* unused parameters */ (void)fid;
+    /* unused parameters */ (void)rc;
 
-    return( rc == RESIOERROR );
+    return( ferror( fid ) != 0 );
 }
 
 void Layer0InitStatics( void )

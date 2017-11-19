@@ -83,7 +83,7 @@ bool WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource )
 {
     WResID              *resource_type;
     WResID              *resource_id;
-    int                 rc;
+    bool                rc;
 
     if( IS_INTRESOURCE( idResource ) ) {
         resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );

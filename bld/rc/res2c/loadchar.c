@@ -49,31 +49,33 @@
 // The parameters it takes are
 //      char                    *buff           Poitner to the buffer to use;
 //      long                    size            maximum buffer size;
-//      int                     f_handle        file handle to use
+//      FILE                    *fp             file handle to use
 //      struct read_file        *fdata          ptr to where this data is to be kept
 // The function returns : int, the character ot -1 if an error occurs.
 
-extern int GetFirstChar( char *buff, long size, int f_handle, struct read_file *fdata ) {
+extern int GetFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata ) {
 //===================================================================================
 
     fdata->buffer = buff;
     fdata->cur_pos = buff;
-    fdata->file_handle = f_handle;
-    fdata->size = read( fdata->file_handle, fdata->buffer, size );
-    if ( fdata->size < 1 ) return( -1 );
+    fdata->fp = fp;
+    fdata->size = fread( fdata->buffer, 1, size, fdata->fp );
+    if ( fdata->size < 1 )
+        return( -1 );
     fdata->end_pos = fdata->buffer + fdata->size;
     return( *( fdata->cur_pos ) );
 }
 
 
-extern int PeekFirstChar( char *buff, long size, int f_handle, struct read_file *fdata ) {
+extern int PeekFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata ) {
 //===================================================================================
 
     fdata->buffer = buff;
     fdata->cur_pos = buff - 1;
-    fdata->file_handle = f_handle;
-    fdata->size = read( fdata->file_handle, fdata->buffer, size );
-    if ( fdata->size < 1 ) return( -1 );
+    fdata->fp = fp;
+    fdata->size = fread( fdata->buffer, 1, size, fdata->fp );
+    if ( fdata->size < 1 )
+        return( -1 );
     fdata->end_pos = fdata->buffer + fdata->size;
     return( *( fdata->cur_pos + 1 ) );
 }
@@ -83,7 +85,7 @@ extern int GetNextChar( struct read_file *fdata ) {
 //=================================================
 
     if ( ( fdata->cur_pos + 1 ) == fdata->end_pos ) {
-        fdata->size = read( fdata->file_handle, fdata->buffer, fdata->size );
+        fdata->size = fread( fdata->buffer, 1, fdata->size, fdata->fp );
         if ( fdata->size < 1 ) return( -1 );
         fdata->end_pos = fdata->buffer + fdata->size;
         fdata->cur_pos = fdata->buffer;
@@ -99,8 +101,9 @@ extern int PeekNextChar( struct read_file *fdata ) {
 //=================================================
 
     if ( ( fdata->cur_pos + 1 ) == fdata->end_pos ) {
-        fdata->size = read( fdata->file_handle, fdata->buffer, fdata->size );
-        if ( fdata->size < 1 ) return( -1 );
+        fdata->size = fread( fdata->buffer, 1, fdata->size, fdata->fp );
+        if ( fdata->size < 1 )
+            return( -1 );
         fdata->end_pos = fdata->buffer + fdata->size;
         fdata->cur_pos = fdata->buffer - 1;
         return( *( fdata->cur_pos + 1 ) );

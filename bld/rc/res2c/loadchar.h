@@ -42,14 +42,12 @@ typedef struct read_file {
     char        *buffer;
     char        *cur_pos;
     char        *end_pos;
-    int         file_handle;
+    FILE        *fp;
     long        size;
 } read_file;
 
-extern  int     GetFirstChar( char *buff, long size, int f_handle,
-                                struct read_file *fdata );
-extern  int     PeekFirstChar( char *buff, long size, int f_handle,
-                                struct read_file *fdata );
+extern  int     GetFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata );
+extern  int     PeekFirstChar( char *buff, long size, FILE *fp, struct read_file *fdata );
 extern  int     GetNextChar( struct read_file *fdata );
 extern  int     PeekNextChar( struct read_file *fdata );
 

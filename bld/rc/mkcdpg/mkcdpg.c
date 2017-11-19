@@ -58,37 +58,41 @@ static void freeInfo( DBInformation *info )
 
 static bool writeInfo( char *fname, DBInformation *info )
 {
-    int         fp;
-    int         rc;
-    int         len;
+    FILE        *fp;
+    size_t      rc;
+    size_t      len;
 
-    fp = open( fname, O_WRONLY | O_BINARY | O_CREAT, PMODE_RWX );
-    if( fp == -1 ) {
+    fp = fopen( fname, "wb" );
+    if( fp == NULL ) {
         printf( "Error - could not open %s", fname );
         return( true );
     }
     len = sizeof( DBTableHeader );
-    rc = write( fp, &(info->head), len );
-    if( rc != len ) goto WRITE_ERROR;
+    rc = fwrite( &(info->head), 1, len, fp );
+    if( rc != len )
+        goto WRITE_ERROR;
 
     len = 256;
-    rc = write( fp, &(info->leads), len );
-    if( rc != len ) goto WRITE_ERROR;
+    rc = fwrite( &(info->leads), 1, len, fp );
+    if( rc != len )
+        goto WRITE_ERROR;
 
     len = info->head.num_indices * sizeof( DBIndexEntry );
-    rc = write( fp, info->index, len );
-    if( rc != len ) goto WRITE_ERROR;
+    rc = fwrite( info->index, 1, len, fp );
+    if( rc != len )
+        goto WRITE_ERROR;
 
     len = info->head.num_entries * sizeof( uint_16 );
-    rc = write( fp, info->table, len );
-    if( rc != len ) goto WRITE_ERROR;
+    rc = fwrite( info->table, 1, len, fp );
+    if( rc != len )
+        goto WRITE_ERROR;
 
-    close( fp );
+    fclose( fp );
     return( false );
 
 WRITE_ERROR:
     printf( "Error writting to file %s\n", fname );
-    close( fp );
+    fclose( fp );
     remove( fname );
     return( true );
 }

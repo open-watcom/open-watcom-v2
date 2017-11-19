@@ -717,7 +717,7 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
             return( true );
         }
         phys->IsOpen = true;
-        if( fseek( WRES_FID2FH( phys->fid ), phys->Offset, SEEK_SET ) == -1 ) {
+        if( fseek( phys->fid, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -746,7 +746,7 @@ static void SetPhysFileOffset( FileStack * stack )
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( WRES_FID2FH( phys->fid ) ) - charsinbuff;
+        phys->Offset = ftell( phys->fid ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
@@ -766,7 +766,7 @@ static bool ReadBuffer( FileStack * stack )
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, WRES_FID2FH( phys->fid ) );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fid );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -834,7 +834,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        fclose( WRES_FID2FH( phys->fid ) );
+        fclose( phys->fid );
         phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
@@ -1000,7 +1000,7 @@ WResFileID RcIoOpenInput( const char *filename, bool text_mode )
     bool                no_handles_available;
 
     if( text_mode ) {
-        fid = WRES_FH2FID( fopen( filename, "rt" ) );
+        fid = fopen( filename, "rt" );
     } else {
         fid = ResOpenFileRO( filename );
     }
@@ -1013,7 +1013,7 @@ WResFileID RcIoOpenInput( const char *filename, bool text_mode )
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
                 if( text_mode ) {
-                    fid = WRES_FH2FID( fopen( filename, "rt" ) );
+                    fid = fopen( filename, "rt" );
                 } else {
                     fid = ResOpenFileRO( filename );
                 }

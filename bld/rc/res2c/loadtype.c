@@ -53,14 +53,14 @@ extern unsigned short GetNextShort( read_file *ch_info ) {
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[0] = ch;
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[1] = ch;
@@ -79,28 +79,28 @@ extern unsigned long GetNextLong( read_file *ch_info ) {
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[0] = ch;
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[1] = ch;
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[2] = ch;
     ch = GetNextChar( ch_info );
     if ( ch == -1 ) {
         puts("File read error occured");
-        close( ch_info->file_handle );
+        fclose( ch_info->fp );
         abort();
     }
     buffer[3] = ch;
@@ -124,14 +124,14 @@ extern char *GetNextString( read_file *ch_info ) {
             buffer = realloc( buffer, current_max );
             if ( !buffer ) {
                 puts("Out of memory");
-                close( ch_info->file_handle );
+                fclose( ch_info->fp );
                 abort();
             }
         }
         ch = GetNextChar( ch_info );
         if ( ch == -1 ) {
             puts("File read error occured");
-            close( ch_info->file_handle );
+            fclose( ch_info->fp );
             free( buffer );
             abort();
         }
