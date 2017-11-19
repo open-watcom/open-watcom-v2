@@ -91,7 +91,7 @@ static HINSTANCE        WRInstance = NULL;
 static int              ref_count = 0;
 
 
-WResFileID res_open( const char *name, wres_open_mode omode )
+WResFileID res_open( const char *file_name, wres_open_mode omode )
 {
     FILE    *fp;
 
