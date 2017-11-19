@@ -78,12 +78,12 @@
 
 // operating system and processor macros
 #if defined(__GENERIC__)
-    #if defined(__386__)
-        #define __PROTECT_MODE__
-        #define __GENERIC_386__
-    #elif defined( _M_I86 )
+    #if defined( _M_I86 )
         #define __REAL_MODE__
         #define __GENERIC_086__
+    #elif defined( _M_IX86 )
+        #define __PROTECT_MODE__
+        #define __GENERIC_386__
     #else
         #error unrecognized processor for GENERIC
     #endif
@@ -91,7 +91,7 @@
     #if defined( _M_I86 )
         #define __REAL_MODE__
         #define __OS2_286__
-    #elif defined(__386__)
+    #elif defined( _M_IX86 )
         #define __PROTECT_MODE__
         #define __OS2_386__
         #define __WARP__
@@ -107,7 +107,7 @@
         #define WIN32_LEAN_AND_MEAN
     #endif
     #define __PROTECT_MODE__
-    #if defined(__386__)
+    #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __NT_386__
     #elif defined(__AXP__)
         #define __NT_AXP__
@@ -118,25 +118,25 @@
     #endif
 #elif defined(__WINDOWS__) || defined(__WINDOWS_386__)
     #define __PROTECT_MODE__
-    #if defined(__386__)
-        #define __WINDOWS__
-    #elif defined( _M_I86 )
+    #if defined( _M_I86 )
         #define __WINDOWS_286__
+    #elif defined( _M_IX86 )
+        #define __WINDOWS__
     #else
         #error unrecognized processor for WINDOWS
     #endif
 #elif defined(__DOS__)
-    #if defined(__386__)
-        #define __PROTECT_MODE__
-        #define __DOS_386__
-    #elif defined( _M_I86 )
+    #if defined( _M_I86 )
         #define __REAL_MODE__
         #define __DOS_086__
+    #elif defined( _M_IX86 )
+        #define __PROTECT_MODE__
+        #define __DOS_386__
     #else
         #error unrecognized processor for DOS
     #endif
 #elif defined(__OSI__)
-    #if defined(__386__)
+    #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __PROTECT_MODE__
         #define __OSI_386__
     #else
@@ -145,17 +145,17 @@
 #elif defined(__QNX__)
     #define __PROTECT_MODE__
     #define __UNIX__
-    #if defined(__386__)
-        #define __QNX_386__
-    #elif defined( _M_I86 )
+    #if defined( _M_I86 )
         #define __QNX_286__
+    #elif defined( _M_IX86 )
+        #define __QNX_386__
     #else
         #error unrecognized processor for QNX
     #endif
 #elif defined(__LINUX__)
     #define __PROTECT_MODE__
     #define __UNIX__
-    #if defined(__386__)
+    #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __LINUX_386__
     #elif defined(__PPC__)
         #define __LINUX_PPC__
@@ -167,7 +167,7 @@
 #elif defined(__HAIKU__)
     #define __PROTECT_MODE__
     #define __UNIX__
-    #if defined(__386__)
+    #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __HAIKU_386__
     #elif defined(__PPC__)
         #define __HAIKU_PPC__
@@ -176,7 +176,7 @@
     #endif
 #elif defined(__NETWARE__)
     #define __PROTECT_MODE__
-    #if defined(__386__)
+    #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __NETWARE_386__
     #else
         #error unrecognized processor for NETWARE
@@ -329,8 +329,8 @@
 #define __ROUND_UP_SIZE_4K( __x )           __ROUND_UP_SIZE(__x,4096)
 #define __ROUND_UP_SIZE_PARA( __x )         __ROUND_UP_SIZE(__x,16)
 
-#define __ROUND_DOWN_SIZE_TO_4K( __x )    ((__x)/4096)
-#define __ROUND_UP_SIZE_TO_4K( __x )      (((__x)+4095)/4096)
+#define __ROUND_DOWN_SIZE_TO_4K( __x )      ((__x)/4096)
+#define __ROUND_UP_SIZE_TO_4K( __x )        (((__x)+4095)/4096)
 
 #define __ROUND_DOWN_SIZE_TO_PARA( __x )    ((__x)>>4)
 #define __ROUND_UP_SIZE_TO_PARA( __x )      (((__x)+15)>>4)
@@ -344,7 +344,7 @@
 #if defined( _M_I86 )
     #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 2 )
 //    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 2 )
-#elif defined(__386__)
+#elif defined( _M_IX86 )
     #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 4 )
 ///    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 4 )
 #else
