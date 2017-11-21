@@ -411,10 +411,10 @@ static void *objRead( orl_file_id fid, size_t len )
     return( ptr->buff );
 }
 
-static long objSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int objSeek( orl_file_id fid, long pos, int where )
+/********************************************************/
 {
-    return( lseek( ORL_FID2PH( fid ), pos, where ) );
+    return( lseek( ORL_FID2PH( fid ), pos, where ) == -1 );
 }
 
 static void freeBuffList( void )

@@ -54,8 +54,8 @@ static void *ObjRead( orl_file_id fid, size_t len )
     return( buf->buf );
 }
 
-static long ObjSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int ObjSeek( orl_file_id fid, long pos, int where )
+/********************************************************/
 {
     switch( where ) {
     case SEEK_SET:
@@ -65,7 +65,7 @@ static long ObjSeek( orl_file_id fid, long pos, int where )
         break;
     }
     LibSeek( ORL_FID2OF( fid )->hdl, pos, where );
-    return( pos - ORL_FID2OF( fid )->offset );
+    return( 0 );
 }
 
 static void *ObjAlloc( size_t size )

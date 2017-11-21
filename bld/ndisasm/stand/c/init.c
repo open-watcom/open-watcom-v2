@@ -507,8 +507,8 @@ static void *objRead( orl_file_id fid, size_t len )
     return retval;
 }
 
-static long objSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int objSeek( orl_file_id fid, long pos, int where )
+/********************************************************/
 {
     (void)fid;
     if( where == SEEK_SET ) {
@@ -518,7 +518,7 @@ static long objSeek( orl_file_id fid, long pos, int where )
     } else {
         objFilePos = objFileLen - (unsigned long)pos;
     }
-    return objFilePos;
+    return( 0 );
 }
 
 extern void CloseObjFile( void )

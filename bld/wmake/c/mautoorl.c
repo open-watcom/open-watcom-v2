@@ -109,8 +109,8 @@ static void *orlRead( orl_file_id fid, size_t bytes )
     return( NULL );
 }
 
-static long orlSeek( orl_file_id fid, long offset, int mode )
-/*************************************************************/
+static int orlSeek( orl_file_id fid, long offset, int mode )
+/**********************************************************/
 {
     (void)fid; // Unused
     switch( mode ) {
@@ -123,7 +123,7 @@ static long orlSeek( orl_file_id fid, long offset, int mode )
     case SEEK_END:
         abort();       // not used by ORL - cheesy, I know
     }
-    return( orlFilePosition );
+    return( 0 );
 }
 
 

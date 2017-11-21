@@ -196,10 +196,10 @@ static void *obj_read( orl_file_id fid, size_t len )
 /*
  * Used by ORL.
  */
-static long obj_seek( orl_file_id fid, long pos, int where )
-/**********************************************************/
+static int obj_seek( orl_file_id fid, long pos, int where )
+/*********************************************************/
 {
-    return( lseek( ORL_FID2PH( fid ), pos, where ) );
+    return( lseek( ORL_FID2PH( fid ), pos, where ) == -1 );
 }
 
 

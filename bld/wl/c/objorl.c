@@ -99,8 +99,8 @@ static void *ORLRead( orl_file_id fid, size_t len )
     return( result );
 }
 
-static long ORLSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int ORLSeek( orl_file_id fid, long pos, int where )
+/********************************************************/
 {
     if( where == SEEK_SET ) {
         ORLPos = pos;
@@ -109,7 +109,7 @@ static long ORLSeek( orl_file_id fid, long pos, int where )
     } else {
         ORLPos = ORL_FID2FL( fid )->file->len - ORLFilePos - pos;
     }
-    return( ORLPos );
+    return( 0 );
 }
 
 void InitObjORL( void )

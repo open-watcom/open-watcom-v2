@@ -107,7 +107,7 @@ ORL_STRUCT( orl_linnum ) {
 
 typedef struct orl_funcs {
     void        *(*cli_read)( orl_file_id, size_t );
-    long int    (*cli_seek)( orl_file_id, long int, int );
+    int         (*cli_seek)( orl_file_id, long int, int );
     void        *(*cli_alloc)( size_t );
     void        (*cli_free)( void * );
 } orl_funcs;

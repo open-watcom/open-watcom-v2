@@ -100,8 +100,8 @@ static void *buffRead( void *file, size_t len )
     return( buf->buf );
 }
 
-static long buffSeek( void *file, long pos, int where )
-//************************************************************
+static int buffSeek( void *file, long pos, int where )
+//****************************************************
 {
     return( fseek( ((buffer_info *)file)->hdl, pos, where ) );
 }
