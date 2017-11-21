@@ -257,7 +257,7 @@ void *ImportLibRead( coff_file_handle coff_file_hnd, size_t len )
     return( IMPLIB_DATA + IMPLIB_POS - len );
 }
 
-long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
+int ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
 {
     if( where == SEEK_SET ) {
         IMPLIB_POS = pos;
@@ -266,7 +266,7 @@ long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
     } else {
         IMPLIB_POS = (long)IMPLIB_LEN - IMPLIB_HDR_SIZE - pos;
     }
-    return( IMPLIB_POS );
+    return( 0 );
 }
 
 

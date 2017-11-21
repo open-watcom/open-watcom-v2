@@ -107,7 +107,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
     if( magic == NULL ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) == -1 ) {
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
     if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
@@ -124,12 +124,12 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
         if( len == 0 ) {
             // This looks good so far, we must now check the record
             len = magic[3] + 1;
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 4, SEEK_CUR ) == -1 ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 4, SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             chksum = magic[0] + magic[1] + magic[2] + magic[3];
             magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, len );
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)( 4 + len ), SEEK_CUR ) == -1 ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)( 4 + len ), SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             if( magic != NULL ) {
@@ -148,7 +148,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
                 magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
                 if( magic == NULL ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
-                } else if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) == -1 ) {
+                } else if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
             }
@@ -170,7 +170,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
     }
     // Is it PE?
     if( magic[0] == 'M' && magic[1] == 'Z' ) {
-        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 0x3c, SEEK_CUR ) == -1 ) {
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 0x3c, SEEK_CUR ) ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 0x4 );
@@ -178,7 +178,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         offset = *(unsigned_16 *)magic;
-        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, offset - 0x40, SEEK_CUR ) == -1 ) {
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, offset - 0x40, SEEK_CUR ) ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
@@ -190,7 +190,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
             if( magic == NULL ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)(offset+8), SEEK_CUR ) == -1 ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)(offset+8), SEEK_CUR ) ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             machine_type = *(unsigned_16 *)magic;
