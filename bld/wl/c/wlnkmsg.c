@@ -52,6 +52,7 @@
 #include "wresset2.h"
 #include "rcrtns.h"
 #include "wlnkmsg.h"
+#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -193,25 +194,25 @@ WResFileID  res_open( const char *name, wres_open_mode omode )
     switch( omode ) {
     default:
     case WRES_OPEN_RO:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_RDONLY ) ) );
         break;
     case WRES_OPEN_RW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
         break;
     case WRES_OPEN_NEW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
         break;
     }
 }
 
 bool res_close( WResFileID fid )
 {
-    return( close( WRES_FID2PH( fid ) ) != 0 );
+    return( close( FP2POSIX( fid ) ) != 0 );
 }
 
 size_t res_read( WResFileID fid, void *buf, size_t len )
 {
-    return( posix_read( WRES_FID2PH( fid ), buf, len ) );
+    return( posix_read( FP2POSIX( fid ), buf, len ) );
 }
 
 size_t res_write( WResFileID fid, const void *buf, size_t len )
@@ -226,16 +227,16 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
 {
     if( fid == hInstance.fid ) {
         if( where == SEEK_SET ) {
-            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) == -1 );
+            return( lseek( FP2POSIX( fid ), amount + WResFileShift, where ) == -1 );
         } else {
-            return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
+            return( lseek( FP2POSIX( fid ), amount, where ) == -1 );
         }
     }
 
     DbgAssert( where != SEEK_END );
     DbgAssert( !( where == SEEK_CUR && amount < 0 ) );
 
-    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
+    if( FP2POSIX( fid ) == Root->outfile->handle ) {
         if( where == SEEK_CUR ) {
             unsigned long   old_pos;
             unsigned long   new_pos;
@@ -252,18 +253,18 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
         }
         return( false );
     } else {
-        return( QLSeek( WRES_FID2PH( fid ), amount, where, "resource file" ) == -1 );
+        return( QLSeek( FP2POSIX( fid ), amount, where, "resource file" ) == -1 );
     }
 }
 
 WResFileOffset res_tell( WResFileID fid )
 {
     if( fid == hInstance.fid ) {
-        return( tell( WRES_FID2PH( fid ) ) );
-    } else if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
+        return( tell( FP2POSIX( fid ) ) );
+    } else if( FP2POSIX( fid ) == Root->outfile->handle ) {
         return( PosLoad() );
     } else {
-        return( QPos( WRES_FID2PH( fid ) ) );
+        return( QPos( FP2POSIX( fid ) ) );
     }
 }
 

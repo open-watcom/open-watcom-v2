@@ -40,6 +40,7 @@
 
 #include "wio.h"
 #include <malloc.h>
+#include "posixfp.h"
 #include "layer0.h"
 
 
@@ -48,37 +49,37 @@ static WResFileID wres_open( const char *name, int omode )
     switch( omode ) {
     default:
     case WRES_OPEN_RO:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_RDONLY ) ) );
     case WRES_OPEN_RW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
     case WRES_OPEN_NEW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
+        return( POSIX2FP( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
     }
 }
 
 static int wres_close( WResFileID fid )
 {
-    return( close( WRES_FID2PH( fid ) ) );
+    return( close( FP2POSIX( fid ) ) );
 }
 
 static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
 {
-    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+    return( posix_read( FP2POSIX( fid ), buf, size ) );
 }
 
 static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
 {
-    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+    return( posix_write( FP2POSIX( fid ), buf, size ) );
 }
 
 static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
 {
-    return( lseek( WRES_FID2PH( fid ), pos, where ) );
+    return( lseek( FP2POSIX( fid ), pos, where ) );
 }
 
 static WResFileOffset wres_tell( WResFileID fid )
 {
-    return( tell( WRES_FID2PH( fid ) ) );
+    return( tell( FP2POSIX( fid ) ) );
 }
 
 static bool res_ioerr( WResFileID fid, size_t rc )

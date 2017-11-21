@@ -42,14 +42,6 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-#if defined( _WIN64 )
-#define WRES_FID2PH(fid)    ((int)((unsigned __int64)(fid) - 1))
-#define WRES_PH2FID(ph)     ((FILE *)((unsigned __int64)(ph) + 1))
-#else
-#define WRES_FID2PH(fid)    ((int)((unsigned long)(fid) - 1))
-#define WRES_PH2FID(ph)     ((FILE *)((unsigned long)(ph) + 1))
-#endif
-
 typedef FILE                *WResFileID;
 #if defined( _WIN64 )
 typedef long                WResFileOffset;

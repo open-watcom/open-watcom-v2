@@ -69,6 +69,7 @@
 #include "exeutil.h"
 #include "newmem.h"
 #include "dosstub.h"
+#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -770,7 +771,7 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
 
 bool RcPadFile( WResFileID fid, size_t pad )
 {
-    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
+    DbgAssert( FP2POSIX( fid ) == Root->outfile->handle );
 
     /* unused parameters */ (void)fid;
 
@@ -789,11 +790,11 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length 
     /* unused parameters */ (void)out_fid;
 
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
-        QRead( WRES_FID2PH( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
+        QRead( FP2POSIX( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );
     }
     if( length > 0 ) {
-        QRead( WRES_FID2PH( in_fid ), TokBuff, length, "resource file" );
+        QRead( FP2POSIX( in_fid ), TokBuff, length, "resource file" );
         WriteLoad( TokBuff, length );
     }
     return( RS_OK );
@@ -830,7 +831,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.fid = WRES_PH2FID( Root->outfile->handle );
+    einfo.fid = POSIX2FP( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
