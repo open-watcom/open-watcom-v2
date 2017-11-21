@@ -494,12 +494,13 @@ static void openFiles( void )
     }
 }
 
-static void *objRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *objRead( FILE *fp, size_t len )
+/******************************************/
 {
     void        *retval;
 
-    (void)fid;
+    /* unused parameters */ (void)fp;
+
     if( (unsigned long)( objFilePos + len ) > objFileLen )
         return NULL;
     retval = objFileBuf + objFilePos;
@@ -507,10 +508,11 @@ static void *objRead( orl_file_id fid, size_t len )
     return retval;
 }
 
-static int objSeek( orl_file_id fid, long pos, int where )
-/********************************************************/
+static int objSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
-    (void)fid;
+    /* unused parameters */ (void)fp;
+
     if( where == SEEK_SET ) {
         objFilePos = pos;
     } else if( where == SEEK_CUR ) {

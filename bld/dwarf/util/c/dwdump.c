@@ -82,7 +82,7 @@ static buff_list    buffList = NULL;
 static int          sectionFound = 0;
 
 static orl_return DoSection( orl_sec_handle o_shnd )
-/*******************************************/
+/**************************************************/
 {
     return( ORL_OKAY );
 }
@@ -95,8 +95,8 @@ orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
 }
 #endif
 
-static void *objRead( orl_file_id fp, size_t len )
-/*************************************************/
+static void *objRead( FILE *fp, size_t len )
+/******************************************/
 {
     buff_list   ptr;
 
@@ -110,14 +110,14 @@ static void *objRead( orl_file_id fp, size_t len )
     return( ptr->buff );
 }
 
-static int objSeek( orl_file_id fp, long pos, int where )
-/*********************************************************/
+static int objSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
     return( fseek( fp, pos, where ) );
 }
 
 static void freeBuffList( void )
-/***********************/
+/******************************/
 {
     buff_list   next;
 

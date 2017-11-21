@@ -567,7 +567,7 @@ int convert_import_library_init( coff_file_handle coff_file_hnd )
 
     i_hdr = (coff_import_object_header *)coff_file_hnd->f_hdr_buffer;
     sym.processor = i_hdr->machine;
-    sym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->file, i_hdr->size_of_data );
+    sym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->fp, i_hdr->size_of_data );
     sym.DLLName = sym.exportedName + strlen( sym.exportedName ) + 1;
     sym.time_date_stamp = i_hdr->time_date_stamp;
     sym.type = i_hdr->name_type;

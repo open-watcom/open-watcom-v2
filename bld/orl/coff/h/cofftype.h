@@ -78,7 +78,7 @@ ORL_STRUCT( coff_file_handle ) {
     coff_file_handle    next;
     coff_sec_handle     *coff_sec_hnd;
     coff_sec_handle     *orig_sec_hnd;
-    orl_file_id         file;
+    FILE                *fp;
     coff_quantity       initial_size;
     coff_file_header    *f_hdr_buffer;
     char                *s_hdr_table_buffer;

@@ -59,8 +59,8 @@
 #include "clibext.h"
 
 
-#define ORL_FID2FL( fid )   ((file_list *)(fid))
-#define ORL_FL2FID( fl )    ((orl_file_id)(fl))
+#define FP2FL( fid )   ((file_list *)(fid))
+#define FL2FP( fl )    ((FILE *)(fl))
 
 typedef struct readcache READCACHE;
 
@@ -84,13 +84,13 @@ static ordinal_t                ImpOrdinal;
 
 static readcache                *ReadCacheList;
 
-static void *ORLRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *ORLRead( FILE *fp, size_t len )
+/******************************************/
 {
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( ORL_FID2FL( fid ), ORLFilePos + ORLPos, len );
+    result = CachePermRead( FP2FL( fp ), ORLFilePos + ORLPos, len );
     ORLPos += len;
     _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
@@ -99,15 +99,15 @@ static void *ORLRead( orl_file_id fid, size_t len )
     return( result );
 }
 
-static int ORLSeek( orl_file_id fid, long pos, int where )
-/********************************************************/
+static int ORLSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
     if( where == SEEK_SET ) {
         ORLPos = pos;
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = ORL_FID2FL( fid )->file->len - ORLFilePos - pos;
+        ORLPos = FP2FL( fp )->file->len - ORLFilePos - pos;
     }
     return( 0 );
 }
@@ -150,7 +150,7 @@ bool IsORL( file_list *list, unsigned long loc )
 
     isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, ORL_FL2FID( list ) );
+    type = ORLFileIdentify( ORLHandle, FL2FP( list ) );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
     } else if( type == ORL_COFF ) {
@@ -177,7 +177,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, ORL_FL2FID( CurrMod->f.source ), type ) );
+    return( ORLFileInit( ORLHandle, FL2FP( CurrMod->f.source ), type ) );
 }
 
 static void ClearCachedData( file_list *list )

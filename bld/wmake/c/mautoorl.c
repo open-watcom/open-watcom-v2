@@ -86,8 +86,8 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-static void *orlRead( orl_file_id fp, size_t bytes )
-/***************************************************/
+static void *orlRead( FILE *fp, size_t bytes )
+/********************************************/
 {
     size_t  n;
     size_t  old_pos;
@@ -109,8 +109,8 @@ static void *orlRead( orl_file_id fp, size_t bytes )
     return( NULL );
 }
 
-static int orlSeek( orl_file_id fp, long offset, int mode )
-/*********************************************************/
+static int orlSeek( FILE *fp, long offset, int mode )
+/***************************************************/
 {
     /* unused parameters */ (void)fp;
 

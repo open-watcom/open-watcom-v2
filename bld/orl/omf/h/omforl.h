@@ -39,7 +39,7 @@
 extern omf_handle           OMFENTRY OmfInit( orl_funcs * );
 extern orl_return           OMFENTRY OmfFini( omf_handle );
 
-extern orl_return           OMFENTRY OmfFileInit( omf_handle, orl_file_id, omf_file_handle * );
+extern orl_return           OMFENTRY OmfFileInit( omf_handle, FILE *, omf_file_handle * );
 extern orl_return           OMFENTRY OmfFileFini( omf_file_handle );
 extern orl_return           OMFENTRY OmfFileScan( omf_file_handle, const char *, orl_sec_return_func );
 extern orl_machine_type     OMFENTRY OmfFileGetMachineType( omf_file_handle );

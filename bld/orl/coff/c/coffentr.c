@@ -63,7 +63,7 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
     return( ORL_OKAY );
 }
 
-orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_file_handle *pcfh )
+orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, FILE *fp, coff_file_handle *pcfh )
 {
     coff_file_handle    coff_file_hnd;
     orl_return          return_val;
@@ -72,7 +72,7 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
     memset( coff_file_hnd, 0, sizeof( ORL_STRUCT( coff_file_handle ) ) );
-    coff_file_hnd->file = file;
+    coff_file_hnd->fp = fp;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );
     if( return_val != ORL_OKAY ) {

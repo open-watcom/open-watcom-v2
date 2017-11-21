@@ -396,8 +396,8 @@ static orl_return PrintSymTable( orl_sec_handle section )
     return( ORL_OKAY );
 }
 
-static void *objRead( orl_file_id fp, size_t len )
-/*************************************************/
+static void *objRead( FILE *fp, size_t len )
+/******************************************/
 {
     buff_list   ptr;
 
@@ -411,8 +411,8 @@ static void *objRead( orl_file_id fp, size_t len )
     return( ptr->buff );
 }
 
-static int objSeek( orl_file_id fp, long pos, int where )
-/*******************************************************/
+static int objSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
     return( fseek( fp, pos, where ) );
 }

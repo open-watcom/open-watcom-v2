@@ -38,13 +38,13 @@
 #include "cofftype.h"
 #include "coffimpl.h"
 
-#define _ClientRead( a, b )             (((a)->implib_data != NULL) ? ImportLibRead((a), b) : ORL_PTR_READ((a)->coff_hnd, (a)->file, b))
-#define _ClientSeek( a, b, c )          (((a)->implib_data != NULL) ? ImportLibSeek((a), b, c) : ORL_PTR_SEEK((a)->coff_hnd, (a)->file, b, c))
+#define _ClientRead( a, b )             (((a)->implib_data != NULL) ? ImportLibRead((a), b) : ORL_PTR_READ((a)->coff_hnd, (a)->fp, b))
+#define _ClientSeek( a, b, c )          (((a)->implib_data != NULL) ? ImportLibSeek((a), b, c) : ORL_PTR_SEEK((a)->coff_hnd, (a)->fp, b, c))
 #define _ClientAlloc( a, b )            ORL_PTR_ALLOC((a)->coff_hnd, b )
 #define _ClientFree( a, b )             ORL_PTR_FREE((a)->coff_hnd, b )
 
-#define _ClientSecRead( a, b )          ORL_PTR_READ((a)->coff_file_hnd->coff_hnd, (a)->coff_file_hnd->file, b )
-#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->coff_file_hnd->coff_hnd, (a)->coff_file_hnd->file, b, c )
+#define _ClientSecRead( a, b )          ORL_PTR_READ((a)->coff_file_hnd->coff_hnd, (a)->coff_file_hnd->fp, b )
+#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->coff_file_hnd->coff_hnd, (a)->coff_file_hnd->fp, b, c )
 #define _ClientSecAlloc( a, b )         ORL_PTR_ALLOC((a)->coff_file_hnd->coff_hnd, b )
 #define _ClientSecFree( a, b )          ORL_PTR_FREE((a)->coff_file_hnd->coff_hnd, b )
 

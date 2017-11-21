@@ -37,13 +37,13 @@
 #include "orlintnl.h"
 #include "elftype.h"
 
-#define _ClientRead( a, b )             ORL_PTR_READ((a)->elf_hnd, (a)->file, b )
-#define _ClientSeek( a, b, c )          ORL_PTR_SEEK((a)->elf_hnd, (a)->file, b, c )
+#define _ClientRead( a, b )             ORL_PTR_READ((a)->elf_hnd, (a)->fp, b )
+#define _ClientSeek( a, b, c )          ORL_PTR_SEEK((a)->elf_hnd, (a)->fp, b, c )
 #define _ClientAlloc( a, b )            ORL_PTR_ALLOC((a)->elf_hnd, b )
 #define _ClientFree( a, b )             ORL_PTR_FREE((a)->elf_hnd, b )
 
-#define _ClientSecRead( a, b, c )       ORL_PTR_READ((a)->elf_file_hnd->elf_hnd, (a)->elf_file_hnd->file, b, c )
-#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->elf_file_hnd->elf_hnd, (a)->elf_file_hnd->file, b, c )
+#define _ClientSecRead( a, b, c )       ORL_PTR_READ((a)->elf_file_hnd->elf_hnd, (a)->elf_file_hnd->fp, b, c )
+#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->elf_file_hnd->elf_hnd, (a)->elf_file_hnd->fp, b, c )
 #define _ClientSecAlloc( a, b )         ORL_PTR_ALLOC((a)->elf_file_hnd->elf_hnd, b )
 #define _ClientSecFree( a, b )          ORL_PTR_FREE((a)->elf_file_hnd->elf_hnd, b )
 
