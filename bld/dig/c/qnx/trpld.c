@@ -40,8 +40,8 @@
 #include "digcli.h"
 #include "trpimp.h"
 #include "digld.h"
+#include "ldimp.h"
 
-#include "../dsx/ldimp.h"
 
 #define TRAPSIG 0x50415254UL    // "TRAP"
 

@@ -24,30 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Pharlap executable Loader (used by 32-bit DOS)
+*
+*               used also for TRAP/DIP/MAD load on Linux/QNX/OSX host OS
+*               until native shared libraries will be supported by OW
 *
 ****************************************************************************/
 
+
+/* Usage of Prarlap executable for OW
+ *
+ *  Host OS     TRAP    MAD     DIP
+ *
+ *  DOS         -       yes     yes
+ *  QNX         yes     yes     yes
+ *  LINUX       -       yes     yes
+ *  OSX         -       yes     yes
+ */
 
 #include <string.h>
 #ifdef __LINUX__
 #include <sys/mman.h>
 #endif
+#include "watcom.h"
 #include "exephar.h"
+#include "digtypes.h"
+#include "digcli.h"
 #include "digld.h"
-
-typedef struct {
-#ifdef __WATCOMC__
-    unsigned long       sig;
-#endif
-    unsigned_8          init_rtn[1];    /* offset is start of routine */
-} imp_header;
+#include "ldimp.h"
 
 
 #define RELOC_BUFF_SIZE 64
 
-static imp_header *ReadInImp( dig_fhandle fid )
+imp_header *ReadInImp( dig_fhandle fid )
 {
     simple_header       hdr;
     unsigned long       size;
