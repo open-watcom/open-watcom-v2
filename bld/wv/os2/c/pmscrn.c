@@ -47,7 +47,6 @@
 #include "dbgmem.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
-#include "guigmous.h"
 #include "wndsys.h"
 #include "trpld.h"
 #include "trpsys.h"
