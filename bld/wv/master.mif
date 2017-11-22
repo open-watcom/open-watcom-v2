@@ -12,14 +12,6 @@ additional_cleanup = *.u *.gdl
 
 #wv_trmem = 1
 
-dig_os_os2_386 = os2v2
-dig_os_dos_386 = dsx
-!ifndef dig_os_$(host_os)_$(host_cpu)
-dig_os = $(host_os)
-!else
-dig_os = $(dig_os_$(host_os)_$(host_cpu))
-!endif
-
 !ifeq sys_windowed 1
 !ifeq host_os os2
 os2pm = 1

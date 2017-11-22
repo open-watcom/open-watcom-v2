@@ -89,7 +89,6 @@ target          = $(serv_basename)$(server_ext_$(host_os))
 target          = $(serv_basename).exe
 !endif
 
-dig_os = $(target_os)
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 
@@ -108,7 +107,7 @@ resource_file = $(serv_basename).res
 !else
 SERVER_remote_objs = serv.obj $(os_prefix)trio.obj
 !endif
-SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
+SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs) $(dig_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
 SERVER_remote_objs += $(os_prefix)noth.obj
