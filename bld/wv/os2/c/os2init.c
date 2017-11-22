@@ -24,22 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for OS/2 debugger.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <process.h>
 #define INCL_DOSMISC
 #define INCL_DOSSIGNALS
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
-#include <os2.h>
+#include <wos2.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "autoenv.h"
 #include "strutil.h"
 #include "dbgmain.h"
 #include "envlkup.h"
@@ -47,8 +48,11 @@
 #include "dbgcmdln.h"
 
 
-static char             *cmdStart;
+char            *CmdData;
+
 static volatile bool    BrkPending;
+
+#ifdef _M_I86
 
 static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
@@ -60,7 +64,6 @@ static void __pascal __far BrkHandler( USHORT sig_arg, USHORT sig_num )
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
-
 void GUImain( void )
 {
     char                buff[256];
@@ -68,20 +71,43 @@ void GUImain( void )
     USHORT              prev_act;
 
     DosSetMaxFH( 40 );
-    cmdStart = buff;
-    getcmd( cmdStart );
+    CmdData = buff;
+    getcmd( CmdData );
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
 }
 
+#else
+
+#include <stdio.h>
+void GUImain( void )
+{
+    char    *buff;
+    int     len;
+
+    // fix up env vars if necessary
+    watcom_setup_env();
+
+    len = _bgetcmd( NULL, INT_MAX ) + 1;
+    buff = malloc( len );
+    CmdData = buff;
+    getcmd( CmdData );
+    //TODO: replace with exception handler
+//    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
+    DebugMain();
+    free( buff );
+}
+
+#endif
+
 
 int GUISysInit( int param )
 {
-    param=param;
-    return( 1 );
+    param = param;
+    return 1;
 }
 
-void GUISysFini( void  )
+void GUISysFini( void )
 {
     DebugFini();
 }
@@ -92,15 +118,16 @@ void WndCleanUp( void )
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 || cmdStart == NULL )
+    if( num != 0 || CmdData == NULL )
         return( NULL );
-    return( cmdStart );
+
+    return( CmdData );
 }
 
 void SetCmdArgStart( int num, char *ptr )
 {
     num = num; /* must be zero */
-    cmdStart = ptr;
+    CmdData = ptr;
 }
 
 void KillDebugger( int ret_code )
@@ -123,13 +150,13 @@ long _fork( const char *cmd, size_t len )
     char        *args;
     size_t      cmd_len;
     RESULTCODES res;
-    USHORT      rc;
+    APIRET      rc;
     HFILE       savestdin;
     HFILE       savestdout;
     HFILE       console;
     HFILE       new;
-    USHORT      act;
-    char        buff[256];
+    OS_UINT     act;
+    char        buff[CCHMAXPATH];
 
     cmd_len = EnvLkup( "COMSPEC", buff, sizeof( buff ) );
     if( cmd_len == 0 )
@@ -142,17 +169,21 @@ long _fork( const char *cmd, size_t len )
     dst = StrCopy( buff, args ) + 1;
     if( len != 0 ) {
         dst = StrCopy( "/C ", dst );
+#ifdef _M_I86
         _fmemcpy( dst, cmd, len );
+#else
+        memcpy( dst, cmd, len );
+#endif
         dst += len;
         *dst++ = NULLCHAR;
     }
     *dst = NULLCHAR;
 
-    savestdin = 0xffff;
+    savestdin  = 0xffff;
     savestdout = 0xffff;
     DosDupHandle( 0, &savestdin );
     DosDupHandle( 1, &savestdout );
-    if( DosOpen( "CON", &console, &act, 0, 0, 0x11, 0x42, 0 ) == 0 ) {
+    if (DosOpen( "CON", &console, &act, 0, 0, 0x11, 0x42, 0) == 0 ) {
         new = 0;
         DosDupHandle( console, &new );
         new = 1;
@@ -174,7 +205,9 @@ long _fork( const char *cmd, size_t len )
     DosDupHandle( savestdout, &new );
     DosClose( savestdout );
 
-    if( rc == 0 ) rc = res.codeTerminate;
+    if( rc == 0 )
+        rc = res.codeTerminate;
+
     return( rc );
 }
 

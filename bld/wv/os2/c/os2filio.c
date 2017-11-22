@@ -34,9 +34,13 @@
 #include <limits.h>
 #define INCL_ERRORS
 #define INCL_BASE
-#include <os2.h>
+#include <wos2.h>
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "doserr.h"
@@ -50,17 +54,16 @@
 const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 const char              LclPathSep = { ';' };
 
-static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
+static const OS_UINT    local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 void LocalErrMsg( sys_error code, char *buff )
 {
     char        *s;
     char        *d;
-    USHORT      msg_len;
+    OS_UINT     msg_len;
     char        ch;
 
-    if( DosGetMessage( NULL, 0, buff, 50, code, "OSO001.MSG",
-                        &msg_len ) != 0 ) {
+    if( DosGetMessage( NULL, 0, buff, 50, code, "OSO001.MSG", &msg_len ) != 0 ) {
         GetDOSErrMsg( code, buff );
         return;
     }
@@ -93,10 +96,10 @@ void LocalErrMsg( sys_error code, char *buff )
 sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     HFILE       hdl;
-    USHORT      action;
-    USHORT      openflags;
-    USHORT      openmode;
-    USHORT      rc;
+    OS_UINT     action;
+    OS_UINT     openflags;
+    OS_UINT     openmode;
+    APIRET      rc;
 
     if( (oattrs & OP_WRITE) == 0 ) {
         openmode = READONLY;
@@ -128,8 +131,8 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 
 size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
-    USHORT      read_len;
-    USHORT      ret;
+    OS_UINT     read_len;
+    APIRET      ret;
     size_t      total;
     unsigned    piece_len;
 
@@ -154,8 +157,8 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 
 size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
-    USHORT      write_len;
-    USHORT      ret;
+    OS_UINT     write_len;
+    APIRET      ret;
     size_t      total;
     unsigned    piece_len;
 
@@ -180,10 +183,14 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
 {
-    unsigned long   new;
-    USHORT          ret;
+    ULONG           new;
+    APIRET          ret;
 
+#ifdef _M_I86
     ret = DosChgFilePtr( hdl, len, local_seek_method[method], &new );
+#else
+    ret = DosSetFilePtr( hdl, len, local_seek_method[method], &new );
+#endif
     if( ret != 0 ) {
         StashErrCode( ret, OP_LOCAL );
         return( ERR_SEEK );
@@ -193,7 +200,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
 
 error_handle LocalClose( sys_handle filehndl )
 {
-    USHORT      ret;
+    APIRET      ret;
 
     ret = DosClose( filehndl );
     return( StashErrCode( ret, OP_LOCAL ) );
@@ -201,9 +208,13 @@ error_handle LocalClose( sys_handle filehndl )
 
 error_handle LocalErase( const char *name )
 {
-    USHORT      ret;
+    APIRET      ret;
 
+#ifdef _M_I86
     ret = DosDelete( (char *)name, 0 );
+#else
+    ret = DosDelete( name );
+#endif
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 

@@ -31,7 +31,7 @@
 
 
 #include "dbgdefn.h"
-#include <stddef.h>
+#include <stdlib.h>
 #define INCL_DOSMISC
 #include "os2.h"
 #include "envlkup.h"
@@ -39,12 +39,23 @@
 
 size_t EnvLkup( const char *name, char *buff, size_t buff_len )
 {
+#ifdef _M_I86
     const char  __far *env;
+#else
+    const char  *env;
+#endif
     size_t      len;
     bool        output;
     char        c;
 
+#ifdef _M_I86
     if( DosScanEnv( (char *)name, (char __far * __far *)&env ) != 0 )
+#else
+    // use getenv() so that autoenv has an effect (we can't
+    // reliably modify the "master" process environment on OS/2)
+    env = getenv( name );
+    if( env == NULL )
+#endif
         return( 0 );
 
     output = false;
