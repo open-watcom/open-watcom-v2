@@ -1057,7 +1057,7 @@ int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char * pkt, unsigned short )
 
     printf( "Trap reply: REQ_GET_MESSAGE_TEXT\n" );
     printf( "    Flags:      %.02x\n", pr->flags );
-    printf( "    Message:    $s\n", text );
+    printf( "    Message:    %s\n", text );
 
     return 1;
 }
