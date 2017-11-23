@@ -1521,8 +1521,12 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
         }
     }
     bp = AddPoint( loc, th, unmapped );
-    if( bp == NULL )
+    if( bp == NULL ) {
+        _Free( image_name );
+        _Free( mod_name );
+        _Free( sym_name );
         return( NULL );
+    }
     bp->status.b.unmapped = unmapped;
     if( mapaddress ) {
         bp->loc.image_name = image_name;
