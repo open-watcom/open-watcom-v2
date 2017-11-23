@@ -397,8 +397,6 @@ static char *ReadInTrap( dig_fhandle fid )
     unsigned            relocnb;
     unsigned            imagesize;
     unsigned            hdrsize;
-    rm_call_struct      rm_dos_read;
-    unsigned            offset;
 
     if( DIGLoader( Read )( fid, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
@@ -414,21 +412,8 @@ static char *ReadInTrap( dig_fhandle fid )
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     DIGLoader( Seek )( fid, hdrsize, DIG_ORG );
-
-    // DPMI file read to real mode memory
-    memset( &rm_dos_read, 0, sizeof( rm_dos_read ) );
-    for( offset = 0; offset < imagesize; offset += (unsigned_16)rm_dos_read.eax ) {
-        rm_dos_read.ss = RMData.segm.rm;
-        rm_dos_read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
-        rm_dos_read.edx = offset;
-        rm_dos_read.ebx = DIG_FID2PH( fid );
-        rm_dos_read.ds = TrapMem.segm.rm;
-        rm_dos_read.ecx = imagesize - offset;
-        rm_dos_read.eax = 0x3f00;
-        relocnb = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &rm_dos_read );
-        if( (rm_dos_read.flags & 1) || (unsigned_16)rm_dos_read.eax == 0 ) {
-            return( TC_ERR_CANT_LOAD_TRAP );
-        }
+    if( DIGLoader( Read )( fid, DPMIGetSegmentBaseAddress( TrapMem.segm.pm ), imagesize ) != imagesize ) {
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
     DIGLoader( Seek )( fid, hdr.reloc_offset, DIG_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
