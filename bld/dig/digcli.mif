@@ -1,12 +1,10 @@
 dig_os_dos386   = dsx
-dig_os_os2386   = os2v2
 !ifdef dig_os_$(host_os)$(host_cpu)
-dig_os          = $(dig_os_$(host_os)$(host_cpu))
+dig_srcs = $(dig_dir)/c/$(dig_os_$(host_os)$(host_cpu));$(dig_dir)/c;$(watcom_dir)/c
 !else
-dig_os          = $(host_os)
+dig_srcs = $(dig_dir)/c/$(host_os);$(dig_dir)/c;$(watcom_dir)/c
 !endif
 
-dig_srcs = $(dig_dir)/c/$(dig_os);$(dig_dir)/c;$(watcom_dir)/c
 !ifeq which SERVER
 dig_objs_qnx386   = $(_subdir_)ldimp.obj
 !else

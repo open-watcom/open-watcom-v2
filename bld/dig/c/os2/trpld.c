@@ -24,23 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for OS/2.
 *
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
-#include <os2.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <wos2.h>
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpsys.h"
 #include "tcerr.h"
 
+
+#ifdef _M_I86
+#define GET_PROC_ADDRESS(m,s,f)   (DosGetProcAddr( m, "#" #s, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n1,n2,m)      (DosLoadModule( NULL, 0, (char *)n1, &m ) != 0 )
+#define LOAD_FAIL_MSG(b,n1,n2)    sprintf( b, TC_ERR_CANT_LOAD_TRAP, n1 )
+#else
+#define GET_PROC_ADDRESS(m,s,f)   (DosQueryProcAddr( m, s, NULL, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n1,n2,m)      (n2[0] == '\0' || DosLoadModule( NULL, 0, n2, &m ) != 0 )
+#define LOAD_FAIL_MSG(b,n1,n2)    sprintf( b, TC_ERR_CANT_LOAD_TRAP, n2 )
+#endif
 
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
@@ -53,7 +62,11 @@ bool IsTrapFilePumpingMessageQueue( void )
     return( TRAPENTRY_PTR_NAME( TellHandles ) != NULL );
 }
 
+#ifdef _M_I86
 bool TrapTellHandles( void __far *hab, void __far *hwnd )
+#else
+bool TrapTellHandles( HAB hab, HWND hwnd )
+#endif
 {
     if( TRAPENTRY_PTR_NAME( TellHandles ) == NULL )
         return( false );
@@ -86,11 +99,16 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                trpfile[256];
     unsigned            len;
     const char          *ptr;
-    unsigned            rc;
     trap_init_func      *init_func;
+#ifdef _M_I86
+    char                trpfile[256];
+#else
+    char                trpfile[CCHMAXPATH];
+    char                trpname[CCHMAXPATH] = "";
+    char                trppath[CCHMAXPATH] = "";
+#endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
@@ -98,6 +116,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         ;
     len = ptr - parms;
     memcpy( trpfile, parms, len );
+#ifdef _M_I86
     if( stricmp( trpfile, "std" ) == 0 ) {
         unsigned        version;
         char            os2ver;
@@ -112,24 +131,32 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             trpfile[len++] = '6';
         }
     }
+#endif
 #ifdef USE_FILENAME_VERSION
     trpfile[len++] = ( USE_FILENAME_VERSION / 10 ) + '0';
     trpfile[len++] = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
     trpfile[len] = '\0';
-    rc = DosLoadModule( NULL, 0, trpfile, &TrapFile );
-    if( rc != 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
+#ifndef _M_I86
+    /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
+     * extension. We will search for them along the PATH (not in LIBPATH);
+     */
+    strcpy( trpname, trpfile );
+    strcat( trpname, ".D32" );
+    _searchenv( trpname, "PATH", trppath );
+#endif
+    if( LOAD_MODULE( trpfile, trppath, TrapFile ) ) {
+        LOAD_FAIL_MSG( buff, trpfile, trppath );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( DosGetProcAddr( TrapFile, "#1", (PFN FAR *)&init_func ) == 0
-      && DosGetProcAddr( TrapFile, "#2", (PFN FAR *)&FiniFunc ) == 0
-      && DosGetProcAddr( TrapFile, "#3", (PFN FAR *)&ReqFunc ) == 0 ) {
-        if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&TRAPENTRY_PTR_NAME( TellHandles ) ) != 0 ) {
+    if( GET_PROC_ADDRESS( TrapFile, 1, init_func )
+      && GET_PROC_ADDRESS( TrapFile, 2, FiniFunc )
+      && GET_PROC_ADDRESS( TrapFile, 3, ReqFunc ) ) {
+        if( !GET_PROC_ADDRESS( TrapFile, 4, TRAPENTRY_PTR_NAME( TellHandles ) ) ) {
             TRAPENTRY_PTR_NAME( TellHandles ) = NULL;
         }
-        if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&TRAPENTRY_PTR_NAME( TellHardMode ) ) != 0 ) {
+        if( !GET_PROC_ADDRESS( TrapFile, 5, TRAPENTRY_PTR_NAME( TellHardMode ) ) ) {
             TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
         }
         parms = ptr;
