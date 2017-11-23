@@ -412,7 +412,7 @@ static char *ReadInTrap( dig_fhandle fid )
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     DIGLoader( Seek )( fid, hdrsize, DIG_ORG );
-    if( DIGLoader( Read )( fid, DPMIGetSegmentBaseAddress( TrapMem.segm.pm ), imagesize ) != imagesize ) {
+    if( DIGLoader( Read )( fid, (void *)DPMIGetSegmentBaseAddress( TrapMem.segm.pm ), imagesize ) != imagesize ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
     DIGLoader( Seek )( fid, hdr.reloc_offset, DIG_ORG );
