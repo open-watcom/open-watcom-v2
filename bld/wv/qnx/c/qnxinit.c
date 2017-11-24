@@ -52,12 +52,13 @@
 #include "clibint.h"
 
 
-unsigned char   _8087 = 0;
-unsigned char   _real87 = 0;
-
 extern int      DbgConHandle; /* Debugger console file handle */
 extern char     **_argv;
 extern int      _argc;
+extern void     __sigabort();
+
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
 
 static char             *cmdStart;
 static volatile bool    BrkPending;
@@ -159,7 +160,7 @@ long _fork( const char *cmd, size_t len )
     if( shell == NULL )
         shell = "/bin/sh";
 
-    argv[0] = shell;
+    argv[0] = (char *)shell;
     if( len != 0 ) {
         argv[1] = "-c";
         memcpy( buff, cmd, len );
@@ -174,7 +175,7 @@ long _fork( const char *cmd, size_t len )
     iov[1] = DbgConHandle;
     iov[2] = DbgConHandle;
     for( i = 3; i < 10; ++i )
-        iov[i] = (char)-1;
+        iov[i] = '\xFF';
     fcntl( DbgConHandle, F_SETFD, (int)0 );
     pid = qnx_spawn( 0, 0, 0, -1, -1,
                 _SPAWN_NEWPGRP | _SPAWN_TCSETPGRP | _SPAWN_SETSID,
