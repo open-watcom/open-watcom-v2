@@ -732,7 +732,7 @@ void PathInit( void )
 }
 
 #if defined( __DOS__ ) || defined( __UNIX__ )
-static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
+static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
 {
     char        *p;
     size_t      len;
@@ -740,7 +740,7 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
     if( rlen < 2 ) {
         if( rlen == 1 )
             *res = NULLCHAR;
-        return( -1 );
+        return( NULL );
     }
     p = res;
     --rlen;     // save space for terminator
@@ -765,10 +765,10 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
         p += nlen;
     }
     *p = NULLCHAR;
-    return( open( res, O_RDONLY ) );
+    return( DIG_PH2FID( open( res, O_RDONLY ) ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char            buffer[TXT_LEN];
     char            *p;
@@ -776,7 +776,7 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     bool            have_path;
     char            c;
     char            dummy[TXT_LEN];
-    int             fd;
+    FILE            *fp;
     char_ring       *curr;
 
     if( buff == NULL ) {
@@ -803,39 +803,37 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     *p = NULLCHAR;
     if( have_path ) {
         StrCopy( buffer, buff );
-        fd = open( buffer, O_RDONLY );
+        fp = DIG_PH2FID( open( buffer, O_RDONLY ) );
     } else {
         // check open file in current directory or in full path
-        fd = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
-        if( fd == -1 ) {
+        fp = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
+        if( fp == NULL ) {
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                fd = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
-                if( fd != -1 ) {
+                fp = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
+                if( fp != NULL ) {
                     break;
                 }
             }
         }
     }
-    if( fd == -1 ) {
+    if( fp == NULL )
         strcpy( buff, buffer );
-        return( DIG_NIL_HANDLE );
-    }
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( read( DIG_FID2PH( fp ), buff, len ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( lseek( DIG_FID2PH( fp ), offs, where ) == -1L );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( close( DIG_FID2PH( fp ) ) != 0 );
 }
 #endif

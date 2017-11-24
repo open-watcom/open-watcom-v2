@@ -37,4 +37,4 @@ typedef struct {
     unsigned_8          init_rtn[1];    /* offset is start of routine */
 } imp_header;
 
-extern imp_header *ReadInImp( dig_fhandle fid );
+extern imp_header *ReadInImp( FILE *fp );

@@ -139,12 +139,12 @@ char *FindFile( char *fullname, char *name, char *path_list )
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/******************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char        *filename;
-    int         fd;
+    FILE        *fp;
 
     /* unused parameters */ (void)max_result;
 
@@ -158,27 +158,25 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     if( filename == NULL ) {
         filename = FindFile( result, realname, DipExePathList );
     }
-    fd = -1;
+    fp = NULL;
     if( filename != NULL )
-        fd = open( filename, O_RDONLY );
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+        fp = fopen( filename, "rb" );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 #endif
 

@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>      // only for sprintf()
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <signal.h>
 #include "trptypes.h"
@@ -78,7 +78,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_fhandle         fid;
+    FILE                *fp;
     const char          *ptr;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
@@ -96,19 +96,19 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    fid = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    fid = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
+    fp = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
 #endif
-    if( fid == DIG_NIL_HANDLE ) {
+    if( fp == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
-    TrapCode = ReadInImp( fid );
-    DIGLoader( Close )( fid );
+    TrapCode = ReadInImp( fp );
+    DIGLoader( Close )( fp );
     sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
     if( TrapCode != NULL ) {
 #ifdef __WATCOMC__

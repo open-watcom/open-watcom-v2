@@ -190,7 +190,7 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
 {
     bool            has_ext;
     bool            has_path;
@@ -228,23 +228,23 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         fd = open( RWBuff, O_RDONLY );
     }
     if( fd == -1 )
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     return( DIG_PH2FID( fd ) );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( read( DIG_FID2PH( fp ), buff, len ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( lseek( DIG_FID2PH( fp ), offs, where ) == -1L );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( close( DIG_FID2PH( fp ) ) != 0 );
 }
 
 void *DIGCLIENTRY( Alloc )( size_t amount )

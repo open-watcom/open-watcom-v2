@@ -94,7 +94,7 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
+FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
 {
     bool        has_ext;
     bool        has_path;
@@ -139,24 +139,24 @@ dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *
     }
     rc = TinyOpen( src, TIO_READ );
     if( TINY_ERROR( rc ) )
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     return( DIG_PH2FID( TINY_INFO( rc ) ) );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
 {
     tiny_ret_t  rc;
 
-    rc = TinyFarRead( DIG_FID2PH( fid ), buff, len );
+    rc = TinyFarRead( DIG_FID2PH( fp ), buff, len );
     return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( TINY_ERROR( TinySeek( DIG_FID2PH( fid ), offs, where ) ) );
+    return( TINY_ERROR( TinySeek( DIG_FID2PH( fp ), offs, where ) ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( TINY_ERROR( TinyClose( DIG_FID2PH( fid ) ) ) );
+    return( TINY_ERROR( TinyClose( DIG_FID2PH( fp ) ) ) );
 }

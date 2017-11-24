@@ -42,6 +42,7 @@
  *  OSX         -       yes     yes
  */
 
+#include <stdio.h>
 #include <string.h>
 #ifdef __LINUX__
 #include <sys/mman.h>
@@ -56,7 +57,7 @@
 
 #define RELOC_BUFF_SIZE 64
 
-imp_header *ReadInImp( dig_fhandle fid )
+imp_header *ReadInImp( FILE *fp )
 {
     simple_header       hdr;
     unsigned long       size;
@@ -69,7 +70,7 @@ imp_header *ReadInImp( dig_fhandle fid )
     unsigned long       buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
-    if( DIGLoader( Read )( fid, &hdr, sizeof( hdr ) ) )
+    if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) )
         return( NULL );
     if( hdr.signature != REX_SIGNATURE )
         return( NULL );
@@ -79,18 +80,18 @@ imp_header *ReadInImp( dig_fhandle fid )
     imp_start = DIGCli( Alloc )( size + bss_size );
     if( imp_start == NULL )
         return( NULL );
-    DIGLoader( Seek )( fid, hdr_size, DIG_ORG );
-    if( DIGLoader( Read )( fid, imp_start, size ) ) {
+    DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
+    if( DIGLoader( Read )( fp, imp_start, size ) ) {
         DIGCli( Free )( imp_start );
         return( NULL );
     }
-    DIGLoader( Seek )( fid, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
     while( hdr.num_relocs != 0 ) {
         bunch = hdr.num_relocs;
         if( bunch > RELOC_BUFF_SIZE )
             bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGLoader( Read )( fid, buff, reloc_size ) ) {
+        if( DIGLoader( Read )( fp, buff, reloc_size ) ) {
             DIGCli( Free )( imp_start );
             return( NULL );
         }
