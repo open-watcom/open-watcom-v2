@@ -32,7 +32,7 @@
 ****************************************************************************/
 
 
-/* Usage of Prarlap executable for OW
+/* Usage of Prarlap executable loader
  *
  *  Host OS     TRAP    MAD     DIP
  *
@@ -86,11 +86,13 @@ imp_header *ReadInImp( FILE *fp )
         return( NULL );
     }
     DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
+    bunch = RELOC_BUFF_SIZE;
+    reloc_size = RELOC_BUFF_SIZE * sizeof( buff[0] );
     while( hdr.num_relocs != 0 ) {
-        bunch = hdr.num_relocs;
-        if( bunch > RELOC_BUFF_SIZE )
-            bunch = RELOC_BUFF_SIZE;
-        reloc_size = bunch * sizeof( buff[0] );
+        if( RELOC_BUFF_SIZE > hdr.num_relocs ) {
+            bunch = hdr.num_relocs;
+            reloc_size = bunch * sizeof( buff[0] );
+        }
         if( DIGLoader( Read )( fp, buff, reloc_size ) ) {
             DIGCli( Free )( imp_start );
             return( NULL );
