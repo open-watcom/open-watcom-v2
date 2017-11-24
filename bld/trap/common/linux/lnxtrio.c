@@ -237,8 +237,6 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
     } else if( FindFilePath( trpfile, result ) ) {
         fd = open( result, O_RDONLY );
     }
-    if( fd == -1 )
-        return( NULL );
     return( DIG_PH2FID( fd ) );
 }
 

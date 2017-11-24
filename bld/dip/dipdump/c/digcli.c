@@ -113,10 +113,7 @@ dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
     /* (ignore the remaining flags) */
 
     fd = open( name, flgs, PMODE_RWX );
-
     dprintf(( "DIGCliOpen: returns %d\n", fd ));
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
     return( DIG_PH2FID( fd ) );
 }
 

@@ -228,8 +228,6 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     } else if( FindFilePath( trpfile, RWBuff ) ) {
         fd = open( RWBuff, O_RDONLY );
     }
-    if( fd == -1 )
-        return( NULL );
     return( DIG_PH2FID( fd ) );
 }
 
