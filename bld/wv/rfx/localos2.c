@@ -112,7 +112,7 @@ error_handle LocalRename( const char *from, const char *to )
 /**********************************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosMove( from, to, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosMove( (char *)from, (char *)to, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosMove( from, to ), OP_LOCAL ) );
 #endif
@@ -122,7 +122,7 @@ error_handle LocalMkDir( const char *name )
 /*****************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosMkDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosMkDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosCreateDir( name, NULL ), OP_LOCAL ) );
 #endif
@@ -132,7 +132,7 @@ error_handle LocalRmDir( const char *name )
 /*****************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosRmDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosRmDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosDeleteDir( name ), OP_LOCAL ) );
 #endif
@@ -168,7 +168,7 @@ error_handle LocalSetCWD( const char *name )
 /******************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosChDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosChDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosSetCurrentDir( name ), OP_LOCAL ) );
 #endif
@@ -180,7 +180,7 @@ long LocalGetFileAttr( const char *name )
 #ifdef _M_I86
     USHORT attr;
 
-    if( DosQFileMode( name, &attr, 0 ) ) {
+    if( DosQFileMode( (char *)name, &attr, 0 ) ) {
         return( -1L );
     }
     return( attr );
@@ -289,7 +289,7 @@ error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len,
 
     info_len = info_len;
 #ifdef _M_I86
-    err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count,0);
+    err = DosFindFirst( (char *)pattern, &handle, attrib, &dta, sizeof( dta ), &count, 0 );
 #else
     err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count, FIL_STANDARD );
 #endif
@@ -388,7 +388,7 @@ error_handle LocalSetFileAttr( const char *name, long attr )
 /**********************************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosSetFileMode( name, attr, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
 #else
     FILESTATUS3 fileinfo;
     APIRET      rc;
