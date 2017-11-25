@@ -33,7 +33,7 @@
                 NAME    FORK
 
                 PUBLIC  Fork_
-                EXTRN   DOSEnvFind_             :near
+                EXTRN   DOSEnvFind_             :proc
                 EXTRN   DbgPSP_                 :near
 
 _text segment byte public 'CODE'

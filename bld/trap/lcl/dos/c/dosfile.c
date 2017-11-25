@@ -43,7 +43,8 @@
 #include "dosfile.h"
 
 
-extern tiny_ret_t       Fork( const char __far *, unsigned );
+/* fork.asm prototype */
+extern tiny_ret_t   __near Fork( const char __far *, unsigned );
 
 const char DosExtList[] = DOSEXTLIST;
 

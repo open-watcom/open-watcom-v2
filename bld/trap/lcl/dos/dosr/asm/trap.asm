@@ -135,7 +135,7 @@ WATCH_DEPTH     equ     6+2+2   ; additional stack in watch point rtn
 _SegmentChain   dw      ?
 OurSP           dw      ?
 OurSS           dw      ?
-DbgPSP          dw      ?
+DebugPSP        dw      ?
 CurrPSP         dw      ?
 TaskPSP         dw      0
 
@@ -205,7 +205,7 @@ InitVectors_    proc    near
 
 
                 call    GetPSP          ; get debugger PSP
-                mov     CS:DbgPSP,AX    ; and save it away
+                mov     CS:DebugPSP,AX  ; and save it away
 
                 call    near ptr ClrIntVecs_
 
@@ -604,7 +604,7 @@ clearatask:
                 mov     SS,CS:OurSS             ; get our stack back
                 mov     SP,CS:OurSP             ; . . .
                 call    GetPSP                  ; get current PSP
-                cmp     AX,CS:DbgPSP            ; is it the debugger?
+                cmp     AX,CS:DebugPSP          ; is it the debugger?
                 je      allcleared              ; quit loop if so
                 mov     DS,AX                   ; get access to PSP
                 mov     DS:0AH,offset clearatask; set terminate offset
@@ -686,7 +686,7 @@ debugprogend:
 public          SetDbgTask_
 SetDbgTask_     proc    near
                 push    BX              ; save BX
-                mov     BX,CS:DbgPSP    ; tell DOS we're the debugger
+                mov     BX,CS:DebugPSP  ; tell DOS we're the debugger
                 jmp     short SetPSP
 SetDbgTask_     endp
 
@@ -735,7 +735,7 @@ DOSTaskPSP_     endp
 
 public          DbgPSP_
 DbgPSP_         proc    near
-                mov     AX,CS:DbgPSP
+                mov     AX,CS:DebugPSP
                 ret
 DbgPSP_         endp
 

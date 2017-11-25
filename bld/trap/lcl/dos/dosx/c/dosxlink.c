@@ -41,14 +41,15 @@
 #include "packet.h"
 #include "trperr.h"
 #include "dosxlink.h"
-#include "dosenv.h"
 #ifdef SERVER
-  #include "dosxrmod.h"
+    #include "dosxrmod.h"
   #ifdef PHARLAP
     #include "pharlap.h"
     #include "dxproto.h"
   #endif
 #else
+    #include "dosenv.h"
+    #include "dosxfork.h"
     #include "tinyio.h"
     #include "trapdbg.h"
   #if defined(PHARLAP)
@@ -135,11 +136,6 @@ typedef struct RMBuff {
     static RMBuff           __far *RMBuffPtr;
 
 #else
-
-    extern short        DbgPSP( void );
-    extern short        GetPSP( void );
-    extern void         SetPSP( short );
-    extern int          _fork( char __far *pgm, char __far *cmdl );
 
     char                BackFromFork;
 

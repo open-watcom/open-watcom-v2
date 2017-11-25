@@ -44,13 +44,10 @@
 #include "madregs.h"
 #include "doscomm.h"
 #include "dosxlink.h"
+#include "dosxfork.h"
 #include "dosextx.h"
 #include "dosfile.h"
 
-
-extern void             SaveVectors(unsigned long *);
-extern void             RestoreVectors(unsigned long *);
-extern void             InitPSP( void );
 
 static char             LinkParms[256];
 static char             FailMsg[128];
