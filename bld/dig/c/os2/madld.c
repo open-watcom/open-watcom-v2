@@ -42,11 +42,11 @@
 
 
 #ifdef _M_I86
-#define GET_PROC_ADDRESS(m,s,f)   (DosGetProcAddr( m, s, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (DosLoadModule( NULL, 0, (char *)n1, &m ) != 0 )
+#define GET_PROC_ADDRESS(m,s,f) (DosGetProcAddr( m, s, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, (char *)n, &m ) != 0)
 #else
-#define GET_PROC_ADDRESS(m,s,f)   (DosQueryProcAddr( m, 0, s, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (n2[0] == '\0' || DosLoadModule( NULL, 0, n2, &m ) != 0 )
+#define GET_PROC_ADDRESS(m,s,f) (DosQueryProcAddr( m, 0, s, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, n, &m ) != 0)
 #endif
 
 void MADSysUnload( mad_sys_handle sys_hdl )
@@ -60,8 +60,8 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     mad_init_func       *init_func;
     mad_status          status;
 #ifndef _M_I86
-    char                madname[CCHMAXPATH] = "";
-    char                madpath[CCHMAXPATH] = "";
+    char                madname[CCHMAXPATH];
+    char                madpath[CCHMAXPATH];
 
     /* To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
@@ -69,8 +69,11 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     strcpy( madname, path );
     strcat( madname, ".D32" );
     _searchenv( madname, "PATH", madpath );
+    if( *madpath == '\0' )
+        return( MS_ERR | MS_FOPEN_FAILED );
+    path = madpath;
 #endif
-    if( LOAD_MODULE( path, madpath, dip_mod ) ) {
+    if( LOAD_MODULE( path, dip_mod ) ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     status = MS_ERR | MS_INVALID_MAD;

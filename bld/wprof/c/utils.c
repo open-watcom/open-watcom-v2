@@ -101,8 +101,8 @@ void ReplaceExt( char * path, char * addext )
 #endif
 }
 
-char *FindFile( char *fullname, char *name, char *path_list )
-/***********************************************************/
+static char *findFile( char *fullname, const char *name, char *path_list )
+/************************************************************************/
 {
     file_handle     fh;
     char            *p;
@@ -135,7 +135,18 @@ char *FindFile( char *fullname, char *name, char *path_list )
             }
         }
     }
+    *fullname = '\0';
     return( NULL );
+}
+
+
+char *FindHelpFile( char *fullname, const char *help_name )
+{
+    if( findFile( fullname, help_name, HelpPathList ) == NULL ) {
+        ErrorMsg( LIT( Unable_To_Open_Help ), help_name );
+        return( NULL );
+    }
+    return( fullname );
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
@@ -154,9 +165,9 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
         _splitpath2( realname, result, NULL, NULL, &filename, NULL );
         _makepath( realname, NULL, NULL, filename, ext );
     }
-    filename = FindFile( result, realname, FilePathList );
+    filename = findFile( result, realname, FilePathList );
     if( filename == NULL ) {
-        filename = FindFile( result, realname, DipExePathList );
+        filename = findFile( result, realname, DipExePathList );
     }
     fp = NULL;
     if( filename != NULL )

@@ -43,8 +43,7 @@
 
 #include "clibext.h"
 
-#define HELPNAME        "wprof.hlp"
-#define HTMLHELPNAME    "wprof.chm"
+#define HELPNAME            "wprof"
 
 extern a_window             *WndMain;
 
@@ -72,23 +71,18 @@ void WPProcHelp( gui_help_actions action )
 /****************************************/
 {
     char        help_name[_MAX_PATH2];
-#if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2_PM__ )
-    char *      filename;
-#endif
 
+    if( GUIIsGUI() ) {
 #ifdef __NT__
-    if( GUIShowHtmlHelp( helpHandle, WndGui( WndMain ), action, HTMLHELPNAME, "" ) ) {
-        return;
-    }
+        if( GUIShowHtmlHelp( helpHandle, WndGui( WndMain ), action, HELPNAME ".chm", "" ) ) {
+            return;
+        }
 #endif
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
-    strcpy( help_name, HELPNAME );
-#else
-    filename = FindFile( help_name, "wprof.ihp", HelpPathList );
-    if( filename == NULL ) {
-        ErrorMsg( LIT( Unable_To_Open_Help ), "wprof.ihp" );
-        return;
+        strcpy( help_name, HELPNAME ".hlp" );
+    } else {
+        if( FindHelpFile( help_name, HELPNAME ".ihp" ) == NULL ) {
+            return;
+        }
     }
-#endif
     GUIShowHelp( helpHandle, WndGui( WndMain ), action, help_name, "" );
 }

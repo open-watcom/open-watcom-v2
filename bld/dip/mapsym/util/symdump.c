@@ -31,13 +31,13 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
-
 #include "bool.h"
 #include "mapsym.h"
 
-static bool     DumpAlphaSorted = FALSE;    // dump alphabetically sorted sym tables
+static bool     DumpAlphaSorted = false;    // dump alphabetically sorted sym tables
 
 /* Heuristics to determine whether a file is a MAPSYM .sym file */
 static bool isSymFile( FILE *f )
@@ -49,31 +49,31 @@ static bool isSymFile( FILE *f )
     /* seek to the end, read and check end map record */
     ret = fseek( f, -(long)sizeof( end_map ), SEEK_END );
     if( ret != 0 ) {
-        return( FALSE );
+        return( false );
     }
     pos = ftell( f );
     /* the endmap record must be 16-byte aligned */
     if( pos % 16 ) {
-        return( FALSE );
+        return( false );
     }
     if( fread( &end_map, 1, sizeof( end_map ), f ) != sizeof( end_map ) ) {
-        return( FALSE );
+        return( false );
     }
     if( end_map.zero != 0 ) {
-        return( FALSE );
+        return( false );
     }
     /* Check .sym file version to make sure it's something reasonable */
     if( (end_map.major_ver < 3) || (end_map.major_ver > 6)
         || (end_map.minor_ver > 12) ) {
-        return( FALSE );
+        return( false );
     }
 
     /* looks like the right sort of .sym file */
-    return( TRUE );
+    return( true );
 }
 
 // Read a Pascal style string - limited to 255 chars max length
-int readString( FILE *f, char *buf )
+static int readString( FILE *f, char *buf )
 {
     unsigned_8  str_len;
 
@@ -156,7 +156,7 @@ static void dumpLines( FILE *f, unsigned_32 base_ofs, bool big_syms )
                 }
             }
         }
-	fseek( f, SYM_PTR_TO_OFS( lines.next_ptr ), SEEK_SET );
+        fseek( f, SYM_PTR_TO_OFS( lines.next_ptr ), SEEK_SET );
     } while( lines.next_ptr != 0 );
 }
 
@@ -220,7 +220,7 @@ int main( int argc, char *argv[] )
     }
 
     if( !strcmp( argv[1], "-a" ) ) {
-        DumpAlphaSorted = TRUE;
+        DumpAlphaSorted = true;
         ++argv;
     }
     file = fopen( argv[1], "rb" );

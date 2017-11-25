@@ -43,11 +43,11 @@
 
 
 #ifdef _M_I86
-#define GET_PROC_ADDRESS(m,s,f)   (DosGetProcAddr( m, s, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (DosLoadModule( NULL, 0, (char *)n1, &m ) != 0 )
+#define GET_PROC_ADDRESS(m,s,f) (DosGetProcAddr( m, s, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, (char *)n, &m ) != 0)
 #else
-#define GET_PROC_ADDRESS(m,s,f)   (DosQueryProcAddr( m, 0, s, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (n2[0] == '\0' || DosLoadModule( NULL, 0, n2, &m ) != 0 )
+#define GET_PROC_ADDRESS(m,s,f) (DosQueryProcAddr( m, 0, s, (PFN FAR *)&f ) == 0)
+#define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, n, &m ) != 0)
 #endif
 
 void DIPSysUnload( dip_sys_handle sys_hdl )
@@ -61,8 +61,8 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     dip_init_func       *init_func;
     dip_status          status;
 #ifndef _M_I86
-    char                dipname[CCHMAXPATH] = "";
-    char                dippath[CCHMAXPATH] = "";
+    char                dipname[CCHMAXPATH];
+    char                dippath[CCHMAXPATH];
 
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
@@ -70,8 +70,11 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     strcpy( dipname, path );
     strcat( dipname, ".D32" );
     _searchenv( dipname, "PATH", dippath );
+    if( *dippath == '\0' )
+        return( DS_ERR | DS_FOPEN_FAILED );
+    path = dippath;
 #endif
-    if( LOAD_MODULE( path, dippath, dip_mod ) ) {
+    if( LOAD_MODULE( path, dip_mod ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     status = DS_ERR | DS_INVALID_DIP;
