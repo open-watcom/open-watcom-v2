@@ -43,13 +43,13 @@
 
 #ifdef _M_I86
 #define GET_PROC_ADDRESS(m,s,f)   (DosGetProcAddr( m, "#" #s, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (DosLoadModule( NULL, 0, (char *)n1, &m ) != 0 )
-#define LOAD_FAIL_MSG(b,n1,n2)    sprintf( b, TC_ERR_CANT_LOAD_TRAP, n1 )
+#define LOAD_MODULE(n,m)          (DosLoadModule( NULL, 0, (char *)n, &m ) != 0 )
 #else
 #define GET_PROC_ADDRESS(m,s,f)   (DosQueryProcAddr( m, s, NULL, (PFN FAR *)&f ) == 0)
-#define LOAD_MODULE(n1,n2,m)      (n2[0] == '\0' || DosLoadModule( NULL, 0, n2, &m ) != 0 )
-#define LOAD_FAIL_MSG(b,n1,n2)    sprintf( b, TC_ERR_CANT_LOAD_TRAP, n2 )
+#define LOAD_MODULE(n,m)          (DosLoadModule( NULL, 0, n, &m ) != 0 )
 #endif
+
+#define LOW(c)      ((c) | 0x20)
 
 static HMODULE          TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
@@ -62,11 +62,7 @@ bool IsTrapFilePumpingMessageQueue( void )
     return( TRAPENTRY_PTR_NAME( TellHandles ) != NULL );
 }
 
-#ifdef _M_I86
-bool TrapTellHandles( void __far *hab, void __far *hwnd )
-#else
 bool TrapTellHandles( HAB hab, HWND hwnd )
-#endif
 {
     if( TRAPENTRY_PTR_NAME( TellHandles ) == NULL )
         return( false );
@@ -102,22 +98,24 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     unsigned            len;
     const char          *ptr;
     trap_init_func      *init_func;
-#ifdef _M_I86
-    char                trpfile[256];
-#else
     char                trpfile[CCHMAXPATH];
-    char                trpname[CCHMAXPATH] = "";
-    char                trppath[CCHMAXPATH] = "";
+#ifndef _M_I86
+    char                trpname[CCHMAXPATH];
 #endif
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
-        ;
-    len = ptr - parms;
-    memcpy( trpfile, parms, len );
+    len = 0;
+    for( ptr = parms; *ptr != '\0'; ++ptr ) {
+        if( *ptr == TRAP_PARM_SEPARATOR ) {
+            ptr++;
+            break;
+        }
+        trpfile[len++] = *ptr;
+    }
 #ifdef _M_I86
-    if( stricmp( trpfile, "std" ) == 0 ) {
+    if( LOW( trpfile[0] ) == 's' && LOW( trpfile[1] ) == 't'
+      && LOW( trpfile[2] ) == 'd' && trpfile[3] == '\0' ) {
         unsigned        version;
         char            os2ver;
 
@@ -143,10 +141,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
      */
     strcpy( trpname, trpfile );
     strcat( trpname, ".D32" );
-    _searchenv( trpname, "PATH", trppath );
+    _searchenv( trpname, "PATH", trpfile );
+    if( *trpfile == '\0' ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpname );
+        return( buff );
+    }
 #endif
-    if( LOAD_MODULE( trpfile, trppath, TrapFile ) ) {
-        LOAD_FAIL_MSG( buff, trpfile, trppath );
+    if( LOAD_MODULE( trpfile, TrapFile ) ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
@@ -160,8 +162,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
         }
         parms = ptr;
-        if( *parms != '\0' )
-            ++parms;
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
