@@ -38,6 +38,7 @@
 #include <dos.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include "bool.h"
 #include "tinyio.h"
 #include "trpimp.h"
 #include "trpcomm.h"
@@ -53,6 +54,10 @@
 #include "doserr.h"
 #include "doscomm.h"
 #include "cpuglob.h"
+
+
+extern void StackCheck();
+#pragma aux StackCheck "__STK";
 
 trap_cpu_regs   Regs;
 int             IntNum;
@@ -222,7 +227,7 @@ static  word    LookUp( word sdtseg, word seg, word global_sel )
 }
 
 
-word    AltSegment( word seg )
+static word    AltSegment( word seg )
 {
     word        otherseg;
 
@@ -469,8 +474,7 @@ void StackCheck()
 {
 }
 
-
-void ADSLoop()
+static void ADSLoop()
 {
     short scode = RSRSLT;             /* Normal result code (default) */
     int stat;
@@ -492,8 +496,8 @@ void ADSLoop()
             break;
 
         case RQXUNLD:                 /* Handle external function requests */
-            DoneAutoCAD = TRUE;
-            AtEnd = TRUE;
+            DoneAutoCAD = true;
+            AtEnd = true;
             BreakPoint();             /* you figure it out */
             break;
         }
@@ -558,9 +562,9 @@ trap_retval ReqProg_kill( void )
                                                                           _DBG1(( "AccKillProg" ));
     ret = GetOutPtr( 0 );
     RedirectFini();
-    AtEnd = TRUE;
+    AtEnd = true;
     if( !DoneAutoCAD ) {
-        AtEnd = TRUE;
+        AtEnd = true;
         cputs( "*** Please quit AUTOCAD in order to restart debugger ***\r\n" );
         MyRunProg();
     }
@@ -663,7 +667,7 @@ static bool SetDebugRegs()
         needed += wp->dregs;
     }
     if( needed > 4 )
-        return( FALSE );
+        return( false );
     dr = 0;
     SysRegs.dr7 = DR7_GE;
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
@@ -674,7 +678,7 @@ static bool SetDebugRegs()
             ++dr;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static unsigned ProgRun( bool step )
@@ -725,7 +729,7 @@ static unsigned ProgRun( bool step )
         ret->conditions |= COND_TERMINATE;
     } else if( DoneAutoCAD ) {
         ret->conditions = COND_TERMINATE;
-        AtEnd = TRUE;
+        AtEnd = true;
     } else if( IntNum == 1 ) {
         if( trace ) {
             ret->conditions |= COND_TRACE;
@@ -750,12 +754,12 @@ leave:
 
 trap_retval ReqProg_go( void )
 {
-    return( ProgRun( FALSE ) );
+    return( ProgRun( false ) );
 }
 
 trap_retval ReqProg_step( void )
 {
-    return( ProgRun( TRUE ) );
+    return( ProgRun( true ) );
 }
 
 #if 0
@@ -878,11 +882,11 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     RedirectInit();
     RealNPXType = NPXType();
     WatchCount = 0;
-    FakeBreak = FALSE;
+    FakeBreak = false;
     GrabVects();
                                                                           _DBG0(( "Done TrapInit" ));
     return( ver );
@@ -891,7 +895,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 void LetACADDie()
 {
     if( DoneAutoCAD ) {
-        DoneAutoCAD = FALSE;
+        DoneAutoCAD = false;
         MyRunProg();    /* we're history! */
     }
 }
@@ -903,7 +907,9 @@ void TRAPENTRY TrapFini()
                                                                           _DBG0(( "Done TrapFini" ));
 }
 
+#if 0
 void GotInt3()
 {
     _DBG0(( "Got Int 3!!!" ));
 }
+#endif
