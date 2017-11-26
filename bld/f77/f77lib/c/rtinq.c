@@ -233,6 +233,21 @@ void    InqExList( void ) {
 }
 
 
+static byte DfltRecFmt( ftnfile *fcb )
+//===================================
+{
+    if( fcb->formatted == FORMATTED_IO ) {
+        return( RECFM_TEXT );
+    } else {
+        if( fcb->accmode == ACCM_DIRECT ) {
+            return( RECFM_FIXED );
+        } else {
+            return( RECFM_VARIABLE );
+        }
+    }
+}
+
+
 void    InqOdList( void ) {
 //===================
 
@@ -246,7 +261,7 @@ void    InqOdList( void ) {
     if( IOCB->set_flags & SET_RECFMPTR ) {
         spec = fcb->recfm;
         if( spec == RECFM_DEFAULT ) {
-            spec = DfltRecType( fcb );
+            spec = DfltRecFmt( fcb );
         }
         RTCopy( RecType[ spec ], IOCB->recfmptr );
     }
