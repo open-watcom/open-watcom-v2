@@ -13,6 +13,8 @@ name = plshelp
 !endif
 which = SERVER
 
+trap_nodoslfn = 1
+
 pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=__cdecl -D_far=__far -D_near=__near -D_Far=__far -D_Near=__Near -I"$(plsdir)"
 
 extra_cpp_flags = -DPHARLAP
@@ -31,8 +33,6 @@ extra_objs = &
     plsintr.obj &
     dilglue.obj
 
-extra_srcs = $(plsdir)
-
 !ifndef extra_linker
 extra_linker = &
         op maxdata=0 runtime maxreal=1023K,maxibuf=4K,flag=2 &
@@ -42,3 +42,5 @@ extra_linker = &
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif
+
+.c: $(plsdir)
