@@ -60,27 +60,8 @@
   #endif
 #endif
 
-#if defined(ACAD)
-    #define EXTENDER_NAMES  "ACAD.EXE\0"
-    #define HELPNAME        ""
-#elif defined(PHARLAP)
-    #define EXTENDER_NAMES  "TNT.EXE\0" "RUN386.EXE\0"
-    #define HELPNAME        "PLSHELP.EXP"
-    #define HELPNAME_DS     "PEDHELP.EXP"
-    #define HELPNAME_NS     "PENHELP.EXP"   /* not supported yet */
-#elif defined(DOS4G)
-    #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
-    #define HELPNAME        "RSIHELP.EXP"
-#elif defined(CAUSEWAY)
-    #define EXTENDER_NAMES  "CWSTUB.EXE\0"
-    #define HELPNAME        "CWHELP.EXE"
-#else
-    #error Extender and helper names not defined
-#endif
 
-#define LOW( c )            ((c) | 0x20)    /*Quick and dirty lower casing*/
-
-#define LINK_SIGNATURE 0xdeb0deb0L
+#define LINK_SIGNATURE      0xdeb0deb0L
 
 #if defined(DOS4G) || defined(CAUSEWAY)
     #define LINK_VECTOR     0x06
@@ -88,7 +69,10 @@
     #define LINK_VECTOR     0x01
 #endif
 
+#define LOW( c )        ((c) | 0x20)        /*Quick and dirty lower casing*/
+
 #ifdef SERVER
+
     #define _DBG( s )
     #define _DBG_ExitFunc( s )
 
@@ -103,7 +87,26 @@
   #endif
 
 #else
-    #define MK_LINEAR( p )    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
+
+  #if defined(ACAD)
+    #define EXTENDER_NAMES  "ACAD.EXE\0"
+    #define HELPNAME        ""
+  #elif defined(PHARLAP)
+    #define EXTENDER_NAMES  "TNT.EXE\0" "RUN386.EXE\0"
+    #define HELPNAME        "PLSHELP.EXP"
+    #define HELPNAME_DS     "PEDHELP.EXP"
+    #define HELPNAME_NS     "PENHELP.EXP"   /* not supported yet */
+  #elif defined(DOS4G)
+    #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
+    #define HELPNAME        "RSIHELP.EXP"
+  #elif defined(CAUSEWAY)
+    #define EXTENDER_NAMES  "CWSTUB.EXE\0"
+    #define HELPNAME        "CWHELP.EXE"
+  #else
+    #error Extender and helper names not defined
+  #endif
+
+    #define MK_LINEAR(p)    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
 
     #define LINK(i)             link[i]
 
@@ -112,7 +115,7 @@
         "mov  ax,2a00h" \
         "sub  sp,50h" \
         "int  21h" \
-        parm caller [ ax ] modify [ sp cx dx ];
+        parm caller [ax] modify [sp cx dx];
 
 #endif
 
