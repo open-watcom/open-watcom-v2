@@ -41,16 +41,20 @@
 #include "pharlap.h"
 #include "dilproto.h"
 #include "trpimp.h"
+#include "trpcomm.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exepe.h"
 #include "madregs.h"
+#include "cpuglob.h"
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
-#include "doserr.h"
 #include "doscomm.h"
 #include "clibint.h"
+#include "trperr.h"
+#include "doserr.h"
+
 
 extern bool     GrabVects( void );
 extern void     ReleVects( void );
@@ -300,7 +304,7 @@ static int RunProgram()
 }
 
 
-static int ReadMemory( PTR386 *addr, unsigned long req, void *buf )
+static int _ReadMemory( PTR386 *addr, unsigned long req, void *buf )
 {
     if( IsProtSeg( addr->selector ) ) {
         return( dbg_pread( addr, req, buf ) );
@@ -309,8 +313,26 @@ static int ReadMemory( PTR386 *addr, unsigned long req, void *buf )
     }
 }
 
+static unsigned short ReadMemory( PTR386 *addr, char *buff, unsigned short requested )
+{
+    int                 err;
+    unsigned short      len;
 
-static int WriteMemory( PTR386 *addr, unsigned long req, void *buf )
+    err = _ReadMemory( addr, (unsigned long)requested, buff );
+    if( err == 0 ) {
+        addr->offset += requested;
+        return( requested );
+    }
+    for( len = requested; len != 0; --len ) {
+        if( _ReadMemory( addr, 1UL, buff++ ) != 0 )
+            break;
+        addr->offset++;
+    }
+    return( requested - len );
+}
+
+
+static int _WriteMemory( PTR386 *addr, unsigned long req, void *buf )
 {
     if( IsProtSeg( addr->selector ) ) {
         return( dbg_pwrite( addr, req, buf ) );
@@ -319,23 +341,18 @@ static int WriteMemory( PTR386 *addr, unsigned long req, void *buf )
     }
 }
 
-
-static unsigned short ReadWrite( rtn, addr, buff, requested )
-    int                 (*rtn)();
-    PTR386              *addr;
-    char                *buff;
-    unsigned short      requested;
+static unsigned short WriteMemory( PTR386 *addr, char *buff, unsigned short requested )
 {
     int                 err;
     unsigned short      len;
 
-    err = rtn( addr, (unsigned long)requested, buff );
+    err = _WriteMemory( addr, (unsigned long)requested, buff );
     if( err == 0 ) {
         addr->offset += requested;
         return( requested );
     }
     for( len = requested; len != 0; --len ) {
-        if( rtn( addr, 1UL, buff++ ) != 0 )
+        if( _WriteMemory( addr, 1UL, buff++ ) != 0 )
             break;
         addr->offset++;
     }
@@ -360,7 +377,7 @@ trap_retval ReqChecksum_mem( void )
     addr.selector = acc->in_addr.segment;
     ret->result = 0;
     while( len >= BUFF_SIZE ) {
-        read = ReadWrite( ReadMemory, &addr, UtilBuff, BUFF_SIZE );
+        read = ReadMemory( &addr, UtilBuff, BUFF_SIZE );
         for( i = 0; i < read; ++i ) {
             ret->result += UtilBuff[i];
         }
@@ -369,7 +386,7 @@ trap_retval ReqChecksum_mem( void )
         len -= BUFF_SIZE;
     }
     if( len != 0 ) {
-        read = ReadWrite( ReadMemory, &addr, UtilBuff, len );
+        read = ReadMemory( &addr, UtilBuff, len );
         if( read == len ) {
             for( i = 0; i < len; ++i ) {
                 ret->result += UtilBuff[i];
@@ -392,13 +409,13 @@ trap_retval ReqRead_mem( void )
     ret = GetOutPtr( 0 );
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
-    len = ReadWrite( ReadMemory, &addr, ret, acc->len );
+    len = ReadMemory( &addr, ret, acc->len );
     return( len );
 }
 
 trap_retval ReqWrite_mem( void )
 {
-    PTR386            addr;
+    PTR386              addr;
     write_mem_req       *acc;
     write_mem_ret       *ret;
 
@@ -407,7 +424,7 @@ trap_retval ReqWrite_mem( void )
     ret = GetOutPtr( 0 );
     addr.offset = acc->mem_addr.offset;
     addr.selector = acc->mem_addr.segment;
-    ret->len = ReadWrite( WriteMemory, &addr,
+    ret->len = WriteMemory( &addr,
                           GetInPtr( sizeof( *acc ) ),
                           GetTotalSize() - sizeof( *acc ) );
     return( sizeof( *ret ) );
@@ -415,7 +432,7 @@ trap_retval ReqWrite_mem( void )
 
 trap_retval ReqRead_io( void )
 {
-    int              err;
+    int                 err;
     read_io_req         *acc;
     void                *ret;
     unsigned            len;
@@ -690,7 +707,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-int MapReturn()
+static int MapReturn()
 {
     switch( Mach.msb_event )
     {
@@ -723,7 +740,7 @@ static void FixFakeBreak()
 
     addr.selector = Mach.msb_cs;
     addr.offset = Mach.msb_eip;
-    ReadWrite( WriteMemory, &addr, (char *)&SavedByte, 1 );
+    WriteMemory( &addr, (char *)&SavedByte, 1 );
 }
 
 
@@ -766,6 +783,7 @@ trap_retval ReqSet_watch( void )
     set_watch_ret   *ret;
     int             i, needed;
     ULONG           linear;
+    PTR386          addr;
 
     _DBG(("AccSetWatch\r\n"));
     acc = GetInPtr( 0 );
@@ -774,12 +792,14 @@ trap_retval ReqSet_watch( void )
     ret->multiplier = 10000;
     if( WatchCount < MAX_WP ) {
         ret->err = 0;
-        ReadMemory( &acc->watch_addr, 4UL, &l );
+        addr.offset = acc->watch_addr.offset;
+        addr.selector = acc->watch_addr.segment;
+        _ReadMemory( &addr, 4UL, &l );
         curr = WatchPoints + WatchCount;
         curr->addr.segment = acc->watch_addr.segment;
         curr->addr.offset = acc->watch_addr.offset;
         curr->value = l;
-        dbg_ptolin( &acc->watch_addr, &linear );
+        dbg_ptolin( &addr, &linear );
         curr->linear = linear;
         curr->len = acc->size;
         curr->linear &= ~( curr->len - 1 );
@@ -807,14 +827,17 @@ trap_retval ReqSet_break( void )
     opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
+    PTR386              addr;
 
     _DBG(("AccSetBreak\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+    addr.offset = acc->break_addr.offset;
+    addr.selector = acc->break_addr.segment;
+    _ReadMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     ret->old = brk_opcode;
     brk_opcode = BRKPOINT;
-    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     return( sizeof( *ret ) );
 }
 
@@ -823,11 +846,14 @@ trap_retval ReqClear_break( void )
 {
     opcode_type         brk_opcode;
     clear_break_req     *acc;
+    PTR386              addr;
 
     _DBG(("AccRestoreBreak\r\n"));
     acc = GetInPtr( 0 );
+    addr.offset = acc->break_addr.offset;
+    addr.selector = acc->break_addr.segment;
     brk_opcode = acc->old;
-    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+    _WriteMemory( &addr, sizeof( brk_opcode ), &brk_opcode );
     return( 0 );
 }
 
@@ -872,6 +898,7 @@ static unsigned ProgRun( bool step )
     int         i;
     dword       value;
     prog_go_ret *ret;
+    PTR386      addr;
 
     ret = GetOutPtr( 0 );
     Mach.msb_dreg[6] = 0;
@@ -898,7 +925,9 @@ static unsigned ProgRun( bool step )
                 if( ( Mach.msb_dreg[6] & DR6_BS ) == 0 )
                     break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
-                    ReadMemory( &wp->addr, 4UL, &value );
+                    addr.offset = wp->addr.offset;
+                    addr.selector = wp->addr.segment;
+                    _ReadMemory( &addr, 4UL, &value );
                     if( value != wp->value ) {
                         ret->conditions = COND_WATCH;
                         Mach.msb_eflags &= ~EF_TF;
