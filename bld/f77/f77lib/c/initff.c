@@ -37,7 +37,6 @@
 
 #include "rtinit.h"
 #include "ftnstd.h"
-#include "fio.h"
 #include "poscc.h"
 
 

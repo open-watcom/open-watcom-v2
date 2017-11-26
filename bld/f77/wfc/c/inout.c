@@ -56,7 +56,6 @@
 #include "errutil.h"
 #include "sdfile.h"
 #include "brseinfo.h"
-#include "fio.h"
 #include "posdat.h"
 
 #include "clibext.h"
@@ -74,10 +73,10 @@
     #error Unknown System
 #endif
 
-static file_attr        DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        ErrAttr = { REC_TEXT };
+static f_attrs          DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          ErrAttr = { REC_TEXT };
 
 static char             ErrExtn[] = { "err" };
 static char             LstExtn[] = { "lst" };

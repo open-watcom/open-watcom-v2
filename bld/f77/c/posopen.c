@@ -34,7 +34,6 @@
 #if defined( __NT__ )
     #include <windows.h>
 #endif
-#include "fio.h"
 #include "posio.h"
 #include "sopen.h"
 #include "poscc.h"

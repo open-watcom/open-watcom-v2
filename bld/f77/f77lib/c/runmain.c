@@ -43,7 +43,6 @@
 #include "rmemmgr.h"
 #include "thread.h"
 #include "runmain.h"
-#include "fio.h"
 #include "posopen.h"
 #include "rtspawn.h"
 #include "rtsysutl.h"

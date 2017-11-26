@@ -32,43 +32,11 @@
 #ifndef _F77_FIO_H
 #define _F77_FIO_H 1
 
-#define REC_TEXT                0x0001  // text records (terminated with CR/LF)
-#define REC_FIXED               0x0002  // fixed records
-#define REC_VARIABLE            0x0004  // variable records (length tags)
-#define CARRIAGE_CONTROL        0x0008  // carriage control file
-#define TRUNC_ON_WRITE          0x0010  // truncate file on write
-#define SEEK                    0x0020  // seek allowed
-#define WRITE_ONLY              0x0040  // no reading allowed
-#define CHAR_DEVICE             0x0080  // Character device and not a file
+#define CHAR_CR         0x0d            // carriage return
+#define CHAR_LF         0x0a            // line feed
+#define CHAR_FF         0x0c            // form feed
 
-// The following bits are only used during Openf()
-
-#define CREATION_MASK           0xff00  // these bits used during Openf() only
-#define RDONLY                  0x0100  // - read only
-#define WRONLY                  0x0200  // - write only
-#define RDWR                    0x0400  // - read/write
-#define APPEND                  0x0800  // - append
-#define S_DENYRW                0x1000  // - deny read or write access
-#define S_DENYWR                0x2000  // - deny write access
-#define S_DENYRD                0x4000  // - deny read access
-#define S_DENYNO                0x8000  // - allow read and write access
-#define S_COMPAT                0x0000  // - default is compatibility mode
-
-// Re-use CREATION_MASK bits
-
-#define LOGICAL_RECORD          0x0200  // start of logical record
-#define PAST_EOF                0x0400  // have seeked past EOF
-#define READ_AHEAD              0x0800  // buffer read
-#define DIRTY_BUFFER            0x1000  // buffer has been modified
-#define CC_NOCR                 0x2000  // no CR/LF
-#define CC_NOLF                 0x4000  // no LF
-#define BUFFERED                0x8000  // buffered i/o
-
-#define CHAR_CR                 0x0d    // carriage return
-#define CHAR_LF                 0x0a    // line feed
-#define CHAR_FF                 0x0c    // form feed
-
-#define CHAR_CTRL_Z             0x1a    // Ctrl/Z character (EOF marker)
+#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
 
 #define READ_ERROR      ((size_t)-1)    // read error indicator
 
@@ -79,7 +47,39 @@
 #define IO_BUFFER       16*1024
 #endif
 
-typedef unsigned_16     f_attrs;        // file attributes
+typedef enum {
+    REC_TEXT            = 0x0001,  // text records (terminated with CR/LF)
+    REC_FIXED           = 0x0002,  // fixed records
+    REC_VARIABLE        = 0x0004,  // variable records (length tags)
+    CARRIAGE_CONTROL    = 0x0008,  // carriage control file
+    TRUNC_ON_WRITE      = 0x0010,  // truncate file on write
+    SEEK                = 0x0020,  // seek allowed
+    WRITE_ONLY          = 0x0040,  // no reading allowed
+    CHAR_DEVICE         = 0x0080,  // Character device and not a file
+
+// The following bits are only used during Openf()
+
+    CREATION_MASK       = 0xff00,  // these bits used during Openf() only
+    RDONLY              = 0x0100,  // - read only
+    WRONLY              = 0x0200,  // - write only
+    RDWR                = 0x0400,  // - read/write
+    APPEND              = 0x0800,  // - append
+    S_DENYRW            = 0x1000,  // - deny read or write access
+    S_DENYWR            = 0x2000,  // - deny write access
+    S_DENYRD            = 0x4000,  // - deny read access
+    S_DENYNO            = 0x8000,  // - allow read and write access
+    S_COMPAT            = 0x0000,  // - default is compatibility mode
+
+// Re-use CREATION_MASK bits
+
+    LOGICAL_RECORD      = 0x0200,  // start of logical record
+    PAST_EOF            = 0x0400,  // have seeked past EOF
+    READ_AHEAD          = 0x0800,  // buffer read
+    DIRTY_BUFFER        = 0x1000,  // buffer has been modified
+    CC_NOCR             = 0x2000,  // no CR/LF
+    CC_NOLF             = 0x4000,  // no LF
+    BUFFERED            = 0x8000,  // buffered i/o
+} f_attrs;
 
 typedef struct b_file {                 // file common
     f_attrs         attrs;                  // file attributes

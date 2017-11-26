@@ -52,7 +52,6 @@
 #include "poserr.h"
 #include "posseek.h"
 #include "sdcio.h"
-#include "fio.h"
 
 #include "clibext.h"
 
@@ -66,7 +65,7 @@
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
 #define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
-static  file_attr       PageFileAttrs = { REC_FIXED | SEEK };
+static  f_attrs         PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
 static  char            PageFileBuff[_MAX_PATH];
 static  unsigned_32     CurrPage;
