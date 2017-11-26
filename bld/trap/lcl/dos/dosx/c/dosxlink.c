@@ -52,6 +52,7 @@
     #include "dosxfork.h"
     #include "tinyio.h"
     #include "trapdbg.h"
+    #include "dbgpsp.h"
   #if defined(PHARLAP)
     #include "exedos.h"
     #include "exeos2.h"

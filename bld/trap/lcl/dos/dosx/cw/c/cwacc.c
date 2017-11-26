@@ -46,7 +46,6 @@
 #include "miscx87.h"
 #include "ioports.h"
 #include "dosredir.h"
-#include "doscomm.h"
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"

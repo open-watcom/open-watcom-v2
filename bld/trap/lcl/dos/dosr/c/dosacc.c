@@ -51,10 +51,10 @@
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
-#include "doscomm.h"
 #include "cpuglob.h"
 #include "dosextx.h"
 #include "dosovl.h"
+#include "dbgpsp.h"
 #include "dosfile.h"
 
 
@@ -137,7 +137,6 @@ extern unsigned short MyFlags( void );
        " pop ax "     \
     value [ax];
 
-extern addr_seg         DbgPSP(void);
 extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
 extern addr_seg         DOSTaskPSP(void);
 extern void             EndUser(void);

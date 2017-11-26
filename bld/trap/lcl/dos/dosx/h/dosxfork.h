@@ -33,7 +33,6 @@ extern __segment    __near GetPSP( void );
 extern void         __near SetPSP( __segment );
 extern void         __near SaveVectors( unsigned long * );
 extern void         __near RestoreVectors( unsigned long * );
-extern __segment    __near DbgPSP( void );
 extern void         __near InitPSP( void );
 extern int          __near _fork( char __far *pgm, char __far *cmdl );
 

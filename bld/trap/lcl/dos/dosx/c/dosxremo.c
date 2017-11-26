@@ -42,7 +42,6 @@
 #include "trapdbg.h"
 #include "winchk.h"
 #include "madregs.h"
-#include "doscomm.h"
 #include "dosxlink.h"
 #include "dosxfork.h"
 #include "dosextx.h"

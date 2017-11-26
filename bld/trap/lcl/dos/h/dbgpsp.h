@@ -24,37 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DbgPSP function prototype
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <i86.h>
-#include "dbgpsp.h"
-#include "dosenv.h"
-
-
-const char __far *DOSEnvFind( char *src )
-{
-    const char  __far *env;
-    char        *p;
-    char        c1;
-    char        c2;
-
-    env = MK_FP( *(unsigned __far *)MK_FP( DbgPSP(), 0x2c ), 0 );
-    do {
-        p = src;
-        do {
-            c1 = *p++;
-            c2 = *env++;
-        } while( c1 == c2 && c1 != '\0' && c2 != '=' );
-        if( c1 == '\0' && c2 == '=' )
-            return( env );
-        while( c2 != '\0' ) {
-            c2 = *env++;
-        }
-    } while( *env != '\0' );
-    return( NULL );
-}
+extern __segment    __near DbgPSP( void );
