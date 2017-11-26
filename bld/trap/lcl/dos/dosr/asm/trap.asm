@@ -116,11 +116,18 @@ RestIntr        macro   intr,loc
                 add     BX,BX
                 add     BX,BX
                 endif
-                mov     AX,loc+0                ; get old interrupt offset
+                mov     AX,word ptr loc+0                ; get old interrupt offset
                 mov     ES:0[BX],AX             ; restore it
-                mov     AX,loc+2                ; get old interrupt segment
+                mov     AX,word ptr loc+2                ; get old interrupt segment
                 mov     ES:2[BX],AX             ; restore it
         endif
+                endm
+
+DbgDOSCall      macro
+                ; do a DOS request, but make sure to use the debugger's
+                ; int 21 vector and NOT the program's
+                pushf
+                call    dword ptr OSIntVec
                 endm
 
 
@@ -152,19 +159,19 @@ SaveBusyWait    dw      ?,?
 
 SaveVects       db      1024 dup(?)
 
-TraceVec        equ     word ptr cs:(SaveVects+01H*4)
-BptVec          equ     word ptr cs:(SaveVects+03H*4)
-PrgIntVec       equ     word ptr cs:(SaveVects+05H*4)
-TimerIntVec     equ     word ptr cs:(SaveVects+08H*4)
-KbdIntVec       equ     word ptr cs:(SaveVects+09H*4)
-SysServVec      equ     word ptr cs:(SaveVects+15H*4)
-BrkVec          equ     word ptr cs:(SaveVects+1bH*4)
-PrgTermVec      equ     word ptr cs:(SaveVects+20H*4)
-OSIntVec        equ     word ptr cs:(SaveVects+21H*4)
-DOSBrkVec       equ     word ptr cs:(SaveVects+23H*4)
-CrtErrVec       equ     word ptr cs:(SaveVects+24H*4)
-ResTermVec      equ     word ptr cs:(SaveVects+27H*4)
-BusyWaitVec     equ     word ptr cs:(SaveVects+28H*4)
+TraceVec        equ     cs:(SaveVects+01H*4)
+BptVec          equ     cs:(SaveVects+03H*4)
+PrgIntVec       equ     cs:(SaveVects+05H*4)
+TimerIntVec     equ     cs:(SaveVects+08H*4)
+KbdIntVec       equ     cs:(SaveVects+09H*4)
+SysServVec      equ     cs:(SaveVects+15H*4)
+BrkVec          equ     cs:(SaveVects+1bH*4)
+PrgTermVec      equ     cs:(SaveVects+20H*4)
+OSIntVec        equ     cs:(SaveVects+21H*4)
+DOSBrkVec       equ     cs:(SaveVects+23H*4)
+CrtErrVec       equ     cs:(SaveVects+24H*4)
+ResTermVec      equ     cs:(SaveVects+27H*4)
+BusyWaitVec     equ     cs:(SaveVects+28H*4)
 
 UsrInt          db      0
 DOSCount        db      0
@@ -198,9 +205,9 @@ InitVectors_    proc    near
                 cli
                 rep     movsw
                 sti
-                mov     ax,BusyWaitVec  ; set up busy wait
+                mov     ax,word ptr BusyWaitVec  ; set up busy wait
                 mov     CS:SaveBusyWait,ax      ; swap location
-                mov     ax,BusyWaitVec+2        ; ...
+                mov     ax,word ptr BusyWaitVec+2        ; ...
                 mov     CS:SaveBusyWait+2,ax    ; ...
 
 
@@ -659,8 +666,8 @@ DOSLoadProg_    proc    near
                 pop     DS
                 int     21H
                 mov     AL,24H          ; set critical error vector
-                mov     DX,CrtErrVec+0
-                mov     DS,CrtErrVec+2
+                mov     DX,word ptr CrtErrVec+0
+                mov     DS,word ptr CrtErrVec+2
                 int     21H
 
                 call    ClrIntVecs_
@@ -690,13 +697,6 @@ SetDbgTask_     proc    near
                 jmp     short SetPSP
 SetDbgTask_     endp
 
-
-DbgDOSCall      macro
-                ; do a DOS request, but make sure to use the debugger's
-                ; int 21 vector and NOT the program's
-                pushf
-                call    dword ptr CS:SaveVects+21H*4
-                endm
 
 public          SetUsrTask_
 SetUsrTask_     proc    near
