@@ -248,7 +248,7 @@ void    OpenAction( ftnfile *fcb ) {
 }
 
 
-int     DfltRecType( ftnfile *fcb ) {
+static int  DfltRecType( ftnfile *fcb ) {
 //===================================
 
     if( fcb->formatted == FORMATTED_IO ) {
