@@ -608,19 +608,13 @@ STATIC void loadImageInfo( image_info * curr_image )
             curr_image->sym_name = NULL;
         }
     }
-    obj_fid = DIGCli( Open )( curr_image->name, DIG_READ );
-    if( obj_fid == DIG_NIL_HANDLE ) {
-        curr_image->exe_not_found = true;
-        if( curr_image->main_load ) {
-            ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
-        }
-    } else if( curr_image->time_stamp == 0 ) {
+    if( curr_image->time_stamp == 0 ) {
         /*
            If sample timestamp is 0, the sampler couldn't figure out
            the right value. Assume it's OK.
         */
     } else {
-        if( fstat( DIG_FID2PH( obj_fid ), &file_status ) == 0 ) {
+        if( stat( curr_image->name, &file_status ) == 0 ) {
             /* QNX creation dates and time stamps tend to be 1 */
             /* unit different, so do not test for equality */
             if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
@@ -629,6 +623,13 @@ STATIC void loadImageInfo( image_info * curr_image )
                     ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
                 }
             }
+        }
+    }
+    obj_fid = DIGCli( Open )( curr_image->name, DIG_READ );
+    if( obj_fid == DIG_NIL_HANDLE ) {
+        curr_image->exe_not_found = true;
+        if( curr_image->main_load ) {
+            ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
         }
     }
     if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted && obj_fid != DIG_NIL_HANDLE ) {
