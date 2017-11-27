@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Pharlap executable Loader (used by 32-bit DOS)
+* Description:  Pharlap executable Loader (used by 32-bit code only)
 *
 *               used also for TRAP/DIP/MAD load on Linux/QNX/OSX host OS
 *               until native shared libraries will be supported by OW
@@ -60,14 +60,14 @@
 imp_header *ReadInImp( FILE *fp )
 {
     simple_header       hdr;
-    unsigned long       size;
-    unsigned long       hdr_size;
-    unsigned long       bss_size;
+    unsigned            size;
+    unsigned            hdr_size;
+    unsigned            bss_size;
     unsigned            reloc_size;
     unsigned            bunch;
     unsigned            i;
-    unsigned long       *fixup_loc;
-    unsigned long       buff[RELOC_BUFF_SIZE];
+    unsigned_32         *fixup_loc;
+    unsigned            buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
     if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) )
@@ -99,7 +99,7 @@ imp_header *ReadInImp( FILE *fp )
         }
         for( i = 0; i < bunch; ++i ) {
             fixup_loc = (void *)(imp_start + (buff[i] & ~0x80000000));
-            *fixup_loc += (unsigned long)imp_start;
+            *fixup_loc += (unsigned_32)imp_start;
         }
         hdr.num_relocs -= bunch;
     }
@@ -108,7 +108,7 @@ imp_header *ReadInImp( FILE *fp )
      * to map the code pages loaded from the BPD as executable, otherwise
      * a segfault will occur when attempting to run any BPD code.
      */
-    mprotect((void*)((u_long)imp_start & ~4095), (size+4095) & ~4095, PROT_READ | PROT_WRITE | PROT_EXEC);
+    mprotect((void*)((u_long)imp_start & ~4095), ( size + 4095 ) & ~4095, PROT_READ | PROT_WRITE | PROT_EXEC);
 #endif
     memset( imp_start + size, 0, bss_size );
     return( (imp_header *)imp_start );
