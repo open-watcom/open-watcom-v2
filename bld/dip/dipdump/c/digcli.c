@@ -298,9 +298,10 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     return( fp );
 }
 
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    unsigned read_len;
+    size_t  read_len;
+
     read_len = fread( buff, 1, len, fp );
 printf("read: in: %x  out: %x\n", len, read_len);
     return( read_len != len );

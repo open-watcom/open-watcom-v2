@@ -197,7 +197,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, ch
     const char      *ptr;
     const char      *endptr;
     char            trpfile[PATH_MAX + 1];
-    int             fd;
+    FILE            *fp;
 
     result = result; max_result = max_result;
     has_ext = false;
@@ -221,28 +221,28 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, ch
         trpfile[name_len++] = '.';
         memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
     }
-    fd = -1;
+    fp = NULL;
     if( has_path ) {
-        fd = open( trpfile, O_RDONLY );
+        fp = fopen( trpfile, "rb" );
     } else if( FindFilePath( trpfile, RWBuff ) ) {
-        fd = open( RWBuff, O_RDONLY );
+        fp = fopen( RWBuff, "rb" );
     }
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fp ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
 int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fp ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
 int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fp ) ) != 0 );
+    return( fclose( fp ) );
 }
 
 void *DIGCLIENTRY( Alloc )( size_t amount )

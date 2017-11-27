@@ -29,12 +29,13 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <string.h>
 #include <sys/time.h>
 #if defined(__WATCOMC__)
     #include <process.h>
@@ -196,7 +197,7 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
     const char          *src;
     char                *dst;
     char                trpfile[256];
-    int                 fd;
+    FILE                *fp;
     char                c;
 
     max_result = max_result;
@@ -225,9 +226,9 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
         dst += name_len;
     }
     *dst = '\0';
-    fd = -1;
+    fp = NULL;
     if( has_path ) {
-        fd = open( trpfile, O_RDONLY );
+        fp = fopen( trpfile, "rb" );
         for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
             if( max_result-- < 2 ) {
                 *dst = '\0';
@@ -235,24 +236,24 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
             }
         }
     } else if( FindFilePath( trpfile, result ) ) {
-        fd = open( result, O_RDONLY );
+        fp = fopen( result, "rb" );
     }
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
 #if 0
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fp ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
 int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fp ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 #endif
 
 int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fp ) ) != 0 );
+    return( fclose( fp ) );
 }

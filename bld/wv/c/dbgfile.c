@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
@@ -765,7 +766,7 @@ static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nl
         p += nlen;
     }
     *p = NULLCHAR;
-    return( DIG_PH2FID( open( res, O_RDONLY ) ) );
+    return( fopen( res, "rb" ) );
 }
 
 FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
@@ -803,7 +804,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     *p = NULLCHAR;
     if( have_path ) {
         StrCopy( buffer, buff );
-        fp = DIG_PH2FID( open( buffer, O_RDONLY ) );
+        fp = fopen( buffer, "rb" );
     } else {
         // check open file in current directory or in full path
         fp = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
@@ -822,18 +823,18 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     return( fp );
 }
 
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fp ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
 int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fp ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
 int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fp ) ) != 0 );
+    return( fclose( fp ) );
 }
 #endif

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -175,7 +176,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     return( fp );
 }
 
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
     return( fread( buff, 1, len, fp ) != len );
 }

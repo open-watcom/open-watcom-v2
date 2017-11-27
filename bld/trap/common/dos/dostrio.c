@@ -29,15 +29,19 @@
 ****************************************************************************/
 
 
-#include <dos.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <dos.h>
 #include "tinyio.h"
 #include "trptypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "servio.h"
 
+
+#define HANDLE2FP(ph)    ((FILE *)((unsigned long)(ph) + 1))
+#define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
 extern int KeyPress_pragma( void );
 extern int KeyGet_pragma( void );
@@ -140,23 +144,23 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, 
     rc = TinyOpen( src, TIO_READ );
     if( TINY_ERROR( rc ) )
         return( NULL );
-    return( DIG_PH2FID( TINY_INFO( rc ) ) );
+    return( HANDLE2FP( TINY_INFO( rc ) ) );
 }
 
-int DIGLoader( Read )( FILE *fp, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
     tiny_ret_t  rc;
 
-    rc = TinyFarRead( DIG_FID2PH( fp ), buff, len );
+    rc = TinyFarRead( FP2HANDLE( fp ), buff, len );
     return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
 }
 
 int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( TINY_ERROR( TinySeek( DIG_FID2PH( fp ), offs, where ) ) );
+    return( TINY_ERROR( TinySeek( FP2HANDLE( fp ), offs, where ) ) );
 }
 
 int DIGLoader( Close )( FILE *fp )
 {
-    return( TINY_ERROR( TinyClose( DIG_FID2PH( fp ) ) ) );
+    return( TINY_ERROR( TinyClose( FP2HANDLE( fp ) ) ) );
 }
