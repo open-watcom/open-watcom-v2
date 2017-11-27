@@ -76,7 +76,7 @@
     #define _DBG( s )
     #define _DBG_ExitFunc( s )
 
-    #define LINK(i)             GetDosLong( link + sizeof( long ) + i )
+    #define LINK(i)             GetDosLong( link + sizeof( long ) * i )
 
   #if defined(CAUSEWAY)
     extern unsigned short   GetZeroSel( void );
