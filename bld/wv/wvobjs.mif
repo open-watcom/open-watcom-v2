@@ -92,13 +92,14 @@ eng_objs_dosi86 = &
     $(_subdir_)fork.obj &
     $(_subdir_)dosinit.obj &
     $(_subdir_)doschk.obj &
+    $(_subdir_)doschkx.obj &
     $(_subdir_)doscmd.obj &
     $(_subdir_)dosfilio.obj &
     $(_subdir_)doslkup.obj &
     $(_subdir_)dosmem.obj &
     $(_subdir_)dosgrow.obj &
     $(_subdir_)dosalloc.obj &
-    $(_subdir_)dostrap.obj
+#    $(_subdir_)dostrap.obj
 
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &

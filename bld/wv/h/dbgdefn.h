@@ -32,18 +32,8 @@
 
 #include "bool.h"
 #include "machtype.h"
+#include "ovldefn.h"
 
-/* Functions declared as OVL_EXTERN are used only within the module
- * they are declared in however pointers to them are used.  In order
- * for the overlay manager to be able to keep track of these pointers
- * the functions must be extern when an overlayed debugger is made
- */
-
-#if defined(_OVERLAYED_)
-#define OVL_EXTERN
-#else
-#define OVL_EXTERN      static
-#endif
 
 #define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'

@@ -634,9 +634,8 @@ const char *ModImageName( mod_handle handle )
     }
 }
 
-static walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
+OVL_EXTERN walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
 {
-
     *((const mad_reg_set_data **)pdata) = data;
     return( WR_STOP );
 }

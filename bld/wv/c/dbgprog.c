@@ -193,8 +193,8 @@ void FindLocalDebugInfo( const char *name )
     InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
 
-static void DoDownLoadCode( void )
-/********************************/
+OVL_EXTERN void DoDownLoadCode( void )
+/************************************/
 {
     file_handle     fh;
 
@@ -1207,7 +1207,7 @@ static void DoReStart( bool have_parms, size_t clen, const char *start, size_t l
 }
 
 
-static void ResNew( void )
+OVL_EXTERN void ResNew( void )
 {
     const char          *start;
     size_t              len;
@@ -1258,7 +1258,7 @@ static const char NogoTab[] = {
 
 
 
-static void ProgNew( void )
+OVL_EXTERN void ProgNew( void )
 {
     const char  *start;
     char        *cmd;

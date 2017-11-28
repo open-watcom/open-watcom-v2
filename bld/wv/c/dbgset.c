@@ -129,50 +129,50 @@ static const char SetNameTab[] = {
     "DOntexpandhex\0"
 };
 
-static void     AutoConf( void );
-static void     BreakOnWriteConf( void );
-static void     DontExpandHexStringConf( void );
-static void     AsmConf( void );
-static void     VarConf( void );
-static void     FuncConf( void );
-static void     GlobConf( void );
-static void     ModConf( void );
-static void     RegConf( void );
-static void     FPUConf( void );
-static void     MMXConf( void );
-static void     XMMConf( void );
-extern void     DClickConf( void );
-extern void     TabConf( void );
-extern void     InputConf( void );
-extern void     MacroConf( void );
-static void     BellConf( void );
-extern void     SearchConf( void );
-static void     LangConf( void );
-static void     RecursionConf( void );
-static void     SupportConf( void );
+OVL_EXTERN void     AutoConf( void );
+OVL_EXTERN void     BreakOnWriteConf( void );
+OVL_EXTERN void     DontExpandHexStringConf( void );
+OVL_EXTERN void     AsmConf( void );
+OVL_EXTERN void     VarConf( void );
+OVL_EXTERN void     FuncConf( void );
+OVL_EXTERN void     GlobConf( void );
+OVL_EXTERN void     ModConf( void );
+OVL_EXTERN void     RegConf( void );
+OVL_EXTERN void     FPUConf( void );
+OVL_EXTERN void     MMXConf( void );
+OVL_EXTERN void     XMMConf( void );
+extern void         DClickConf( void );
+extern void         TabConf( void );
+extern void         InputConf( void );
+extern void         MacroConf( void );
+OVL_EXTERN void     BellConf( void );
+extern void         SearchConf( void );
+OVL_EXTERN void     LangConf( void );
+OVL_EXTERN void     RecursionConf( void );
+OVL_EXTERN void     SupportConf( void );
 
-static void     BadSet( void );
-static void     AutoSet( void );
-static void     BreakOnWriteSet( void );
-static void     DontExpandHexStringSet( void );
-static void     AsmSet( void );
-static void     VarSet( void );
-static void     FuncSet( void );
-static void     GlobSet( void );
-static void     ModSet( void );
-static void     RegSet( void );
-static void     FPUSet( void );
-static void     MMXSet( void );
-static void     XMMSet( void );
-extern void     DClickSet( void );
-static void     BellSet( void );
-extern void     TabSet( void );
-static void     LangSet( void );
-extern void     InputSet( void );
-extern void     MacroSet( void );
-extern void     SearchSet( void );
-static void     RecursionSet( void );
-static void     SupportSet( void );
+OVL_EXTERN void     BadSet( void );
+OVL_EXTERN void     AutoSet( void );
+OVL_EXTERN void     BreakOnWriteSet( void );
+OVL_EXTERN void     DontExpandHexStringSet( void );
+OVL_EXTERN void     AsmSet( void );
+OVL_EXTERN void     VarSet( void );
+OVL_EXTERN void     FuncSet( void );
+OVL_EXTERN void     GlobSet( void );
+OVL_EXTERN void     ModSet( void );
+OVL_EXTERN void     RegSet( void );
+OVL_EXTERN void     FPUSet( void );
+OVL_EXTERN void     MMXSet( void );
+OVL_EXTERN void     XMMSet( void );
+extern void         DClickSet( void );
+OVL_EXTERN void     BellSet( void );
+extern void         TabSet( void );
+OVL_EXTERN void     LangSet( void );
+extern void         InputSet( void );
+extern void         MacroSet( void );
+extern void         SearchSet( void );
+OVL_EXTERN void     RecursionSet( void );
+OVL_EXTERN void     SupportSet( void );
 
 static void (* const SetJmpTab[])( void ) = {
     &AutoSet,
@@ -269,7 +269,7 @@ void ShowSwitch( bool on )
 }
 
 
-static void BadSet( void )
+OVL_EXTERN void BadSet( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
 }
@@ -303,12 +303,12 @@ void ConfigSet( void )
  * BellSet - set bell on/off processing
  */
 
-static void BellSet( void )
+OVL_EXTERN void BellSet( void )
 {
     _SwitchSet( SW_BELL, SwitchOnOff() );
 }
 
-static void BellConf( void )
+OVL_EXTERN void BellConf( void )
 {
     ShowSwitch( _IsOn( SW_BELL ) );
 }
@@ -318,12 +318,12 @@ static void BellConf( void )
  * AutoSet - set autoconfig on/off processing
  */
 
-static void AutoSet( void )
+OVL_EXTERN void AutoSet( void )
 {
     _SwitchSet( SW_AUTO_SAVE_CONFIG, SwitchOnOff() );
 }
 
-static void AutoConf( void )
+OVL_EXTERN void AutoConf( void )
 {
     ShowSwitch( _IsOn( SW_AUTO_SAVE_CONFIG ) );
 }
@@ -332,13 +332,13 @@ static void AutoConf( void )
  *  - set break on write option
  */
 
-static void BreakOnWriteSet( void )
+OVL_EXTERN void BreakOnWriteSet( void )
 {
     _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
     SetCapabilitiesExactBreakpointSupport( true, false );
 }
 
-static void BreakOnWriteConf( void )
+OVL_EXTERN void BreakOnWriteConf( void )
 {
     ShowSwitch( _IsOn( SW_BREAK_ON_WRITE ) );
 }
@@ -346,12 +346,12 @@ static void BreakOnWriteConf( void )
  *  - set hex expansion
  */
 
-static void DontExpandHexStringSet( void )
+OVL_EXTERN void DontExpandHexStringSet( void )
 {
     _SwitchSet( SW_DONT_EXPAND_HEX, SwitchOnOff() );
 }
 
-static void DontExpandHexStringConf( void )
+OVL_EXTERN void DontExpandHexStringConf( void )
 {
     ShowSwitch( _IsOn( SW_DONT_EXPAND_HEX ) );
 }
@@ -360,12 +360,12 @@ static void DontExpandHexStringConf( void )
  * RecursionSet - set recursion checking on/off processing
  */
 
-static void RecursionSet( void )
+OVL_EXTERN void RecursionSet( void )
 {
     _SwitchSet( SW_RECURSE_CHECK, SwitchOnOff() );
 }
 
-static void RecursionConf( void )
+OVL_EXTERN void RecursionConf( void )
 {
     ShowSwitch( _IsOn( SW_RECURSE_CHECK ) );
 }
@@ -421,7 +421,7 @@ void NewLang( const char *lang )
 }
 
 
-static void LangSet( void )
+OVL_EXTERN void LangSet( void )
 {
     const char  *start;
     size_t      len;
@@ -431,7 +431,7 @@ static void LangSet( void )
     NewLang( start );
 }
 
-static void LangConf( void )
+OVL_EXTERN void LangConf( void )
 {
     ConfigLine( Language );
 }
@@ -700,7 +700,7 @@ struct dump_toggles {
     char                        *p;
 };
 
-static walk_result DumpToggles( dig_mad mad, void *d )
+OVL_EXTERN walk_result DumpToggles( dig_mad mad, void *d )
 {
     struct dump_toggles         *td = d;
     const mad_toggle_strings    *toggles;
@@ -799,13 +799,13 @@ static window_toggle    AsmToggle[] = {
     { ASM_HEX, ASM_DECIMAL, SW_ASM_HEX },
 };
 
-static void AsmSet( void )
+OVL_EXTERN void AsmSet( void )
 {
     ToggleWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
     AsmChangeOptions();
 }
 
-static void AsmConf( void )
+OVL_EXTERN void AsmConf( void )
 {
     ConfWindowSwitches( AsmToggle, ArraySize( AsmToggle ), AsmSettings, MWT_ASM );
 }
@@ -814,13 +814,13 @@ static void AsmConf( void )
         FPU Window
 */
 
-static void FPUSet( void )
+OVL_EXTERN void FPUSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_FPU );
     FPUChangeOptions();
 }
 
-static void FPUConf( void )
+OVL_EXTERN void FPUConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_FPU );
 }
@@ -878,13 +878,13 @@ static window_toggle VarToggle[] = {
     { VAR_STATIC, VAR_NOSTATIC, SW_VAR_SHOW_STATIC },
 };
 
-static void VarSet( void )
+OVL_EXTERN void VarSet( void )
 {
     ToggleWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
     VarChangeOptions();
 }
 
-static void VarConf( void )
+OVL_EXTERN void VarConf( void )
 {
     ConfWindowSwitches( VarToggle, ArraySize( VarToggle ), VarSettings, MWT_LAST );
 }
@@ -904,13 +904,13 @@ static window_toggle FuncToggle[] = {
     { FUNC_TYPED, FUNC_ALL, SW_FUNC_D2_ONLY },
 };
 
-static void FuncSet( void )
+OVL_EXTERN void FuncSet( void )
 {
     ToggleWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
     FuncChangeOptions();
 }
 
-static void FuncConf( void )
+OVL_EXTERN void FuncConf( void )
 {
     ConfWindowSwitches( FuncToggle, ArraySize( FuncToggle ), FuncSettings, MWT_LAST );
 }
@@ -920,13 +920,13 @@ static window_toggle GlobToggle[] = {
     { FUNC_TYPED, FUNC_ALL, SW_GLOB_D2_ONLY },
 };
 
-static void GlobSet( void )
+OVL_EXTERN void GlobSet( void )
 {
     ToggleWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
     GlobChangeOptions();
 }
 
-static void GlobConf( void )
+OVL_EXTERN void GlobConf( void )
 {
     ConfWindowSwitches( GlobToggle, ArraySize( GlobToggle ), FuncSettings, MWT_LAST );
 }
@@ -936,49 +936,49 @@ static window_toggle ModToggle[] = {
     { FUNC_ALL, FUNC_TYPED, SW_MOD_ALL_MODULES },
 };
 
-static void ModSet( void )
+OVL_EXTERN void ModSet( void )
 {
     ToggleWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
     ModChangeOptions();
 }
 
-static void ModConf( void )
+OVL_EXTERN void ModConf( void )
 {
     ConfWindowSwitches( ModToggle, ArraySize( ModToggle ), FuncSettings, MWT_LAST );
 }
 
 
-static void RegSet( void )
+OVL_EXTERN void RegSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_REG );
     RegChangeOptions();
 }
 
-static void RegConf( void )
+OVL_EXTERN void RegConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_REG );
 }
 
 
-static void MMXSet( void )
+OVL_EXTERN void MMXSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_MMX );
     MMXChangeOptions();
 }
 
-static void MMXConf( void )
+OVL_EXTERN void MMXConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_MMX );
 }
 
 
-static void XMMSet( void )
+OVL_EXTERN void XMMSet( void )
 {
     ToggleWindowSwitches( NULL, 0, NULL, MWT_XMM );
     XMMChangeOptions();
 }
 
-static void XMMConf( void )
+OVL_EXTERN void XMMConf( void )
 {
     ConfWindowSwitches( NULL, 0, NULL, MWT_XMM );
 }
@@ -1010,7 +1010,7 @@ static bool IsInSupportNames( const char *name, size_t len )
     return( false );
 }
 
-static void SupportSet( void )
+OVL_EXTERN void SupportSet( void )
 {
     char_ring   *new;
     const char  *start;
@@ -1035,7 +1035,7 @@ static void SupportSet( void )
     }
 }
 
-static void SupportConf( void )
+OVL_EXTERN void SupportConf( void )
 {
     char_ring   *curr;
     char        *p;

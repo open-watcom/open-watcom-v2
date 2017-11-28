@@ -81,7 +81,7 @@ static void AddText( gui_window *gui, char *add )
     }
 }
 
-static bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     void        *curr;

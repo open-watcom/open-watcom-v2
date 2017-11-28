@@ -107,7 +107,7 @@ static void     ImgInit( a_window *wnd )
     WndZapped( wnd );
 }
 
-static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     image_entry *image;
     char        *new_name;
@@ -165,7 +165,7 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static int ImgNumRows( a_window *wnd )
+OVL_EXTERN int ImgNumRows( a_window *wnd )
 {
     image_entry *image;
     int         count;
@@ -179,7 +179,7 @@ static int ImgNumRows( a_window *wnd )
     return( count );
 }
 
-static  bool    ImgGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    ImgGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     image_entry         *image;
@@ -241,13 +241,13 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     return( false );
 }
 
-static void     ImgRefresh( a_window *wnd )
+OVL_EXTERN void     ImgRefresh( a_window *wnd )
 {
     ImgInit( wnd );
 }
 
 
-static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 

@@ -34,8 +34,10 @@
 #include <malloc.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "dbgerr.h"
 #include "tinyio.h"
-#include "dosheap.h"
+#include "heap.h"
+#include "stdui.h"
 
 
 extern void __far _ovl_addarea( unsigned, unsigned );

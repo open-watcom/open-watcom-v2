@@ -125,8 +125,8 @@ inspect_type WndGetExprSPInspectType( address *paddr )
     return( INSP_RAW_DATA );
 }
 
-static void DoLValExpr( void )
-/****************************/
+OVL_EXTERN void DoLValExpr( void )
+/********************************/
 {
     EvalLValExpr( 1 );
     ReqEOC();

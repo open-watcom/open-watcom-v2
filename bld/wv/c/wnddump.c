@@ -45,12 +45,12 @@
 
 typedef void WRITERTN( file_handle, const char * );
 
-static void WriteFile( file_handle fh, const char *buff )
+OVL_EXTERN void WriteFile( file_handle fh, const char *buff )
 {
     WriteText( fh, buff, strlen( buff ) );
 }
 
-static void WriteLog( file_handle fh, const char *buff )
+OVL_EXTERN void WriteLog( file_handle fh, const char *buff )
 {
     /* unused parameters */ (void)fh;
 

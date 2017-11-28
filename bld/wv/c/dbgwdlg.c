@@ -142,7 +142,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-static int DlgNumRows( a_window *wnd )
+OVL_EXTERN int DlgNumRows( a_window *wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -150,7 +150,7 @@ static int DlgNumRows( a_window *wnd )
 }
 
 
-static void DlgRefresh( a_window *wnd )
+OVL_EXTERN void DlgRefresh( a_window *wnd )
 {
     if( DlgLines != 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
@@ -165,7 +165,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
@@ -199,7 +199,7 @@ void WndDlgFini( void )
     }
 }
 
-static bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 

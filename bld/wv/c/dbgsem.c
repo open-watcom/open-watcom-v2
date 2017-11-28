@@ -930,7 +930,7 @@ typedef struct cue_find {
     }                   match;
 } cue_find;
 
-static walk_result FindCue( cue_handle *ch, void *d )
+OVL_EXTERN walk_result sem_FindCue( cue_handle *ch, void *d )
 {
     cue_find    *cd = d;
     char        file[FILENAME_MAX];
@@ -958,7 +958,7 @@ static walk_result FindCue( cue_handle *ch, void *d )
     return( WR_CONTINUE );
 }
 
-static walk_result FindModCue( mod_handle mod, void *d )
+OVL_EXTERN walk_result FindModCue( mod_handle mod, void *d )
 {
     DIPHDL( cue, ch );
     cue_find            *fd = d;
@@ -968,7 +968,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
     fd->ambig = false;
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
-        DIPWalkFileList( mod, FindCue, fd );
+        DIPWalkFileList( mod, sem_FindCue, fd );
         if( fd->id == 0 )
             return( WR_CONTINUE );
         if( fd->ambig ) {

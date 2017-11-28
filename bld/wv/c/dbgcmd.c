@@ -43,7 +43,7 @@
 #include "dbginit.h"
 
 
-static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
+OVL_EXTERN bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
 {
     switch( action ) {
     case INP_RTN_INIT:
@@ -59,7 +59,7 @@ static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
 }
 
 
-static void DoOneCmd( void *_cmd )
+OVL_EXTERN void DoOneCmd( void *_cmd )
 {
     char        *cmd = _cmd;
 

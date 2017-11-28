@@ -84,17 +84,17 @@ int WndNumColours = { ArraySize( WndColours ) };
 
 
 typedef enum {
-    ATTR_ACTIVE         = 0x0001,
-    ATTR_SELECTED       = 0x0002,
-    ATTR_STANDOUT       = 0x0004,
-    ATTR_DISABLED       = 0x0008,
-    ATTR_PLAIN          = 0x0010,
-    ATTR_FRAME          = 0x0020,
-    ATTR_ICON           = 0x0040,
-    ATTR_MENU           = 0x0080,
-    ATTR_TITLE          = 0x0100,
-    ATTR_BUTTON         = 0x0200,
-    ATTR_SHADOW         = 0x0400,
+    DBG_ATTR_ACTIVE     = 0x0001,
+    DBG_ATTR_SELECTED   = 0x0002,
+    DBG_ATTR_STANDOUT   = 0x0004,
+    DBG_ATTR_DISABLED   = 0x0008,
+    DBG_ATTR_PLAIN      = 0x0010,
+    DBG_ATTR_FRAME      = 0x0020,
+    DBG_ATTR_ICON       = 0x0040,
+    DBG_ATTR_MENU       = 0x0080,
+    DBG_ATTR_TITLE      = 0x0100,
+    DBG_ATTR_BUTTON     = 0x0200,
+    DBG_ATTR_SHADOW     = 0x0400,
 } attr_bits;
 
 static const char AttrNameTab[] = {
@@ -112,17 +112,17 @@ static const char AttrNameTab[] = {
 };
 
 static attr_bits AttrBits[] = {
-    ATTR_ACTIVE,
-    ATTR_SELECTED,
-    ATTR_STANDOUT,
-    ATTR_DISABLED,
-    ATTR_PLAIN,
-    ATTR_FRAME,
-    ATTR_ICON,
-    ATTR_MENU,
-    ATTR_TITLE,
-    ATTR_BUTTON,
-    ATTR_SHADOW,
+    DBG_ATTR_ACTIVE,
+    DBG_ATTR_SELECTED,
+    DBG_ATTR_STANDOUT,
+    DBG_ATTR_DISABLED,
+    DBG_ATTR_PLAIN,
+    DBG_ATTR_FRAME,
+    DBG_ATTR_ICON,
+    DBG_ATTR_MENU,
+    DBG_ATTR_TITLE,
+    DBG_ATTR_BUTTON,
+    DBG_ATTR_SHADOW,
 };
 
 typedef struct {
@@ -131,33 +131,33 @@ typedef struct {
 } attr_map;
 
 static attr_map AttrMap[] = {
-    { GUI_MENU_PLAIN,           ATTR_MENU+ATTR_PLAIN },
-    { GUI_MENU_STANDOUT,        ATTR_MENU+ATTR_STANDOUT },
-    { GUI_MENU_GRAYED,          ATTR_MENU+ATTR_DISABLED },
-    { GUI_MENU_ACTIVE,          ATTR_MENU+ATTR_ACTIVE },
-    { GUI_MENU_ACTIVE_STANDOUT, ATTR_MENU+ATTR_ACTIVE+ATTR_STANDOUT },
-    { GUI_MENU_FRAME,           ATTR_FRAME+ATTR_MENU },
-    { GUI_TITLE_INACTIVE,       ATTR_TITLE+ATTR_DISABLED },
-    { GUI_FRAME_ACTIVE,         ATTR_FRAME+ATTR_ACTIVE },
-    { GUI_FRAME_INACTIVE,       ATTR_FRAME+ATTR_DISABLED },
-    { GUI_ICON,                 ATTR_ICON },
-    { GUI_MENU_GRAYED_ACTIVE,   ATTR_MENU+ATTR_DISABLED+ATTR_ACTIVE },
-    { WND_PLAIN,                ATTR_PLAIN },
-    { WND_TABSTOP,              ATTR_ACTIVE },
-    { WND_SELECTED,             ATTR_SELECTED },
-    { WND_STANDOUT,             ATTR_STANDOUT },
-    { WND_HOTSPOT,              ATTR_BUTTON },
-    { WND_STANDOUT_TABSTOP,     ATTR_ACTIVE+ATTR_STANDOUT },
+    { GUI_MENU_PLAIN,           DBG_ATTR_MENU+DBG_ATTR_PLAIN },
+    { GUI_MENU_STANDOUT,        DBG_ATTR_MENU+DBG_ATTR_STANDOUT },
+    { GUI_MENU_GRAYED,          DBG_ATTR_MENU+DBG_ATTR_DISABLED },
+    { GUI_MENU_ACTIVE,          DBG_ATTR_MENU+DBG_ATTR_ACTIVE },
+    { GUI_MENU_ACTIVE_STANDOUT, DBG_ATTR_MENU+DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
+    { GUI_MENU_FRAME,           DBG_ATTR_FRAME+DBG_ATTR_MENU },
+    { GUI_TITLE_INACTIVE,       DBG_ATTR_TITLE+DBG_ATTR_DISABLED },
+    { GUI_FRAME_ACTIVE,         DBG_ATTR_FRAME+DBG_ATTR_ACTIVE },
+    { GUI_FRAME_INACTIVE,       DBG_ATTR_FRAME+DBG_ATTR_DISABLED },
+    { GUI_ICON,                 DBG_ATTR_ICON },
+    { GUI_MENU_GRAYED_ACTIVE,   DBG_ATTR_MENU+DBG_ATTR_DISABLED+DBG_ATTR_ACTIVE },
+    { WND_PLAIN,                DBG_ATTR_PLAIN },
+    { WND_TABSTOP,              DBG_ATTR_ACTIVE },
+    { WND_SELECTED,             DBG_ATTR_SELECTED },
+    { WND_STANDOUT,             DBG_ATTR_STANDOUT },
+    { WND_HOTSPOT,              DBG_ATTR_BUTTON },
+    { WND_STANDOUT_TABSTOP,     DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
 };
 
 static attr_map DlgAttrMap[] = {
-    { GUI_DLG_NORMAL,                   ATTR_PLAIN },
-    { GUI_DLG_FRAME,                    ATTR_FRAME },
-    { GUI_DLG_SHADOW,                   ATTR_SHADOW },
-    { GUI_DLG_BUTTON_PLAIN,             ATTR_BUTTON+ATTR_PLAIN },
-    { GUI_DLG_BUTTON_STANDOUT,          ATTR_BUTTON+ATTR_STANDOUT },
-    { GUI_DLG_BUTTON_ACTIVE,            ATTR_BUTTON+ATTR_ACTIVE },
-    { GUI_DLG_BUTTON_ACTIVE_STANDOUT,   ATTR_BUTTON+ATTR_ACTIVE+ATTR_STANDOUT },
+    { GUI_DLG_NORMAL,                   DBG_ATTR_PLAIN },
+    { GUI_DLG_FRAME,                    DBG_ATTR_FRAME },
+    { GUI_DLG_SHADOW,                   DBG_ATTR_SHADOW },
+    { GUI_DLG_BUTTON_PLAIN,             DBG_ATTR_BUTTON+DBG_ATTR_PLAIN },
+    { GUI_DLG_BUTTON_STANDOUT,          DBG_ATTR_BUTTON+DBG_ATTR_STANDOUT },
+    { GUI_DLG_BUTTON_ACTIVE,            DBG_ATTR_BUTTON+DBG_ATTR_ACTIVE },
+    { GUI_DLG_BUTTON_ACTIVE_STANDOUT,   DBG_ATTR_BUTTON+DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
 };
 
 typedef enum {

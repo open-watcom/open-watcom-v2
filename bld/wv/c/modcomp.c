@@ -41,7 +41,7 @@
 #include "modcomp.h"
 
 
-static const char *ModGetName( const void *data_handle, int item )
+OVL_EXTERN const char *ModGetName( const void *data_handle, int item )
 {
     const module_list *list = data_handle;
 

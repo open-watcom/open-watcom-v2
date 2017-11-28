@@ -120,7 +120,7 @@ static bool CheckType( sym_handle *sym, name_list *name )
 }
 
 
-static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
+OVL_EXTERN walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
 {
     name_list   *name = _name;
 //    char        *p;

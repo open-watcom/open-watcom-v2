@@ -35,16 +35,19 @@
 #include <malloc.h>
 #include <errno.h>
 #include <dos.h>
+#include "bool.h"
 #include "tinyio.h"
-#include "dosheap.h"
-#include "dbgswtch.h"
+#include "heap.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
+
 
 extern struct heapstart         *LastSeg;
 extern void                     *SyMemBeg;
 extern void                     *SyMemEnd;
 
 #pragma aux __AllocSeg modify[];
-unsigned __AllocSeg( unsigned int amount )
+__segment __AllocSeg( unsigned int amount )
     {
         unsigned n;             /* number of paragraphs desired   */
         short seg;
@@ -107,9 +110,10 @@ unsigned __AllocSeg( unsigned int amount )
  * memory
  */
 
-frlptr near __nheap;
+frlptr __near __nheap;
 
-void __near *_nmalloc( size_t amt ) {
+void __near *_nmalloc( size_t amt )
+{
     amt = amt;
     return( 0 );
 }

@@ -35,16 +35,19 @@
 #include <malloc.h>
 #include <errno.h>
 #include <dos.h>
+#include "bool.h"
 #include "tinyio.h"
-#include "dosheap.h"
-#include "dbgswtch.h"
+#include "heap.h"
+#include "dbgdefn.h"
+#include "dbgdata.h"
+
 
 extern struct heapstart         *LastSeg;
 extern void                     *SyMemBeg;
 extern void                     *SyMemEnd;
 
 #pragma aux __GrowSeg modify[];
-unsigned __GrowSeg( unsigned short seg, unsigned int amount )
+int __GrowSeg( unsigned short seg, unsigned int amount )
     {
         unsigned n;             /* number of paragraphs desired   */
         unsigned int old_heaplen;

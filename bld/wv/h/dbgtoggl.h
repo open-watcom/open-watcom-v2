@@ -104,6 +104,7 @@ typedef struct {
     bool     SW_KEEP_HEAP_ENABLED           : 1;
     bool     SW_BREAK_ON_WRITE              : 1;
     bool     SW_DONT_EXPAND_HEX             : 1;    /* If set, display hex in shortest form - 0xf rather than 0x000f, etc */
+    bool     SW_NOSNOW                      : 1;
 } dbg_switches;
 
 

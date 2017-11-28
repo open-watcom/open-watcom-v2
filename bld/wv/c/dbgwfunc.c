@@ -74,7 +74,7 @@ enum {
 };
 
 
-static  void    FuncModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    FuncModify( a_window *wnd, int row, int piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -109,7 +109,7 @@ static void FuncGetSourceName( a_window *wnd, int row )
     NameListName( NameList( func ), row, TxtBuff, SN_QUALIFIED );
 }
 
-static int FuncNumRows( a_window *wnd )
+OVL_EXTERN int FuncNumRows( a_window *wnd )
 {
     return( NameListNumRows( NameList( WndFunc( wnd ) ) ) );
 }
@@ -147,7 +147,7 @@ static void FuncNewOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -185,7 +185,7 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    FuncGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    FuncGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     address     addr;
@@ -227,7 +227,7 @@ extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-static void FuncRefresh( a_window *wnd )
+OVL_EXTERN void FuncRefresh( a_window *wnd )
 {
     func_window *func = WndFunc( wnd );
     mod_handle  mod;
@@ -255,7 +255,7 @@ static void FuncRefresh( a_window *wnd )
     }
 }
 
-static void FuncSetOptions( a_window *wnd )
+OVL_EXTERN void FuncSetOptions( a_window *wnd )
 {
     func_window *func = WndFunc( wnd );
 
@@ -263,7 +263,7 @@ static void FuncSetOptions( a_window *wnd )
     FuncNewOptions( wnd );
 }
 
-static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 

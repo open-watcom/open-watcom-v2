@@ -75,13 +75,13 @@ static bool ChkDate( void )
     if( date.year  < _EXPIRY_YEAR  )
         return( true );
     if( date.year  > _EXPIRY_YEAR  )
-    	return( false );
+        return( false );
     if( date.month < _EXPIRY_MONTH )
-    	return( true );
+        return( true );
     if( date.month > _EXPIRY_MONTH )
-    	return( false );
+        return( false );
     if( date.day   > _EXPIRY_DAY   )
-    	return( false );
+        return( false );
     return( true );
 }
 #endif
@@ -100,7 +100,7 @@ void FingClose( void )
 }
 
 
-static int FingNumRows( a_window *wnd )
+OVL_EXTERN int FingNumRows( a_window *wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -108,11 +108,11 @@ static int FingNumRows( a_window *wnd )
 }
 
 
-static  bool    FingGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    FingGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
     if( piece != 0 )
-    	return( false );
+        return( false );
     row -= TOP_BLANK( wnd );
     if( row < 0 ) {
         line->text = " ";
@@ -120,7 +120,7 @@ static  bool    FingGetLine( a_window *wnd, int row, int piece,
     }
     if( row >= FingMessageSize ) {
         if( !GUIIsGUI() || piece != 0 )
-        	return( false );
+            return( false );
         row -= FingMessageSize;
         switch( row ) {
         case 0:
@@ -139,7 +139,7 @@ static  bool    FingGetLine( a_window *wnd, int row, int piece,
     return( true );
 }
 
-static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 
@@ -215,6 +215,6 @@ void FingOpen( void )
     info.scroll = GUI_NOSCROLL;
     WndFing = WndCreateWithStruct( &info );
     if( WndFing != NULL ) {
-    	WndRepaint( WndFing );
+        WndRepaint( WndFing );
     }
 }

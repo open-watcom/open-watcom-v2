@@ -972,7 +972,7 @@ static brkp *BPNotNull( brkp *bp )
     return( bp );
 }
 
-static void ResPoint( brkp *bp, bool res )
+OVL_EXTERN void ResPoint( brkp *bp, bool res )
 {
     bp->status.b.resume = res;
     RecordBreakEvent( bp, res ? B_RESUME : B_UNRESUME );
@@ -1037,7 +1037,7 @@ OVL_EXTERN brkp *UnResumePoint( memory_expr def_seg )
  * ClearPoint -- clear specified break point
  */
 
-static brkp *ClearPoint( memory_expr def_seg )
+OVL_EXTERN brkp *ClearPoint( memory_expr def_seg )
 {
     address addr;
     if( CurrToken == T_MUL ) {
@@ -1398,7 +1398,7 @@ int GetBPResume( brkp *bp )
     return( bp->status.b.resume );
 }
 
-static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
+OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
 {
     brkp            *bp;
     const char      *start;
@@ -1596,8 +1596,8 @@ typedef struct tmp_break_struct
     const char  *comment;
 } tmp_break_struct;
 
-static void BreakOnAddress( void *_s )
-/***********************************************/
+OVL_EXTERN void BreakOnAddress( void *_s )
+/****************************************/
 {
     tmp_break_struct *s = _s;
 
@@ -1929,7 +1929,7 @@ typedef struct cue_first {
     bool        found;
 } cue_first;
 
-OVL_EXTERN walk_result FindCue( cue_handle *ch, void *_d )
+OVL_EXTERN walk_result brk_FindCue( cue_handle *ch, void *_d )
 {
     cue_first          *d = _d;
     HDLAssign( cue, d->dest, ch );
@@ -1946,7 +1946,7 @@ bool    FindFirstCue( mod_handle mod, cue_handle *ch )
     if( mod != NO_MOD ) {
         d.dest = ch;
         d.found = false;
-        DIPWalkFileList( mod, FindCue, &d );
+        DIPWalkFileList( mod, brk_FindCue, &d );
     }
     return( d.found );
 }

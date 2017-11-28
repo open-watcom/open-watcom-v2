@@ -77,7 +77,7 @@ typedef struct {
 #define ModList( mod ) ( &((mod)->___list) )
 
 
-static int ModNumRows( a_window *wnd )
+OVL_EXTERN int ModNumRows( a_window *wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }
@@ -119,7 +119,7 @@ static void     ModInit( a_window *wnd )
     ModCalcIndent( wnd );
 }
 
-static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     mod_handle  handle;
@@ -178,7 +178,7 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static void     ModModify( a_window *wnd, int row, int piece )
+OVL_EXTERN void     ModModify( a_window *wnd, int row, int piece )
 {
     if( piece == PIECE_SOURCE ) {
         if( ModHasSourceInfo( ModListMod( ModList( WndMod( wnd ) ), row ) ) ) {
@@ -194,7 +194,7 @@ static void     ModModify( a_window *wnd, int row, int piece )
 }
 
 
-static  bool    ModGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    ModGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     mod_handle  handle;
@@ -255,7 +255,7 @@ extern void ModNewHandle( a_window *wnd, mod_handle handle )
     ModSetCurrent( wnd );
 }
 
-static void     ModRefresh( a_window *wnd )
+OVL_EXTERN void     ModRefresh( a_window *wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
@@ -277,13 +277,13 @@ static void     ModRefresh( a_window *wnd )
     }
 }
 
-static void ModSetOptions( a_window *wnd )
+OVL_EXTERN void ModSetOptions( a_window *wnd )
 {
     WndMod( wnd )->all_modules = _IsOn( SW_MOD_ALL_MODULES );
     ModInit( wnd );
 }
 
-static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 

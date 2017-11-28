@@ -225,7 +225,7 @@ static bool RegResize( a_window *wnd )
 }
 
 
-static int RegNumRows( a_window *wnd )
+OVL_EXTERN int RegNumRows( a_window *wnd )
 {
     return( WndReg( wnd )->rows );
 }
@@ -244,7 +244,7 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 }
 
 
-static const char *RegValueName( const void *data_handle, int item )
+OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     size_t          buff_len;
@@ -259,7 +259,7 @@ static const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-static  void    RegModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    RegModify( a_window *wnd, int row, int piece )
 {
     int                     i;
     item_mach               value;
@@ -314,7 +314,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     NewCurrRadix( old_radix );
 }
 
-static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -356,7 +356,7 @@ static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    RegGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    RegGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
     int                 column;
@@ -407,7 +407,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void     RegRefresh( a_window *wnd )
+OVL_EXTERN void     RegRefresh( a_window *wnd )
 {
     int                 row,rows;
     int                 reg_num;
@@ -441,7 +441,7 @@ static void     RegRefresh( a_window *wnd )
     }
 }
 
-static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 

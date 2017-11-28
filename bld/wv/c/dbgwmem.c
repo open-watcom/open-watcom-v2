@@ -60,9 +60,6 @@
 
 
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
-extern void             MemFiniTypes( mem_type_walk_data *data );
-extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
-
 
 typedef gui_ord (MEMHEADER)(a_window *,int);
 
@@ -175,7 +172,7 @@ static unsigned MemCurrOffset( a_window *wnd )
     return( ( curr_row * mem->items_per_line + curr_piece ) * mem->item_size );
 }
 
-static gui_ord MemHeader( a_window *wnd, int piece )
+OVL_EXTERN gui_ord MemHeader( a_window *wnd, int piece )
 {
     address     addr;
     mem_window  *mem;
@@ -210,7 +207,7 @@ static gui_ord MemHeader( a_window *wnd, int piece )
 }
 
 
-static gui_ord BinHeader( a_window *wnd, int piece )
+OVL_EXTERN gui_ord BinHeader( a_window *wnd, int piece )
 {
     mem_window  *mem;
 
@@ -272,7 +269,7 @@ static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-static  void MemRefresh( a_window *wnd )
+OVL_EXTERN  void MemRefresh( a_window *wnd )
 {
     mem_window  *mem;
 
@@ -411,7 +408,7 @@ static  void    MemUpdateCursor( a_window *wnd )
 }
 
 
-static  void    MemModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    MemModify( a_window *wnd, int row, int piece )
 {
     address     addr;
     union {
@@ -638,7 +635,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-static  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -783,7 +780,7 @@ static void MemResize( a_window *wnd )
     MemRefresh( wnd );
 }
 
-static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     mem_window  *mem;
 
@@ -871,14 +868,14 @@ static void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static  void StkRefresh( a_window *wnd )
+OVL_EXTERN  void StkRefresh( a_window *wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-static  int     MemScroll( a_window *wnd, int lines )
+OVL_EXTERN  int     MemScroll( a_window *wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -953,7 +950,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;

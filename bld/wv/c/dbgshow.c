@@ -207,7 +207,7 @@ typedef struct {
     bool        config; /* should info be dumped for save config call */
 } show_rtn;
 
-static void ConfigTypes( void )
+OVL_EXTERN void ConfigTypes( void )
 {
 }
 

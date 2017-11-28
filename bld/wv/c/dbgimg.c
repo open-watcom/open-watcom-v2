@@ -55,7 +55,7 @@ char *ImgSymFileName( image_entry *image, bool always )
     }
 }
 
-static int ImageCompare( void *_pa, void *_pb )
+OVL_EXTERN int ImageCompare( void *_pa, void *_pb )
 {
     image_entry **pa = _pa;
     image_entry **pb = _pb;

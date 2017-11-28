@@ -49,16 +49,11 @@
 #include "clibext.h"
 
 
-#ifdef _OVERLAYED_
-#define CONST
-#else
-#define CONST static const
-#endif
 
 #define WV_SYM_DEF(size) struct { fixed_wv_sym_entry s; unsigned char len, name[size]; }
 
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
-    CONST WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
+    static const WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
         {                                       \
             { TK_ ## tk, TM_ ## tm, ts },       \
             SC_ ## sc,                          \
@@ -85,7 +80,7 @@ typedef struct wv_sym_list {
 #include "dipwvsym.h"
 #undef pick
 
-CONST wv_sym_entry *const ListInternal[] = {
+static const wv_sym_entry *const ListInternal[] = {
     #define pick(n,tk,tm,tt) (const wv_sym_entry *)&wvINT_ ## n,
     #include "dipwvsym.h"
     #undef pick
@@ -123,7 +118,7 @@ struct lookup_reg {
     const mad_reg_info  *ri;
 };
 
-static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
+OVL_EXTERN walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct lookup_reg   *ld = d;
 

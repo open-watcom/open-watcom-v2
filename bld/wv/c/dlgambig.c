@@ -44,7 +44,7 @@
 #include "dbglkup.h"
 
 
-static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
+OVL_EXTERN int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 
@@ -56,7 +56,7 @@ static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
     return( dlg.chosen );
 }
 
-static const char *SymPickText( const void *data_handle, int item )
+OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

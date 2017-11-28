@@ -39,8 +39,6 @@
 #include "stdui.h"
 #include "dosscrn.h"
 #include "tinyio.h"
-#include "dbgswtch.h"
-#include "dbginstr.h"
 
 /*
 Warning(1028): _ActFontTbls is an undefined reference

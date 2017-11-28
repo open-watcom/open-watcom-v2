@@ -376,7 +376,7 @@ bool    AsmIsTracking( a_window *wnd )
 }
 #endif
 
-static  void    AsmModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    AsmModify( a_window *wnd, int row, int piece )
 {
     asm_window  *asw;
     address     addr;
@@ -396,7 +396,7 @@ static  void    AsmModify( a_window *wnd, int row, int piece )
 }
 
 
-static void AsmNotify( a_window *wnd, wnd_row row, int piece )
+OVL_EXTERN void AsmNotify( a_window *wnd, wnd_row row, int piece )
 {
     asm_window  *asw;
     address     addr;
@@ -432,7 +432,7 @@ bool AsmOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-static void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     asm_window  *asw;
@@ -563,7 +563,7 @@ static void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static int AsmScroll( a_window *wnd, int lines )
+OVL_EXTERN int AsmScroll( a_window *wnd, int lines )
 {
     address             addr;
     int                 moved;
@@ -612,7 +612,7 @@ static int AsmScroll( a_window *wnd, int lines )
 }
 
 
-static  void    AsmBegPaint( a_window *wnd, int row, int num )
+OVL_EXTERN  void    AsmBegPaint( a_window *wnd, int row, int num )
 {
     asm_window  *asw;
 
@@ -623,7 +623,7 @@ static  void    AsmBegPaint( a_window *wnd, int row, int num )
 }
 
 
-static  void    AsmEndPaint( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    AsmEndPaint( a_window *wnd, int row, int piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 
@@ -657,7 +657,7 @@ static void AsmNewSource( asm_window *asw, cue_handle *ch )
     }
 }
 
-static  bool    AsmGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    AsmGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     address     addr;
     asm_window  *asw;
@@ -899,7 +899,7 @@ static  void    AsmNewIP( a_window *wnd )
     }
 }
 
-static void     AsmRefresh( a_window *wnd )
+OVL_EXTERN void     AsmRefresh( a_window *wnd )
 {
     asm_window          *asw;
     unsigned            new_size;
@@ -994,7 +994,7 @@ static  void    AsmInit( a_window *wnd )
     WndZapped( wnd );
 }
 
-static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
@@ -1029,7 +1029,7 @@ static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static void DoAsmChangeOptions( a_window *wnd )
+OVL_EXTERN void DoAsmChangeOptions( a_window *wnd )
 {
     asm_window  *asw;
 

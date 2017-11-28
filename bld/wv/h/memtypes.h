@@ -44,3 +44,6 @@ typedef struct {
     char                **labels;
     int                 byte_id;
 } mem_type_walk_data;
+
+extern void     MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
+extern void     MemFiniTypes( mem_type_walk_data *data );

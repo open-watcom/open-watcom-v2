@@ -192,7 +192,7 @@ struct type_name {
     mad_type_handle     th;
 };
 
-static walk_result      FindTypeName( mad_type_handle th, void *d )
+OVL_EXTERN walk_result      FindTypeName( mad_type_handle th, void *d )
 {
     struct type_name    *nd = d;
     const char          *p;

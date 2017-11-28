@@ -73,7 +73,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON( NULL, CTL_NEW_CANCEL,       B3, R1, B3+BW ),
 };
 
-static bool NewSymEvent( gui_window *gui, gui_event event, void *param )
+OVL_EXTERN bool NewSymEvent( gui_window *gui, gui_event event, void *param )
 {
     gui_ctl_id  id;
 

@@ -49,9 +49,6 @@
 #include "dbgwio.h"
 
 
-extern void             MemInitTypes( mad_type_kind mas, mem_type_walk_data *data );
-extern void             MemFiniTypes( mem_type_walk_data *data );
-
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 
 static mem_type_walk_data       IOData;
@@ -84,7 +81,7 @@ typedef struct {
 #define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
 
 
-static int IONumRows( a_window *wnd )
+OVL_EXTERN int IONumRows( a_window *wnd )
 {
     return( WndIO( wnd )->num_rows );
 }
@@ -105,7 +102,7 @@ static void IOAddNewAddr( a_window *wnd, address *addr, int type )
     curr->value_known = false;
 }
 
-static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     io_window   *io = WndIO( wnd );
     address     addr;
@@ -186,7 +183,7 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static void     IOModify( a_window *wnd, int row, int piece )
+OVL_EXTERN void     IOModify( a_window *wnd, int row, int piece )
 {
     if( row < 0 ) {
         IOMenuItem( wnd, MENU_IO_NEW_ADDRESS, row, piece );
@@ -207,7 +204,7 @@ static void     IOModify( a_window *wnd, int row, int piece )
     }
 }
 
-static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
 //    bool        ret;
@@ -254,7 +251,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece *li
 }
 
 
-static void     IORefresh( a_window *wnd )
+OVL_EXTERN void     IORefresh( a_window *wnd )
 {
     WndNoSelect( wnd );
     WndRepaint( wnd );
@@ -298,7 +295,7 @@ void FiniIOWindow( void )
     MemFiniTypes( &IOData );
 }
 
-static bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
 

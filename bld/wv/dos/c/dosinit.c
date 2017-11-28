@@ -31,26 +31,28 @@
 
 
 #include <stdlib.h>
-#include <dos.h>
+#include <string.h>
 #include <setjmp.h>
+#include <dos.h>
 #include "tinyio.h"
 #include "dbgdefn.h"
 #include "dbgmain.h"
 #include "dbginit.h"
+#include "dbgio.h"
 
 extern void             WndRefresh( void );
 
-static void (interrupt *_old10)();
-static void (interrupt *_old1b)();
-static void (interrupt *_old23)();
-static void (interrupt *_old24)();
-static void (interrupt *_old28)();
-static void (interrupt *orig28)();
+static void (__interrupt *_old10)();
+static void (__interrupt *_old1b)();
+static void (__interrupt *_old23)();
+static void (__interrupt *_old24)();
+static void (__interrupt *_old28)();
+static void (__interrupt *orig28)();
 
 
 extern char ActFontTbls;
 
-void interrupt Interrupt10( union REGS r )
+OVL_EXTERN void __interrupt Interrupt10( union REGS r )
 {
     if( r.w.ax == 0x1103 ) {
         ActFontTbls = r.h.bl;
@@ -59,7 +61,7 @@ void interrupt Interrupt10( union REGS r )
 }
 
 static volatile bool Pending;
-void interrupt Interrupt1b_23( void )
+OVL_EXTERN void __interrupt Interrupt1b_23( void )
 {
     Pending = true;
 }
@@ -75,7 +77,7 @@ bool TBreak( void ) {
 
 
 static char Fail;
-void interrupt Interrupt24( union REGS r )
+OVL_EXTERN void __interrupt Interrupt24( union REGS r )
 {
     r.h.al = Fail;
 }
@@ -145,9 +147,9 @@ void WndCleanUp( void )
 
 #include <time.h>
 
-long    timezone        = 5L * 60L * 60L;       /* seconds from GMT */
-int     __dst_adjust    = 60L * 60L;            /* daylight adjustment */
-int     daylight        = 1;                    /* d.s.t. indicator */
+long    _WCDATA timezone    = 5L * 60L * 60L;       /* seconds from GMT */
+int     __dst_adjust        = 60L * 60L;            /* daylight adjustment */
+int     _WCDATA daylight    = 1;                    /* d.s.t. indicator */
 
 struct tm __start_dst =                         /* start of daylight savings */
         { 0, 0, 2,                              /* M4.1.0/02:00:00 default */
@@ -165,9 +167,11 @@ void tzset( void )
 {
 }
 
+#if 0
 void SysMemInit( void )
 {
 }
+#endif
 
 bool SysGUI( void )
 {

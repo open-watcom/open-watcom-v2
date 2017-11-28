@@ -96,7 +96,7 @@ int ModCompare( mod_handle const *a, mod_handle const *b )
     return( stricmp( namea, nameb ) );
 }
 
-static int ModOrder( const void *ap, const void *bp )
+OVL_EXTERN int ModOrder( const void *ap, const void *bp )
 {
     image_entry *ia;
     image_entry *ib;

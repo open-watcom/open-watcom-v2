@@ -31,8 +31,9 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <i86.h>
-#include "bool.h"
+#include "dbgdefn.h"
 #include "tinyio.h"
 #include "doschk.h"
 #include "doschkx.h"

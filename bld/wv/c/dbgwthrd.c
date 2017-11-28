@@ -77,7 +77,7 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-static int TrdNumRows( a_window *wnd )
+OVL_EXTERN int TrdNumRows( a_window *wnd )
 {
     thread_state    *thd;
     unsigned        num;
@@ -90,7 +90,7 @@ static int TrdNumRows( a_window *wnd )
     return( num );
 }
 
-static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -140,7 +140,7 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static void TrdRefresh( a_window *wnd )
+OVL_EXTERN void TrdRefresh( a_window *wnd )
 {
     thread_state    *thd;
     int                 row;
@@ -158,7 +158,7 @@ static void TrdRefresh( a_window *wnd )
 }
 
 
-static  bool    TrdGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN bool    TrdGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );

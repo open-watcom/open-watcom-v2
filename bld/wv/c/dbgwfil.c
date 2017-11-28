@@ -194,7 +194,7 @@ static void GotoLine( a_window *wnd )
 }
 
 
-static void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     address     addr;
     mod_handle  mod;
@@ -324,7 +324,7 @@ static void FilePos( a_window *wnd, int pos )
 }
 
 
-static int FileScroll( a_window *wnd, int lines )
+OVL_EXTERN int FileScroll( a_window *wnd, int lines )
 {
     int         old_top;
 
@@ -334,7 +334,7 @@ static int FileScroll( a_window *wnd, int lines )
 }
 
 
-static  void    FileModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    FileModify( a_window *wnd, int row, int piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -366,7 +366,7 @@ static void FileSetDotAddr( a_window *wnd, address addr )
     }
 }
 
-static void FileNotify( a_window *wnd, wnd_row row, int piece )
+OVL_EXTERN void FileNotify( a_window *wnd, wnd_row row, int piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -420,7 +420,7 @@ void FileBreakGadget( a_window *wnd, wnd_line_piece *line, bool curr, brkp *bp )
 }
 
 
-static  bool    FileGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    FileGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     int         len;
@@ -734,7 +734,7 @@ static void ClearSrcFile( file_window *file )
     }
 }
 
-static void FileRefresh( a_window *wnd )
+OVL_EXTERN void FileRefresh( a_window *wnd )
 {
     file_window *file = WndFile( wnd );
     address     dotaddr;
@@ -769,7 +769,7 @@ static void FileRefresh( a_window *wnd )
 }
 
 
-static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );
 

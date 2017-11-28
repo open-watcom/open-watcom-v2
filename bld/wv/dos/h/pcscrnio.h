@@ -220,7 +220,7 @@
 #pragma aux BIOSGetRows =                                       \
         "push   es"             \
         "push   bp"             \
-        "mov    ah,1130h"       \
+        "mov    ax,1130h"       \
         "xor    bh,bh"          \
         "int    10h"            \
         "inc    dl"             \
@@ -232,7 +232,7 @@
 #pragma aux BIOSGetPoints =                                     \
         "push   es"             \
         "push   bp"             \
-        "mov    ah,1130h"       \
+        "mov    ax,1130h"       \
         "xor    bh,bh"          \
         "int    10h"            \
         "pop    bp"             \

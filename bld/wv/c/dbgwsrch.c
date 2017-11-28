@@ -96,7 +96,7 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-static int SrchNumRows( a_window *wnd )
+OVL_EXTERN int SrchNumRows( a_window *wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
@@ -164,7 +164,7 @@ OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
 }
 
 
-static int CueCompare( void *pa, void *pb )
+OVL_EXTERN int CueCompare( void *pa, void *pb )
 {
     return( strcmp( (*(a_cue **)pa)->name, (*(a_cue **)pb)->name ) );
 }
@@ -229,7 +229,7 @@ static void     SrchInit( a_window *wnd )
 }
 
 
-static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    *new;
@@ -253,7 +253,7 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    SrchGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    SrchGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
@@ -290,7 +290,7 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
 
 
 
-static void     SrchRefresh( a_window *wnd )
+OVL_EXTERN void     SrchRefresh( a_window *wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -311,7 +311,7 @@ static void     SrchRefresh( a_window *wnd )
 }
 
 
-static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 

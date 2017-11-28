@@ -64,7 +64,7 @@ trap_elen           MaxPacketLen;
 
 #if !defined( BUILD_RFX )
 
-static void TrapFailed( void )
+OVL_EXTERN void TrapFailed( void )
 {
     KillTrap();
     StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );

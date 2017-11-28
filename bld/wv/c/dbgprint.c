@@ -676,7 +676,7 @@ typedef struct {
 } print_fld;
 
 
-static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
+OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
 {
     print_fld   *d = _d;
     char        *name;

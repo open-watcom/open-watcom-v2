@@ -36,11 +36,11 @@
 #include "dbgdata.h"
 #include "kbio.h"
 #include "dbgmem.h"
+#include "dbgscrn.h"
+#include "dbgerr.h"
 #include "stdui.h"
 #include "dosscrn.h"
 #include "tinyio.h"
-#include "dbgswtch.h"
-#include "dbginstr.h"
 #include "uidbg.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
@@ -91,6 +91,7 @@ static unsigned int  PgmMouse, DbgMouse;
 #define CGA_CURSOR_ON   0x0607
 #define MON_CURSOR_ON   0x0b0c
 
+#define IRET            '\xCF'
 
 typedef enum {
         DISP_NONE,
@@ -813,8 +814,9 @@ void InitScreen( void )
     char        __far *vect;
 
     /* check for Microsoft mouse */
-    vect = *((char __far * __far *)MK_FP( 0, 4*0x33 ));
-    if( vect == NULL || *vect == IRET ) _SwitchOff( SW_USE_MOUSE );
+    vect = *((char __far * __far *)MK_FP( 0, 4 * 0x33 ));
+    if( vect == NULL || *vect == IRET )
+        _SwitchOff( SW_USE_MOUSE );
 
     AllocSave();
     SaveMouse( PgmMouse );
@@ -1066,7 +1068,7 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 
     if( typ == C_OFF ) {
         uioffcursor();
-    } else if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != NULL ) ) {
+    } else if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != 0 ) ) {
         if( row == OldRow && col == OldCol && typ == OldTyp )
             return;
         OldTyp = typ;
@@ -1085,7 +1087,7 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 
 void uioffcursor( void )
 {
-    if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != NULL ) ) {
+    if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != 0 ) ) {
         OldTyp = C_OFF;
         VIDSetCurTyp( VIDPort, NoCur );
     }
@@ -1206,8 +1208,6 @@ static void GetLines( void )
 
 bool ScreenOption( const char *start, unsigned len, int pass )
 {
-    unsigned long   num;
-
     pass=pass;
     switch( Lookup( ScreenNameTab, start, len ) ) {
     case OPT_MONO:

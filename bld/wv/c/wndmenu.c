@@ -347,7 +347,7 @@ extern void ProcAccel( void )
     DoProcAccel( false, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
 }
 
-static void FreeLabels( gui_menu_struct *menu, int num_menus )
+OVL_EXTERN void FreeLabels( gui_menu_struct *menu, int num_menus )
 {
     while( --num_menus >= 0 ) {
         if( menu->id != MENU_MAIN_ACTION && menu->child != NULL ) {
@@ -363,7 +363,7 @@ static void FreeLabels( gui_menu_struct *menu, int num_menus )
 }
 
 
-static void LoadLabels( gui_menu_struct *menu, int num_menus )
+OVL_EXTERN void LoadLabels( gui_menu_struct *menu, int num_menus )
 {
     while( --num_menus >= 0 ) {
         if( menu->child != NULL ) {

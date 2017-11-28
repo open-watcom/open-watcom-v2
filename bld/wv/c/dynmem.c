@@ -361,9 +361,6 @@ void MemInit( void )
 
 #if defined( _M_I86 )
 
-extern LP_VOID  ExtraAlloc( size_t size );
-extern void     ExtraFree( LP_VOID ptr );
-
 LP_VOID uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );

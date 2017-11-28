@@ -42,7 +42,7 @@
 #include "madcli.h"
 
 
-static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
+OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle th, void *d )
 {
     mem_type_walk_data  *data = d;
     mad_type_info       tinfo;
@@ -76,7 +76,7 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
     return( WR_CONTINUE );
 }
 
-extern void MemInitTypes( mad_type_kind mas, mem_type_walk_data *data )
+void MemInitTypes( mad_type_kind mas, mem_type_walk_data *data )
 {
     data->num_types = 0;
     data->labels = NULL;
@@ -89,7 +89,7 @@ extern void MemInitTypes( mad_type_kind mas, mem_type_walk_data *data )
     MADTypeWalk( mas, MadMemTypeWalk, data );
 }
 
-extern void MemFiniTypes( mem_type_walk_data *data )
+void MemFiniTypes( mem_type_walk_data *data )
 {
     int         i;
 
