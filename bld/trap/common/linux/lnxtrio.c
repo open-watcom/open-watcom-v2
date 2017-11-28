@@ -241,7 +241,6 @@ FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, c
     return( fp );
 }
 
-#if 0
 int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
     return( fread( buff, 1, len, fp ) != len );
@@ -251,7 +250,6 @@ int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
     return( fseek( fp, offs, where ) );
 }
-#endif
 
 int DIGLoader( Close )( FILE *fp )
 {
