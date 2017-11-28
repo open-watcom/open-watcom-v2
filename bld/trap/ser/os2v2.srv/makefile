@@ -9,6 +9,6 @@ srv = ser
 which = SERVER
 remote_link = 1
 
-extra_objs = seros22.obj
+extra_objs = seros2.obj
 
 !include $(trap_dir)/master.mif

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 1.x serial port interface.
+* Description:  OS/2 serial port access functions.
 *
 ****************************************************************************/
 
@@ -32,48 +32,60 @@
 #include <dos.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSDEVICES
+#define INCL_DOSDEVIOCTL
 #define INCL_DOSPROCESS
 #define INCL_DOSINFOSEG
-#include <os2.h>
+#define INCL_DOSERRORS
+#define INCL_DOSMISC
+#include <wos2.h>
+#include "bool.h"
 #include "serial.h"
+#include "serlink.h"
 #include "trpimp.h"
 #include "trperr.h"
 
-int                                     CurrentBaud;
-long                                    MSecsAtZero;
-GINFOSEG                                __far *GInfoSeg;
-LINFOSEG                                __far *LInfoSeg;
-HFILE                                   ComPort = 0;
+int                             CurrentBaud;
+long                            MSecsAtZero;
+HFILE                           ComPort = 0;
+#ifdef _M_I86
+GINFOSEG                        __far *GInfoSeg;
+LINFOSEG                        __far *LInfoSeg;
+#endif
 
-#define BSIZE   1024                    /* must be power of 2 */
-char                                    ReadBuff[BSIZE];
-int                                     ReadBuffRemove;
-int                                     ReadBuffAdd;
+#define BSIZE                   1024            /* must be power of 2 */
+char                            ReadBuff[BSIZE];
+int                             ReadBuffRemove;
+int                             ReadBuffAdd;
 
-#define READER_STACKSIZE                2048
-byte                                    ReaderStack[READER_STACKSIZE];
-TID                                     ReaderId;
-ULONG                                   ReadSemaphore;
-bool                                    OverRun;
-bool                                    BlockTransmission;
+#ifdef _M_I86
+#define READER_STACKSIZE        2048
+byte                            ReaderStack[READER_STACKSIZE];
+ULONG                           ReadSemaphore;
+#else
+#define READER_STACKSIZE        8192
+HEV                             ReadSemaphore;
+#endif
+TID                             ReaderId;
+bool                            OverRun;
+bool                            BlockTransmission;
 
-extern int                              MaxBaud;
+extern int                      MaxBaud;
 
 #define MILLISEC_PER_TICK       55
 
 #define SERIAL          0x0001
 
 #define SETLINECTRL     0x0042
-    #define     DATA_BITS_8     0x08
-    #define STOP_BITS_1 0x00
-    #define PARITY_NONE 0x00
+#define DATA_BITS_8     0x08
+#define STOP_BITS_1     0x00
+#define PARITY_NONE     0x00
 
 #define SETBAUDRATE     0x0041
 
 #define GETCOMMEVENT    0x0072
-    #define LAST_CHAR_SENT      0x0004
-    #define CHAR_AVAILABLE      0x0001
-    #define ERROR_DETECTED      0x0080
+#define LAST_CHAR_SENT  0x0004
+#define CHAR_AVAILABLE  0x0001
+#define ERROR_DETECTED  0x0080
 
 #define FLUSH           0x000B
 #define INPUT           0x0001
@@ -81,24 +93,54 @@ extern int                              MaxBaud;
 
 void ZeroWaitCount( void )
 {
+#ifdef _M_I86
     MSecsAtZero = GInfoSeg->msecs;
+#else
+    DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT, &MSecsAtZero, sizeof( MSecsAtZero ) );
+#endif
 }
 
 
 unsigned WaitCount( void )
 {
+#ifdef _M_I86
     return( ( GInfoSeg->msecs - MSecsAtZero ) / MILLISEC_PER_TICK );
+#else
+    ULONG  ulMsecs;
+
+    DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT, &ulMsecs, sizeof( ulMsecs ) );
+    return( ( ulMsecs - MSecsAtZero ) / MILLISEC_PER_TICK );
+#endif
 }
 
 
 void ClearCom( void )
 {
     BYTE        command;
+#ifdef _M_I86
 
     command = 0;
     DosDevIOCtl( 0L, &command, INPUT, FLUSH, ComPort );
     command = 0;
     DosDevIOCtl( 0L, &command, OUTPUT, FLUSH, ComPort );
+#else
+    ULONG       ulParmLen;
+    USHORT      data;
+    ULONG       ulDataLen;
+
+    command = 0;
+    ulParmLen = sizeof( command );
+    ulDataLen = sizeof( data );
+    DosDevIOCtl( ComPort, IOCTL_GENERAL, DEV_FLUSHINPUT,
+        &command, sizeof( command ), &ulParmLen,
+        &data, sizeof( data ), &ulDataLen );
+    command = 0;
+    ulParmLen = sizeof( command );
+    ulDataLen = sizeof( data );
+    DosDevIOCtl( ComPort, IOCTL_GENERAL, DEV_FLUSHOUTPUT,
+        &command, sizeof( command ), &ulParmLen,
+        &data, sizeof( data ), &ulDataLen );
+#endif
 }
 
 static void WaitTransmit( void )
@@ -106,50 +148,69 @@ static void WaitTransmit( void )
     USHORT      event;
 
     do {
+#ifdef _M_I86
         DosDevIOCtl( (PVOID)&event, (PVOID)0L, GETCOMMEVENT, SERIAL, ComPort );
-    } while( ( event & LAST_CHAR_SENT ) == 0 );
+#else
+        ULONG       ulDataLen;
+
+        ulDataLen = sizeof( event );
+        DosDevIOCtl( ComPort, IOCTL_ASYNC, ASYNC_GETCOMMEVENT,
+            NULL, 0, NULL, &event, sizeof( event ), &ulDataLen );
+#endif
+    } while( (event & LAST_CHAR_SENT) == 0 );
 }
 
 void SendByte( int value )
 {
-    USHORT      written = 0;
+    OS_UINT     written = 0;
 
     DosWrite( ComPort, (BYTE *)&value, 1, &written );
-    if( !BlockTransmission ) WaitTransmit();
+    if( !BlockTransmission ) {
+        WaitTransmit();
+    }
 }
 
 void StartBlockTrans( void )
 {
-    BlockTransmission = TRUE;
+    BlockTransmission = true;
 }
 
 void StopBlockTrans( void )
 {
     if( BlockTransmission ) {
-        BlockTransmission = FALSE;
+        BlockTransmission = false;
         WaitTransmit();
     }
 }
 
+#ifdef _M_I86
 static void FAR Reader( void )
+#else
+static void APIENTRY Reader( ULONG arg )
+#endif
 {
     int         data;
-    USHORT      read;
+    OS_UINT     read;
     int         new_index;
 
-    OverRun = FALSE;
+    OverRun = false;
     for( ;; ) {
-        DosRead( ComPort, &data, 1, &read );
+        if( DosRead( ComPort, &data, 1, &read ) )
+            break;
         if( read == 1 ) {
             new_index = ReadBuffAdd + 1;
-            new_index &= BSIZE-1;
+            new_index &= BSIZE - 1;
             if( new_index == ReadBuffRemove ) {
-                OverRun = TRUE;
+                OverRun = true;
             } else {
-                ReadBuff[ ReadBuffAdd ] = data;
+                ReadBuff[ReadBuffAdd] = data;
                 ReadBuffAdd = new_index;
             }
+#ifdef _M_I86
             DosSemClear( &ReadSemaphore );
+#else
+            DosPostEventSem( ReadSemaphore );
+#endif
         }
     }
 }
@@ -158,16 +219,26 @@ static void FAR Reader( void )
 int WaitByte( unsigned ticks )
 {
     int         data;
+#ifndef _M_I86
+    ULONG       ulPostCount;
+#endif
 
     data = 0;
     if( ReadBuffAdd == ReadBuffRemove ) {
-        if( DosSemSetWait( &ReadSemaphore, ticks*MILLISEC_PER_TICK ) != 0 ) {
+#ifdef _M_I86
+        if( DosSemSetWait( &ReadSemaphore, ticks * MILLISEC_PER_TICK ) != 0 ) {
+#else
+        if( DosWaitEventSem( ReadSemaphore, ticks * MILLISEC_PER_TICK ) != 0 ) {
+#endif
             return( SDATA_NO_DATA );
         }
     }
-    data = ReadBuff[ ReadBuffRemove ];
+#ifndef _M_I86
+    DosResetEventSem( ReadSemaphore, &ulPostCount );
+#endif
+    data = ReadBuff[ReadBuffRemove];
     ReadBuffRemove++;
-    ReadBuffRemove &= BSIZE-1;
+    ReadBuffRemove &= BSIZE - 1;
     return( data );
 }
 
@@ -178,8 +249,12 @@ int GetByte( void )
 }
 
 
-USHORT Rate[] = {
-        0,              /* os2 can't handle 115200 */
+UINT Rate[] = {
+#ifdef _M_I86
+        0,              /* 16-bit OS/2 can't handle 115200 */
+#else
+        115200,
+#endif
         57600,
         38400,
         19200,
@@ -187,38 +262,53 @@ USHORT Rate[] = {
         4800,
         2400,
         1200,
-        0 };
+        0
+};
 
 
 bool Baud( int index )
 {
     USHORT      temp;
     BYTE        lc[3];
-    USHORT      rc;
+#ifndef _M_I86
+    BYTE        command;
+    ULONG       ulParmLen;
+#endif
 
-    if( index == MIN_BAUD ) return( TRUE );
-    if( index == CurrentBaud ) return( TRUE );
+    if( index == MIN_BAUD )
+        return( true );
+    if( index == CurrentBaud )
+        return( true );
     temp = Rate[index];
-    rc = DosDevIOCtl( (PVOID)0L, (PVOID)&temp, SETBAUDRATE, SERIAL, ComPort );
-    if( rc != 0 ) {
-        return( FALSE );
-    }
-    lc[ 0 ] = DATA_BITS_8;
-    lc[ 1 ] = PARITY_NONE;
-    lc[ 2 ] = STOP_BITS_1;
-    rc = DosDevIOCtl( (PVOID)0L, (PVOID)&lc, SETLINECTRL, SERIAL, ComPort );
-    if( rc != 0 ) {
-        return( FALSE );
-    }
+#ifdef _M_I86
+    if( DosDevIOCtl( (PVOID)0L, (PVOID)&temp, SETBAUDRATE, SERIAL, ComPort ) )
+#else
+    command   = 0;
+    ulParmLen = sizeof( temp );
+    if( DosDevIOCtl( ComPort, IOCTL_ASYNC, ASYNC_SETBAUDRATE,
+        &temp, sizeof( temp ), &ulParmLen, NULL, 0, NULL ) )
+#endif
+        return( false );
+    lc[0] = DATA_BITS_8;
+    lc[1] = PARITY_NONE;
+    lc[2] = STOP_BITS_1;
+#ifdef _M_I86
+    if( DosDevIOCtl( (PVOID)0L, (PVOID)&lc, SETLINECTRL, SERIAL, ComPort ) )
+#else
+    ulParmLen = sizeof( lc );
+    if( DosDevIOCtl( ComPort, IOCTL_ASYNC, ASYNC_SETLINECTRL,
+        &lc, sizeof( lc ), &ulParmLen, NULL, 0, NULL ) )
+#endif
+        return( false );
     CurrentBaud = index;
-    return( TRUE );
+    return( true );
 }
 
 
 char *ParsePortSpec( const char **spec )
 {
     const char  *parm;
-    USHORT      action;
+    OS_UINT     action;
     char        port;
     static char name[] = "com?";
 
@@ -228,8 +318,10 @@ char *ParsePortSpec( const char **spec )
     if( *parm >= '1' && *parm <= '9' ) {
         port = *parm++;
     }
-    if( *parm != '\0' && *parm != '.' ) return( TRP_ERR_invalid_serial_port_number );
-    if( spec != NULL ) *spec = parm;
+    if( *parm != '\0' && *parm != '.' )
+        return( TRP_ERR_invalid_serial_port_number );
+    if( spec != NULL )
+        *spec = parm;
     if( ComPort != 0 ) {
         DosClose( ComPort );
         ComPort = 0;
@@ -256,11 +348,19 @@ bool CheckPendingError( void )
 {
     USHORT      event;
     bool        over_run;
+#ifdef _M_I86
 
     DosDevIOCtl( (PVOID)&event, (PVOID)0L, GETCOMMEVENT, SERIAL, ComPort );
+#else
+    ULONG       ulDataLen;
+
+    ulDataLen = sizeof( event );
+    DosDevIOCtl( ComPort, IOCTL_ASYNC, ASYNC_GETCOMMEVENT,
+        NULL, 0, NULL, &event, sizeof( event ), &ulDataLen );
+#endif
     over_run = OverRun;
-    OverRun = FALSE;
-    return( over_run || ( event & ERROR_DETECTED ) );
+    OverRun = false;
+    return( over_run || (event & ERROR_DETECTED) );
 }
 
 
@@ -275,34 +375,50 @@ void Wait( unsigned timer_ticks )
 
     wait_time = WaitCount() + timer_ticks;
     while( WaitCount() < wait_time ) {
-        DosSleep( MILLISEC_PER_TICK/2 );        /* half a timer tick */
+        DosSleep( MILLISEC_PER_TICK / 2 );      /* half a timer tick */
     }
 }
 
 
 char *InitSys( void )
 {
+#ifdef _M_I86
     SEL         sel_global;
     SEL         sel_local;
-    USHORT      rc;
+#endif
 
     if( MaxBaud == 0 ) {
         MaxBaud = 3; /* 19200 -- see table */
     }
-    rc = DosGetInfoSeg( &sel_global, &sel_local );
-    if( rc != 0 ) return( TRP_OS2_no_info );
+#ifdef _M_I86
+    if( DosGetInfoSeg( &sel_global, &sel_local ) )
+#else
+    if( DosCreateEventSem( NULL, &ReadSemaphore, 0, false ) )
+#endif
+        return( TRP_OS2_no_info );
+#ifdef _M_I86
     GInfoSeg = MK_FP( sel_global, 0 );
     LInfoSeg = MK_FP( sel_local, 0 );
-    rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL,
-                     0, LInfoSeg->tidCurrent );
-    if( rc != 0 ) return( TRP_OS2_cannot_set_thread_priority );
+    if( DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, LInfoSeg->tidCurrent ) )
+#else
+    if( DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 ) )
+#endif
+        return( TRP_OS2_cannot_set_thread_priority );
     ReadBuffAdd = 0;
     ReadBuffRemove = 0;
+#ifdef _M_I86
     ReadSemaphore = 0;
-    rc = DosCreateThread( Reader, &ReaderId, ReaderStack+READER_STACKSIZE );
-    if( rc != 0 ) return( TRP_OS2_cannot_create_helper_thread );
-    rc = DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, ReaderId );
-    if( rc != 0 ) return( TRP_OS2_cannot_set_thread_priority );
+    if( DosCreateThread( Reader, &ReaderId, ReaderStack + READER_STACKSIZE ) )
+#else
+    if( DosCreateThread( &ReaderId, Reader, 0, CREATE_READY, READER_STACKSIZE ) )
+#endif
+        return( TRP_OS2_cannot_create_helper_thread );
+#ifdef _M_I86
+    if( DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, ReaderId ) )
+#else
+    if( DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, ReaderId ) )
+#endif
+        return( TRP_OS2_cannot_set_thread_priority );
     CurrentBaud = -1;
     return( NULL );
 }
@@ -310,4 +426,8 @@ char *InitSys( void )
 
 void ResetSys( void )
 {
+#ifndef _M_I86
+    DosCloseEventSem( ReadSemaphore );
+    ReadSemaphore = 0;
+#endif
 }
