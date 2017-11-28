@@ -49,6 +49,7 @@
 #include "madcli.h"
 #include "madsys.h"
 #include "xfloat.h"
+#include "ovldefn.h"
 
 
 #if defined( _M_IX86 ) || defined( _M_X64 ) || defined( __ALPHA__ ) || defined( __PPC__ ) || defined( __MIPS__ )
@@ -279,7 +280,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
     return( MS_OK );
 }
 
-static mad_status DUMMYIMPENTRY( Init )( void )
+OVL_EXTERN mad_status DUMMYIMPENTRY( Init )( void )
 {
     /* never actually called */
     return( MS_OK );
@@ -324,7 +325,7 @@ mad_status      MADLoad( dig_mad mad )
     return( MS_OK );
 }
 
-static void DUMMYIMPENTRY( Fini )( void )
+OVL_EXTERN void DUMMYIMPENTRY( Fini )( void )
 {
     /* never actually called */
 }
@@ -367,22 +368,22 @@ dig_mad         MADActiveSet( dig_mad mad )
     return( mad_old );
 }
 
-static unsigned DUMMYIMPENTRY( StateSize )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( StateSize )( void )
 {
     return( 0 );
 }
 
-static void DUMMYIMPENTRY( StateInit )( imp_mad_state_data *msd )
+OVL_EXTERN void DUMMYIMPENTRY( StateInit )( imp_mad_state_data *msd )
 {
     /* unused parameters */ (void)msd;
 }
 
-static void DUMMYIMPENTRY( StateSet )( imp_mad_state_data *msd )
+OVL_EXTERN void DUMMYIMPENTRY( StateSet )( imp_mad_state_data *msd )
 {
     /* unused parameters */ (void)msd;
 }
 
-static void DUMMYIMPENTRY( StateCopy )( const imp_mad_state_data *src, imp_mad_state_data *dst )
+OVL_EXTERN void DUMMYIMPENTRY( StateCopy )( const imp_mad_state_data *src, imp_mad_state_data *dst )
 {
     /* unused parameters */ (void)src; (void)dst;
 }
@@ -511,7 +512,7 @@ size_t MADNameDescription( dig_mad mad, char *buff, size_t buff_size )
  *      Address Arithmetic
  */
 
-static void DUMMYIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
+OVL_EXTERN void DUMMYIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
 {
     /* unused parameters */ (void)af;
 
@@ -523,7 +524,7 @@ void            MADAddrAdd( address *a, long b, mad_address_format af )
     Active->rtns->AddrAdd( a, b, af );
 }
 
-static int DUMMYIMPENTRY( AddrComp )( const address *a, const address *b, mad_address_format af )
+OVL_EXTERN int DUMMYIMPENTRY( AddrComp )( const address *a, const address *b, mad_address_format af )
 {
     /* unused parameters */ (void)af;
 
@@ -539,7 +540,7 @@ int MADAddrComp( const address *a, const address *b, mad_address_format af )
     return( Active->rtns->AddrComp( a, b, af ) );
 }
 
-static long DUMMYIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )
+OVL_EXTERN long DUMMYIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )
 {
     /* unused parameters */ (void)af;
 
@@ -551,7 +552,7 @@ long            MADAddrDiff( const address *a, const address *b, mad_address_for
     return( Active->rtns->AddrDiff( a, b, af ) );
 }
 
-static mad_status DUMMYIMPENTRY( AddrMap )( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( AddrMap )( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
 {
     /* unused parameters */ (void)a; (void)map; (void)real; (void)mr;
     return( MS_FAIL );
@@ -562,7 +563,7 @@ mad_status      MADAddrMap( addr_ptr *a, const addr_ptr *map, const addr_ptr *re
     return( Active->rtns->AddrMap( a, map, real, mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( AddrFlat )( const mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( AddrFlat )( const mad_registers *mr )
 {
     /* unused parameters */ (void)mr;
 
@@ -574,7 +575,7 @@ mad_status      MADAddrFlat( const mad_registers *mr )
     return( Active->rtns->AddrFlat( mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const mad_registers *mr )
 {
     /* unused parameters */ (void)a; (void)size; (void)mr;
 
@@ -590,7 +591,7 @@ mad_status      MADAddrInterrupt( const addr_ptr *a, unsigned size, const mad_re
  *      Machine Types
  */
 
-static walk_result DUMMYIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *d )
+OVL_EXTERN walk_result DUMMYIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *d )
 {
     /* unused parameters */ (void)tk; (void)wk; (void)d;
     return( WR_CONTINUE );
@@ -601,7 +602,7 @@ struct type_glue {
     void                *d;
 };
 
-static walk_result DIGCLIENT TypeGlue( mad_type_handle th, void *d )
+OVL_EXTERN walk_result DIGCLIENT MM_TypeGlue( mad_type_handle th, void *d )
 {
     struct type_glue    *gd = d;
 
@@ -614,10 +615,10 @@ walk_result     MADTypeWalk( mad_type_kind tk, MAD_TYPE_WALKER *wk, void *d )
 
     glue.wk = wk;
     glue.d  = d;
-    return( Active->rtns->TypeWalk( tk, TypeGlue, &glue ) );
+    return( Active->rtns->TypeWalk( tk, MM_TypeGlue, &glue ) );
 }
 
-static mad_string DUMMYIMPENTRY( TypeName )( mad_type_handle th )
+OVL_EXTERN mad_string DUMMYIMPENTRY( TypeName )( mad_type_handle th )
 {
     /* unused parameters */ (void)th;
 
@@ -629,7 +630,7 @@ mad_string      MADTypeName( mad_type_handle th )
     return( Active->rtns->TypeName( th ) );
 }
 
-static mad_radix DUMMYIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+OVL_EXTERN mad_radix DUMMYIMPENTRY( TypePreferredRadix )( mad_type_handle th )
 {
     /* unused parameters */ (void)th;
 
@@ -641,7 +642,7 @@ mad_radix       MADTypePreferredRadix( mad_type_handle th )
     return( Active->rtns->TypePreferredRadix( th ) );
 }
 
-static mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
+OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
 {
     /* unused parameters */ (void)ti;
 
@@ -653,7 +654,7 @@ mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
     return( Active->rtns->TypeForDIPType( ti ) );
 }
 
-static void DUMMYIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+OVL_EXTERN void DUMMYIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
 {
     /* unused parameters */ (void)th;
 
@@ -727,7 +728,7 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
     return( MS_UNSUPPORTED );
 }
 
-static mad_type_handle DUMMYIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *a )
+OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *a )
 {
     /* unused parameters */ (void)tk; (void)af; (void)mr; (void)a;
 
@@ -740,7 +741,7 @@ mad_type_handle MADTypeDefault( mad_type_kind tk, mad_address_format af, const m
 }
 
 
-static mad_status DUMMYIMPENTRY( TypeConvert )( const mad_type_info *ti_src, const void *src, const mad_type_info *ti_dst, void *dst, addr_seg seg )
+OVL_EXTERN mad_status DUMMYIMPENTRY( TypeConvert )( const mad_type_info *ti_src, const void *src, const mad_type_info *ti_dst, void *dst, addr_seg seg )
 {
     /* unused parameters */ (void)ti_src; (void)src; (void)ti_dst; (void)dst; (void)seg;
 
@@ -1192,7 +1193,7 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
     return( Active->rtns->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-static mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
+OVL_EXTERN mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     /* unused parameters */ (void)radix; (void)mti; (void)d; (void)buff_size_p; (void)buff;
 
@@ -1475,7 +1476,7 @@ mad_status MADTypeHandleToString( mad_radix radix, mad_type_handle th, const voi
  *      Machine Registers
  */
 
-static unsigned DUMMYIMPENTRY( RegistersSize )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( RegistersSize )( void )
 {
     return( 1 );
 }
@@ -1485,7 +1486,7 @@ unsigned        MADRegistersSize( void )
     return( Active->rtns->RegistersSize() );
 }
 
-static mad_status DUMMYIMPENTRY( RegistersHost )( mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegistersHost )( mad_registers *mr )
 {
     /* unused parameters */ (void)mr;
 
@@ -1497,7 +1498,7 @@ mad_status      MADRegistersHost( mad_registers *mr )
     return( Active->rtns->RegistersHost( mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( RegistersTarget )( mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegistersTarget )( mad_registers *mr )
 {
     /* unused parameters */ (void)mr;
 
@@ -1509,7 +1510,7 @@ mad_status      MADRegistersTarget( mad_registers *mr )
     return( Active->rtns->RegistersTarget( mr ) );
 }
 
-static walk_result DUMMYIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+OVL_EXTERN walk_result DUMMYIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     /* unused parameters */ (void)tk; (void)wk; (void)d;
 
@@ -1521,7 +1522,7 @@ struct regset_glue {
     void                *d;
 };
 
-static walk_result DIGCLIENT RegSetGlue( const mad_reg_set_data *rsd, void *d )
+OVL_EXTERN walk_result DIGCLIENT RegSetGlue( const mad_reg_set_data *rsd, void *d )
 {
     struct regset_glue  *gd = d;
 
@@ -1537,7 +1538,7 @@ walk_result     MADRegSetWalk( mad_type_kind tk, MAD_REG_SET_WALKER *wk, void *d
     return( Active->rtns->RegSetWalk( tk, &RegSetGlue, &glue ) );
 }
 
-static mad_string DUMMYIMPENTRY( RegSetName )( const mad_reg_set_data *rsd )
+OVL_EXTERN mad_string DUMMYIMPENTRY( RegSetName )( const mad_reg_set_data *rsd )
 {
     /* unused parameters */ (void)rsd;
 
@@ -1549,7 +1550,7 @@ mad_string      MADRegSetName( const mad_reg_set_data *rsd )
     return( Active->rtns->RegSetName( rsd ) );
 }
 
-static size_t DUMMYIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+OVL_EXTERN size_t DUMMYIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     /* unused parameters */ (void)rsd;
 
@@ -1563,7 +1564,7 @@ size_t MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size
     return( Active->rtns->RegSetLevel( rsd, buff, buff_size ) );
 }
 
-static unsigned DUMMYIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
+OVL_EXTERN unsigned DUMMYIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
     /* unused parameters */ (void)rsd;
 
@@ -1575,7 +1576,7 @@ unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data *rsd )
     return( Active->rtns->RegSetDisplayGrouping( rsd ) );
 }
 
-static mad_status DUMMYIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
     /* unused parameters */ (void)rsd; (void)mr; (void)piece; (void)descript_p; (void)max_descript_p; (void)reg; (void)disp_type; (void)max_value;
 
@@ -1588,7 +1589,7 @@ mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad
                 max_descript_p, reg, disp_type, max_value ) );
 }
 
-static mad_status DUMMYIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
 {
     /* unused parameters */ (void)rsd; (void)reg;
 
@@ -1603,7 +1604,7 @@ mad_status      MADRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_r
 }
 
 
-static const mad_toggle_strings *DUMMYIMPENTRY( RegSetDisplayToggleList )( const mad_reg_set_data *rsd )
+OVL_EXTERN const mad_toggle_strings *DUMMYIMPENTRY( RegSetDisplayToggleList )( const mad_reg_set_data *rsd )
 {
     /* unused parameters */ (void)rsd;
 
@@ -1615,7 +1616,7 @@ const mad_toggle_strings *MADRegSetDisplayToggleList( const mad_reg_set_data *rs
     return( Active->rtns->RegSetDisplayToggleList( rsd ) );
 }
 
-static unsigned DUMMYIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+OVL_EXTERN unsigned DUMMYIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     /* unused parameters */ (void)rsd; (void)on; (void)off;
 
@@ -1627,7 +1628,7 @@ unsigned        MADRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on
     return( Active->rtns->RegSetDisplayToggle( rsd, on, off ) );
 }
 
-static mad_status DUMMYIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr )
 {
     /* unused parameters */ (void)rsd; (void)ri; (void)old; (void)curr;
 
@@ -1639,7 +1640,7 @@ mad_status      MADRegModified( const mad_reg_set_data *rsd, const mad_reg_info 
     return( Active->rtns->RegModified( rsd, ri, old, curr ) );
 }
 
-static mad_status DUMMYIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_registers *mr, address *a )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
     /* unused parameters */ (void)ri; (void)mr; (void)a;
 
@@ -1651,7 +1652,7 @@ mad_status      MADRegInspectAddr( const mad_reg_info *ri, const mad_registers *
     return( Active->rtns->RegInspectAddr( ri, mr, a ) );
 }
 
-static walk_result DUMMYIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
+OVL_EXTERN walk_result DUMMYIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
     /* unused parameters */ (void)rsd; (void)ri; (void)wk; (void)d;
 
@@ -1663,14 +1664,14 @@ struct reg_glue {
     void                *d;
 };
 
-static walk_result DIGCLIENT RegGlue( const mad_reg_info *ri, int has_sublist, void *d )
+OVL_EXTERN walk_result DIGCLIENT RegGlue( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct reg_glue     *gd = d;
 
     return( gd->wk( ri, has_sublist, gd->d ) );
 }
 
-static walk_result DIGCLIENT AllRegWalk( const mad_reg_set_data *rsd, void *d )
+OVL_EXTERN walk_result DIGCLIENT AllRegWalk( const mad_reg_set_data *rsd, void *d )
 {
     return( Active->rtns->RegWalk( rsd, NULL, &RegGlue, d ) );
 }
@@ -1701,7 +1702,7 @@ struct full_name {
     size_t                      len;
 };
 
-static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *d )
+OVL_EXTERN walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct full_name            *name = d;
     struct full_name_component  curr;
@@ -1777,7 +1778,7 @@ size_t MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, size_
     return( name.len );
 }
 
-static void DUMMYIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, addr_ptr *a )
+OVL_EXTERN void DUMMYIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, addr_ptr *a )
 {
     /* unused parameters */ (void)sr; (void)mr;
 
@@ -1790,7 +1791,7 @@ void            MADRegSpecialGet( mad_special_reg sr, const mad_registers *mr, a
     Active->rtns->RegSpecialGet( sr, mr, a );
 }
 
-static void DUMMYIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const addr_ptr *a )
+OVL_EXTERN void DUMMYIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const addr_ptr *a )
 {
     /* unused parameters */ (void)sr; (void)mr; (void)a;
 }
@@ -1800,7 +1801,7 @@ void            MADRegSpecialSet( mad_special_reg sr, mad_registers *mr, const a
     Active->rtns->RegSpecialSet( sr, mr, a );
 }
 
-static size_t DUMMYIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
+OVL_EXTERN size_t DUMMYIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     /* unused parameters */ (void)sr; (void)mr; (void)af; (void)buff_size; (void)buff;
 
@@ -1812,7 +1813,7 @@ size_t MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_addre
     return( Active->rtns->RegSpecialName( sr, mr, af, buff, buff_size ) );
 }
 
-static const mad_reg_info *DUMMYIMPENTRY( RegFromContextItem )( context_item ci )
+OVL_EXTERN const mad_reg_info *DUMMYIMPENTRY( RegFromContextItem )( context_item ci )
 {
     /* unused parameters */ (void)ci;
 
@@ -1824,7 +1825,7 @@ const mad_reg_info *MADRegFromContextItem( context_item ci )
     return( Active->rtns->RegFromContextItem( ci ) );
 }
 
-static void DUMMYIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+OVL_EXTERN void DUMMYIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
@@ -1834,7 +1835,7 @@ void            MADRegUpdateStart( mad_registers *mr, unsigned flags, unsigned b
     Active->rtns->RegUpdateStart( mr, flags, bit_start, bit_size );
 }
 
-static void DUMMYIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+OVL_EXTERN void DUMMYIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
@@ -1850,7 +1851,7 @@ void            MADRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit
  */
 
 
-static mad_status DUMMYIMPENTRY( CallStackGrowsUp )( void )
+OVL_EXTERN mad_status DUMMYIMPENTRY( CallStackGrowsUp )( void )
 {
     return( MS_FAIL );
 }
@@ -1860,7 +1861,7 @@ mad_status      MADCallStackGrowsUp( void )
     return( Active->rtns->CallStackGrowsUp() );
 }
 
-static const mad_string *DUMMYIMPENTRY( CallTypeList )( void )
+OVL_EXTERN const mad_string *DUMMYIMPENTRY( CallTypeList )( void )
 {
     return( EmptyStrList );
 }
@@ -1870,7 +1871,7 @@ const mad_string        *MADCallTypeList( void )
     return( Active->rtns->CallTypeList() );
 }
 
-static mad_status DUMMYIMPENTRY( CallBuildFrame )( mad_string ct, address ret, address rtn, const mad_registers *in, mad_registers *out )
+OVL_EXTERN mad_status DUMMYIMPENTRY( CallBuildFrame )( mad_string ct, address ret, address rtn, const mad_registers *in, mad_registers *out )
 {
     /* unused parameters */ (void)ct; (void)ret; (void)rtn; (void)in; (void)out;
 
@@ -1882,7 +1883,7 @@ mad_status              MADCallBuildFrame( mad_string ct, address ret, address r
     return( Active->rtns->CallBuildFrame( ct, ret, rtn, in, out ) );
 }
 
-static const mad_reg_info *DUMMYIMPENTRY( CallReturnReg )( mad_string ct, address a )
+OVL_EXTERN const mad_reg_info *DUMMYIMPENTRY( CallReturnReg )( mad_string ct, address a )
 {
     /* unused parameters */ (void)ct; (void)a;
 
@@ -1894,7 +1895,7 @@ const mad_reg_info      *MADCallReturnReg( mad_string ct, address a )
     return( Active->rtns->CallReturnReg( ct, a ) );
 }
 
-static const mad_reg_info **DUMMYIMPENTRY( CallParmRegList )( mad_string ct, address a )
+OVL_EXTERN const mad_reg_info **DUMMYIMPENTRY( CallParmRegList )( mad_string ct, address a )
 {
     static const mad_reg_info *list[] = { NULL };
 
@@ -1908,7 +1909,7 @@ const mad_reg_info      **MADCallParmRegList( mad_string ct, address a )
     return( Active->rtns->CallParmRegList( ct, a ) );
 }
 
-static unsigned DUMMYIMPENTRY( CallUpStackSize )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( CallUpStackSize )( void )
 {
     return( 1 );
 }
@@ -1918,7 +1919,7 @@ unsigned                MADCallUpStackSize( void )
     return( Active->rtns->CallUpStackSize() );
 }
 
-static mad_status DUMMYIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
     /* unused parameters */ (void)cud; (void)mr;
 
@@ -1930,7 +1931,7 @@ mad_status              MADCallUpStackInit( mad_call_up_data *cud, const mad_reg
     return( Active->rtns->CallUpStackInit( cud, mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud, address const *start, unsigned rtn_characteristics, long return_disp, mad_registers const *in, address *execution, address *frame, address *stack, mad_registers **out )
+OVL_EXTERN mad_status DUMMYIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud, address const *start, unsigned rtn_characteristics, long return_disp, mad_registers const *in, address *execution, address *frame, address *stack, mad_registers **out )
 {
     /* unused parameters */ (void)cud; (void)start; (void)rtn_characteristics; (void)return_disp; (void)in; (void)execution; (void)frame; (void)stack; (void)out;
 
@@ -1949,7 +1950,7 @@ mad_status              MADCallUpStackLevel( mad_call_up_data *cud, address cons
 
 #define ILL_INSTR       "????"
 
-static unsigned DUMMYIMPENTRY( DisasmDataSize )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( DisasmDataSize )( void )
 {
     return( 1 );
 }
@@ -1959,7 +1960,7 @@ unsigned                MADDisasmDataSize( void )
     return( Active->rtns->DisasmDataSize() );
 }
 
-static unsigned DUMMYIMPENTRY( DisasmNameMax )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( DisasmNameMax )( void )
 {
     return( sizeof( ILL_INSTR ) - 1 );
 }
@@ -1969,7 +1970,7 @@ unsigned                MADDisasmNameMax( void )
     return( Active->rtns->DisasmNameMax() );
 }
 
-static mad_status DUMMYIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
+OVL_EXTERN mad_status DUMMYIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
     /* unused parameters */ (void)dd;
 
@@ -1982,7 +1983,7 @@ mad_status              MADDisasm( mad_disasm_data *dd, address *a, int adj )
     return( Active->rtns->Disasm( dd, a, adj ) );
 }
 
-static size_t DUMMYIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
+OVL_EXTERN size_t DUMMYIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     /* unused parameters */ (void)dd; (void)radix;
 
@@ -2003,7 +2004,7 @@ size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radi
     return( Active->rtns->DisasmFormat( dd, dp, radix, buff, buff_size ) );
 }
 
-static unsigned DUMMYIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
+OVL_EXTERN unsigned DUMMYIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
     /* unused parameters */ (void)dd;
 
@@ -2015,7 +2016,7 @@ unsigned    MADDisasmInsSize( mad_disasm_data *dd )
     return( Active->rtns->DisasmInsSize( dd ) );
 }
 
-static mad_status DUMMYIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
+OVL_EXTERN mad_status DUMMYIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
 {
     /* unused parameters */ (void)dd;
 
@@ -2027,7 +2028,7 @@ mad_status  MADDisasmInsUndoable( mad_disasm_data *dd )
     return( Active->rtns->DisasmInsUndoable( dd ) );
 }
 
-static mad_disasm_control DUMMYIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_registers *mr )
+OVL_EXTERN mad_disasm_control DUMMYIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_registers *mr )
 {
     /* unused parameters */ (void)dd; (void)mr;
 
@@ -2039,7 +2040,7 @@ mad_disasm_control      MADDisasmControl( mad_disasm_data *dd, const mad_registe
     return( Active->rtns->DisasmControl( dd, mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_registers *mr, address *a )
+OVL_EXTERN mad_status DUMMYIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_registers *mr, address *a )
 {
     /* unused parameters */ (void)dd; (void)mr; (void)a;
 
@@ -2051,7 +2052,7 @@ mad_status              MADDisasmInsNext( mad_disasm_data *dd, const mad_registe
     return( Active->rtns->DisasmInsNext( dd, mr, a ) );
 }
 
-static mad_status DUMMYIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
+OVL_EXTERN mad_status DUMMYIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     /* unused parameters */ (void)start; (void)len; (void)radix; (void)mr; (void)a;
 
@@ -2063,7 +2064,7 @@ mad_status              MADDisasmInspectAddr( const char *start, unsigned len, m
     return( Active->rtns->DisasmInspectAddr( start, len, radix, mr, a ) );
 }
 
-static walk_result DUMMYIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
+OVL_EXTERN walk_result DUMMYIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     /* unused parameters */ (void)dd; (void)wk; (void)mr; (void)d;
 
@@ -2075,7 +2076,7 @@ struct memref_glue {
     void                *d;
 };
 
-static walk_result DIGCLIENT MemRefGlue( address a, mad_type_handle th, mad_memref_kind mk, void *d )
+OVL_EXTERN walk_result DIGCLIENT MemRefGlue( address a, mad_type_handle th, mad_memref_kind mk, void *d )
 {
     struct memref_glue  *gd = d;
 
@@ -2091,7 +2092,7 @@ walk_result             MADDisasmMemRefWalk( mad_disasm_data *dd, MAD_MEMREF_WAL
     return( Active->rtns->DisasmMemRefWalk( dd, MemRefGlue, mr, &glue ) );
 }
 
-static const mad_toggle_strings *DUMMYIMPENTRY( DisasmToggleList )( void )
+OVL_EXTERN const mad_toggle_strings *DUMMYIMPENTRY( DisasmToggleList )( void )
 {
     return( EmptyToggleList );
 }
@@ -2101,7 +2102,7 @@ const mad_toggle_strings        *MADDisasmToggleList( void )
     return( Active->rtns->DisasmToggleList() );
 }
 
-static unsigned DUMMYIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
+OVL_EXTERN unsigned DUMMYIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
 {
     /* unused parameters */ (void)on; (void)off;
 
@@ -2118,7 +2119,7 @@ unsigned                MADDisasmToggle( unsigned on, unsigned off )
  *      Instruction Tracing
  */
 
-static unsigned DUMMYIMPENTRY( TraceSize )( void )
+OVL_EXTERN unsigned DUMMYIMPENTRY( TraceSize )( void )
 {
     return( 1 );
 }
@@ -2128,7 +2129,7 @@ unsigned        MADTraceSize( void )
     return( Active->rtns->TraceSize() );
 }
 
-static void DUMMYIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
+OVL_EXTERN void DUMMYIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 {
     /* unused parameters */ (void)td; (void)mr;
 }
@@ -2138,7 +2139,7 @@ void            MADTraceInit( mad_trace_data *td, const mad_registers *mr )
     Active->rtns->TraceInit( td, mr );
 }
 
-static mad_trace_how DUMMYIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *a )
+OVL_EXTERN mad_trace_how DUMMYIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *a )
 {
     /* unused parameters */ (void)td; (void)dd; (void)tk; (void)mr; (void)a;
 
@@ -2150,7 +2151,7 @@ mad_trace_how   MADTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_
     return( Active->rtns->TraceOne( td, dd, tk, mr, a ) );
 }
 
-static mad_status DUMMYIMPENTRY( TraceHaveRecursed )( address a, const mad_registers *mr )
+OVL_EXTERN mad_status DUMMYIMPENTRY( TraceHaveRecursed )( address a, const mad_registers *mr )
 {
     /* unused parameters */ (void)a; (void)mr;
 
@@ -2162,7 +2163,7 @@ mad_status      MADTraceHaveRecursed( address a, const mad_registers *mr )
     return( Active->rtns->TraceHaveRecursed( a, mr ) );
 }
 
-static mad_status DUMMYIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
+OVL_EXTERN mad_status DUMMYIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
     /* unused parameters */ (void)td; (void)dd; (void)in; (void)out;
 
@@ -2174,7 +2175,7 @@ mad_status      MADTraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const
     return( Active->rtns->TraceSimulate( td, dd, in, out ) );
 }
 
-static void DUMMYIMPENTRY( TraceFini )( mad_trace_data *td )
+OVL_EXTERN void DUMMYIMPENTRY( TraceFini )( mad_trace_data *td )
 {
     /* unused parameters */ (void)td;
 }
@@ -2184,7 +2185,7 @@ void            MADTraceFini( mad_trace_data *td )
     Active->rtns->TraceFini( td );
 }
 
-static mad_status DUMMYIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
+OVL_EXTERN mad_status DUMMYIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     /* unused parameters */ (void)mr;
 
