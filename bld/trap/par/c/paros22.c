@@ -36,12 +36,8 @@
 #include <os2.h>
 #include "i86.h"
 #include "parlink.h"
+#include "portio.h"
 
-
-APIRET16 APIENTRY16 DosPortAccess(USHORT,USHORT,USHORT,USHORT);
-
-extern USHORT APIENTRY16 output_port(USHORT, USHORT);
-extern USHORT APIENTRY16 input_port(USHORT);
 
 #define NUM_ELTS(a)   (sizeof(a) / sizeof(a[0]))
 

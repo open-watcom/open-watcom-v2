@@ -32,25 +32,16 @@
 
 #include <stddef.h>
 #define INCL_DOSINFOSEG
+#define INCL_DOSDEVICES
 #include <os2.h>
 #include "i86.h"
 #include "parlink.h"
+#include "portio.h"
 
-
-extern unsigned __far output_port( unsigned, unsigned );
-extern unsigned __far input_port( unsigned );
-
-extern unsigned __pascal __far DosDevConfig( char __far *, unsigned short,
-                                         unsigned short );
-
-extern unsigned short __pascal __far DosPortAccess( unsigned short reserverd,
-                                                unsigned short req_release,
-                                                unsigned short first_port,
-                                                unsigned short last_port );
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
-GINFOSEG                                __far *GInfoSeg;
+GINFOSEG    __far *GInfoSeg;
 
 unsigned short PortTest[] = {
         0x378, 0x3bc, 0x278
@@ -68,8 +59,10 @@ int NumPrinters( void )
     unsigned short      rc;
 
     rc = DosDevConfig( &num_printers, 0, 0 );
-    if( rc != 0 ) return( 0 );
-    if( num_printers > PortsFound ) num_printers = PortsFound;
+    if( rc != 0 )
+        return( 0 );
+    if( num_printers > PortsFound )
+        num_printers = PortsFound;
     return( num_printers );
 }
 
