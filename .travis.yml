@@ -62,14 +62,14 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
       script: travis/build.sh boot
-#    - # ...
-#      os: osx
-#      install:
-#        - export OWTOOLS=GCC
-#        - export OWTRAVISJOB=BOOTSTRAP
-#        - export OWDOCBUILD=0
-#        - export OWVERBOSE=1
-#      script: travis/build.sh boot
+    - # ...
+      os: osx
+      install:
+        - export OWTOOLS=GCC
+        - export OWTRAVISJOB=BOOTSTRAP
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=1
+      script: travis/build.sh boot
     #################################
     - stage: Build
       os: linux
@@ -92,16 +92,16 @@ jobs:
           # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
       script: travis/build.sh docpdf
-#    - # ...
-#      os: osx
-#      install:
-#        - export OWTRAVISJOB=BUILD
-#        - export OWDOCBUILD=0
-#        - export OWVERBOSE=0
-#          # install DOS Emulator
-#        - brew install dosbox
-#        - export OWDOSBOX=dosbox
-#      script: travis/build.sh build
+    - # ...
+      os: osx
+      install:
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+          # install DOS Emulator
+        - brew install dosbox
+        - export OWDOSBOX=dosbox
+      script: travis/build.sh build
     #################################
     - stage: Test1
       os: linux
@@ -146,12 +146,12 @@ jobs:
         - travis/envinfo.sh
         - travis/cacheinf.sh
       script: travis/tfini.sh
-#    - # ...
-#      os: osx
-#      before_script:
-#        - travis/envinfo.sh
-#        - travis/cacheinf.sh
-#      script: travis/tfini.sh
+    - # ...
+      os: osx
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
+      script: travis/tfini.sh
 
 #  coverity_scan:
 #    project:
