@@ -8,12 +8,6 @@ librarian  += -q
 rc         += -q
 rcaui      += -q
 
-bcc        += -zq
-bcl        += -zq
-bas        += -q
-blink      += op q
-blib       += -q
-
 # enable to switch to causeway extender
 !ifdef $(proj_name)_causeway
 clflags_dos_386 = -l=causeway
