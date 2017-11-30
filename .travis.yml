@@ -95,6 +95,7 @@ jobs:
     - # ...
       os: osx
       install:
+        - export OWTOOLS=GCC
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
