@@ -77,10 +77,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
         LPVOID          show;
         WORD            reserved;
     }                   parm_block;
-    struct {
-        dip_init_func   *load;
-        dip_fini_func   *unload;
-    }                   transfer_block;
+    dip_link_block      transfer_block;
     char                *p;
     UINT                prev;
 

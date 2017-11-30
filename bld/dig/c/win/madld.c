@@ -77,10 +77,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
         LPVOID          show;
         WORD            reserved;
     }                   parm_block;
-    struct {
-        mad_init_func   *load;
-        mad_fini_func   *unload;
-    }                   transfer_block;
+    mad_link_block      transfer_block;
     char                *p;
     UINT                prev;
 

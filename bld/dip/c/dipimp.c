@@ -130,6 +130,8 @@ dip_imp_routines        ImpInterface = {
     DIPImp( LookupSymEx ),
 };
 
+#define FIRST_IMP_FUNC      HandleSize
+
 #if defined( __WINDOWS__ )
 static HINSTANCE    ThisInst;
 static HANDLE       TaskId;
@@ -272,8 +274,6 @@ dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it,
 
 #if defined( __WINDOWS__ )
 
-typedef void (DIGENTRY *INTERPROC)();
-
 #ifdef DEBUGGING
 void Say( const char *buff )
 {
@@ -293,12 +293,9 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTERPROC           *func;
+    FARPROC             *func;
     unsigned            count;
-    struct {
-        dip_init_func   *load;
-        dip_fini_func   *unload;
-    }                   *link;
+    dip_link_block      *link;
     unsigned            seg;
     unsigned            off;
 
@@ -311,10 +308,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTERPROC *)&ImpInterface.HandleSize;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTERPROC );
+    func = (FARPROC *)&ImpInterface.FIRST_IMP_FUNC;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, FIRST_IMP_FUNC ) ) / sizeof( FARPROC );
     while( count != 0 ) {
-        *func = (INTERPROC)MakeProcInstance( (FARPROC)*func, this_inst );
+        if( *func != NULL ) {
+            *func = MakeProcInstance( *func, this_inst );
+        }
         ++func;
         --count;
     }

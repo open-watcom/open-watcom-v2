@@ -188,6 +188,11 @@ typedef struct mad_client_routines {
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY mad_fini_func( void );
+
+typedef struct mad_link_block {
+    mad_init_func   *load;
+    mad_fini_func   *unload;
+} mad_link_block;
 #endif
 
 DIG_DLLEXPORT mad_init_func MADLOAD;

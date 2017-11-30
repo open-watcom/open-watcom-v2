@@ -131,6 +131,8 @@ mad_imp_routines        MadImpInterface = {
     MADImp( CallUpStackLevel ),
 };
 
+#define FIRST_IMP_FUNC      Init
+
 #if defined( __WATCOMC__ ) && defined( __386__ )
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;
@@ -270,8 +272,6 @@ void    MCStatus( mad_status ms )
 
 #if defined( __WINDOWS__)
 
-typedef void (DIGENTRY INTER_FUNC)();
-
 #ifdef DEBUGGING
 void Say( char *buff )
 {
@@ -291,12 +291,9 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTER_FUNC          **func;
+    FARPROC             *func;
     unsigned            count;
-    struct {
-        mad_init_func   *load;
-        mad_fini_func   *unload;
-    }                   *link;
+    mad_link_block      *link;
     unsigned            seg;
     unsigned            off;
 
@@ -309,10 +306,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&MadImpInterface.Init;
-    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, Init ) ) / sizeof( INTER_FUNC * );
+    func = (FARPROC *)&MadImpInterface.FIRST_IMP_FUNC;
+    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, FIRST_IMP_FUNC ) ) / sizeof( FARPROC );
     while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        if( *func != NULL ) {
+            *func = MakeProcInstance( *func, this_inst );
+        }
         ++func;
         --count;
     }

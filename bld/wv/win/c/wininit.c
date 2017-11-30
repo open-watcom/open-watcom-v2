@@ -71,8 +71,7 @@ static char     *CmdData;
 #if defined( __GUI__ )
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle ) {
-        TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( !ToldWinHandle && TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
         ToldWinHandle = true;
     }
 }

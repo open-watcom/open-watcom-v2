@@ -171,9 +171,13 @@ void TrapHardModeCheck( void )
     TrapHardModeRequired = TRAPENTRY_PTR_NAME( HardModeCheck )();
 }
 
-void TrapTellHWND( HWND hwnd )
+bool TrapTellHWND( HWND hwnd )
 {
-    TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+    if( TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
+        TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+        return( true );
+    }
+    return( false );
 }
 
 void TrapInputHook( hook_fn *hookfn )

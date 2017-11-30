@@ -50,12 +50,12 @@ extern void     RestoreOrigVectors( void );
   #endif
 #elif defined( __NT__ )
 
-extern void     TrapTellHWND( HWND hwnd );
+extern bool     TrapTellHWND( HWND hwnd );
 
 #elif defined( __WINDOWS__ )
 
 extern bool     TrapHardModeRequired;
-extern void     TrapTellHWND( HWND hwnd );
+extern bool     TrapTellHWND( HWND hwnd );
 extern void     TrapSetHardMode( bool mode );
 extern void     TrapHardModeCheck( void );
 extern void     TrapInputHook( hook_fn * );

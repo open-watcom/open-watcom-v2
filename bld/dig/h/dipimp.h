@@ -189,6 +189,11 @@ typedef struct dip_client_routines {
 typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY dip_fini_func( void );
+
+typedef struct dip_link_block {
+    dip_init_func   *load;
+    dip_fini_func   *unload;
+} dip_link_block;
 #endif
 
 DIG_DLLEXPORT dip_init_func DIPLOAD;

@@ -45,9 +45,13 @@ static trap_fini_func   *FiniFunc = NULL;
 
 static TRAPENTRY_FUNC_PTR( InfoFunction );
 
-void TrapTellHWND( HWND hwnd )
+bool TrapTellHWND( HWND hwnd )
 {
-    TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+    if( TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
+        TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+        return( true );
+    }
+    return( false );
 }
 
 void KillTrap( void )
