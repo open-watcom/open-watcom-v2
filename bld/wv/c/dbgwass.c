@@ -882,7 +882,7 @@ static  void    AsmNewIP( a_window *wnd )
 {
     asm_window          *asw;
     address             ip;
-    mad_type_handle     th;
+    mad_type_handle     mth;
 
     asw = WndAsm( wnd );
     ip = Context.execution;
@@ -892,9 +892,9 @@ static  void    AsmNewIP( a_window *wnd )
         asw->active = ip;
     }
     WndRowDirty( wnd, -TITLE_SIZE );
-    th = GetMADTypeHandleDefaultAt( ip, MTK_ADDRESS );
-    if( th != asw->def_addr ) {
-        asw->def_addr = th;
+    mth = GetMADTypeHandleDefaultAt( ip, MTK_ADDRESS );
+    if( mth != asw->def_addr ) {
+        asw->def_addr = mth;
         AsmResize( wnd );
     }
 }

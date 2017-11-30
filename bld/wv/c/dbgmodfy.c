@@ -60,7 +60,7 @@ extern stack_entry      *ExprSP;
  *  MemMod -- modify memory or io port
  */
 
-static void MemMod( mad_type_handle th, mad_type_kind mas )
+static void MemMod( mad_type_handle mth, mad_type_kind mas )
 {
     item_mach           item;
     item_type           ops;
@@ -77,7 +77,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
     }
     if( CurrToken == T_COMMA )
         Scan();
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     while( !ScanEOC() ) {
         if( !( ops & IT_IO ) ) {
             SetDataDot( addr );
@@ -89,7 +89,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
             if( CurrToken != T_COMMA && !ScanEOC() ) {
                 Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
             }
-            ItemPutMAD( &addr, &item, ops, th );
+            ItemPutMAD( &addr, &item, ops, mth );
         }
         if( CurrToken == T_COMMA ) {
             Scan();
@@ -107,7 +107,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
 void ProcModify( void )
 {
     const char          *startpos;
-    mad_type_handle     th;
+    mad_type_handle     mth;
     mad_type_kind       tk;
 
     if( !AdvMachState( ACTION_MODIFY_MEMORY ) ) {
@@ -119,11 +119,11 @@ void ProcModify( void )
         MemMod( GetMADTypeHandleDefaultAt( NilAddr, MTK_BASIC ), MAS_MEMORY );
     } else {
         Scan();
-        th = ScanType( MAS_ALL | MTK_ALL, &tk );
-        if( th == MAD_NIL_TYPE_HANDLE ) {
+        mth = ScanType( MAS_ALL | MTK_ALL, &tk );
+        if( mth == MAD_NIL_TYPE_HANDLE ) {
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_MODIFY ) );
         }
-        MemMod( th, tk );
+        MemMod( mth, tk );
     }
     RecordCommand( startpos, CMD_MODIFY );
 }

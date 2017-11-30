@@ -602,11 +602,11 @@ struct type_glue {
     void                *d;
 };
 
-OVL_EXTERN walk_result DIGCLIENT MM_TypeGlue( mad_type_handle th, void *d )
+OVL_EXTERN walk_result DIGCLIENT MM_TypeGlue( mad_type_handle mth, void *d )
 {
     struct type_glue    *gd = d;
 
-    return( gd->wk( th, gd->d ) );
+    return( gd->wk( mth, gd->d ) );
 }
 
 walk_result     MADTypeWalk( mad_type_kind tk, MAD_TYPE_WALKER *wk, void *d )
@@ -618,28 +618,28 @@ walk_result     MADTypeWalk( mad_type_kind tk, MAD_TYPE_WALKER *wk, void *d )
     return( Active->rtns->TypeWalk( tk, MM_TypeGlue, &glue ) );
 }
 
-OVL_EXTERN mad_string DUMMYIMPENTRY( TypeName )( mad_type_handle th )
+OVL_EXTERN mad_string DUMMYIMPENTRY( TypeName )( mad_type_handle mth )
 {
-    /* unused parameters */ (void)th;
+    /* unused parameters */ (void)mth;
 
     return( MAD_MSTR_NIL );
 }
 
-mad_string      MADTypeName( mad_type_handle th )
+mad_string      MADTypeName( mad_type_handle mth )
 {
-    return( Active->rtns->TypeName( th ) );
+    return( Active->rtns->TypeName( mth ) );
 }
 
-OVL_EXTERN mad_radix DUMMYIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+OVL_EXTERN mad_radix DUMMYIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 {
-    /* unused parameters */ (void)th;
+    /* unused parameters */ (void)mth;
 
     return( 0 );
 }
 
-mad_radix       MADTypePreferredRadix( mad_type_handle th )
+mad_radix       MADTypePreferredRadix( mad_type_handle mth )
 {
-    return( Active->rtns->TypePreferredRadix( th ) );
+    return( Active->rtns->TypePreferredRadix( mth ) );
 }
 
 OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
@@ -654,17 +654,17 @@ mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
     return( Active->rtns->TypeForDIPType( ti ) );
 }
 
-OVL_EXTERN void DUMMYIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+OVL_EXTERN void DUMMYIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
 {
-    /* unused parameters */ (void)th;
+    /* unused parameters */ (void)mth;
 
     ti->b.kind = MTK_CUSTOM;
     ti->b.bits = 0;
 }
 
-void            MADTypeInfo( mad_type_handle th, mad_type_info  *ti )
+void            MADTypeInfo( mad_type_handle mth, mad_type_info  *ti )
 {
-    Active->rtns->TypeInfo( th, ti );
+    Active->rtns->TypeInfo( mth, ti );
 }
 
 mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
@@ -1463,11 +1463,11 @@ mad_status MADTypeToString( mad_radix radix, const mad_type_info *mti, const voi
     return( Active->rtns->TypeToString( radix, mti, d, buff, buff_size_p ) );
 }
 
-mad_status MADTypeHandleToString( mad_radix radix, mad_type_handle th, const void *d, char *buff, size_t *buff_size_p )
+mad_status MADTypeHandleToString( mad_radix radix, mad_type_handle mth, const void *d, char *buff, size_t *buff_size_p )
 {
     mad_type_info       mti;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     return( MADTypeToString( radix, &mti, d, buff, buff_size_p ) );
 }
 
@@ -1576,17 +1576,17 @@ unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data *rsd )
     return( Active->rtns->RegSetDisplayGrouping( rsd ) );
 }
 
-OVL_EXTERN mad_status DUMMYIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
+OVL_EXTERN mad_status DUMMYIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_mth, size_t *max_value )
 {
-    /* unused parameters */ (void)rsd; (void)mr; (void)piece; (void)descript_p; (void)max_descript_p; (void)reg; (void)disp_type; (void)max_value;
+    /* unused parameters */ (void)rsd; (void)mr; (void)piece; (void)descript_p; (void)max_descript_p; (void)reg; (void)disp_mth; (void)max_value;
 
     return( MS_FAIL );
 }
 
-mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
+mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_mth, size_t *max_value )
 {
     return( Active->rtns->RegSetDisplayGetPiece( rsd, mr, piece, descript_p,
-                max_descript_p, reg, disp_type, max_value ) );
+                max_descript_p, reg, disp_mth, max_value ) );
 }
 
 OVL_EXTERN mad_status DUMMYIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
@@ -2076,11 +2076,11 @@ struct memref_glue {
     void                *d;
 };
 
-OVL_EXTERN walk_result DIGCLIENT MemRefGlue( address a, mad_type_handle th, mad_memref_kind mk, void *d )
+OVL_EXTERN walk_result DIGCLIENT MemRefGlue( address a, mad_type_handle mth, mad_memref_kind mk, void *d )
 {
     struct memref_glue  *gd = d;
 
-    return( gd->wk( a, th, mk, gd->d ) );
+    return( gd->wk( a, mth, mk, gd->d ) );
 }
 
 walk_result             MADDisasmMemRefWalk( mad_disasm_data *dd, MAD_MEMREF_WALKER *wk, const mad_registers *mr, void *d )

@@ -200,24 +200,24 @@ extern  void    WndGblVarInspect( mod_handle mod )
 }
 
 extern  void    WndMemInspect( address addr, char *next,
-                               unsigned len, mad_type_handle type )
+                               unsigned len, mad_type_handle mth )
 {
     a_window    *wnd;
 
-    wnd = DoWndMemOpen( addr, type );
+    wnd = DoWndMemOpen( addr, mth );
     if( next != NULL ) MemSetFollow( wnd, next );
     if( len != 0 ) MemSetLength( wnd, len );
 }
 
-extern  void    WndIOInspect( address *addr, mad_type_handle type )
+extern  void    WndIOInspect( address *addr, mad_type_handle mth )
 {
     a_window    *wnd;
 
     wnd = WndFindExisting( WND_IO );
     if( wnd == NULL ) {
-        wnd = DoWndIOOpen( addr, type );
+        wnd = DoWndIOOpen( addr, mth );
     } else {
-        IONewAddr( wnd, addr, type );
+        IONewAddr( wnd, addr, mth );
     }
 }
 

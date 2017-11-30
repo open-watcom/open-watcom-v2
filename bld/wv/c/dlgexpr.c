@@ -184,14 +184,14 @@ bool DlgString( const char *title, char *buff )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
-bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
+bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle mth )
 {
     bool                ok;
     mad_type_info       mti;
     char                buff[EXPR_LEN];
     size_t              buff_len = sizeof( buff );
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
     ok = DlgAnyExpr( title, buff, sizeof( buff ) );
     if( !ok )

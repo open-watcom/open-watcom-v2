@@ -95,11 +95,11 @@ imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
     return( DoSymCreate( iih, (sym_list **)d ) );
 }
 
-void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
+void MadTypeToDipTypeInfo( mad_type_handle mth, dip_type_info *ti )
 {
     mad_type_info       mti;
 
-    MADTypeInfo( mt, &mti );
+    MADTypeInfo( mth, &mti );
     ti->size = BITS2BYTES( mti.b.bits );
     ti->modifier = TM_NONE;
     switch( mti.b.kind ) {
@@ -409,7 +409,7 @@ OVL_EXTERN dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *ii, imp_type_han
     /* unused parameters */ (void)ii; (void)lc;
 
     if( it->ri != NULL ) {
-        MadTypeToDipTypeInfo( it->ri->type, ti );
+        MadTypeToDipTypeInfo( it->ri->mth, ti );
     } else {
         ti->kind = it->t.k;
         ti->modifier = it->t.m;

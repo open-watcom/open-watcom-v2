@@ -34,5 +34,5 @@ extern void     SetIOMenuItems( void );
 extern void     InitIOWindow( void );
 extern void     FiniIOWindow( void );
 extern void     IONewAddr( a_window *wnd, address *addr, int type );
-extern a_window *DoWndIOOpen( address *addr, mad_type_handle type );
+extern a_window *DoWndIOOpen( address *addr, mad_type_handle mth );
 extern a_window *WndIOOpen( void );

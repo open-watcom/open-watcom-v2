@@ -123,7 +123,7 @@ mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
     //NYI:

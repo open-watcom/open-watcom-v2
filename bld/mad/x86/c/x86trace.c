@@ -259,11 +259,11 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
     return( MTRH_STEPBREAK );
 }
 
-static walk_result TouchesScreenBuff( address a, mad_type_handle th, mad_memref_kind mk, void *d )
+static walk_result TouchesScreenBuff( address a, mad_type_handle mth, mad_memref_kind mk, void *d )
 {
     const mad_registers *mr = d;
 
-    /* unused parameters */ (void)th;
+    /* unused parameters */ (void)mth;
 
     if( mk & MMK_IMPLICIT )
         return( WR_CONTINUE );

@@ -64,7 +64,7 @@ typedef struct
 typedef struct brkp {
     mappable_addr   loc;
     item_mach       item;   /* opcode in break points */
-    mad_type_handle th;     /* how to format data item */
+    mad_type_handle mth;    /* how to format data item */
     dig_mad         mad;    /* MAD to use when formatting */
     unsigned_8      __unused_size;
     cmd_list        *cmds;

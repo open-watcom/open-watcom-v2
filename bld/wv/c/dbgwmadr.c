@@ -88,7 +88,7 @@ typedef struct {
     const char              *descript;
     size_t                  max_descript;
     const mad_reg_info      *reginfo;
-    mad_type_handle         disp_type;
+    mad_type_handle         disp_mth;
     size_t                  max_value;
 } reg_display_piece;
 
@@ -96,7 +96,7 @@ static bool GetDisplayPiece( reg_display_piece *disp, reg_window *reg, machine_s
 {
     return( MADRegSetDisplayGetPiece( reg->data, &mach->mr, i, &disp->descript,
                                   &disp->max_descript, &disp->reginfo,
-                                  &disp->disp_type, &disp->max_value ) == MS_OK );
+                                  &disp->disp_mth, &disp->max_value ) == MS_OK );
 }
 
 static bool RegResize( a_window *wnd )
@@ -132,7 +132,7 @@ static bool RegResize( a_window *wnd )
     for( i = 0; i < reg->count; ++i ) {
         GetDisplayPiece( &disp, reg, DbgRegs, i );
         if( disp.max_value == 0 && disp.reginfo != NULL ) {
-            disp.max_value = GetMADMaxFormatWidth( disp.disp_type );
+            disp.max_value = GetMADMaxFormatWidth( disp.disp_mth );
         }
         info = &reg->info[i];
         info->max_value = disp.max_value;
@@ -251,8 +251,8 @@ OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
 
     buff_len = TXT_LEN;
     if( possible->name == MAD_MSTR_NIL ) {
-        MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
-                possible->type, possible->data, TxtBuff, &buff_len );
+        MADTypeHandleToString( MADTypePreferredRadix( possible->mth ),
+                possible->mth, possible->data, TxtBuff, &buff_len );
     } else {
         MADCli( String )( possible->name, TxtBuff, buff_len );
     }
@@ -283,17 +283,17 @@ OVL_EXTERN  void    RegModify( a_window *wnd, int row, int piece )
         return;
     if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK )
         return;
-    old_radix = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
+    old_radix = NewCurrRadix( MADTypePreferredRadix( disp.disp_mth ) );
     MADRegFullName( disp.reginfo, ".", TxtBuff, TXT_LEN );
     RegValue( &value, disp.reginfo, DbgRegs );
     if( num_possible == 1 ) {
-        ok = DlgMadTypeExpr( TxtBuff, &value, disp.disp_type );
+        ok = DlgMadTypeExpr( TxtBuff, &value, disp.disp_mth );
         if( ok ) {
-            RegNewValue( disp.reginfo, &value, possible->type );
+            RegNewValue( disp.reginfo, &value, possible->mth );
         }
     } else {
         for( i = 0; i < num_possible; ++i ) {
-            MADTypeInfo( possible[i].type, &tinfo );
+            MADTypeInfo( possible[i].mth, &tinfo );
             if( memcmp( &value, possible[i].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ) {
                 break;
             }
@@ -308,7 +308,7 @@ OVL_EXTERN  void    RegModify( a_window *wnd, int row, int piece )
             i = DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible );
         }
         if( i != -1 ) {
-            RegNewValue( disp.reginfo, possible[i].data, possible[i].type );
+            RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
         }
     }
     NewCurrRadix( old_radix );
@@ -383,11 +383,11 @@ OVL_EXTERN  bool    RegGetLine( a_window *wnd, int row, int piece,
         if( reg->info[i].info == NULL ) {
             strcpy( TxtBuff, "   " );
         } else {
-            new_radix = MADTypePreferredRadix( disp.disp_type );
+            new_radix = MADTypePreferredRadix( disp.disp_mth );
             old_radix = NewCurrRadix( new_radix );
             RegValue( &value, reg->info[i].info, DbgRegs );
             max = reg->info[i].max_value + 1;
-            MADTypeHandleToString( new_radix, disp.disp_type, &value, TxtBuff, &max );
+            MADTypeHandleToString( new_radix, disp.disp_mth, &value, TxtBuff, &max );
             NewCurrRadix( old_radix );
             reg->info[i].standout = false;
             if( MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) == MS_MODIFIED_SIGNIFICANTLY ) {

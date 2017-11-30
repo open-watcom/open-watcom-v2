@@ -139,13 +139,13 @@ void CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti )
 }
 #endif
 
-char *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len )
+char *AddrTypeToString( address *a, mad_type_handle mth, char *buff, size_t buff_len )
 {
     mad_type_info       mti;
     item_mach           item;
     mad_type_info       host;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     AddrFix( a );
     MADTypeConvert( &host, a, &mti, &item, 0 );

@@ -189,17 +189,17 @@ int ScanCmd( const char *cmd_table )
 struct type_name {
     const char          *start;
     unsigned            len;
-    mad_type_handle     th;
+    mad_type_handle     mth;
 };
 
-OVL_EXTERN walk_result      FindTypeName( mad_type_handle th, void *d )
+OVL_EXTERN walk_result      FindTypeName( mad_type_handle mth, void *d )
 {
     struct type_name    *nd = d;
     const char          *p;
     char                *q;
     unsigned            len;
 
-    GetMADTypeNameForCmd( th, TxtBuff, TXT_LEN );
+    GetMADTypeNameForCmd( mth, TxtBuff, TXT_LEN );
     for( p = nd->start, q = TxtBuff; tolower( *p ) == tolower( *q ); ++p, ++q ) {
         if( *q == NULLCHAR ) {
             break;
@@ -211,12 +211,12 @@ OVL_EXTERN walk_result      FindTypeName( mad_type_handle th, void *d )
     if( *q == NULLCHAR ) {
         /* an exact match */
         nd->len = len;
-        nd->th = th;
+        nd->mth = mth;
         return( WR_STOP );
     }
     if( len > nd->len ) {
         nd->len = len;
-        nd->th = th;
+        nd->mth = mth;
     }
     return( WR_CONTINUE );
 }
@@ -232,34 +232,34 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
     }
     data.start = TokenStart + len;
     data.len = 0;
-    data.th = MAD_NIL_TYPE_HANDLE;
+    data.mth = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, FindTypeName, &data );
-    if( data.th != MAD_NIL_TYPE_HANDLE )
+    if( data.mth != MAD_NIL_TYPE_HANDLE )
         ReScan( data.start + data.len );
-    return( data.th );
+    return( data.mth );
 }
 
 mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
 {
-    mad_type_handle     th = 0;
+    mad_type_handle     mth = 0;
 
     if( tk & MAS_MEMORY ) {
-        th = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
-        if( th != MAD_NIL_TYPE_HANDLE ) {
+        mth = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
+        if( mth != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_MEMORY;
-            return( th );
+            return( mth );
         }
     }
     if( tk & MAS_IO ) {
-        th = DoScanType( tk & ~MAS_MEMORY, LIT_ENG( IO ) );
-        if( th != MAD_NIL_TYPE_HANDLE ) {
+        mth = DoScanType( tk & ~MAS_MEMORY, LIT_ENG( IO ) );
+        if( mth != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_IO;
-            return( th );
+            return( mth );
         }
     }
-    return( th );
+    return( mth );
 }
 
 mad_string ScanCall( void )

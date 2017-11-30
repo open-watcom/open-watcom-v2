@@ -97,14 +97,14 @@ void MADCLIENTRY( Notify )( mad_notify_type nt, const void *d )
     PostMessage( StatHdl, STAT_MAD_NOTIFY, (WPARAM)nt, (LPARAM)d );
 }
 
-mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
+mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle mth,
                             mad_label_kind lk, char *buff, unsigned buff_len )
 {
     mad_type_info       mti;
     addr_ptr            item;
     mad_type_info       host;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeConvert( &host, &a, &mti, &item, 0 );
     MADTypeToString( 16, &mti, &item, buff, &buff_len );

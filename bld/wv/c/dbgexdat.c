@@ -55,20 +55,20 @@ extern void             WndAddrInspect( address );
  * IOExam -- perform the examine port command
  */
 
-static void IOExam( mad_type_handle type )
+static void IOExam( mad_type_handle mth )
 {
     address     addr;
 
     OptMemAddr( EXPR_GIVEN, &addr );
     ReqEOC();
-    WndIOInspect( &addr, type );
+    WndIOInspect( &addr, mth );
 }
 
 /*
  * MemExam -- perform the examine command
  */
 
-static void MemExam( mad_type_handle type )
+static void MemExam( mad_type_handle mth )
 {
     address     addr;
     const char  *start;
@@ -94,22 +94,22 @@ static void MemExam( mad_type_handle type )
     }
     ReqEOC();
     SetDataDot( addr );
-    WndMemInspect( addr, expr, len, type );
+    WndMemInspect( addr, expr, len, mth );
 }
 
 OVL_EXTERN void TypeExam( void )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     mad_type_kind       tk;
 
-    th = ScanType( MAS_ALL | MTK_ALL, &tk );
-    if( th == MAD_NIL_TYPE_HANDLE ) {
+    mth = ScanType( MAS_ALL | MTK_ALL, &tk );
+    if( mth == MAD_NIL_TYPE_HANDLE ) {
         Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_EXAMINE ) );
     }
     if( tk & MAS_IO ) {
-        IOExam( th );
+        IOExam( mth );
     } else {
-        MemExam( th );
+        MemExam( mth );
     }
 }
 

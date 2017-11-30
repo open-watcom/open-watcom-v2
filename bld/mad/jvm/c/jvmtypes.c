@@ -76,33 +76,36 @@ const mad_type_data TypeArray[] = {
 
 walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     walk_result         wr;
 
-    if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
-    for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
-        if( (tk & TypeArray[th].u.info->b.kind)
-         && TypeArray[th].name != MAD_MSTR_NIL ) {
-            wr = wk( th, data );
-            if( wr != WR_CONTINUE ) return( wr );
+    if( !(tk & MAS_MEMORY) )
+        return( WR_CONTINUE );
+    for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
+        if( (tk & TypeArray[mth].u.info->b.kind)
+         && TypeArray[mth].name != MAD_MSTR_NIL ) {
+            wr = wk( mth, data );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     }
     return( WR_CONTINUE );
 }
 
-mad_string MADIMPENTRY( TypeName )( mad_type_handle th )
+mad_string MADIMPENTRY( TypeName )( mad_type_handle mth )
 {
-    return( TypeArray[th].name );
+    return( TypeArray[mth].name );
 }
 
-mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 {
-    return( TypeArray[th].hex ? 16 : 10 );
+    return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
 {
-    memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
+    memcpy( ti, TypeArray[mth].u.info, sizeof( *ti ) );
 }
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )

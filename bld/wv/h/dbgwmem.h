@@ -34,7 +34,7 @@ extern void     MemSetLength( a_window *wnd, unsigned size );
 extern void     MemSetFollow( a_window *wnd, char *follow );
 extern void     InitMemWindow( void );
 extern void     FiniMemWindow( void );
-extern a_window *DoWndMemOpen( address addr, mad_type_handle type );
+extern a_window *DoWndMemOpen( address addr, mad_type_handle mth );
 extern a_window *WndMemOpen( void );
 extern a_window *WndStkOpen( void );
 extern a_window *DoWndBinOpen( const char *title, file_handle fh );

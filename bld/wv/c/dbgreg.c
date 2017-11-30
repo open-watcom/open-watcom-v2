@@ -197,7 +197,7 @@ static memory_delta *NewMemDelta( address addr, mem_delta_size bytes )
     return( new );
 }
 
-OVL_EXTERN walk_result FindMemRefs( address a, mad_type_handle th,
+OVL_EXTERN walk_result FindMemRefs( address a, mad_type_handle mth,
                         mad_memref_kind mk, void *d )
 {
     mad_type_info       mti;
@@ -208,7 +208,7 @@ OVL_EXTERN walk_result FindMemRefs( address a, mad_type_handle th,
 
     if( (mk & (MMK_VOLATILE | MMK_WRITE)) == 0 )
         return( WR_CONTINUE );
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     bytes = BITS2BYTES( mti.b.bits );
     if( bytes > MAX_DELTA_BYTES )
         return( WR_STOP ); /* don't fit */
@@ -1038,7 +1038,7 @@ void RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mac
 
 void RegNewValue( const mad_reg_info *reginfo,
                       const item_mach *new_val,
-                      mad_type_handle type )
+                      mad_type_handle mth )
 {
     char                        *p;
     location_list               dst_ll,src_ll;
@@ -1048,10 +1048,10 @@ void RegNewValue( const mad_reg_info *reginfo,
     if( !AdvMachState( ACTION_MODIFY_REGISTER ) )
         return;
     RegLocation( DbgRegs, reginfo, &dst_ll );
-    MadTypeToDipTypeInfo( reginfo->type, &dst_ti );
+    MadTypeToDipTypeInfo( reginfo->mth, &dst_ti );
     PushLocation( &dst_ll, &dst_ti );
     LocationCreate( &src_ll, LT_INTERNAL, (void *)new_val );
-    MadTypeToDipTypeInfo( type, &src_ti );
+    MadTypeToDipTypeInfo( mth, &src_ti );
     PushLocation( &src_ll, &src_ti );
     DoAssign();
     p = StrCopy( GetCmdName( CMD_ASSIGN ), TxtBuff );
@@ -1059,7 +1059,7 @@ void RegNewValue( const mad_reg_info *reginfo,
     p += MADRegFullName( reginfo, ".", p, TXT_LEN );
     p = StrCopy( "=", p );
     max = TXT_LEN - ( p - TxtBuff );
-    MADTypeHandleToString( CurrRadix, type, new_val, p, &max );
+    MADTypeHandleToString( CurrRadix, mth, new_val, p, &max );
     p += max;
     RecordEvent( TxtBuff );
     CollapseMachState();

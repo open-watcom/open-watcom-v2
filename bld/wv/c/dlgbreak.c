@@ -102,15 +102,15 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
     }
     tmp_bp->initial_countdown = tmp_bp->countdown;
     if( GUIIsChecked( gui, CTL_BRK_EXECUTE ) ) {
-        tmp_bp->th = BP_EXECUTE;
+        tmp_bp->mth = BP_EXECUTE;
     } else if( GUIIsChecked( gui, CTL_BRK_BYTE ) ) {
-        tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 1 );
+        tmp_bp->mth = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 1 );
     } else if( GUIIsChecked( gui, CTL_BRK_WORD ) ) {
-        tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 2 );
+        tmp_bp->mth = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 2 );
     } else if( GUIIsChecked( gui, CTL_BRK_DWORD ) ) {
-        tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 4 );
+        tmp_bp->mth = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 4 );
     } else if( GUIIsChecked( gui, CTL_BRK_QWORD ) ) {
-        tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 8 );
+        tmp_bp->mth = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 8 );
     }
     if( !GetAddr( dlg, gui ) ) {
         PrevError( TxtBuff );
@@ -176,10 +176,10 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_ACTIVE, tmp_bp->status.b.active );
     GUISetChecked( gui, CTL_BRK_RESUME, tmp_bp->status.b.resume );
 
-    if( IS_BP_EXECUTE( tmp_bp->th ) ) {
+    if( IS_BP_EXECUTE( tmp_bp->mth ) ) {
         mti.b.bits = 0;
     } else {
-        MADTypeInfo( tmp_bp->th, &mti );
+        MADTypeInfo( tmp_bp->mth, &mti );
     }
     GUISetChecked( gui, CTL_BRK_EXECUTE, mti.b.bits == BYTES2BITS( 0 ) );
     GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == BYTES2BITS( 1 ) );
@@ -262,7 +262,7 @@ OVL_EXTERN bool BrkEvent( gui_window *gui, gui_event gui_ev, void *param )
             if( GetDlgStatus( dlg, gui ) ) {
                 ok = true;
                 if( dlg->brand_new ) {
-                    if( !BrkCheckWatchLimit( dlg->tmpbp.loc.addr, dlg->tmpbp.th ) ) {
+                    if( !BrkCheckWatchLimit( dlg->tmpbp.loc.addr, dlg->tmpbp.mth ) ) {
                         ok = false;
                     }
                 } else {

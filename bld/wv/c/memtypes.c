@@ -42,7 +42,7 @@
 #include "madcli.h"
 
 
-OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle th, void *d )
+OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle mth, void *d )
 {
     mem_type_walk_data  *data = d;
     mad_type_info       tinfo;
@@ -51,13 +51,13 @@ OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle th, void *d )
 
     if( data->labels != NULL ) {
         i = data->num_types;
-        MADTypeInfo( th, &tinfo );
-        MADCli( String )( MADTypeName( th ), TxtBuff, TXT_LEN );
+        MADTypeInfo( mth, &tinfo );
+        MADCli( String )( MADTypeName( mth ), TxtBuff, TXT_LEN );
         data->labels[i] = DupStr( TxtBuff );
-        data->info[i].type = th;
-        data->info[i].item_width = GetMADMaxFormatWidth( th );
+        data->info[i].mth = mth;
+        data->info[i].item_width = GetMADMaxFormatWidth( mth );
         data->info[i].item_size = BITS2BYTES( tinfo.b.bits );
-        data->info[i].piece_radix = MADTypePreferredRadix( th );
+        data->info[i].piece_radix = MADTypePreferredRadix( mth );
         ipl = 80 / ( data->info[i].item_width + 1 ); // kludge
         if( ipl > 16 ) {
             ipl = 16;
@@ -103,7 +103,7 @@ void MemFiniTypes( mem_type_walk_data *data )
     data->info = NULL;
 }
 
-unsigned GetMADMaxFormatWidth( mad_type_handle th )
+unsigned GetMADMaxFormatWidth( mad_type_handle mth )
 {
     mad_radix           old_radix, new_radix;
     item_mach           tmp;
@@ -112,7 +112,7 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
     int                 sign = 0;
     unsigned long       *plong;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     switch( mti.b.kind ) {
     case MTK_ADDRESS:
     case MTK_INTEGER:
@@ -127,7 +127,7 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
         memset( &tmp, 0, sizeof( tmp ) );
         break;
     }
-    new_radix = MADTypePreferredRadix( th );
+    new_radix = MADTypePreferredRadix( mth );
     old_radix = NewCurrRadix( new_radix );
     max = 0;
     MADTypeToString( new_radix, &mti, &tmp, TxtBuff, &max );

@@ -1873,12 +1873,11 @@ extern void *WndSrcInspect( address addr )
     // used by examine/source command
     return( NULL );
 }
-extern void WndMemInspect( address addr, char *next, unsigned len,
-                           mad_type_handle type )
+extern void WndMemInspect( address addr, char *next, unsigned len, mad_type_handle mth )
 {
     // used by examine/byte/word/etc command
 }
-extern void WndIOInspect( address *addr, mad_type_handle type )
+extern void WndIOInspect( address *addr, mad_type_handle mth )
 {
     // used by examine/iobyte/ioword/etc command
 }

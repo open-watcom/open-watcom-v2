@@ -209,7 +209,7 @@ static const mad_toggle_strings FPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_mth, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
@@ -218,14 +218,14 @@ static mad_status       CPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value );
 
 static mad_status       FPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value );
 
 static const mad_reg_set_data RegSet[] = {
@@ -362,7 +362,7 @@ unsigned MADIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 typedef struct {
     unsigned_16         first_reg_idx;
     unsigned_8          num_regs;
-    unsigned_8          disp_type;
+    unsigned_8          disp_mth;
 } reg_display_entry;
 
 /* Note that $zero isn't displayed - it'd just waste valuable space */
@@ -381,16 +381,18 @@ static const reg_display_entry CPUSymbolic[] = {
 };
 
 static int FindEntry( const reg_display_entry *tbl, unsigned piece,
-                                unsigned *idx, mad_type_handle *type )
+                                unsigned *idx, mad_type_handle *mth )
 {
     for( ;; ) {
-        if( tbl->num_regs == 0 ) return( 0 );
-        if( tbl->num_regs > piece ) break;
+        if( tbl->num_regs == 0 )
+            return( 0 );
+        if( tbl->num_regs > piece )
+            break;
         piece -= tbl->num_regs;
         ++tbl;
     }
     *idx = tbl->first_reg_idx + piece;
-    *type = tbl->disp_type;
+    *mth = tbl->disp_mth;
     return( 1 );
 }
 
@@ -399,32 +401,32 @@ static mad_status CPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
     unsigned    idx;
 
     if( MADState->reg_state[CPU_REG_SET] & CT_SYMBOLIC_NAMES ) {
-        if( !FindEntry( CPUSymbolic, piece, &idx, disp_type ) ) return( MS_FAIL );
+        if( !FindEntry( CPUSymbolic, piece, &idx, disp_mth ) ) return( MS_FAIL );
     } else {
-        if( !FindEntry( CPUNumeric, piece, &idx, disp_type ) ) return( MS_FAIL );
+        if( !FindEntry( CPUNumeric, piece, &idx, disp_mth ) ) return( MS_FAIL );
     }
     *reg = &RegList[idx].info;
     if( !(MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) ) {
-        if( *disp_type == MIPST_DWORD ) {
-            *disp_type = MIPST_WORD;
+        if( *disp_mth == MIPST_DWORD ) {
+            *disp_mth = MIPST_WORD;
             *reg = &RegListHalf[idx - IDX_r0].info;
         }
     }
     //NYI: if extended & ~ 64 bit mode, downshift to 32-bit display.
     //     Also, if 64 <=> 32 bit switch, tell client to redraw window
     if( !(MADState->reg_state[CPU_REG_SET] & CT_HEX) ) {
-        switch( *disp_type ) {
+        switch( *disp_mth ) {
         case MIPST_DWORD:
-            *disp_type = MIPST_UINT64;
+            *disp_mth = MIPST_UINT64;
             break;
         case MIPST_WORD:
-            *disp_type = MIPST_ULONG;
+            *disp_mth = MIPST_ULONG;
             break;
         }
     }
@@ -445,17 +447,17 @@ static mad_status FPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
     unsigned    idx;
 
-    if( !FindEntry( FPUList, piece, &idx, disp_type ) )
+    if( !FindEntry( FPUList, piece, &idx, disp_mth ) )
         return( MS_FAIL );
     if( MADState->reg_state[FPU_REG_SET] & FT_HEX ) {
-        switch( *disp_type ) {
+        switch( *disp_mth ) {
         case MIPST_DOUBLE:
-            *disp_type = MIPST_HDOUBLE;
+            *disp_mth = MIPST_HDOUBLE;
             break;
         }
     }
@@ -472,12 +474,12 @@ mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
     /* unused parameters */ (void)mr;
 
-    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
+    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_mth, max_value ) );
 }
 
 static const mad_modify_list    WordReg = { NULL, MIPST_WORD, MAD_MSTR_NIL };
@@ -489,7 +491,7 @@ mad_status MADIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, cons
     /* unused parameters */ (void)rsd;
 
     *num_possible_p = 1;
-    switch( ri->type ) {
+    switch( ri->mth ) {
     case MIPST_DOUBLE:
         *possible_p = &FltReg;
         break;
@@ -764,7 +766,7 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     for( j = 0; j < num; ++j ) {
         RegSubList[i][j] = RegList[idx];
         RegSubList[i][j].info.name       = sub[j].name;
-        RegSubList[i][j].info.type       = sub[j].mth;
+        RegSubList[i][j].info.mth        = sub[j].mth;
         RegSubList[i][j].info.bit_start += sub[j].start;
         RegSubList[i][j].info.bit_size   = (unsigned_8)TypeArray[sub[j].mth].u.b->bits;
         RegSubList[i][j].sublist_code    = RS_NONE;

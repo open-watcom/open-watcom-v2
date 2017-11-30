@@ -31,7 +31,7 @@
 
 
 typedef struct {
-    mad_type_handle     type;
+    mad_type_handle     mth;
     unsigned char       items_per_line;
     unsigned char       item_size;
     unsigned char       item_width;

@@ -226,8 +226,8 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     GetChildPos( hwnd, field, &c_rect);
     dc = GetDC( field );
     GetTextMetrics( dc, &tm );
-    MADTypeInfo( data->th, &mti );
-    radix = MADTypePreferredRadix( data->th );
+    MADTypeInfo( data->mth, &mti );
+    radix = MADTypePreferredRadix( data->mth );
 
     if( data->num_possible == 1 ) {
         if( data->maxv == 0 ) {
@@ -243,7 +243,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         }
         SetDlgItemText(hwnd,REG_EDIT_FIELD,s);
     } else {
-        MADTypeInfo( data->curr_info->type, &cmp );
+        MADTypeInfo( data->curr_info->mth, &cmp );
         max_len = 0;
         for( i = 0; i < data->num_possible; i++ ) {
             if( data->m_list[i].name == MAD_MSTR_NIL ) {
@@ -293,7 +293,7 @@ static void CheckForRegisterChange( HWND hwnd )
     InputUnion      in;
 
     data = (RegModifyData *)GET_DLGDATA( hwnd );
-    MADTypeInfo( data->curr_info->type, &mti_target );
+    MADTypeInfo( data->curr_info->mth, &mti_target );
     if( data->num_possible == 1 ) {
         size = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;
         s = alloca( size );
@@ -397,8 +397,8 @@ static void GetNewRegValue( HWND hwnd )
 
     MADRegSetDisplayGetPiece( modify_data.reg_set, regs, GetDlgCtrlID( hwnd ),
         &descript, &max_descript, (const mad_reg_info **) (&( modify_data.curr_info )),
-        &( modify_data.th ), &( modify_data.maxv ) );
-    MADTypeInfo( modify_data.curr_info->type, &tinfo );
+        &( modify_data.mth ), &( modify_data.maxv ) );
+    MADTypeInfo( modify_data.curr_info->mth, &tinfo );
     modify_data.curr_value = alloca( BITS2BYTES( tinfo.b.bits ) );
     BitGet( modify_data.curr_value, (unsigned char *)regs, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size);
     MADRegSetDisplayModify( modify_data.reg_set, modify_data.curr_info,

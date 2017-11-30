@@ -150,7 +150,7 @@ typedef union {
 
 typedef struct {
     const char                  *name;
-    mad_type_handle             type;
+    mad_type_handle             mth;
     dig_size_bits               bit_start;
     unsigned_8                  bit_size;
     unsigned_8                  flags;
@@ -164,7 +164,7 @@ typedef unsigned_8 mad_special_reg; enum {
 
 typedef struct {
     const void          *data;
-    mad_type_handle     type;
+    mad_type_handle     mth;
     mad_string          name;
 } mad_modify_list;
 

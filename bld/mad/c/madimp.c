@@ -225,9 +225,9 @@ unsigned    MCMachineData( address a, dig_info_type info_type, dig_elen in_size,
     return( MADClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status  MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, size_t buff_size )
+mad_status  MCAddrToString( address a, mad_type_handle mth, mad_label_kind lk, char *buff, size_t buff_size )
 {
-    return( MADClient->AddrToString( a, th, lk, buff, buff_size ) );
+    return( MADClient->AddrToString( a, mth, lk, buff, buff_size ) );
 }
 
 mad_status  MCMemExpr( const char *expr, mad_radix radix, address *a )

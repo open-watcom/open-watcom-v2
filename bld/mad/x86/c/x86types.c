@@ -122,7 +122,7 @@ static const mad_type_data TypeArray[] = {
 
 walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     processor_level     iol;
     processor_level     meml;
     walk_result         wr;
@@ -137,10 +137,10 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
         if( tk & MAS_MEMORY ) meml = L3;
     }
 
-    for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
-        if( (int)TypeArray[th].io <= iol || (int)TypeArray[th].mem <= meml ) {
-            if( tk & TypeArray[th].u.info->b.kind ) {
-                wr = wk( th, data );
+    for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
+        if( (int)TypeArray[mth].io <= iol || (int)TypeArray[mth].mem <= meml ) {
+            if( tk & TypeArray[mth].u.info->b.kind ) {
+                wr = wk( mth, data );
                 if( wr != WR_CONTINUE ) return( wr );
             }
         }
@@ -148,21 +148,21 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     return( WR_CONTINUE );
 }
 
-mad_string MADIMPENTRY( TypeName )( mad_type_handle th )
+mad_string MADIMPENTRY( TypeName )( mad_type_handle mth )
 {
-    return( TypeArray[th].name );
+    return( TypeArray[mth].name );
 }
 
-mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 {
-    return( TypeArray[th].hex ? 16 : 10 );
+    return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
 {
-    memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
-    if( TypeArray[th].u.b == &BIT.b || TypeArray[th].u.b == &MMX_TITLE || TypeArray[th].u.b == &XMM_TITLE ) {
-        ti->b.handler_code = (unsigned_8)th;
+    memcpy( ti, TypeArray[mth].u.info, sizeof( *ti ) );
+    if( TypeArray[mth].u.b == &BIT.b || TypeArray[mth].u.b == &MMX_TITLE || TypeArray[mth].u.b == &XMM_TITLE ) {
+        ti->b.handler_code = (unsigned_8)mth;
     }
 }
 

@@ -165,11 +165,11 @@ static bool ItemPut( address *addr, const void *data, item_type typ )
 
 }
 
-static item_type ItemTypeFromMADType( mad_type_handle th )
+static item_type ItemTypeFromMADType( mad_type_handle mth )
 {
     mad_type_info       mti;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     switch( mti.b.kind ) {
     case MTK_INTEGER:
     case MTK_XMM:
@@ -203,21 +203,21 @@ static item_type ItemTypeFromMADType( mad_type_handle th )
     return( IT_NIL );
 }
 
-item_type ItemGetMAD( address *addr, item_mach *item, item_type ops, mad_type_handle th )
+item_type ItemGetMAD( address *addr, item_mach *item, item_type ops, mad_type_handle mth )
 {
     item_type   it;
 
-    it = ItemTypeFromMADType( th );
+    it = ItemTypeFromMADType( mth );
     if( !ItemGet( addr, item, it | ops ) )
         return( IT_NIL );
     return( it );
 }
 
-item_type ItemPutMAD( address *addr, const item_mach *item, item_type ops, mad_type_handle th )
+item_type ItemPutMAD( address *addr, const item_mach *item, item_type ops, mad_type_handle mth )
 {
     item_type   it;
 
-    it = ItemTypeFromMADType( th );
+    it = ItemTypeFromMADType( mth );
     if( !ItemPut( addr, item, it | ops ) )
         return( IT_NIL );
     return( it );

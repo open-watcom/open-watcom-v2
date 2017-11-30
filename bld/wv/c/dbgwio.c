@@ -148,7 +148,7 @@ OVL_EXTERN void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
         if( piece == PIECE_VALUE ) {
             old_radix = NewCurrRadix( IOData.info[curr->type].piece_radix );
             item.ud = curr->value_known ? curr->value.ud : 0;
-            ok = DlgMadTypeExpr( TxtBuff, &item, IOData.info[curr->type].type );
+            ok = DlgMadTypeExpr( TxtBuff, &item, IOData.info[curr->type].mth );
             if( ok ) {
                 curr->value = item;
                 curr->value_known = true;
@@ -165,14 +165,14 @@ OVL_EXTERN void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
         break;
     case MENU_IO_READ:
         curr->value_known = true;
-        if( ItemGetMAD( &curr->addr, &curr->value, IT_IO, IOData.info[curr->type].type ) == IT_NIL ) {
+        if( ItemGetMAD( &curr->addr, &curr->value, IT_IO, IOData.info[curr->type].mth ) == IT_NIL ) {
             curr->value_known = false;
         }
         WndPieceDirty( wnd, row, PIECE_VALUE );
         break;
     case MENU_IO_WRITE:
         if( curr->value_known ) {
-            ItemPutMAD( &curr->addr, &curr->value, IT_IO, IOData.info[curr->type].type );
+            ItemPutMAD( &curr->addr, &curr->value, IT_IO, IOData.info[curr->type].mth );
         }
         break;
     default:
@@ -236,7 +236,7 @@ OVL_EXTERN  bool    IOGetLine( a_window *wnd, int row, int piece, wnd_line_piece
         line->indent = 2 * MaxGadgetLength + 10 * WndMaxCharX( wnd );
         if( curr->value_known ) {
             max = TXT_LEN;
-            MADTypeHandleToString( new_radix, IOData.info[curr->type].type, &curr->value, TxtBuff, &max );
+            MADTypeHandleToString( new_radix, IOData.info[curr->type].mth, &curr->value, TxtBuff, &max );
         } else {
             for( i = 0; i < IOData.info[curr->type].item_width; ++i ) {
                 TxtBuff[i] = '?';
@@ -340,7 +340,7 @@ extern void IONewAddr( a_window *wnd, address *addr, int type )
 }
 
 
-extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
+extern a_window *DoWndIOOpen( address *addr, mad_type_handle mth )
 {
     io_window   *io;
     int         i;
@@ -352,9 +352,9 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle type )
     io->num_rows = 1;
     io->list->addr = *addr;
     io->list->type = PIECE_TYPE( MENU_IO_FIRST_TYPE );
-    if( type != MAD_NIL_TYPE_HANDLE ) {
+    if( mth != MAD_NIL_TYPE_HANDLE ) {
         for( i = 0; i < IOData.num_types; i++ ) {
-            if( IOData.info[i].type == type ) {
+            if( IOData.info[i].mth == mth ) {
                 break;
             }
         }

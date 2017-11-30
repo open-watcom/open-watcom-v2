@@ -101,8 +101,8 @@ OVL_EXTERN void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piec
             WndMenuEnableAll( wnd );
             WndMenuEnable( wnd, MENU_BREAK_ENABLE, !bp->status.b.active );
             WndMenuEnable( wnd, MENU_BREAK_DISABLE, bp->status.b.active );
-            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->th ) );
-            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->th ) );
+            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
+            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
         } else {
             WndMenuGrayAll( wnd );
         }
@@ -274,7 +274,7 @@ OVL_EXTERN void     BrkRefresh( a_window *wnd )
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
-            if( !IS_BP_EXECUTE( bp->th ) ) {
+            if( !IS_BP_EXECUTE( bp->mth ) ) {
                 WndPieceDirty( wnd, row, PIECE_SOURCE );
             }
             ++row;
