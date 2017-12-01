@@ -35,12 +35,14 @@
 #include "bool.h"
 #include "digtypes.h"
 
-#if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
-    #define     TRAPENTRY   DIGFAR __pascal
-#elif defined( __WATCOMC__ ) && ( defined( _M_I86 ) || defined( __DOS__ ) || defined( __DSX__ ) )
-    #define     TRAPENTRY   DIGFAR __saveregs
+#if defined( __WINDOWS__ )
+    #define     TRAPENTRY   __far __pascal
+#elif defined( _M_I86 )
+    #define     TRAPENTRY   __far __saveregs
+#elif defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __DSX__ ) )
+    #define     TRAPENTRY   __saveregs
 #else
-    #define     TRAPENTRY   DIGFAR
+    #define     TRAPENTRY
 #endif
 
 #define TRAP_MAJOR_VERSION      18
@@ -112,8 +114,13 @@ typedef struct {
 typedef void __far hook_fn(unsigned, unsigned);
 #endif
 
-typedef mx_entry        DIGFAR *mx_entry_p;
-typedef in_mx_entry     DIGFAR *in_mx_entry_p;
+#if defined( _M_I86 )
+typedef mx_entry        __far *mx_entry_p;
+typedef in_mx_entry     __far *in_mx_entry_p;
+#else
+typedef mx_entry        *mx_entry_p;
+typedef in_mx_entry     *in_mx_entry_p;
+#endif
 
 typedef const void      *in_data_p;
 typedef void            *out_data_p;
