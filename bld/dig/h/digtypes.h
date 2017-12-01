@@ -35,23 +35,21 @@
 #include <stddef.h>
 #include "machtype.h"
 
-#if defined( __WATCOMC__ ) && defined( _M_I86 )
-    #define DIGFAR      __far
-#else
-    #define DIGFAR
-#endif
-
 #if defined( __WINDOWS__ )
-    #define DIGREGISTER     DIGFAR __pascal
-    #define DIGENTRY        DIGFAR __pascal
+    #define DIGREGISTER     __far __pascal
+    #define DIGENTRY        DIGREGISTER __export
+    #define DIGCLIENT       __loadds
+#elif defined( _M_I86 )
+    #define DIGREGISTER     __far
+    #define DIGENTRY        DIGREGISTER __loadds
     #define DIGCLIENT       __loadds
 #else
-    #define DIGREGISTER     DIGFAR
-    #define DIGENTRY        DIGFAR
+    #define DIGREGISTER
+    #define DIGENTRY
     #define DIGCLIENT
 #endif
 
-#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ ) || defined( __WINDOWS__ )
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
     #define DIG_DLLEXPORT   __declspec(dllexport)
 #else
     #define DIG_DLLEXPORT

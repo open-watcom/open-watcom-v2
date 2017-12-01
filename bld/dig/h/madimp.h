@@ -195,9 +195,9 @@ typedef struct mad_link_block {
 } mad_link_block;
 #endif
 
-DIG_DLLEXPORT mad_init_func MADLOAD;
+DIG_DLLEXPORT extern mad_init_func MADLOAD;
 #ifdef __WINDOWS__
-DIG_DLLEXPORT mad_fini_func MADUNLOAD;
+extern mad_fini_func MADUNLOAD;
 #endif
 
 #define MC(n)       MC ## n

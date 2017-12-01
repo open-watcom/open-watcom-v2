@@ -39,12 +39,7 @@
 #include "madimp.h"
 
 #if defined( __WATCOMC__ )
-  #if defined( __WINDOWS__ )
-  #elif defined( _M_I86 )
-    #pragma aux MADLOAD "*" __loadds
-  #else
     #pragma aux MADLOAD "*"
-  #endif
 #endif
 
 mad_client_routines     *MADClient;
@@ -279,7 +274,7 @@ void Say( char *buff )
 }
 #endif
 
-DIG_DLLEXPORT void DIGENTRY MADUNLOAD( void )
+void DIGENTRY MADUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }

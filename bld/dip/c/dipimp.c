@@ -43,12 +43,7 @@
 #endif
 
 #if defined( __WATCOMC__ )
-  #if defined( __WINDOWS__ )
-  #elif defined( _M_I86 )
-    #pragma aux DIPLOAD "*" __loadds
-  #else
     #pragma aux DIPLOAD "*"
-  #endif
 #endif
 
 address                 NilAddr;
@@ -281,7 +276,7 @@ void Say( const char *buff )
 }
 #endif
 
-DIG_DLLEXPORT void DIGENTRY DIPUNLOAD( void )
+void DIGENTRY DIPUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }

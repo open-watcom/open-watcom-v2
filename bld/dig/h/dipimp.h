@@ -196,9 +196,9 @@ typedef struct dip_link_block {
 } dip_link_block;
 #endif
 
-DIG_DLLEXPORT dip_init_func DIPLOAD;
+DIG_DLLEXPORT extern dip_init_func DIPLOAD;
 #ifdef __WINDOWS__
-DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
+extern dip_fini_func DIPUNLOAD;
 #endif
 
 #define DC(n)       DC ## n
