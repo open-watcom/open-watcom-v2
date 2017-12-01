@@ -102,7 +102,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 
 u_long      PE_getFileSize( FILE *fp, u_long startOffset);
 PE_MODULE   *PE_loadLibraryExt( FILE *fp, u_long offset, u_long *size );
-PE_MODULE   *PE_loadLibraryFile( FILE *fp );
+PE_MODULE   *PE_loadLibraryFile( FILE *fp, const char *szDLLName );
 void        *PE_getProcAddress( PE_MODULE *hModule, const char *szProcName );
 void        PE_freeLibrary( PE_MODULE *hModule );
 int         PE_getError( void );

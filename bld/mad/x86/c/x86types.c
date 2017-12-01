@@ -113,11 +113,11 @@ typedef struct mad_type_data {
     }                   u;
 } mad_type_data;
 
-#define pick( e, n, h, iol, meml, info )        \
-        { MAD_MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
 
 static const mad_type_data TypeArray[] = {
-#include "x86types.h"
+    #define pick( e, n, h, iol, meml, info ) { MAD_MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
+    #include "_x86type.h"
+    #undef pick
 };
 
 walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )

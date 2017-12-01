@@ -33,9 +33,8 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#define DIP_MAJOR       1
-#define DIP_MINOR       3
-#define DIP_MINOR_OLD   0
+#define DIP_MAJOR       2
+#define DIP_MINOR       0
 
 #define MH2IMH( mh )    ((mh)&0x0000FFFF)
 #define IMH2MH( imh )   (imh)

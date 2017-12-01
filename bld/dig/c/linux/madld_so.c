@@ -41,9 +41,12 @@
 #include "clibext.h"
 
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    dlclose( sys_hdl );
+    if( *sys_hdl = NULL_SYSHDL ) {
+        dlclose( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
@@ -54,6 +57,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     char                full_path[_MAX_PATH];
     mad_status          status;
 
+    *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
     strcat( newpath, ".so" );
     shlib = dlopen( newpath, RTLD_NOW );

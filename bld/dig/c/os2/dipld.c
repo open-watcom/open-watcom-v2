@@ -50,9 +50,12 @@
 #define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, n, &m ) != 0)
 #endif
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    DosFreeModule( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DosFreeModule( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
@@ -64,6 +67,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     char                dipname[CCHMAXPATH];
     char                dippath[CCHMAXPATH];
 
+    *sys_hdl = NULL_SYSHDL;
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */

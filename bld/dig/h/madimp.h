@@ -35,9 +35,8 @@
 
 #include "madcli.h"
 
-#define MAD_MAJOR       1
-#define MAD_MINOR_OLD   1
-#define MAD_MINOR       2
+#define MAD_MAJOR       2
+#define MAD_MINOR       0
 
 #define MADImp(n)       MADImp ## n
 #define _MADImp(n)      _MADImp ## n n
@@ -115,7 +114,6 @@ typedef struct mad_imp_routines {
     _MADImp( CallBuildFrame );
     _MADImp( CallReturnReg );
     _MADImp( CallParmRegList );
-    _MADImp( OldCallUpStackLevel );
 
     _MADImp( DisasmDataSize );
     _MADImp( DisasmNameMax );

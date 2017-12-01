@@ -49,9 +49,12 @@
 #define LOAD_MODULE(n,m)        (DosLoadModule( NULL, 0, n, &m ) != 0)
 #endif
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    DosFreeModule( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DosFreeModule( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
@@ -63,6 +66,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     char                madname[CCHMAXPATH];
     char                madpath[CCHMAXPATH];
 
+    *sys_hdl = NULL_SYSHDL;
     /* To prevent conflicts with the 16-bit MAD DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */

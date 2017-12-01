@@ -29,7 +29,7 @@ set PROJDIR=<CWD>
 #    <CCCMD> dos386/<PROJNAME>.sym   <OWRELROOT>/binw/<PROJNAME>.dsy
 
     <CCCMD> wini86/<PROJNAME>.dll     <OWRELROOT>/binw/
-#    <CCCMD> wini86/<PROJNAME>.sym     <OWRELROOT>/binw/
+    <CCCMD> wini86/<PROJNAME>.sym     <OWRELROOT>/binw/
 
 #    <CCCMD> os2i86/<PROJNAME>.dll     <OWRELROOT>/binp/dll/
 #    <CCCMD> os2i86/<PROJNAME>.sym     <OWRELROOT>/binp/dll/

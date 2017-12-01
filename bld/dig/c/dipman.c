@@ -161,7 +161,7 @@ static const address    NilAddr = { 0 };
 
 dip_client_routines DIPClientInterface = {
     DIP_MAJOR,
-    DIP_MINOR_OLD,
+    DIP_MINOR,
     sizeof( dip_client_routines ),
     DIGCli( Alloc ),
     DIGCli( Realloc ),
@@ -220,11 +220,8 @@ dip_status DIPLoad( const char *path )
         return( status );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
       || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
-        if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-            DIPSysUnload( LoadedDIPs[i].sys_hdl );
-        }
+        DIPSysUnload( &LoadedDIPs[i].sys_hdl );
         LoadedDIPs[i].rtns = NULL;
-        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
         return( DS_ERR | DS_INVALID_DIP_VERSION );
     }
     SetHdlSizes( LoadedDIPs[i].rtns );
@@ -253,11 +250,8 @@ void DIPFiniLatest( void )
     for( i = MAX_DIPS - 1; i >= 0; --i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
-            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
-            }
             LoadedDIPs[i].rtns = NULL;
-            LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
+            DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             break;
         }
     }
@@ -270,12 +264,9 @@ void DIPFini( void )
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
-            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
-            }
+            LoadedDIPs[i].rtns = NULL;
         }
-        LoadedDIPs[i].rtns = NULL;
-        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
+        DIPSysUnload( &LoadedDIPs[i].sys_hdl );
     }
 }
 

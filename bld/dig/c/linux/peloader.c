@@ -411,10 +411,14 @@ REMARKS:
 Same as above but for an open file handle. szDLLName must be correct in
 order to load debug symbols under the debugger.
 ****************************************************************************/
-PE_MODULE * PE_loadLibraryFile( FILE *fp )
+PE_MODULE * PE_loadLibraryFile( FILE *fp, const char *szDLLName )
 {
     PE_MODULE   *hMod;
     u_long      size;
+
+#ifndef WATCOM_DEBUG_SYMBOLS
+    /* unused parameters */ (void)szDLLName;
+#endif
 
     if( fp == NULL ) {
         result = PE_fileNotFound;

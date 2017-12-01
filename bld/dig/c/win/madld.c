@@ -53,10 +53,11 @@ void Say( const char *buff )
 }
 #endif
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    if( sys_hdl != NULL ) {
-        sys_hdl();
+    if( *sys_hdl != NULL_SYSHDL ) {
+        (*sys_hdl)();
+        *sys_hdl = NULL_SYSHDL;
     }
 }
 
@@ -81,9 +82,9 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     char                *p;
     UINT                prev;
 
+    *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = NULL_SYSHDL;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );
@@ -110,6 +111,6 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
         *sys_hdl = transfer_block.unload;
         return( MS_OK );
     }
-    MADSysUnload( transfer_block.unload );
+    MADSysUnload( &transfer_block.unload );
     return( status );
 }

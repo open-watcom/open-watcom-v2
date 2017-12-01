@@ -43,8 +43,8 @@
     #define     TRAPENTRY   DIGFAR
 #endif
 
-#define TRAP_MAJOR_VERSION      17
-#define TRAP_MINOR_VERSION      1
+#define TRAP_MAJOR_VERSION      18
+#define TRAP_MINOR_VERSION      0
 #define OLD_TRAP_MINOR_VERSION  0
 
 #define REQUEST_FAILED ((trap_retval)-1)

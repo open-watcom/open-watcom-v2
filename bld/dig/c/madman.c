@@ -253,9 +253,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
                 curr->rtns->Fini();
                 curr->rtns = NULL;
             }
-            if( curr->sys_hdl != NULL_SYSHDL ) {
-                MADSysUnload( curr->sys_hdl );
-            }
+            MADSysUnload( &curr->sys_hdl );
             DIGCli( Free )( curr );
             break;
         }
@@ -340,9 +338,7 @@ void            MADUnload( dig_mad mad )
             me->rtns->Fini();
             me->rtns = NULL;
         }
-        if( me->sys_hdl != NULL_SYSHDL ) {
-            MADSysUnload( me->sys_hdl );
-        }
+        MADSysUnload( &me->sys_hdl );
     }
 }
 
@@ -2255,7 +2251,6 @@ static mad_imp_routines DummyRtns = {
     DummyImp( CallBuildFrame ),
     DummyImp( CallReturnReg ),
     DummyImp( CallParmRegList ),
-    NULL,
 
     DummyImp( DisasmDataSize ),
     DummyImp( DisasmNameMax ),

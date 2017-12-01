@@ -43,9 +43,12 @@
 
 #define MADSIG  0x0044414DUL    // "MAD"
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    DIGCli( Free )( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DIGCli( Free )( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli,
@@ -56,6 +59,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     mad_init_func       *init_func;
     mad_status          status;
 
+    *sys_hdl = NULL_SYSHDL;
     fp = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
     if( fp == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );

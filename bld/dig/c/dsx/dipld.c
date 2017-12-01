@@ -44,10 +44,13 @@
 
 #define DIPSIG  0x00504944UL    // "DIP"
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
-    DIGCli( Free )( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DIGCli( Free )( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
@@ -58,6 +61,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     dip_status          status;
     char                dip_name[_MAX_PATH];
 
+    *sys_hdl = NULL_SYSHDL;
     fp = DIGLoader( Open )( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
     if( fp == NULL ) {
         return( DS_ERR | DS_FOPEN_FAILED );

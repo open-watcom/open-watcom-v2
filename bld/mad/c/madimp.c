@@ -98,7 +98,6 @@ mad_imp_routines        MadImpInterface = {
     MADImp( CallBuildFrame ),
     MADImp( CallReturnReg ),
     MADImp( CallParmRegList ),
-    NULL,
 
     MADImp( DisasmDataSize ),
     MADImp( DisasmNameMax ),
@@ -288,7 +287,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     MSG                 msg;
     FARPROC             *func;
     unsigned            count;
-    mad_link_block      *link;
+    mad_link_block      __far *link;
     unsigned            seg;
     unsigned            off;
 

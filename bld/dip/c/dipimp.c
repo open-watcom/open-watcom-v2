@@ -290,7 +290,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     MSG                 msg;
     FARPROC             *func;
     unsigned            count;
-    dip_link_block      *link;
+    dip_link_block      __far *link;
     unsigned            seg;
     unsigned            off;
 

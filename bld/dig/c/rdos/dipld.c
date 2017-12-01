@@ -40,9 +40,12 @@
 #include "dipsys.h"
 
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    RdosFreeDll( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        RdosFreeDll( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
@@ -52,6 +55,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     char                newpath[256];
     dip_status          status;
 
+    *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
     dip_dll = RdosLoadDll( newpath );
