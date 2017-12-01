@@ -68,7 +68,7 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     } else if( func == SIG_HOLD ) {
         act.sa_handler = __FAR_SIG_HOLD;
     } else {
-        act.sa_handler = (void (__far *)(int))func;
+        act.sa_handler = (__far_sig_func)func;
     }
 #else
     act.sa_handler = func;
@@ -79,7 +79,7 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     if( sigaction(sig, &act, &act) )
         return( SIG_ERR );
 #if defined( __SMALL_CODE__ )
-    return( (void (*)(int))act.sa_handler );
+    return( (__sig_func)act.sa_handler );
 #else
     return( act.sa_handler );
 #endif
