@@ -103,9 +103,9 @@ mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
     return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( ti, TypeArray[mth].u.info, sizeof( *ti ) );
+    memcpy( mti, TypeArray[mth].u.info, sizeof( *mti ) );
 }
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
@@ -168,7 +168,7 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
     return( MS_UNSUPPORTED );
 }

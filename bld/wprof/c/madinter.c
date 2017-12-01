@@ -80,15 +80,15 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
 {
     mad_type_info       mti;
     addr_ptr            item;
-    mad_type_info       host;
+    mad_type_info       host_mti;
 
     /* unused parameters */ (void)lk;
 
     if( CnvAddr( a, buff, buff_len ) )
         return( MS_OK );
     MADTypeInfo( th, &mti );
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
-    MADTypeConvert( &host, &a, &mti, &item, 0 );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
+    MADTypeConvert( &host_mti, &a, &mti, &item, 0 );
     MADTypeToString( 16, &mti, &item, buff, &buff_len );
     return( MS_FAIL );
 }

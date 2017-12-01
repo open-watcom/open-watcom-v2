@@ -56,7 +56,7 @@ pick( mad_radix,                    TypePreferredRadix, ( mad_type_handle ) )
 pick( mad_type_handle,              TypeForDIPType,     ( const dip_type_info * ) )
 pick( void,                         TypeInfo,           ( mad_type_handle, mad_type_info * ) )
 pick( mad_type_handle,              TypeDefault,        ( mad_type_kind, mad_address_format, const mad_registers *, const address * ) )
-pick( mad_status,                   TypeConvert,        ( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg ) )
+pick( mad_status,                   TypeConvert,        ( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg ) )
 pick( mad_status,                   TypeToString,       ( mad_radix radix, const mad_type_info *, const void *, char *buff, size_t *buff_size_p ) )
 /*
  *      Machine Registers

@@ -45,18 +45,18 @@
 OVL_EXTERN walk_result MadMemTypeWalk( mad_type_handle mth, void *d )
 {
     mem_type_walk_data  *data = d;
-    mad_type_info       tinfo;
+    mad_type_info       mti;
     int                 ipl;
     int                 i;
 
     if( data->labels != NULL ) {
         i = data->num_types;
-        MADTypeInfo( mth, &tinfo );
+        MADTypeInfo( mth, &mti );
         MADCli( String )( MADTypeName( mth ), TxtBuff, TXT_LEN );
         data->labels[i] = DupStr( TxtBuff );
         data->info[i].mth = mth;
         data->info[i].item_width = GetMADMaxFormatWidth( mth );
-        data->info[i].item_size = BITS2BYTES( tinfo.b.bits );
+        data->info[i].item_size = BITS2BYTES( mti.b.bits );
         data->info[i].piece_radix = MADTypePreferredRadix( mth );
         ipl = 80 / ( data->info[i].item_width + 1 ); // kludge
         if( ipl > 16 ) {

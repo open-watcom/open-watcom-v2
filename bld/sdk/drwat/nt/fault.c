@@ -102,17 +102,17 @@ ExceptDlgInfo * FaultGetExceptDlgInfo( HWND fault )
 
 static void SetIp( HWND hwnd, address *addr )
 {
-    mad_type_info   host;
+    mad_type_info   host_mti;
     mad_type_info   mti;
     void            *item;
     char            buf[BUF_SIZE];
     unsigned        max;
 
     max = BUF_SIZE - 1;
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, addr ), &mti );
     item = alloca( BITS2BYTES( mti.b.bits ) + 1 );
-    MADTypeConvert( &host, addr, &mti, item, 0 );
+    MADTypeConvert( &host_mti, addr, &mti, item, 0 );
     MADTypeToString( 16, &mti, item, buf, &max );
     SetDlgItemText( hwnd, INT_CS_IP, buf );
 }

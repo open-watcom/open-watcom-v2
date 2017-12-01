@@ -220,7 +220,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
     mad_type_info       mti;
     size_t              buff_len;
     item_mach           item;
-    mad_type_info       host;
+    mad_type_info       host_mti;
     mad_type_handle     mth;
 
     if( sign_type == NUM_CHECK ) {
@@ -278,8 +278,8 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
             mth = MADTypeDefault( MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, &ExprSP->v.addr );
         }
         MADTypeInfo( mth, &mti );
-        MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
-        MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
+        MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
+        MADTypeConvert( &host_mti, &ExprSP->v.addr, &mti, &item, 0 );
         buff_len = sizeof( buff );
         MADTypeToString( FMT2RADIX( radixfmt ), &mti, &item, ptr, &buff_len );
         ptr += buff_len;

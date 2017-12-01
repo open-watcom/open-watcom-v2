@@ -249,9 +249,9 @@ mad_status  MCTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
     return( MADClient->TypeInfoForHost( tk, size, mti ) );
 }
 
-mad_status  MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status  MCTypeConvert( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
-    return( MADClient->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
+    return( MADClient->TypeConvert( in_mti, in_d, out_mti, out_d, seg ) );
 }
 
 mad_status  MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )

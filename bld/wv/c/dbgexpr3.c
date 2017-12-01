@@ -164,8 +164,8 @@ static conv_class ConvIdx( dip_type_info *info )
 void FromItem( item_mach *tmp, stack_entry *entry )
 {
     unsigned            size;
-    mad_type_info       src_type;
-    mad_type_info       dst_type;
+    mad_type_info       src_mti;
+    mad_type_info       dst_mti;
     dip_type_info       ti;
 
     if( entry->info.size > sizeof( *tmp ) ) {
@@ -177,27 +177,27 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_type );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_mti );
         } else {
-            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_type );
+            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_mti );
         }
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.uint, 0 );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.uint, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &dst_type );
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.real, 0 );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &dst_mti );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.real, 0 );
         return;
     case TK_COMPLEX:
         ti.kind = TK_REAL;
         ti.size = entry->info.size / 2;
         ti.modifier = entry->info.modifier;
-        MADTypeInfo( MADTypeForDIPType( &ti ), &src_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.cmplx.re ), &dst_type );
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.cmplx.re, 0 );
-        MADTypeConvert( &src_type, (unsigned_8 *)tmp + ti.size, &dst_type, &entry->v.cmplx.im, 0 );
+        MADTypeInfo( MADTypeForDIPType( &ti ), &src_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.cmplx.re ), &dst_mti );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.cmplx.re, 0 );
+        MADTypeConvert( &src_mti, (unsigned_8 *)tmp + ti.size, &dst_mti, &entry->v.cmplx.im, 0 );
         return;
     case TK_POINTER:
     case TK_ADDRESS:
@@ -246,8 +246,8 @@ void FromItem( item_mach *tmp, stack_entry *entry )
 void ToItem( stack_entry *entry, item_mach *tmp )
 {
     unsigned            size;
-    mad_type_info       src_type;
-    mad_type_info       dst_type;
+    mad_type_info       src_mti;
+    mad_type_info       dst_mti;
 
     if( entry->info.size > sizeof( *tmp ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
@@ -259,18 +259,18 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_type );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_mti );
         } else {
-            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_type );
+            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_mti );
         }
-        MADTypeConvert( &src_type, &entry->v.uint, &dst_type, tmp, 0 );
+        MADTypeConvert( &src_mti, &entry->v.uint, &dst_mti, tmp, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_type );
-        MADTypeConvert( &src_type, &entry->v.real, &dst_type, tmp, 0 );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
+        MADTypeConvert( &src_mti, &entry->v.real, &dst_mti, tmp, 0 );
         return;
     case TK_COMPLEX:
         switch( size ) {
@@ -845,26 +845,26 @@ void AddOp( stack_entry *left, stack_entry *right )
 void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
 {
     unsigned            bytes;
-    mad_type_info       src;
+    mad_type_info       src_mti;
 
     bytes = BITS2BYTES( mti->b.bits );
     switch( mti->b.kind ) {
     case MTK_INTEGER:
         ConvertTo( entry, TK_INTEGER, TM_UNSIGNED, bytes );
-        MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.uint ), &src );
+        MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.uint ), &src_mti );
         break;
     case MTK_ADDRESS:
         if( mti->a.seg.bits == 0 ) {
             ConvertTo( entry, TK_ADDRESS, TM_NEAR, bytes );
-            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach.offset ), &src );
+            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach.offset ), &src_mti );
         } else {
             ConvertTo( entry, TK_ADDRESS, TM_FAR, bytes );
-            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach ), &src );
+            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach ), &src_mti );
         }
         break;
     case MTK_FLOAT:
         ConvertTo( entry, TK_REAL, TM_NONE, bytes );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
         break;
     case MTK_XMM:
         //MAD: nyi
@@ -875,7 +875,7 @@ void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
         ToItem( entry, tmp );
         return;
     }
-    if( MADTypeConvert( &src, &entry->v, mti, tmp, 0 ) != MS_OK ) {
+    if( MADTypeConvert( &src_mti, &entry->v, mti, tmp, 0 ) != MS_OK ) {
         ToItem( entry, tmp );
     }
 }

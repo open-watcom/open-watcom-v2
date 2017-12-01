@@ -267,7 +267,7 @@ OVL_EXTERN  void    RegModify( a_window *wnd, int row, int piece )
     bool                    ok;
     mad_radix               old_radix;
     reg_display_piece       disp;
-    mad_type_info           tinfo;
+    mad_type_info           mti;
     mad_modify_list const   *possible;
     int                     num_possible;
 
@@ -293,8 +293,8 @@ OVL_EXTERN  void    RegModify( a_window *wnd, int row, int piece )
         }
     } else {
         for( i = 0; i < num_possible; ++i ) {
-            MADTypeInfo( possible[i].mth, &tinfo );
-            if( memcmp( &value, possible[i].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ) {
+            MADTypeInfo( possible[i].mth, &mti );
+            if( memcmp( &value, possible[i].data, BITS2BYTES( mti.b.bits ) ) == 0 ) {
                 break;
             }
         }

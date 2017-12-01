@@ -760,7 +760,7 @@ image_info *AddrImage( address *addr )
     count = 0;
     for( ;; ) {
         if( count >= CurrSIOData->image_count ) {
-            if( closest.segment != 0 ) 
+            if( closest.segment != 0 )
                 break;
             return( NULL );
         }
@@ -1190,13 +1190,13 @@ STATIC unsigned char exeGetChar( void )
 
 size_t FormatAddr( address a, char *buffer, size_t max )
 {
-    mad_type_info       host;
+    mad_type_info       host_mti;
     mad_type_info       mti;
     unsigned_8          item[16];
 
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &a ), &mti );
-    MADTypeConvert( &host, &a, &mti, item, 0 );
+    MADTypeConvert( &host_mti, &a, &mti, item, 0 );
     MADTypeToString( 16, &mti, item, buffer, &max );
     return( max );
 }
@@ -1208,7 +1208,7 @@ void GetFullInstruct( address a, char * buffer, size_t max )
     char *              tail;
     address             start;
     unsigned            ins_size;
-    mad_type_info       host;
+    mad_type_info       host_mti;
     unsigned_8          item;
     size_t              mad_max = max;
 
@@ -1225,9 +1225,9 @@ void GetFullInstruct( address a, char * buffer, size_t max )
         for( i = 0; i < ins_size || i < numBytes; i++ ) {
             if( i < ins_size ) {
                 item = exeGetChar();
-                MADTypeInfoForHost( MTK_INTEGER, sizeof( item ), &host );
+                MADTypeInfoForHost( MTK_INTEGER, sizeof( item ), &host_mti );
                 mad_max = 4;
-                MADTypeToString( 16, &host, &item, tail, &mad_max );
+                MADTypeToString( 16, &host_mti, &item, tail, &mad_max );
                 tail += mad_max;
             } else if( i < numBytes ) {
                 *tail++ = ' ';          /* two spaces */

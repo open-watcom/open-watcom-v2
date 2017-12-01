@@ -109,7 +109,7 @@ typedef struct mad_type_data {
     unsigned            mem     : 3;
     union {
         const mad_type_info_basic       *b;
-        const mad_type_info             *info;
+        const mad_type_info             *mti;
     }                   u;
 } mad_type_data;
 
@@ -158,9 +158,9 @@ mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
     return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( ti, TypeArray[mth].u.info, sizeof( *ti ) );
+    memcpy( mti, TypeArray[mth].u.info, sizeof( *mti ) );
     if( TypeArray[mth].u.b == &BIT.b || TypeArray[mth].u.b == &MMX_TITLE || TypeArray[mth].u.b == &XMM_TITLE ) {
         ti->b.handler_code = (unsigned_8)mth;
     }
@@ -304,9 +304,9 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
-    /* unused parameters */ (void)in_t; (void)in_d; (void)out_t; (void)out_d; (void)seg;
+    /* unused parameters */ (void)in_mti; (void)in_d; (void)out_mti; (void)out_d; (void)seg;
 
     return( MS_UNSUPPORTED );
 }

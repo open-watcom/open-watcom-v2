@@ -98,7 +98,7 @@ typedef struct mad_type_data {
     unsigned            hex     : 1;
     union {
         const mad_type_info_basic       *b;
-        const mad_type_info             *info;
+        const mad_type_info             *mti;
     }                   u;
 } mad_type_data;
 

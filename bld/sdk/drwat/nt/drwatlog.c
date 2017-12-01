@@ -268,7 +268,7 @@ static void logStack( ExceptDlgInfo *info ) {
     address         sp;
     DWORD           linecnt;
     DWORD           bytesread;
-    mad_type_info   host;
+    mad_type_info   host_mti;
     mad_type_info   mti;
     void            *item;
     char            buff[BUF_SIZE];
@@ -278,7 +278,7 @@ static void logStack( ExceptDlgInfo *info ) {
 #define MIN_SIZE    sizeof( unsigned_16 )
 
     MADRegSpecialGet( MSR_SP, info->regs, &( sp.mach ) );
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &sp ), &mti );
     item = alloca( BITS2BYTES( mti.b.bits ) + 1 );
 #ifdef __AXP__
@@ -290,7 +290,7 @@ static void logStack( ExceptDlgInfo *info ) {
     logPrintf( STR_STACK_DATA );
     for( linecnt=0; linecnt < 20; linecnt ++ ) {
         bytesread = MADCli( ReadMem )( sp, word_size * 4, data );
-        MADTypeConvert( &host, &sp, &mti, item, 0 );
+        MADTypeConvert( &host_mti, &sp, &mti, item, 0 );
         buff_len = sizeof( buff );
         MADTypeToString( 16, &mti, item, buff, &buff_len );
         logStrPrintf( "%s - ", buff );
