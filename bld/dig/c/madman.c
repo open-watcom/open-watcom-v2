@@ -101,9 +101,9 @@ mad_status MADCLIENTRY( TypeInfoForHost )( mad_type_kind tk, int size, mad_type_
     return( MADTypeInfoForHost( tk, size, mti ) );
 }
 
-mad_status MADCLIENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status MADCLIENTRY( TypeConvert )( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
-    return( MADTypeConvert( in_t, in_d, out_t, out_d, seg ) );
+    return( MADTypeConvert( in_mti, in_d, out_mti, out_d, seg ) );
 }
 
 mad_status MADCLIENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
@@ -650,17 +650,17 @@ mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
     return( Active->rtns->TypeForDIPType( ti ) );
 }
 
-OVL_EXTERN void DUMMYIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *ti )
+OVL_EXTERN void DUMMYIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
     /* unused parameters */ (void)mth;
 
-    ti->b.kind = MTK_CUSTOM;
-    ti->b.bits = 0;
+    mti->b.kind = MTK_CUSTOM;
+    mti->b.bits = 0;
 }
 
-void            MADTypeInfo( mad_type_handle mth, mad_type_info  *ti )
+void            MADTypeInfo( mad_type_handle mth, mad_type_info  *mti )
 {
-    Active->rtns->TypeInfo( mth, ti );
+    Active->rtns->TypeInfo( mth, mti );
 }
 
 mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
@@ -737,9 +737,9 @@ mad_type_handle MADTypeDefault( mad_type_kind tk, mad_address_format af, const m
 }
 
 
-OVL_EXTERN mad_status DUMMYIMPENTRY( TypeConvert )( const mad_type_info *ti_src, const void *src, const mad_type_info *ti_dst, void *dst, addr_seg seg )
+OVL_EXTERN mad_status DUMMYIMPENTRY( TypeConvert )( const mad_type_info *src_mti, const void *src, const mad_type_info *dst_mti, void *dst, addr_seg seg )
 {
-    /* unused parameters */ (void)ti_src; (void)src; (void)ti_dst; (void)dst; (void)seg;
+    /* unused parameters */ (void)src_mti; (void)src; (void)dst_mti; (void)dst; (void)seg;
 
     return( MS_UNSUPPORTED );
 }
@@ -1149,44 +1149,44 @@ static mad_status ComposeFloat( decomposed_item *v, const mad_type_info *mti, vo
     return( MS_OK );
 }
 
-static mad_status DoConversion( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+static mad_status DoConversion( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
     mad_status          ms;
     decomposed_item     value;
 
-    if( in_t->b.kind != out_t->b.kind )
+    if( in_mti->b.kind != out_mti->b.kind )
         return( MS_UNSUPPORTED );
-    switch( in_t->b.kind ) {
+    switch( in_mti->b.kind ) {
     case MTK_INTEGER:
-        ms = DecomposeInt( in_t, in_d, &value );
+        ms = DecomposeInt( in_mti, in_d, &value );
         if( ms != MS_OK )
             return( ms );
-        return( ComposeInt( &value, out_t, out_d ) );
+        return( ComposeInt( &value, out_mti, out_d ) );
     case MTK_ADDRESS:
-        ms = DecomposeAddr( in_t, in_d, seg, &value );
+        ms = DecomposeAddr( in_mti, in_d, seg, &value );
         if( ms != MS_OK )
             return( ms );
-        return( ComposeAddr( &value, out_t, out_d ) );
+        return( ComposeAddr( &value, out_mti, out_d ) );
     case MTK_FLOAT:
-        ms = DecomposeFloat( in_t, in_d, &value );
+        ms = DecomposeFloat( in_mti, in_d, &value );
         if( ms != MS_OK )
             return( ms );
-        return( ComposeFloat( &value, out_t, out_d ) );
+        return( ComposeFloat( &value, out_mti, out_d ) );
     }
     return( MS_UNSUPPORTED );
 }
 
-mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status      MADTypeConvert( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
     mad_status  ms;
 
-    if( in_t->b.handler_code  == MAD_DEFAULT_HANDLING && out_t->b.handler_code == MAD_DEFAULT_HANDLING ) {
-        ms = DoConversion( in_t, in_d, out_t, out_d, seg );
+    if( in_mti->b.handler_code  == MAD_DEFAULT_HANDLING && out_mti->b.handler_code == MAD_DEFAULT_HANDLING ) {
+        ms = DoConversion( in_mti, in_d, out_mti, out_d, seg );
         if( ms == MS_OK ) {
             return( MS_OK );
         }
     }
-    return( Active->rtns->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
+    return( Active->rtns->TypeConvert( in_mti, in_d, out_mti, out_d, seg ) );
 }
 
 OVL_EXTERN mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
@@ -1386,8 +1386,8 @@ static size_t DoStrReal( long_double *value, mad_type_info const *mti, char *buf
 static mad_status FloatTypeToString( mad_radix radix, mad_type_info const *mti, const void *d, char *buff, size_t *buff_size_p )
 {
     size_t              buff_size;
-    mad_type_info       host;
-    unsigned_8    const *p;
+    mad_type_info       host_mti;
+    const unsigned_8    *p;
     size_t              len;
     mad_status          ms;
 #if defined( _LONG_DOUBLE_ )
@@ -1424,8 +1424,8 @@ static mad_status FloatTypeToString( mad_radix radix, mad_type_info const *mti, 
         }
         return( MS_OK );
     case 10:
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( val ), &host );
-        ms = MADTypeConvert( mti, d, &host, &val, 0 );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( val ), &host_mti );
+        ms = MADTypeConvert( mti, d, &host_mti, &val, 0 );
         if( ms != MS_OK )
             return( ms );
         *buff_size_p = DoStrReal( (long_double *)&val, mti, buff, buff_size );

@@ -40,6 +40,6 @@ typedef struct {
 
 bool IsEmptyString( const char *s );
 void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,
-int width, RegStringCreateData **rc, int *nregs, int *ncols );
+            int width, RegStringCreateData **rc, int *nregs, int *ncols );
 
 void FreeRegStringCreate( RegStringCreateData *reg_create, int num_regs );

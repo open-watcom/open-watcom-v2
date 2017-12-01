@@ -241,8 +241,9 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
 
 mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
 {
-    mad_type_handle     mth = 0;
+    mad_type_handle     mth;
 
+    mth = MAD_NIL_TYPE_HANDLE;
     if( tk & MAS_MEMORY ) {
         mth = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
         if( mth != MAD_NIL_TYPE_HANDLE ) {
