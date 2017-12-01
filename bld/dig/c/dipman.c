@@ -676,7 +676,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     image_idx           ii = 0;
     imp_mod_handle      imh;
     mod_handle          mh;
-    type_handle         *it;
+    type_handle         *th;
     sym_handle          *is;
     walk_result         wr;
 
@@ -697,11 +697,11 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
         ii = MH_IMAGE( mh );
         break;
     case SS_TYPE:
-        it = start;
-        if( it->ap != 0 )
+        th = start;
+        if( th->ap != 0 )
             return( WR_CONTINUE );
-        start = TH2ITH( it );
-        ii = it->ii;
+        start = TH2ITH( th );
+        ii = th->ii;
         break;
     case SS_BLOCK:
         if( DIPAddrMod( ((scope_block *)start)->start, &mh ) == SR_NONE ) {
@@ -941,7 +941,7 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
 }
 
 dip_status DIPTypeAddRef( type_handle *th )
-/**************************************/
+/*****************************************/
 {
     image_handle        *ih;
 
@@ -956,7 +956,7 @@ dip_status DIPTypeAddRef( type_handle *th )
 }
 
 dip_status DIPTypeRelease( type_handle *th )
-/**************************************/
+/******************************************/
 {
     image_handle        *ih;
 
@@ -1033,20 +1033,20 @@ dip_status DIPTypePtrAddrSpace( type_handle *th, location_context *lc, address *
     return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
-dip_status DIPTypeThunkAdjust( type_handle *oth, type_handle *mth,
+dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
                         location_context *lc, address *a )
 {
     image_handle        *ih;
 
-    if( oth->ap != 0 || mth->ap != 0 )
+    if( th1->ap != 0 || th2->ap != 0 )
         return( DS_FAIL );
-    if( oth->ii != mth->ii )
+    if( th1->ii != th2->ii )
         return( DS_FAIL );
-    ih = II2IH( oth->ii );
+    ih = II2IH( th1->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
     return( ih->dip->TypeThunkAdjust( IH2IIH( ih ),
-        TH2ITH( oth ), TH2ITH( mth ), lc, a ) );
+        TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
 }
 
 int DIPTypeCmp( type_handle *th1, type_handle *th2 )
