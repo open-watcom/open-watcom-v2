@@ -119,44 +119,39 @@ void KillTrap( void )
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE            *fp;
-    const char      *ptr;
     trap_init_func  *init_func;
-#ifdef USE_FILENAME_VERSION
     char            filename[256];
     char            *p;
-#endif
+    char            chr;
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-#ifdef USE_FILENAME_VERSION
-    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
+        parms = DEFAULT_TRP_NAME;
+    p = filename;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+        *p++ = chr;
     }
+#ifdef USE_FILENAME_VERSION
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
     *p = '\0';
     fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        ;
-    }
-    fp = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
-#endif
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    parms = ptr;
-    ptr = ReadInTrap( fp );
+    p = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    if( ptr != NULL ) {
-        strcpy( buff, ptr );
+    if( p != NULL ) {
+        strcpy( buff, p );
     } else {
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         if( TrapCode->signature == TRAP_SIGNATURE ) {
             init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-            if( *parms != '\0' )
-                ++parms;
             *trap_ver = init_func( parms, buff, trap_ver->remote );
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {

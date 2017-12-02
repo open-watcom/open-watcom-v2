@@ -44,15 +44,16 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    const char  *ptr;
+    char    chr;
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
-        ;
-    parms = ptr;
-    if( *parms != '\0' )
-        ++parms;
+        parms = DEFAULT_TRP_NAME;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+    }
     *trap_ver = TrapInit( parms, buff, trap_ver->remote );
     if( buff[0] == '\0' ) {
         if( TrapVersionOK( *trap_ver ) ) {

@@ -95,8 +95,8 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    unsigned            len;
-    const char          *ptr;
+    char                *p;
+    char                chr;
     trap_init_func      *init_func;
     char                trpfile[CCHMAXPATH];
 #ifndef _M_I86
@@ -104,14 +104,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-    len = 0;
-    for( ptr = parms; *ptr != '\0'; ++ptr ) {
-        if( *ptr == TRAP_PARM_SEPARATOR ) {
-            ptr++;
+        parms = DEFAULT_TRP_NAME;
+    p = trpfile;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
             break;
         }
-        trpfile[len++] = *ptr;
+        *p++ = chr;
     }
 #ifdef _M_I86
     if( LOW( trpfile[0] ) == 's' && LOW( trpfile[1] ) == 't'
@@ -122,19 +122,19 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         DosGetVersion( (PUSHORT)&version );
         os2ver = version >> 8;
         if( os2ver >= 20 ) {
-            trpfile[len++] = '3';
-            trpfile[len++] = '2';
+            *p++ = '3';
+            *p++ = '2';
         } else {
-            trpfile[len++] = '1';
-            trpfile[len++] = '6';
+            *p++ = '1';
+            *p++ = '6';
         }
     }
 #endif
 #ifdef USE_FILENAME_VERSION
-    trpfile[len++] = ( USE_FILENAME_VERSION / 10 ) + '0';
-    trpfile[len++] = ( USE_FILENAME_VERSION % 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+    *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
-    trpfile[len] = '\0';
+    *p = '\0';
 #ifndef _M_I86
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
@@ -143,12 +143,12 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     strcat( trpname, ".D32" );
     _searchenv( trpname, "PATH", trpfile );
     if( *trpfile == '\0' ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpname );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpname );
         return( buff );
     }
 #endif
     if( LOAD_MODULE( trpfile, TrapFile ) ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
@@ -161,7 +161,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         if( !GET_PROC_ADDRESS( TrapFile, 5, TRAPENTRY_PTR_NAME( TellHardMode ) ) ) {
             TRAPENTRY_PTR_NAME( TellHardMode ) = NULL;
         }
-        parms = ptr;
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {

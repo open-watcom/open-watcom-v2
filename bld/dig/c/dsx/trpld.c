@@ -53,7 +53,6 @@
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
-#define DEFAULT_TRP_NAME        "STD"
 #define DEFAULT_TRP_EXT         "TRP"
 #define TRAP_VECTOR             0x1a
 #define PSP_ENVSEG_OFF          0x2c
@@ -489,42 +488,38 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                *err;
-    const char          *ptr;
     FILE                *fp;
     trap_file_header    __far *head;
-#ifdef USE_FILENAME_VERSION
     char                filename[256];
     char                *p;
-#endif
+    char                chr;
 
-    if( parms == NULL || *parms == '\0' ) {
+    if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
+    p = filename;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+        *p++ = chr;
     }
 #ifdef USE_FILENAME_VERSION
-    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
-    }
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
     *p = '\0';
     fp = DIGLoader( Open )( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        ;
-    }
-    fp = DIGLoader( Open )( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
-#endif
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    err = ReadInTrap( fp );
+    p = ReadInTrap( fp );
     DIGLoader( Close )( fp );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
-    if( err == NULL ) {
-        if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {
-            strcpy( buff, err );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    if( p == NULL ) {
+        if( (p = SetTrapHandler()) != NULL || (p = CopyEnv()) != NULL ) {
+            strcpy( buff, p );
         } else {
             strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             head = EXTENDER_RM2PM( TrapMem.segm.rm, 0 );
@@ -535,9 +530,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 PMData->initfunc.s.segment = TrapMem.segm.rm;
                 PMData->reqfunc.s.segment  = TrapMem.segm.rm;
                 PMData->finifunc.s.segment = TrapMem.segm.rm;
-                parms = ptr;
-                if( *parms != '\0' )
-                    ++parms;
                 if( CallTrapInit( parms, buff, trap_ver ) ) {
                     if( TrapVersionOK( *trap_ver ) ) {
                         TrapVer = *trap_ver;

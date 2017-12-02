@@ -79,37 +79,35 @@ void KillTrap( void )
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     FILE                *fp;
-    const char          *ptr;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
-#ifdef USE_FILENAME_VERSION
     char                filename[256];
     char                *p;
-#endif
+    char                chr;
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-#ifdef USE_FILENAME_VERSION
-    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
+        parms = DEFAULT_TRP_NAME;
+    p = filename;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+        *p++ = chr;
     }
+#ifdef USE_FILENAME_VERSION
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+#endif
     *p = '\0';
     fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        ;
-    }
-    fp = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
-#endif
     if( fp == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
     TrapCode = ReadInImp( fp );
     DIGLoader( Close )( fp );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
     if( TrapCode != NULL ) {
 #ifdef __WATCOMC__
         if( TrapCode->sig == TRAPSIG ) {
@@ -118,9 +116,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             ld_func = (trap_load_func *)TrapCode->init_rtn;
             trap_funcs = ld_func( &TrapCallbacks );
             if( trap_funcs != NULL ) {
-                parms = ptr;
-                if( *parms != '\0' )
-                    ++parms;
                 *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
                 FiniFunc = trap_funcs->fini_func;
                 if( buff[0] == '\0' ) {
