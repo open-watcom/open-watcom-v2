@@ -117,7 +117,7 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
 
     if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
     for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
-        if( (tk & TypeArray[mth].u.info->b.kind)
+        if( (tk & TypeArray[mth].u.mti->b.kind)
          && TypeArray[mth].name != MAD_MSTR_NIL ) {
             wr = wk( mth, data );
             if( wr != WR_CONTINUE ) return( wr );
@@ -138,7 +138,7 @@ mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 
 void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( mti, TypeArray[mth].u.info, sizeof( *mti ) );
+    memcpy( mti, TypeArray[mth].u.mti, sizeof( *mti ) );
 }
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, mad_registers const *mr, address const *ap )

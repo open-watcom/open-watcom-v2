@@ -139,7 +139,7 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
 
     for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
         if( (int)TypeArray[mth].io <= iol || (int)TypeArray[mth].mem <= meml ) {
-            if( tk & TypeArray[mth].u.info->b.kind ) {
+            if( tk & TypeArray[mth].u.mti->b.kind ) {
                 wr = wk( mth, data );
                 if( wr != WR_CONTINUE ) return( wr );
             }
@@ -160,9 +160,9 @@ mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 
 void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( mti, TypeArray[mth].u.info, sizeof( *mti ) );
+    memcpy( mti, TypeArray[mth].u.mti, sizeof( *mti ) );
     if( TypeArray[mth].u.b == &BIT.b || TypeArray[mth].u.b == &MMX_TITLE || TypeArray[mth].u.b == &XMM_TITLE ) {
-        ti->b.handler_code = (unsigned_8)mth;
+        mti->b.handler_code = (unsigned_8)mth;
     }
 }
 
