@@ -70,7 +70,7 @@ public:
         { Implementation::operator=( x ); return( *this ); }
 
     size_type
-    count(const key_type& __x)
+    count(const key_type& __x) const
     {
         return Implementation::find(__x) == Implementation::end() ? 0 : 1;
     }
