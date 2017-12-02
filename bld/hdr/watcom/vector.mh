@@ -79,7 +79,7 @@ public:
     reference       operator[]( size_type n );
     const_reference operator[]( size_type n ) const;
     pointer         data();
-    pointer         data() const;
+    const_pointer   data() const;
     reference       at( size_type n );
     const_reference at( size_type n ) const;
     reference       front( );
@@ -535,7 +535,7 @@ vector< Type, Allocator >::data()
 }
 
 template<class Type, class Allocator>
-inline typename vector< Type, Allocator >::pointer
+inline typename vector< Type, Allocator >::const_pointer
 vector< Type, Allocator >::data() const
 {
     return( buffer );
