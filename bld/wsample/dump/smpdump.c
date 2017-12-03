@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,11 +76,10 @@ static char ext[_MAX_EXT];
 int main( int argc, char **argv )
 {
     char                quiet;
-    int                 fd;
+    FILE                *fp;
     size_t              wanted;
     unsigned            i, j, k, l;
     int                 length = 0;
-    off_t               head_off;
     char *              record_type;
     samp_block *        data;
     auto samp_header    head;
@@ -110,28 +110,30 @@ int main( int argc, char **argv )
         strcpy( ext, ".smp" );
     }
     _makepath( path, drv, dir, name, ext );
-    fd = open( path, O_BINARY | O_RDONLY, 0 );
-    if( fd == -1 )
+    fp = fopen( path, "rb" );
+    if( fp == NULL )
         return( 1 );
-    head_off = lseek( fd, -(long)SIZE_HEADER, SEEK_END );
-    if( head_off == -1 )
+    if( fseek( fp, -(long)SIZE_HEADER, SEEK_END ) ) {
+        fclose( fp );
         return( 1 );
-    posix_read( fd, &head, SIZE_HEADER );
+    }
+    fread( &head, 1, SIZE_HEADER, fp );
     if( head.signature != SAMP_SIGNATURE ) {
         SWAP_16( head.signature );
         if( head.signature == SAMP_SIGNATURE ) {
             byte_swap = true;
             SWAP_32( head.sample_start );
         } else {
+            fclose( fp );
             return( 1 );
         }
     }
     printf( "Sample file version: %u.%u\n", head.major_ver, head.minor_ver );
-    lseek( fd, head.sample_start, SEEK_SET );
+    fseek( fp, head.sample_start, SEEK_SET );
     for( ;; ) {
         /* read the prefix of record */
         wanted = sizeof( data->pref );
-        if( posix_read( fd, &data->pref, wanted ) != wanted )
+        if( fread( &data->pref, 1, wanted, fp ) != wanted )
             break;
         COND_SWAP_32( data->pref.tick );
         COND_SWAP_16( data->pref.length );
@@ -139,7 +141,7 @@ int main( int argc, char **argv )
 
         /* read the rest of the record */
         wanted = data->pref.length - sizeof( data->pref );
-        if( posix_read( fd, &data->d, wanted ) != wanted )
+        if( fread( &data->d, 1, wanted, fp ) != wanted )
             break;
 
         /* dump common record data */
@@ -306,6 +308,6 @@ int main( int argc, char **argv )
             break;
         }
     }
-    close( fd );
+    fclose( fp );
     return( 0 );
 }
