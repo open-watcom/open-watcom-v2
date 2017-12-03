@@ -177,7 +177,7 @@ bool Dmp_mdbg_head( void )
     Curr_sectoff = lseek( Handle, 0, SEEK_END );
     Wlseek( Curr_sectoff -(int)sizeof( master_dbg_header ) );
     Wread( &mdh, sizeof( master_dbg_header ) );
-    if( mdh.signature == VALID_SIGNATURE &&
+    if( mdh.signature == WAT_DBG_SIGNATURE &&
         mdh.exe_major_ver == EXE_MAJOR_VERSION &&
         (signed)mdh.exe_minor_ver <= EXE_MINOR_VERSION &&
         mdh.obj_major_ver == OBJ_MAJOR_VERSION &&

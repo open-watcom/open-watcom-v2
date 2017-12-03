@@ -860,7 +860,7 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     SeekCheck( fseek( exe->sym.fd, -(long)sizeof( dbg_head ), SEEK_END ), file_name );
     debug_header = ftell( exe->sym.fd );
     ReadCheck( fread( &dbg_head, 1, sizeof( dbg_head ), exe->sym.fd ), sizeof( dbg_head ), file_name );
-    if( dbg_head.signature != VALID_SIGNATURE           ||
+    if( dbg_head.signature != WAT_DBG_SIGNATURE         ||
         dbg_head.exe_major_ver != EXE_MAJOR_VERSION     ||
         dbg_head.exe_minor_ver > EXE_MINOR_VERSION      ||
         dbg_head.obj_major_ver != OBJ_MAJOR_VERSION     ||

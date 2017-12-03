@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Watcom debugging information. 
+* Description:  Watcom debugging information.
 *
 ****************************************************************************/
 
@@ -80,15 +80,19 @@
 **********************************************************************/
 
 
-#define VALID_SIGNATURE 0x8386
-#define FOX_SIGNATURE1  0x8300
-#define FOX_SIGNATURE2  0x8301
-#define WAT_RES_SIG     0x8302
-#define OLD_EXE_MAJOR_VERSION 2
-#define EXE_MAJOR_VERSION   3
-#define EXE_MINOR_VERSION   0
-#define OBJ_MAJOR_VERSION   1
-#define OBJ_MINOR_VERSION   3
+/* resource signatures */
+#define FOX_SIGNATURE1          0x8300
+#define FOX_SIGNATURE2          0x8301
+#define WAT_RES_SIG             0x8302
+
+/* Watcom debug info signature */
+#define WAT_DBG_SIGNATURE       0x8386
+
+#define OLD_EXE_MAJOR_VERSION   2
+#define EXE_MAJOR_VERSION       3
+#define EXE_MINOR_VERSION       0
+#define OBJ_MAJOR_VERSION       1
+#define OBJ_MINOR_VERSION       3
 
 #include "pushpck1.h"
 

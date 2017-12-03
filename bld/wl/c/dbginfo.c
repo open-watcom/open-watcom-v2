@@ -123,7 +123,7 @@ void ODBIInit( section *sect )
 /****************************/
 {
     DBISize = sizeof( dbgheader );
-    Master.signature = DBG_SIGNATURE;
+    Master.signature = WAT_DBG_SIGNATURE;
     Master.exe_major_ver = EXE_MAJOR_VERSION;
     Master.exe_minor_ver = EXE_MINOR_VERSION;
     Master.obj_major_ver = 0;

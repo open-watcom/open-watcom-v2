@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#define DBG_SIGNATURE   0x8386
-#define FOX1_SIGNATURE  0x8300
-#define FOX2_SIGNATURE  0x8301
-#define RES_SIGNATURE   0x8302
+#define WAT_DBG_SIGNATURE   0x8386
+#define FOX_SIGNATURE1      0x8300
+#define FOX_SIGNATURE2      0x8301
+#define WAT_RES_ID          0x8302
 
 #include "pushpck1.h"
 

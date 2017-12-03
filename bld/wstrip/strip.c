@@ -155,13 +155,13 @@ static bool TryWATCOM( int h, info_info *info, bool resfile )
             return( false );
         if( header.signature != FOX_SIGNATURE1
           && header.signature != FOX_SIGNATURE2
-          && header.signature != (resfile ? VALID_SIGNATURE : WAT_RES_SIG) )
+          && header.signature != (resfile ? WAT_DBG_SIGNATURE : WAT_RES_SIG) )
             break;
         if( header.debug_size > end )
             return( false );
         end = lseek( h, end - header.debug_size, SEEK_SET );
     }
-    if( header.signature != (resfile ? WAT_RES_SIG : VALID_SIGNATURE) )
+    if( header.signature != (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) )
         return( false );
     end += sizeof( header );
     if( end <= header.debug_size )
@@ -241,7 +241,7 @@ static bool IsSymResFile( int handle, bool resfile )
     lseek( handle, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
     if( posix_read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) )
         return( false );
-    if( header.signature == (resfile ? WAT_RES_SIG : VALID_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == (long)header.debug_size )
+    if( header.signature == (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == (long)header.debug_size )
         return( true );
     if( resfile )
         return( false );

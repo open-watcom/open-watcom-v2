@@ -37,10 +37,10 @@
 /* Include patch signature header shared with BPATCH */
 #include "patchsig.h"
 
-#define VALID_SIGNATURE 0x8386
-#define FOX_SIGNATURE1  0x8300
-#define FOX_SIGNATURE2  0x8301
-#define WAT_RES_SIG     0x8302
+#define WAT_DBG_SIGNATURE   0x8386
+#define FOX_SIGNATURE1      0x8300
+#define FOX_SIGNATURE2      0x8301
+#define WAT_RES_SIG         0x8302
 
 #include "pushpck1.h"
 typedef struct dbgheader {
@@ -89,7 +89,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                 notfound = false;
                 WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
                 break;
-            } else if( header.signature == VALID_SIGNATURE ||
+            } else if( header.signature == WAT_DBG_SIGNATURE ||
                        header.signature == FOX_SIGNATURE1 ||
                        header.signature == FOX_SIGNATURE2 ) {
                 currpos -= header.debug_size;

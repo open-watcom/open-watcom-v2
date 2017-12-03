@@ -250,7 +250,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
         end = DCSeek( ii->sym_fid, end - header.debug_size, DIG_ORG );
         DCRead( ii->sym_fid, &header, sizeof( header ) );
     }
-    if( header.signature != VALID_SIGNATURE )
+    if( header.signature != WAT_DBG_SIGNATURE )
         return( DS_FAIL );
     switch( header.exe_major_ver ) {
     case EXE_MAJOR_VERSION:
