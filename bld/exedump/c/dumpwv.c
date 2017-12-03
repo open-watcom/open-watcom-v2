@@ -80,10 +80,10 @@ static void get_len_prefix_string( char *res, const char *str )
 /*
  * dump_line_numbers - dump line number info
  */
-static void dump_line_numbers( mod_info *mi )
-/*******************************************/
+static void dump_line_numbers( mod_dbg_info *mi )
+/***********************************************/
 {
-    int                 i,j;
+    int                 i, j;
     unsigned_32         *offs;
     int                 cnt;
     v3_line_segment     *li;
@@ -98,13 +98,13 @@ static void dump_line_numbers( mod_info *mi )
     Wdputslc( "   *** Line Numbers ***\n" );
     Wdputslc( "   ====================\n" );
 
-    offs = alloca( (cnt+1) * sizeof( unsigned_32 ) );
+    offs = alloca( ( cnt + 1 ) * sizeof( unsigned_32 ) );
     if( offs == NULL ) {
         Wdputslc( "Error! Not enough stack.\n" );
         longjmp( Se_env, 1 );
     }
     Wlseek( Curr_sectoff + mi->di[DMND_LINES].info_off );
-    Wread( offs, (cnt+1) * sizeof( unsigned_32 ) );
+    Wread( offs, ( cnt + 1 ) * sizeof( unsigned_32 ) );
     Wdputs( "      " );
     Putdec( cnt );
     Wdputslc( " offset entries:\n" );
@@ -118,10 +118,10 @@ static void dump_line_numbers( mod_info *mi )
     for( i = 0; i < cnt; i++ ) {
         Wlseek( Curr_sectoff + offs[i] );
         Wread( Wbuff, sizeof( v3_line_segment ) );
-        li = (v3_line_segment *) Wbuff;
+        li = (v3_line_segment *)Wbuff;
         coff = 0;
         for( ;; ) {
-            size = (li->count - 1)* sizeof( line_info );
+            size = ( li->count - 1 ) * sizeof( line_dbg_info );
             Wread( Wbuff + sizeof( v3_line_segment ), size );
             Wdputslc( "      -------------------------------------\n" );
             Wdputs( "      Data " );
@@ -141,7 +141,7 @@ static void dump_line_numbers( mod_info *mi )
                 Wdputslc( "H\n" );
             }
             coff += sizeof( v3_line_segment ) + size;
-            if( coff >= (offs[i+1] - offs[i]) ) {
+            if( coff >= ( offs[i + 1] - offs[i] ) ) {
                 break;
             }
             Wread( Wbuff, sizeof( v3_line_segment ) );
@@ -195,7 +195,7 @@ static void dump_block( unsigned_8 *buff, bool is32 )
     block       *blk;
 
     if( is32 ) {
-        blk386 = (block_386 *) buff;
+        blk386 = (block_386 *)buff;
         Wdputs( "          start off = " );
         Puthex( blk386->start_offset, 8 );
         Wdputs( ", code size = " );
@@ -204,7 +204,7 @@ static void dump_block( unsigned_8 *buff, bool is32 )
         Puthex( blk386->parent_block_offset, 4 );
         Wdputslc( "\n" );
     } else {
-        blk = (block *) buff;
+        blk = (block *)buff;
         Wdputs( "          start off = " );
         Puthex( blk->start_offset, 4 );
         Wdputs( ", code size = " );
@@ -295,7 +295,7 @@ static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
         buff += sizeof( unsigned_32 );
         break;
     case CONST_ADDR286:
-        p32 = (addr32_ptr *) buff;
+        p32 = (addr32_ptr *)buff;
         buff += sizeof( addr32_ptr );
         Wdputs( "CONST_ADDR286( " );
         Puthex( p32->segment, 4 );
@@ -304,7 +304,7 @@ static unsigned_8 *dump_single_location_entry( unsigned_8 *buff )
         Wdputslc( " )\n" );
         break;
     case CONST_ADDR386:
-        p48 = (addr48_ptr *) buff;
+        p48 = (addr48_ptr *)buff;
         buff += sizeof( addr48_ptr );
         Wdputs( "CONST_ADDR386( " );
         Puthex( p48->segment, 4 );
@@ -483,7 +483,7 @@ static void dump_rtn( unsigned_8 *buff )
     Putdec( epi );
     Wdputslc( "\n" );
 
-    ret_off = *(unsigned_16 *) ptr;
+    ret_off = *(unsigned_16 *)ptr;
     ptr += sizeof( unsigned_16 );
     Wdputs( "          return address offset (from bp) = " );
     Puthex( ret_off, 4 );
@@ -536,7 +536,7 @@ static void dump_rtn386( unsigned_8 *buff )
     Putdec( epi );
     Wdputslc( "\n" );
 
-    ret_off = *(unsigned_32 *) ptr;
+    ret_off = *(unsigned_32 *)ptr;
     ptr += sizeof( unsigned_32 );
     Wdputs( "          return address offset (from bp) = " );
     Puthex( ret_off, 8 );
@@ -567,8 +567,8 @@ static void dump_rtn386( unsigned_8 *buff )
 /*
  * dump_locals - dump all local variable information
  */
-static void dump_locals( mod_info *mi )
-/*************************************/
+static void dump_locals( mod_dbg_info *mi )
+/*****************************************/
 {
     int         i;
     unsigned_32 *offs;
@@ -725,7 +725,7 @@ static void dump_locals( mod_info *mi )
                 break;
             case SET_BASE:
                 Wdputslc( "SET_BASE\n" );
-                sb = (set_base *) buff;
+                sb = (set_base *)buff;
                 Wdputs( "          base = " );
                 Puthex( sb->seg, 4 );
                 Wdputc( ':' );
@@ -734,7 +734,7 @@ static void dump_locals( mod_info *mi )
                 break;
             case SET_BASE_386:
                 Wdputslc( "SET_BASE_386\n" );
-                sb386 = (set_base386 *) buff;
+                sb386 = (set_base386 *)buff;
                 Wdputs( "          base = " );
                 Puthex( sb386->seg, 4 );
                 Wdputc( ':' );
@@ -754,8 +754,8 @@ static void dump_locals( mod_info *mi )
 /*
  * dump_types - dump all typing information
  */
-static void dump_types( mod_info *mi )
-/************************************/
+static void dump_types( mod_dbg_info *mi )
+/****************************************/
 {
     unsigned_32 *offs;
     int         cnt;
@@ -784,20 +784,20 @@ static void dump_types( mod_info *mi )
 static void dump_module_info( section_dbg_header *sdh )
 /*****************************************************/
 {
-    unsigned_32 bytes_read;
-    mod_info    *mi;
-    unsigned_32 total_bytes;
-    long        cpos;
-    char        name[256];
-    unsigned_16 index;
-    mod_info    *tmi;
+    unsigned_32     bytes_read;
+    mod_dbg_info    *mi;
+    unsigned_32     total_bytes;
+    long            cpos;
+    char            name[256];
+    unsigned_16     index;
+    mod_dbg_info    *tmi;
 
     total_bytes = sdh->gbl_offset - sdh->mod_offset;
     print_info_title( "Module" );
 
     bytes_read = 0;
-    mi = (mod_info *) Wbuff;
-    tmi = alloca( sizeof( mod_info ) + 255 );
+    mi = (mod_dbg_info *)Wbuff;
+    tmi = alloca( sizeof( mod_dbg_info ) + 255 );
     if( tmi == NULL ) {
         Wdputslc( "Error! Not enough stack.\n" );
         longjmp( Se_env, 1 );
@@ -806,9 +806,9 @@ static void dump_module_info( section_dbg_header *sdh )
     index = 0;
     while( bytes_read < total_bytes ) {
         Wlseek( cpos );
-        Wread( Wbuff, sizeof( mod_info ) + 255 );
-        bytes_read += sizeof( mod_info ) + mi->name[0];
-        cpos += sizeof( mod_info ) + mi->name[0];
+        Wread( Wbuff, sizeof( mod_dbg_info ) + 255 );
+        bytes_read += sizeof( mod_dbg_info ) + mi->name[0];
+        cpos += sizeof( mod_dbg_info ) + mi->name[0];
         get_len_prefix_string( name, mi->name );
         Putdecl( index, 3 );
         Wdputs( ") Name:   ");
@@ -832,7 +832,7 @@ static void dump_module_info( section_dbg_header *sdh )
         Wdputs( ", offset = " );
         Puthex( mi->di[DMND_LINES].info_off, 8 );
         Wdputslc( "H\n" );
-        memcpy( tmi, mi, sizeof( mod_info ) + mi->name[0] );
+        memcpy( tmi, mi, sizeof( mod_dbg_info ) + mi->name[0] );
         if( Debug_options & LOCALS ) {
             dump_locals( tmi );
         }
@@ -863,7 +863,7 @@ static void dump_global_info( section_dbg_header *sdh )
     print_info_title( "Global" );
 
     bytes_read = 0;
-    gi = (v3_gbl_info *) Wbuff;
+    gi = (v3_gbl_info *)Wbuff;
     cpos = Curr_sectoff + sdh->gbl_offset;
     while( bytes_read < total_bytes ) {
         Wlseek( cpos );
@@ -904,29 +904,29 @@ static void dump_global_info( section_dbg_header *sdh )
 static void dump_addr_info( section_dbg_header *sdh )
 /***************************************************/
 {
-    unsigned_32 total_bytes;
-    unsigned_32 bytes_read;
-    seg_info    *si;
-    long        cpos;
-    long        basepos;
-    unsigned_32 len;
-    int         i;
-    unsigned_32 seg_off;
+    unsigned_32     total_bytes;
+    unsigned_32     bytes_read;
+    seg_dbg_info    *si;
+    long            cpos;
+    long            basepos;
+    unsigned_32     len;
+    int             i;
+    unsigned_32     seg_off;
 
     total_bytes = sdh->section_size - sdh->addr_offset;
     print_info_title( "Addr" );
 
     bytes_read = 0;
-    si = (seg_info *) Wbuff;
+    si = (seg_dbg_info *)Wbuff;
     basepos = cpos = Curr_sectoff + sdh->addr_offset;
     while( bytes_read < total_bytes ) {
         Wlseek( cpos );
-        Wread( Wbuff, sizeof( seg_info ) );
+        Wread( Wbuff, sizeof( seg_dbg_info ) );
         Wlseek( cpos );
-        len = sizeof( seg_info ) + (si->count - 1) * sizeof( addr_info );
+        len = sizeof( seg_dbg_info ) + ( si->count - 1 ) * sizeof( addr_dbg_info );
         Wread( Wbuff, len );
         Wdputs( " Base:  fileoff = " );
-        Puthex( cpos-basepos, 8 );
+        Puthex( cpos - basepos, 8 );
         Wdputs( "H   seg = " );
         Puthex( si->base.segment, 4 );
         Wdputs( "H,  off = " );
@@ -936,8 +936,8 @@ static void dump_addr_info( section_dbg_header *sdh )
         for( i = 0; i < si->count; i++ ) {
             Putdecl( i, 6 );
             Wdputs( ") fileoff = " );
-            Puthex( (long) cpos - basepos + sizeof( seg_info) +
-                        i * sizeof( addr_info ) - sizeof( addr_info ), 8 );
+            Puthex( (long)cpos - basepos + sizeof( seg_dbg_info ) +
+                        i * sizeof( addr_dbg_info ) - sizeof( addr_dbg_info ), 8 );
             Wdputs( "H,  Size = " );
             Puthex( si->addr[i].size, 8 );
             Wdputs( "H @" );

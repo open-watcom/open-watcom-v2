@@ -31,7 +31,7 @@
 
 
 extern section_info     *FindInfo( imp_image_handle *ii, imp_mod_handle im );
-extern mod_info         *ModPointer( imp_image_handle *ii, imp_mod_handle im );
+extern mod_dbg_info     *ModPointer( imp_image_handle *ii, imp_mod_handle im );
 extern dip_status       AdjustMods( section_info *inf, unsigned long adjust );
 extern void             SetModBase( imp_image_handle *ii );
 extern void             ModInfoFini( section_info *inf );

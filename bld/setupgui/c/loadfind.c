@@ -34,19 +34,11 @@
 #include "wresall.h"
 #include "wresset2.h"
 #include "wresrtns.h"
+#include "machtype.h"
+#include "wdbginfo.h"
+
 
 #include "pushpck1.h"
-typedef struct dbgheader {
-    uint_16     signature;
-    uint_8      exe_major_ver;
-    uint_8      exe_minor_ver;
-    uint_8      obj_major_ver;
-    uint_8      obj_minor_ver;
-    uint_16     lang_size;
-    uint_16     seg_size;
-    uint_32     debug_size;
-} dbgheader;
-
 typedef struct {
     char        signature[4];
     uint_16     disk_number;
@@ -79,27 +71,22 @@ typedef struct {
 } zip_cdfh;
 #include "poppck.h"
 
-#define WAT_DBG_SIGNATURE   0x8386
-#define FOX_SIGNATURE1      0x8300
-#define FOX_SIGNATURE2      0x8301
-#define WAT_RES_SIG         0x8302
-
 WResFileOffset          WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
 bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
-    WResFileOffset  currpos;
-    WResFileOffset  offset;
-    dbgheader       header;
-    zip_eocd        eocd;
-    zip_cdfh        cdfh;
-    bool            notfound;
+    WResFileOffset      currpos;
+    WResFileOffset      offset;
+    master_dbg_header   header;
+    zip_eocd            eocd;
+    zip_cdfh            cdfh;
+    bool                notfound;
 
     notfound = !res_file;
     WResFileShift = 0;
     if( notfound ) {
-        offset = sizeof( dbgheader );
+        offset = sizeof( master_dbg_header );
 
         /* Look for a PKZIP header and skip archive if present */
         if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
@@ -118,10 +105,10 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         WRESSEEK( hinfo->fid, -offset, SEEK_END );
         currpos = WRESTELL( hinfo->fid );
         for( ;; ) {
-            WRESREAD( hinfo->fid, &header, sizeof( dbgheader ) );
+            WRESREAD( hinfo->fid, &header, sizeof( master_dbg_header ) );
             if( header.signature == WAT_RES_SIG ) {
                 notfound = false;
-                WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
+                WResFileShift = currpos - header.debug_size + sizeof( master_dbg_header );
                 break;
             } else if( header.signature == WAT_DBG_SIGNATURE ||
                        header.signature == FOX_SIGNATURE1 ||

@@ -96,33 +96,33 @@
 
 #include "pushpck1.h"
 
-typedef word        line_number;
+typedef unsigned_16 line_number;
 
 typedef struct {
-    word            signature;      /* == 0x8386                    */
-    byte            exe_major_ver;  /* == 2 or 3                    */
-    byte            exe_minor_ver;  /* == 0                         */
-    byte            obj_major_ver;  /* == 1                         */
-    byte            obj_minor_ver;  /* == 1                         */
-    word            lang_size;
-    word            segment_size;
-    dword           debug_size;
+    unsigned_16     signature;      /* == 0x8386                    */
+    unsigned_8      exe_major_ver;  /* == 2 or 3                    */
+    unsigned_8      exe_minor_ver;  /* == 0                         */
+    unsigned_8      obj_major_ver;  /* == 1                         */
+    unsigned_8      obj_minor_ver;  /* == 1                         */
+    unsigned_16     lang_size;
+    unsigned_16     segment_size;
+    unsigned_32     debug_size;
 } _WCUNALIGNED master_dbg_header;
 
 typedef struct {
-    dword           mod_offset;     /* --\                          */
-    dword           gbl_offset;     /*    +--> from section start   */
-    dword           addr_offset;    /* --/                          */
-    dword           section_size;
-    word            section_id;
+    unsigned_32     mod_offset;     /* --\                          */
+    unsigned_32     gbl_offset;     /*    +--> from section start   */
+    unsigned_32     addr_offset;    /* --/                          */
+    unsigned_32     section_size;
+    unsigned_16     section_id;
 } _WCUNALIGNED section_dbg_header;
 
 
 typedef struct {
-    dword           info_off;       /* from debug header */
+    unsigned_32     info_off;       /* from debug header */
     union {
-        word        size;           /* for V2 - size of demand info */
-        word        entries;        /* for V3 - # entries in link table */
+        unsigned_16 size;           /* for V2 - size of demand info */
+        unsigned_16 entries;        /* for V3 - # entries in link table */
     }               u;
 } _WCUNALIGNED demand_info;
 
@@ -134,31 +134,31 @@ typedef enum {
 } demand_kind;
 
 typedef struct {
-    word            language;       /* offset from source language table */
+    unsigned_16     language;       /* offset from source language table */
     demand_info     di[MAX_DMND];
     char            name[1];
-} _WCUNALIGNED mod_info;
+} _WCUNALIGNED mod_dbg_info;
 
 typedef struct {
     line_number     line;
-    dword           code_offset;    /* offset from segment base */
-} _WCUNALIGNED line_info;
+    unsigned_32     code_offset;    /* offset from segment base */
+} _WCUNALIGNED line_dbg_info;
 
 typedef struct {
-    word            segment;        /* offset from addr info class */
-    word            count;
-    line_info       line[1];        /* repeated 'count' times */
+    unsigned_16     segment;        /* offset from addr info class */
+    unsigned_16     count;
+    line_dbg_info   line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v2_line_segment;
 
 typedef struct {
-    dword           segment;        /* offset from addr info class */
-    word            count;
-    line_info       line[1];        /* repeated 'count' times */
+    unsigned_32     segment;        /* offset from addr info class */
+    unsigned_16     count;
+    line_dbg_info   line[1];        /* repeated 'count' times */
 } _WCUNALIGNED v3_line_segment;
 
 typedef struct {
     addr48_ptr      addr;
-    word            mod;        /* offset from mod info class for V2 */
+    unsigned_16     mod;        /* offset from mod info class for V2 */
                                 /* module index number for V3 */
     char            name[1];
 } _WCUNALIGNED gbl_info;
@@ -169,23 +169,23 @@ typedef struct {
 
 typedef struct {
     addr48_ptr      addr;
-    word            mod;    /* module index number for V3 */
-    byte            kind;
+    unsigned_16     mod;        /* module index number for V3 */
+    unsigned_8      kind;
     char            name[1];
 } _WCUNALIGNED v3_gbl_info;
 
 
 typedef struct {
-    dword           size;
-    word            mod;        /* offset from mod info class for V2 */
+    unsigned_32     size;
+    unsigned_16     mod;        /* offset from mod info class for V2 */
                                 /* module index number for V3 */
-} _WCUNALIGNED addr_info;
+} _WCUNALIGNED addr_dbg_info;
 
 typedef struct {
     addr48_ptr      base;
-    word            count;
-    addr_info       addr[1];    /* repeated 'count' times */
-} _WCUNALIGNED seg_info;
+    unsigned_16     count;
+    addr_dbg_info   addr[1];    /* repeated 'count' times */
+} _WCUNALIGNED seg_dbg_info;
 
 #define SEG_COUNT_MASK  0x7fff
 

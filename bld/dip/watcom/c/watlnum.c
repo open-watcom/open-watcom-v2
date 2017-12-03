@@ -200,20 +200,20 @@ static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im, word ent
 }
 
 
-static line_info *FindLineOff( addr_off off, addr_off adj,
+static line_dbg_info *FindLineOff( addr_off off, addr_off adj,
                         const char *start, const char *end,
                         struct search_info *close, imp_image_handle *ii )
 {
-    line_info   *ln_ptr;
-    int         low, high, target;
-    addr_off    chk;
-    const char  *dummy;
+    line_dbg_info   *ln_ptr;
+    int             low, high, target;
+    addr_off        chk;
+    const char      *dummy;
 
     low = 0;
     /* get number of entries minus one */
-    high = ( end - start ) / sizeof( line_info ) - 1;
+    high = ( end - start ) / sizeof( line_dbg_info ) - 1;
     /* point at first entry */
-    ln_ptr = (line_info *)start;
+    ln_ptr = (line_dbg_info *)start;
     while( low <= high ) {
         target = (low + high) >> 1;
         chk = ln_ptr[target].code_offset + adj;
@@ -274,7 +274,7 @@ static void SearchSection( imp_image_handle *ii, struct search_info *close, addr
 {
     line_segment        *seg;
     line_segment        *next;
-    line_info           *info;
+    line_dbg_info       *info;
     mem_block           block;
 
     close->found = false;
@@ -332,7 +332,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
 
 static void ScanSection( struct search_info *close, cue_fileid file_id, line_number search_line )
 {
-    line_info           *curr;
+    line_dbg_info       *curr;
     line_segment        *ptr;
     line_segment        *next;
     line_number         line;
@@ -344,7 +344,7 @@ static void ScanSection( struct search_info *close, cue_fileid file_id, line_num
         if( search_line == 0 ) {
             search_line = LINE_LINE( ptr )[0].line;
         }
-        for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
+        for( curr = LINE_LINE( ptr ); curr < (line_dbg_info *)next; ++curr ) {
             spec.fno = 1;
             line = curr->line;
             if( line >= PRIMARY_RANGE ) {
@@ -406,8 +406,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
 
 unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    line_info   *info;
-    line_number line;
+    line_dbg_info   *info;
+    line_number     line;
 
     LinStart = NULL;
     line = 0;
@@ -432,7 +432,7 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     address             addr;
-    line_info           *info;
+    line_dbg_info       *info;
     line_segment        *seg;
 
     LinStart = NULL;
@@ -451,7 +451,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
             DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
 {
-    line_info           *curr;
+    line_dbg_info       *curr;
     line_segment        *ptr;
     line_segment        *next;
     walk_result         wr;
@@ -462,7 +462,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
         for( ptr = LinStart; ptr < LinEnd; ptr = next ) {
             next = NEXT_SEG( ptr );
             ic->seg_bias = BIAS( ptr );
-            for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
+            for( curr = LINE_LINE( ptr ); curr < (line_dbg_info *)next; ++curr ) {
                 ic->info_bias = BIAS( curr );
                 if( curr->line < PRIMARY_RANGE ) {
                     wr = wk( ii, ic, d );
@@ -490,8 +490,8 @@ imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
 
 cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    line_info   *info;
-    line_number line;
+    line_dbg_info   *info;
+    line_number     line;
 
     LinStart = NULL;
     if( ic->entry != NO_LINE && GetLineInfo( ii, ic->im, ic->entry ) == DS_OK ) {
@@ -524,7 +524,7 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic,
 
 static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    line_info           *info;
+    line_dbg_info       *info;
     line_segment        *seg;
     word                num_entries;
     dip_status          status;
@@ -535,7 +535,7 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
         info = UNBIAS( ic->info_bias );
         ++info;
         for( ;; ) {
-            if( info < (line_info *)NEXT_SEG( seg ) ) {
+            if( info < (line_dbg_info *)NEXT_SEG( seg ) ) {
                 ic->seg_bias = BIAS( seg );
                 ic->info_bias = BIAS( info );
                 UnlockLine();
@@ -577,7 +577,7 @@ static line_segment *FindPrevSeg( line_segment *seg )
 
 static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    line_info           *info;
+    line_dbg_info       *info;
     line_segment        *seg;
     word                num_entries;
     dip_status          status;

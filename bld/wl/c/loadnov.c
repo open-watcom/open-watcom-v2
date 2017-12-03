@@ -44,6 +44,8 @@
 #include "impexp.h"
 #include "loadfile.h"
 #include "loadnov.h"
+#include "machtype.h"
+#include "wdbginfo.h"
 
 #include "clibext.h"
 
@@ -694,7 +696,7 @@ void FindExportedSyms( void )
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
-                dinfo->global.curr.u.vm_offs += sizeof( gblinfo ) + strlen( sym->name );
+                dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + strlen( sym->name );
             }
         }
     }

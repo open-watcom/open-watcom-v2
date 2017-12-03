@@ -31,6 +31,9 @@
 
 
 #include "bdiff.h"
+#ifdef __QNX__
+#include <conio.h>
+#endif
 #include "oldfile.h"
 #include "myio.h"
 #include "msg.h"

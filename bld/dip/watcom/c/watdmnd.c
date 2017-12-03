@@ -189,7 +189,7 @@ void FiniDemand( void )
 static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
 {
     demand_kind         dk;
-    mod_info            *mp;
+    mod_dbg_info        *mp;
     section_info        *sect;
     word                entry;
     dword               real_entry;
