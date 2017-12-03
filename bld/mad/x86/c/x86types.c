@@ -137,7 +137,7 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
         if( tk & MAS_MEMORY ) meml = L3;
     }
 
-    for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
+    for( mth = 0; mth < X86T_LAST_ONE; ++mth ) {
         if( (int)TypeArray[mth].io <= iol || (int)TypeArray[mth].mem <= meml ) {
             if( tk & TypeArray[mth].u.mti->b.kind ) {
                 wr = wk( mth, data );
