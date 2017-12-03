@@ -115,8 +115,8 @@ static unsigned_8       PMExceptSaveList[EXCEPT_COUNT] = {
 };
 #define NUM_PM_SAVE_EXCEPTS (sizeof(PMExceptSaveList)/sizeof(PMExceptSaveList[0]))
 
-static void __far *OrigPMExcepts[NUM_PM_SAVE_VECTS];
-static void __far *SavePMExcepts[NUM_PM_SAVE_VECTS];
+static void __far *OrigPMExcepts[NUM_PM_SAVE_EXCEPTS];
+static void __far *SavePMExcepts[NUM_PM_SAVE_EXCEPTS];
 
 static intr_state   IntrState = IS_NONE;
 
