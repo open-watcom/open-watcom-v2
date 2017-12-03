@@ -44,7 +44,7 @@
 #include "wio.h"
 #include "sopen.h"
 #include "machtype.h"
-#include "dbginfo.h"
+#include "wdbginfo.h"
 #include "cv4.h"
 #include "tistrail.h"
 #include "wstrip.h"

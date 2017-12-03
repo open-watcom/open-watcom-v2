@@ -38,7 +38,7 @@
 #include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dbginfo.h"
+#include "wdbginfo.h"
 
 #define INFO_MAX_BLOCK      0xff80
 
