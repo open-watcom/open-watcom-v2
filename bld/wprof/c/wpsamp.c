@@ -279,7 +279,7 @@ STATIC void sampleOpenMainImage( void )
     int             count;
 
     gatherSort( CurrSIOData );
-    for( count = CurrSIOData->image_count; count > 0; --count ) {
+    for( count = CurrSIOData->image_count; count-- > 0; ) {
         curr_image = CurrSIOData->images[count];
         if( curr_image->main_load ) {
             if( curr_image->dip_handle != NO_MOD && curr_image->mod_count > 2 ) {
