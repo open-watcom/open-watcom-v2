@@ -30,7 +30,8 @@
 
 
 #include "machtype.h"
-#include "dbginfo.h"
+#include "wdbginfo.h"
+
 
 #ifdef DEBUG
 extern void debugout( char *, ... );
