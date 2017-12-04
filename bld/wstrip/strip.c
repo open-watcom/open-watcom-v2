@@ -271,21 +271,14 @@ static void AddInfo( void )
 {
     info_info           info;
     master_dbg_header   header;
-    int                 msgid;
 
     if( finfo.name[0] == '\0' ) {
-        msgid = MSG_NO_SPECIFIED_0;
-        if( res )
-            msgid = MSG_NO_SPECIFIED_1;
-        Fatal( msgid, NULL );
+        Fatal( ( res ) ? MSG_NO_SPECIFIED_1 : MSG_NO_SPECIFIED_0, NULL );
     }
 
     FindInfoInfo( fin.h, &info, res );
     if( info.type != WRAP_NONE ) {
-        msgid = MSG_HAS_INFO_0;
-        if( res )
-            msgid = MSG_HAS_INFO_1;
-        Fatal( msgid, fin.name );
+        Fatal( ( res ) ? MSG_HAS_INFO_1 : MSG_HAS_INFO_0, fin.name );
     }
 
     /* initialize symbol or resource file */
@@ -294,10 +287,7 @@ static void AddInfo( void )
         FatalDelTmp( MSG_CANT_OPEN, finfo.name );
     }
     if( !IsResMagic( finfo.h, res ) && !IsSymResFile( finfo.h, res ) ) {
-        msgid = MSG_INV_FILE_0;
-        if( res )
-            msgid = MSG_INV_FILE_1;
-        FatalDelTmp( msgid, finfo.name );
+        FatalDelTmp( ( res ) ? MSG_INV_FILE_1 : MSG_INV_FILE_0, finfo.name );
     }
     if( strcmp( fin.name, fout.name ) != 0 ) {
         if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
@@ -328,15 +318,11 @@ static void AddInfo( void )
 static void StripInfo( void )
 {
     info_info           info;
-    int                 msgid;
 
     FindInfoInfo( fin.h, &info, res );
     if( info.type == WRAP_NONE ) {
         if( !nodebug_ok ) {
-            msgid = MSG_NO_INFO_0;
-            if( res )
-                msgid = MSG_NO_INFO_1;
-            Fatal( msgid, fin.name );
+            Fatal( ( res ) ? MSG_NO_INFO_1 : MSG_NO_INFO_0, fin.name );
         }
     }
 
@@ -348,10 +334,7 @@ static void StripInfo( void )
 #endif
         finfo.h = sopen4( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
         if( finfo.h == -1 ) {
-            msgid = MSG_CANT_CREATE_0;
-            if( res )
-                msgid = MSG_CANT_CREATE_1;
-            FatalDelTmp( msgid, finfo.name );
+            FatalDelTmp( ( res ) ? MSG_CANT_CREATE_1 : MSG_CANT_CREATE_0, finfo.name );
         }
     }
 
