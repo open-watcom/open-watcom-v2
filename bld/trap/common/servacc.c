@@ -155,9 +155,9 @@ bool Session( void )
     }
 }
 
-char    *TrapClientString( unsigned tc )
+char    *TrapClientString( tc_error err )
 {
-    switch( tc ) {
+    switch( err ) {
     case TC_BAD_TRAP_FILE:      return( TRP_ERR_BAD_TRAP_FILE );
     case TC_CANT_LOAD_TRAP:     return( TRP_ERR_CANT_LOAD_TRAP );
     case TC_WRONG_TRAP_VERSION: return( TRP_ERR_WRONG_TRAP_VERSION );

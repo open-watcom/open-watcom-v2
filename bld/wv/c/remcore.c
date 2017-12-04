@@ -717,9 +717,9 @@ void FiniCoreSupp( void )
     MData = NULL;
 }
 
-char    *TrapClientString( unsigned tc )
+char    *TrapClientString( tc_error err )
 {
-    switch( tc ) {
+    switch( err ) {
     case TC_BAD_TRAP_FILE:      return( LIT_ENG( BAD_TRAP_FILE ) );
     case TC_CANT_LOAD_TRAP:     return( LIT_ENG( CANT_LOAD_TRAP_FILE ) );
     case TC_WRONG_TRAP_VERSION: return( LIT_ENG( INCORRECT_TRAP_FILE_VERSION ) );

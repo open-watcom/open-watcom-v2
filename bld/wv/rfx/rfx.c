@@ -1989,9 +1989,9 @@ char    *Squish( file_parse *parse, char *into )
     return( endpath );
 }
 
-char    *TrapClientString( unsigned tc )
+char    *TrapClientString( tc_error err )
 {
-    switch( tc ) {
+    switch( err ) {
         case TC_BAD_TRAP_FILE:      return( "Bad trap file" );
         case TC_CANT_LOAD_TRAP:     return( "Cannot load trap file %s" );
         case TC_WRONG_TRAP_VERSION: return( "Incorrect trap file version" );
