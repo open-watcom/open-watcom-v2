@@ -247,7 +247,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     }
     if( !inf->ctl->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( inf->ctl->sym_fid, off, DIG_ORG) != off ) {
+        if( DCSeek( inf->ctl->sym_fid, off, DIG_ORG ) ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( DS_ERR|DS_FSEEK_FAILED );
         }

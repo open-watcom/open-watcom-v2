@@ -76,7 +76,8 @@ static unsigned long BSeek( dig_fhandle fid, unsigned long p, dig_seek w )
         Buff.off = npos - bpos;
         return( npos );
     }
-    Buff.fpos = DCSeek( fid, npos, DIG_ORG );
+    DCSeek( fid, npos, DIG_ORG );
+    Buff.fpos = DCTell( fid );
     Buff.off = 0;
     Buff.len = 0;
     return( Buff.fpos );
@@ -88,7 +89,8 @@ static size_t BRead( dig_fhandle fid, void *b, size_t s )
     size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
-        Buff.fpos = DCSeek( fid, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        DCSeek( fid, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        Buff.fpos = DCTell( fid );
         Buff.len = 0;
         Buff.off = 0;
         if( Buff.fpos == DIG_SEEK_ERROR )
@@ -245,10 +247,10 @@ static dip_status CheckSymFile( dig_fhandle fid )
     unsigned long       pos;
 
     /* seek to the end, read and check end map record */
-    pos = DCSeek( fid, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_END );
-    if( pos == DIG_SEEK_ERROR ) {
+    if( DCSeek( fid, DIG_SEEK_POSBACK( sizeof( end_map ) ), DIG_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
+    pos = DCTell( fid );
     /* the endmap record must be 16-byte aligned */
     if( pos % 16 ) {
         return( DS_FAIL );

@@ -101,9 +101,9 @@ dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( DIG_PH2FID( fh ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
 {
-    return( SeekStream( DIG_FID2PH( fid ), p, k ) );
+    return( SeekStream( DIG_FID2PH( fid ), p, k ) == ERR_SEEK );
 }
 
 unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )

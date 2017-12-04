@@ -44,7 +44,7 @@
  */
 static BOOL seekRead( dig_fhandle fid, DWORD offset, void *buf, DWORD size )
 {
-    if( DIGCli( Seek )( fid, offset, DIG_ORG ) == -1L ) {
+    if( DIGCli( Seek )( fid, offset, DIG_ORG ) ) {
         return( FALSE );
     }
     if( DIGCli( Read )( fid, buf, size ) != size ) {

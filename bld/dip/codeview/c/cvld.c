@@ -89,7 +89,7 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     unsigned_32         debug_rva;
     debug_directory     dir;
 
-    if( DCSeek( fid, 0, DIG_ORG ) != 0 ) {
+    if( DCSeek( fid, 0, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( fid, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
@@ -98,13 +98,13 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     if( hdr.dos.signature != DOS_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( DCSeek( fid, NH_OFFSET, DIG_ORG ) != NH_OFFSET ) {
+    if( DCSeek( fid, NH_OFFSET, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( fid, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( fid, nh_off, DIG_ORG ) != nh_off ) {
+    if( DCSeek( fid, nh_off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( fid, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
@@ -122,7 +122,7 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     section_off = nh_off + offsetof( pe_header, flags ) +
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
-    if( DCSeek( fid, section_off, DIG_ORG ) != section_off ) {
+    if( DCSeek( fid, section_off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     for( i = 0; i < hdr.pe.num_objects; i++ ) {
@@ -132,7 +132,7 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
                             hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
-            if( DCSeek( fid, debug_rva, DIG_ORG ) != debug_rva ) {
+            if( DCSeek( fid, debug_rva, DIG_ORG ) ) {
                 return( DS_ERR|DS_FSEEK_FAILED );
             }
             if( DCRead( fid, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
@@ -153,10 +153,10 @@ static dip_status TryFindTrailer( dig_fhandle fid, unsigned long *offp, unsigned
     cv_trailer          sig;
     unsigned long       pos;
 
-    pos = DCSeek( fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
-    if( pos == DIG_SEEK_ERROR ) {
+    if( DCSeek( fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
+    pos = DCTell( fid );
     if( DCRead( fid, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
@@ -182,7 +182,7 @@ static dip_status FindCV( dig_fhandle fid, unsigned long *offp, unsigned long *s
             return( ds );
         }
     }
-    if( DCSeek( fid, *offp, DIG_ORG ) != *offp ) {
+    if( DCSeek( fid, *offp, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( fid, sig, sizeof( sig ) ) != sizeof( sig ) ) {
@@ -204,13 +204,13 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     size_t                      block_size;
     unsigned                    num;
 
-    if( DCSeek( ii->sym_fid, off, DIG_ORG ) != off ) {
+    if( DCSeek( ii->sym_fid, off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( ii->sym_fid, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( ii->sym_fid, ii->bias + directory, DIG_ORG ) != (ii->bias + directory) ) {
+    if( DCSeek( ii->sym_fid, ii->bias + directory, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( ii->sym_fid, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {

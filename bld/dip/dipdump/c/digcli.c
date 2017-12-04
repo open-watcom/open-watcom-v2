@@ -117,7 +117,7 @@ dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
     return( DIG_PH2FID( fd ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
 {
     int     whence;
     long    off;
@@ -128,11 +128,20 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k 
     case DIG_END:   whence = SEEK_END; break;
     default:
         dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", DIG_FID2PH( fid ), p, k ));
-        return( DIG_SEEK_ERROR );
+        return( true );
     }
 
     off = lseek( DIG_FID2PH( fid ), p, whence );
     dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", DIG_FID2PH( fid ), p, k, off ));
+    return( off == -1L );
+}
+
+unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )
+{
+    long    off;
+
+    off = tell( DIG_FID2PH( fid ) );
+    dprintf(( "DIGCliTell: h=%d -> %ld\n", DIG_FID2PH( fid ), off ));
     return( off );
 }
 

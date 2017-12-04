@@ -94,7 +94,7 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
+int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
@@ -109,7 +109,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_se
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( DIG_FID2H( fid ), offset, 0, mode ) );
+    return( SetFilePointer( DIG_FID2H( fid ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
 }
 
 /*

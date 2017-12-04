@@ -108,10 +108,10 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
     return( DIG_PH2FID( fd ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
-/*******************************************************************************/
+int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+/*********************************************************************/
 {
-    return( lseek( DIG_FID2PH( fid ), p, k ) );
+    return( lseek( DIG_FID2PH( fid ), p, k ) == -1L );
 }
 
 unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )

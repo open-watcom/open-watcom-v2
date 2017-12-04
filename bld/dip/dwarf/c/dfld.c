@@ -105,7 +105,9 @@ static dip_status GetSectInfo( dig_fhandle fid, unsigned long *sizes, unsigned l
     uint                sect;
 
     // Find TIS header seek to elf header
-    start = DCSeek( fid, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_END );
+    if( DCSeek( fid, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_END ) )
+        return( DS_FAIL );
+    start = DCTell( fid );
     for( ;; ) {
         if( DCRead( fid, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
             return( DS_FAIL );
@@ -116,8 +118,7 @@ static dip_status GetSectInfo( dig_fhandle fid, unsigned long *sizes, unsigned l
             DCSeek( fid, 0, DIG_ORG );
             break;
         }
-        start += sizeof( dbg_head );
-        start -= dbg_head.size;
+        start -= dbg_head.size - sizeof( dbg_head );
         DCSeek( fid, start, DIG_ORG );
         if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
             break;

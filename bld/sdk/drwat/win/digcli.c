@@ -144,7 +144,7 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
+int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
 {
     int                 mode;
     unsigned long       ret;
@@ -163,7 +163,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_se
     }
     ret = lseek( DIG_FID2PH( fid ), offset, mode );
     DEBUGOUT( "seek END" );
-    return( ret );
+    return( ret == -1L );
 }
 
 /*

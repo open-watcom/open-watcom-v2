@@ -82,7 +82,8 @@ static unsigned long BSeek( dig_fhandle fid, unsigned long p, dig_seek w )
         Buff.off = npos - bpos;
         return( npos );
     }
-    Buff.fpos = DCSeek( fid, npos, DIG_ORG );
+    DCSeek( fid, npos, DIG_ORG );
+    Buff.fpos = DCTell( fid );
     Buff.off = 0;
     Buff.len = 0;
     return( Buff.fpos );
@@ -94,7 +95,8 @@ static size_t BRead( dig_fhandle fid, void *b, size_t s )
     size_t      want;
 
     if( s > sizeof( Buff.data ) ) {
-        Buff.fpos = DCSeek( fid, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        DCSeek( fid, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
+        Buff.fpos = DCTell( fid );
         Buff.len = 0;
         Buff.off = 0;
         if( Buff.fpos == DIG_SEEK_ERROR )

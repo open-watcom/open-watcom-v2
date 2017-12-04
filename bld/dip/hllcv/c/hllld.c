@@ -105,7 +105,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
     memset( ii->directory, 0, block_count * sizeof( void * ) );
 
     /* skip to the first entry */
-    if( DCSeek( ii->sym_fid, offent, DIG_ORG ) != offent) {
+    if( DCSeek( ii->sym_fid, offent, DIG_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -222,7 +222,8 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
         unsigned long   cur;
         unsigned        overlap = 0;
 
-        cur = DCSeek( ii->sym_fid, 0, DIG_END );
+        DCSeek( ii->sym_fid, 0, DIG_END );
+        cur = DCTell( ii->sym_fid );
         if( cur > size + off && size + off > size ) {
             cur = off + size;
         }
@@ -433,7 +434,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *ii, unsigned long nh_off )
             /*
              * Get segment info from the object table.
              */
-            if ( DCSeek( ii->sym_fid, buf.flat.objtab_off + nh_off, DIG_ORG ) != buf.flat.objtab_off + nh_off ) {
+            if( DCSeek( ii->sym_fid, buf.flat.objtab_off + nh_off, DIG_ORG ) ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
 
@@ -547,10 +548,10 @@ static dip_status TryFindTrailer( imp_image_handle *ii )
     hll_trailer         sig;
     unsigned long       pos;
 
-    pos = DCSeek( ii->sym_fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
-    if( pos == DIG_SEEK_ERROR ) {
+    if( DCSeek( ii->sym_fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
+    pos = DCTell( ii->sym_fid );
     if( DCRead( ii->sym_fid, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
