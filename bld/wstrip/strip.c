@@ -63,6 +63,8 @@
 
 #define SEEK_POSBACK(p) (-(long)(p))
 
+#define CopyData(i,o)   CopyDataLen( i, o, ~0UL )
+
 #include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -123,14 +125,14 @@ static void FatalDelTmp( int reason, const char *insert )
     Fatal( reason, insert );
 }
 
-static void CopyData( fdata *in, fdata *out, unsigned long max )
+static void CopyDataLen( fdata *in, fdata *out, unsigned long max )
 {
     size_t              size;
 
-    for( ;; ) {
-        if( max == 0 )
-            break;
-        size = ( max > (unsigned long)bufsize ) ? bufsize : max;
+    size = bufsize;
+    for( ; max != 0; max -= (unsigned long)size ) {
+        if( size > max )
+            size = (size_t)max;
         size = posix_read( in->h, Buffer, size );
         if( size == 0 )
             break;
@@ -140,7 +142,6 @@ static void CopyData( fdata *in, fdata *out, unsigned long max )
         if( size != (size_t)posix_write( out->h, Buffer, size ) ) {
             FatalDelTmp( MSG_WRITE_ERROR, out->name );
         }
-        max -= (unsigned long)size;
     }
 }
 
@@ -159,7 +160,8 @@ static bool TryWATCOM( int h, info_info *info, bool resfile )
             break;
         if( header.debug_size > end )
             return( false );
-        end = lseek( h, end - header.debug_size, SEEK_SET );
+        end -= header.debug_size;
+        lseek( h, end, SEEK_SET );
     }
     if( header.signature != (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) )
         return( false );
@@ -237,11 +239,12 @@ static bool IsSymResFile( int handle, bool resfile )
 {
     master_dbg_header   header;
     info_info           info;
+    unsigned long       pos;
 
-    lseek( handle, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
+    pos = lseek( handle, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
     if( posix_read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) )
         return( false );
-    if( header.signature == (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == (long)header.debug_size )
+    if( header.signature == (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) && ( pos + sizeof( header ) ) == header.debug_size )
         return( true );
     if( resfile )
         return( false );
@@ -293,13 +296,13 @@ static void AddInfo( void )
         if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
             Fatal( MSG_SEEK_ERROR, fin.name );
         }
-        CopyData( &fin, &fout, ~0UL );
+        CopyData( &fin, &fout );
     }
 
     /* transfer info file to output file */
     lseek( finfo.h, 0L, SEEK_SET );
     lseek( fout.h, 0L, SEEK_END );
-    CopyData( &finfo, &fout, ~0UL );
+    CopyData( &finfo, &fout );
 
     /* add header (trailer), if required */
     if( res ) {
@@ -343,7 +346,7 @@ static void StripInfo( void )
         if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
             Fatal( MSG_SEEK_ERROR, fin.name );
         }
-        CopyData( &fin, &fout, info.start );
+        CopyDataLen( &fin, &fout, info.start );
     } else {
         lseek( fin.h, info.start, SEEK_SET );
         lseek( fout.h, info.start, SEEK_SET );
@@ -351,14 +354,14 @@ static void StripInfo( void )
 
     if( finfo.h != -1 ) {
         /* transfer data to info file */
-        CopyData( &fin, &finfo, info.len );
+        CopyDataLen( &fin, &finfo, info.len );
     } else {
         /* else skip it */
         lseek( fin.h, info.len, SEEK_CUR );
     }
 
     /* transfer remaining data */
-    CopyData( &fin, &fout, ~0UL );
+    CopyData( &fin, &fout );
 }
 
 static bool Suffix( char *fname, const char *suff )
