@@ -106,6 +106,11 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k 
     return( SeekStream( DIG_FID2PH( fid ), p, k ) );
 }
 
+unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )
+{
+    return( SeekStream( DIG_FID2PH( fid ), 0, DIO_SEEK_CUR ) );
+}
+
 size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *b , size_t s )
 {
     return( ReadStream( DIG_FID2PH( fid ), b, s ) );

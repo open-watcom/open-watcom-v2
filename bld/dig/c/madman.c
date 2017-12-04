@@ -121,7 +121,6 @@ mad_client_routines MADClientInterface = {
     DIGCli( Free ),
 
     DIGCli( Open ),
-    DIGCli( Seek ),
     DIGCli( Read ),
     DIGCli( Close ),
 

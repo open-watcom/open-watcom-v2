@@ -153,7 +153,6 @@ typedef struct mad_client_routines {
     _DIGCli( Free );
 
     _DIGCli( Open );
-    _DIGCli( Seek );
     _DIGCli( Read );
     _DIGCli( Close );
 

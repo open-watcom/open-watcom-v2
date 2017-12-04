@@ -174,6 +174,7 @@ dip_client_routines DIPClientInterface = {
     DIPCli( AddrSection ),
     DIGCli( Open ),
     DIGCli( Seek ),
+    DIGCli( Tell ),
     DIGCli( Read ),
     DIGCli( Write ),
     DIGCli( Close ),

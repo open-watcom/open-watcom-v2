@@ -169,11 +169,6 @@ dig_fhandle MCOpen( const char *name, dig_open mode )
     return( MADClient->Open( name, mode ) );
 }
 
-unsigned long   MCSeek( dig_fhandle fid, unsigned long p, dig_seek m )
-{
-    return( MADClient->Seek( fid, p, m ) );
-}
-
 size_t  MCRead( dig_fhandle fid, void *d, size_t l )
 {
     return( MADClient->Read( fid, d, l ) );

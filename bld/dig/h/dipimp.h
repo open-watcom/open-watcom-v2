@@ -171,6 +171,7 @@ typedef struct dip_client_routines {
 
     _DIGCli( Open );
     _DIGCli( Seek );
+    _DIGCli( Tell );
     _DIGCli( Read );
     _DIGCli( Write );
     _DIGCli( Close );

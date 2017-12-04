@@ -113,6 +113,14 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_se
 }
 
 /*
+ * DIGCliTell
+ */
+unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )
+{
+    return( SetFilePointer( DIG_FID2H( fid ), 0, 0, FILE_CURRENT ) );
+}
+
+/*
  * DIGCliRead
  */
 size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *buf, size_t size )

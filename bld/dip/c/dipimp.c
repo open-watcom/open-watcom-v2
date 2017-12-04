@@ -209,6 +209,11 @@ unsigned long DCSeek( dig_fhandle fid, unsigned long p, dig_seek w )
     return( DIPClient->Seek( fid, p, w ) );
 }
 
+unsigned long DCTell( dig_fhandle fid )
+{
+    return( DIPClient->Tell( fid ) );
+}
+
 size_t DCRead( dig_fhandle fid, void *b, size_t s )
 {
     return( DIPClient->Read( fid, b, s ) );
