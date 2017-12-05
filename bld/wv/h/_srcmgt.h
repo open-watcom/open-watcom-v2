@@ -47,9 +47,10 @@
 #define SM_NO_MOD                       NO_MOD
 #define SM_BUF_SIZE                     512
 
-#define SMSeekStart( fp )               SeekStream( fp, 0L, DIO_SEEK_CUR )
-#define SMSeekOrg( fp, offset )         SeekStream( fp, offset, DIO_SEEK_ORG )
-#define SMSeekEnd( fp )                 SeekStream( fp, 0L, DIO_SEEK_END );
+#define SMSeekStart( fp )               (SeekStream( fp, 0L, DIO_SEEK_CUR ) == ERR_SEEK)
+#define SMSeekOrg( fp, offset )         (SeekStream( fp, offset, DIO_SEEK_ORG ) == ERR_SEEK)
+#define SMSeekEnd( fp )                 (SeekStream( fp, 0L, DIO_SEEK_END ) == ERR_SEEK)
+#define SMTell( fp )                    SeekStream( fp, 0L, DIO_SEEK_CUR )
 
 #define SMOpenRead( name )              FileOpen( name, OP_READ )
 #define SMNilHandle( fp)                ( fp == NIL_HANDLE )

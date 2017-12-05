@@ -76,8 +76,11 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid
     hndl->cur_line_ptr = hndl->line_ptr = hndl->line_end = hndl->line_buf;
     hndl->cur_line = 1;
     hndl->fp = fp;
-    hndl->bias = SMSeekStart( fp );
-    hndl->eof_off = SMSeekEnd( fp );
+    SMSeekStart( fp );
+    hndl->bias = SMTell( fp );
+    SMSeekEnd( fp );
+    hndl->eof_off = SMTell( fp );
+    SMSeekOrg( fp, hndl->bias );
     hndl->open_name = NULL;
     hndl->use = 1;
     hndl->mod = mod;
@@ -125,9 +128,13 @@ browser *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id )
 unsigned long FSize( browser *hndl )
 {
     unsigned long       old;
+    unsigned long       size;
 
-    old = SMSeekEnd( hndl->fp );
-    return( SMSeekOrg( hndl->fp, old ) );
+    old = SMTell( hndl->fp );
+    SMSeekEnd( hndl->fp );
+    size = SMTell( hndl->fp );
+    SMSeekOrg( hndl->fp, old );
+    return( size );
 }
 
 
@@ -177,7 +184,7 @@ static int get_block( browser *hndl, unsigned long off )
     if( off >= hndl->eof_off )
         return( 0 );
     loc = hndl->bias + off;
-    if( SMSeekOrg( hndl->fp, loc ) != loc ) {
+    if( SMSeekOrg( hndl->fp, loc ) ) {
         hndl->eof_off = off;
         return( 0 );
     }

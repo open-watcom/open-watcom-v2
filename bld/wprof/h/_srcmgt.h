@@ -31,32 +31,33 @@
 
 
 #include <malloc.h>
-#include "wio.h"
+#include <stdio.h>
 
 #define SMTabIntervalGet()              8
 
 #define _SMAlloc( pointer, size )       (pointer) = ProfAlloc( size )
 #define _SMFree( pointer )              ProfFree( pointer )
 
-#define sm_file_handle                  int
+#define sm_file_handle                  FILE *
 #define sm_mod_handle                   int
 #define sm_cue_fileid                   int
 
 #define SM_NO_MOD                       ((sm_mod_handle)-1)
 #define SM_BUF_SIZE                     512UL
 
-#define SMSeekStart( fp )               lseek( fp, 0L, SEEK_CUR )
-#define SMSeekOrg( fp, offset )         lseek( fp, offset, SEEK_SET )
-#define SMSeekEnd( fp )                 lseek( fp, 0L, SEEK_END );
+#define SMSeekStart( fp )               fseek( fp, 0L, SEEK_CUR )
+#define SMSeekOrg( fp, offset )         fseek( fp, offset, SEEK_SET )
+#define SMSeekEnd( fp )                 fseek( fp, 0L, SEEK_END )
+#define SMTell( fp )                    ftell( fp )
 
-#define SMOpenRead( name )              open( name, O_RDONLY|O_BINARY )
-#define SMNilHandle( fp)                ( fp == -1 )
-#define SMClose( fp )                   close( fp )
+#define SMOpenRead( name )              fopen( name, "rb" )
+#define SMNilHandle( fp)                ( fp == NULL )
+#define SMClose( fp )                   fclose( fp )
 
-#define SMReadStream( fp, buff, len )   read( fp, buff, len )
+#define SMReadStream( fp, buff, len )   fread( buff, 1, len, fp )
 
 #define SMFileRemote( fp )              0
 
 
-extern void *ProfAlloc(size_t size);
-extern void ProfFree(void *ptr);
+extern void *ProfAlloc( size_t size );
+extern void ProfFree( void *ptr );
