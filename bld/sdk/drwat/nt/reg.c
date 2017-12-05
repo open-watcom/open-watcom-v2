@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <process.h>
 #include <ctype.h>
 #include "drwatcom.h"

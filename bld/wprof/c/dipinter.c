@@ -209,7 +209,7 @@ void WPDipSetProc( process_info *dip_proc )
 
 
 
-mod_handle WPDipLoadInfo( dig_fhandle fid, const char *f_name, void *image,
+mod_handle WPDipLoadInfo( FILE *fid, const char *f_name, void *image,
                    unsigned image_size, unsigned dip_start, unsigned dip_end )
 /****************************************************************************/
 {

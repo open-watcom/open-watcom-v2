@@ -31,9 +31,6 @@
 
 //#define LOGGING 1
 
-#ifdef LOGGING
-#include <stdio.h>
-#endif
 #ifdef __NT__
 #include <windows.h>
 #endif

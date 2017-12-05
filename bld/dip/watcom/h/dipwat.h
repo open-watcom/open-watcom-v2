@@ -33,6 +33,7 @@
 #ifndef DIP_WATCOM
 #define DIP_WATCOM
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "bool.h"
@@ -127,7 +128,7 @@ typedef struct section_info {
 typedef struct imp_image_handle {
     struct section_info         *sect;
     unsigned                    num_sects;
-    dig_fhandle                 sym_fid;
+    FILE                        *sym_fp;
     unsigned                    num_segs;
     char                        *lang;
     addr_seg                    *map_segs;

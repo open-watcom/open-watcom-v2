@@ -80,94 +80,83 @@ void DIGCLIENTRY( Free )( void *p )
     free( p );
 }
 
-dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
+FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
-    int     fd;
-    int     flgs;
+    const char  *fmode;
 
-    dprintf(( "DIGCliOpen: name=%p:{%s} mode=%#x\n", name, name, mode ));
+    dprintf(( "DIGCliOpen: name=%s mode=%x\n", name, (unsigned)mode ));
 
     /* convert flags. */
     switch( mode & (DIG_READ | DIG_WRITE) ) {
     case DIG_READ:
-        flgs = O_RDONLY;
+        fmode = "rb";
         break;
     case DIG_WRITE:
-        flgs = O_WRONLY;
+        fmode = "wb";
         break;
     case DIG_WRITE | DIG_READ:
-        flgs = O_RDWR;
+        fmode = "r+b";
         break;
     default:
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     }
-#ifdef O_BINARY
-    flgs |= O_BINARY;
-#endif
-    if( mode & DIG_CREATE )
-        flgs |= O_CREAT;
-    if( mode & DIG_TRUNC )
-        flgs |= O_TRUNC;
-    if( mode & DIG_APPEND )
-        flgs |= O_APPEND;
-    /* (ignore the remaining flags) */
-
-    fd = open( name, flgs, PMODE_RWX );
-    dprintf(( "DIGCliOpen: returns %d\n", fd ));
-    return( DIG_PH2FID( fd ) );
+    fp = fopen( name, fmode );
+    dprintf(( "DIGCliOpen: returns %lx\n", (unsigned long)fp ));
+    return( fp );
 }
 
-int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
 {
     int     whence;
     long    off;
+    int     rc;
 
     switch( k ) {
     case DIG_ORG:   whence = SEEK_SET; break;
     case DIG_CUR:   whence = SEEK_CUR; break;
     case DIG_END:   whence = SEEK_END; break;
     default:
-        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", DIG_FID2PH( fid ), p, k ));
+        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", FP2POSIX( fp ), p, k ));
         return( true );
     }
 
-    off = lseek( DIG_FID2PH( fid ), p, whence );
-    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", DIG_FID2PH( fid ), p, k, off ));
-    return( off == -1L );
+    rc = fseek( fp, p, whence );
+    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", FP2POSIX( fp ), p, k, off ));
+    return( rc );
 }
 
-unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
     long    off;
 
-    off = tell( DIG_FID2PH( fid ) );
-    dprintf(( "DIGCliTell: h=%d -> %ld\n", DIG_FID2PH( fid ), off ));
+    off = ftell( fp );
+    dprintf(( "DIGCliTell: h=%d -> %ld\n", fp, off ));
     return( off );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
 {
     size_t      rc;
 
-    rc = read( DIG_FID2PH( fid ), b, s );
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", DIG_FID2PH( fid ), b, (unsigned)s, (unsigned)rc ));
+    rc = fread( b, 1, s, fp );
+    dprintf(( "DIGCliRead: h=%lx b=%p s=%d -> %d\n", (unsigned long)fp, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
 {
     size_t      rc;
 
-    rc = write( DIG_FID2PH( fid ), b, s );
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", DIG_FID2PH( fid ), b, (unsigned)s, (unsigned)rc ));
+    rc = fwrite( b, 1, s, fp );
+    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", (unsigned long)fp, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle fid )
+void DIGCLIENTRY( Close )( FILE *fp )
 {
-    dprintf(( "DIGCliClose: h=%d\n", DIG_FID2PH( fid ) ));
-    if( close( DIG_FID2PH( fid ) ) ) {
-        dprintf(( "DIGCliClose: h=%d failed!!\n", DIG_FID2PH( fid ) ));
+    dprintf(( "DIGCliClose: h=%lx\n", (unsigned long)fp ));
+    if( fclose( fp ) ) {
+        dprintf(( "DIGCliClose: h=%lx failed!!\n", (unsigned long)fp ));
     }
 }
 

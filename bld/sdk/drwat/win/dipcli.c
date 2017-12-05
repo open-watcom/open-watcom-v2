@@ -49,7 +49,7 @@
 
 
 #if 0
-dig_fhandle PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, char *ext )
 {
     char        path[ _MAX_PATH ];
     char        *realname;
@@ -68,7 +68,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' ) {
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     } else {
         return( DIGCli( Open )( path, DIG_READ ) );
     }

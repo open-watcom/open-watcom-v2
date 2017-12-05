@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "dbgdefn.h"
 #include "ldsupp.h"
 #include "mad.h"

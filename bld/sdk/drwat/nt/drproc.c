@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <time.h>
 #include "drwatcom.h"
 #include "menu.h"
 #include "aboutdlg.h"
@@ -38,8 +39,6 @@
 #include "end.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
-#include <stdio.h>
-#include <time.h>
 
 
 /* Local Window callback functions prototypes */

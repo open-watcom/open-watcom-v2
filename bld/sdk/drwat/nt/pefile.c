@@ -42,7 +42,7 @@
 /*
  * seekRead
  */
-static BOOL seekRead( dig_fhandle fid, DWORD offset, void *buf, DWORD size )
+static BOOL seekRead( FILE *fid, DWORD offset, void *buf, DWORD size )
 {
     if( DIGCli( Seek )( fid, offset, DIG_ORG ) ) {
         return( FALSE );
@@ -56,7 +56,7 @@ static BOOL seekRead( dig_fhandle fid, DWORD offset, void *buf, DWORD size )
 /*
  * getEXEHeader - verify that this is a PE executable and read the header
  */
-static BOOL getEXEHeader( dig_fhandle fid, pe_header *hdr )
+static BOOL getEXEHeader( FILE *fid, pe_header *hdr )
 {
     WORD        sig;
     DWORD       nh_offset;
@@ -114,7 +114,7 @@ BOOL GetSegmentList( ModuleNode *node )
 /*
  * GetModuleName - get the name of a module from its Export directory table
  */
-char *GetModuleName( dig_fhandle fid )
+char *GetModuleName( FILE *fid )
 {
     pe_header           header;
     pe_object           obj;
@@ -148,7 +148,7 @@ char *GetModuleName( dig_fhandle fid )
     return( ret );
 }
 
-BOOL GetModuleSize( dig_fhandle fid, DWORD *size )
+BOOL GetModuleSize( FILE *fid, DWORD *size )
 {
     pe_header           header;
 
@@ -158,7 +158,7 @@ BOOL GetModuleSize( dig_fhandle fid, DWORD *size )
     return( TRUE );
 }
 
-ObjectInfo *GetModuleObjects( dig_fhandle fid, DWORD *num_objects )
+ObjectInfo *GetModuleObjects( FILE *fid, DWORD *num_objects )
 {
     pe_header           header;
     pe_object           obj;

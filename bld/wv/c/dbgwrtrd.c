@@ -30,7 +30,6 @@
 
 
 #include <stdlib.h>
-#include <stdio.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"

@@ -76,7 +76,7 @@ static void Cleanup( imp_image_handle *ii )
     VMFini( ii );
 }
 
-static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long *sizep )
+static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep )
 {
     union {
         dos_exe_header  dos;
@@ -89,25 +89,25 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     unsigned_32         debug_rva;
     debug_directory     dir;
 
-    if( DCSeek( fid, 0, DIG_ORG ) ) {
+    if( DCSeek( fp, 0, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( fid, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
+    if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( hdr.dos.signature != DOS_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( DCSeek( fid, NH_OFFSET, DIG_ORG ) ) {
+    if( DCSeek( fp, NH_OFFSET, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( fid, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
+    if( DCRead( fp, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( fid, nh_off, DIG_ORG ) ) {
+    if( DCSeek( fp, nh_off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( fid, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
+    if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
         return( DS_FAIL );
     }
     if( hdr.pe.signature != PE_SIGNATURE ) {
@@ -122,20 +122,20 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     section_off = nh_off + offsetof( pe_header, flags ) +
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
-    if( DCSeek( fid, section_off, DIG_ORG ) ) {
+    if( DCSeek( fp, section_off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     for( i = 0; i < hdr.pe.num_objects; i++ ) {
-        if( DCRead( fid, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
+        if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
                             hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
-            if( DCSeek( fid, debug_rva, DIG_ORG ) ) {
+            if( DCSeek( fp, debug_rva, DIG_ORG ) ) {
                 return( DS_ERR|DS_FSEEK_FAILED );
             }
-            if( DCRead( fid, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
+            if( DCRead( fp, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
                 return( DS_ERR|DS_FREAD_FAILED );
             }
             if( dir.debug_type != DEBUG_TYPE_CODEVIEW ) {
@@ -148,16 +148,16 @@ static dip_status TryFindPE( dig_fhandle fid, unsigned long *offp, unsigned long
     return( DS_FAIL );
 }
 
-static dip_status TryFindTrailer( dig_fhandle fid, unsigned long *offp, unsigned long *sizep )
+static dip_status TryFindTrailer( FILE *fp, unsigned long *offp, unsigned long *sizep )
 {
     cv_trailer          sig;
     unsigned long       pos;
 
-    if( DCSeek( fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    pos = DCTell( fid );
-    if( DCRead( fid, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    pos = DCTell( fp );
+    if( DCRead( fp, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( memcmp( sig.sig, CV4_NB09, sizeof( sig.sig ) ) != 0 ) {
@@ -168,24 +168,24 @@ static dip_status TryFindTrailer( dig_fhandle fid, unsigned long *offp, unsigned
     return( DS_OK );
 }
 
-static dip_status FindCV( dig_fhandle fid, unsigned long *offp, unsigned long *sizep )
+static dip_status FindCV( FILE *fp, unsigned long *offp, unsigned long *sizep )
 {
     char        sig[CV_SIG_SIZE];
     dip_status  ds;
 
-    ds = TryFindPE( fid, offp, sizep );
+    ds = TryFindPE( fp, offp, sizep );
     if( ds & DS_ERR )
         return( ds );
     if( ds != DS_OK ) {
-        ds = TryFindTrailer( fid, offp, sizep );
+        ds = TryFindTrailer( fp, offp, sizep );
         if( ds != DS_OK ) {
             return( ds );
         }
     }
-    if( DCSeek( fid, *offp, DIG_ORG ) ) {
+    if( DCSeek( fp, *offp, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( fid, sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    if( DCRead( fp, sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( memcmp( sig, CV4_NB09, sizeof( sig ) ) != 0 ) {
@@ -204,16 +204,16 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     size_t                      block_size;
     unsigned                    num;
 
-    if( DCSeek( ii->sym_fid, off, DIG_ORG ) ) {
+    if( DCSeek( ii->sym_fp, off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( ii->sym_fid, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
+    if( DCRead( ii->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( ii->sym_fid, ii->bias + directory, DIG_ORG ) ) {
+    if( DCSeek( ii->sym_fp, ii->bias + directory, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( ii->sym_fid, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {
+    if( DCRead( ii->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( dir_header.cbDirHeader != sizeof( dir_header )
@@ -238,7 +238,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
         if( ii->directory[i] == NULL ) {
             return( DS_ERR|DS_NO_MEM );
         }
-        if( DCRead( ii->sym_fid, ii->directory[i], block_size ) != block_size ) {
+        if( DCRead( ii->sym_fp, ii->directory[i], block_size ) != block_size ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         ++i;
@@ -306,7 +306,7 @@ static dip_status SetMADType( imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     dip_status                  ds;
     unsigned long               off;
@@ -315,10 +315,10 @@ dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
     cv_sst_global_types_header  *hdr;
 
     memset( ii, 0, sizeof( *ii ) );
-    ds = FindCV( fid, &off, &size );
+    ds = FindCV( fp, &off, &size );
     if( ds != DS_OK )
         return( ds );
-    ii->sym_fid = fid;
+    ii->sym_fp = fp;
     ii->bias = off;
     ds = VMInit( ii, size );
     if( ds != DS_OK )
@@ -393,5 +393,5 @@ void MapLogical( imp_image_handle *ii, address *a )
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     Cleanup( ii );
-    DCClose( ii->sym_fid );
+    DCClose( ii->sym_fp );
 }

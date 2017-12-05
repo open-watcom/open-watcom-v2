@@ -37,6 +37,7 @@
 #endif
 
 #include "commonui.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include "bool.h"
 #include "listbox.h"
@@ -76,7 +77,34 @@
 #define STAT_MAD_NOTIFY         ( WM_USER + 29 )
 
 /*
- * dig_fhandle can be pointer to file structure or handle number
+ *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  can be pointer to file structure or handle number
  * therefore 0/NULL is reserved for errors
  * if handle number is used then handle must be 1 based
  */
@@ -202,7 +230,7 @@ void RemoveProcess( DWORD process );
 void DisplayProcList( void );
 void AddProcessName( DWORD procid, char *name );
 ProcNode *GetNextOwnedProc( ProcNode *cur );
-void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name );
+void AddModule( DWORD procid, FILE *fid, DWORD base, char *name );
 void RemoveModule( DWORD procid, DWORD base );
 //void MapAddress( addr_ptr *addr, ModuleNode *mod );
 ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr );
@@ -286,9 +314,9 @@ void FreeMemList( MemListData *info );
 
 /* pefile.c */
 BOOL GetSegmentList( ModuleNode *node );
-char *GetModuleName( dig_fhandle fid );
-BOOL GetModuleSize( dig_fhandle fid, DWORD *size );
-ObjectInfo *GetModuleObjects( dig_fhandle fid, DWORD *num_objects );
+char *GetModuleName( FILE *fid );
+BOOL GetModuleSize( FILE *fid, DWORD *size );
+ObjectInfo *GetModuleObjects( FILE *fid, DWORD *num_objects );
 
 /* disasm.c */
 RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );

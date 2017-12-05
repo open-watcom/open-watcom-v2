@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <ctype.h>
 #if defined( __NT__ ) && defined( __GUI__ )
     #define WIN32_LEAN_AND_MEAN

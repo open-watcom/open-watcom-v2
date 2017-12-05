@@ -48,12 +48,12 @@
 #define DEBUGOUT( x )
 static process_info     *curProcess;
 static mod_handle       curModHdl;
-static dig_fhandle      cur_fid;
+static FILE             *cur_fid;
 static BOOL             dipIsLoaded;
 
 
 #if 0
-dig_fhandle PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, char *ext )
 {
     char        path[ _MAX_PATH ];
     char        *realname;
@@ -72,7 +72,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' ) {
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     } else {
         return( DIGCli( Open )( path, DIG_READ ) );
     }
@@ -125,7 +125,7 @@ bool LoadDbgInfo( void )
     err = true;
     curProcess = DIPCreateProcess();
     cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
-    if( cur_fid != DIG_NIL_HANDLE ) {
+    if( cur_fid != NULL ) {
         DEBUGOUT( "File open OK" );
         priority = 0;
         for( ;; ) {
@@ -147,9 +147,9 @@ bool LoadDbgInfo( void )
     }
     if( err ) {
         DEBUGOUT( "LoadDbgInfo Failed" );
-        if( cur_fid != DIG_NIL_HANDLE ) {
+        if( cur_fid != NULL ) {
             DIGCli( Close )( cur_fid );
-            cur_fid = DIG_NIL_HANDLE;
+            cur_fid = NULL;
         }
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
@@ -245,9 +245,9 @@ void SymFileClose( void )
     if( curProcess != NULL ) {
         DIPDestroyProcess( curProcess );
     }
-    if( cur_fid != DIG_NIL_HANDLE ) {
+    if( cur_fid != NULL ) {
         DIGCli( Close )( cur_fid );
-        cur_fid = DIG_NIL_HANDLE;
+        cur_fid = NULL;
     }
     curProcess = NULL;
     curModHdl = NO_MOD;

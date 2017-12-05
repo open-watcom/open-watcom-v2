@@ -30,7 +30,6 @@
 
 
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #ifdef __WATCOMC__

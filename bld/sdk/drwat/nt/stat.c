@@ -33,7 +33,6 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <stdio.h>
 #include <dos.h>
 #include "drwatcom.h"
 #include "wclbproc.h"

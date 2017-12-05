@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -60,9 +59,9 @@ void GUImain( void )
 
     cmdline = RdosGetCmdLine();
     if( cmdline ) {
-        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 ) 
+        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 )
             cmdline++;
-    
+
         strcpy( CmdData, cmdline );
     } else
         CmdData[0] = 0;

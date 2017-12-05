@@ -31,7 +31,6 @@
 
 
 #include <windows.h>
-#include <stdio.h>
 #include <process.h>
 #include "drwatcom.h"
 #include "menu.h"

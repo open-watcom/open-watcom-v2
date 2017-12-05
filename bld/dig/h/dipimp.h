@@ -209,6 +209,6 @@ extern dip_fini_func DIPUNLOAD;
 #undef pick
 
 extern void         *DC( AllocZ )( size_t amount );
-extern dip_status   DC( ReadAt )( dig_fhandle fid, void *b, size_t s, unsigned long p );
+extern dip_status   DC( ReadAt )( FILE *fp, void *b, size_t s, unsigned long p );
 
 #endif

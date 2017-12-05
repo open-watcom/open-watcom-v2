@@ -79,7 +79,6 @@ void GUImain( void )
 
 #else
 
-#include <stdio.h>
 void GUImain( void )
 {
     char    *buff;

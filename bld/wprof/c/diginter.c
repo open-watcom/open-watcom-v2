@@ -75,8 +75,8 @@ void DIGCLIENTRY( Free )( void * p )
     _FREE( p );
 }
 
-dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
-/*****************************************************************/
+FILE * DIGCLIENTRY( Open )( const char * name, dig_open mode )
+/************************************************************/
 {
     int             fd;
     int             access;
@@ -104,24 +104,24 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
     }
     fd = open( name, access );
     if( fd == -1 )
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     return( DIG_PH2FID( fd ) );
 }
 
-int DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
-/*********************************************************************/
+int DIGCLIENTRY( Seek )( FILE *fid, unsigned long p, dig_seek k )
+/***************************************************************/
 {
     return( lseek( DIG_FID2PH( fid ), p, k ) == -1L );
 }
 
-unsigned long DIGCLIENTRY( Tell )( dig_fhandle fid )
-/**************************************************/
+unsigned long DIGCLIENTRY( Tell )( FILE *fid )
+/********************************************/
 {
     return( lseek( DIG_FID2PH( fid ), 0, SEEK_CUR ) );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void * b , size_t s )
-/****************************************************************/
+size_t DIGCLIENTRY( Read )( FILE *fid, void * b , size_t s )
+/**********************************************************/
 {
 #if defined( __QNX__ )
     return( BigRead( DIG_FID2PH( fid ), b, s ) );
@@ -130,8 +130,8 @@ size_t DIGCLIENTRY( Read )( dig_fhandle fid, void * b , size_t s )
 #endif
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void * b, size_t s )
-/**********************************************************************/
+size_t DIGCLIENTRY( Write )( FILE *fid, const void * b, size_t s )
+/****************************************************************/
 {
 #if defined( __QNX__ )
     return( BigWrite( DIG_FID2PH( fid ), b, s ) );
@@ -140,8 +140,8 @@ size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void * b, size_t s )
 #endif
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle fid )
-/******************************************/
+void DIGCLIENTRY( Close )( FILE *fid )
+/************************************/
 {
     close( DIG_FID2PH( fid ) );
 }

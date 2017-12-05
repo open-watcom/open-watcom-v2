@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include "wio.h"
 #include "common.h"

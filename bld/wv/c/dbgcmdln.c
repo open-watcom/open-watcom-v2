@@ -30,7 +30,6 @@
 
 
 #include <ctype.h>
-#include <stdio.h>
 #define BACKWARDS
 #include "dbgdefn.h"
 #include "dbgdata.h"

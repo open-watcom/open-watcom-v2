@@ -134,7 +134,7 @@ struct imp_image_handle {
     imp_image_handle    *next_image;    /* Pointer to the next HLL/CV image. */
     unsigned long       bias;           /* The the offset of the NBxx signature. */
     unsigned long       size;           /* the size of the debug info. */
-    dig_fhandle         sym_fid;        /* The file handle. */
+    FILE                *sym_fp;         /* The file handle. */
     struct virt_page    ***virt;        /* ? */
     unsigned            vm_dir_num;     /* ? */
     hll_dir_entry       **directory;    /* The subsection directory, 2 levels. */

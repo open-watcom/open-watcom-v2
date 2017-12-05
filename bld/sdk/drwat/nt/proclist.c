@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "priority.h"
@@ -188,9 +187,9 @@ static void freeModuleNode( ModuleNode *node )
         if( node->objects != NULL ) {
             MemFree( node->objects );
         }
-        if( node->fid != DIG_NIL_HANDLE ) {
+        if( node->fid != NULL ) {
             DIGCli( Close )( node->fid );
-            node->fid = DIG_NIL_HANDLE;
+            node->fid = NULL;
         }
         MemFree( node );
     }
@@ -219,7 +218,7 @@ ModuleNode *GetNextModule( ModuleNode *modinfo )
 /*
  * AddModule
  */
-void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name )
+void AddModule( DWORD procid, FILE *fid, DWORD base, char *name )
 {
     ProcNode    *process;
     ModuleNode  *new;

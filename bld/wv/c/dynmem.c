@@ -31,7 +31,6 @@
 
 #include "dbglit.h"
 #include <stdlib.h>
-#include <stdio.h>
 #ifdef __WATCOMC__
  /* it's important that <malloc> is included up here */
  #define __fmemneed foo

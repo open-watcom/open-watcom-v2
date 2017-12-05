@@ -484,7 +484,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, dig_fhandle fid, unsigned start, unsigned end )
+static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, unsigned start, unsigned end )
 {
     char        buff[TXT_LEN];
     char        *symfile;

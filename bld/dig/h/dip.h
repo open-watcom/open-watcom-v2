@@ -56,7 +56,7 @@ process_info    *DIPSetProcess( process_info * );
 void            DIPDestroyProcess( process_info * );
 
 unsigned        DIPPriority( unsigned );
-mod_handle      DIPLoadInfo( dig_fhandle, unsigned extra, unsigned prio );
+mod_handle      DIPLoadInfo( FILE *, unsigned extra, unsigned prio );
 void            DIPMapInfo( mod_handle, void * );
 void            DIPUnloadInfo( mod_handle );
 unsigned        DIPImagePriority( mod_handle );

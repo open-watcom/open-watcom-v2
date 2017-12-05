@@ -76,7 +76,7 @@ struct imp_image_handle {
        A single DIP may be used for multiple images. */
     struct section_info         *sect;
     unsigned                    num_sects;
-    dig_fhandle                 sym_fid;
+    FILE                        *sym_fp;
     unsigned                    num_segs;
     char                        *lang;
 };

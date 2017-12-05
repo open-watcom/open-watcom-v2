@@ -32,7 +32,6 @@
 
 #include <stddef.h>
 #include <limits.h>
-#include <stdio.h>
 #include <time.h>
 #include <direct.h>
 #include <dos.h>

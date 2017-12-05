@@ -77,7 +77,7 @@ static void UnloadInfo( imp_image_handle *ii )
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     InfoClear( ii );
-    DCClose( ii->sym_fid );
+    DCClose( ii->sym_fp );
     UnloadInfo( ii );
 }
 
@@ -110,11 +110,11 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
         curr->size = block_size;
         curr->next = NULL;
         curr->link = NULL;
-        if( DCSeek( new->ctl->sym_fid, off, DIG_ORG ) ) {
+        if( DCSeek( new->ctl->sym_fp, off, DIG_ORG ) ) {
             DCStatus( DS_ERR|DS_INFO_INVALID );
             return( DS_ERR|DS_INFO_INVALID );
         }
-        if( DCRead( new->ctl->sym_fid, curr->info, block_size ) != block_size ) {
+        if( DCRead( new->ctl->sym_fp, curr->info, block_size ) != block_size ) {
             DCStatus( DS_ERR|DS_INFO_INVALID );
             return( DS_ERR|DS_INFO_INVALID );
         }
@@ -134,13 +134,13 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
  * GetNumSect - find the number of sections for this load
  */
 
-static dip_status GetNumSect( dig_fhandle fid, unsigned long curr, unsigned long end, unsigned *count )
+static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, unsigned *count )
 {
     section_dbg_header  header;
 
     *count = 0;
     while( curr < end ) {
-        if( DCRead( fid, &header, sizeof( header ) ) != sizeof( header ) ) {
+        if( DCRead( fp, &header, sizeof( header ) ) != sizeof( header ) ) {
             DCStatus( DS_ERR|DS_INFO_INVALID );
             return( DS_ERR|DS_INFO_INVALID );
         }
@@ -162,7 +162,7 @@ static dip_status GetNumSect( dig_fhandle fid, unsigned long curr, unsigned long
         }
         (*count)++;
         curr += header.section_size;
-        DCSeek( fid, curr, DIG_ORG );
+        DCSeek( fp, curr, DIG_ORG );
     }
     if( curr > end ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
@@ -182,7 +182,7 @@ static dip_status ProcSectionInfo( imp_image_handle *ii, unsigned long pos )
     section_info        *new;
     dip_status          status;
 
-    DCRead( ii->sym_fid, &header, sizeof( header ) );
+    DCRead( ii->sym_fp, &header, sizeof( header ) );
     new = ii->sect + header.section_id;
     new->sect_id = header.section_id;
     new->ctl = ii;
@@ -218,7 +218,7 @@ static dip_status ProcSectionInfo( imp_image_handle *ii, unsigned long pos )
     }
     ii->num_sects++;
     pos += header.section_size;
-    if( DCSeek( ii->sym_fid, pos, DIG_ORG ) ) {
+    if( DCSeek( ii->sym_fp, pos, DIG_ORG ) ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
@@ -237,10 +237,10 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     bool                v2;
     char                *new;
 
-    if( DCSeek( ii->sym_fid, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_END ) )
+    if( DCSeek( ii->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_END ) )
         return( DS_FAIL );
-    end = DCTell( ii->sym_fid );
-    if( DCRead( ii->sym_fid, &header, sizeof( header ) ) != sizeof( header ) ) {
+    end = DCTell( ii->sym_fp );
+    if( DCRead( ii->sym_fp, &header, sizeof( header ) ) != sizeof( header ) ) {
         return( DS_FAIL );
     }
     while( header.signature == FOX_SIGNATURE1
@@ -251,8 +251,8 @@ static dip_status DoPermInfo( imp_image_handle *ii )
             return( DS_ERR|DS_INFO_INVALID );
         }
         end -= header.debug_size;
-        DCSeek( ii->sym_fid, end, DIG_ORG );
-        DCRead( ii->sym_fid, &header, sizeof( header ) );
+        DCSeek( ii->sym_fp, end, DIG_ORG );
+        DCRead( ii->sym_fp, &header, sizeof( header ) );
     }
     if( header.signature != WAT_DBG_SIGNATURE )
         return( DS_FAIL );
@@ -284,9 +284,9 @@ static dip_status DoPermInfo( imp_image_handle *ii )
         return( DS_ERR|DS_INFO_INVALID );
     }
     num_segs = header.segment_size / sizeof( addr_seg );
-    DCSeek( ii->sym_fid, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
-    curr = DCTell( ii->sym_fid );
-    ret = GetNumSect( ii->sym_fid, curr, end, &num_sects );
+    DCSeek( ii->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
+    curr = DCTell( ii->sym_fp );
+    ret = GetNumSect( ii->sym_fp, curr, end, &num_sects );
     if( ret != DS_OK )
         return( ret );
     new = DCAlloc( header.lang_size
@@ -303,17 +303,17 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     ii->real_segs = (void *)( ii->map_segs + num_segs );
     ii->sect = (void *)( ii->real_segs + num_segs );
     ii->num_sects = 0;
-    DCSeek( ii->sym_fid, curr - header.lang_size - header.segment_size, DIG_ORG );
-    if( DCRead( ii->sym_fid, ii->lang, header.lang_size ) != header.lang_size ) {
+    DCSeek( ii->sym_fp, curr - header.lang_size - header.segment_size, DIG_ORG );
+    if( DCRead( ii->sym_fp, ii->lang, header.lang_size ) != header.lang_size ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
-    if( DCRead( ii->sym_fid, ii->map_segs, header.segment_size ) != header.segment_size ) {
+    if( DCRead( ii->sym_fp, ii->map_segs, header.segment_size ) != header.segment_size ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
     while( ii->num_sects < num_sects ) {
-        curr = DCTell( ii->sym_fid );
+        curr = DCTell( ii->sym_fp );
         ret = ProcSectionInfo( ii, curr );
         if( ret != DS_OK ) {
             return( ret );
@@ -326,15 +326,15 @@ static dip_status DoPermInfo( imp_image_handle *ii )
 /*
  * DIPImpLoadInfo -- process symbol table info on end of .exe file
  */
-dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     dip_status          ret;
 
-    if( fid == DIG_NIL_HANDLE ) {
+    if( fp == NULL ) {
         DCStatus( DS_ERR|DS_FOPEN_FAILED );
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    ii->sym_fid = fid;
+    ii->sym_fp = fp;
     ii->sect = NULL;
     ii->lang = NULL;
     ret = DoPermInfo( ii );
@@ -350,14 +350,14 @@ dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
 
 dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff )
 {
-    dig_fhandle  fid;
+    FILE    *fp;
 
-    fid = inf->ctl->sym_fid;
-    if( DCSeek( fid, offset, DIG_ORG ) ) {
+    fp = inf->ctl->sym_fp;
+    if( DCSeek( fp, offset, DIG_ORG ) ) {
         DCStatus( DS_ERR|DS_FSEEK_FAILED );
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( fid, buff, size ) != size ) {
+    if( DCRead( fp, buff, size ) != size ) {
         DCStatus( DS_ERR|DS_FREAD_FAILED );
         return( DS_ERR|DS_FREAD_FAILED );
     }

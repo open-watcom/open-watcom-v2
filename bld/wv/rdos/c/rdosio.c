@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

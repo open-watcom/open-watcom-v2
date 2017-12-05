@@ -32,7 +32,6 @@
 
 #include <limits.h>
 #include <stddef.h>
-#include <stdio.h>
 #include "wio.h"
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )

@@ -36,7 +36,7 @@
         Loading/unloading symbolic information.
 */
 
-dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     //TODO:
     /*
