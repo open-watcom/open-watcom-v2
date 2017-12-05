@@ -420,12 +420,10 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *ii )
 {
     dip_status      ds;
     sym_mapdef      map;
-    unsigned long   map_start;
     char            name[256];
     unsigned        name_len;
 
-    map_start = BSeek( fp, 0, DIG_ORG );
-    if( map_start == DIG_SEEK_ERROR ) {
+    if( BSeek( fp, 0, DIG_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 

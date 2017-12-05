@@ -116,12 +116,12 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
     case DIG_CUR:   whence = SEEK_CUR; break;
     case DIG_END:   whence = SEEK_END; break;
     default:
-        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", FP2POSIX( fp ), p, k ));
+        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", (unsigned long)fp, p, k ));
         return( true );
     }
 
     rc = fseek( fp, p, whence );
-    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", FP2POSIX( fp ), p, k, off ));
+    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", (unsigned long)fp, p, k, ftell( fp ) ));
     return( rc );
 }
 
