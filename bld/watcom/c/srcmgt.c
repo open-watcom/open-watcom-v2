@@ -184,7 +184,7 @@ static int get_block( browser *hndl, unsigned long off )
     if( off >= hndl->eof_off )
         return( 0 );
     loc = hndl->bias + off;
-    if( SMSeekOrg( hndl->fp, loc ) ) {
+    if( SMSeekFail( SMSeekOrg( hndl->fp, loc ) ) ) {
         hndl->eof_off = off;
         return( 0 );
     }

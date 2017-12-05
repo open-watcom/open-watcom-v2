@@ -48,6 +48,8 @@
 #define SMSeekStart( fp )               fseek( fp, 0L, SEEK_CUR )
 #define SMSeekOrg( fp, offset )         fseek( fp, offset, SEEK_SET )
 #define SMSeekEnd( fp )                 fseek( fp, 0L, SEEK_END )
+#define SMSeekFail(x)                   ((x) != 0)
+
 #define SMTell( fp )                    ftell( fp )
 
 #define SMOpenRead( name )              fopen( name, "rb" )
