@@ -53,7 +53,7 @@
 //#include "msg.def"
 
 STATIC char *       errMsgText( dip_status );
-STATIC bool         loadDIP( char *, bool, bool );
+STATIC bool         loadDIP( const char *, bool, bool );
 
 STATIC dip_status   DIPStatus;
 
@@ -246,8 +246,8 @@ void WPDipFini( void )
 
 
 
-STATIC bool loadDIP( char *dip, bool defaults, bool fail_big )
-/************************************************************/
+STATIC bool loadDIP( const char *dip, bool defaults, bool fail_big )
+/******************************************************************/
 {
     dip_status  ret;
 

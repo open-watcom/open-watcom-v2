@@ -151,8 +151,8 @@ void ClearSample( sio_data * curr_sio )
     thread_data         *next;
 
     cursor_type = WndHourGlass( NULL );
-    if( curr_sio->fh != 0 ) {
-        close( curr_sio->fh );
+    if( curr_sio->fp != NULL ) {
+        fclose( curr_sio->fp );
     }
     if( curr_sio->samp_file_name != NULL ) {
         ProfFree( curr_sio->samp_file_name );

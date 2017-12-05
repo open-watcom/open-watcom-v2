@@ -31,11 +31,11 @@
 
 extern void         AsmSize( void );
 extern void         AsmFini( void );
-extern file_handle  ExeOpen( char * name );
-extern void         ExeClose( file_handle fh );
+extern FILE         *ExeOpen( const char *name );
+extern void         ExeClose( FILE *fp );
 extern void         SetExeOffset( address a );
 extern void         SetExeImage( image_info *image );
-extern bool         SetExeFile( file_handle fh, bool overlay );
+extern bool         SetExeFile( FILE *fp, bool overlay );
 extern image_info   *AddrImage( address *addr );
 extern void         MapAddressToActual( image_info *curr_image, addr_ptr *addr );
 extern void         MapAddressToMap( addr_ptr *addr );

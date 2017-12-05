@@ -89,7 +89,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     massgd_sample_addr * samp_data;
     wp_asmline *        asm_line;
     mod_handle          mh;
-    file_handle         fh;
+    FILE                *fp;
     address             addr;
     cue_fileid          fid;
     search_result       cue_find;
@@ -110,8 +110,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
                                         src_row, 0, ch2 ) == SR_NONE ) {
         ch2 = NULL;
     }
-    fh = ExeOpen( curr_sio->curr_image->name );
-    if( fh == -1 ) {
+    fp = ExeOpen( curr_sio->curr_image->name );
+    if( fp == NULL ) {
         ErrorMsg( LIT( Exe_Not_Found ), curr_sio->curr_image->name );
         return( NULL );
     }
@@ -120,8 +120,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     wpasm_file->asm_buff = ProfAlloc( MAX_ASM_BUFF_LEN );
     wpasm_file->asm_buff_len = MAX_ASM_BUFF_LEN;
     SetNumBytes( 0 );
-    SetExeFile( fh, false );
-    wpasm_file->fh = fh;
+    SetExeFile( fp, false );
+    wpasm_file->fp = fp;
     addr = DIPModAddr( curr_mod->mh );
     SetExeOffset( addr );
     wpasm_file->max_time = 0;
@@ -216,8 +216,8 @@ void WPAsmClose( wp_asmfile * wpasm_file )
         if( wpasm_file->asm_buff != NULL ) {
             ProfFree( wpasm_file->asm_buff );
         }
-        if( wpasm_file->fh != 0 ) {
-            ExeClose( wpasm_file->fh );
+        if( wpasm_file->fp != 0 ) {
+            ExeClose( wpasm_file->fp );
         }
         ProfFree( wpasm_file );
     }
@@ -263,9 +263,9 @@ char * WPAsmGetLine( a_window * wnd, int line )
         }
     } else {
         SetNumBytes( 0 );
-        SetExeFile( wpasm_file->fh, false );
+        SetExeFile( wpasm_file->fp, false );
         SetExeImage( curr_sio->curr_image );
-        GetFullInstruct( asm_line->u.asm_line.addr, wpasm_file->asm_buff, wpasm_file->asm_buff_len-1 );
+        GetFullInstruct( asm_line->u.asm_line.addr, wpasm_file->asm_buff, wpasm_file->asm_buff_len - 1 );
     }
     return( wpasm_file->asm_buff );
 }

@@ -219,7 +219,7 @@ typedef struct sio_data {
     struct sio_data         *next;
     char                    *samp_file_name;
     process_info            *dip_process;
-    file_handle             fh;
+    FILE                    *fp;
     clicks_t                timer_rate;  /* microseconds between ticks*/
     clicks_t                gather_cutoff;
     clicks_t                abs_count;

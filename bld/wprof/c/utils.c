@@ -105,7 +105,7 @@ void ReplaceExt( char * path, char * addext )
 static char *findFile( char *fullname, const char *name, char *path_list )
 /************************************************************************/
 {
-    file_handle     fh;
+    int             fh;
     char            *p;
     char            c;
 
@@ -259,72 +259,6 @@ void InitPaths( void )
     DipExePathList = AddPath( DipExePathList, "/usr/watcom" );
 #endif
 }
-
-#if defined( __QNX__ )
-
-#define MAX_QNX_TRANSFER (0x8000 - 512)
-
-size_t BigRead( int fh, void *buffer, size_t size )
-/*************************************************/
-{
-
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-*/
-    size_t      total;
-    unsigned    read_len;
-    unsigned    amount;
-
-    amount = MAX_QNX_TRANSFER;
-    total = 0;
-    while( size > 0 ) {
-        if( amount > size )
-            amount = (unsigned)size;
-        read_len = read( fh, buffer, amount );
-        if( read_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
-        }
-        total += read_len;
-        if( read_len != amount ) {
-            return( total );
-        }
-        buffer = (char *)buffer + amount;
-        size -= amount;
-    }
-    return( total );
-}
-
-size_t BigWrite( int fh, const void *buffer, size_t size )
-/********************************************************/
-{
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-*/
-    size_t      total;
-    unsigned    write_len;
-    unsigned    amount;
-
-    amount = MAX_QNX_TRANSFER;
-    total = 0;
-    while( size > 0 ) {
-        if( amount > size )
-            amount = (unsigned)size;
-        write_len = write( fh, buffer, amount );
-        if( write_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
-        }
-        total += write_len;
-        if( write_len != amount ) {
-            return( total );
-        }
-        buffer = (char *)buffer + amount;
-        size -= amount;
-    }
-    return( total );
-}
-#endif
 
 #if defined( __DOS__ )
 extern void DoRingBell( void );

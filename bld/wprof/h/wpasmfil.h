@@ -57,7 +57,7 @@ typedef struct wp_asm_groups {
 
 typedef struct wp_asmfile {
     wp_asm_groups *             asm_data;
-    file_handle                 fh;
+    FILE                        *fp;
     char *                      asm_buff;
     clicks_t                    max_time;
     int                         asm_buff_len;

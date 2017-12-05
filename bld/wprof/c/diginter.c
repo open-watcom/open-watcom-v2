@@ -78,72 +78,46 @@ void DIGCLIENTRY( Free )( void * p )
 FILE * DIGCLIENTRY( Open )( const char * name, dig_open mode )
 /************************************************************/
 {
-    int             fd;
-    int             access;
+    const char  *access;
 
-    access = O_BINARY;
-    if( mode & DIG_TRUNC ) {
-        access |= O_TRUNC | O_CREAT;
-    }
-    if( mode & DIG_READ ) {
-        access |= O_RDONLY;
-    }
-    if( mode & DIG_WRITE ) {
-        if( access & DIG_READ ) {
-            access &= ~O_RDONLY;
-            access |= O_RDWR;
-        } else {
-            access |= O_WRONLY | O_CREAT;
-        }
-    }
-    if( mode & DIG_CREATE ) {
-        access |= O_CREAT;
-    }
     if( mode & DIG_APPEND ) {
-        access |= O_APPEND;
+        access = "ab";
+    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+        access = "wb";
+    } else {
+        access = "rb";
     }
-    fd = open( name, access );
-    if( fd == -1 )
-        return( NULL );
-    return( DIG_PH2FID( fd ) );
+    return( fopen( name, access ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+/**************************************************************/
+{
+    return( fseek( fp, p, k ) );
+}
+
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+/*******************************************/
+{
+    return( ftell( fp ) );
+}
+
+size_t DIGCLIENTRY( Read )( FILE *fp, void * b , size_t s )
+/*********************************************************/
+{
+    return( fread( b, 1, s, fp ) );
+}
+
+size_t DIGCLIENTRY( Write )( FILE *fp, const void * b, size_t s )
 /***************************************************************/
 {
-    return( lseek( DIG_FID2PH( fid ), p, k ) == -1L );
+    return( fwrite( b, 1, s, fp ) );
 }
 
-unsigned long DIGCLIENTRY( Tell )( FILE *fid )
-/********************************************/
+void DIGCLIENTRY( Close )( FILE *fp )
+/***********************************/
 {
-    return( lseek( DIG_FID2PH( fid ), 0, SEEK_CUR ) );
-}
-
-size_t DIGCLIENTRY( Read )( FILE *fid, void * b , size_t s )
-/**********************************************************/
-{
-#if defined( __QNX__ )
-    return( BigRead( DIG_FID2PH( fid ), b, s ) );
-#else
-    return( posix_read( DIG_FID2PH( fid ), b, s ) );
-#endif
-}
-
-size_t DIGCLIENTRY( Write )( FILE *fid, const void * b, size_t s )
-/****************************************************************/
-{
-#if defined( __QNX__ )
-    return( BigWrite( DIG_FID2PH( fid ), b, s ) );
-#else
-    return( posix_write( DIG_FID2PH( fid ), b, s ) );
-#endif
-}
-
-void DIGCLIENTRY( Close )( FILE *fid )
-/************************************/
-{
-    close( DIG_FID2PH( fid ) );
+    fclose( fp );
 }
 
 void DIGCLIENTRY( Remove )( const char * name, dig_open mode )

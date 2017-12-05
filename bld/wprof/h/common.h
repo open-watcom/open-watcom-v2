@@ -39,8 +39,6 @@
 #define STATIC          static
 #define MAX_LONG_DIGITS (16)
 
-typedef int             file_handle;
-
 #define NULLCHAR        0
 
 typedef void *          pointer;
