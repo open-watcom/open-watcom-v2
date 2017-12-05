@@ -120,25 +120,16 @@ void DIGCLIENTRY( Free )( void *ptr )
  */
 FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
-    int         fd;
-    int         flags;
+    const char  *access;
 
-    flags = O_BINARY;
-    if( mode & DIG_READ )
-        flags |= O_RDONLY;
-    if( mode & DIG_WRITE )
-        flags |= O_WRONLY;
-    if( mode & DIG_TRUNC )
-        flags |= O_TRUNC;
-    if( mode & DIG_CREATE ) {
-        flags |= O_CREAT;
-        fd = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
+    if( mode & DIG_APPEND ) {
+        access = "ab";
+    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+        access = "wb";
     } else {
-        fd = sopen3( path, flags, SH_DENYWR );
+        access = "rb";
     }
-    if( fd == -1 )
-        return( NULL );
-    return( DIG_PH2FID( fd ) );
+    return( fopen( path, access ) );
 }
 
 /*
@@ -146,8 +137,8 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
  */
 int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
 {
-    int                 mode;
-    unsigned long       ret;
+    int         mode;
+    int         ret;
 
     DEBUGOUT( "seek BEGIN" );
     switch( dipmode ) {
@@ -161,9 +152,9 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
         mode = SEEK_END;
         break;
     }
-    ret = lseek( DIG_FID2PH( fp ), offset, mode );
+    ret = fseek( fp, offset, mode );
     DEBUGOUT( "seek END" );
-    return( ret == -1L );
+    return( ret );
 }
 
 /*
@@ -171,10 +162,10 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
  */
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
-    unsigned long       ret;
+    unsigned long   ret;
 
     DEBUGOUT( "tell BEGIN" );
-    ret = lseek( DIG_FID2PH( fp ), 0, SEEK_CUR );
+    ret = ftell( fp );
     DEBUGOUT( "tell END" );
     return( ret );
 }
@@ -185,7 +176,7 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
-    return( read( DIG_FID2PH( fp ), buf, size ) );
+    return( fread( buf, 1, size, fp ) );
 }
 
 /*
@@ -193,7 +184,7 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
  */
 size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
-    return( write( DIG_FID2PH( fp ), buf, size ) );
+    return( fwrite( buf, 1, size, fp ) );
 }
 
 /*
@@ -201,7 +192,7 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
  */
 void DIGCLIENTRY( Close )( FILE *fp )
 {
-    close( DIG_FID2PH( fp ) );
+    fclose( fp );
 }
 
 /*

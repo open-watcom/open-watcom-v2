@@ -70,24 +70,16 @@ void DIGCLIENTRY( Free )( void *ptr )
  */
 FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
-    HFILE               ret;
-    int                 flags;
-    OFSTRUCT            tmp;
+    const char  *access;
 
-    flags = 0;
-    if( mode & DIG_READ )
-        flags |= OF_READ;
-    if( mode & DIG_WRITE )
-        flags |= OF_WRITE;
-    if( mode & DIG_TRUNC )
-        flags |= OF_CREATE;
-    if( mode & DIG_CREATE )
-        flags |= OF_CREATE;
-    //NYI: should check for DIG_SEARCH
-    ret = OpenFile( path, &tmp, flags );
-    if( ret == HFILE_ERROR )
-        return( NULL );
-    return( DIG_H2FID( ret ) );
+    if( mode & DIG_APPEND ) {
+        access = "ab";
+    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+        access = "wb";
+    } else {
+        access = "rb";
+    }
+    return( fopen( path, access ) );
 }
 
 /*
@@ -99,16 +91,16 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
 
     switch( dipmode ) {
     case DIG_ORG:
-        mode = FILE_BEGIN;
+        mode = SEEK_SET;
         break;
     case DIG_CUR:
-        mode = FILE_CURRENT;
+        mode = SEEK_CUR;
         break;
     case DIG_END:
-        mode = FILE_END;
+        mode = SEEK_END;
         break;
     }
-    return( SetFilePointer( DIG_FID2H( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
+    return( fseek( fp, offset, mode ) );
 }
 
 /*
@@ -116,7 +108,7 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
  */
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
-    return( SetFilePointer( DIG_FID2H( fp ), 0, 0, FILE_CURRENT ) );
+    return( ftell( fp ) );
 }
 
 /*
@@ -124,11 +116,7 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
  */
 size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
-    DWORD       bytesread;
-
-    if( !ReadFile( DIG_FID2H( fp ), buf, size, &bytesread, NULL ) )
-        return( DIG_RW_ERROR );
-    return( bytesread );
+    return( fread( buf, 1, size, fp ) );
 }
 
 /*
@@ -136,11 +124,7 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
  */
 size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
-    DWORD       byteswritten;
-
-    if( !WriteFile( DIG_FID2H( fp ), buf, size, &byteswritten, NULL ) )
-        return( DIG_RW_ERROR );
-    return( byteswritten );
+    return( fwrite( buf, 1, size, fp ) );
 }
 
 /*
@@ -148,7 +132,7 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
  */
 void DIGCLIENTRY( Close )( FILE *fp )
 {
-    CloseHandle( DIG_FID2H( fp ) );
+    fclose( fp );
 }
 
 /*
@@ -157,7 +141,7 @@ void DIGCLIENTRY( Close )( FILE *fp )
 void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
     mode = mode;
-    DeleteFile( path );
+    remove( path );
 }
 
 unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
