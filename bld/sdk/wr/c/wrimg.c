@@ -57,27 +57,27 @@
 bool WRLoadBitmapFile( WRInfo *info )
 {
     bool                ok;
-    WResFileID          fid;
+    FILE                *fp;
     long int            file_length;
     char                fn[_MAX_FNAME];
     WResID              *type;
     WResID              *name;
     WResLangType        def_lang;
 
-    fid = NULL;
+    fp = NULL;
     def_lang.sublang = DEF_LANG;
     def_lang.lang = DEF_SUBLANG;
 
     ok = ( info != NULL );
 
     if( ok ) {
-        ok = ( (fid = ResOpenFileRO( info->file_name )) != NULL );
+        ok = ( (fp = ResOpenFileRO( info->file_name )) != NULL );
     }
     if( ok ) {
-        ok = !RESSEEK( fid, 0, SEEK_END );
+        ok = !RESSEEK( fp, 0, SEEK_END );
     }
     if( ok ) {
-        file_length = RESTELL( fid );
+        file_length = RESTELL( fp );
         ok = ( file_length != 0 && file_length != -1 );
     }
 
@@ -102,8 +102,8 @@ bool WRLoadBitmapFile( WRInfo *info )
                                info->dir, &def_lang, NULL );
     }
 
-    if( fid != NULL ) {
-        ResCloseFile( fid );
+    if( fp != NULL ) {
+        ResCloseFile( fp );
     }
 
     if( name != NULL ) {
@@ -297,14 +297,14 @@ bool WRLoadCursorFile( WRInfo *info )
 
 static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 {
-    WResFileID          src_fid;
-    WResFileID          dst_fid;
+    FILE                *src_fp;
+    FILE                *dst_fp;
     bool                ok;
     bool                use_rename;
     WResLangNode        *lnode;
 
-    src_fid = NULL;
-    dst_fid = NULL;
+    src_fp = NULL;
+    dst_fp = NULL;
     lnode = NULL;
 
     ok = ( info != NULL && tnode != NULL );
@@ -318,12 +318,12 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 
     if( ok ) {
         if( info->file_name != NULL ) {
-            ok = ( (src_fid = ResOpenFileRO( info->tmp_file )) != NULL );
+            ok = ( (src_fp = ResOpenFileRO( info->tmp_file )) != NULL );
         }
     }
 
     if( ok ) {
-        ok = ( (dst_fid = ResOpenNewFile( info->save_name )) != NULL );
+        ok = ( (dst_fp = ResOpenNewFile( info->save_name )) != NULL );
     }
 
     if( ok ) {
@@ -335,22 +335,22 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 
     if( ok ) {
         if( lnode->data != NULL ) {
-            ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst_fid );
+            ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst_fp );
         } else {
-            ok = WRCopyResFromFileToFile( src_fid, lnode->Info.Offset, lnode->Info.Length, dst_fid );
+            ok = WRCopyResFromFileToFile( src_fp, lnode->Info.Offset, lnode->Info.Length, dst_fp );
         }
     }
 
-    if( src_fid != NULL ) {
-        ResCloseFile( src_fid );
+    if( src_fp != NULL ) {
+        ResCloseFile( src_fp );
     }
 
-    if( dst_fid != NULL ) {
-        ResCloseFile( dst_fid );
+    if( dst_fp != NULL ) {
+        ResCloseFile( dst_fp );
     }
 
     if( !ok ) {
-        if( dst_fid != NULL ) {
+        if( dst_fp != NULL ) {
             WRDeleteFile( info->save_name );
         }
     }

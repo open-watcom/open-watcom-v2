@@ -36,18 +36,18 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteAccelEntry( AccelTableEntry *currentry, WResFileID fid )
-/*******************************************************************/
+bool ResWriteAccelEntry( AccelTableEntry *currentry, FILE *fp )
+/*************************************************************/
 {
-    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry ) ) != sizeof( AccelTableEntry ) )
+    if( WRESWRITE( fp, currentry, sizeof( AccelTableEntry ) ) != sizeof( AccelTableEntry ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResWriteAccelEntry32( AccelTableEntry32 *currentry, WResFileID fid )
-/***********************************************************************/
+bool ResWriteAccelEntry32( AccelTableEntry32 *currentry, FILE *fp )
+/*****************************************************************/
 {
-    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry32 ) ) != sizeof( AccelTableEntry32 ) )
+    if( WRESWRITE( fp, currentry, sizeof( AccelTableEntry32 ) ) != sizeof( AccelTableEntry32 ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

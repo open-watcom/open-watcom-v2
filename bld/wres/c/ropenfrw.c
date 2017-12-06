@@ -36,13 +36,13 @@
 #include "wresrtns.h"
 
 
-WResFileID ResOpenFileRW( const char *filename )
-/**********************************************/
+FILE *ResOpenFileRW( const char *filename )
+/*****************************************/
 {
-    WResFileID  fid;
+    FILE    *fp;
 
-    fid = WRESOPEN( filename, WRES_OPEN_RW );
-    if( fid == NULL )
+    fp = WRESOPEN( filename, WRES_OPEN_RW );
+    if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    return( fid );
+    return( fp );
 }

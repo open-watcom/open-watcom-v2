@@ -209,14 +209,14 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        if( RESSEEK( exe->fid, file_offset, SEEK_SET ) )
+        if( RESSEEK( exe->fp, file_offset, SEEK_SET ) )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) )
+        if( RESSEEK( info->fp, res_info->Offset, SEEK_SET ) )
             return( RS_READ_ERROR );
 
-        ret = CopyExeData( info->fid, exe->fid, res_info->Length );
+        ret = CopyExeData( info->fp, exe->fp, res_info->Length );
         if( ret != RS_OK ) {
             return( ret );
         }
@@ -228,7 +228,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 
         // Write padding if necessary (this is critical)
         if( padded_res_size > entry->resource.res_size ) {
-            RcPadFile( exe->fid, padded_res_size - entry->resource.res_size );
+            RcPadFile( exe->fp, padded_res_size - entry->resource.res_size );
         }
 
         // Update page table

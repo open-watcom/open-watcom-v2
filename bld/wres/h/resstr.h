@@ -45,6 +45,6 @@ typedef struct StringTableBlock {
 
 extern void ResInitStringTableBlock( StringTableBlock * );
 extern void ResFreeStringTableBlock( StringTableBlock * );
-extern bool ResWriteStringTableBlock( StringTableBlock * currblock, bool use_unicode, WResFileID fid );
+extern bool ResWriteStringTableBlock( StringTableBlock * currblock, bool use_unicode, FILE *fp );
 
 #endif

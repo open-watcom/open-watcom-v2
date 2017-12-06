@@ -33,6 +33,6 @@
 #ifndef M2WRES_INCLUDED
 #define M2WRES_INCLUDED
 
-bool ConvertMResToWRes( WResFileID in_fid, WResFileID out_fid );
+bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp );
 
 #endif

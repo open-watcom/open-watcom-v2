@@ -44,7 +44,7 @@
 #include "layer0.h"
 
 
-static WResFileID wres_open( const char *name, int omode )
+static FILE *wres_open( const char *name, int omode )
 {
     switch( omode ) {
     default:
@@ -57,34 +57,34 @@ static WResFileID wres_open( const char *name, int omode )
     }
 }
 
-static int wres_close( WResFileID fid )
+static int wres_close( FILE *fp )
 {
-    return( close( FP2POSIX( fid ) ) );
+    return( close( FP2POSIX( fp ) ) );
 }
 
-static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+static WResFileSSize wres_read( FILE *fp, void *buf, WResFileSize size )
 {
-    return( posix_read( FP2POSIX( fid ), buf, size ) );
+    return( posix_read( FP2POSIX( fp ), buf, size ) );
 }
 
-static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+static WResFileSSize wres_write( FILE *fp, const void *buf, WResFileSize size )
 {
-    return( posix_write( FP2POSIX( fid ), buf, size ) );
+    return( posix_write( FP2POSIX( fp ), buf, size ) );
 }
 
-static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+static WResFileOffset wres_seek( FILE *fp, WResFileOffset pos, int where )
 {
-    return( lseek( FP2POSIX( fid ), pos, where ) );
+    return( lseek( FP2POSIX( fp ), pos, where ) );
 }
 
-static WResFileOffset wres_tell( WResFileID fid )
+static WResFileOffset wres_tell( FILE *fp )
 {
-    return( tell( FP2POSIX( fid ) ) );
+    return( tell( FP2POSIX( fp ) ) );
 }
 
-static bool res_ioerr( WResFileID fid, size_t rc )
+static bool res_ioerr( FILE *fp, size_t rc )
 {
-    /* unused parameters */ (void)fid;
+    /* unused parameters */ (void)fp;
 
     return( rc == (size_t)-1 );
 }

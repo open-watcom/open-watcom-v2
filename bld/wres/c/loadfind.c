@@ -58,17 +58,17 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
     WResFileShift = 0;
     if( notfound ) {
         offset = sizeof( master_dbg_header );
-        if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
-            if( WRESREAD( hinfo->fid, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+        if( !WRESSEEK( hinfo->fp, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
+            if( WRESREAD( hinfo->fp, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                     offset += sizeof( PATCH_LEVEL );
                 }
             }
         }
-        WRESSEEK( hinfo->fid, -offset, SEEK_END );
-        currpos = WRESTELL( hinfo->fid );
+        WRESSEEK( hinfo->fp, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
-            WRESREAD( hinfo->fid, &header, sizeof( master_dbg_header ) );
+            WRESREAD( hinfo->fp, &header, sizeof( master_dbg_header ) );
             if( header.signature == WAT_RES_SIG ) {
                 notfound = false;
                 WResFileShift = currpos - header.debug_size + sizeof( master_dbg_header );
@@ -77,7 +77,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                        header.signature == FOX_SIGNATURE1 ||
                        header.signature == FOX_SIGNATURE2 ) {
                 currpos -= header.debug_size;
-                WRESSEEK( hinfo->fid, currpos, SEEK_SET );
+                WRESSEEK( hinfo->fp, currpos, SEEK_SET );
             } else {        /* did not find the resource information */
                 break;
             }

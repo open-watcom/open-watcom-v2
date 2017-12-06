@@ -33,6 +33,6 @@
 #ifndef DMPDIAG_INCLUDED
 #define DMPDIAG_INCLUDED
 
-extern bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid );
+extern bool DumpDialog( uint_32 offset, uint_32 length, FILE *fp );
 
 #endif

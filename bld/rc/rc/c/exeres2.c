@@ -184,9 +184,9 @@ extern uint_32 ComputeOS2ResSegCount( WResDir dir )
  * This is fine because all segments but the last one are 64K big, and
  * hence will be nicely aligned.
  */
-static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
-            WResFileID out_fid, int shift_count, int *err_code )
-/**********************************************************************/
+static RcStatus copyOneResource( WResLangInfo *lang, FILE *res_fp,
+            FILE *out_fp, int shift_count, int *err_code )
+/*****************************************************************/
 {
     RcStatus            ret;
     long                out_offset;
@@ -194,14 +194,14 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
 
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
-    out_offset = RESTELL( out_fid );
+    out_offset = RESTELL( out_fp );
     if( out_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) ) {
+        if( RESSEEK( out_fp, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -209,18 +209,18 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
     }
 
     if( ret == RS_OK ) {
-        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) ) {
+        if( RESSEEK( res_fp, lang->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( res_fid, out_fid, lang->Length );
+        ret = CopyExeData( res_fp, out_fp, lang->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RESTELL( out_fid ), shift_count );
-        ret = PadExeData( out_fid, align_amount );
+        align_amount = AlignAmount( RESTELL( out_fp ), shift_count );
+        ret = PadExeData( out_fp, align_amount );
         *err_code = errno;
     }
 
@@ -234,8 +234,8 @@ RcStatus CopyOS2Resources( void )
     WResDirWindow       wind;
     OS2ResTable         *restab;
     WResLangInfo        *lang;
-    WResFileID          tmp_fid;
-    WResFileID          res_fid;
+    FILE                *tmp_fp;
+    FILE                *res_fp;
     RcStatus            ret;
     int                 err_code;
     int                 shift_count;
@@ -246,8 +246,8 @@ RcStatus CopyOS2Resources( void )
     int                 i;
 
     restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    tmp_fid   = Pass2Info.TmpFile.fid;
-    res_fid   = Pass2Info.ResFile->fid;
+    tmp_fp    = Pass2Info.TmpFile.fp;
+    res_fp    = Pass2Info.ResFile->fp;
     tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
     currseg   = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs
                 - Pass2Info.OldFile.u.NEInfo.Seg.NumOS2ResSegs;
@@ -260,9 +260,9 @@ RcStatus CopyOS2Resources( void )
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RESTELL( tmp_fid ), shift_count );
+    align_amount = AlignAmount( RESTELL( tmp_fp ), shift_count );
     if( align_amount ) {
-        ret = PadExeData( tmp_fid, align_amount );
+        ret = PadExeData( tmp_fp, align_amount );
         err_code = errno;
     }
 
@@ -272,7 +272,7 @@ RcStatus CopyOS2Resources( void )
         lang = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RESTELL( tmp_fid );
+            seg_offset = RESTELL( tmp_fp );
         } else {
             seg_offset += 0x10000;
         }
@@ -296,7 +296,7 @@ RcStatus CopyOS2Resources( void )
             continue;
 
         /* Copy resource data */
-        ret = copyOneResource( lang, res_fid, tmp_fid, shift_count, &err_code );
+        ret = copyOneResource( lang, res_fp, tmp_fp, shift_count, &err_code );
         if( ret != RS_OK )
             break;
 
@@ -324,8 +324,8 @@ RcStatus CopyOS2Resources( void )
  * WriteOS2ResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_code )
-/************************************************************************************/
+extern RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
+/******************************************************************************/
 {
     RcStatus                    ret;
     uint_16                     res_type;
@@ -336,10 +336,10 @@ extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
         res_type = restab->resources[i].res_type;
         res_id   = restab->resources[i].res_id;
-        if( RESWRITE( fid, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RESWRITE( fp, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             ret = RS_WRITE_ERROR;
         } else {
-            if( RESWRITE( fid, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+            if( RESWRITE( fp, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
                 ret = RS_WRITE_ERROR;
             }
         }

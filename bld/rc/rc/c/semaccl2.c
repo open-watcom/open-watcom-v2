@@ -38,10 +38,10 @@
 #include "rccore.h"
 
 
-static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID fid )
-/********************************************************************************/
+static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, FILE *fp )
+/**************************************************************************/
 {
-    if( RESWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
+    if( RESWRITE( fp, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }
@@ -192,18 +192,18 @@ static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
 }
 
 static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
-                                   WResFileID fid, uint_32 codepage )
-/*******************************************************************/
+                                   FILE *fp, uint_32 codepage )
+/**************************************************************/
 {
     FullAccelEntryOS2   *currentry;
     bool                error;
 
-    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), fid );
+    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), fp );
     if( !error ) {
-        error = ResWriteUint16( codepage, fid );
+        error = ResWriteUint16( codepage, fp );
     }
     for( currentry = acctable->head; currentry != NULL && !error; currentry = currentry->next ) {
-        ResOS2WriteAccelEntry( &currentry->entry, fid );
+        ResOS2WriteAccelEntry( &currentry->entry, fp );
     }
     return( error );
 }
@@ -218,7 +218,7 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
-        error = writeAccelTableEntries( acctable, CurrResFile.fid, codepage );
+        error = writeAccelTableEntries( acctable, CurrResFile.fp, codepage );
         if( error ) {
             err_code = LastWresErr();
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );

@@ -48,6 +48,6 @@ typedef struct BitmapInfoHeader {
 } BitmapInfoHeader;
 #include "poppck.h"
 
-extern bool ResWriteBitmapInfoHeader( BitmapInfoHeader *, WResFileID fid );
+extern bool ResWriteBitmapInfoHeader( BitmapInfoHeader *, FILE *fp );
 
 #endif

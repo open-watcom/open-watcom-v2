@@ -205,11 +205,11 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
         }
         if( tokentype == Y_MENU ) {
             error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
-                            item->UseUnicode, CurrResFile.fid );
+                            item->UseUnicode, CurrResFile.fp );
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
                       &(item->item.popup.item.menuExData), item->UseUnicode,
-                      CurrResFile.fid );
+                      CurrResFile.fp );
         }
     } else {
         SemCheckMenuItemNormal( item, tokentype );
@@ -218,11 +218,11 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
         }
         if( tokentype == Y_MENU ) {
             error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
-                        item->UseUnicode, CurrResFile.fid );
+                        item->UseUnicode, CurrResFile.fp );
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
                          &(item->item.normal.menuExData), item->UseUnicode,
-                         CurrResFile.fid );
+                         CurrResFile.fp );
         }
     }
     *err_code = LastWresErr();
@@ -303,14 +303,14 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            error = ResWriteMenuHeader( &head, CurrResFile.fid );
+            error = ResWriteMenuHeader( &head, CurrResFile.fp );
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
             head.Size = RES_HEADER_SIZE;
             memset( headerdata, 0, head.Size );
-            ResWritePadDWord( CurrResFile.fid );
+            ResWritePadDWord( CurrResFile.fp );
             loc.start = SemStartResource();
-            error = ResWriteMenuExHeader( &head, CurrResFile.fid, headerdata );
+            error = ResWriteMenuExHeader( &head, CurrResFile.fp, headerdata );
         } else {
             loc.start = 0;      // Is this valid?
         }
@@ -320,7 +320,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
         if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            error = ResWritePadDWord( CurrResFile.fid );
+            error = ResWritePadDWord( CurrResFile.fp );
         }
         if( error) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );

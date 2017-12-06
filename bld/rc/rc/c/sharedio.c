@@ -55,7 +55,7 @@ static void closeAResFile( ResFileInfo *res )
 /*******************************************/
 {
     if( res->IsOpen ) {
-        ResCloseFile( res->fid );
+        ResCloseFile( res->fp );
         res->IsOpen = false;
     }
     if( res->Dir != NULL ) {
@@ -86,15 +86,15 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         *resinfo = resfile;
         resfile->Dir = WResInitDir();
         resfile->name = resnames->name;
-        resfile->fid = ResOpenFileRO( resfile->name );
-        if( resfile->fid == NULL ) {
+        resfile->fp = ResOpenFileRO( resfile->name );
+        if( resfile->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             resfile->IsOpen = false;
             goto HANDLE_ERROR;
         } else {
             resfile->IsOpen = true;
         }
-        error = WResReadDir2( resfile->fid, resfile->Dir, &dup_discarded, resfile );
+        error = WResReadDir2( resfile->fp, resfile->Dir, &dup_discarded, resfile );
         if( error ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:
@@ -111,8 +111,8 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         }
         if( rescnt >= MAX_OPEN_RESFILES ) {
             resfile->IsOpen = false;
-            ResCloseFile( resfile->fid );
-            resfile->fid = NULL;
+            ResCloseFile( resfile->fp );
+            resfile->fp = NULL;
             *allopen = false;
         }
 

@@ -50,8 +50,8 @@ static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
     }
 }
 
-static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir outdir )
-/************************************************************************************/
+static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
+/************************************************************************/
 {
     MResResourceHeader *    mheader;
     WResID *                name;
@@ -61,7 +61,7 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
     uint_32                 offset;
     bool                    duplicate;
 
-    mheader = MResReadResourceHeader( in_fid );
+    mheader = MResReadResourceHeader( in_fp );
     /* assume that any error reading here means end of file */
     lastheader = ( mheader == NULL );
     error = false;
@@ -69,7 +69,7 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
     while( !lastheader && !error ) {
         name = ConvertNameOrOrdToID( mheader->Name );
         type = ConvertNameOrOrdToID( mheader->Type );
-        offset = RESTELL( out_fid );
+        offset = RESTELL( out_fp );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
@@ -82,17 +82,17 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
                 puts( "Error: duplicate entry" );
                 error = false;
             } else {
-                error = BinaryCopy( in_fid, out_fid, mheader->Size );
+                error = BinaryCopy( in_fp, out_fp, mheader->Size );
             }
         } else {
-            RESSEEK( in_fid, mheader->Size, SEEK_CUR );
+            RESSEEK( in_fp, mheader->Size, SEEK_CUR );
         }
 
         WResIDFree( name );
         WResIDFree( type );
         MResFreeResourceHeader( mheader );
 
-        mheader = MResReadResourceHeader( in_fid );
+        mheader = MResReadResourceHeader( in_fp );
         /* assume that any error reading here means end of file */
         lastheader = ( mheader == NULL );
     }
@@ -100,8 +100,8 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
     return( error );
 } /* ConvertMResources */
 
-bool ConvertMResToWRes( WResFileID in_fid, WResFileID out_fid )
-/*************************************************************/
+bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp )
+/*************************************************/
 {
     WResDir                 outdir;
     bool                    error;
@@ -111,10 +111,10 @@ bool ConvertMResToWRes( WResFileID in_fid, WResFileID out_fid )
         return( true );
     }
 
-    error = ConvertMResources( in_fid, out_fid, outdir );
+    error = ConvertMResources( in_fp, out_fp, outdir );
 
     if( !error ) {
-        error = WResWriteDir( out_fid, outdir );
+        error = WResWriteDir( out_fp, outdir );
     }
 
     WResFreeDir( outdir );

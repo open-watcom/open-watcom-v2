@@ -58,7 +58,7 @@ bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, 
 
         if( !WResIsEmptyWindow( wind ) ) {
             res = WResGetLangInfo( wind );
-            if( !WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) ) {
+            if( !WRESSEEK( hinfo->fp, res->Offset, SEEK_SET ) ) {
                 return( true );
             }
         }

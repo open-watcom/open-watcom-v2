@@ -35,13 +35,13 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResFileOffset ResTell( WResFileID fid )
-/**************************************/
+WResFileOffset ResTell( FILE *fp )
+/********************************/
 /* cover function for tell */
 {
     WResFileOffset  posn;
 
-    posn = WRESTELL( fid );
+    posn = WRESTELL( fp );
     if( posn == -1 ) {
         WRES_ERROR( WRS_TELL_FAILED );
     }

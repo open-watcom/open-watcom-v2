@@ -37,34 +37,34 @@
 #include "cmpcont.h"
 #include "cmpfiles.h"
 
-static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
-/********************************************************/
+static int OpenFiles( FILE **fp1, FILE **fp2 )
+/********************************************/
 /* opens the files named in CmdLineParms and puts their file ids in */
 /* fileid1 and fileid2 */
 {
     int         error;
 
-    *fid1 = ResOpenFileRO( CmdLineParms.FileName1 );
-    if( *fid1 == NULL ) {
+    *fp1 = ResOpenFileRO( CmdLineParms.FileName1 );
+    if( *fp1 == NULL ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName1 );
-        *fid2 = NULL;
+        *fp2 = NULL;
         return( true );
     }
 
-    *fid2 = ResOpenFileRO( CmdLineParms.FileName2 );
-    if( *fid2 == NULL ) {
+    *fp2 = ResOpenFileRO( CmdLineParms.FileName2 );
+    if( *fp2 == NULL ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName2 );
-        ResCloseFile( *fid1 );
-        *fid1 = NULL;
+        ResCloseFile( *fp1 );
+        *fp1 = NULL;
         return( true );
     }
 
-    error = (!WResIsWResFile( *fid1 ));
+    error = (!WResIsWResFile( *fp1 ));
     if( error ) {
         printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName1 );
     } else {
-        error = (!WResIsWResFile( *fid2 ));
+        error = (!WResIsWResFile( *fp2 ));
         if( error ) {
             printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName2 );
@@ -74,14 +74,14 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
     return( error );
 }
 
-static void CloseFiles( WResFileID fid1, WResFileID fid2 )
-/********************************************************/
+static void CloseFiles( FILE *fp1, FILE *fp2 )
+/********************************************/
 {
-    if( fid1 != NULL ) {
-        ResCloseFile( fid1 );
+    if( fp1 != NULL ) {
+        ResCloseFile( fp1 );
     }
-    if( fid2 != NULL ) {
-        ResCloseFile( fid2 );
+    if( fp2 != NULL ) {
+        ResCloseFile( fp2 );
     }
 }
 
@@ -90,18 +90,18 @@ int CompareFiles( void )
 {
     int         error;
     int         result;
-    WResFileID  fid1;
-    WResFileID  fid2;
+    FILE        *fp1;
+    FILE        *fp2;
 
-    error = OpenFiles( &fid1, &fid2 );
+    error = OpenFiles( &fp1, &fp2 );
 
     if( !error ) {
-        result = CompareContents( fid1, fid2 );
+        result = CompareContents( fp1, fp2 );
     } else {
         result = -1;
     }
 
-    CloseFiles( fid1, fid2 );
+    CloseFiles( fp1, fp2 );
 
     return( result );
 }

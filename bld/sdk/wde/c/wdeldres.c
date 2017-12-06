@@ -104,7 +104,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     DialogBoxExControl32        c32ex;
 
     WdeDialogBoxInfo            *dlg_info;
-    WResFileID                  fid;
+    FILE                        *fp;
     WdeDialogBoxControl         *control;
     LIST                        *prev_control;
 #if 0
@@ -116,7 +116,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     bool                        ok;
 
     dlg_info = NULL;
-    fid = NULL;
+    fp = NULL;
     file_name = NULL;
     memset( &h32ex, 0, sizeof( h32ex ) );
     memset( &h32, 0, sizeof( h32 ) );
@@ -139,27 +139,27 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        ok = ( (fid = ResOpenFileRO( file_name )) != NULL );
+        ok = ( (fp = ResOpenFileRO( file_name )) != NULL );
     }
 
     if( ok ) {
         dlg_info->MemoryFlags = lnode->Info.MemoryFlags;
-        ok = !ResSeek( fid, lnode->Info.Offset, SEEK_SET );
+        ok = !ResSeek( fp, lnode->Info.Offset, SEEK_SET );
     }
 
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
-            dlg_info->dialog_header->is32bitEx = ResIsDialogBoxEx( fid );
-            ResSeek( fid, lnode->Info.Offset, SEEK_SET );
+            dlg_info->dialog_header->is32bitEx = ResIsDialogBoxEx( fp );
+            ResSeek( fp, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogBoxExHeader32( &h32, &h32ex, fid );
+                ok = !ResReadDialogBoxExHeader32( &h32, &h32ex, fp );
             } else {
-                ok = !ResReadDialogBoxHeader32( &h32, fid );
+                ok = !ResReadDialogBoxHeader32( &h32, fp );
             }
         } else {
-            ok = !ResReadDialogBoxHeader( &h16, fid );
+            ok = !ResReadDialogBoxHeader( &h16, fp );
         }
     }
 
@@ -213,7 +213,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                  *       whether this an extended dialog or not
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
-                    if( ResReadDialogBoxExControl32( &c32ex, fid ) ) {
+                    if( ResReadDialogBoxExControl32( &c32ex, fp ) ) {
                         ok = false;
                         break;
                     }
@@ -229,7 +229,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     control->Text = c32ex.Text;
                     control->ExtraBytes = c32ex.ExtraBytes;
                 } else {
-                    if( ResReadDialogBoxControl32( &c32, fid ) ) {
+                    if( ResReadDialogBoxControl32( &c32, fp ) ) {
                         ok = false;
                         break;
                     }
@@ -245,7 +245,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     control->ExtraBytes = c32.ExtraBytes;
                 }
             } else {
-                if( ResReadDialogBoxControl( &c16, fid ) ) {
+                if( ResReadDialogBoxControl( &c16, fp ) ) {
                     ok = false;
                     break;
                 }
@@ -276,8 +276,8 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
         }
     }
 
-    if( fid != NULL ) {
-        ResCloseFile( fid );
+    if( fp != NULL ) {
+        ResCloseFile( fp );
     }
 
     return( dlg_info );

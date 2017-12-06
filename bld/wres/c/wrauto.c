@@ -37,7 +37,7 @@
 
 DepInfo *WResGetAutoDep( const char *fname )
 {
-    WResFileID      fid;
+    FILE            *fp;
     WResDir         dir;
     bool            dup_discarded;
     WResID          *name;
@@ -48,10 +48,10 @@ DepInfo *WResGetAutoDep( const char *fname )
     size_t          numread;
 
     ret = NULL;
-    fid = ResOpenFileRO( fname );
-    if( fid != NULL ) {
-        if( WResIsWResFile( fid ) && (dir = WResInitDir()) != NULL ) {
-            if( !WResReadDir( fid, dir, &dup_discarded ) ) {
+    fp = ResOpenFileRO( fname );
+    if( fp != NULL ) {
+        if( WResIsWResFile( fp ) && (dir = WResInitDir()) != NULL ) {
+            if( !WResReadDir( fp, dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );
                 type = WResIDFromNum( DEP_LIST_TYPE );
                 if( name != NULL && type != NULL ) {
@@ -60,15 +60,15 @@ DepInfo *WResGetAutoDep( const char *fname )
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
                         info = WResGetLangInfo( window );
-                        if( WRESSEEK( fid, info->Offset, SEEK_SET ) ) {
+                        if( WRESSEEK( fp, info->Offset, SEEK_SET ) ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
                         } else {
                             ret = WRESALLOC( info->Length );
                             if( ret == NULL ) {
                                 WRES_ERROR( WRS_MALLOC_FAILED );
                             } else {
-                                if( (numread = WRESREAD( fid, ret, info->Length )) != (size_t)info->Length ) {
-                                    WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                                if( (numread = WRESREAD( fp, ret, info->Length )) != (size_t)info->Length ) {
+                                    WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                                     ret = NULL;
                                 }
                             }
@@ -84,7 +84,7 @@ DepInfo *WResGetAutoDep( const char *fname )
             }
             WResFreeDir( dir );
         }
-        ResCloseFile( fid );
+        ResCloseFile( fp );
     }
     return( ret );
 }

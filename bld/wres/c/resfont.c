@@ -35,18 +35,18 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteFontInfo( FontInfo *info, WResFileID fid )
-/*****************************************************/
+bool ResWriteFontInfo( FontInfo *info, FILE *fp )
+/***********************************************/
 {
-    if( WRESWRITE( fid, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) )
+    if( WRESWRITE( fp, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResWriteFontDirEntry( FontDirEntry *entry, WResFileID fid )
-/**************************************************************/
+bool ResWriteFontDirEntry( FontDirEntry *entry, FILE *fp )
+/********************************************************/
 {
-    if( WRESWRITE( fid, &(entry->Info), entry->StructSize ) != entry->StructSize )
+    if( WRESWRITE( fp, &(entry->Info), entry->StructSize ) != entry->StructSize )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

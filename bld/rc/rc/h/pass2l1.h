@@ -52,7 +52,7 @@ typedef struct ResFileInfo {
     struct ResFileInfo  *next;
     const char          *name;
     bool                IsOpen;
-    WResFileID          fid;
+    FILE                *fp;
     WResDir             Dir;
 } ResFileInfo;
 
@@ -82,7 +82,7 @@ typedef struct LXExeInfo {
 
 typedef struct ExeFileInfo {
     bool                IsOpen;
-    WResFileID          fid;
+    FILE                *fp;
     const char          *name;
     uint_32             WinHeadOffset;      /* wlink doesn't initialize this */
     ExeType             Type;

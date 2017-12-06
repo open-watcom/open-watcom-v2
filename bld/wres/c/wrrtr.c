@@ -35,8 +35,8 @@
 #include "read.h"
 #include "reserr.h"
 
-WResTypeInfo *WResReadTypeRecord( WResFileID fid )
-/************************************************/
+WResTypeInfo *WResReadTypeRecord( FILE *fp )
+/******************************************/
 /* reads in the fields of a type info record from the current position in */
 /* the file identified by fp */
 {
@@ -45,7 +45,7 @@ WResTypeInfo *WResReadTypeRecord( WResFileID fid )
     size_t              numread;
     unsigned            numcharsleft;
 
-    if( WResReadFixedTypeRecord( &newtype, fid ) )
+    if( WResReadFixedTypeRecord( &newtype, fp ) )
         return( NULL );
 
     if( newtype.TypeName.IsName ) {
@@ -59,8 +59,8 @@ WResTypeInfo *WResReadTypeRecord( WResFileID fid )
     } else {
         memcpy( newptr, &newtype, sizeof( WResTypeInfo ) );
         if( numcharsleft != 0 ) {
-            if( (numread = WRESREAD( fid, newptr->TypeName.ID.Name.Name + 1, numcharsleft )) != numcharsleft ) {
-                WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+            if( (numread = WRESREAD( fp, newptr->TypeName.ID.Name.Name + 1, numcharsleft )) != numcharsleft ) {
+                WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );
                 newptr = NULL;
             }

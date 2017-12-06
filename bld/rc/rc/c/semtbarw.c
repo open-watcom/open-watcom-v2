@@ -96,9 +96,9 @@ void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
         loc.start = SemStartResource();
         cnt = ( toolbar->nodecnt - 1 ) * TB_ITEM_CNT;
         cnt += toolbar->last->cnt;
-        ResWriteToolBarHeader( CurrResFile.fid, item1, item2, cnt );
+        ResWriteToolBarHeader( CurrResFile.fp, item1, item2, cnt );
         for( cur = &toolbar->first; cur != NULL; cur = cur->next ) {
-            ResWriteToolBarItems( CurrResFile.fid, cur->items, cur->cnt );
+            ResWriteToolBarItems( CurrResFile.fp, cur->items, cur->cnt );
         }
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), flags, loc );

@@ -104,8 +104,8 @@ static bool Pass1InitRes( void )
     }
 
     /* open the temporary file */
-    CurrResFile.fid = ResOpenNewFile( CurrResFile.filename );
-    if( CurrResFile.fid == NULL ) {
+    CurrResFile.fp = ResOpenNewFile( CurrResFile.filename );
+    if( CurrResFile.fp == NULL ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
         return( true );
@@ -123,7 +123,7 @@ static bool Pass1InitRes( void )
         }
     } else {
         CurrResFile.IsWatcomRes = true;
-        WResFileInit( CurrResFile.fid );
+        WResFileInit( CurrResFile.fp );
     }
     RegisterTmpFile( CurrResFile.filename );
 
@@ -327,17 +327,17 @@ static void Pass1ResFileShutdown( void )
             WriteWINTables();
         }
         if( ErrorHasOccured ) {
-            ResCloseFile( CurrResFile.fid );
+            ResCloseFile( CurrResFile.fp );
             CurrResFile.IsOpen = false;
             RemoveCurrResFile();
         } else {
             if( CurrResFile.IsWatcomRes ) {
-                error = WResWriteDir( CurrResFile.fid, CurrResFile.dir );
+                error = WResWriteDir( CurrResFile.fp, CurrResFile.dir );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 }
             }
-            if( ResCloseFile( CurrResFile.fid ) ) {
+            if( ResCloseFile( CurrResFile.fp ) ) {
                 RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
                 remove( CurrResFile.filename );
                 UnregisterTmpFile( CurrResFile.filename );
@@ -381,7 +381,7 @@ static bool OpenResFileInfo( ExeType type )
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->IsOpen = false;
-        Pass2Info.ResFile->fid = NULL;
+        Pass2Info.ResFile->fp = NULL;
         Pass2Info.ResFile->Dir = NULL;
         return( true );
     }
@@ -411,18 +411,18 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->fid = ResOpenFileRO( filename );
-    if( info->fid == NULL ) {
+    info->fp = ResOpenFileRO( filename );
+    if( info->fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
     info->IsOpen = true;
-    info->Type = FindNEPELXHeader( info->fid, &info->WinHeadOffset );
+    info->Type = FindNEPELXHeader( info->fp, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -433,13 +433,13 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     case EXE_TYPE_PE:
         pehdr = &info->u.PEInfo.WinHeadData;
         info->u.PEInfo.WinHead = pehdr;
-        status = SeekRead( info->fid, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
         if( IS_PE64( *pehdr ) ) {
-            status = SeekRead( info->fid, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
+            status = SeekRead( info->fp, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
             if( status != RS_OK ) {
                 RcError( ERR_NOT_VALID_EXE, filename );
                 return( false );
@@ -450,7 +450,7 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         }
         break;
     case EXE_TYPE_LX:
-        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -464,14 +464,14 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         break;
     }
 
-    return( !RESSEEK( info->fid, 0, SEEK_SET ) );
+    return( !RESSEEK( info->fp, 0, SEEK_SET ) );
 } /* openExeFileInfoRO */
 
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->fid = ResOpenNewFile( filename );
-    if( info->fid == NULL ) {
+    info->fp = ResOpenNewFile( filename );
+    if( info->fp == NULL ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
     }
@@ -534,7 +534,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 //    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
-        RESCLOSE( old->fid );
+        RESCLOSE( old->fp );
         old->IsOpen = false;
     }
     switch( old->Type ) {
@@ -553,7 +553,7 @@ extern void ClosePass2FilesAndFreeMem( void )
     }
 
     if( tmp->IsOpen ) {
-        RESCLOSE( tmp->fid );
+        RESCLOSE( tmp->fp );
         tmp->IsOpen = false;
     }
     switch( tmp->Type ) {
@@ -649,7 +649,7 @@ extern void RcPass2IoShutdown( bool noerror )
 typedef struct PhysFileInfo {
     char            *Filename;
     bool            IsOpen;
-    WResFileID      fid;
+    FILE            *fp;
     unsigned long   Offset;     /* offset in file to read from next time if this */
                                 /* is not the current file */
 } PhysFileInfo;
@@ -711,13 +711,13 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 /************************************************/
 {
     if( !phys->IsOpen ) {
-        phys->fid = RcIoOpenInput( phys->Filename, true );
-        if( phys->fid == NULL ) {
+        phys->fp = RcIoOpenInput( phys->Filename, true );
+        if( phys->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
         phys->IsOpen = true;
-        if( fseek( phys->fid, phys->Offset, SEEK_SET ) == -1 ) {
+        if( fseek( phys->fp, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -746,7 +746,7 @@ static void SetPhysFileOffset( FileStack * stack )
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( phys->fid ) - charsinbuff;
+        phys->Offset = ftell( phys->fp ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
@@ -766,7 +766,7 @@ static bool ReadBuffer( FileStack * stack )
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fid );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fp );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -834,7 +834,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        fclose( phys->fid );
+        fclose( phys->fp );
         phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
@@ -992,19 +992,19 @@ extern bool RcIoIsCOrHFile( void )
  * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-WResFileID RcIoOpenInput( const char *filename, bool text_mode )
-/**************************************************************/
+FILE *RcIoOpenInput( const char *filename, bool text_mode )
+/*********************************************************/
 {
-    WResFileID          fid;
+    FILE                *fp;
     FileStackEntry      *currfile;
     bool                no_handles_available;
 
     if( text_mode ) {
-        fid = fopen( filename, "rt" );
+        fp = fopen( filename, "rt" );
     } else {
-        fid = ResOpenFileRO( filename );
+        fp = ResOpenFileRO( filename );
     }
-    no_handles_available = ( fid == NULL && errno == EMFILE );
+    no_handles_available = ( fp == NULL && errno == EMFILE );
     if( no_handles_available ) {
         /* set currfile to be the first (not before first) entry */
         /* close open files except the current input file until able to open */
@@ -1013,15 +1013,15 @@ WResFileID RcIoOpenInput( const char *filename, bool text_mode )
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
                 if( text_mode ) {
-                    fid = fopen( filename, "rt" );
+                    fp = fopen( filename, "rt" );
                 } else {
-                    fid = ResOpenFileRO( filename );
+                    fp = ResOpenFileRO( filename );
                 }
-                no_handles_available = ( fid == NULL && errno == EMFILE );
+                no_handles_available = ( fp == NULL && errno == EMFILE );
             }
        }
     }
-    return( fid );
+    return( fp );
 
 } /* RcIoOpenInput */
 

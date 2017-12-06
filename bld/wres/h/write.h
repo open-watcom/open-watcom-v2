@@ -39,23 +39,23 @@ typedef size_t ConvToUnicode_fn( size_t, const char *, char * );
 
 extern ConvToUnicode_fn *ConvToUnicode;
 
-extern bool ResWriteUint8( uint_8 newint, WResFileID fid );
-extern bool ResWriteUint16( uint_16 newint, WResFileID fid );
-extern bool ResWriteUint32( uint_32 newint, WResFileID fid );
-extern bool ResWritePadDWord( WResFileID fid );
-extern bool WResWriteLangRecord( const WResLangInfo *info, WResFileID fid );
-extern bool WResWriteResRecord( const WResResInfo *res, WResFileID fid );
-extern bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid );
-extern bool WResWriteWResID( const WResID *name, WResFileID fid );
-extern bool WResWriteWResIDName( const WResIDName *name, WResFileID fid );
-extern bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileID fid );
-extern bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid );
-extern bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid );
+extern bool ResWriteUint8( uint_8 newint, FILE *fp );
+extern bool ResWriteUint16( uint_16 newint, FILE *fp );
+extern bool ResWriteUint32( uint_32 newint, FILE *fp );
+extern bool ResWritePadDWord( FILE *fp );
+extern bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp );
+extern bool WResWriteResRecord( const WResResInfo *res, FILE *fp );
+extern bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp );
+extern bool WResWriteWResID( const WResID *name, FILE *fp );
+extern bool WResWriteWResIDName( const WResIDName *name, FILE *fp );
+extern bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, FILE *fp );
+extern bool WResWriteHeaderRecord( const WResHeader *header, FILE *fp );
+extern bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp );
 extern void MResFreeResourceHeader( MResResourceHeader *oldheader );
-extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID fid );
-extern bool ResWriteString( const char *string, bool use_unicode, WResFileID fid );
-extern bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, size_t len );
+extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp );
+extern bool ResWriteString( const char *string, bool use_unicode, FILE *fp );
+extern bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t len );
 extern void WriteInitStatics( void );
-extern bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID fid, bool iswin32 );
+extern bool MResWriteResourceHeader( MResResourceHeader *currhead, FILE *fp, bool iswin32 );
 
 #endif

@@ -37,7 +37,7 @@
 #endif
 
 typedef struct handle_info {
-    WResFileID  fid;
+    FILE        *fp;
     int         status;
 #ifdef WIN_GUI
     HINSTANCE   inst;

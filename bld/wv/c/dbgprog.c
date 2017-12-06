@@ -66,6 +66,7 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "ntdbgpb.h"
+#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -557,7 +558,7 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_MIN, last ) ) {
+        if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last ) ) {
             return( true );
         }
         FileClose( fh );
@@ -579,7 +580,7 @@ static bool ProcImgSymInfo( image_entry *image )
             fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
         }
         if( fh != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
+            if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
                 return( true );
             }
             FileClose( fh );
@@ -593,7 +594,7 @@ static bool ProcImgSymInfo( image_entry *image )
         } else {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+                if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
                     return( true );
                 }
                 FileClose( fh );

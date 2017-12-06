@@ -102,8 +102,8 @@ static void PrintHeader( MenuHeader * head )
     printf( "\tMenu Header.   Version: %d  Header size: %d\n", head->Version, head->Size );
 }
 
-bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
-/*************************************************************/
+bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
+/*******************************************************/
 {
     bool            error;
     int             depth;  /* number of menu levels deep */
@@ -112,10 +112,10 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
 
     length = length;
 
-    error = RESSEEK( fid, offset, SEEK_SET );
+    error = RESSEEK( fp, offset, SEEK_SET );
 
     if( !error ) {
-        error = ResReadMenuHeader( &head, fid );
+        error = ResReadMenuHeader( &head, fp );
     }
     if( !error ) {
         PrintHeader( &head );
@@ -124,7 +124,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
     depth = 1;
     while( depth > 0 && !error ) {
         item = ResNewMenuItem();
-        error = ResReadMenuItem( item, fid );
+        error = ResReadMenuItem( item, fp );
         if( !error ) {
             if( item->IsPopup ) {
                 depth++;
@@ -142,7 +142,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
         ResFreeMenuItem( item );
     }
 
-    RESSEEK( fid, offset, SEEK_SET );
+    RESSEEK( fp, offset, SEEK_SET );
 
     return( error );
 }

@@ -60,10 +60,10 @@ struct MenuItem {
 #include "rccore.h"
 
 
-static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID fid )
-/**************************************************************************/
+static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, FILE *fp )
+/********************************************************************/
 {
-    if( RESWRITE( fid, currhead, sizeof( MenuHeaderOS2 ) ) != sizeof( MenuHeaderOS2 ) ) {
+    if( RESWRITE( fp, currhead, sizeof( MenuHeaderOS2 ) ) != sizeof( MenuHeaderOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -71,21 +71,21 @@ static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID fid )
     }
 }
 
-static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID fid )
-/**********************************************************************************/
+static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
+/****************************************************************************/
 {
     bool        error;
 
-    error = ResWriteUint16( curritem->ItemStyle, fid );
+    error = ResWriteUint16( curritem->ItemStyle, fp );
     if( !error ) {
-        error = ResWriteUint16( curritem->ItemAttrs, fid );
+        error = ResWriteUint16( curritem->ItemAttrs, fp );
     }
     if( !error ) {
-        error = ResWriteUint16( curritem->ItemCmd, fid );
+        error = ResWriteUint16( curritem->ItemCmd, fp );
     }
     if( !error ) {
         if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR) && curritem->ItemText != NULL ) {
-            error = ResWriteString( curritem->ItemText, false, fid );
+            error = ResWriteString( curritem->ItemText, false, fp );
         }
     }
 
@@ -161,7 +161,7 @@ static bool SemOS2WriteMenuItem( FullMenuItemOS2 *item, int *err_code )
 {
     bool    error;
 
-    error = ResOS2WriteMenuItemNormal( &(item->item), CurrResFile.fid );
+    error = ResOS2WriteMenuItemNormal( &(item->item), CurrResFile.fp );
     *err_code = LastWresErr();
     return( error );
 }
@@ -209,7 +209,7 @@ static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code, uint_32 cod
     head.Class    = 4;
     head.NumItems = count;
 
-    error = ResOS2WriteMenuHeader( &head, CurrResFile.fid );
+    error = ResOS2WriteMenuHeader( &head, CurrResFile.fp );
     if( error ) {
         ErrorHasOccured = true;
         return( error );

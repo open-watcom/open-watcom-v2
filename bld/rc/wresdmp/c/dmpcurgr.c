@@ -53,8 +53,8 @@ static void PrintCurDirEntry( CurDirEntry * entry )
     printf( "\tLength: %ld   Resource Name: %d\n", entry->Length, entry->CurID );
 }
 
-bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID fid )
-/********************************************************************/
+bool DumpCursorGroup( uint_32 offset, uint_32 length, FILE *fp )
+/**************************************************************/
 {
     IconCurDirHeader    head;
     CurDirEntry         entry;
@@ -62,20 +62,20 @@ bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID fid )
     int                 currentry;
 
     length = length;
-    RESSEEK( fid, offset, SEEK_SET );
+    RESSEEK( fp, offset, SEEK_SET );
 
-    error = ResReadIconCurDirHeader( &(head), fid );
+    error = ResReadIconCurDirHeader( &(head), fp );
     PrintIconCurDirHeader( &head );
 
     for( currentry = 0; !error && currentry < head.ResCount; currentry++ ) {
-        error = ResReadCurDirEntry( &entry, fid );
+        error = ResReadCurDirEntry( &entry, fp );
         if( !error ) {
             printf( "    %2d. ", currentry + 1 );
             PrintCurDirEntry( &entry );
         }
     }
 
-    RESSEEK( fid, offset, SEEK_SET );
+    RESSEEK( fp, offset, SEEK_SET );
 
     return( error );
 }

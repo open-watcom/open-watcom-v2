@@ -769,11 +769,11 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-bool RcPadFile( WResFileID fid, size_t pad )
+bool RcPadFile( FILE *fp, size_t pad )
 {
-    DbgAssert( FP2POSIX( fid ) == Root->outfile->handle );
+    DbgAssert( FP2POSIX( fp ) == Root->outfile->handle );
 
-    /* unused parameters */ (void)fid;
+    /* unused parameters */ (void)fp;
 
     PadLoad( pad );
     return( false );
@@ -784,17 +784,17 @@ void CheckDebugOffset( ExeFileInfo *info )
     /* unused parameters */ (void)info;
 }
 
-RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
-/****************************************************************************/
+RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, unsigned_32 length )
+/*******************************************************************/
 {
-    /* unused parameters */ (void)out_fid;
+    /* unused parameters */ (void)out_fp;
 
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
-        QRead( FP2POSIX( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
+        QRead( FP2POSIX( in_fp ), TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );
     }
     if( length > 0 ) {
-        QRead( FP2POSIX( in_fid ), TokBuff, length, "resource file" );
+        QRead( FP2POSIX( in_fp ), TokBuff, length, "resource file" );
         WriteLoad( TokBuff, length );
     }
     return( RS_OK );
@@ -831,7 +831,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.fid = POSIX2FP( Root->outfile->handle );
+    einfo.fp = POSIX2FP( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;

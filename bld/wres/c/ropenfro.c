@@ -36,14 +36,14 @@
 #include "wresrtns.h"
 
 
-WResFileID ResOpenFileRO( const char *filename )
-/**********************************************/
+FILE *ResOpenFileRO( const char *filename )
+/*****************************************/
 /* use this function to open Microsoft .RES files also */
 {
-    WResFileID  fid;
+    FILE    *fp;
 
-    fid = WRESOPEN( filename, WRES_OPEN_RO );
-    if( fid == NULL )
+    fp = WRESOPEN( filename, WRES_OPEN_RO );
+    if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    return( fid );
+    return( fp );
 }

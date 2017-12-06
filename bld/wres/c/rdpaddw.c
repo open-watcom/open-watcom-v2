@@ -38,18 +38,18 @@
 #include "read.h"
 
 
-bool ResReadPadDWord( WResFileID fid )
-/************************************/
+bool ResReadPadDWord( FILE *fp )
+/******************************/
 /* advances in the file to the next DWORD boundry */
 {
     WResFileOffset  curr_pos;
     WResFileOffset  padding;
 
-    curr_pos = WRESTELL( fid );
+    curr_pos = WRESTELL( fp );
     if( curr_pos == -1 )
         return( WRES_ERROR( WRS_TELL_FAILED ) );
     padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
-    if( WRESSEEK( fid, padding, SEEK_CUR ) )
+    if( WRESSEEK( fp, padding, SEEK_CUR ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 }

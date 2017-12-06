@@ -35,8 +35,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResReadExtraWResID( WResID *name, WResFileID fid )
-/******************************************************/
+bool WResReadExtraWResID( WResID *name, FILE *fp )
+/************************************************/
 /* reads the extra bytes into the end of the structure */
 /* assumes that the fixed portion has just been read in and is in name and */
 /* that name is big enough to hold the extra bytes */
@@ -47,8 +47,8 @@ bool WResReadExtraWResID( WResID *name, WResFileID fid )
     if( name->IsName ) {
         extrabytes = name->ID.Name.NumChars - 1;
         if( extrabytes > 0 ) {
-            if( (numread = WRESREAD( fid, name->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
-                return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+            if( (numread = WRESREAD( fp, name->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
+                return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
             }
         }
     }
