@@ -89,11 +89,11 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         offset = sizeof( master_dbg_header );
 
         /* Look for a PKZIP header and skip archive if present */
-        if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
-            if( WRESREAD( hinfo->fid, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
+        if( !WRESSEEK( hinfo->fp, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
+            if( WRESREAD( hinfo->fp, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
                 if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                    if( !WRESSEEK( hinfo->fid, eocd.cd_offset, SEEK_SET ) ) {
-                        if( WRESREAD( hinfo->fid, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
+                    if( !WRESSEEK( hinfo->fp, eocd.cd_offset, SEEK_SET ) ) {
+                        if( WRESREAD( hinfo->fp, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
                             if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
                                 offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
                             }
@@ -102,10 +102,10 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                 }
             }
         }
-        WRESSEEK( hinfo->fid, -offset, SEEK_END );
-        currpos = WRESTELL( hinfo->fid );
+        WRESSEEK( hinfo->fp, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
-            WRESREAD( hinfo->fid, &header, sizeof( master_dbg_header ) );
+            WRESREAD( hinfo->fp, &header, sizeof( master_dbg_header ) );
             if( header.signature == WAT_RES_SIG ) {
                 notfound = false;
                 WResFileShift = currpos - header.debug_size + sizeof( master_dbg_header );
@@ -114,7 +114,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                        header.signature == FOX_SIGNATURE1 ||
                        header.signature == FOX_SIGNATURE2 ) {
                 currpos -= header.debug_size;
-                WRESSEEK( hinfo->fid, currpos, SEEK_SET );
+                WRESSEEK( hinfo->fp, currpos, SEEK_SET );
             } else {        /* did not find the resource information */
                 break;
             }
