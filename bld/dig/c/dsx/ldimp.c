@@ -32,7 +32,7 @@
 ****************************************************************************/
 
 
-/* Usage of Prarlap executable loader
+/* Usage of the Prarlap executable Loader
  *
  *  Host OS     TRAP    MAD     DIP
  *
