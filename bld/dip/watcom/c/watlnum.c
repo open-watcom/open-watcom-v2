@@ -40,17 +40,19 @@
 
 #define NO_LINE         ((word)-1)
 
-#define NEXT_SEG( ptr )     (V2Lines ? ((line_segment *)((ptr)->v2.line+(ptr)->v2.count)) \
-                                     : ((line_segment *)((ptr)->v3.line+(ptr)->v3.count)))
-#define LINE_SEG( ptr )     (V2Lines ? (ptr)->v2.segment : (ptr)->v3.segment)
-#define LINE_COUNT( ptr )   (V2Lines ? (ptr)->v2.count : (ptr)->v3.count)
-#define LINE_LINE( ptr)     (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
+#define NEXT_SEG( ptr )     (V2Lines ? ((line_segment *)((ptr)->u.v2.line+(ptr)->u.v2.count)) \
+                                     : ((line_segment *)((ptr)->u.v3.line+(ptr)->u.v3.count)))
+#define LINE_SEG( ptr )     (V2Lines ? (ptr)->u.v2.segment : (ptr)->u.v3.segment)
+#define LINE_COUNT( ptr )   (V2Lines ? (ptr)->u.v2.count : (ptr)->u.v3.count)
+#define LINE_LINE( ptr)     (V2Lines ? (ptr)->u.v2.line : (ptr)->u.v3.line)
 
 #define MIDIDX16(lo,hi) ((unsigned_16)(((unsigned_32)lo + (unsigned_32)hi) / 2))
 
-typedef union {
-    v2_line_segment     v2;
-    v3_line_segment     v3;
+typedef struct {
+    union {
+        v2_line_segment     v2;
+        v3_line_segment     v3;
+    } u;
 } line_segment;
 
 typedef struct search_info {

@@ -93,7 +93,7 @@ mod_dbg_info *ModPointer( imp_image_handle *ii, imp_mod_handle im )
  * AllocLinkTable - allocate the demand load link table
  *
  */
-static dip_status AllocLinkTable( section_info *inf, dword num_links, dword first_link )
+static dip_status AllocLinkTable( imp_image_handle *ii, section_info *inf, dword num_links, dword first_link )
 {
     pointer_int         **lnk_tbl;
     pointer_int         *lnk;
@@ -130,8 +130,8 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
             return( DS_ERR|DS_NO_MEM );
         }
         lnk_tbl[i++] = lnk;
-        if( !inf->ctl->v2 ) {
-            if( DCRead( inf->ctl->sym_fp, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
+        if( !ii->v2 ) {
+            if( DCRead( ii->sym_fp, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
                 DCStatus( DS_ERR|DS_FREAD_FAILED );
                 return( DS_ERR|DS_FREAD_FAILED );
             }
@@ -150,7 +150,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
             tbl = blk->link;
             for( i = 0; i < tbl->count; ++i ) {
                 mod = (mod_dbg_info *)((byte *)blk->info + tbl->mod_off[i]);
-                if( inf->ctl->v2 ) {
+                if( ii->v2 ) {
                     if( mod->di[dk].u.size != 0 ) {
                         if( num >= MAX_LINK_ENTRIES ) {
                             lnk = *++lnk_tbl;
@@ -172,7 +172,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
             }
         }
     }
-    if( inf->ctl->v2 ) {
+    if( ii->v2 ) {
         if( num >= MAX_LINK_ENTRIES ) {
             lnk = *++lnk_tbl;
             num = 0;
@@ -188,7 +188,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
  *            - allocate module index table
  *            - allocate demand load link table
  */
-dip_status AdjustMods( section_info *inf, unsigned long adjust )
+dip_status AdjustMods( imp_image_handle *ii, section_info *inf, unsigned long adjust )
 {
     info_block          *blk;
     unsigned            count;
@@ -226,7 +226,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
             tbl->mod_off[count++] = mod_off;
             mod = (mod_dbg_info *)((byte *)blk->info + mod_off);
             for( dk = 0; dk < MAX_DMND; ++dk ) {
-                if( inf->ctl->v2 ) {
+                if( ii->v2 ) {
                     if( mod->di[dk].u.size != 0 ) {
                         ++num_links;
                     }
@@ -245,15 +245,15 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
             }
         }
     }
-    if( !inf->ctl->v2 ) {
+    if( !ii->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( inf->ctl->sym_fp, off, DIG_ORG ) ) {
+        if( DCSeek( ii->sym_fp, off, DIG_ORG ) ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( DS_ERR|DS_FSEEK_FAILED );
         }
         num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
     }
-    ok = AllocLinkTable( inf, num_links, first_link );
+    ok = AllocLinkTable( ii, inf, num_links, first_link );
     if( ok != DS_OK )
         return( ok );
     num = 0;
@@ -324,13 +324,13 @@ void ModInfoFini( section_info *inf )
  * ModInfoSplit - find a good place to split module information
  */
 
-unsigned ModInfoSplit( info_block *blk, section_info *inf )
+unsigned ModInfoSplit( imp_image_handle *ii, info_block *blk, section_info *inf )
 {
     unsigned    off;
     unsigned    prev;
     byte        *start;
 
-    /* unused parameters */ (void)inf;
+    /* unused parameters */ (void)ii; (void)inf;
 
     start = blk->info;
     prev = 0;

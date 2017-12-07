@@ -86,9 +86,9 @@ void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
  * GetBlockInfo -- get permanent information into memory
  */
 
-static dip_status GetBlockInfo( section_info *new, unsigned long off,
+static dip_status GetBlockInfo( imp_image_handle *ii, section_info *new, unsigned long off,
                             dword size, info_block **owner,
-                            unsigned (*split)(info_block *, section_info *) )
+                            unsigned (*split)(imp_image_handle *ii, info_block *, section_info *) )
 {
     size_t              split_size;
     info_block          *curr;
@@ -110,17 +110,11 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
         curr->size = block_size;
         curr->next = NULL;
         curr->link = NULL;
-        if( DCSeek( new->ctl->sym_fp, off, DIG_ORG ) ) {
-            DCStatus( DS_ERR|DS_INFO_INVALID );
+        if( InfoRead( ii->sym_fp, off, block_size, curr->info ) != DS_OK )
             return( DS_ERR|DS_INFO_INVALID );
-        }
-        if( DCRead( new->ctl->sym_fp, curr->info, block_size ) != block_size ) {
-            DCStatus( DS_ERR|DS_INFO_INVALID );
-            return( DS_ERR|DS_INFO_INVALID );
-        }
         if( block_size == size )
             return( DS_OK );
-        split_size = split( curr, new );
+        split_size = split( ii, curr, new );
         curr = DCRealloc( curr, ( sizeof( info_block ) - 1 ) + split_size );
         curr->size = split_size;
         off += split_size;
@@ -176,51 +170,54 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
  * that section numbers are contiguous
  */
 
-static dip_status ProcSectionInfo( imp_image_handle *ii, unsigned long pos )
+static dip_status ProcSectionsInfo( imp_image_handle *ii, unsigned num_sects )
 {
     section_dbg_header  header;
     section_info        *new;
     dip_status          status;
+    unsigned long       pos;
 
-    DCRead( ii->sym_fp, &header, sizeof( header ) );
-    new = ii->sect + header.section_id;
-    new->sect_id = header.section_id;
-    new->ctl = ii;
-    new->mod_info = NULL;
-    new->addr_info = NULL;
-    new->gbl = NULL;
-    new->dmnd_link = NULL;
-    /* if there are no modules in the section, it's a 'placekeeper' section
-        for the linker overlay structure -- just ignore it */
-    if( header.mod_offset != header.gbl_offset ) {
-        status = GetBlockInfo( new, header.mod_offset + pos,
-                            header.gbl_offset - header.mod_offset,
-                            &new->mod_info, &ModInfoSplit );
-        if( status != DS_OK )
-            return( status );
-        status = GetBlockInfo( new, header.gbl_offset + pos,
-                            header.addr_offset - header.gbl_offset,
-                            &new->gbl, &GblSymSplit );
-        if( status != DS_OK )
-            return( status );
-        status = GetBlockInfo( new, header.addr_offset+pos,
-                            header.section_size - header.addr_offset,
-                            &new->addr_info, &AddrInfoSplit );
-        if( status != DS_OK )
-            return( status );
-        status = MakeGblLst( new );
-        if( status != DS_OK )
-            return( status );
-        status = AdjustMods( new, pos );
-        if( status != DS_OK ) {
-            return( status );
+    pos = DCTell( ii->sym_fp );
+    while( num_sects-- > 0 ) {
+        DCRead( ii->sym_fp, &header, sizeof( header ) );
+        new = ii->sect + header.section_id;
+        new->sect_id = header.section_id;
+        new->mod_info = NULL;
+        new->addr_info = NULL;
+        new->gbl = NULL;
+        new->dmnd_link = NULL;
+        /* if there are no modules in the section, it's a 'placekeeper' section
+            for the linker overlay structure -- just ignore it */
+        if( header.mod_offset != header.gbl_offset ) {
+            status = GetBlockInfo( ii, new, header.mod_offset + pos,
+                                header.gbl_offset - header.mod_offset,
+                                &new->mod_info, &ModInfoSplit );
+            if( status != DS_OK )
+                return( status );
+            status = GetBlockInfo( ii, new, header.gbl_offset + pos,
+                                header.addr_offset - header.gbl_offset,
+                                &new->gbl, &GblSymSplit );
+            if( status != DS_OK )
+                return( status );
+            status = GetBlockInfo( ii, new, header.addr_offset+pos,
+                                header.section_size - header.addr_offset,
+                                &new->addr_info, &AddrInfoSplit );
+            if( status != DS_OK )
+                return( status );
+            status = MakeGblLst( ii, new );
+            if( status != DS_OK )
+                return( status );
+            status = AdjustMods( ii, new, pos );
+            if( status != DS_OK ) {
+                return( status );
+            }
         }
-    }
-    ii->num_sects++;
-    pos += header.section_size;
-    if( DCSeek( ii->sym_fp, pos, DIG_ORG ) ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        ii->num_sects++;
+        pos += header.section_size;
+        if( DCSeek( ii->sym_fp, pos, DIG_ORG ) ) {
+            DCStatus( DS_ERR|DS_INFO_INVALID );
+            return( DS_ERR|DS_INFO_INVALID );
+        }
     }
     return( DS_OK );
 }
@@ -312,12 +309,9 @@ static dip_status DoPermInfo( imp_image_handle *ii )
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
-    while( ii->num_sects < num_sects ) {
-        curr = DCTell( ii->sym_fp );
-        ret = ProcSectionInfo( ii, curr );
-        if( ret != DS_OK ) {
-            return( ret );
-        }
+    ret = ProcSectionsInfo( ii, num_sects );
+    if( ret != DS_OK ) {
+        return( ret );
     }
     SetModBase( ii );
     return( InitDemand( ii ) );
@@ -348,11 +342,8 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
  * InfoRead -- read demand information from disk
  */
 
-dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff )
+dip_status InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff )
 {
-    FILE    *fp;
-
-    fp = inf->ctl->sym_fp;
     if( DCSeek( fp, offset, DIG_ORG ) ) {
         DCStatus( DS_ERR|DS_FSEEK_FAILED );
         return( DS_ERR|DS_FSEEK_FAILED );
@@ -382,8 +373,8 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
     }
     AdjustAddrInit();
     for( i = 0; i < ii->num_sects; ++i ) {
-        AdjustAddrs( ii->sect + i );
-        AdjustSyms(  ii->sect + i );
+        AdjustAddrs( ii, i );
+        AdjustSyms( ii, i );
     }
 }
 

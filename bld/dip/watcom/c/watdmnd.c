@@ -282,7 +282,7 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, demand_kind dk,
             }
         }
         tmpoff = (unsigned long)MK_DMND_OFFSET( *lnk );
-        if( InfoRead( sect, tmpoff, size, section->buff ) != DS_OK ) {
+        if( InfoRead( ii->sym_fp, tmpoff, size, section->buff ) != DS_OK ) {
             if( section != LastDemand )
                 DCFree( section );
             return( NULL );

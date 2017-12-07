@@ -31,9 +31,8 @@
 
 
 extern void                     AdjustAddrInit( void );
-extern void                     AdjustAddrs( section_info *inf );
+extern void                     AdjustAddrs( imp_image_handle *ii, unsigned sectno );
 extern address                  FindModBase( imp_image_handle *ii, imp_mod_handle im );
-extern mem_block                FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
-                                        unsigned long offset );
-extern unsigned                 AddrInfoSplit( info_block *curr, section_info *inf );
+extern mem_block                FindSegBlock( imp_image_handle *ii, imp_mod_handle im, unsigned long offset );
+extern unsigned                 AddrInfoSplit( imp_image_handle *ii, info_block *curr, section_info *inf );
 extern void                     AddrInfoFini( section_info *inf );

@@ -32,11 +32,10 @@
 
 extern section_info     *FindInfo( imp_image_handle *ii, imp_mod_handle im );
 extern mod_dbg_info     *ModPointer( imp_image_handle *ii, imp_mod_handle im );
-extern dip_status       AdjustMods( section_info *inf, unsigned long adjust );
+extern dip_status       AdjustMods( imp_image_handle *ii, section_info *inf, unsigned long adjust );
 extern void             SetModBase( imp_image_handle *ii );
 extern void             ModInfoFini( section_info *inf );
-extern unsigned         ModInfoSplit( info_block *blk, section_info *inf );
+extern unsigned         ModInfoSplit( imp_image_handle *ii, info_block *blk, section_info *inf );
 extern word             ModOff2Idx( section_info *inf, word off );
 extern walk_result      MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d );
-extern size_t           PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
-                                char *buff, size_t buff_size );
+extern size_t           PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic, char *buff, size_t buff_size );

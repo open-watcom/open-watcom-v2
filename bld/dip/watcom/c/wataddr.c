@@ -82,7 +82,7 @@ void AdjustAddrInit( void )
     NonSectEnd = 0;
 }
 
-void AdjustAddrs( section_info *inf )
+void AdjustAddrs( imp_image_handle *ii, unsigned sectno )
 {
     seg_dbg_info        *ptr;
     seg_dbg_info        *end;
@@ -92,7 +92,9 @@ void AdjustAddrs( section_info *inf )
     addr_off            off;
     addr_seg            last;
     address             place;          //NYI: place is a temp kludge
+    section_info        *inf;
 
+    inf = ii->sect + sectno;
     AddrModCache.ii = NULL;
     SegBlockCache.ii = NULL;
     if( inf->addr_info == NULL )
@@ -103,12 +105,12 @@ void AdjustAddrs( section_info *inf )
     for( blk = inf->addr_info; blk != NULL; blk = blk->next ) {
         end = GET_SEG_INFO( blk, blk->size );
         for( ptr = GET_SEG_INFO( blk, 0 ); ptr < end; ptr = NEXT_SEG_INFO( ptr ) ) {
-            AddressMap( inf->ctl, &ptr->base );
+            AddressMap( ii, &ptr->base );
             off = ptr->base.offset;
             curr = ptr->addr;
             for( i = GET_SEG_COUNT( ptr ); i != 0; --i, ++curr ) {
                 if( curr->mod != (word)-1 ) {
-                    if( inf->ctl->v2 ) {
+                    if( ii->v2 ) {
                         curr->mod = ModOff2Idx( inf, curr->mod );
                     }
                     curr->mod += inf->mod_base_idx;
@@ -289,14 +291,14 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im, unsigned long o
 }
 
 
-unsigned AddrInfoSplit( info_block *blk, section_info *inf )
+unsigned AddrInfoSplit( imp_image_handle *ii, info_block *blk, section_info *inf )
 {
     seg_dbg_info    *start;
     seg_dbg_info    *seg;
     seg_dbg_info    *next;
     seg_dbg_info    *end;
 
-    /* unused parameters */ (void)inf;
+    /* unused parameters */ (void)ii; (void)inf;
 
     start = GET_SEG_INFO( blk, 0 );
     end = GET_SEG_INFO( blk, blk->size );

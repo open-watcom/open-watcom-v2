@@ -39,9 +39,9 @@
 #define GETS32(x)       *(signed_32 *)(x)
 
 extern void             GblSymFini( section_info *inf );
-extern void             AdjustSyms( section_info *inf );
-extern dip_status       MakeGblLst( section_info *inf );
-extern unsigned         GblSymSplit( info_block *gbl, section_info *inf );
+extern void             AdjustSyms( imp_image_handle *ii, unsigned sectno );
+extern dip_status       MakeGblLst( imp_image_handle *ii, section_info *inf );
+extern unsigned         GblSymSplit( imp_image_handle *ii, info_block *gbl, section_info *inf );
 extern dip_status       SymHdl2GblLoc( imp_image_handle *ii, imp_sym_handle *is,
                                 location_list *ll );
 extern dip_status       SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
