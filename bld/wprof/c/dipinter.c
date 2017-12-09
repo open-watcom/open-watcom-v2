@@ -218,11 +218,12 @@ mod_handle WPDipLoadInfo( FILE *fid, const char *f_name, void *image,
 
     dip_module = NO_MOD;
     for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
+        if( priority > end )
+            break;
         DIPStatus = DS_OK;
         dip_module = DIPLoadInfo( fid, image_size, priority );
         if( dip_module != NO_MOD ) {
             *(void **)DIPImageExtra( dip_module ) = image;
-            DIPMapInfo( dip_module, image );
             break;
         }
         if( DIPStatus & DS_ERR ) {

@@ -76,5 +76,3 @@ void    ImgSort( void )
     DbgImageList = SortLinkedList( DbgImageList, offsetof( image_entry, link ),
                                 ImageCompare, DbgAlloc, DbgFree );
 }
-
-

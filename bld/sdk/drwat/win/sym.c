@@ -118,21 +118,21 @@ void FiniSymbols( void )
 bool LoadDbgInfo( void )
 {
     dip_priority    priority;
-    FILE            *cur_fp;
+    FILE            *fp;
 
     DEBUGOUT( "Enter LoadDbgInfo" );
     curModHdl = NO_MOD;
     curProcess = DIPCreateProcess();
-    cur_fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
-    if( cur_fp != NULL ) {
+    fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
+    if( fp != NULL ) {
         DEBUGOUT( "File open OK" );
         for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
-            curModHdl = DIPLoadInfo( cur_fp, 0, priority );
+            curModHdl = DIPLoadInfo( fp, 0, priority );
             if( curModHdl != NO_MOD ) {
                 break;
             }
         }
-        DIGCli( Close )( cur_fp );
+        DIGCli( Close )( fp );
         if( curModHdl != NO_MOD ) {
             DEBUGOUT( "debug info load OK" );
             DIPMapInfo( curModHdl, NULL );
@@ -222,9 +222,9 @@ BOOL FindSymbol( ADDRESS *addr, syminfo *si )
 }
 
 /*
- * SymFileClose - close the current symfile
+ * UnloadDbgInfo - cleanup DIP
  */
-void SymFileClose( void )
+void UnloadDbgInfo( void )
 {
     if( curModHdl != NO_MOD ) {
         DIPUnloadInfo( curModHdl );

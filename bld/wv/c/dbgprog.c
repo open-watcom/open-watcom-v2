@@ -492,7 +492,10 @@ static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, dip_priority star
     dip_priority    priority;
     char            *endstr;
 
+    image->dip_handle = NO_MOD;
     for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
+        if( priority > end )
+            return( false );
         DIPStatus = DS_OK;
         image->dip_handle = DIPLoadInfo( fid, sizeof( image_entry * ), priority );
         if( image->dip_handle != NO_MOD )
@@ -585,8 +588,8 @@ static bool ProcImgSymInfo( image_entry *image )
                 }
             }
             _Free( image->symfile_name );
+            image->symfile_name = NULL;
         }
-        image->symfile_name = NULL;
         if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
             if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
                 image->deferred_symbols = true;
@@ -893,8 +896,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
     CheckSegAlias();
     image->system_handle = system_handle;
     SetLastExe( fullname );
-    ProcImgSymInfo( image );
-    if( image->dip_handle != NO_MOD ) {
+    if( ProcImgSymInfo( image ) ) {
         DIPMapInfo( image->dip_handle, image );
     }
     InitImageInfo( image );

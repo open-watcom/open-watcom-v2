@@ -629,9 +629,10 @@ STATIC void loadImageInfo( image_info * curr_image )
     }
     obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
     if( obj_fp != NULL ) {
-        if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted ) {
+        if( !curr_image->sym_deleted ) {
+        } else if( curr_image->dip_handle == NO_MOD ) {
             curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
-                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                                           sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
         DIGCli( Close )( obj_fp );
     } else {
@@ -639,6 +640,9 @@ STATIC void loadImageInfo( image_info * curr_image )
         if( curr_image->main_load ) {
             ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
         }
+    }
+    if( curr_image->dip_handle != NO_MOD ) {
+        DIPMapInfo( curr_image->dip_handle, curr_image );
     }
     initModuleInfo( curr_image );
     if( curr_image->dip_handle != NO_MOD ) {

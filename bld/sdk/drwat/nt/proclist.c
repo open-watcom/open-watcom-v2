@@ -189,7 +189,6 @@ static void freeModuleNode( ModuleNode *node )
         }
         if( node->fp != NULL ) {
             DIGCli( Close )( node->fp );
-            node->fp = NULL;
         }
         MemFree( node );
     }
