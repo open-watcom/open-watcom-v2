@@ -38,7 +38,6 @@
 #include "digcli.h"
 #include "trptypes.h"
 #include "remcore.h"
-#include "posixfp.h"
 
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
@@ -99,32 +98,32 @@ FILE * DIGCLIENTRY( Open )( char const *name, dig_open mode )
     fh = FileOpen( name, DIG2WVOpenMode( mode ) );
     if( fh == NIL_HANDLE )
         return( NULL );
-    return( POSIX2FP( fh ) );
+    return( FH2FP( fh ) );
 }
 
-int DIGCLIENTRY( Seek )( FILE *fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
 {
-    return( SeekStream( FP2POSIX( fid ), p, k ) == ERR_SEEK );
+    return( SeekStream( FP2FH( fp ), p, k ) == ERR_SEEK );
 }
 
-unsigned long DIGCLIENTRY( Tell )( FILE *fid )
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
-    return( SeekStream( FP2POSIX( fid ), 0, DIO_SEEK_CUR ) );
+    return( SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR ) );
 }
 
-size_t DIGCLIENTRY( Read )( FILE *fid, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
 {
-    return( ReadStream( FP2POSIX( fid ), b, s ) );
+    return( ReadStream( FP2FH( fp ), b, s ) );
 }
 
-size_t DIGCLIENTRY( Write )( FILE *fid, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
 {
-    return( WriteStream( FP2POSIX( fid ), b, s ) );
+    return( WriteStream( FP2FH( fp ), b, s ) );
 }
 
-void DIGCLIENTRY( Close )( FILE *fid )
+void DIGCLIENTRY( Close )( FILE *fp )
 {
-    FileClose( FP2POSIX( fid ) );
+    FileClose( FP2FH( fp ) );
 }
 
 void DIGCLIENTRY( Remove )( char const *name, dig_open mode )

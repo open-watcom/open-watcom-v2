@@ -66,7 +66,6 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "ntdbgpb.h"
-#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -485,7 +484,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, dip_priority start, dip_priority end )
+static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority start, dip_priority end )
 {
     char            buff[TXT_LEN];
     char            *symfile;
@@ -497,7 +496,7 @@ static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, dip_priority star
         if( priority > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( fid, sizeof( image_entry * ), priority );
+        image->dip_handle = DIPLoadInfo( FH2FP( fh ), sizeof( image_entry * ), priority );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -559,7 +558,7 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( fh != NIL_HANDLE ) {
-        ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last_priority );
+        ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last_priority );
         FileClose( fh );
         if( ret ) {
             return( ret );
@@ -581,7 +580,7 @@ static bool ProcImgSymInfo( image_entry *image )
                 fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
             }
             if( fh != NIL_HANDLE ) {
-                ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+                ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX );
                 FileClose( fh );
                 if( ret ) {
                     return( ret );
@@ -596,7 +595,7 @@ static bool ProcImgSymInfo( image_entry *image )
             } else {
                 fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
                 if( fh != NIL_HANDLE ) {
-                    ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX );
+                    ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX );
                     FileClose( fh );
                     if( ret ) {
                         return( ret );
