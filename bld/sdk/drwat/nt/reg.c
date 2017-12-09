@@ -786,7 +786,7 @@ BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo )
     if( !getProcessIndex( procid, &index ) )
         goto GETIMAGEMEM_ERROR;
 
-    for( i=0; i < imageObject->NumInstances; i += 1 ) {
+    for( i = 0; i < imageObject->NumInstances; i++ ) {
         if( inst == NULL )
             goto GETIMAGEMEM_ERROR;
 
