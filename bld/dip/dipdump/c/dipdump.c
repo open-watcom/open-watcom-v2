@@ -947,19 +947,19 @@ static int DumpFile( const char *file, char **dips )
         process_info    *proc = DIPCreateProcess();
 
         if( proc != NULL ) {
-            int         prty;
-            mod_handle  mh = 0;
+            dip_priority    priority;
+            mod_handle      mh = 0;
 
-            for( prty = DIPPriority( 0 ); prty != 0; prty = DIPPriority( prty ) ) {
+            for( priority = 0; (priority = DIPPriority( priority )) != 0;  ) {
                 DIGCli( Seek )( fp, 0, DIG_ORG );
-                mh = DIPLoadInfo( fp, 0, prty );
+                mh = DIPLoadInfo( fp, 0, priority );
                 if( mh != NO_MOD ) {
                     break;
                 }
             }
             if( mh != NO_MOD ) {
                 DIPMapInfo( mh, NULL );
-                InfoMsg( "DIP opened '%s' at prty=%d, mh=%lx\n", file, prty, (long)mh );
+                InfoMsg( "DIP opened '%s' at prty=%d, mh=%lx\n", file, priority, (long)mh );
 
                 /*
                  * Enumerate the debug info.

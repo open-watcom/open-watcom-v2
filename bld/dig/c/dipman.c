@@ -454,27 +454,29 @@ void DIPDestroyProcess( process_info *p )
     }
 }
 
-unsigned DIPPriority( unsigned old )
+dip_priority DIPPriority( dip_priority prev_priority )
 {
-    unsigned    prio;
-    unsigned    curr;
-    int         j;
+    dip_priority    priority;
+    dip_priority    curr_priority;
+    int             j;
 
-    prio = UINT_MAX;
+    priority = DIP_PRIOR_MAX + 1;
     for( j = 0; j < MAX_DIPS; ++j ) {
         if( LoadedDIPs[j].rtns == NULL )
             continue;
-        curr = LoadedDIPs[j].rtns->dip_priority;
-        if( curr <= old )
+        curr_priority = LoadedDIPs[j].rtns->priority;
+        if( curr_priority > DIP_PRIOR_MAX )
+            curr_priority = DIP_PRIOR_MAX;
+        if( curr_priority <= prev_priority )
             continue;
-        if( curr >= prio )
+        if( curr_priority >= priority )
             continue;
-        prio = curr;
+        priority = curr_priority;
     }
-    return( prio == UINT_MAX ? 0 : prio );
+    return( priority > DIP_PRIOR_MAX ? 0 : priority );
 }
 
-mod_handle DIPLoadInfo( FILE *fp, unsigned extra, unsigned prio )
+mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
 {
     image_idx           ii;
     int                 j;
@@ -496,7 +498,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, unsigned prio )
     for( j = 0; j < MAX_DIPS; ++j ) {
         if( LoadedDIPs[j].rtns == NULL )
             continue;
-        if( LoadedDIPs[j].rtns->dip_priority != prio )
+        if( LoadedDIPs[j].rtns->priority != priority )
             continue;
         ret = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
         if( ret == DS_OK ) {
@@ -540,7 +542,7 @@ void DIPUnloadInfo( mod_handle mh )
 }
 
 
-unsigned DIPImagePriority( mod_handle mh )
+dip_priority DIPImagePriority( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -549,7 +551,7 @@ unsigned DIPImagePriority( mod_handle mh )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( DIP_PRIOR_MAX + 1 );
-    return( ih->dip->dip_priority );
+    return( ih->dip->priority );
 }
 
 /*

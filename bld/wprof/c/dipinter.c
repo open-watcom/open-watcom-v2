@@ -210,20 +210,16 @@ void WPDipSetProc( process_info *dip_proc )
 
 
 mod_handle WPDipLoadInfo( FILE *fid, const char *f_name, void *image,
-                   unsigned image_size, unsigned dip_start, unsigned dip_end )
+                   unsigned image_size, dip_priority start, dip_priority end )
 /****************************************************************************/
 {
-    unsigned    prio;
-    mod_handle  dip_module;
+    dip_priority    priority;
+    mod_handle      dip_module;
 
     dip_module = NO_MOD;
-    prio = dip_start;
-    for( ;; ) {
-        prio = DIPPriority( prio );
-        if( prio == 0 || prio > dip_end )
-            break;
+    for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
         DIPStatus = DS_OK;
-        dip_module = DIPLoadInfo( fid, image_size, prio );
+        dip_module = DIPLoadInfo( fid, image_size, priority );
         if( dip_module != NO_MOD ) {
             *(void **)DIPImageExtra( dip_module ) = image;
             DIPMapInfo( dip_module, image );

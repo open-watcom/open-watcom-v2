@@ -55,11 +55,11 @@ process_info    *DIPCreateProcess( void );
 process_info    *DIPSetProcess( process_info * );
 void            DIPDestroyProcess( process_info * );
 
-unsigned        DIPPriority( unsigned );
-mod_handle      DIPLoadInfo( FILE *, unsigned extra, unsigned prio );
+dip_priority    DIPPriority( dip_priority prev_priority );
+mod_handle      DIPLoadInfo( FILE *, unsigned extra, dip_priority priority );
 void            DIPMapInfo( mod_handle, void * );
 void            DIPUnloadInfo( mod_handle );
-unsigned        DIPImagePriority( mod_handle );
+dip_priority    DIPImagePriority( mod_handle );
 
 /*
  *      Information Walkers

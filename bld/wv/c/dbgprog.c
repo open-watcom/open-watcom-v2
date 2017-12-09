@@ -485,20 +485,16 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, unsigned start, unsigned end )
+static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, dip_priority start, dip_priority end )
 {
-    char        buff[TXT_LEN];
-    char        *symfile;
-    unsigned    prio;
-    char        *endstr;
+    char            buff[TXT_LEN];
+    char            *symfile;
+    dip_priority    priority;
+    char            *endstr;
 
-    prio = start;
-    for( ;; ) {
-        prio = DIPPriority( prio );
-        if( prio == 0 || prio > end )
-            return( false );
+    for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( fid, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( fid, sizeof( image_entry * ), priority );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -529,18 +525,18 @@ static bool CheckLoadDebugInfo( image_entry *image, FILE *fid, unsigned start, u
  */
 static bool ProcImgSymInfo( image_entry *image )
 {
-    file_handle fh;
-    unsigned    last;
-    char        buff[TXT_LEN];
-    char        *symfile_name;
-    const char  *nopath;
-    size_t      len;
+    file_handle     fh;
+    dip_priority    last_priority;
+    char            buff[TXT_LEN];
+    char            *symfile_name;
+    const char      *nopath;
+    size_t          len;
 
     image->deferred_symbols = false;
     if( _IsOff( SW_LOAD_SYMS ) )
         return( NO_MOD );
     if( image->symfile_name != NULL ) {
-        last = DIP_PRIOR_MAX;
+        last_priority = DIP_PRIOR_MAX;
         fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
         if( fh == NIL_HANDLE ) {
             nopath = SkipPathInfo( image->symfile_name, OP_REMOTE );
@@ -551,14 +547,14 @@ static bool ProcImgSymInfo( image_entry *image )
             }
         }
     } else {
-        last = DIP_PRIOR_EXPORTS - 1;
+        last_priority = DIP_PRIOR_EXPORTS - 1;
         fh = FileOpen( image->image_name, OP_READ );
         if( fh == NIL_HANDLE ) {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last ) ) {
+        if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last_priority ) ) {
             return( true );
         }
         FileClose( fh );
@@ -594,7 +590,7 @@ static bool ProcImgSymInfo( image_entry *image )
         } else {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+                if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX ) ) {
                     return( true );
                 }
                 FileClose( fh );

@@ -118,8 +118,8 @@ void FiniSymbols( void )
  */
 bool LoadDbgInfo( void )
 {
-    bool                err;
-    unsigned            priority;
+    bool            err;
+    dip_priority    priority;
 
     DEBUGOUT( "Enter LoadDbgInfo" );
     err = true;
@@ -127,11 +127,7 @@ bool LoadDbgInfo( void )
     cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
     if( cur_fid != NULL ) {
         DEBUGOUT( "File open OK" );
-        priority = 0;
-        for( ;; ) {
-            priority = DIPPriority( priority );
-            if( priority == 0 )
-                break;
+        for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
             curModHdl = DIPLoadInfo( cur_fid, 0, priority );
             if( curModHdl != NO_MOD ) {
                 break;

@@ -89,7 +89,7 @@ extern const char   DIPImp( Name )[];
 struct dip_imp_routines {
     unsigned_8          major;
     unsigned_8          minor;
-    unsigned_16         dip_priority;
+    dip_priority        priority;
     const char          *dip_name;
 
     _DIPImp( HandleSize );

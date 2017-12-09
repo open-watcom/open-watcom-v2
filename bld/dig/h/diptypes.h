@@ -35,15 +35,14 @@
 #include "digtypes.h"
 
 
-#define NO_MOD              ((mod_handle)0)
-#define ILL_MOD             ((mod_handle)1)
+#define NO_MOD                  ((mod_handle)0)
+#define ILL_MOD                 ((mod_handle)1)
 
-#define DIP_PRIOR_MIN       0
-#define DIP_PRIOR_HIGHEST   (DIP_PRIOR_DEFAULT-1)
-#define DIP_PRIOR_DEFAULT   (DIP_PRIOR_NORMAL-1)
-#define DIP_PRIOR_NORMAL    50
-#define DIP_PRIOR_EXPORTS   75
-#define DIP_PRIOR_MAX       100
+#define DIP_PRIOR_MIN           1
+#define DIP_PRIOR_DEFAULT       (DIP_PRIOR_NORMAL - 1)
+#define DIP_PRIOR_NORMAL        50
+#define DIP_PRIOR_EXPORTS       75
+#define DIP_PRIOR_MAX           100
 
 #include "digpck.h"
 
@@ -64,6 +63,8 @@ struct location_context;
 typedef struct process_info     process_info;
 typedef struct dip_imp_routines dip_imp_routines;
 typedef struct location_context location_context;
+
+typedef signed_16               dip_priority;
 
 typedef unsigned_32             mod_handle;
 typedef unsigned_32             cue_fileid;
