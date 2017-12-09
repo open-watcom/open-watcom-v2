@@ -1095,7 +1095,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
             break;
         ++i;
     }
-    DCClose( fp );
     return( DS_OK );
 }
 

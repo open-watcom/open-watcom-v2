@@ -77,39 +77,12 @@
 #define STAT_MAD_NOTIFY         ( WM_USER + 29 )
 
 /*
- *
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  can be pointer to file structure or handle number
+ * can be pointer to file structure or handle number
  * therefore 0/NULL is reserved for errors
  * if handle number is used then handle must be 1 based
  */
 #define DIG_H2FID(h)    ((void *)(h))
-#define DIG_FID2H(fid)  ((HANDLE)(fid))
+#define DIG_FID2H(fp)   ((HANDLE)(fp))
 
 
 #define MAX_SYM_NAME    128
@@ -230,7 +203,7 @@ void RemoveProcess( DWORD process );
 void DisplayProcList( void );
 void AddProcessName( DWORD procid, char *name );
 ProcNode *GetNextOwnedProc( ProcNode *cur );
-void AddModule( DWORD procid, FILE *fid, DWORD base, char *name );
+void AddModule( DWORD procid, FILE *fp, DWORD base, char *name );
 void RemoveModule( DWORD procid, DWORD base );
 //void MapAddress( addr_ptr *addr, ModuleNode *mod );
 ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr );
@@ -314,9 +287,9 @@ void FreeMemList( MemListData *info );
 
 /* pefile.c */
 BOOL GetSegmentList( ModuleNode *node );
-char *GetModuleName( FILE *fid );
-BOOL GetModuleSize( FILE *fid, DWORD *size );
-ObjectInfo *GetModuleObjects( FILE *fid, DWORD *num_objects );
+char *GetModuleName( FILE *fp );
+BOOL GetModuleSize( FILE *fp, DWORD *size );
+ObjectInfo *GetModuleObjects( FILE *fp, DWORD *num_objects );
 
 /* disasm.c */
 RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );

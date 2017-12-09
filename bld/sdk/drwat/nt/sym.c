@@ -108,14 +108,13 @@ bool LoadDbgInfo( ModuleNode *mod )
         return( false );
     mod->syminfo->procinfo = DIPCreateProcess();
     for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
-        mod->syminfo->hdl = DIPLoadInfo( mod->fid, 0, priority );
+        mod->syminfo->hdl = DIPLoadInfo( mod->fp, 0, priority );
         if( mod->syminfo->hdl != NO_MOD ) {
             break;
         }
     }
     if( mod->syminfo->hdl == NO_MOD )
         return( false );
-    DIPMapInfo( mod->syminfo->hdl, mod );
     return( true );
 }
 

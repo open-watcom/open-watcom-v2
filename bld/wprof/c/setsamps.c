@@ -590,6 +590,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         if( sym_fp != NULL ) {
             curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
                                        sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+            DIGCli( Close )( sym_fp );
         }
     } else {
         name_len = strlen( curr_image->name ) + 1;
@@ -602,6 +603,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         if( sym_fp != NULL ) {
             curr_image->dip_handle = WPDipLoadInfo( sym_fp, curr_image->sym_name, curr_image,
                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+            DIGCli( Close )( sym_fp );
         }
         if( curr_image->dip_handle == NO_MOD ) {
             ProfFree( curr_image->sym_name );
@@ -626,22 +628,16 @@ STATIC void loadImageInfo( image_info * curr_image )
         }
     }
     obj_fp = DIGCli( Open )( curr_image->name, DIG_READ );
-    if( obj_fp == NULL ) {
+    if( obj_fp != NULL ) {
+        if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted ) {
+            curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
+                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+        }
+        DIGCli( Close )( obj_fp );
+    } else {
         curr_image->exe_not_found = true;
         if( curr_image->main_load ) {
             ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
-        }
-    }
-    if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted && obj_fp != NULL ) {
-        curr_image->dip_handle = WPDipLoadInfo( obj_fp, curr_image->name, curr_image,
-                                   sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
-    }
-    if( curr_image->dip_handle == NO_MOD ) {
-        if( sym_fp != NULL ) {
-            DIGCli( Close )( sym_fp );
-        }
-        if( obj_fp != NULL ) {
-            DIGCli( Close )( obj_fp );
         }
     }
     initModuleInfo( curr_image );

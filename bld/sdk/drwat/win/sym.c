@@ -48,7 +48,6 @@
 #define DEBUGOUT( x )
 static process_info     *curProcess;
 static mod_handle       curModHdl;
-static FILE             *cur_fid;
 static BOOL             dipIsLoaded;
 
 
@@ -118,41 +117,33 @@ void FiniSymbols( void )
  */
 bool LoadDbgInfo( void )
 {
-    bool            err;
     dip_priority    priority;
+    FILE            *cur_fp;
 
     DEBUGOUT( "Enter LoadDbgInfo" );
-    err = true;
+    curModHdl = NO_MOD;
     curProcess = DIPCreateProcess();
-    cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
-    if( cur_fid != NULL ) {
+    cur_fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
+    if( cur_fp != NULL ) {
         DEBUGOUT( "File open OK" );
         for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
-            curModHdl = DIPLoadInfo( cur_fid, 0, priority );
+            curModHdl = DIPLoadInfo( cur_fp, 0, priority );
             if( curModHdl != NO_MOD ) {
                 break;
             }
         }
+        DIGCli( Close )( cur_fp );
         if( curModHdl != NO_MOD ) {
             DEBUGOUT( "debug info load OK" );
             DIPMapInfo( curModHdl, NULL );
-            err = false;
-        } else {
-            DEBUGOUT( "curModHdl == NO_MOD" );
+            return( true );
         }
+        DEBUGOUT( "curModHdl == NO_MOD" );
     }
-    if( err ) {
-        DEBUGOUT( "LoadDbgInfo Failed" );
-        if( cur_fid != NULL ) {
-            DIGCli( Close )( cur_fid );
-            cur_fid = NULL;
-        }
-        DIPDestroyProcess( curProcess );
-        curProcess = NULL;
-        curModHdl = NO_MOD;
-        return( false );
-    }
-    return( true );
+    DEBUGOUT( "LoadDbgInfo Failed" );
+    DIPDestroyProcess( curProcess );
+    curProcess = NULL;
+    return( false );
 }
 
 /*
@@ -237,14 +228,10 @@ void SymFileClose( void )
 {
     if( curModHdl != NO_MOD ) {
         DIPUnloadInfo( curModHdl );
+        curModHdl = NO_MOD;
     }
     if( curProcess != NULL ) {
         DIPDestroyProcess( curProcess );
+        curProcess = NULL;
     }
-    if( cur_fid != NULL ) {
-        DIGCli( Close )( cur_fid );
-        cur_fid = NULL;
-    }
-    curProcess = NULL;
-    curModHdl = NO_MOD;
 }

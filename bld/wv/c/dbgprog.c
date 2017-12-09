@@ -531,10 +531,12 @@ static bool ProcImgSymInfo( image_entry *image )
     char            *symfile_name;
     const char      *nopath;
     size_t          len;
+    bool            ret;
 
+    ret = false;
     image->deferred_symbols = false;
     if( _IsOff( SW_LOAD_SYMS ) )
-        return( NO_MOD );
+        return( ret );
     if( image->symfile_name != NULL ) {
         last_priority = DIP_PRIOR_MAX;
         fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
@@ -554,50 +556,53 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last_priority ) ) {
-            return( true );
-        }
+        ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, last_priority );
         FileClose( fh );
+        if( ret ) {
+            return( ret );
+        }
     }
-    if( image->symfile_name != NULL )
-        return( false );
-    _AllocA( symfile_name, strlen( image->image_name ) + 1 );
-    strcpy( symfile_name, image->image_name );
-    symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
-    len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
-    _Alloc( image->symfile_name, len + 1 );
-    if( image->symfile_name != NULL ) {
-        memcpy( image->symfile_name, buff, len + 1 );
-        fh = FileOpen( image->symfile_name, OP_READ );
-        if( fh == NIL_HANDLE ) {
-            fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
-        }
-        if( fh == NIL_HANDLE ) {
-            fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
-        }
-        if( fh != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
-                return( true );
+    if( image->symfile_name == NULL ) {
+        _AllocA( symfile_name, strlen( image->image_name ) + 1 );
+        strcpy( symfile_name, image->image_name );
+        symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
+        len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
+        _Alloc( image->symfile_name, len + 1 );
+        if( image->symfile_name != NULL ) {
+            memcpy( image->symfile_name, buff, len + 1 );
+            fh = FileOpen( image->symfile_name, OP_READ );
+            if( fh == NIL_HANDLE ) {
+                fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
             }
-            FileClose( fh );
-        }
-        _Free( image->symfile_name );
-    }
-    image->symfile_name = NULL;
-    if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
-        if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
-            image->deferred_symbols = true;
-        } else {
-            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+            if( fh == NIL_HANDLE ) {
+                fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
+            }
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX ) ) {
-                    return( true );
-                }
+                ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
                 FileClose( fh );
+                if( ret ) {
+                    return( ret );
+                }
+            }
+            _Free( image->symfile_name );
+        }
+        image->symfile_name = NULL;
+        if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
+            if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
+                image->deferred_symbols = true;
+            } else {
+                fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+                if( fh != NIL_HANDLE ) {
+                    ret = CheckLoadDebugInfo( image, POSIX2FP( fh ), DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX );
+                    FileClose( fh );
+                    if( ret ) {
+                        return( ret );
+                    }
+                }
             }
         }
     }
-    return( false );
+    return( ret );
 }
 
 

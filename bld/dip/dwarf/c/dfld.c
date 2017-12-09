@@ -478,8 +478,6 @@ void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 /*******************************************************/
 {
     FiniDwarf( ii );
-    DCClose( ii->sym_fp );
-
     FiniAddrInfo( ii->addr_map );
     FiniImpCueInfo( ii );
     FiniModMap( ii );

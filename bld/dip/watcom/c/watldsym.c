@@ -77,7 +77,6 @@ static void UnloadInfo( imp_image_handle *ii )
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     InfoClear( ii );
-    DCClose( ii->sym_fp );
     UnloadInfo( ii );
 }
 

@@ -702,5 +702,4 @@ void hllMapLogical( imp_image_handle *ii, address *a )
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     Cleanup( ii );
-    DCClose( ii->sym_fp );
 }

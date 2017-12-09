@@ -50,7 +50,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
         return( DS_FAIL );
     if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 )
         return( DS_FAIL );
-    DCClose( fp );
     ii->cc = jcf.cc;
     if( GetU16( ii->cc + offsetof( ClassClass, major_version ) ) != JAVA_VERSION ) {
         return( DS_INFO_BAD_VERSION );

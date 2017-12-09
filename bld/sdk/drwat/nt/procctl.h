@@ -72,7 +72,7 @@ typedef struct modnode {
     ObjectInfo          *objects;
     DWORD               base;
     DWORD               size;
-    FILE                *fid;
+    FILE                *fp;
     char                *name;
     struct ProcNode     *procnode;
 } ModuleNode;

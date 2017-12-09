@@ -474,7 +474,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
         ImpUnloadInfo( ii );
         return( ds );
     }
-    DCClose( fp );
     return( DS_OK );
 }
 
