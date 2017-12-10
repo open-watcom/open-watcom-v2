@@ -114,7 +114,7 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == ERR_SEEK );
+    return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
 }
 
 /*

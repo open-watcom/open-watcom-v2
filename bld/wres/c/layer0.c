@@ -72,12 +72,12 @@ static WResFileSSize wres_write( FILE *fp, const void *buf, WResFileSize size )
     return( posix_write( FP2POSIX( fp ), buf, size ) );
 }
 
-static WResFileOffset wres_seek( FILE *fp, WResFileOffset pos, int where )
+static int wres_seek( FILE *fp, long pos, int where )
 {
-    return( lseek( FP2POSIX( fp ), pos, where ) );
+    return( lseek( FP2POSIX( fp ), pos, where ) == -1L );
 }
 
-static WResFileOffset wres_tell( FILE *fp )
+static long wres_tell( FILE *fp )
 {
     return( tell( FP2POSIX( fp ) ) );
 }

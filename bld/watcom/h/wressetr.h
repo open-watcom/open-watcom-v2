@@ -42,14 +42,6 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-#if defined( _WIN64 )
-typedef long                WResFileOffset;
-#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
-typedef off_t               WResFileOffset;
-#else
-typedef long                WResFileOffset;
-#endif
-
 typedef enum {
     WRES_OPEN_RO,
     WRES_OPEN_RW,
@@ -58,12 +50,12 @@ typedef enum {
 
 typedef struct WResRoutines {                                       /* defaults */
     /* I/O routines */
-    FILE            *(*cli_open)(const char *, wres_open_mode);     /* open */
-    bool            (*cli_close)(FILE *);                           /* close */
-    size_t          (*cli_read)(FILE *, void *, size_t);            /* read */
-    size_t          (*cli_write)(FILE *, const void *, size_t);     /* write */
-    bool            (*cli_seek)(FILE *, WResFileOffset, int );      /* lseek */
-    WResFileOffset  (*cli_tell)(FILE *);                            /* tell */
+    FILE            *(*cli_open)(const char *, wres_open_mode);     /* fopen */
+    bool            (*cli_close)(FILE *);                           /* fclose */
+    size_t          (*cli_read)(FILE *, void *, size_t);            /* fread */
+    size_t          (*cli_write)(FILE *, const void *, size_t);     /* fwrite */
+    bool            (*cli_seek)(FILE *, long, int );                /* fseek */
+    long            (*cli_tell)(FILE *);                            /* ftell */
     bool            (*cli_ioerr)(FILE *,size_t);                    /* ioerr */
     /* memory routines */
     void            *(*cli_alloc)(size_t);                          /* malloc */
@@ -74,6 +66,6 @@ typedef struct WResRoutines {                                       /* defaults 
     WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __ioerr, __alloc, __free }
 
 /* This is a global variable exported by function FindResources */
-extern WResFileOffset   WResFileShift;
+extern long     WResFileShift;
 
 #endif

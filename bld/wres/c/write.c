@@ -84,12 +84,12 @@ bool ResWriteUint32( uint_32 newint, FILE *fp )
 bool ResWritePadDWord( FILE *fp )
 /*******************************/
 {
-    WResFileOffset  curr_pos;
+    long            curr_pos;
     size_t          padding;
     uint_32         zero = 0;
 
     curr_pos = WRESTELL( fp );
-    if( curr_pos == -1 )
+    if( curr_pos == -1L )
         return( WRES_ERROR( WRS_TELL_FAILED ) );
     padding = RES_PADDING( curr_pos, sizeof( zero ) );
     if( padding != 0 ) {

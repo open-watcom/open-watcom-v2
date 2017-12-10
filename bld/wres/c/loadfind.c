@@ -39,7 +39,7 @@
 #include "patchsig.h"
 
 
-WResFileOffset    WResFileShift = 0;
+long    WResFileShift = 0;
 
 bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 /*************************************************************
@@ -48,8 +48,8 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
  * or look for the resource information in a debugger record at the end of file
  */
 {
-    WResFileOffset      currpos;
-    WResFileOffset      offset;
+    long                currpos;
+    long                offset;
     master_dbg_header   header;
     bool                notfound;
     char                buffer[sizeof( PATCH_LEVEL )];
@@ -58,7 +58,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
     WResFileShift = 0;
     if( notfound ) {
         offset = sizeof( master_dbg_header );
-        if( !WRESSEEK( hinfo->fp, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
+        if( !WRESSEEK( hinfo->fp, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                     offset += sizeof( PATCH_LEVEL );

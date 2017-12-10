@@ -250,7 +250,7 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, FILE *fp,
 /* NOTE: this routine fills in dibhead as it copies the data */
 {
     RcStatus            ret;
-    WResFileOffset      curpos;
+    long                curpos;
 
     ret = RS_OK;
     if( RESSEEK( fp, entry->Offset, SEEK_SET ) ) {
@@ -457,7 +457,7 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, FILE *fp,
 /* NOTE: this routine fills in dibhead as it copies the data */
 {
     RcStatus        ret;
-    WResFileOffset  curpos;
+    long            curpos;
 
     ret = RS_OK;
     if( RESSEEK( fp, entry->Offset, SEEK_SET ) ) {
@@ -690,7 +690,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     RcStatus            ret;
     char                *buffer;
     ResLocation         loc;
-    WResFileOffset      pos;
+    long                pos;
 
     buffer = RESALLOC( BITMAP_BUFFER_SIZE );
 
@@ -791,7 +791,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     RcStatus            ret;
     char                *buffer;
     ResLocation         loc;
-    WResFileOffset      pos;
+    long                pos;
 
     buffer = RESALLOC( FONT_BUFFER_SIZE );
 
@@ -802,7 +802,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
         *err_code = LastWresErr();
     } else {
         pos = RESTELL( fp );
-        if( pos == -1 ) {
+        if( pos == -1L ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {

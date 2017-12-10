@@ -75,7 +75,7 @@ void SemWriteRawDataItem( RawDataItem item )
     }
 }
 
-RcStatus SemCopyDataUntilEOF( WResFileOffset offset, FILE *fp,
+RcStatus SemCopyDataUntilEOF( long offset, FILE *fp,
                          void *buff, unsigned buffsize, int *err_code )
 /*********************************************************************/
 {
@@ -111,7 +111,7 @@ ResLocation SemCopyRawFile( const char *filename )
     char            full_filename[_MAX_PATH];
     ResLocation     loc;
     int             err_code;
-    WResFileOffset  pos;
+    long            pos;
     bool            error;
 
     error = false;
@@ -136,7 +136,7 @@ ResLocation SemCopyRawFile( const char *filename )
     if( !error ) {
         loc.start = SemStartResource();
         pos = RESTELL( fp );
-        if( pos == -1 ) {
+        if( pos == -1L ) {
             RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
             error = true;
         } else {

@@ -71,13 +71,13 @@ typedef struct {
 } zip_cdfh;
 #include "poppck.h"
 
-WResFileOffset          WResFileShift = 0;
+long            WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
 bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
-    WResFileOffset      currpos;
-    WResFileOffset      offset;
+    long                currpos;
+    long                offset;
     master_dbg_header   header;
     zip_eocd            eocd;
     zip_cdfh            cdfh;
@@ -89,7 +89,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         offset = sizeof( master_dbg_header );
 
         /* Look for a PKZIP header and skip archive if present */
-        if( !WRESSEEK( hinfo->fp, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
+        if( !WRESSEEK( hinfo->fp, -(long)sizeof( eocd ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
                 if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
                     if( !WRESSEEK( hinfo->fp, eocd.cd_offset, SEEK_SET ) ) {

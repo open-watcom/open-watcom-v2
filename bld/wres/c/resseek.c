@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResSeek( FILE *fp, WResFileOffset offset, int origin )
-/*********************************************************/
+bool ResSeek( FILE *fp, long offset, int origin )
+/***********************************************/
 /* cover function for seek */
 {
     if( WRESSEEK( fp, offset, origin ) )

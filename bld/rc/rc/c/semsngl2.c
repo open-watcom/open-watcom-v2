@@ -171,7 +171,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     RcStatus            ret;
     char *              buffer;
     ResLocation         loc;
-    WResFileOffset      pos;
+    long                pos;
 
     buffer = RESALLOC( FONT_BUFFER_SIZE );
 
@@ -182,7 +182,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
         *err_code = LastWresErr();
     } else {
         pos = RESTELL( fp );
-        if( pos == -1 ) {
+        if( pos == -1L ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {

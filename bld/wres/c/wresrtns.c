@@ -63,7 +63,7 @@ static size_t res_write( FILE *fp, const void *buf, size_t size )
     return( fwrite( buf, 1, size, fp ) );
 }
 
-static bool res_seek( FILE *fp, WResFileOffset pos, int where )
+static bool res_seek( FILE *fp, long pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
@@ -72,7 +72,7 @@ static bool res_seek( FILE *fp, WResFileOffset pos, int where )
     return( fseek( fp, pos, where ) != 0 );
 }
 
-static WResFileOffset res_tell( FILE *fp )
+static long res_tell( FILE *fp )
 {
     return( ftell( fp ) );
 }

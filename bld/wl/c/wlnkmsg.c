@@ -223,7 +223,7 @@ size_t res_write( FILE *fp, const void *buf, size_t len )
     return( len );
 }
 
-bool res_seek( FILE *fp, WResFileOffset amount, int where )
+bool res_seek( FILE *fp, long amount, int where )
 {
     if( fp == hInstance.fp ) {
         if( where == SEEK_SET ) {
@@ -257,7 +257,7 @@ bool res_seek( FILE *fp, WResFileOffset amount, int where )
     }
 }
 
-WResFileOffset res_tell( FILE *fp )
+long res_tell( FILE *fp )
 {
     if( fp == hInstance.fp ) {
         return( tell( FP2POSIX( fp ) ) );

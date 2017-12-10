@@ -43,8 +43,7 @@ BOOL SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
     int     rc;
     DWORD   bytes;
 
-    rc = SetFilePointer( handle, newpos, NULL, FILE_BEGIN );
-    if( rc == INVALID_SET_FILE_POINTER ) {
+    if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
         return( FALSE );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );
@@ -118,7 +117,7 @@ int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
                 return( FALSE );
             }
             hi->modname[len] = 0;
-            pos = nh_offset + hi->u.neh.segment_off + 
+            pos = nh_offset + hi->u.neh.segment_off +
                 ( hi->u.neh.adsegnum - 1 ) * sizeof( segment_record ) +
                 offsetof( segment_record, min );
             if( !SeekRead( handle, pos, stack, sizeof( *stack ) ) ) {

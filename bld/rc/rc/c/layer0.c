@@ -343,14 +343,14 @@ size_t res_read( FILE *fp, void *in_buff, size_t size )
     return( total_read );
 }
 
-bool res_seek( FILE *fp, WResFileOffset amount, int where )
-/*********************************************************/
+bool res_seek( FILE *fp, long amount, int where )
+/***********************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
 {
     RcBuffer        *buff;
-    WResFileOffset  currpos;
+    long            currpos;
     int             diff;
     int             i;
 
@@ -428,8 +428,8 @@ bool res_seek( FILE *fp, WResFileOffset amount, int where )
     return( false );
 }
 
-WResFileOffset res_tell( FILE *fp )
-/*********************************/
+long res_tell( FILE *fp )
+/***********************/
 {
     RcBuffer *  buff;
     int         i;
@@ -445,9 +445,9 @@ WResFileOffset res_tell( FILE *fp )
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        return( ftell( fp ) + (WResFileOffset)buff->Count );
+        return( ftell( fp ) + (long)buff->Count );
     } else {
-        return( ftell( fp ) - (WResFileOffset)buff->Count );
+        return( ftell( fp ) - (long)buff->Count );
     }
 }
 
