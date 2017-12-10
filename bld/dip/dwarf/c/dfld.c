@@ -275,28 +275,25 @@ static dip_status InitDwarf( imp_image_handle *ii )
     dwarf_info      *dwarf;
     dip_status      ret;
 
+    ret = DS_ERR | DS_NO_MEM;
     dwarf = DCAlloc( sizeof( *dwarf ) );
-    ii->dwarf = dwarf;
-    if( dwarf == NULL ) {
-        ret = DS_ERR | DS_NO_MEM;
-        DCStatus( ret );
-        goto error_exit;
+    if( dwarf != NULL ) {
+        ii->dwarf = dwarf;
+        ret = GetSectInfo( ii->sym_fp, sect_sizes, dwarf->sect_offsets, &ii->is_byteswapped );
+        if( ret == DS_OK ) {
+            dwarf->handle = DRDbgInitNFT( ii, sect_sizes, ii->is_byteswapped );
+            if( dwarf->handle != NULL ) {
+                ii->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
+                return( ret );
+            }
+            ret = DS_ERR | DS_NO_MEM;
+        }
     }
-    ret = GetSectInfo( ii->sym_fp, sect_sizes, dwarf->sect_offsets, &ii->is_byteswapped );
-    if( ret != DS_OK ) goto error_exit;
-    dwarf->handle = DRDbgInitNFT( ii, sect_sizes, ii->is_byteswapped );
-    if( dwarf->handle == NULL ) {
-        ret = DS_ERR | DS_NO_MEM;
-        DCStatus( ret );
-        goto error_exit;
-    }
-    ii->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
-    return( ret );
-error_exit:
     if( dwarf != NULL ) {
         DCFree( dwarf );
-        ii->dwarf = NULL;
     }
+    ii->dwarf = NULL;
+    DCStatus( ret );
     return( ret );
 }
 
