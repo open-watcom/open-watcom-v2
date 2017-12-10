@@ -36,7 +36,7 @@
 #ifndef BOOTSTRAP
 
 #include "autodep.h"
-#include "wresset2.h"
+#include "wressetr.h"
 
 typedef struct res_info {
     DepInfo *first;

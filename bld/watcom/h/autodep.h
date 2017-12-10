@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Autdependency structure defintion shared between resource
+* Description:  Autodependency structure defintion shared between resource
 *               compiler and wmake.
 *
 ****************************************************************************/
@@ -33,8 +33,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "wressetr.h"
 
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
