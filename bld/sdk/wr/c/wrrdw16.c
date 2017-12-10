@@ -33,15 +33,12 @@
 #include "commonui.h"
 #include <string.h>
 #include <stdlib.h>
-#include "wio.h"
 #include "wrglbl.h"
 #include "wrrdw16.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
 #include "rcrtns.h"
 #include "wresdefn.h"
-
-#include "clibext.h"
 
 
 /****************************************************************************/

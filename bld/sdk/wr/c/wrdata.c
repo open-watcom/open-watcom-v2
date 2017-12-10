@@ -44,8 +44,6 @@
 #include "wrdatai.h"
 #include "rcrtns.h"
 
-#include "clibext.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */

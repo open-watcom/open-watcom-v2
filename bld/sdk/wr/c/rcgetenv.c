@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "watcom.h"
 #include "pass2.h"
 #include "rcio.h"

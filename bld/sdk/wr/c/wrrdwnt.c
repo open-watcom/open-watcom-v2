@@ -39,8 +39,6 @@
 #include "wrmemi.h"
 #include "rcrtns.h"
 
-#include "clibext.h"
-
 
 /* forward declarations */
 bool WRReadResourceEntry( FILE *fp, uint_32 offset, resource_entry *res_entry );

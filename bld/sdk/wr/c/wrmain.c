@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
 #include "wrimg.h"
@@ -57,8 +56,6 @@
 #include "dllmain.h"
 #include "wresdefn.h"
 #include "reserr.h"
-
-#include "clibext.h"
 
 
 /****************************************************************************/
