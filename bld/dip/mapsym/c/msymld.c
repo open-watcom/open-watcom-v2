@@ -454,9 +454,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     dip_status  ds;
 
-    if( fp == NULL )
-        return( DS_ERR | DS_FOPEN_FAILED );
-
     ii->gbl = NULL;
     ii->addr = NULL;
     ii->name = NULL;

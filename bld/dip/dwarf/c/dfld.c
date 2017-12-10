@@ -381,10 +381,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     dip_status          ret;
 
-    if( fp == NULL ) {
-        DCStatus( DS_ERR | DS_FOPEN_FAILED );
-        return( DS_ERR | DS_FOPEN_FAILED );
-    }
     ii->sym_fp = fp;
     ret = InitDwarf( ii );
     if( ret == DS_OK ) {
@@ -396,8 +392,10 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
             ii->dcmap = NULL;
             InitScope( &ii->scope );
             DFAddImage( ii );
+            return( ret );
         }
     }
+    ii->sym_fp = NULL;
     return( ret );
 }
 

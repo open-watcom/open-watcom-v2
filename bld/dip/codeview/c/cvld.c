@@ -55,14 +55,14 @@ static void Cleanup( imp_image_handle *ii )
     unsigned            blocks;
     unsigned            i;
 
-    owner = &ImageList;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == ii )
+    for( owner = &ImageList; (curr = *owner) != NULL; owner = &curr->next_image ) {
+        if( curr == ii ) {
+            /* if found then remove it from list */
+            *owner = curr->next_image;
             break;
-        owner = &curr->next_image;
+        }
     }
-    *owner = ii->next_image;
+    /* destroy entry */
     if( ii->directory != NULL ) {
         blocks = BLOCK_FACTOR( ii->dir_count, DIRECTORY_BLOCK_ENTRIES );
         for( i = 0; i < blocks; ++i ) {
@@ -318,43 +318,40 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
     ds = FindCV( fp, &off, &size );
     if( ds != DS_OK )
         return( ds );
-    ii->sym_fp = fp;
     ii->bias = off;
     ds = VMInit( ii, size );
     if( ds != DS_OK )
         return( ds );
+    ii->sym_fp = fp;
     ii->next_image = ImageList;
     ImageList = ii;
     ds = LoadDirectory( ii, off + CV_SIG_SIZE );
-    if( ds != DS_OK ) {
-        DCStatus( ds );
-        Cleanup( ii );
-        return( ds );
-    }
-    ds = LoadMapping( ii );
-    if( ds != DS_OK ) {
-        DCStatus( ds );
-        Cleanup( ii );
-        return( ds );
-    }
-    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
-    if( cde != NULL ) {
-        hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
-        if( hdr == NULL ) {
-            Cleanup( ii );
-            return( DS_ERR|DS_FAIL );
+    if( ds == DS_OK ) {
+        ds = LoadMapping( ii );
+        if( ds == DS_OK ) {
+            cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
+            if( cde != NULL ) {
+                hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
+                if( hdr == NULL ) {
+                    ds = DS_ERR | DS_FAIL;
+                } else {
+                    ii->types_base = cde->lfo
+                        + offsetof(cv_sst_global_types_header, offType )
+                        + hdr->cType * sizeof( hdr->offType[0] );
+                }
+            }
+            if( ds == DS_OK ) {
+                ds = SetMADType( ii );
+                if( ds == DS_OK ) {
+                    return( DS_OK );
+                }
+            }
         }
-        ii->types_base = cde->lfo
-            + offsetof(cv_sst_global_types_header, offType )
-            + hdr->cType * sizeof( hdr->offType[0] );
     }
-    ds = SetMADType( ii );
-    if( ds != DS_OK ) {
-        DCStatus( ds );
-        Cleanup( ii );
-        return( ds );
-    }
-    return( DS_OK );
+    ii->sym_fp = NULL;
+    DCStatus( ds );
+    Cleanup( ii );
+    return( ds );
 }
 
 void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )

@@ -323,14 +323,11 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
     dip_status          ret;
 
-    if( fp == NULL ) {
-        DCStatus( DS_ERR|DS_FOPEN_FAILED );
-        return( DS_ERR|DS_FOPEN_FAILED );
-    }
     ii->sym_fp = fp;
     ii->sect = NULL;
     ii->lang = NULL;
     ret = DoPermInfo( ii );
+    ii->sym_fp = NULL;
     if( ret != DS_OK )
         UnloadInfo( ii );
     return( ret );

@@ -56,15 +56,12 @@ static void Cleanup( imp_image_handle *ii )
     unsigned            i;
 
     /* unlink it */
-    owner = &ImageList;
-    for( ;; ) {
-        curr = *owner;
+    for( owner = &ImageList; (curr = *owner) != NULL; owner = &curr->next_image ) {
         if( curr == ii ) {
+            *owner = curr->next_image;
             break;
         }
-        owner = &curr->next_image;
     }
-    *owner = ii->next_image;
 
     /* free memory */
     if( ii->directory != NULL ) {
@@ -635,7 +632,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 
     /* Locate global types. If none, we've types per module. */
     if( rc == DS_OK ) {
-        /* FIXME
+/* FIXME
         hll_debug_dir *cde;
         cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
         if( cde != NULL ) {
@@ -648,8 +645,9 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
                 + offsetof( cv_sst_global_types_header, offType )
                 + hdr->cType * sizeof( hdr->offType[0] );
         }
-        */
+ */
     }
+    ii->sym_fp = NULL;
 
     /* We're done - clean up on failure. */
     if( rc != DS_OK ) {

@@ -493,8 +493,7 @@ static unsigned long ObjSize( pe_object *obj )
     return( size );
 }
 
-static unsigned long RVAToPos( unsigned long rva, any_header *head,
-                        pe_object *obj )
+static unsigned long RVAToPos( unsigned long rva, any_header *head, pe_object *obj )
 {
     unsigned    i;
     for( i = 0; i < head->pe.num_objects; ++i ) {
@@ -536,8 +535,7 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
     return( (char *)&exp->name_cache[off] );
 }
 
-static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp,
-                                unsigned num )
+static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp, unsigned num )
 {
     unsigned            i;
     unsigned            j;
@@ -575,7 +573,7 @@ static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp,
                     if( ds != DS_OK ) {
                         return( ds );
                     }
-                 }
+                }
             }
         }
     }
@@ -610,8 +608,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
         return( DS_ERR|DS_FREAD_FAILED );
     }
     for( i = 0; i < head->pe.num_objects; ++i ) {
-        ds = AddBlock( ii, i + 1, 0, ObjSize( &obj[i] ),
-                (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
+        ds = AddBlock( ii, i + 1, 0, ObjSize( &obj[i] ), (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -635,39 +632,37 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
     exp->cache_name_len = 0;
 
     pos = RVAToPos( dir.address_table_rva, head, obj );
-    if( BSeek( fp, pos, DIG_ORG ) != pos ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+    ds = DS_ERR|DS_FSEEK_FAILED;
+    if( BSeek( fp, pos, DIG_ORG ) == pos ) {
+        ds = DS_ERR|DS_FREAD_FAILED;
+        if( BRead( fp, exp->eat, dir.num_eat_entries * sizeof( unsigned_32 ) ) == dir.num_eat_entries * sizeof( unsigned_32 ) ) {
+            ds = DS_ERR|DS_FAIL;
+            name = CacheName( exp, dir.name_rva );
+            if( name != NULL ) {
+                ds = AddName( ii, strlen( name ), name );
+                if( ds == DS_OK ) {
+                    exp->name_ptr_base = RVAToPos( dir.name_ptr_table_rva, head, obj );
+                    exp->ord_base      = RVAToPos( dir.ordinal_table_rva, head, obj );
+                    for( ; dir.num_name_ptrs != 0; ) {
+                        chunk = dir.num_name_ptrs;
+                        if( chunk > MAX_EXPORTS_PER )
+                            chunk = MAX_EXPORTS_PER;
+                        ds = PEExportBlock( ii, exp, chunk );
+                        if( ds != DS_OK ) {
+                            break;
+                        }
+                        exp->name_ptr_base += chunk * sizeof( unsigned_32 );
+                        exp->ord_base      += chunk * sizeof( unsigned_16 );
+                        dir.num_name_ptrs  -= chunk;
+                    }
+                }
+            }
+        }
     }
-    if( BRead( fp, exp->eat, dir.num_eat_entries * sizeof( unsigned_32 ) ) != dir.num_eat_entries * sizeof( unsigned_32 ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
-    }
-
-    name = CacheName( exp, dir.name_rva );
-    if( name == NULL ) {
-        return( DS_ERR|DS_FAIL );
-    }
-    ds = AddName( ii, strlen( name ), name );
     if( ds != DS_OK ) {
         DCFree( exp );
-        return( ds );
     }
-    exp->name_ptr_base = RVAToPos( dir.name_ptr_table_rva, head, obj );
-    exp->ord_base      = RVAToPos( dir.ordinal_table_rva, head, obj );
-    for( ; dir.num_name_ptrs != 0; ) {
-        chunk = dir.num_name_ptrs;
-        if( chunk > MAX_EXPORTS_PER )
-            chunk = MAX_EXPORTS_PER;
-        ds = PEExportBlock( ii, exp, chunk );
-        if( ds != DS_OK ) {
-            DCFree( exp );
-            return( ds );
-        }
-        exp->name_ptr_base += chunk * sizeof( unsigned_32 );
-        exp->ord_base      += chunk * sizeof( unsigned_16 );
-        dir.num_name_ptrs  -= chunk;
-    }
-    DCFree( exp );
-    return( DS_OK );
+    return( ds );
 }
 
 static dip_status TryStub( FILE *fp, imp_image_handle *ii )
@@ -1063,8 +1058,6 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
     dip_status  ds;
     int         i;
 
-    if( fp == NULL )
-        return( DS_ERR|DS_FOPEN_FAILED );
     ii->gbl = NULL;
     ii->addr = NULL;
     ii->name = NULL;
