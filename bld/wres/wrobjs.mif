@@ -67,6 +67,7 @@ wres_more_objs = &
     rillib.obj &
     ropenfrw.obj &
     ropenewf.obj &
+    ropentmp.obj &
     rrlli.obj &
     wrauto.obj &
     wrchkwrf.obj &

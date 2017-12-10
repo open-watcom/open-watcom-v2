@@ -49,7 +49,7 @@ static bool ConvertFileMResToWRes( FILE *in_fp )
     FILE            *tmp_fp;
     bool            error;
 
-    tmp_fp = ResOpenNewFile( TMP_FILENAME );
+    tmp_fp = ResOpenFileNew( TMP_FILENAME );
     if( tmp_fp == NULL ) {
         perror( "Error (temp file): " );
         ResCloseFile( in_fp );
@@ -73,7 +73,7 @@ static bool ConvertFileWResToMRes( FILE *in_fp )
     FILE            *tmp_fp;
     bool            error;
 
-    tmp_fp = ResOpenNewFile( TMP_FILENAME );
+    tmp_fp = ResOpenFileNew( TMP_FILENAME );
     if( tmp_fp == NULL ) {
         perror( "Error (temp file): " );
         ResCloseFile( in_fp );

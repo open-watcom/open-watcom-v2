@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,14 +30,19 @@
 ****************************************************************************/
 
 
-#ifndef WRESOPEN_INCLUDED
-#define WRESOPEN_INCLUDED
+#include "layer0.h"
+#include "opcl.h"
+#include "reserr.h"
+#include "wresrtns.h"
 
-extern FILE         *ResOpenFileNew( const char *filename );
-extern FILE         *ResOpenFileRO( const char *filename );
-extern FILE         *ResOpenFileRW( const char *filename );
-extern FILE         *ResOpenFileTmp( const char *filename );
-extern bool         ResCloseFile( FILE *fp );
-extern bool         WResCheckWResFile( const char *filename );
 
-#endif
+FILE *ResOpenFileTmp( const char *filename )
+/******************************************/
+{
+    FILE    *fp;
+
+    fp = WRESOPEN( filename, WRES_OPEN_TMP );
+    if( fp == NULL )
+        WRES_ERROR( WRS_OPEN_FAILED );
+    return( fp );
+}

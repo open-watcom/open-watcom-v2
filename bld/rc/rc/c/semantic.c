@@ -65,7 +65,7 @@ SemOffset SemStartResource( void )
         save_name = CurrResFile.filename;
         /* put the temporary file in the same location as the output RES file */
         MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
-        CurrResFile.fp = ResOpenNewFile( MSFormatTmpFile );
+        CurrResFile.fp = ResOpenFileNew( MSFormatTmpFile );
         if( CurrResFile.fp == NULL ) {
             CurrResFile.fp = save_fp;
             ResCloseFile( save_fp );
@@ -88,7 +88,7 @@ SemLength SemEndResource( SemOffset start )
     if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.fp ) - start );
     } else {
-        /* Close the temperary file, reset the RES file handle and return */
+        /* Close the temporary file, reset the RES file handle and return */
         /* the length of the resource */
         len = ResTell( CurrResFile.fp ) - start;
 
@@ -154,7 +154,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
             return;
         }
 
-        /* copy the data from the temperary file to the RES file */
+        /* copy the data from the temporary file to the RES file */
         if( ResSeek( tmp_fp, loc.start, SEEK_SET ) ) {
             RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ResCloseFile( tmp_fp );

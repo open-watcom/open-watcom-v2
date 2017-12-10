@@ -37,7 +37,7 @@
 #include "wresrtns.h"
 
 
-FILE *ResOpenNewFile( const char *filename )
+FILE *ResOpenFileNew( const char *filename )
 /******************************************/
 {
     FILE    *fp;

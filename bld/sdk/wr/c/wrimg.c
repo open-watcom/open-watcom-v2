@@ -323,7 +323,7 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     }
 
     if( ok ) {
-        ok = ( (dst_fp = ResOpenNewFile( info->save_name )) != NULL );
+        ok = ( (dst_fp = ResOpenFileNew( info->save_name )) != NULL );
     }
 
     if( ok ) {

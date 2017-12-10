@@ -104,7 +104,7 @@ static bool Pass1InitRes( void )
     }
 
     /* open the temporary file */
-    CurrResFile.fp = ResOpenNewFile( CurrResFile.filename );
+    CurrResFile.fp = ResOpenFileNew( CurrResFile.filename );
     if( CurrResFile.fp == NULL ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
@@ -470,7 +470,7 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->fp = ResOpenNewFile( filename );
+    info->fp = ResOpenFileNew( filename );
     if( info->fp == NULL ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );

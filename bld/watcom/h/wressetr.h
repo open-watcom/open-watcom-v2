@@ -41,6 +41,7 @@ typedef enum {
     WRES_OPEN_RO,
     WRES_OPEN_RW,
     WRES_OPEN_NEW,
+    WRES_OPEN_TMP
 } wres_open_mode;
 
 typedef struct WResRoutines {                                       /* defaults */
