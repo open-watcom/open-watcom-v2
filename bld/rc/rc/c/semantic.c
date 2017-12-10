@@ -139,14 +139,12 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     } else {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, true );
     }
+    RESFREE( ms_head.Type );
+    RESFREE( ms_head.Name );
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-        RESFREE( ms_head.Type );
-        RESFREE( ms_head.Name );
         ErrorHasOccured = true;
     } else {
-        RESFREE( ms_head.Type );
-        RESFREE( ms_head.Name );
         tmp_fp = ResOpenFileRO( MSFormatTmpFile );
         if( tmp_fp == NULL ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );

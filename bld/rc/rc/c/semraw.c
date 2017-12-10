@@ -101,8 +101,8 @@ RcStatus SemCopyDataUntilEOF( long offset, FILE *fp,
 
 #define BUFFER_SIZE   0x200
 
-ResLocation SemCopyRawFile( const char *filename )
-/************************************************/
+static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
+/**********************************************************************/
 {
     FILE            *fp;
     RcStatus        ret;
@@ -116,16 +116,21 @@ ResLocation SemCopyRawFile( const char *filename )
     error = false;
     fp = NULL;
     buffer = RESALLOC( BUFFER_SIZE );
-    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-        RcError( ERR_CANT_FIND_FILE, filename );
-        error = true;
+    if( !onlyFile ) {
+        if( RcFindSourceFile( filename, full_filename ) == -1 ) {
+            RcError( ERR_CANT_FIND_FILE, filename );
+            error = true;
+        }
+        if( !error ) {
+            if( AddDependency( full_filename ) ) {
+                error = true;
+            } else {
+                filename = full_filename;
+            }
+        }
     }
-
-    if( !error && AddDependency( full_filename ) )
-        error = true;
-
     if( !error ) {
-        fp = RcIoOpenInput( full_filename, false );
+        fp = RcIoOpenInput( filename, false );
         if( fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
@@ -136,12 +141,12 @@ ResLocation SemCopyRawFile( const char *filename )
         loc.start = SemStartResource();
         pos = RESTELL( fp );
         if( pos == -1L ) {
-            RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
+            RcError( ERR_READING_DATA, filename, strerror( errno ) );
             error = true;
         } else {
             ret = SemCopyDataUntilEOF( pos, fp, buffer, BUFFER_SIZE, &err_code );
             if( ret != RS_OK ) {
-                ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
+                ReportCopyError( ret, ERR_READING_DATA, filename, err_code );
                 error = true;
             }
         }
@@ -158,6 +163,18 @@ ResLocation SemCopyRawFile( const char *filename )
     }
     RESFREE( buffer );
     return( loc );
+}
+
+ResLocation SemCopyRawFile( const char *filename )
+/************************************************/
+{
+    return( semCopyRawFile( filename, false ) );
+}
+
+ResLocation SemCopyRawFileOnly( const char *filename )
+/****************************************************/
+{
+    return( semCopyRawFile( filename, true ) );
 }
 
 DataElemList *SemNewDataElemList( RawDataItem node )

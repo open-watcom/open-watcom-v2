@@ -62,17 +62,15 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         start = SemCopyRawFile( filename->string );
-        RESFREE( filename->string );
-        RESFREE( filename );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ),
                             MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = true;
         RESFREE( name );
-        RESFREE( filename->string );
-        RESFREE( filename );
     }
+    RESFREE( filename->string );
+    RESFREE( filename );
 }
 
 void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *fullflags, char *filename )
