@@ -102,13 +102,13 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
             firstIcon  = false;
             id->IsName = false;
             id->ID.Num = 22;
-            start = SemCopyRawFileOnly( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
 
-            start = SemCopyRawFileOnly( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
         } else {
-            start = SemCopyRawFileOnly( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
         }
         break;
@@ -120,7 +120,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
         } else {
             flags = flagsMP;
         }
-        start = SemCopyRawFileOnly( filename );
+        start = SemCopyRawFileOnly( full_filename );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
         break;
 

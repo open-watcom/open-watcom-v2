@@ -41,9 +41,10 @@
 
 
 /* used in the work around for MS format RES files */
-static char         *MSFormatTmpFile = NULL;
+static FILE         *tmpResFile = NULL;     /* holding place for the RES file handle */
+static char         *tmpResFileName = NULL;
 
-static FILE         *save_fp;           /* holding place for the RES file handle */
+static FILE         *save_fp;               /* holding place for the RES file handle */
 static char         *save_name;
 
 /* Modified from WINNT.H */
@@ -60,20 +61,19 @@ SemOffset SemStartResource( void )
     if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.fp ) );
     } else {
-        /* save current values */
-        save_fp = CurrResFile.fp;
-        save_name = CurrResFile.filename;
         /* put the temporary file in the same location as the output RES file */
-        MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
-        CurrResFile.fp = ResOpenFileNew( MSFormatTmpFile );
-        if( CurrResFile.fp == NULL ) {
-            CurrResFile.fp = save_fp;
-            ResCloseFile( save_fp );
-            remove( save_name );
-            RcFatalError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
+        tmpResFileName = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
+        tmpResFile = ResOpenFileNew( tmpResFileName );
+        if( tmpResFile == NULL ) {
+            ResCloseFile( CurrResFile.fp );
+            RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
-            RegisterTmpFile( MSFormatTmpFile );
-            CurrResFile.filename = MSFormatTmpFile;
+            /* save current values */
+            save_fp = CurrResFile.fp;
+            save_name = CurrResFile.filename;
+            CurrResFile.fp = tmpResFile;
+            CurrResFile.filename = tmpResFileName;
+            RegisterTmpFile( tmpResFileName );
         }
         /* The start position should be 0 but to be safe call ResTell */
         return( ResTell( CurrResFile.fp ) );
@@ -85,36 +85,33 @@ SemLength SemEndResource( SemOffset start )
 {
     SemLength   len;
 
-    if( CurrResFile.IsWatcomRes ) {
-        return( ResTell( CurrResFile.fp ) - start );
-    } else {
-        /* Close the temporary file, reset the RES file handle and return */
-        /* the length of the resource */
-        len = ResTell( CurrResFile.fp ) - start;
-
-        if( ResCloseFile( CurrResFile.fp ) ) {
-            RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
-            ErrorHasOccured = true;
-        }
+    /* the length of the resource */
+    len = ResTell( CurrResFile.fp ) - start;
+    if( !CurrResFile.IsWatcomRes ) {
         /* restore previous values */
         CurrResFile.fp = save_fp;
         CurrResFile.filename = save_name;
-        return( len );
+        /* Close the temporary file, reset the RES file handle and return */
+        if( ResCloseFile( tmpResFile ) ) {
+            RcError( ERR_CLOSING_TMP, tmpResFileName, LastWresErrStr() );
+            ErrorHasOccured = true;
+        }
+        tmpResFile = NULL;
     }
+    return( len );
 }
 
-void SemAddResourceFree( WResID * name, WResID * type, ResMemFlags flags,
-                ResLocation loc )
-/***********************************************************************/
+void SemAddResourceFree( WResID *name, WResID *type, ResMemFlags flags, ResLocation loc )
+/***************************************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
     RESFREE( name );
     RESFREE( type );
 }
 
-static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
+static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                 ResLocation loc, const WResLangType *lang )
-/***************************************************************************/
+/*************************************************************************/
 {
     MResResourceHeader  ms_head;
     unsigned long       cur_byte_num;
@@ -141,47 +138,42 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     }
     RESFREE( ms_head.Type );
     RESFREE( ms_head.Name );
+    ErrorHasOccured = true;
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-        ErrorHasOccured = true;
     } else {
-        tmp_fp = ResOpenFileRO( MSFormatTmpFile );
+        tmp_fp = ResOpenFileRO( tmpResFileName );
         if( tmp_fp == NULL ) {
-            RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
-            ErrorHasOccured = true;
+            RcError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
             return;
         }
-
         /* copy the data from the temporary file to the RES file */
         if( ResSeek( tmp_fp, loc.start, SEEK_SET ) ) {
-            RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
-            ResCloseFile( tmp_fp );
-            ErrorHasOccured = true;
-            return;
-        }
-
-        /* this is very inefficient but hopefully the buffering in layer0.c */
-        /* will make it tolerable */
-        for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
-            error = ResReadUint8( &cur_byte, tmp_fp );
-            if( error ) {
-                RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
-                ResCloseFile( tmp_fp );
-                ErrorHasOccured = true;
-                return;
-            } else {
+            RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+        } else {
+            ErrorHasOccured = false;
+            /* this is very inefficient but hopefully the buffering in layer0.c */
+            /* will make it tolerable */
+            for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
+                error = ResReadUint8( &cur_byte, tmp_fp );
+                if( error ) {
+                    RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+                    ErrorHasOccured = true;
+                    break;
+                }
                 error = ResWriteUint8( cur_byte, CurrResFile.fp );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                    ResCloseFile( tmp_fp );
                     ErrorHasOccured = true;
-                    return;
+                    break;
                 }
             }
         }
         if( ResCloseFile( tmp_fp ) ) {
-            RcError( ERR_WRITTING_RES_FILE, MSFormatTmpFile, LastWresErrStr() );
-            ErrorHasOccured = true;
+            if( !ErrorHasOccured ) {
+                RcError( ERR_WRITTING_RES_FILE, tmpResFileName, LastWresErrStr() );
+                ErrorHasOccured = true;
+            }
         }
     }
 }
@@ -240,10 +232,10 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
             copyMSFormatRes( name, type, flags, loc, lang );
         }
         /* erase the temporary file */
-        remove( MSFormatTmpFile );
-        UnregisterTmpFile( MSFormatTmpFile );
-        RESFREE( MSFormatTmpFile );
-        MSFormatTmpFile = NULL;
+        remove( tmpResFileName );
+        UnregisterTmpFile( tmpResFileName );
+        RESFREE( tmpResFileName );
+        tmpResFileName = NULL;
     }
 }
 
@@ -251,5 +243,6 @@ void SemanticInitStatics( void )
 /******************************/
 {
     save_fp = NULL;
-    MSFormatTmpFile = NULL;
+    tmpResFile = NULL;
+    tmpResFileName = NULL;
 }
