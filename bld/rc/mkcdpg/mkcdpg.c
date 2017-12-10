@@ -34,7 +34,6 @@
 #include <windows.h>
 #include <string.h>
 #include "bool.h"
-#include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "rctypes.h"

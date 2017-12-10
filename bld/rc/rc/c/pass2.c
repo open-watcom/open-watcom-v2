@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "wio.h"
+#include <stddef.h>
 #include "global.h"
 #include "rcerrors.h"
 #include "rcstrblk.h"

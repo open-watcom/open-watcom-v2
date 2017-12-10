@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "rcrtns.h"

@@ -30,7 +30,6 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include "wresall.h"
 #include "bincpy.h"
 #include "w2mres.h"

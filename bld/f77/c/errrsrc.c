@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <malloc.h>
-#include "wio.h"
 #include "ftnstd.h"
 #include "cioconst.h"
 #include "wressetr.h"

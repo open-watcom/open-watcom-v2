@@ -31,7 +31,6 @@
 
 
 #include "layer0.h"
-#include "wio.h"
 #include "rcrtns.h"
 #include "reserr.h"
 

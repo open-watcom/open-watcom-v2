@@ -31,7 +31,6 @@
 
 #include <assert.h>
 #include <time.h>
-#include "wio.h"
 #include "global.h"
 #include "rcstrblk.h"
 #include "rcerrors.h"

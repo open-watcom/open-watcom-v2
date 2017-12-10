@@ -33,7 +33,6 @@
 #ifndef TYPES_INCLUDED
 #define TYPES_INCLUDED
 
-#include <stddef.h>
 #include "bool.h"
 
 #endif

@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "watcom.h"
 #include "types.h"
 #include "wressetr.h"

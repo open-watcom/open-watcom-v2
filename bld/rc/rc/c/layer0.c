@@ -31,7 +31,6 @@
 
 
 #include <stdarg.h>
-#include "wio.h"
 #include "global.h"
 #include "rcmem.h"
 #include "iortns.h"

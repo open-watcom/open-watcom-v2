@@ -30,7 +30,6 @@
 
 
 #include "global.h"
-#include "wio.h"
 #include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"

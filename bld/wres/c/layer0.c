@@ -33,8 +33,8 @@
 /* Structure now declared in wresrtns.c */
 /* This file should be replace by a call to the WResSetRtns macro in projects */
 /* that define their own low level routines. */
-/* it can use POSIX or ISO C file I/O functions */
-/* this example uses POSIX functions */
+/* by default it uses ISO C file I/O functions */
+/* this example uses POSIX file I/O functions */
 
 #if 0
 

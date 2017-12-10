@@ -34,8 +34,6 @@
 #define WRESLAYER0_INCLUDED
 
 #include <stdio.h>
-#include <stddef.h>
-#include <sys/types.h>
 #include "bool.h"
 #include "watcom.h"
 #include "wressetr.h"

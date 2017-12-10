@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include "wresall.h"
 #include "wressetr.h"
 #include "rcrtns.h"
