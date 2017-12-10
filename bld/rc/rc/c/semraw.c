@@ -116,7 +116,7 @@ ResLocation SemCopyRawFile( const char *filename )
     error = false;
     fp = NULL;
     buffer = RESALLOC( BUFFER_SIZE );
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         error = true;
     }

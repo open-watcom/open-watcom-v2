@@ -135,8 +135,8 @@ static bool Pass1InitRes( void )
     return( false );
 } /* Pass1InitRes */
 
-int RcFindResource( const char *name, char *fullpath )
-/****************************************************/
+int RcFindSourceFile( const char *name, char *fullpath )
+/******************************************************/
 {
     return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }

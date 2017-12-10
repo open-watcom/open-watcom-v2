@@ -94,7 +94,7 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         purity_option = CUR_ICON_PURITY_31;
     }
 
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

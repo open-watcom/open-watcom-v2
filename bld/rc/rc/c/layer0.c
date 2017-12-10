@@ -179,6 +179,8 @@ FILE *res_open( const char *file_name, wres_open_mode omode )
     case WRES_OPEN_NEW:
         fp = fopen( file_name, "wb" );
         break;
+    case WRES_OPEN_TMP:
+        return( tmpfile() );
     }
     if( fp != NULL ) {
         RegisterOpenFile( fp );

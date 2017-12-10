@@ -126,7 +126,7 @@ void SemWINAddResFile( char *filename )
 {
     char                full_filename[_MAX_PATH];
 
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

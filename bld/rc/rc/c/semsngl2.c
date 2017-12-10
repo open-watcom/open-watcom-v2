@@ -61,7 +61,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
         return;
     }
 
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }
