@@ -42,7 +42,7 @@
 
 /* used in the work around for MS format RES files */
 static FILE         *tmpResFile = NULL;     /* holding place for the RES file handle */
-static char         *tmpResFileName = NULL;
+static char         *tmpResFileName = "Temporary file 1 (res)";
 
 static FILE         *save_fp;               /* holding place for the RES file handle */
 static char         *save_name;
@@ -61,11 +61,9 @@ SemOffset SemStartResource( void )
     if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.fp ) );
     } else {
-        /* put the temporary file in the same location as the output RES file */
-        tmpResFileName = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
-        tmpResFile = ResOpenFileNew( tmpResFileName );
+        /* open the new temporary RES file */
+        tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
-            ResCloseFile( CurrResFile.fp );
             RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
             /* save current values */
@@ -73,7 +71,6 @@ SemOffset SemStartResource( void )
             save_name = CurrResFile.filename;
             CurrResFile.fp = tmpResFile;
             CurrResFile.filename = tmpResFileName;
-            RegisterTmpFile( tmpResFileName );
         }
         /* The start position should be 0 but to be safe call ResTell */
         return( ResTell( CurrResFile.fp ) );
@@ -83,22 +80,15 @@ SemOffset SemStartResource( void )
 SemLength SemEndResource( SemOffset start )
 /*****************************************/
 {
-    SemLength   len;
-
-    /* the length of the resource */
-    len = ResTell( CurrResFile.fp ) - start;
-    if( !CurrResFile.IsWatcomRes ) {
+    if( CurrResFile.IsWatcomRes ) {
+        return( ResTell( CurrResFile.fp ) - start );
+    } else {
         /* restore previous values */
         CurrResFile.fp = save_fp;
         CurrResFile.filename = save_name;
-        /* Close the temporary file, reset the RES file handle and return */
-        if( ResCloseFile( tmpResFile ) ) {
-            RcError( ERR_CLOSING_TMP, tmpResFileName, LastWresErrStr() );
-            ErrorHasOccured = true;
-        }
-        tmpResFile = NULL;
+        /* return the length of the resource */
+        return( ResTell( tmpResFile ) - start );
     }
-    return( len );
 }
 
 void SemAddResourceFree( WResID *name, WResID *type, ResMemFlags flags, ResLocation loc )
@@ -117,7 +107,6 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     unsigned long       cur_byte_num;
     uint_8              cur_byte;
     bool                error;
-    FILE                *tmp_fp;
 
     /* fill in and output a MS format resource header */
     ms_head.Type = WResIDToNameOrOrd( type );
@@ -142,37 +131,31 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
     } else {
-        tmp_fp = ResOpenFileRO( tmpResFileName );
-        if( tmp_fp == NULL ) {
-            RcError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
-            return;
-        }
-        /* copy the data from the temporary file to the RES file */
-        if( ResSeek( tmp_fp, loc.start, SEEK_SET ) ) {
+        if( tmpResFile == NULL ) {
             RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
-            ErrorHasOccured = false;
-            /* this is very inefficient but hopefully the buffering in layer0.c */
-            /* will make it tolerable */
-            for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
-                error = ResReadUint8( &cur_byte, tmp_fp );
-                if( error ) {
-                    RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
-                    ErrorHasOccured = true;
-                    break;
+            /* copy the data from the temporary file to the RES file */
+            if( ResSeek( tmpResFile, loc.start, SEEK_SET ) ) {
+                RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+            } else {
+                /* this is very inefficient but hopefully the buffering in layer0.c */
+                /* will make it tolerable */
+                ErrorHasOccured = false;
+                for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
+                    error = ResReadUint8( &cur_byte, tmpResFile );
+                    if( error ) {
+                        RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+                        ErrorHasOccured = true;
+                        break;
+                    } else {
+                        error = ResWriteUint8( cur_byte, CurrResFile.fp );
+                        if( error ) {
+                            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                            ErrorHasOccured = true;
+                            break;
+                        }
+                    }
                 }
-                error = ResWriteUint8( cur_byte, CurrResFile.fp );
-                if( error ) {
-                    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                    ErrorHasOccured = true;
-                    break;
-                }
-            }
-        }
-        if( ResCloseFile( tmp_fp ) ) {
-            if( !ErrorHasOccured ) {
-                RcError( ERR_WRITTING_RES_FILE, tmpResFileName, LastWresErrStr() );
-                ErrorHasOccured = true;
             }
         }
     }
@@ -231,11 +214,9 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
         if( !duplicate ) {
             copyMSFormatRes( name, type, flags, loc, lang );
         }
-        /* erase the temporary file */
-        remove( tmpResFileName );
-        UnregisterTmpFile( tmpResFileName );
-        RESFREE( tmpResFileName );
-        tmpResFileName = NULL;
+        /* erase the temporary RES file */
+        ResCloseFile( tmpResFile );
+        tmpResFile = NULL;
     }
 }
 
@@ -243,6 +224,6 @@ void SemanticInitStatics( void )
 /******************************/
 {
     save_fp = NULL;
+    save_name = NULL;
     tmpResFile = NULL;
-    tmpResFileName = NULL;
 }
