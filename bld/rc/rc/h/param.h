@@ -49,7 +49,7 @@ typedef struct FRStrings {
     char                buf[1]; /* dynamic buffer contains both strings */
 }FRStrings;
 
-struct RCParams {
+typedef struct RCParams {
 #ifdef SCANDEBUG
     unsigned    DebugScanner    : 1;
 #endif
@@ -90,7 +90,7 @@ struct RCParams {
     char        **CPPArgs;    /* temporary until preprocessing done inline */
     ExtraRes    *ExtraResFiles;
     FRStrings   *FindReplaceStrings;
-};
+} RCParams;
 
 #define VERSION_30_STAMP 0x0300
 #define VERSION_31_STAMP 0x030a     /* This is what the MS rc uses */
@@ -109,6 +109,7 @@ enum RCTargetOS {
 
 extern bool ScanParams( int argc, char * argv[] );
 extern void RcAddCPPArg( char * newarg );
+extern void ScanParamInit( void );
 extern void ScanParamShutdown( void );
 extern int  ParseEnvVar( const char *env, char **argv, char *buf );
 extern void SetMBRange( unsigned from, unsigned to, char data );

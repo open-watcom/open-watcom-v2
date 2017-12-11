@@ -311,9 +311,9 @@ static bool PEResDirBuild( PEResDir *res, WResDir dir )
  * NB when a visit function returns an error this function MUST return
  *    without altering errno
  */
-static RcStatus traverseTree( PEResDir * dir, void * visit_data,
-                    RcStatus (*visit)( PEResEntry *, void * visit_data ) )
-/*******************************************************************/
+static RcStatus traverseTree( PEResDir *dir, void *visit_data,
+                    RcStatus (*visit)( PEResEntry *, void *visit_data ) )
+/***********************************************************************/
 /* Perfroms a level order traversal of a PEResDir tree calling visit at */
 /* each entry */
 {

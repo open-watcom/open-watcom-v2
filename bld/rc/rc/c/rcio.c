@@ -66,11 +66,10 @@ static bool Pass1InitRes( void )
     ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
-    CurrResFile.IsOpen = false;
-
-    CurrResFile.filename = "Temporary file 0 (res)";
+    memset( &CurrResFile, 0, sizeof( CurrResFile ) );
 
     /* open the temporary file */
+    CurrResFile.filename = "Temporary file 0 (res)";
     CurrResFile.fp = ResOpenFileTmp( NULL );
     if( CurrResFile.fp == NULL ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
@@ -109,10 +108,6 @@ static bool Pass1InitRes( void )
         CurrResFile.IsWatcomRes = true;
         WResFileInit( CurrResFile.fp );
     }
-    CurrResFile.IsOpen = true;
-    CurrResFile.StringTable = NULL;
-    CurrResFile.ErrorTable = NULL;
-    CurrResFile.FontDir = NULL;
     CurrResFile.NextCurOrIcon = 1;
     return( false );
 } /* Pass1InitRes */
@@ -312,7 +307,6 @@ static void Pass1ResFileShutdown( void )
             RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
         }
         CurrResFile.fp = NULL;
-        CurrResFile.IsOpen = false;
     }
 } /* Pass1ResFileShutdown */
 
@@ -430,21 +424,6 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     return( !RESSEEK( info->fp, 0, SEEK_SET ) );
 } /* openExeFileInfoRO */
 
-static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
-/******************************************************************/
-{
-    info->fp = ResOpenFileTmp( NULL );
-    if( info->fp == NULL ) {
-        RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
-        return( false );
-    }
-    info->IsOpen = true;
-    info->DebugOffset = 0;
-    info->name = filename;
-
-    return( true );
-} /* openNewExeFileInfo */
-
 static void FreeNEFileInfoPtrs( NEExeInfo * info )
 /*************************************************/
 {
@@ -536,14 +515,17 @@ extern bool RcPass2IoInit( void )
     bool    noerror;
     bool    tmpexe_exists;
 
-    memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
+    memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
-
-    Pass2Info.TmpFileName = "Temporary file 2 (exe)";
 
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
-        noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );
+        Pass2Info.TmpFile.name = "Temporary file 2 (exe)";
+        Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
+        if( Pass2Info.TmpFile.fp == NULL ) {
+            RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );
+            noerror = false;
+        }
     }
     tmpexe_exists = noerror;
 
@@ -555,7 +537,7 @@ extern bool RcPass2IoInit( void )
             *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
         }
         if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
-            && CmdLineParms.ExtraResFiles != NULL ) {
+          && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = false;
         } else {

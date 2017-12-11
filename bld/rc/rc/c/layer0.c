@@ -461,7 +461,7 @@ bool res_ioerr( FILE *fp, size_t rc )
 }
 
 void Layer0InitStatics( void )
-/***********************************/
+/****************************/
 {
     int     i;
 

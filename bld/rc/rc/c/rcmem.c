@@ -40,10 +40,7 @@
 #include "rcalloc1.h"
 
 #ifdef RC_USE_TRMEM
-    #include "wio.h"
     #include "trmem.h"
-
-    #include "clibext.h"
 
 
     _trmem_hdl RcMemHandle = NULL;
@@ -52,7 +49,7 @@
     /***************************************************************/
     {
         dummy = dummy;
-        posix_write( STDOUT_FILENO, buf, len );
+        printf( buf );
     }
 #endif
 
