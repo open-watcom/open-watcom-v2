@@ -194,12 +194,9 @@ extern void RcFatalError( unsigned int errornum, ... )
     RcMsgV( errornum, SEV_FATAL_ERR, arglist );
     va_end( arglist );
 
-    if( IsTmpFile( CurrResFile.filename ) ) {
+    if( CurrResFile.fp != NULL ) {
         ResCloseFile( CurrResFile.fp );
-        remove( CurrResFile.filename );
-        UnregisterTmpFile( CurrResFile.filename );
-        RESFREE( CurrResFile.filename );
-        CurrResFile.filename = NULL;
+        CurrResFile.fp = NULL;
     }
 #if !defined( WRDLL )
     CloseAllFiles();

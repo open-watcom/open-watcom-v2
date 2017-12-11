@@ -59,26 +59,6 @@
 
 #define BUFFER_SIZE     1024
 
-char *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext )
-/***********************************************************************/
-{
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    *out;
-    char    fname[32];
-#if defined( __DOS__ ) || defined( __OSI__ )
-    sprintf( fname, "__TMP%c__", id );
-#else
-    // Must be able to run several "rc" executables simultaneously
-    // in the same directory
-    sprintf( fname, "__RCTMP%c%lu__", id, (unsigned long)getpid() );
-#endif
-    out = RESALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
-    _splitpath( dirfile, drive, dir, NULL, NULL );
-    _makepath( out, drive, dir, fname, ext );
-    return( out );
-} /* RcMakeTmpInSameDir */
-
 static bool Pass1InitRes( void )
 /******************************/
 {
@@ -86,14 +66,23 @@ static bool Pass1InitRes( void )
     ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
-    /* put the temporary file in the same location as the output file */
-    CurrResFile.filename = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '0', "res" );
+    CurrResFile.IsOpen = false;
+
+    CurrResFile.filename = "Temporary file 0 (res)";
+
+    /* open the temporary file */
+    CurrResFile.fp = ResOpenFileTmp( NULL );
+    if( CurrResFile.fp == NULL ) {
+        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
+        return( true );
+    }
 
     /* initialize the directory */
     CurrResFile.dir = WResInitDir();
     if( CurrResFile.dir == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        CurrResFile.IsOpen = false;
+        ResCloseFile( CurrResFile.fp );
+        CurrResFile.fp = NULL;
         return( true );
     }
 
@@ -105,13 +94,6 @@ static bool Pass1InitRes( void )
         WResSetTargetOS( CurrResFile.dir, WRES_OS_OS2 );
     }
 
-    /* open the temporary file */
-    CurrResFile.fp = ResOpenFileNew( CurrResFile.filename );
-    if( CurrResFile.fp == NULL ) {
-        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
-        CurrResFile.IsOpen = false;
-        return( true );
-    }
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
         /* write null header here if it is win32 */
@@ -127,8 +109,6 @@ static bool Pass1InitRes( void )
         CurrResFile.IsWatcomRes = true;
         WResFileInit( CurrResFile.fp );
     }
-    RegisterTmpFile( CurrResFile.filename );
-
     CurrResFile.IsOpen = true;
     CurrResFile.StringTable = NULL;
     CurrResFile.ErrorTable = NULL;
@@ -239,39 +219,8 @@ extern bool RcPass1IoInit( void )
     return( true );
 }
 
-static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
-/************************************************************************/
-{
-    int     fileerror;      /* error while deleting or renaming */
-    bool    rc;
-
-    /* remove the old copy of the output file */
-    fileerror = remove( outfile );
-    if( fileerror ) {
-        if( errno == ENOENT ) {
-            /* ignore the error if it says that the file doesn't exist */
-            errno = 0;
-        } else {
-            RcError( ERR_DELETING_FILE, outfile, strerror( errno ) );
-            remove( tmpfile );
-            UnregisterTmpFile( tmpfile );
-            return( true );
-        }
-    }
-    rc = false;
-    /* rename the temp file to the output file */
-    fileerror = rename( tmpfile, outfile );
-    if( fileerror ) {
-        RcError( ERR_RENAMING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
-        remove( tmpfile );
-        rc = true;
-    }
-    UnregisterTmpFile( tmpfile );
-    return( rc );
-} /* ChangeTmpToOutFile */
-
-static bool ChangeTmpToOutFileN( FILE *tmpfile, const char *out_name )
-/********************************************************************/
+static bool ChangeTmpToOutFile( FILE *tmpfile, const char *out_name )
+/*******************************************************************/
 {
     RcStatus    status;      /* error while deleting or renaming */
     FILE        *outfile;
@@ -296,23 +245,9 @@ static bool ChangeTmpToOutFileN( FILE *tmpfile, const char *out_name )
     ResCloseFile( outfile );
 
     RESFREE( buffer );
-
     return( status == RS_OK );
-} /* ChangeTmpToOutFileN */
 
-static bool RemoveCurrResFile( void )
-/**********************************/
-{
-    int     fileerror;
-
-    fileerror = remove( CurrResFile.filename );
-    UnregisterTmpFile( CurrResFile.filename );
-    if( fileerror ) {
-        return( true );
-    } else {
-        return( false );
-    }
-}
+} /* ChangeTmpToOutFile */
 
 static void WriteWINTables( void )
 /********************************/
@@ -352,36 +287,32 @@ static void Pass1ResFileShutdown( void )
     bool        error;
 
     error = false;
-    if( CurrResFile.IsOpen ) {
+    if( CurrResFile.fp != NULL ) {
         if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
             WriteOS2Tables();
         } else {
             WriteWINTables();
         }
-        if( ErrorHasOccured ) {
-            ResCloseFile( CurrResFile.fp );
-            CurrResFile.IsOpen = false;
-            RemoveCurrResFile();
-        } else {
+        if( !ErrorHasOccured ) {
             if( CurrResFile.IsWatcomRes ) {
                 error = WResWriteDir( CurrResFile.fp, CurrResFile.dir );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 }
             }
-            if( ResCloseFile( CurrResFile.fp ) ) {
-                RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
-                remove( CurrResFile.filename );
-                UnregisterTmpFile( CurrResFile.filename );
-            } else if( !error ) {
-                ChangeTmpToOutFile( CurrResFile.filename, CmdLineParms.OutResFileName );
+            if( !error ) {
+                ChangeTmpToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
             }
-            CurrResFile.IsOpen = false;
         }
-        WResFreeDir( CurrResFile.dir );
-        CurrResFile.dir = NULL;
-        RESFREE( CurrResFile.filename );
-        CurrResFile.filename = NULL;
+        if( CurrResFile.dir != NULL ) {
+            WResFreeDir( CurrResFile.dir );
+            CurrResFile.dir = NULL;
+        }
+        if( ResCloseFile( CurrResFile.fp ) ) {
+            RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
+        }
+        CurrResFile.fp = NULL;
+        CurrResFile.IsOpen = false;
     }
 } /* Pass1ResFileShutdown */
 
@@ -654,7 +585,7 @@ extern void RcPass2IoShutdown( bool noerror )
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
-        ChangeTmpToOutFileN( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
+        ChangeTmpToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
     }
     ResCloseFile( Pass2Info.TmpFile.fp );
     Pass2Info.TmpFile.fp = NULL;
