@@ -68,7 +68,7 @@
     #include <netinet/in.h>
     #include <netinet/tcp.h>
     #include <netdb.h>
-  #if defined( __OS2__ ) 
+  #if defined( __OS2__ )
     #if defined( _M_I86 )
         #include <netlib.h>
     #else
@@ -175,7 +175,7 @@ static int recv( int handle, void *buf, int size, int timeout )
     while( !RdosIsTcpConnectionClosed( handle ) && count == 0 ) {
         count = RdosReadTcpConnection( handle, buf, size );
     }
-    return( count );     
+    return( count );
 }
 
 static int send( int handle, const void *buf, int size, int timeout )
@@ -358,7 +358,7 @@ bool RemoteConnect( void )
     timeout.tv_sec = 0;
     timeout.tv_usec = 10000;
     rc = select( control_socket + 1, &ready, 0, 0, &timeout );
-    if( IS_RET_OK( rc ) ) {
+    if( IS_RET_OK( rc ) && rc > 0 ) {
         data_socket = accept( control_socket, &dummy, &dummy_len );
         if( IS_VALID_SOCKET( data_socket ) ) {
             nodelay();
@@ -400,9 +400,9 @@ void RemoteDisco( void )
 const char *RemoteLink( const char *parms, bool server )
 {
     unsigned short      port;
-#ifndef __RDOS__    
+#ifndef __RDOS__
     struct servent      *sp;
-#endif    
+#endif
 
 #ifdef SERVER
   #if !defined( __RDOS__ )
@@ -421,7 +421,7 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
   #endif
- 
+
     port = 0;
   #ifdef __RDOS__
     while( isdigit( *parms ) ) {
@@ -497,7 +497,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     _DBG_NET(("Start accepting connections\r\n"));
     /* Start accepting connections */
-  #ifndef __RDOS__    
+  #ifndef __RDOS__
     listen( control_socket, 5 );
   #endif
 #else
