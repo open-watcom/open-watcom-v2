@@ -57,6 +57,8 @@
 #include "clibext.h"
 
 
+#define BUFFER_SIZE     1024
+
 char *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext )
 /***********************************************************************/
 {
@@ -268,6 +270,36 @@ static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
     return( rc );
 } /* ChangeTmpToOutFile */
 
+static bool ChangeTmpToOutFileN( FILE *tmpfile, const char *out_name )
+/********************************************************************/
+{
+    RcStatus    status;      /* error while deleting or renaming */
+    FILE        *outfile;
+    size_t      numread;
+    char        *buffer;
+
+    buffer = RESALLOC( BUFFER_SIZE );
+
+    status = RS_OK;
+    RESSEEK( tmpfile, 0, SEEK_SET );
+    outfile = ResOpenFileRW( out_name );
+    while( (numread = RESREAD( tmpfile, buffer, BUFFER_SIZE )) != 0 ) {
+        if( numread != BUFFER_SIZE && RESIOERR( tmpfile, numread ) ) {
+            status = RS_READ_ERROR;
+            break;
+        }
+        if( RESWRITE( outfile, buffer, numread ) != numread ) {
+            status = RS_WRITE_ERROR;
+            break;
+        }
+    }
+    ResCloseFile( outfile );
+
+    RESFREE( buffer );
+
+    return( status == RS_OK );
+} /* ChangeTmpToOutFileN */
+
 static bool RemoveCurrResFile( void )
 /**********************************/
 {
@@ -470,12 +502,11 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->fp = ResOpenFileNew( filename );
+    info->fp = ResOpenFileTmp( NULL );
     if( info->fp == NULL ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
     }
-    RegisterTmpFile( filename );
     info->IsOpen = true;
     info->DebugOffset = 0;
     info->name = filename;
@@ -527,11 +558,9 @@ extern void ClosePass2FilesAndFreeMem( void )
 {
     ExeFileInfo         *tmp;
     ExeFileInfo         *old;
-//    char                *tmpfilename;
 
     tmp = &(Pass2Info.TmpFile);
     old = &(Pass2Info.OldFile);
-//    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
         RESCLOSE( old->fp );
@@ -552,10 +581,6 @@ extern void ClosePass2FilesAndFreeMem( void )
         break;
     }
 
-    if( tmp->IsOpen ) {
-        RESCLOSE( tmp->fp );
-        tmp->IsOpen = false;
-    }
     switch( tmp->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
@@ -571,6 +596,7 @@ extern void ClosePass2FilesAndFreeMem( void )
         break;
     }
     CloseResFiles( Pass2Info.ResFile );
+
 } /* ClosePass2FilesAndFreeMem */
 
 extern bool RcPass2IoInit( void )
@@ -581,8 +607,9 @@ extern bool RcPass2IoInit( void )
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
-    /* put the temporary file in the same location as the output file */
-    Pass2Info.TmpFileName = RcMakeTmpInSameDir( CmdLineParms.OutExeFileName, '2', "tmp" );
+
+    Pass2Info.TmpFileName = "Temporary file 2 (exe)";
+
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );
@@ -610,10 +637,8 @@ extern bool RcPass2IoInit( void )
         Pass2Info.IoBuffer = NULL;
         ClosePass2FilesAndFreeMem();
         if( tmpexe_exists ) {
-            remove( Pass2Info.TmpFileName );
-            UnregisterTmpFile( Pass2Info.TmpFileName );
-            RESFREE( Pass2Info.TmpFileName );
-            Pass2Info.TmpFileName = NULL;
+            ResCloseFile( Pass2Info.TmpFile.fp );
+            Pass2Info.TmpFile.fp = NULL;
         }
     }
 
@@ -629,13 +654,11 @@ extern void RcPass2IoShutdown( bool noerror )
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
-        ChangeTmpToOutFile( Pass2Info.TmpFileName, CmdLineParms.OutExeFileName);
-    } else {
-        UnregisterTmpFile( Pass2Info.TmpFileName );
-        remove( Pass2Info.TmpFileName );
+        ChangeTmpToOutFileN( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
     }
-    RESFREE( Pass2Info.TmpFileName );
-    Pass2Info.TmpFileName = NULL;
+    ResCloseFile( Pass2Info.TmpFile.fp );
+    Pass2Info.TmpFile.fp = NULL;
+
 } /* RcPass2IoShutdown */
 
 /****** Text file input routines ******/

@@ -58,12 +58,10 @@ SemOffset SemStartResource( void )
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
     }
-    if( CurrResFile.IsWatcomRes ) {
-        return( ResTell( CurrResFile.fp ) );
-    } else {
-        /* open the new temporary RES file */
+    if( !CurrResFile.IsWatcomRes ) {
         tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
+            ResCloseFile( CurrResFile.fp );
             RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
             /* save current values */
@@ -72,23 +70,23 @@ SemOffset SemStartResource( void )
             CurrResFile.fp = tmpResFile;
             CurrResFile.filename = tmpResFileName;
         }
-        /* The start position should be 0 but to be safe call ResTell */
-        return( ResTell( CurrResFile.fp ) );
     }
+    return( ResTell( CurrResFile.fp ) );
 }
 
 SemLength SemEndResource( SemOffset start )
 /*****************************************/
 {
-    if( CurrResFile.IsWatcomRes ) {
-        return( ResTell( CurrResFile.fp ) - start );
-    } else {
+    SemLength   len;
+
+    /* the length of the resource */
+    len = ResTell( CurrResFile.fp ) - start;
+    if( !CurrResFile.IsWatcomRes ) {
         /* restore previous values */
         CurrResFile.fp = save_fp;
         CurrResFile.filename = save_name;
-        /* return the length of the resource */
-        return( ResTell( tmpResFile ) - start );
     }
+    return( len );
 }
 
 void SemAddResourceFree( WResID *name, WResID *type, ResMemFlags flags, ResLocation loc )
