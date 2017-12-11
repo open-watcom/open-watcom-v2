@@ -305,9 +305,9 @@ OVL_EXTERN void WVIMPENTRY( Cancel )( void )
 {
 }
 
-OVL_EXTERN dip_status WVIMPENTRY( LoadInfo )( FILE *fid, imp_image_handle *ii )
+OVL_EXTERN dip_status WVIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
 {
-    /* unused parameters */ (void)fid; (void)ii;
+    /* unused parameters */ (void)fp; (void)ii;
 
     return( DS_FAIL );
 }

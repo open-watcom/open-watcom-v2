@@ -744,7 +744,7 @@ void PhoneyStack( void )
 }
 
 static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
-/*******************************************************************/
+/**************************************************************/
 {
     WResDir     dir;
     FILE        *res_fp;
@@ -782,7 +782,7 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
 }
 
 static void FiniNEResources( FILE *res_fp, WResDir inRes, ResTable *outRes )
-/********************************************************************************/
+/**************************************************************************/
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {

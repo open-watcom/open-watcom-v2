@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,13 +196,12 @@ FILE *res_open( const char *name, wres_open_mode omode )
     default:
     case WRES_OPEN_RO:
         return( POSIX2FP( open( name, O_BINARY | O_RDONLY ) ) );
-        break;
     case WRES_OPEN_RW:
         return( POSIX2FP( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
-        break;
     case WRES_OPEN_NEW:
         return( POSIX2FP( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
-        break;
+    case WRES_OPEN_TMP:
+        return( NULL );
     }
 }
 

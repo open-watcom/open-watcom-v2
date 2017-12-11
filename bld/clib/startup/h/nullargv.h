@@ -30,14 +30,5 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "nullargv.h"
-
-
-void __Null_Argv( void )
-{
-#ifndef __NETWARE__
-    exit( main() );
-    // never return
-#endif
-}
+extern int  main( void );
+extern void __Null_Argv( void );

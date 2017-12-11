@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 
 static dip_status GetBlockInfo( imp_image_handle *ii, section_info *new, unsigned long off,
                             dword size, info_block **owner,
-                            unsigned (*split)(imp_image_handle *ii, info_block *, section_info *) )
+                            unsigned (*split)(imp_image_handle *, info_block *, section_info *) )
 {
     size_t              split_size;
     info_block          *curr;
@@ -198,7 +199,7 @@ static dip_status ProcSectionsInfo( imp_image_handle *ii, unsigned num_sects )
                                 &new->gbl, &GblSymSplit );
             if( status != DS_OK )
                 return( status );
-            status = GetBlockInfo( ii, new, header.addr_offset+pos,
+            status = GetBlockInfo( ii, new, header.addr_offset + pos,
                                 header.section_size - header.addr_offset,
                                 &new->addr_info, &AddrInfoSplit );
             if( status != DS_OK )
