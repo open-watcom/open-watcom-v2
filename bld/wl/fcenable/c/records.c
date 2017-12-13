@@ -437,7 +437,7 @@ rec_status ReadRec( void )
             return( OBJECT );
         } else if( Rec1->head.class == MODEND || Rec1->head.class == MODE32 ) {
             if( PageLen != 0 ) {            // skip padding in the library.
-                offset = tell( InFile );
+                offset = ftell( InFile );
                 offset = PageLen - offset % PageLen;
                 if( offset == PageLen )
                     offset = 0;

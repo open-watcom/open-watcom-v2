@@ -42,9 +42,9 @@ static _trmem_hdl TrHdl;
 static void PrintLine( void *handle, const char *buff, size_t len )
 /*****************************************************************/
 {
-    handle = handle;
-    putlen( buff, len );
-    put( "\n" );
+    /* unused parameters */ (void)handle;
+
+    printf( "%s\n", buff );
 }
 
 #endif
