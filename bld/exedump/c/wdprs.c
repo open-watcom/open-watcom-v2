@@ -52,6 +52,17 @@ void Puthex( unsigned_32 num, unsigned_16 width )
 }
 
 /*
+ * Put a hex number 64-bit
+ */
+void Puthex64( long long num, unsigned_16 width )
+/*********************************************/
+{
+    while( width-- ) {
+        Wdputc( hexchar[( num >> ( 4 * width ) ) & 0x000f] );
+    }
+}
+
+/*
  * Put a decimal number
  */
 void Putdec( unsigned_32 num )
@@ -77,11 +88,29 @@ void Putdecs( signed_32 num )
 }
 
 /*
+ * Put a decimal number 64-bit
+ */
+void Putdec64( long long num )
+/****************************/
+{
+    if( num >= 10 )
+        Putdec64( num / 10 );
+    Wdputc( num % 10 + '0' );
+}
+
+/*
  * put a decimal number, always printing 'len' characters.
  * this will print 0 if num == 0.
 */
 
 void Putdecl( unsigned_32 num, unsigned_16 len )
+/**********************************************/
+{
+    Putdecbz( num /10, len - 1 );
+    Wdputc( num % 10 + '0' );
+}
+
+void Putdecl64( long long num, unsigned_16 len )
 /**********************************************/
 {
     Putdecbz( num /10, len - 1 );
@@ -123,9 +152,50 @@ void Putdecbz( unsigned_32 num, unsigned_16 len )
             Wdputc( ' ' );
             len--;
         }
-        Wdputc( '0' );
+        Wdputc( ' ' );
     } else {
         DecBZRecurse( num, len, 0 );
+    }
+}
+
+static void DecBZRecurse64( long long num, unsigned_16 len, char minus )
+/**********************************************************************/
+{
+    if( num > 0 ) {
+        if( len > 1 ) {
+            DecBZRecurse64( num / 10, len - 1, minus );
+        } else {
+            DecBZRecurse64( num / 10, 0, minus );
+        }
+    }
+    if( num == 0 ) {        /* we are to the left of the 1st digit */
+        while( len-- > 0 ) {
+            Wdputc( ' ' );
+        }
+    } else {
+        if( num < 10 && minus )
+            Wdputc( '-' );
+        Wdputc( num % 10 + '0' );
+    }
+}
+
+/*
+ * put a decimal number, always printing 'len' characters.
+ * this will print only spaces if num == 0.
+ * (i.e. PUT DECimal Blank when Zero)
+*/
+
+void Putdecbz64( long long num, unsigned_16 len )
+/***********************************************/
+{
+    if( num == 0 ) {
+        while( len > 1 ) {
+            Wdputc( ' ' );
+            len--;
+        }
+        Wdputc( '0' );
+    } else {
+        DecBZRecurse64( num, len, 0 );
     }
 }
 

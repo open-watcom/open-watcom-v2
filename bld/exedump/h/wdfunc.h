@@ -151,12 +151,16 @@ extern void dmp_data_line( char *, unsigned_16, unsigned_16 );
  * wdprs.c
  */
 extern void Puthex( unsigned_32, unsigned_16 );
+extern void Puthex64( long long, unsigned_16 );
 extern void Putdec( unsigned_32 );
+extern void Putdec64( long long );
 extern void Putdecs( signed_32 );
 extern void Putdecl( unsigned_32, unsigned_16 );
+extern void Putdecl64( long long, unsigned_16 );
 extern void Putdecsl( signed_32, unsigned_16 );
 extern void Putdecbz( unsigned_32, unsigned_16);
 extern void Putdecsbz( signed_32, unsigned_16);
+extern void Putdecbz64( long long, unsigned_16);
 extern void Parse_option( void );
 extern uint_32 get_u32( uint_32 *src );
 extern int_32  get_s32( int_32 *src );
@@ -183,7 +187,7 @@ extern unsigned long    WFileSize( void );
 extern void             Wdputc( int );
 extern void             Wdputs( const char * );
 extern void             Wdputslc( const char * );
-extern void             Dump_header( void *, const char * const * );
+extern void             Dump_header( void *, const char * const *, int );
 extern void             Dump_asciiz( unsigned long offset );
 extern void             DumpFlags( unsigned_32, unsigned_32, const char * const *, const char * );
 extern void             *Wmalloc( size_t );

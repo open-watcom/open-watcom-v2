@@ -38,6 +38,8 @@
 
 #include "clibext.h"
 
+#define PE_RVA(t) \
+    (( IS_PE64( Pe_head ) ) ? PE64( Pe_head ).table[t].rva : PE32( Pe_head ).table[t].rva )
 
 static  const_string_table pe_export_msg[] = {
     "4          export flags                      = ",
@@ -107,6 +109,7 @@ static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
     unsigned_32     *nam_addr;
     unsigned_32     addr_size;
     unsigned_32     i;
+    unsigned_32     export_rva;
 
     Wlseek( nam_off );
     addr_size = num_ptr * sizeof( unsigned_32 );
@@ -120,12 +123,13 @@ static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
     Wdputslc( "\n" );
     Wdputslc( "  ordinal     name ptr        name\n" );
     Wdputslc( "  =======     ========        ====\n" );
+    export_rva = PE_RVA( PE_TBL_EXPORT );
     for( i = 0; i < num_ptr; i++ ) {
         Putdecl( ord_addr[i] + base, 6 );
         Wdputs( "        " );
         Puthex( nam_addr[i], 8 );
         Wdputs( "        " );
-        Dump_asciiz( nam_addr[i] - Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off );
+        Dump_asciiz( nam_addr[i] - export_rva + Exp_off );
         Wdputslc( "\n" );
     }
 }
@@ -136,28 +140,48 @@ static void dmp_exp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
 static void dmp_imp_addr( unsigned_32 offset )
 /********************************************/
 {
-    unsigned_32     address;
-    unsigned_32     addr_size;
+    struct {
+        union {
+            unsigned_32     _32[2];
+            long long       _64[1];
+        } u;
+    } address;
     int             i;
 
     Wlseek( offset );
     Wdputslc( "\n" );
     Wdputslc( "Import Address Table\n" );
     Wdputslc( "====================\n" );
-    addr_size = sizeof( unsigned_32 );
-    Wread( &address, addr_size );
-    for( i = 0; address != 0; i++ ) {
-        if( i != 0 ) {
-            if( (i) % 4 == 0 ) {
-                Wdputslc( "\n" );
-            } else {
-                Wdputs( "     " );
+    if( IS_PE64( Pe_head ) ) {
+        Wread( address.u._64, sizeof( address.u._64 ) );
+        for( i = 0; address.u._64[0] != 0; i++ ) {
+            if( i != 0 ) {
+                if( (i) % 4 == 0 ) {
+                    Wdputslc( "\n" );
+                } else {
+                    Wdputs( "     " );
+                }
             }
+            Putdecl( i, 4 );
+            Wdputc( ':' );
+            Puthex64( address.u._64[0], 16 );
+            Wread( address.u._64, sizeof( address.u._64 ) );
         }
-        Putdecl( i, 4 );
-        Wdputc( ':' );
-        Puthex( address, 8 );
-        Wread( &address, addr_size );
+    } else {
+        Wread( address.u._32, sizeof( address.u._32[0] ) );
+        for( i = 0; address.u._32[0] != 0; i++ ) {
+            if( i != 0 ) {
+                if( (i) % 4 == 0 ) {
+                    Wdputslc( "\n" );
+                } else {
+                    Wdputs( "     " );
+                }
+            }
+            Putdecl( i, 4 );
+            Wdputc( ':' );
+            Puthex( address.u._32[0], 8 );
+            Wread( address.u._32, sizeof( address.u._32[0] ) );
+        }
     }
     Wdputslc( "\n" );
     Wdputslc( "\n" );
@@ -169,37 +193,70 @@ static void dmp_imp_addr( unsigned_32 offset )
 static void dmp_imp_lookup( unsigned_32 offset )
 /**********************************************/
 {
-    unsigned_32             address;
-    unsigned_32             addr_size;
+    struct {
+        union {
+            unsigned_32     _32[2];
+            long long       _64[1];
+        } u;
+    } address;
     int                     i;
     unsigned_16             hint;
+    unsigned_32             import_rva;
 
     Wlseek( offset );
     Wdputslc( "\n" );
     Wdputslc( "Import Lookup Table\n" );
     Wdputslc( "===================\n" );
-    Wdputslc( "       import       hint       name/ordinal\n" );
-    Wdputslc( "       ======       ====       ============\n" );
 
-    addr_size = sizeof( unsigned_32 );
-    Wread( &address, addr_size );
-    for( i = 0; address != 0; ++i ) {
-        Wdputs( "       " );
-        Puthex( address, 8 );
-        if( address & PE_IMPORT_BY_ORDINAL ) {
-            Wdputs( "          " );
-            Putdecl( address & ~PE_IMPORT_BY_ORDINAL, 8 );
-        } else {
-            Wlseek( address - Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off );
-            Wread( &hint, sizeof( hint ) );
-            Putdecl( hint, 8 );
-            Wdputs( "        " );
-            Dump_asciiz( address - Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off + sizeof( hint ) );
+#define LMARG   "       "
+
+    import_rva = PE_RVA( PE_TBL_IMPORT );
+    if( IS_PE64( Pe_head ) ) {
+        Wdputslc( LMARG "import                   hint   name/ordinal\n" );
+        Wdputslc( LMARG "======                   ====   ============\n" );
+        Wread( address.u._64, sizeof( address.u._64 ) );
+        for( i = 0; address.u._64[0] != 0; ++i ) {
+            Wdputs( LMARG );
+            Puthex64( address.u._64[0], 16 );
+            if( address.u._32[1] & PE_IMPORT_BY_ORDINAL ) {
+                address.u._32[1] &= ~PE_IMPORT_BY_ORDINAL;
+                Wdputs( "                  " );
+                Putdecl( address.u._32[0], 8 );
+            } else {
+                Wlseek( address.u._32[0] - import_rva + Imp_off );
+                Wread( &hint, sizeof( hint ) );
+                Wdputs( "     " );
+                Putdecl( hint, 8 );
+                Wdputs( "   " );
+                Dump_asciiz( address.u._32[0] - import_rva + Imp_off + sizeof( hint ) );
+            }
+            Wdputslc( "\n" );
+            offset += sizeof( address.u._64 );
+            Wlseek( offset );
+            Wread( address.u._64, sizeof( address.u._64 ) );
         }
-        Wdputslc( "\n" );
-        offset += sizeof( unsigned_32 );
-        Wlseek( offset );
-        Wread( &address, addr_size );
+    } else {
+        Wdputslc( LMARG "import       hint       name/ordinal\n" );
+        Wdputslc( LMARG "======       ====       ============\n" );
+        Wread( address.u._32, sizeof( address.u._32[0] ) );
+        for( i = 0; address.u._32[0] != 0; ++i ) {
+            Wdputs( LMARG );
+            Puthex( address.u._32[0], 8 );
+            if( address.u._32[0] & PE_IMPORT_BY_ORDINAL ) {
+                Wdputs( "          " );
+                Putdecl( address.u._32[0], 8 );
+            } else {
+                Wlseek( address.u._32[0] - import_rva + Imp_off );
+                Wread( &hint, sizeof( hint ) );
+                Putdecl( hint, 8 );
+                Wdputs( "        " );
+                Dump_asciiz( address.u._32[0] - import_rva + Imp_off + sizeof( hint ) );
+            }
+            Wdputslc( "\n" );
+            offset += sizeof( address.u._32[0] );
+            Wlseek( offset );
+            Wread( address.u._32, sizeof( address.u._32[0] ) );
+        }
     }
 }
 
@@ -214,6 +271,7 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
     unsigned_32     *nam_addr;
     unsigned_32     addr_size;
     size_t          i;
+    unsigned_32     export_rva;
 
     Wlseek( nam_off );
     addr_size = num_ptr * sizeof( unsigned_32 );
@@ -224,8 +282,9 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
     ord_addr = Wmalloc( addr_size );
     Wread( ord_addr, addr_size );
     Wdputslc( "\n" );
+    export_rva = PE_RVA( PE_TBL_EXPORT );
     for( i = 0; i < num_ptr; i++ ) {
-        Dump_asciiz( nam_addr[i] - Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off );
+        Dump_asciiz( nam_addr[i] - export_rva + Exp_off );
         Wdputc( '.' );
         Wdputc( '\'' );
         Wdputs( Fname );
@@ -242,14 +301,14 @@ void Dmp_exp_tab( void )
 /**********************/
 {
     pe_export_directory     pe_export;
+    unsigned_32             export_rva;
 
     strupr( Fname );
     Wlseek( Exp_off );
     Wread( &pe_export, sizeof( pe_export_directory ) );
-    dmp_ord_name( pe_export.name_ptr_table_rva -
-            Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off,
-            pe_export.ordinal_table_rva -
-            Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off,
+    export_rva = PE_RVA( PE_TBL_EXPORT );
+    dmp_ord_name( pe_export.name_ptr_table_rva - export_rva + Exp_off,
+            pe_export.ordinal_table_rva - export_rva + Exp_off,
             pe_export.num_name_ptrs, pe_export.ordinal_base );
 }
 
@@ -260,18 +319,17 @@ void Dmp_exports( void )
 /**********************/
 {
     pe_export_directory     pe_export;
+    unsigned_32             export_rva;
 
     Wlseek( Exp_off );
     Wread( &pe_export, sizeof( pe_export_directory ) );
     Banner( "Export Directory Table" );
-    Dump_header( (char *)&pe_export.flags, pe_export_msg );
-    dmp_exp_addr( pe_export.address_table_rva -
-            Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off,
+    Dump_header( (char *)&pe_export.flags, pe_export_msg, 4 );
+    export_rva = PE_RVA( PE_TBL_EXPORT );
+    dmp_exp_addr( pe_export.address_table_rva - export_rva + Exp_off,
             pe_export.num_eat_entries, pe_export.ordinal_base );
-    dmp_exp_ord_name( pe_export.name_ptr_table_rva -
-            Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off,
-            pe_export.ordinal_table_rva -
-            Pe_head.table[ PE_TBL_EXPORT ].rva + Exp_off,
+    dmp_exp_ord_name( pe_export.name_ptr_table_rva - export_rva + Exp_off,
+            pe_export.ordinal_table_rva - export_rva + Exp_off,
             pe_export.num_name_ptrs, pe_export.ordinal_base );
     Wdputslc( "\n" );
 }
@@ -284,21 +342,22 @@ void Dmp_imports( void )
 {
     pe_import_directory     pe_import;
     unsigned_32             offset;
+    unsigned_32             import_rva;
 
     offset = Imp_off;
+    import_rva = PE_RVA( PE_TBL_IMPORT );
     for( ;; ) {
         Wlseek( offset );
         Wread( &pe_import, sizeof( pe_import_directory ) );
-        if( pe_import.import_lookup_table_rva == 0 ) break;
+        if( pe_import.import_lookup_table_rva == 0 )
+            break;
         Banner( "Import Directory Table" );
-        Dump_header( (char *)&pe_import.import_lookup_table_rva, pe_import_msg );
+        Dump_header( (char *)&pe_import.import_lookup_table_rva, pe_import_msg, 4 );
         Wdputs( "          DLL name = <" );
-        Dump_asciiz( pe_import.name_rva - Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off );
+        Dump_asciiz( pe_import.name_rva - import_rva + Imp_off );
         Wdputslc( ">\n" );
-        dmp_imp_lookup( pe_import.import_lookup_table_rva -
-                Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off );
-        dmp_imp_addr( pe_import.import_address_table_rva -
-                Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off );
+        dmp_imp_lookup( pe_import.import_lookup_table_rva - import_rva + Imp_off );
+        dmp_imp_addr( pe_import.import_address_table_rva - import_rva + Imp_off );
         offset += sizeof( pe_import_directory );
     }
 }

@@ -198,7 +198,7 @@ bool Dmp_coff_head( void )
     Puthex( Coff_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
-    Dump_header( (char *)&header, coff_hdr_msg );
+    Dump_header( (char *)&header, coff_hdr_msg, 4 );
     DumpCoffHdrFlags( header.flags );
     load_string_table( &header );
     Wlseek( Coff_off + sizeof(coff_file_header) + header.opt_hdr_size );

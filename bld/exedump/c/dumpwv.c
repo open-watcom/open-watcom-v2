@@ -967,7 +967,7 @@ void Dump_section( void )
     Puthex( Curr_sectoff, 8 );
     Wdputslc( ")\n" );
     Wdputslc( "=========================\n" );
-    Dump_header( (char *)&sdh.mod_offset, sdh_msg );
+    Dump_header( (char *)&sdh.mod_offset, sdh_msg, 4 );
     Wdputslc( "\n" );
     currSect = sdh.section_id;
 

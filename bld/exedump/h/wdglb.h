@@ -161,6 +161,16 @@ typedef enum {
     DR_DEBUG_NUM_SECTS          // the number of debug info sections.
 } dr_section;
 
+typedef struct dos_exe_header_ex {
+    dos_exe_header  hdr;
+    unsigned_32     load_len;
+} dos_exe_header_ex;
+
+typedef struct dos16m_exe_header_ex {
+    dos16m_exe_header   hdr;
+    unsigned_32         load_len;
+} dos16m_exe_header_ex;
+
 extern struct section_data      Sections[DR_DEBUG_NUM_SECTS];
 extern int                      Handle;         /* the file handle         */
 extern int                      Lhandle;        /* the listfile handle     */
@@ -191,15 +201,14 @@ extern extended_header          Phar_ext_head;  /* the phar_extended_header*/
 extern simple_header            Phar_head;      /* the phar_header         */
 extern extended_nlm_header      Nlm_ext_head;   /* the nlm_extended_header */
 extern nlm_header               Nlm_head;       /* the nlm_header          */
-extern pe_header                Pe_head;        /* the pe_header           */
+extern exe_pe_header            Pe_head;        /* the exe_pe_header       */
 extern struct os2_flat_header   Os2_386_head;   /* the new_header (V2.0)   */
 extern struct os2_exe_header    Os2_head;       /* the new_header          */
-extern struct dos_exe_header    Dos_head;       /* the old_header          */
+extern dos_exe_header_ex        Dos_head;       /* the old_header          */
 extern unsigned_16              Resrc_shift_cnt;/* the restab shift        */
 extern unsigned_16              Options_dmp;
 extern unsigned_8               Debug_options;
 extern char                     *Name;          /* file name               */
-extern unsigned_32              Load_len;       /* start of debugging info */
 extern unsigned_32              Resrc_end;      /* end of resrc table      */
 extern jmp_buf                  Se_env;         /* for the setjmp          */
 extern exe_form                 Form;

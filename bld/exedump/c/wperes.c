@@ -105,7 +105,7 @@ void Dmp_fixups( void )
         Wread( &pe_fixup, sizeof( pe_fixup_header ) );
         offset += pe_fixup.block_size;
         if( pe_fixup.block_size == 0 ) break;
-        Dump_header( (char *)&pe_fixup.page_rva, pe_fixup_msg );
+        Dump_header( (char *)&pe_fixup.page_rva, pe_fixup_msg, 4 );
         if( Options_dmp & FIX_DMP ) {
             dmp_type_offset( ( pe_fixup.block_size -
                             sizeof( pe_fixup_header ) ) / 2 );
@@ -316,7 +316,7 @@ void Dmp_resources( void )
     Wlseek( Res_off );
     Wread( &pe_res_type, sizeof( resource_dir_header ) );
     Banner( "Resource Directory Table" );
-    Dump_header( (char *)&pe_res_type.flags, pe_resource_msg );
+    Dump_header( (char *)&pe_res_type.flags, pe_resource_msg, 4 );
     Wdputslc( "\n" );
     Wdputslc( "type id/string                 name id/string                 language id\n" );
     Wdputslc( "==============                 ==============                 ===========\n" );

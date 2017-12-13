@@ -99,9 +99,9 @@ static bool os2_debug( void )
 /***************************/
 {
     Wlseek( 0 );
-    Wread( &Dos_head, sizeof( Dos_head ) );
-    if( Dos_head.signature == DOS_SIGNATURE ) {
-        if( Dos_head.reloc_offset == OS2_EXE_HEADER_FOLLOWS ) {
+    Wread( &Dos_head, sizeof( Dos_head.hdr ) );
+    if( Dos_head.hdr.signature == DOS_SIGNATURE ) {
+        if( Dos_head.hdr.reloc_offset == OS2_EXE_HEADER_FOLLOWS ) {
             Wlseek( OS2_NE_OFFSET );
             Wread( &New_exe_off, sizeof( New_exe_off ) );
             Wlseek( New_exe_off );
@@ -130,7 +130,7 @@ static void dmp_master( master_dbg_header mdh )
     size_t          i;
 
     Banner( "Master Debug Info" );
-    Dump_header( (char *)&mdh.exe_major_ver, mdh_msg );
+    Dump_header( (char *)&mdh.exe_major_ver, mdh_msg, 4 );
     Wdputslc( "\n" );
 
     Curr_sectoff -= (long)mdh.debug_size;

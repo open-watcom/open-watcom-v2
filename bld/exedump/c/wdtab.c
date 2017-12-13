@@ -546,16 +546,16 @@ bool Dmp_os2_exports( void )
     unsigned_16     ordinal;
 
     /* Check executable format; handle stubless modules */
-    Wread( &Dos_head, sizeof( Dos_head ) );
-    if( Dos_head.signature == DOS_SIGNATURE ) {
-        if( Dos_head.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
+    Wread( &Dos_head, sizeof( Dos_head.hdr ) );
+    if( Dos_head.hdr.signature == DOS_SIGNATURE ) {
+        if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
             return( false );
         }
         Wlseek( OS2_NE_OFFSET );
         Wread( &New_exe_off, sizeof( New_exe_off ) );
-    } else if( Dos_head.signature == OSF_FLAT_LX_SIGNATURE
-      || Dos_head.signature == OSF_FLAT_SIGNATURE
-      || Dos_head.signature == OS2_SIGNATURE_WORD ) {
+    } else if( Dos_head.hdr.signature == OSF_FLAT_LX_SIGNATURE
+      || Dos_head.hdr.signature == OSF_FLAT_SIGNATURE
+      || Dos_head.hdr.signature == OS2_SIGNATURE_WORD ) {
         New_exe_off = 0;
     }
 

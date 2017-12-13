@@ -564,7 +564,7 @@ static void dmp_prog_sec( unsigned_32 start )
             offset += sizeof( Elf32_Phdr );
             Data_count++;
             dmp_prog_type( elf_prog.p_type );
-            Dump_header( &elf_prog, elf_prog_msg );
+            Dump_header( &elf_prog, elf_prog_msg, 4 );
             dmp_prog_flgs( elf_prog.p_flags );
             if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
                 if( Segspec == 0 || Segspec == Data_count ) {
@@ -598,7 +598,7 @@ static void dmp_prog_sec( unsigned_32 start )
                 Wdputslc( "\n" );
             }
             dmp_sec_type( elf_sec.sh_type );
-            Dump_header( &elf_sec.sh_name, elf_sec_msg );
+            Dump_header( &elf_sec.sh_name, elf_sec_msg, 4 );
             dmp_sec_flgs( elf_sec.sh_flags );
             if( Options_dmp & FIX_DMP ) {
                 if( elf_sec.sh_type==SHT_REL || elf_sec.sh_type==SHT_RELA ) {
@@ -745,7 +745,7 @@ static void dmp_cmd_list( unsigned_32 start, int n )
         switch( cmd ) {
         case LC_SEGMENT:
             Wread( &seg, sizeof( seg ) );
-            Dump_header( &seg, m_segment_msg );
+            Dump_header( &seg, m_segment_msg, 4 );
             break;
         default:
             Wdputs( "\ncmd       = " );
@@ -767,7 +767,7 @@ bool Dmp_macho_header( unsigned long start )
 /******************************************/
 {
     struct mach_header  mhead;
-    
+
     Wread( &mhead, sizeof( mhead ) );
     if( (mhead.magic != MH_MAGIC) && (mhead.magic != MH_CIGAM) ) {
         return( false );
