@@ -60,9 +60,10 @@ int SysRunCommand( const char *cmd )
     char        *cmdline;
     tiny_ret_t  tinyrc;
     int         ofh;
-    char        temp_name[256];
+    char        temp_name[256 + 1 + 13];
     char        buff[256 + 1];
     unsigned    bytes_read;
+    char        *p;
 
     pgmname = strdup( cmd );
     if( pgmname == NULL )
@@ -76,7 +77,10 @@ int SysRunCommand( const char *cmd )
     }
     rc = -1;
     getcwd( temp_name, 256 );
-    memset( temp_name + strlen( temp_name ), 0, 13 );
+    p = temp_name + strlen( temp_name );
+    if( p[-1] != '\\' )
+        *p++ = '\\';
+    memset( p, 0, 13 );
     tinyrc = TinyCreateTemp( temp_name, TIO_NORMAL );
     if( TINY_OK( tinyrc ) ) {
         ofh = TINY_INFO( tinyrc );
