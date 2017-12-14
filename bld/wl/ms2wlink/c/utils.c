@@ -57,8 +57,8 @@ void UtilsInit( void )
 /***************************/
 // check to see if STDIN is the console. if not, don't write prompt.
 {
-    QSetBinary( STDIN_HANDLE );
-    WritePrompt = QIsConIn( STDIN_HANDLE );
+    QSetBinary( stdin );
+    WritePrompt = QIsConIn( stdin );
 }
 
 void ImplyFormat( format_type typ )
@@ -274,10 +274,10 @@ static void PromptStart( const char *msg, prompt_slot slot )
     const char  *text;
 
     text = PromptText[slot];
-    QWrite( STDERR_HANDLE, text, strlen( text ), "console" );
-    QWrite( STDERR_HANDLE, "[", 1, "console" );
+    QWrite( stderr, text, strlen( text ), "console" );
+    QWrite( stderr, "[", 1, "console" );
     if( msg != NULL ) {
-        QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
+        QWrite( stderr, msg, strlen( msg ), "console" );
     }
 }
 
@@ -312,10 +312,10 @@ void OutPutPrompt( prompt_slot slot )
         // note: fall down
     default:
         PromptStart( msg, slot );
-        QWrite( STDERR_HANDLE, DefExt[slot], 4, "console" );
+        QWrite( stderr, DefExt[slot], 4, "console" );
         break;
     }
-    QWrite( STDERR_HANDLE, "]: ", 3, "console" );
+    QWrite( stderr, "]: ", 3, "console" );
 }
 
 // spawn/suicide support.

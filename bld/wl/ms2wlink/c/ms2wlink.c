@@ -167,7 +167,7 @@ static void BuildWATCOM( void )
     ListWrite( Commands[OPTION_SLOT] );
 }
 
-#define NL "\r\n"
+#define NL "\n"
 static const char TheHelp[] = {
     banner1w1( "Microsoft to Watcom linker command translation utility" ) NL
     banner1w2( _MS2WLINK_VERSION_ ) NL

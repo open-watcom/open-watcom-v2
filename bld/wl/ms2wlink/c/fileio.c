@@ -49,33 +49,33 @@ static void IOError( char *msgstart, const char *name )
     ErrorExit( strerror( errno ) );
 }
 
-f_handle QOpenR( const char *name )
-/*********************************/
+FILE *QOpenR( const char *name )
+/******************************/
 {
-    f_handle h;
+    FILE    *fp;
 
-    h = open( name, O_RDONLY | O_BINARY );
-    if( h >= 0 ) {
-        return( h );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        return( fp );
     }
     IOError( "can't open ", name );
-    return( NIL_FHANDLE );
+    return( NULL );
 }
 
-size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+size_t QRead( FILE *fp, void *buffer, size_t len, const char *name )
 /***********************************************************************/
 {
     size_t  ret;
 
-    ret = posix_read( file, buffer, len );
+    ret = fread( buffer, 1, len, fp );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
     return( ret );
 }
 
-size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
-/******************************************************************************/
+size_t QWrite( FILE *fp, const void *buffer, size_t len, const char *name )
+/*************************************************************************/
 /* write from far memory */
 {
     size_t  ret;
@@ -83,44 +83,42 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
     if( len == 0 )
         return( 0 );
 
-    ret = posix_write( file, buffer, len );
+    ret = fwrite( buffer, 1, len, fp );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
     return( ret );
 }
 
-void QWriteNL( f_handle file, const char *name )
+void QWriteNL( FILE *fp, const char *name )
 /**********************************************/
 {
-    QWrite( file, "\n", 1, name );
+    QWrite( fp, "\n", 1, name );
 }
 
-void QClose( f_handle file, const char *name )
-/********************************************/
+void QClose( FILE *fp, const char *name )
+/***************************************/
 /* file close */
 {
-    int ret;
-
-    ret = close( file );
-    if( ret == -1 ) {
+    if( fclose( fp ) ) {
         IOError( "io error processing ", name );
     }
 }
 
-unsigned long QFileSize( f_handle file )
-/**************************************/
+unsigned long QFileSize( FILE *fp )
+/*********************************/
 {
     unsigned long   curpos;
     unsigned long   size;
 
-    curpos = tell( file );
-    size = lseek( file, 0L, SEEK_END );
-    lseek( file, curpos, SEEK_SET );
+    curpos = ftell( fp );
+    fseek( fp, 0L, SEEK_END );
+    size = ftell( fp );
+    fseek( fp, curpos, SEEK_SET );
     return( size );
 }
 
-bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+bool QReadStr( FILE *fp, char *dest, size_t size, const char *name )
 /***********************************************************************/
 /* quick read string (for reading directive file) */
 {
@@ -129,7 +127,7 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 
     eof = false;
     while( --size > 0 ) {
-        if( QRead( file, &ch, 1, name ) == 0 ) {
+        if( QRead( fp, &ch, 1, name ) == 0 ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {
@@ -143,10 +141,10 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
     return( eof );
 }
 
-bool QIsConIn( f_handle file )
-/****************************/
+bool QIsConIn( FILE *fp )
+/***********************/
 {
-    return( isatty( file ) );
+    return( isatty( fileno( fp ) ) );
 }
 
 // routines based on the "quick" file i/o routines.
@@ -154,28 +152,27 @@ bool QIsConIn( f_handle file )
 void ErrorOut( const char *msg )
 /******************************/
 {
-    QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
+    QWrite( stderr, msg, strlen( msg ), "console" );
 }
 
 void ErrorExit( const char *msg )
 /*******************************/
 {
-    QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
-    QWriteNL( STDERR_HANDLE, "console" );
+    QWrite( stderr, msg, strlen( msg ), "console" );
+    QWriteNL( stderr, "console" );
     Suicide();
 }
 
 void CommandOut( const char *command )
 /************************************/
 {
-    QWrite( STDOUT_HANDLE, command, strlen( command ), "console" );
-    QWriteNL( STDOUT_HANDLE, "console" );
+    printf( "%s\n", command );
 }
 
-void QSetBinary( f_handle file )
-/******************************/
+void QSetBinary( FILE *fp )
+/*************************/
 {
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    setmode( file, O_BINARY );
+    setmode( fileno( fp ), O_BINARY );
 #endif
 }

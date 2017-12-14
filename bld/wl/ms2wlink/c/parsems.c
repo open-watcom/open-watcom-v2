@@ -65,7 +65,7 @@ bool InitParsing( void )
     CmdFile->oldhow = COMMANDLINE;
     CmdFile->where = MIDST;
     CmdFile->name = NULL;
-    CmdFile->file = NIL_FHANDLE;
+    CmdFile->fp = NULL;
     getcmd( CmdFile->buffer );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
@@ -79,8 +79,8 @@ void FreeParserMem( void )
 
     while( (curr = CmdFile) != NULL ) {
         CmdFile = CmdFile->next;
-        if( curr->file != NIL_FHANDLE ) {
-            QClose( curr->file, curr->name );
+        if( curr->fp != NULL ) {
+            QClose( curr->fp, curr->name );
         }
         MemFree( curr->buffer );
         MemFree( curr->name );
@@ -92,7 +92,7 @@ static void GetNewLine( prompt_slot slot )
 /******************************************/
 {
     if( CmdFile->how == NONBUFFERED ) {
-        if( QReadStr( CmdFile->file, CmdFile->buffer, MAX_LINE, CmdFile->name ) ) {
+        if( QReadStr( CmdFile->fp, CmdFile->buffer, MAX_LINE, CmdFile->name ) ) {
             CmdFile->where = ENDOFFILE;
         } else {
             CmdFile->where = MIDST;
@@ -111,7 +111,7 @@ static void GetNewLine( prompt_slot slot )
         CmdFile->how = INTERACTIVE;
         CmdFile->oldhow = INTERACTIVE;
         OutPutPrompt( slot );
-        if( QReadStr( STDIN_HANDLE, CmdFile->buffer, MAX_LINE, "console" ) ) {
+        if( QReadStr( stdin, CmdFile->buffer, MAX_LINE, "console" ) ) {
             CmdFile->where = ENDOFCMD;
         } else {
             CmdFile->where = MIDST;
@@ -128,7 +128,7 @@ static void RestoreCmdLine( void )
 
     temp = CmdFile;
     CmdFile = CmdFile->next;
-    QClose( temp->file, temp->name );
+    QClose( temp->fp, temp->name );
     MemFree( temp->name );
     MemFree( temp->buffer );
     MemFree( temp );
@@ -182,18 +182,18 @@ void StartNewFile( char *fname )
 
     newfile = MemAlloc( sizeof( cmdfilelist ) );
     newfile->name = fname;
-    newfile->file = NIL_FHANDLE;
+    newfile->fp = NULL;
     newfile->buffer = NULL;
     newfile->next = CmdFile;
     CmdFile = newfile;
-    newfile->file = QOpenR( newfile->name );
-    long_size = QFileSize( newfile->file );
+    newfile->fp = QOpenR( newfile->name );
+    long_size = QFileSize( newfile->fp );
     if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
         size_t  size = (size_t)long_size;
 
         newfile->buffer = MemAlloc( size + 1 );
         if( newfile->buffer != NULL ) {
-            size = QRead( newfile->file, newfile->buffer, size, newfile->name );
+            size = QRead( newfile->fp, newfile->buffer, size, newfile->name );
             *(newfile->buffer + size) = '\0';
             newfile->where = MIDST;
             newfile->how = BUFFERED;
