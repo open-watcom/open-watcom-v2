@@ -68,9 +68,7 @@ bool XchkOpen( where_parm where, char *f_buff )
         if( TINY_OK( rc ) ) {
             while( *f_buff != NULLCHAR )
                 ++f_buff;
-            if( f_buff[-1] == '\\' ) {
-                --f_buff;
-            } else {
+            if( f_buff[-1] != '\\' ) {
                 *f_buff++ = '\\';
             }
             memcpy( f_buff, CHECK_FILE, sizeof( CHECK_FILE ) );
