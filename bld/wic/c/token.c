@@ -699,7 +699,7 @@ WicErrors getNextToken(pToken tok)
             temp,
             orderLineNum
         );
-        while (NEXT_CHAR == '') {
+        while (NEXT_CHAR == '\f') {
             getNextChar();
             tok->pos->spacesBefore = skipBlank();
         }

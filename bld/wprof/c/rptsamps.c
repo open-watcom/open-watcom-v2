@@ -293,7 +293,7 @@ void ReportSampleInfo( void )
         for( ;; ) {
             curr_sio = curr_sio->next;
             dumpSampleInfo();
-            fprintf( df, "\n" );
+            fprintf( df, "\f\n" );
             dumpSampleImages( true, curr_sio );
             if( curr_sio == SIOData ) {
                 break;
