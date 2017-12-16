@@ -700,4 +700,12 @@ void PMakeCleanup( pmake_data *data )
         free( data->targ_list );
         data->targ_list = tmp;
     }
+    if( data->command != NULL ) {
+        free( data->command );
+        data->command = NULL;
+    }
+    if( data->makefile != NULL ) {
+        free( data->makefile );
+        data->makefile = NULL;
+    }
 }
