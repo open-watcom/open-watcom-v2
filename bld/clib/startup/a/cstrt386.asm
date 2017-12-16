@@ -88,7 +88,8 @@ BEGTEXT  segment use32 para public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
+        jmp short forever
+        public ___begtext
 ___begtext label byte
         nop     ;3
         nop     ;4
@@ -103,7 +104,6 @@ ___begtext label byte
         nop     ;D
         nop     ;E
         nop     ;F
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 

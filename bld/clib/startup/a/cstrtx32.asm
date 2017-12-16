@@ -117,8 +117,10 @@ DGROUP group BEGTEXT,_TEXT,CODE32,_NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,Y
 
 BEGTEXT  segment use32 para public 'CODE'
         assume  cs:_TEXT
-        jmp     null_error
+        jmp short null_error
         nop     ;2
+        public ___begtext
+___begtext label byte
         nop     ;3
         nop     ;4
         nop     ;5

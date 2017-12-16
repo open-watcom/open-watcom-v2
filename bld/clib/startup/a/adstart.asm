@@ -149,11 +149,11 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 BEGTEXT  segment use32 word public 'CODE'
         assume  cs:BEGTEXT
-___begtext label byte
 forever label   near
         int     3h
-        jmp    short forever
+        jmp short forever
         public ___begtext
+___begtext label byte
         assume  cs:nothing
 BEGTEXT  ends
 

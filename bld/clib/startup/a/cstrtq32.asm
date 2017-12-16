@@ -65,9 +65,10 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 BEGTEXT segment use32 dword public 'CODE'
         assume  cs:BEGTEXT
         int 0       ; cause a fault
+        nop
+        nop
+        public ___begtext
 ___begtext label byte
-        nop
-        nop
         nop
         nop
         assume  cs:nothing

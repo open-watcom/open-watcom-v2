@@ -68,13 +68,15 @@ ENDM
 
 BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
-forever: jmp    short forever
+forever label   near
+        jmp short forever
+        nop
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 

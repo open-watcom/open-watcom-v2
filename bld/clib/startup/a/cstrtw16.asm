@@ -90,13 +90,13 @@ BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
+        jmp short forever
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 

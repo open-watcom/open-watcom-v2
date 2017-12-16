@@ -64,12 +64,14 @@ if ( _MODEL and _BIG_CODE ) eq 0
 BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
         int     0       ; cause a fault
+        nop
+        nop
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 

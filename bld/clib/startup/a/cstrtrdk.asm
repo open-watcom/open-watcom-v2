@@ -46,15 +46,15 @@ BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
-        ; NOTE that __begtext needs to be at offset 3
+        jmp short forever
+        ; NOTE that ___begtext needs to be at offset 3
         ; don't move it.  i.e. don't change any code before here.
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 
