@@ -52,9 +52,9 @@ set PROJDIR=<CWD>
     <CPCMD> <OWSRCDIR>/watcom/h/mdef.inc                  <OWRELROOT>/src/startup/mdef.inc
     <CPCMD> <OWSRCDIR>/watcom/h/xinit.inc                 <OWRELROOT>/src/startup/xinit.inc
     <CPCMD> <OWSRCDIR>/comp_cfg/h/langenv.inc             <OWRELROOT>/src/startup/langenv.inc
-    <CPCMD> <OWSRCDIR>/clib/startup/a/msgrt16.inc         <OWRELROOT>/src/startup/msgrt16.inc
-    <CPCMD> <OWSRCDIR>/clib/startup/a/msgrt32.inc         <OWRELROOT>/src/startup/msgrt32.inc
-    <CPCMD> <OWSRCDIR>/clib/startup/a/msgcpyrt.inc        <OWRELROOT>/src/startup/msgcpyrt.inc
+    <CPCMD> <OWSRCDIR>/clib/startup/h/msgrt16.inc         <OWRELROOT>/src/startup/msgrt16.inc
+    <CPCMD> <OWSRCDIR>/clib/startup/h/msgrt32.inc         <OWRELROOT>/src/startup/msgrt32.inc
+    <CPCMD> <OWSRCDIR>/clib/startup/h/msgcpyrt.inc        <OWRELROOT>/src/startup/msgcpyrt.inc
 
     <CPCMD> <OWSRCDIR>/cpplib/contain/cpp/*               <OWRELROOT>/src/cpplib/contain/
 
