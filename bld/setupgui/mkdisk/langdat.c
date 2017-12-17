@@ -38,6 +38,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "bldutils.h"
+#include "memutils.h"
 #include "iopath.h"
 
 #include "clibext.h"
@@ -99,7 +100,7 @@ static void AddToList( const char *name, ctl_file **owner )
         break;
         owner = &curr->next;
     }
-    curr = Alloc( sizeof( *curr ) );
+    curr = MAlloc( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->name, name );
     *owner = curr;
@@ -195,7 +196,7 @@ static void PushInclude( const char *name )
     char        dir_name[_MAX_PATH];
     size_t      len;
 
-    new = Alloc( sizeof( *new ) );
+    new = MAlloc( sizeof( *new ) );
     new->prev = IncludeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
@@ -228,7 +229,7 @@ static bool PopInclude( void )
     curr = IncludeStk;
     fclose( curr->fp );
     IncludeStk = curr->prev;
-    free( curr );
+    MFree( curr );
     if( IncludeStk == NULL ) {
         return( false );
     }
@@ -411,16 +412,16 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
     bool        found;
 
     len = strlen( str ) + 1;
-    s_copy = Alloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
+    s_copy = MAlloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
         found = checkWord( p, word_list );
         if( found && !and_op || !found && and_op ) {
-            free( s_copy );
+            MFree( s_copy );
             return( !and_op );
         }
     }
-    free( s_copy );
+    MFree( s_copy );
     return( and_op );
 }
 
@@ -444,7 +445,7 @@ static void set_product_version( char *filename )
 }
 
 #define DEFVAL(x)   ((x==NULL)?"":x)
-#define DEFVALA(x)  ((x==NULL)?NULL:strdup(x))
+#define DEFVALA(x)  ((x==NULL)?NULL:MStrdup(x))
 
 static void ProcessLine( const char *line )
 {
@@ -472,7 +473,7 @@ static void ProcessLine( const char *line )
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVAL( DefKeys );
 
-    line_copy = strdup( line );
+    line_copy = MStrdup( line );
     p = SkipBlanks( line_copy );
     cmd = strtok( p, "=" );
     do {
@@ -493,17 +494,17 @@ static void ProcessLine( const char *line )
             rel = str;
         } else if( !stricmp( cmd, "cond" ) ) {
             if( cond != NULL ) {
-                free( cond );
+                MFree( cond );
             }
-            cond = strdup( str );
+            cond = MStrdup( str );
         } else if( !stricmp( cmd, "conda" ) ) {
             if( cond == NULL ) {
-                cond = strdup( str );
+                cond = MStrdup( str );
             } else {
                 len = strlen( cond ) + strlen( str ) + 1 + 1;
-                p = Alloc( len );
+                p = MAlloc( len );
                 strcpy( p, cond );
-                free( cond );
+                MFree( cond );
                 cond = p;
                 strcat( p, " " );
                 strcat( p, str );
@@ -512,17 +513,17 @@ static void ProcessLine( const char *line )
 //            pack = str;
         } else if( !stricmp( cmd, "where" ) ) {
             if( where != NULL ) {
-                free( where );
+                MFree( where );
             }
-            where = strdup( str );
+            where = MStrdup( str );
         } else if( !stricmp( cmd, "wherea" ) ) {
             if( where == NULL ) {
-                where = strdup( str );
+                where = MStrdup( str );
             } else {
                 len = strlen( where ) + strlen( str ) + 1 + 1;
-                p = Alloc( len );
+                p = MAlloc( len );
                 strcpy( p, where );
-                free( where );
+                MFree( where );
                 where = p;
                 strcat( p, " " );
                 strcat( p, str );
@@ -563,12 +564,12 @@ static void ProcessLine( const char *line )
             Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
         }
     }
-    free( line_copy );
+    MFree( line_copy );
     if( cond != NULL && *cond != '\0' ) {
-        free( cond );
+        MFree( cond );
     }
     if( where != NULL && *where != '\0' ) {
-        free( where );
+        MFree( where );
     }
 }
 
@@ -578,24 +579,24 @@ static void ProcessDefault( const char *line )
     char    *line_copy;
 
     /* Reset any existing defaults */
-    if( DefType != NULL ) free( DefType );
-    if( DefRedist != NULL ) free( DefRedist );
-    if( DefDir != NULL ) free( DefDir );
-    if( DefUsr != NULL ) free( DefUsr );
-    if( DefRel != NULL ) free( DefRel );
-    if( DefCond != NULL ) free( DefCond );
-    if( DefPack != NULL ) free( DefPack );
-    if( DefWhere != NULL ) free( DefWhere );
-    if( DefDesc != NULL ) free( DefDesc );
-    if( DefOld != NULL ) free( DefOld );
-    if( DefPatch != NULL ) free( DefPatch );
-    if( DefDstvar != NULL ) free( DefDstvar );
-    if( DefKeys != NULL ) free( DefKeys );
+    if( DefType != NULL ) MFree( DefType );
+    if( DefRedist != NULL ) MFree( DefRedist );
+    if( DefDir != NULL ) MFree( DefDir );
+    if( DefUsr != NULL ) MFree( DefUsr );
+    if( DefRel != NULL ) MFree( DefRel );
+    if( DefCond != NULL ) MFree( DefCond );
+    if( DefPack != NULL ) MFree( DefPack );
+    if( DefWhere != NULL ) MFree( DefWhere );
+    if( DefDesc != NULL ) MFree( DefDesc );
+    if( DefOld != NULL ) MFree( DefOld );
+    if( DefPatch != NULL ) MFree( DefPatch );
+    if( DefDstvar != NULL ) MFree( DefDstvar );
+    if( DefKeys != NULL ) MFree( DefKeys );
     DefType = DefRedist = DefDir = DefUsr = DefRel = DefCond = DefPack
         = DefWhere = DefDesc = DefOld = DefPatch = DefDstvar = DefKeys = NULL;
 
     /* Process new defaults (if provided) */
-    line_copy = strdup( line );
+    line_copy = MStrdup( line );
     p = SkipBlanks( line_copy );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
@@ -607,31 +608,31 @@ static void ProcessDefault( const char *line )
         do {
             str = strtok( NULL, "\"" );
             if( !stricmp( cmd, "type" ) ) {
-                DefType = strdup( str );
+                DefType = MStrdup( str );
             } else if( !stricmp( cmd, "redist" ) ) {
-                DefRedist = strdup( str );
+                DefRedist = MStrdup( str );
             } else if( !stricmp( cmd, "dir" ) ) {
-                DefDir = strdup( str );
+                DefDir = MStrdup( str );
             } else if( !stricmp( cmd, "usr" ) ) {
-                DefUsr = strdup( str );
+                DefUsr = MStrdup( str );
             } else if( !stricmp( cmd, "rel" ) ) {
-                DefRel = strdup( str );
+                DefRel = MStrdup( str );
             } else if( !stricmp( cmd, "cond" ) ) {
-                DefCond = strdup( str );
+                DefCond = MStrdup( str );
             } else if( !stricmp( cmd, "pack" ) ) {
-                DefPack = strdup( str );
+                DefPack = MStrdup( str );
             } else if( !stricmp( cmd, "where" ) ) {
-                DefWhere = strdup( str );
+                DefWhere = MStrdup( str );
             } else if( !stricmp( cmd, "desc" ) ) {
-                DefDesc = strdup( str );
+                DefDesc = MStrdup( str );
             } else if( !stricmp( cmd, "old" ) ) {
-                DefOld = strdup( str );
+                DefOld = MStrdup( str );
             } else if( !stricmp( cmd, "patch" ) ) {
-                DefPatch = strdup( str );
+                DefPatch = MStrdup( str );
             } else if( !stricmp( cmd, "dstvar" ) ) {
-                DefDstvar = strdup( str );
+                DefDstvar = MStrdup( str );
             } else if( !stricmp( cmd, "keys" ) ) {
-                DefKeys = strdup( str );
+                DefKeys = MStrdup( str );
             } else {
                 printf( "langdat warning: unknown default %s\n", cmd );
                 printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
@@ -639,7 +640,7 @@ static void ProcessDefault( const char *line )
             cmd = strtok( NULL, " \t=" );
         } while( cmd != NULL );
     }
-    free( line_copy );
+    MFree( line_copy );
 }
 
 /****************************************************************************
@@ -818,6 +819,7 @@ int main( int argc, char *argv[] )
 
     /* unused parameters */ (void)argc;
 
+    MOpen();
     Product_ver[0] = '\0';
     ProcessOptions( argv + 1 );
     if( Product == NULL ) {
@@ -834,6 +836,7 @@ int main( int argc, char *argv[] )
             Line[0] = '\0';
 #endif
             if( Line[0] == '\0' ) {
+                MClose();
                 Fatal( "Can not find '%s'\n", p );
             }
         }
@@ -842,9 +845,10 @@ int main( int argc, char *argv[] )
     while( CtlList != NULL ) {
         ProcessCtlFile( CtlList->name );
         next = CtlList->next;
-        free( CtlList );
+        MFree( CtlList );
         CtlList = next;
     }
     CloseLog();
+    MClose();
     return( 0 );
 }
