@@ -49,7 +49,7 @@ diff_objs    = diff.obj $(cl_extra_objs_gen)
 cdsay_objs   = cdsay.obj equals.obj
 wgrep_objs   = wgrep.obj $(cl_extra_objs_gen)
 
-extra_cpp_flags = -DSTANDALONE_RX -DTRMEM
+extra_cpp_flags = -DSTANDALONE_RX
 
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
 extra_c_flags_utils = $(trmem_cover_cflags)
