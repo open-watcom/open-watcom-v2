@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include <direct.h>
 #include "builder.h"
 #include "tinyio.h"
+#include "memutils.h"
 
 
 void SysInit( int argc, char *argv[] )
@@ -65,7 +67,7 @@ int SysRunCommand( const char *cmd )
     unsigned    bytes_read;
     char        *p;
 
-    pgmname = strdup( cmd );
+    pgmname = MStrdup( cmd );
     if( pgmname == NULL )
         return( -1 );
     cmdline = strchr( pgmname, ' ' );
@@ -117,6 +119,6 @@ int SysRunCommand( const char *cmd )
         }
         TinyDelete( temp_name );
     }
-    free( pgmname );
+    MFree( pgmname );
     return( rc );
 }

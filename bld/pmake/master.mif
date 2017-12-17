@@ -2,14 +2,20 @@ proj_name = pmake
 
 pmake_autodepends = .AUTODEPEND
 
+pmake_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-.c : ..
+!include trmem.mif
 
-extra_c_flags           = -I..
+.c : ..;$(trmem_dir)
 
-objs = pmake.obj pmkcmd.obj
+extra_c_flags	= -I.. -I"$(builder_dir)/h"
+extra_c_flags_pmkcmd = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
+
+objs = pmake.obj pmkcmd.obj $(trmem_objs)
 
 !include exetarg.mif

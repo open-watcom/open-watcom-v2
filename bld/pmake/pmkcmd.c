@@ -44,6 +44,10 @@
 #include "bool.h"
 #include "watcom.h"
 #include "pmake.h"
+#include "memutils.h"
+#ifdef TRMEM
+#include "trmem.h"
+#endif
 
 #include "clibext.h"
 #include "clibint.h"
@@ -71,8 +75,8 @@ static void WriteCmdFile( pmake_data *data )
 
     fp = fopen( TMPBAT, "w+t" );
     if( fp == NULL ) {
-        printf( "PMAKE: unable to open %s for writing: %s\n",
-            TMPBAT, strerror( errno ) );
+        printf( "PMAKE: unable to open %s for writing: %s\n", TMPBAT, strerror( errno ) );
+        MClose();
         exit( EXIT_FAILURE );
     }
 #ifdef __UNIX__
@@ -95,8 +99,8 @@ static void WriteCmdFile( pmake_data *data )
     getcwd( buffer, sizeof( buffer ) );
     fprintf( fp, "cd %s\n", buffer );
     if( fclose( fp ) ) {
-        printf( "PMAKE: unable to close %s: %s\n",
-            TMPBAT, strerror( errno ) );
+        printf( "PMAKE: unable to close %s: %s\n", TMPBAT, strerror( errno ) );
+        MClose();
         exit( EXIT_FAILURE );
     }
 }
@@ -118,7 +122,7 @@ static int RunCommand( char *cmd )
             skip_sp = false;
         }
     }
-    argv = (const char **)malloc( i * sizeof( char * ) );
+    argv = (const char **)MAlloc( i * sizeof( char * ) );
     if( argv == NULL )
         return( 1 );    // error no memory
     skip_sp = true;
@@ -136,7 +140,7 @@ static int RunCommand( char *cmd )
     }
     argv[i] = NULL;
     i = (int)spawnvp( P_WAIT, cmd, argv );
-    free( (void *)argv );
+    MFree( (void *)argv );
     return( i );
 }
 
@@ -227,6 +231,7 @@ static void PrintHelp( void )
 
     for( i = 0; Help[i] != NULL; ++i )
         puts( Help[i] );
+    MClose();
     exit( EXIT_FAILURE );
 }
 
@@ -246,9 +251,11 @@ int main( void )
     _argv = argv;
     _argc = argc;
 #endif
+    MOpen();
     getcmd( CmdBuff );
     data = PMakeBuild( CmdBuff );
     if( data == NULL ) {
+        MClose();
         exit( EXIT_FAILURE );
     }
     if( data->want_help ) {
@@ -256,6 +263,7 @@ int main( void )
     }
     if( data->want_help || data->signaled ) {
         PMakeCleanup( data );
+        MClose();
         exit( EXIT_FAILURE );
     }
     /* If -b was given, only write out a batch file. By default,
@@ -269,5 +277,60 @@ int main( void )
     }
 
     PMakeCleanup( data );
+    MClose();
     return( rc );
+}
+
+#ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+
+static void     TRPrintLine( void *h, const char *buff, size_t len )
+{
+    /* unused parameters */ (void)h; (void)len;
+    printf( "%s\n", buff );
+}
+#endif
+
+void MOpen( void )
+/****************/
+{
+#ifdef TRMEM
+    TRMemHandle = _trmem_open( malloc, free, NULL, NULL, NULL, TRPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
+}
+
+void MClose( void )
+/*****************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( TRMemHandle );
+    _trmem_close( TRMemHandle );
+#endif
+}
+
+void *MAlloc( size_t size )
+{
+    void        *p;
+
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
+    p = malloc( size );
+#endif
+    if( p == NULL ) {
+        printf( "Out of memory!\n" );
+        MClose();
+        exit( EXIT_FAILURE );
+    }
+    return( p );
+}
+
+void MFree( void *p )
+{
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), TRMemHandle );
+#else
+    free( p );
+#endif
 }

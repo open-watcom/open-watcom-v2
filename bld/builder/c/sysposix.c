@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <sys/wait.h>
 #include "watcom.h"
 #include "builder.h"
+#include "memutils.h"
 
 #define BUFSIZE 256
 
@@ -53,12 +55,12 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     const char  **argv;
     int         i;
 
-    cmdnam = strdup( cmd );
+    cmdnam = MStrdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
-    argv = malloc( strlen( cmd ) * sizeof( char * ) );
+    argv = MAlloc( strlen( cmd ) * sizeof( char * ) );
     if( argv == NULL ) {
-        free( cmdnam );
+        MFree( cmdnam );
         return( -1 );
     }
     i = 0;
@@ -92,8 +94,8 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
             }
         }
     }
-    free( cmdnam );
-    free( argv );
+    MFree( cmdnam );
+    MFree( argv );
     if( pid == -1 )
         return( -1 );
     return( 0 );

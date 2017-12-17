@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,24 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Builder & Langdat utility functions.
+* Description:  Memory handling functions.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stddef.h>
-#include "bool.h"
-
-#define MAX_LINE    4096
-
-#define IS_BLANK(c) ((c)==' ' || (c)=='\t')
-
-extern FILE         *LogFile;
-
-extern void         Fatal( const char *, ... );
-extern void         Log( bool quiet, const char *, ... );
-extern void         LogFlush( void );
-extern void         OpenLog( const char * );
-extern void         CloseLog( void );
-extern char         *SkipBlanks( const char * );
+extern void         *MAlloc( size_t );
+extern void         MFree( void * );
+extern void         MOpen( void );
+extern void         MClose( void );
+extern char         *MStrdup( const char * );
