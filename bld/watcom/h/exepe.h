@@ -57,7 +57,7 @@ enum {
     PE_TBL_NUMBER = 16
 };
 
-#define OLD_PE_TBL_NUMBER 9
+#define OLD_PE_TBL_NUMBER   9
 
 typedef struct {
         pe_va           rva;
@@ -82,6 +82,7 @@ typedef struct {
     unsigned_32         uninit_data_size;
     pe_va               entry_rva;
     unsigned_32         code_base;
+    /* here start difference */
     unsigned_32         data_base;
     unsigned_32         image_base;
     unsigned_32         object_align;
@@ -125,6 +126,7 @@ typedef struct {
     unsigned_32         uninit_data_size;
     pe_va               entry_rva;
     unsigned_32         code_base;
+    /* here start difference */
     unsigned_64         image_base;
     unsigned_32         object_align;
     unsigned_32         file_align;
