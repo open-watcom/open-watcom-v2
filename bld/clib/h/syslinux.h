@@ -40,7 +40,7 @@
 #endif
 
 /* Include architecture specific definitions */
-#if defined( __386__ )
+#if defined( _M_IX86 ) && !defined( _M_I86 )
     #include "sys386.h"
 #elif defined( __PPC__ )
     #include "sysppc.h"

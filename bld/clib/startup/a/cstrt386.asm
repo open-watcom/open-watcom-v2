@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -87,23 +88,23 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,
 BEGTEXT  segment use32 para public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
-        int     3h
-        jmp short forever
+        int     3h              ;0
+        jmp short forever       ;1
         public ___begtext
 ___begtext label byte
-        nop     ;3
-        nop     ;4
-        nop     ;5
-        nop     ;6
-        nop     ;7
-        nop     ;8
-        nop     ;9
-        nop     ;A
-        nop     ;B
-        nop     ;C
-        nop     ;D
-        nop     ;E
-        nop     ;F
+        nop                     ;3
+        nop                     ;4
+        nop                     ;5
+        nop                     ;6
+        nop                     ;7
+        nop                     ;8
+        nop                     ;9
+        nop                     ;A
+        nop                     ;B
+        nop                     ;C
+        nop                     ;D
+        nop                     ;E
+        nop                     ;F
         assume  cs:nothing
 BEGTEXT  ends
 

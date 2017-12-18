@@ -51,7 +51,7 @@ extern "C" {
   extern unsigned _inline_inpw(unsigned __port);
   extern unsigned _inline_outp(unsigned __port, unsigned __value);
   extern unsigned _inline_outpw(unsigned __port,unsigned __value);
- #ifdef __386__
+ #if !defined( _M_I86 )
   extern unsigned _inline_inpd(unsigned __port);
   extern unsigned _inline_outpd(unsigned __port,unsigned __value);
  #endif

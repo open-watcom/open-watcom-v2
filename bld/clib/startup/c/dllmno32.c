@@ -42,10 +42,3 @@ unsigned APIENTRY DllMain( unsigned hmod, unsigned termination )
     }
     return( __dll_initialize() );
 }
-
-#pragma off (unreferenced)
-extern void __DLLstart_( void );
-static const void *__p = &__DLLstart_;
-#if defined(_M_IX86)
- #pragma aux __DLLstart_  "*"
-#endif

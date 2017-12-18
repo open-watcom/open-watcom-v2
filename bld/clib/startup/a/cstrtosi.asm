@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -249,11 +250,11 @@ _cstart_ proc  far
 
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
         call    __CMain
-
         jmp     exit_                   ; exit
-        dd      ___begtext              ; make sure dead code elimination
 _cstart_ endp
 
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT segment
 
 __exit  proc far
 public "C",__exit
