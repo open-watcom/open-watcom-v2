@@ -42,6 +42,8 @@ all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 
 !else ifeq host_os nt
 
+extra_a_flags_cstrtwnt = -I"$(clib_dir)/startup/h"
+
 extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
 extra_c_flags_int21nt = -s
 
@@ -51,7 +53,9 @@ all : w32run.exe .SYMBOLIC
 
 all: .SYMBOLIC
 
-extra_c_flags_loader = -D__OS2 -D__CALL21__
+extra_a_flags_cstrtos2 = -I"$(clib_dir)/startup/h"
+
+extra_c_flags_loader   = -D__OS2 -D__CALL21__
 
 !else
 

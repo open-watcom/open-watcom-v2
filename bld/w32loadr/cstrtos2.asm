@@ -60,15 +60,12 @@ _LaunchPgm_ proc near
         ret                     ; return
 _LaunchPgm_ endp
 
-copyright proc  near
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by WATCOM International Corp. 1988-1995."
-        db      " All rights reserved."
-copyright endp
+include msgcpyrt.inc
 
 _TEXT   ends
 
