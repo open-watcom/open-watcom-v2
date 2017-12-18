@@ -139,25 +139,19 @@ STACK   ends
 
         assume  cs:_TEXT
 
- _cstart_ proc near
+_cstart_ proc near
         jmp     around
 
-;
-; copyright message
-;
-include msgcpyrt.inc
+if ( _MODEL and _BIG_CODE ) eq 0
+        dw      ___begtext      ; make sure dead code elimination
+endif                           ; doesn't kill BEGTEXT segment
 
 ;
 ; miscellaneous code-segment messages
 ;
 NullAssign      db      '*** NULL assignment detected',0
 
-if ( _MODEL and _BIG_CODE ) eq 0
-        dw      ___begtext      ; make sure dead code elimination
-endif                           ; doesn't kill BEGTEXT segment
-
 around:
-
         assume  ds:DGROUP
 
         cld                             ; set direction forward
@@ -197,6 +191,10 @@ L1:
         jmp     __qnx_exit_
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 _TEXT   ends
 

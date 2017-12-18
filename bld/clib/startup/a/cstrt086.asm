@@ -208,10 +208,10 @@ endif
 _cstart_ proc near
         jmp     around
 
-;
-; copyright message
-;
-include msgcpyrt.inc
+if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
+                dw      ___begtext      ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT segment
+endif
 
 ;
 ; miscellaneous code-segment messages
@@ -225,11 +225,6 @@ endif
 NoMemory        db      'Not enough memory',0
 ConsoleName     db      'con',00h
 NewLine         db      0Dh,0Ah
-
-if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
-                dw      ___begtext      ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT segment
-endif
 
 around: sti                             ; enable interrupts
 if _MODEL and _TINY
@@ -520,6 +515,10 @@ endif
         int     021h                    ; back to DOS
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 ;
 ;       set up addressability without segment relocations for emulator

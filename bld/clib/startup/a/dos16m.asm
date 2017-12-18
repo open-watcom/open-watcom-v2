@@ -296,13 +296,8 @@ verylast ends
 
 _startup_ proc near
         dd      stackavail_
-_cstart_:
+_cstart_ proc near
         jmp     around
-
-;
-; copyright message
-;
-include msgcpyrt.inc
 
 ;
 ; miscellaneous code-segment messages
@@ -313,12 +308,13 @@ ConsoleName     db      'con',0
 NewLine         db      0Dh,0Ah
 msg_notPM       db      'requires DOS/16M', 0Dh, 0Ah, '$'
 
-_Not_Enough_Memory_:
+_Not_Enough_Memory_ proc
         mov     bx,1                    ; set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
         jmp     __fatal_runtime_error   ; display msg and exit
         ; never return
+_Not_Enough_Memory_ endp
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there
@@ -461,6 +457,7 @@ _is_ovl:                                ; endif
         mov     ax,0ffh                 ; run all initializers
         call    __FInitRtns             ; call initializer routines
         call    __CMain
+_cstart_ endp
 _startup_ endp
 
 ;       don't touch AL in __exit, it has the return code
@@ -535,6 +532,10 @@ no_ovl:                                 ; endif
         int     021h                    ; back to DOS
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 ;
 ;       set up addressability without segment relocations for emulator

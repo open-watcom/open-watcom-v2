@@ -38,6 +38,6 @@ void mainCRTStartup( void )
     __NTMain();
 }
 
-const char _cstart_CopyRight[] =
-        "Open Watcom C/C++ Alpha Run-Time system. "
-        "Portions Copyright (c) Sybase, Inc. 1995-2002.";
+const char _cstart_CopyRight[] = {
+    #include "msgcpyrt.h"
+};

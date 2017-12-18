@@ -1,4 +1,4 @@
-/****************************************************************************
+/*****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -24,20 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  Open Watcom C/C++ Alpha AXP NT windowed startup code.
+* Description:  Copyright message included from startup files.
 *
-****************************************************************************/
+*****************************************************************************/
 
 
-#include "variety.h"
-#include "winmain.h"
+#if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
+    #define pick(x)         .asciiz x
+#else
+    #define pick(x)         x
+#endif
 
+#if defined( __WASAXP__ ) || defined( __AXP__ )
+    pick( "Open Watcom C/C++ AXP Run-Time system. " )
+#elif defined( __WASPPC__ ) || defined( __PPC__ )
+    pick( "Open Watcom C/C++ PPC Run-Time system. " )
+#elif defined( __WASMIPS__ ) || defined( __MIPS__ )
+    pick( "Open Watcom C/C++ MIPS Run-Time system. " )
+#elif defined( _M_I86 )
+    pick( "Open Watcom C/C++16 Run-Time system. " )
+#elif defined( _M_IX86 )
+    pick( "Open Watcom C/C++32 Run-Time system. " )
+#endif
 
-void wWinMainCRTStartup( void )
-{
-    __wWinMain();
-}
+pick( "Copyright (c) Open Watcom Contributors 2002-2017. " )
+pick( "Portions Copyright (C) Sybase, Inc. 1988-2002." )
+#if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
+    .asciiz 0
+#endif
 
-const char _wstartw_CopyRight[] = {
-    #include "msgcpyrt.h"
-};
+#undef pick

@@ -597,13 +597,13 @@ _cstart_ proc  far
 _cstartd:
         sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
         call __RdosMain
+_cstart_ endp
+
         dd ___begtext              ; make sure dead code elimination
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

@@ -145,6 +145,7 @@ _cstart_ proc  near
     sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
     call __RdosMain
     jmp _cexit_
+_cstart_ endp
 
     dd ___begtext              ; make sure dead code elimination
 
@@ -152,8 +153,6 @@ _cstart_ proc  near
 ; copyright message
 ;
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

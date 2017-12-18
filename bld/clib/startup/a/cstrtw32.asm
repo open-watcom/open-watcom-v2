@@ -225,14 +225,16 @@ DATA    ends
         assume  ss:_DATA
 
 __saved_DS dw 0
-public _cstart_
-public _wstart_
-public _wstart2_
-public __DLLstart_
+
+        public _cstart_
+        public _wstart_
+        public _wstart2_
+        public __DLLstart_
+
 _cstart_ proc  far
-_wstart_:
-_wstart2_:
-__DLLstart_:
+_wstart_ proc  far
+_wstart2_ proc  far
+__DLLstart_ proc  far
         dd      offset  hInstance ; loader starts execution 8 bytes past here
         dd      _end
         mov     _LocalPtr,gs            ; save selector of extender's data
@@ -337,15 +339,17 @@ not_dll2:                               ; endif
 
         call    WINMAIN
         jmp     exit                    ; exit
+__DLLstart_ endp
+_wstart2_ endp
+_wstart_ endp
+_cstart_ endp
+
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT segment
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-        dd      ___begtext              ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT segment
-_cstart_ endp
-
 
 __exit  proc far
         public  "C",__exit

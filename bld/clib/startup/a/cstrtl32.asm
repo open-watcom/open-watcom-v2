@@ -67,9 +67,8 @@ _TEXT   segment use32 word public 'CODE'
 ;           ...
 ;           NULL
 
-_cstart_:
+_cstart_ proc near
 _start proc near
-
         xor     ebp,ebp         ; Clear frame pointer
         mov     _STACKTOP,esp   ; set stack top
         pop     ecx             ; Pop the argument count.
@@ -79,13 +78,15 @@ _start proc near
         push    esi             ; Push argv
         push    ecx             ; Push argc
         call    __LinuxMain
+_start endp
+_cstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-_start endp
 
 _TEXT   ends
 

@@ -133,19 +133,15 @@ STACK   ends
 
         assume  cs:_TEXT
 
- _cstart_ proc near
+_cstart_ proc near
+__DLLstart_ proc near
         assume  ds:DGROUP
-__DLLstart_:
+
         jmp     around
 
-;
-; copyright message
-;
-include msgcpyrt.inc
-
 ife _MODEL and _BIG_CODE
-        dw      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
+        dw      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT
 endif
 
 around:
@@ -175,8 +171,13 @@ around:
         pop     bx                      ; ...
         retf                            ; return
 
+__DLLstart_ endp
 _cstart_ endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 _TEXT   ends
 

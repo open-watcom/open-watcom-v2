@@ -43,26 +43,34 @@
 _TEXT   segment use32 word public 'CODE'
 
         public  __DLLstart_
+        public  __DLLstartw_
+ifdef __NT__
+        public  _DllMainCRTStartup@12:
+        public  _wDllMainCRTStartup@12:
+endif
 
         assume  cs:_TEXT
 
 __DLLstart_ proc near
-__DLLstartw_:
-        public  __DLLstartw_
+__DLLstartw_ proc near
 ifdef __NT__
-_DllMainCRTStartup@12:
-        public  _DllMainCRTStartup@12:
-_wDllMainCRTStartup@12:
-        public  _wDllMainCRTStartup@12:
+_DllMainCRTStartup@12 proc near
+_wDllMainCRTStartup@12 proc near
 endif
         jmp     __LibMain
+ifdef __NT__
+_wDllMainCRTStartup@12 endp
+_DllMainCRTStartup@12 endp
+endif
+__DLLstartw_ endp
+__DLLstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-__DLLstart_ endp
 
 _TEXT   ends
 

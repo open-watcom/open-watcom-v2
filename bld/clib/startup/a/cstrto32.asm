@@ -48,13 +48,14 @@ _TEXT   segment use32 word public 'CODE'
 
 _cstart_ proc near
         jmp     __OS2Main
+_cstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

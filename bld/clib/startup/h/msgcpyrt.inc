@@ -30,8 +30,9 @@
 
 
 ifdef __386__
-        db      "Open Watcom C/C++32 Run-Time system. "
+        db "Open Watcom C/C++32 Run-Time system. "
 else
-        db      "Open Watcom C/C++16 Run-Time system. "
+        db "Open Watcom C/C++16 Run-Time system. "
 endif
-        db      "Portions Copyright (C) Sybase, Inc. 1988-2002."
+        db "Copyright (c) Open Watcom Contributors 2002-2017. "
+        db "Portions Copyright (C) Sybase, Inc. 1988-2002.", 0

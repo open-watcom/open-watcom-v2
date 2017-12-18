@@ -247,19 +247,14 @@ STACK   ends
 _cstart_ proc near
         jmp     short around
 
-;
-; copyright message
-;
-include msgcpyrt.inc
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT
 
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",00h
 NewLine         db      0Dh,0Ah
-
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
 
 around: sti                             ; enable interrupts
 
@@ -602,6 +597,10 @@ endif   ; ACAD
 
 __exit   endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return

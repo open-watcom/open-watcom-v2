@@ -187,19 +187,14 @@ STACK   ends
 _cstart_ proc near
         jmp     short around
 
-;
-; copyright message (special - see comment at top)
-;
-include msgcpyrt.inc
-
         align   4
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT
+
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",00h
-
 NewLine         db      0Dh,0Ah
 
 around: sti                             ; enable interrupts
@@ -419,6 +414,11 @@ L7:
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit  endp
+
+;
+; copyright message (special - see comment at top)
+;
+include msgcpyrt.inc
 
         public  __GETDS
         align   4

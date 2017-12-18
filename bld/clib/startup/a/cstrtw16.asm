@@ -202,14 +202,9 @@ STACK   ends
         assume  cs:_TEXT
         assume  ds:DGROUP
 
- _wstart_ proc near
- _cstart_:
+_wstart_ proc near
+_cstart_ proc near
         jmp     around
-
-;
-; copyright message
-;
-include msgcpyrt.inc
 
 ife _MODEL and _BIG_CODE
 if _MODEL NE _TINY
@@ -296,6 +291,7 @@ notprot:
 
         call    WINMAIN                 ; invoke user's program
         jmp     exit                    ; exit, never return
+_cstart_ endp
 _wstart_ endp
 
 __exit  proc
@@ -309,6 +305,11 @@ _error:
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit endp
+
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 public  __GETDS
 __GETDS proc    near

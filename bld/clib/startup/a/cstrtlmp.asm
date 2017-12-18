@@ -70,10 +70,11 @@ _cstart_:
         addu    $a2,$a1,$v0     ; point a2 at terminating NULL of argv
         addiu   $a2,$a2,4       ; make a2 point at start of arge
         j       _LinuxMain      ; off we go, never to return
+
 ;
-; signature message
+; copyright message
 ;
-        .asciiz "Open Watcom C/C++ MIPS Run-Time system."
+#include "msgcpyrt.h"
 
 .new_section .drectve, "iRr0"
              .asciiz "-entry:_cstart_"

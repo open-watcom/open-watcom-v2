@@ -174,16 +174,15 @@ endif
         mov     edx,esp             ; argv
         lea     ebx,4[edx+eax*4]    ; arge
         jmp     __CMain
+_cstart_ endp
+
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT segment
 
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT segment
-
-_cstart_ endp
 
 __exit proc near
         public  "C",__exit

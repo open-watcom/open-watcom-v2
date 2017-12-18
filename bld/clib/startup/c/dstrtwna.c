@@ -50,5 +50,5 @@ int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved )
 }
 
 const char  _DLLstart_CopyRight[] =
-        "Open Watcom C/C++ Alpha Run-Time system. "
-        "Portions Copyright (c) Sybase, Inc. 1995-2002.";
+    #include "msgcpyrt.h"
+;

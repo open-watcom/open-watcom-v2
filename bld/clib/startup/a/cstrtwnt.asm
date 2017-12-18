@@ -48,15 +48,17 @@ _TEXT   segment use32 word public 'CODE'
         assume  cs:_TEXT
 
 _cstart_ proc near
-mainCRTStartup:
+mainCRTStartup proc near
         jmp     __NTMain
+mainCRTStartup endp
+_cstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

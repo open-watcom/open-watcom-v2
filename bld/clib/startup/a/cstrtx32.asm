@@ -92,10 +92,13 @@ __X386_STACK            ends
 __X386_GROUP_16         group   __X386_DATASEG_16,__X386_STACK
 
 __X386_CODESEG_16       segment para use16 public 'CODE'
-assume cs:__X386_CODESEG_16,ds:nothing,es:nothing,fs:nothing,gs:nothing,ss:nothing
-extrn __x386_start:near
-_cstart_:
+        assume cs:__X386_CODESEG_16,ds:nothing,es:nothing,fs:nothing,gs:nothing,ss:nothing
+        extrn __x386_start:near
+
+_cstart_ proc near
         jmp     __x386_start    ;jump to 16 bit initialization
+_cstart_ endp
+
 __X386_CODESEG_16       ends
 
 
@@ -223,11 +226,6 @@ STACK   ends
 
         assume  cs:_TEXT
         assume  ds:DGROUP
-
-;
-; copyright message
-;
-include msgcpyrt.inc
 
 ;
 ; miscellaneous code-segment messages
@@ -423,6 +421,11 @@ L5:
         mov     ah,4cH                  ; DOS call to exit with return code
         int     021h                    ; back to DOS
 __exit   endp
+
+;
+; copyright message
+;
+include msgcpyrt.inc
 
         public  __GETDS
 __GETDS proc    near
