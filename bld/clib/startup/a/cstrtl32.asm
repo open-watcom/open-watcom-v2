@@ -59,18 +59,18 @@ _TEXT   segment use32 word public 'CODE'
 ;
 ;   ESP - The stack contains the arguments and environment:
 ;
-;           0(%esp)			argc
-;           4(%esp)			argv[0]
+;           0(%esp)             argc
+;           4(%esp)             argv[0]
 ;           ...
-;           (4*argc)(%esp)		NULL
-;           (4*(argc+1))(%esp)	envp[0]
+;           (4*argc)(%esp)      NULL
+;           (4*(argc+1))(%esp)  envp[0]
 ;           ...
 ;           NULL
 
 _cstart_:
 _start proc near
 
-	    xor     ebp,ebp         ; Clear frame pointer
+        xor     ebp,ebp         ; Clear frame pointer
         mov     _STACKTOP,esp   ; set stack top
         pop     ecx             ; Pop the argument count.
         mov     esi,esp         ; argv starts just at the current stack top
@@ -83,7 +83,6 @@ _start proc near
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 _start endp

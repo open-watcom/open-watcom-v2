@@ -54,7 +54,6 @@ wWinMainCRTStartup:
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 _wstartw_ endp

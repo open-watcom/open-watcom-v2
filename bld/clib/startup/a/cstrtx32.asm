@@ -227,7 +227,6 @@ STACK   ends
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 ;

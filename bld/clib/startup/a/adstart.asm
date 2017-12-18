@@ -250,7 +250,6 @@ _cstart_ proc near
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 ;

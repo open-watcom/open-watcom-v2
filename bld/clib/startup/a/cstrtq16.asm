@@ -145,7 +145,6 @@ STACK   ends
 ;
 ; copyright message
 ;
-include msgrt16.inc
 include msgcpyrt.inc
 
 ;

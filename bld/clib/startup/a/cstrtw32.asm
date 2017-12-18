@@ -340,7 +340,6 @@ not_dll2:                               ; endif
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
         dd      ___begtext              ; make sure dead code elimination

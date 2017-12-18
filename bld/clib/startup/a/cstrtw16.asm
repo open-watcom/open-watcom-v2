@@ -209,7 +209,6 @@ STACK   ends
 ;
 ; copyright message
 ;
-include msgrt16.inc
 include msgcpyrt.inc
 
 ife _MODEL and _BIG_CODE

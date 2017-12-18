@@ -117,22 +117,22 @@ _cexit_ proc near
     mov dx,ds:ExitSs
     or dx,dx
     jz _exit_done
-;    
+;
     mov ss,dx
     mov esp,ds:ExitEsp
     mov ds:ExitSs,0
     or eax,eax
     clc
     jz _exit_far
-;    
+;
     stc
 _exit_far:
     retf
 
 _exit_done:
-    ret    
+    ret
 _cexit_ endp
-         
+
 public _cstart_
 
 _cstart_ proc  near
@@ -144,14 +144,13 @@ _cstart_ proc  near
 
     sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
     call __RdosMain
-    jmp _cexit_    
+    jmp _cexit_
 
     dd ___begtext              ; make sure dead code elimination
 
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 _cstart_ endp

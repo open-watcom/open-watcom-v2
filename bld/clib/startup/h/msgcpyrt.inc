@@ -29,4 +29,9 @@
 ;*****************************************************************************
 
 
+ifdef __386__
+        db      "Open Watcom C/C++32 Run-Time system. "
+else
+        db      "Open Watcom C/C++16 Run-Time system. "
+endif
         db      "Portions Copyright (C) Sybase, Inc. 1988-2002."

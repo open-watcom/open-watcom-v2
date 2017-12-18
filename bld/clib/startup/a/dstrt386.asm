@@ -60,7 +60,6 @@ endif
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
 
 __DLLstart_ endp

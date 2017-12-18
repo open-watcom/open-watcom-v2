@@ -211,7 +211,6 @@ _cstart_ proc near
 ;
 ; copyright message
 ;
-include msgrt16.inc
 include msgcpyrt.inc
 
 ;
