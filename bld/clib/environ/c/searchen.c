@@ -76,51 +76,51 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
 
     prev_errno = _RWD_errno;
     if( __F_NAME(access,_waccess)( name, F_OK ) == 0 ) {
-        p = buffer;                                 /* JBS 90/3/30 */
-        len = 0;                                    /* JBS 04/1/06 */
-        for( ;; ) {
-            if( IS_DIR_SEP( name[0] ) )
-                break;
-            if( name[0] == STRING( '.' ) )
-                break;
+        p = buffer;
+        len = 0;
+        if( !IS_DIR_SEP( name[0] ) && name[0] != STRING( '.' ) ) {
 #ifndef __UNIX__
-            if( name[0] != NULLCHAR && name[1] == DRV_SEP )
-                break;
+            if( name[0] == NULLCHAR || name[1] != DRV_SEP ) {
 #endif
-            __F_NAME(getcwd,_wgetcwd)( buffer, _MAX_PATH );
-            len = __F_NAME(strlen,wcslen)( buffer );
-            p = &buffer[ len ];
-            if( p[-1] != DIR_SEP ) {
-                if( len < (_MAX_PATH - 1) ) {
-                    *p++ = DIR_SEP;
-                    len++;
+                __F_NAME(getcwd,_wgetcwd)( buffer, _MAX_PATH );
+                if( *buffer != NULLCHAR ) {
+                    len = __F_NAME(strlen,wcslen)( buffer );
+                    p = buffer + len;
+                    if( p[-1] != DIR_SEP ) {
+                        if( len < ( _MAX_PATH - 1 ) ) {
+                            *p++ = DIR_SEP;
+                            len++;
+                        }
+                    }
                 }
+#ifndef __UNIX__
             }
-            break;
+#endif
         }
         *p = NULLCHAR;
-        __F_NAME(strncat,wcsncat)( p, name, (_MAX_PATH - 1) - len );
+        __F_NAME(strncat,wcsncat)( p, name, ( _MAX_PATH - 1 ) - len );
         return;
     }
     p = __F_NAME(getenv,_wgetenv)( env_var );
     if( p != NULL ) {
         for( ;; ) {
-            if( *p == NULLCHAR ) break;
+            if( *p == NULLCHAR )
+                break;
             p2 = buffer;
-            len = 0;                                /* JBS 04/1/06 */
-            while( *p ) {
+            len = 0;
+            while( *p != NULLCHAR ) {
                 if( *p == LIST_SEPARATOR )
                     break;
                 if( *p != STRING( '"' ) ) {
-                    if( len < (_MAX_PATH-1) ) {
-                        *p2++ = *p; /* JBS 00/9/29 */
+                    if( len < ( _MAX_PATH - 1 ) ) {
+                        *p2++ = *p;
                         len++;
                     }
                 }
                 p++;
             }
             /* check for zero-length prefix which represents CWD */
-            if( p2 != buffer ) {                    /* JBS 90/3/30 */
+            if( p2 != buffer ) {
 #ifdef __UNIX__
                 if( !IS_DIR_SEP( p2[-1] ) ) {
 #else
@@ -132,7 +132,7 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                     }
                 }
                 *p2 = NULLCHAR;
-                len += __F_NAME(strlen,wcslen)( name );/* JBS 04/12/23 */
+                len += __F_NAME(strlen,wcslen)( name );
                 if( len < _MAX_PATH ) {
                     __F_NAME(strcat,wcscat)( p2, name );
                     /* check to see if file exists */
@@ -142,7 +142,8 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                     }
                 }
             }
-            if( *p == NULLCHAR ) break;
+            if( *p == NULLCHAR )
+                break;
             ++p;
         }
     }
