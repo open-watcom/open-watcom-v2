@@ -109,21 +109,23 @@ BEGTEXT  segment use32 para public 'CODE'
 ;if @Version     LT      600     ;If MASM is < 6.0
 ;        assume  cs:_TEXT
 ;endif
-        jmp     null_error
-        nop     ;2
-        nop     ;3
-        nop     ;4
-        nop     ;5
-        nop     ;6
-        nop     ;7
-        nop     ;8
-        nop     ;9
-        nop     ;A
-        nop     ;B
-        nop     ;C
-        nop     ;D
-        nop     ;E
-        nop     ;F
+        jmp short null_error
+        nop                 ;2
+        public ___begtext
+___begtext label byte
+        nop                 ;3
+        nop                 ;4
+        nop                 ;5
+        nop                 ;6
+        nop                 ;7
+        nop                 ;8
+        nop                 ;9
+        nop                 ;A
+        nop                 ;B
+        nop                 ;C
+        nop                 ;D
+        nop                 ;E
+        nop                 ;F
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -235,20 +237,17 @@ _BSS          segment word public 'BSS'
 _BSS          ends
 
 
-;if @Version     LT      600     ;If the MASM is < 6.0
-;        assume  cs:_TEXT
-;endif
         assume  ds:DGROUP
 
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by WATCOM Systems Inc. 1989, 1995."
-        db      " All rights reserved."
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
+
 fpe_handler:    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

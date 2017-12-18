@@ -51,6 +51,12 @@ _cstart_ proc near
         jmp     __OS2Main
 _cstart_ endp
 
+        dd      ___begtext      ; reference module with segment definitions
+;
+; copyright message
+;
+include msgcpyrt.inc
+
 _LaunchPgm_ proc near
         push    cs              ; simulate far call
         mov     bx,cs           ; pass in our CS value
@@ -59,13 +65,6 @@ _LaunchPgm_ proc near
         call    esi             ; invoke program
         ret                     ; return
 _LaunchPgm_ endp
-
-        dd      ___begtext      ; reference module with segment definitions
-
-;
-; copyright message
-;
-include msgcpyrt.inc
 
 _TEXT   ends
 
