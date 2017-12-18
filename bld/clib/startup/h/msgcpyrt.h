@@ -29,6 +29,8 @@
 *****************************************************************************/
 
 
+#include "bancfg.h"
+
 #if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
     #define pick(x)         .asciiz x
 #else
@@ -47,7 +49,7 @@
     pick( "Open Watcom C/C++32 Run-Time system. " )
 #endif
 
-pick( "Copyright (c) Open Watcom Contributors 2002-2017. " )
+pick( "Copyright (c) Open Watcom Contributors 2002-" CURR_YEAR ". " )
 pick( "Portions Copyright (C) Sybase, Inc. 1988-2002." )
 #if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
     .asciiz 0
