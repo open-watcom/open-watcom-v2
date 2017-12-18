@@ -197,7 +197,6 @@ endif
 
         assume  nothing
         public  _cstart_
-        public  _Not_Enough_Memory_
 
         assume  cs:_TEXT
 
@@ -275,7 +274,6 @@ endif
         sub     cx,ax                   ; calc # of paragraphs available
         cmp     dx,cx                   ; compare with what we need
         jb      enuf_mem                ; if not enough memory
-_Not_Enough_Memory_:
         mov     bx,1                    ; - set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;

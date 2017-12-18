@@ -74,6 +74,12 @@ extern "C" {
 #endif
 
 
+static _WCNORETURN void _Not_Enough_Memory( void )
+{
+    __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
+}
+
 static void *_allocate( unsigned amount )
 {
     void *p;

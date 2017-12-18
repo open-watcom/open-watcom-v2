@@ -290,7 +290,6 @@ verylast ends
 
         assume  nothing
         public  _cstart_
-        public  _Not_Enough_Memory_
 
         assume  cs:_TEXT
 
@@ -303,18 +302,9 @@ _cstart_ proc near
 ; miscellaneous code-segment messages
 ;
 NullAssign      db      '*** NULL assignment detected',0
-NoMemory        db      'Not enough memory',0
 ConsoleName     db      'con',0
 NewLine         db      0Dh,0Ah
 msg_notPM       db      'requires DOS/16M', 0Dh, 0Ah, '$'
-
-_Not_Enough_Memory_ proc
-        mov     bx,1                    ; set exit code
-        mov     ax,offset NoMemory      ;
-        mov     dx,cs                   ;
-        jmp     __fatal_runtime_error   ; display msg and exit
-        ; never return
-_Not_Enough_Memory_ endp
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there

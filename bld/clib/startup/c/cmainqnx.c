@@ -87,13 +87,13 @@ static void _WCI86FAR __null_FPE_rtn( int fpe_type )
     fpe_type = fpe_type;
 }
 
-_WCNORETURN void _Not_Enough_Memory( void )
+#if defined( _M_I86 )
+static _WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
     // never return
 }
 
-#if defined( _M_I86 )
 static void SetupArgs( struct _proc_spawn *cmd )
 {
     register char *cp, **cpp, *mp, **argv;
@@ -268,7 +268,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
        open, which we definately don't want to call as __user_init. Later on
        we can delete the compare and always call __user_init().
     */
-    if ( (long) __f[0] != (long) __f[1] )
+    if ( (long)__f[0] != (long)__f[1] )
        __user_init();
 
     /* Invoke main skipping over the full path of the loaded command */
