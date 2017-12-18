@@ -42,7 +42,6 @@
 // - note there is no #pragma aborts so that debugger can trace out
 extern _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *, unsigned );
 extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *, unsigned );
-extern _WCRTLINK _WCNORETURN void _Not_Enough_Memory( void );
 extern _WCRTLINK _WCNORETURN void __exit( unsigned );
 
 // ASM interface
