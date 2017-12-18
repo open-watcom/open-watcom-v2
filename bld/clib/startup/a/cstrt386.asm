@@ -190,7 +190,6 @@ _cstart_ proc near
 ;
 ; copyright message (special - see comment at top)
 ;
-        db      "Open WATCOM C/C++32 Run-Time system. "
 include msgcpyrt.inc
 
         align   4
