@@ -397,7 +397,7 @@ trap_retval ReqMap_addr( void )
             Buff.value = 1;
             break;
         }
-        Buff.mte = ModHandles[acc->handle];
+        Buff.mte = ModHandles[acc->mod_handle];
         DosPTrace( &Buff );
         Buff.mte = ModHandles[0];
         ret->out_addr.segment = Buff.value;
@@ -1214,11 +1214,11 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    if( acc->handle != 0 ) {
-        CurrModHandle = acc->handle + 1;
+    if( acc->mod_handle != 0 ) {
+        CurrModHandle = acc->mod_handle + 1;
     }
     if( CurrModHandle >= NumModHandles ) {
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof(*ret) );
@@ -1227,7 +1227,7 @@ trap_retval ReqGet_lib_name( void )
     Buff.offv = FP_OFF( name );
     Buff.cmd = PT_CMD_GET_LIB_NAME;
     DosPTrace( &Buff );
-    ret->handle = CurrModHandle;
+    ret->mod_handle = CurrModHandle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

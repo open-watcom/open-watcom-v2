@@ -1017,15 +1017,15 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    ret->handle = 0;
+    ret->mod_handle = 0;
     // first is 0 based, LastClassGiven is 1 based, so no increment is required
-    if( acc->handle == 0 ) {
+    if( acc->mod_handle == 0 ) {
         if( nbinclasses <= LastClassGiven ) {
             return( sizeof( *ret ) );
         }
         first = LastClassGiven;
     } else {
-        first = acc->handle;
+        first = acc->mod_handle;
     }
 
     if( first >= nbinclasses ) return( sizeof( *ret ) );
@@ -1041,7 +1041,7 @@ trap_retval ReqGet_lib_name( void )
     strcpy( name, JAVAPREFIX );
     strcat( name, cb->name );
 
-    ret->handle = LastClassGiven = first + 1;
+    ret->mod_handle = LastClassGiven = first + 1;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

@@ -53,27 +53,27 @@ trap_retval ReqMap_addr( void )
     obj = GetCurrentDebug();
 
     if (obj) {
-        mod = LockModule( obj, acc->handle );
+        mod = LockModule( obj, acc->mod_handle );
         if( mod ) {
             switch ( sel ) {
-            case MAP_FLAT_CODE_SELECTOR:                
+            case MAP_FLAT_CODE_SELECTOR:
                 ret->out_addr.segment = 0x1B3;
                 ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
                 ret->lo_bound = 0;
-                ret->hi_bound = mod->ImageSize - 1;            
+                ret->hi_bound = mod->ImageSize - 1;
                 break;
             case MAP_FLAT_DATA_SELECTOR:
                 ret->out_addr.segment = 0x1BB;
                 ret->out_addr.offset = mod->ImageBase + mod->ObjectRva + offset;
                 ret->lo_bound = 0;
-                ret->hi_bound = mod->ImageSize - 1;            
+                ret->hi_bound = mod->ImageSize - 1;
                 break;
             case 0:
             case 1:
                 ret->out_addr.segment = mod->CodeSel;
                 ret->out_addr.offset = offset;
                 ret->lo_bound = 0;
-                ret->hi_bound = mod->ImageSize - 1;            
+                ret->hi_bound = mod->ImageSize - 1;
                 break;
             case 2:
             case 3:
@@ -90,7 +90,7 @@ trap_retval ReqMap_addr( void )
                     ret->out_addr.segment = mod->CodeSel;
                     ret->out_addr.offset = offset;
                     ret->lo_bound = 0;
-                    ret->hi_bound = mod->ImageSize - 1;            
+                    ret->hi_bound = mod->ImageSize - 1;
                     break;
                 }
                 if( sel == mod->DataSel ) {
@@ -102,7 +102,7 @@ trap_retval ReqMap_addr( void )
                     else
                         ret->hi_bound = 0;
                     break;
-                }                    
+                }
                 ret->out_addr.segment = 0;
                 ret->out_addr.offset = offset;
                 ret->lo_bound = 0;
@@ -111,7 +111,7 @@ trap_retval ReqMap_addr( void )
             }
         }
         UnlockModule( obj );
-    }        
+    }
 
     if( mod )
         return( sizeof( *ret ) );
@@ -135,10 +135,10 @@ trap_retval ReqGet_lib_name( void )
 
     obj = GetCurrentDebug();
     if( obj != NULL ) {
-        ret->handle = GetNextModule( obj, acc->handle );
-        if( ret->handle != 0 ) {
+        ret->mod_handle = GetNextModule( obj, acc->mod_handle );
+        if( ret->mod_handle != 0 ) {
             name = GetOutPtr( sizeof( *ret ) );
-            mod = LockModule( obj, ret->handle );
+            mod = LockModule( obj, ret->mod_handle );
             if( mod != NULL ) {
                 strcpy( name, mod->ModuleName );
             } else {
@@ -148,6 +148,6 @@ trap_retval ReqGet_lib_name( void )
             return( sizeof( *ret ) + strlen( name ) + 1 );
         }
     }
-    ret->handle = 0;
+    ret->mod_handle = 0;
     return( sizeof( *ret ) );
 }

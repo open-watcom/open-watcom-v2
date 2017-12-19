@@ -137,7 +137,7 @@ typedef struct {
 typedef struct {
     access_req          req;
     addr48_ptr          in_addr;
-    trap_mhandle        handle;
+    trap_mhandle        mod_handle;
 } _WCUNALIGNED map_addr_req;
 
 typedef struct {
@@ -211,11 +211,11 @@ typedef struct {
     unsigned_32 CRzero;
     unsigned_32 CRtwo;
     unsigned_32 CRthree;
-#else    
+#else
     unsigned_32 CR0;
     unsigned_32 CR2;
     unsigned_32 CR3;
-#endif    
+#endif
     unsigned_16 DS;
     unsigned_16 ES;
     unsigned_16 SS;
@@ -358,11 +358,11 @@ typedef struct {
 
 typedef struct {
     access_req          req;
-    trap_mhandle        handle;
+    trap_mhandle        mod_handle;
 } _WCUNALIGNED get_lib_name_req;
 
 typedef struct {
-    trap_mhandle        handle;
+    trap_mhandle        mod_handle;
     /* followed by name string */
 } get_lib_name_ret;
 

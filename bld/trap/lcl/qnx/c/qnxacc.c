@@ -403,7 +403,7 @@ trap_retval ReqMap_addr( void )
         break;
     }
     if( ProcInfo.pid != 0 ) {
-        switch( acc->handle ) {
+        switch( acc->mod_handle ) {
         case MH_DEBUGGEE:
             if( ProcInfo.flat ) {
                 switch( acc->in_addr.segment & ~PRIV_MASK ) {
@@ -1552,10 +1552,10 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
-    switch( acc->handle ) {
+    switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
-        ret->handle = MH_SLIB;
+        ret->mod_handle = MH_SLIB;
         if( ProcInfo.dbg32 ) {
             strcpy( name, "/boot/sys/Slib32" );
         } else {
@@ -1563,7 +1563,7 @@ trap_retval ReqGet_lib_name( void )
         }
         break;
     case MH_SLIB:
-        ret->handle = MH_PROC;
+        ret->mod_handle = MH_PROC;
         if( ProcInfo.proc32 ) {
             strcpy( name, "/boot/sys/Proc32" );
         } else {
@@ -1571,7 +1571,7 @@ trap_retval ReqGet_lib_name( void )
         }
         break;
     default:
-        ret->handle = MH_NONE;
+        ret->mod_handle = MH_NONE;
         name[0] = '\0';
         break;
     }
@@ -1586,10 +1586,10 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
     p = NULL;
-    switch( acc->handle ) {
+    switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
-        ret->handle = MH_SLIB;
+        ret->mod_handle = MH_SLIB;
         if( ProcInfo.dbg32 ) {
             if( ( pid = vid = qnx_name_locate(ProcInfo.nid, _SLIB_NAME, 0, 0 ) ) != -1 ) {
                 qnx_psinfo( proc = PROC_PID, pid, &info, 0, 0 );
@@ -1613,7 +1613,7 @@ trap_retval ReqGet_lib_name( void )
         }
         break;
     case MH_SLIB:
-        ret->handle = MH_PROC;
+        ret->mod_handle = MH_PROC;
         if( ( proc = qnx_vc_attach(ProcInfo.nid, PROC_PID, 0, 0 ) ) != -1 ) {
             qnx_psinfo( proc, PROC_PID, &info, 0, 0 );
             p = info.un.proc.name;
@@ -1624,7 +1624,7 @@ trap_retval ReqGet_lib_name( void )
             p = "sys/Proc16";
         }
     default:
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );

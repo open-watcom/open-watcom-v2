@@ -844,7 +844,7 @@ trap_retval ReqMap_addr( void )
     ret->lo_bound = 0;
     ret->hi_bound = 0;
     _DBG_MISC(( "AccMapAddr\r\n" ));
-    curr = (nlm_entry *)acc->handle;
+    curr = (nlm_entry *)acc->mod_handle;
     if( curr == NULL ) { // main NLM
         _DBG_MISC(( "Main NLM\r\n" ));
         if( MSB == NULL )
@@ -1794,18 +1794,18 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    if( acc->handle == 0 ) {
+    if( acc->mod_handle == 0 ) {
         curr = NLMList;
     } else {
-        curr = ((nlm_entry *)acc->handle)->next;
+        curr = ((nlm_entry *)acc->mod_handle)->next;
     }
     if( curr == LastNLMListEntry ) {
         LastNLMListEntry = NLMList;
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
-    ret->handle = (unsigned long)curr;
+    ret->mod_handle = (unsigned long)curr;
     len = curr->ld.LDFileName[0];
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';

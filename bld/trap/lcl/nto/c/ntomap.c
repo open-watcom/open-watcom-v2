@@ -43,7 +43,7 @@ typedef struct lli {
     addr_off    base;
     addr_off    offset;
     addr_off    dbg_dyn_sect;
-    addr_off    code_size;          
+    addr_off    code_size;
     char        newly_loaded : 1;   /* Library loaded but debugger not yet told */
     char        newly_unloaded : 1; /* Library unloaded but debugger not yet told */
     char        filename[257]; // TODO: These should really be dynamic!
@@ -98,7 +98,7 @@ void AddProcess( const char *exe_name, addr_off dynsection )
     lli->dbg_dyn_sect = dynsection;
     strcpy( lli->filename, exe_name );
     dbg_print(( "Added process: ofs/dyn = %08x/%08x '%s'\n",
-                (unsigned)lli->offset, (unsigned)lli->dbg_dyn_sect, lli->filename ));    
+                (unsigned)lli->offset, (unsigned)lli->dbg_dyn_sect, lli->filename ));
 }
 
 /*
@@ -134,7 +134,7 @@ void AddLib( pid_handle pid, struct link_map *lmap )
     }
 
     dbg_print(( "Added library: ofs/dyn = %08x/%08x '%s'\n",
-                (unsigned)lli->offset, (unsigned)lli->dbg_dyn_sect, lli->filename ));    
+                (unsigned)lli->offset, (unsigned)lli->dbg_dyn_sect, lli->filename ));
 }
 
 void DelLib( addr_off dynsection )
@@ -168,7 +168,7 @@ void DelProcess( void )
 
 /*
  * AddLibs - called when dynamic linker is adding a library, or after loading
- * or attaching to a process. We zip through the list and add whichever libs 
+ * or attaching to a process. We zip through the list and add whichever libs
  * we don't know about yet.
  */
 int AddLibs( pid_handle pid, addr_off first_lmap )
@@ -263,9 +263,9 @@ void ProcessLdBreakpoint( pid_handle pid, addr_off rdebug_va )
 }
 
 /*
- * Map address in image from link-time virtual address to actual linear address as 
+ * Map address in image from link-time virtual address to actual linear address as
  * loaded in memory. For executables, this will in effect return the address unchanged
- * (image base 0x08048100 equals linear 0x08048100), for shared libs this will typically 
+ * (image base 0x08048100 equals linear 0x08048100), for shared libs this will typically
  * add the offset from zero (if that is the link time VA) to actual load base.
  */
 trap_retval ReqMap_addr( void )
@@ -277,20 +277,20 @@ trap_retval ReqMap_addr( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->in_addr.offset );
     CONV_LE_16( acc->in_addr.segment );
-    CONV_LE_32( acc->handle );
+    CONV_LE_32( acc->mod_handle );
     ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr_off)0;
 
-    if( acc->handle > ModuleTop ) {
+    if( acc->mod_handle > ModuleTop ) {
         dbg_print(( "ReqMap_addr: Invalid handle passed!\n" ));
         return( sizeof( *ret ) );
     } else {
-        lli = &moduleInfo[acc->handle];
+        lli = &moduleInfo[acc->mod_handle];
     }
 
-    dbg_print(( "ReqMap_addr: addr %0x:%08x in module %d\n", acc->in_addr.segment, 
-                (unsigned)acc->in_addr.offset, (unsigned)acc->handle ));
+    dbg_print(( "ReqMap_addr: addr %0x:%08x in module %d\n", acc->in_addr.segment,
+                (unsigned)acc->in_addr.offset, (unsigned)acc->mod_handle ));
     ret->out_addr.offset = acc->in_addr.offset + lli->offset;
     dbg_print(( "to %08x\n", (unsigned)ret->out_addr.offset ));
     CONV_LE_32( ret->out_addr.offset );
@@ -313,11 +313,11 @@ trap_retval ReqGet_lib_name( void )
     unsigned            ret_len;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_32( acc->mod_handle );
     ret  = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
 
-    ret->handle = 0;    /* debugger won't look for more if handle is zero */
+    ret->mod_handle = 0;    /* debugger won't look for more if handle is zero */
     ret_len = sizeof( *ret );
 
     /* The first slot is reserved for the main executable; also, we always
@@ -325,26 +325,26 @@ trap_retval ReqGet_lib_name( void )
      * passed in (because the debugger passes in the handle we returned
      * in the previous call).
      */
-    for( i = acc->handle + 1; i < ModuleTop; ++i ) {
+    for( i = acc->mod_handle + 1; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             /* Indicate that lib is gone */
             *name = '\0';
             dbg_print(( "(lib unloaded, '%s')\n", moduleInfo[i].filename ));
             moduleInfo[i].newly_unloaded = FALSE;
-            ret->handle = i;
+            ret->mod_handle = i;
             ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
             strcpy( name, moduleInfo[i].filename );
             dbg_print(( "(lib loaded, '%s')\n", name ));
             moduleInfo[i].newly_loaded = FALSE;
-            ret->handle = i;
+            ret->mod_handle = i;
             ret_len += strlen( name ) + 1;
             break;
         }
     }
     dbg_print(( "ReqGet_lib_name: in handle %ld, out handle %ld, name '%s'\n",
-               acc->handle, ret->handle, name ));
-    CONV_LE_32( ret->handle );
+               acc->mod_handle, ret->mod_handle, name ));
+    CONV_LE_32( ret->mod_handle );
     return( ret_len );
 }

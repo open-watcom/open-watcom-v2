@@ -268,7 +268,7 @@ trap_retval ReqMap_addr( void )
     seg &= ~PRIV_MASK;
 
     ret->out_addr.offset = acc->in_addr.offset;
-    switch( acc->handle ) {
+    switch( acc->mod_handle ) {
     case MH_DEBUGGEE:
         if( acc->in_addr.segment == MAP_FLAT_DATA_SELECTOR ) {
             index = 0;
@@ -747,14 +747,14 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr( 0 );
-    ret->handle = 0;
+    ret->mod_handle = 0;
     if( PmdInfo.read_gdts == 0 )
         return( sizeof( *ret ) );
     name = GetOutPtr( sizeof( *ret ) );
-    switch( acc->handle ) {
+    switch( acc->mod_handle ) {
     case MH_NONE:
     case MH_DEBUGGEE:
-        ret->handle = MH_SLIB;
+        ret->mod_handle = MH_SLIB;
         if( PmdInfo.dbg32 ) {
             strcpy( name, "/boot/sys/Slib32" );
         } else {
@@ -762,7 +762,7 @@ trap_retval ReqGet_lib_name( void )
         }
         break;
     case MH_SLIB:
-        ret->handle = MH_PROC;
+        ret->mod_handle = MH_PROC;
         if( PmdInfo.hdr.osdata.sflags & _PSF_32BIT ) {
             strcpy( name, "/boot/sys/Proc32" );
         } else {
