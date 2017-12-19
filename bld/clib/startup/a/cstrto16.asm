@@ -134,11 +134,11 @@ STACK   ends
 
         assume  cs:_TEXT
 
-_cstart_ proc near
-__DLLstart_ proc near
+_cstart_ proc far
+__DLLstart_ proc far
         assume  ds:DGROUP
 
-        jmp     around
+        jmp short around
 
 ife _MODEL and _BIG_CODE
         dw      ___begtext              ; make sure dead code elimination
@@ -170,7 +170,7 @@ around:
         pop     dx                      ; ...
         pop     cx                      ; ...
         pop     bx                      ; ...
-        retf                            ; return
+        ret                             ; return
 
 __DLLstart_ endp
 _cstart_ endp

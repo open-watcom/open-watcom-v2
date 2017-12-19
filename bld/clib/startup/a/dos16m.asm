@@ -68,7 +68,7 @@ C_ETEXT ends
 
 nullseg segment para public 'CODE'
         assume  cs:nullseg
-fake_start:     jmp     short bad_start
+fake_start:     jmp short bad_start
                 nop
                 nop
         public  d16_seginfo_struct
@@ -298,7 +298,7 @@ verylast ends
 _startup_ proc near
         dd      stackavail_
 _cstart_ proc near
-        jmp     around
+        jmp short around
 
 ;
 ; miscellaneous code-segment messages

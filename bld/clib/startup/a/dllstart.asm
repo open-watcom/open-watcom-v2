@@ -184,7 +184,7 @@ STACK   ends
         assume  cs:_TEXT
 
 __DLLstart_ proc far
-        jmp     short around
+        jmp short around
 ;
 ; miscellaneous code-segment messages
 ;

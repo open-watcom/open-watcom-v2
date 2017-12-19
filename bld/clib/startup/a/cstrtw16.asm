@@ -74,7 +74,7 @@ pStackBot       equ     000EH
 
         extrn   __DOSseg__      : byte
 
- DGROUP group _NULL,AFX_NULL,_DATA,CONST,STRINGS,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
+DGROUP  group _NULL,AFX_NULL,_DATA,CONST,STRINGS,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 ife _MODEL and _BIG_CODE
 
@@ -205,7 +205,7 @@ STACK   ends
 
 _wstart_ proc near
 _cstart_ proc near
-        jmp     around
+        jmp short around
 
 ife _MODEL and _BIG_CODE
 if _MODEL NE _TINY

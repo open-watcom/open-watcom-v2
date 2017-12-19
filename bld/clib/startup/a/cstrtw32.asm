@@ -287,7 +287,8 @@ __DLLstart_ proc  far
         test    edx,edx                 ; is it zero?
         jne     short okcpy             ; no, do the copy
         mov     byte ptr ds:[ebx],0     ; put a trailing zero
-        jmp     short donecpy
+        jmp short donecpy
+
 okcpy:  mov     es,dx
         mov     ds:cmd_seg,es           ; save for later
         movzx   esi,si                  ;    use by getcmd
@@ -298,9 +299,10 @@ again:  mov     al,byte ptr es:[esi]
         je      short donecpy
         inc     esi
         inc     ebx
-        jmp     short again
-donecpy:pop     es
+        jmp short again
 
+donecpy:
+        pop     es
         movzx   eax,hInstance
         push    eax
         mov     edi, offset filename
@@ -316,14 +318,15 @@ donecpy:pop     es
 ;;      _ASTACKPTR = (char *)alloca( _ASTACKSIZ ) + _ASTACKSIZ;
         cmp     byte ptr __inDLL,0      ; if in DLL
         je      short not_dll           ; then
-          mov   eax,_STACKLOW           ; - put alternate stack on bottom
-          add   eax,__ASTACKSIZ         ; - ...
-          mov   __ASTACKPTR,eax         ; - ...
-          jmp   short not_dll2          ; else
-not_dll:mov     __ASTACKPTR,esp         ; - save address of alternate stack
+        mov     eax,_STACKLOW           ; - put alternate stack on bottom
+        add     eax,__ASTACKSIZ         ; - ...
+        mov     __ASTACKPTR,eax         ; - ...
+        jmp short not_dll2              ; else
+
+not_dll:
+        mov     __ASTACKPTR,esp         ; - save address of alternate stack
         sub     esp,__ASTACKSIZ         ; - allocate alternate stack for F77
 not_dll2:                               ; endif
-
         ; push parms for WINMAIN
         mov     ax,hInstance
         mov     _pid,ax                 ; save for use by getpid()
@@ -337,7 +340,6 @@ not_dll2:                               ; endif
         mov     ax,cmdShow
         movzx   eax,ax
         push    eax
-
         call    WINMAIN
         jmp     exit                    ; exit
 __DLLstart_ endp

@@ -246,7 +246,7 @@ STACK   ends
         assume  cs:_TEXT
 
 _cstart_ proc near
-        jmp     short around
+        jmp short around
 
         dd      ___begtext      ; make sure dead code elimination
                                 ; doesn't kill BEGTEXT
@@ -322,7 +322,8 @@ endif   ; ACAD
         mov     al,bl                   ; - (was in ascii)
         xor     ah,ah                   ; - subtype
         mov     bx,14h                  ; - get value of Phar Lap data segment
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 not_pharlap:                            ; - see if Rational DOS/4G
         mov     dx,78h                  ; - ...
         mov     ax,0FF00h               ; - ...
@@ -371,14 +372,15 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         mov     ds,edx                  ; restore ds
         push    ds                      ; save ds
-
         cmp     byte ptr  _Extender,X_RATIONAL ; if OS/386 or Rational
         jg      short pharlap           ; then
-          mov   dx,PSP_SEG              ; - get PSP segment descriptor
-          mov   ds,edx                  ; - ... into ds
-          mov   dx,ds:[02ch]            ; - get environment segment into dx
-          jmp   short haveenv           ; else
-pharlap:mov   dx,ENV_SEG                ; - PharLap environment segment
+        mov     dx,PSP_SEG              ; - get PSP segment descriptor
+        mov     ds,edx                  ; - ... into ds
+        mov     dx,ds:[02ch]            ; - get environment segment into dx
+        jmp short haveenv               ; else
+
+pharlap:
+        mov   dx,ENV_SEG                ; - PharLap environment segment
 haveenv:                                ; endif
         mov     es:word ptr _Envptr+4,dx ; save segment of environment area
         mov     ds,edx                  ; get segment addr of environment area

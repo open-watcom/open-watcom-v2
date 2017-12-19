@@ -98,7 +98,8 @@ loop64k:        cmp     esp,edi                 ; - while esp > edi
                 jbe     end64k                  ; - - ...
                 mov     [esp],eax               ; - - touch the page
                 sub     esp,1000H               ; - - down another 4K
-                jmp     short loop64k           ; - endwhile
+                jmp short loop64k               ; - endwhile
+
 end64k:                                         ; - ...
                 mov     esp,edi                 ; - use the new location as stk
                 shr     ecx,2                   ; - adjust for dword move

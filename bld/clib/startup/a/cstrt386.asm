@@ -186,7 +186,7 @@ STACK   ends
         assume  cs:_TEXT
 
 _cstart_ proc near
-        jmp     short around
+        jmp short around
 
         align   4
         dd      ___begtext              ; make sure dead code elimination
@@ -244,7 +244,8 @@ ENV_SEG equ     2ch
         pop     eax                     ; - restore version number
         mov     ebx,ds                  ; - get value of Phar Lap data segment
         mov     cx,ENV_SEG              ; - PharLap environment segment
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 not_pharlap:                            ; - assume DOS/4G or compatible
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
@@ -266,7 +267,8 @@ rat9:                                   ; - endif
 rat10:                                  ; - endif
         mov     _psp,es                 ; - save segment address of PSP
         mov     cx,es:[02ch]            ; - get environment segment into cx
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 know_extender:                          ; endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype

@@ -207,16 +207,16 @@ notprot:
         mov     ax,0ffh         ; run all initializers
         call    __FInitRtns     ; call initializer routines
         call    LIBMAIN         ; invoke the 'C' routine (result in AX)
-        jmp     short dll_exit  ; LibMain is responsible for stack clean up
+        jmp short dll_exit      ; LibMain is responsible for stack clean up
 
 _error:
 
-        pop     si               ; clean up stack on a LocalInit error
+        pop     si              ; clean up stack on a LocalInit error
         pop     es
         pop     cx
         pop     ds
         pop     di
-        jmp     short dll_exit
+        jmp short dll_exit
 
 __exit:
         public  "C",__exit
