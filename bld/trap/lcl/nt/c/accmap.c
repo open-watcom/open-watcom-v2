@@ -636,7 +636,7 @@ trap_retval ReqMap_addr( void )
         }
         ret->out_addr.offset = (ULONG_PTR)( lli->base + obj.rva );
     }
-    addSegmentToLibList( acc->handle, ret->out_addr.segment, ret->out_addr.offset );
+    addSegmentToLibList( acc->mod_handle, ret->out_addr.segment, ret->out_addr.offset );
     ret->out_addr.offset += acc->in_addr.offset;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;

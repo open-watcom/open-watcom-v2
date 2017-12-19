@@ -260,7 +260,7 @@ trap_retval ReqGet_lib_name( void )
 
     if( !TaskLoaded ) {
         ret = GetOutPtr( 0 );
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );

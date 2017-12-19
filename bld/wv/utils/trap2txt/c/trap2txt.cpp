@@ -583,7 +583,7 @@ int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short )
         printf( "    Address:    FLAT_DATA:%.08x\n", prq->in_addr.offset );
     else
         printf( "    Address:    %.04x:%.08x\n", prq->in_addr.segment, prq->in_addr.offset );
-    printf( "    MAD Handle: %.08x\n", prq->handle );
+    printf( "    MAD Handle: %.08x\n", prq->mod_handle );
 
     return 1;
 }
@@ -1003,7 +1003,7 @@ int handle_REQ_GET_LIB_NAME( unsigned char * pkt, unsigned short )
     get_lib_name_req * prq = ( get_lib_name_req * ) pkt;
 
     printf( "Debugger request: REQ_GET_LIB_NAME\n" );
-    printf( "    MAD Handle: %u\n", prq->handle );
+    printf( "    MAD Handle: %u\n", prq->mod_handle );
 
     return 1;
 }
@@ -1014,8 +1014,8 @@ int handle_REQ_GET_LIB_NAME_REPLY( unsigned char * pkt, unsigned short )
     char * name = ( char * ) &pr[1];
 
     printf( "Trap reply: REQ_GET_LIB_NAME\n" );
-    if( pr->handle ) {
-        printf( "    MAD Handle: %u\n", pr->handle );
+    if( pr->mod_handle ) {
+        printf( "    MAD Handle: %u\n", pr->mod_handle );
         if( *name ) {
             printf( "    Name:       %s\n", name );
         } else {
