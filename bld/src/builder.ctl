@@ -59,7 +59,6 @@ set PROJDIR=<CWD>
     <CPCMD> clibexam/*                                  <OWRELROOT>/samples/clibexam/
     <CPCMD> clibexam/kanji/*                            <OWRELROOT>/samples/clibexam/kanji/
     <CPCMD> clibexam/test/*                             <OWRELROOT>/samples/clibexam/test/
-    rm -f <OWRELROOT>/samples/clibexam/files.dat
 
     <CPCMD> cplbexam/*                                  <OWRELROOT>/samples/cplbexam/
     <CPCMD> cplbexam/complex/friend/*                   <OWRELROOT>/samples/cplbexam/complex/friend/
@@ -80,13 +79,11 @@ set PROJDIR=<CWD>
     <CPCMD> cplbexam/strstrea/istrstre/*                <OWRELROOT>/samples/cplbexam/strstrea/istrstre/
     <CPCMD> cplbexam/strstrea/ostrstre/*                <OWRELROOT>/samples/cplbexam/strstrea/ostrstre/
     <CPCMD> cplbexam/strstrea/strstre/*                 <OWRELROOT>/samples/cplbexam/strstrea/strstre/
-    rm -f <OWRELROOT>/samples/cplbexam/files.dat
 
     <CPCMD> cppexamp/*                                  <OWRELROOT>/samples/cppexamp/
     <CPCMD> cppexamp/excarea/*                          <OWRELROOT>/samples/cppexamp/excarea/
     <CPCMD> cppexamp/membfun/*                          <OWRELROOT>/samples/cppexamp/membfun/
     <CPCMD> cppexamp/rtti/*                             <OWRELROOT>/samples/cppexamp/rtti/
-    rm -f <OWRELROOT>/samples/cppexamp/files.dat
 
     <CPCMD> directx/*                                   <OWRELROOT>/samples/directx/
     <CPCMD> directx/c/d3d/*                             <OWRELROOT>/samples/directx/c/d3d/
@@ -97,16 +94,13 @@ set PROJDIR=<CWD>
     <CPCMD> directx/cpp/dinput/*                        <OWRELROOT>/samples/directx/cpp/dinput/
     <CPCMD> directx/cpp/dshow/*                         <OWRELROOT>/samples/directx/cpp/dshow/
     <CPCMD> directx/cpp/dsound/*                        <OWRELROOT>/samples/directx/cpp/dsound/
-    rm -f <OWRELROOT>/samples/directx/files.dat
 
     <CPCMD> dll/*                                       <OWRELROOT>/samples/dll/
-    rm -f <OWRELROOT>/samples/dll/files.dat
 
     <CPCMD> fortran/*                                   <OWRELROOT>/src/fortran/
     <CPCMD> fortran/win/*                               <OWRELROOT>/src/fortran/win/
     <CPCMD> fortran/dos/*                               <OWRELROOT>/src/fortran/dos/
     <CPCMD> fortran/os2/*                               <OWRELROOT>/src/fortran/os2/
-    rm -f <OWRELROOT>/src/fortran/files.dat
 
     <CPCMD> ftnexamp/os2/*                              <OWRELROOT>/samples/fortran/os2/
     <CPCMD> ftnexamp/os2/rexx/*                         <OWRELROOT>/samples/fortran/os2/rexx/
@@ -123,10 +117,8 @@ set PROJDIR=<CWD>
     <CPCMD> ftnexamp/dll/win32/makefile                 <OWRELROOT>/samples/fortran/win32/dll/
 
     <CPCMD> goodies/*                                   <OWRELROOT>/samples/goodies/
-    rm -f <OWRELROOT>/samples/goodies/files.dat
 
     <CPCMD> misc/*                                      <OWRELROOT>/src/
-    rm -f <OWRELROOT>/src/files.dat
 
     <CPCMD> os2/*                                       <OWRELROOT>/samples/os2/
     <CPCMD> os2/dll/*                                   <OWRELROOT>/samples/os2/dll/
@@ -137,7 +129,6 @@ set PROJDIR=<CWD>
     <CPCMD> os2/som/helloc/*                            <OWRELROOT>/samples/os2/som/helloc/
     <CPCMD> os2/som/hellocpp/*                          <OWRELROOT>/samples/os2/som/hellocpp/
     <CPCMD> os2/som/wps/*                               <OWRELROOT>/samples/os2/som/wps/
-    rm -f <OWRELROOT>/samples/os2/files.dat
 
     <CPCMD> win/*                                       <OWRELROOT>/samples/win/
     <CPCMD> win/alarm/*                                 <OWRELROOT>/samples/win/alarm/
@@ -185,7 +176,6 @@ set PROJDIR=<CWD>
     <CPCMD> win/watzee/win32/*                          <OWRELROOT>/samples/win/watzee/win32/
     <CPCMD> win/watzee/win386/*                         <OWRELROOT>/samples/win/watzee/win386/
     <CPCMD> win/watzee/winaxp/*                         <OWRELROOT>/samples/win/watzee/winaxp/
-    rm -f <OWRELROOT>/samples/win/files.dat
 
 [ BLOCK . . ]
 
