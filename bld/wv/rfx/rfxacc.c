@@ -284,13 +284,13 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-error_handle RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
+error_handle RemoteDateTime( sys_handle sh, int *time, int *date, int set )
 {
     if( set ) {
         rfx_setdatetime_req     acc;
 
         SUPP_RFX_SERVICE( acc, REQ_RFX_SETDATETIME );
-        acc.handle = hdl;
+        acc.handle = sh;
         acc.time = mymktime( *time, *date );
 
         TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
@@ -299,7 +299,7 @@ error_handle RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
         rfx_getdatetime_ret     ret;
 
         SUPP_RFX_SERVICE( acc, REQ_RFX_GETDATETIME );
-        acc.handle = hdl;
+        acc.handle = sh;
 
         TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
 

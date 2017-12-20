@@ -50,6 +50,9 @@
 #define READWRITE   2
 #define FROMEND     2
 
+#define SYSH2LH(sh)     (int)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 typedef long   dosret;
 
 extern int              DbgConHandle; /* Debugger's console file handle */
@@ -68,6 +71,7 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     unsigned    openmode;
     int         ret;
+    sys_handle  sh;
 
     if( (oattrs & OP_WRITE) == 0 ) {
         openmode = O_RDONLY;
@@ -81,15 +85,17 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     if( oattrs & OP_TRUNC )
         openmode |= O_TRUNC;
     ret = open( name, openmode, 0666 );
-    if( (int)ret == -1 ) {
+    if( ret == -1 ) {
         StashErrCode( errno, OP_LOCAL );
-        return( NIL_SYS_HANDLE );
+        SET_SYSHANDLE_NULL( sh );
+        return( sh );
     }
     fcntl( ret, F_SETFD, (int)FD_CLOEXEC );
-    return( ret );
+    LH2SYSH( sh, ret );
+    return( sh );
 }
 
-size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
+size_t LocalRead( sys_handle sh, void *ptr, size_t len )
 {
     int         ret;
     size_t      total;
@@ -101,7 +107,7 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     while( len > 0 ) {
         if( piece_len > len )
             piece_len = (unsigned)len;
-        ret = read( filehndl, ptr, piece_len );
+        ret = read( SYSH2LH( sh ), ptr, piece_len );
         if( ret < 0 ) {
             StashErrCode( errno, OP_LOCAL );
             return( ERR_RETURN );
@@ -116,7 +122,7 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     return( total );
 }
 
-size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
+size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
 {
     ssize_t     ret;
     size_t      total;
@@ -128,7 +134,7 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     while( len > 0 ) {
         if( piece_len > len )
             piece_len = (unsigned)len;
-        ret = write( filehndl, ptr, piece_len );
+        ret = write( SYSH2LH( sh ), ptr, piece_len );
         if( ret < 0 ) {
             StashErrCode( errno, OP_LOCAL );
             return( ERR_RETURN );
@@ -143,11 +149,11 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     return( total );
 }
 
-unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
+unsigned long LocalSeek( sys_handle sh, unsigned long len, seek_method method )
 {
     off_t       ret;
 
-    ret = lseek( hdl, len, local_seek_method[method] );
+    ret = lseek( SYSH2LH( sh ), len, local_seek_method[method] );
     if( ret == (off_t)-1 ) {
         StashErrCode( errno, OP_LOCAL );
         return( ERR_SEEK );
@@ -155,9 +161,9 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     return( ret );
 }
 
-error_handle LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle sh )
 {
-    if( close( filehndl ) == 0 )
+    if( close( SYSH2LH( sh ) ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
@@ -171,5 +177,8 @@ error_handle LocalErase( const char *name )
 
 sys_handle LocalHandleSys( file_handle fh )
 {
-    return( (sys_handle)fh );
+    sys_handle  sh;
+
+    FH2SYSH( sh, fh );
+    return( sh );
 }

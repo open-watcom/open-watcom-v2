@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-extern int              GetCachedHandle( sys_handle remote );
-extern void             InitHandleCache( void );
-extern int              AddCachedHandle( int local, sys_handle remote );
-extern int              DelCachedHandle( int local );
 extern bool             InitFileSupp( void );
 extern bool             HaveRemoteFiles( void );
 extern size_t           RemoteStringToFullName( bool executable, const char *name, char *res, trap_elen res_len );

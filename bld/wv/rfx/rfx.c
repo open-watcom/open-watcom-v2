@@ -577,6 +577,14 @@ static void SameDate( file_handle fh_src, object_loc src_loc, file_handle fh_dst
     }
 }
 
+static bool isInteractive( file_handle fh, object_loc loc )
+{
+    if( loc == LOC_REMOTE ) {
+        return( false );
+    } else {
+        return( LocalInteractive( GetSystemHandle( fh ) ) );
+    }
+}
 
 /**************************************************************************/
 /* MAIN LINEISH                                                           */
@@ -677,7 +685,7 @@ static void Interactive( void )
     char    *p;
     bool    interactive;
 
-    interactive = LocalInteractive( STD_IN );
+    interactive = isInteractive( STD_IN, LOC_LOCAL );
     if( interactive ) {
         Error( banner1w( "Remote File eXchange program", _RFX_VERSION_ ) );
         Error( banner2 );

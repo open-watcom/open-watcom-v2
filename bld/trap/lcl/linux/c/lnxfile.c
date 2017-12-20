@@ -40,6 +40,9 @@
 #include "lnxcomm.h"
 
 
+#define TRPH2LH(th)     (th)->handle.u._32[0]
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=lh;(th)->handle.u._32[1]=0
+
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 trap_retval ReqFile_get_config( void )
@@ -69,8 +72,8 @@ trap_retval ReqFile_open( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
-    mode = MapAcc[ (acc->mode & (TF_READ|TF_WRITE)) - 1];
-    access = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
+    mode = MapAcc[(acc->mode & (TF_READ | TF_WRITE)) - 1];
+    access = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
     if( acc->mode & TF_CREATE ) {
         mode |= O_CREAT | O_TRUNC;
         if( acc->mode & TF_EXEC ) {
@@ -82,13 +85,13 @@ trap_retval ReqFile_open( void )
         fcntl( handle, F_SETFD, (int)FD_CLOEXEC );
         errno = 0;
         ret->err = 0;
-        ret->handle = handle;
+        LH2TRPH( ret, handle );
     } else {
         ret->err = errno;
-        ret->handle = 0;
+        LH2TRPH( ret, 0 );
     }
     CONV_LE_32( ret->err );
-    CONV_LE_32( ret->handle );
+    CONV_LE_64( ret->handle );
     return( sizeof( *ret ) );
 }
 
@@ -98,10 +101,10 @@ trap_retval ReqFile_seek( void )
     file_seek_ret       *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     CONV_LE_32( acc->pos );
     ret = GetOutPtr( 0 );
-    ret->pos = lseek( acc->handle, acc->pos, local_seek_method[acc->mode] );
+    ret->pos = lseek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode] );
     if( ret->pos != ((off_t)-1) ) {
         errno = 0;
         ret->err = 0;
@@ -124,7 +127,7 @@ trap_retval ReqFile_read( void )
     file_read_ret       *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     CONV_LE_16( acc->len );
     ret = GetOutPtr( 0 );
     ptr = GetOutPtr( sizeof( *ret ) );
@@ -134,7 +137,7 @@ trap_retval ReqFile_read( void )
         if( len == 0 ) break;
         curr = len;
         if( curr > SHRT_MAX ) curr = SHRT_MAX;
-        rv = read( acc->handle, ptr, curr );
+        rv = read( TRPH2LH( acc ), ptr, curr );
         if( rv == (trap_elen)-1 ) {
             total = (trap_elen)-1;
             break;
@@ -188,9 +191,9 @@ trap_retval ReqFile_write( void )
     file_write_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
@@ -215,9 +218,9 @@ trap_retval ReqFile_close( void )
     file_close_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    if( close( acc->handle ) != -1 ) {
+    if( close( TRPH2LH( acc ) ) != -1 ) {
         errno = 0;
         ret->err = 0;
     } else {

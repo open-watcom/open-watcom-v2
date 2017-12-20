@@ -89,7 +89,7 @@ trap_retval ReqFile_open( void )
     }
     dbg_print(( "opened handle %ld\n", ret->handle ));
     CONV_LE_32( ret->err );
-    CONV_LE_32( ret->handle );
+    CONV_LE_64( ret->handle );
     return( sizeof( *ret ) );
 }
 
@@ -99,7 +99,7 @@ trap_retval ReqFile_seek( void )
     file_seek_ret       *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     CONV_LE_32( acc->pos );
     dbg_print(( "seek: handle %ld, position %ld, mode %d\n", acc->handle, acc->pos, acc->mode ));
     ret = GetOutPtr( 0 );
@@ -127,7 +127,7 @@ trap_retval ReqFile_read( void )
     file_read_ret       *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     CONV_LE_16( acc->len );
     dbg_print(( "read: handle %ld, %d bytes\n", acc->handle, acc->len ));
     ret = GetOutPtr( 0 );
@@ -193,7 +193,7 @@ trap_retval ReqFile_write( void )
     file_write_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
     ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
                         GetTotalSize() - sizeof( *acc ) );
@@ -222,7 +222,7 @@ trap_retval ReqFile_close( void )
     file_close_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     dbg_print(( "close: handle %ld\n", acc->handle ));
     ret = GetOutPtr( 0 );
     if( close( acc->handle ) != -1 ) {

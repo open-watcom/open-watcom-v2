@@ -72,7 +72,7 @@ static char_ring *LclPath;
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
 
-#define SYSHANDLE(h)    SysHandles[h & ~REMOTE_IND]
+#define SYSHANDLE(sh)   SysHandles[sh & ~REMOTE_IND]
 #define SYSERROR(e)     SysErrors[(e & ~REMOTE_IND) - 1]
 #define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
 #define SETREMOTE(x)    x |= REMOTE_IND
@@ -148,7 +148,7 @@ static file_handle FindFreeHandle( void )
     file_handle     fh;
 
     for( fh = 0; fh < MAX_OPENS; ++fh ) {
-        if( SYSHANDLE( fh ) == NIL_SYS_HANDLE ) {
+        if( IS_SYSHANDLE_NULL( SYSHANDLE( fh ) ) ) {
             return( fh );
         }
     }
@@ -157,13 +157,13 @@ static file_handle FindFreeHandle( void )
 
 size_t ReadStream( file_handle fh, void *b, size_t l )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteRead( sys, b, l ) );
+        return( RemoteRead( sh, b, l ) );
     } else {
-        return( LocalRead( sys, b, l ) );
+        return( LocalRead( sh, b, l ) );
     }
 }
 
@@ -174,13 +174,13 @@ size_t ReadText( file_handle fh, void *b, size_t l )
 
 size_t WriteStream( file_handle fh, const void *b, size_t l )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteWrite( sys, b, l ) );
+        return( RemoteWrite( sh, b, l ) );
     } else {
-        return( LocalWrite( sys, b, l ) );
+        return( LocalWrite( sh, b, l ) );
     }
 }
 
@@ -205,19 +205,19 @@ size_t WriteText( file_handle fh, const void *b, size_t len )
 
 unsigned long SeekStream( file_handle fh, long p, seek_method m )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteSeek( sys, p, m ) );
+        return( RemoteSeek( sh, p, m ) );
     } else {
-        return( LocalSeek( sys, p, m ) );
+        return( LocalSeek( sh, p, m ) );
     }
 }
 
 file_handle FileOpen( const char *name, obj_attrs oattrs )
 {
-    sys_handle  sys;
+    sys_handle  sh;
     file_handle fh;
 
     if( oattrs & OP_SEARCH ) {
@@ -229,13 +229,13 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
         return( NIL_HANDLE );
     if( oattrs & OP_REMOTE ) {
         SETREMOTE( fh );
-        sys = RemoteOpen( name, oattrs );
+        sh = RemoteOpen( name, oattrs );
     } else {
-        sys = LocalOpen( name, oattrs );
+        sh = LocalOpen( name, oattrs );
     }
-    if( sys == NIL_SYS_HANDLE )
+    if( IS_SYSHANDLE_NULL( sh ) )
         return( NIL_HANDLE );
-    SYSHANDLE( fh ) = sys;
+    SYSHANDLE( fh ) = sh;
     if( oattrs & OP_APPEND )
         SeekStream( fh, 0, DIO_SEEK_END );
     return( fh );
@@ -243,14 +243,14 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
 
 error_handle FileClose( file_handle fh )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
-    SYSHANDLE( fh ) = NIL_SYS_HANDLE;
+    sh = SYSHANDLE( fh );
+    SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     if( ISREMOTE( fh ) ) {
-        return( RemoteClose( sys ) );
+        return( RemoteClose( sh ) );
     } else {
-        return( LocalClose( sys ) );
+        return( LocalClose( sh ) );
     }
 }
 
@@ -626,7 +626,7 @@ void SysFileInit( void )
     file_handle     fh;
 
     for( fh = 0; fh < MAX_OPENS; ++fh ) {
-        SYSHANDLE( fh ) = NIL_SYS_HANDLE;
+        SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     }
     SYSHANDLE( STD_IN ) = LocalHandleSys( STD_IN  );
     SYSHANDLE( STD_OUT ) = LocalHandleSys( STD_OUT );

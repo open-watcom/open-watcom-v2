@@ -42,6 +42,9 @@
 #include "dosfile.h"
 
 
+#define TRPH2LH(th)     (tiny_handle_t)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+
 /* fork.asm prototype */
 extern tiny_ret_t   __near Fork( const char __far *, unsigned );
 
@@ -84,7 +87,7 @@ trap_retval ReqFile_open( void )
             mode |= 0x80; /* set no inheritance */
         rc = TinyOpen( filename, mode );
     }
-    ret->handle = TINY_INFO( rc );
+    LH2TRPH( ret, TINY_INFO( rc ) );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
@@ -98,7 +101,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyLSeek( acc->handle, acc->pos, local_seek_method[acc->mode], (u32_stk_ptr)&pos );
+    rc = TinyLSeek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode], (u32_stk_ptr)&pos );
     ret->pos = pos;
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
@@ -115,7 +118,7 @@ trap_retval ReqFile_read( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    rc = TinyRead( acc->handle, buff, acc->len );
+    rc = TinyRead( TRPH2LH( acc ), buff, acc->len );
     if( TINY_ERROR( rc ) ) {
         ret->err = TINY_INFO( rc );
         len = 0;
@@ -134,8 +137,7 @@ trap_retval ReqFile_write( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
-                       ( GetTotalSize() - sizeof( *acc ) ) );
+    rc = TinyWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), ( GetTotalSize() - sizeof( *acc ) ) );
     ret->len = TINY_INFO( rc );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
@@ -147,8 +149,7 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ),
-                   ( GetTotalSize() - sizeof( file_write_console_req ) ) );
+    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ), ( GetTotalSize() - sizeof( file_write_console_req ) ) );
     ret->len = TINY_INFO( rc );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
@@ -162,7 +163,7 @@ trap_retval ReqFile_close( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyClose( acc->handle );
+    rc = TinyClose( TRPH2LH( acc ) );
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }

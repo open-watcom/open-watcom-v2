@@ -40,6 +40,13 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
+
+#define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
+#define BUFF_SIZE       256
+
+#define TRPH2LH(th)     (HFILE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+
 #if 0
 typedef struct {
     struct {
@@ -56,10 +63,6 @@ typedef struct {
 } dos_dta;
 #endif
 
-#define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
-#define BUFF_SIZE       256
-
-
 trap_retval ReqRfx_rename( void )
 {
     char                *old_name;
@@ -72,7 +75,6 @@ trap_retval ReqRfx_rename( void )
     ret->err = DosMove( old_name, new_name );
     return( sizeof( *ret ) );
 }
-
 
 trap_retval ReqRfx_mkdir( void )
 {
@@ -245,7 +247,7 @@ trap_retval ReqRfx_setdatetime( void )
     info.ftimeLastAccess = time;
     info.fdateLastWrite = date;
     info.ftimeLastWrite = time;
-    DosSetFileInfo( acc->handle, FIL_STANDARD, &info, sizeof( info ) );
+    DosSetFileInfo( TRPH2LH( acc ), FIL_STANDARD, &info, sizeof( info ) );
     return( 0 );
 }
 
@@ -286,7 +288,7 @@ trap_retval ReqRfx_getdatetime( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    DosQueryFileInfo( acc->handle, FIL_STANDARD, (char *)&info, sizeof( info ) );
+    DosQueryFileInfo( TRPH2LH( acc ), FIL_STANDARD, (char *)&info, sizeof( info ) );
     ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite,
                           *(USHORT *)&info.fdateLastWrite );
     return( sizeof( *ret ) );

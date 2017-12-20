@@ -36,6 +36,10 @@
 #include "stdrdos.h"
 #include "rdos.h"
 
+
+#define TRPH2LH(th)     (int)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -78,15 +82,15 @@ trap_retval ReqFile_open( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->err = 0;
-    ret->handle = 0;
-
     handle = RdosOpenFile( buff, 0 );
 
-    if( handle )
-        ret->handle = handle;
-    else
+    if( handle ) {
+        LH2TRPH( ret, handle );
+        ret->err = 0;
+    } else {
+        LH2TRPH( ret, 0 );
         ret->err = MSG_FILE_NOT_FOUND;
+    }
 
     return( sizeof( *ret ) );
 }
@@ -105,17 +109,17 @@ trap_retval ReqFile_seek( void )
     ret->pos = 0;
     switch( acc->mode ) {
     case TF_SEEK_ORG:
-        RdosSetFilePos( acc->handle, pos );
+        RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;
         break;
     case TF_SEEK_CUR:
-        pos += RdosGetFilePos( acc->handle );
-        RdosSetFilePos( acc->handle, pos );
+        pos += RdosGetFilePos( TRPH2LH( acc ) );
+        RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;
         break;
     case TF_SEEK_END:
-        pos += RdosGetFileSize( acc->handle );
-        RdosSetFilePos( acc->handle, pos );
+        pos += RdosGetFileSize( TRPH2LH( acc ) );
+        RdosSetFilePos( TRPH2LH( acc ), pos );
         ret->pos = pos;
         break;
     default:
@@ -141,7 +145,7 @@ trap_retval ReqFile_write( void )
     ret->err = 0;
 
     if( len )
-        ret->len = RdosWriteFile( acc->handle, buff, len );
+        ret->len = RdosWriteFile( TRPH2LH( acc ), buff, len );
     else
         ret->len = 0;
 
@@ -161,7 +165,7 @@ trap_retval ReqFile_write_console( void )
     len = GetTotalSize() - sizeof( *acc );
 
     RdosWriteSizeString( buff, len );
-    
+
     ret->err = 0;
     ret->len = len;
 
@@ -179,7 +183,7 @@ trap_retval ReqFile_read( void )
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
 
-    bytes = RdosReadFile( acc->handle, buff, acc->len );
+    bytes = RdosReadFile( TRPH2LH( acc ), buff, acc->len );
     ret->err = 0;
 
     return( sizeof( *ret ) + bytes );
@@ -194,8 +198,8 @@ trap_retval ReqFile_close( void )
     ret = GetOutPtr( 0 );
 
     ret->err = 0;
-    RdosCloseFile( acc->handle );
-    
+    RdosCloseFile( TRPH2LH( acc ) );
+
     return( sizeof( *ret ) );
 }
 
@@ -263,6 +267,6 @@ trap_retval ReqFile_string_to_fullpath( void )
             }
         }
     }
-        
+
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }

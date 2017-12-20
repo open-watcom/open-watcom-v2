@@ -37,6 +37,9 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
+
+#define TRPH2LH(th)     (tiny_handle_t)((th)->handle.u._32[0])
+
 trap_retval ReqRfx_rename( void )
 {
     tiny_ret_t      rc;
@@ -207,7 +210,7 @@ trap_retval ReqRfx_setdatetime( void )
 
     acc = GetInPtr( 0 );
     mylocaltime( acc->time, &time, &date );
-    TinySetFileStamp( acc->handle, time, date );
+    TinySetFileStamp( TRPH2LH( acc ), time, date );
     return( 0 );
 }
 
@@ -251,7 +254,7 @@ trap_retval ReqRfx_getdatetime( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyGetFileStamp( acc->handle );
+    rc = TinyGetFileStamp( TRPH2LH( acc ) );
     time = rc & 0xffff;
     date = rc >> 16;
     ret->time = mymktime( time, date );

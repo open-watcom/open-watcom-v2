@@ -47,6 +47,9 @@
 #include "rfx.h"
 
 
+#define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )
 {
     struct _DATETIME datetime;
@@ -69,7 +72,7 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = datetime.weekday;
 }
 
-bool LocalInteractive( sys_handle fh )
+bool LocalInteractive( sys_handle sh )
 /************************************/
 {
     APIRET type;
@@ -78,9 +81,9 @@ bool LocalInteractive( sys_handle fh )
     //NYI: really should convert fh to sys_handle, but I know that it's
     // a one-to-one mapping
 #ifdef _M_I86
-    if( DosQHandType( fh, &type, &flags ) ) {
+    if( DosQHandType( SYSH2LH( sh ), &type, &flags ) ) {
 #else
-    if( DosQueryHType( fh, &type, &flags ) ) {
+    if( DosQueryHType( SYSH2LH( sh ), &type, &flags ) ) {
 #endif
         return( false );
     }
@@ -209,7 +212,7 @@ long LocalGetFreeSpace( int drv )
     return( usage.cbSector * usage.cSectorUnit * usage.cUnitAvail );
 }
 
-error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
 /************************************************************************/
 {
     struct _FILESTATUS fstatus;
@@ -221,23 +224,23 @@ error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
     ptime = (struct _FTIME *)time;
     if( set ) {
 #ifdef _M_I86
-        rc = DosQFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
 #else
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
-        rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosSetFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
         if( rc != 0 ) {
             return( StashErrCode( rc, OP_LOCAL ) );
         }
     } else {
 #ifdef _M_I86
-        rc = DosQFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
 #else
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );

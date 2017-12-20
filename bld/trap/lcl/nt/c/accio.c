@@ -39,6 +39,15 @@
 #include "stdnt.h"
 #include "ntextx.h"
 
+
+#ifdef _WIN64
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._64[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._64[0]=lh
+#else
+#define TRPH2LH(th)     (HANDLE)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+#endif
+
 static const DWORD          local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 trap_retval ReqFile_get_config( void )
@@ -118,7 +127,7 @@ trap_retval ReqFile_open( void )
         }
 
     }
-    ret->handle = (trap_fhandle)h;
+    LH2TRPH( ret, h );
     return( sizeof( *ret ) );
 }
 
@@ -130,7 +139,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = SetFilePointer( (HANDLE)acc->handle, acc->pos, NULL, local_seek_method[acc->mode] );
+    rc = SetFilePointer( TRPH2LH( acc ), acc->pos, NULL, local_seek_method[acc->mode] );
     if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
     } else {
@@ -155,7 +164,7 @@ trap_retval ReqFile_write( void )
 
     len = GetTotalSize() - sizeof( *acc );
 
-    rc = WriteFile( (HANDLE)acc->handle, buff, len, &bytes, NULL );
+    rc = WriteFile( TRPH2LH( acc ), buff, len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -174,18 +183,18 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret  *ret;
     DWORD                   len;
     void                    *buff;
-    HANDLE                  handle;
+    HANDLE                  h;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetInPtr( sizeof( *acc ) );
     len = GetTotalSize() - sizeof( *acc );
 
-    handle = GetStdHandle( STD_ERROR_HANDLE );
+    h = GetStdHandle( STD_ERROR_HANDLE );
     if( DebugeePid ) {
         //NYI: write to program screen
     } else {
-        rc = WriteFile( handle, buff, len, &bytes, NULL );
+        rc = WriteFile( h, buff, len, &bytes, NULL );
         if( !rc ) {
             ret->err = GetLastError();
             bytes = 0;
@@ -208,7 +217,7 @@ trap_retval ReqFile_read( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    rc = ReadFile( (HANDLE)acc->handle, buff, acc->len, &bytes, NULL );
+    rc = ReadFile( TRPH2LH( acc ), buff, acc->len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -232,8 +241,8 @@ trap_retval ReqFile_close( void )
      * we do not close the file handle if it was a magical one that
      * we remembered from a DLL load
      */
-    if( !IsMagicalFileHandle( (HANDLE)acc->handle ) ) {
-        rc = CloseHandle( (HANDLE)acc->handle );
+    if( !IsMagicalFileHandle( TRPH2LH( acc ) ) ) {
+        rc = CloseHandle( TRPH2LH( acc ) );
         if( !rc ) {
             ret->err = GetLastError();
         }

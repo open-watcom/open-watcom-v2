@@ -52,6 +52,9 @@
 #include "nlmio.h"
 
 
+#define TRPH2LH(th)     (int)((th)->handle.u._32[0])
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=(unsigned_32)lh;(th)->handle.u._32[1]=0
+
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 trap_retval ReqFile_get_config( void )
@@ -81,15 +84,14 @@ trap_retval ReqFile_open( void )
     if( acc->mode & TF_CREATE ) {
         retval = IOCreat( GetInPtr( sizeof( *acc ) ) );
     } else {
-        retval = IOOpen( GetInPtr( sizeof( *acc ) ),
-                         MapAcc[acc->mode - 1] );
+        retval = IOOpen( GetInPtr( sizeof( *acc ) ), MapAcc[acc->mode - 1] );
     }
     if( retval < 0 ) {
         ret->err = retval;
-        ret->handle = 0;
+        LH2TRPH( ret, 0 );
     } else {
         ret->err = 0;
-        ret->handle = retval;
+        LH2TRPH( ret, retval );
     }
     return( sizeof( *ret ) );
 }
@@ -101,7 +103,7 @@ trap_retval ReqFile_close( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = IOClose( acc->handle );
+    ret->err = IOClose( TRPH2LH( acc ) );
     return( sizeof( *ret ) );
 }
 
@@ -114,8 +116,7 @@ trap_retval ReqFile_write( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    retval = IOWrite( acc->handle, GetInPtr( sizeof(*acc) ),
-                      ( GetTotalSize() - sizeof( *acc ) ) );
+    retval = IOWrite( TRPH2LH( acc ), GetInPtr( sizeof(*acc) ), ( GetTotalSize() - sizeof( *acc ) ) );
     if( retval < 0 ) {
         ret->err = retval;
         ret->len = 0;
@@ -135,8 +136,7 @@ trap_retval ReqFile_write_console( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ),
-                             ( GetTotalSize() - sizeof( *acc ) ) );
+    retval = IOWriteConsole( GetInPtr( sizeof(*acc) ), ( GetTotalSize() - sizeof( *acc ) ) );
     if( retval < 0 ) {
         ret->err = retval;
         ret->len = 0;
@@ -155,7 +155,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    retval = IOSeek( acc->handle, local_seek_method[acc->mode], acc->pos );
+    retval = IOSeek( TRPH2LH( acc ), local_seek_method[acc->mode], acc->pos );
     if( retval < 0 ) {
         ret->err = retval;
         ret->pos = 0;
@@ -174,8 +174,7 @@ trap_retval ReqFile_read( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    retval = IORead( acc->handle, GetOutPtr( sizeof( *ret ) ),
-                     acc->len );
+    retval = IORead( TRPH2LH( acc ), GetOutPtr( sizeof( *ret ) ), acc->len );
     if( retval < 0 ) {
         ret->err = retval;
         retval = 0;

@@ -52,6 +52,8 @@
 #define FP2FH(fp)       ((file_handle)((unsigned long)(fp)) - 1)
 #endif
 
+#define FH2SYSH(sh,fh)  (sh).u._32[0]=fh;(sh).u._32[1]=0
+
 /* Handles */
 
 struct machine_state;
