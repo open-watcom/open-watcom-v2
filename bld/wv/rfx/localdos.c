@@ -41,15 +41,15 @@
 #include "local.h"
 
 
+#define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 extern void __buffered_keyboard_input( char * );
 #pragma aux __buffered_keyboard_input = \
         _MOV_AH 0x0a \
         _INT_21 \
         parm caller [ds dx] \
         modify [ax];
-
-#define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
-#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
 static error_handle DOSErrCode( tiny_ret_t rc )
 {

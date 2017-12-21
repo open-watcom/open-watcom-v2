@@ -831,7 +831,7 @@ trap_retval ReqGet_sys_config( void )
 
 trap_retval ReqMap_addr( void )
 {
-    nlm_entry   *curr;
+    nlm_entry           *curr;
     map_addr_req        *acc;
     map_addr_ret        *ret;
     struct LoadDefinitionStructure *ld;
@@ -1794,10 +1794,11 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    if( acc->mod_handle == 0 ) {
+    curr = (nlm_entry *)acc->mod_handle;
+    if( curr == NULL ) {
         curr = NLMList;
     } else {
-        curr = ((nlm_entry *)acc->mod_handle)->next;
+        curr = curr->next;
     }
     if( curr == LastNLMListEntry ) {
         LastNLMListEntry = NLMList;
@@ -1805,7 +1806,7 @@ trap_retval ReqGet_lib_name( void )
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
-    ret->mod_handle = (unsigned long)curr;
+    ret->mod_handle = (unsigned_32)curr;
     len = curr->ld.LDFileName[0];
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';

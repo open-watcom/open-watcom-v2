@@ -91,6 +91,15 @@ static obj_attrs DIG2WVOpenMode( dig_open mode )
     return( oattrs );
 }
 
+/*
+ * Debugger use internaly file I/O based on "int" handles
+ * like POSIX but it is index into array which hold real
+ * OS file handles.
+ * Therefore DIGCLIENTRY I/O function must be based on
+ * these functions and can not use ISO stream I/O functions
+ * and handles are managed as POSIX handle
+ * Appropriate macros for file handle mapping must be used
+ */
 FILE * DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     file_handle fh;

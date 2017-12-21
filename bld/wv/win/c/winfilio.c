@@ -54,7 +54,6 @@ void LocalErrMsg( sys_error code, char *buff )
     GetDOSErrMsg( code, buff );
 }
 
-
 sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     tiny_ret_t  ret;

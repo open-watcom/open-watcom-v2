@@ -89,7 +89,7 @@ static loc_handle GetCachedHandle( sys_handle remote )
             return( fcache[i].lochandle );
         }
     }
-    return( -1 );
+    return( LOC_NIL_HANDLE );
 }
 
 /* Initialize local/remote handle cache */
@@ -126,15 +126,14 @@ static int AddCachedHandle( loc_handle local, sys_handle remote )
 /* Remove cached file entry from the list */
 static int DelCachedHandle( loc_handle local )
 {
-    int     i = 0;
+    int     i;
 
-    while( i < CACHED_HANDLES ) {
+    for( i = 0; i < CACHED_HANDLES; i++ ) {
         if( fcache[i].lochandle == local ) {
             SET_SYSHANDLE_NULL( fcache[i].remhandle );
             fcache[i].lochandle = LOC_NIL_HANDLE;
             return( 0 );
         }
-        i++;
     }
     return( -1 );
 }
