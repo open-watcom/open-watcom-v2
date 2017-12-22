@@ -40,13 +40,6 @@
 #define OS_PUINT        PUSHORT
 #define __FAR           __far
 
-/* values returned by DosQHandType() */
-
-#define HANDTYPE_FILE     0x0000
-#define HANDTYPE_DEVICE   0x0001
-#define HANDTYPE_PIPE     0x0002
-#define HANDTYPE_NETWORK  0x8000
-
 // The following are not defined in the os2 2.0 header files so
 // lets do it here
 #define NULLHANDLE      ((LHANDLE)0)
