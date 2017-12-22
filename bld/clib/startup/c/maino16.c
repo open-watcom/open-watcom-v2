@@ -46,7 +46,7 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #define INCL_DOSMEMMGR
-#include <wos2.h>
+#include <os2.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtstack.h"
