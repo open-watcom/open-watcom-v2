@@ -516,6 +516,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, gui_ctl_idx posi
     }
     if( !GUICreateMenuItems( info->num_child_menus, info->child,
                              &new_menu[position].popup ) ) {
+        GUIMemFree( new_menu );
         return( false );
     }
     GUIMemFree( menu );
