@@ -55,7 +55,7 @@ extern void __InitRtns( unsigned );
 //      __PARMREG1==255 -> run all init routines
 //      __PARMREG1==15  -> run init routines whose priority is <= 15
 #if defined( _M_I86 )
-  extern void _WCI86FAR __FInitRtns(unsigned);
+  extern void __far __FInitRtns(unsigned);
   #pragma aux __FInitRtns "*" parm [__PARMREG1]
 #endif
 
@@ -71,7 +71,7 @@ extern void __FiniRtns(unsigned,unsigned);
 //      __PARMREG1==16,__PARMREG2==255 -> run fini routines in range 16...255
 //      __PARMREG1==16,__PARMREG2==40  -> run fini routines in range 16...40
 #if defined( _M_I86 )
-  extern void _WCI86FAR __FFiniRtns( unsigned, unsigned );
+  extern void __far __FFiniRtns( unsigned, unsigned );
   #pragma aux __FFiniRtns "*" parm [__PARMREG1] [__PARMREG2]
 #endif
 
