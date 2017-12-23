@@ -37,13 +37,14 @@
 
 .386p
 
+include langenv.inc
 include struct.inc
+include tinit.inc
 include xinit.inc
-
 
 DGROUP group CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
-extrn __DOSseg__:byte
+        extrn   __DOSseg__      : byte
 
 FarProc MACRO name
 public name
@@ -82,27 +83,6 @@ ___begtext label byte
 BEGTEXT ends
 
 _TEXT   segment use32 word public 'CODE'
-
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _DATA   segment use32 word public 'DATA'
 

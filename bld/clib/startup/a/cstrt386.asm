@@ -46,7 +46,10 @@
 .387
 .386p
 
+include langenv.inc
+include tinit.inc
 include xinit.inc
+include extender.inc
 
 FLG_NO87    equ 1
 FLG_LFN     equ 1
@@ -124,41 +127,8 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
-
 _DATA    segment dword public 'DATA'
-X_ERGO                  equ     0       ; Ergo OS/386 (unsupported)
-X_RATIONAL              equ     1       ; DOS/4G(W) or compatible
-X_PHARLAP_V2            equ     2       ; PharLap 386|DOS
-X_PHARLAP_V3            equ     3
-X_PHARLAP_V4            equ     4
-X_PHARLAP_V5            equ     5
-X_PHARLAP_V6            equ     6       ; PharLap TNT
-X_INTEL                 equ     9       ; Intel CodeBuilder (unsupported)
-X_WIN386                equ     10      ; Watcom Win386
-XS_NONE                 equ     0
-XS_RATIONAL_ZEROBASE    equ     0
-XS_RATIONAL_NONZEROBASE equ     1
+
 __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
 __x386_zero_base_selector dw 0  ; base 0 selector for X-32VM
 

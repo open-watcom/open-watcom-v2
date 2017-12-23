@@ -76,16 +76,12 @@ SaveSP  dw      1 dup(?)
         endbss
 
 ifndef  __OS2__
+
+        xdefp       "C",__Init_FPE_handler
+        xdefp       "C",__Fini_FPE_handler
+
 Save87  dw      0
         dw      0
-endif
-
-        ifndef  __OS2__
-            xdefp       "C",__Init_FPE_handler
-            xdefp       "C",__Fini_FPE_handler
-        endif
-
-ifndef  __OS2__
 
 defp    __Init_FPE_handler
         _guess                          ; guess initialization required

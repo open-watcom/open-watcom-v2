@@ -29,8 +29,8 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
-include xinit.inc
 
         modstart    _8087
 
@@ -51,6 +51,8 @@ __dos87emucall  dw  0   ; (DOS) 0 => no 80x87 EMU, otherwise 80x87 EMU control r
 __dos87real     db  0   ; (DOS) 0 => no real 80x87 installed, otherwise real 80x87 installed
 endif
 enddata
+
+include xinit.inc
 
         xinit   __chk8087,INIT_PRIORITY_FPU + 3
 

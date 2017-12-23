@@ -29,14 +29,15 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
+
 .286p
         name    crwdata
 
         assume  nothing
 
 ifdef _PROT_MODE_
- include xinit.inc
 else
  DGROUP group   _DATA
 endif
@@ -118,6 +119,8 @@ InitHeap proc   far
         ret                             ; return
 InitHeap endp
 _TEXT   ends
+
+include xinit.inc
 
         xinit   InitHeap,0
 

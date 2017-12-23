@@ -37,6 +37,7 @@
 ;               wasm libentry.asm -bt=WINDOWS -ml -0r
 ;
 
+include langenv.inc
 include xinit.inc
 
 DGROUP group _NULL,_DATA,CONST,STRINGS,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
@@ -72,20 +73,6 @@ CONST   ends
 
 STRINGS segment word public 'DATA'
 STRINGS ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _NULL   segment para public 'BEGDATA'
 __nullarea label word

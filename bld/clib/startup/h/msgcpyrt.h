@@ -29,8 +29,6 @@
 *****************************************************************************/
 
 
-#include "bancfg.h"
-
 #if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
     #define pick(x)         .asciiz x
 #else

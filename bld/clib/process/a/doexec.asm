@@ -29,6 +29,7 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include msdos.inc
 include mdef.inc
 include struct.inc

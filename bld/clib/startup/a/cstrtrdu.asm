@@ -34,7 +34,7 @@
 .387
 .386p
 
-include xinit.inc
+include langenv.inc
 
         assume  nothing
 

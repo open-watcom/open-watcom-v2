@@ -31,8 +31,6 @@
 ;*****************************************************************************
 
 
-include langenv.inc
-
 PNEAR   equ     0
 PFAR    equ     1
 
@@ -99,8 +97,6 @@ DTOR_PRIORITY          equ 40   ; priority for module DTOR
 FINI_PRIORITY_EXIT     equ 16   ; when exit() is called, functions between
                                 ; 255 and this are called, the rest of the
                                 ; fini routines are called from __exit().
-
-DGROUP  group   XIB,XI,XIE,YIB,YI,YIE
 
 XIB segment word public 'DATA'
 XIB ends

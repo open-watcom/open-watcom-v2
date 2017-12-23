@@ -31,6 +31,9 @@
 
         name    sgdef086
 
+include langenv.inc
+include xinit.inc
+
         assume  nothing
 
 DGROUP group XIB,XI,XIE,YIB,YI,YIE
@@ -39,8 +42,7 @@ XIB     segment word public 'DATA'
 _Start_XI label byte
         public  "C",_Start_XI
 XIB     ends
-XI      segment word public 'DATA'
-XI      ends
+
 XIE     segment word public 'DATA'
 _End_XI label byte
         public  "C",_End_XI
@@ -50,8 +52,7 @@ YIB     segment word public 'DATA'
 _Start_YI label byte
         public  "C",_Start_YI
 YIB     ends
-YI      segment word public 'DATA'
-YI      ends
+
 YIE     segment word public 'DATA'
 _End_YI label byte
         public  "C",_End_YI

@@ -41,7 +41,9 @@
 ;       which are needed by the C Library. It should also be MINIMAL.
 ;       This is so we can make CLIB DLLs.
 ;
+include langenv.inc
 include mdef.inc
+include xinit.inc
 
         name    cstart
 
@@ -87,20 +89,6 @@ _TEXT   segment para public 'CODE'
         INIT_VAL        equ 0101h
         NUM_VAL         equ 16
 
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 _NULL   segment para public 'BEGDATA'
 public  __nullarea
 __nullarea  label   word
@@ -120,8 +108,8 @@ STRINGS ends
 _DATA   segment word public 'DATA'
 _DATA   ends
 
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 STACK   segment para stack 'STACK'
         stklow  label   word

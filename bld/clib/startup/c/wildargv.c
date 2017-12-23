@@ -67,6 +67,7 @@ extern "C" {
 #endif
 
 #include "initarg.h"
+
 #include "exitwmsg.h"
 
 #include "histsplt.h"

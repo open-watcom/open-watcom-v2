@@ -153,6 +153,7 @@
 /bld/rcsdll/batch/*/*.cmd
 #
 !/bld/src/**/*.lnk
+/bld/src/startup/*
 #
 !/bld/trap/**/*.trp/
 #

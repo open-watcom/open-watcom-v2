@@ -37,6 +37,7 @@
 ;               wasm cstrtw16 -bt=WINDOWS -ml -0r
 ;
 
+include langenv.inc
 include mdef.inc
 include xinit.inc
 
@@ -175,20 +176,6 @@ DATA    ends
 
 BCSD    segment word public 'DATA'
 BCSD    ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _BSS          segment word public 'BSS'
 _BSS          ends

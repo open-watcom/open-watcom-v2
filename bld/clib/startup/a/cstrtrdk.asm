@@ -32,6 +32,9 @@
 .387
 .386p
 
+include langenv.inc
+include xinit.inc
+
 include exitwmsg.inc
 
         assume  nothing
@@ -73,28 +76,6 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 NullAssign      db      '*** NULL assignment detected',0
 CONST   ends
-
-XIB     segment word public 'DATA'
-_Start_XI label byte
-        public  "C",_Start_XI
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-_End_XI label byte
-        public  "C",_End_XI
-XIE     ends
-
-YIB     segment word public 'DATA'
-_Start_YI label byte
-        public  "C",_Start_YI
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-_End_YI label byte
-        public  "C",_End_YI
-YIE     ends
 
 _DATA   segment use32 public 'DATA'
 

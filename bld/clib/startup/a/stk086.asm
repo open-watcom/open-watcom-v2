@@ -29,8 +29,10 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 include struct.inc
+
 include exitwmsg.inc
 
         modstart        stk
@@ -39,10 +41,6 @@ datasegment
         extrn   "C",_STACKLOW : word
 SS_seg  dw      0
 enddata
-
-include xinit.inc
-
-        xinit   _init_stk,DEF_PRIORITY
 
         assume  ds:DGROUP
 
@@ -94,5 +92,10 @@ __STKOVERFLOW:
         endproc __STK
 
 msg     db      "Stack Overflow!", 0
+
+include xinit.inc
+
+        xinit   _init_stk,DEF_PRIORITY
+
         endmod
         end

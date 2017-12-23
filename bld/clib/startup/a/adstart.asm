@@ -48,6 +48,7 @@
 .387
 .386p
 
+include langenv.inc
 include xinit.inc
 include extender.inc
 
@@ -173,21 +174,6 @@ _AFTERNULL ends
 
 CONST   segment word public 'DATA'
 CONST   ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 
 _DATA   segment dword public 'DATA'
 

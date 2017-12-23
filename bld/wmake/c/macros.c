@@ -372,7 +372,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
             if( ctime ) {
                 FmtStr( getDirBuf(), "%D:%D:%D", tm->tm_hour, tm->tm_min, tm->tm_sec );
             } else if( cdate ) {
-                FmtStr( getDirBuf(), "%D-%D-%D", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday );
+                FmtStr( getDirBuf(), "%d-%D-%D", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday );
             } else if( cyear ) {
                 FmtStr( getDirBuf(), "%d", tm->tm_year + 1900 );
             }

@@ -73,10 +73,7 @@ P5Epilog        macro
 if COMP_CFG_COFF == 1
 else
 DGROUP  group   TIB,TI,TIE
-TIB     segment use32 byte public 'DATA'
-TIB     ends
-TI      segment use32 byte public 'DATA'
-TI      ends
-TIE     segment use32 byte public 'DATA'
-TIE     ends
+
+include tinit.inc
+
 endif

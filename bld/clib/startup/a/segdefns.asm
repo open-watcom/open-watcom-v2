@@ -35,6 +35,13 @@ include langenv.inc
         name    segdefns
 .386p
 
+if COMP_CFG_COFF eq 0
+
+include tinit.inc
+include xinit.inc
+
+endif
+
         assume  nothing
 
         extrn   __DOSseg__      : byte
@@ -90,19 +97,12 @@ CONST   segment word public 'DATA'
 CONST   ends
 
 if COMP_CFG_COFF eq 0
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
 
 XIB     segment word public 'DATA'
 _Start_XI label byte
         public  "C",_Start_XI
 XIB     ends
-XI      segment word public 'DATA'
-XI      ends
+
 XIE     segment word public 'DATA'
 _End_XI label byte
         public  "C",_End_XI
@@ -112,16 +112,16 @@ YIB     segment word public 'DATA'
 _Start_YI label byte
         public  "C",_Start_YI
 YIB     ends
-YI      segment word public 'DATA'
-YI      ends
+
 YIE     segment word public 'DATA'
 _End_YI label byte
         public  "C",_End_YI
 YIE     ends
+
 endif
 
-_DATA    segment word public 'DATA'
-_DATA    ends
+_DATA   segment word public 'DATA'
+_DATA   ends
 
 DATA    segment word public 'DATA'
 DATA    ends
