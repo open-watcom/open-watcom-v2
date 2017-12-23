@@ -30,8 +30,8 @@
 
 .386
 
+include langenv.inc
 include mdef.inc
-include xinit.inc
 
 public  __autolock
 
@@ -99,6 +99,8 @@ _AUTOLOCK   ends
 _AUTOLOCKE  segment dword   public    use32  'DATA'
 _end:
 _AUTOLOCKE  ends
+
+include xinit.inc
 
 xinit   automemlock,   INIT_PRIORITY_EXIT - 1
 xfini   automemunlock, INIT_PRIORITY_EXIT - 1

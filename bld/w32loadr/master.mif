@@ -27,6 +27,9 @@ ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 
 w32bind_objs = w32bind.obj
 
+extra_cpp_flags = -DCURR_YEAR="$(%__CYEAR__)"
+extra_a_flags = -dCURR_YEAR="$(%__CYEAR__)"
+
 !ifdef bootstrap
 
 all : w32bind.exe .SYMBOLIC

@@ -28,11 +28,12 @@
 ;*
 ;*****************************************************************************
 
+
 ; !!!!! must be compiled with -fpi87 option !!!!!
 
+include langenv.inc
 include mdef.inc
 include struct.inc
-include xinit.inc
 
 .8087
 public  FJSRQQ
@@ -53,10 +54,6 @@ public  FICRQQ
 FICRQQ  equ             00E32H
 public  FIARQQ
 FIARQQ  equ             0FE32H
-
-
-        xinit   __init_87_emulator,INIT_PRIORITY_FPU
-        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
 
 DGROUP  group   _DATA
         assume  ds:DGROUP
@@ -300,5 +297,11 @@ __patch3d proc near
 __patch3d endp
 
 _TEXT   ends
+
+
+include xinit.inc
+
+        xinit   __init_87_emulator,INIT_PRIORITY_FPU
+        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
 
         end

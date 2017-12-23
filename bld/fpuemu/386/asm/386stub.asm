@@ -1,32 +1,34 @@
 .386p
 .387
 
+include langenv.inc
 include mdef.inc
-include xinit.inc
 
-    modstart    386inite
+        modstart    386inite
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;      void _init_387_emulator( int )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-public          __init_387_emulator
+        public  __init_387_emulator
 __init_387_emulator proc near
-            ret
+        ret
 __init_387_emulator endp
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;      void _fini_387_emulator( void )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-public          __fini_387_emulator
+        public  __fini_387_emulator
 __fini_387_emulator proc near
-            ret
+        ret
 __fini_387_emulator endp
 
-    endmod
+        endmod
 
-    xinit   __init_387_emulator,INIT_PRIORITY_FPU
-    xfini   __fini_387_emulator,INIT_PRIORITY_FPU
+include xinit.inc
 
-    end
+        xinit   __init_387_emulator,INIT_PRIORITY_FPU
+        xfini   __fini_387_emulator,INIT_PRIORITY_FPU
+
+        end
