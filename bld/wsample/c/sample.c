@@ -630,9 +630,9 @@ int main( int argc, char **argv )
     Info.d.config.huge_shift    = 12;
 #if defined( _M_IX86 )
     Info.d.config.mad           = MAD_X86;
-#elif defined(__ALPHA__)
+#elif defined( __AXP__ )
     Info.d.config.mad           = MAD_AXP;
-#elif defined(__PPC__)
+#elif defined( __PPC__ )
     Info.d.config.mad           = MAD_PPC;
 #else
     #error Machine type not configured

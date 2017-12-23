@@ -72,7 +72,7 @@
     // pad to 2-byte boundary
     #define AlignPad1 char padding[1];
     #define AlignPad2 ;
-#elif defined( __ALPHA__ ) || defined( __386__ )
+#elif defined( _M_IX86 ) || defined( __AXP__ )
     // pad to 4-byte boundary
     #define AlignPad1 char padding[3];
     #define AlignPad2 char padding[2];

@@ -35,7 +35,7 @@
 
 void    Quit( const char *usage_msg[], const char *msg, ... );
 void    Die( const char *str, ... );
-#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
 #pragma aux Quit aborts;
 #pragma aux Die aborts;
 #endif

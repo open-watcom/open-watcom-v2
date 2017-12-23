@@ -37,7 +37,7 @@
 #define myassert(ignore)
 #else
 extern  void            AssertionFailed( char *, unsigned int );
-#ifndef __ALPHA__
+#ifndef __AXP__
 #pragma aux AssertionFailed aborts;
 #endif
 #define myassert(expr)    if(!(expr)) AssertionFailed(__FILE__,__LINE__)

@@ -293,7 +293,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
 
     // set up tabs for drawing
     if( !EditFlags.RealTabs ) {
-#if defined( __WATCOMC__) && !defined( __ALPHA__ )
+#if defined( __WATCOMC__) && !defined( __AXP__ )
         len = _inline_strlen( text );
 #else
         len = strlen( text );
@@ -482,7 +482,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     rect.bottom = y + height;
 
     if( EditFlags.RealTabs ) {
-#if defined( __WATCOMC__) && !defined( __ALPHA__ )
+#if defined( __WATCOMC__) && !defined( __AXP__ )
         len = _inline_strlen( text );
 #else
         len = strlen( text );
