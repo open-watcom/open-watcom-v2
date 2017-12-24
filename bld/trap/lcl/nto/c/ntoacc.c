@@ -79,7 +79,7 @@ static bool get_nto_version( unsigned_8 *major, unsigned_8 *minor )
     char    buf[32];
 
     *major = *minor = 0;
-	if( confstr( _CS_RELEASE, buf, sizeof( buf ) ) ) {
+    if( confstr( _CS_RELEASE, buf, sizeof( buf ) ) ) {
         char    *s = buf;
 
         *major = atoi( s );
@@ -721,17 +721,17 @@ static int nto_watchpoint( int addr, int len, int type )
     procfs_break    brk;
 
     switch( type ) {
-    case 1:			/* Read */
+    case 1:         /* Read */
         brk.type = _DEBUG_BREAK_RD;
         break;
-    case 2:			/* Read/Write */
+    case 2:         /* Read/Write */
         brk.type = _DEBUG_BREAK_RW;
         break;
-    default:		/* Modify */
+    default:        /* Modify */
         /* FIXME: brk.type = _DEBUG_BREAK_RWM gives EINVAL for some reason.  */
         brk.type = _DEBUG_BREAK_RW;
     }
-    brk.type |= _DEBUG_BREAK_HW;	/* Always ask for HW watchpoint */
+    brk.type |= _DEBUG_BREAK_HW;    /* Always ask for HW watchpoint */
     brk.addr = addr;
     brk.size = len;
 

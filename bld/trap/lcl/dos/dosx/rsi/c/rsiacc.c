@@ -223,8 +223,7 @@ trap_retval ReqMap_addr( void )
         fp.sel = 1;
         fp.off += ObjInfo[0].start;
         for( i = 0; i < NumObjects; ++i ) {
-            if( ObjInfo[i].start <= fp.off
-             && (ObjInfo[i].start + ObjInfo[i].size) > fp.off ) {
+            if( ObjInfo[i].start <= fp.off && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.off ) {
                 fp.sel = i + 1;
                 fp.off -= ObjInfo[i].start;
                 ret->lo_bound = ObjInfo[i].start - ObjInfo[0].start;
