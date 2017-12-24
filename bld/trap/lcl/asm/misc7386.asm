@@ -43,13 +43,14 @@ ifdef __NETWARE__
 endif
         sub     eax,eax                 ; set initial control word to 0
         push    eax                     ; push it on stack
-;
+        ; we can not use FWAIT until FPU will be detected
         fninit                          ; initialize math coprocessor
         fnstcw  [esp]                   ; store control word in memory
         xor     al,al                   ; assume no coprocessor present
         mov     ah,[esp + 1]            ; upper byte is 03h if
         cmp     ah,03h                  ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present
+        ; now we can use FWAIT if necessary because FPU is present
         mov     al,1                    ; assume it is an 8087
         and     word ptr [esp],NOT 80h  ; turn interrupts on (IEM=0)
         fldcw   [esp]                   ; load control word

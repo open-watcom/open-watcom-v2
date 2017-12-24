@@ -41,6 +41,7 @@ ifndef __WINDOWS__
 
 xdefp   "C",NPXType
         push    bp                      ; save bp
+        ; we can not use FWAIT until FPU will be detected
         sub     ax,ax                   ; set initial control word to 0
         push    ax                      ; push it on stack
         mov     bp,sp                   ; point to control word
@@ -51,6 +52,7 @@ xdefp   "C",NPXType
         mov     ah,3                    ; upper byte is 03h if
         cmp     ah,[bp + 1]             ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present
+        ; now we can use FWAIT if necessary because FPU is present
         mov     al,1                    ; assume it is an 8087
         and     word ptr [bp],NOT 80h   ; turn interrupts on (IEM=0)
         fldcw   [bp]                    ; load control word
