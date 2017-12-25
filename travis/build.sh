@@ -54,6 +54,9 @@ build_proc()
                     RC=$?
                 fi
             elif [ "$1" = "build" ]; then
+                if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
+                    return 0
+                fi
                 cd $OWSRCDIR
                 builder build
                 RC=$?
@@ -69,6 +72,9 @@ build_proc()
                     RC=$?
                 fi
             elif [ "$1" = "build" ]; then
+                if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
+                    return 0
+                fi
                 cd $OWSRCDIR
                 builder -q build
                 RC=$?
@@ -91,6 +97,9 @@ build_proc()
             RC=0
         elif [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$1" = "build" ]; then
+                if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$OWOSXBUILD" != "1" ]; then
+                    return 0
+                fi
                 travis/covscan.sh
             else
                 RC=0
