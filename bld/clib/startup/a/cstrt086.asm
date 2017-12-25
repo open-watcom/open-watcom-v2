@@ -197,7 +197,7 @@ _cstart_ proc near
         jmp     around
 
 if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
-                dw      ___begtext      ; make sure dead code elimination
+        dw      ___begtext              ; make sure dead code elimination
                                         ; doesn't kill BEGTEXT segment
 endif
 
