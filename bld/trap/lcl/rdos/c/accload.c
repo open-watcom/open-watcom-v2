@@ -68,7 +68,7 @@ trap_retval ReqProg_load( void )
 
     _splitpath( parm, drive, dir, fname, ext );
 
-    if( strlen( ext ) )
+    if( strlen( ext ) ) {
         _makepath( name, drive, dir, fname, ext );
     } else {
         _makepath( name, drive, dir, fname, "com" );
