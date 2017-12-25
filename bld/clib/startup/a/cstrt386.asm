@@ -158,6 +158,8 @@ STACK   ends
 _cstart_ proc near
         jmp short around
 
+        db      "WATCOM"                ; signature for DOS4GW to identify OW run-time
+
         align   4
         dd      ___begtext              ; make sure dead code elimination
                                         ; doesn't kill BEGTEXT
