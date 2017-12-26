@@ -63,20 +63,20 @@ void *DIGCLIENTRY( Alloc )( size_t amount )
     return( _MALLOC( amount ) );
 }
 
-void *DIGCLIENTRY( Realloc )( void * p, size_t amount )
-/*****************************************************/
+void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
+/****************************************************/
 {
     return( _REALLOC( p, amount ) );
 }
 
-void DIGCLIENTRY( Free )( void * p )
-/**********************************/
+void DIGCLIENTRY( Free )( void *p )
+/*********************************/
 {
     _FREE( p );
 }
 
-FILE * DIGCLIENTRY( Open )( const char * name, dig_open mode )
-/************************************************************/
+FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
+/***********************************************************/
 {
     const char  *access;
 
@@ -102,14 +102,14 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     return( ftell( fp ) );
 }
 
-size_t DIGCLIENTRY( Read )( FILE *fp, void * b , size_t s )
-/*********************************************************/
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
+/********************************************************/
 {
     return( fread( b, 1, s, fp ) );
 }
 
-size_t DIGCLIENTRY( Write )( FILE *fp, const void * b, size_t s )
-/***************************************************************/
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
+/**************************************************************/
 {
     return( fwrite( b, 1, s, fp ) );
 }
@@ -120,8 +120,8 @@ void DIGCLIENTRY( Close )( FILE *fp )
     fclose( fp );
 }
 
-void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
-/************************************************************/
+void DIGCLIENTRY( Remove )( const char *name, dig_open mode )
+/***********************************************************/
 {
     /* unused parameters */ (void)mode;
 
@@ -143,7 +143,7 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
         *d = 0;
         if( IsX86BigAddr( addr ) ) {
             *d |= X86AC_BIG;
-        };
+        }
         if( IsX86RealAddr( addr ) ) {
             *d |= X86AC_REAL;
         }
