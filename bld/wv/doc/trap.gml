@@ -1201,7 +1201,7 @@ described:
 :DTHD.Type
 :DDHD.Definition
 :DT.trap_fhandle
-:DD.This is an :F.unsigned_32:eF. which holds a debuggee file handle.
+:DD.This is an :F.unsigned_64:eF. which holds a debuggee file handle.
 :eDL.
 .beglevel
 .section REQ_FILE_GET_CONFIG (0)
