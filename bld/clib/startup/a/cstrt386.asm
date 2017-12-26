@@ -158,17 +158,20 @@ STACK   ends
 _cstart_ proc near
         jmp short around
 
-        db      "WATCOM",0              ; signature for DOS4GW to identify OW run-time
-
-        align   4
-        dd      ___begtext              ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT
+;
+; signature for DOS4GW to identify OW run-time
+;
+        db      "WATCOM",0
 
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",0
 NewLine         db      0Dh,0Ah
+
+        align   4
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT
 
 around: sti                             ; enable interrupts
 
@@ -395,8 +398,9 @@ __exit  endp
 ;
 include msgcpyrt.inc
 
-        public  __GETDS
         align   4
+
+        public  __GETDS
 __GETDS proc    near
 public "C",__GETDSStart_
 __GETDSStart_ label byte
