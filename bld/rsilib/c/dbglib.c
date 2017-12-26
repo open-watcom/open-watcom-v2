@@ -17,30 +17,31 @@
 #include "rsi1632.h"
 #include "loader.h"
 
+/* config items */
+#define OUTDATEDWINDOWSCRAP     0
+#define DEBUGHOTKEY             0
+
 /* DOS4G Entry points */
 #define DOS4G_KERNEL_PACKAGE_NAME       "D32_KERNEL"
 #define DOS4G_DEBUG_HOOK_ENTRY          "D32DebugHook"
 #define DOS4G_NULLP_ENTRY               "D32NullPtrCheck"
 #define DOS4G_INTCHAIN_ENTRY            "D32ChainInterrupt"
 
-#define OUTDATEDWINDOWSCRAP 0
-#define DEBUGHOTKEY         0
-
 /*----------------- DEFINITIONS OF INTERRUPTS AND EXCEPTIONS --------------*/
 
 /*
  *  What the exceptions mean
  *
- *      #       Description                     
+ *      #       Description
  *      ----------------------------------------
- *      0x00    Divide by Zero                  
- *      0x01    Debugging Exceptions ( step )   
- *      0x03    Breakpoint                      
- *      0x06    Undefined Opcode                
- *      0x0A    Invalid Task State              
- *      0x0C    Stack Fault                     
- *      0x0D    General Protection Fault        
- *      0x0E    Page Fault                      
+ *      0x00    Divide by Zero
+ *      0x01    Debugging Exceptions ( step )
+ *      0x03    Breakpoint
+ *      0x06    Undefined Opcode
+ *      0x0A    Invalid Task State
+ *      0x0C    Stack Fault
+ *      0x0D    General Protection Fault
+ *      0x0E    Page Fault
  *
  *  Since these are built into the chip, they ought to be the same regardless
  *  of the specific computer.
@@ -57,14 +58,14 @@
 
 /*  Real mode interrupts used
  *
- *      #       Description       
+ *      #       Description
  *      --------------------------
- *      0x02    NMI ( Breakout )  
- *      0x05    Print-Screen key  
- *      0x15    Alt-SysRq key     
- *      0x1B    Ctrl-Break key    
- *      0x21    DOS Funtions      
- *      0x23    Ctrl-C key        
+ *      0x02    NMI ( Breakout )
+ *      0x05    Print-Screen key
+ *      0x15    Alt-SysRq key
+ *      0x1B    Ctrl-Break key
+ *      0x21    DOS Funtions
+ *      0x23    Ctrl-C key
  *
  */
 
@@ -78,7 +79,7 @@
 #define INT_DOS                             0x21
 #define INT_CTRL_C_KEY                      0x23
 
-#define INT_RM_PASSUP                       INT_CTRL_BREAK_KEY      
+#define INT_RM_PASSUP                       INT_CTRL_BREAK_KEY
 
 /*------------------------ CODE ---------------------------*/
 
@@ -128,27 +129,31 @@ static int  first_time = 1;
 static unsigned char saved_opcode;
 
 /*
- *  This is the list of exceptions which 4gw hooks when it starts up.
- *  Since they depend only on the chip, they can be hooked on any machine.
+ * This is the list of exceptions which 4gw hooks when it starts up.
+ * Since they depend only on the chip, they can be hooked on any machine.
  */
 static int hook_exceptions[] = {
-    EXC_DIVIDE_BY_ZERO,
-    EXC_SINGLE_STEP,
-    EXC_BREAKPOINT,
-    EXC_UNDEF_OPCODE,
-    EXC_INVALID_TASK_STATE,
-    EXC_STACK_FAULT,
-    EXC_GP_FAULT,
-    EXC_PAGE_FAULT
+    EXC_DIVIDE_BY_ZERO,         // 00
+    EXC_SINGLE_STEP,            // 01
+    EXC_BREAKPOINT,             // 03
+    EXC_UNDEF_OPCODE,           // 06
+    EXC_INVALID_TASK_STATE,     // 0A
+    EXC_STACK_FAULT,            // 0C
+    EXC_GP_FAULT,               // 0D
+    EXC_PAGE_FAULT              // 0E
 };
-// static int hook_exceptions[] = { 0, 1, 3, 6, 0x0A, 0x0C, 0x0D, 0x0E };
 
 /*
- *  These are the interrupts that get hooked by 4gw, independantly from the
- *  break-type interrupts ( break, ctrl-c, prt-scrn, sys-rq ).
+ * These are the interrupts that get hooked by 4gw, independantly from the
+ * break-type interrupts ( break, ctrl-c, prt-scrn, sys-rq ).
  */
 
-static int hook_interrupts[] = { 1, 2, 3, 0x21 };
+static int hook_interrupts[] = {
+    INT_SINGLE_STEP,            // 01
+    INT_NMI,                    // 02
+    INT_BREAKPOINT,             // 03
+    INT_DOS                     // 21
+};
 
 #if DEBUGHOTKEY
 
@@ -198,7 +203,7 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
 {
     TSF32 FarPtr curr_tsf = client;
 
-    /*  The first TSF on the chain will always be in the DOS/16M
+    /* The first TSF on the chain will always be in the DOS/16M
         passup code, for the hotkey interrupt.  We will break there
         if we couldn't find anywhere else to break, but the preferred
         location is in a user code segment because the passup code
@@ -215,7 +220,7 @@ static TSF32 FarPtr find_user_code( TSF32 FarPtr client )
         outi( curr_tsf->cs ); outi( (int)curr_tsf->eip ); outs( "\n\r" );
         outs( "user sel" ); outi( user_sel ); outs( "\n\r" );
 #endif
-        /*  Break in any code segment above primary DOS/4G code segment
+        /* Break in any code segment above primary DOS/4G code segment
             (DOS/4G and DOS/16M guts may not all be reentrant).  The
             debug_hook function is conveniently exported from that
             segment.
@@ -250,7 +255,7 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
         hotkey_hit = 0;
 #ifdef DEBUGHOTKEY
         outs( "hotkey seen " );
-        outi( FP_OFF( client ) ); 
+        outi( FP_OFF( client ) );
         outi( client->cs ); outi( (int)client->eip ); outs( "\r\n" );
 #endif
         D32DebugSetBreak( client->eip + eip_mod, client->cs, 0, &saved_opcode, &hotkey_opcode );
@@ -264,12 +269,12 @@ static int fix_fpe_fault( unsigned short opcodew, TSF32 FarPtr client )
     static unsigned short imm16;
 
     switch( opcodew ) {
-    case 0x04C7 :           /* mov ds:[si], imm16 */
+    case 0x04C7 :       /* mov ds:[si], imm16 */
         peek32( client->eip + 2, client->cs, &imm16, 2 );
         poke32( client->esi, client->ds, &imm16, 2 );
         client->eip += 4;
         break;
-    case 0x0429 :            /* sub ds:[si], ax */
+    case 0x0429 :       /* sub ds:[si], ax */
         peek32( client->esi, client->ds, &imm16, 2 );
         imm16 -= (int)client->eax;
         poke32( client->esi, client->ds, &imm16, 2 );
@@ -309,10 +314,10 @@ static int fixcrash( TSF32 FarPtr client )
     opcode = (unsigned char)( opcodew & 0xFF );
 
     /* We zero the word on the stack because we will return to the
-            POP instruction and try again.  We also zero the offending
-            register, because if we take a fault while we're in the middle
-            of ihandle, ihandle itself will pop the register and cause
-            a recursive crash loop.
+        POP instruction and try again.  We also zero the offending
+        register, because if we take a fault while we're in the middle
+        of ihandle, ihandle itself will pop the register and cause
+        a recursive crash loop.
     */
     if( opcode == 0x07 ) {      /* POP ES */
         client->es = 0;
@@ -334,9 +339,9 @@ coverup:
     }
 
     /* Attempt to fix up the Microsoft floating point emulator,
-            which overstores FWAIT instructions with "mov ax,ax"
-            using the instruction mov ds:[si],C089h and does lots of
-            other sneaky tricks
+        which overstores FWAIT instructions with "mov ax,ax"
+        using the instruction mov ds:[si],C089h and does lots of
+        other sneaky tricks
     */
     if( fix_fpe_fault( opcodew, client ) ) {
         return( 1 );
@@ -385,10 +390,10 @@ static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hN
         /* Handler should get out of the way */
         if( ( client->int_id == hotkey_int ) && !being_debugged ) {
             /* If we detect the hotkey while the debugger is in control, and
-                    there is no other debugger to hotkey into, just beep.
+                there is no other debugger to hotkey into, just beep.
             */
 #if DEBUGHOTKEY
-            outi( debugging ); 
+            outi( debugging );
             outs( " think we're in the debugger\r\n" );
 #endif
             beep();        /* Can't hotkey, already in control */
@@ -396,20 +401,20 @@ static unsigned __loadds __saveregs __cdecl __far debug_handler( unsigned int hN
 
         } else if( client->int_id == EXC_PAGE_FAULT ) {
             /* If a page fault in debugger, assume triggered by peek32/poke32
-                    and just cover it up, setting the page_fault flag.
+                and just cover it up, setting the page_fault flag.
             */
             page_fault = 1;
             client->eip += 3;
             hNext = 0;      /* Fault has been handled */
         } else if( ( client->int_id == EXC_SINGLE_STEP ) && !being_debugged ) {
             /* If a debug exception occurs while the debugger is active, it's
-                    because something (such as DOS/4G with NULLP) is debugging the
-                    debugger.  Because the debugger must juggle the real mode
-                    interrupt vectors, we want to cover up run-of-the-mill exceptions
-                    caused by NULLP.
-    
-                    However, if there is a parent debugger present to handle the
-                    exception, we don't want to cover it up.
+                because something (such as DOS/4G with NULLP) is debugging the
+                debugger.  Because the debugger must juggle the real mode
+                interrupt vectors, we want to cover up run-of-the-mill exceptions
+                caused by NULLP.
+
+                However, if there is a parent debugger present to handle the
+                exception, we don't want to cover it up.
             */
             hNext = 0;
         }
@@ -440,9 +445,9 @@ analyze:
         break;
     case EXC_PAGE_FAULT:      /* Page fault */
         /* If we get a page fault while the user program is running,
-                we want to flag it immediately.  If VM is present, it will
-                already have covered up any of its own page faults; the
-                debug handler will only be called on a legitimate fault.
+            we want to flag it immediately.  If VM is present, it will
+            already have covered up any of its own page faults; the
+            debug handler will only be called on a legitimate fault.
         */
         break;
     case EXC_BREAKPOINT:         /* Breakpoint */
@@ -466,7 +471,7 @@ analyze:
             break;
         }
         /* Catch INT 21h/AH = FFh
-                    DX = 11FFh (DOS/16M debugger presence test)
+            DX = 11FFh (DOS/16M debugger presence test)
         */
         if( ((unsigned short)client->eax & 0xFF00) == 0xFF00 &&
                 (unsigned short)client->edx == 0x11FF ) {
@@ -596,7 +601,7 @@ typedef union {
     INTVECT     w;                  /* treat as selector/offset */
 } farptr16;
 
-static void FarPtr  save_int5;
+static void FarPtr  save_int05;
 static void FarPtr  save_int15;
 static void FarPtr  save_int1b;
 static void FarPtr  save_int23;
@@ -617,7 +622,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
     }
 
     if( _d16info.miscellaneous & D16misc_AT_compat ) {
-        rsi_rm_get_vector( INT_PRT_SCRN_KEY,   &save_int5 );
+        rsi_rm_get_vector( INT_PRT_SCRN_KEY,   &save_int05 );
         rsi_rm_get_vector( INT_CTRL_C_KEY,     &save_int23 );
         rsi_rm_get_vector( INT_CTRL_BREAK_KEY, &save_int1b );
     }
@@ -648,7 +653,7 @@ int D32DebugInit( TSF32 FarPtr process_regs, int hkey )
         lowmem_cs.pv = rsi_get_rm_ptr( lowmem_cs.pv );
 
         /* Set up INT 15h chain to previous handler, and prepare to store
-            address of passup handler (5, 1B, or 23) in hotkey_passup.
+           address of passup handler (5, 1B, or 23) in hotkey_passup.
         */
         org15p.w.sel = rsi_sel_data_alias( FP_SEG( &org15_handler ) );
         if( org15p.w.sel == NULL_PTR )
@@ -699,10 +704,10 @@ void D32DebugTerm( void )
         if( ( hotkey_int < 8 ) || ( hotkey_int > 0x2f ) ) {
             rsi_int_passdown( hotkey_int );
         }
-        rsi_rm_set_vector( INT_SYS_SERVICES, save_int15 );
-        rsi_rm_set_vector( INT_PRT_SCRN_KEY, save_int5 );
-        rsi_rm_set_vector( INT_CTRL_BREAK_KEY, save_int1b );
-        rsi_rm_set_vector( INT_CTRL_C_KEY, save_int23 );
+        rsi_rm_set_vector( INT_SYS_SERVICES,    save_int15 );
+        rsi_rm_set_vector( INT_PRT_SCRN_KEY,    save_int05 );
+        rsi_rm_set_vector( INT_CTRL_BREAK_KEY,  save_int1b );
+        rsi_rm_set_vector( INT_CTRL_C_KEY,      save_int23 );
     }
 }
 
@@ -717,7 +722,7 @@ void D32DebugRun( TSF32 FarPtr process_regs )
         dbgregs = *process_regs;
 
         /* DJT fix for Windows 95 cleverness: call fixtrap if we're
-            trying to single-step under Windows 95, to make sure 
+            trying to single-step under Windows 95, to make sure
             we get the single-step interrupt we're expecting.
         */
 
