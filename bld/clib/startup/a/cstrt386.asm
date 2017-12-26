@@ -117,7 +117,7 @@ _TEXT   segment use32 dword public 'CODE'
 
 _NULL   segment para public 'BEGDATA'
 __nullarea label word
-        db      01h,01h,01h,00h
+        db      1,1,1,0
         public  __nullarea
 _NULL   ends
 
@@ -158,7 +158,7 @@ STACK   ends
 _cstart_ proc near
         jmp short around
 
-        db      "WATCOM"                ; signature for DOS4GW to identify OW run-time
+        db      "WATCOM",0              ; signature for DOS4GW to identify OW run-time
 
         align   4
         dd      ___begtext              ; make sure dead code elimination
@@ -167,7 +167,7 @@ _cstart_ proc near
 ;
 ; miscellaneous code-segment messages
 ;
-ConsoleName     db      "con",00h
+ConsoleName     db      "con",0
 NewLine         db      0Dh,0Ah
 
 around: sti                             ; enable interrupts
