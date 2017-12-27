@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-enum {
+typedef enum {
     COND_CONFIG         = 0x0001,
     COND_SECTIONS       = 0x0002,
     COND_LIBRARIES      = 0x0004,
@@ -46,7 +46,8 @@ enum {
     COND_MESSAGE        = 0x1000,
     COND_STOP           = 0x2000,
     COND_RUNNING        = 0x4000,
+
     COND_STOPPERS       = (COND_TRACE|COND_BREAK|COND_WATCH|COND_USER
                                 |COND_TERMINATE|COND_EXCEPTION|COND_STOP)
-};
+} trap_conditions;
 
