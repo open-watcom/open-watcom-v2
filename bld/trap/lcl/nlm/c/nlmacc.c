@@ -1326,7 +1326,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-static unsigned Execute( msb *which )
+static trap_conditions Execute( msb *which )
 {
     msb         *m;
 

@@ -1317,7 +1317,7 @@ void SetBrkPending( void )
     BrkPending = TRUE;
 }
 
-static unsigned MapReturn( unsigned conditions )
+static trap_conditions MapReturn( trap_conditions conditions )
 {
     if( BrkPending ) {
         /* Get CS:EIP & SS:ESP correct */

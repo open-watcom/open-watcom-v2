@@ -1052,12 +1052,12 @@ static void RunHandler( int sig )
     /* Running this signal handler will cause the Receive to terminate */
 }
 
-static int RunIt( unsigned step )
+static trap_conditions RunIt( unsigned step )
 {
     struct _debug_info  info;
     void                (*old)();
     pid_t               pid;
-    int                 ret;
+    trap_conditions     conditions;
     thread_info         *thread;
     thread_info         *new;
     unsigned            i;
@@ -1074,7 +1074,8 @@ static int RunIt( unsigned step )
         return( COND_THREAD );
     }
     for( thread = ProcInfo.thread; thread < &ProcInfo.thread[ProcInfo.max_threads]; thread++ ) {
-        if( thread->tid == 0 ) continue;
+        if( thread->tid == 0 )
+            continue;
         if( step == 0 || thread->tid == ProcInfo.pid ) {
             if( !thread->frozen ) {
                 if( __qnx_debug_cont( ProcInfo.proc, thread->tid, step ) == 0 ) {
@@ -1099,16 +1100,18 @@ static int RunIt( unsigned step )
             }
             return( COND_USER );
         }
-        ret = 0;
+        conditions = 0;
         for( i = 0; i < ProcInfo.max_threads; i++ ) {
             /*
                 Don't walk the thread array directly because it might move
                 due to a realloc.
             */
             thread = &ProcInfo.thread[i];
-            if( thread->frozen ) continue;
+            if( thread->frozen )
+                continue;
             pid = thread->tid;
-            if( pid == 0 ) continue;
+            if( pid == 0 )
+                continue;
             if( step == 0 || pid == ProcInfo.pid ) {
                 __qnx_debug_xfer( ProcInfo.proc, pid, _DEBUG_INFO, &info, sizeof( info ), 0, 0 );
                 switch( info.debug_state ) {
@@ -1116,31 +1119,31 @@ static int RunIt( unsigned step )
                     __qnx_debug_hold( ProcInfo.proc, pid );
                     break;
                 case _DEBUG_STATE_HELD:
-                    ret |= COND_USER;
+                    conditions |= COND_USER;
                     if(pid != ProcInfo.pid) {
                         ProcInfo.pid = pid;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_TRACE:
-                    ret |= COND_TRACE;
+                    conditions |= COND_TRACE;
                     if(pid != ProcInfo.pid) {
                         ProcInfo.pid = pid;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_BRK:
-                    ret |= COND_BREAK;
+                    conditions |= COND_BREAK;
                     if(pid != ProcInfo.pid) {
                         ProcInfo.pid = pid;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_WATCH:
-                    ret |= COND_WATCH;
+                    conditions |= COND_WATCH;
                     if(pid != ProcInfo.pid) {
                         ProcInfo.pid = pid;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     }
                     break;
                 case _DEBUG_STATE_DEAD:
@@ -1150,24 +1153,24 @@ static int RunIt( unsigned step )
                         thread->tid = 0;
                         find_thread(pid)->frozen = false;
                         ProcInfo.pid = pid;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     } else {
                         thread->dying = false;
                         if( pid != ProcInfo.pid ) {
                             ProcInfo.pid = pid;
-                            ret |= COND_THREAD;
+                            conditions |= COND_THREAD;
                         }
                         ProcInfo.at_end = true;
-                        ret |= COND_TERMINATE;
+                        conditions |= COND_TERMINATE;
                     }
                     break;
                 case _DEBUG_STATE_SIGNAL:
                     __qnx_debug_sigclr( ProcInfo.proc, pid, info.signo );
                     if( info.signo == SIGINT ) {
-                        ret |= COND_USER;
+                        conditions |= COND_USER;
                     } else {
                         ProcInfo.sig = info.signo;
-                        ret = COND_EXCEPTION;
+                        conditions = COND_EXCEPTION;
                     }
                     break;
                 case _DEBUG_STATE_FORK:
@@ -1177,9 +1180,9 @@ static int RunIt( unsigned step )
                         new->tid = ProcInfo.son;
                         new->frozen = true;
                         new->fork = true;
-                        ret |= COND_THREAD;
+                        conditions |= COND_THREAD;
                     }
-                    ret |= COND_MESSAGE;
+                    conditions |= COND_MESSAGE;
                     break;
                 case _DEBUG_STATE_THREAD:
                     ProcInfo.son = info.messenger;
@@ -1189,12 +1192,12 @@ static int RunIt( unsigned step )
                             new->frozen = false;
                         }
                     }
-                    ret |= COND_THREAD;
+                    conditions |= COND_THREAD;
                     break;
                 }
             }
         }
-        return( ret );
+        return( conditions );
     }
     ProcInfo.at_end = true;
     return( COND_TERMINATE );
@@ -1229,7 +1232,7 @@ static unsigned ProgRun( bool step )
         }
         ret->conditions = RunIt( 0 );
     }
-    if( !(ret->conditions & COND_TERMINATE) ) {
+    if( (ret->conditions & COND_TERMINATE) == 0 ) {
         __qnx_debug_xfer( ProcInfo.proc, ProcInfo.pid, _DEBUG_REG_RD, &regs, sizeof( regs ), 0, 0 );
         #if 0
         Out( "stopped at " );

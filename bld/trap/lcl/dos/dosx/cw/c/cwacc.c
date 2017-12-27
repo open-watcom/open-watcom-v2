@@ -339,10 +339,10 @@ int CheckTerminate( void )
     return( 0 );
 }
 
-static int MapStateToCond( unsigned state )
-/*****************************************/
+static trap_conditions MapStateToCond( unsigned state )
+/*****************************************************/
 {
-    int     rc;
+    trap_conditions rc;
 
     if( state & ST_TERMINATE ) {
         _DBG( "Condition: TERMINATE\r\n" );

@@ -707,7 +707,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-static int MapReturn()
+static trap_conditions MapReturn( void )
 {
     switch( Mach.msb_event )
     {
@@ -734,7 +734,7 @@ static int MapReturn()
 }
 
 
-static void FixFakeBreak()
+static void FixFakeBreak( void )
 {
     PTR386      addr;
 
@@ -744,10 +744,10 @@ static void FixFakeBreak()
 }
 
 
-static int Execute()
+static trap_conditions Execute( void )
 {
-    int         err;
-    int         trap;
+    int             err;
+    trap_conditions conditions;
 
     if( !GrabVects() )
         return( COND_EXCEPTION );
@@ -761,17 +761,17 @@ static int Execute()
         return( COND_EXCEPTION );
     }
     ReleVects();
-    trap = MapReturn();
+    conditions = MapReturn();
     if( FakeBreak ) {
         FixFakeBreak();
         FakeBreak = FALSE;
         if( !AtEnd ) {
-            trap = COND_USER;
+            conditions = COND_USER;
         }
     }
     if( AtEnd )
         return( COND_TERMINATE );
-    return( trap );
+    return( conditions );
 }
 
 

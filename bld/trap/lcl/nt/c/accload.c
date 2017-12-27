@@ -197,7 +197,7 @@ static void addAllWOWModules( void )
  */
 static BOOL executeUntilVDMStart( void )
 {
-    int rc;
+    myconditions    rc;
 
     for( ;; ) {
         rc = DebugExecute( STATE_WAIT_FOR_VDM_START, NULL, FALSE );
@@ -215,7 +215,7 @@ static BOOL executeUntilVDMStart( void )
 static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 {
     if( attrib & WOW_SYSTEM ) {
-        *( DWORD * ) lparam = pid;
+        *(DWORD *)lparam = pid;
         return( FALSE );
     }
     return( TRUE );
@@ -225,7 +225,7 @@ static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 static BOOL WINAPI EnumWOWProcessFunc( DWORD pid, DWORD attrib, LPARAM lparam )
 {
     (void)pid, (void)attrib; // Unused
-    *( DWORD *)lparam = 0;
+    *(DWORD *)lparam = 0;
     return( FALSE );
 }
 #endif
@@ -494,8 +494,8 @@ trap_retval ReqProg_load( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = ( WORD ) con.SegCs;
-        WOWAppInfo.offset = ( WORD ) con.Eip;
+        WOWAppInfo.segment = (WORD)con.SegCs;
+        WOWAppInfo.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );
@@ -527,8 +527,8 @@ trap_retval ReqProg_load( void )
          */
         ti = FindThread( DebugeeTid );
         MyGetThreadContext( ti, &con );
-        WOWAppInfo.segment = ( WORD )con.SegCs;
-        WOWAppInfo.offset = ( WORD )con.Eip;
+        WOWAppInfo.segment = (WORD)con.SegCs;
+        WOWAppInfo.offset = (WORD)con.Eip;
         con.SegSs = con.SegDs; // Wow lies about the stack segment.  Reset it
         con.Esp = stack;
         MySetThreadContext( ti, &con );

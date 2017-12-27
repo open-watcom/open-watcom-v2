@@ -744,7 +744,7 @@ static bool SetDebugRegs( void )
     }
 }
 
-static unsigned DoRun( void )
+static trap_conditions DoRun( void )
 {
     D32DebugRun( &Proc );
     switch( Proc.int_id ) {
@@ -834,7 +834,7 @@ static unsigned ProgRun( bool step )
                     ret->conditions = DoRun();
                     Proc.eflags &= ~TRACE_BIT;
                 }
-                if( ( ret->conditions & (COND_TRACE|COND_BREAK) ) == 0 )
+                if( (ret->conditions & (COND_TRACE | COND_BREAK)) == 0 )
                     break;
                 if( CheckWatchPoints() ) {
                     ret->conditions |= COND_WATCH;

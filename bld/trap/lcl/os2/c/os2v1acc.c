@@ -952,43 +952,43 @@ static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
-static unsigned MapReturn( unsigned changes )
+static trap_conditions MapReturn( trap_conditions conditions )
 {
 
     if( BrkPending ) {
         ReadRegs( &Buff );
-        return( changes | COND_USER );
+        return( conditions | COND_USER );
     }
 
     switch( Buff.cmd ) {
     case PT_RET_SUCCESS:
-        return( changes );
+        return( conditions );
     case PT_RET_SIGNAL:
-        return( changes | COND_USER );
+        return( conditions | COND_USER );
     case PT_RET_STEP:
-        return( changes | COND_TRACE );
+        return( conditions | COND_TRACE );
     case PT_RET_BREAK:
-        return( changes | COND_BREAK );
+        return( conditions | COND_BREAK );
     case PT_RET_PARITY:
         ExceptNum = 2;
-        return( changes | COND_EXCEPTION );
+        return( conditions | COND_EXCEPTION );
     case PT_RET_FAULT:
         ExceptNum = 13;
-        return( changes | COND_EXCEPTION );
+        return( conditions | COND_EXCEPTION );
     case PT_RET_WATCH:
-        return( changes | COND_WATCH );
+        return( conditions | COND_WATCH );
     case PT_RET_LIB_LOADED:
         RecordModHandle( Buff.value );
-        return( changes | COND_LIBRARIES );
+        return( conditions | COND_LIBRARIES );
     case PT_RET_TRD_TERMINATE:
-        return( changes );
+        return( conditions );
     // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
     // case PT_RET_FUNERAL:
     // case PT_RET_ERROR:
     default:
         CanExecTask = FALSE;
         AtEnd = TRUE;
-        return( changes | COND_TERMINATE );
+        return( conditions | COND_TERMINATE );
     }
 }
 

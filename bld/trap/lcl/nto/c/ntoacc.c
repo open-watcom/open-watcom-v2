@@ -845,15 +845,15 @@ static void Resume( int step )
 }
 
 
-static int RunIt( unsigned step )
+static trap_conditions RunIt( unsigned step )
 {
     void                (*old)();
-    int                 ret;
+    trap_conditions     conditions;
     sigset_t            sig_set;
     siginfo_t           info;
     procfs_status       status;
 
-    ret = 0;
+    conditions = 0;
 
     Resume( step );
 
@@ -877,16 +877,16 @@ static int RunIt( unsigned step )
         // If current tid is zero, the process ended. We're not interested.
         if( status.tid ) {
             ProcInfo.tid = status.tid;
-            ret |= COND_THREAD | COND_THREAD_EXTRA;
+            conditions |= COND_THREAD | COND_THREAD_EXTRA;
         }
     }
 
     if( status.flags & _DEBUG_FLAG_SSTEP ) {
-        ret |= COND_TRACE;
+        conditions |= COND_TRACE;
     } else if( status.flags & _DEBUG_FLAG_TRACE_EXEC ) {
-        ret |= COND_BREAK;
+        conditions |= COND_BREAK;
     } else if( status.flags & (_DEBUG_FLAG_TRACE_RD | _DEBUG_FLAG_TRACE_WR) ) {
-        ret |= COND_BREAK;
+        conditions |= COND_BREAK;
     } else if( status.flags & _DEBUG_FLAG_ISTOP ) {
         switch( status.why ) {
         case _DEBUG_WHY_SIGNALLED:
@@ -894,10 +894,10 @@ static int RunIt( unsigned step )
         case _DEBUG_WHY_JOBCONTROL:
             dbg_print(( "stopped on signal: %d\n", status.info.si_signo ));
             if( status.info.si_signo == SIGINT ) {
-                ret |= COND_USER;
+                conditions |= COND_USER;
             } else {
                 ProcInfo.sig = status.info.si_signo;
-                ret |= COND_EXCEPTION;
+                conditions |= COND_EXCEPTION;
             }
             break;
         case _DEBUG_WHY_TERMINATED: {
@@ -907,22 +907,22 @@ static int RunIt( unsigned step )
             dbg_print(( "debuggee terminated (pid %d), status collected (%d)\n",
                         ProcInfo.pid, wait_val ));
             ProcInfo.at_end = TRUE;
-            ret |= COND_TERMINATE;
+            conditions |= COND_TERMINATE;
             break;
         }
         case _DEBUG_WHY_REQUESTED:
             /* We are assuming a requested stop is due to a SIGINT.  */
-            ret |= COND_USER;
+            conditions |= COND_USER;
             break;
         }
     }
     /* Check the dynamic linker breakpoint. */
-    if( (ret & COND_BREAK) && (status.ip == ProcInfo.ld_bp_va) ) {
-        ret &= ~COND_BREAK;
-        ret |= COND_LIBRARIES;
+    if( (conditions & COND_BREAK) && (status.ip == ProcInfo.ld_bp_va) ) {
+        conditions &= ~COND_BREAK;
+        conditions |= COND_LIBRARIES;
         ProcessLdBreakpoint( ProcInfo.procfd, ProcInfo.rdebug_va );
     }
-    return( ret );
+    return( conditions );
 }
 
 
@@ -944,7 +944,7 @@ static unsigned ProgRun( bool step )
         dbg_print(( "about to run\n" ));
         ret->conditions = RunIt( 0 );
     }
-    if( !(ret->conditions & COND_TERMINATE) ) {
+    if( (ret->conditions & COND_TERMINATE) == 0 ) {
         memset( &regs, 0, sizeof( regs ) );
         devctl( ProcInfo.procfd, DCMD_PROC_GETGREG, &regs, sizeof( regs ), &regsize );
         ret->program_counter.offset  = regs.x86.eip;

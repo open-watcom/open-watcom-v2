@@ -821,7 +821,7 @@ static bool SetDebugRegs( void )
     return( watch386 );
 }
 
-static unsigned MapReturn( int trap )
+static trap_conditions MapReturn( int trap )
 {
     out( "cond=" );
     switch( trap ) {

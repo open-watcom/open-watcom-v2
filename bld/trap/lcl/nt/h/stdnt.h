@@ -161,6 +161,11 @@ struct msg_list {
     char        msg[1]; /* variable size */
 };
 
+typedef unsigned		myconditions;
+
+#if !defined( WOW ) || defined( MD_x64 )
+typedef void            IMAGE_NOTE;
+#endif
 
 /*
  * global variables prototypes
@@ -173,83 +178,80 @@ struct msg_list {
  */
 
 /* accmap.c */
-BOOL FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
-void FixUpDLLNames( void );
-void RemoveModuleFromLibList( char *module, char *filename );
-BOOL IsMagicalFileHandle( HANDLE h );
-HANDLE GetMagicalFileHandle( char *name );
-void AddProcess( header_info * );
-void DelProcess( BOOL );
-void VoidProcess( void );
-#if !defined( WOW ) || defined( MD_x64 )
-typedef void IMAGE_NOTE;
-#endif
-void AddLib( BOOL, IMAGE_NOTE *im );
-void DelLib( void );
-void FreeLibList( void );
-int DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
+extern BOOL             FindExceptInfo( LPVOID off, LPVOID *base, DWORD *size );
+extern void             FixUpDLLNames( void );
+extern void             RemoveModuleFromLibList( char *module, char *filename );
+extern BOOL             IsMagicalFileHandle( HANDLE h );
+extern HANDLE           GetMagicalFileHandle( char *name );
+extern void             AddProcess( header_info * );
+extern void             DelProcess( BOOL );
+extern void             VoidProcess( void );
+extern void             AddLib( BOOL, IMAGE_NOTE *im );
+extern void             DelLib( void );
+extern void             FreeLibList( void );
+extern int              DoListLibs( char *buff, int is_first, int want_16, int want_32, int verbose, int sel );
 
 /* accmem.c */
-DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
-DWORD ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
+extern DWORD            WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
+extern DWORD            ReadMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size );
 
 /* accmisc.c */
-BOOL IsBigSel( WORD sel );
-unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list );
-void AddMessagePrefix( char *buff, int len );
+extern BOOL             IsBigSel( WORD sel );
+extern unsigned long    FindProgFile( const char *pgm, char *buffer, const char *ext_list );
+extern void             AddMessagePrefix( char *buff, int len );
 
 /* accrun.c */
-int DebugExecute( DWORD state, int *tsc, bool );
-void InterruptProgram( void );
-bool Terminate( void );
+extern myconditions     DebugExecute( DWORD state, int *tsc, bool );
+extern void             InterruptProgram( void );
+extern bool             Terminate( void );
 
 /* misc.c */
-BOOL MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
+extern BOOL             MyGetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define GetThreadContext Dont_call_GetThreadContext_directly__Call_MyGetThreadContext_instead
-BOOL MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
+extern BOOL             MySetThreadContext( thread_info *ti, MYCONTEXT *pc );
 #define SetThreadContext Dont_call_SetThreadContext_directly__Call_MySetThreadContext_instead
 
 /* peread.c */
-BOOL SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
-int GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
-int GetModuleName( HANDLE fhdl, char *name );
+extern BOOL             SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size );
+extern int              GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack );
+extern int              GetModuleName( HANDLE fhdl, char *name );
 
 /* pgmexec.c */
-BOOL CausePgmToLoadThisDLL( void );
-BOOL TaskReadWord( WORD seg, DWORD off, LPWORD data );
-BOOL TaskWriteWord( WORD seg, DWORD off, WORD data );
-BOOL TaskReadFPU( LPVOID data );
-BOOL TaskWriteFPU( LPVOID data );
-void TaskDoExit( void );
-HANDLE TaskGetModuleHandle( char *name );
+extern BOOL             CausePgmToLoadThisDLL( void );
+extern BOOL             TaskReadWord( WORD seg, DWORD off, LPWORD data );
+extern BOOL             TaskWriteWord( WORD seg, DWORD off, WORD data );
+extern BOOL             TaskReadFPU( LPVOID data );
+extern BOOL             TaskWriteFPU( LPVOID data );
+extern void             TaskDoExit( void );
+extern HANDLE           TaskGetModuleHandle( char *name );
 
 /* thread.c */
-void AddThread( DWORD tid, HANDLE th, LPVOID sa );
-void DeadThread( DWORD tid );
-thread_info *FindThread( DWORD tid );
-void RemoveThread( DWORD tid );
-void RemoveAllThreads( void );
+extern void             AddThread( DWORD tid, HANDLE th, LPVOID sa );
+extern void             DeadThread( DWORD tid );
+extern thread_info      *FindThread( DWORD tid );
+extern void             RemoveThread( DWORD tid );
+extern void             RemoveAllThreads( void );
 
 /* accbrwat.c */
-BOOL CheckWatchPoints( void );
-BOOL SetDebugRegs( void );
-void ClearDebugRegs( void );
-DWORD GetDR6( void );
-void SetDR7( DWORD tmp );
-BOOL FindBreak( WORD segment, DWORD offset, BYTE *ch );
+extern BOOL             CheckWatchPoints( void );
+extern BOOL             SetDebugRegs( void );
+extern void             ClearDebugRegs( void );
+extern DWORD            GetDR6( void );
+extern void             SetDR7( DWORD tmp );
+extern BOOL             FindBreak( WORD segment, DWORD offset, BYTE *ch );
 
 /* dbgthrd.c */
-extern DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags );
-BOOL MyWaitForDebugEvent( void );
-void MyContinueDebugEvent( int );
-extern void StopControlThread( void );
-extern void ProcessQueuedRepaints( void );
-extern void ParseServiceStuff( char *name,
-    char **pdll_name, char **pservice_name,
-    char **pdll_destination, char **pservice_parm );
+extern DWORD            StartControlThread( char *name, DWORD *pid, DWORD cr_flags );
+extern BOOL             MyWaitForDebugEvent( void );
+extern void             MyContinueDebugEvent( int );
+extern void             StopControlThread( void );
+extern void             ProcessQueuedRepaints( void );
+extern void             ParseServiceStuff( char *name,
+                            char **pdll_name, char **pservice_name,
+                            char **pdll_destination, char **pservice_parm );
 
 /* accregs.c */
-extern LPVOID AdjustIP( MYCONTEXT *, int );
-extern void SetIP( MYCONTEXT *, LPVOID );
+extern LPVOID           AdjustIP( MYCONTEXT *, int );
+extern void             SetIP( MYCONTEXT *, LPVOID );
 
-extern void say( char *fmt, ... );
+extern void             say( char *fmt, ... );

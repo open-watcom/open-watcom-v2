@@ -57,6 +57,9 @@
 #include "qnxcomm.h"
 
 
+#define TRPH2LH(th)     (th)->handle.u._32[0]
+#define LH2TRPH(th,lh)  (th)->handle.u._32[0]=lh;(th)->handle.u._32[1]=0
+
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 trap_retval ReqFile_get_config( void )
@@ -128,10 +131,10 @@ trap_retval ReqFile_open( void )
         fcntl( handle, F_SETFD, (int)FD_CLOEXEC );
         errno = 0;
         ret->err = 0;
-        ret->handle = handle;
+        LH2TRPH( ret, handle );
     } else {
         ret->err = errno;
-        ret->handle = 0;
+        LH2TRPH( ret, 0 );
     }
     return( sizeof( *ret ) );
 }
@@ -144,7 +147,7 @@ trap_retval ReqFile_close( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( close( acc->handle ) != -1 ) {
+    if( close( TRPH2LH( acc ) ) != -1 ) {
         errno = 0;
         ret->err = 0;
     } else {
@@ -175,7 +178,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->pos = lseek( acc->handle, acc->pos, local_seek_method[acc->mode] );
+    ret->pos = lseek( TRPH2LH( acc ), acc->pos, local_seek_method[acc->mode] );
     if( ret->pos != ((off_t)-1) ) {
         errno = 0;
         ret->err = 0;
@@ -220,8 +223,7 @@ trap_retval ReqFile_write( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
-                        GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( TRPH2LH( acc ), GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
     ret->err = errno;
     return( sizeof( *ret ) );
 }
@@ -231,38 +233,38 @@ trap_retval ReqFile_write_console( void )
     file_write_console_ret      *ret;
 
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
-                        GetTotalSize() - sizeof( file_write_console_req ) );
+    ret->len = DoWrite( 2, GetInPtr( sizeof( file_write_console_req ) ), GetTotalSize() - sizeof( file_write_console_req ) );
     ret->err = errno;
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqFile_read( void )
 {
-    unsigned     total;
-    unsigned     len;
-    char         *ptr;
-    unsigned     curr;
-    int          rv;
-    file_read_req       *acc;
-    file_read_ret       *ret;
+    unsigned        total;
+    unsigned        len;
+    char            *ptr;
+    unsigned        curr;
+    int             rv;
+    file_read_req   *acc;
+    file_read_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ptr = GetOutPtr( sizeof( *ret ) );
     len = acc->len;
     total = 0;
-    for( ;; ) {
-        if( len == 0 ) break;
+    for( ; len != 0; ) {
         curr = len;
-        if( curr > INT_MAX ) curr = INT_MAX;
-        rv = read( acc->handle, ptr, curr );
+        if( curr > INT_MAX )
+            curr = INT_MAX;
+        rv = read( TRPH2LH( acc ), ptr, curr );
         if( rv < 0 ) {
             total = -1;
             break;
         }
         total += rv;
-        if( rv != curr ) break;
+        if( rv != curr )
+            break;
         ptr += rv;
         len -= rv;
     }

@@ -1212,7 +1212,7 @@ static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
-static unsigned MapReturn( unsigned conditions )
+static trap_conditions MapReturn( trap_conditions conditions )
 {
     if( BrkPending ) {
         /* Get CS:EIP & SS:ESP correct */
