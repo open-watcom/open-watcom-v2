@@ -185,6 +185,8 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 
 #define EnterDebuggerWithSignature EnterDebuggerWithMessage
 
+#define DEBUGGER_COMMAND(c)   DEBUGGER_ ## c ## _COMMAND
+
 #define DEBUGGER_THREADID_COMMAND "!THREADID "
 #define DEBUGGER_THREADID_FORMAT DEBUGGER_THREADID_COMMAND "0x%8.8x=%s"
 #define DebuggerSetThreadId( id, name ) \
