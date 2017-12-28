@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "bancfg.h"
+#define _BETAVER    1
 
 #define DOBANSTR( p )       #p
 #define BANSTR( p )         DOBANSTR( p )
@@ -51,13 +51,12 @@
 #define _BANEXTRA           __DATE__
 #endif
 
-#define banner1p1(p)        p
-#define banner1p2(v)        "Version " v " " _BANEXTRA
-#define banner1(p,v)        banner1p1(p) " " banner1p2(v)
-#define banner1w(p,v)       "Open Watcom " banner1p1(p) " " banner1p2(v)
+#define banner1v(v)         "Version " v " " _BANEXTRA
+#define banner1(p,v)        p " " banner1v(v)
+#define banner1w(p,v)       "Open Watcom " p " " banner1v(v)
 
 #define banner1w1(p)        "Open Watcom " p
-#define banner1w2(v)        banner1p2(v)
+#define banner1w2(v)        banner1v(v)
 
 #define banner21            "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors."
 #define banner21a(year)     "Portions Copyright (c) " year "-2002 Sybase, Inc."
@@ -68,8 +67,8 @@
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
 #define banner3a            "See http://www.openwatcom.org/ for details."
 
-#define banner1ps(p,v)      "Powersoft " banner1p1(p) " " banner1p2(v)
-#define banner2ps           banner2( "1984" )
+#define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
+#define banner2ps           banner21a( "1984" )
 #define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
 #if defined( _M_I86 )
@@ -78,7 +77,7 @@
   #define STR_BITNESS " (32-bit)"
 #elif defined( _M_X64 )
   #define STR_BITNESS " (64-bit)"
-#elif defined(__i386__) || defined(__i386)
+#elif defined( __i386__ ) || defined( __i386 )
   #define STR_BITNESS " (32-bit)"
 #elif defined( __AMD64__ ) || defined( __amd64 )
   #define STR_BITNESS " (64-bit)"

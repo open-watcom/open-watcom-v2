@@ -93,9 +93,10 @@ __STKOVERFLOW:
 
 msg     db      "Stack Overflow!", 0
 
+        endmod
+
 include xinit.inc
 
         xinit   _init_stk,DEF_PRIORITY
 
-        endmod
         end

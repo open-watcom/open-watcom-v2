@@ -103,9 +103,10 @@ endif
         ; never return
         endproc __STK
 
+        endmod
+
 include xinit.inc
 
         xinit   _init_stk,DEF_PRIORITY
 
-        endmod
         end

@@ -558,8 +558,8 @@ pick(   WIE_ABOUTTEXT,
         "Open Watcom Image Editor for Windows" STR_BITNESS,
         "Open Watcom Image Editor for Windows" STR_BITNESS )
 pick(   WIE_ABOUTVERSION,
-        banner1p2( _RESEDIT_VERSION_ ),
-        banner1p2( _RESEDIT_VERSION_ ) )
+        banner1v( _RESEDIT_VERSION_ ),
+        banner1v( _RESEDIT_VERSION_ ) )
 pick(   WIE_ABOUTTITLE,
         "About Open Watcom Image Editor",
         "About Open Watcom Image Editor" )

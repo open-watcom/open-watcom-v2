@@ -60,9 +60,10 @@ chk_passed:
         ret     4
         endproc __CHK
 
+        endmod
+
 include xinit.inc
 
         xinit   _init_stk,DEF_PRIORITY
 
-        endmod
         end

@@ -52,3 +52,6 @@
 objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
+
+extra_clib_c_flags = -D_BANVER=$(bld_ver_tool) -DCURR_YEAR="$(curr_year)"
+extra_clib_a_flags = -d_BANVER=$(bld_ver_tool) -dCURR_YEAR="$(curr_year)"

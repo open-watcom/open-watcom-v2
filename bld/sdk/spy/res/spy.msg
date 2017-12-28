@@ -65,8 +65,8 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom Spy for Windows" STR_BITNESS,
         "Open Watcom Spy for Windows" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
-        banner1p2( _SPY_VERSION_ ),
-        banner1p2( _SPY_VERSION_ ) )
+        banner1v( _SPY_VERSION_ ),
+        banner1v( _SPY_VERSION_ ) )
 pick(   STR_ABOUT_TITLE,
         "About Open Watcom Spy",
         "About Open Watcom Spy" )

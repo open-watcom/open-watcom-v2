@@ -195,9 +195,10 @@ ldebug_fmt  = debug dwarf
 cldebug_fmt = -hd
 !endif
 
+mode_cppflags = -D_BANVER=$(bld_ver_tool) -DCURR_YEAR="$(curr_year)"
 mode_libflags =
 !ifeq release 1
-mode_cppflags = -DNDEBUG
+mode_cppflags += -DNDEBUG
 mode_cflags   = -oaxt -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
@@ -206,7 +207,7 @@ mode_clflags  = $(cldebug_fmt) -d1
 mode_libflags = -s-t-zld
 !endif
 !else
-mode_cppflags =
+mode_cppflags +=
 mode_cflags   = -od -d2 $(cdebug_fmt)
 mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
@@ -625,7 +626,7 @@ rc_cpp_mps      = -D__MIPS__
 rc_cpp_ppc      = -D__PPC__
 rc_cpp_x64      = -D_M_X64
 
-rc_cppflags     = $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
+rc_cppflags     = -D_BANVER=$(bld_ver_tool) -DCURR_YEAR="$(curr_year)" $(rc_cpp_$(host_os)) $(rc_cpp_$(host_cpu))
 
 rc_flags_all    = -xb -r
 

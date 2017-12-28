@@ -391,8 +391,8 @@ pick( STR_ABOUT_NAME,
     "Dr. Watcom for Windows" STR_BITNESS )
 #endif
 pick( STR_ABOUT_VERSION,
-    banner1p2( _DRNT_VERSION_ ),
-    banner1p2( _DRNT_VERSION_ ) )
+    banner1v( _DRNT_VERSION_ ),
+    banner1v( _DRNT_VERSION_ ) )
 #ifdef CHICAGO
 pick( STR_ABOUT_TITLE,
     "About Dr. Watcom for Windows 9x",

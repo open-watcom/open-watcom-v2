@@ -114,9 +114,10 @@ lup:                                    ; do {
         jmp     eax                     ; return to caller
         endproc __alloca_probe
 
+        endmod
+
 include xinit.inc
 
         xinit   _init_stk,DEF_PRIORITY
 
-        endmod
         end
