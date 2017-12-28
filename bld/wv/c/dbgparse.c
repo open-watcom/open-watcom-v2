@@ -314,8 +314,23 @@ bool LangLoad( const char *lang, size_t langlen )
 {
     file_handle fh;
     bool        ret;
+#ifdef USE_FILENAME_VERSION
+    char        lang_fname[13];
+    size_t      len;
 
+  #define STRXX(x)  #x
+  #define STRX(x)   STRXX(x)
+
+    len = langlen;
+    if( len > 6 ) {
+        len = 6;
+    }
+    memcpy( lang_fname, lang, len );
+    strcpy( lang_fname + len, STRX( USE_FILENAME_VERSION ) );
+    fh = LocalPathOpen( lang_fname, len + 2, "prs" );
+#else
     fh = LocalPathOpen( lang, langlen, "prs" );
+#endif
     if( fh == NIL_HANDLE )
         return( false );
     ret = ReadAllSections( fh );
