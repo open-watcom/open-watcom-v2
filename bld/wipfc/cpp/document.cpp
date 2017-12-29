@@ -491,7 +491,7 @@ void Document::summary( std::FILE* out )
     std::fprintf( out, "Pages defined by name:    %u\n", static_cast< unsigned int >( nameMap.size() ) );
     std::fprintf( out, "Pages defined by number:  %u\n", static_cast< unsigned int >( resMap.size() ) );
     std::fprintf( out, "Words in dictionary:      %u\n", dict->size() );
-    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( index.size() ) ); 
+    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( index.size() ) );
     std::fprintf( out, "Global index entries:     %u\n", eHdr->gIndexCount );
     std::fprintf( out, "Number of fonts used:     %u\n", static_cast< unsigned int >( fonts->size() ) );
     std::fprintf( out, "Number of External files: %u\n", extfiles->size() );
