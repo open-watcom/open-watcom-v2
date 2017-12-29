@@ -219,7 +219,7 @@ void    PrtBanner( void ) {
     puts( banner1w( "F77 " _TARGET_ " Compile and Link Utility", _WFL_VERSION_ ) );
 #endif
     puts( banner2 );
-    puts( banner2a( "1990" ) );
+    puts( banner2a( 1990 ) );
     puts( banner3 );
     puts( banner3a );
 }

@@ -66,7 +66,7 @@ static void Banner( void )
     }
     printf( banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) "\n" );
     printf( banner2 "\n" );
-    printf( banner2a( "1984" ) "\n" );
+    printf( banner2a( 1984 ) "\n" );
     printf( banner3 "\n" );
     printf( banner3a "\n" );
 }

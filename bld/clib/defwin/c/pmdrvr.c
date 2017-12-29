@@ -48,7 +48,7 @@ static char  DefaultAboutMsg[] = {
     banner1w1("Default Windowing System") "\n\n"
     "            Version 1.0\n\n"
     banner21 "\n"
-    banner21a("1991")
+    banner21a( 1991 )
 };
 
 static char  *AboutTitle = DefaultAboutTitle;

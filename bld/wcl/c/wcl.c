@@ -305,7 +305,7 @@ static void print_banner( void )
     puts( banner1w( "C/C++ " _TARGET_ " Compile and Link Utility", _WCL_VERSION_ ) );
 #endif
     puts( banner2 );
-    puts( banner2a( "1988" ) );
+    puts( banner2a( 1988 ) );
     puts( banner3 );
     puts( banner3a );
     done = 1;

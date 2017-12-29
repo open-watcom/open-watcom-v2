@@ -78,7 +78,7 @@ void Banner( void )
     #error unknown AS_CPU
 #endif
     puts( banner2 );
-    puts( banner2a( "1984" ) );
+    puts( banner2a( 1984 ) );
     puts( banner3 );
     puts( banner3a );
     printed = true;

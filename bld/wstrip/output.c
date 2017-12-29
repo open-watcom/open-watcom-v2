@@ -116,7 +116,7 @@ void Banner( void )
 {
     printf( banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) "\n" );
     printf( banner2 "\n" );
-    printf( banner2a( "1988" ) "\n" );
+    printf( banner2a( 1988 ) "\n" );
     printf( banner3 "\n" );
     printf( banner3a "\n" );
 }

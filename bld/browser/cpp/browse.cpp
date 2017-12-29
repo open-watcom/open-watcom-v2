@@ -88,7 +88,7 @@ static const char *SplashInfo[] = {
     "",
     banner1w( "Source Browser", _WBRW_VERSION_ ),
     banner2,
-    banner2a( "1994" ),
+    banner2a( 1994 ),
     banner3,
     banner3a,
     NULL };

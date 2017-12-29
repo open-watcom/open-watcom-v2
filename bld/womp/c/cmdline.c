@@ -148,7 +148,7 @@ STATIC void header( void ) {
     PrtFmt(
         banner1w( "Object Module Processor", _WOMP_VERSION_ ) "\n"
         banner2 "\n"
-        banner2a( "1990" ) "\n"
+        banner2a( 1990 ) "\n"
         banner3 "\n"
         banner3a "\n"
     );

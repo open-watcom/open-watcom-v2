@@ -678,7 +678,7 @@ void    TOutBanner( void ) {
     TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
 #endif
     TOutNL( banner2 );
-    TOutNL( banner2a( "1984" ) );
+    TOutNL( banner2a( 1984 ) );
     TOutNL( banner3 );
     TOutNL( banner3a );
 }
@@ -706,7 +706,7 @@ void    PrtBanner( void ) {
                t->tm_hour, t->tm_min, t->tm_sec );
     PrtLstNL( banner );
     PrtLstNL( banner2 );
-    PrtLstNL( banner2a( "1984" ) );
+    PrtLstNL( banner2a( 1984 ) );
     PrtLstNL( banner3 );
     PrtLstNL( banner3a );
 }

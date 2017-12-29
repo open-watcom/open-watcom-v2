@@ -16,7 +16,7 @@
 #include "notelog.h"
 #include "banner.h"
 
-#define FIRST_COPYRIGHT_YEAR "1993"
+#define FIRST_COPYRIGHT_YEAR 1993
 
 "APPLICON" ICON "drwatcom.ico"
 "ALERTICON" ICON "err.ico"

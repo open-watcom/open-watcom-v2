@@ -39,7 +39,7 @@ char *AboutMessage[] = {
     banner1w1( "Execution Profiler" STR_BITNESS ),
     banner1w2( _WPROF_VERSION_ ),
     banner2,
-    banner2a( "1987" ),
+    banner2a( 1987 ),
     "",
     banner3,
     banner3a,

@@ -72,7 +72,7 @@
 #include "autoenv.h"
 
 /*
- * increment LATEST_SUPPORTED_VERSION macro 
+ * increment LATEST_SUPPORTED_VERSION macro
  * when some change in file formats is done
  */
 #define LATEST_SUPPORTED_VERSION 40
@@ -125,7 +125,7 @@ const char* _viperDesc[] = {
     banner1w1( "Integrated Development Environment" STR_BITNESS ),
     banner1w2( _IDE_VERSION_ ),
     banner2,
-    banner2a( "1993" ),
+    banner2a( 1993 ),
     banner3,
     banner3a,
     NULL

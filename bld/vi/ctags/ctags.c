@@ -111,7 +111,7 @@ static void displayBanner( void )
     }
     printf( banner1w( "CTAGS Utility", "1.0" ) "\n" );
     printf( banner2 "\n" );
-    printf( banner2a( "1984" ) "\n" );
+    printf( banner2a( 1984 ) "\n" );
     printf( banner3 "\n" );
     printf( banner3a "\n" );
 

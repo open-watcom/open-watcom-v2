@@ -263,7 +263,7 @@ int Banner( void )
         banner1w( "Library Manager", _WLIB_VERSION_ ),
 #endif
         banner2,
-        banner2a( "1984" ),
+        banner2a( 1984 ),
         banner3,
         banner3a,
         NULL

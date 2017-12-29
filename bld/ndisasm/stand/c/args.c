@@ -52,7 +52,7 @@
 static const char * const banner[]={
     banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
     banner2,
-    banner2a( "1995" ),
+    banner2a( 1995 ),
     banner3,
     banner3a,
     NULL

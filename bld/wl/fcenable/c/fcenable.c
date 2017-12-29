@@ -162,7 +162,7 @@ int main(int argc, char **argv )
     printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
 #endif
     printf( banner2 );
-    printf( banner2a( "1990" ) );
+    printf( banner2a( 1990 ) );
     printf( banner3 );
     printf( banner3a );
     InputBuffer = InitRecStuff();

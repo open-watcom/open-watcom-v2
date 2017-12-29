@@ -43,13 +43,13 @@ int main ( int argc, char *argv[] )
     }
 
     majorver = bannerver / 1000;
-    minorver = ( bannerver / 10 ) - ( majorver * 100 );
-    revision = bannerver - ( ( bannerver / 10 ) * 10 );
+    minorver = ( bannerver / 10 ) % 100;
+    revision = bannerver % 10;
 #ifdef _BETAVER
     revision = 'b' - 'a' + 1;   /* 2 = b for beta */
 #endif
 
     printf( "OP VERSION = %u.%u.%u\n", majorver, minorver, revision);
-    printf( "OP COPYRIGHT '" banner2a( "1984" ) "'\n" );
+    printf( "OP COPYRIGHT '" banner2a( 1984 ) "'\n" );
     return( 0 );
 }

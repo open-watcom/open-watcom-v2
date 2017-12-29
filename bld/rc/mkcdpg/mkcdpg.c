@@ -239,7 +239,7 @@ int main( int argc, char *argv[] ) {
     error = false;
     printf( banner1( "WRC Code Page Generator", "1.0" ) "\n" );
     printf( banner2 "\n" );
-    printf( banner2a( "1984" ) "\n" );
+    printf( banner2a( 1984 ) "\n" );
     printf( banner3 "\n" );
     printf( banner3a "\n\n" );
     if( argc != 3 ) {

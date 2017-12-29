@@ -159,7 +159,7 @@ static void doBanner( void )
 {
     myPrintf( banner1w( "Win386 Bind Utility",_WBIND_VERSION_ ) "\n" );
     myPrintf( banner2 "\n" );
-    myPrintf( banner2a( "1991" ) "\n" );
+    myPrintf( banner2a( 1991 ) "\n" );
     myPrintf( banner3 "\n" );
     myPrintf( banner3a "\n" );
     myPrintf("\n");

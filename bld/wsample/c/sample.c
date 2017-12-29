@@ -343,7 +343,7 @@ void Usage( void )
     Output(
         banner1w( "Execution Sampler", _WSAMP_VERSION_ ) NL
         banner2 NL
-        banner2a( "1989" ) NL
+        banner2a( 1989 ) NL
         banner3 NL
         banner3a NL
         NL

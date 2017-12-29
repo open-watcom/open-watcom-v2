@@ -39,6 +39,6 @@
 
 pick( PRODUCT,      IDV banner1w( "Linker", _WLINK_VERSION_ ) )
 pick( COPYRIGHT,    banner2 )
-pick( COPYRIGHT2,   banner2a( "1985" ) )
+pick( COPYRIGHT2,   banner2a( 1985 ) )
 pick( TRADEMARK,    banner3 )
 pick( TRADEMARK2,   banner3a )

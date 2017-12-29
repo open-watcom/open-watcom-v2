@@ -58,8 +58,8 @@
 #define banner1w1(p)        "Open Watcom " p
 #define banner1w2(v)        banner1v(v)
 
-#define banner21            "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors."
-#define banner21a(year)     "Portions Copyright (c) " year "-2002 Sybase, Inc."
+#define banner21            "Copyright (c) 2002-" DOBANSTR( CURR_YEAR ) " The Open Watcom Contributors."
+#define banner21a(year)     "Portions Copyright (c) " DOBANSTR( year ) "-2002 Sybase, Inc."
 
 #define banner2             banner21 " All Rights Reserved."
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
@@ -68,7 +68,7 @@
 #define banner3a            "See http://www.openwatcom.org/ for details."
 
 #define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
-#define banner2ps           banner21a( "1984" )
+#define banner2ps           banner21a( 1984 )
 #define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
 #if defined( _M_I86 )
