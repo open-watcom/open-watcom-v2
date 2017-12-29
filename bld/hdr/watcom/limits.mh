@@ -30,7 +30,7 @@
 :include cpponly.sp
 
 :endsegment
-:include mbmax.sp
+:include mblenmax.sp
 
 /*
  *  ANSI required limits

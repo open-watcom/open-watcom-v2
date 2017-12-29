@@ -100,7 +100,7 @@ using std::wcstoull;
 
 :include null.sp
 
-:include mbmax.sp
+:include mbcurmax.sp
 
 :include maxpath.sp
 

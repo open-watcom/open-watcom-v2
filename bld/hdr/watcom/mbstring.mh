@@ -19,7 +19,8 @@
 
 :include nlserror.sp
 
-:include mbmax.sp
+:include mbcurmax.sp
+:include mblenmax.sp
 
 _WCRTLINK extern unsigned char *_mbscpy( unsigned char *__s1, const unsigned char *__s2 );
 _WCRTLINK extern unsigned char *_mbsncpy( unsigned char *__s1, const unsigned char *__s2, size_t __n );
