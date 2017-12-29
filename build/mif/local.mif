@@ -156,7 +156,7 @@ bld_ldflags  =  -link -nologo &
     $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(build_cppflags) $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = -out:$^@
 
@@ -379,7 +379,7 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(build_cppflags) $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = crs $^@
 
