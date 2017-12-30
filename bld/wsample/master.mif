@@ -207,7 +207,7 @@ $(xname).exp : $(objs) wresui.res $(libs) $(__MAKEFILES__)
 
 libs += $(rsilib_lib)
 
-lflags_dos_i86 = sys dos16m runtime auto opt stub=$(wstub_dir)/dosi86/wstubq.exe lib doslfn$(memory_model_i86).lib
+lflags_dos_i86 = sys dos16m runtime auto opt stub=$(wstub_dir)/dos386/wstubq.exe lib doslfn$(memory_model_i86).lib
 
 !else ifeq target win
 

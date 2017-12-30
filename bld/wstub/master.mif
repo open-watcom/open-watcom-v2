@@ -16,9 +16,6 @@ extra_c_flags = -oaxs
 
 .c : ..
 
-!define host_$(host_os)$(host_cpu)
-
-!ifdef host_dosi86
 wstub.exe : wstub.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ $(lflags) file $[@
@@ -26,7 +23,3 @@ wstub.exe : wstub.obj $(__MAKEFILES__)
 wstubq.exe : wstubq.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ $(lflags) file $[@
-!else
-wstub.exe wstubq.exe :
-    cp ../dosi86/$@ $@
-!endif

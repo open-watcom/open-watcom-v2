@@ -18,10 +18,8 @@ set PROJDIR=<CWD>
     <CCCMD> cwdll/dos386/cwdll.lib  <OWRELROOT>/lib386/dos/
     <CCCMD> inc/cwdll.h             <OWRELROOT>/h/
 
-    <CCCMD> cw32/dos386/cwstub.exe  <OWRELROOT>/binw/
-    <CCCMD> cw32/dos386/cwdstub.exe <OWRELROOT>/binw/
-    <CCCMD> cw32/dos386/cwstub.exe  <OWRELROOT>/binl/
-    <CCCMD> cw32/dos386/cwdstub.exe <OWRELROOT>/binl/
+    <CCCMD> cw32/dos386/*.exe       <OWRELROOT>/binw/
+    <CCCMD> cw32/dos386/*.exe       <OWRELROOT>/binl/
 
     <CCCMD> cwc/dosi86/cwc.exe      <OWRELROOT>/binw/
     <CCCMD> cwc/nt386/cwc.exe       <OWRELROOT>/binnt/

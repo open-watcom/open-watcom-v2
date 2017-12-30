@@ -43,6 +43,10 @@ FCB1            EQU     5Ch
 FCB2            EQU     6Ch
 PSP_PARAMS      EQU     80h
 
+MCB_SIGN        EQU     0
+MCB_OWNER       EQU     1
+MCB_SIZE        EQU     3
+
 DGROUP  GROUP   _TEXT,_DATA,_BSS,_STACK
 
 _TEXT   SEGMENT 'CODE'
@@ -344,7 +348,7 @@ SetupEnv        PROC    NEAR
                 mov     ax,EnvSeg
                 dec     ax
                 mov     es,ax
-                mov     bx,es:[3]               ; size of current environment
+                mov     bx,es:[MCB_SIZE]        ; size of current environment
                 mov     cl,4
                 shl     bx,cl
 
