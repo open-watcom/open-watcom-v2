@@ -278,6 +278,79 @@ typedef unsigned long long      syscall_res;
 #define SYS_sendfile                4207
 #define SYS_getpmsg                 4208
 #define SYS_putpmsg                 4209
+#define SYS_mmap2                   4210
+#define SYS_truncate64              4211
+#define SYS_ftruncate64             4212
+#define SYS_stat64                  4213
+#define SYS_lstat64                 4214
+#define SYS_fstat64                 4215
+#define SYS_pivot_root              4216
+#define SYS_mincore                 4217
+#define SYS_madvise                 4218
+#define SYS_getdents64              4219
+#define SYS_fcntl64                 4220
+//#define SYS_ni_syscall              4221
+#define SYS_gettid                  4222
+#define SYS_readahead               4223
+#define SYS_setxattr                4224
+#define SYS_lsetxattr               4225
+#define SYS_fsetxattr               4226
+#define SYS_getxattr                4227
+#define SYS_lgetxattr               4228
+#define SYS_fgetxattr               4229
+#define SYS_listxattr               4230
+#define SYS_llistxattr              4231
+#define SYS_flistxattr              4232
+#define SYS_removexattr             4233
+#define SYS_lremovexattr            4234
+#define SYS_fremovexattr            4235
+#define SYS_tkill                   4236
+#define SYS_sendfile64              4237
+#define SYS_futex                   4238
+#define SYS_sched_setaffinity       4239
+#define SYS_sched_getaffinity       4240
+#define SYS_io_setup                4241
+#define SYS_io_destroy              4242
+#define SYS_io_getevents            4243
+#define SYS_io_submit               4244
+#define SYS_io_cancel               4245
+#define SYS_exit_group              4246
+#define SYS_lookup_dcookie          4247
+#define SYS_epoll_create            4248
+#define SYS_epoll_ctl               4249
+#define SYS_epoll_wait              4250
+#define SYS_remap_file_pages        4251
+#define SYS_set_tid_address         4252
+#define SYS_restart_syscall         4253
+#define SYS_fadvise64_64            4254
+#define SYS_statfs64                4255
+#define SYS_fstatfs64               4256
+#define SYS_timer_create            4257
+#define SYS_timer_settime           4258
+#define SYS_timer_gettime           4259
+#define SYS_timer_getoverrun        4260
+#define SYS_timer_delete            4261
+#define SYS_clock_settime           4262
+#define SYS_clock_gettime           4263
+#define SYS_clock_getres            4264
+#define SYS_clock_nanosleep         4265
+#define SYS_tgkill                  4266
+#define SYS_utimes                  4267
+#define SYS_mbind                   4268
+#define SYS_get_mempolicy           4269
+#define SYS_set_mempolicy           4270
+#define SYS_mq_open                 4271
+#define SYS_mq_unlink               4272
+#define SYS_mq_timedsend            4273
+#define SYS_mq_timedreceive         4274
+#define SYS_mq_notify               4275
+#define SYS_mq_getsetattr           4276
+#define SYS_vserver                 4277
+#define SYS_waitid                  4278
+//#define SYS_ni_syscall              4279       /* available, was setaltroot */
+#define SYS_add_key                 4280
+#define SYS_request_key             4281
+#define SYS_keyctl                  4282
 
 /*
  * internal sub-numbers for SYS_socketcall
@@ -351,4 +424,5 @@ syscall_res sys_call5( u_long func, u_long r_4, u_long r_5, u_long r_6, u_long r
     parm [$v0] [$a0] [$a1] [$a2] [$a3]          \
     value [$v1 $v0];
 
-#define _sys_exit(rc)   sys_call1n(SYS_exit, rc)
+#define _sys_exit(rc)       sys_call1n(SYS_exit, rc)
+#define _sys_exit_group(rc) sys_call1n(SYS_exit_group, rc)
