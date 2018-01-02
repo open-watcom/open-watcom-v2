@@ -123,11 +123,11 @@ extern bool OptionsInit( int argc, char **argv ) {
 
     PP_IncludePathInit();
 #ifdef AS_ALPHA
-    s = "__WASAXP__=" BANSTR( _BANVER ) ;
+    s = "__WASAXP__=" _MACROSTR( _BLDVER );
 #elif defined( AS_PPC )
-    s = "__WASPPC__=" BANSTR( _BANVER ) ;
+    s = "__WASPPC__=" _MACROSTR( _BLDVER );
 #elif defined( AS_MIPS )
-    s = "__WASMPS__=" BANSTR( _BANVER ) ;
+    s = "__WASMPS__=" _MACROSTR( _BLDVER );
 #endif
     maxNumPredefines = argc + 2; // version macro and extra null at the end
     if( !optionsPredefine( s ) )

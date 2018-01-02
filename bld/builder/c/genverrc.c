@@ -36,7 +36,7 @@
 
 #ifndef _VERSION
  #include "banner.h"
- #define _VERSION (_BANVER/10)
+ #define _VERSION (_BLDVER/10)
 #endif
 
 #if 0   // example has embedded ISO C comments

@@ -46,7 +46,7 @@
 #error Unknown System
 #endif
 
-char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
+char CompilerID[] = { "__WATCOMC__=" _MACROSTR( _BLDVER ) };
 
 int CBanner( void )
 {

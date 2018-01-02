@@ -283,8 +283,8 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     if( !CompFlags.no_alternative_tokens ) {
         DefineAlternativeTokens();
     }
-    PreDefineStringMacro( "__WATCOMC__=" BANSTR( _BANVER ) );
-    PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" BANSTR( _BANVER ) );
+    PreDefineStringMacro( "__WATCOMC__=" _MACROSTR( _BLDVER ) );
+    PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" _MACROSTR( _BLDVER ) );
     // #if __WATCOM_REVISION__ >= 8
     PreDefineStringMacro( "__WATCOM_REVISION__=8" );
     if( !PragToggle.check_stack ) {

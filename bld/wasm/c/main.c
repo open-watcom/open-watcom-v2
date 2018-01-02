@@ -342,17 +342,17 @@ static bool isvalidident( char *id )
     int     lwr_char;
 
     if( isdigit( *id ) )
-        return( true ); /* can't start with a number */
+        return( false ); /* can't start with a number */
     for( s = id; *s != '\0'; s++ ) {
         lwr_char = tolower( *s );
         if( !( lwr_char == '_' || lwr_char == '.' || lwr_char == '$'
                 || lwr_char == '@' || lwr_char == '?'
                 || isdigit( lwr_char )
                 || islower( lwr_char ) ) ) {
-            return( true );
+            return( false );
         }
     }
-    return( false );
+    return( true );
 }
 
 static void add_constant( const char *string, bool underscored )
@@ -380,11 +380,10 @@ static void add_constant( const char *string, bool underscored )
         string = "1";
 
     if( isvalidident( name ) ) {
+        StoreConstant( name, string, false ); // don't allow it to be redef'd
+    } else {
         AsmError( SYNTAX_ERROR ); // fixme
-        return;
     }
-
-    StoreConstant( name, string, false ); // don't allow it to be redef'd
 }
 
 static void AddStringToIncludePath( char *str, const char *end )
@@ -1163,7 +1162,7 @@ static void do_init_stuff( char **cmdline )
     if( !MsgInit() )
         exit(1);
 
-    add_constant( "WASM=" BANSTR( _BANVER ), true );
+    add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );

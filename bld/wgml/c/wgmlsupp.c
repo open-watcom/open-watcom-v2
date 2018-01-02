@@ -44,9 +44,6 @@
 
 #include "clibext.h"
 
-#define mystr(x)            # x
-#define xmystr(s)           mystr(s)
-
 #define CRLF            "\n"
 
 
@@ -61,8 +58,8 @@ void g_banner( void )
         out_msg( banner2 CRLF );
         out_msg( banner3 CRLF );
         out_msg( banner3a CRLF );
-        out_msg( "Compiled with WATCOMC "xmystr(__WATCOMC__)
-                 " "__DATE__" "__TIME__ CRLF);
+        out_msg( "Compiled with WATCOMC " _MACROSTR( __WATCOMC__ )
+                 " " __DATE__ " " __TIME__ CRLF );
         mem_banner();
         GlobalFlags.bannerprinted = 1;
     }

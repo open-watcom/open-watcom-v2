@@ -29,11 +29,16 @@
 ;*
 ;*****************************************************************************
 
+_STRING macro p1
+        db "&p1"
+        endm
 
 ifdef __386__
         db "Open Watcom C/C++32 Run-Time system. "
 else
         db "Open Watcom C/C++16 Run-Time system. "
 endif
-        db "Copyright (c) Open Watcom Contributors 2002-", CURR_YEAR, ". "
+        db "Copyright (c) Open Watcom Contributors 2002-"
+        _STRING %_CYEAR
+        db ". "
         db "Portions Copyright (C) Sybase, Inc. 1988-2002.", 0

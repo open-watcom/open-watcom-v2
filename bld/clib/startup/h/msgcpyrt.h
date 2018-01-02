@@ -29,8 +29,10 @@
 *****************************************************************************/
 
 
+#define _DOSTR( p )         #p
+#define _MACROSTR( p )      _DOSTR( p )
 #if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
-    #define pick(x)         .asciiz x
+    #define pick(x)         .ascii x
 #else
     #define pick(x)         x
 #endif
@@ -47,10 +49,14 @@
     pick( "Open Watcom C/C++32 Run-Time system. " )
 #endif
 
-pick( "Copyright (c) Open Watcom Contributors 2002-" CURR_YEAR ". " )
+pick( "Copyright (c) Open Watcom Contributors 2002-" )
+pick( _MACROSTR( _CYEAR ) )
+pick( ". " )
 pick( "Portions Copyright (C) Sybase, Inc. 1988-2002." )
 #if defined( __WASAXP__ ) || defined( __WASPPC__ ) || defined( __WASMIPS__ )
-    .asciiz 0
+    .ascii 0
 #endif
 
 #undef pick
+#undef _MACROSTR
+#undef _DOSTR

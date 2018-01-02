@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <banner.h>
 
-int     bannerver = _BANVER;
+int     bannerver = _BLDVER;
 
 int main ( int argc, char *argv[] )
 {

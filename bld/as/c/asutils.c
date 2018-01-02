@@ -69,11 +69,11 @@ void Banner( void )
     if( _IsOption( BE_QUIET ) || printed )
         return;
 #if defined( AS_ALPHA )
-    puts( banner1w( "Alpha AXP Assembler", "0.8" ) );
+    puts( banner1w( "Alpha AXP Assembler", _WASAXP_VERSION_ ) );
 #elif defined( AS_PPC )
-    puts( banner1w( "PowerPC Assembler", "0.3" ) );
+    puts( banner1w( "PowerPC Assembler", _WASPPC_VERSION_ ) );
 #elif defined( AS_MIPS )
-    puts( banner1w( "MIPS Assembler", "0.1" ) );
+    puts( banner1w( "MIPS Assembler", _WASMIPS_VERSION_ ) );
 #else
     #error unknown AS_CPU
 #endif
