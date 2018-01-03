@@ -54,14 +54,14 @@
 
 #elif defined( __NT__ )
 
-  extern void __NTMain( void );
-  extern void __wNTMain( void );
+    extern void __NTMain( void );
+    extern void __wNTMain( void );
   #if defined(_M_IX86)
     #pragma aux __NTMain "*"
     #pragma aux __wNTMain "*"
   #endif
 
-  #if defined( _M_ALPHA )
+  #if defined( __AXP__ ) && defined( __PPC__ )
     void mainCRTStartup( void );
     void wmainCRTStartup( void );
   #endif

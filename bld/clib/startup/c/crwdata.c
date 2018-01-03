@@ -47,7 +47,11 @@ _WCRTDATA void              *__ASTACKSIZ;   // alternate stack size
 _WCRTDATA void              *__ASTACKPTR;   // alternate stack pointer
 _WCRTDATA int               _cbyte;         // used by getch, getche
 _WCRTDATA int               _cbyte2;        // used by getch, getche
+#if defined( __LINUX__ )
+_WCRTDATA char              **_Envptr;      // offset part of environment pointer
+#else
 _WCRTDATA char              *_Envptr;       // offset part of environment pointer
+#endif
 _WCRTDATA unsigned char     _osmajor;       // major OS version number
 _WCRTDATA unsigned char     _osminor;       // minor OS version number
 _WCRTDATA unsigned short    _osbuild;       // operating system build number

@@ -50,6 +50,6 @@ int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved )
     return( _LibMain( hdll, reason, reserved ) );
 }
 
-const char  _DLLstart_CopyRight[] =
+const char  _DLLstart_CopyRight[] = {
     #include "msgcpyrt.h"
-;
+};

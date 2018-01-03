@@ -20,7 +20,7 @@
 !inject crtinit.obj                      nt nta ntp
 !inject crwd086.obj  d16                                                    q16
 !inject crwd386.obj      d32             nt         nvc ncl nvl nll     o32     q32             l32         rdu rdk
-!inject crwdaxp.obj                         nta ntp                                                 lpc lmp
+!inject crwdata.obj                         nta ntp                                                 lpc lmp
 !inject cstrt086.obj d16
 !inject cstrt386.obj     d32
 !inject cstrtaxp.obj                        nta

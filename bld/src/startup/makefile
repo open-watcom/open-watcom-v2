@@ -21,7 +21,7 @@ src_objs = &
 all: $(src_objs) .symbolic
 
 msgcpyrt.inc : $(clib_dir)/startup/h/msgcpyrt.inc
-    $(sed) -e "s/\", CURR_YEAR, \"/$(%__CYEAR__)/" $< >$@
+    $(sed) -e "s/%_CYEAR/$(curr_year)/" $< >$@
 
 wildargv.c : $(clib_dir)/startup/c/wildargv.c
     $(sed) -f ../srcfix1.sed $< >$@
@@ -36,7 +36,8 @@ cstrtw16.asm : $(clib_dir)/startup/a/cstrtw16.asm
     $(sed) -f ../srcfix2.sed $< >$@
 
 dos16m.asm : $(clib_dir)/startup/a/dos16m.asm
-    $(sed) -f ../srcfix2.sed -e "s/include exitwmsg.inc/extrn   \"C\",__fatal_runtime_error : proc/" $< >$@
+    $(sed) -f ../srcfix2.sed -e "s/include exitwmsg.inc//" $< >$@
+#    $(sed) -f ../srcfix2.sed -e "s/include exitwmsg.inc/extrn   \"C\",__fatal_runtime_error : proc/" $< >$@
 
 maino16.c : $(clib_dir)/startup/c/maino16.c
     $(sed) -e "s/$#include \"exitwmsg.h\"/extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char __far *, unsigned );/" $< >$@

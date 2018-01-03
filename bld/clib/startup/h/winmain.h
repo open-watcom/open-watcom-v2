@@ -30,13 +30,13 @@
 
 
 #if defined( __NT__ )
-  extern void __WinMain( void );
-  extern void __wWinMain( void );
+    extern void __WinMain( void );
+    extern void __wWinMain( void );
   #if defined( _M_IX86 )
     #pragma aux __WinMain "*";
     #pragma aux __wWinMain "*";
   #endif
-  #if defined( _M_ALPHA )
+  #if defined( __AXP__ ) && defined( __PPC__ )
     void WinMainCRTStartup( void );
     void wWinMainCRTStartup( void );
   #endif

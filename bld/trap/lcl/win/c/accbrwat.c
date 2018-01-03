@@ -67,7 +67,7 @@ typedef struct {
 static watch_point      wpList[ MAX_WP ];
 WORD                    WPCount;
 
-#define GMEM_FLAGS      (GMEM_SHARE+GMEM_MOVEABLE+GMEM_ZEROINIT)
+#define GMEM_FLAGS      (GMEM_SHARE + GMEM_MOVEABLE + GMEM_ZEROINIT)
 #define BREAK_INCREMENT 64
 
 /*
@@ -178,7 +178,7 @@ trap_retval ReqClear_break( void )
 /*
  * Code to manipulate debug registers is here.  The Set/GetDebugRegister
  * calls are pragmas that talk to WDEBUG.386.  The pragmas themselves are
- * in UTILS\WATCOM\WDEBUG.H
+ * in bld/watcom/h/wdebug.h
  */
 static void setDR6( DWORD tmp )
 {
@@ -221,8 +221,8 @@ void ClearDebugRegs( void )
     int i;
 
     if( WDebug386 ) {
-        for( i = 0; i < 4; i++)
-            SetDRn( i,0L,0L );
+        for( i = 0; i < 4; i++ )
+            SetDRn( i, 0L, 0L );
         setDR6( 0 );
         setDR7( 0 );
     }
@@ -251,7 +251,7 @@ BOOL SetDebugRegs( void )
         dr7 |= SetDRn( dr, wp->linear, DRLen( wp->len ) | DR7_BWR );
         dr++;
         if( wp->dregs == 2 ) {
-            dr7 |= SetDRn( dr, wp->linear+wp->len, DRLen( wp->len ) | DR7_BWR );
+            dr7 |= SetDRn( dr, wp->linear + wp->len, DRLen( wp->len ) | DR7_BWR );
             dr++;
         }
     }

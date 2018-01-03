@@ -30,8 +30,10 @@
 
 
 #include "variety.h"
-#include "rtdata.h"
 #include <alloca.h>
+#include "rtdata.h"
+#include "rtstack.h"
+
 
 _WCRTLINK unsigned stackavail( void )
 {
