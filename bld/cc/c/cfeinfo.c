@@ -35,7 +35,6 @@
 #include "cgdefs.h"
 #include "cg.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "compcfg.h"
 #include <sys/stat.h>

@@ -31,7 +31,6 @@
 
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
 #include "scan.h"
@@ -47,12 +46,6 @@ static struct {
 } AuxInfoFlg;
 
 
-void *AsmQuerySymbol( const char *name )
-/**************************************/
-{
-    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
-}
-
 uint_32 AsmQuerySPOffsetOf( void *handle )
 /****************************************/
 {
@@ -60,28 +53,6 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 
     // CC provides this
     return( 0 );
-}
-
-
-enum sym_state AsmQueryState( void *handle )
-/******************************************/
-{
-    SYM_HANDLE sym_handle = (SYM_HANDLE)handle;
-    auto SYM_ENTRY sym;
-
-    if( sym_handle == SYM_NULL )
-        return( SYM_UNDEFINED );
-    SymGet( &sym, sym_handle );
-    if( (sym.flags & SYM_REFERENCED) == 0 ) {
-        sym.flags |= SYM_REFERENCED;
-        SymReplace( &sym, sym_handle );
-    }
-    switch( sym.attribs.stg_class ) {
-    case SC_AUTO:
-    case SC_REGISTER:
-        return( SYM_STACK );
-    }
-    return( SYM_EXTERNAL );
 }
 
 
@@ -197,7 +168,6 @@ void PragmaFini( void )
 {
 }
 
-
 static void InitAuxInfo( void )
 {
     CurrAlias = NULL;
@@ -208,13 +178,6 @@ static void InitAuxInfo( void )
 
     AuxInfoFlg.f_returns = false;
 //    AuxInfoFlg.f_streturn = false;
-}
-
-static void AdvanceToken( void )
-{
-    CMemFree( SavedId );
-    SavedId = NULL;
-    CurToken = LAToken;
 }
 
 static void CopyAuxInfo( void )
@@ -243,40 +206,16 @@ static void CopyAuxInfo( void )
     }
 }
 
-static bool GetAliasInfo( void )
-/******************************/
+bool GetPragAuxAlias( void )
+/**************************/
 {
-    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( true );
+    CurrAlias = SearchPragAuxAlias( Buffer );
     NextToken();
-    if( CurToken != T_ID )                  // error
-        return( false );
-    LookAhead();
-    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
-        PragCurrAlias( SavedId );
-        AdvanceToken();
+    if( CurToken == T_RIGHT_PAREN )
         NextToken();
-        return( true );
-    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
-        HashValue = SavedHash;
-        SetCurrInfo( SavedId );
-        AdvanceToken();
-        NextToken();
-        if( CurToken != T_ID )              // error
-            return( false );
-        PragCurrAlias( Buffer );
-        NextToken();
-        if( CurToken == T_RIGHT_PAREN )
-            NextToken();
-        CopyAuxInfo();
-        PragEnding();
-        return( false ); /* process no more! */
-    } else {                                // error
-        AdvanceToken();
-        return( false ); // shut up the compiler
-    }
+    CopyAuxInfo();
+    return( true );
 }
-
 
 static void GetParmInfo( void )
 /*****************************/
@@ -319,7 +258,7 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
-    if( GetAliasInfo() && CurToken == T_ID ) {
+    if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
@@ -409,6 +348,32 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
     }
     HW_CAsgn( name, HW_EMPTY );
     return( name );
+}
+
+hw_reg_set PragReg( void )
+{
+    char            buffer[20];
+    size_t          len;
+    bool            prefix;
+
+    prefix = ( CurToken == T_BAD_CHAR && Buffer[0] == '$' );
+    if( prefix ) {
+        buffer[0] = '$';
+        NextToken();
+    }
+    len = TokenLen;
+    if( prefix )
+        len++;
+    if( len > sizeof( buffer ) - 1 ) {
+        len = sizeof( buffer ) - 1;
+    }
+    if( prefix ) {
+        memcpy( buffer + 1, Buffer, len - 1 );
+    } else {
+        memcpy( buffer, Buffer, len );
+    }
+    buffer[len] = '\0';
+    return( PragRegName( buffer, len ) );
 }
 
 void AsmSysInit( unsigned char *buf )

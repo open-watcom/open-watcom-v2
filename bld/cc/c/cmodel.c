@@ -32,7 +32,6 @@
 
 #include "cvars.h"
 #include "scan.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include <ctype.h>
 

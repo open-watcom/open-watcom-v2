@@ -38,7 +38,6 @@
 #include "langenv.h"
 #include "cgprotos.h"
 #include "feprotos.h"
-#include "pragdefn.h"
 #include "caux.h"
 #include "cfeinfo.h"
 
@@ -52,7 +51,9 @@ typedef struct user_seg {
     int             segtype;
     segment_id      segid;
     char            *class_name;
+#if _INTEL_CPU
     hw_reg_set      pegged_register;
+#endif
     bool            used;
 } user_seg;
 
@@ -394,8 +395,10 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
 {
     seg_name        *seg;
     user_seg        *useg, **lnk;
+#if _INTEL_CPU
     hw_reg_set      reg;
     const char      *p;
+#endif
     size_t          len;
 
     len = strlen( segname ) + 1;
@@ -404,6 +407,7 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
             return( seg->segid );
         }
     }
+#if _INTEL_CPU
     HW_CAsgn( reg, HW_EMPTY );
     for( p = segname; *p != '\0'; ++p ) {
         if( *p == ':' ) {
@@ -413,6 +417,7 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
             break;
         }
     }
+#endif
     for( lnk = &userSegments; (useg = *lnk) != NULL; lnk = &useg->next ) {
         if( memcmp( segname, useg->name, len ) == 0 ) {
             return( useg->segid ); /* was return( segment ) */
@@ -420,7 +425,9 @@ static segment_id AddSeg( const char *segname, const char *class_name, int segty
     }
     useg = AllocUserSeg( segname, class_name, segtype );
     useg->next = *lnk;
+#if _INTEL_CPU
     useg->pegged_register = reg;
+#endif
     *lnk = useg;
     return( useg->segid );
 }
@@ -545,6 +552,7 @@ SYM_HANDLE SegSymHandle( segment_id segid )
     return( SYM_NULL );
 }
 
+#if _INTEL_CPU
 hw_reg_set *SegPeggedReg( segment_id segid )
 {
     user_seg    *useg;
@@ -556,7 +564,7 @@ hw_reg_set *SegPeggedReg( segment_id segid )
     }
     return( NULL );
 }
-
+#endif
 
 static align_type SegAlign( align_type suggested )
 /************************************************/

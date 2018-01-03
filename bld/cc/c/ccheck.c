@@ -31,7 +31,6 @@
 
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "i64.h"
 #include "cfeinfo.h"
 

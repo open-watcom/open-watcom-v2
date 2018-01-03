@@ -94,39 +94,6 @@ static void PragInitCurrInfo( call_class linkage )
 }
 
 
-static int GetAliasInfo()
-    {
-        call_class      linkage;
-        auto char buff[256];
-
-        CurrAlias = &DefaultInfo;
-        if( CurToken != T_LEFT_PAREN ) return( 1 );
-        NextToken();
-        if( CurToken != T_ID ) return( 0 );
-        PragCurrAlias();
-        strcpy( buff, Buffer );
-        NextToken();
-        if( CurToken == T_RIGHT_PAREN ) {
-            NextToken();
-            return( 1 );
-        } else if( CurToken == T_COMMA ) {
-            NextToken();
-            CreateAux( buff );
-            linkage = PragLinkage();
-            if( linkage == LINKAGE_OS ) {
-                linkage |= PARMS_BY_ADDRESS;
-            }
-            if( CurToken == T_RIGHT_PAREN ) {
-                NextToken();
-                PragInitCurrInfo( linkage );
-            }
-            PragEnding();
-            return( 0 ); /* process no more! */
-        }
-        return( 0 ); /* process no more! */
-    }
-
-
 void PragAux()
     {
         call_class      linkage;
@@ -141,7 +108,7 @@ void PragAux()
 
 
         if( CheckForOrigin() ) return;
-        if( !GetAliasInfo() ) return;
+        if( !GetPragAuxAliasInfo() ) return;
         CurrEntry = NULL;
         if( CurToken != T_ID ) return;
         linkage = PragLinkage();

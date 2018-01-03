@@ -32,7 +32,6 @@
 #include <ctype.h>
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "asmstmt.h"
 
@@ -135,7 +134,6 @@ void PragmaFini( void )
 {
 }
 
-
 static void InitAuxInfo( void )
 /*****************************/
 {
@@ -203,53 +201,21 @@ static void CopyAuxInfo( void )
     }
 }
 
-static void AdvanceToken( void )
-/******************************/
-{
-    CMemFree( SavedId );
-    SavedId = NULL;
-    CurToken = LAToken;
-}
-
-static bool GetAliasInfo( void )
-/******************************/
+bool GetPragAuxAlias( void )
 {
     bool    isfar16;
 
-    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( IS_ID_OR_KEYWORD( CurToken ) );
-    NextToken();
-    if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
-        return( false );
-    LookAhead();
-    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
-        PragCurrAlias( SavedId );
-        AdvanceToken();
+    isfar16 = PragRecog( "far16" );
+    if( IS_ID_OR_KEYWORD( CurToken ) ) {
+        CurrAlias = SearchPragAuxAlias( Buffer );
         NextToken();
-        return( IS_ID_OR_KEYWORD( CurToken ) );
-    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
-        HashValue = SavedHash;
-        SetCurrInfo( SavedId );
-        AdvanceToken();
-        NextToken();
-        if( !IS_ID_OR_KEYWORD( CurToken ) ) // error
-            return( false );
-        isfar16 = PragRecog( "far16" );
-        if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            PragCurrAlias( Buffer );
-            NextToken();
-        }
-        if( CurToken == T_RIGHT_PAREN )
-            NextToken();
-        if( isfar16 )
-            AuxInfo.flags |= AUX_FLAG_FAR16;
-        CopyAuxInfo();
-        PragEnding();
-        return( false ); /* process no more! */
-    } else {                                // error
-        AdvanceToken();
-        return( false ); // shut up the compiler
     }
+    if( CurToken == T_RIGHT_PAREN )
+        NextToken();
+    if( isfar16 )
+        AuxInfo.flags |= AUX_FLAG_FAR16;
+    CopyAuxInfo();
+    return( true );
 }
 
 typedef enum {
@@ -273,33 +239,6 @@ static fix_words FixupKeyword( void )
     return( FIXWORD_NONE );
 }
 
-
-void *AsmQuerySymbol( const char *name )
-/**************************************/
-{
-    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
-}
-
-enum sym_state AsmQueryState( void *handle )
-/******************************************/
-{
-    SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
-    SYM_ENTRY   sym;
-
-    if( sym_handle == SYM_NULL )
-        return( SYM_UNDEFINED );
-    SymGet( &sym, sym_handle );
-    if( (sym.flags & SYM_REFERENCED) == 0 ) {
-        sym.flags |= SYM_REFERENCED;
-        SymReplace( &sym, sym_handle );
-    }
-    switch( sym.attribs.stg_class ) {
-    case SC_AUTO:
-    case SC_REGISTER:
-        return( SYM_STACK );
-    }
-    return( SYM_EXTERNAL );
-}
 
 #if _CPU == 8086
     #define SYM_INT     SYM_INT2
@@ -788,7 +727,10 @@ hw_reg_set PragRegName( const char *str, size_t len )
     return( name );
 }
 
-
+hw_reg_set PragReg( void )
+{
+    return( PragRegName( Buffer, TokenLen ) );
+}
 
 static void GetParmInfo( void )
 /****************************/
@@ -949,7 +891,7 @@ void PragAux( void )
     } have;
 
     InitAuxInfo();
-    if( GetAliasInfo() ) {
+    if( GetPragAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );

@@ -31,7 +31,6 @@
 
 #include "cvars.h"
 #include "scan.h"
-#include "pragdefn.h"
 #include "cfeinfo.h"
 #include "dumpapi.h"
 

@@ -30,6 +30,9 @@
 
 
 #define BY_C_FRONT_END
+#ifndef global
+    #define global  extern
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -67,16 +70,7 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #include "cerrs.h"
 #include "toggle.h"
 #include "cmsg.h"
-#include "strsave.h"
-#include "cmemmgr.h"
-
-#ifndef local
-    #define local
-#endif
-
-#ifndef global
-    #define global  extern
-#endif
+#include "pragdefn.h"
 
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
@@ -612,7 +606,9 @@ extern SYM_HANDLE   SegSymHandle(segment_id);
 extern void         SetFuncSegment(SYMPTR,segment_id);
 extern void         SetFarHuge(SYMPTR,bool);
 extern char         *SegClassName(segment_id);
+#if _INTEL_CPU
 extern hw_reg_set   *SegPeggedReg(segment_id);
+#endif
 extern void         SetSegment(SYMPTR);
 extern void         SetSegAlign(SYMPTR);
 extern void         AssignSeg(SYMPTR);
@@ -734,11 +730,15 @@ extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
 extern void         SetPackAmount( unsigned amount );
+extern bool         GetPragAuxAliasInfo( void );
+extern aux_info     *SearchPragAuxAlias( const char *name );
+extern bool         GetPragAuxAlias( void );
 
 /* cprag??? */
 extern void         AsmStmt(void);
 extern void         PragAux(void);
 extern hw_reg_set   PragRegName(const char *, size_t);
+extern hw_reg_set   PragReg( void );
 
 /* cpurge */
 extern void         InitPurge(void);
@@ -882,7 +882,7 @@ extern SYM_HANDLE   GetBlockSymList( void );
 extern void         InitStmt( void );
 extern void         SwitchPurge( void );
 
-/* Macro to skip all typedefs and arrive at the underlying type */
+/* Macros to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                        \
     while( typeptr->decl_type == TYPE_TYPEDEF ) {       \
         typeptr = typeptr->object;                      \

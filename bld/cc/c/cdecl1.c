@@ -32,7 +32,6 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "langenv.h"
-#include "pragdefn.h"
 #include "cfeinfo.h"
 
 static   void    ParmDeclList( void );
@@ -156,7 +155,7 @@ enum main_names {
 
 static struct {
     char const      *name;
-    unsigned char   len; 
+    unsigned char   len;
 } MainNames[MAIN_NUM] = {
     #define pick(e,n) { NAMELIT( n ) }
     MAIN_NAMES
