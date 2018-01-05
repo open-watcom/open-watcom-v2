@@ -643,7 +643,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
             }
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-                return( (WPI_MRESULT)(GUIEVENTWND( GUICurrWnd, gui_ev, &key_state ) ) );
+                return( (WPI_MRESULT)GUIEVENTWND( GUICurrWnd, gui_ev, &key_state ) );
             }
         }
     }

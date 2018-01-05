@@ -84,7 +84,7 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     if( oattrs & OP_TRUNC )
         openmode |= O_TRUNC;
     ret = open( name, openmode, 0666 );
-    if( (int)ret == -1 ) {
+    if( ret == -1 ) {
         StashErrCode( errno, OP_LOCAL );
         SET_SYSHANDLE_NULL( sh );
         return( sh );

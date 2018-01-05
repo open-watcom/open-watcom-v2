@@ -83,7 +83,8 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
 {
     wnd_create_struct   info;
 
-    if( !GUIWndInit( WndDClick, WndStyle ) ) return( false );
+    if( !GUIWndInit( WndDClick, WndStyle ) )
+        return( false );
     GUIMDIInitMenuOnly();
     GUI3DDialogInit();
     GUISetBackgroundColour( &Colours );
@@ -123,7 +124,8 @@ void WndShowWndMain( void )
 
 bool WndFini( void )
 {
-    if( !WndShutDownHook() ) return( false );
+    if( !WndShutDownHook() )
+        return( false );
     GUIDestroyWnd( NULL );
     if( BusyString != NULL ) {
         WndFree( BusyString );
@@ -145,7 +147,8 @@ static void WndMoveResize( a_window *wnd )
     gui_rect            rect;
     wnd_coord           save_curr;
 
-    if( WndMain != NULL && WndIsMinimized( WndMain ) ) return;
+    if( WndMain != NULL && WndIsMinimized( WndMain ) )
+        return;
     GUIGetTextMetrics( wnd->gui, &text );
     GUIGetClientRect( wnd->gui, &rect );
     wnd->width = rect.width;
@@ -225,7 +228,8 @@ static void DoMainEventProc( spawn_parms *spawnp )
 
     wnd = GUIGetExtra( gui );
     spawnp->ret = false;
-    if( wnd == NULL ) return;
+    if( wnd == NULL )
+        return;
     if( WndIgnoreAllEvents ) {
         if( event == GUI_PAINT ) {
             WndRepaint( wnd );
@@ -237,13 +241,16 @@ static void DoMainEventProc( spawn_parms *spawnp )
     }
     if( event == GUI_MOUSEMOVE ) {
         GUISetMouseCursor( wndCursorType );
-        if( WndIgnoreMouseMove( wnd ) ) return;
+        if( WndIgnoreMouseMove( wnd ) ) {
+            return;
+        }
     }
-    if( !WndDoingRefresh && wndProcNesting == 1 ) WndDoInput();
-    ret = true;
+    if( !WndDoingRefresh && wndProcNesting == 1 )
+        WndDoInput();
 
     WndChooseEvent( wnd, event, parm );
     WndSelectEvent( wnd, event, parm );
+    ret = true;
     switch( event ) {
     case GUI_STATUS_CLEARED:
         return;
@@ -273,11 +280,13 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndScrollDown( wnd );
         break;
     case GUI_SCROLL_PAGE_UP:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) ) break;
+        if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+            break;
         WndPageUp( wnd );
         break;
     case GUI_SCROLL_PAGE_DOWN:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) ) break;
+        if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+            break;
         WndPageDown( wnd );
         break;
     case GUI_NOW_ACTIVE:
@@ -298,7 +307,8 @@ static void DoMainEventProc( spawn_parms *spawnp )
         ret = false;
         break;
     case GUI_MOVE:
-        if( WndMain != NULL && WndIsMinimized( WndMain ) ) return;
+        if( WndMain != NULL && WndIsMinimized( WndMain ) )
+            return;
         WndResizeHook( wnd );
         break;
     case GUI_FONT_CHANGED :
@@ -436,11 +446,13 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndCursorRight( wnd );
                 break;
             case GUI_KEY_PAGEDOWN:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) ) break;
+                if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+                    break;
                 WndPageDown( wnd );
                 break;
             case GUI_KEY_PAGEUP:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) ) break;
+                if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+                    break;
                 WndPageUp( wnd );
                 break;
             case GUI_KEY_UP:
@@ -498,6 +510,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
             bool    dummy;
 
             GUI_GET_ENDSESSION( parm, endsession, dummy );
+            (void)dummy;    /* reference to unused variable */
             if( endsession ) {
                 WndEndSessionHook();
             }
