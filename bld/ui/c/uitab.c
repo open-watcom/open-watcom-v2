@@ -150,6 +150,7 @@ EVENT uitabfilter( EVENT ev, VTAB *vtab )
             if( !vtab->enter ) return( ev );
             vtab->home = 0;
             ev = EV_CURSOR_DOWN;
+            /* fall through */
         case EV_CURSOR_UP:
         case EV_CURSOR_DOWN:
             best = NULL;

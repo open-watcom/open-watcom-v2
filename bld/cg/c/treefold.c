@@ -136,16 +136,19 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     switch( op ) {
     case O_NE:
         rev_ret = true;
+        /* fall through */
     case O_EQ:
         rel = REL_EQ;
         break;
     case O_GE:
         rev_ret = true;
+        /* fall through */
     case O_LT:
         rel = REL_LT;
         break;
     case O_GT:
         rev_ret = true;
+        /* fall through */
     case O_LE:
         rel = REL_LE;
         break;

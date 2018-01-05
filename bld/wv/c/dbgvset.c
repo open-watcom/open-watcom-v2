@@ -266,6 +266,7 @@ static int ScanAttribute( type_display *type, int token )
     case TY_ISSTRUCT:
         VarDisplayAlias( type, VarDisplayAddStruct( ScanName() ) );
         dirty = false;
+        /* fall through */
     case TY_HEX:
         type->display |= VARDISP_HEX;
         break;
@@ -325,7 +326,8 @@ static int ScanAttribute( type_display *type, int token )
     default:
         oops();
     }
-    if( dirty ) VarDisplayDirty( type );
+    if( dirty )
+        VarDisplayDirty( type );
     return( token );
 }
 

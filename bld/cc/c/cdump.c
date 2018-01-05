@@ -468,6 +468,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
             DumpFlags( flags, typ, pch );
             ChunkSaveStr( pch, funcsym->name );
         }
+        /* fall through */
     case TYPE_ARRAY:
         DumpTail( typ, funcsym, FLAG_NONE, pch );
         break;

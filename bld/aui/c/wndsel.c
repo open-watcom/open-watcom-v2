@@ -47,7 +47,9 @@ void WndSelectEvent( a_window *wnd, gui_event event, void *parm )
         WndNoSelect( wnd );
         return;
     case GUI_MOUSEMOVE:
-        if( _Is( wnd, WSW_SELECTING_WITH_KEYBOARD ) ) break;
+        if( _Is( wnd, WSW_SELECTING_WITH_KEYBOARD ) )
+            break;
+        /* fall through */
     case GUI_PAINT:
         return;
     case GUI_KEYDOWN:
@@ -62,6 +64,7 @@ void WndSelectEvent( a_window *wnd, gui_event event, void *parm )
         case GUI_KEY_END:
             if( GUI_SHIFT_STATE( state ) )
                 return;
+            /* fall through */
         case GUI_KEY_ESCAPE:
             WndNoSelect( wnd );
             break;

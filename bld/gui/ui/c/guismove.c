@@ -223,6 +223,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     case EV_ESCAPE :
         MoveResizeCancel();
         cancel = true;
+        /* fall through */
     case EV_ENTER :
         finish = true;
         break;

@@ -252,7 +252,7 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
         }
         MinimizedMoved = false;
         break;
-   case EV_MOUSE_DRAG :
+    case EV_MOUSE_DRAG :
         MinimizedMoved = true;
         GUIDoMoveResize( GUIMouseWnd, row, col, ev, NULL );
         break;
@@ -661,25 +661,21 @@ bool GUIProcessEvent( EVENT ev )
     case EV_MOUSE_DCLICK_R :
         ProcessMousePos( GUI_RBUTTONDBLCLK, row, col, wnd );
         return( true );
-        break;
     case EV_MOUSE_RELEASE_R :
         ProcessMouseReleaseDrag( ev, GUI_RBUTTONUP, row, col );
         return( true );
-        break;
     case EV_MOUSE_DRAG_R :
         if( GUICurrWnd != GUIMouseWnd ) {
             /* got drag without press first */
-            ProcessMousePress( EV_MOUSE_PRESS_R, GUI_LBUTTONDOWN, row, col,
-                               new_curr_wnd );
+            ProcessMousePress( EV_MOUSE_PRESS_R, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         }
+        /* fall through */
     case EV_MOUSE_MOVE :
         ProcessMousePos( GUI_MOUSEMOVE, row, col, wnd );
         return( true );
-        break;
     case EV_MOUSE_RELEASE :
         ProcessMouseReleaseDrag( ev, GUI_LBUTTONUP, row, col );
         return( true );
-        break;
     case EV_MOUSE_DRAG :
         if( GUICurrWnd != GUIMouseWnd ) {
             /* got drag without press first */
@@ -688,19 +684,15 @@ bool GUIProcessEvent( EVENT ev )
         }
         ProcessMouseReleaseDrag( ev, GUI_MOUSEMOVE, row, col );
         return( true );
-        break;
     case EV_MOUSE_PRESS_R :
         ProcessMousePress( ev, GUI_RBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
-        break;
     case EV_MOUSE_PRESS :
         ProcessMousePress( ev, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
-        break;
     case EV_MOUSE_DCLICK :
         ProcessMousePress( ev, GUI_LBUTTONDBLCLK, row, col, new_curr_wnd );
         return( true );
-        break;
     case EV_NO_EVENT :
         gui_ev = GUI_NO_EVENT;
         break;
@@ -724,7 +716,6 @@ bool GUIProcessEvent( EVENT ev )
             GUIWholeWndDirty( GUICurrWnd );
         }
         return( true );
-        break;
     case EV_SCROLL_HORIZONTAL :
         if( GUI_HSCROLL_EVENTS_SET( GUICurrWnd ) ) {
             DoScrollDrag( GUICurrWnd->hgadget, prev, diff );
@@ -732,11 +723,9 @@ bool GUIProcessEvent( EVENT ev )
             GUIWholeWndDirty( GUICurrWnd );
         }
         return( true );
-        break;
     case EV_MENU_INITPOPUP :
         ProcessInitPopupEvent();
         return( true );
-        break;
 #if 0
     case EV_BACKGROUND_RESIZE :
         {
@@ -747,7 +736,6 @@ bool GUIProcessEvent( EVENT ev )
             }
         }
         return( true );
-        break;
 #endif
     default :
         if( IS_CTLEVENT( ev ) ) {

@@ -294,6 +294,7 @@ static char *ExpandMacroToken( void )
         break;
     case T_LSTRING:
         len = 1;
+        /* fall through */
     case T_STRING:
         len += strlen( MacroPtr ) + 3;
         buf = CMemAlloc( len );

@@ -436,6 +436,7 @@ TB_LD * strtotb(char *p, TB_LD * ld, bool negative)
         switch (*++p) {
         case '-':
             exp_sign = -1;
+            /* fall through */
         case '+': p++;
             break;
         case '0':

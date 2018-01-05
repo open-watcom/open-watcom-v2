@@ -490,27 +490,32 @@ static int NumSize( DATA_TYPE op_type )
         break;
     case TYPE_CHAR:
         size = SIGN_BIT;
+        /* fall through */
     case TYPE_UCHAR:
         size |= 8;
         break;
     case TYPE_SHORT:
         size = SIGN_BIT;
+        /* fall through */
     case TYPE_USHORT:
         size |= 16;
         break;
     case TYPE_LONG:
         size = SIGN_BIT;
+        /* fall through */
     case TYPE_ULONG:
     case TYPE_POINTER:
         size |= 32;
         break;
     case TYPE_LONG64:
         size = SIGN_BIT;
+        /* fall through */
     case TYPE_ULONG64:
         size |= 64;
         break;
     case TYPE_INT:
         size = SIGN_BIT;
+        /* fall through */
     case TYPE_UINT:
 #if TARGET_INT == 2
         size |= 16;
@@ -567,16 +572,19 @@ static cmp_result IsMeaninglessCompare( signed_64 val, TYPEPTR typ_op1, TYPEPTR 
     switch( opr ) { // mapped rel ops to equivalent cases
     case T_NE:
         rev_ret = true;
+        /* fall through */
     case T_EQ:
         rel = REL_EQ;
         break;
     case T_GE:
         rev_ret = true;
+        /* fall through */
     case T_LT:
         rel = REL_LT;
         break;
     case T_GT:
         rev_ret = true;
+        /* fall through */
     case T_LE:
         rel = REL_LE;
         break;
@@ -728,7 +736,7 @@ static bool IsInt( DATA_TYPE op )
         ret = true;
         break;
     default:
-       ret = false;
+        ret = false;
     }
     return( ret );
 }
@@ -1289,6 +1297,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
         }
+        /* fall through */
     case T_AND_EQUAL:
     case T_RSHIFT_EQUAL:
     case T_LSHIFT_EQUAL:
@@ -1298,6 +1307,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( result_type == ERR ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
         }
+        /* fall through */
     case T_TIMES_EQUAL:
     case T_DIV_EQUAL:
         result_type = op1_type;

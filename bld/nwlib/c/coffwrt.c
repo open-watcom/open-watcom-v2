@@ -331,6 +331,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_
         break;
     default:
         sfile->import->processor = WL_PROC_X86;
+        /* fall through */
     case WL_PROC_X86:
         type = IMAGE_REL_I386_DIR32NB;
         break;
@@ -533,6 +534,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 break;
             default:
                 sfile->import->processor = WL_PROC_X86;
+                /* fall through */
             case WL_PROC_X86:
                 AddCoffSection( &c_file, ".text", 0x6, 1, IMAGE_SCN_ALIGN_2BYTES
                     | IMAGE_SCN_LNK_COMDAT | IMAGE_SCN_CNT_CODE
@@ -602,6 +604,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 break;
             default:
                 sfile->import->processor = WL_PROC_X86;
+                /* fall through */
             case WL_PROC_X86:
                 LibWrite( io, CoffImportX86Text, 0x6 );
                 WriteCoffReloc( io, 0x2, 5, IMAGE_REL_I386_DIR32 );

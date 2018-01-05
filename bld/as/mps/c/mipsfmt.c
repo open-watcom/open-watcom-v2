@@ -655,7 +655,6 @@ static int doDelaySlotNOP( uint_32 *buffer )
     int     inc = 0;
 
     if( _DirIsSet( REORDER ) ) {
-        buffer += sizeof( uint_32 );
         *buffer = OPCODE_NOP;
         inc = 1;
     }

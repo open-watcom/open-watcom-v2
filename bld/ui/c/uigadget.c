@@ -187,8 +187,10 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
         switch( ev ) {
         case EV_MOUSE_PRESS :
             StartPos = g->pos;
+            /* fall through */
         case EV_MOUSE_DCLICK :
             RepeatEvent = EV_NO_EVENT;
+            /* fall through */
         case EV_MOUSE_REPEAT :
             if( Drag ) {
                 break;
@@ -232,6 +234,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                     return( EV_NO_EVENT );
                 }
             }
+            /* fall through */
         case EV_MOUSE_RELEASE :
             if( Pressed == NULL ) {
                 break;

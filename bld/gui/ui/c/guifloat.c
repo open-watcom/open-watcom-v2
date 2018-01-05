@@ -116,6 +116,7 @@ void GUIProcessMenuCurr( MENUITEM *menu )
         break;
     case MENU_FLOAT :
         type = FLOAT_HINT;
+        /* fall through */
     case MENU_SYS :
         menu_wnd = MenuWnd;
     }

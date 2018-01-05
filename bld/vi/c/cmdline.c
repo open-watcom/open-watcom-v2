@@ -366,15 +366,12 @@ vi_rc RunCommandLine( const char *cmdl )
         KeyAddString( data );
         rc = ERR_NO_ERR;
         break;
-
     case PCL_T_UNALIAS:
         rc = UnAlias( data );
         break;
-
     case PCL_T_UNABBREV:
         rc = UnAbbrev( data );
         break;
-
     case PCL_T_UNMAP:
     case PCL_T_UNMAP_DMT:
         flag = MAPFLAG_MESSAGE + MAPFLAG_UNMAP;
@@ -383,7 +380,6 @@ vi_rc RunCommandLine( const char *cmdl )
         }
         rc = MapKey( flag, data );
         break;
-
     case PCL_T_EVAL:
         data = Expand( dataBuff, data, NULL );
         i = setjmp( jmpaddr );
@@ -397,7 +393,6 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = ERR_NO_ERR;
         }
         break;
-
     case PCL_T_COMPILE:
     case PCL_T_SOURCE:
     case PCL_T_LOAD:
@@ -458,7 +453,6 @@ vi_rc RunCommandLine( const char *cmdl )
             }
             break;
         }
-
     case PCL_T_GENCONFIG:
 #ifdef __WIN__
         test1 = EditFlags.SaveConfig;
@@ -475,23 +469,18 @@ vi_rc RunCommandLine( const char *cmdl )
         }
 #endif
         break;
-
     case PCL_T_COMPRESS:
         rc = CompressWhiteSpace();
         break;
-
     case PCL_T_EXPAND:
         rc = ExpandWhiteSpace();
         break;
-
     case PCL_T_SHOVE:
         rc = Shift( n1, n2, '>', true );
         break;
-
     case PCL_T_SUCK:
         rc = Shift( n1, n2, '<', true );
         break;
-
     case PCL_T_FILES:
         if( EditFlags.LineDisplay ) {
             rc = DisplayFileStatus();
@@ -499,37 +488,31 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = EditFileFromList();
         }
         break;
-
     case PCL_T_NEXT:
         rc = RotateFileForward();
         break;
-
     case PCL_T_PREV:
         rc = RotateFileBackwards();
         break;
-
     case PCL_T_HELP:
         rc = DoHelp( data );
         break;
-
     case PCL_T_VIEW:
     case PCL_T_VIEW_DMT:
         EditFlags.ViewOnly = true;
+        /* fall through */
     case PCL_T_EDIT:
     case PCL_T_EDIT_DMT:
         rc = EditFile( data, ( tkn == PCL_T_VIEW_DMT || tkn == PCL_T_EDIT_DMT ) );
         EditFlags.ViewOnly = false;
         break;
-
     case PCL_T_OPEN:
         rc = OpenWindowOnFile( data );
         break;
-
     case PCL_T_HIDE:
     case PCL_T_HIDE_DMT:
         rc = HideLineRange( n1, n2, ( tkn == PCL_T_HIDE_DMT ) );
         break;
-
     case PCL_T_DELETE:
         rc = SetSavebufNumber( data );
         if( rc != ERR_NO_ERR ) {
@@ -548,7 +531,6 @@ vi_rc RunCommandLine( const char *cmdl )
             LineDeleteMessage( n1, n2 );
         }
         break;
-
     case PCL_T_SAVEANDEXIT:
         data = GetNextWord1( data, st );
         if( *st == '\0' ) {
@@ -557,7 +539,6 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = SaveAndExit( NULL );
         }
         break;
-
     case PCL_T_PUT:
     case PCL_T_PUT_DMT:
         rc = SetSavebufNumber( data );
@@ -574,7 +555,6 @@ vi_rc RunCommandLine( const char *cmdl )
             RestoreCurrentFilePos();
         }
         break;
-
     case PCL_T_YANK:
         rc = SetSavebufNumber( data );
         if( rc != ERR_NO_ERR ) {
@@ -588,11 +568,9 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = YankLineRange( n1, n2 );
         }
         break;
-
     case PCL_T_SUBSTITUTE:
         rc = Substitute( n1, n2, data );
         break;
-
     case PCL_T_GLOBAL:
     case PCL_T_GLOBAL_DMT:
         if( !test1 ) {
@@ -604,7 +582,6 @@ vi_rc RunCommandLine( const char *cmdl )
         }
         rc = Global( n1,n2, data, ( tkn == PCL_T_GLOBAL_DMT ) );
         break;
-
     case PCL_T_WRITEQUIT:
         if( CurrentFile == NULL ) {
             rc = NextFile();
@@ -618,7 +595,6 @@ vi_rc RunCommandLine( const char *cmdl )
             }
         }
         break;
-
     case PCL_T_WRITE:
     case PCL_T_WRITE_DMT:
         data = GetNextWord1( data, st );
@@ -648,11 +624,9 @@ vi_rc RunCommandLine( const char *cmdl )
             }
         }
         break;
-
     case PCL_T_READ:
         rc = ReadAFile( n1, data );
         break;
-
     case PCL_T_QUIT:
 #ifdef __WIN__
         rc = CurFileExitOptionSaveChanges();
@@ -663,13 +637,11 @@ vi_rc RunCommandLine( const char *cmdl )
     case PCL_T_QUIT_DMT:
         rc = NextFileDammit();
         break;
-
     case PCL_T_DATE:
         GetDateTimeString( st );
         Message1( st );
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
         break;
-
     case PCL_T_CD:
         data = GetNextWord1( data, st );
         if( *st != '\0' ) {
@@ -681,7 +653,6 @@ vi_rc RunCommandLine( const char *cmdl )
             Message1( "Current directory is %s",CurrentDirectory );
         }
         break;
-
     case PCL_T_SHELL:
     EVIL_SHELL:
         {
@@ -697,7 +668,6 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = ERR_NO_ERR;
         }
         break;
-
     case PCL_T_SYSTEM:
         if( n1f && n2f ) {
             rc = DoGenericFilter( n1, n2, data );
@@ -710,11 +680,9 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = ERR_NO_ERR;
         }
         break;
-
     case PCL_T_RESIZE:
         rc = ResizeCurrentWindowWithKeys();
         break;
-
     case PCL_T_TILE:
         data = GetNextWord1( data, st );
         if( st[0] != '\0' ) {
@@ -745,22 +713,18 @@ vi_rc RunCommandLine( const char *cmdl )
             rc = WindowTile( x, y );
         }
         break;
-
     case PCL_T_CASCADE:
         rc = WindowCascade();
         break;
-
     case PCL_T_MOVEWIN:
         rc = MoveCurrentWindowWithKeys();
         break;
-
     case PCL_T_TAG:
         data = GetNextWord1( data, st );
         if( *st != '\0' ) {
             rc = TagHunt( st );
         }
         break;
-
     case PCL_T_FGREP:
         {
             bool        ci;
@@ -820,14 +784,12 @@ vi_rc RunCommandLine( const char *cmdl )
             }
         }
         break;
-
     case PCL_T_EGREP:
         rc = GetStringWithPossibleQuote( &data, st );
         if( rc != ERR_NO_STRING ) {
             rc = DoEGREP( data, st );
         }
         break;
-
     case PCL_T_SIZE:
         data = GetNextWord1( data, st );
         if( *st == '\0' ) {
@@ -851,7 +813,6 @@ vi_rc RunCommandLine( const char *cmdl )
         y2 = atoi( st );
         rc = ResizeCurrentWindow( x, y, x2, y2 );
         break;
-
     case PCL_T_ECHO:
         data = GetNextWord1( data, st );
         if( *st == '\0' ) {
@@ -932,6 +893,7 @@ vi_rc RunCommandLine( const char *cmdl )
         if( rc >= ERR_NO_ERR ) {
             break;
         }
+        /* fall through */
     case TOK_INVALID:
         if( n1f && !n2f ) {
             if( !n1 ) {

@@ -608,7 +608,8 @@ dis_handler_return PPCMem2( dis_handle *h, void *d, dis_dec_ins *ins )
             if( code.i.lo.math.type2 == 1 ) {
                 ins->op[1].ref_type = DRT_PPC_SWORD;
                 break;
-            } // fall through
+            }
+            /* fall through */
         case 5:
             ins->op[1].ref_type = DRT_PPC_HWORD;
             break;
@@ -710,7 +711,8 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     magic = 2;
     switch( ins->type ) {
     case DI_PPC_b:
-        magic = 0;  // fall through
+        magic = 0;
+        /* fall through */
     case DI_PPC_bc:
         magic++;    // magic=1 for b, 3 for bc
         if( code.b.AA ) {
@@ -719,7 +721,7 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
         } else {
             ins->op[magic-1].type = DO_RELATIVE;
         }
-        // fall through
+        /* fall through */
     case DI_PPC_bcctr:
     case DI_PPC_bclr:
         ins->num_ops = magic;   // magic=2 for bcctr, bclr
@@ -734,7 +736,7 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_bc:
         ins->op[2].value.s._32[I64LO32] = DisSEX( code.i.lo.branch.BD, 13 ) << 2;
         ins->op[2].op_position = 0;
-        // fall through
+        /* fall through */
     case DI_PPC_bcctr:
     case DI_PPC_bclr:
         ins->op[0].type = DO_IMMED;
@@ -778,6 +780,7 @@ dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
     case DI_PPC_cmpli:
         ins->op[3].type = DO_IMMED;
         ins->op[3].value.s._32[I64LO32] = code.i.lo.immediate;
+        /* fall through */
     default:
         break;
     }
@@ -1120,14 +1123,14 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_PPC_addi:
-    // load 16-bit immediate value.
+        // load 16-bit immediate value.
         if( ins->op[1].base == DR_PPC_r0 ) {
             new = "li";
             ins->num_ops = 2;
             ins->op[1] = ins->op[2];
             break;
         }
-    // adding negative value.
+        // adding negative value.
         if( ins->op[2].value.s._32[I64LO32] < 0 ) {
             new = "subi";
             ins->op[2].value.s._32[I64LO32] = -ins->op[2].value.s._32[I64LO32];
@@ -1165,6 +1168,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     // SPR statements
     case DI_PPC_mtspr:
         ins->num_ops = 1;
+        /* fall through */
     case DI_PPC_mfspr:
         ins->num_ops--; // ins->num_ops = 0 for mtspr, 1 for mfspr.
         switch( ins->op[ins->num_ops].value.s._32[I64LO32] ) {
@@ -1244,6 +1248,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             break;
         case 4:
             ins->num_ops = 2;
+            /* fall through */
         case 1:
             new = "mf";
             break;
@@ -1257,6 +1262,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             ins->num_ops = 1;
             break;
         }
+        /* fall through */
     case DI_PPC_bclr:
         if( (ins->op[0].value.s._32[I64LO32] & 0x14) == 0x14 ) {
             new = "blr";
@@ -1303,7 +1309,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             }
             break;
         }
-        // else, fall through
+        /* fall through */
     case DI_PPC_bcctr:
         if( (ins->op[0].value.s._32[I64LO32] & 0x14) == 0x14 ) {
             new = "bctr";
@@ -1442,7 +1448,8 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
                 for( ;; ) {
                     ch = *src;
                     *p = ch;
-                    if( ch == '\0' ) break;
+                    if( ch == '\0' )
+                        break;
                     ++src;
                     ++p;
                 }

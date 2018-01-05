@@ -382,6 +382,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
     switch( ev ) {
         case EV_MOUSE_DCLICK:
             Dclick = true;
+            /* fall through */
         case EV_MOUSE_PRESS:
         case EV_MOUSE_RELEASE:
         case EV_MOUSE_REPEAT:

@@ -870,6 +870,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         switch( ev ) {
         case EV_KILL_UI:
             uiforceevadd( EV_KILL_UI );
+            /* fall through */
         case EV_ESCAPE:
             GUIEVENTWND( wnd, GUI_DIALOG_ESCAPE, NULL );
             GUICloseDialog( wnd );

@@ -869,6 +869,7 @@ extern  void    Pow2Div( instruction *ins )
     case I2:
     case U2:
         if_32 = true;
+        /* fall through */
     case I4:
     case U4:
         LayOpword( 0xe2c1 );    /* shl  edx,n */
@@ -901,6 +902,7 @@ extern  void    By2Div( instruction *ins )
     case I2:
     case U2:
         if_32 = true;
+        /* fall through */
     case I4:
     case U4:
         LayOpword( 0xc22b );    /* sub  eax,edx */

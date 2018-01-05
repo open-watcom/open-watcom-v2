@@ -315,7 +315,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
       case ADDR_FN_ONE_USED :
         if( !CompFlags.extensions_enabled )
             break;
-        // drops thru
+        /* fall through */
       case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
         adjustFnMembPtr( ctl, func );
@@ -323,7 +323,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
       case ADDR_FN_MANY_USED :
         if( !CompFlags.extensions_enabled )
             break;
-        // drops thru
+        /* fall through */
       case ADDR_FN_MANY :
         switch( _CNV_TYPE( ctl->reqd_cnv ) ) {
           case CNV_ASSIGN :
@@ -653,7 +653,9 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                                   case CTD_NO :
                                     break;
                                   case CTD_LEFT :
-                                    if( tgt.type == src.type ) break;
+                                    if( tgt.type == src.type )
+                                        break;
+                                    /* fall through */
                                   case CTD_LEFT_VIRTUAL :
                                     info->to_base = true;
                                     break;
@@ -671,6 +673,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                                     break;
                                   case CTD_RIGHT_AMBIGUOUS :
                                     info->to_ambiguous = true;
+                                    /* fall through */
                                   case CTD_RIGHT :
                                   case CTD_RIGHT_VIRTUAL :
                                   case CTD_RIGHT_PRIVATE :
@@ -1305,12 +1308,14 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             DbgDefault( "pcPtrConvert -- impossible conversion" );
 #if 0
             case 1:       // convert to pointer type, if not class conv
-                if( cl_conv ) break;
+                if( cl_conv )
+                    break;
 #else
             case 1:       // convert to pointer type using code-gen
-                if( tgt_type == expr_type ) break;
+                if( tgt_type == expr_type )
+                    break;
 #endif
-                // fall thru
+                /* fall through */
             case 2:       // truncate to __based pointer, except TF1_ADD
                 expr = NodeConvert( tgt_type, expr );
                 break;

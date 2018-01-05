@@ -485,12 +485,12 @@ WPopupMenu* VpeMain::makeMenu( MenuPop* popup, VToolBar* tools )
     WPopupMenu* pop = new WPopupMenu( popup->name );
     pop->onPopup( this, popup->onpop );
     MenuData* menu = popup->menu;
-    if( menu ) {
+    if( menu != NULL ) {
         for( int i=0; i<popup->count; i++ ) {
-            if( menu[i].pop ) {
+            if( menu[i].pop != NULL ) {
                 WPopupMenu* p = makeMenu( menu[i].pop, tools );
                 pop->insertPopup( p, i );
-            } else if( !menu[i].name ) {
+            } else if( menu[i].name == NULL ) {
                 pop->insertSeparator( i );
             } else {
                 WMenuItem* m = new WMenuItem( menu[i].name, this, menu[i].callback, (cbh)&VpeMain::mHint, menu[i].hint );
@@ -667,7 +667,7 @@ void VpeMain::onPopup2( WPopupMenu* pop )
     if( _activeVComp ) {
         MItem* m = _activeVComp->target();
         WVList actlist;
-        if( m ) {
+        if( m != NULL ) {
             m->addActions( actlist );
             int icount = actlist.count();
             int ii = 0;
@@ -777,7 +777,7 @@ void VpeMain::onPopup3( WPopupMenu* pop )
     if( _activeVComp ) {
         m = _activeVComp->selectedItem();
     }
-    if( m ) {
+    if( m != NULL ) {
         WVList actlist;
         m->addActions( actlist );
         int icount = actlist.count();

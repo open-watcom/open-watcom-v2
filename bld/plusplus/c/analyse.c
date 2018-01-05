@@ -1327,16 +1327,19 @@ static int numSize( type_id id ) {     // NUMSIZE - number of bits
     switch( id ) {
     case TYP_SCHAR:
         size = SIGN_BIT;
+        /* fall through */
     case TYP_UCHAR:
         size |= 8;
         break;
     case TYP_SSHORT:
         size = SIGN_BIT;
+        /* fall through */
     case TYP_USHORT:
         size |= 16;
         break;
     case TYP_SLONG:
         size = SIGN_BIT;
+        /* fall through */
     case TYP_ULONG:
     case TYP_POINTER:
     case TYP_FUNCTION:
@@ -1345,11 +1348,13 @@ static int numSize( type_id id ) {     // NUMSIZE - number of bits
         break;
     case TYP_SLONG64:
         size = SIGN_BIT;
+        /* fall through */
     case TYP_ULONG64:
         size |= 64;
         break;
     case TYP_SINT:
         size = SIGN_BIT;
+        /* fall through */
     case TYP_UINT:
 #if TARGET_INT == 2
         size |= 16;
@@ -1435,16 +1440,19 @@ static void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
         switch( cgop ) { // mapped rel ops to equivalent cases
         case CO_NE:
             rev_ret = true;
+            /* fall through */
         case CO_EQ:
             rel = REL_EQ;
             break;
         case CO_GE:
             rev_ret = true;
+            /* fall through */
         case CO_LT:
             rel = REL_LT;
             break;
         case CO_GT:
             rev_ret = true;
+            /* fall through */
         case CO_LE:
             rel = REL_LE;
             break;
@@ -2441,7 +2449,7 @@ static void warnIntTrunc(       // WARN WHEN INTEGER TRUNCATION
                     // these unary ops don't create more bits
                     // so promotion to int confuses things
                     node_type = node->u.subtree[0]->type;
-                    // fall through
+                    /* fall through */
                 default :
                     if( node->cgop == CO_FETCH && node->u.subtree[0] != NULL
                      && NodeIsUnaryOp( node->u.subtree[0], CO_BITFLD_CONVERT ) ) {
@@ -3461,7 +3469,7 @@ start_opac_string:
                 type = left->type;
                 continue;
             }
-            // drops thru
+            /* fall through */
           case RESULT_BIN_ARITH :
             type = binary_arith_result( left, right );
             continue;
@@ -3748,7 +3756,6 @@ start_opac_string:
                 break;
             type = NodeType( expr );
             continue;
-            break;
           case CONV_DYN_CAST :
             expr = CastDynamic( expr );
             if( expr->op == PT_ERROR )
@@ -4235,9 +4242,11 @@ start_opac_string:
           case RELOAD_EXPR_BINARY :             // drops thru
             right = PTreeOpRight( expr );
             right->type = BindTemplateClass( right->type, &right->locn, false );
+            /* fall through */
           case RELOAD_EXPR_UNARY :
             left = PTreeOpLeft( expr );
             left->type = BindTemplateClass( left->type, &left->locn, false );
+            /* fall through */
           case RELOAD_EXPR_TYPE :               // drops thru
             if( expr->op == PT_ERROR )
                 break;
@@ -4280,7 +4289,7 @@ start_opac_string:
          && expr->u.subtree[1] != NULL ) {
             expr = FoldBinary( expr );
         }
-        // drops thru
+        /* fall through */
       default :
         expr->flags |= PTF_LV_CHECKED;
         break;

@@ -635,6 +635,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             switch( binding ) {
             case ORL_SYM_BINDING_WEAK:
                 isweak = true;
+                /* fall through */
             case ORL_SYM_BINDING_ALIAS:
             case ORL_SYM_BINDING_LAZY:
                 assocsymhdl = ORLSymbolGetAssociated( symhdl );
@@ -702,7 +703,7 @@ static orl_return DoReloc( orl_reloc reloc )
         break;
     case ORL_RELOC_TYPE_TOCREL_14:  // relative ref to 14-bit offset from TOC base.
         type = FIX_SHIFT;
-        // NOTE fall through
+        /* fall through */
     case ORL_RELOC_TYPE_TOCREL_16:  // relative ref to 16-bit offset from TOC base.
     case ORL_RELOC_TYPE_GOT_16:     // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOC | FIX_OFFSET_16;
@@ -710,7 +711,7 @@ static orl_return DoReloc( orl_reloc reloc )
         break;
     case ORL_RELOC_TYPE_TOCVREL_14: // relative ref to 14-bit offset from TOC base.
         type = FIX_SHIFT;
-        // NOTE fall through
+        /* fall through */
     case ORL_RELOC_TYPE_TOCVREL_16: // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOCV | FIX_OFFSET_16;
         break;

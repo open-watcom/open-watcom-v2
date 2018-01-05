@@ -763,16 +763,19 @@ static void MakeCPUConstant( asm_token tok )
     case T_DOT_686:
     case T_P686:
         MakeConstantUnderscored( "686" );
+        /* fall through */
     case T_DOT_586P:
     case T_P586P:
     case T_DOT_586:
     case T_P586:
         MakeConstantUnderscored( "586" );
+        /* fall through */
     case T_DOT_486P:
     case T_P486P:
     case T_DOT_486:
     case T_P486:
         MakeConstantUnderscored( "486" );
+        /* fall through */
     case T_DOT_386P:
     case T_P386P:
     case T_DOT_386:
@@ -995,11 +998,13 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                         size = 6;
                         break;
                     }
+                    /* fall through */
                 case T_QWORD:
                     if( Use32 ) {
                         size = 8;
                         break;
                     }
+                    /* fall through */
                 default:
                     AsmError( STRANGE_PARM_TYPE );
                     return( RC_ERROR );
@@ -1141,6 +1146,7 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                     sprintf( buffer, "mov %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     break;
                 }
+                /* fall through */
             default:
                 AsmError( SYNTAX_ERROR );
                 return( RC_ERROR );
@@ -1285,7 +1291,7 @@ static bool expand_call( token_idx index, int lang_type )
         } else {
             cleanup++;
         }
-        /* fall into T_STDCALL */
+        /* fall through */
     case LANG_STDCALL:
         reversed++;
         break;
@@ -1749,7 +1755,7 @@ static bool idata_fixup( expr_list *opndx )
             break;
         }
         Code->mem_type = MT_WORD;
-        // no break
+        /* fall through */
 #if defined( _STANDALONE_ )
     case MT_SWORD:
 #endif
@@ -2432,7 +2438,7 @@ bool AsmParse( const char *curline )
                         }
                     }
                 }
-                /* fall into default */
+                /* fall through */
 #endif
             default:
                 rCode->info.token = AsmBuffer[i].u.token;
@@ -2955,7 +2961,7 @@ static bool check_size( void )
             SET_OPSIZ_OFF( Code );
             return( state );
         }
-        // no break;
+        /* fall through */
     default:
         // make sure the 2 opnds are of the same type
         op1_size = OperandSize( op1 );

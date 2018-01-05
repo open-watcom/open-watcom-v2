@@ -88,6 +88,7 @@ extern bool RXEvent( gui_window * gui, gui_event event, void * param )
         switch( id ) {
         case CTL_RX_OK:
             GetRXStatus( gui );
+            /* fall through */
         case CTL_RX_CANCEL:
             GUICloseDialog( gui );
             break;
