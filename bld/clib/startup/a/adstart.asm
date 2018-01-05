@@ -545,11 +545,13 @@ __exit   proc near                      ; never return
         ; return code is already on the stack
         jmp short L5
 
-        public   __do_exit_with_msg__
+        public   __do_exit_with_msg_
 
 ; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 
-__do_exit_with_msg__:                   ; never return
+__do_exit_with_msg_:                    ; never return
         push    edx                     ; save return code on stack
         push    eax                     ; save msg
         mov     edx,offset ConsoleName

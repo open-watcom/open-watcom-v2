@@ -358,11 +358,13 @@ ifndef __STACK__
 endif
         jmp short L7
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: ( char *msg, int rc )  always in registers
+; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 
-__do_exit_with_msg__:                   ; never return
+__do_exit_with_msg_:                    ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName

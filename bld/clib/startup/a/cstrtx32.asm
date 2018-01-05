@@ -68,7 +68,6 @@ public  __x386_zero_base_selector
 public  __data_bottom
 public  __x386_init
 public  _cstart_
-public  __do_exit_with_msg__
 public  "C",sbrk
 public  "C",__exit
 public  "C",__brk
@@ -375,10 +374,13 @@ null_error:     ; a null code pointer has been called
         mov     eax,offset DGROUP:null_msg
         mov     dl,1                    ;error code
 
-; input: EAX - pointer to message to print
-;        EDX - exit code
+        public  __do_exit_with_msg_
 
-__do_exit_with_msg__:
+; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
+
+__do_exit_with_msg_:
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset DGROUP:ConsoleName

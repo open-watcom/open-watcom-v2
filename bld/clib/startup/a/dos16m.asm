@@ -460,12 +460,13 @@ __exit  proc  far
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: DX:AX - far pointer to message to print
-;        BX    - exit code
+; input: ( char __far *msg, int rc ) always in registers
+;       DX:AX - far pointer to message to print
+;       BX    - exit code
 
-__do_exit_with_msg__:
+__do_exit_with_msg_:
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg

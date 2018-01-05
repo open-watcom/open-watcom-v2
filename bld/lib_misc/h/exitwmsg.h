@@ -44,23 +44,12 @@ extern _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *, unsigned );
 extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *, unsigned );
 extern _WCRTLINK _WCNORETURN void __exit( unsigned );
 
-// ASM interface
-// - always uses register calling convention
-// - this function is only called from the C implementation for DOS
-//   of __exit_with_msg
-extern _WCNORETURN void __do_exit_with_msg( char _WCI86FAR *, unsigned );
-#if defined( _M_I86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [ax dx] [bx]
-#elif defined( _M_IX86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [eax] [edx]
-#endif
-
 // WVIDEO interface
 
 extern _WCRTDATA char volatile __WD_Present;
 
 // this function should be called before __exit_with_msg()
-// to allow Watcom Debugger (nee WVIDEO) to trap runtime errors.
+// to allow Watcom Debugger (see WVIDEO) to trap runtime errors.
 // this really needs to be far!!!
 extern _WCRTLINK int __EnterWVIDEO( char _WCFAR *string );
 

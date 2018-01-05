@@ -345,13 +345,15 @@ error_exit:
         or      eax,-1                  ; exit code -1
         jmp     do_exit
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: ( char *msg, int rc )  always in registers
+; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 ; may be only called from startup code, after that there is
 ; nowhere to exit to!
 
-__do_exit_with_msg__:
+__do_exit_with_msg_:
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName

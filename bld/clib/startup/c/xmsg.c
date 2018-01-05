@@ -31,6 +31,8 @@
 
 #include "variety.h"
 #include "exitwmsg.h"
+#include "doexitwm.h"
+
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 {
