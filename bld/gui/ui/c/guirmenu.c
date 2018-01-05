@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Load menu data from resources. 
+* Description:  Load menu data from resources.
 *
 ****************************************************************************/
 
@@ -198,7 +198,7 @@ void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
 
     if( entry != NULL ) {
         for( i = 0; i < num; i++ ) {
-            if( entry[i].num_child_menus != NULL ) {
+            if( entry[i].num_child_menus > 0 ) {
                 GUIFreeGUIMenuStruct( entry[i].child, entry[i].num_child_menus );
             }
             if( entry[i].label != NULL ) {
