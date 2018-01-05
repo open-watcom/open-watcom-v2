@@ -99,16 +99,15 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
             tool->picked();
             return( true );
         }
+        break;
     }
     case GUI_CONTROL_CLICKED:
     case GUI_CONTROL_DCLICKED: {
         GUI_GETID( parm, id );
         WControl* control = getControl( id );
-        if( control != NULL ) {
-            return( control->processMsg( msg ) );
-        } else {
-            return( false );
-        }
+        if( control == NULL )
+            break;
+        return( control->processMsg( msg ) );
     }
     case GUI_LBUTTONUP: {
         GUI_GET_POINT( parm, point );
@@ -129,11 +128,9 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     case GUI_CONTROL_RCLICKED: {
         GUI_GETID( parm, id );
         WControl* control = getControl( id );
-        if( control != NULL ) {
-            return( control->rightBttnUp( 0, 0, 0 ) );
-        } else {
-            return( false );
-        }
+        if( control == NULL )
+            break;
+        return( control->rightBttnUp( 0, 0, 0 ) );
     }
     case GUI_RBUTTONDOWN: {
         GUI_GET_POINT( parm, point );
@@ -160,18 +157,18 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         return( losingFocus( NULL ) );
     }
     case GUI_KEYDOWN: {
+        WWindow *p;
         _keyHandled = false;
-        WWindow *p = this;
-        while( p != NULL ) {
-            _keyHandled = p->keyDown( ((gui_key_state *)parm)->key,
-                                      ((gui_key_state *)parm)->state );
-            if( _keyHandled ) break;
-            p = p->parent();
+        for( p = this; p != NULL; p = p->parent() ) {
+            _keyHandled = p->keyDown( ((gui_key_state *)parm)->key, ((gui_key_state *)parm)->state );
+            if( _keyHandled ) {
+                break;
+            }
         }
         return( _keyHandled );
     }
     case GUI_KEY_CONTROL: {
-        return( false );
+        break;
     }
     case GUI_KEYUP: {
         // we don't care about GUI_KEYUP messages; however we want to
@@ -271,8 +268,9 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         bool ending;
         bool dummy;
         GUI_GET_ENDSESSION( parm, ending, dummy );
+        (void)dummy;    /* reference unused variable */
         endSession( ending );
-        /* unused parameters */ (void)dummy;
+        return( true );
     case GUI_ACTIVATEAPP:
         bool activated;
         GUI_GET_BOOL( parm, activated );
@@ -282,7 +280,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         GUI_GET_BOOL( parm, isactwin );
         return( contextHelp( isactwin ) );
     }
-    return( true );
+    return( false );
 }
 
 
