@@ -60,6 +60,10 @@
 #include "feprotos.h"
 
 
+#if _TARGET & _TARG_80386
+    #define _OMF_32
+#endif
+
 #define _NIDX_NULL      1   // lname ""
 #define _NIDX_CODE      2   // lname "CODE"
 #define _NIDX_DATA      3   // lname "DATA"
