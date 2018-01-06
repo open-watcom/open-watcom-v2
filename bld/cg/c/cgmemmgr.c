@@ -125,11 +125,11 @@ extern bool     GetEnvVar( char *, char *, int );
 
 
 #define _1K             1024L
-#define _4K             (4*_1K)
-#define _64K            (64*_1K)
-#define _1M             (_1K*_1K)
-#define _4M             (4*_1M)
-#define _16M            (16*_1M)
+#define _4K             (4 * _1K)
+#define _64K            (64 * _1K)
+#define _1M             (_1K * _1K)
+#define _4M             (4 * _1M)
+#define _16M            (16 * _1M)
 
 static  pointer     MemFromSys( size_t );
 
@@ -146,11 +146,11 @@ static pointer_int  PeakAlloc    = 0;
 #define MAX_SIZE        14 /* 16384 */
 #define MIN_SIZE        4  /* 16 */
 #if defined( LONG_IS_64BITS ) || defined( _WIN64 )
-#define WORD_SIZE       8  /* Needed to keep alignment. */
+#define MEM_WORD_SIZE   8  /* Needed to keep alignment. */
 #else
-#define WORD_SIZE       4
+#define MEM_WORD_SIZE   4
 #endif
-#define MAX_CLASS       (MAX_SIZE-MIN_SIZE)
+#define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
 
 /* Free list structure - length holds the size of memory block, which
  * is necessary for freeing memory. Note that the length field is set
@@ -163,7 +163,7 @@ typedef struct frl {
     struct frl  *link;
 } frl;
 
-#if (1 << MIN_SIZE) < (2 * WORD_SIZE)
+#if (1 << MIN_SIZE) < (2 * MEM_WORD_SIZE)
     #error "Free list will not fit into freed chunk"
 #endif
 
@@ -185,7 +185,7 @@ typedef struct blk_hdr {
 
 #define TAG_SIZE        sizeof( tag )
 
-#define MIN_ALLOC _RoundUp( sizeof( frl ), WORD_SIZE )
+#define MIN_ALLOC _RoundUp( sizeof( frl ), MEM_WORD_SIZE )
 #define MAX_ALLOC (1 << MAX_SIZE)
 #define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
@@ -434,7 +434,7 @@ extern pointer  MemAlloc( size_t amount )
         MemInit();
     if( amount == 0 )
         return( NULL );
-    amount = _RoundUp( amount + TAG_SIZE, WORD_SIZE );
+    amount = _RoundUp( amount + TAG_SIZE, MEM_WORD_SIZE );
     if( amount > MAX_ALLOC ) {
         return( MemFromSys( amount ) );
     }
