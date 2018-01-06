@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-typedef char    *SYM_NAMEPTR;
-
 #include "cg.h"
+#include <stddef.h>
 #include "cgaux.h"
 
 /* only for long_double */
@@ -62,6 +61,7 @@ typedef signed_64       int64;
 typedef unsigned_64     uint64;
 
 typedef void            *SYM_HANDLE;
+typedef char            *SYM_NAMEPTR;
 
 typedef signed int      id_level_stype;
 typedef unsigned char   id_level_type;
@@ -270,9 +270,6 @@ typedef struct parm_list {
     TYPEPTR             parm_type;
 } parm_list;
 
-extern  void WalkTypeList( void (*func)(TYPEPTR) );
-extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
-
 typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,func2,...) */
     struct textsegment *next;       /* also used by pre-compiled header */
     size_t             class;
@@ -328,8 +325,6 @@ typedef struct xref_entry {
     struct xref_entry   *next_xref;
     source_loc          src_loc;
 } XREF_ENTRY, *XREFPTR;
-
-extern  XREFPTR NewXref( XREFPTR );
 
 typedef struct id_hash_entry {         /* SYMBOL TABLE structure */
     struct id_hash_entry   *next_sym;  /* also used by pre-compiled header */
@@ -425,8 +420,6 @@ typedef struct tag_entry {
     char                name[1];
 } TAGDEFN, *TAGPTR;
 
-extern  void WalkTagList( void (*func)(TAGPTR) );
-
 /* flags for QUAD.flags field */
 
 enum quad_flags {           /* code data */
@@ -490,8 +483,6 @@ typedef enum {
     DECL_STATE_FORLOOP  = 0x08,
 } decl_state;
 
-#include <stddef.h>
-#include "cgaux.h"
 #include "cops.h"
 
 typedef struct label_entry {
@@ -708,3 +699,8 @@ typedef struct call_list {
     TREEPTR             callnode;
     source_loc          src_loc;
 } call_list;
+
+extern void     WalkTypeList( void (*func)(TYPEPTR) );
+extern void     WalkFuncTypeList( void (*func)(TYPEPTR,int) );
+extern XREFPTR  NewXref( XREFPTR );
+extern void     WalkTagList( void (*func)(TAGPTR) );
