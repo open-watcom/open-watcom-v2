@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "typedef.h"
 #include "inslist.h"

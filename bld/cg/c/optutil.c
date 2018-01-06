@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "stack.h"
 #include "optutil.h"

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "freelist.h"
 #include "utils.h"
