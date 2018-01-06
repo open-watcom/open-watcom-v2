@@ -1050,6 +1050,7 @@
 
 :option. wpx
 :target. any
+:nochain.
 :internal.
 :usage. internal experimental option, check prototypes defined already
 :jusage.
