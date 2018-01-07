@@ -1,5 +1,7 @@
 #include <windows.h>
-#include "banner.h"
+
+#define _DOSTR( p )         #p
+#define _MACROSTR( p )      _DOSTR( p )
 
 #ifndef VERINFO_FILEVERSION
     #error You must define VERINFO_FILEVERSION.
@@ -26,17 +28,17 @@
 #endif
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION VERINFO_FILEVERSION
-PRODUCTVERSION VERINFO_PRODUCTVERSION
-FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
-FILEFLAGS 0x0L
-FILEOS VOS_NT_WINDOWS32
+FILEVERSION     VERINFO_FILEVERSION
+PRODUCTVERSION  VERINFO_PRODUCTVERSION
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0x0L
+FILEOS          VOS_NT_WINDOWS32
 #ifdef VERINFO_EXE
-FILETYPE VFT_APP
+FILETYPE        VFT_APP
 #else
-FILETYPE VFT_DLL
+FILETYPE        VFT_DLL
 #endif
-FILESUBTYPE 0x0L
+FILESUBTYPE     0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
@@ -46,12 +48,12 @@ BEGIN
             VALUE "FileDescription", VERINFO_FILEDESCRIPTION_STR "\0"
             VALUE "FileVersion", VERINFO_FILEVERSION_STR "\0"
             VALUE "InternalName", VERINFO_INTERNALNAME_STR "\0"
-            VALUE "LegalCopyright", "Copyright \251 2002-" _MACROSTR( _CYEAR )
-                                    " The Open Watcom Contributors. "
 #ifndef VERINFO_NO_SYBASE
-                                    "Portions Copyright \251 2002 Sybase, Inc. "
+            VALUE "LegalCopyright", "The Open Watcom Contributors 2002-" _MACROSTR( _CYEAR ) ". " \
+                                "Portions Copyright \251 2002 Sybase, Inc. All Rights Reserved.\0"
+#else
+            VALUE "LegalCopyright", "The Open Watcom Contributors 2002-" _MACROSTR( _CYEAR ) ". All Rights Reserved.\0"
 #endif
-                                    "All Rights Reserved.\0"
 #ifdef VERINFO_EXE
             VALUE "OriginalFilename", VERINFO_INTERNALNAME_STR ".exe\0"
 #else
