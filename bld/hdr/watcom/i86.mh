@@ -253,11 +253,7 @@ _WCIRTLINK extern void _enable( void );
  #pragma intrinsic(_disable,_enable)
 #endif
 
-:segment QNX | LINUX
-_WCRTLINK extern unsigned delay(unsigned int __milliseconds);
-:elsesegment
-_WCRTLINK extern void    delay(unsigned int __milliseconds);
-:endsegment
+:include delay.sp
 :segment DOS | QNX
 #if defined(_M_I86) || defined(__WINDOWS_386__)
 _WCRTLINK extern int     int86( int, union REGS *, union REGS * );

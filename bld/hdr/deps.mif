@@ -182,7 +182,7 @@ conio.h         : conio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ..
 crtdbg.h        : crtdbg.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 ctype.h         : $(ctype_deps)
 direct.h        : direct.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp
-dos.h           : dos.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp
+dos.h           : dos.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
 dosfunc.h       : dosfunc.mh ../crwat.sp ../readonly.sp
 eh.h            : eh.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 env.h           : env.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(posixext)
@@ -197,7 +197,7 @@ fstream.h       : $(fstream_deps)
 generic.h       : generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 graph.h         : $(graph_deps)
 graph2.h        : graph2.mh $(graph_deps)
-i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
+i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../delay.sp
 inttypes.h      : $(inttypes_deps)
 io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../access.sp ../seekpos.sp $(extension)
 iomanip.h       : $(iomanip_deps)
