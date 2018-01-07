@@ -35,8 +35,7 @@
 #include <time.h>
 
 #ifndef _VERSION
- #include "banner.h"
- #define _VERSION (_BLDVER/10)
+#error Macro '_VERSION' must be defined!
 #endif
 
 #if 0   // example has embedded ISO C comments
