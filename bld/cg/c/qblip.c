@@ -33,13 +33,14 @@
 
 #include "cgstd.h"
 #include "targsys.h"
+#include "typclass.h"
 #include "hwreg.h"
 #include "bitset.h"
 #include "opcodes.h"
 #include "inslist.h"
 #include "blips.h"
 
-void BlipInit()
+void BlipInit( void )
 {
 }
 
