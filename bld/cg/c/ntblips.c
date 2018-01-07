@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#undef FAR
+#include "cgstd.h"
 #include "zoiks.h"
 #include "cgdefs.h"
 #include "coderep.h"
