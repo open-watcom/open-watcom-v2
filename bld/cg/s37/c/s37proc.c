@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "procdef.h"
 #include "model.h"
 #include "rtclass.h"

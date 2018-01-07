@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,18 +32,16 @@
 
 #ifdef _CGDLL
 
+#undef BY_CG
+
+#include "cgstd.h"
 #ifdef __OS2__
 #define INCL_DOS
 #include <os2.h>
 #else
 #include <windows.h>
 #endif
-
-#undef BY_CG
-
-#include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "model.h"
 #include "cgmisc.h"
 #include "cgcli.h"

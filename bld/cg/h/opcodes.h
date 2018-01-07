@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #ifndef OPCODES_H_INCLUDED
 #define OPCODES_H_INCLUDED
-#include "targsys.h"
 
 typedef enum {
     #define PICK(e,i,d1,d2,ot,pnum,attr)  OP_##i,

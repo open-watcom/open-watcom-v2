@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +33,12 @@
 
 // (jww) 93/12/13 -- add initialization of type aliases
 
-#include <stdarg.h>
 #include "cgstd.h"
+#include <stdarg.h>
+#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
-#include "typedef.h"
 #include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"

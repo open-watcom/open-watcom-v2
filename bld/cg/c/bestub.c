@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,10 @@
 
 #pragma off(unreferenced);
 #include "cgstd.h"
+#include "coderep.h"
 #include "cgswitch.h"
 #include "cfloat.h"
 #include "dbbit.h"
-#include "coderep.h"
-#include "cgdefs.h"
 #include "symdbg.h"
 
 typedef union hdl_type {

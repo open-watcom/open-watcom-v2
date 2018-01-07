@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "cg.h"
-#include "cgaux.h"
 #include "targsys.h"
+#include "_cg.h"
+#include "cgaux.h"
 #include "model.h"
 #include "zoiks.h"
 /*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +63,6 @@ essentially no worst case performance scenario.
 #include "cgstd.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "_cg.h"
-#include "cgdefs.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>
 #endif
@@ -72,17 +71,20 @@ essentially no worst case performance scenario.
 #elif defined( __OSI__ )
     #define __CALL21__
     #include "tinyio.h"
+#elif defined( __DOS__ )
+    #include "tinyio.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
 #endif
+#include "_cg.h"
+#include "cgdefs.h"
 #include "utils.h"
 #include "onexit.h"
 #include "feprotos.h"
 
 #ifdef __DOS__
 
-#include "tinyio.h"
 #include "dosmem.h"
 
 typedef struct {

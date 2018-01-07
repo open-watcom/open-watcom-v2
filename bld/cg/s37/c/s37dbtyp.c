@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <string.h>
-#include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "cgmem.h"
 #include "offset.h"
-#include "typedef.h"
 #include "s37bead.h"
 #include "s37dbg.h"
 

@@ -33,7 +33,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "opcodes.h"
 #include "model.h"
 #include "inssched.h"
 #include "funits.h"

@@ -34,7 +34,6 @@
 #include "pattern.h"
 #include "funits.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "regset.h"
 #include "rtclass.h"
 #include "vergen.h"

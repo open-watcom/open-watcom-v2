@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,9 @@
 #include "cfloat.h"
 
 
-extern  void    CFCnvTarget( cfloat *f, flt *buffer, int class ) {
-/****************************************************************************/
-
+void    CFCnvTarget( cfloat *f, flt *buffer, int class )
+/******************************************************/
+{
     switch( class ) {
     case FL:
         buffer->ldble = CFToF( f );

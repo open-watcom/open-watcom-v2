@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,11 @@
 #include "cgstd.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "cgmem.h"
 #include "typclass.h"
-#include "typedef.h"
 #include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"

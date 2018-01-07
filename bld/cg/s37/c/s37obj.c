@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "cgstd.h"
 #include "cgmem.h"
-#include "cg.h"
+#include "_cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
 #include "offset.h"

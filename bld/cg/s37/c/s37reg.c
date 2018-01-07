@@ -36,7 +36,6 @@
 #include "model.h"
 #include "cgaux.h"
 #include "cgmem.h"
-#include "typedef.h"
 
 #include "s37reg.def"
 
