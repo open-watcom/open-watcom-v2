@@ -80,6 +80,8 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     int                 scroll_position;
 
     switch( msg ) {
+    case GUI_INIT_WINDOW:
+        return( true );
     case GUI_CLICKED: {
         GUI_GETID( parm, id );
         WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
