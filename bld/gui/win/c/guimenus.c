@@ -819,7 +819,7 @@ WPI_MRESULT GUIProcessInitMenuPopup ( gui_window *wnd, HWND hwnd, WPI_MSG msg,
 
     hmenu = GET_WM_INITMENU_MENU( wparam, lparam );
     if ( GetPopupId( wnd, hmenu, &id ) ) {
-        GUIEVENTWND( wnd, GUI_INITMENUPOPUP, &id );
+        GUIEVENT( wnd, GUI_INITMENUPOPUP, &id );
     }
     return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
 }

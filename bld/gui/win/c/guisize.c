@@ -75,7 +75,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
             wnd->root_client_rect = wnd->hwnd_client_rect;
             GUISetRowCol( wnd, NULL );
             GUIScreenToScaleR( &size );
-            GUIEVENTWND( wnd, GUI_RESIZE, &size );
+            GUIEVENT( wnd, GUI_RESIZE, &size );
 #endif
         } else {
             _wpi_setwindowpos( frame, NULLHANDLE, pos.x, pos.y, size.x, size.y,

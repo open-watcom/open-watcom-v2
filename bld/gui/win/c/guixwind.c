@@ -667,7 +667,7 @@ bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
         currentpoint.y = _wpi_cvtc_y( wnd->hwnd, currentpoint.y );
         _wpi_clienttoscreen( wnd->hwnd, &currentpoint );
         GUIMakeRelative( wnd, &currentpoint, &point );
-        GUIEVENTWND( wnd, gui_ev, &point );
+        GUIEVENT( wnd, gui_ev, &point );
         return( true );
     }
     return( false );
@@ -723,7 +723,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
         size.x = right - left;
         size.y = bottom - top;
         GUIScreenToScaleR( &size );
-        GUIEVENTWND( wnd, GUI_RESIZE, &size );
+        GUIEVENT( wnd, GUI_RESIZE, &size );
     }
 }
 
@@ -770,7 +770,7 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
     GUISetScroll( wnd );
     if( wnd->flags & SENT_INIT ) {
         GUIScreenToScaleR( size );
-        GUIEVENTWND( wnd, GUI_RESIZE, size );
+        GUIEVENT( wnd, GUI_RESIZE, size );
     }
     GUIInvalidatePaintHandles( wnd );
 #ifdef __OS2_PM__
@@ -783,7 +783,7 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
 static void ProcessMenu( gui_window *wnd, gui_ctl_id id )
 {
     if( id < GUI_LAST_MENU_ID ) {
-        GUIEVENTWND( wnd, GUI_CLICKED, &id );
+        GUIEVENT( wnd, GUI_CLICKED, &id );
     } else {
         switch( id ) {
         case GUI_CHANGE_FONT :
@@ -966,7 +966,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         if( ( hwnd == wnd->hwnd ) && ( wnd->root == NULLHANDLE ) ) {
             GUIMDINewWindow( hwnd );
         }
-        if( GUIEVENTWND( wnd, GUI_INIT_WINDOW, NULL ) ) {
+        if( GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {
             wnd->flags |= SENT_INIT;
             GUISetScroll( wnd ); /* initalize scroll ranges */
             GUIBringToFront( wnd );
@@ -1069,7 +1069,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 ActivateNC( GUICurrWnd, activate );
             }
             if( root != NULL ) {
-                GUIEVENTWND( root, GUI_ACTIVATEAPP, &activate );
+                GUIEVENT( root, GUI_ACTIVATEAPP, &activate );
             }
         }
         use_defproc = true;
@@ -1142,7 +1142,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             break;
         }
         if( !GUIParentHasFlags( wnd, IS_MINIMIZED ) ) {
-            GUIEVENTWND( wnd, GUI_MOVE, NULL );
+            GUIEVENT( wnd, GUI_MOVE, NULL );
         }
         break;
     case WM_SIZE:
@@ -1155,7 +1155,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             if( wnd->style & GUI_CHANGEABLE_FONT ) {
                 GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, false );
             }
-            GUIEVENTWND( wnd, GUI_ICONIFIED, NULL );
+            GUIEVENT( wnd, GUI_ICONIFIED, NULL );
             if( GUIMDI ) {
                 GUIBringNewToFront( wnd );
             }
@@ -1208,7 +1208,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         if( ( win != (HWND)NULL) && ( win != hwnd ) ) {
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
-                GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &id );
             }
         } else {
             _wpi_setcapture( hwnd );
@@ -1279,7 +1279,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
                 if( _wpi_getparent( win ) == hwnd ) {
-                    GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &id );
+                    GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &id );
                 }
             }
         }
@@ -1289,7 +1289,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 
         es.endsession = ( wparam != 0 );
         es.logoff = ( lparam == 0x80000000L );
-        GUIEVENTWND( wnd, GUI_ENDSESSION, &es );
+        GUIEVENT( wnd, GUI_ENDSESSION, &es );
         return( 0L );
     }
     case WM_QUERYENDSESSION : {
@@ -1297,7 +1297,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 
         es.endsession = ( wparam != 0 );
         es.logoff = ( lparam == 0x80000000L );  // ENDSESSION_LOGOFF
-        if( !GUIEVENTWND( wnd, GUI_QUERYENDSESSION, &es ) ) {
+        if( !GUIEVENT( wnd, GUI_QUERYENDSESSION, &es ) ) {
             return( true );
         }
         return( 0L );
@@ -1319,7 +1319,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         ret = -1;
         GUIGetKeyState( &key_state.state );
         if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
-            ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
+            ret = GUIEVENT( wnd, GUI_KEYTOITEM, &key_state );
         }
         break;
 #endif
@@ -1339,7 +1339,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
         } else if( wnd->style & GUI_CLOSEABLE ) {
 
-            if( GUIEVENTWND( wnd, GUI_CLOSE, NULL ) ) {
+            if( GUIEVENT( wnd, GUI_CLOSE, NULL ) ) {
                 wnd->flags |= DOING_CLOSE;
                 if( wnd->flags & IS_ROOT ) {
                     return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
@@ -1359,7 +1359,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_DESTROY :
         wnd->flags |= DOING_DESTROY;
         NumWindows--;
-        GUIEVENTWND( wnd, GUI_DESTROY, NULL );
+        GUIEVENT( wnd, GUI_DESTROY, NULL );
         GUIDestroyAllChildren( wnd );
         if( wnd->flags & IS_ROOT ) {
             GUIDestroyAllPopupsWithNoParent();
@@ -1404,7 +1404,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
 
                 es.endsession = true;
                 es.logoff = false;
-                GUIEVENTWND( wnd, GUI_ENDSESSION, &es );
+                GUIEVENT( wnd, GUI_ENDSESSION, &es );
             }
             return( 0L );
 

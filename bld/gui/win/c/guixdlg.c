@@ -142,7 +142,7 @@ static bool InitDialog( gui_window *wnd )
         GUISetFocus( wnd, focus_id );
     }
     GUISetRowCol( wnd, NULL );
-    GUIEVENTWND( wnd, GUI_INIT_DIALOG, NULL );
+    GUIEVENT( wnd, GUI_INIT_DIALOG, NULL );
     wnd->flags |= SENT_INIT;
    /* must return false or Windows will set input focus to the
     * first control with a group style
@@ -172,7 +172,7 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
                 break;
             case EN_KILLFOCUS :
                 EditControlHasFocus = false;
-                GUIEVENTWND( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
+                GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 break;
             }
             break;
@@ -200,23 +200,23 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
         case GUI_DEFPUSH_BUTTON :
             switch( wNotify ) {
             case BN_CLICKED :
-                GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
             case BN_DOUBLECLICKED :
-                GUIEVENTWND( wnd, GUI_CONTROL_DCLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
             }
             break;
         case GUI_LISTBOX :
             switch( wNotify ) {
             case LBN_SELCHANGE :
-                GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
             case LBN_DBLCLK :
-                GUIEVENTWND( wnd, GUI_CONTROL_DCLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
             case LBN_KILLFOCUS :
-                GUIEVENTWND( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
+                GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 return( true );
             }
             break;
@@ -224,15 +224,15 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
         case GUI_EDIT_COMBOBOX :
             switch( wNotify ) {
             case CBN_SELCHANGE :
-                GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 return( true );
 #ifndef __OS2_PM__
             case CBN_DBLCLK :
-                GUIEVENTWND( wnd, GUI_CONTROL_DCLICKED, &id );
+                GUIEVENT( wnd, GUI_CONTROL_DCLICKED, &id );
                 return( true );
 #endif
             case CBN_KILLFOCUS :
-                GUIEVENTWND( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
+                GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
                 return( true );
             }
             break;
@@ -281,7 +281,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
 
     id = _wpi_getid( wparam );
     if( SHORT1FROMMP( lparam ) == CMDSRC_PUSHBUTTON ) {
-        GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+        GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
         ret = true;
     }
 #endif
@@ -341,7 +341,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             size.y = _wpi_getwmsizey( wparam, lparam );
             GUIScreenToScaleR( &size );
             GUISetRowCol( wnd, &size );
-            GUIEVENTWND( wnd, GUI_RESIZE, &size );
+            GUIEVENT( wnd, GUI_RESIZE, &size );
         }
         break;
 #if defined(__NT__)
@@ -392,7 +392,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         if( child ) {
             item = GUIGetControlByHwnd( wnd, child );
             if( item != NULL && item->id != 0 ) {
-                msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
+                msg_processed = GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }
         if( item == NULL || item->id == 0 ) {
@@ -407,7 +407,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             child = _wpi_windowfrompoint( pnt );
             item = GUIGetControlByHwnd( wnd, child );
             if( item != NULL && item->id != 0 && ( _wpi_getparent( child ) == hwnd ) ) {
-                msg_processed = GUIEVENTWND( wnd, GUI_CONTROL_RCLICKED, &item->id );
+                msg_processed = GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &item->id );
             }
         }
         break;
@@ -439,7 +439,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
                 escape_pressed = ( !GET_WM_COMMAND_CMD( wparam, lparam ) && ( id == IDCANCEL ) );
 #endif
                 if( !escape_pressed ) {
-                    GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+                    GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
                 }
             }
         } else {
@@ -453,7 +453,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             }
         }
         if( escape_pressed ) {
-            GUIEVENTWND( wnd, GUI_DIALOG_ESCAPE, NULL );
+            GUIEVENT( wnd, GUI_DIALOG_ESCAPE, NULL );
             GUICloseDialog( wnd );
         }
         msg_processed = true;
@@ -467,7 +467,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         break;
     case WM_DESTROY :
         if( wnd != NULL ) {
-            GUIEVENTWND( wnd, GUI_DESTROY, NULL );
+            GUIEVENT( wnd, GUI_DESTROY, NULL );
         }
 #ifndef __OS2_PM__
         break;
@@ -490,7 +490,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         if( !GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
             return( -1 );
         }
-        ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
+        ret = GUIEVENT( wnd, GUI_KEYTOITEM, &key_state );
         break;
 #endif
     // the following code allows GUI dialogs to receive key msgs
@@ -507,7 +507,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-            if( GUIEVENTWND( wnd, gui_ev, &key_state ) ) {
+            if( GUIEVENT( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
         }
@@ -521,7 +521,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-            if( GUIEVENTWND( wnd, gui_ev, &key_state ) ) {
+            if( GUIEVENT( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
         }

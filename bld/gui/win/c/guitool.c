@@ -77,7 +77,7 @@ bool GUIXCloseToolBar( gui_window *wnd )
         if( (wnd->flags & DOING_DESTROY) == 0 ) {
             GUIResizeBackground( wnd, true );
         }
-        GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
+        GUIEVENT( wnd, GUI_TOOLBAR_DESTROYED, NULL );
     }
     return( true );
 }
@@ -455,7 +455,7 @@ bool GUIChangeToolBar( gui_window *wnd )
     GUIResizeBackground( wnd, true );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
     _wpi_updatewindow( toolhwnd );
-    GUIEVENTWND( wnd, gui_ev, NULL );
+    GUIEVENT( wnd, gui_ev, NULL );
     return( true );
 }
 

@@ -86,7 +86,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     /* send paint to app */
     GUIGetUpdateRows( wnd, hwnd, &row_num.start, &row_num.num );
     if( row_num.num > 0 ) {
-        GUIEVENTWND( wnd, GUI_PAINT, &row_num );
+        GUIEVENT( wnd, GUI_PAINT, &row_num );
     }
 
     /* finish painting */
@@ -186,7 +186,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
         /* send paint to app */
         GUIGetUpdateRows( wnd, hwnd, &row_num.start, &row_num.num );
         if( row_num.num > 0 ) {
-            GUIEVENTWND( wnd, GUI_PAINT, &row_num );
+            GUIEVENT( wnd, GUI_PAINT, &row_num );
         }
 
         /* finish painting */

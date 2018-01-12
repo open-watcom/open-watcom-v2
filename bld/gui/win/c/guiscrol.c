@@ -186,13 +186,13 @@ static void GUIVScroll( int diff, gui_window *wnd, gui_event gui_ev )
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
         GUIScroll( wnd, SB_VERT, diff );
-        GUIEVENTWND( wnd, GUI_VSCROLL_NOTIFY, NULL );
+        GUIEVENT( wnd, GUI_VSCROLL_NOTIFY, NULL );
     } else {
         if( gui_ev == GUI_SCROLL_VERTICAL ) {
             diff /= GUIGetScrollInc( wnd, SB_VERT );
-            GUIEVENTWND( wnd, gui_ev, &diff );
+            GUIEVENT( wnd, gui_ev, &diff );
         } else {
-            GUIEVENTWND( wnd, gui_ev, NULL );
+            GUIEVENT( wnd, gui_ev, NULL );
         }
     }
 }
@@ -209,13 +209,13 @@ static void GUIHScroll( int diff, gui_window *wnd, gui_event gui_ev )
     }
     if( GUI_DO_HSCROLL( wnd ) ) {
         GUIScroll( wnd, SB_HORZ, diff );
-        GUIEVENTWND( wnd, GUI_HSCROLL_NOTIFY, NULL );
+        GUIEVENT( wnd, GUI_HSCROLL_NOTIFY, NULL );
     } else {
         if( gui_ev == GUI_SCROLL_HORIZONTAL ) {
             diff /= GUIGetScrollInc( wnd, SB_HORZ );
-            GUIEVENTWND( wnd, gui_ev, &diff );
+            GUIEVENT( wnd, gui_ev, &diff );
         } else {
-            GUIEVENTWND( wnd, gui_ev, NULL );
+            GUIEVENT( wnd, gui_ev, NULL );
         }
     }
 }
