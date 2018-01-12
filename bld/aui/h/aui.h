@@ -388,7 +388,6 @@ extern WNDNOTIFY        NoNotify;
 extern WNDNUMROWS       NoNumRows;
 extern WNDNEXTROW       NoNextRow;
 
-extern WNDCALLBACK      WndEvent;
 extern WNDREFRESH       WndRefresh;
 extern WNDGETLINE       WndGetLine;
 extern WNDGETLINE       WndGetLineAbs;

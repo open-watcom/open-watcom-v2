@@ -265,7 +265,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         wnd->gui = gui;
         cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WndEvent( wnd, event, parm );
+        ret = WNDEVENT( wnd, event, parm );
         WndSetThumb( wnd );
         WndHourGlass( cursor );
         break;
@@ -280,12 +280,12 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndScrollDown( wnd );
         break;
     case GUI_SCROLL_PAGE_UP:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+        if( WNDEVENT( wnd, GUI_SCROLL_PAGE_UP, parm ) )
             break;
         WndPageUp( wnd );
         break;
     case GUI_SCROLL_PAGE_DOWN:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+        if( WNDEVENT( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
             break;
         WndPageDown( wnd );
         break;
@@ -295,14 +295,14 @@ static void DoMainEventProc( spawn_parms *spawnp )
         } else {
             _Set( wnd, WSW_ACTIVE );
             WndAddPopupMenu( wnd );
-            WndEvent( wnd, event, parm );
+            WNDEVENT( wnd, event, parm );
         }
         ret = false;
         break;
     case GUI_NOT_ACTIVE:
         _Clr( wnd, WSW_ACTIVE );
         if( wnd != WndMain ) {
-            WndEvent( wnd, event, parm );
+            WNDEVENT( wnd, event, parm );
         }
         ret = false;
         break;
@@ -322,7 +322,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         _Clr( wnd, WSW_ICONIFIED );
         cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WndEvent( wnd, GUI_RESIZE, parm );
+        ret = WNDEVENT( wnd, GUI_RESIZE, parm );
         WndSetThumb( wnd );
         WndHourGlass( cursor );
         break;
@@ -446,12 +446,12 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndCursorRight( wnd );
                 break;
             case GUI_KEY_PAGEDOWN:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+                if( WNDEVENT( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
                     break;
                 WndPageDown( wnd );
                 break;
             case GUI_KEY_PAGEUP:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+                if( WNDEVENT( wnd, GUI_SCROLL_PAGE_UP, parm ) )
                     break;
                 WndPageUp( wnd );
                 break;

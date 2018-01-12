@@ -35,6 +35,8 @@
 #include "aui.h"
 #include "auistr.h"
 
+#define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
+
 extern void             WndLitInit( void );
 extern void             WndLitFini( void );
 

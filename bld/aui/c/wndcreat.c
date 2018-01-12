@@ -203,7 +203,7 @@ extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass,
 
 extern void     WndDestroy( a_window *wnd )
 {
-    WndEvent( wnd, GUI_DESTROY, NULL );
+    WNDEVENT( wnd, GUI_DESTROY, NULL );
     GUIMemFree( wnd->searchitem );
     wnd->searchitem = NULL;
     WndFree( wnd->popitem );

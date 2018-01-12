@@ -186,7 +186,7 @@ bool WndTabLeft( a_window *wnd, bool wrap )
         return( true );
     } else {
         WndSetHScroll( wnd, 0 );
-        WndEvent( wnd, GUI_SCROLL_LEFT, NULL );
+        WNDEVENT( wnd, GUI_SCROLL_LEFT, NULL );
         return( false );
     }
 }
@@ -227,7 +227,7 @@ bool WndTabRight( a_window *wnd, bool wrap )
 
     curr = wnd->current;
     if( !WndNextCurrent( wnd, wrap ) ) {
-        WndEvent( wnd, GUI_SCROLL_RIGHT, NULL );
+        WNDEVENT( wnd, GUI_SCROLL_RIGHT, NULL );
         return( false );
     }
     WndDirtyScreenPiece( wnd, &curr );

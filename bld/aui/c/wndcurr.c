@@ -365,7 +365,7 @@ extern  void    WndDirtyCurr( a_window *wnd )
             WndSelPieceChange( wnd, &wnd->current );
         }
     }
-    WndEvent( wnd, GUI_NO_EVENT, NULL );
+    WNDEVENT( wnd, GUI_NO_EVENT, NULL );
 }
 
 

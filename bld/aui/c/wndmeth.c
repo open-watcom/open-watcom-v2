@@ -341,12 +341,6 @@ void WndRefresh( a_window * wnd )
 }
 
 
-bool WndEvent( a_window * wnd, gui_event event, void *parm )
-{
-    return( wnd->info->event( wnd, event, parm ) );
-}
-
-
 int WndNumRows( a_window * wnd )
 {
     return( wnd->info->numrows( wnd ) + wnd->title_size );
