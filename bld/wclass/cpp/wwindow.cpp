@@ -75,119 +75,119 @@ AccelKey::AccelKey( WKeyCode key, WObject* client, bcbk callback )
 bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
 {
     gui_point           point;
-    gui_coord           size;
     WControlId          id;
-    int                 scroll_position;
 
     switch( msg ) {
+    /* following GUI events are unhandled now, return false
+    case GUI_INIT_DIALOG:
+    case GUI_NO_EVENT:
+    case GUI_FONT_CHANGED:
+    case GUI_CONTROL_NOT_ACTIVE:
+    case GUI_DIALOG_ESCAPE:
+    case GUI_KEYTOITEM:
+    case GUI_TIMER_EVENT:
+        break;
+    */
     case GUI_INIT_WINDOW:
         return( true );
-    case GUI_CLICKED: {
-        GUI_GETID( parm, id );
-        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
-        if( menu != NULL ) {
-            menu->picked();
-            return( true );
-        }
-        // a popup menu with no menu items will generate GUI_CLICKED
-        // - simulate a GUI_INITMENUPOPUP
-        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
-        if( pop != NULL ) {
-            pop->popup();
-            return( true );
-        }
-        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
-        if( tool != NULL ) {
-            tool->picked();
-            return( true );
-        }
-        break;
-    }
-    case GUI_CONTROL_CLICKED:
-    case GUI_CONTROL_DCLICKED: {
-        GUI_GETID( parm, id );
-        WControl* control = getControl( id );
-        if( control == NULL )
-            break;
-        return( control->processMsg( msg ) );
-    }
-    case GUI_LBUTTONUP: {
-        GUI_GET_POINT( parm, point );
-        return( leftBttnUp( point.x, point.y, 0 ) );
-    }
-    case GUI_LBUTTONDOWN: {
-        GUI_GET_POINT( parm, point );
-        return( leftBttnDn( point.x, point.y, 0 ) );
-    }
-    case GUI_LBUTTONDBLCLK: {
-        GUI_GET_POINT( parm, point );
-        return( leftBttnDbl( point.x, point.y, 0 ) );
-    }
-    case GUI_RBUTTONUP: {
-        GUI_GET_POINT( parm, point );
-        return( rightBttnUp( point.x, point.y, 0 ) );
-    }
-    case GUI_CONTROL_RCLICKED: {
-        GUI_GETID( parm, id );
-        WControl* control = getControl( id );
-        if( control == NULL )
-            break;
-        return( control->rightBttnUp( 0, 0, 0 ) );
-    }
-    case GUI_RBUTTONDOWN: {
-        GUI_GET_POINT( parm, point );
-        return( rightBttnDn( point.x, point.y, 0 ) );
-    }
-    case GUI_RBUTTONDBLCLK: {
-        GUI_GET_POINT( parm, point );
-        return( rightBttnDbl( point.x, point.y, 0 ) );
-    }
-    case GUI_MOUSEMOVE: {
-        GUI_GET_POINT( parm, point );
-        return( mouseMove( point.x, point.y, 0 ) );
-    }
-    case GUI_VSCROLL_NOTIFY: {
-        return( scrollPosChanged( WScrollBarVertical ) );
-    }
-    case GUI_HSCROLL_NOTIFY: {
-        return( scrollPosChanged( WScrollBarHorizontal ) );
-    }
-    case GUI_NOW_ACTIVE: {
-        return( gettingFocus( NULL ) );
-    }
-    case GUI_NOT_ACTIVE: {
-        return( losingFocus( NULL ) );
-    }
-    case GUI_KEYDOWN: {
-        WWindow *p;
-        _keyHandled = false;
-        for( p = this; p != NULL; p = p->parent() ) {
-            _keyHandled = p->keyDown( ((gui_key_state *)parm)->key, ((gui_key_state *)parm)->state );
-            if( _keyHandled ) {
-                break;
+    case GUI_CLICKED:
+        {
+            GUI_GETID( parm, id );
+            WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
+            if( menu != NULL ) {
+                menu->picked();
+                return( true );
+            }
+            // a popup menu with no menu items will generate GUI_CLICKED
+            // - simulate a GUI_INITMENUPOPUP
+            WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            if( pop != NULL ) {
+                pop->popup();
+                return( true );
+            }
+            WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
+            if( tool != NULL ) {
+                tool->picked();
+                return( true );
             }
         }
-        return( _keyHandled );
-    }
+        break;
+    case GUI_CONTROL_CLICKED:
+    case GUI_CONTROL_DCLICKED:
+        {
+            GUI_GETID( parm, id );
+            WControl* control = getControl( id );
+            if( control != NULL ) {
+                return( control->processMsg( msg ) );
+            }
+        }
+        break;
+    case GUI_LBUTTONUP:
+        GUI_GET_POINT( parm, point );
+        return( leftBttnUp( point.x, point.y, 0 ) );
+    case GUI_LBUTTONDOWN:
+        GUI_GET_POINT( parm, point );
+        return( leftBttnDn( point.x, point.y, 0 ) );
+    case GUI_LBUTTONDBLCLK:
+        GUI_GET_POINT( parm, point );
+        return( leftBttnDbl( point.x, point.y, 0 ) );
+    case GUI_RBUTTONUP:
+        GUI_GET_POINT( parm, point );
+        return( rightBttnUp( point.x, point.y, 0 ) );
+    case GUI_CONTROL_RCLICKED:
+        {
+            GUI_GETID( parm, id );
+            WControl* control = getControl( id );
+            if( control != NULL ) {
+                return( control->rightBttnUp( 0, 0, 0 ) );
+            }
+        }
+        break;
+    case GUI_RBUTTONDOWN:
+        GUI_GET_POINT( parm, point );
+        return( rightBttnDn( point.x, point.y, 0 ) );
+    case GUI_RBUTTONDBLCLK:
+        GUI_GET_POINT( parm, point );
+        return( rightBttnDbl( point.x, point.y, 0 ) );
+    case GUI_MOUSEMOVE:
+        GUI_GET_POINT( parm, point );
+        return( mouseMove( point.x, point.y, 0 ) );
+    case GUI_VSCROLL_NOTIFY:
+        return( scrollPosChanged( WScrollBarVertical ) );
+    case GUI_HSCROLL_NOTIFY:
+        return( scrollPosChanged( WScrollBarHorizontal ) );
+    case GUI_NOW_ACTIVE:
+        return( gettingFocus( NULL ) );
+    case GUI_NOT_ACTIVE:
+        return( losingFocus( NULL ) );
+    case GUI_KEYDOWN:
+        {
+            WWindow *p;
+
+            _keyHandled = false;
+            for( p = this; p != NULL; p = p->parent() ) {
+                _keyHandled = p->keyDown( ((gui_key_state *)parm)->key, ((gui_key_state *)parm)->state );
+                if( _keyHandled ) {
+                    break;
+                }
+            }
+            return( _keyHandled );
+        }
     case GUI_KEY_CONTROL:
         break;
-    case GUI_KEYUP: {
+    case GUI_KEYUP:
         // we don't care about GUI_KEYUP messages; however we want to
         // return whether the GUI_KEYDOWN message was handled or not
         return( _keyHandled );
-    }
-    case GUI_CLOSE: {
+    case GUI_CLOSE:
         return( reallyClose() );
-    }
-    case GUI_DESTROY: {
+    case GUI_DESTROY:
         setHandle( NULL );
         return( true );
-    }
-    case GUI_ICONIFIED: {
+    case GUI_ICONIFIED:
         minimized();
         return( true );
-    }
-    case GUI_MOVE: {
+    case GUI_MOVE:
         // BobP removed because it caused size problems
         // * could not move window to second monitor
         // * Window would jump
@@ -195,28 +195,33 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         //moved( 0, 0 );
         enumChildren();
         return( true );
-    }
-    case GUI_RESIZE: {
-        GUI_GET_SIZE( parm, size );
-        resized( size.x, size.y );
-        enumChildren();
-        return( true );
-    }
-    case GUI_PAINT: {
-        _painting = true;
-        GUI_GET_ROWS( parm, _firstDirtyRow, _numDirtyRows );
-        bool ret = paint();
-        _firstDirtyRow = 0;
-        _numDirtyRows = 0;
-        _painting = false;
-        return( ret );
-    }
-    case GUI_INITMENUPOPUP: {
-        GUI_GETID( parm, id );
-        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
-        pop->popup();
-        return( true );
-    }
+    case GUI_RESIZE:
+        {
+            gui_coord   size;
+            GUI_GET_SIZE( parm, size );
+            resized( size.x, size.y );
+            enumChildren();
+            return( true );
+        }
+    case GUI_PAINT:
+        {
+            bool    ret;
+
+            _painting = true;
+            GUI_GET_ROWS( parm, _firstDirtyRow, _numDirtyRows );
+            ret = paint();
+            _firstDirtyRow = 0;
+            _numDirtyRows = 0;
+            _painting = false;
+            return( ret );
+        }
+    case GUI_INITMENUPOPUP:
+        {
+            GUI_GETID( parm, id );
+            WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            pop->popup();
+            return( true );
+        }
     case GUI_TOOLBAR_DESTROYED:
         if( !_toolBar->changed( WToolBarClosed ) ) {
             clearToolBar();
@@ -245,8 +250,12 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     case GUI_SCROLL_BOTTOM:
         return( scrollNotify( WScrollBottom, 0 ) );
     case GUI_SCROLL_VERTICAL:
-        GUI_GET_SCROLL( parm, scroll_position );
-        return( scrollNotify( WScrollVertical, scroll_position ) );
+        {
+            int scroll_position;
+
+            GUI_GET_SCROLL( parm, scroll_position );
+            return( scrollNotify( WScrollVertical, scroll_position ) );
+        }
     case GUI_SCROLL_LEFT:
         return( scrollNotify( WScrollLeft, 0 ) );
     case GUI_SCROLL_PAGE_LEFT:
@@ -260,30 +269,39 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     case GUI_SCROLL_FULL_RIGHT:
         return( scrollNotify( WScrollFullRight, 0 ) );
     case GUI_SCROLL_HORIZONTAL:
-        GUI_GET_SCROLL( parm, scroll_position );
-        return( scrollNotify( WScrollHorizontal, scroll_position ) );
+        {
+            int scroll_position;
+
+            GUI_GET_SCROLL( parm, scroll_position );
+            return( scrollNotify( WScrollHorizontal, scroll_position ) );
+        }
     case GUI_STATUS_CLEARED:
         return( statusWindowCleared() );
     case GUI_QUERYENDSESSION:
         return( !queryEndSession() );
-    case GUI_ENDSESSION: {
-        bool ending;
-        bool dummy;
-        GUI_GET_ENDSESSION( parm, ending, dummy );
-        (void)dummy;    /* reference unused variable */
-        endSession( ending );
-        return( true );
-    }
-    case GUI_ACTIVATEAPP: {
-        bool activated;
-        GUI_GET_BOOL( parm, activated );
-        return( appActivate( activated ) );
-    }
-    case GUI_CONTEXTHELP: {
-        bool isactwin;
-        GUI_GET_BOOL( parm, isactwin );
-        return( contextHelp( isactwin ) );
-    }
+    case GUI_ENDSESSION:
+        {
+            bool ending;
+            bool dummy;
+            GUI_GET_ENDSESSION( parm, ending, dummy );
+            (void)dummy;    /* reference to unused variable */
+            endSession( ending );
+            return( true );
+        }
+    case GUI_ACTIVATEAPP:
+        {
+            bool activated;
+            GUI_GET_BOOL( parm, activated );
+            return( appActivate( activated ) );
+        }
+    case GUI_CONTEXTHELP:
+        {
+            bool isactwin;
+            GUI_GET_BOOL( parm, isactwin );
+            return( contextHelp( isactwin ) );
+        }
+    default:
+        break;
     }
     return( false );
 }
@@ -316,8 +334,8 @@ void WWindow::enumChildren()
 }
 
 
-extern "C" bool WinProc( gui_window *hwin, gui_event msg, void *parm )
-/********************************************************************/
+extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event msg, void *parm )
+/****************************************************************************/
 {
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
     if( msg == GUI_INIT_WINDOW ) {
@@ -361,7 +379,7 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.gui_call_back = WinProc;
+    create_info.gui_call_back = WinGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
     _handle = GUICreateWindow( &create_info );
