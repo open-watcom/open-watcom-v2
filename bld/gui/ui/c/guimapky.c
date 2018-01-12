@@ -206,10 +206,10 @@ EVENT GUIMapKeys( EVENT ev )
     key_state.key = GUIMapKey( key );
     GUIGetKeyState( &key_state.state );
     if( GUICurrWnd != NULL ) {
-        GUIEVENTWND( GUICurrWnd, GUI_KEYDOWN, &key_state );
+        GUIEVENT( GUICurrWnd, GUI_KEYDOWN, &key_state );
     }
     if( GUICurrWnd != NULL ) {
-        GUIEVENTWND( GUICurrWnd, GUI_KEYUP, &key_state );
+        GUIEVENT( GUICurrWnd, GUI_KEYUP, &key_state );
     }
     return( EV_NO_EVENT );
 }

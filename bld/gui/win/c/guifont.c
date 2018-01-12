@@ -49,7 +49,7 @@ static void SetFont( gui_window *wnd, HFONT font )
     wnd->font = font;
     GUISetRowCol( wnd, NULL );
     GUISetScroll( wnd );
-    GUIEVENTWND( wnd, GUI_FONT_CHANGED, NULL );
+    GUIEVENT( wnd, GUI_FONT_CHANGED, NULL );
 }
 
 static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )

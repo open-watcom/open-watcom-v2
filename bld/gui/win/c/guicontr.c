@@ -309,7 +309,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
                 GUIGetKeyState( &key_control.key_state.state );
                 if( key_control.key_state.key == GUI_KEY_ENTER ) {
                     key_control.id = info->id;
-                    if( GUIEVENTWND( wnd, GUI_KEY_CONTROL, &key_control ) ) {
+                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
                         return( 0L );
                     }
                 }
@@ -328,7 +328,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
                 case GUI_KEY_DOWN :
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
-                    GUIEVENTWND( wnd, GUI_KEY_CONTROL, &key_control );
+                    GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control );
                 }
             }
         //} else {
@@ -349,7 +349,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
                 case GUI_KEY_DOWN :
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
-                    if( GUIEVENTWND( wnd, GUI_KEY_CONTROL, &key_control ) ) {
+                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
                         return( 0L );
                     }
                 }

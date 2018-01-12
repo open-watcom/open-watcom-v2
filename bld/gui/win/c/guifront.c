@@ -72,11 +72,11 @@ void GUIBringToFront( gui_window *wnd )
             if( _wpi_getparent( GUICurrWnd->hwnd_frame ) != HWND_DESKTOP ) {
                 ActivateNC( GUICurrWnd, false );
             }
-            GUIEVENTWND( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
+            GUIEVENT( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
         }
         // if the application indicates that it has processed the message
         // then do not proceed to bring the window to top
-        if( !GUIEVENTWND( wnd, GUI_NOW_ACTIVE, NULL ) ) {
+        if( !GUIEVENT( wnd, GUI_NOW_ACTIVE, NULL ) ) {
             GUICurrWnd = wnd;
             GUIFrontOfList( wnd );
             ActivateNC( wnd, true );

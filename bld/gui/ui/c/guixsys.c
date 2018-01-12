@@ -317,7 +317,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
         if( wnd->hgadget != NULL ) {
             uiinitgadget( wnd->hgadget );
         }
-        if( !GUIEVENTWND( wnd, GUI_INIT_WINDOW, NULL ) ) {
+        if( !GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {
             return( false );
         }
         GUIBringToFront( wnd );

@@ -663,7 +663,7 @@ static void EditNotify( gui_key key, a_dialog *ui_dlg_info, gui_window *wnd )
             GUIGetKeyState( &key_control.key_state.state );
             key_control.id = GUIGetControlId( wnd, ui_dlg_info->curr );
             if( key_control.id != 0 ) {
-                GUIEVENTWND( wnd, GUI_KEY_CONTROL, &key_control );
+                GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control );
             }
         }
     }
@@ -688,7 +688,7 @@ static void CheckNotify( a_dialog *ui_dlg_info, gui_window *wnd )
     if( ui_dlg_info->curr != NULL ) {
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
-            GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+            GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
         }
     }
 }
@@ -717,7 +717,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
             default :
                 return;
             }
-            GUIEVENTWND( wnd, gui_ev, &id );
+            GUIEVENT( wnd, gui_ev, &id );
         }
     }
 }
@@ -740,7 +740,7 @@ void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
             case FLD_COMBOBOX :
             case FLD_EDIT_MLE :
                 id = GUIGetControlId( wnd, ui_dlg_info->other );
-                GUIEVENTWND( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
+                GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
             }
         }
     }
@@ -768,7 +768,7 @@ EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd 
     default :
         if( IS_CTLEVENT( ev ) ) {
             id = EV2ID( ev );
-            GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+            GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
             return( EV_NO_EVENT );
         }
         return( ev );
@@ -860,7 +860,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         uiyield();
         GUIInsertControl( wnd, &controls_info[i], i );
     }
-    GUIEVENTWND( wnd, GUI_INIT_DIALOG, NULL );
+    GUIEVENT( wnd, GUI_INIT_DIALOG, NULL );
     uipushlist( NULL );
     uipushlist( GUIUserEvents );
     uipushlist( GUIControlEvents );
@@ -872,7 +872,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             uiforceevadd( EV_KILL_UI );
             /* fall through */
         case EV_ESCAPE:
-            GUIEVENTWND( wnd, GUI_DIALOG_ESCAPE, NULL );
+            GUIEVENT( wnd, GUI_DIALOG_ESCAPE, NULL );
             GUICloseDialog( wnd );
             break;
         default :

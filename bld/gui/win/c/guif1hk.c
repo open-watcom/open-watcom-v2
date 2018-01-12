@@ -119,11 +119,11 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
             curr = getFirstGUIParent( qmsg->hwnd );
             if( curr != NULL ) {
                 b = true;
-                GUIEVENTWND( curr, GUI_CONTEXTHELP, &b );
+                GUIEVENT( curr, GUI_CONTEXTHELP, &b );
                 root = GUIGetRootWindow();
                 if( root != NULL ) {
                     b = false;
-                    GUIEVENTWND( root, GUI_CONTEXTHELP, &b );
+                    GUIEVENT( root, GUI_CONTEXTHELP, &b );
                 }
             }
         }

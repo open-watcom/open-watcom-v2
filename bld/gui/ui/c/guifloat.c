@@ -203,7 +203,7 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     if( ( ev != EV_MOUSE_DCLICK ) && ( ev != EV_NO_EVENT ) ) {
         if( IS_CTLEVENT( ev ) ) {
             id = EV2ID( ev );
-            GUIEVENTWND( wnd, GUI_CLICKED, &id );
+            GUIEVENT( wnd, GUI_CLICKED, &id );
             if( curr_id != NULL ) {
                 *curr_id = id;
             }

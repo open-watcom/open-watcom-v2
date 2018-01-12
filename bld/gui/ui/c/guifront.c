@@ -46,7 +46,7 @@ void GUIBringToFront( gui_window * wnd )
     change = GUICurrWnd != wnd;
     if( wnd != NULL ) {
         if( ( GUICurrWnd != NULL ) && change ) {
-            GUIEVENTWND( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
+            GUIEVENT( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
             old_curr_wnd = GUICurrWnd;
             GUICurrWnd = wnd;
             old_curr_wnd->flags |= NON_CLIENT_INVALID;
@@ -55,7 +55,7 @@ void GUIBringToFront( gui_window * wnd )
             GUICurrWnd = wnd;
         }
         if( change ) {
-            if( GUIEVENTWND( GUICurrWnd, GUI_NOW_ACTIVE, NULL ) ) {
+            if( GUIEVENT( GUICurrWnd, GUI_NOW_ACTIVE, NULL ) ) {
                 return;
             }
             GUIFrontOfList( GUICurrWnd );

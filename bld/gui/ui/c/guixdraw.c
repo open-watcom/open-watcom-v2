@@ -445,7 +445,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
         if( GUI_WND_VISIBLE( wnd ) && !( wnd->flags & DONT_SEND_PAINT ) ) {
             rownum.start = vscroll + area->row - frame_adjust;
             rownum.num = area->height;
-            GUIEVENTWND( wnd, GUI_PAINT, &rownum );
+            GUIEVENT( wnd, GUI_PAINT, &rownum );
         }
         for( control = wnd->controls; control != NULL;
              control = control->sibling ) {

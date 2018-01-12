@@ -110,7 +110,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         }
         GUIMemFree( with_excl );
     }
-    GUIEVENTWND( wnd, GUI_TOOLBAR_FIXED, NULL );
+    GUIEVENT( wnd, GUI_TOOLBAR_FIXED, NULL );
     return( true );
 }
 
@@ -132,11 +132,11 @@ bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
 
     switch( gui_ev ) {
     case GUI_INIT_WINDOW :
-        GUIEVENTWND( wnd->parent, GUI_TOOLBAR_FLOATING, NULL );
+        GUIEVENT( wnd->parent, GUI_TOOLBAR_FLOATING, NULL );
         return( true );
     case GUI_KEYDOWN :
     case GUI_KEYUP :
-        GUIEVENTWND( wnd->parent, gui_ev, param );
+        GUIEVENT( wnd->parent, gui_ev, param );
         break;
     case GUI_CLICKED :
         GUI_GETID( param, id );
@@ -147,7 +147,7 @@ bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         id = EV2ID( id );
-        GUIEVENTWND( wnd->parent, GUI_CLICKED, &id );
+        GUIEVENT( wnd->parent, GUI_CLICKED, &id );
         break;
     case GUI_LBUTTONDBLCLK :
         FixToolbar( wnd );
@@ -328,7 +328,7 @@ bool GUIXCloseToolBar( gui_window *wnd )
         wnd->tbinfo = NULL;
     }
     if( !switching ) {
-        GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
+        GUIEVENT( wnd, GUI_TOOLBAR_DESTROYED, NULL );
     }
     return( true );
 }

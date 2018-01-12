@@ -275,7 +275,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
         newsize.x = wnd->use.width;
         newsize.y = wnd->use.height;
         GUIScreenToScaleR( &newsize );
-        GUIEVENTWND( wnd, GUI_RESIZE, &newsize );
+        GUIEVENT( wnd, GUI_RESIZE, &newsize );
     }
     if( was_minimized ) {
         UnMinimize( wnd );
@@ -329,7 +329,7 @@ static void MoveWnd( gui_window *wnd, int row_diff, int col_diff )
     uivmove( &wnd->screen, (ORD)( row_diff + (int)wnd->screen.area.row),
              (ORD)(col_diff + (int)wnd->screen.area.col ) );
     GUISetUseWnd( wnd );
-    GUIEVENTWND( wnd, GUI_MOVE, NULL );
+    GUIEVENT( wnd, GUI_MOVE, NULL );
     if( !GUI_WND_MINIMIZED( wnd ) ) {
         /* don't move children if parent is minimized */
         for( curr = wnd->child; curr != NULL; curr = curr->sibling ) {
@@ -605,7 +605,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
     }
     GUISetSystemMenuFlags( wnd );
     if( action == GUI_MINIMIZE ) {
-        GUIEVENTWND( wnd, GUI_ICONIFIED, NULL );
+        GUIEVENT( wnd, GUI_ICONIFIED, NULL );
     }
 }
 
@@ -624,7 +624,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         newsize.x = wnd->use.width;
         newsize.y = wnd->use.height;
         GUIScreenToScaleR( &newsize );
-        GUIEVENTWND( wnd, GUI_RESIZE, &newsize );
+        GUIEVENT( wnd, GUI_RESIZE, &newsize );
     } else {
         hidden = uivshow( &wnd->screen );
 #ifdef HELL_FREEZES_OVER

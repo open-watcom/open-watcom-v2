@@ -119,7 +119,7 @@ static void SendPointEvent( gui_window *wnd, gui_event gui_ev,
             point->y += wnd->vgadget->pos;
         }
         GUIMakeRelative( wnd, point, &pt );
-        GUIEVENTWND( wnd, gui_ev, &pt );
+        GUIEVENT( wnd, gui_ev, &pt );
     }
 }
 
@@ -365,7 +365,7 @@ static void ProcessInitPopupEvent( void )
     if( uigetcurrentmenu ( &menu ) ) {
         id = EV2ID( menu.event );
         if( id != 0 ) {
-            GUIEVENTWND( GUICurrWnd, GUI_INITMENUPOPUP, &id );
+            GUIEVENT( GUICurrWnd, GUI_INITMENUPOPUP, &id );
         }
     }
 }
@@ -431,7 +431,7 @@ static void ProcessScrollEvent( EVENT ev  )
         return;
     }
     if( events ) {
-        GUIEVENTWND( GUICurrWnd, gui_ev, NULL );
+        GUIEVENT( GUICurrWnd, gui_ev, NULL );
     } else {
         GUIScroll( diff, gadget );
         if( gadget->dir == HORIZONTAL ) {
@@ -439,7 +439,7 @@ static void ProcessScrollEvent( EVENT ev  )
         } else {
             notify = GUI_VSCROLL_NOTIFY;
         }
-        GUIEVENTWND( GUICurrWnd, notify, NULL );
+        GUIEVENT( GUICurrWnd, notify, NULL );
     }
 }
 
@@ -502,11 +502,11 @@ static void DoScrollDrag( p_gadget gadget, int prev, int diff )
     }
     uisetgadgetnodraw( gadget, gadget->pos - diff );
     if( prev + diff == 0 ) {
-        GUIEVENTWND( GUICurrWnd, top, NULL );
+        GUIEVENT( GUICurrWnd, top, NULL );
     } else if( ( prev + diff ) == ( gadget->total_size - gadget->page_size ) ) {
-        GUIEVENTWND( GUICurrWnd, bottom, NULL );
+        GUIEVENT( GUICurrWnd, bottom, NULL );
     } else {
-        GUIEVENTWND( GUICurrWnd, scroll, &diff );
+        GUIEVENT( GUICurrWnd, scroll, &diff );
     }
 }
 
@@ -743,7 +743,7 @@ bool GUIProcessEvent( EVENT ev )
                 menu_window = GUIGetMenuWindow();
                 if( menu_window != NULL ) {
                     id = EV2ID( ev );
-                    GUIEVENTWND( menu_window, GUI_CLICKED, &id );
+                    GUIEVENT( menu_window, GUI_CLICKED, &id );
                 }
             }
             return( true );
@@ -751,7 +751,7 @@ bool GUIProcessEvent( EVENT ev )
         break;
     }
     if( ( GUICurrWnd != NULL ) && (gui_ev != GUI_NO_EVENT ) ) {
-        GUIEVENTWND( GUICurrWnd, gui_ev, NULL );
+        GUIEVENT( GUICurrWnd, gui_ev, NULL );
     }
     return( true );
 }
