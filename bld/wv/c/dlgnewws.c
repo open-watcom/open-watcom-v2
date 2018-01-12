@@ -39,13 +39,6 @@
 #include "modcomp.h"
 
 
-typedef enum {
-    COMPLETE_SYMBOL,
-    COMPLETE_MODULE
-} comp_type;
-
-static  void            (*CompRtn)( gui_window *gui, gui_ctl_id id );
-
 enum {
     CTL_NEW_SYMBOL = CTL_NEW__LAST
 };
@@ -63,21 +56,25 @@ enum {
 #define DLG_NEW_COLS    W
 #define DLG_MAX_COLS    70
 
+typedef enum {
+    COMPLETE_SYMBOL,
+    COMPLETE_MODULE
+} comp_type;
+
+static void     (*CompRtn)( gui_window *gui, gui_ctl_id id );
 
 static gui_control_info Controls[] = {
-
-    DLG_EDIT( "", CTL_NEW_EDIT,             C0, R0, W-1 ),
-
-    DLG_DEFBUTTON( NULL, CTL_NEW_OK,        B1, R1, B1+BW ),
-    DLG_BUTTON( NULL, CTL_NEW_SYMBOL,       B2, R1, B2+BW ),
-    DLG_BUTTON( NULL, CTL_NEW_CANCEL,       B3, R1, B3+BW ),
+    DLG_EDIT(       "",     CTL_NEW_EDIT,   C0, R0, W - 1 ),
+    DLG_DEFBUTTON(  NULL,   CTL_NEW_OK,     B1, R1, B1 + BW ),
+    DLG_BUTTON(     NULL,   CTL_NEW_SYMBOL, B2, R1, B2 + BW ),
+    DLG_BUTTON(     NULL,   CTL_NEW_CANCEL, B3, R1, B3 + BW ),
 };
 
 OVL_EXTERN bool NewSymEvent( gui_window *gui, gui_event event, void *param )
 {
     gui_ctl_id  id;
 
-    if( DlgNewEvent( gui, event, param ) )
+    if( DlgNewGUIEventProc( gui, event, param ) )
         return( true );
     switch( event ) {
     case GUI_CONTROL_CLICKED:
@@ -87,8 +84,9 @@ OVL_EXTERN bool NewSymEvent( gui_window *gui, gui_event event, void *param )
         }
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 static bool DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_type type )

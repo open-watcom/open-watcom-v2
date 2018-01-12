@@ -36,6 +36,7 @@
 #include "dlgnew.h"
 #include <string.h>
 
+
 #define R0 0
 #define R1 2
 #define C0 1
@@ -44,17 +45,9 @@
 #define B1 BUTTON_POS( 1, 2, W, BW )
 #define B2 BUTTON_POS( 2, 2, W, BW )
 
-
 #define DLG_NEW_ROWS    4
 #define DLG_NEW_COLS    W
 #define DLG_MAX_COLS    70
-
-
-static gui_control_info Controls[] = {
-    DLG_EDIT( "",      CTL_NEW_EDIT,    C0, R0, W - 1 ),
-    DLG_DEFBUTTON( "", CTL_NEW_OK,      B1, R1, B1 + BW ),
-    DLG_BUTTON( "",    CTL_NEW_CANCEL,  B2, R1, B2 + BW ),
-};
 
 
 typedef struct {
@@ -63,7 +56,15 @@ typedef struct {
     bool        cancel;
 } dlg_new;
 
-bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
+
+static gui_control_info Controls[] = {
+    DLG_EDIT(       "", CTL_NEW_EDIT,    C0, R0, W - 1 ),
+    DLG_DEFBUTTON(  "", CTL_NEW_OK,      B1, R1, B1 + BW ),
+    DLG_BUTTON(     "", CTL_NEW_CANCEL,  B2, R1, B2 + BW ),
+};
+
+
+bool DlgNewGUIEventProc( gui_window *gui, gui_event event, void *param )
 {
     gui_ctl_id  id;
     dlg_new     *dlgnew;
@@ -87,19 +88,20 @@ bool DlgNewEvent( gui_window * gui, gui_event event, void * param )
             GUICloseDialog( gui );
             return( true );
         default:
-            return( false );
+            break;
         }
     case GUI_DESTROY:
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 
 bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
-                               GUICALLBACK *callback, int rows,
+                               GUICALLBACK *gui_call_back, int rows,
                                int cols, int max_cols )
 {
     dlg_new     dlgnew;
@@ -113,7 +115,7 @@ bool    DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
     dlgnew.buff_len = buff_len;
     dlgnew.cancel = true;
 
-    DlgOpen( title, rows, cols, controls, num_controls, callback, &dlgnew );
+    DlgOpen( title, rows, cols, controls, num_controls, gui_call_back, &dlgnew );
     return( !dlgnew.cancel );
 }
 
@@ -125,7 +127,7 @@ bool    DlgNew( const char *title, char *buff, unsigned buff_len )
     Controls[1].text = WndLoadString( LITERAL_New_OK );
     Controls[2].text = WndLoadString( LITERAL_New_Cancel );
     rc = DlgNewWithCtl( title, buff, buff_len,
-                   Controls, ArraySize( Controls ), &DlgNewEvent,
+                   Controls, ArraySize( Controls ), &DlgNewGUIEventProc,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
     WndFree( (void *)Controls[1].text );
     WndFree( (void *)Controls[2].text );
