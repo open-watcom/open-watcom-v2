@@ -69,7 +69,7 @@
 extern a_window         *WndMain;
 extern const char       WndNameTab[];
 
-extern GUICALLBACK      WndMainEventProc;
+extern GUICALLBACK      WndMainGUIEventProc;
 extern void             DlgNewProg( void );
 extern void             InitPaint( void );
 extern void             InitFileMap( void );
@@ -239,7 +239,7 @@ void DUIShow( void )
     WndDebug();
     WndShowAll();
     WndShowWndMain();
-    WndMainEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
+    WndMainGUIEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
     if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) ) {
         DlgNewProg();
     }

@@ -86,7 +86,7 @@ static char             StatusLine1[_MAX_PATH];
 static gui_ord          StatusBarLen;
 static gui_rect         StatusRect;
 static char             StatusBarBuf[256];
-static GUICALLBACK      StatusEventProc;
+static GUICALLBACK      StatusGUIEventProc;
 
 static const char *Messages[] = {
     #define pick( x, y ) y,
@@ -95,31 +95,28 @@ static const char *Messages[] = {
 };
 
 static gui_create_info StatusInfo = {
-    NULL,                               // Title
-    { 1500, 2500, 6500, 6000 },         // Position
-    GUI_NOSCROLL,                       // Scroll Styles
-    GUI_VISIBLE                         // Window Styles
+    NULL,                                   // Title
+    { 1500, 2500, 6500, 6000 },             // Position
+    GUI_NOSCROLL,                           // Scroll Styles
+    GUI_VISIBLE                             // Window Styles
 //  | GUI_CLOSEABLE
     | GUI_SYSTEM_MENU
-//  | GUI_RESIZEABLE
-//  | GUI_MAXIMIZE
-//  | GUI_MINIMIZE
-    /*| GUI_DIALOG_LOOK*/,
-    NULL,                               // Parent
-    0,                                  // Number of menus
-    NULL,                               // Menu's
-    WND_NUMBER_OF_COLORS,               // number of color attributes
-                                        // ArraySize( StatusColours );
-    StatusColours,                      // Array of color attributes
-    &StatusEventProc,                   // Callback function
-    NULL,                               // Extra
-    NULL,                               // Icon
-    NULL                                // Menu Resource
+/*  | GUI_RESIZEABLE
+    | GUI_MAXIMIZE
+    | GUI_MINIMIZE
+    | GUI_DIALOG_LOOK */,
+    NULL,                                   // Parent
+    0, NULL,                                // Menu array
+    WND_NUMBER_OF_COLORS, StatusColours,    // Colour attribute array
+    &StatusGUIEventProc,                    // GUI Event Callback function
+    NULL,                                   // Extra
+    NULL,                                   // Icon
+    NULL                                    // Menu Resource
 };
 
 static gui_control_info Cancel = {
-      GUI_DEFPUSH_BUTTON, NULL, 0, 0, 0, 0, NULL, // nyi - kanji
-      GUI_NOSCROLL, GUI_TAB_GROUP | GUI_AUTOMATIC, CTL_CANCEL
+    GUI_DEFPUSH_BUTTON, NULL, 0, 0, 0, 0, NULL, // nyi - kanji
+    GUI_NOSCROLL, GUI_TAB_GROUP | GUI_AUTOMATIC, CTL_CANCEL
 };
 
 void StatusShow( bool show )
@@ -266,8 +263,8 @@ bool StatusCancelled( void )
     return( CancelSetup );
 }
 
-static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
-/**************************************************************************/
+static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+/*****************************************************************************/
 {
     static bool         button_pressed = false;
     gui_ctl_id          id;
@@ -281,10 +278,8 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
         return( false );
 
     switch( gui_ev ) {
-
     case GUI_INIT_WINDOW:
         return( true );
-
     case GUI_PAINT:
         {
             if( StatusBarLen == 0 ) {
@@ -406,13 +401,11 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                 GUIDrawLine( gui, &start, &end, GUI_PEN_SOLID, 1, WND_STATUS_FRAME );
             }
 #endif
-            return( false );
+            return( true );
         }
-
     case GUI_DESTROY:
         StatusWnd = NULL;
-        return( false );
-
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUIGetFocus( gui, &id );
         GUI_GETID( parm, id );

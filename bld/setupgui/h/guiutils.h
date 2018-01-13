@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-extern GUICALLBACK WndMainEventProc;
 extern bool SetupPreInit( void );
 extern bool SetupInit( void );
 extern void SetupTitle( void );

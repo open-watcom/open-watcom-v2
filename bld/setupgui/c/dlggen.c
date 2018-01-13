@@ -51,9 +51,8 @@
 #include "gendlg.h"
 #include "utils.h"
 #include "ctype.h"
-#if !defined( __WATCOMC__ )
-#include <clibext.h>
-#endif
+
+#include "clibext.h"
 
 
 /* A few new defines, rather than hard numbers in source */
@@ -547,9 +546,8 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     }
 }
 
-static GUICALLBACK GenericEventProc;
-static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
-/****************************************************************************/
+static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/*******************************************************************************/
 {
 #if !defined( _UI )
     static bool         first_time = true;
@@ -901,7 +899,7 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
     GUIRefresh();
     GUIModalDlgOpen( parent == NULL ? MainWnd : parent, title, height, width,
                      curr_dialog->controls, curr_dialog->num_controls,
-                     &GenericEventProc, &result );
+                     &GenericGUIEventProc, &result );
     ResetDriveInfo();
     return( result.state );
 }

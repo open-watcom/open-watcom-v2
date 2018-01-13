@@ -38,7 +38,7 @@ extern gui_menu_struct  WndMainMenu[];
 extern gui_colour_set   WndColours[];
 extern int              WndNumColours;
 
-extern GUICALLBACK      WndMainEventProc;
+extern GUICALLBACK      WndMainGUIEventProc;
 
 extern char             *StrCopy(char *,char *);
 
@@ -139,7 +139,7 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     }
     init->num_attrs = WndNumColours;
     init->colours = info->colour;
-    init->gui_call_back = WndMainEventProc;
+    init->gui_call_back = WndMainGUIEventProc;
     init->extra = wnd;
 
     _Set( wnd, WSW_ACTIVE );

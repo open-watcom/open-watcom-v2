@@ -84,14 +84,13 @@ gui_resource WndGadgetArray[] = {
 gui_ord     BitMapBottom;
 gui_coord   BitMapSize;
 
-extern GUICALLBACK WndMainEventProc;
-bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
+static bool MainSetupWndGUIEventProc( gui_window * gui, gui_event gui_ev, void *parm )
 {
     int                 i;
 
     /* unused parameters */ (void)parm;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_PAINT:
         if( GUIIsGUI() ) {
             gui_rect            rect;
@@ -140,8 +139,7 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 
         } else {
             for( i = 0; i < sizeof( Bolt ) / sizeof( Bolt[0] ); ++i ) {
-                GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND,
-                                   WND_APPROX_SIZE );
+                GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND, WND_APPROX_SIZE );
             }
         }
         break;
@@ -202,7 +200,7 @@ bool SetupInit( void )
     init.menu = NULL;
     init.num_attrs = WND_NUMBER_OF_COLORS;
     init.colours = MainColours;
-    init.gui_call_back = WndMainEventProc;
+    init.gui_call_back = MainSetupWndGUIEventProc;
     init.extra = NULL;
 
     GUIInitHotSpots( 1, WndGadgetArray );

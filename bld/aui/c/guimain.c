@@ -33,7 +33,7 @@
 #include "auipvt.h"
 #include <ctype.h>
 
-extern GUICALLBACK      WndMainEventProc;
+extern GUICALLBACK      WndMainGUIEventProc;
 
 gui_coord               WndMax;
 gui_coord               WndScreen;
@@ -199,7 +199,7 @@ static void WndKeyEnter( a_window *wnd )
 
 typedef struct {
     gui_window  *gui;
-    gui_event   event;
+    gui_event   gui_ev;
     void        *parm;
     bool        ret;
 } spawn_parms;
@@ -223,7 +223,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
     void                *cursor;
 
     gui_window          *gui = spawnp->gui;
-    gui_event           event = spawnp->event;
+    gui_event           gui_ev = spawnp->gui_ev;
     void                *parm = spawnp->parm;
 
     wnd = GUIGetExtra( gui );
@@ -231,15 +231,15 @@ static void DoMainEventProc( spawn_parms *spawnp )
     if( wnd == NULL )
         return;
     if( WndIgnoreAllEvents ) {
-        if( event == GUI_PAINT ) {
+        if( gui_ev == GUI_PAINT ) {
             WndRepaint( wnd );
         }
-        if( event == GUI_MOUSEMOVE && GUIIsGUI() ) {
+        if( gui_ev == GUI_MOUSEMOVE && GUIIsGUI() ) {
             GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
         }
         return;
     }
-    if( event == GUI_MOUSEMOVE ) {
+    if( gui_ev == GUI_MOUSEMOVE ) {
         GUISetMouseCursor( wndCursorType );
         if( WndIgnoreMouseMove( wnd ) ) {
             return;
@@ -248,10 +248,10 @@ static void DoMainEventProc( spawn_parms *spawnp )
     if( !WndDoingRefresh && wndProcNesting == 1 )
         WndDoInput();
 
-    WndChooseEvent( wnd, event, parm );
-    WndSelectEvent( wnd, event, parm );
+    WndChooseEvent( wnd, gui_ev, parm );
+    WndSelectEvent( wnd, gui_ev, parm );
     ret = true;
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_STATUS_CLEARED:
         return;
     case GUI_ACTIVATEAPP:
@@ -265,7 +265,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         wnd->gui = gui;
         cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WNDEVENT( wnd, event, parm );
+        ret = WNDEVENT( wnd, gui_ev, parm );
         WndSetThumb( wnd );
         WndHourGlass( cursor );
         break;
@@ -295,14 +295,14 @@ static void DoMainEventProc( spawn_parms *spawnp )
         } else {
             _Set( wnd, WSW_ACTIVE );
             WndAddPopupMenu( wnd );
-            WNDEVENT( wnd, event, parm );
+            WNDEVENT( wnd, gui_ev, parm );
         }
         ret = false;
         break;
     case GUI_NOT_ACTIVE:
         _Clr( wnd, WSW_ACTIVE );
         if( wnd != WndMain ) {
-            WNDEVENT( wnd, event, parm );
+            WNDEVENT( wnd, gui_ev, parm );
         }
         ret = false;
         break;
@@ -527,7 +527,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
     case GUI_TOOLBAR_FLOATING:
     case GUI_TOOLBAR_FIXED:
     case GUI_TOOLBAR_DESTROYED:
-        WndSetToolBar( event );
+        WndSetToolBar( gui_ev );
         ret = true;
         break;
     case GUI_HSCROLL_NOTIFY:
@@ -595,12 +595,12 @@ void *WndHourGlass( void *to )
 }
 
 
-bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
+bool WndMainGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     spawn_parms         spawnp;
 
     spawnp.gui = gui;
-    spawnp.event = event;
+    spawnp.gui_ev = gui_ev;
     spawnp.parm = parm;
     wndProcNesting++;
     SpawnP( (aui_spawn_funcP *)DoMainEventProc, &spawnp );
