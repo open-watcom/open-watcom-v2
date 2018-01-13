@@ -57,11 +57,11 @@ enum {
 /* all 0 values are set in the code */
 
 static gui_control_info GetNew[] = {
-    DLG_STRING( NULL,             START_STATIC, TEXT_ROW,   0 ),            /* STATIC */
-    DLG_STRING( "=",              0,            TEXT_ROW,   1 ),            /* EQUAL  */
-    DLG_EDIT( NULL,       EDIT,   0,            TEXT_ROW,   0 ),            /* EDIT   */
-    DLG_BUTTON( NULL,     CANCEL, 0,            BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
-    DLG_DEFBUTTON( NULL,  OK,     0,            BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
+    DLG_STRING(     NULL,           START_STATIC, TEXT_ROW,   0 ),            /* STATIC */
+    DLG_STRING(     "=",            0,            TEXT_ROW,   1 ),            /* EQUAL  */
+    DLG_EDIT(       NULL,   EDIT,   0,            TEXT_ROW,   0 ),            /* EDIT   */
+    DLG_BUTTON(     NULL,   CANCEL, 0,            BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
+    DLG_DEFBUTTON(  NULL,   OK,     0,            BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
 };
 
 typedef struct ret_info {
@@ -70,10 +70,10 @@ typedef struct ret_info {
 } ret_info;
 
 /*
- * GetNewFunction - call back routine for the GetNewVal dialog
+ * GetNewValGUIEventProc - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     ret_info    *info;
@@ -82,7 +82,7 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         info->ret_val = GUI_RET_CANCEL;
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -98,11 +98,11 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
         default :
             break;
         }
-        break;
+        return( true );
     default :
         break;
     }
-    return( true );
+    return( false );
 }
 
 /*
@@ -152,7 +152,7 @@ gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
 
 
-    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, ARRAY_SIZE( GetNew ), &GetNewFunction, &info );
+    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, ARRAY_SIZE( GetNew ), &GetNewValGUIEventProc, &info );
     *new_val = info.text;
     return( info.ret_val );
 }

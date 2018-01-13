@@ -48,7 +48,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON(     NULL, CTL_PICK_CANCEL,  18, 12, 28 ),
 };
 
-bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
+bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     dlg_pick            *dlg;
@@ -79,8 +79,9 @@ bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
         }
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 
@@ -99,7 +100,7 @@ gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.chosen = -1;
-    OpenRtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickEvent, &dlg );
+    OpenRtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
     return( dlg.chosen );
 }
 

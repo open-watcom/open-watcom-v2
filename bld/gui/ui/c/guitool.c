@@ -46,7 +46,7 @@ static gui_menu_struct Menu = {
 };
 #define NUM_MENU_ITEMS ( sizeof( Menu ) / sizeof( gui_menu_struct ) )
 
-static GUICALLBACK ToolbarCallBack;
+static GUICALLBACK ToolbarGUIEventProc;
 
 static gui_create_info FloatingToolbar = {
     NULL,
@@ -54,11 +54,9 @@ static gui_create_info FloatingToolbar = {
     GUI_NOSCROLL,
     GUI_SYSTEM_MENU | GUI_VISIBLE | GUI_RESIZEABLE | GUI_CLOSEABLE | GUI_INIT_INVISIBLE,
     NULL,
-    NUM_MENU_ITEMS,
-    &Menu,
-    0,
-    NULL,
-    ToolbarCallBack,
+    NUM_MENU_ITEMS, &Menu,              // Menu array
+    0, NULL,                            // Colour attribute array
+    ToolbarGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -126,7 +124,7 @@ static bool FixToolbar( gui_window *wnd )
     return( GUIXCreateFixedToolbar( parent ) );
 }
 
-bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
+bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
@@ -137,35 +135,35 @@ bool ToolbarCallBack( gui_window *wnd, gui_event gui_ev, void *param )
     case GUI_KEYDOWN :
     case GUI_KEYUP :
         GUIEVENT( wnd->parent, gui_ev, param );
-        break;
+        return( true );
     case GUI_CLICKED :
         GUI_GETID( param, id );
         if( id == FIX_TOOLBAR ) {
             FixToolbar( wnd );
         }
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         id = EV2ID( id );
         GUIEVENT( wnd->parent, GUI_CLICKED, &id );
-        break;
+        return( true );
     case GUI_LBUTTONDBLCLK :
         FixToolbar( wnd );
-        break;
+        return( true );
     case GUI_DESTROY :
         /* didn't get close first */
         if( wnd->parent->tbinfo->floattoolbar != NULL ) {
             wnd->parent->tbinfo->floattoolbar = NULL;
         }
         GUICloseToolBar( wnd->parent );
-        break;
+        return( true );
     case GUI_CLOSE :
         wnd->parent->tbinfo->floattoolbar = NULL;
-        break;
+        return( true );
     default :
         break;
     }
-    return( true );
+    return( false );
 }
 
 

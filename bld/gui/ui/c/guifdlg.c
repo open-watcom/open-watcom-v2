@@ -138,19 +138,19 @@ enum {
 // matches it
 static gui_control_info dlgControls[] =
 {
-/*  0 */ DLG_STRING(    NULL, 2, 0, 11 ),
-/*  1 */ DLG_STRING(    NULL, DIR_START, 0, DIR_START+12 ),
-/*  2 */ DLG_EDIT(      NULL, CTL_EDIT, 2, 1, BOX_WIDTH+3 ),
-/*  3 */ DLG_DYNSTRING( NULL, CTL_DIR_NAME, DIR_START, 1, DLG_FILE_COLS-1 ),
-/*  4 */ DLG_LIST_BOX(  NULL, CTL_FILE_LIST,    2, 3, 2+BOX_WIDTH, 9 ),
-/*  5 */ DLG_LIST_BOX(  NULL, CTL_DIR_LIST,     DIR_START, 3, DIR_START+BOX_WIDTH2, 9 ),
-/*  6 */ DLG_DEFBUTTON( NULL, CTL_OK,   (DIR_START+BOX_WIDTH2+4), 4, (DIR_START+BOX_WIDTH2+14) ),
-/*  7 */ DLG_BUTTON(    NULL, CTL_CANCEL,       (DIR_START+BOX_WIDTH2+4), 6, (DIR_START+BOX_WIDTH2+14) ),
-/*  8 */ DLG_STRING(    NULL, 2, 11, 20 ),
-/*  9 */ DLG_COMBO_BOX( NULL, CTL_FILE_TYPES, 2,12,2+BOX_WIDTH+3,15 ),
+/*  0 */ DLG_STRING(    NULL,                 2,                            0,  11 ),
+/*  1 */ DLG_STRING(    NULL,                 DIR_START,                    0,  DIR_START + 12 ),
+/*  2 */ DLG_EDIT(      NULL, CTL_EDIT,       2,                            1,  BOX_WIDTH + 3 ),
+/*  3 */ DLG_DYNSTRING( NULL, CTL_DIR_NAME,   DIR_START,                    1,  DLG_FILE_COLS - 1 ),
+/*  4 */ DLG_LIST_BOX(  NULL, CTL_FILE_LIST,  2,                            3,  2 + BOX_WIDTH,                9 ),
+/*  5 */ DLG_LIST_BOX(  NULL, CTL_DIR_LIST,   DIR_START,                    3,  DIR_START + BOX_WIDTH2,       9 ),
+/*  6 */ DLG_DEFBUTTON( NULL, CTL_OK,         (DIR_START + BOX_WIDTH2 + 4), 4, (DIR_START + BOX_WIDTH2 + 14) ),
+/*  7 */ DLG_BUTTON(    NULL, CTL_CANCEL,     (DIR_START + BOX_WIDTH2 + 4), 6, (DIR_START + BOX_WIDTH2 + 14) ),
+/*  8 */ DLG_STRING(    NULL,                 2,                            11, 20 ),
+/*  9 */ DLG_COMBO_BOX( NULL, CTL_FILE_TYPES, 2,                            12, 2 + BOX_WIDTH + 3,            15 ),
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-/* 10 */ DLG_STRING(    NULL, DIR_START+2, 11, DIR_START+8 ),
-/* 11 */ DLG_COMBO_BOX( NULL, CTL_DRIVES, DIR_START+2,12,DIR_START+BOX_WIDTH,15 )
+/* 10 */ DLG_STRING(    NULL,                 DIR_START + 2,                11, DIR_START + 8 ),
+/* 11 */ DLG_COMBO_BOX( NULL, CTL_DRIVES,     DIR_START + 2,                12, DIR_START + BOX_WIDTH,        15 )
 #endif
 };
 
