@@ -447,8 +447,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
             rownum.num = area->height;
             GUIEVENT( wnd, GUI_PAINT, &rownum );
         }
-        for( control = wnd->controls; control != NULL;
-             control = control->sibling ) {
+        for( control = wnd->controls; control != NULL; control = control->sibling ) {
             GUIRefreshControl( control->parent, control->id );
         }
         GUIDrawStatus( wnd );

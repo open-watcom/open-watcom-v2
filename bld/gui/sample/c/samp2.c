@@ -53,11 +53,9 @@ static gui_create_info DialogWnd = {
     GUI_NOSCROLL,
     GUI_VISIBLE,
     NULL,
-    0,
-    NULL,
-    0,
-    NULL,
-    &GetNewFunction,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Color attribute array
+    &GetNewFunction,                    // GUI Event Callback Function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -85,11 +83,9 @@ static gui_create_info StatusWnd = {
     GUI_NOSCROLL,
     GUI_VISIBLE | GUI_DIALOG_LOOK,
     NULL,
-    0,
-    NULL,
-    GUI_NUM_ATTRS + 1,
-    &StatusColours,
-    &StatusFunction,
+    0, NULL,                            // Menu array
+    GUI_NUM_ATTRS + 1, &StatusColours,  // Color attribute array
+    &StatusFunction,                    // GUI Event Callback Function
     NULL,
     NULL,
     NULL                                // Menu Resource

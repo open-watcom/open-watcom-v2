@@ -51,11 +51,9 @@ gui_create_info DlgWin = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    0,
-    NULL,
-    0,
-    NULL,
-    &Child1EventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Color attribute array
+    &Child1EventWnd,                    // GUI Event Callback Function
     &Child1_Out,
     &DlgWinIcon,
     NULL                                // Menu Resource
@@ -161,11 +159,9 @@ static gui_create_info DialogControl = {
     GUI_NOSCROLL,                       // Scroll Styles
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
-    0,                                  // Number of menus
-    NULL,                               // Menu's
-    0,                                  // Number of color attributes
-    NULL,                               // Array of color attributes
-    &StaticDialogEventWnd,              // Callback function
+    0, NULL,                            // Menu array
+    0, NULL,                            // Color attribute array
+    &StaticDialogEventWnd,              // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource

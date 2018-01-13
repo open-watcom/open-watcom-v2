@@ -883,8 +883,7 @@ extern void GUISetModalDlgs( bool );
 
 /* Control Functions */
 
-extern bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
-                           gui_colour_set *standout );
+extern bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout );
 extern bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id );
 extern bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
 extern bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable );

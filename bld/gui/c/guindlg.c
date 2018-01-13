@@ -61,7 +61,7 @@ static gui_create_info DlgControl = {
 #else
     0, NULL,                            // Colour attribute array
 #endif
-    NULL,
+    NULL,                               // GUI Event Callback Function
     NULL,
     NULL,
     NULL                                // Menu Resource

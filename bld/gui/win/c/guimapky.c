@@ -206,7 +206,7 @@ static bool convert_numeric( WORD ch, gui_key *key )
 
 static bool convert_alpha( WORD ch, gui_key *key )
 {
-    WORD        t;
+    gui_key     t;
 
     if( isalpha( ch ) ) {
         t = toupper( ch ) - 'A';

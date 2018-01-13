@@ -49,9 +49,9 @@ static gui_create_info Parent = {
     GUI_HSCROLL | GUI_VSCROLL,
     GUI_GADGETS | GUI_VISIBLE,
     NULL,
-    0, NULL,
-    0, NULL,
-    &MainEventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Color attribute array
+    &MainEventWnd,                      // GUI Event Callback Function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -63,10 +63,9 @@ static gui_create_info Child = {
     GUI_SCROLL_BOTH,
     GUI_VISIBLE+GUI_CLOSEABLE+GUI_MAXIMIZE+GUI_RESIZEABLE+GUI_MINIMIZE,
     NULL,
-    0,
-    NULL,
-    0, NULL,
-    &MainEventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Color attribute array
+    &MainEventWnd,                      // GUI Event Callback Function
     NULL,
     NULL,
     NULL                                // Menu Resource
