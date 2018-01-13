@@ -211,7 +211,6 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
     case WM_CLOSE :
         GUICloseToolBar( wnd );
         return( true );
-        break;
     }
     return( false );
 }

@@ -1386,19 +1386,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND        client;
-    bool        call_def;
-    WPI_MRESULT ret;
     gui_window  *wnd;
-
-    call_def = true;
-    ret      = 0L;
 
     client = WinWindowFromID( hwnd, FID_CLIENT );
     wnd = GUIGetWindow( client );
-
     if( wnd != NULL ) {
         switch( msg ) {
-
         case WM_SAVEAPPLICATION: {
                 gui_end_session     es;
 
@@ -1407,26 +1400,17 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
                 GUIEVENT( wnd, GUI_ENDSESSION, &es );
             }
             return( 0L );
-
-        case WM_TRANSLATEACCEL:  {
-                // Don't let OS/2 process F10 as an accelerator
-                // Note: similar code exists in guimapky.c but we need to
-                // take different default action
-                PQMSG   pqmsg = wparam;
-                USHORT  flags = SHORT1FROMMP(pqmsg->mp1);
-                USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
-
-                if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
-                    return( (WPI_MRESULT)false );
-            }
+        case WM_TRANSLATEACCEL:
+            // Don't let OS/2 process F10 as an accelerator
+            // Note: similar code exists in guimapky.c but we need to
+            // take different default action
+            if( IS_VKEY_F10( wparam ) )
+                return( 0L );
             break;
-
         case WM_CHAR:
             return( GUIProcesskey( hwnd, msg, wparam, lparam ) );
-            break;
         case WM_INITMENUPOPUP :
-            ret = GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam );
-            return( ret );
+            return( GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam ) );
         case WM_MENUSELECT:
             return( GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam ) );
         case WM_SETFOCUS:
@@ -1447,16 +1431,10 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
         case WM_VSCROLL :
         case WM_HSCROLL :
             GUIProcessScrollMsg( wnd, msg, wparam, lparam );
-            call_def = false;
-            break;
+            return( 0L );
         }
     }
-
-    if( call_def ) {
-        return( _wpi_callwindowproc( oldFrameProc, hwnd, msg, wparam, lparam ) );
-    }
-
-    return( ret );
+    return( _wpi_callwindowproc( oldFrameProc, hwnd, msg, wparam, lparam ) );
 }
 #endif
 

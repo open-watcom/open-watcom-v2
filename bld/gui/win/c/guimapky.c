@@ -495,7 +495,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
                 }
                 RetTrue = GUIEVENT( GUICurrWnd, gui_ev, &key_state );
                 if( RetTrue ) {
-                    return( 0l ); // app used key, don't send to windows
+                    return( 0L ); // app used key, don't send to windows
                 }
             }
         }
@@ -614,39 +614,31 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
 
 WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    WORD                key_flags;
     gui_key_state       key_state;
     gui_event           gui_ev;
 
-    hwnd = hwnd;
-    key_flags = SHORT1FROMMP( wparam );
-
-    if( msg == WM_TRANSLATEACCEL ) {
+    switch( msg ) {
+    case WM_TRANSLATEACCEL:
         // Don't let OS/2 process F10 as an accelerator
         // Note: similar code exists in guixwind.c but we need to
         // take different default action
-        PQMSG   pqmsg = wparam;
-        USHORT  flags = SHORT1FROMMP(pqmsg->mp1);
-        USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
-
-        if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
-            return( (WPI_MRESULT)false );
-
-        return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-    }
-    if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
-        if( msg == WM_CHAR ) {
-            if( key_flags & KC_KEYUP ) {
-                gui_ev = GUI_KEYUP;
-            } else {
-                gui_ev = GUI_KEYDOWN;
-            }
+        if( !IS_VKEY_F10( wparam ) )
+            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+        break;
+    case WM_CHAR:
+        if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+                if( SHORT1FROMMP( wparam ) & KC_KEYUP ) {
+                    gui_ev = GUI_KEYUP;
+                } else {
+                    gui_ev = GUI_KEYDOWN;
+                }
                 return( (WPI_MRESULT)GUIEVENT( GUICurrWnd, gui_ev, &key_state ) );
             }
         }
+        break;
     }
-    return( (WPI_MRESULT)false );
+    return( 0L );
 }
 #endif
