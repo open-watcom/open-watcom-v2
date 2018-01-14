@@ -36,7 +36,7 @@
 /*
         Replaceable function
 */
-bool GUIClearStatusText( gui_window * wnd )
+bool GUIClearStatusText( gui_window *wnd )
 {
     return( GUIDrawStatusText( wnd, LIT( Empty ) ) );
 }

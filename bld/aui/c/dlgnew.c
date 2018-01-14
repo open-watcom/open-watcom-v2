@@ -83,10 +83,12 @@ bool DlgNewGUIEventProc( gui_window *gui, gui_event event, void *param )
         case CTL_NEW_OK:
             GUIDlgBuffGetText( gui, CTL_NEW_EDIT, dlgnew->buff, dlgnew->buff_len );
             dlgnew->cancel = false;
-            /* fall through */
-        case CTL_NEW_CANCEL:
             GUICloseDialog( gui );
-            return( true );
+            break;
+        case CTL_NEW_CANCEL:
+            dlgnew->cancel = true;
+            GUICloseDialog( gui );
+            break;
         default:
             break;
         }

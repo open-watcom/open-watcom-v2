@@ -111,7 +111,7 @@ extern void WndSetThumb( a_window *wnd )
 }
 
 extern WNDSCROLL WndScroll;
-int WndScroll( a_window * wnd, int lines )
+int WndScroll( a_window *wnd, int lines )
 {
     int         new_top;
     int         total_rows;
@@ -150,7 +150,7 @@ int WndScroll( a_window * wnd, int lines )
     return( lines );
 }
 
-extern int WndScrollAbs( a_window * wnd, int line )
+extern int WndScrollAbs( a_window *wnd, int line )
 {
     return( WndScroll( wnd, WndScreenRow( wnd, line ) ) );
 }

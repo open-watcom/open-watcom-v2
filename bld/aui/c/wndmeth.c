@@ -83,7 +83,7 @@ void    NoEndPaint( a_window *wnd, wnd_row row, int num )
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void NoRefresh( a_window * wnd )
+void NoRefresh( a_window *wnd )
 {
     WndRepaint( wnd );
 }
@@ -94,28 +94,28 @@ void NoMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-int NoScroll( a_window * wnd, int lines )
+int NoScroll( a_window *wnd, int lines )
 {
     /* unused parameters */ (void)wnd; (void)lines;
 
     return( 0 );
 }
 
-int NoNumRows( a_window * wnd )
+int NoNumRows( a_window *wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( -1 );
 }
 
-int NoNextRow( a_window * wnd, int row, int inc )
+int NoNextRow( a_window *wnd, int row, int inc )
 {
     /* unused parameters */ (void)wnd;
 
     return( row + inc );
 }
 
-bool NoWndEventProc( a_window * wnd, gui_event event, void *parm )
+bool NoWndEventProc( a_window *wnd, gui_event event, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 
@@ -334,20 +334,20 @@ void    WndEndPaint( a_window *wnd, int row, int num )
 }
 
 
-void WndRefresh( a_window * wnd )
+void WndRefresh( a_window *wnd )
 {
     wnd->info->refresh( wnd );
     WndKillCacheLines( wnd );
 }
 
 
-int WndNumRows( a_window * wnd )
+int WndNumRows( a_window *wnd )
 {
     return( wnd->info->numrows( wnd ) + wnd->title_size );
 }
 
 
-int WndNextRow( a_window * wnd, int row, int inc )
+int WndNextRow( a_window *wnd, int row, int inc )
 {
     return( wnd->info->nextrow( wnd, row, inc ) );
 }

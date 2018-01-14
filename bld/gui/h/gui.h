@@ -663,7 +663,7 @@ extern void GUIShowWindowNA( gui_window *wnd );
 extern bool GUIIsWindowVisible( gui_window *wnd );
 extern void GUISetRestoredSize( gui_window *wnd, gui_rect *rect );
 extern bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect );
-extern bool GUISetIcon( gui_window * wnd, gui_resource *res );
+extern bool GUISetIcon( gui_window *wnd, gui_resource *res );
 extern bool GUISetRedraw( gui_window *wnd, bool redraw );
 
 extern bool GUICascadeWindows( void );
@@ -731,21 +731,21 @@ extern bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
 
 /* Text Functions */
 
-extern bool GUISetWindowText( gui_window * wnd, const char * data );
+extern bool GUISetWindowText( gui_window *wnd, const char *data );
 extern size_t GUIGetWindowTextLength( gui_window *wnd );
 extern size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
 extern gui_ord GUIGetRow( gui_window *wnd, gui_point *pos );
 extern gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *pos );
 extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
                                 const char *string, int mouse_x );
-extern gui_ord GUIGetExtentX( gui_window *wnd, const char * text, size_t length );
-extern gui_ord GUIGetExtentY( gui_window *wnd, const char * text );
-extern gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length );
-extern gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text );
+extern gui_ord GUIGetExtentX( gui_window *wnd, const char *text, size_t length );
+extern gui_ord GUIGetExtentY( gui_window *wnd, const char *text );
+extern gui_ord GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length );
+extern gui_ord GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text );
 extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
-extern void GUIGetMaxDialogSize( gui_coord * size );
-extern void GUIGetPoint( gui_window* wnd, gui_ord extent, gui_ord row,
+extern void GUIGetMaxDialogSize( gui_coord *size );
+extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row,
                          gui_point *point );
 
 /* Menu Functions */
@@ -848,8 +848,8 @@ extern void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end );
 
 /* deals in percent of range */
 
-extern void GUISetHScrollThumb( gui_window * wnd, int percent );
-extern void GUISetVScrollThumb( gui_window * wnd, int percent );
+extern void GUISetHScrollThumb( gui_window *wnd, int percent );
+extern void GUISetVScrollThumb( gui_window *wnd, int percent );
 
 /* deals with user defined scale */
 
@@ -878,7 +878,7 @@ extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_co
 extern bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
 extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra );
-extern void GUICloseDialog( gui_window * wnd );
+extern void GUICloseDialog( gui_window *wnd );
 extern void GUISetModalDlgs( bool );
 
 /* Control Functions */

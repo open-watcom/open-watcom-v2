@@ -36,7 +36,7 @@
  * GUISetExtra -- store the extra word for the application
  */
 
-void GUISetExtra( gui_window * wnd, void * extra )
+void GUISetExtra( gui_window *wnd, void *extra )
 {
     wnd->extra = extra;
 }
@@ -45,7 +45,7 @@ void GUISetExtra( gui_window * wnd, void * extra )
  * GUIGetExtra -- get the extra word for the application
  */
 
-void * GUIGetExtra( gui_window * wnd )
+void *GUIGetExtra( gui_window *wnd )
 {
     return( wnd->extra );
 }

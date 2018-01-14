@@ -58,7 +58,7 @@ typedef struct hintinfo {
     gui_hint_struct     *gui;
 } hintinfo;
 
-extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window * wnd,
+extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
                                 gui_ctl_id id, hint_type type, gui_menu_styles style );
 extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );

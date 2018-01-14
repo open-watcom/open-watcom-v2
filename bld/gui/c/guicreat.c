@@ -46,8 +46,8 @@
 
 gui_window *GUICreateWindow( gui_create_info *dlg_info )
 {
-    gui_window * wnd;
-    gui_window * parent;
+    gui_window  *wnd;
+    gui_window  *parent;
 
     wnd = GUISetupWnd( dlg_info );
     if( wnd == NULL ) {

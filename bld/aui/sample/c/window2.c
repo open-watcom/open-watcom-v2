@@ -213,14 +213,14 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-static bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
+static bool W2EventProc( a_window *wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
     parm=parm;
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
-        memcpy( w2->words, Word, WORD_SIZE*sizeof( char** ) );
+        memcpy( w2->words, Word, WORD_SIZE * sizeof( char ** ) );
         qsort( w2->words,
                WORD_SIZE,
                sizeof( char** ),

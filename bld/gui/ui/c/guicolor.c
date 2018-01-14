@@ -207,7 +207,7 @@ static gui_colour GetColour( ATTR attr )
     return( GUI_BLACK );
 }
 
-void GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours )
+void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 {
     int i;
 

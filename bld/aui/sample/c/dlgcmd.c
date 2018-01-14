@@ -115,13 +115,14 @@ static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             return( false );
         }
         GUICloseDialog( gui );
-        /* fall through */
+        return( true );
     case GUI_DESTROY:
         WndFree( cmd );
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 

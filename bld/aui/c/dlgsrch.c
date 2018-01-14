@@ -88,7 +88,8 @@ static bool RXGUIEventProc( gui_window *gui, gui_event event, void *param )
         switch( id ) {
         case CTL_RX_OK:
             GetRXStatus( gui );
-            /* fall through */
+            GUICloseDialog( gui );
+            break;
         case CTL_RX_CANCEL:
             GUICloseDialog( gui );
             break;
@@ -225,7 +226,8 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event event, void *param )
         switch( id ) {
         case CTL_SRCH_LIST:
             DlgClickHistory( gui, CTL_SRCH_EDIT, CTL_SRCH_LIST );
-            if( event == GUI_CONTROL_CLICKED ) return( true );
+            if( event == GUI_CONTROL_CLICKED )
+                break;
             /* fall through */
         case CTL_SRCH_NEXT:
             dlg->direction = 1;

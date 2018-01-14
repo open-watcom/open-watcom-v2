@@ -35,8 +35,8 @@
 #define CTL_NEW_EDIT    102
 #define CTL_NEW__LAST   103
 
-extern GUICALLBACK 	DlgNewGUIEventProc;
-extern bool         DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
+extern GUICALLBACK      DlgNewGUIEventProc;
+extern bool             DlgNewWithCtl( const char *title, char *buff, unsigned buff_len,
                                gui_control_info *controls, int num_controls,
                                GUICALLBACK *gui_call_back, int rows,
                                int cols, int max_cols );

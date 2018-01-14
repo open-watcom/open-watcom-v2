@@ -38,7 +38,7 @@
  * GUIWndDirty -- tell the user interface that the screen contents are bad
  */
 
-void GUIWndDirty( gui_window * wnd )
+void GUIWndDirty( gui_window *wnd )
 {
     SAREA screen;
 

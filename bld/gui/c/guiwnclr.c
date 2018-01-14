@@ -73,7 +73,7 @@ static gui_colour_set Default[GUI_NUM_ATTRS] =
 #endif
 };
 
-bool GUISetColours( gui_window * wnd, int num_attrs, gui_colour_set * colours )
+bool GUISetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
     if( num_attrs < GUI_NUM_ATTRS ) {
         num_attrs = GUI_NUM_ATTRS;
@@ -83,21 +83,21 @@ bool GUISetColours( gui_window * wnd, int num_attrs, gui_colour_set * colours )
     return( GUIXSetColours( wnd, colours ) );
 }
 
-void GUIFreeColours( gui_window * wnd )
+void GUIFreeColours( gui_window *wnd )
 {
     GUIMemFree( wnd->colours );
     wnd->num_attrs = 0;
     wnd->colours = NULL;
 }
 
-int GUIGetNumWindowColours( gui_window * wnd )
+int GUIGetNumWindowColours( gui_window *wnd )
 {
     return( wnd->num_attrs );
 }
 
-gui_colour_set * GUIGetWindowColours( gui_window * wnd )
+gui_colour_set *GUIGetWindowColours( gui_window *wnd )
 {
-    gui_colour_set * colours;
+    gui_colour_set *colours;
 
     colours = GUIMemAlloc( wnd->num_attrs * sizeof( gui_colour_set ) );
     if( colours != NULL ) {

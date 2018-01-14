@@ -36,7 +36,7 @@
  * GUIGetScrollCreateStyle --
  */
 
-gui_create_styles GUIGetCreateStyle( gui_window * wnd )
+gui_create_styles GUIGetCreateStyle( gui_window *wnd )
 {
     return( wnd->style );
 }

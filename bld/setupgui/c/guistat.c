@@ -86,32 +86,11 @@ static char             StatusLine1[_MAX_PATH];
 static gui_ord          StatusBarLen;
 static gui_rect         StatusRect;
 static char             StatusBarBuf[256];
-static GUICALLBACK      StatusGUIEventProc;
 
 static const char *Messages[] = {
     #define pick( x, y ) y,
     #include "status.h"
     #undef pick
-};
-
-static gui_create_info StatusInfo = {
-    NULL,                                   // Title
-    { 1500, 2500, 6500, 6000 },             // Position
-    GUI_NOSCROLL,                           // Scroll Styles
-    GUI_VISIBLE                             // Window Styles
-//  | GUI_CLOSEABLE
-    | GUI_SYSTEM_MENU
-/*  | GUI_RESIZEABLE
-    | GUI_MAXIMIZE
-    | GUI_MINIMIZE
-    | GUI_DIALOG_LOOK */,
-    NULL,                                   // Parent
-    0, NULL,                                // Menu array
-    WND_NUMBER_OF_COLORS, StatusColours,    // Colour attribute array
-    &StatusGUIEventProc,                    // GUI Event Callback function
-    NULL,                                   // Extra
-    NULL,                                   // Icon
-    NULL                                    // Menu Resource
 };
 
 static gui_control_info Cancel = {
@@ -132,20 +111,6 @@ void StatusShow( bool show )
             GUIHideWindow( StatusWnd );
         }
         GUIWndDirty( StatusWnd );
-    }
-}
-
-void StatusFini( void )
-/*********************/
-{
-    if( StatusWnd == NULL ){
-        return;
-    } else {
-        if( StatusInfo.title != NULL ) {
-            GUIMemFree( (void *)StatusInfo.title );
-        }
-        GUIDestroyWnd( StatusWnd );
-        StatusWnd = NULL;
     }
 }
 
@@ -448,6 +413,26 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     return( false );
 }
 
+static gui_create_info StatusInfo = {
+    NULL,                                   // Title
+    { 1500, 2500, 6500, 6000 },             // Position
+    GUI_NOSCROLL,                           // Scroll Styles
+    GUI_VISIBLE                             // Window Styles
+//  | GUI_CLOSEABLE
+    | GUI_SYSTEM_MENU
+/*  | GUI_RESIZEABLE
+    | GUI_MAXIMIZE
+    | GUI_MINIMIZE
+    | GUI_DIALOG_LOOK */,
+    NULL,                                   // Parent
+    0, NULL,                                // Menu array
+    WND_NUMBER_OF_COLORS, StatusColours,    // Colour attribute array
+    &StatusGUIEventProc,                    // GUI Event Callback function
+    NULL,                                   // Extra
+    NULL,                                   // Icon
+    NULL                                    // Menu Resource
+};
+
 static bool OpenStatusWindow( const char *title )
 /***********************************************/
 {
@@ -516,4 +501,18 @@ bool StatusInit( void )
 
     ReplaceVars( buff, sizeof( buff ), GetVariableStrVal( "AppName" ) );
     return( OpenStatusWindow( buff ) );
+}
+
+void StatusFini( void )
+/*********************/
+{
+    if( StatusWnd == NULL ){
+        return;
+    } else {
+        if( StatusInfo.title != NULL ) {
+            GUIMemFree( (void *)StatusInfo.title );
+        }
+        GUIDestroyWnd( StatusWnd );
+        StatusWnd = NULL;
+    }
 }
