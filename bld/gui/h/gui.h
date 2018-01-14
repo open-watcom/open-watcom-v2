@@ -333,7 +333,7 @@ typedef struct gui_control_info {
     gui_ctl_id          id;
 } gui_control_info;
 
-typedef bool (GUICALLBACK)( gui_window *, gui_event ev, void *param );
+typedef bool (GUICALLBACK)( gui_window *, gui_event gui_ev, void *param );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
 typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );

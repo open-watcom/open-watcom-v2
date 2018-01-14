@@ -42,25 +42,25 @@ static gui_window       *Parents[MAX_DLG_NESTS];
 static GUICALLBACK      *dlgGUIEventProcs[MAX_DLG_NESTS];
 static int              Nested = -1;
 
-static bool dlgOpenGUIEventProc( gui_window *gui, gui_event event, void *parm )
+static bool dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     bool        rc;
     void        *cursor;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         cursor = WndHourGlass( NULL );
         ++Nested;
         Parents[Nested] = gui;
-        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
+        rc = dlgGUIEventProcs[Nested]( gui, gui_ev, parm );
         WndHourGlass( cursor );
         break;
     case GUI_DESTROY:
-        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
+        rc = dlgGUIEventProcs[Nested]( gui, gui_ev, parm );
         --Nested;
         break;
     default:
-        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
+        rc = dlgGUIEventProcs[Nested]( gui, gui_ev, parm );
         break;
     }
     return( rc );

@@ -64,13 +64,13 @@ static gui_control_info Controls[] = {
 };
 
 
-bool DlgNewGUIEventProc( gui_window *gui, gui_event event, void *param )
+bool DlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlg_new     *dlgnew;
 
     dlgnew = GUIGetExtra( gui );
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         GUISetText( gui, CTL_NEW_EDIT, dlgnew->buff);
         GUISetFocus( gui, CTL_NEW_EDIT );

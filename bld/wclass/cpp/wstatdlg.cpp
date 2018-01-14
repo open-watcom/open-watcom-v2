@@ -71,7 +71,7 @@ WControl * WEXPORT WStatDialog::getControl( WControlId id ) {
     return( NULL );
 }
 
-extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event msg, void *parm );
+extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm );
 
 void WStatDialog::doDialog( WWindow *parent ) {
 /*********************************************/

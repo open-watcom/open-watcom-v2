@@ -53,8 +53,8 @@ WCLASS WControl : public WWindow {
         WStyle   style() { return( _style ); }
 
         virtual bool processMsg( gui_event ) { return( false ); }
-        virtual bool WEXPORT processMsg( gui_event msg, void *parm ) {
-            return( WWindow::processMsg( msg, parm ) );
+        virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm ) {
+            return( WWindow::processMsg( gui_ev, parm ) );
         };
         virtual void WEXPORT autosize();
         virtual void WEXPORT getText( char* buff, size_t len );

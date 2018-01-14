@@ -67,7 +67,9 @@ bool WndHaveToolBar( void )
 
 void    WndCloseToolBar( void )
 {
-    if( WndHaveToolBar() ) GUICloseToolBar( WndMain->gui );
+    if( WndHaveToolBar() ) {
+        GUICloseToolBar( WndMain->gui );
+    }
 }
 
 gui_ord WndToolHeight( void )
@@ -80,13 +82,13 @@ bool WndToolFixed( void )
     return( ToolEvent == GUI_TOOLBAR_FIXED );
 }
 
-void WndSetToolBar( gui_event event )
+void WndSetToolBar( gui_event gui_ev )
 {
-    gui_event   old;
+    gui_event   old_gui_ev;
 
-    old = ToolEvent;
-    ToolEvent = event;
-    if( old != event ) {
+    old_gui_ev = ToolEvent;
+    ToolEvent = gui_ev;
+    if( old_gui_ev != gui_ev ) {
         WndSetWndMax();
     }
 }

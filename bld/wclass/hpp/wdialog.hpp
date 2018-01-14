@@ -55,7 +55,7 @@ WCLASS WDialog : public WWindow {
         virtual WWindow * WEXPORT switchChild( WWindow *win, bool forward );
         void WEXPORT quit( int code );
         void WEXPORT setDefaultQuitCode( int quit ) { _quitCode = quit; }
-        bool WEXPORT processMsg( gui_event msg, void *parm );
+        bool WEXPORT processMsg( gui_event gui_ev, void *parm );
         virtual WOrdinal WEXPORT frameWidth( void ) {
             return( WSystemMetrics::dialogFrameWidth() );
         }

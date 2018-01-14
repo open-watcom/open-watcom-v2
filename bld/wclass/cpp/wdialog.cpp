@@ -118,10 +118,10 @@ WEXPORT WDialog::~WDialog() {
     }
 }
 
-bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
-/*************************************************************/
-
-    switch( msg ) {
+bool WEXPORT WDialog::processMsg( gui_event gui_ev, void *parm )
+/**************************************************************/
+{
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         initialize();
         return( true );
@@ -136,18 +136,18 @@ bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
         setHandle( NULL );
         return( true );
     }
-    return( WWindow::processMsg( msg, parm ) );
+    return( WWindow::processMsg( gui_ev, parm ) );
 }
 
 
-extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event msg, void *parm )
-/****************************************************************************/
+extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************/
 {
     WDialog* win = (WDialog*)GUIGetExtra( hwin );
-    if( msg == GUI_INIT_DIALOG ) {
+    if( gui_ev == GUI_INIT_DIALOG ) {
         win->setHandle( hwin );
     }
-    return( win->processMsg( msg, parm ) );
+    return( win->processMsg( gui_ev, parm ) );
 }
 
 

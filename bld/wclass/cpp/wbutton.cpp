@@ -109,10 +109,10 @@ bool WEXPORT WButton::hotKey( WKeyCode ) {
 }
 
 
-bool WButton::processMsg( gui_event msg ) {
-/*****************************************/
-
-    switch( msg ) {
+bool WButton::processMsg( gui_event gui_ev )
+/******************************************/
+{
+    switch( gui_ev ) {
     case GUI_CONTROL_CLICKED:
         if( _clickClient && _click ) {
             (_clickClient->*_click)( this );
@@ -132,7 +132,7 @@ bool WButton::processMsg( gui_event msg ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 #endif
 

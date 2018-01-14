@@ -473,28 +473,28 @@ gui_window *GUIGetMenuWindow( void )
 
 static void DoScrollDrag( p_gadget gadget, int prev, int diff )
 {
-    gui_event top;
-    gui_event bottom;
-    gui_event scroll;
+    gui_event gui_ev_top;
+    gui_event gui_ev_bottom;
+    gui_event gui_ev_scroll;
 
     /* unused parameters */ (void)prev;
 
     if( gadget->dir == VERTICAL ) {
-        top = GUI_SCROLL_TOP;
-        bottom = GUI_SCROLL_BOTTOM;
-        scroll = GUI_SCROLL_VERTICAL;
+        gui_ev_top = GUI_SCROLL_TOP;
+        gui_ev_bottom = GUI_SCROLL_BOTTOM;
+        gui_ev_scroll = GUI_SCROLL_VERTICAL;
     } else {
-        top = GUI_SCROLL_FULL_LEFT;
-        bottom = GUI_SCROLL_FULL_RIGHT;
-        scroll = GUI_SCROLL_HORIZONTAL;
+        gui_ev_top = GUI_SCROLL_FULL_LEFT;
+        gui_ev_bottom = GUI_SCROLL_FULL_RIGHT;
+        gui_ev_scroll = GUI_SCROLL_HORIZONTAL;
     }
     uisetgadgetnodraw( gadget, gadget->pos - diff );
     if( prev + diff == 0 ) {
-        GUIEVENT( GUICurrWnd, top, NULL );
+        GUIEVENT( GUICurrWnd, gui_ev_top, NULL );
     } else if( ( prev + diff ) == ( gadget->total_size - gadget->page_size ) ) {
-        GUIEVENT( GUICurrWnd, bottom, NULL );
+        GUIEVENT( GUICurrWnd, gui_ev_bottom, NULL );
     } else {
-        GUIEVENT( GUICurrWnd, scroll, &diff );
+        GUIEVENT( GUICurrWnd, gui_ev_scroll, &diff );
     }
 }
 

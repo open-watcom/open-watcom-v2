@@ -121,10 +121,10 @@ void WEXPORT WCombo::onDblClick( WObject* client, cbw click ) {
 }
 
 
-bool WCombo::processMsg( gui_event msg ) {
-/****************************************/
-
-    switch( msg ) {
+bool WCombo::processMsg( gui_event gui_ev )
+/*****************************************/
+{
+    switch( gui_ev ) {
     case GUI_CONTROL_CLICKED:
         if( _changedClient && _changed ) {
             (_changedClient->*_changed)( this );
@@ -226,7 +226,7 @@ void * WEXPORT WCombo::tagPtr( int index ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 #pragma warning 657 9
 #endif

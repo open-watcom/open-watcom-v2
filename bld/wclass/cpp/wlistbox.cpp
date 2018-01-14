@@ -109,10 +109,10 @@ int WListBox::findString( int index, const char *str ) {
 }
 
 
-bool WListBox::processMsg( gui_event msg ) {
-/******************************************/
-
-    switch( msg ) {
+bool WListBox::processMsg( gui_event gui_ev )
+/*******************************************/
+{
+    switch( gui_ev ) {
     case GUI_CONTROL_CLICKED:
         if( _changedClient && _changed ) {
             (_changedClient->*_changed)( this );
@@ -248,7 +248,7 @@ void* WEXPORT WListBox::tagPtr( int index ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 #endif
 

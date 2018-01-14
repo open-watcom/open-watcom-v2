@@ -115,11 +115,11 @@ int NoNextRow( a_window *wnd, int row, int inc )
     return( row + inc );
 }
 
-bool NoWndEventProc( a_window *wnd, gui_event event, void *parm )
+bool NoWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_WINDOW:
     case GUI_RESIZE:
     case GUI_MOVE:

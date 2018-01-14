@@ -74,11 +74,11 @@ static  void    SetRXStatus( gui_window *gui )
 }
 
 
-static bool RXGUIEventProc( gui_window *gui, gui_event event, void *param )
+static bool RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetRXStatus( gui );
         GUISetFocus( gui, CTL_RX_OK );
@@ -207,13 +207,13 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 }
 
 
-static bool SrchGUIEventProc( gui_window *gui, gui_event event, void *param )
+static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlg_search  *dlg;
 
     dlg = GUIGetExtra( gui );
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetDlgStatus( gui, dlg );
         GUISetFocus( gui, CTL_SRCH_EDIT );
@@ -226,7 +226,7 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event event, void *param )
         switch( id ) {
         case CTL_SRCH_LIST:
             DlgClickHistory( gui, CTL_SRCH_EDIT, CTL_SRCH_LIST );
-            if( event == GUI_CONTROL_CLICKED )
+            if( gui_ev == GUI_CONTROL_CLICKED )
                 break;
             /* fall through */
         case CTL_SRCH_NEXT:

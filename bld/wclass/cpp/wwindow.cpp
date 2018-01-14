@@ -72,12 +72,12 @@ AccelKey::AccelKey( WKeyCode key, WObject* client, bcbk callback )
 
 /***************************************************************************/
 
-bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
+bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
 {
     gui_point           point;
     WControlId          id;
 
-    switch( msg ) {
+    switch( gui_ev ) {
     /* following GUI events are unhandled now, return false
     case GUI_INIT_DIALOG:
     case GUI_NO_EVENT:
@@ -118,7 +118,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
             GUI_GETID( parm, id );
             WControl* control = getControl( id );
             if( control != NULL ) {
-                return( control->processMsg( msg ) );
+                return( control->processMsg( gui_ev ) );
             }
         }
         break;
@@ -334,14 +334,14 @@ void WWindow::enumChildren()
 }
 
 
-extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event msg, void *parm )
-/****************************************************************************/
+extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************/
 {
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
-    if( msg == GUI_INIT_WINDOW ) {
+    if( gui_ev == GUI_INIT_WINDOW ) {
         win->setHandle( hwin );
     }
-    return( win->processMsg( msg, parm ) );
+    return( win->processMsg( gui_ev, parm ) );
 }
 
 

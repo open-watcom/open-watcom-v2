@@ -37,13 +37,13 @@
 #include "clibext.h"
 
 
-void WndChooseEvent( a_window *wnd, gui_event event, void *parm )
+void WndChooseEvent( a_window *wnd, gui_event gui_ev, void *parm )
 {
     gui_key     key;
 
     if( _Isnt( wnd, WSW_CHOOSING ) )
         return;
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_KEYDOWN:
     case GUI_KEYUP:
         GUI_GET_KEY( parm, key );

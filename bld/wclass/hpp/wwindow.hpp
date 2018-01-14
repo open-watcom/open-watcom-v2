@@ -286,7 +286,7 @@ public:
     WWindow * WEXPORT parent() { return( _parent ); }
     WRect getAutosize( void ) { return( _autosize ); }
     virtual WWindow * switchChild( WWindow *currChild, bool forward );
-    virtual bool WEXPORT processMsg( gui_event msg, void *parm );
+    virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm );
     virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
         return( GUIGetExtentX( _handle, (char *)text, len ) );
     }

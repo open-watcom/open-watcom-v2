@@ -36,12 +36,12 @@ wnd_row         WndMenuRow;
 int             WndMenuPiece;
 
 
-void WndSelectEvent( a_window *wnd, gui_event event, void *parm )
+void WndSelectEvent( a_window *wnd, gui_event gui_ev, void *parm )
 {
     gui_key             key;
     gui_keystate        state;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_RBUTTONDOWN:
     case GUI_LBUTTONDOWN:
         WndNoSelect( wnd );
