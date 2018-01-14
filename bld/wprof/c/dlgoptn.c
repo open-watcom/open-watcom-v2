@@ -135,8 +135,8 @@ STATIC void setDlgDefaults( gui_window * gui )
 
 
 
-STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
-/*********************************************************************/
+STATIC bool optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/****************************************************************************/
 {
     gui_ctl_id      id;
 
@@ -172,7 +172,7 @@ void DlgGetOptions( a_window * wnd )
 {
     CurrSIOData = WndExtra( wnd );
     DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,
-            optionControls, ArraySize( optionControls ), &progEvent, NULL );
+            optionControls, ArraySize( optionControls ), &optsGUIEventProc, NULL );
     if( CurrSIOData != NULL ) {
         WndDirty( CurrSIOData->sample_window );
     }

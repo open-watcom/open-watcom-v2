@@ -38,8 +38,6 @@ extern gui_menu_struct  WndMainMenu[];
 extern gui_colour_set   WndColours[];
 extern int              WndNumColours;
 
-extern GUICALLBACK      WndMainGUIEventProc;
-
 extern char             *StrCopy(char *,char *);
 
 gui_menu_struct *WndMainMenuPtr = WndMainMenu;

@@ -79,7 +79,7 @@ static void W5Refresh( a_window *wnd )
 }
 
 static wnd_info W5Info = {
-    NoEventProc,
+    NoWndEventProc,
     W5Refresh,
     W5GetLine,
     NoMenuItem,

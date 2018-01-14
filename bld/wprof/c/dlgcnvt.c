@@ -132,8 +132,8 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
 
 
 
-STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
-/*********************************************************************/
+STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/****************************************************************************/
 {
     gui_ctl_id      id;
 
@@ -178,7 +178,7 @@ void DlgGetConvert( a_window * wnd )
         return;
     strcpy( convertPath, CurrSIOData->samp_file_name );
     DlgOpen( LIT( Convert_Data ), DLG_CNVT_ROWS, DLG_CNVT_COLS,
-             convertControls, ArraySize( convertControls ), &progEvent, NULL );
+             convertControls, ArraySize( convertControls ), &progGUIEventProc, NULL );
     if( CurrSIOData != NULL ) {
         WndDirty( CurrSIOData->sample_window );
     }

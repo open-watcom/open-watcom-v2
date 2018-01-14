@@ -61,7 +61,7 @@ static void    W8Refresh( a_window *wnd )
 }
 
 static wnd_info W8Info = {
-    NoEventProc,
+    NoWndEventProc,
     W8Refresh,
     W8GetLine,
     NoMenuItem,

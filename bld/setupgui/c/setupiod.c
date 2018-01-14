@@ -40,37 +40,37 @@ typedef struct data_source_t {
     int         fhandle;
 } data_source;
 
-extern int FileInit( const char *archive )
+int FileInit( const char *archive )
 {
     return( 0 );
 }
 
 
-extern int FileFini( void )
+int FileFini( void )
 {
     return( 0 );
 }
 
 
-extern int FileIsPlainFS( void )
+int FileIsPlainFS( void )
 {
     return( 1 );
 }
 
 
-extern int FileIsArchive( void )
+int FileIsArchive( void )
 {
     return( 0 );
 }
 
 
-extern int FileStat( const char *path, struct stat *buf )
+int FileStat( const char *path, struct stat *buf )
 {
     return( stat( path, buf ) );
 }
 
 
-extern void *FileOpen( const char *path, int flags )
+void *FileOpen( const char *path, int flags )
 {
     data_source     *ds;
 
@@ -87,7 +87,7 @@ extern void *FileOpen( const char *path, int flags )
 }
 
 
-extern int FileClose( void *handle )
+int FileClose( void *handle )
 {
     data_source     *ds = handle;
     int             rc;
@@ -99,7 +99,7 @@ extern int FileClose( void *handle )
 }
 
 
-extern long FileSeek( void *handle, long offset, int origin )
+long FileSeek( void *handle, long offset, int origin )
 {
     data_source     *ds = handle;
 
@@ -107,7 +107,7 @@ extern long FileSeek( void *handle, long offset, int origin )
 }
 
 
-extern size_t FileRead( void *handle, void *buffer, size_t length )
+size_t FileRead( void *handle, void *buffer, size_t length )
 {
     data_source     *ds = handle;
 

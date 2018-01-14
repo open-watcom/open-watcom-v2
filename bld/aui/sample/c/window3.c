@@ -306,7 +306,7 @@ static void W3Refresh( a_window *wnd )
 }
 
 static wnd_info W3Info = {
-    NoEventProc,
+    NoWndEventProc,
     W3Refresh,
     W3GetLine,
     W3MenuItem,

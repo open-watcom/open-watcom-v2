@@ -75,19 +75,15 @@
         (1 + (num - 1) * (bwidth + BUTTON_GAP( cols, of, bwidth, 1 ))))
 
 
-extern vhandle          FullInstall;
-extern vhandle          SelectiveInstall;
-
 typedef struct dlg_window_set {
     dlg_state           state;
     a_dialog_header     *current_dialog;     /* stuff needed in future */
 } DLG_WINDOW_SET;
 
-dlg_state       GenericDialog( gui_window *parent, a_dialog_header * );
-extern void     SetDefaultAutoSetValue( vhandle var_handle );
-extern void     ResetDriveInfo();
+extern vhandle  FullInstall;
+extern vhandle  SelectiveInstall;
 
-int VisibilityCondition = 0;
+bool    VisibilityCondition = false;
 
 static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dialog )
 /**********************************************************************************/
@@ -450,7 +446,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // Kind of like an on and off (below) switch
     // for special behaviour of GetOptionVarValue()
     // SetVariableByName( "_Visibility_Condition_", "1" );
-    VisibilityCondition = 1;
+    VisibilityCondition = true;
 
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         // Figure out which controls to hide and which to show.
@@ -501,7 +497,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     GUIMemFree( control_on_new_line );
 
     // SetVariableByName( "_Visibility_Condition_", "0" );
-    VisibilityCondition = 0;
+    VisibilityCondition = false;
 
     visible_checked_radiobutton = false;
     new_check_candidate = CTL_NULL;
@@ -866,8 +862,8 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 }
 
 
-extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
-/********************************************************************************/
+dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
+/*************************************************************************/
 {
     char                *title;
     DLG_WINDOW_SET      result;

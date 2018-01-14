@@ -145,8 +145,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
     case MENU_SYSTEM:
         GUISpawnStart();
         sys_spec = getenv( "COMSPEC" );
-        if( sys_spec == NULL
-         || spawnl( P_WAIT, sys_spec, sys_spec, NULL ) == -1 ) {
+        if( sys_spec == NULL || spawnl( P_WAIT, sys_spec, sys_spec, NULL ) == -1 ) {
             ErrorMsg( LIT( Bad_System_Load ) );
         }
         GUISpawnEnd();

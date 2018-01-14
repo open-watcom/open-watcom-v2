@@ -33,8 +33,6 @@
 #include "auipvt.h"
 #include <ctype.h>
 
-extern GUICALLBACK      WndMainGUIEventProc;
-
 gui_coord               WndMax;
 gui_coord               WndScreen;
 gui_coord               WndScale;

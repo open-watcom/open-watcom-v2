@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern gui_window *DlgGetParent( void );
+extern gui_window *DlgOpenGetGUIParent( void );

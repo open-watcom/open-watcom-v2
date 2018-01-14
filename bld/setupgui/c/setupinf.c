@@ -75,7 +75,7 @@
 
 extern char             *TrimQuote(char*);
 extern bool             SkipDialogs;
-extern int              VisibilityCondition;
+extern bool             VisibilityCondition;
 extern char             *VariablesFile;
 
 #define RoundUp( v, r ) (((v) + (r) - 1) & ~(unsigned long)((r)-1))

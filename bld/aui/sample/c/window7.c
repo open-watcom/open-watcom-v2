@@ -61,7 +61,7 @@ static void    W7Refresh( a_window *wnd )
 }
 
 static wnd_info W7Info = {
-    NoEventProc,
+    NoWndEventProc,
     W7Refresh,
     W7GetLine,
     NoMenuItem,

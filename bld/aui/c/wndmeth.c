@@ -34,7 +34,7 @@
 #include <string.h>
 
 wnd_info NoInfo = {
-    NoEventProc,
+    NoWndEventProc,
     NoRefresh,
     NoGetLine,
     NoMenuItem,
@@ -115,7 +115,7 @@ int NoNextRow( a_window * wnd, int row, int inc )
     return( row + inc );
 }
 
-bool NoEventProc( a_window * wnd, gui_event event, void *parm )
+bool NoWndEventProc( a_window * wnd, gui_event event, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 

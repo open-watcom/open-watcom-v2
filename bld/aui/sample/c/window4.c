@@ -194,7 +194,7 @@ static void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 static wnd_info W4Info = {
-    NoEventProc,
+    NoWndEventProc,
     W4Refresh,
     W4GetLine,
     W4MenuItem,

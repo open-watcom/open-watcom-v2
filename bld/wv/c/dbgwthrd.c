@@ -250,7 +250,7 @@ OVL_EXTERN bool    TrdGetLine( a_window *wnd, int row, int piece,
 
 
 wnd_info TrdInfo = {
-    NoEventProc,
+    NoWndEventProc,
     TrdRefresh,
     TrdGetLine,
     TrdMenuItem,

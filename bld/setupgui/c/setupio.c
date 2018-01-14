@@ -81,7 +81,7 @@ static char *flipBackSlashes( const char *old_path )
     return( new_path );
 }
 
-extern int FileInit( const char *archive )
+int FileInit( const char *archive )
 {
     int             zerr;
 
@@ -96,7 +96,7 @@ extern int FileInit( const char *archive )
 }
 
 
-extern int FileFini( void )
+int FileFini( void )
 {
     if( srcType == DS_ZIP ) {
         zip_close( srcZip );
@@ -105,19 +105,19 @@ extern int FileFini( void )
 }
 
 
-extern int FileIsPlainFS( void )
+int FileIsPlainFS( void )
 {
     return( srcType == DS_FILE );
 }
 
 
-extern int FileIsArchive( void )
+int FileIsArchive( void )
 {
     return( srcType == DS_ZIP );
 }
 
 
-extern int FileStat( const char *path, struct stat *buf )
+int FileStat( const char *path, struct stat *buf )
 {
     int                 rc;
     struct zip_stat     zs;
@@ -147,7 +147,7 @@ extern int FileStat( const char *path, struct stat *buf )
 }
 
 
-extern void *FileOpen( const char *path, int flags )
+void *FileOpen( const char *path, int flags )
 {
     data_source     *ds;
     char            *alt_path;
@@ -179,7 +179,7 @@ extern void *FileOpen( const char *path, int flags )
 }
 
 
-extern int FileClose( void *handle )
+int FileClose( void *handle )
 {
     data_source     *ds = handle;
     int             rc;
@@ -200,7 +200,7 @@ extern int FileClose( void *handle )
 }
 
 
-extern long FileSeek( void *handle, long offset, int origin )
+long FileSeek( void *handle, long offset, int origin )
 {
     data_source     *ds = handle;
     long            pos;
@@ -219,7 +219,7 @@ extern long FileSeek( void *handle, long offset, int origin )
 }
 
 
-extern size_t FileRead( void *handle, void *buffer, size_t length )
+size_t FileRead( void *handle, void *buffer, size_t length )
 {
     data_source     *ds = handle;
     size_t          amt;

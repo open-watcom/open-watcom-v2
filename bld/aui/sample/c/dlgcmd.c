@@ -69,7 +69,7 @@ static void DoCmd( char *cmd )
 }
 
 
-extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     char        *text;
@@ -132,6 +132,6 @@ extern  void    DlgCmd( void )
     cmd = WndMustAlloc( 100 );
     GUISetModalDlgs( true );
     DlgOpen( "Enter a command", DLG_CMD_ROWS, DLG_CMD_COLS,
-             Controls, NUM_CONTROLS, &CmdEvent, cmd );
+             Controls, NUM_CONTROLS, &CmdGUIEventProc, cmd );
     GUISetModalDlgs( false );
 }

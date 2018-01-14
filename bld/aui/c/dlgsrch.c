@@ -74,7 +74,7 @@ static  void    SetRXStatus( gui_window *gui )
 }
 
 
-extern bool RXGUIEventProc( gui_window * gui, gui_event event, void * param )
+static bool RXGUIEventProc( gui_window *gui, gui_event event, void *param )
 {
     gui_ctl_id  id;
 
@@ -82,7 +82,7 @@ extern bool RXGUIEventProc( gui_window * gui, gui_event event, void * param )
     case GUI_INIT_DIALOG:
         SetRXStatus( gui );
         GUISetFocus( gui, CTL_RX_OK );
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
@@ -206,7 +206,7 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 }
 
 
-extern bool SrchGUIEventProc( gui_window * gui, gui_event event, void * param )
+static bool SrchGUIEventProc( gui_window *gui, gui_event event, void *param )
 {
     gui_ctl_id  id;
     dlg_search  *dlg;

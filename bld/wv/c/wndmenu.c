@@ -138,13 +138,13 @@ const char MainTab[] = { "MAin\0" };
 extern void PlayDead( bool dead )
 {
     WndIgnoreAllEvents = dead;
-    #if defined(__GUI__) && (defined(__WINDOWS__) || defined(__NT__))
-        if( dead ) {
-            UnknownScreen(); // the trap file might steal focus!
-        } else {
-            DebugScreen();
-        }
-    #endif
+#if defined(__GUI__) && (defined(__WINDOWS__) || defined(__NT__))
+    if( dead ) {
+        UnknownScreen(); // the trap file might steal focus!
+    } else {
+        DebugScreen();
+    }
+#endif
 }
 
 
@@ -228,7 +228,9 @@ char *GetMenuLabel( unsigned size,
         }
         if( menu->num_child_menus != 0 ) {
             p = GetMenuLabel( menu->num_child_menus, menu->child, id, buff, strip_amp );
-            if( p != NULL ) return( p );
+            if( p != NULL ) {
+                return( p );
+            }
         }
         --size;
         ++menu;
@@ -246,7 +248,9 @@ static gui_menu_struct *FindSubMenu( const char *start, unsigned len, gui_menu_s
         }
         if( child->num_child_menus != 0 ) {
             sub = FindSubMenu( start, len, child->child, child->num_child_menus );
-            if( sub != NULL ) return( sub );
+            if( sub != NULL ) {
+                return( sub );
+            }
         }
         ++child;
     }
@@ -261,9 +265,12 @@ int FindMenuLen( gui_menu_struct *child )
     p = child->label + strlen( child->label ) - 1;
     while( *p == ' ' ) --p;
     if( *p == ')' ) {
-        while( *p != '(' ) --p;
+        while( *p != '(' )
+            --p;
         --p;
-        while( *p == ' ' ) --p;
+        while( *p == ' ' ) {
+            --p;
+        }
     }
     return( p - child->label + 1 );
 }
@@ -312,7 +319,8 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         *menu = child;
         *parent = main_menu->child;
         *num_siblings = main_menu->num_child_menus;
-        if( add_to_menu ) return( true );
+        if( add_to_menu )
+            return( true );
         ReqEOC();
         AccelMenuItem( child, true );
     } else {
@@ -499,7 +507,8 @@ static void     DoMatch( void )
     a_window    *wnd;
 
     wnd = WndFindActive();
-    if( wnd == NULL ) return;
+    if( wnd == NULL )
+        return;
     if( WndKeyPiece( wnd ) == WND_NO_PIECE ) {
         Error( ERR_NONE, LIT_DUI( ERR_MATCH_NOT_SUPPORTED ) );
     } else {
@@ -693,7 +702,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_MAIN_WINDOW_ZOOM:
         wnd = WndFindActive();
-        if( wnd == NULL ) break;
+        if( wnd == NULL )
+            break;
         if( WndIsMaximized( wnd ) ) {
             WndRestoreWindow( wnd );
         } else {
@@ -739,14 +749,16 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         WndClassInspect( WND_FPU );
         break;
     case MENU_MAIN_OPEN_THREADS:
-        if( HaveRemoteRunThread() )
+        if( HaveRemoteRunThread() ) {
             WndClassInspect( WND_RUN_THREAD );
-        else
+        } else {
             WndClassInspect( WND_THREAD );
+        }
         break;
     case MENU_MAIN_OPEN_FUNCTIONS:
         wnd = WndClassInspect( WND_GBLFUNCTIONS );
-        if( wnd == NULL ) break;
+        if( wnd == NULL )
+            break;
         FuncNewMod( wnd, NO_MOD );
         break;
     case MENU_MAIN_OPEN_FILESCOPE:
@@ -754,7 +766,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_MAIN_OPEN_GLOBALS:
         wnd = WndClassInspect( WND_GLOBALS );
-        if( wnd == NULL ) break;
+        if( wnd == NULL )
+            break;
         GlobNewMod( wnd, NO_MOD );
         break;
     case MENU_MAIN_OPEN_LOCALS:
@@ -762,7 +775,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         break;
     case MENU_MAIN_OPEN_MODULES:
         wnd = WndClassInspect( WND_MODULES );
-        if( wnd == NULL ) break;
+        if( wnd == NULL )
+            break;
         ModNewHandle( wnd, NO_MOD );
         break;
     case MENU_MAIN_OPEN_REGISTER:

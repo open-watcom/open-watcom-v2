@@ -72,8 +72,10 @@ extern  void    WndCoordToGUIPoint( a_window *wnd,
 
     point->x = 0;
     point->y = 0;
-    if( where->row == WND_NO_ROW ) return;
-    if( !WndGetLine( wnd, where->row, where->piece, &line ) ) return;
+    if( where->row == WND_NO_ROW )
+        return;
+    if( !WndGetLine( wnd, where->row, where->piece, &line ) )
+        return;
     point->x = line.indent + GUIGetExtentX( wnd->gui, line.text, where->col );
     point->y = where->row * wnd->max_char.y;
 }
@@ -99,7 +101,9 @@ extern  a_window        *WndFindActive()
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( _Is( wnd, WSW_ACTIVE ) ) return( wnd );
+        if( _Is( wnd, WSW_ACTIVE ) ) {
+            return( wnd );
+        }
     }
     return( WndMain );
 }
@@ -110,7 +114,9 @@ extern  bool    WndValid( a_window *check )
     a_window    *wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( check == wnd ) return( true );
+        if( check == wnd ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -155,7 +161,8 @@ void WndSetWndMax()
 {
     gui_rect    rect;
 
-    if( WndIsMinimized( WndMain ) ) return;
+    if( WndIsMinimized( WndMain ) )
+        return;
     GUIGetClientRect( WndMain->gui, &rect );
     WndMax.x = rect.width;
     WndMax.y = rect.height;
@@ -172,7 +179,8 @@ a_window        *WndNext( a_window *wnd )
     } else {
         gui = GUIGetNextWindow( wnd->gui );
     }
-    if( gui == NULL ) return( NULL );
+    if( gui == NULL )
+        return( NULL );
     return( GUIGetExtra( gui ) );
 }
 

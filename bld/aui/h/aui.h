@@ -367,6 +367,7 @@ extern bool             WndInit( char *title );
 extern bool             WndInitWithMenuRes( char *title, res_name_or_id menu_id );
 extern bool             WndFini( void );
 extern bool             WndMainMenuProc( a_window *, gui_ctl_id id );
+extern GUICALLBACK      WndMainGUIEventProc;
 extern void             WndSetSrchItem( a_window *wnd, const char *expr );
 extern bool             WndSearch( a_window *, bool, int );
 extern void             WndInitNumRows( a_window * );
@@ -375,7 +376,7 @@ extern void             WndRXError( int );
 extern void             WndFreshAll( void );
 extern a_window         *WndNext( a_window * );
 
-extern WNDCALLBACK      NoEventProc;
+extern WNDCALLBACK      NoWndEventProc;
 extern WNDREFRESH       NoRefresh;
 extern WNDGETLINE       NoGetLine;
 extern WNDMENU          NoMenuItem;

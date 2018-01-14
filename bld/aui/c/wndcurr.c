@@ -327,8 +327,10 @@ void WndCurrVisible( a_window *wnd )
     wnd_line_piece      line;
     int                 len;
 
-    if( !WndHasCurrent( wnd ) ) return;
-    if( wnd != WndFindActive() ) return;
+    if( !WndHasCurrent( wnd ) )
+        return;
+    if( wnd != WndFindActive() )
+        return;
     if( WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line ) ) {
         WndAdjustCurrCol( wnd, &line );
         /* try to make whole selection visible for searching */
@@ -338,7 +340,8 @@ void WndCurrVisible( a_window *wnd )
             wnd->sel_end.row == wnd->current.row &&
             wnd->sel_end.piece == wnd->current.piece ) {
             len = wnd->sel_end.col - wnd->sel_start.col;
-            if( len < 0 ) len = -len;
+            if( len < 0 )
+                len = -len;
             ++len;
         } else {
             len = 1;

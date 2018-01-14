@@ -67,7 +67,7 @@ static bool dlgOpenGUIEventProc( gui_window *gui, gui_event event, void *parm )
 }
 
 
-gui_window *DlgGetParent( void )
+gui_window *DlgOpenGetGUIParent( void )
 {
     if( Nested >= MAX_DLG_NESTS )
         return( NULL );
@@ -80,7 +80,7 @@ void DlgOpen( const char *title, int rows, int cols,
 {
     gui_window  *parent;
 
-    parent = DlgGetParent();
+    parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
     GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
 }
@@ -101,7 +101,7 @@ static gui_create_info ResDialog = {
 
 void ResDlgOpen( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
 {
-    ResDialog.parent = DlgGetParent();
+    ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
     ResDialog.extra = extra;
     GUICreateResDialog( &ResDialog, MAKEINTRESOURCE( dlg_id ) );

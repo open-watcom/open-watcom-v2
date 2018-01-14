@@ -48,7 +48,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-static bool OptSetEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;
@@ -88,6 +88,6 @@ bool    DlgOptions( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( &OptSetEvent, &optset, DLG_OPTIONS );
+    ResDlgOpen( &OptSetGUIEventProc, &optset, DLG_OPTIONS );
     return( !optset.cancel );
 }

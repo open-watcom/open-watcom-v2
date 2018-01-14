@@ -123,17 +123,19 @@ static const char *FmtNum( const void *data_handle, int item )
 
 static void TimeIt( void )
 {
-    char        buff[80];
-    int         len;
-    long        iters;
-    a_window    *wnd;
+    char                buff[80];
+    int                 len;
+    long                iters;
+    a_window            *wnd;
     gui_text_metrics    dummy;
 
     wnd = WndFindActive();
-    if( !wnd ) return;
+    if( wnd == NULL )
+        return;
     buff[0]='\0';
     DlgNew( "Enter Iterations", buff, 80 );
-    if( buff[0] == '\0' ) return;
+    if( buff[0] == '\0' )
+        return;
     iters = strtol( buff, NULL, 10 );
     strcpy( buff, "This is just some text" );
     len = strlen( buff );
@@ -181,7 +183,8 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         TimeIt();
         break;
     case MENU_MATCH:
-        if( active == NULL ) return( true );
+        if( active == NULL )
+            return( true );
         if( WndKeyPiece( active ) == WND_NO_PIECE ) {
             Say( "Match not supported in this window" );
         } else {
@@ -210,13 +213,16 @@ extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         GetPassword();
         break;
     case MENU_NEXT:
-        if( active != NULL ) WndSearch( active, false, 1 );
+        if( active != NULL )
+            WndSearch( active, false, 1 );
         break;
     case MENU_PREV:
-        if( active != NULL ) WndSearch( active, false, -1 );
+        if( active != NULL )
+            WndSearch( active, false, -1 );
         break;
     case MENU_SEARCH:
-        if( SrchHistory == NULL ) SrchHistory = WndInitHistory();
+        if( SrchHistory == NULL )
+            SrchHistory = WndInitHistory();
         if( active != NULL ) {
             WndSearch( active, false, DlgSearch( active, SrchHistory ) );
         }

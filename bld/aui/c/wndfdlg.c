@@ -43,7 +43,7 @@ extern int DlgGetFileName( open_file_name *ofn )
     a_window    *wnd;
 
     wnd = WndFindActive();
-    rc = GUIGetFileName( DlgGetParent(), ofn );
+    rc = GUIGetFileName( DlgOpenGetGUIParent(), ofn );
     if( wnd != NULL )
         WndToFront( wnd );
     return( rc );

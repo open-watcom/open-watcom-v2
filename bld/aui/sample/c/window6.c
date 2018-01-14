@@ -65,7 +65,7 @@ static void    W6Refresh( a_window *wnd )
 static wnd_metrics W6Metrics = { 3, 12, 0, 0 };
 
 static wnd_info W6Info = {
-    NoEventProc,
+    NoWndEventProc,
     W6Refresh,
     W6GetLine,
     NoMenuItem,
