@@ -212,7 +212,7 @@ void WndInstallClickHook( WNDCLICKHOOK *rtn )
 }
 
 
-static void DoMainEventProc( spawn_parms *spawnp )
+static void DoMainGUIEventProc( spawn_parms *spawnp )
 {
     a_window            *wnd;
     bool                ret;
@@ -603,7 +603,7 @@ bool WndMainGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     spawnp.gui_ev = gui_ev;
     spawnp.parm = parm;
     wndProcNesting++;
-    SpawnP( (aui_spawn_funcP *)DoMainEventProc, &spawnp );
+    SpawnP( (aui_spawn_funcP *)DoMainGUIEventProc, &spawnp );
     wndProcNesting--;
     return( spawnp.ret );
 }

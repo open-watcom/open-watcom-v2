@@ -39,10 +39,10 @@
 #define MAX_DLG_NESTS   5
 
 static gui_window       *Parents[MAX_DLG_NESTS];
-static GUICALLBACK      *Routines[MAX_DLG_NESTS];
+static GUICALLBACK      *dlgGUIEventProcs[MAX_DLG_NESTS];
 static int              Nested = -1;
 
-static bool DlgEventProc( gui_window * gui, gui_event event, void *parm )
+static bool dlgOpenGUIEventProc( gui_window *gui, gui_event event, void *parm )
 {
     bool        rc;
     void        *cursor;
@@ -51,16 +51,16 @@ static bool DlgEventProc( gui_window * gui, gui_event event, void *parm )
     case GUI_INIT_DIALOG:
         cursor = WndHourGlass( NULL );
         ++Nested;
-        Parents[ Nested ] = gui;
-        rc = Routines[ Nested ]( gui, event, parm );
+        Parents[Nested] = gui;
+        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
         WndHourGlass( cursor );
         break;
     case GUI_DESTROY:
-        rc = Routines[ Nested ]( gui, event, parm );
+        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
         --Nested;
         break;
     default:
-        rc = Routines[ Nested ]( gui, event, parm );
+        rc = dlgGUIEventProcs[Nested]( gui, event, parm );
         break;
     }
     return( rc );
@@ -71,18 +71,18 @@ gui_window *DlgGetParent( void )
 {
     if( Nested >= MAX_DLG_NESTS )
         return( NULL );
-    return( ( Nested == -1 ) ? WndMain->gui : Parents[ Nested ] );
+    return( ( Nested == -1 ) ? WndMain->gui : Parents[Nested] );
 }
 
 void DlgOpen( const char *title, int rows, int cols,
                      gui_control_info *ctl, int num_controls,
-                     GUICALLBACK *rtn, void *extra )
+                     GUICALLBACK *gui_call_back, void *extra )
 {
     gui_window  *parent;
 
     parent = DlgGetParent();
-    Routines[Nested + 1] = rtn;
-    GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, DlgEventProc, extra );
+    dlgGUIEventProcs[Nested + 1] = gui_call_back;
+    GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
 }
 
 static gui_create_info ResDialog = {
@@ -91,20 +91,18 @@ static gui_create_info ResDialog = {
     GUI_NOSCROLL,                       // Scroll Styles
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
-    0,                                  // Number of menus
-    NULL,                               // Menu's
-    0,                                  // Number of color attributes
-    NULL,                               // Array of color attributes
-    DlgEventProc,                       // Callback function
+    0, NULL,                            // Menu array
+    0, NULL,                            // Colour attribute array
+    dlgOpenGUIEventProc,                // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource
 };
 
-void ResDlgOpen( GUICALLBACK *rtn, void *extra, int dlg_id )
+void ResDlgOpen( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
 {
     ResDialog.parent = DlgGetParent();
-    Routines[Nested + 1] = rtn;
+    dlgGUIEventProcs[Nested + 1] = gui_call_back;
     ResDialog.extra = extra;
     GUICreateResDialog( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
 }
