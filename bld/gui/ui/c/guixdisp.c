@@ -184,7 +184,7 @@ static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void 
     default :
         break;
     }
-    return( true );
+    return( false );
 }
 
 /*
