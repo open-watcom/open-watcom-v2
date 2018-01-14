@@ -488,11 +488,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         if( GUICurrWnd != NULL ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, 0, &key_state.key ) ) {
-                if( msg == WM_SYSKEYDOWN  ) {
-                    gui_ev = GUI_KEYDOWN;
-                } else {
-                    gui_ev = GUI_KEYUP;
-                }
+                gui_ev = ( msg == WM_SYSKEYDOWN ) ? GUI_KEYDOWN : GUI_KEYUP;
                 RetTrue = GUIEVENT( GUICurrWnd, gui_ev, &key_state );
                 if( RetTrue ) {
                     return( 0L ); // app used key, don't send to windows
@@ -629,11 +625,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-                if( SHORT1FROMMP( wparam ) & KC_KEYUP ) {
-                    gui_ev = GUI_KEYUP;
-                } else {
-                    gui_ev = GUI_KEYDOWN;
-                }
+                gui_ev = IS_KEY_UP( wparam ) ? GUI_KEYUP : GUI_KEYDOWN;
                 return( (WPI_MRESULT)GUIEVENT( GUICurrWnd, gui_ev, &key_state ) );
             }
         }

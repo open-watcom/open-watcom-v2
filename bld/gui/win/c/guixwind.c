@@ -63,23 +63,20 @@
 #include "guirdlg.h"
 
 
-extern bool     GUIMainTouched;
-
 #if !defined(__NT__)
 #define WM_PAINTICON            0x0026
 #endif
 #define WM_GUI_USEREVENT        (WM_USER+0x654)
-        bool                    EditControlHasFocus     = false;
-extern  bool                    GUIMDI;
-static  int                     NumWindows      =       0;
-static  gui_window_styles       Style;
-static  bool                    Posted          =       false;
-static  bool                    FirstInstance   =       true;
 
-#ifdef __OS2_PM__
-static  WPI_WNDPROC             oldFrameProc;
-WPI_MRESULT CALLBACK GUIFrameProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-#endif
+#define GUI_CLASSNAME_MAX       64
+
+#define BACKGROUND_STYLES       WS_CHILD | WS_VISIBLE
+#define GUI_DIALOG_STYLE        DS_MODALFRAME
+
+#define REGISTER_STYLE          CS_DBLCLKS
+#define REGISTER_DIALOG_STYLE   CS_PARENTDC
+
+#define SENDPOINTGUIEVENT(w, gm, wp, lp)    SendPointEvent( wp, lp, w, gm, true )
 
 typedef struct wmcreate_info {
     int                 size;
@@ -87,30 +84,32 @@ typedef struct wmcreate_info {
     gui_create_info     *dlg_info;
 } wmcreate_info;
 
-/* forward reference */
+extern bool     GUIMainTouched;
+extern bool     GUIMDI;
 
-WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool            EditControlHasFocus = false;
 
-#ifdef __NT__
-#if !defined(WM_MOUSEWHEEL)
-#define WM_MOUSEWHEEL (WM_MOUSELAST + 1)
-#endif
-#endif
-
-gui_window      *GUICurrWnd     = NULL;
+gui_window      *GUICurrWnd = NULL;
 WPI_INST        GUIMainHInst;
 
-#define GUI_CLASSNAME_MAX       64
+char            GUIClass[GUI_CLASSNAME_MAX + 1];
+char            GUIDialogClass[GUI_CLASSNAME_MAX + 1] = "GUIDialogClass";
+char            GUIDefaultClassName[] = "GUIClass";
 
-char GUIClass[GUI_CLASSNAME_MAX + 1];
-char GUIDialogClass[GUI_CLASSNAME_MAX + 1] = "GUIDialogClass";
-char GUIDefaultClassName[] = "GUIClass";
+static int                  NumWindows = 0;
+static bool                 Posted = false;
+static bool                 FirstInstance = true;
+static gui_window_styles    Style;
+#ifdef __OS2_PM__
+static WPI_WNDPROC          oldFrameProc;
+#endif
 
-#define BACKGROUND_STYLES       WS_CHILD | WS_VISIBLE
-#define GUI_DIALOG_STYLE        DS_MODALFRAME
+/* forward reference */
 
-#define REGISTER_STYLE          CS_DBLCLKS
-#define REGISTER_DIALOG_STYLE   CS_PARENTDC
+#ifdef __OS2_PM__
+WPI_MRESULT CALLBACK GUIFrameProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+#endif
+WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 /*
  * GUIXSetupWnd -- set the default values in the gui_window structure
@@ -138,7 +137,7 @@ static void GUISetWindowClassName( void )
 
 void GUIWantPartialRows( gui_window *wnd, bool want )
 {
-    if( wnd ) {
+    if( wnd != NULL ) {
         if( want ) {
             wnd->flags |= PARTIAL_ROWS;
         } else {
@@ -149,8 +148,7 @@ void GUIWantPartialRows( gui_window *wnd, bool want )
 
 void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
 {
-    wnd=wnd;
-    check=check;
+    /* unused parameters */ (void)wnd; (void)check;
 }
 
 /*
@@ -181,8 +179,7 @@ void GUIDestroyWnd( gui_window *wnd )
              * window was current */
             hwnd = GUIGetParentFrameHWND( wnd );
             wnd->flags |= DOING_CLOSE;
-            if( NumWindows == 1 || ( _wpi_getparent( hwnd ) == HWND_DESKTOP ) &&
-                !( wnd->style & GUI_POPUP ) ) {
+            if( NumWindows == 1 || ( _wpi_getparent( hwnd ) == HWND_DESKTOP ) && (wnd->style & GUI_POPUP) == 0 ) {
                 _wpi_sendmessage( hwnd, WM_CLOSE, 0, 0 );
             } else {
                 DestroyWindow( hwnd );
@@ -203,7 +200,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
     wc.hIcon = _wpi_loadicon( NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (WPI_INST) NULL, IDC_ARROW );
+    wc.hCursor = LoadCursor( (WPI_INST)NULL, IDC_ARROW );
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = class_name;
@@ -256,12 +253,12 @@ int GUIXMain( int argc, char *argv[] )
     HAB         inst;
 
     inst = WinInitialize( 0 );
-    if( !inst ) {
+    if( inst == 0 ) {
         return( 0 );
     }
 
     GUIPMmq = WinCreateMsgQueue( inst, 0 );
-    if( !GUIPMmq ) {
+    if( GUIPMmq == 0 ) {
         return( 0 );
     }
 
@@ -374,8 +371,7 @@ void GUIShowWindowNA( gui_window *wnd )
     if( wnd->root_frame != NULLHANDLE ) {
         _wpi_showwindow( wnd->root_frame, flags );
     }
-    if( ( wnd->hwnd_frame != NULLHANDLE ) &&
-        ( wnd->hwnd_frame != wnd->root_frame ) ) {
+    if( ( wnd->hwnd_frame != NULLHANDLE ) && ( wnd->hwnd_frame != wnd->root_frame ) ) {
         _wpi_showwindow( wnd->hwnd_frame, flags );
     }
 }
@@ -470,12 +466,12 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     style = COMMON_STYLES;
     if( parent == NULL ) {
         parent_hwnd = HWND_DESKTOP;
-        if( !( dlg_info->style & GUI_POPUP ) ) {
+        if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
         }
     } else {
         parent_hwnd = parent->hwnd;
-        if( !( dlg_info->style & GUI_POPUP ) ) {
+        if( (dlg_info->style & GUI_POPUP) == 0 ) {
             style |= CHILD_STYLE;
         }
     }
@@ -483,7 +479,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     if( !GUISetupStruct( wnd, dlg_info, &pos, &size, parent_hwnd, &hmenu ) ) {
         return( false );
     }
-    if( !(wnd->style & GUI_NOFRAME) ) {
+    if( (wnd->style & GUI_NOFRAME) == 0 ) {
         if( dlg_info->title != NULL ) {
             style |= WS_CAPTION;
             wnd->flags |= HAS_CAPTION;
@@ -550,7 +546,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         }
         flags |= FCF_BORDER;
     } else {
-        if( !(wnd->style & GUI_NOFRAME) ) {
+        if( (wnd->style & GUI_NOFRAME) == 0 ) {
             flags |= FCF_BORDER;
             frame_flags |= FS_BORDER;
         }
@@ -630,7 +626,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
 
     GUISetIcon( wnd, dlg_info->icon );
 
-    if( dlg_info->style & (GUI_INIT_MAXIMIZED|GUI_INIT_MINIMIZED) ) {
+    if( dlg_info->style & (GUI_INIT_MAXIMIZED | GUI_INIT_MINIMIZED) ) {
         GUISetRedraw( wnd, false );
         if( dlg_info->style & GUI_INIT_MAXIMIZED ) {
             GUIMaximizeWindow( wnd );
@@ -643,7 +639,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         }
     }
 
-    if( !(wnd->style & GUI_INIT_INVISIBLE ) ) {
+    if( (wnd->style & GUI_INIT_INVISIBLE) == 0 ) {
         GUIShowWindowNA( wnd );
     }
 
@@ -719,7 +715,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
 
     _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
 
-    if( force_msg && ( wnd->flags & SENT_INIT ) ) {
+    if( force_msg && (wnd->flags & SENT_INIT) ) {
         size.x = right - left;
         size.y = bottom - top;
         GUIScreenToScaleR( &size );
@@ -734,8 +730,8 @@ static bool SetFocusToParent( void )
 
     // for a reason I do not yet comprehend, the MDI stuff should no longer
     // be a deterent to setting the focus to the top parent
-    if( ( GUICurrWnd != NULL ) && !EditControlHasFocus /* && !GUIMDI */ &&
-        !( GUICurrWnd->style & GUI_POPUP ) ) {
+    if( ( GUICurrWnd != NULL ) && !EditControlHasFocus /* && !GUIMDI */
+      && (GUICurrWnd->style & GUI_POPUP) == 0 ) {
         curr_hwnd = GUIGetTopParentHWND( GUICurrWnd->hwnd );
         if( GUIGetCtrlWnd( curr_hwnd ) == NULL ) {
             if( _wpi_iswindow( GUIMainHInst, curr_hwnd ) ) {
@@ -762,7 +758,7 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
         GUIResizeBackground( wnd, false );
     }
     GUIResizeToolBar( wnd );
-    if( !(wnd->flags & NEEDS_RESIZE_REDRAW ) ) {
+    if( (wnd->flags & NEEDS_RESIZE_REDRAW) == 0 ) {
         wnd->old_rows = wnd->num_rows;
     }
     GUISetRowCol( wnd, size );
@@ -862,8 +858,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 
     root = NULL;
     dlg_info = NULL;
-    ret = 0L;
-    use_defproc = false;
     if( msg == WM_CREATE ) {
 #ifdef __WINDOWS_386__
         CREATESTRUCT __far *lpcs = (CREATESTRUCT __far *)MK_FP32( (void *)lparam );
@@ -900,6 +894,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
     }
 
+    ret = 0L;
     if( GUIMDIProcessMessage( wnd, hwnd, msg, wparam, lparam, &ret ) ) {
         return( ret );
     }
@@ -908,16 +903,15 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         /* message for root window */
         switch( msg ) {
         case WM_CREATE :
+            ret = 0L;
 #ifdef __OS2_PM__
-            wnd->root_pinfo.normal_pres =
-                _wpi_createos2normpres( GUIMainHInst, hwnd );
+            wnd->root_pinfo.normal_pres = _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
             _wpi_getclientrect( wnd->root_frame, &wnd->root_client_rect );
-            if( CreateBackgroundWnd( wnd, dlg_info ) ) {
-                return( 0 );
+            if( !CreateBackgroundWnd( wnd, dlg_info ) ) {
+                ret = (WPI_MRESULT)WPI_ERROR_ON_CREATE;
             }
-            return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
-            break;
+            return( ret );
         }
     } else if( ( wnd->root != NULLHANDLE ) && ( hwnd == wnd->hwnd ) ) {
         /* message for container window */
@@ -928,36 +922,30 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 size.y = _wpi_getwmsizey( wparam, lparam );
                 GUIDoResize( wnd, hwnd, &size );
             }
-            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-            break;
+            /* fall through */
         case WM_MOVE :
-            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-            break;
         case WM_VSCROLL :
         case WM_HSCROLL :
         case WM_CLOSE :
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-            break;
         }
     }
 
+    use_defproc = false;
+    ret = 0L;
     switch( msg ) {
     case WM_CREATE :
 #ifdef __OS2_PM__
-        wnd->hwnd_pinfo.normal_pres =
-            _wpi_createos2normpres( GUIMainHInst, hwnd );
+        wnd->hwnd_pinfo.normal_pres = _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
         NumWindows++; // even if -1 is returned, window will get WM_DESTROY
         win = GUIGetParentFrameHWND( wnd );
-        if( (  wnd->root_frame != NULLHANDLE ) ||
-            ( dlg_info->style & GUI_POPUP ) ) {
-            if( !GUIAddToSystemMenu( wnd, win, 0, NULL,
-                                     dlg_info->style ) ) {
+        if( (  wnd->root_frame != NULLHANDLE ) || (dlg_info->style & GUI_POPUP) ) {
+            if( !GUIAddToSystemMenu( wnd, win, 0, NULL, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         } else {
-            if( !GUIAddToSystemMenu( wnd, win, dlg_info->num_menus,
-                                dlg_info->menu, dlg_info->style ) ) {
+            if( !GUIAddToSystemMenu( wnd, win, dlg_info->num_menus, dlg_info->menu, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         }
@@ -970,10 +958,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             wnd->flags |= SENT_INIT;
             GUISetScroll( wnd ); /* initalize scroll ranges */
             GUIBringToFront( wnd );
-            return( 0 );
         } else {
             /* app decided not to create window */
-            return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
+            ret = (WPI_MRESULT)WPI_ERROR_ON_CREATE;
         }
         break;
 #if defined(__NT__)
@@ -984,11 +971,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     //case WM_CTLCOLOREDIT :
         ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
         if( ret == (WPI_MRESULT)NULL ) {
-            SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
-                        GUIGetBack( wnd, GUI_BACKGROUND ) ) );
+            SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
             ret = (WPI_MRESULT)wnd->bk_brush;
         }
-        return( ret );
+        break;
 #elif !defined( __OS2_PM__ )
     case WM_CTLCOLOR :
         switch( HIWORD( lparam ) ) {
@@ -999,21 +985,21 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         case CTLCOLOR_MSGBOX :
         case CTLCOLOR_STATIC :
             ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
-            if( ret == (HBRUSH)NULL ) {
-                SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
-                            GUIGetBack( wnd, GUI_BACKGROUND ) ) );
+            if( ret == (WPI_MRESULT)NULL ) {
+                SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
                 ret = (WPI_MRESULT)wnd->bk_brush;
             }
             break;
         }
-        return( ret );
+        break;
 #endif
 #ifndef __OS2_PM__
     case WM_INITMENUPOPUP :
-        return( GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam ) );
-
+        ret = GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam );
+        break;
     case WM_MENUSELECT :
-        return( GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam ) );
+        ret = GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam );
+        break;
 #endif
     case WM_GETMINMAXINFO :
         {
@@ -1029,40 +1015,44 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 _wpi_setmaxposition( minmax, 0, 0 );
                 _wpi_setmaxtracksize( minmax, _wpi_getwidthrect( rect ), _wpi_getheightrect( rect ) );
             }
+            break;
         }
-        return( ret );
     case WM_ERASEBKGND:
 #ifdef __OS2_PM__
         //GUIInvalidatePaintHandles( wnd );
-        return( (WPI_MRESULT)true );
+        ret = (WPI_MRESULT)true;
 #else
         if( !_wpi_isiconic( hwnd ) ) {
             GetClientRect( hwnd, &rc );
             FillRect( (HDC)wparam, &rc, wnd->bk_brush );
         }
         use_defproc = true;
-        break;
 #endif
+        break;
 #if !defined(__OS2_PM__)
     case WM_PAINTICON :
-    {
-        HICON   old;
-        old = SET_HICON( wnd->hwnd, wnd->icon );
-        ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-        SET_HICON( wnd->hwnd, old );
-        return( ret );
-    }
+        {
+            HICON   old;
+
+            old = SET_HICON( wnd->hwnd, wnd->icon );
+            ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
+            SET_HICON( wnd->hwnd, old );
+            break;
+        }
 #endif
     case WM_PAINT:
         if( _wpi_isiconic( hwnd ) ) {
-            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+            use_defproc = true;
         } else {
             GUIPaint( wnd, hwnd, false );
         }
         break;
 #ifndef __OS2_PM__
-    case WM_ACTIVATEAPP: {
-            bool activate = ( wparam != 0 );
+    case WM_ACTIVATEAPP:
+        {
+            bool activate;
+
+            activate = ( wparam != 0 );
             root = GUIGetRootWindow();
             ActivateNC( root, activate );
             if( GUICurrWnd != NULL ) {
@@ -1071,8 +1061,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             if( root != NULL ) {
                 GUIEVENT( root, GUI_ACTIVATEAPP, &activate );
             }
+            use_defproc = true;
         }
-        use_defproc = true;
         break;
 #if 0
     // this repaints the nc client area when the window loses focus to
@@ -1085,96 +1075,93 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 #endif
     case WM_SETFOCUS :
         if( !_wpi_ismsgsetfocus( msg, lparam ) ) {
-            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-        }
-        if( !EditControlHasFocus ) {
-            if( SetFocusToParent() ) {
-                return( 0L );
-            }
+            use_defproc = true;
+        } else if( !EditControlHasFocus ) {
+            SetFocusToParent();
         }
         break;
 #endif
     case WM_VSCROLL :
     case WM_HSCROLL :
         GUIProcessScrollMsg( wnd, msg, wparam, lparam );
-        return( 0L );
+        break;
 #ifdef __NT__
     case WM_MOUSEWHEEL :
         {
-        // Try to handle mousewheel messages...
-        // Fake them into GUIProcessScrollMsg()
-        // as "normal" vertical scroll messages.
-        short gcWheelDelta; //wheel delta from roll
-        WORD  wKey;
+            // Try to handle mousewheel messages...
+            // Fake them into GUIProcessScrollMsg()
+            // as "normal" vertical scroll messages.
+            short gcWheelDelta; //wheel delta from roll
+            WORD  wKey;
 
-        // The wnd I get is not the same as WM_VSCROLL : above gets...
-        // Note to self: Fix it...
-        // Seems like the main app window gets the message, rather than
-        // the MDI clients...
+            // The wnd I get is not the same as WM_VSCROLL : above gets...
+            // Note to self: Fix it...
+            // Seems like the main app window gets the message, rather than
+            // the MDI clients...
 
-        gcWheelDelta = HIWORD(wparam);
-        wKey = LOWORD(wparam);
-        // Scroll wheel upwards  gives  120
-        //    "     "   downward   "   -120
-        if( wnd != GUICurrWnd ) // Send to child window with focus
-            wnd = GUICurrWnd;
-        if( gcWheelDelta > 0 ) {
-            // positive - scroll up
-            if( wKey == MK_CONTROL || wKey == MK_SHIFT )
-               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEUP, 0L );
-            else
-               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEUP, 0L );
-        } else {
-            // negative - scroll down
-            if( wKey == MK_CONTROL || wKey == MK_SHIFT )
-               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEDOWN, 0L );
-            else
-               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEDOWN, 0L );
+            gcWheelDelta = HIWORD(wparam);
+            wKey = LOWORD(wparam);
+            // Scroll wheel upwards  gives  120
+            //    "     "   downward   "   -120
+            if( wnd != GUICurrWnd ) // Send to child window with focus
+                wnd = GUICurrWnd;
+            if( gcWheelDelta > 0 ) {
+                // positive - scroll up
+                if( wKey == MK_CONTROL || wKey == MK_SHIFT ) {
+                    GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEUP, 0L );
+                } else {
+                    GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEUP, 0L );
+                }
+            } else {
+                // negative - scroll down
+                if( wKey == MK_CONTROL || wKey == MK_SHIFT ) {
+                    GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEDOWN, 0L );
+                } else {
+                    GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEDOWN, 0L );
+                }
+            }
+            // Inform GUI system we are done with scrolling for now.
+            GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_ENDSCROLL, 0 );
         }
-        // Inform GUI system we are done with scrolling for now.
-        GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_ENDSCROLL, 0 );
-        }
-        return( 0L );
+        break;
 #endif
     case WM_MOVE :
         use_defproc = true;
-        if( wnd->flags & DOING_CLOSE ) {
-            break;
-        }
-        if( !GUIParentHasFlags( wnd, IS_MINIMIZED ) ) {
-            GUIEVENT( wnd, GUI_MOVE, NULL );
+        if( (wnd->flags & DOING_CLOSE) == 0 ) {
+            if( !GUIParentHasFlags( wnd, IS_MINIMIZED ) ) {
+                GUIEVENT( wnd, GUI_MOVE, NULL );
+            }
         }
         break;
     case WM_SIZE:
         use_defproc = true;
-        if( wnd->flags & DOING_CLOSE ) {
-            break;
-        }
-        if( _wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
-            wnd->flags |= IS_MINIMIZED;
-            if( wnd->style & GUI_CHANGEABLE_FONT ) {
-                GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, false );
-            }
-            GUIEVENT( wnd, GUI_ICONIFIED, NULL );
-            if( GUIMDI ) {
-                GUIBringNewToFront( wnd );
-            }
-        } else {
-            wnd->flags &= ~IS_MINIMIZED;
-            size.x = _wpi_getwmsizex( wparam, lparam );
-            size.y = _wpi_getwmsizey( wparam, lparam );
-            GUIDoResize( wnd, hwnd, &size );
-            if( wnd->flags & IS_ROOT ) {
-                win = GUIGetParentFrameHWND( wnd );
-                if( !_wpi_isiconic( win ) ) {
-                    GUIMaximizeZoomedChildren( wnd );
+        if( (wnd->flags & DOING_CLOSE) == 0 ) {
+            if( _wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
+                wnd->flags |= IS_MINIMIZED;
+                if( wnd->style & GUI_CHANGEABLE_FONT ) {
+                    GUIEnableSysMenuItem( wnd, GUI_CHANGE_FONT, false );
+                }
+                GUIEVENT( wnd, GUI_ICONIFIED, NULL );
+                if( GUIMDI ) {
+                    GUIBringNewToFront( wnd );
+                }
+            } else {
+                wnd->flags &= ~IS_MINIMIZED;
+                size.x = _wpi_getwmsizex( wparam, lparam );
+                size.y = _wpi_getwmsizey( wparam, lparam );
+                GUIDoResize( wnd, hwnd, &size );
+                if( wnd->flags & IS_ROOT ) {
+                    win = GUIGetParentFrameHWND( wnd );
+                    if( !_wpi_isiconic( win ) ) {
+                        GUIMaximizeZoomedChildren( wnd );
+                    }
                 }
             }
-        }
 #ifdef __NT__
-        //Call back to tell about resizing so system tray can be used
-        WndSizeChange( hwnd, wparam, lparam );
+            //Call back to tell about resizing so system tray can be used
+            WndSizeChange( hwnd, wparam, lparam );
 #endif
+        }
         break;
     case WM_MOUSEMOVE:
         currentpoint.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
@@ -1182,11 +1169,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         point.x = currentpoint.x;
         point.y = currentpoint.y;
         GUIScreenToScaleR( &point );
-        if( ( currentpoint.x != prevpoint.x ) ||
-            ( currentpoint.y != prevpoint.y ) ) {
+        if( ( currentpoint.x != prevpoint.x ) || ( currentpoint.y != prevpoint.y ) ) {
             prevpoint.x = currentpoint.x;
             prevpoint.y = currentpoint.y;
-            SendPointEvent( wparam, lparam, wnd, GUI_MOUSEMOVE, true );
+            SENDPOINTGUIEVENT( wnd, GUI_MOUSEMOVE, wparam, lparam );
         }
         break;
 #ifndef __OS2_PM__
@@ -1199,13 +1185,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_RBUTTONDOWN:
         _wpi_setcapture( hwnd );
         CheckDoFront( wnd );
-        SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDOWN, true );
+        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
         break;
 #else
     case WM_RBUTTONDOWN :
         WPI_MAKEPOINT( wparam, lparam, currentpoint );
         win = PM1632WinWindowFromPoint( hwnd, &currentpoint, false );
-        if( ( win != (HWND)NULL) && ( win != hwnd ) ) {
+        if( ( win != (HWND)NULL ) && ( win != hwnd ) ) {
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
                 GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &id );
@@ -1213,32 +1199,32 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         } else {
             _wpi_setcapture( hwnd );
             CheckDoFront( wnd );
-            SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDOWN, true );
+            SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
         }
         break;
 #endif
     case WM_LBUTTONDOWN:
         _wpi_setcapture( hwnd );
         CheckDoFront( wnd );
-        SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONDOWN, true );
+        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDOWN, wparam, lparam );
         use_defproc = true;
         break;
     case WM_LBUTTONUP:
         _wpi_releasecapture();
-        SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONUP, true );
+        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONUP, wparam, lparam );
         use_defproc = true;
         break;
     case WM_RBUTTONUP:
         _wpi_releasecapture();
-        SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONUP, true );
+        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONUP, wparam, lparam );
         break;
     case WM_LBUTTONDBLCLK:
         CheckDoFront( wnd );
-        SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONDBLCLK, true );
+        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDBLCLK, wparam, lparam );
         break;
     case WM_RBUTTONDBLCLK:
         CheckDoFront( wnd );
-        SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDBLCLK, true );
+        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDBLCLK, wparam, lparam );
         break;
     case WM_SYSCOMMAND:
         id = _wpi_getid( wparam );
@@ -1246,12 +1232,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         case SC_NEXTWINDOW :
             if( GUIMDI ) {
                 NextWndToFront( hwnd );
-                return( 0L );
+                break;
             }
+            /* fall through */
         default :
-            if( ( id & 0xf000 ) == ( SC_NEXTWINDOW & 0xf000 ) ) {
+            if( (id & 0xf000) == (SC_NEXTWINDOW & 0xf000) ) {
                 /* top value same for all SC_* values */
-                return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+                use_defproc = true;
             } else {
                 ProcessMenu( wnd, id );
             }
@@ -1264,14 +1251,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #else
     case WM_PARENTNOTIFY:
-        if( ( LOWORD(wparam) == WM_RBUTTONDOWN ) ||
-            ( LOWORD(wparam) == WM_LBUTTONDOWN ) ||
-            ( LOWORD(wparam) == WM_MBUTTONDOWN ) ) {
+        if( ( LOWORD( wparam ) == WM_RBUTTONDOWN ) ||
+            ( LOWORD( wparam ) == WM_LBUTTONDOWN ) ||
+            ( LOWORD( wparam ) == WM_MBUTTONDOWN ) ) {
             if( wnd->root == NULLHANDLE ) {
                 CheckDoFront( wnd );
             }
         }
-
         if( LOWORD(wparam) == WM_RBUTTONDOWN ) {
             WPI_MAKEPOINT( wparam, lparam, currentpoint );
             MapWindowPoints( hwnd, (HWND)NULL, &currentpoint, 1 );
@@ -1284,24 +1270,26 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             }
         }
         break;
-    case WM_ENDSESSION : {
-        gui_end_session     es;
+    case WM_ENDSESSION :
+        {
+            gui_end_session     es;
 
-        es.endsession = ( wparam != 0 );
-        es.logoff = ( lparam == 0x80000000L );
-        GUIEVENT( wnd, GUI_ENDSESSION, &es );
-        return( 0L );
-    }
-    case WM_QUERYENDSESSION : {
-        gui_end_session     es;
-
-        es.endsession = ( wparam != 0 );
-        es.logoff = ( lparam == 0x80000000L );  // ENDSESSION_LOGOFF
-        if( !GUIEVENT( wnd, GUI_QUERYENDSESSION, &es ) ) {
-            return( true );
+            es.endsession = ( wparam != 0 );
+            es.logoff = ( lparam == 0x80000000L );
+            GUIEVENT( wnd, GUI_ENDSESSION, &es );
         }
-        return( 0L );
-    }
+        break;
+    case WM_QUERYENDSESSION :
+        {
+            gui_end_session     es;
+
+            es.endsession = ( wparam != 0 );
+            es.logoff = ( lparam == 0x80000000L );  // ENDSESSION_LOGOFF
+            if( !GUIEVENT( wnd, GUI_QUERYENDSESSION, &es ) ) {
+                ret = (WPI_MRESULT)true;
+            }
+        }
+        break;
 #endif
     case WM_COMMAND:
         if( _wpi_ismenucommand( wparam, lparam ) ||
@@ -1315,11 +1303,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #ifndef __OS2_PM__
     case WM_VKEYTOITEM :
-        use_defproc = false;
-        ret = -1;
+        ret = (WPI_MRESULT)-1;
         GUIGetKeyState( &key_state.state );
-        if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
-            ret = GUIEVENT( wnd, GUI_KEYTOITEM, &key_state );
+        if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+            ret = (WPI_MRESULT)GUIEVENT( wnd, GUI_KEYTOITEM, &key_state );
         }
         break;
 #endif
@@ -1333,28 +1320,27 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_KEYUP :
     case WM_KEYDOWN :
 #endif
-        return( GUIProcesskey( hwnd, msg, wparam, lparam ) );
+        ret = (WPI_MRESULT)GUIProcesskey( hwnd, msg, wparam, lparam );
+        break;
     case WM_CLOSE :
         if( wnd->flags & DOING_CLOSE ) {
-            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+            use_defproc = true;
         } else if( wnd->style & GUI_CLOSEABLE ) {
-
             if( GUIEVENT( wnd, GUI_CLOSE, NULL ) ) {
                 wnd->flags |= DOING_CLOSE;
                 if( wnd->flags & IS_ROOT ) {
-                    return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+                    use_defproc = true;
                 } else {
                     _wpi_destroywindow( wnd->hwnd_frame );
                 }
             }
         }
-        return( 0L );
-
+        break;
 #ifdef __NT__
     // Message to deal with tray icons (Win 95 and NT 4.0 ).
     case WM_TRAYCALLBACK :
         TrayCallBack( hwnd, wparam, lparam );
-        return( 0L );
+        break;
 #endif
     case WM_DESTROY :
         wnd->flags |= DOING_DESTROY;
@@ -1365,21 +1351,19 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             GUIDestroyAllPopupsWithNoParent();
         }
         GUIFreeWindowMemory( wnd, false, false );
-
         if( NumWindows == 0 ) {
             _wpi_postquitmessage( 0 );
             Posted = true;
         }
-        return( 0L );
+        break;
     default:
         use_defproc = true;
+        break;
     }
-
-    if( use_defproc ) {
+    if( use_defproc )
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-    } else {
-        return( ret );
-    }
+
+    return( ret );
 }
 
 #ifdef __OS2_PM__

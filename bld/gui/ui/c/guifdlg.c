@@ -1103,9 +1103,9 @@ static void InitTextList( gui_window *gui, gui_ctl_id id, const char **text_list
 }
 
 /*
- * GetFileNameEvent - event handler for GetFileName dialog
+ * GetFileNameGUIEventProc - event handler for GetFileName dialog
  */
-static bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     int         sel;
@@ -1122,12 +1122,11 @@ static bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
 #endif
         if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
             dlg->dialogRC = FN_RC_FAILED_TO_INITIALIZE;
-            return( false );
+            break;
         }
         dlg->initted = true;
         GUISetFocus( gui, CTL_EDIT );
         return( true );
-        break;
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         switch( id ) {
@@ -1136,7 +1135,7 @@ static bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
             ProcessOKorDClick( gui, id );
             break;
         }
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED:
         if( !dlg->initted )
             break;
@@ -1177,7 +1176,7 @@ static bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
     }
     return( false );
 
-} /* GetFileNameEvent */
+} /* GetFileNameGUIEventProc */
 
 /*
  * GUIGetFileName - get a file name from the user
@@ -1211,7 +1210,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         goToDir( gui, ofn->initial_dir );
 
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
-                    dlgControls, ARRAY_SIZE( dlgControls ), &GetFileNameEvent, &dlg );
+                    dlgControls, ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
 
         if( !(ofn->flags & FN_CHANGEDIR) ) {
             goToDir( gui, olddir );

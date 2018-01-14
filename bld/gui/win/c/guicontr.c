@@ -271,9 +271,6 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     HWND                grand_parent;
     gui_window          *wnd;
     gui_key_control     key_control;
-#ifdef __OS2_PM__
-    WORD                key_flags;
-#endif
 
     parent = _wpi_getparent( hwnd );
     wnd = GUIGetCtrlWnd( parent );
@@ -340,9 +337,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
 #else
     case WM_CHAR :
         if( EditControlHasFocus ) {
-            key_flags = SHORT1FROMMP( wparam );
-            if( !( key_flags & KC_KEYUP ) &&
-                GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
+            if( !IS_KEY_UP( wparam ) && GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
                 //case GUI_KEY_ENTER :
                 case GUI_KEY_UP :

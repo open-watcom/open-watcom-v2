@@ -60,10 +60,10 @@ typedef enum {
     GUI_ICONIFIED,
     GUI_FONT_CHANGED,
     GUI_PAINT,
-    GUI_KEYDOWN,         /* keystroke messages */
+    GUI_KEYDOWN,                /* keystroke messages */
     GUI_KEYUP,
     GUI_KEY_CONTROL,
-    GUI_SCROLL_UP,       /* scrolling messages */
+    GUI_SCROLL_UP,              /* scrolling messages */
     GUI_SCROLL_PAGE_UP,
     GUI_SCROLL_TOP,
     GUI_SCROLL_DOWN,
@@ -77,9 +77,9 @@ typedef enum {
     GUI_SCROLL_PAGE_RIGHT,
     GUI_SCROLL_FULL_RIGHT,
     GUI_SCROLL_HORIZONTAL,
-    GUI_CLICKED,                /* menu clicked        */
+    GUI_CLICKED,                /* menu clicked */
     GUI_CONTROL_DCLICKED,       /* control double clicked */
-    GUI_LBUTTONDOWN,      /* mouse messages                 */
+    GUI_LBUTTONDOWN,            /* mouse messages */
     GUI_LBUTTONUP,
     GUI_LBUTTONDBLCLK,
     GUI_RBUTTONDOWN,

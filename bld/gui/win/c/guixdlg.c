@@ -56,6 +56,8 @@
 #endif
 
 
+#define SENDPOINTGUIEVENT(w, gm, wp, lp)    !SendPointEvent( wp, lp, w, gm, false )
+
 /* Local Window callback functions prototypes */
 WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
@@ -307,9 +309,6 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     control_item        *item;
     gui_event           gui_ev;
     gui_key_state       key_state;
-#ifdef __OS2_PM__
-    WORD                key_flags;
-#endif
 
     msg_processed = false;
     ret = false;
@@ -319,8 +318,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         wnd->hwnd = hwnd;
         wnd->hwnd_frame = hwnd;
 #ifdef __OS2_PM__
-        wnd->hwnd_pinfo.normal_pres =
-            _wpi_createos2normpres( GUIMainHInst, hwnd );
+        wnd->hwnd_pinfo.normal_pres = _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
         _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
         wnd->root_client_rect = wnd->hwnd_client_rect;
@@ -334,7 +332,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
 
     switch( message ) {
     case WM_SIZE :
-        if( wnd ) {
+        if( wnd != NULL ) {
             _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
             wnd->root_client_rect = wnd->hwnd_client_rect;
             size.x = _wpi_getwmsizex( wparam, lparam );
@@ -352,8 +350,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     //case WM_CTLCOLOREDIT :
         // May come along before WM_INITDIALOG
         if( wnd != NULL ) {
-            SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
-                        GUIGetBack( wnd, GUI_BACKGROUND ) ) );
+            SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
             return( (WPI_DLGRESULT)wnd->bk_brush );
         }
         break;
@@ -369,17 +366,18 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         hfocus = _wpi_getfocus();
         InitDialog( wnd );
 #ifdef __OS2_PM__
-        if( hfocus != _wpi_getfocus() ) {
+        if( hfocus != _wpi_getfocus() || (wnd->flags & IS_RES_DIALOG) ) {
+            // if the focus did not change then let the
+            // windowing system set the focus
+            ret = true;
+        }
+#else
+        if( (wnd->flags & IS_RES_DIALOG) && hfocus == _wpi_getfocus() ) {
+            // if the focus did not change then let the
+            // windowing system set the focus
             ret = true;
         }
 #endif
-        if( wnd->flags & IS_RES_DIALOG ) {
-            if( hfocus == _wpi_getfocus() ) {
-                // if the focus did not change then let the
-                // windowing system set the focus
-                ret = true;
-            }
-        }
         break;
 #ifdef __OS2_PM__
     case WM_CONTROL :
@@ -396,7 +394,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             }
         }
         if( item == NULL || item->id == 0 ) {
-            msg_processed |= !SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDOWN, false );
+            msg_processed |= SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
         }
         break;
 #else
@@ -412,23 +410,23 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         break;
     case WM_RBUTTONDOWN:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDOWN, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
         break;
 #endif
     case WM_RBUTTONUP:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONUP, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONUP, wparam, lparam );
         break;
     case WM_RBUTTONDBLCLK:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_RBUTTONDBLCLK, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDBLCLK, wparam, lparam );
         break;
     case WM_LBUTTONDOWN:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONDOWN, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDOWN, wparam, lparam );
         break;
     case WM_LBUTTONUP:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONUP, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONUP, wparam, lparam );
         break;
     case WM_LBUTTONDBLCLK:
-        msg_processed = !SendPointEvent( wparam, lparam, wnd, GUI_LBUTTONDBLCLK, false );
+        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDBLCLK, wparam, lparam );
         break;
     case WM_COMMAND :
         escape_pressed = false;
@@ -501,12 +499,9 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     case WM_SYSKEYUP :
     case WM_KEYDOWN :
     case WM_KEYUP :
-        gui_ev = GUI_KEYUP;
-        if( ( message == WM_KEYDOWN  ) || ( message == WM_SYSKEYDOWN  ) ) {
-            gui_ev = GUI_KEYDOWN;
-        }
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+            gui_ev = ( ( message == WM_KEYDOWN  ) || ( message == WM_SYSKEYDOWN  ) ) ? GUI_KEYDOWN : GUI_KEYUP;
             if( GUIEVENT( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
@@ -514,13 +509,9 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         break;
 #else
     case WM_CHAR :
-        key_flags = SHORT1FROMMP( wparam );
-        gui_ev = GUI_KEYDOWN;
-        if( key_flags & KC_KEYUP ) {
-            gui_ev = GUI_KEYUP;
-        }
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+            gui_ev = IS_KEY_UP( wparam ) ? GUI_KEYUP : GUI_KEYDOWN;
             if( GUIEVENT( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
