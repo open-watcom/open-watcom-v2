@@ -47,25 +47,25 @@ typedef struct dlg_async {
     unsigned cond;
 } dlg_async;
 
-static gui_window   *AsyncWnd = 0;
+static gui_window   *AsyncWnd = NULL;
 static dlg_async    dlg;
 
 void AsyncNotify( void )
 {
    if( AsyncWnd ) {
         dlg.cond = PollAsync();
-        if( !( dlg.cond & COND_RUNNING ) ) {
+        if( (dlg.cond & COND_RUNNING) == 0 ) {
 #ifdef __RDOS__
             uisendescape();
 #else
             GUICloseDialog( AsyncWnd );
-            AsyncWnd = 0;
-#endif            
+            AsyncWnd = NULL;
+#endif
         }
     }
 }
 
-OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool AsyncGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
 
@@ -76,29 +76,28 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
         AsyncWnd = gui;
         return( true );
     case GUI_DIALOG_ESCAPE:
-        AsyncWnd = 0;
+        AsyncWnd = NULL;
         dlg.cond = StopAsync();
         return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_ASYNC_STOP:
-            AsyncWnd = 0;
+            AsyncWnd = NULL;
             dlg.cond = StopAsync();
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
-        AsyncWnd = 0;
+        AsyncWnd = NULL;
         return( true );
     }
-
     return( false );
 }
 
-extern unsigned DlgAsyncRun( void )
+unsigned DlgAsyncRun( void )
 {
-    ResDlgOpen( &AsyncEvent, 0, DIALOG_ASYNC_RUN );
+    ResDlgOpen( AsyncGUIEventProc, 0, DIALOG_ASYNC_RUN );
     return( dlg.cond );
 }

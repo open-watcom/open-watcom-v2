@@ -52,7 +52,7 @@ OVL_EXTERN int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
 
     dlg.func = PickInit;
     dlg.chosen = -1;
-    ResDlgOpen( &GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
+    ResDlgOpen( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
     return( dlg.chosen );
 }
 

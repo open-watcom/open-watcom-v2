@@ -64,7 +64,7 @@ static void SetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 }
 
 
-OVL_EXTERN bool VarEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_var_expand  *varx;
@@ -105,7 +105,7 @@ extern  bool    DlgVarExpand( dlg_var_expand *pvarx )
     varx.start = pvarx->start;
     varx.end = pvarx->end;
     varx.cancel = true;
-    ResDlgOpen( &VarEvent, &varx, DIALOG_VARX );
+    ResDlgOpen( VarGUIEventProc, &varx, DIALOG_VARX );
     if( varx.cancel )
         return( false );
     pvarx->start = varx.start;

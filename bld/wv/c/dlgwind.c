@@ -103,7 +103,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool WndSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *wndset;
@@ -141,6 +141,6 @@ bool    DlgWndSet( void )
     dlg_window_set      wndset;
 
     wndset.cancel = true;
-    ResDlgOpen( &WndSetEvent, &wndset, DIALOG_WIND );
+    ResDlgOpen( WndSetGUIEventProc, &wndset, DIALOG_WIND );
     return( !wndset.cancel );
 }

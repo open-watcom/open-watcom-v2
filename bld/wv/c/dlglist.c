@@ -81,7 +81,7 @@ static void AddText( gui_window *gui, char *add )
     }
 }
 
-OVL_EXTERN bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     void        *curr;
@@ -157,8 +157,9 @@ OVL_EXTERN bool SourceEvent( gui_window *gui, gui_event gui_ev, void *param )
         }
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,unsigned),
@@ -170,5 +171,5 @@ void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,u
     dlg.next = next;
     dlg.name = name;
     dlg.title = DupStr( title );
-    ResDlgOpen( &SourceEvent, &dlg, DIALOG_LIST );
+    ResDlgOpen( SourceGUIEventProc, &dlg, DIALOG_LIST );
 }

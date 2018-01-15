@@ -55,7 +55,7 @@ extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, i
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
 
 
-OVL_EXTERN bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_command *dlg;
     char        *text;
@@ -100,8 +100,9 @@ OVL_EXTERN bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )
         WndFree( dlg );
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 
@@ -110,5 +111,5 @@ void    DlgCmd( void )
     dlg_command *dlg;
 
     dlg = WndMustAlloc( sizeof( dlg_command ) );
-    ResDlgOpen( &CmdEvent, dlg, DIALOG_CMD );
+    ResDlgOpen( CmdGUIEventProc, dlg, DIALOG_CMD );
 }

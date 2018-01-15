@@ -50,7 +50,7 @@ static char             prog[UTIL_LEN];
 static char             args[UTIL_LEN];
 
 
-OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
+OVL_EXTERN bool ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
 {
     gui_ctl_id          id;
     dlg_new_prog        *dlg;
@@ -84,11 +84,10 @@ OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
         return( true );
     }
-
     return( false );
 }
 
@@ -99,7 +98,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     pdlg->prog = prog;
     pdlg->args = args;
     pdlg->cancel = true;
-    ResDlgOpen( &ProgEvent, pdlg, DIALOG_NEW_PROG );
+    ResDlgOpen( ProgGUIEventProc, pdlg, DIALOG_NEW_PROG );
 }
 
 void    DlgNewProg( void )
