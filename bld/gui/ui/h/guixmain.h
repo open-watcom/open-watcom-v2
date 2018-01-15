@@ -34,7 +34,7 @@
 #define _GUIXMAIN_H_
 
 extern bool     GUISetupStruct( gui_window *, gui_create_info *, bool dialog );
-extern EVENT    GUIWndGetEvent( VSCREEN * );
+extern ui_event GUIWndGetEvent( VSCREEN * );
 extern int      GUIXMain( int argc, char * argv[] );
 
 #endif // _GUIXMAIN_H_

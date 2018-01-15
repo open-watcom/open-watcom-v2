@@ -124,18 +124,17 @@ void GUISetShowGadget( p_gadget gadget, bool show, bool set, int pos )
     ResetScrollAttrs( scroll_bar, scroll_icon );
 }
 
-static EVENT CheckGadget( p_gadget gadget, EVENT ev, EVENT scroll_ev,
-                          int *prev, int *diff )
+static ui_event CheckGadget( p_gadget gadget, ui_event ui_ev, ui_event scroll_ui_ev, int *prev, int *diff )
 {
     *prev = gadget->pos;
-    ev = uigadgetfilter( ev, gadget );
-    if( ev == scroll_ev ) {
+    ui_ev = uigadgetfilter( ui_ev, gadget );
+    if( ui_ev == scroll_ui_ev ) {
         *diff = gadget->pos - *prev;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT GUIGadgetFilter( gui_window *wnd, EVENT ev, int *prev, int *diff )
+ui_event GUIGadgetFilter( gui_window *wnd, ui_event ui_ev, int *prev, int *diff )
 {
     ATTR        scroll_bar;
     ATTR        scroll_icon;
@@ -145,21 +144,21 @@ EVENT GUIGadgetFilter( gui_window *wnd, EVENT ev, int *prev, int *diff )
     if( GUIUseGadget( wnd, wnd->hgadget ) ) {
         set = true;
         SetScrollAttrs( wnd, &scroll_bar, &scroll_icon );
-        ev = CheckGadget( wnd->hgadget, ev, EV_SCROLL_HORIZONTAL, prev, diff );
+        ui_ev = CheckGadget( wnd->hgadget, ui_ev, EV_SCROLL_HORIZONTAL, prev, diff );
     }
-    if( ev != EV_NO_EVENT && ev != EV_SCROLL_HORIZONTAL ) {
+    if( ui_ev != EV_NO_EVENT && ui_ev != EV_SCROLL_HORIZONTAL ) {
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( !set ) {
                 SetScrollAttrs( wnd, &scroll_bar, &scroll_icon );
                 set = true;
             }
-            ev = CheckGadget( wnd->vgadget, ev, EV_SCROLL_VERTICAL, prev, diff );
+            ui_ev = CheckGadget( wnd->vgadget, ui_ev, EV_SCROLL_VERTICAL, prev, diff );
         }
     }
     if( set ) {
         ResetScrollAttrs( scroll_bar, scroll_icon );
     }
-    return( ev );
+    return( ui_ev );
 }
 
 void GUIInitGadget( p_gadget gadget, ORD start, ORD length, ORD anchor )

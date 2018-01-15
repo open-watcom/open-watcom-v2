@@ -51,26 +51,15 @@
 
 static unsigned char    ReadReq;      /* this will be 0x00 or 0x10 */
 
-static EVENT    EventsPress[]   = {
-    EV_SHIFT_PRESS,
-    EV_SHIFT_PRESS,
-    EV_CTRL_PRESS,
-    EV_ALT_PRESS,
-    EV_SCROLL_PRESS,
-    EV_NUM_PRESS,
-    EV_CAPS_PRESS,
-    EV_INSERT_PRESS
-};
-
-static EVENT    EventsRelease[] = {
-    EV_SHIFT_RELEASE,
-    EV_SHIFT_RELEASE,
-    EV_CTRL_RELEASE,
-    EV_ALT_RELEASE,
-    EV_SCROLL_RELEASE,
-    EV_NUM_RELEASE,
-    EV_CAPS_RELEASE,
-    EV_INSERT_RELEASE
+static shiftkey_event   ShiftkeyEvents[] = {
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,
+    EV_ALT_PRESS,       EV_ALT_RELEASE,
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,
+    EV_NUM_PRESS,       EV_NUM_RELEASE,
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE,
+    EV_INSERT_PRESS,    EV_INSERT_RELEASE
 };
 
 unsigned int extern uiextkeyboard( void )
@@ -145,13 +134,13 @@ bool intern initkeyboard( void )
 }
 
 
-EVENT intern keyboardevent( void )
-/********************************/
+ui_event intern keyboardevent( void )
+/***********************************/
 {
     register    unsigned int            key;
     register    unsigned int            scan;
     register    unsigned char           ascii;
-    register    EVENT                   ev;
+    register    ui_event                ui_ev;
     register    unsigned char           newshift;
     register    unsigned char           changed;
 
@@ -166,9 +155,9 @@ EVENT intern keyboardevent( void )
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
-        ev = scan + 0x100;
+        ui_ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( ev >= EV_HOME && ev <= EV_DELETE ) {
+        if( ui_ev >= EV_HOME && ui_ev <= EV_DELETE ) {
             if( ( newshift & S_NUM ) == 0 ) {
                 if( ( newshift & S_SHIFT ) != 0 ) {
                     ascii = 0;      /* wipe out digit */
@@ -176,23 +165,23 @@ EVENT intern keyboardevent( void )
             }
         }
         if( ascii != 0 ) {
-            ev = ascii;
+            ui_ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+                ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_ENTER:
                 case EV_ESCAPE:
-                    ev = ascii + 0x100;
+                    ui_ev = ascii + 0x100;
                     break;
                 }
             }
         }
 #ifdef FD6
-        if( !iskeyboardchar( ev ) ) {
-            ev = EV_NO_EVENT;
+        if( !iskeyboardchar( ui_ev ) ) {
+            ui_ev = EV_NO_EVENT;
         }
 #endif
     } else {
@@ -204,23 +193,23 @@ EVENT intern keyboardevent( void )
                 if( ( changed & scan ) != 0 ) {
                     if( ( newshift & scan ) != 0 ) {
                         UIData->old_shift |= scan;
-                        return( EventsPress[ key ] );
+                        return( ShiftkeyEvents[key].press );
                     } else {
                         UIData->old_shift &= ~scan;
-                        return( EventsRelease[ key ] );
+                        return( ShiftkeyEvents[key].release );
                     }
                 }
                 scan <<= 1;
                 ++key;
             }
         }
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT UIAPI uikeyboardevent( void )
-/**********************************/
+ui_event UIAPI uikeyboardevent( void )
+/************************************/
 {
     return( keyboardevent() );
 }

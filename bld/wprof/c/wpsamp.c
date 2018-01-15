@@ -64,7 +64,7 @@ STATIC bool             sampleProcTopStatus( a_window *, int, int, wnd_line_piec
 STATIC bool             sampleProcBotStatus( a_window *, int, int, wnd_line_piece * );
 STATIC bool             sampleProcStatus( a_window *, int, int, wnd_line_piece * );
 STATIC bool             sampleProcOverview( a_window *, int, int, wnd_line_piece * );
-STATIC bool             sampleEventProc( a_window *, gui_event, void * );
+STATIC bool             sampleWndEventProc( a_window *, gui_event, void * );
 STATIC bool             sampleSetLine( a_window *, int, int, wnd_line_piece * );
 STATIC bool             sampleGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 STATIC int              simageDetailLine( a_window *, int, bool );
@@ -208,7 +208,7 @@ static char         lineData[96];
 
 
 static wnd_info     WPSampleInfo = {
-    sampleEventProc,
+    sampleWndEventProc,
     sampleRefresh,
     sampleGetLine,
     sampleMenuItem,
@@ -296,8 +296,8 @@ STATIC void sampleOpenMainImage( void )
 
 
 
-STATIC bool sampleEventProc( a_window *wnd, gui_event gui_ev, void *parm )
-/************************************************************************/
+STATIC bool sampleWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
+/***************************************************************************/
 {
     sio_data        *curr_sio;
 

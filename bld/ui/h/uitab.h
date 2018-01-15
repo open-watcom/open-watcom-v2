@@ -53,5 +53,5 @@ typedef struct vtab {
         unsigned        enter:1;      /* grab enter event as CR */
 } VTAB;
 
-EVENT uitabfilter( EVENT, VTAB * );
+ui_event uitabfilter( ui_event, VTAB * );
 #endif

@@ -186,8 +186,7 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 }
 
 
-extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass,
-                              void *extra )
+extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass, void *extra )
 {
     wnd_create_struct   info;
 

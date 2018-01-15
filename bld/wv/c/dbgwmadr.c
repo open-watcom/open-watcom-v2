@@ -441,7 +441,7 @@ OVL_EXTERN void     RegRefresh( a_window *wnd )
     }
 }
 
-OVL_EXTERN bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RegWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 
@@ -471,7 +471,7 @@ OVL_EXTERN bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info MadRegInfo = {
-    RegEventProc,
+    RegWndEventProc,
     RegRefresh,
     RegGetLine,
     RegMenuItem,

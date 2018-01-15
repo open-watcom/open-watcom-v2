@@ -45,18 +45,18 @@ void UIAPI uiflush( void )
 }
 
 
-static EVENT doget( bool update )
-/*******************************/
+static ui_event doget( bool update )
+/**********************************/
 {
-    register    EVENT                   ev;
-    static      short                   ReturnIdle = 1;
+    register ui_event       ui_ev;
+    static   short          ReturnIdle = 1;
 
     for( ;; ) {
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = _uievent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = _uievent();
+        if( ui_ev > EV_NO_EVENT )
             break;
         if( ReturnIdle ) {
             --ReturnIdle;
@@ -71,7 +71,7 @@ static EVENT doget( bool update )
         _uiwaitkeyb( 60, 0 );
     }
     ReturnIdle = 1;
-    if( ev==EV_REDRAW_SCREEN ){
+    if( ui_ev == EV_REDRAW_SCREEN ){
         SAREA           screen={ 0, 0, 0, 0 };
 
         screen.height= UIData->height;
@@ -81,23 +81,23 @@ static EVENT doget( bool update )
         UserForcedTermRefresh= true;
         physupdate( &screen );
     }
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT UIAPI uieventsource( bool update )
-/**************************************/
+ui_event UIAPI uieventsource( bool update )
+/*****************************************/
 {
-    EVENT   ev;
+    ui_event    ui_ev;
 
-    ev = doget( update );
+    ui_ev = doget( update );
     stopmouse();
     stopkeyboard();
-    return( uieventsourcehook( ev ) );
+    return( uieventsourcehook( ui_ev ) );
 }
 
 
-EVENT UIAPI uiget( void )
-/***********************/
+ui_event UIAPI uiget( void )
+/**************************/
 {
     return( uieventsource( true ) );
 }

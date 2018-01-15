@@ -75,3 +75,8 @@
      0 - Left Ctrl key pressed
 */
 #endif
+
+typedef struct shiftkey_event {
+    ui_event    press;
+    ui_event    release;
+} shiftkey_event;

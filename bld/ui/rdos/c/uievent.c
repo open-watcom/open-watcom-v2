@@ -61,29 +61,18 @@ static ORD              currMouseRow;
 static ORD              currMouseCol;
 static ORD              currMouseStatus;
 
-static EVENT    EventsPress[] = {
-    EV_SHIFT_PRESS,
-    EV_ALT_PRESS,
-    EV_CTRL_PRESS,
-    EV_NO_EVENT,
-    EV_SCROLL_PRESS,
-    EV_NO_EVENT,
-    EV_CAPS_PRESS,
-    EV_NUM_PRESS
+static shiftkey_event   ShiftkeyEvents[] = {
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_ALT_PRESS,       EV_ALT_RELEASE,
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,
+    ___,                ___,
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,
+    ___,                ___,
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE,
+    EV_NUM_PRESS,       EV_NUM_RELEASE
 };
 
-static EVENT    EventsRelease[] = {
-    EV_SHIFT_RELEASE,
-    EV_ALT_RELEASE,
-    EV_CTRL_RELEASE,
-    EV_NO_EVENT,
-    EV_SCROLL_RELEASE,
-    EV_NO_EVENT,
-    EV_CAPS_RELEASE,
-    EV_NUM_RELEASE
-};
-
-static EVENT KeyEventProc( void )
+static ui_event KeyEventProc( void )
 {
     int                 ext;
     int                 keystate;
@@ -91,7 +80,7 @@ static EVENT KeyEventProc( void )
     int                 scan;
     unsigned char       key;
     unsigned char       ascii;
-    EVENT               ev;
+    ui_event            ui_ev;
     unsigned char       changed;
 
     if( RdosReadKeyEvent( &ext, &keystate, &vk, &scan ) ) {
@@ -99,9 +88,9 @@ static EVENT KeyEventProc( void )
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
-        ev = scan + 0x100;
+        ui_ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( ev >= EV_HOME && ev <= EV_DELETE ) {
+        if( ui_ev >= EV_HOME && ui_ev <= EV_DELETE ) {
             if( ( keystate & KEY_NUM_ACTIVE ) == 0 ) {
                 if( ( keystate & KEY_SHIFT_PRESSED ) != 0 ) {
                     ascii = 0;      /* wipe out digit */
@@ -109,16 +98,16 @@ static EVENT KeyEventProc( void )
             }
         }
         if( ascii != 0 ) {
-            ev = ascii;
+            ui_ev = ascii;
             if( ( keystate & KEY_ALT_PRESSED ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+                ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_ENTER:
                 case EV_ESCAPE:
-                    ev = ascii + 0x100;
+                    ui_ev = ascii + 0x100;
                     break;
                 }
             }
@@ -132,22 +121,22 @@ static EVENT KeyEventProc( void )
                 if( ( changed & scan ) != 0 ) {
                     if( ( keystate & scan ) != 0 ) {
                         UIData->old_shift |= scan;
-                        return( EventsPress[ key ] );
+                        return( ShiftkeyEvents[key].press );
                     } else {
                         UIData->old_shift &= ~scan;
-                        return( EventsRelease[ key ] );
+                        return( ShiftkeyEvents[key].release );
                     }
                 }
                 scan <<= 1;
                 ++key;
             }
         }
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-static EVENT MouseEventProc( void )
+static ui_event MouseEventProc( void )
 {
     ORD stat = 0;
     int row;

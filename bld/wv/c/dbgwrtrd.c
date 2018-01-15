@@ -108,7 +108,7 @@ OVL_EXTERN int RunTrdNumRows( a_window *wnd )
     return( num );
 }
 
-OVL_EXTERN bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RunTrdWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -282,7 +282,7 @@ OVL_EXTERN bool    RunTrdGetLine( a_window *wnd, int row, int piece,
 }
 
 wnd_info RunTrdInfo = {
-    RunTrdEventProc,
+    RunTrdWndEventProc,
     RunTrdRefresh,
     RunTrdGetLine,
     RunTrdMenuItem,

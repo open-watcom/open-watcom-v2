@@ -705,14 +705,14 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
     gui_ctl_idx num_menus;
     MENUITEM    *menu;
     gui_ctl_idx i;
-    EVENT       ev;
+    ui_event    ui_ev;
 
     if( wnd->vbarmenu != NULL ) {
-        ev = ID2EV( id );
+        ui_ev = ID2EV( id );
         menu = wnd->vbarmenu->titles;
         num_menus = GetNumItems( menu );
         for( i = 0; i < num_menus; i++ ) {
-            if( menu[i].event == ev ) {
+            if( menu[i].event == ui_ev ) {
                 if( !DeleteMenu( wnd, id, &wnd->vbarmenu->titles, i ) ) {
                     return( false );
                 }

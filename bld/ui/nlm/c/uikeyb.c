@@ -105,12 +105,12 @@ void intern kbdspawnend( void )
 }
 
 
-EVENT intern keyboardevent( void )
-/********************************/
+ui_event intern keyboardevent( void )
+/***********************************/
 {
     BYTE        scan;
     BYTE        ascii;
-    EVENT       ev;
+    ui_event    ui_ev;
     BYTE        type;
     BYTE        status;
 
@@ -124,119 +124,119 @@ EVENT intern keyboardevent( void )
     switch( type ){
     case NORMAL_KEY:
         if( ascii == 0 || ascii == 0xe0 ){
-            ev = 0x100 + scan;
+            ui_ev = 0x100 + scan;
         } else {
             if( ( status & ALT_KEY ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+                ui_ev = EV_ALT_SPACE;
             } else if( ascii + 0x100 == EV_TAB_FORWARD ){
-                ev = EV_TAB_FORWARD;
+                ui_ev = EV_TAB_FORWARD;
             } else if( ascii + 0x100 == EV_ESCAPE ){
-                ev = EV_ESCAPE;
+                ui_ev = EV_ESCAPE;
             } else if( ascii + 0x100 == EV_ENTER ){
-                ev = EV_ENTER;
+                ui_ev = EV_ENTER;
             } else if( ascii + 0x100 == EV_RUB_OUT ){
-                ev = EV_RUB_OUT;
+                ui_ev = EV_RUB_OUT;
             } else {
-                ev = ascii;
+                ui_ev = ascii;
             } /* end if */
         } /* end if */
         break;
     case FUNCTION_KEY:
         if( status & ALT_KEY ){
-            ev = EV_ALT_F1 + ( ascii - 30 - 1 );
+            ui_ev = EV_ALT_F1 + ( ascii - 30 - 1 );
         } else if( status & CONTROL_KEY ){
-            ev = EV_CTRL_F1 + ( ascii - 20 - 1 );
+            ui_ev = EV_CTRL_F1 + ( ascii - 20 - 1 );
         } else if( status & ( RIGHT_SHIFT_KEY | LEFT_SHIFT_KEY ) ){
-            ev = EV_SHIFT_F1 + ( ascii - 10 - 1 );
+            ui_ev = EV_SHIFT_F1 + ( ascii - 10 - 1 );
         } else {
-            ev = EV_F1 + ( ascii - 1 );
+            ui_ev = EV_F1 + ( ascii - 1 );
         } /* end if */
         break;
     case ENTER_KEY:
-        ev = EV_ENTER;
+        ui_ev = EV_ENTER;
         break;
     case ESCAPE_KEY:
-        ev = EV_ESCAPE;
+        ui_ev = EV_ESCAPE;
         break;
     case BACKSPACE_KEY:
-        ev = EV_RUB_OUT;
+        ui_ev = EV_RUB_OUT;
         break;
     case DELETE_KEY:
-        ev = EV_DELETE;
+        ui_ev = EV_DELETE;
         break;
     case INSERT_KEY:
-        ev = EV_INSERT;
+        ui_ev = EV_INSERT;
         break;
     case CURSOR_UP_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_CURSOR_UP;
+            ui_ev = EV_CTRL_CURSOR_UP;
         } else {
-            ev = EV_CURSOR_UP;
+            ui_ev = EV_CURSOR_UP;
         }
         break;
     case CURSOR_DOWN_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_CURSOR_DOWN;
+            ui_ev = EV_CTRL_CURSOR_DOWN;
         } else {
-            ev = EV_CURSOR_DOWN;
+            ui_ev = EV_CURSOR_DOWN;
         }
         break;
     case CURSOR_RIGHT_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_CURSOR_RIGHT;
+            ui_ev = EV_CTRL_CURSOR_RIGHT;
         } else {
-            ev = EV_CURSOR_RIGHT;
+            ui_ev = EV_CURSOR_RIGHT;
         }
         break;
     case CURSOR_LEFT_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_CURSOR_LEFT;
+            ui_ev = EV_CTRL_CURSOR_LEFT;
         } else {
-            ev = EV_CURSOR_LEFT;
+            ui_ev = EV_CURSOR_LEFT;
         }
         break;
     case CURSOR_HOME_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_HOME;
+            ui_ev = EV_CTRL_HOME;
         } else {
-            ev = EV_HOME;
+            ui_ev = EV_HOME;
         }
         break;
     case CURSOR_END_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_END;
+            ui_ev = EV_CTRL_END;
         } else {
-            ev = EV_END;
+            ui_ev = EV_END;
         }
         break;
     case CURSOR_PUP_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_PAGE_UP;
+            ui_ev = EV_CTRL_PAGE_UP;
         } else {
-            ev = EV_PAGE_UP;
+            ui_ev = EV_PAGE_UP;
         }
         break;
     case CURSOR_PDOWN_KEY:
         if( status & CONTROL_KEY ){
-            ev = EV_CTRL_PAGE_DOWN;
+            ui_ev = EV_CTRL_PAGE_DOWN;
         } else {
-            ev = EV_PAGE_DOWN;
+            ui_ev = EV_PAGE_DOWN;
         }
         break;
     case 0xff:
         // 0xff is not a valid key type so this must have come from
         // the uiwakethread call below.
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
         break;
     default:
         break;
     } /* end switch */
 
-    if( !iskeyboardchar( ev ) ) {
-        ev = EV_NO_EVENT;
+    if( !iskeyboardchar( ui_ev ) ) {
+        ui_ev = EV_NO_EVENT;
     } /* end if */
 
-    return( ev );
+    return( ui_ev );
 
 }
 

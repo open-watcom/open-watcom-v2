@@ -43,6 +43,6 @@ typedef struct vbuffer {
 } VBUFFER;
 
 extern void         uipadblanks( char *, int );
-extern EVENT        uieditevent( EVENT, VBUFFER * );
+extern ui_event     uieditevent( ui_event, VBUFFER * );
 
 #endif

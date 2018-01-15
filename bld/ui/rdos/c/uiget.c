@@ -63,23 +63,23 @@ unsigned long UIAPI uiclock( void )
     return( lsb );
 }
 
-EVENT UIAPI uieventsource( bool update )
+ui_event UIAPI uieventsource( bool update )
 {
-    EVENT                   ev;
-    static      int         ReturnIdle = 1;
-    unsigned long           start;
-    EVENT                   ( *proc )();
+    ui_event            ui_ev;
+    static int          ReturnIdle = 1;
+    unsigned long       start;
+    ui_event            ( *proc )();
 
     start = uiclock();
     for( ; ; ) {
         if( HasEscape ) {
             HasEscape = false;
-            ev = EV_ESCAPE;
+            ui_ev = EV_ESCAPE;
         }
         else
-            ev = forcedevent();
+            ui_ev = forcedevent();
 
-        if( ev > EV_NO_EVENT )
+        if( ui_ev > EV_NO_EVENT )
             break;
 
         if( Callback && TimerPeriodMs ) {
@@ -87,20 +87,20 @@ EVENT UIAPI uieventsource( bool update )
             if( proc == 0) {
                 (*Callback)();
             } else {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
         } else {
             proc = (void *)RdosWaitTimeout( WaitHandle, 25 );
             if( proc != 0) {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
-        
+
             if( ReturnIdle ) {
                 ReturnIdle--;
                 return( EV_IDLE );
@@ -116,19 +116,19 @@ EVENT UIAPI uieventsource( bool update )
 
             proc = (void *)RdosWaitTimeout( WaitHandle, 250 );
             if( proc != 0) {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
         }
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiget( void )
+ui_event UIAPI uiget( void )
 {
     return( uieventsource( true ) );
 }

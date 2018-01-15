@@ -70,13 +70,13 @@ static gui_control_info Controls[] = {
     DLG_BUTTON(     NULL,   CTL_NEW_CANCEL, B3, R1, B3 + BW ),
 };
 
-OVL_EXTERN bool NewSymEvent( gui_window *gui, gui_event event, void *param )
+OVL_EXTERN bool NewSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
-    if( DlgNewGUIEventProc( gui, event, param ) )
+    if( DlgNewGUIEventProc( gui, gui_ev, param ) )
         return( true );
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         if( id == CTL_NEW_SYMBOL ) {
@@ -101,7 +101,7 @@ static bool DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_typ
     Controls[1].text = LIT_DUI( OK );
     Controls[3].text = LIT_DUI( Cancel );
     return( DlgNewWithCtl( title, buff, buff_len,
-                   Controls, ArraySize( Controls ), NewSymEvent,
+                   Controls, ArraySize( Controls ), NewSymGUIEventProc,
                    DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS ) );
 }
 

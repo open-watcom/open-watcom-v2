@@ -91,7 +91,7 @@ typedef struct a_num_field {          /* display is choice+diff */
 
 typedef struct a_hot_spot {
     char                *str;
-    EVENT               event;
+    ui_event            event;
     int                 row;
     int                 startcol;
     int                 length;
@@ -171,8 +171,8 @@ typedef struct a_dialog {
 extern void uiposnhotspots(VSCREEN *,VFIELD *);
 extern void uiprinthotspots(VSCREEN *,VFIELD *);
 extern void uioffhotspots(VSCREEN *,VFIELD *);
-extern EVENT uihotkeyfilter( a_dialog *, EVENT );
-extern EVENT uihotspotfilter( VSCREEN *, VFIELD *, EVENT );
+extern ui_event uihotkeyfilter( a_dialog *, ui_event );
+extern ui_event uihotspotfilter( VSCREEN *, VFIELD *, ui_event );
 extern char uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
 extern void uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
 extern char uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
@@ -183,9 +183,9 @@ extern void uifinidialog(void *);
 
 extern a_dialog *uibegdialog( const char *title, VFIELD *, ORD, ORD, int, int );
 extern bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area );
-extern EVENT uiprocessdialogevent( EVENT, a_dialog * );
+extern ui_event uiprocessdialogevent( ui_event, a_dialog * );
 extern void uireinitdialog( a_dialog *, VFIELD *);
-extern EVENT uidialog(a_dialog *);
+extern ui_event uidialog(a_dialog *);
 extern void uienddialog(a_dialog *);
 extern void uifreedialog( a_dialog *ui_dlg_info );
 extern void uiprintfield(a_dialog *, VFIELD *);
@@ -197,8 +197,8 @@ extern void uidialogsetdirty( a_dialog *, bool );
 extern void uidialogsetcurr( a_dialog *, VFIELD *);
 extern void uidialogexitcurr( a_dialog * );
 extern void uidialogchangefield( a_dialog * );
-extern bool uiisdefaulthotspot( VFIELD *, EVENT );
-extern EVENT uilistbox( EVENT , struct a_list *, bool );
+extern bool uiisdefaulthotspot( VFIELD *, ui_event );
+extern ui_event uilistbox( ui_event , struct a_list *, bool );
 extern void uiupdateedit( a_dialog *, VFIELD * );
 extern void uiboxpushlist( void );
 extern void uiboxpoplist( void );
@@ -227,7 +227,7 @@ extern void uiselectcombo( a_dialog *, VFIELD *, unsigned choice );
  * functions in uidialcb.c
  */
 
-extern EVENT uidialogcallback( a_dialog *, EVENT );
+extern ui_event uidialogcallback( a_dialog *, ui_event );
 
 #ifdef __cplusplus
 }

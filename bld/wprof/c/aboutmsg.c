@@ -41,7 +41,7 @@
 #include "aboutmsg.h"
 
 
-STATIC bool aboutEventProc( a_window *, gui_event, void * );
+STATIC bool aboutWndEventProc( a_window *, gui_event, void * );
 STATIC int  AboutNumRows( a_window * );
 STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 
@@ -49,7 +49,7 @@ static a_window     *aboutWindow = NULL;
 static bool         aboutOn = true;
 
 static wnd_info     AboutInfo = {
-    aboutEventProc,
+    aboutWndEventProc,
     NoRefresh,
     aboutGetLine,
     NoMenuItem,
@@ -139,8 +139,8 @@ STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece 
 
 
 
-STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
-/***********************************************************************/
+STATIC bool aboutWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
+/**************************************************************************/
 {
     /* unused parameters */ (void)wnd; (void)parm;
 

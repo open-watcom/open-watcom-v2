@@ -33,9 +33,9 @@
 #include "uidef.h"
 #include "uidialog.h"
 
-EVENT uidialogcallback( a_dialog *ui_dlg_info, EVENT ev )
+ui_event uidialogcallback( a_dialog *ui_dlg_info, ui_event ui_ev )
 {
     /* unused parameters */ (void)ui_dlg_info;
 
-    return( ev );
+    return( ui_ev );
 }

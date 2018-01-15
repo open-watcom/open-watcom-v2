@@ -810,7 +810,7 @@ OVL_EXTERN  void VarRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool VarWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     var_window  *var = WndVar( wnd );
     gui_ord     old_width;
@@ -926,7 +926,7 @@ void VarChangeOptions( void )
 }
 
 wnd_info VarInfo = {
-    VarEventProc,
+    VarWndEventProc,
     VarRefresh,
     VarGetLine,
     VarMenuItem,

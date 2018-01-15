@@ -258,24 +258,28 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
 
 } /* eventWeWant */
 
-EVENT intern getanyevent( void )
+ui_event intern getanyevent( void )
 {
     INPUT_RECORD        ir;
     DWORD               rd,ss;
     WORD                vk;
-    EVENT               ascii;
+    ui_event            ui_ev;
+    unsigned char       ascii;
     BOOL                has_alt, has_shift, has_ctrl;
-    map                 *ev,what;
-    EVENT               evnt;
+    map                 *ev, what;
 
     for( ;; ) {
         PeekConsoleInput( InputHandle, &ir, 1, &rd );
-        if( rd == 0 ) return( EV_NO_EVENT );
+        if( rd == 0 )
+            return( EV_NO_EVENT );
         ReadConsoleInput( InputHandle, &ir, 1, &rd );
         if( eventWeWant( &ir ) ) {
-            if( ir.EventType != MOUSE_EVENT ) break;
-            evnt = mouseevent();
-            if( evnt > EV_NO_EVENT ) return( evnt );
+            if( ir.EventType != MOUSE_EVENT )
+                break;
+            ui_ev = mouseevent();
+            if( ui_ev > EV_NO_EVENT ) {
+                return( ui_ev );
+            }
         }
     }
 
@@ -288,25 +292,26 @@ EVENT intern getanyevent( void )
     setshiftstate( has_shift, has_ctrl, has_alt );
     what.vk = vk;
 
-    ev = bsearch( &what, events, sizeof( events )/sizeof( map ),
-                    sizeof( what ), CompareEvents );
+    ev = bsearch( &what, events, sizeof( events ) / sizeof( map ), sizeof( what ), CompareEvents );
     if( ev != NULL ) {
         if( has_shift ) {
-            ascii = ev->shift;
+            ui_ev = ev->shift;
         } else if( has_ctrl ) {
-            ascii = ev->ctrl;
+            ui_ev = ev->ctrl;
         } else if( has_alt ) {
-            ascii = ev->alt;
+            ui_ev = ev->alt;
         } else {
-            ascii = ev->reg;
+            ui_ev = ev->reg;
         }
     } else if( ascii == 0 ) {
-        ascii = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
+    } else {
+        ui_ev = ascii;
     }
-    if( ascii > EV_NO_EVENT ) {
+    if( ui_ev > EV_NO_EVENT ) {
         uihidemouse();
     }
-    return( ascii );
+    return( ui_ev );
 
 } /* getanyevent */
 

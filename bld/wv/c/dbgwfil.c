@@ -769,7 +769,7 @@ OVL_EXTERN void FileRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FileWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );
 
@@ -811,7 +811,7 @@ OVL_EXTERN bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info FileInfo = {
-    FileEventProc,
+    FileWndEventProc,
     FileRefresh,
     FileGetLine,
     FileMenuItem,

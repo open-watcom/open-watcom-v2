@@ -295,7 +295,7 @@ void FiniIOWindow( void )
     MemFiniTypes( &IOData );
 }
 
-OVL_EXTERN bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool IOWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
 
@@ -316,7 +316,7 @@ OVL_EXTERN bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info IOInfo = {
-    IOEventProc,
+    IOWndEventProc,
     IORefresh,
     IOGetLine,
     IOMenuItem,

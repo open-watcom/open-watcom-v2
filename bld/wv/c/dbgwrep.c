@@ -220,7 +220,7 @@ OVL_EXTERN  bool    RepGetLine( a_window *wnd, int row, int piece,
 }
 
 
-OVL_EXTERN bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RepWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -233,7 +233,7 @@ OVL_EXTERN bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info RepInfo = {
-    RepEventProc,
+    RepWndEventProc,
     RepRefresh,
     RepGetLine,
     RepMenuItem,

@@ -263,7 +263,7 @@ OVL_EXTERN void FuncSetOptions( a_window *wnd )
     FuncNewOptions( wnd );
 }
 
-OVL_EXTERN bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FuncWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 
@@ -294,7 +294,7 @@ void FuncChangeOptions( void )
 }
 
 wnd_info FuncInfo = {
-    FuncEventProc,
+    FuncWndEventProc,
     FuncRefresh,
     FuncGetLine,
     FuncMenuItem,

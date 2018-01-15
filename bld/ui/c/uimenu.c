@@ -48,7 +48,7 @@
 
 static  int                     BetweenTitles = BETWEEN_TITLES;
 
-extern  EVENT                   Event;
+extern  ui_event                Event;
 
 static  VBARMENU                MenuList;
 static  VBARMENU*               Menu;
@@ -58,11 +58,11 @@ static  int                     NumMenus = 0;
 
 static  UI_WINDOW               BarWin;
 
-static EVENT    menu_list[] = {
+static ui_event    menu_list[] = {
     EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
     EV_ALT_Q,           EV_ALT_M,
     EV_SCROLL_PRESS,    EV_CAPS_RELEASE,
-    EV_NO_EVENT,
+    __rend__,
     EV_MOUSE_PRESS,
     EV_MOUSE_DRAG,
     EV_MOUSE_RELEASE,
@@ -74,7 +74,7 @@ static EVENT    menu_list[] = {
     EV_ALT_PRESS,
     EV_ALT_RELEASE,
     EV_F10,
-    EV_NO_EVENT
+    __end__
 };
 
 static char     *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
@@ -86,11 +86,11 @@ extern void uisetbetweentitles( int between )
     BetweenTitles = between;
 }
 
-extern char uialtchar( EVENT ev )
-/*******************************/
+extern char uialtchar( ui_event ui_ev )
+/*************************************/
 {
-    if( ( ev >= EV_ALT_Q ) && ( ev <= EV_ALT_M ) ) {
-        return( alt[ev - EV_ALT_Q] );
+    if( ( ui_ev >= EV_ALT_Q ) && ( ui_ev <= EV_ALT_M ) ) {
+        return( alt[ui_ev - EV_ALT_Q] );
     } else {
         return( '\0' );
     }
@@ -341,14 +341,14 @@ static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
     return( handled );
 }
 
-static EVENT createpopup( DESCMENU *desc, EVENT *newevent )
+static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 {
-    EVENT       itemevent;
+    ui_event    ui_ev;
     MENUITEM    *curr_menu;
     SAREA       keep_inside;
     SAREA       return_exclude;
 
-    itemevent = EV_NO_EVENT;
+    ui_ev = EV_NO_EVENT;
     if( MENUGRAYED(Menu->titles[Menu->menu - 1]) ) {
         curr_menu = NULL;
     } else {
@@ -367,12 +367,12 @@ static EVENT createpopup( DESCMENU *desc, EVENT *newevent )
 
         uimenudisable( true );
 
-        *newevent = uicreatesubpopupinarea( curr_menu, desc, true, false,
+        *new_ui_ev = uicreatesubpopupinarea( curr_menu, desc, true, false,
                                             curr_menu[0].event, &keep_inside,
                                             &BarWin.area, &return_exclude );
         uimenudisable( false );
 
-        switch( *newevent ) {
+        switch( *new_ui_ev ) {
         case EV_CURSOR_RIGHT :
         case EV_CURSOR_LEFT :
         case EV_ALT_PRESS :
@@ -385,20 +385,20 @@ static EVENT createpopup( DESCMENU *desc, EVENT *newevent )
         case EV_MOUSE_RELEASE_R:
               break;
         default :
-            itemevent = *newevent;
+            ui_ev = *new_ui_ev;
         }
     }
-    return( itemevent );
+    return( ui_ev );
 }
 
 
-static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
-/**************************************************************/
+static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
+/***********************************************************************/
 {
     int         index;
     int         oldmenu = 0;
-    EVENT       itemevent;
-    EVENT       newevent;
+    ui_event    itemevent;
+    ui_event    new_ui_ev;
     DESCMENU    *desc;
     int         menu;
     bool        select;
@@ -406,18 +406,18 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
     ORD         mousecol;
     bool        mouseon;
 
-    newevent = ev;
-    if( iskeyboardchar( ev ) ){
+    new_ui_ev = ui_ev;
+    if( iskeyboardchar( ui_ev ) ){
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = false;
     }
     if( !isdialogue( vptr ) ) {
         if( NumMenus > 0 ) {
             desc = &Describe[Menu->menu - 1];
-            newevent = EV_NO_EVENT; /* Moved here from "else" case below */
+            new_ui_ev = EV_NO_EVENT; /* Moved here from "else" case below */
             if( Menu->popuppending ) {
                 Menu->popuppending = false;
-                itemevent = createpopup( desc, &ev );
+                itemevent = createpopup( desc, &ui_ev );
             } else {
                 itemevent = EV_NO_EVENT;
             }
@@ -427,9 +427,9 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                 oldmenu = menu = 0;
             }
             select = false;
-            if( ev == EV_ALT_PRESS && !Menu->ignorealt ){
+            if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ){
                 Menu->altpressed = true;
-            } else if( ev == EV_ALT_RELEASE && Menu->altpressed ){
+            } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ){
                 if( Menu->active ){
                     menu = 0;
                 } else {
@@ -437,26 +437,25 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                     menu = 1;
                 }
                 Menu->altpressed = false;
-            } else if( ev == EV_F10 && UIData->f10menus ){
+            } else if( ui_ev == EV_F10 && UIData->f10menus ){
                 desc = &Describe[0];
                 menu = 1;
-            } else if( ev == EV_MOUSE_PRESS_R  ||
-                       ev == EV_MOUSE_PRESS_M  ){
-                newevent = ev;
+            } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ){
+                new_ui_ev = ui_ev;
                 menu = 0;
                 Menu->draginmenu = false;
-            } else if( ( ev == EV_MOUSE_PRESS ) ||
-                ( ev == EV_MOUSE_DRAG ) ||
-                ( ev == EV_MOUSE_REPEAT ) ||
-                ( ev == EV_MOUSE_RELEASE ) ||
-                ( ev == EV_MOUSE_DCLICK ) ) {
+            } else if( ( ui_ev == EV_MOUSE_PRESS ) ||
+                ( ui_ev == EV_MOUSE_DRAG ) ||
+                ( ui_ev == EV_MOUSE_REPEAT ) ||
+                ( ui_ev == EV_MOUSE_RELEASE ) ||
+                ( ui_ev == EV_MOUSE_DCLICK ) ) {
                 uigetmouse( &mouserow, &mousecol, &mouseon );
                 if( ( mouserow < uimenuheight() ) &&
                     ( Menu->active  ||
-                      ev == EV_MOUSE_PRESS  || ev == EV_MOUSE_DCLICK  ||
-                      ev == EV_MOUSE_DRAG || ev == EV_MOUSE_REPEAT ) ) {
-                    if( ev == EV_MOUSE_DCLICK ) {
-                        ev = EV_MOUSE_PRESS;
+                      ui_ev == EV_MOUSE_PRESS  || ui_ev == EV_MOUSE_DCLICK  ||
+                      ui_ev == EV_MOUSE_DRAG || ui_ev == EV_MOUSE_REPEAT ) ) {
+                    if( ui_ev == EV_MOUSE_DCLICK ) {
+                        ui_ev = EV_MOUSE_PRESS;
                     }
                     menu = 0;
                     for( index = 0 ; !MENUENDMARKER( Menu->titles[index] ); ++index ) {
@@ -476,21 +475,21 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                         && ( mouserow < desc->area.row + desc->area.height - 1 )
                         && ( desc->area.row <= mouserow ) ) {
                         Menu->movedmenu = true;
-                    } else if( ev == EV_MOUSE_PRESS  ) {
-                        newevent = ev;
+                    } else if( ui_ev == EV_MOUSE_PRESS  ) {
+                        new_ui_ev = ui_ev;
                         menu = 0;
                         Menu->draginmenu = false;
-                    } else if( ev == EV_MOUSE_RELEASE ) {
+                    } else if( ui_ev == EV_MOUSE_RELEASE ) {
                         menu = 0;
                         Menu->draginmenu = false;
                     }
                 } else {
-                    newevent = ev;
+                    new_ui_ev = ui_ev;
                 }
-                if( ev != EV_MOUSE_RELEASE && menu != oldmenu ){
+                if( ui_ev != EV_MOUSE_RELEASE && menu != oldmenu ){
                     Menu->movedmenu = true;
                 }
-                if( ev == EV_MOUSE_RELEASE ) {
+                if( ui_ev == EV_MOUSE_RELEASE ) {
                     if( !Menu->movedmenu ) {
                         menu = 0;
                     } else {
@@ -498,11 +497,11 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                     }
                     Menu->movedmenu = false;
                 }
-            } else if( uialtchar( ev ) != '\0'  ) {
-                process_char( uialtchar( ev ), &desc, &menu, &select );
-                newevent = EV_NO_EVENT;
+            } else if( uialtchar( ui_ev ) != '\0'  ) {
+                process_char( uialtchar( ui_ev ), &desc, &menu, &select );
+                new_ui_ev = EV_NO_EVENT;
             } else if( Menu->active ) {
-                switch( ev ) {
+                switch( ui_ev ) {
                 case EV_ESCAPE :
                     menu = 0;
                     break;
@@ -533,24 +532,24 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                 case EV_NO_EVENT :
                     break;
                 default :
-                    if( iskeyboardchar( ev ) ) {
-                        if( process_char( ev, &desc, &menu, &select ) ) {
+                    if( iskeyboardchar( ui_ev ) ) {
+                        if( process_char( ui_ev, &desc, &menu, &select ) ) {
                             break;
                         }
                     }
                     if( itemevent != EV_NO_EVENT ) {
-                        newevent = itemevent;
+                        new_ui_ev = itemevent;
                         select = true;
                     } else {
-                        newevent = ev;
+                        new_ui_ev = ui_ev;
                     }
                 }
             } else {
-                newevent = ev;
+                new_ui_ev = ui_ev;
             }
             if( menu != oldmenu ) {
                 if( menu > 0 && !Menu->active ) {
-                    newevent = EV_MENU_ACTIVE;
+                    new_ui_ev = EV_MENU_ACTIVE;
                 }
                 Menu->active = ( menu > 0 );
                 if( oldmenu > 0 ) {
@@ -574,14 +573,14 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
                 }
                 Menu->event = itemevent;
                 if( select ) {
-                    newevent = Menu->event;
+                    new_ui_ev = Menu->event;
                     Menu->active = false;
                     uimenutitlebar();
                 }
             }
         }
     }
-    if( ev == EV_MOUSE_RELEASE ){
+    if( ui_ev == EV_MOUSE_RELEASE ){
         Menu->draginmenu = false;
     }
     if( Menu->ignorealt ){
@@ -601,12 +600,12 @@ static EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
         InitMenuPopupPending = true;
     }
 
-    return( newevent );
+    return( new_ui_ev );
 }
 
 #if 0
-EVENT uigeteventfrompos( ORD row, ORD col )
-/*****************************************/
+ui_event uigeteventfrompos( ORD row, ORD col )
+/********************************************/
 {
     unsigned            index;
     DESCMENU*           desc;
@@ -625,30 +624,30 @@ EVENT uigeteventfrompos( ORD row, ORD col )
 }
 #endif
 
-EVENT intern menuevent( VSCREEN *vptr )
-/*************************************/
+ui_event intern menuevent( VSCREEN *vptr )
+/****************************************/
 {
-    register    EVENT                   newevent;
-    register    EVENT                   ev;
+    register ui_event       new_ui_ev;
+    register ui_event       ui_ev;
 
-    newevent = EV_NO_EVENT;
+    new_ui_ev = EV_NO_EVENT;
 
     if ( InitMenuPopupPending ) {
         InitMenuPopupPending = false;
         if( Menu->titles[Menu->menu - 1].popup != NULL ) {
-            newevent = EV_MENU_INITPOPUP;
+            new_ui_ev = EV_MENU_INITPOPUP;
         }
     }
 
-    if( newevent == EV_NO_EVENT ) {
+    if( new_ui_ev == EV_NO_EVENT ) {
         if ( uimenuson() && !uimenuisdisabled() ) {
             uipushlist( menu_list );
             if( !Menu->active || isdialogue( vptr ) ) {
-                ev = getprime( vptr );
+                ui_ev = getprime( vptr );
             } else {
-                ev = getprime( NULL );
+                ui_ev = getprime( NULL );
             }
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_SCROLL_PRESS:
                 Menu->scroll = true;
                 break;
@@ -668,15 +667,15 @@ EVENT intern menuevent( VSCREEN *vptr )
                 Menu->caps = false;
                 break;
             default:
-                newevent = process_menuevent( vptr, ev );
+                new_ui_ev = process_menuevent( vptr, ui_ev );
             }
-            uipoplist();
+            uipoplist( /* menu_list */ );
         } else {
-            newevent = getprime( vptr );
+            new_ui_ev = getprime( vptr );
         }
     }
 
-    return( newevent );
+    return( new_ui_ev );
 }
 
 
@@ -929,8 +928,8 @@ void UIAPI uinomenus( void )
 }
 
 
-void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
-/*****************************************************************/
+void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, ui_event hot )
+/*******************************************************************/
 {
     register    int                     index;
 

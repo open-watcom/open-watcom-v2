@@ -33,5 +33,5 @@
 
 extern bool     TrieInit( void );
 extern void     TrieFini( void );
-extern bool     TrieAdd( EVENT event, const char *str );
-extern EVENT    TrieRead( void );
+extern bool     TrieAdd( ui_event ui_ev, const char *str );
+extern ui_event TrieRead( void );

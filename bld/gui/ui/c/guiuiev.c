@@ -36,8 +36,8 @@
 #include "guiuiev.h"
 
 
-EVENT GUIUIProcessEvent( EVENT ev )
+ui_event GUIUIProcessEvent( ui_event ui_ev )
 {
-    return( ev );
+    return( ui_ev );
 }
 

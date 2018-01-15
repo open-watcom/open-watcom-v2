@@ -994,7 +994,7 @@ static  void    AsmInit( a_window *wnd )
     WndZapped( wnd );
 }
 
-OVL_EXTERN bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool AsmWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
@@ -1046,7 +1046,7 @@ void AsmChangeOptions( void )
 }
 
 wnd_info AsmInfo = {
-    AsmEventProc,
+    AsmWndEventProc,
     AsmRefresh,
     AsmGetLine,
     AsmMenuItem,

@@ -43,7 +43,7 @@
 
 static int      memFHdl;
 
-extern void HelpMemInit( void )
+void HelpMemInit( void )
 {
 #ifdef TRMEM
     memFHdl= open( "MEMERR", O_WRONLY | O_TRUNC | O_CREAT | O_TEXT, PMODE_RW );
@@ -54,7 +54,7 @@ extern void HelpMemInit( void )
 #endif
 }
 
-extern void HelpMemFini( void )
+void HelpMemFini( void )
 {
 #ifdef TRMEM
 //    TRMemPrtList();
@@ -68,17 +68,17 @@ extern void HelpMemFini( void )
 #endif
 }
 
-extern HELPMEM void *HelpMemAlloc( size_t size )
+HELPMEM void *HelpMemAlloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-extern HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
+HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 }
 
-extern HELPMEM void HelpMemFree( void *ptr )
+HELPMEM void HelpMemFree( void *ptr )
 {
     free( ptr );
 }

@@ -37,24 +37,14 @@
 #define INCL_DOSDEVICES
 #include "doscall.h"
 
-static EVENT    EventsPress[]   = {
-    EV_SHIFT_PRESS,
-    EV_SHIFT_PRESS,
-    EV_CTRL_PRESS,
-    EV_ALT_PRESS,
-    EV_SCROLL_PRESS,
-    EV_NUM_PRESS,
-    EV_CAPS_PRESS,
-};
-
-static EVENT    EventsRelease[] = {
-    EV_SHIFT_RELEASE,
-    EV_SHIFT_RELEASE,
-    EV_CTRL_RELEASE,
-    EV_ALT_RELEASE,
-    EV_SCROLL_RELEASE,
-    EV_NUM_RELEASE,
-    EV_CAPS_RELEASE,
+static shiftkey_event   ShiftkeyEvents[] = {
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,
+    EV_ALT_PRESS,       EV_ALT_RELEASE,
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,
+    EV_NUM_PRESS,       EV_NUM_RELEASE,
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE
 };
 
 static unsigned         shift_state;
@@ -95,13 +85,13 @@ void intern kbdspawnend( void )
 }
 
 
-EVENT intern keyboardevent( void )
-/********************************/
+ui_event intern keyboardevent( void )
+/***********************************/
 {
     register    unsigned                scan;
     register    unsigned char           key;
     register    unsigned char           ascii;
-    register    EVENT                   ev;
+    register    ui_event                ui_ev;
     register    unsigned char           newshift;
     register    unsigned char           changed;
     struct _KBDKEYINFO                  keyInfo;
@@ -123,24 +113,24 @@ EVENT intern keyboardevent( void )
     if( os2getkey( &keyInfo ) ) {
         scan  = keyInfo.chScan;
         ascii = keyInfo.chChar;
-        ev = scan + 0x100;
+        ui_ev = scan + 0x100;
         if( ascii != 0 && ascii != 0xE0 ) {
-            ev = ascii;
+            ui_ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+                ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_ENTER:
                 case EV_ESCAPE:
-                    ev = ascii + 0x100;
+                    ui_ev = ascii + 0x100;
                     break;
                 }
             }
         }
-        if( !iskeyboardchar( ev ) ) {
-            ev = EV_NO_EVENT;
+        if( !iskeyboardchar( ui_ev ) ) {
+            ui_ev = EV_NO_EVENT;
         }
     } else {
         changed = ( newshift ^ UIData->old_shift ) & ~S_INSERT;
@@ -151,21 +141,19 @@ EVENT intern keyboardevent( void )
                 if( ( changed & scan ) != 0 ) {
                     if( ( newshift & scan ) != 0 ) {
                         UIData->old_shift |= scan;
-                        ev = EventsPress[ key ];
-                        return( ev );
+                        return( ShiftkeyEvents[key].press );
                     } else {
                         UIData->old_shift &= ~scan;
-                        ev = EventsRelease[ key ];
-                        return( ev );
+                        return( ShiftkeyEvents[key].release );
                     }
                 }
                 scan <<= 1;
                 ++key;
             }
         }
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
 

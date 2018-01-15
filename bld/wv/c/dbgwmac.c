@@ -604,7 +604,7 @@ OVL_EXTERN void     MacRefresh( a_window *wnd )
     WndRepaint( wnd );
 }
 
-OVL_EXTERN bool MacEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool MacWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 
@@ -629,7 +629,7 @@ OVL_EXTERN bool MacEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info MacInfo = {
-    MacEventProc,
+    MacWndEventProc,
     MacRefresh,
     MacGetLine,
     MacMenuItem,

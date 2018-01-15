@@ -213,7 +213,7 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-static bool W2EventProc( a_window *wnd, gui_event gui_ev, void *parm )
+static bool W2WndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = WndExtra( wnd );
 
@@ -243,7 +243,7 @@ static bool W2EventProc( a_window *wnd, gui_event gui_ev, void *parm )
 }
 
 static wnd_info W2Info = {
-    W2EventProc,
+    W2WndEventProc,
     W2Refresh,
     W2GetLine,
     W2MenuItem,

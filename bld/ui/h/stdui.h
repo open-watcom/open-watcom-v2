@@ -46,8 +46,8 @@
 #endif
 
 
-typedef enum EVENT {
-    EV_SIGNED_TYPE               = -1,    /* ensure EVENT is signed type, required by uiungetevent */
+typedef enum ui_event {
+    EV_SIGNED_TYPE               = -1,    /* ensure ui_event is signed type, required by uiungetevent */
     EV_NO_EVENT                  = 0x0000,
 
     EV_FIRST_EDIT_CHAR           = 0x0001,
@@ -293,7 +293,11 @@ typedef enum EVENT {
     EV_FIRST_UNUSED              = 0x0400,
 
     EV_LAST_EVENT                = 0x7FFF,
-} EVENT;
+} ui_event;
+
+#define ___                     EV_NO_EVENT         /* readable no event */
+#define __rend__                EV_NO_EVENT         /* readable group separator in event list */
+#define __end__                 EV_NO_EVENT         /* readable group separator in event list */
 
 #define EV_FIRST_EVENT          EV_FIRST_EDIT_CHAR
 
@@ -321,10 +325,10 @@ typedef enum EVENT {
 
 #define MAX_EVENT_LISTS         30
 
-typedef struct eventlist {
+typedef struct ui_event_list {
     int             num_lists;
-    EVENT     _FARD *events[ MAX_EVENT_LISTS ];
-} EVENTLIST;
+    ui_event  _FARD *events[ MAX_EVENT_LISTS ];
+} ui_event_list;
 
 enum    {
     ATTR_MENU,
@@ -538,7 +542,7 @@ typedef struct ui_window {
 } UI_WINDOW;
 
 typedef struct vscreen {
-    EVENT           event;          /* garbage                          */
+    ui_event        event;          /* garbage                          */
     const char      _FARD *title;   /* title of virtual screen          */
     SAREA           area;           /* position on physical screen      */
     unsigned int    flags;          /* dialogue, unframed, movable etc. */
@@ -555,7 +559,7 @@ typedef struct monitor {
     ORD             width;          /* number of columns                */
     int             colour;         /* M_MONO, M_CGA, M_EGA             */
     ATTR      _FARD *attrs;         /* attributes                       */
-    EVENTLIST _FARD *events;        /* event list pointer               */
+    ui_event_list _FARD *events;    /* event list pointer               */
     UI_WINDOW _FARD *area_head;     /* head of area list                */
     UI_WINDOW _FARD *area_tail;     /* tail of area list                */
     unsigned        mouse_acc_delay;/* acceleration delay               */
@@ -638,11 +642,11 @@ extern      void            uiclose( VSCREEN _FARD * );
 extern      void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );
 extern      bool            uiconfig( char *, char ** );
 extern      void            uicursor( VSCREEN _FARD *, ORD, ORD, CURSOR_TYPE );
-extern      EVENT           uidialogevent( VSCREEN _FARD * );
+extern      ui_event        uidialogevent( VSCREEN _FARD * );
 extern      void            uidirty( SAREA );
 extern      void            uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
-extern      EVENT           uieventsource( bool );
-extern      EVENT           uieventsourcehook( EVENT );
+extern      ui_event        uieventsource( bool );
+extern      ui_event        uieventsourcehook( ui_event );
 extern      LP_VOID         uifaralloc( size_t );
 extern      void            uifarfree( LP_VOID );
 extern      void            uifini( void );
@@ -652,18 +656,18 @@ extern      void            uiflush( void );
 extern      void            uiflushevent( void );
 extern      void            uifree( void * );
 extern      unsigned long   uiclock( void );
-extern      EVENT           uiget( void );
+extern      ui_event        uiget( void );
 extern      void            uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD *, int _FARD * );
-extern      EVENTLIST _FARD *uigetlist( void );
+extern      ui_event_list _FARD *uigetlist( void );
 extern      void            uigetmouse( ORD _FARD *, ORD _FARD *, bool _FARD * );
 extern      void            uiignorealt( void );
 extern      unsigned int    uiextkeyboard( void );
 extern      bool            uiinit( int );
 extern      void            uiinitcursor( void );
 extern      bool            uiinitgmouse( int );
-extern      bool            uiinlist( EVENT, EVENT _FARD * );
-extern      bool            uiinlists( EVENT );
-extern      bool            uiintoplist( EVENT );
+extern      bool            uiinlist( ui_event, ui_event _FARD * );
+extern      bool            uiinlists( ui_event );
+extern      bool            uiintoplist( ui_event );
 extern      bool            uikeepbackground( void );
 extern      void            *uimalloc( size_t );
 extern      void            uimouse( int );
@@ -677,11 +681,11 @@ extern      void            uionmouse( void );
 extern      VSCREEN   _FARD *uiopen( SAREA *, const char *, unsigned int );
 extern      void            uihidemouse( void );
 extern      unsigned        uiclockdelay( unsigned milli );
-extern      EVENT     _FARD *uipoplist( void );
+extern      ui_event  _FARD *uipoplist( void );
 extern      void            uiposition( SAREA *, ORD, ORD, int, int, bool );
 extern      void            uiprotect( VSCREEN _FARD * );
-extern      void            uipushlist( EVENT _FARD * );
-extern      void            uiputlist( EVENTLIST _FARD * );
+extern      void            uipushlist( ui_event _FARD * );
+extern      void            uiputlist( ui_event_list _FARD * );
 extern      void            *uirealloc( void *, size_t );
 extern      void            uirefresh( void );
 extern      bool            uiremovebackground( void );
@@ -706,10 +710,10 @@ extern      void            uivattribute( VSCREEN _FARD *, SAREA, ATTR );
 extern      void            uivclose( VSCREEN _FARD * );
 extern      void            uivdirty( VSCREEN _FARD *, SAREA );
 extern      void            uivfill( VSCREEN _FARD *, SAREA, ATTR, unsigned char );
-extern      EVENT           uivget( VSCREEN  _FARD * );
-extern      EVENT           uivgetevent( VSCREEN _FARD * );
-extern      EVENT           uivgetprime( VSCREEN _FARD * );
-extern      EVENT           uivgetprimevent( VSCREEN _FARD * );
+extern      ui_event        uivget( VSCREEN  _FARD * );
+extern      ui_event        uivgetevent( VSCREEN _FARD * );
+extern      ui_event        uivgetprime( VSCREEN _FARD * );
+extern      ui_event        uivgetprimevent( VSCREEN _FARD * );
 extern      bool            uivhide( VSCREEN _FARD * );
 extern      bool            uivmouseinstalled( void );
 extern      VSCREEN   _FARD *uivmousepos( VSCREEN _FARD *, ORD _FARD *, ORD _FARD * );
@@ -726,14 +730,14 @@ extern      void            uivtextput( VSCREEN _FARD *, ORD, ORD, ATTR, const c
 extern      void            uitextfield( VSCREEN _FARD *, ORD, ORD, ORD, ATTR, LPC_STRING, int );
 extern      void            uimousespeed( unsigned );
 extern      unsigned char   uicheckshift( void );
-extern      EVENT           uikeyboardevent( void );
+extern      ui_event        uikeyboardevent( void );
 extern      bool            uimouseinstalled( void );
 
 extern      bool            FlipCharacterMap( void );
 extern      bool            UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] );
 
 extern      void            uiyield( void );
-extern      bool            uiforceevadd( EVENT );  // int is a bool
+extern      bool            uiforceevadd( ui_event );  // int is a bool
 extern      void            uiforceevflush( void );
 extern      int             uiisdbcs( void );       // bool
 extern      int             uionnec( void );        // bool

@@ -33,28 +33,28 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-extern          EVENT                   Event;
+extern ui_event     Event;
 
-EVENT UIAPI uivget( VSCREEN *vptr )
-/**********************************/
+ui_event UIAPI uivget( VSCREEN *vptr )
+/************************************/
 {
     Event = menuevent( vptr );
     return( saveevent() );
 }
 
 
-EVENT UIAPI uivgetevent( VSCREEN *vptr )
-/***************************************/
+ui_event UIAPI uivgetevent( VSCREEN *vptr )
+/*****************************************/
 {
-    register    EVENT                   ev;
+    register ui_event       ui_ev;
 
-    ev = uivget( vptr );
-//    switch( ev ) {
+    ui_ev = uivget( vptr );
+//    switch( ui_ev ) {
 //    case EV_NO_EVENT:
 //    case EV_SINK:
 //        uirefresh();
 //    }
-    return( ev );
+    return( ui_ev );
 }
 
 

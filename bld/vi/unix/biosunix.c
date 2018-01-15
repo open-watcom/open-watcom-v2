@@ -71,7 +71,7 @@ unsigned short BIOSGetCursor( unsigned char page )
 static unsigned short vi_keys[EV_FIRST_UNUSED];
 
 struct map {
-    EVENT       ev;
+    ui_event    ui_ev;
     vi_key      key;
 };
 
@@ -171,22 +171,22 @@ static struct map events[] = {
     { EV_MOUSE_MOVE,            VI_KEY( MOUSEEVENT )    }
 };
 
-static vi_key get_vi_key( EVENT ev )
+static vi_key get_vi_key( ui_event ui_ev )
 {
-    if( iseditchar( ev ) ) {
-        return( (vi_key)ev );
+    if( iseditchar( ui_ev ) ) {
+        return( (vi_key)ui_ev );
     }
-    if( ev >= EV_F1 && ev <= EV_F10 ) {
-        return( VI_KEY( F1 ) + ( ev - EV_F1 ) );
+    if( ui_ev >= EV_F1 && ui_ev <= EV_F10 ) {
+        return( VI_KEY( F1 ) + ( ui_ev - EV_F1 ) );
     }
-    if( ev >= EV_SHIFT_F1 && ev <= EV_SHIFT_F10 ) {
-        return( VI_KEY( SHIFT_F1 ) + ( ev - EV_SHIFT_F1 ) );
+    if( ui_ev >= EV_SHIFT_F1 && ui_ev <= EV_SHIFT_F10 ) {
+        return( VI_KEY( SHIFT_F1 ) + ( ui_ev - EV_SHIFT_F1 ) );
     }
-    if( ev >= EV_CTRL_F1 && ev <= EV_CTRL_F10 ) {
-        return( VI_KEY( CTRL_F1 ) + ( ev - EV_CTRL_F1 ) );
+    if( ui_ev >= EV_CTRL_F1 && ui_ev <= EV_CTRL_F10 ) {
+        return( VI_KEY( CTRL_F1 ) + ( ui_ev - EV_CTRL_F1 ) );
     }
-    if( ev >= EV_ALT_F1 && ev <= EV_ALT_F10 ) {
-        return( VI_KEY( ALT_F1 ) + ( ev - EV_ALT_F1 ) );
+    if( ui_ev >= EV_ALT_F1 && ui_ev <= EV_ALT_F10 ) {
+        return( VI_KEY( ALT_F1 ) + ( ui_ev - EV_ALT_F1 ) );
     }
     return( VI_KEY( DUMMY ) );
 }
@@ -199,7 +199,7 @@ int BIOSKeyboardInit( void )
         vi_keys[i] = get_vi_key( i );
     }
     for( i = 0; i < sizeof( events ) / sizeof( struct map ); i++ ) {
-        vi_keys[events[i].ev] = events[i].key;
+        vi_keys[events[i].ui_ev] = events[i].key;
     }
     return( 0 );
 }
@@ -210,13 +210,13 @@ int BIOSKeyboardInit( void )
 unsigned BIOSGetKeyboard( unsigned *scan )
 {
     vi_key      key;
-    EVENT       ev;
+    ui_event    ui_ev;
 
     key = VI_KEY( DUMMY );
     do {
-        ev = uieventsource( 0 );
-        if( ev < EV_FIRST_UNUSED ) {
-            key = vi_keys[ev];
+        ui_ev = uieventsource( 0 );
+        if( ui_ev < EV_FIRST_UNUSED ) {
+            key = vi_keys[ui_ev];
         }
     } while( key == VI_KEY( DUMMY ) );
     if( scan != NULL ) {

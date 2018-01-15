@@ -201,7 +201,7 @@ static bool W1Init( a_window *wnd )
     return( true );
 }
 
-static bool W1EventProc( a_window *wnd, gui_event gui_ev, void *parm )
+static bool W1WndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
     switch( gui_ev ) {
@@ -220,7 +220,7 @@ static bool W1EventProc( a_window *wnd, gui_event gui_ev, void *parm )
 }
 
 static wnd_info W1Info = {
-    W1EventProc,
+    W1WndEventProc,
     W1Refresh,
     W1GetLine,
     W1MenuItem,

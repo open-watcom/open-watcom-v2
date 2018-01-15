@@ -53,10 +53,10 @@
 #include <stdio.h>
 
 
-EVENT GUIUserEvents[] = {
+ui_event GUIUserEvents[] = {
     GUI_FIRST_USER_EVENT, LAST_EVENT,
-    EV_NO_EVENT,
-    EV_NO_EVENT
+    __rend__,
+    __end__
 };
 
 /* statics */
@@ -75,13 +75,13 @@ static enum {
     MOUSE_RESTORE_START         /* mouse press to start restore            */
 } MouseState;
 
-static EVENT GUIInternalEvents[] = {
+static ui_event GUIInternalEvents[] = {
     EV_SYS_MENU_FIRST, EV_SYS_MENU_LAST,
-    EV_NO_EVENT,
-    EV_NO_EVENT
+    __rend__,
+    __end__
 };
 
-static  EVENT           PrevMouseEvent  = EV_NO_EVENT;
+static  ui_event        PrevMouseEvent  = EV_NO_EVENT;
 static  bool            MinimizedMoved  = false;
 static  gui_window      *ButtonDownSent = NULL;
 
@@ -145,7 +145,7 @@ static bool ValidMin( gui_window *wnd, ORD wnd_row, ORD wnd_col )
  *                            Also use in the case of drag.
  */
 
-static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD col )
+static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, ORD col )
 {
     gui_coord   point;
     ORD         wnd_row;
@@ -182,10 +182,10 @@ static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD co
         }
         /* fall through */
     case MOUSE_MOVE:
-        if( ev == EV_MOUSE_RELEASE_R ) {
+        if( ui_ev == EV_MOUSE_RELEASE_R ) {
             return;
         }
-        GUIDoMoveResize( GUIMouseWnd, row, col, ev, NULL );
+        GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
         break;
     default :
         if( GUIMouseWnd != NULL ) {
@@ -194,7 +194,7 @@ static void ProcessMouseReleaseDrag( EVENT ev, gui_event gui_ev, ORD row, ORD co
             sendPointGUIEvent( GUIMouseWnd, gui_ev, &point );
         }
     }
-    if( ev == EV_MOUSE_RELEASE || ev == EV_MOUSE_RELEASE_R ) {
+    if( ui_ev == EV_MOUSE_RELEASE || ui_ev == EV_MOUSE_RELEASE_R ) {
         MouseState = MOUSE_FREE;
     }
 }
@@ -219,9 +219,9 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
     return( true );
 }
 
-EVENT GUICreatePopup( gui_window *wnd, gui_coord *point )
+ui_event GUICreatePopup( gui_window *wnd, gui_coord *point )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
     gui_point   gpoint;
 
     gpoint.x = point->x - wnd->screen.area.col;
@@ -229,18 +229,18 @@ EVENT GUICreatePopup( gui_window *wnd, gui_coord *point )
     uipushlist( NULL );
     uipushlist( GUIInternalEvents );
     uipushlist( GUIUserEvents );
-    ev = GUICreateMenuPopup( wnd, &gpoint, wnd->menu, GUI_TRACK_LEFT, NULL );
+    ui_ev = GUICreateMenuPopup( wnd, &gpoint, wnd->menu, GUI_TRACK_LEFT, NULL );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* GUIInternalEvents */ );
     uipoplist( /* NULL */ );
-    return( ev );
+    return( ui_ev );
 }
 
-static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
+static void ProcessMinimizedMouseEvent( ui_event ui_ev, ORD row, ORD col )
 {
     gui_coord point;
 
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_MOUSE_PRESS :
         if( GUIStartMoveResize( GUIMouseWnd, row, col, RESIZE_NONE ) ) {
             MouseState = MOUSE_MOVE;
@@ -249,11 +249,11 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
         break;
     case EV_MOUSE_DRAG :
         MinimizedMoved = true;
-        GUIDoMoveResize( GUIMouseWnd, row, col, ev, NULL );
+        GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
         break;
     case EV_MOUSE_RELEASE :
         if( MouseState == MOUSE_MOVE ) {
-            GUIDoMoveResize( GUIMouseWnd, row, col, ev, NULL );
+            GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
             MouseState = MOUSE_FREE;
         }
         if( !MinimizedMoved ) {
@@ -274,7 +274,7 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
  * ProcessMousePress -- respond to the press of the mouse
  */
 
-static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col, bool new_curr_wnd )
+static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD col, bool new_curr_wnd )
 {
     gui_coord   point;
     ORD         wnd_row;
@@ -303,11 +303,11 @@ static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col, boo
         use_gadgets = ( !new_curr_wnd || (GUIGetWindowStyles() & (GUI_INACT_GADGETS | GUI_INACT_SAME)) );
         if( use_gadgets && GUI_HAS_CLOSER( GUICurrWnd ) &&
             ( wnd_col >= CLOSER_COL - 1 ) && ( wnd_col <= CLOSER_COL + 1 ) ) {
-            if( ( GUICurrWnd->menu != NULL ) && ( ev == EV_MOUSE_PRESS ) ) {
+            if( ( GUICurrWnd->menu != NULL ) && ( ui_ev == EV_MOUSE_PRESS ) ) {
                 point.x = GUICurrWnd->screen.area.col;
-                ev = GUICreatePopup( GUICurrWnd, &point );
+                ui_ev = GUICreatePopup( GUICurrWnd, &point );
             }
-            if( (GUICurrWnd->style & GUI_CLOSEABLE) && (ev == EV_MOUSE_DCLICK) ) {
+            if( (GUICurrWnd->style & GUI_CLOSEABLE) && (ui_ev == EV_MOUSE_DCLICK) ) {
                 if( GUICloseWnd( GUICurrWnd ) ) {
                     MouseState = MOUSE_FREE;
                 }
@@ -318,12 +318,12 @@ static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col, boo
             } else {
                 MouseState = MOUSE_MAX_START;
             }
-        } else if( use_gadgets && ValidMin( GUICurrWnd, wnd_row, wnd_col ) && ( ev == EV_MOUSE_PRESS ) ) {
+        } else if( use_gadgets && ValidMin( GUICurrWnd, wnd_row, wnd_col ) && ( ui_ev == EV_MOUSE_PRESS ) ) {
             MouseState = MOUSE_MIN_START;
-        } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && (ev == EV_MOUSE_PRESS) &&
+        } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && (ui_ev == EV_MOUSE_PRESS) &&
                    ( ( wnd_col == 0) || (wnd_col == GUICurrWnd->screen.area.width - 1) ) ) {
             dir = RESIZE_UP;
-        } else if( ( ev == EV_MOUSE_DCLICK ) || ( ev == EV_MOUSE_PRESS ) ) {
+        } else if( ( ui_ev == EV_MOUSE_DCLICK ) || ( ui_ev == EV_MOUSE_PRESS ) ) {
             if( GUIStartMoveResize( GUICurrWnd, row, col, RESIZE_NONE ) ) {
                 MouseState = MOUSE_MOVE;
             }
@@ -331,7 +331,7 @@ static void ProcessMousePress( EVENT ev, gui_event gui_ev, ORD row, ORD col, boo
     } else if( GUIPtInRect( &GUICurrWnd->use, wnd_row, wnd_col ) ) {
         MouseState = MOUSE_CLIENT;
         sendPointGUIEvent( GUICurrWnd, gui_ev, &point );
-    } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && ( ev == EV_MOUSE_PRESS ) &&
+    } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && ( ui_ev == EV_MOUSE_PRESS ) &&
                ( wnd_row == GUICurrWnd->screen.area.height - 1 ) &&
                ( ( wnd_col == 0 ) || ( wnd_col == GUICurrWnd->screen.area.width - 1 ) ) ) {
         dir = RESIZE_DOWN;
@@ -362,7 +362,7 @@ static void ProcessInitPopupEvent( void )
     }
 }
 
-static void ProcessScrollEvent( EVENT ev  )
+static void ProcessScrollEvent( ui_event ui_ev  )
 {
     gui_event   gui_ev;
     p_gadget    gadget;
@@ -370,7 +370,7 @@ static void ProcessScrollEvent( EVENT ev  )
     bool        events;
     gui_event   notify;
 
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_SCROLL_UP :
         events = ( (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_UP;
@@ -431,9 +431,9 @@ static void ProcessScrollEvent( EVENT ev  )
     }
 }
 
-static bool SetCurrWnd( EVENT ev, gui_window *curr )
+static bool SetCurrWnd( ui_event ui_ev, gui_window *curr )
 {
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_MOUSE_DCLICK_R :
     case EV_MOUSE_PRESS_R :
     case EV_MOUSE_PRESS :
@@ -505,58 +505,58 @@ static void DoScrollDrag( p_gadget gadget, int prev, int diff )
  *                   This is for consistency with windows.
  */
 
-static EVENT CheckPrevEvent( EVENT ev )
+static ui_event CheckPrevEvent( ui_event ui_ev )
 {
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_MOUSE_PRESS :
     case EV_MOUSE_PRESS_R :
-        PrevMouseEvent = ev;
+        PrevMouseEvent = ui_ev;
         break;
     case EV_MOUSE_DCLICK :
-        if( ev == PrevMouseEvent ) {
-            ev = EV_MOUSE_PRESS;
+        if( ui_ev == PrevMouseEvent ) {
+            ui_ev = EV_MOUSE_PRESS;
         }
-        PrevMouseEvent = ev;
+        PrevMouseEvent = ui_ev;
         break;
     case EV_MOUSE_DCLICK_R :
-        if( ev == PrevMouseEvent ) {
-            ev = EV_MOUSE_PRESS_R;
+        if( ui_ev == PrevMouseEvent ) {
+            ui_ev = EV_MOUSE_PRESS_R;
         }
-        PrevMouseEvent = ev;
+        PrevMouseEvent = ui_ev;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-static EVENT MapMiddleToRight( EVENT ev )
+static ui_event MapMiddleToRight( ui_event ui_ev )
 {
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_MOUSE_PRESS_M :
-        ev = EV_MOUSE_PRESS_R;
+        ui_ev = EV_MOUSE_PRESS_R;
         break;
     case EV_MOUSE_DRAG_M :
-        ev = EV_MOUSE_DRAG_R;
+        ui_ev = EV_MOUSE_DRAG_R;
         break;
     case EV_MOUSE_RELEASE_M :
-        ev = EV_MOUSE_RELEASE_R;
+        ui_ev = EV_MOUSE_RELEASE_R;
         break;
     case EV_MOUSE_DCLICK_M :
-        ev = EV_MOUSE_DCLICK_R;
+        ui_ev = EV_MOUSE_DCLICK_R;
         break;
     case EV_MOUSE_REPEAT_M :
-        ev = EV_MOUSE_REPEAT_R;
+        ui_ev = EV_MOUSE_REPEAT_R;
         break;
     case EV_MOUSE_HOLD_M :
-        ev = EV_MOUSE_HOLD_R;
+        ui_ev = EV_MOUSE_HOLD_R;
         break;
     }
-    return( ev );
+    return( ui_ev );
 }
 
 /*
  * GUIProcessEvent -- Main event loop to process UI events
  */
 
-bool GUIProcessEvent( EVENT ev )
+bool GUIProcessEvent( ui_event ui_ev )
 {
 //    gui_event   gui_ev;
     ORD         row, col;
@@ -570,13 +570,13 @@ bool GUIProcessEvent( EVENT ev )
 
     // this is processed before all others and signals the end for all
     // GUI UI windows ( unconditional )
-    if( ev == EV_KILL_UI ) {
+    if( ui_ev == EV_KILL_UI ) {
         GUIDestroyWnd( NULL );
         return( false );
     }
 
-    ev = MapMiddleToRight( ev );
-    ev = CheckPrevEvent( ev );
+    ui_ev = MapMiddleToRight( ui_ev );
+    ui_ev = CheckPrevEvent( ui_ev );
     wnd = NULL;
     if( uimouseinstalled() ) {
         screen = uivmousepos( NULL, &row, &col );
@@ -584,73 +584,73 @@ bool GUIProcessEvent( EVENT ev )
             wnd = (gui_window *)((char *)screen - offsetof( gui_window, screen ));
         }
     }
-    if( GUIDoKeyboardMoveResize( ev ) ) {
+    if( GUIDoKeyboardMoveResize( ui_ev ) ) {
         return( true );
     }
     if( MouseState == MOUSE_MOVE || MouseState == MOUSE_SIZE ) {
-        if( GUIDoMoveResizeCheck( GUIMouseWnd, ev, row, col ) ) {
+        if( GUIDoMoveResizeCheck( GUIMouseWnd, ui_ev, row, col ) ) {
             MouseState = MOUSE_FREE;
             return( true );
         }
         if( GUI_WND_MINIMIZED( GUIMouseWnd ) ) {
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_MOUSE_DCLICK :
             case EV_MOUSE_RELEASE :
             case EV_MOUSE_DRAG :
-                ProcessMinimizedMouseEvent( ev, row, col );
+                ProcessMinimizedMouseEvent( ui_ev, row, col );
             }
         } else {
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_MOUSE_RELEASE :
             case EV_MOUSE_DRAG :
             case EV_MOUSE_DRAG_R :
-                ProcessMouseReleaseDrag( ev, GUI_LBUTTONUP, row, col );
+                ProcessMouseReleaseDrag( ui_ev, GUI_LBUTTONUP, row, col );
             }
         }
         return( true );
     }
-    new_curr_wnd = SetCurrWnd( ev, wnd );
-    if( GUIProcessAltMenuEvent( ev ) ) {
+    new_curr_wnd = SetCurrWnd( ui_ev, wnd );
+    if( GUIProcessAltMenuEvent( ui_ev ) ) {
         return( true );
     }
     /* Only deal with press and dclick events for minimized windows.
      * All other non-menu events are ingored.
      */
-    if( !IS_CTLEVENT( ev ) && ( GUICurrWnd != NULL ) && GUI_WND_MINIMIZED( GUICurrWnd ) ) {
+    if( !IS_CTLEVENT( ui_ev ) && ( GUICurrWnd != NULL ) && GUI_WND_MINIMIZED( GUICurrWnd ) ) {
         /* ignore event if mouse not in minimized current window */
         if( GUICurrWnd == wnd ) {
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_MOUSE_PRESS :
             case EV_MOUSE_DCLICK :
             case EV_MOUSE_RELEASE :
                 GUIMouseWnd = GUICurrWnd;
-                ProcessMinimizedMouseEvent( ev, row, col );
+                ProcessMinimizedMouseEvent( ui_ev, row, col );
                 break;
             }
         }
         return( true );
     }
-    if( !IS_CTLEVENT( ev ) && ( GUICurrWnd != NULL ) && GUIIsOpen( GUICurrWnd ) ) {
+    if( !IS_CTLEVENT( ui_ev ) && ( GUICurrWnd != NULL ) && GUIIsOpen( GUICurrWnd ) ) {
         /* see if any of the controls in the window consume the event */
-        ev = GUIProcessControlEvent( GUICurrWnd, ev, row, col );
+        ui_ev = GUIProcessControlEvent( GUICurrWnd, ui_ev, row, col );
         /* See if the event is for on of the scroll bars. */
         /* Diff and prev are used if the event return is  */
         /* EV_SCROLL_HORIZONTAL or EV_SCROLL_VERTICAL.    */
         if( !new_curr_wnd || (GUIGetWindowStyles() & (GUI_INACT_GADGETS | GUI_INACT_SAME)) ) {
-            ev = GUIGadgetFilter( GUICurrWnd, ev, &prev, &diff );
+            ui_ev = GUIGadgetFilter( GUICurrWnd, ui_ev, &prev, &diff );
         }
-        if( ev == EV_NO_EVENT ) {
+        if( ui_ev == EV_NO_EVENT ) {
             return( true );
         }
     }
 //    gui_ev = GUI_NO_EVENT;
-    ev = GUIMapKeys( ev );
-    switch( ev ) {
+    ui_ev = GUIMapKeys( ui_ev );
+    switch( ui_ev ) {
     case EV_MOUSE_DCLICK_R :
         ProcessMousePos( GUI_RBUTTONDBLCLK, row, col, wnd );
         return( true );
     case EV_MOUSE_RELEASE_R :
-        ProcessMouseReleaseDrag( ev, GUI_RBUTTONUP, row, col );
+        ProcessMouseReleaseDrag( ui_ev, GUI_RBUTTONUP, row, col );
         return( true );
     case EV_MOUSE_DRAG_R :
         if( GUICurrWnd != GUIMouseWnd ) {
@@ -662,23 +662,23 @@ bool GUIProcessEvent( EVENT ev )
         ProcessMousePos( GUI_MOUSEMOVE, row, col, wnd );
         return( true );
     case EV_MOUSE_RELEASE :
-        ProcessMouseReleaseDrag( ev, GUI_LBUTTONUP, row, col );
+        ProcessMouseReleaseDrag( ui_ev, GUI_LBUTTONUP, row, col );
         return( true );
     case EV_MOUSE_DRAG :
         if( GUICurrWnd != GUIMouseWnd ) {
             /* got drag without press first */
             ProcessMousePress( EV_MOUSE_PRESS, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         }
-        ProcessMouseReleaseDrag( ev, GUI_MOUSEMOVE, row, col );
+        ProcessMouseReleaseDrag( ui_ev, GUI_MOUSEMOVE, row, col );
         return( true );
     case EV_MOUSE_PRESS_R :
-        ProcessMousePress( ev, GUI_RBUTTONDOWN, row, col, new_curr_wnd );
+        ProcessMousePress( ui_ev, GUI_RBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
     case EV_MOUSE_PRESS :
-        ProcessMousePress( ev, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
+        ProcessMousePress( ui_ev, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
     case EV_MOUSE_DCLICK :
-        ProcessMousePress( ev, GUI_LBUTTONDBLCLK, row, col, new_curr_wnd );
+        ProcessMousePress( ui_ev, GUI_LBUTTONDBLCLK, row, col, new_curr_wnd );
         return( true );
     case EV_NO_EVENT :
         break;
@@ -691,7 +691,7 @@ bool GUIProcessEvent( EVENT ev )
     case EV_SCROLL_LEFT_PAGE :
     case EV_SCROLL_RIGHT_PAGE :
         if( GUICurrWnd != NULL ) {
-            ProcessScrollEvent( ev );
+            ProcessScrollEvent( ui_ev );
             return( true );
         }
         break;
@@ -724,11 +724,11 @@ bool GUIProcessEvent( EVENT ev )
         return( true );
 #endif
     default :
-        if( IS_CTLEVENT( ev ) ) {
-            if( !GUIMDIProcessEvent( ev ) ) {
+        if( IS_CTLEVENT( ui_ev ) ) {
+            if( !GUIMDIProcessEvent( ui_ev ) ) {
                 menu_window = GUIGetMenuWindow();
                 if( menu_window != NULL ) {
-                    id = EV2ID( ev );
+                    id = EV2ID( ui_ev );
                     GUIEVENT( menu_window, GUI_CLICKED, &id );
                 }
             }

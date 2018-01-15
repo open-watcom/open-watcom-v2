@@ -283,7 +283,7 @@ OVL_EXTERN void ModSetOptions( a_window *wnd )
     ModInit( wnd );
 }
 
-OVL_EXTERN bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool ModWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 
@@ -315,7 +315,7 @@ void ModChangeOptions( void )
 }
 
 wnd_info ModInfo = {
-    ModEventProc,
+    ModWndEventProc,
     ModRefresh,
     ModGetLine,
     ModMenuItem,

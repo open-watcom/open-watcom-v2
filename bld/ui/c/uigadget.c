@@ -51,7 +51,7 @@ char            DownPoint[2]        = DOWN_POINT;
 
 static  p_gadget        Pressed         = NULL;   /* pointer to gadget where mouse pressed  */
 static  bool            Drag            = false;
-static  EVENT           RepeatEvent     = EV_NO_EVENT;
+static  ui_event        RepeatEvent     = EV_NO_EVENT;
 static  int             StartPos        = 0;
 
 static void drawgadget( p_gadget g )
@@ -153,11 +153,11 @@ void uifinigadget( p_gadget g )
     /* unused parameters */ (void)g;
 }
 
-EVENT uigadgetfilter( EVENT ev, p_gadget g )
+ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
 {
     int         m_anchor, m_linear;
     int         tmp;
-    EVENT       newev;
+    ui_event    newev;
     ORD         start;
     int         length;
     int         pos = 0;
@@ -171,20 +171,21 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
             m_linear = m_anchor;
             m_anchor = tmp;
         }
-        if( ( ev == EV_MOUSE_PRESS ) || ( ev == EV_MOUSE_DCLICK ) ) {
+        if( ( ui_ev == EV_MOUSE_PRESS ) || ( ui_ev == EV_MOUSE_DCLICK ) ) {
             if( ( m_anchor != g->anchor ) || ( m_linear < g->start ) ||
                 ( m_linear > g->end ) || ( Pressed != NULL ) ) {
-                return( ev );
+                return( ui_ev );
             } else {
                 Pressed = g;
             }
         }
         /* ignore everything if the gadget was not pressed */
-        if( Pressed != g ) return( ev );
+        if( Pressed != g )
+            return( ui_ev );
         length = g->end - g->start - 1;
         /* don't send pagefoward followed by pagebackward, then forward */
         /* ignore non-mouse events */
-        switch( ev ) {
+        switch( ui_ev ) {
         case EV_MOUSE_PRESS :
             StartPos = g->pos;
             /* fall through */
@@ -271,7 +272,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                 g->linear = m_linear;
                 uidrawgadget( g );
             }
-            if( ( ev == EV_MOUSE_RELEASE ) || ( g->flags & GADGET_TRACK ) ) {
+            if( ( ui_ev == EV_MOUSE_RELEASE ) || ( g->flags & GADGET_TRACK ) ) {
                 if( Drag ) {
                     StartPos = pos;
                     g->pos = pos;
@@ -289,7 +290,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
                 } else {
                     newev = EV_NO_EVENT;
                 }
-                if( ev == EV_MOUSE_RELEASE ) {
+                if( ui_ev == EV_MOUSE_RELEASE ) {
                     Drag = false;
                     Pressed = NULL;
                 }
@@ -300,10 +301,10 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
         case EV_MOUSE_HOLD :
             break;
         default :
-            return( ev );
+            return( ui_ev );
         }
     } else {
-        return( ev );
+        return( ui_ev );
     }
     return( EV_NO_EVENT );
 }

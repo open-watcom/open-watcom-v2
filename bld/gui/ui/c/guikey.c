@@ -37,7 +37,7 @@
 #include "guixwind.h"
 
 
-bool GUIProcessAltMenuEvent( EVENT ev )
+bool GUIProcessAltMenuEvent( ui_event ui_ev )
 {
     gui_key     key;
     gui_coord   point;
@@ -45,11 +45,11 @@ bool GUIProcessAltMenuEvent( EVENT ev )
     bool        top;
 
     if( GUICurrWnd != NULL ) {
-        key = (gui_key)ev;
+        key = (gui_key)ui_ev;
         wnd = NULL;
         top = ( GUICurrWnd->parent == NULL ) ||
              !( GUICurrWnd->parent->style & GUI_VISIBLE );
-        if( ev == EV_ALT_SPACE ) {
+        if( ui_ev == EV_ALT_SPACE ) {
             if( top ) {
                 wnd = GUICurrWnd;
             } else {

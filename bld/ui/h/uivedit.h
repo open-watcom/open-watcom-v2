@@ -60,8 +60,8 @@ typedef struct veditline {
     extern "C" {
 #endif
 
-extern EVENT    uiveditevent( VSCREEN *, VEDITLINE *, EVENT );
-extern EVENT    uiveditline( VSCREEN *, VEDITLINE * );
+extern ui_event uiveditevent( VSCREEN *, VEDITLINE *, ui_event );
+extern ui_event uiveditline( VSCREEN *, VEDITLINE * );
 extern bool     uiveditinit(VSCREEN *, VEDITLINE *, char *, int, ORD, ORD, int );
 extern bool     uiveditfini(VSCREEN *, VEDITLINE *);
 

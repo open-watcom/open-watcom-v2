@@ -52,12 +52,6 @@
 #include "clibext.h"
 
 
-extern  EVENT   uivget( VSCREEN * );
-
-static int          CheckHelpBlock( HelpFp help_file, char *topic, char *buffer, long int start );
-static void         replacetopic( char *word );
-static ScanCBfunc   scanCallBack;
-
 // In normal QNX text files, the record separator is just a LF.
 // However, with the new help file format containing both binary and
 // text data, we can't do a text conversion, so the record separator
@@ -107,6 +101,8 @@ typedef struct a_field {
     char                keyword[1];
 } a_field;
 
+extern a_ui_edit        *UIEdit;
+
 static VSCREEN helpScreen = {
     EV_NO_EVENT,                    /* event number */
     NULL,                           /* screen title */
@@ -138,7 +134,7 @@ static a_hot_spot       hotSpots[] = {
     { "&Back",            EV_F4,          -1,       1,     15, 0  },
     { "&Search",          EV_ALT_S,       -1,       0,     15, 0  },
     { "Cancel",           EV_ESCAPE,      -1,      -2,     15, 0  },
-    { NULL,               EV_NO_EVENT }
+    { NULL,               ___ }
 };
 
 #define SEARCH_HOT_SPOT         2
@@ -150,20 +146,27 @@ static VFIELD hotSpotFields[] = {
     {{0}, FLD_VOID,NULL }
 };
 
-static EVENT keyShift[] = {
-    EV_NO_EVENT,
+static ui_event keyShift[] = {
+    __rend__,
     EV_ALT_F12,
-    EV_MARK_PRESS,      EV_MARK_RELEASE,
-    EV_MOUSE_RELEASE,   EV_MOUSE_DRAG,
-    EV_INSERT,          EV_DELETE,
+    EV_MARK_PRESS,
+    EV_MARK_RELEASE,
+    EV_MOUSE_RELEASE,
+    EV_MOUSE_DRAG,
+    EV_INSERT,
+    EV_DELETE,
     EV_MOUSE_DCLICK,
-    EV_NO_EVENT
+    __rend__
 };
 
-static EVENT helpEventList[] = {
-    EV_NO_EVENT,             /* end of event-range pairs */
-    EV_ALT_B, 'b', 'B',
-    EV_ALT_S, 's', 'S',
+static ui_event helpEventList[] = {
+    __rend__,
+    EV_ALT_B,
+    'b',
+    'B',
+    EV_ALT_S,
+    's',
+    'S',
     EV_CURSOR_LEFT,
     EV_CURSOR_RIGHT,
     EV_TAB_FORWARD,
@@ -173,7 +176,8 @@ static EVENT helpEventList[] = {
     EV_HELP,
     EV_PAGE_UP,
     EV_PAGE_DOWN,
-    '-','+',
+    '-',
+    '+',
     EV_F4,
     EV_F9,
     EV_F10,
@@ -189,7 +193,7 @@ static EVENT helpEventList[] = {
     EV_FIELD_CHANGE,
     E_UP,
     E_DOWN,
-    EV_NO_EVENT         /* end of single event list */
+    __end__
 };
 
 static a_hstackent      *helpStack;
@@ -213,10 +217,12 @@ static char             curFile[_MAX_PATH];
 static HelpFp           helpFileHdl;
 static HelpHdl          helpSearchHdl;
 static VTAB             tabFilter;
-static EVENT            curEvent;
-static EVENT            (*eventMapFn)( EVENT );
+static ui_event         curEvent;
+static ui_event         (*eventMapFn)( ui_event );
 
-extern a_ui_edit        *UIEdit;
+static int              CheckHelpBlock( HelpFp help_file, char *topic, char *buffer, long int start );
+static void             replacetopic( char *word );
+static ScanCBfunc       scanCallBack;
 
 static void window_pos( ORD *start, ORD *size, int slack, int pos )
 {
@@ -624,10 +630,10 @@ static unsigned help_in_tab( a_field *fld, void *dummy )
     return( true );
 }
 
-static EVENT hlpwait( VTAB *tab )
+static ui_event hlpwait( VTAB *tab )
 {
     bool                done;
-    static EVENT        bumpev = EV_NO_EVENT;
+    static ui_event     bumpev = EV_NO_EVENT;
     char                *next_name;
     unsigned            len1;
     unsigned            len2;
@@ -1207,7 +1213,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
  */
 static int dispHelp( char *str, VTAB *tab )
 {
-    EVENT               ev;
+    ui_event            ui_ev;
     bool                done;
     int                 lastline;
     int                 start;
@@ -1251,15 +1257,15 @@ static int dispHelp( char *str, VTAB *tab )
     seek_line( currLine );
     lastline = currLine + use.height;
     done = false;
-    ev = EV_NO_EVENT;
+    ui_ev = EV_NO_EVENT;
     while( !done ) {
         currentColour = C_PLAIN;
         currentAttr = AT( ATTR_NORMAL );
         if( lastline != currLine ) {
-            lastline = scrollHelp( &use, lastline, ( ev != EV_NO_EVENT ) );
+            lastline = scrollHelp( &use, lastline, ( ui_ev != EV_NO_EVENT ) );
         }
-        ev = hlpwait( tab );
-        switch( ev ) {
+        ui_ev = hlpwait( tab );
+        switch( ui_ev ) {
         case E_UP:
         case EV_CURSOR_UP:
         case EV_TOP:
@@ -1363,7 +1369,7 @@ static char *fixHelpTopic( char *topic )
     return( ret );
 }
 
-static int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ), bool first )
+static int do_showhelp( char **helptopic, char *filename, ui_event (*rtn)( ui_event ), bool first )
 {
     int         err;
     char        *ptr;
@@ -1440,7 +1446,7 @@ static int do_showhelp( char **helptopic, char *filename, EVENT (*rtn)( EVENT ),
     return( err );
 }
 
-int showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang )
+int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang )
 {
     bool        first;
     int         err;

@@ -94,5 +94,5 @@ extern int  helpinit( const char **helpfilenames, HelpSrchPathItem *srchlist );
 extern int  help_reinit( const char **helpfilenames );
 extern void helpfini( void );
 extern void Free_Stack( void );
-extern int  showhelp( const char *topic, EVENT (*rtn)( EVENT ), HelpLangType lang );
+extern int  showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang );
 extern void SetHelpFileDefExt( const char *name, char *buff );

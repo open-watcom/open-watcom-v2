@@ -950,7 +950,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-OVL_EXTERN bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool MemWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;
@@ -1014,7 +1014,7 @@ OVL_EXTERN bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info BinInfo = {
-    MemEventProc,
+    MemWndEventProc,
     MemRefresh,
     MemGetLine,
     MemMenuItem,
@@ -1031,7 +1031,7 @@ wnd_info BinInfo = {
 };
 
 wnd_info MemInfo = {
-    MemEventProc,
+    MemWndEventProc,
     MemRefresh,
     MemGetLine,
     MemMenuItem,
@@ -1048,7 +1048,7 @@ wnd_info MemInfo = {
 };
 
 wnd_info StkInfo = {
-    MemEventProc,
+    MemWndEventProc,
     StkRefresh,
     MemGetLine,
     MemMenuItem,

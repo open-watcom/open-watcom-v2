@@ -38,16 +38,16 @@
 #include "clibext.h"
 
 
-EVENT LineEvents[] = {
+ui_event LineEvents[] = {
     EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
     EV_HOME,            EV_DELETE,
-    EV_NO_EVENT,                /* end of list of ranges */
+    __rend__,
     EV_RUB_OUT,
     EV_CTRL_END,
     EV_CTRL_HOME,
     EV_CTRL_CURSOR_LEFT,
     EV_CTRL_CURSOR_RIGHT,
-    EV_NO_EVENT
+    __end__
 };
 
 
@@ -103,8 +103,8 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
 }
 
 
-EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
-/***********************************************************************/
+ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev )
+/*******************************************************************************/
 {
     register    int                     scroll;
     register    bool                    scrollable;
@@ -129,8 +129,8 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
 //      uirefresh();                    not needed for QNX or DOS ??? jimg
         editline->update = false;
     }
-    if( ev > EV_NO_EVENT ) {
-        if( !uiinlists( ev ) ) {
+    if( ui_ev > EV_NO_EVENT ) {
+        if( !uiinlists( ui_ev ) ) {
             growing = uiinlists( EV_BUFFER_FULL );
             scrollable = growing || ( editline->length > editline->fldlen );
             buffer.content = editline->buffer;
@@ -139,7 +139,7 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
             buffer.insert = ( vptr->cursor == C_INSERT );
             buffer.dirty = false;
             buffer.auto_clear = editline->auto_clear;
-            ev = uieditevent( ev, &buffer );
+            ui_ev = uieditevent( ui_ev, &buffer );
             editline->auto_clear = buffer.auto_clear;
             editline->dirty |= buffer.dirty;
             editline->index = buffer.index;
@@ -162,28 +162,28 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
             if( ( editline->index == editline->length ) ||
                 ( *(editline->buffer + editline->length - 1) != ' ' ) ) {
                 if( growing ) {
-                    ev = EV_BUFFER_FULL;   /* may clobber EV_BUMP_RIGHT */
+                    ui_ev = EV_BUFFER_FULL;   /* may clobber EV_BUMP_RIGHT */
                 }
             }
-//            if( ev != EV_NO_EVENT && !uiinlists( ev ) ) {
-//                ev = EV_NO_EVENT;
+//            if( ui_ev != EV_NO_EVENT && !uiinlists( ui_ev ) ) {
+//                ui_ev = EV_NO_EVENT;
 //            }
         }
     }
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
-/************************************************************/
+ui_event UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
+/**************************************************************/
 {
-    register    EVENT                   ev;
+    register ui_event       ui_ev;
 
     uipushlist( LineEvents );
-    ev = uivgetevent( vptr );
-    uipoplist();
-    ev = uiveditevent( vptr, editline, ev );
-    return( ev );
+    ui_ev = uivgetevent( vptr );
+    uipoplist( /* LineEvents */ );
+    ui_ev = uiveditevent( vptr, editline, ui_ev );
+    return( ui_ev );
 }
 
 bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,

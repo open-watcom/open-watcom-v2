@@ -825,8 +825,8 @@ static void size_handler( int signo )
 }
 
 
-static EVENT td_sizeevent( void )
-/*******************************/
+static ui_event td_sizeevent( void )
+/**********************************/
 {
     SAREA           area;
 
@@ -1594,19 +1594,19 @@ static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 }
 
 
-EVENT td_event( void )
+ui_event td_event( void )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
 
-    ev = td_sizeevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
+    ui_ev = td_sizeevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
     /* In a terminal environment we have to go for the keyboard first,
        since that's how the mouse events are coming in */
-    ev = tk_keyboardevent();
-    if( ev > EV_NO_EVENT ) {
+    ui_ev = tk_keyboardevent();
+    if( ui_ev > EV_NO_EVENT ) {
         uihidemouse();
-        return( ev );
+        return( ui_ev );
     }
     return( mouseevent() );
 }

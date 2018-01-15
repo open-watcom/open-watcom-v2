@@ -170,10 +170,10 @@ void uiupdatelistbox( a_list *list )
 
 void uiboxpushlist( void )
 {
-    static EVENT    listboxevents[] = {
+    static ui_event listboxevents[] = {
         'a',            'z',
         'A',            'Z',
-        EV_NO_EVENT,
+        __rend__,
         EV_SCROLL_LINE_UP,
         EV_SCROLL_LINE_DOWN,
         EV_SCROLL_PAGE_UP,
@@ -187,7 +187,7 @@ void uiboxpushlist( void )
         EV_MOUSE_REPEAT,
         EV_MOUSE_DRAG,
         EV_ALT_CURSOR_UP,
-        EV_NO_EVENT
+        __end__
     };
 
     uipushlist( listboxevents );
@@ -195,7 +195,7 @@ void uiboxpushlist( void )
 
 void uiboxpoplist( void )
 {
-    uipoplist();
+    uipoplist( /* listboxevents */ );
 }
 
 static int getlistsize( const void *data_handle, UIPICKGETTEXT *get )
@@ -306,13 +306,13 @@ static int getmouseregion( a_list *list, int *row, int *col )
 }
 
 
-static EVENT charselect( EVENT ev, a_list *list )
+static ui_event charselect( ui_event ui_ev, a_list *list )
 {
     int         num;
     int         i;
     char        typed;
 
-    typed = (char)ev;
+    typed = (char)ui_ev;
     if( isupper( typed ) ) {
         typed = tolower( typed );
     }
@@ -330,7 +330,7 @@ static EVENT charselect( EVENT ev, a_list *list )
     return( EV_NO_EVENT );
 }
 
-EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
+ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
 {
     int             listsize;
     int             maxline;
@@ -341,7 +341,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
     bool            close;
 
     if( Dclick ) {
-        switch( ev ) {
+        switch( ui_ev ) {
         case EV_MOUSE_PRESS :
             Dclick = false; /* must have gotten dlick without release */
             /* fall through */
@@ -359,7 +359,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
             Dclick = false;
             /* fall through */
         default :
-            return( ev );
+            return( ui_ev );
         }
     }
     close = false;
@@ -375,11 +375,11 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
     }
 
     if( maxline > 0 ) {
-        ev = uigadgetfilter( ev, &box->gadget );
+        ui_ev = uigadgetfilter( ui_ev, &box->gadget );
     }
 
     newevent = EV_NO_EVENT;
-    switch( ev ) {
+    switch( ui_ev ) {
         case EV_MOUSE_DCLICK:
             Dclick = true;
             /* fall through */
@@ -391,13 +391,13 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
                 int         row, col, mpos;
 
                 mpos = getmouseregion( list, &row, &col );
-                newevent = ev;
+                newevent = ui_ev;
                 if( mpos == R_SEL ) {
                     SelStart = true;
                     box->row  = (ORD) row - box->area.row;
                     box->row += box->line;
                 }
-                if( ev == EV_MOUSE_RELEASE ) {
+                if( ui_ev == EV_MOUSE_RELEASE ) {
                     if( mpos == R_SEL ) {
                         list->choice = list->box->row;
                         newevent = EV_LIST_BOX_CHANGED;
@@ -406,9 +406,9 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
                         close = true;
                         SelStart = false;
                     }
-                } else if( ev == EV_MOUSE_PRESS || ev == EV_MOUSE_DCLICK ) {
+                } else if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
                     if( mpos == R_SEL ) {
-                        if( ev == EV_MOUSE_DCLICK ) {
+                        if( ui_ev == EV_MOUSE_DCLICK ) {
                             newevent = EV_LIST_BOX_DCLICK;
                         }
                     } else {
@@ -513,10 +513,10 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
             close = true;
             break;
         default :
-            if( isalpha( ev ) ) {
-                newevent = charselect( ev, list );
+            if( isalpha( ui_ev ) ) {
+                newevent = charselect( ui_ev, list );
             } else {
-                newevent = ev;
+                newevent = ui_ev;
             }
             break;
     }

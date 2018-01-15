@@ -137,8 +137,8 @@ static void state_handler( int signo )
 }
 
 
-static EVENT cd_sizeevent( void )
-/*******************************/
+static ui_event cd_sizeevent( void )
+/**********************************/
 {
     SAREA       area;
     unsigned    state;
@@ -349,21 +349,21 @@ static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
     return( 0 );
 }
 
-static EVENT cd_event( void )
+static ui_event cd_event( void )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
 
-    ev = cd_sizeevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
-    ev = mouseevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
-    ev = ck_keyboardevent();
-    if( ev == EV_NO_EVENT )
-        return( ev );
+    ui_ev = cd_sizeevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
+    ui_ev = mouseevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
+    ui_ev = ck_keyboardevent();
+    if( ui_ev == EV_NO_EVENT )
+        return( ui_ev );
     uihidemouse();
-    return( ev );
+    return( ui_ev );
 }
 
 Display ConsDisplay = {

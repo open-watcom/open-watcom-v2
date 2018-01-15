@@ -48,15 +48,15 @@ void ShowMsgBox( char *caption, char *msg )
 {
     a_dialog            *msgbox;
     bool                done;
-    EVENT               event;
+    ui_event            ui_ev;
 
-    static EVENT        events[] = {
-        EV_NO_EVENT,
+    static ui_event     events[] = {
+        __rend__,
         EV_ENTER,
         EV_ESCAPE,
         EV_MOUSE_PRESS,
         EV_LIST_BOX_DCLICK,
-        EV_NO_EVENT
+        __end__
     };
     done = false;
 
@@ -65,8 +65,8 @@ void ShowMsgBox( char *caption, char *msg )
     helpMsgBox[0].u.str = msg;
     msgbox = uibegdialog( caption, helpMsgBox, 5, 50, 0, 0 );
     while( !done ) {
-        event = uidialog( msgbox );
-        switch( event ) {
+        ui_ev = uidialog( msgbox );
+        switch( ui_ev ) {
         case EV_ENTER:
             done = true;
             break;

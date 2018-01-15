@@ -311,7 +311,7 @@ OVL_EXTERN void     SrchRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool SrchWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -333,7 +333,7 @@ OVL_EXTERN bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info SrchInfo = {
-    SrchEventProc,
+    SrchWndEventProc,
     SrchRefresh,
     SrchGetLine,
     SrchMenuItem,

@@ -227,7 +227,7 @@ void uioffhotspots( VSCREEN *w, VFIELD *field )
     uirefresh();
 }
 
-EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
+ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
 {
     int         row, col;
     VFIELD      *field;
@@ -235,7 +235,7 @@ EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
     for( field = fields; field->typ != FLD_VOID; ++field ){
         if( field->typ != FLD_HOT )
             continue;
-        switch( ev ) {
+        switch( ui_ev ) {
             case ' ':
             case EV_ENTER:
                 if( field->u.hs->flags & HOT_CURRENT ) {
@@ -249,7 +249,7 @@ EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
             continue;
         if( field->u.hs->flags & HOT_HIDDEN )
             continue;
-        switch( ev ) {
+        switch( ui_ev ) {
             case EV_ENTER:
                 if( field->u.hs->flags & HOT_DEFAULT ) {
                     return( field->u.hs->event );
@@ -264,21 +264,21 @@ EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
                 if( field->area.row == row  && field->u.hs->str != NULL  &&
                     field->area.col <= col  &&
                     field->area.col + field->area.width > col ) {
-                        if( ev == EV_MOUSE_PRESS || ev == EV_MOUSE_DCLICK ) {
+                        if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
                             ActiveField = field;
                             ActiveField->u.hs->flags |= HOT_ACTIVE;
                             uidisplayhotspot( w, ActiveField );
-                            ev = EV_NO_EVENT;
-                        } else if( ev == EV_MOUSE_RELEASE && field == ActiveField ) {
+                            ui_ev = EV_NO_EVENT;
+                        } else if( ui_ev == EV_MOUSE_RELEASE && field == ActiveField ) {
                             ActiveField->u.hs->flags &= (~HOT_ACTIVE);
                             uidisplayhotspot( w, ActiveField );
                             ActiveField = NULL;
-                            ev = field->u.hs->event;
+                            ui_ev = field->u.hs->event;
                         } else if( field == ActiveField  &&
                                 !( field->u.hs->flags & HOT_ACTIVE ) ) {
                             field->u.hs->flags |= HOT_ACTIVE;
                             uidisplayhotspot( w, field );
-                            ev = EV_NO_EVENT;
+                            ui_ev = EV_NO_EVENT;
                         }
                 } else if( field->u.hs->flags & HOT_ACTIVE ) {
                     field->u.hs->flags &= (~HOT_ACTIVE);
@@ -287,17 +287,17 @@ EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
                 break;
         }
     }
-    return( ev );
+    return( ui_ev );
 }
 
-bool uiisdefaulthotspot( VFIELD *fields, EVENT ev )
+bool uiisdefaulthotspot( VFIELD *fields, ui_event ui_ev )
 {
     VFIELD  *field;
 
     for( field = fields; field->typ != FLD_VOID; ++field ){
         if( field->typ != FLD_HOT ) continue;
         if( field->u.hs->flags & HOT_DEFAULT ) {
-            return( field->u.hs->event == ev );
+            return( field->u.hs->event == ui_ev );
         }
     }
     return( false );

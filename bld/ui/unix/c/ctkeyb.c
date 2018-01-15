@@ -59,7 +59,7 @@ enum {
 };
 
 struct an_in_term_info {
-    EVENT               ev;
+    ui_event            ui_ev;
     char                *str;
 };
 
@@ -81,7 +81,7 @@ static bool init_interminfo( void )
     entry = InTerminfo;
 
 #define evmap( code, terminfo_code )            \
-    entry->ev = EV_##code;                      \
+    entry->ui_ev = EV_##code;                   \
     entry->str = terminfo_code;                 \
     ++entry;
 
@@ -165,7 +165,7 @@ static bool init_interminfo( void )
 }
 
 static const struct {
-    EVENT       ev;
+    ui_event    ui_ev;
     char        ch;
 } InStandard[] = {
 /*
@@ -183,10 +183,10 @@ See ck_keyboard_event function for special handling of these codes.
 };
 
 typedef struct {
-    EVENT       normal;
-    EVENT       shift;
-    EVENT       ctrl;
-    EVENT       alt;
+    ui_event       normal;
+    ui_event       shift;
+    ui_event       ctrl;
+    ui_event       alt;
 } event_shift_map;
 
 #define SPECIAL_MAP( name, c )  { c, c, c, EV_ALT_##name }
@@ -313,28 +313,28 @@ void nextc_unget( char *str, size_t n )
 
 static int find_entry( const void *pkey, const void *pbase )
 {
-    const EVENT                 *evp = pkey;
-    const event_shift_map       *entry = pbase;
+    const ui_event          *evp = pkey;
+    const event_shift_map   *entry = pbase;
 
     return( *evp - entry->normal );
 }
 
-EVENT ck_keyboardevent( void )
-/****************************/
+ui_event ck_keyboardevent( void )
+/*******************************/
 {
-    EVENT                       ev;
-    EVENT                       search_ev;
+    ui_event                    ui_ev;
+    ui_event                    search_ev;
     event_shift_map             *entry;
     static unsigned short       sticky;
     static unsigned short       real_shift;
 
-    ev = TrieRead();
+    ui_ev = TrieRead();
     ck_shift_state();
     if( shift_state != ( real_shift | sticky ) ) {
         /* did it change? */
         real_shift = shift_state;
     }
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_STICKY_FUNC:
         sticky ^= S_FUNC;
         break;
@@ -357,59 +357,62 @@ EVENT ck_keyboardevent( void )
         real_shift |= S_ALT;
         break;
     case EV_SHIFT_RELEASE:
-        if( !(real_shift & S_SHIFT) ) ev = EV_NO_EVENT;
+        if( !(real_shift & S_SHIFT) )
+            ui_ev = EV_NO_EVENT;
         real_shift &= ~S_SHIFT;
         break;
     case EV_CTRL_RELEASE:
-        if( !(real_shift & S_CTRL) ) ev = EV_NO_EVENT;
+        if( !(real_shift & S_CTRL) )
+            ui_ev = EV_NO_EVENT;
         real_shift &= ~S_CTRL;
         break;
     case EV_ALT_RELEASE:
-        if( !(real_shift & S_ALT) ) ev = EV_NO_EVENT;
+        if( !(real_shift & S_ALT) )
+            ui_ev = EV_NO_EVENT;
         real_shift &= ~S_ALT;
         break;
     case EV_NO_EVENT:
         break;
     default:
         if( sticky & S_FUNC ) {
-            switch( ev ) {
+            switch( ui_ev ) {
             case '1':
-                ev = EV_F1;
+                ui_ev = EV_F1;
                 break;
             case '2':
-                ev = EV_F2;
+                ui_ev = EV_F2;
                 break;
             case '3':
-                ev = EV_F3;
+                ui_ev = EV_F3;
                 break;
             case '4':
-                ev = EV_F4;
+                ui_ev = EV_F4;
                 break;
             case '5':
-                ev = EV_F5;
+                ui_ev = EV_F5;
                 break;
             case '6':
-                ev = EV_F6;
+                ui_ev = EV_F6;
                 break;
             case '7':
-                ev = EV_F7;
+                ui_ev = EV_F7;
                 break;
             case '8':
-                ev = EV_F8;
+                ui_ev = EV_F8;
                 break;
             case '9':
-                ev = EV_F9;
+                ui_ev = EV_F9;
                 break;
             case '0':
-                ev = EV_F10;
+                ui_ev = EV_F10;
                 break;
             case 'A':
             case 'a':
-                ev = EV_F11;
+                ui_ev = EV_F11;
                 break;
             case 'B':
             case 'b':
-                ev = EV_F12;
+                ui_ev = EV_F12;
                 break;
             }
             sticky &= ~S_FUNC;
@@ -420,19 +423,19 @@ EVENT ck_keyboardevent( void )
                 then we want to see certain CTRL-? combinations come back
                 as some standard UI events.
             */
-            switch( ev ) {
+            switch( ui_ev ) {
             case '\x08':
                /* ctrl-backspace often does the opposite of backspace */
                 if( strcmp(key_backspace, "\x08" ) == 0 )
-                    ev = EV_RUB_OUT;
+                    ui_ev = EV_RUB_OUT;
                 else
-                    ev = EV_CTRL_BACKSPACE;
+                    ui_ev = EV_CTRL_BACKSPACE;
                 break;
             case '\x09':
-                ev = EV_TAB_FORWARD;
+                ui_ev = EV_TAB_FORWARD;
                 break;
             case '\x0c':
-                ev = EV_REDRAW_SCREEN;
+                ui_ev = EV_REDRAW_SCREEN;
                 break;
             }
         }
@@ -442,38 +445,37 @@ EVENT ck_keyboardevent( void )
         #define S_MASK  (S_SHIFT|S_CTRL|S_ALT)
 
         if( shift_state & S_MASK ) {
-            search_ev = tolower( ev );
-            entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
-                                sizeof( ShiftMap[0] ), find_entry );
+            search_ev = tolower( ui_ev );
+            entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ), sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
                 if( shift_state & S_SHIFT ) {
-                    ev = entry->shift;
+                    ui_ev = entry->shift;
                 } else if( shift_state & S_CTRL ) {
-                    ev = entry->ctrl;
+                    ui_ev = entry->ctrl;
                 } else { /* must be ALT */
-                    ev = entry->alt;
+                    ui_ev = entry->alt;
                 }
             }
         }
-        if( ev ) {
-            UIDebugPrintf1( "UI: Something read: %4.4X", ev );
+        if( ui_ev ) {
+            UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
         }
-        return( ev );
+        return( ui_ev );
     }
     shift_state = real_shift;
-    if( ev ) {
-        UIDebugPrintf1( "UI: Something read: %4.4X", ev );
+    if( ui_ev ) {
+        UIDebugPrintf1( "UI: Something read: %4.4X", ui_ev );
     }
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT tk_keyboardevent( void )
+ui_event tk_keyboardevent( void )
 {
-    EVENT       ev;
+    ui_event       ui_ev;
 
-    ev = ck_keyboardevent();
-    if( ev != EV_MOUSE_PRESS )
-        return( ev );
+    ui_ev = ck_keyboardevent();
+    if( ui_ev != EV_MOUSE_PRESS )
+        return( ui_ev );
     UIDebugPrintf0( "UI: Mouse event handling" );
     tm_saveevent();
     return( EV_NO_EVENT ); /* make UI check for mouse events */
@@ -506,14 +508,14 @@ static int init_trie( void )
     buff[1] = '\0';
     for( i = 0; i < NUM_ELTS( InStandard ); ++i ) {
         buff[0] = InStandard[i].ch;
-        if( !TrieAdd( InStandard[i].ev, buff ) ) {
+        if( !TrieAdd( InStandard[i].ui_ev, buff ) ) {
             TrieFini();
             return( false );
         }
     }
 
     for( i = 0; i < NUM_IN_TERM_INFO_MAPPINGS; ++i ) {
-        if( !TrieAdd( InTerminfo[i].ev, InTerminfo[i].str ) ) {
+        if( !TrieAdd( InTerminfo[i].ui_ev, InTerminfo[i].str ) ) {
             TrieFini();
             return( false );
         }
@@ -521,8 +523,8 @@ static int init_trie( void )
     return( true );
 }
 
-static int ck_unevent( EVENT ev )
-/*******************************/
+static int ck_unevent( ui_event ui_ev )
+/*************************************/
 
 // Somebody wants us to pretend that the specified event has occurred
 // (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press
@@ -530,10 +532,10 @@ static int ck_unevent( EVENT ev )
 // is pressed).
 
 {
-    /* unused parameters */ (void)ev;
+    /* unused parameters */ (void)ui_ev;
 
 #if 0 //Don't think this does anything under QNX
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_SHIFT_RELEASE:
         shift_state &= ~S_SHIFT;
         break;

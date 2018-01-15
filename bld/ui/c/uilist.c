@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-static EVENTLIST EventList = { 0 };
+static ui_event_list EventList = { 0 };
 
 
 void initeventlists( void )
@@ -44,22 +44,22 @@ void initeventlists( void )
 }
 
 
-EVENTLIST* UIAPI uigetlist( void )
-/*********************************/
+ui_event_list * UIAPI uigetlist( void )
+/*************************************/
 {
     return( UIData->events );
 }
 
 
-void UIAPI uiputlist( EVENTLIST *eventlist )
-/*******************************************/
+void UIAPI uiputlist( ui_event_list *eventlist )
+/**********************************************/
 {
     UIData->events = eventlist;
 }
 
 
-void UIAPI uipushlist( EVENT *list )
-/***********************************/
+void UIAPI uipushlist( ui_event *list )
+/*************************************/
 {
     if( UIData->events->num_lists < MAX_EVENT_LISTS ) {
         UIData->events->events[UIData->events->num_lists++] = list;
@@ -67,30 +67,30 @@ void UIAPI uipushlist( EVENT *list )
 }
 
 
-bool UIAPI uiinlist( EVENT ev, EVENT *eptr )
-/******************************************/
+bool UIAPI uiinlist( ui_event ui_ev, ui_event *ui_ev_list )
+/*********************************************************/
 {
-    while( *eptr != EV_NO_EVENT ) {
-        if( ( ev >= *eptr ) && ( ev <= *( eptr + 1 ) ) ) {
+    while( *ui_ev_list != __rend__ ) {
+        if( ( ui_ev >= *ui_ev_list ) && ( ui_ev <= *( ui_ev_list + 1 ) ) ) {
             return( true );
         }
-        eptr += 2;
+        ui_ev_list += 2;
     }
-    ++eptr;
-    while( *eptr != EV_NO_EVENT ) {
-        if( ev == *eptr ) {
+    ++ui_ev_list;
+    while( *ui_ev_list != __end__ ) {
+        if( ui_ev == *ui_ev_list ) {
             return( true );
         }
-        ++eptr;
+        ++ui_ev_list;
     }
     return( false );
 }
 
 
-EVENT *UIAPI uipoplist( void )
-/*****************************/
+ui_event *UIAPI uipoplist( void )
+/*******************************/
 {
-    register EVENT      *list;
+    register ui_event   *list;
 
     list = NULL;
     if( UIData->events->num_lists > 0 ) {
@@ -102,19 +102,19 @@ EVENT *UIAPI uipoplist( void )
 }
 
 
-bool UIAPI uiinlists( EVENT ev )
-/******************************/
+bool UIAPI uiinlists( ui_event ui_ev )
+/************************************/
 {
     register int    index;
 
     // EV_KILL_UI is implicitly pushed as part of every list
-    if( ev == EV_KILL_UI )
+    if( ui_ev == EV_KILL_UI )
         return( true );
     if( UIData->events->num_lists > 0 ) {
         for( index = UIData->events->num_lists - 1; index >= 0; --index ) {
             if( UIData->events->events[index] == NULL )
                 break;
-            if( uiinlist( ev, UIData->events->events[index] ) ) {
+            if( uiinlist( ui_ev, UIData->events->events[index] ) ) {
                 return( true );
             }
         }
@@ -123,10 +123,10 @@ bool UIAPI uiinlists( EVENT ev )
 }
 
 
-bool UIAPI uiintoplist( EVENT ev )
-/*********************************/
+bool UIAPI uiintoplist( ui_event ui_ev )
+/**************************************/
 {
     if( UIData->events->num_lists > 0 )
-        return( uiinlist( ev, UIData->events->events[UIData->events->num_lists - 1] ) );
+        return( uiinlist( ui_ev, UIData->events->events[UIData->events->num_lists - 1] ) );
     return( false );
 }

@@ -124,28 +124,28 @@ static VFIELD FieldDialog[] = {  // Define Field Dialog
 
 void sample_dialog()
 {
-    EVENT               event;
+    ui_event            ui_ev;
     a_dialog            *ui_dlg_info;
 
-    static EVENT        events[] = {
-        EV_NO_EVENT,
+    static ui_event     events[] = {
+        __rend__,
         EV_ENTER,
         EV_ESCAPE,
         EV_SCREWUP,
-        EV_NO_EVENT
+        __end__
     };
 
     ui_dlg_info = uibegdialog( "TEST", FieldDialog, 12, 74, 0, 0 );
     uipushlist( events );
-    for( ; ; ) {
-        event = uidialog( ui_dlg_info );
-        if( event == EV_ESCAPE || event == EV_ENTER ) {
+    for( ;; ) {
+        ui_ev = uidialog( ui_dlg_info );
+        if( ui_ev == EV_ESCAPE || ui_ev == EV_ENTER ) {
             break;
-        } else if( event == EV_SCREWUP ) {
+        } else if( ui_ev == EV_SCREWUP ) {
             list_box.data_handle = list_data;
             uiupdatelistbox( &list_box );
         }
     }
-    uipoplist();
+    uipoplist( /* events */ );
     uienddialog( ui_dlg_info );
 }

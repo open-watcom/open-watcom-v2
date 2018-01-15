@@ -67,7 +67,7 @@
  * key-lookup.
  */
 
-#define EV_UNUSED               ((EVENT)-1)
+#define EV_UNUSED               ((ui_event)-1)
 
 #define TRIE_ARRAY_GROWTH       4
 
@@ -78,7 +78,7 @@ typedef struct eTrie eTrie;
 typedef struct eNode{
     eTrie       *trie;          // the child sub-trie
     char        c;              // the character associated with it
-    EVENT       ev;             // the event associated with the string
+    ui_event    ui_ev;          // the event associated with the string
 } eNode;
 
 struct eTrie{
@@ -164,7 +164,7 @@ static int child_search( char key, eTrie *trie )
  * to improve the performance, but I think any improvements would be slight,
  * as this function is only called at initialization.
  */
-bool TrieAdd( EVENT event, const char *str )
+bool TrieAdd( ui_event ui_ev, const char *str )
 {
     eTrie       *trie = &KeyTrie;
     int         i;
@@ -200,7 +200,7 @@ bool TrieAdd( EVENT event, const char *str )
             }
 
             trie->child[i].c = *str;
-            trie->child[i].ev = EV_UNUSED;
+            trie->child[i].ui_ev = EV_UNUSED;
             trie->child[i].trie = NULL;
         }
 
@@ -210,7 +210,7 @@ bool TrieAdd( EVENT event, const char *str )
         // by this point, "i" is set to the index of a matching sub-trie.
         if( *str == '\0' ) {
             // at the end of the string, so insert the event
-            trie->child[i].ev = event;
+            trie->child[i].ui_ev = ui_ev;
             return( true );
         }
 
@@ -239,14 +239,14 @@ static int child_comp( const int *pkey, const eNode *pbase )
     return( *pkey - pbase->c );
 }
 
-EVENT TrieRead( void )
+ui_event TrieRead( void )
 {
     eTrie           *trie;
     char            *buf;
     int             c;
     size_t          cpos = 0;
-    EVENT           ev = EV_UNUSED;
-    size_t          ev_pos = 0;
+    ui_event        ui_ev = EV_UNUSED;
+    size_t          ui_ev_pos = 0;
     eNode           *node;
     int             timeout;
 
@@ -271,18 +271,18 @@ EVENT TrieRead( void )
                             (int (*)(const void *, const void *))child_comp );
         if( node == NULL )
             break;
-        if( node->ev != EV_UNUSED ) {
-            ev = node->ev;
-            ev_pos = cpos;
+        if( node->ui_ev != EV_UNUSED ) {
+            ui_ev = node->ui_ev;
+            ui_ev_pos = cpos;
         }
         trie = node->trie;
         if( trie == NULL )
             break;
         timeout = 3;
     }
-    if( ev == EV_UNUSED ) {
-        ev = (unsigned char)buf[0];
-        ev_pos = 1;
+    if( ui_ev == EV_UNUSED ) {
+        ui_ev = (unsigned char)buf[0];
+        ui_ev_pos = 1;
     }
 
     // when we get down here cpos will be the number of chars in buf
@@ -290,8 +290,8 @@ EVENT TrieRead( void )
     // (the nul is sent on time-outs, and is guaranteed to never appear
     // in a terminfo keysequence as they are all nul-terminated.)
 
-    if( cpos > ev_pos ) {
-        nextc_unget( &buf[ev_pos], cpos - ev_pos );
+    if( cpos > ui_ev_pos ) {
+        nextc_unget( &buf[ui_ev_pos], cpos - ui_ev_pos );
     }
-    return( ev );
+    return( ui_ev );
 }

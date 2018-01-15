@@ -43,9 +43,9 @@
 
 #include <wwindows.h>
 
-extern void ToCharacter( void );
-extern void ToGraphical( void );
-extern EVENT keyboardevent( void );
+extern void     ToCharacter( void );
+extern void     ToGraphical( void );
+extern ui_event keyboardevent( void );
 
 #define Normal          UIData->attrs[ ATTR_NORMAL ]
 
@@ -59,7 +59,7 @@ char    check_empty[4];
 enum    Symbols { RADIO_BUTTON, CHECK_BOX };
 enum    Conditons { ON, OFF };
 
-extern EVENT    LineEvents[];
+extern ui_event     LineEvents[];
 
 #define EV_QUIT         EV_F2
 enum {
@@ -76,22 +76,22 @@ static MENUITEM filemenu[] = {
     { "Open",     EV_OPEN,          0 },
     { "Close",    EV_CLOSE,         0 },
     { "Nothing",  EV_NOTHING,       2 },
-    { NULL,       EV_NO_EVENT,      ITEM_SEPARATOR },
+    { NULL,       ___,              ITEM_SEPARATOR },
     { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         EV_NO_EVENT,      0 },
+    { "",         ___,              0 },
     { "Exit",     EV_QUIT,          1 },
     NULL
 };
 
 static MENUITEM editmenu[] = {
-    { NULL,       EV_NO_EVENT,      0 },
+    { NULL,       ___,              0 },
 };
 
 static MENUITEM barmenu[] = {
-    { "File",     EV_NO_EVENT,      0 },
-    { "Edit",     EV_NO_EVENT,      1 },
+    { "File",     ___,              0 },
+    { "Edit",     ___,              1 },
     { "Go!",      EV_GO,            0 },
-    { "File",     EV_NO_EVENT,      2 },
+    { "File",     ___,              2 },
     NULL
 };
 
@@ -137,19 +137,19 @@ static VEDITLINE inputline = {
     true,        /* bool: application altered buffer */
 };
 
-static EVENT oplist[] = {
-    EV_NO_EVENT,
+static ui_event     oplist[] = {
+    __rend__,
     EV_ENTER,
     EV_ESCAPE,
-    EV_NO_EVENT
+    __end__
 };
 
-static EVENT             evlist[] = {
+static ui_event     evlist[] = {
     EV_FIRST_EVENT,     EV_LAST_KEYBOARD,
     EV_MOUSE_PRESS,     EV_MOUSE_RELEASE,
     EV_MOUSE_HOLD_R,    EV_MOUSE_REPEAT_M,
     EV_OPEN,            EV_NOTHING,
-    EV_NO_EVENT,
+    __rend__,
     EV_MOUSE_DCLICK,
     EV_MOUSE_REPEAT,
     EV_IDLE,
@@ -160,13 +160,13 @@ static EVENT             evlist[] = {
     EV_CURSOR_DOWN,
     EV_CURSOR_LEFT,
     EV_CURSOR_RIGHT,
-    EV_NO_EVENT
+    __end__
 };
 
-typedef struct an_event_string{
-    EVENT       ev;
+typedef struct an_event_string {
+    ui_event    ui_ev;
     char        *str;
-}an_event_string;
+} an_event_string;
 
 static SAREA    BandArea;
 int             BandOn = 0;
@@ -192,13 +192,13 @@ static          an_event_string         evstrs[] = {
     { EV_IDLE,              "EV_IDLE" },
     { EV_MENU_INITPOPUP,    "EV_MENU_INITPOPUP" },
     { EV_BACKGROUND_RESIZE, "EV_BACKGROUND_RESIZE" },
-    { EV_NO_EVENT,          NULL }
+    { ___,                  NULL }
 };
 
 static void open( void )
 /**********************/
 {
-    EVENT ev;
+    ui_event    ui_ev;
 
     if( uivopen( &opwin ) ) {
 
@@ -210,18 +210,18 @@ static void open( void )
         inputline.scroll = 0;
         inputline.update = true;
         for( ; ; ) {
-            ev = uiveditline( &opwin, &inputline );
-            if( ev != EV_NO_EVENT ) break;
+            ui_ev = uiveditline( &opwin, &inputline );
+            if( ui_ev != EV_NO_EVENT ) break;
         }
-        if( ev == EV_ENTER ) {
+        if( ui_ev == EV_ENTER ) {
             /* open file */
-        } else if( ev == EV_ESCAPE ) {
+        } else if( ui_ev == EV_ESCAPE ) {
             /* do nothing */
         } else {
             /* must be an event handled in the mainline */
             uiungetevent();
         }
-        uipoplist();
+        uipoplist( /* oplist */ );
         uivclose( &opwin );
     }
 }
@@ -231,7 +231,7 @@ static void open( void )
 int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd ) {
 
-    EVENT               ev;
+    ui_event            ui_ev;
     SAREA               area;
     char                buff[80];
     an_event_string     *ptr;
@@ -270,19 +270,19 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
         uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
         for( ; ; ) {
             uipushlist( evlist );
-            ev = uivgetevent( NULL );
-            uipoplist();
-            if( ev == EV_QUIT ) break;
-            if( ev == EV_ALT_R ) break;
-            if( ev == EV_MOUSE_PRESS_R ) {
+            ui_ev = uivgetevent( NULL );
+            uipoplist( /* evlist */ );
+            if( ui_ev == EV_QUIT ) break;
+            if( ui_ev == EV_ALT_R ) break;
+            if( ui_ev == EV_MOUSE_PRESS_R ) {
                 uimousepos( NULL, &mrow, &mcol );
                 mrow++;
                 mcol++;
                 uipushlist( evlist );
-                ev = uicreatepopup( mrow, mcol, &filemenu, false, true, NULL );
-                uipoplist();
+                ui_ev = uicreatepopup( mrow, mcol, &filemenu, false, true, NULL );
+                uipoplist( /* evlist */ );
             }
-            switch ( ev ) {
+            switch( ui_ev ) {
                 case EV_SAMPLE_DIALOG:
                     sample_dialog();
                     break;
@@ -323,12 +323,12 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 fixup = false;
                 uivsetcursor( &mainwin );
             }
-            if( ev != EV_NO_EVENT ) {
-                for( ptr=evstrs; ; ++ptr ){
-                    if( ptr->ev == EV_NO_EVENT ) {
-                        sprintf( buff, "event 0x%4.4x", ev );
+            if( ui_ev != EV_NO_EVENT ) {
+                for( ptr = evstrs; ; ++ptr ){
+                    if( ptr->ui_ev == EV_NO_EVENT ) {
+                        sprintf( buff, "event 0x%4.4x", ui_ev );
                         break;
-                    } else if( ptr->ev == ev ) {
+                    } else if( ptr->ui_ev == ui_ev ) {
                         strcpy( buff, ptr->str );
                         break;
                     }
@@ -338,7 +338,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     evrow = TOP_ROW;
                 }
                 uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
-                switch( ev ) {
+                switch( ui_ev ) {
                 case EV_MOUSE_PRESS:
                     BandOn = 1;
                     uimousepos( NULL, &mrow, &mcol );

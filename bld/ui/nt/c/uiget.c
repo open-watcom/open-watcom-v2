@@ -47,19 +47,19 @@ unsigned long UIAPI uiclock( void )
     return( GetTickCount() );
 }
 
-EVENT UIAPI uieventsource( bool update )
+ui_event UIAPI uieventsource( bool update )
 {
-    EVENT                   ev;
-    static      int                     ReturnIdle = 1;
-    unsigned long                       start;
+    ui_event                ui_ev;
+    static   int            ReturnIdle = 1;
+    unsigned long           start;
 
     start = uiclock();
     for( ; ; ) {
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = getanyevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = getanyevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
         if( ReturnIdle ) {
             ReturnIdle--;
@@ -76,11 +76,11 @@ EVENT UIAPI uieventsource( bool update )
         waitforevent();
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiget( void )
+ui_event UIAPI uiget( void )
 {
     return( uieventsource( true ) );
 }

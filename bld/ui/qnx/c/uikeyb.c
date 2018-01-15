@@ -68,14 +68,14 @@ unsigned char UIAPI uicheckshift( void )
     return _uicheckshift();
 }
 
-extern void uishiftrelease( EVENT ev )
-/************************************/
+extern void uishiftrelease( ui_event ui_ev )
+/******************************************/
 // Somebody wants us to pretend that the specified event has occurred
 // (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press
 // event will be generated for the next keystroke (if that shift key
 // is pressed).
 {
-    _uishiftrelease(ev);
+    _uishiftrelease( ui_ev );
 }
 
 void intern restorekeyb( void )

@@ -196,7 +196,7 @@ static void MoveResizeCancel( void )
  * GUIDoKeyboardMoveResize
  */
 
-bool GUIDoKeyboardMoveResize( EVENT ev )
+bool GUIDoKeyboardMoveResize( ui_event ui_ev )
 {
     bool        finish;
     bool        cancel;
@@ -207,7 +207,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     }
     finish = false;
     cancel = false;
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_CURSOR_UP :
         MoveSizeChange.y--;
         break;
@@ -231,8 +231,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
         return( true );
     }
     if( !cancel ) {
-        DoMoveResize( MoveSizeWnd, MoveSizeChange.x, MoveSizeChange.y, finish,
-                      &adjust );
+        DoMoveResize( MoveSizeWnd, MoveSizeChange.x, MoveSizeChange.y, finish, &adjust );
         MoveSizeChange.x += adjust.x;
         MoveSizeChange.y += adjust.y;
     }
@@ -246,8 +245,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
  * GUIDoMoveResize -- do a mouse move or resize
  */
 
-bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
-                      gui_point *adjust )
+bool GUIDoMoveResize( gui_window *wnd, int row, int col, ui_event ui_ev, gui_point *adjust )
 {
     bool        finish;
     int         delta_x;
@@ -255,8 +253,7 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
 
     delta_x = col - MoveResizeAnchor.x;
     delta_y = row - MoveResizeAnchor.y;
-    finish = ( ev == EV_MOUSE_RELEASE ) || ( ev == EV_MOUSE_RELEASE_R ) ||
-             ( ev == EV_ENTER );
+    finish = ( ui_ev == EV_MOUSE_RELEASE ) || ( ui_ev == EV_MOUSE_RELEASE_R ) || ( ui_ev == EV_ENTER );
     DoMoveResize( wnd, delta_x, delta_y, finish, adjust );
     return( true );
 }
@@ -265,11 +262,11 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
  * GUIDoMoveResizeCheck -- check if event affects mouse move or resize
  */
 
-bool GUIDoMoveResizeCheck( gui_window * wnd, EVENT ev, ORD row, ORD col )
+bool GUIDoMoveResizeCheck( gui_window * wnd, ui_event ui_ev, ORD row, ORD col )
 {
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_ENTER :
-        GUIDoMoveResize( wnd, row, col, ev, NULL );
+        GUIDoMoveResize( wnd, row, col, ui_ev, NULL );
         break;
     case EV_ESCAPE :
         MoveResizeCancel();

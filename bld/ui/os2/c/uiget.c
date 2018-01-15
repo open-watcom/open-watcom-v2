@@ -73,23 +73,23 @@ unsigned long UIAPI uiclock( void )
     #endif
 }
 
-EVENT UIAPI uieventsource( bool update )
-/**************************************/
+ui_event UIAPI uieventsource( bool update )
+/*****************************************/
 {
-    register    EVENT                   ev;
-    static      int                     ReturnIdle = 1;
-    unsigned long                       start;
+    register ui_event       ui_ev;
+    static   int            ReturnIdle = 1;
+    unsigned long           start;
 
     start = uiclock();
     for( ; ; ) {
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = mouseevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = mouseevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = keyboardevent();
-        if( ev > EV_NO_EVENT ) {
+        ui_ev = keyboardevent();
+        if( ui_ev > EV_NO_EVENT ) {
             uihidemouse();
             break;
         }
@@ -111,12 +111,12 @@ EVENT UIAPI uieventsource( bool update )
         }
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiget( void )
-/************************/
+ui_event UIAPI uiget( void )
+/**************************/
 {
     return( uieventsource( true ) );
 }

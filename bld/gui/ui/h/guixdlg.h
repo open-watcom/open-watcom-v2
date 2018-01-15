@@ -55,7 +55,7 @@ extern void GUIDeleteDialog( a_dialog *ui_dlg_info );
 extern bool GUIDeleteField( gui_window *wnd, gui_ctl_id id );
 extern a_list *GUIGetList( VFIELD *field );
 extern gui_ctl_id GUIGetControlId( gui_window *wnd, VFIELD *field );
-extern EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd );
+extern ui_event GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd );
 extern void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
                            bool colours_set, bool is_dialog );
 

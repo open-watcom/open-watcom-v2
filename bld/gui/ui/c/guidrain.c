@@ -37,16 +37,18 @@
 
 void GUIDrainEvents( void )
 {
-    EVENT   ev;
+    ui_event    ui_ev;
 
     UIData->busy_wait = true;
     uipushlist( GUIAllEvents );
     for( ;; ) {
-        ev = uivgetevent( NULL );
-        if( ev == EV_SINK ) break;
-        ev = GUIUIProcessEvent( ev );
-        if( ev == EV_NO_EVENT ) break;
-        GUIProcessEvent( ev );
+        ui_ev = uivgetevent( NULL );
+        if( ui_ev == EV_SINK )
+            break;
+        ui_ev = GUIUIProcessEvent( ui_ev );
+        if( ui_ev == EV_NO_EVENT )
+            break;
+        GUIProcessEvent( ui_ev );
     }
     uipoplist();
     UIData->busy_wait = false;

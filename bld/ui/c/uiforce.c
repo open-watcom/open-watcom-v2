@@ -36,19 +36,20 @@
 #define FORCED_Q_SIZE 5
 
 typedef struct {
-    int     head;
-    int     tail;
-    EVENT   Q[ FORCED_Q_SIZE ];
+    int         head;
+    int         tail;
+    ui_event    ui_ev[FORCED_Q_SIZE];
 } Queue;
+
 static Queue Forced_Q = { 0, 0 };
 
-static bool Q_ismember( Queue * q, EVENT ev )
-/*******************************************/
+static bool Q_ismember( Queue *q, ui_event ui_ev )
+/************************************************/
 {
     int i;
 
     for( i = q->head; i != q->tail; i = (i + 1) % FORCED_Q_SIZE ) {
-        if( q->Q[ i ] == ev ) {
+        if( q->ui_ev[i] == ui_ev ) {
             return( true );
         }
     }
@@ -58,9 +59,9 @@ static bool Q_ismember( Queue * q, EVENT ev )
 #define _queue_empty( q ) (q).head = (q).tail = 0
 #define _queue_is_empty( q ) ((q).head == (q).tail)
 #define _queue_is_full( q ) ( ((q).tail + 1) % FORCED_Q_SIZE == (q).head )
-#define _queue_add( q, ev )     (q).Q[ (q).tail ] = (ev); \
+#define _queue_add( q, ev )     (q).ui_ev[(q).tail] = (ev); \
                                 (q).tail = ((q).tail + 1) % FORCED_Q_SIZE
-#define _queue_remove( q, evp ) *(evp) = (q).Q[ (q).head ]; \
+#define _queue_remove( q, evp ) *(evp) = (q).ui_ev[(q).head]; \
                                 (q).head = ((q).head + 1) % FORCED_Q_SIZE
 #define _queue_is_member( q, ev ) Q_ismember( &(q), ev )
 
@@ -77,14 +78,14 @@ void intern forceevfini( void )
     // finalize critical section
 }
 
-bool UIAPI uiforceevadd( EVENT ev )
-/**********************************/
+bool UIAPI uiforceevadd( ui_event ui_ev )
+/***************************************/
 {
     bool ret;
 
     // enter critical section
     if( !_queue_is_full( Forced_Q ) ) {
-        _queue_add( Forced_Q, ev );
+        _queue_add( Forced_Q, ui_ev );
         ret = true;
     } else {
         ret = false;
@@ -108,19 +109,19 @@ void UIAPI uiforceevflush( void )
     // exit critical section
 }
 
-EVENT intern forcedevent( void )
-/******************************/
+ui_event intern forcedevent( void )
+/*********************************/
 /* This function should ONLY be called from the uieventsource function */
 {
-    EVENT   ev;
+    ui_event    ui_ev;
 
     // enter critical section
     if( _queue_is_empty( Forced_Q ) ) {
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     } else {
-        _queue_remove( Forced_Q, &ev );
+        _queue_remove( Forced_Q, &ui_ev );
     }
     // exit critical section
 
-    return( ev );
+    return( ui_ev );
 }

@@ -47,24 +47,24 @@
 #include <string.h>
 
 
-EVENT GUIControlEvents[] = {
-    EV_NO_EVENT,
+ui_event GUIControlEvents[] = {
+    __rend__,
     EV_LIST_BOX_CHANGED,
     EV_LIST_BOX_DCLICK,
     EV_LIST_BOX_CLOSED,
     EV_CHECK_BOX_CLICK,
     EV_CURSOR_UP,
     EV_CURSOR_DOWN,
-    EV_NO_EVENT
+    __end__
 };
 
 static a_radio_group * RadioGroup = NULL;
 static bool Group = false;
 
-static EVENT GUIDlgEvents[] = {
-    EV_NO_EVENT,
+static ui_event GUIDlgEvents[] = {
+    __rend__,
     EV_ESCAPE,
-    EV_NO_EVENT,
+    __end__,
 };
 
 static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
@@ -693,7 +693,7 @@ static void CheckNotify( a_dialog *ui_dlg_info, gui_window *wnd )
     }
 }
 
-static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
+static void ListNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_event   gui_ev;
 //    a_list      *list;
@@ -704,7 +704,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
         GUIGetList( ui_dlg_info->curr );
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_LIST_BOX_CHANGED :
                 gui_ev = GUI_CONTROL_CLICKED;
                 break;
@@ -746,18 +746,18 @@ void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
     }
 }
 
-EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
+ui_event GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_ctl_id  id;
 
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_CHECK_BOX_CLICK :
         CheckNotify( ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     case EV_LIST_BOX_DCLICK :
     case EV_LIST_BOX_CHANGED :
     case EV_LIST_BOX_CLOSED :
-        ListNotify( ev, ui_dlg_info, wnd );
+        ListNotify( ui_ev, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     case EV_CURSOR_UP :
         EditNotify( GUI_KEY_UP, ui_dlg_info, wnd );
@@ -766,12 +766,12 @@ EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd 
         EditNotify( GUI_KEY_DOWN, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     default :
-        if( IS_CTLEVENT( ev ) ) {
-            id = EV2ID( ev );
+        if( IS_CTLEVENT( ui_ev ) ) {
+            id = EV2ID( ui_ev );
             GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
             return( EV_NO_EVENT );
         }
-        return( ev );
+        return( ui_ev );
     }
 }
 
@@ -783,7 +783,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
                        bool sys, res_name_or_id dlg_id )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
     int         i;
     a_dialog    *ui_dlg_info;
     VFIELD      *fields;
@@ -866,8 +866,8 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     uipushlist( GUIControlEvents );
     uipushlist( GUIDlgEvents );
     while( ( GetDialog( ui_dlg_info ) != NULL ) ) {
-        ev = uidialog( ui_dlg_info );
-        switch( ev ) {
+        ui_ev = uidialog( ui_dlg_info );
+        switch( ui_ev ) {
         case EV_KILL_UI:
             uiforceevadd( EV_KILL_UI );
             /* fall through */
@@ -876,7 +876,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             GUICloseDialog( wnd );
             break;
         default :
-            GUIProcessControlNotify( ev, ui_dlg_info, wnd );
+            GUIProcessControlNotify( ui_ev, ui_dlg_info, wnd );
         }
     }
     return( true );

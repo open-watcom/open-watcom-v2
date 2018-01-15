@@ -139,7 +139,7 @@ OVL_EXTERN  bool    FingGetLine( a_window *wnd, int row, int piece,
     return( true );
 }
 
-OVL_EXTERN bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FingWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 
@@ -162,7 +162,7 @@ OVL_EXTERN bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 static wnd_info FingInfo = {
-    FingEventProc,
+    FingWndEventProc,
     NoRefresh,
     FingGetLine,
     NoMenuItem,

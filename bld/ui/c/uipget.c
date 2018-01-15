@@ -34,26 +34,26 @@
 #include "uidebug.h"
 
 
-EVENT           Event = EV_NO_EVENT;
+ui_event        Event = EV_NO_EVENT;
 
-EVENT intern saveevent( void )
-/****************************/
+ui_event intern saveevent( void )
+/*******************************/
 {
-    register    EVENT                   ev;
+    register ui_event       ui_ev;
 
     if( Event > EV_NO_EVENT && uiinlists( Event ) ) {
-        ev = Event;
+        ui_ev = Event;
         Event = -Event;
     } else {
         Event = EV_NO_EVENT;
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT intern getprime( VSCREEN *vptr )
-/************************************/
+ui_event intern getprime( VSCREEN *vptr )
+/***************************************/
 {
     _uicheckuidata();
     if( Event <= EV_NO_EVENT ) {
@@ -69,26 +69,26 @@ EVENT intern getprime( VSCREEN *vptr )
 }
 
 
-EVENT UIAPI uivgetprime( VSCREEN *vptr )
-/***************************************/
+ui_event UIAPI uivgetprime( VSCREEN *vptr )
+/*****************************************/
 {
     getprime( vptr );
     return( saveevent() );
 }
 
 
-EVENT UIAPI uivgetprimevent( VSCREEN *vptr )
-/*******************************************/
+ui_event UIAPI uivgetprimevent( VSCREEN *vptr )
+/*********************************************/
 {
-    register    EVENT                   ev;
+    register ui_event       ui_ev;
 
-    ev = uivgetprime( vptr );
-//    switch( ev ) {
+    ui_ev = uivgetprime( vptr );
+//    switch( ui_ev ) {
 //    case EV_NO_EVENT:
 //    case EV_SINK:
 //        uirefresh();
 //    }
-    return( ev );
+    return( ui_ev );
 }
 
 

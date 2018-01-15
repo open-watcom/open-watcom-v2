@@ -247,7 +247,7 @@ OVL_EXTERN void     ImgRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool ImgWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -265,7 +265,7 @@ OVL_EXTERN bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info ImgInfo = {
-    ImgEventProc,
+    ImgWndEventProc,
     ImgRefresh,
     ImgGetLine,
     ImgMenuItem,

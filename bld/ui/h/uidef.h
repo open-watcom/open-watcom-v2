@@ -55,7 +55,7 @@
     #define _IND_SAREA( X )     ind_xfer_sarea( X )
 
     void __far *                (*ind_xfer( void (__far *rtn)() ) )();
-    EVENT                       (*ind_xfer_event( EVENT (__far *rtn)() ) )();
+    ui_event                    (*ind_xfer_event( ui_event (__far *rtn)() ) )();
     long                        (*ind_xfer_long( long (__far *rtn)() ) )();
     int                         (*ind_xfer_int( int (__far *rtn)() ) )();
     SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
@@ -114,9 +114,9 @@ bool            intern          isscreen( BUFFER * );
 bool            intern          issnow( BUFFER * );
 void            intern          kbdspawnstart( void );
 void            intern          kbdspawnend( void );
-EVENT           intern          keyboardevent( void );
-EVENT           intern          menuevent( VSCREEN * );
-EVENT           intern          mouseevent( void );
+ui_event        intern          keyboardevent( void );
+ui_event        intern          menuevent( VSCREEN * );
+ui_event        intern          mouseevent( void );
 void            intern          mouseon( void );
 void            intern          mouseoff( void );
 void            intern          mousespawnstart( void );
@@ -136,13 +136,13 @@ void            intern          permit_refresh( void );
     #define                     forbid_refresh()
     #define                     permit_refresh()
 #endif
-EVENT           intern          saveevent( void );
-EVENT           intern          getprime( VSCREEN * );
+ui_event        intern          saveevent( void );
+ui_event        intern          getprime( VSCREEN * );
 void            intern          setupmouse( void );
 void            intern          setvideomode( unsigned );
 int             intern          videopage( void );
 void            intern          vertretrace( void );
-EVENT           intern          getanyevent( void );
+ui_event        intern          getanyevent( void );
 void            intern          waitforevent( void );
 void            intern          initeventlists( void );
 

@@ -202,7 +202,7 @@ static void CallClose( a_window *wnd )
 }
 
 
-OVL_EXTERN bool CallEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool CallWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 
@@ -225,7 +225,7 @@ OVL_EXTERN bool CallEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 
 
 wnd_info CallInfo = {
-    CallEventProc,
+    CallWndEventProc,
     CallRefresh,
     CallGetLine,
     CallMenuItem,

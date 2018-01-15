@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern EVENT GUIAllEvents[];
-extern EVENT GUIUserEvents[];
-extern EVENT GUIControlEvents[];
+extern ui_event GUIAllEvents[];
+extern ui_event GUIUserEvents[];
+extern ui_event GUIControlEvents[];

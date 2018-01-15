@@ -222,8 +222,7 @@ void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff )
  * GUIProcessControlEvent -- send the given event to the given control
  */
 
-EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
-                              gui_ord col )
+ui_event GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, gui_ord col )
 {
     a_dialog    *ui_dlg_info;
     bool        colours_set;
@@ -236,16 +235,16 @@ EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
         uipushlist( NULL );
         uipushlist( GUIUserEvents );
         uipushlist( GUIControlEvents );
-        ev = uiprocessdialogevent( ev, ui_dlg_info );
+        ui_ev = uiprocessdialogevent( ui_ev, ui_dlg_info );
         uipoplist( /* GUIControlEvents */ );
         uipoplist( /* GUIUserEvents */ );
         uipoplist( /* NULL */ );
         if( colours_set ) {
             GUIResetDialColours();
         }
-        return( GUIProcessControlNotify( ev, ui_dlg_info, wnd ) );
+        return( GUIProcessControlNotify( ui_ev, ui_dlg_info, wnd ) );
    } else {
-        return( ev );
+        return( ui_ev );
     }
 }
 

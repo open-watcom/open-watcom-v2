@@ -157,7 +157,7 @@ OVL_EXTERN void GlobSetOptions( a_window *wnd )
     GlobInit( wnd );
 }
 
-bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool GlobWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -182,7 +182,7 @@ void GlobChangeOptions( void )
 }
 
 wnd_info GlobInfo = {
-    GlobEventProc,
+    GlobWndEventProc,
     GlobRefresh,
     GlobGetLine,
     GlobMenuItem,

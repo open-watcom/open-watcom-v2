@@ -129,11 +129,11 @@ void GUIProcessMenuCurr( MENUITEM *menu )
  * GUICreateMenuPopup - create a floating popup menu
  */
 
-EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
+ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
                           MENUITEM *menu, gui_mouse_track track,
                           gui_ctl_id *curr_id )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
     gui_ctl_id  id;
     ATTR        attr_active;
     ATTR        attr_hot;
@@ -169,9 +169,9 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
     UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
 
-    ev = 0;
+    ui_ev = 0;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
-        ev = ID2EV( *curr_id );
+        ui_ev = ID2EV( *curr_id );
     }
     top = GUIGetTopWnd( wnd );
     COPYAREA( top->use, area );
@@ -182,12 +182,12 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
                             wnd->screen.area.col + location->x, &area, NULL ) ) {
         return( EV_NO_EVENT );
     }
-    ev = uicreatepopupinarea( menu, &desc, track & GUI_TRACK_LEFT,
-                              track & GUI_TRACK_RIGHT, ev, &area, false );
+    ui_ev = uicreatepopupinarea( menu, &desc, track & GUI_TRACK_LEFT,
+                              track & GUI_TRACK_RIGHT, ui_ev, &area, false );
 
-    if( ev == EV_KILL_UI ) {
+    if( ui_ev == EV_KILL_UI ) {
         uiforceevadd( EV_KILL_UI );
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
 
     GUIProcessMenuCurr( NULL );
@@ -200,15 +200,15 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     UIData->attrs[ATTR_CURR_INACTIVE]   = attr_curr_inactive;
     UIData->attrs[ATTR_MENU]            = attr_menu;
 
-    if( ( ev != EV_MOUSE_DCLICK ) && ( ev != EV_NO_EVENT ) ) {
-        if( IS_CTLEVENT( ev ) ) {
-            id = EV2ID( ev );
+    if( ( ui_ev != EV_MOUSE_DCLICK ) && ( ui_ev != EV_NO_EVENT ) ) {
+        if( IS_CTLEVENT( ui_ev ) ) {
+            id = EV2ID( ui_ev );
             GUIEVENT( wnd, GUI_CLICKED, &id );
             if( curr_id != NULL ) {
                 *curr_id = id;
             }
         } else {
-            GUIProcessSysMenuEvent( ev, wnd );
+            GUIProcessSysMenuEvent( ui_ev, wnd );
         }
     }
     if( MenuState == MENU_SYS ) {
@@ -216,7 +216,7 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     }
     MenuWnd = NULL;
 
-    return( ev );
+    return( ui_ev );
 }
 
 static void TrackPopup( gui_window *wnd, gui_point *location,

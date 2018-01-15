@@ -32,5 +32,5 @@
 
 #ifndef _GUIMAPKY_H_
 #define _GUIMAPKY_H_
-extern EVENT GUIMapKeys( EVENT ev );
+extern ui_event GUIMapKeys( ui_event ui_ev );
 #endif // _GUIMAPKY_H_

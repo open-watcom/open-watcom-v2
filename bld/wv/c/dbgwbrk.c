@@ -299,7 +299,7 @@ OVL_EXTERN void     BrkRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool BrkWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
@@ -320,7 +320,7 @@ OVL_EXTERN bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info BrkInfo = {
-    BrkEventProc,
+    BrkWndEventProc,
     BrkRefresh,
     BrkGetLine,
     BrkMenuItem,

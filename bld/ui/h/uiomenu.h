@@ -42,7 +42,7 @@ typedef struct describemenu {
 
 typedef struct menuitem {
         char*           name;           /* name of item         */
-        EVENT           event;          /* item event           */
+        ui_event        event;          /* item event           */
 } MENUITEM;
 
 /* the titles and items fields must be initialized by the       */
@@ -51,7 +51,7 @@ typedef struct menuitem {
 typedef struct vbarmenu {
         MENUITEM*       titles;         /* titles for pull down menus       */
         MENUITEM**      items;          /* pull down menus                  */
-        EVENT           event;          /* current menu item event          */
+        ui_event        event;          /* current menu item event          */
         unsigned        inlist:1;       /* selection will lead to the event */
         unsigned        newitem:1;      /* current menu item changed        */
         unsigned        active:1;       /* the user is browsing the menus   */
@@ -65,6 +65,6 @@ typedef struct vbarmenu {
 
 void            extern          uimenubar( VBARMENU * );
 void            extern          uimenuindicators( int );
-void            extern          uimenus( MENUITEM *, MENUITEM **, EVENT );
+void            extern          uimenus( MENUITEM *, MENUITEM **, ui_event );
 void            extern          uinomenus( void );
 #endif

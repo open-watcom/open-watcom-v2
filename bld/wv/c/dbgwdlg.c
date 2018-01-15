@@ -199,7 +199,7 @@ void WndDlgFini( void )
     }
 }
 
-OVL_EXTERN bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool DlgWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -223,7 +223,7 @@ OVL_EXTERN bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info LogInfo = {
-    DlgEventProc,
+    DlgWndEventProc,
     DlgRefresh,
     DlgGetLine,
     NoMenuItem,
