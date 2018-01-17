@@ -34,7 +34,7 @@
 #include "dlgstat.h"
 #include "dlgdynam.h"
 
-static GUICALLBACK DynamicDialogEventWnd;
+static GUICALLBACK DynamicDialogWndGUIEventProc;
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
@@ -45,8 +45,8 @@ static gui_create_info DialogControl = {
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
     0, NULL,                            // Menu array
-    0, NULL,                            // Color attribute array
-    &DynamicDialogEventWnd,             // GUI Event Callback function
+    0, NULL,                            // Colour attribute array
+    &DynamicDialogWndGUIEventProc,      // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource
@@ -112,12 +112,11 @@ static void InitDialog( gui_window *parent )
 }
 
 /*
- * DynamicDialogEventWnd
+ * DynamicDialogWndGUIEventProc
  */
 
-bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    bool        ret;
     gui_ctl_id  id;
     char        *new;
     unsigned    i;
@@ -128,7 +127,6 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_rect    rect;
     int         extent, top, start, end;
 
-    ret = true;
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         GUIGetRect( gui, &rect );
@@ -174,7 +172,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 //      GUISelectAll( gui, LISTBOX_CONTROL, true );
 //      GUISetFocus( gui, CHECKBOX_CONTROL1 );
 //      GUISetCurrSelect( gui, LISTBOX_CONTROL, 1 );
-        break;
+        return( true );
     case GUI_CONTROL_NOT_ACTIVE :
         GUI_GETID( param, id );
         switch( id ) {
@@ -190,13 +188,13 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIMemFree( new );
             break;
         }
-        break;
+        return( true );
     case GUI_CONTROL_RCLICKED :
         GUI_GETID( param, id );
         text = GUIGetText( gui, id );
         GUIDisplayMessage( gui, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
-        break;
+        return( true );
     case GUI_CONTROL_DCLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -204,7 +202,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
-            break;
+            return( true );
         }
         break;
     case GUI_CONTROL_CLICKED :
@@ -217,8 +215,8 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
-           // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
-            break;
+            // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
+            return( true );
         case OKBUTTON_CONTROL :
             for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
                 if( GUIIsChecked( gui, id ) ) {
@@ -257,26 +255,24 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUICloseDialog( gui );
 #endif
             }
-            break;
+            return( true );
         case CANCELBUTTON_CONTROL :
 #if 0
             GUIDisplayMessage( gui, "Cancel\nButton CancelButton CancelButtonCancelButton Cancel Button Cancel Button Cancel Button Cancel Button Cancel\tButton Cancel Button\t\t\tCancel Button", "Got dialog item : ",
                                GUI_STOP );
 #endif
             GUICloseDialog( gui );
-            break;
+            return( true );
         case EDIT_CONTROL :
-            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ",
-                               GUI_QUESTION );
-            break;
+            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ", GUI_QUESTION );
+            return( true );
         case STATIC_CONTROL :
-            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ",
-                               GUI_STOP );
-            break;
+            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ", GUI_STOP );
+            return( true );
         case ADDBUTTON_CONTROL :
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
             GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA, ListBoxData, ListBoxFunc );
-            break;
+            return( true );
         case CLEARBUTTON_CONTROL :
             if( !GUIIsControlVisible( gui, RADIOBUTTON_CONTROL1 ) ) {
                 GUIShowControl( gui, RADIOBUTTON_CONTROL1 );
@@ -316,14 +312,12 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUIResizeWindow( gui, &rect );
             }
 #endif
-            break;
+            return( true );
         }
-        break;
     default :
-        ret = false;
         break;
     }
-    return( ret );
+    return( false );
 }
 
 void DynamicDialogCreate( gui_window *parent )

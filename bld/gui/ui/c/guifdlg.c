@@ -1133,9 +1133,9 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
         case CTL_FILE_LIST:
         case CTL_DIR_LIST:
             ProcessOKorDClick( gui, id );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     case GUI_CONTROL_CLICKED:
         if( !dlg->initted )
             break;
@@ -1143,15 +1143,15 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
         switch( id ) {
         case CTL_OK:
             ProcessOKorDClick( gui, id );
-            break;
+            return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_FILE_LIST:
             ptr = GUIGetText( gui, id );
             GUISetText( gui, CTL_EDIT, ptr );
             GUIMemFree( ptr );
-            break;
+            return( true );
         case CTL_DRIVES :
             sel = GUIGetCurrSelect( gui, id );
             strcpy( path, GetDriveTextList()[sel] );
@@ -1161,16 +1161,16 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
-            break;
+            return( true );
         case CTL_FILE_TYPES:
             sel = GUIGetCurrSelect( gui, id );
             if( !initDialog( gui, dlg->fileExtensions[sel], NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );
             }
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;  // makes GCC happy.
     }

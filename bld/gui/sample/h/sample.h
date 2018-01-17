@@ -80,12 +80,11 @@ typedef struct {
     disp_entry * display;
 } out_info;
 
-extern  GUICALLBACK     DialogEventWnd;
-extern  GUICALLBACK     MainEventWnd;
-extern  GUICALLBACK     ControlEventWnd;
-extern  GUICALLBACK     ChildEventWnd;
-extern  GUICALLBACK     Child1EventWnd;
-extern  GUICALLBACK     Child3EventWnd;
+extern  GUICALLBACK     MainWndGUIEventProc;
+extern  GUICALLBACK     ControlWndGUIEventProc;
+extern  GUICALLBACK     Child1WndGUIEventProc;
+extern  GUICALLBACK     Child2WndGUIEventProc;
+extern  GUICALLBACK     Child3WndGUIEventProc;
 
 enum {
     MENU_STATIC_DIALOG,

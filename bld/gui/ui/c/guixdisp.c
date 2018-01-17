@@ -177,11 +177,11 @@ static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void 
         case GUI_RET_YES :
             *ret = (gui_message_return)id;
             GUICloseDialog( gui );
-            break;
+            return( true );
         default :
             break;
         }
-        return( true );
+        break;
     default :
         break;
     }

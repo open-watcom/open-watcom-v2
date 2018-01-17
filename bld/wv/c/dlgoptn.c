@@ -113,16 +113,16 @@ OVL_EXTERN bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             optset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_CANCEL:
             optset->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_DEFAULTS:
             SetDlgStatus( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     }
     return( false );
 }

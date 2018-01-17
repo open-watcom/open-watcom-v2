@@ -161,7 +161,7 @@ STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
         return( true );
     }

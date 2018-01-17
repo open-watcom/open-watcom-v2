@@ -89,16 +89,16 @@ static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *para
         case CANCEL :
             GUICloseDialog( gui );
             info->ret_val = GUI_RET_CANCEL;
-            break;
+            return( true );
         case OK :
             info->text = GUIGetText( gui, EDIT );
             GUICloseDialog( gui );
             info->ret_val = GUI_RET_OK;
-            break;
+            return( true );
         default :
             break;
         }
-        return( true );
+        break;
     default :
         break;
     }

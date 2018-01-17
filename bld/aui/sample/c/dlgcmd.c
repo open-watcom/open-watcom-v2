@@ -110,12 +110,12 @@ static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             if( text != NULL )
                 DoCmd( text );
             GUIMemFree( text );
-            break;
-        case CTL_CMD_CHECK:
-            return( false );
+            /* fall through */
+        case CTL_CMD_CANCEL:
+            GUICloseDialog( gui );
+            return( true );
         }
-        GUICloseDialog( gui );
-        return( true );
+        break;
     case GUI_DESTROY:
         WndFree( cmd );
         return( true );

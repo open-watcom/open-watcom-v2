@@ -48,13 +48,14 @@ enum {
     CLEARBUTTON_CONTROL,
 };
 
-extern  gui_control_info Controls[];
+extern gui_control_info Controls[];
 
-extern  bool            DialogScaled;
-extern  bool            ButtonsScaled;
-extern  bool            ControlsScaled;
+extern bool         DialogScaled;
+extern bool         ButtonsScaled;
+extern bool         ControlsScaled;
 
-extern int  NUM_LIST_BOX_DATA;
-extern void StaticDialogInit( void );
-extern void StaticDialogCreate( gui_window *parent );
-extern GUICALLBACK StaticDialogEventWnd;
+extern int          NUM_LIST_BOX_DATA;
+
+extern void         StaticDialogInit( void );
+extern void         StaticDialogCreate( gui_window *parent );
+extern GUICALLBACK  StaticDialogWndGUIEventProc;

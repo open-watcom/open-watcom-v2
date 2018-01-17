@@ -83,6 +83,7 @@ OVL_EXTERN bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             /* fall through */
         case CTL_CMD_SYMBOL:
             SymComplete( gui, CTL_CMD_EDIT );
+            GUICloseDialog( gui );
             return( true );
         case CTL_CMD_OK:
             text = GUIGetText( gui, CTL_CMD_EDIT );
@@ -92,10 +93,10 @@ OVL_EXTERN bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
                 DoCmd( DupStr( text ) );
                 GUIMemFree( text );
             }
-            break;
+            GUICloseDialog( gui );
+            return( true );
         }
-        GUICloseDialog( gui );
-        return( true );
+        break;
     case GUI_DESTROY:
         WndFree( dlg );
         return( true );

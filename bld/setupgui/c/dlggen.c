@@ -620,20 +620,20 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             GetVariableVals( gui, curr_dialog, true );
             GUICloseDialog( gui );
             result->state = IdToDlgState( id );
-            break;
+            return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
             result->state = DLG_CAN;
-            break;
+            return( true );
         case CTL_DONE:
             GUICloseDialog( gui );
             result->state = DLG_DONE;
-            break;
+            return( true );
         case CTL_OPTIONS:  // Options button on Welcome dialog
             // call Options dialog
             DoDialogWithParent( gui, "Options" );
             GetVariableVals( gui, curr_dialog, false );
-            break;
+            return( true );
         default:
             {
                 const char      *dlg_name;
@@ -664,20 +664,19 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
                         }
                     }
                 }
+                if( !initializing )
+                    GetVariableVals( gui, curr_dialog, false );
+
+                UpdateControlVisibility( gui, curr_dialog, false );
+                return( true );
             }
-            if( !initializing )
-                GetVariableVals( gui, curr_dialog, false );
-
-            UpdateControlVisibility( gui, curr_dialog, false );
-
-            break;
         case CTL_HELP:
             strcpy( buff, "Help_" );
             strcat( buff, curr_dialog->name );
             DoDialogWithParent( gui, buff );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }

@@ -150,16 +150,15 @@ STATIC bool optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case CTL_OK:
             getDlgValues( gui );
+            /* fall through */
+        case CTL_CANCEL:
             GUICloseDialog( gui );
             return( true );
         case CTL_DEFAULTS:
             setDlgDefaults( gui );
             return( true );
-        case CTL_CANCEL:
-            GUICloseDialog( gui );
-            return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
         return( true );
     }

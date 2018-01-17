@@ -83,16 +83,16 @@ OVL_EXTERN bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
                 varx->cancel = false;
                 GUICloseDialog( gui );
             }
-            break;
+            return( true );
         case CTL_VARX_CANCEL:
             varx->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_VARX_DEFAULTS:
             SetDlgStatus( varx, gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     }
     return( false );
 }

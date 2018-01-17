@@ -78,8 +78,7 @@ OVL_EXTERN bool ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * par
             GUIDlgBuffGetText( gui, CTL_NEWP_PROG, prog, sizeof( prog ) );
             GUIDlgBuffGetText( gui, CTL_NEWP_ARGS, args, sizeof( args ) );
             dlg->cancel = false;
-            GUICloseDialog( gui );
-            return( true );
+            /* fall through */
         case CTL_NEWP_CANCEL:
             GUICloseDialog( gui );
             return( true );

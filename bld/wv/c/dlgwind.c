@@ -121,16 +121,16 @@ OVL_EXTERN bool WndSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             wndset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_WIND_CANCEL:
             wndset->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_WIND_DEFAULTS:
             SetDlgStatus( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     }
     return( false );
 }

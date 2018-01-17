@@ -382,15 +382,15 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
                     CancelSetup = true;
                 }
                 button_pressed = false;
-                break;
             }
+            return( true );
         case CTL_DONE:
             if( !button_pressed ) {
                 CancelSetup = true;
-                break;
             }
+            return( true );
         }
-        return( true );
+        break;
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
         switch( key ) {

@@ -65,20 +65,20 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         if( id == CTL_PICK_LIST ) {
             dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
             GUICloseDialog( gui );
+            return( true );
         }
-        return( true );
+        break;
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_PICK_OK:
             dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
-            GUICloseDialog( gui );
-            break;
+            /* fall through */
         case CTL_PICK_CANCEL:
             GUICloseDialog( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }

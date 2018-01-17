@@ -306,11 +306,11 @@ gui_create_info Parent = {
     NUM_MAIN_MENUS, MainMenu,           // Menu array
 #endif
 #if default_colours
-    0, NULL,                            // Color attribute array
+    0, NULL,                            // Colour attribute array
 #else
-    GUI_NUM_ATTRS, &ParentColours,      // Color attribute array
+    GUI_NUM_ATTRS, &ParentColours,      // Colour attribute array
 #endif
-    &MainEventWnd,                      // GUI Event Callback Function
+    &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     &MainIcon,
     NULL                                // Menu Resource
@@ -324,11 +324,11 @@ gui_create_info Child1 = {
     NULL,
     NUM_CHILD_MENUS, ChildMenu,         // Menu array
 #if default_colours
-    0, NULL,                            // Color attribute array
+    0, NULL,                            // Colour attribute array
 #else
-    GUI_NUM_ATTRS + 1, &ChildColours,   // Color attribute array
+    GUI_NUM_ATTRS + 1, &ChildColours,   // Colour attribute array
 #endif
-    &Child1EventWnd,                    // GUI Event Callback Function
+    &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &Win1Icon,
     NULL                                // Menu Resource
@@ -348,11 +348,11 @@ gui_create_info Child2 = {
     NUM_CHILD_MENUS, ChildMenu,         // Menu array
 #endif
 #if default_colours
-    0, NULL,                            // Color attribute array
+    0, NULL,                            // Colour attribute array
 #else
-    GUI_NUM_ATTRS + 1, &ChildColours,   // Color attribute array
+    GUI_NUM_ATTRS + 1, &ChildColours,   // Colour attribute array
 #endif
-    &ChildEventWnd,                     // GUI Event Callback Function
+    &Child2WndGUIEventProc,             // GUI Event Callback function
     &Child2_Out,
     &Win2Icon,
     NULL                                // Menu Resource
@@ -366,11 +366,11 @@ gui_create_info Child3 = {
     NULL,
     0, NULL,                            // Menu array
 #if default_colours
-    0, NULL,                            // Color attribute array
+    0, NULL,                            // Colour attribute array
 #else
-    GUI_NUM_ATTRS + 1, &ChildColours,   // Color attribute array
+    GUI_NUM_ATTRS + 1, &ChildColours,   // Colour attribute array
 #endif
-    Child3EventWnd,                     // GUI Event Callback Function
+    Child3WndGUIEventProc,              // GUI Event Callback function
     NULL,
     &Win3Icon,
     NULL                                // Menu Resource
@@ -383,8 +383,8 @@ gui_create_info Child4 = {
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
     0, NULL,                            // Menu array
-    0, NULL,                            // Color attribute array
-    &Child1EventWnd,                    // GUI Event Callback Function
+    0, NULL,                            // Colour attribute array
+    &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &Win1Icon,
     NULL                                // Menu Resource
@@ -449,11 +449,11 @@ gui_create_info DialogWndControl = {
     NULL,
     0, NULL,                            // Menu array
 #if default_colours
-    0, NULL,                            // Color attribute array
+    0, NULL,                            // Colour attribute array
 #else
-    GUI_NUM_ATTRS, &DialogColours,      // Color attribute array
+    GUI_NUM_ATTRS, &DialogColours,      // Colour attribute array
 #endif
-    &ControlEventWnd,                   // GUI Event Callback Function
+    &ControlWndGUIEventProc,            // GUI Event Callback function
     NULL,
     &DlgIcon,
     NULL                                // Menu Resource

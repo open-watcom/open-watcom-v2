@@ -100,27 +100,27 @@ bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
             ctltext = GUIGetText( wnd, CTL_NEWPROJ_PROJDIR );
             if( ctltext == NULL ) {
                 ShowError( APPWIZ_NO_PROJDIR );
-                break;
+                return( true );
             }
             strcpy( projectDir, ctltext );
             ctltext = GUIGetText( wnd, CTL_NEWPROJ_PROJNAME );
             if( ctltext == NULL ) {
                 ShowError( APPWIZ_NO_PROJNAME );
-                break;
+                return( true );
             }
             strcpy( projectName, ctltext );
             projectTypeIndex = GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE );
             if( !createProjectDir( projectDir ) ) {
-                break;
+                return( true );
             }
             GUICloseDialog( wnd );
-            break;
+            return( true );
         case CTL_NEWPROJ_CANCEL:
             projectTypeIndex = -1;
             GUICloseDialog( wnd );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }

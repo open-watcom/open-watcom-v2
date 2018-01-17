@@ -64,18 +64,18 @@ static bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         case CTL_OPT_OK:
             optset->cancel = false;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_CANCEL:
             optset->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_DEFAULTS:
             SetDlgStatus( gui );
-            break;
+            return( true );
         default :
             break;
         }
-        return( true );
+        break;
     default :
         break;
     }

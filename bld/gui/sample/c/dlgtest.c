@@ -38,7 +38,7 @@
 #include "wresdefn.h"
 
 
-GUICALLBACK TestDialogEventWnd;
+static GUICALLBACK TestDialogWndGUIEventProc;
 
 static gui_create_info DialogControl = {
     "Test Dialog Box",                  // Title
@@ -47,29 +47,27 @@ static gui_create_info DialogControl = {
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
     0, NULL,                            // Menu array
-    0, NULL,                            // Color attribute array
-    &TestDialogEventWnd,                // GUI Event Callback function
+    0, NULL,                            // Colour attribute array
+    &TestDialogWndGUIEventProc,         // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource
 };
 
 /*
- * TestDialogEventWnd
+ * TestDialogWndGUIEventProc
  */
 
-bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    bool        ret;
     gui_ctl_id  id;
     char        *new;
     char        *text;
     gui_ctl_idx num;
 
-    ret = true;
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
-        break;
+        return( true );
     case GUI_CONTROL_NOT_ACTIVE :
         GUI_GETID( param, id );
         switch( id ) {
@@ -85,13 +83,13 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIMemFree( new );
             break;
         }
-        break;
+        return( true );
     case GUI_CONTROL_RCLICKED :
         GUI_GETID( param, id );
         text = GUIGetText( gui, id );
         GUIDisplayMessage( gui, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
-        break;
+        return( true );
     case GUI_CONTROL_DCLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -99,7 +97,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
-            break;
+            return( true );
         }
         break;
     case GUI_CONTROL_CLICKED :
@@ -112,7 +110,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
-            break;
+            return( true );
         case OKBUTTON_CONTROL :
             num = CHECKBOX_CONTROL2;
             if( gui == DialogWindow ) {
@@ -125,29 +123,26 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                     GUIMemFree( text );
                 }
             }
-            break;
+            return( true );
         case CANCELBUTTON_CONTROL :
             GUICloseDialog( gui );
-            break;
+            return( true );
         case EDIT_CONTROL :
-            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ",
-                               GUI_QUESTION );
-            break;
+            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ", GUI_QUESTION );
+            return( true );
         case STATIC_CONTROL :
-            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ",
-                               GUI_STOP );
-            break;
+            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ", GUI_STOP );
+            return( true );
         case ADDBUTTON_CONTROL :
-            break;
+            return( true );
         case CLEARBUTTON_CONTROL :
-            break;
+            return( true );
         }
         break;
     default :
-        ret = false;
         break;
     }
-    return( ret );
+    return( false );
 }
 
 #if 0
@@ -210,11 +205,10 @@ void TestDialogCreate( gui_window *parent )
     }
 }
 
-static bool DummyEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+static bool DummyWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    gui = gui;
-    gui_ev = gui_ev;
-    param = param;
+    /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
+
     return( false );
 }
 
@@ -225,8 +219,8 @@ static gui_create_info ResDialog = {
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
     0, NULL,                            // Menu array
-    0, NULL,                            // Color attribute array
-    &DummyEventWnd,                     // GUI Event Callback function
+    0, NULL,                            // Colour attribute array
+    &DummyWndGUIEventProc,              // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource

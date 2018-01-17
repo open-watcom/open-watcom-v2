@@ -44,8 +44,8 @@ static gui_ord Width = 0;
 static char Text[][NUM_TEXT] = { {"0%"}, {"25%"}, {"50%"}, {"75%"}, {"100%"} };
 static int Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
 
-static GUICALLBACK GetNewFunction;
-static GUICALLBACK StatusFunction;
+static GUICALLBACK GetNewGUIEventProc;
+static GUICALLBACK StatusGUIEventProc;
 
 static gui_create_info DialogWnd = {
     "Install Program: ",
@@ -54,8 +54,8 @@ static gui_create_info DialogWnd = {
     GUI_VISIBLE,
     NULL,
     0, NULL,                            // Menu array
-    0, NULL,                            // Color attribute array
-    &GetNewFunction,                    // GUI Event Callback Function
+    0, NULL,                            // Colour attribute array
+    &GetNewGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -84,8 +84,8 @@ static gui_create_info StatusWnd = {
     GUI_VISIBLE | GUI_DIALOG_LOOK,
     NULL,
     0, NULL,                            // Menu array
-    GUI_NUM_ATTRS + 1, &StatusColours,  // Color attribute array
-    &StatusFunction,                    // GUI Event Callback Function
+    GUI_NUM_ATTRS + 1, &StatusColours,  // Colour attribute array
+    &StatusGUIEventProc,                // GUI Event Callback function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -117,22 +117,22 @@ static gui_message_return ret_val = GUI_RET_CANCEL;
 static gui_window * Status = NULL;
 
 /*
- * GetNewFunction - call back routine for the GetNewVal dialog
+ * GetNewGUIEventProc - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         ret_val = GUI_RET_CANCEL;
-        break;
+        return( true );
     case GUI_DESTROY :
         if( Status != NULL ) {
             GUIDestroyWnd( Status );
         }
-        break;
+        return( true );
     case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -156,16 +156,16 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
             ret_val = GUI_RET_OK;
             break;
         }
-        break;
+        return( true );
     }
-    return( true );
+    return( false );
 }
 
 /*
- * StatusFunction - call back routine for the status window
+ * StatusGUIEventProc - call back routine for the status window
  */
 
-static bool StatusFunction( gui_window * gui, gui_event gui_ev, void * param )
+static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
 {
     int              i;
     int              pos;
@@ -192,9 +192,9 @@ static bool StatusFunction( gui_window * gui, gui_event gui_ev, void * param )
         for( i = 0; i < NUM_TEXT; i++ ) {
             Strlen[i] *= metrics.max.x;
         }
-        break;
+        return( true );
     case GUI_DESTROY :
-        break;
+        return( true );
     case GUI_PAINT :
         GUIDrawRect( gui, &Rect, GUI_FIRST_UNUSED );
         for( i = 0; i < NUM_TEXT; i++ ) {
@@ -202,18 +202,15 @@ static bool StatusFunction( gui_window * gui, gui_event gui_ev, void * param )
             if( pos < (int)Rect.x ) {
                 pos = Rect.x;
             }
-            if( ( i > NumEnters ) ||
-                ( i == 0 ) && ( NumEnters == 0 ) ) {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
-                             GUI_TITLE_ACTIVE );
+            if( ( i > NumEnters ) || ( i == 0 ) && ( NumEnters == 0 ) ) {
+                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_TITLE_ACTIVE );
             } else {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos,
-                             GUI_FIRST_UNUSED );
+                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_FIRST_UNUSED );
             }
         }
-        break;
+        return( true );
     }
-    return( true );
+    return( false );
 }
 
 void GUImain( void )

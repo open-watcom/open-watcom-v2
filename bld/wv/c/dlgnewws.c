@@ -81,8 +81,9 @@ OVL_EXTERN bool NewSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
         GUI_GETID( param, id );
         if( id == CTL_NEW_SYMBOL ) {
             CompRtn( gui, CTL_NEW_EDIT );
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }

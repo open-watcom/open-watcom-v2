@@ -109,7 +109,7 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
         case CTL_LIST_LIST:
             GUIDlgBuffGetText( gui, CTL_LIST_LIST, TxtBuff, TXT_LEN );
             GUISetText( gui, CTL_LIST_EDIT, TxtBuff );
-            break;
+            return( true );
         case CTL_LIST_DELETE:
             i = GUIGetCurrSelect( gui, CTL_LIST_LIST );
             if( i != -1 ) {
@@ -123,7 +123,7 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             }
             GUISetFocus( gui, CTL_LIST_LIST );
             GUISetText( gui, CTL_LIST_EDIT, NULL );
-            break;
+            return( true );
         case CTL_LIST_ADD:
         case CTL_LIST_OK:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
@@ -133,7 +133,7 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             GUIClearText( gui, CTL_LIST_EDIT );
             GUISetFocus( gui, CTL_LIST_EDIT );
             if( id == CTL_LIST_ADD )
-                break;
+                return( true );
             dlg->clear();
             size = GUIGetListSize( gui, CTL_LIST_LIST );
             for( i = 0; i < size; ++i ) {
@@ -146,7 +146,7 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             /* fall through */
         case CTL_LIST_CANCEL:
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_LIST_BROWSE:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
             if( !AllBrowse( TxtBuff ) )
@@ -155,7 +155,7 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             GUISetFocus( gui, CTL_LIST_EDIT );
             return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }
