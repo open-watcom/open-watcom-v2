@@ -1086,7 +1086,7 @@ static void DoResNew( bool have_parms, const char *cmd,
 }
 
 
-extern void LoadNewProg( const char *cmd, const char *parms )
+void LoadNewProg( const char *cmd, const char *parms )
 {
     size_t      clen, plen;
     char        prog[FILENAME_MAX];

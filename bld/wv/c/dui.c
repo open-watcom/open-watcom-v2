@@ -64,13 +64,13 @@
 #include "wndhelp.h"
 #include "wndmenu.h"
 #include "fingmsg.h"
+#include "dlgnewp.h"
 
 
 extern a_window         *WndMain;
 extern const char       WndNameTab[];
 
 extern GUICALLBACK      WndMainGUIEventProc;
-extern void             DlgNewProg( void );
 extern void             InitPaint( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );
