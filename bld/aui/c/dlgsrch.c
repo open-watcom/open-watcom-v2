@@ -216,7 +216,7 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_INIT_DIALOG:
         SetDlgStatus( gui, dlg );
         GUISetFocus( gui, CTL_SRCH_EDIT );
-        break;
+        return( true );
     case GUI_KEY_CONTROL:
         return( DlgHistoryKey( gui, param, CTL_SRCH_EDIT, CTL_SRCH_LIST ) );
     case GUI_CONTROL_DCLICKED:

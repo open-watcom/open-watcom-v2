@@ -70,7 +70,6 @@
 extern a_window         *WndMain;
 extern const char       WndNameTab[];
 
-extern GUICALLBACK      WndMainGUIEventProc;
 extern void             InitPaint( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );
