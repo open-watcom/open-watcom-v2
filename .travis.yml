@@ -63,6 +63,7 @@ jobs:
         - export OWVERBOSE=1
       script: travis/build.sh boot
     - # ...
+      if: env(OWOSXBUILD) = 1
       os: osx
       install:
         - export OWTOOLS=GCC
@@ -93,6 +94,7 @@ jobs:
         - sudo apt-get install -y dosemu ghostscript
       script: travis/build.sh docpdf
     - # ...
+      if: env(OWOSXBUILD) = 1
       os: osx
       install:
         - export OWTOOLS=GCC
@@ -148,6 +150,7 @@ jobs:
         - travis/cacheinf.sh
       script: travis/tfini.sh
     - # ...
+      if: env(OWOSXBUILD) = 1
       os: osx
       before_script:
         - travis/envinfo.sh
