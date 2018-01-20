@@ -1234,8 +1234,13 @@ static mad_status XMMGetPiece(
     row = piece / ( group + 2 );
     column = piece % ( group + 2 );
     if( row == 0 ) {
+        /* header line */
         if( column < group ) {
-            *max_value_p = 2;
+            if( group - piece > 10 ) {
+                *max_value_p = 3;
+            } else {
+                *max_value_p = 2;
+            }
             *reg_p = &XXX_dummy.info;
             *disp_type_p = (mad_type_handle)( X86T_XMM_TITLE0 - 1 + group - piece );
         } else {
