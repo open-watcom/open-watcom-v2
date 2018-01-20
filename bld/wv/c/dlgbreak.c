@@ -319,6 +319,7 @@ OVL_EXTERN bool BrkGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
             }
         }
         DbgUpdate( UP_BREAK_CHANGE );
+        return( true );
     }
     return( false );
 }

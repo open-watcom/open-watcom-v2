@@ -320,7 +320,7 @@ STATIC bool sampleWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
         SetCurrentMAD( curr_sio->config.mad );
         CurrSIOData = curr_sio;
         return( true );
-    case WND_CURRENT_CHANGED:
+    case GUI_NO_EVENT:
         sampFixDirtyCurr( wnd );
         return( true );
     case GUI_DESTROY:
@@ -328,7 +328,7 @@ STATIC bool sampleWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
         if( curr_sio != NULL ) {
             ClearSample( curr_sio );
         }
-        return( false );
+        return( true );
     }
     return( false );
 }

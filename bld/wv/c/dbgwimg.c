@@ -259,7 +259,7 @@ OVL_EXTERN bool ImgWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         ImgInit( wnd );
         return( true );
     case GUI_DESTROY:
-        return( false );
+        return( true );
     }
     return( false );
 }

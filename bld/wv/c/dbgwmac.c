@@ -624,6 +624,7 @@ OVL_EXTERN bool MacWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         return( true );
     case GUI_DESTROY:
         WndFree( wndmac );
+        return( true );
     }
     return( false );
 }

@@ -421,8 +421,7 @@ WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
 }
 
 
-WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
-                          WExStyle exstyle )
+WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style, WExStyle exstyle )
     : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
@@ -439,8 +438,7 @@ WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
 }
 
 
-WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
-                          WStyle style, WExStyle exstyle )
+WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text, WStyle style, WExStyle exstyle )
     : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )

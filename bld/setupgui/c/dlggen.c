@@ -609,7 +609,7 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
         break;
 #endif
     case GUI_DESTROY:
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {

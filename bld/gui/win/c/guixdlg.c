@@ -146,9 +146,9 @@ static bool InitDialog( gui_window *wnd )
     GUISetRowCol( wnd, NULL );
     GUIEVENT( wnd, GUI_INIT_DIALOG, NULL );
     wnd->flags |= SENT_INIT;
-   /* must return false or Windows will set input focus to the
-    * first control with a group style
-    */
+    /* must return false or Windows will set input focus to the
+     * first control with a group style
+     */
     return( false );
 }
 

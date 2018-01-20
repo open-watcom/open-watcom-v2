@@ -287,12 +287,12 @@ enum {
     CMT_COMPILER_OPTIONS= 0xff, /* Microsoft: incremental compiler opts */
     CMT_SOURCE_NAME     = 0xff  /* name of the source file              */
 };
+
 /*
  * pack COMENT into two bytes so it can be written as a word
  */
-
-
 #define CMT_NP( a ) ((CMT_##a<<8)|CMT_TNP)
+
 /*
  * Comment Class Subtype
  */

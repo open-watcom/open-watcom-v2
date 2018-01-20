@@ -315,6 +315,7 @@ OVL_EXTERN bool BrkWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         return( true );
     case GUI_DESTROY:
         WndFree( wndbreak );
+        return( true );
     }
     return( false );
 }

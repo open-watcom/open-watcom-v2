@@ -515,9 +515,7 @@ static unsigned ActiveLine( void )
 #ifdef DEADCODE
 void    FileReset( a_window *wnd )
 {
-    file_window *file = WndFile( wnd );
-
-    file->active = NOT_ACTIVE;
+    WndFile( wnd )->active = NOT_ACTIVE;
 }
 #endif
 

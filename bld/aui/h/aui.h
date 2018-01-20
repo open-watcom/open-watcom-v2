@@ -70,8 +70,6 @@ typedef struct {
 #define WND_SAVE_ROW    0
 #define WND_RESTORE_ROW 1
 
-#define WND_CURRENT_CHANGED     GUI_NO_EVENT // sent when WndDirtyCurr called
-
 #define WND_GUIEVENT    WndMainGUIEventProc
 
 typedef enum {

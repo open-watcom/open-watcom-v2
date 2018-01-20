@@ -1039,7 +1039,8 @@ bool VpeMain::gettingFocus( WWindow* )
     return( false );
 }
 
-bool VpeMain::appActivate( bool activated ) {
+bool VpeMain::appActivate( bool activated )
+{
     if( activated && _project != NULL ) {
         if( _autoRefresh ) {
             _project->refresh( false );

@@ -558,7 +558,6 @@ static ui_event MapMiddleToRight( ui_event ui_ev )
 
 bool GUIProcessEvent( ui_event ui_ev )
 {
-//    gui_event   gui_ev;
     ORD         row, col;
     gui_window  *wnd;
     int         prev;
@@ -643,7 +642,6 @@ bool GUIProcessEvent( ui_event ui_ev )
             return( true );
         }
     }
-//    gui_ev = GUI_NO_EVENT;
     ui_ev = GUIMapKeys( ui_ev );
     switch( ui_ev ) {
     case EV_MOUSE_DCLICK_R :
@@ -736,10 +734,5 @@ bool GUIProcessEvent( ui_event ui_ev )
         }
         break;
     }
-/*
-    if( ( GUICurrWnd != NULL ) && (gui_ev != GUI_NO_EVENT ) ) {
-        GUIEVENT( GUICurrWnd, gui_ev, NULL );
-    }
-*/
     return( true );
 }

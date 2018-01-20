@@ -84,7 +84,7 @@ gui_resource WndGadgetArray[] = {
 gui_ord     BitMapBottom;
 gui_coord   BitMapSize;
 
-static bool MainSetupWndGUIEventProc( gui_window * gui, gui_event gui_ev, void *parm )
+static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     int                 i;
 
@@ -142,11 +142,11 @@ static bool MainSetupWndGUIEventProc( gui_window * gui, gui_event gui_ev, void *
                 GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND, WND_APPROX_SIZE );
             }
         }
-        break;
+        return( true );
     default:
         break;
     }
-    return( true );
+    return( false );
 }
 
 gui_coord               GUIScale;

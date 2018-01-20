@@ -143,12 +143,14 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         DlgCmd();
         ProcInput();
     }
-    if( _IsOn( SW_ERROR_RETURNS ) ) return;
+    if( _IsOn( SW_ERROR_RETURNS ) )
+        return;
     DUIArrowCursor();
     Suicide();
 }
 
 void PrevError( const char *msg )
+/*******************************/
 {
     DUIWndDebug();
     RingBell();

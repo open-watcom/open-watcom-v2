@@ -554,7 +554,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             char        text[100];
 
             GUI_GETID( param, id );
-            sprintf ( text,"GUI_INITMENUPOPUP: id = %d", id );
+            sprintf( text, "GUI_INITMENUPOPUP: id = %d", id );
             GUIDrawStatusText( MainWnd, text );
         }
         //GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
@@ -1286,8 +1286,7 @@ bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 static bool Enabled = true;
 #endif
 
-static void CreatePopup( gui_window *gui, int num_menus,
-                         gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
+static void CreatePopup( gui_window *gui, int num_menus, gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
 {
     int                 i;
     gui_menu_struct     *sub_menu;
@@ -1430,12 +1429,11 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GET_POINT( param, point );
         GUIGetMousePosn( gui, &point );
 #if dynamic_menus
-        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, GUI_NO_EVENT, false );
-//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], GUI_NO_EVENT, false );
+        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, 0, false );
+//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], 0, false );
         GUITrackFloatingPopup( gui, &point, GUI_TRACK_RIGHT, NULL); //&CurrPopupItem );
 #else
-        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true,
-                                &CurrPopupItem );
+        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true, &CurrPopupItem );
 #endif
         return( true );
     case GUI_RBUTTONDOWN :

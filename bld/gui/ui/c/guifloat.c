@@ -169,7 +169,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     UIData->attrs[ATTR_CURR_INACTIVE]   = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
     UIData->attrs[ATTR_MENU]            = wnd->colours[GUI_MENU_FRAME];
 
-    ui_ev = 0;
+    ui_ev = EV_NO_EVENT;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
         ui_ev = ID2EV( *curr_id );
     }

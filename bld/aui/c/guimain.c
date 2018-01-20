@@ -259,8 +259,8 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
         WndSetPopup( id );
         break;
     case GUI_INIT_WINDOW:
-        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->num_popups );
         wnd->gui = gui;
+        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->num_popups );
         cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
         ret = WNDEVENT( wnd, gui_ev, parm );
@@ -278,12 +278,12 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
         WndScrollDown( wnd );
         break;
     case GUI_SCROLL_PAGE_UP:
-        if( WNDEVENT( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+        if( WNDEVENT( wnd, gui_ev, parm ) )
             break;
         WndPageUp( wnd );
         break;
     case GUI_SCROLL_PAGE_DOWN:
-        if( WNDEVENT( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+        if( WNDEVENT( wnd, gui_ev, parm ) )
             break;
         WndPageDown( wnd );
         break;
@@ -320,7 +320,7 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
         _Clr( wnd, WSW_ICONIFIED );
         cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WNDEVENT( wnd, GUI_RESIZE, parm );
+        ret = WNDEVENT( wnd, gui_ev, parm );
         WndSetThumb( wnd );
         WndHourGlass( cursor );
         break;

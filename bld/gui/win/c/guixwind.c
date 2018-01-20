@@ -954,14 +954,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         if( ( hwnd == wnd->hwnd ) && ( wnd->root == NULLHANDLE ) ) {
             GUIMDINewWindow( hwnd );
         }
-        if( GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {
-            wnd->flags |= SENT_INIT;
-            GUISetScroll( wnd ); /* initalize scroll ranges */
-            GUIBringToFront( wnd );
-        } else {
+        if( !GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {
             /* app decided not to create window */
-            ret = (WPI_MRESULT)WPI_ERROR_ON_CREATE;
+            return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
         }
+        wnd->flags |= SENT_INIT;
+        GUISetScroll( wnd ); /* initalize scroll ranges */
+        GUIBringToFront( wnd );
         break;
 #if defined(__NT__)
     case WM_CTLCOLORBTN :

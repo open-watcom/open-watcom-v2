@@ -47,7 +47,7 @@
 #define START_EDIT      9
 
 enum {
-    STATIC,
+    STATIC = 1,
     EQUAL,
     EDIT,
     CANCEL,

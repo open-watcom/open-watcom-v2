@@ -279,7 +279,7 @@ OVL_EXTERN bool FuncWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     case GUI_RESIZE :
         CalcIndent( wnd );
         WndZapped( wnd );
-        break;
+        return( true );
     case GUI_DESTROY :
         NameListFree( NameList( func ) );
         WndFree( func );
