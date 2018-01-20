@@ -124,9 +124,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             }
         }
         DUIFlushKeys();
-        DUIWndDebug();
-        RingBell();
-        DUIErrorBox( buff );
+        PrevError( buff );
     }
     cmderror = false;
     for( inp = InpStack; inp != NULL; inp = inp->link ) {

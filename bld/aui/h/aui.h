@@ -72,7 +72,7 @@ typedef struct {
 
 #define WND_CURRENT_CHANGED     GUI_NO_EVENT // sent when WndDirtyCurr called
 
-
+#define WND_GUIEVENT    WndMainGUIEventProc
 
 typedef enum {
     WND_FIRST_UNUSED = GUI_FIRST_UNUSED,

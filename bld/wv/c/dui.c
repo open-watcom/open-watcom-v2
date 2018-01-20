@@ -195,7 +195,8 @@ void DUIInit( void )
 #if defined(__GUI__)
     TellWinHandle();
 #endif
-    if( WndMain != NULL ) WndSetIcon( WndMain, &MainIcon );
+    if( WndMain != NULL )
+        WndSetIcon( WndMain, &MainIcon );
     StartTimer();
     InitHelp();
     InitGadget();
@@ -238,7 +239,7 @@ void DUIShow( void )
     WndDebug();
     WndShowAll();
     WndShowWndMain();
-    WndMainGUIEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
+    WND_GUIEVENT( WndGui( WndMain ), GUI_NO_EVENT, NULL );
     if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) ) {
         DlgNewProg();
     }
