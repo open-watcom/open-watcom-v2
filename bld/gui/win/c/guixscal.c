@@ -177,7 +177,7 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_ord *start, int *num )
     hwnd = hwnd;
 
     _wpi_gettextmetrics( wnd->hdc, &GUItm );
-    avgy = AVGYCHAR(GUItm);
+    avgy = AVGYCHAR( GUItm );
     _wpi_getpaintrect( wnd->ps, &rect );
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
 

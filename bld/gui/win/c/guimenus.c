@@ -44,6 +44,8 @@
 
 #define MAX_STR 256
 
+extern  bool    GUIMDI;
+
 gui_menu_struct GUIHint[] = {
  { NULL, GUI_CHANGE_FONT, GUI_ENABLED, NULL },
  { NULL, GUI_FIX_TOOLBAR, GUI_ENABLED, NULL }
@@ -56,8 +58,6 @@ void GUIInitGUIMenuHint( void )
     GUIHint[1].label = LIT( XFix_Tool_Bar );
     GUIHint[1].hinttext = LIT( Make_Tool_Bar_Fixed );
 }
-
-extern  bool    GUIMDI;
 
 static bool GetMenuFlags( HMENU hmenu, gui_ctl_id id_position, bool by_position,
                           unsigned *menu_flags, unsigned *attr_flags )

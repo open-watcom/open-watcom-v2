@@ -34,12 +34,14 @@
 #include "dlgstat.h"
 #include "samprc.h"
 
+
+extern out_info Child1_Out;
+
 bool            DialogScaled    = false;
 bool            ButtonsScaled   = false;
 bool            ControlsScaled  = false;
 char * ListBoxData[] = { "one", "two", "three" };
 int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
-extern out_info Child1_Out;
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 

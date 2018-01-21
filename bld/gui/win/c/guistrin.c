@@ -35,7 +35,6 @@
 #include "guiscale.h"
 #include "guigetx.h"
 
-extern WPI_TEXTMETRIC GUItm;
 
 static gui_ord DoReturn( gui_ord ret, gui_window * wnd, bool got_new )
 {

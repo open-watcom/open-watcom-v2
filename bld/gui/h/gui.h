@@ -499,9 +499,8 @@ typedef enum {
 #define GUI_ALT_STATE( state )      ((state & GUI_KS_ALT) != 0)
 #define GUI_CTRL_STATE( state )     ((state & GUI_KS_CTRL) != 0)
 
-#define GUI_NO_COLUMN   ((gui_ord)-1)
-#define GUI_NO_ROW      ((gui_ord)-1)
-#define NO_SELECT       ((gui_ctl_id)-1)
+#define GUI_NO_COLUMN           ((gui_ord)-1)
+#define GUI_NO_ROW              ((gui_ord)-1)
 
 // GUIIsChecked and GUISetChecked values
 #define GUI_NOT_CHECKED         0

@@ -41,14 +41,13 @@
 #include "guistr.h"
 #include "guicolor.h"
 
+
 typedef struct draw_cache {
     WPI_COLOUR  back;
     WPI_COLOUR  colour;
     HBRUSH      brush;
     HPEN        pen;
 } draw_cache;
-
-extern  WPI_TEXTMETRIC  GUItm;
 
 /*
  * SetText -- set the current text colour and background colour properly
@@ -97,15 +96,14 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     pen = (HPEN)NULL;
     GUIGetMetrics( wnd );
     if( !bitmap ) {
-        height = AVGYCHAR(GUItm);
+        height = AVGYCHAR( GUItm );
     }
     rect = wnd->hwnd_client_rect;
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom);
+    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
     _wpi_getpaintrect( wnd->ps, &paint_rect );
-    _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right,
-                         &paint_bottom );
+    _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right, &paint_bottom );
     top = paint_top / height * height;
-    bottom = ( paint_bottom + height - 1) / height * height;
+    bottom = ( paint_bottom + height - 1 ) / height * height;
 
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll_pos = GUIGetScrollPos( wnd, SB_HORZ );

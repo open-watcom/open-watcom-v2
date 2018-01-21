@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
+#define GETRGB( rgb )   ( RGB( GUIGETRVALUE(rgb), GUIGETGVALUE(rgb), GUIGETBVALUE(rgb) ) )
+
 extern bool GUIXSetColours( gui_window * wnd, gui_colour_set * colours );
 extern HBRUSH GUIFreeBKBrush( gui_window * wnd );
 extern void GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours );
 extern WPI_COLOUR GUIGetFore( gui_window *wnd, gui_attr attr );
 extern WPI_COLOUR GUIGetBack( gui_window *wnd, gui_attr attr );
-
-#define GETRGB( rgb )   ( RGB( GUIGETRVALUE(rgb), GUIGETGVALUE(rgb), GUIGETBVALUE(rgb) ) )

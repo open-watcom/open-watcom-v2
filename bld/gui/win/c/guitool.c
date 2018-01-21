@@ -42,8 +42,6 @@
 #include "guirdlg.h"
 
 
-extern  gui_menu_struct GUIHint[];
-
 /* total height/width taken up by outline around  bitmap, on button */
 #if defined (__NT__)
 #define OUTLINE_AMOUNT  4   // Should be changed later.
@@ -51,6 +49,8 @@ extern  gui_menu_struct GUIHint[];
 #define OUTLINE_AMOUNT  4
 #endif
 #define BORDER_AMOUNT   1 /* space outside row of buttons */
+
+extern  gui_menu_struct GUIHint[];
 
 /*
  * GUIXCloseToolBar -- close the tool bar and free memory.  Can be called by

@@ -51,8 +51,6 @@
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
 
-extern  WPI_TEXTMETRIC  GUItm;
-
 static void MaxChild( gui_window *wnd, void *param )
 {
     param = param;

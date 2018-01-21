@@ -36,8 +36,6 @@
 #include "guitextm.h"
 
 
-extern  WPI_TEXTMETRIC  GUItm;
-
 void GUISetMetrics( gui_text_metrics *metrics, WPI_TEXTMETRIC *tm )
 {
     metrics->avg.x = AVGXCHAR( *tm );

@@ -38,19 +38,21 @@
 
 
 #ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
+
+extern  int         GUINumHotSpots;
+
+hotspot_info        *GUIHotSpots;
+
+#ifdef __NT__
 // For TransparentBlt function
 // #include "wptoolbr.h"
 // #include <windows.h>
 static HBITMAP      bitmap2 = NULL;
 static HINSTANCE    hInstUser = NULL;
-
-typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
-
-static PFNLI    pfnLoadImage;
+static PFNLI        pfnLoadImage;
 #endif
-
-extern  int             GUINumHotSpots;
-        hotspot_info    *GUIHotSpots;
 
 bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
 {
@@ -74,8 +76,7 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
 #ifdef __NT__
         }
 #endif
-        _wpi_getbitmapdim( GUIHotSpots[i].bitmap, &GUIHotSpots[i].size.x,
-                           &GUIHotSpots[i].size.y );
+        _wpi_getbitmapdim( GUIHotSpots[i].bitmap, &GUIHotSpots[i].size.x, &GUIHotSpots[i].size.y );
     }
     return( true );
 }

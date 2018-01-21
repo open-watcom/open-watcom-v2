@@ -44,6 +44,9 @@
 #include "clibext.h"
 
 
+#define MDIWIN2ID(x)    (x + GUI_MDI_FIRST_WINDOW)
+#define ID2MDIWIN(x)    (x - GUI_MDI_FIRST_WINDOW)
+
 #define MAX_LENGTH      80
 
 typedef struct {
@@ -63,7 +66,7 @@ static gui_menu_struct MDIMoreMenu[] = {
     { NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL }
 };
 
-static  gui_ctl_id      GUIMDIMenuID    = NO_SELECT;
+static  gui_ctl_id      GUIMDIMenuID    = 0;
 static  gui_window      *Root           = NULL;
 static  int             NumMDIWindows   = 0;
 static  int             CurrMDIWindow   = -1;
@@ -106,7 +109,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
 {
     GUIEnableMDIActions( enable );
     if( enable ) {
-        if( GUIMDIMenuID != NO_SELECT && GUIGetMenuPopupCount( root, GUIMDIMenuID ) != 0 ){
+        if( GUIMDIMenuID != 0 && GUIGetMenuPopupCount( root, GUIMDIMenuID ) != 0 ){
             GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
         }
     } else {
@@ -181,7 +184,7 @@ static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx positi
     menu.child = NULL;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
-    if( GUIMDIMenuID != NO_SELECT ) {
+    if( GUIMDIMenuID != 0 ) {
         GUIInsertMenuToPopup( root, GUIMDIMenuID, position, &menu, false );
     }
 }
@@ -189,7 +192,7 @@ static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx positi
 void MDIDeleteMenu( gui_ctl_id id )
 {
     if( id == GUIMDIMenuID ) {
-        GUIMDIMenuID = NO_SELECT;
+        GUIMDIMenuID = 0;
     }
 }
 
@@ -259,7 +262,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
         CurrMDIWindow = NumMDIWindows - 1;
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             if( NumMDIWindows == MAX_NUM_MDI_WINDOWS + 1 ) {
-                if( GUIMDIMenuID != NO_SELECT ) {
+                if( GUIMDIMenuID != 0 ) {
                     MDIMoreMenu[0].label = LIT( XMore_Windows );
                     MDIMoreMenu[0].hinttext = LIT( More_Windows_Hint );
                     GUIAppendMenuToPopup( root, GUIMDIMenuID, MDIMoreMenu, false );

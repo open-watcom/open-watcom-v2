@@ -46,10 +46,12 @@
 #include "guirdlg.h"
 
 
-extern  bool            EditControlHasFocus;
+typedef struct dialog_wnd_node {
+    gui_window              *wnd;
+    struct dialog_wnd_node  *next;
+} dialog_wnd_node;
 
-WPI_MRESULT CALLBACK GUIEditFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+extern  bool            EditControlHasFocus;
 
 controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
 #if defined( __NT__ ) && !defined( _WIN64 )
@@ -61,12 +63,10 @@ controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
     #undef pick
 };
 
-typedef struct dialog_wnd_node {
-    gui_window              *wnd;
-    struct dialog_wnd_node  *next;
-} dialog_wnd_node;
-
 static dialog_wnd_node  *DialogHead = NULL;
+
+WPI_MRESULT CALLBACK GUIEditFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 bool GUIInsertCtrlWnd( gui_window *wnd )
 {

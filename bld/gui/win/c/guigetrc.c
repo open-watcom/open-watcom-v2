@@ -36,7 +36,6 @@
 #include "guigetx.h"
 #include "guiscale.h"
 
-extern WPI_TEXTMETRIC GUItm;
 
 gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pos )
 {
@@ -47,7 +46,7 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pos )
 
     pos = *in_pos;
     GUIGetMetrics( wnd );
-    height = AVGYCHAR(GUItm);
+    height = AVGYCHAR( GUItm );
 
     GUIScaleToScreenRPt( &pos );
     row = pos.y / height;

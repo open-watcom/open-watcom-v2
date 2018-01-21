@@ -58,9 +58,7 @@
 
 #define SENDPOINTGUIEVENT(w, gm, wp, lp)    !SendPointEvent( wp, lp, w, gm, false )
 
-/* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-
+extern  controls_struct GUIControls[];
 extern  bool            EditControlHasFocus;
 
 static  char            *Font           = NULL;         /* name of font used in dialogs  */
@@ -69,7 +67,8 @@ static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
 
-extern  controls_struct GUIControls[];
+/* Local Window callback functions prototypes */
+WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 void GUISetJapanese( void )
 {
