@@ -84,7 +84,6 @@ extern void             WndSetWndMax(void);
 extern void             WndSetToolBar( gui_event gui_ev );
 extern void             WndPaintDirt(a_window*);
 extern void             WndDirtyCurrChar(a_window*);
-extern void             WndDirtyCurr(a_window*);
 extern void             WndDirtyScreenChar( a_window *wnd, wnd_coord *piece );
 extern void             WndDirtyScreenRange( a_window *wnd, wnd_coord *piece, int end_col );
 extern void             WndDirtyScreenPiece( a_window *wnd, wnd_coord *piece );
