@@ -60,11 +60,6 @@
 
 #define GUI_IS_GUI
 
-/* use 0-9 for os-specific menu constants */
-
-#define GUI_MENU_FONT   0
-#define GUI_CHANGE_FONT ( GUI_LAST_MENU_ID + GUI_MENU_FONT + 1 )
-
 typedef enum flags {
     NONE_SET            = 0x0000,
     HRANGE_SET          = 0x0001,
