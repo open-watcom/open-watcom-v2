@@ -32,7 +32,7 @@
 
 /* use 0-9 for os-specific menu constants */
 
-#define GUI_MENU_FONT                   0
+#define GUI_MENU_CHANGE_FONT            0
 #define GUI_MENU_FIX_TOOLBAR            1
 
 /* use all from 10 for MDI-specific menu constants */
@@ -46,9 +46,10 @@
 #define GUI_MENU_MDI_MORE_WINDOWS       16
 #define GUI_MENU_MDI_FIRST_WINDOW       17
 
-#define GUI_MENU_ID(x)                  (GUI_LAST_MENU_ID + x + 1)
+#define GUI_MENU_ID(x)                  (GUI_LAST_MENU_ID + x)
+#define GUI_MENU_IDX(x)                 (x - GUI_LAST_MENU_ID)
 
-#define GUI_CHANGE_FONT                 GUI_MENU_ID( GUI_MENU_FONT )
+#define GUI_CHANGE_FONT                 GUI_MENU_ID( GUI_MENU_CHANGE_FONT )
 #define GUI_FIX_TOOLBAR                 GUI_MENU_ID( GUI_MENU_FIX_TOOLBAR )
 
 #define GUI_MDI_FIRST_SEPARATOR         GUI_MENU_ID( GUI_MENU_MDI_FIRST_SEPARATOR )

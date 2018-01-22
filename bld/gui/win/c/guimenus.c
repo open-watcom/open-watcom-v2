@@ -53,10 +53,10 @@ gui_menu_struct GUIHint[] = {
 
 void GUIInitGUIMenuHint( void )
 {
-    GUIHint[0].label = LIT( Change_XFont_ );
-    GUIHint[0].hinttext = LIT( Change_Font_for_this_window  );
-    GUIHint[1].label = LIT( XFix_Tool_Bar );
-    GUIHint[1].hinttext = LIT( Make_Tool_Bar_Fixed );
+    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label = LIT( Change_XFont_ );
+    GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].hinttext = LIT( Change_Font_for_this_window  );
+    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label = LIT( XFix_Tool_Bar );
+    GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].hinttext = LIT( Make_Tool_Bar_Fixed );
 }
 
 static bool GetMenuFlags( HMENU hmenu, gui_ctl_id id_position, bool by_position,
@@ -684,8 +684,8 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
     if( style & GUI_CHANGEABLE_FONT ) {
         if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
             _wpi_appendmenu( system, MF_STRING, MF_ENABLED,
-                             GUIHint[GUI_MENU_FONT].id, NULLHANDLE,
-                             GUIHint[GUI_MENU_FONT].label );
+                             GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].id, NULLHANDLE,
+                             GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label );
         }
     }
     if( num_menus > 0 ) {

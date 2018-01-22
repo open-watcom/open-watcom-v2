@@ -191,7 +191,7 @@ enum {
 
 #define IS_CTLEVENT(x)  (x >= GUI_FIRST_USER_EVENT)
 
-#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT)
-#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT)
+#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT + 1)
+#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT - 1)
 
 #endif // _GUIWIND_H_
