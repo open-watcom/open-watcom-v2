@@ -50,8 +50,6 @@
 #include "dbginsty.h"
 
 
-extern stack_entry      *ExprSP;
-
 extern void BreakOnSelected( const char *item )
 {
     const char      *old;

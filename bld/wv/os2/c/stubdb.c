@@ -65,6 +65,11 @@
 #include "dlgcmd.h"
 #include "dbgwintr.h"
 
+
+extern void             *WndAsmInspect( address addr );
+
+extern char             *CmdData;
+
 /*************************************************/
 /* TODO! review all these prototypes declaration if they are local(static) or external */
 
@@ -94,14 +99,10 @@ void VarRestoreWndFromScope( void *wnd );
 void PopErrBox( const char *buff );
 /*************************************************/
 
-extern void             *WndAsmInspect( address addr );
-
-static bool             Done;
-extern char             *CmdData;
-extern stack_entry      *ExprSP;
-
 unsigned                NumLines;
 unsigned                NumColumns;
+
+static bool             Done;
 
 unsigned DUIConfigScreen( void )
 {

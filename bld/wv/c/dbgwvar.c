@@ -62,8 +62,6 @@
 
 extern void             WndVarNewWindow( char * );
 
-extern stack_entry      *ExprSP;
-
 typedef struct {
     var_info            i;
     gui_ord             last_width;     // how wide were we last resize?

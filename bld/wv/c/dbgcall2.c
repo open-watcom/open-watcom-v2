@@ -45,8 +45,6 @@
 #include "dbgupdt.h"
 
 
-extern stack_entry      *ExprSP;
-
 static machine_state    *FreezeRegSet = NULL;
 static location_context FreezeContext;
 static mod_handle       FreezeContextMod;

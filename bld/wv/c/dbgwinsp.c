@@ -66,10 +66,6 @@
 
 extern void             MemNewAddr( a_window *wnd, address addr );
 
-extern stack_entry      *ExprSP;
-extern WNDOPEN          *WndOpenTab[];
-
-
 static a_window *WndFindExisting( wnd_class_wv wndclass )
 {
     a_window    *wnd;

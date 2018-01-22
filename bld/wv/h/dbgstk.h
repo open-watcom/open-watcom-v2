@@ -74,3 +74,5 @@ typedef struct stack_entry {
 
 #define SET_TH( e )     (e)->th = (void *)((e)+1)
 #define SET_SH( e )     (e)->v.sh = (void *)((unsigned_8 *)((e)+1)+type_SIZE)
+
+extern stack_entry      *ExprSP;

@@ -50,11 +50,8 @@ extern a_window         *WndMain;
 extern gui_coord        WndScreen;
 extern gui_coord        WndMax;
 extern gui_coord        WndScale;
-extern const char       WndNameTab[];
 extern gui_colour_set   WndColours[];
 extern gui_colour_set   WndStatusColour;
-
-extern WNDOPEN            *WndOpenTab[];
 
 wnd_posn        WndPosition[WND_NUM_CLASSES];
 static char     *WndFontInfo[WND_NUM_CLASSES];

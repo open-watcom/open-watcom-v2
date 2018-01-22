@@ -68,7 +68,6 @@
 
 
 extern a_window         *WndMain;
-extern const char       WndNameTab[];
 
 extern void             InitPaint( void );
 extern void             InitFileMap( void );

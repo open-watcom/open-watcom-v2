@@ -82,8 +82,6 @@ enum {
 
 extern void             AddChar( void );
 
-extern stack_entry      *ExprSP;
-
 #define type_bitsII     int
 
 /* SSL Table Variables */

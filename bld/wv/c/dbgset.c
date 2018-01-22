@@ -71,7 +71,6 @@ extern void             FuncChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 
-extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
 

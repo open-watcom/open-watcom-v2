@@ -64,10 +64,11 @@
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
 
-extern stack_entry      *ExprSP;
-
 extern void             VarSaveWndToScope( void *wnd );
 extern void             VarRestoreWndFromScope( void *wnd );
+
+bool                    VarError;
+type_display            *TypeDisplay;
 
 static int              TargRow;
 static long             ExprStackTimeStamp;
@@ -78,14 +79,11 @@ static long             ScopeTimeStamp = 0;
 
 static bool             FindField( sym_handle *field, var_node *vfield );
 
-bool                    VarError;
 static var_type_bits    Hide;
 
 /*
  *      This is all junk to remember how we display fields/structs
  */
-
-type_display    *TypeDisplay;
 
 static void VarNodeDisplayUpdate( var_node *v )
 /*********************************************/

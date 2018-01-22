@@ -65,8 +65,6 @@
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern unsigned         ExprSize( stack_entry * );
 
-extern stack_entry      *ExprSP;
-
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord
 
 #include "menudef.h"

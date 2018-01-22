@@ -54,8 +54,6 @@
 #include "dbgupdt.h"
 
 
-extern stack_entry      *ExprSP;
-
 /*
  *  MemMod -- modify memory or io port
  */

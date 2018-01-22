@@ -46,9 +46,6 @@
 #include "dbgreg.h"
 
 
-extern stack_entry      *ExprSP;
-
-
 static char         *ParseTable;
 static unsigned     ParseTableSize;
 static token_table  ParseTokens;

@@ -108,6 +108,8 @@ extern void         WndCodeBrk(address ,bool );
 
 extern void         WndDoInput(void);
 
+extern WNDOPEN      *WndOpenTab[];
+extern const char   WndNameTab[];
 extern wnd_macro    *WndMacroList;
 
 extern char         *WndClipItem;

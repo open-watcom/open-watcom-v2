@@ -51,8 +51,6 @@
 
 extern void             WndUserAdd(char *,unsigned int );
 
-extern const char       WndNameTab[];
-
 static void BadCmd( void )
 {
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );

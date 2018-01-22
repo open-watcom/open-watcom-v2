@@ -68,10 +68,8 @@ extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             WndRestoreToFront( a_window* );
 
-extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
-extern wnd_macro        *WndMacroList;
 
 static unsigned         TabInterval = 8;
 

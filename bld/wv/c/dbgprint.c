@@ -72,10 +72,6 @@ extern bool             DlgNewWithSym( const char *title, char *, unsigned);
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
 
-
-extern stack_entry      *ExprSP;
-
-
 static char             *OutPtr;
 static char             *OutBuff;
 static unsigned         OutLen;

@@ -53,8 +53,6 @@ typedef bool dlg_func(const char *,char *,unsigned);
 /* to be moved to header files ! */
 extern char             *StrDouble(xreal*,char*);
 
-extern stack_entry      *ExprSP;
-
 #define EXPR_LEN        128
 
 

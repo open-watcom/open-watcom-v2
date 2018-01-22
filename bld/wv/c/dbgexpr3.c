@@ -47,8 +47,6 @@
 #include "dbgprog.h"
 
 
-extern stack_entry      *ExprSP;
-
 typedef enum {
     I1,
     U1,

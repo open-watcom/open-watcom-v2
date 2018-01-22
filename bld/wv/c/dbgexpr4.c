@@ -64,9 +64,6 @@ extern char             *DupStringEntry( char *, unsigned long );
 extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
 extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
 
-extern stack_entry      *ExprSP;
-
-
 /*
  * DoPlus - add two stack entries
  */

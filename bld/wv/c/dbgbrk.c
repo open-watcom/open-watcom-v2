@@ -90,9 +90,6 @@ extern bool             DlgBreak( address );
 extern bool             CheckBPIns( void );
 extern bool             DlgAreYouNuts( unsigned long );
 
-extern char_ring        *DLLList;
-extern stack_entry      *ExprSP;
-
 static const char PointNameTab[] = {
     "Activate\0"
     "Clear\0"

@@ -42,8 +42,6 @@
 #include "dbgwpain.h"
 
 
-extern const char       WndNameTab[];
-
 static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 

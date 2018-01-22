@@ -50,8 +50,6 @@
 #include "dbgreg.h"
 
 
-extern stack_entry  *ExprSP;
-
 #define MAX_PARMS       10
 
 static char             *DefParms[MAX_PARMS];
