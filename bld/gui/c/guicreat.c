@@ -35,7 +35,6 @@
 #include "guix.h"
 #include "guihook.h"
 
-        bool            GUIMDI  = false;
 
 /*
  *  GUICreateWindow -- Create a window with given attributes.  The window

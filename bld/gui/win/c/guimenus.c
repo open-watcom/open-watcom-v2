@@ -41,10 +41,10 @@
 #include "guistr.h"
 #include "guixhook.h"
 #include "guihook.h"
+#include "guimdi.h"
+
 
 #define MAX_STR 256
-
-extern  bool    GUIMDI;
 
 gui_menu_struct GUIHint[] = {
  { NULL, GUI_CHANGE_FONT, GUI_ENABLED, NULL },

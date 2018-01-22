@@ -37,8 +37,8 @@
 #include "guiscale.h"
 #include "guirect.h"
 #include "guipaint.h"
+#include "guimdi.h"
 
-extern  bool    GUIMDI;
 
 bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 {

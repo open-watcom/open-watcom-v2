@@ -54,7 +54,7 @@ typedef struct {
     gui_ctl_id  list_id;
 } dlg_init;
 
-extern  bool            GUIMDI;
+bool GUIMDI = false;
 
 static gui_menu_struct MDISecondSepMenu[] = {
     { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }
@@ -117,8 +117,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     }
 }
 
-static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus,
-                     gui_menu_struct *menu )
+static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu )
 {
     gui_ctl_idx i;
     bool        has_items;
@@ -200,17 +199,16 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, 
 {
     gui_window  *root;
     gui_ctl_idx i;
-    gui_ctl_idx max_num;
+    gui_ctl_idx num_mdi_items;
 
     if( !AddMenu( wnd, parent, num_menus, menu ) ) {
         return;
     }
     root = GUIGetRootWindow();
-    max_num = NumMDIWindows;
-    if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-        max_num = MAX_NUM_MDI_WINDOWS;
-    }
-    for( i = 0; i < max_num; i++ ) {
+    num_mdi_items = NumMDIWindows;
+    if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
+        num_mdi_items = MAX_NUM_MDI_WINDOWS;
+    for( i = 0; i < num_mdi_items; i++ ) {
         InsertMenuForWindow( root, i, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
@@ -223,18 +221,19 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, 
 bool GUIEnableMDIMenus( bool enable )
 {
     gui_ctl_idx i;
-    gui_ctl_idx num_menus;
     gui_window  *root;
+    gui_ctl_idx num_mdi_items;
 
     root = GUIGetRootWindow();
     if( root != NULL ) {
         GUIEnableMDIActions( enable );
-        num_menus = NumMDIWindows;
+        num_mdi_items = NumMDIWindows;
+        if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
+            num_mdi_items = MAX_NUM_MDI_WINDOWS;
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-            num_menus = MAX_NUM_MDI_WINDOWS;
             GUIEnableMenuItem( root, GUI_MDI_MORE_WINDOWS, enable, false );
         }
-        for( i = 0; i < num_menus; i++ ) {
+        for( i = 0; i < num_mdi_items; i++ ) {
             GUIEnableMenuItem( root, MDIWIN2ID( i ), enable, false );
         }
         return( true );
@@ -356,7 +355,8 @@ void MDIDelete( gui_window *wnd )
     gui_window  *root;
     gui_ctl_idx index;
     gui_ctl_idx position;
-    gui_ctl_idx i, num_menu_windows;
+    gui_ctl_idx i;
+    gui_ctl_idx num_mdi_items;
 
     if( wnd == Root ) {
         Root = NULL;
@@ -384,22 +384,22 @@ void MDIDelete( gui_window *wnd )
             MDIWindows[index] = NULL;
         } else {
             // delete all MDI menu items from this index on
-            num_menu_windows = NumMDIWindows;
-            if( num_menu_windows > MAX_NUM_MDI_WINDOWS - 1 )
-                num_menu_windows = MAX_NUM_MDI_WINDOWS - 1;
-            for( i = index; i < num_menu_windows; i++ ) {
+            num_mdi_items = NumMDIWindows;
+            if( num_mdi_items > MAX_NUM_MDI_WINDOWS - 1 )
+                num_mdi_items = MAX_NUM_MDI_WINDOWS - 1;
+            for( i = index; i < num_mdi_items; i++ ) {
                 GUIDeleteMenuItem( root, MDIWIN2ID( i ), false );
                 MDIWindows[i] = MDIWindows[i + 1];
             }
-            GUIDeleteMenuItem( root, MDIWIN2ID( num_menu_windows ), false );
-            MDIWindows[num_menu_windows] = NULL;
+            GUIDeleteMenuItem( root, MDIWIN2ID( num_mdi_items ), false );
+            MDIWindows[num_mdi_items] = NULL;
 
             // re-add all menu items from index on
             position = GUIGetMenuPopupCount( root, GUIMDIMenuID );
             if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
                 position--;
             }
-            for( i = index; i < num_menu_windows; i++ ) {
+            for( i = index; i < num_mdi_items; i++ ) {
                 InsertMenuForWindow( root, i, position + ( i - index ) );
                 if( CurrMDIWindow == i ) {
                     CurrMDIWindow--;
@@ -445,7 +445,7 @@ static void DlgInit( gui_window *wnd, void *param )
 
     info = (dlg_init *)param;
     TotalWindows++;
-    ChildWindows[TotalWindows-1] = wnd;
+    ChildWindows[TotalWindows - 1] = wnd;
     if( GUIGetWindowText( wnd, buffer, sizeof( buffer ) ) != 0 ) {
         GUIAddText( info->dlg_wnd, info->list_id, buffer );
     } else {

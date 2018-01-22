@@ -61,6 +61,7 @@
 #include "guisystr.h"
 #include "guixmain.h"
 #include "guirdlg.h"
+#include "guimdi.h"
 
 
 #if !defined(__NT__)
@@ -85,7 +86,6 @@ typedef struct wmcreate_info {
 } wmcreate_info;
 
 extern bool     GUIMainTouched;
-extern bool     GUIMDI;
 
 bool            EditControlHasFocus = false;
 

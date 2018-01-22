@@ -33,6 +33,8 @@
 #ifndef _GUIMDI_H_
 #define _GUIMDI_H_
 
+extern bool         GUIMDI;
+
 extern gui_window   *GUIMDIGetWindow( gui_ctl_id id );
 extern void         GUIMDIMoreWindows( void );
 extern int          GUIGetNumChildWindows( void );
