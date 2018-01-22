@@ -555,7 +555,7 @@ static bool DoOneToggle( mad_window_toggles wt )
         }
         break;
     case MWT_MMX:
-        RegFindData( MTK_CUSTOM, &rsd );
+        RegFindData( MTK_MMX, &rsd );
         if( rsd == NULL ) {
             PendingAdd( SysConfig.mad, wt, start, len );
             return( true );
@@ -722,7 +722,7 @@ OVL_EXTERN walk_result DumpToggles( dig_mad mad, void *d )
             return( WR_CONTINUE );
         break;
     case MWT_MMX:
-        RegFindData( MTK_CUSTOM, &rsd );
+        RegFindData( MTK_MMX, &rsd );
         if( rsd == NULL )
             return( WR_CONTINUE );
         break;

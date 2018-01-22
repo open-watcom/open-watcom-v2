@@ -49,6 +49,7 @@ extern a_window *WndXMMOpen( void )
     const mad_reg_set_data      *rsd;
 
     RegFindData( MTK_XMM, &rsd );
-    if( rsd == NULL ) return( NULL );
+    if( rsd == NULL )
+        return( NULL );
     return( WndMadRegOpen( MTK_XMM, WND_XMM, &XMMIcon ) );
 }

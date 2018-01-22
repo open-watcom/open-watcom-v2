@@ -77,15 +77,20 @@ static const mad_type_info_float F10EMPTY =
 static const mad_type_info_float F10SPECIAL =
     { MTK_FLOAT, X86T_F10SPECIAL, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, 15, 0, 14, MNR_UNSIGNED, ME_LITTLE };
 
+static const mad_type_info_basic MMX_TITLE =
+    { MTK_MMX,  X86T_MMX_TITLE0, 8 };
+static const mad_type_info_basic XMM_TITLE =
+    { MTK_XMM,  X86T_XMM_TITLE0, 8 };
+
 static const mad_type_info_basic IRET16 =
-    { MTK_CUSTOM, X86T_IRET16, 3*16 };
+    { MTK_CUSTOM, X86T_IRET16, 3 * 16 };
 static const mad_type_info_basic IRET32 =
-    { MTK_CUSTOM, X86T_IRET32, 3*32 };
+    { MTK_CUSTOM, X86T_IRET32, 3 * 32 };
 
 static const mad_type_info_basic POPA =
-    { MTK_CUSTOM, X86T_POPA, 8*16 };
+    { MTK_CUSTOM, X86T_POPA, 8 * 16 };
 static const mad_type_info_basic POPAD =
-    { MTK_CUSTOM, X86T_POPAD, 8*32 };
+    { MTK_CUSTOM, X86T_POPAD, 8 * 32 };
 static const mad_type_info_basic TAG =
     { MTK_CUSTOM, X86T_TAG, 16 };
 static const mad_type_info_basic FPPTR_REAL =
@@ -94,11 +99,6 @@ static const mad_type_info_basic FPPTR_16 =
     { MTK_CUSTOM, X86T_FPPTR_16, 64 };
 static const mad_type_info_basic FPPTR_32 =
     { MTK_CUSTOM, X86T_FPPTR_32, 64 };
-static const mad_type_info_basic MMX_TITLE =
-    { MTK_CUSTOM, X86T_MMX_TITLE0, 8 };
-
-static const mad_type_info_basic XMM_TITLE =
-    { MTK_XMM, X86T_XMM_TITLE0, 8 };
 
 #undef D
 

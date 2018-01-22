@@ -48,7 +48,8 @@ extern a_window *WndMMXOpen( void )
 {
     const mad_reg_set_data      *rsd;
 
-    RegFindData( MTK_CUSTOM, &rsd );
-    if( rsd == NULL ) return( NULL );
-    return( WndMadRegOpen( MTK_CUSTOM, WND_MMX, &MMXIcon ) );
+    RegFindData( MTK_MMX, &rsd );
+    if( rsd == NULL )
+        return( NULL );
+    return( WndMadRegOpen( MTK_MMX, WND_MMX, &MMXIcon ) );
 }

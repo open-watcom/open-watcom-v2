@@ -870,10 +870,8 @@ void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
         ConvertTo( entry, TK_REAL, TM_NONE, bytes );
         MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
         break;
+    case MTK_MMX:
     case MTK_XMM:
-        //MAD: nyi
-        ToItem( entry, tmp );
-        return;
     case MTK_CUSTOM:
         //MAD: nyi
         ToItem( entry, tmp );

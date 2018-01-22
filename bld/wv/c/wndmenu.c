@@ -408,7 +408,7 @@ void SetMADMenuItems( void )
 
     RegFindData( MTK_FLOAT, &rsd );
     WndEnableMainMenu( MENU_MAIN_OPEN_FPU, rsd != NULL );
-    RegFindData( MTK_CUSTOM, &rsd );
+    RegFindData( MTK_MMX, &rsd );
     WndEnableMainMenu( MENU_MAIN_OPEN_MMX, rsd != NULL );
     RegFindData( MTK_XMM, &rsd );
     WndEnableMainMenu( MENU_MAIN_OPEN_XMM, rsd != NULL );
