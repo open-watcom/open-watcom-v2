@@ -357,8 +357,7 @@ OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, int row, int piece
 }
 
 
-OVL_EXTERN  bool    RegGetLine( a_window wnd, int row, int piece,
-                            wnd_line_piece *line )
+OVL_EXTERN  bool    RegGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;

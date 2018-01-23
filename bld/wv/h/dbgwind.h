@@ -99,14 +99,14 @@ typedef struct wnd_macro {
 
 extern wnd_metrics *WndMetrics[];
 
-extern void         WndInitScrnState(void);
-extern void         WndNewProg(void);
-extern void         WndStrt(void);
-extern void         WndShow(void);
+extern void         WndInitScrnState( void );
+extern void         WndNewProg( void );
+extern void         WndStrt( void );
+extern void         WndShow( void );
 
-extern void         WndCodeBrk(address ,bool );
+extern void         WndCodeBrk( address, bool );
 
-extern void         WndDoInput(void);
+extern void         WndDoInput( void );
 
 extern WNDOPEN      *WndOpenTab[];
 extern const char   WndNameTab[];
@@ -114,4 +114,4 @@ extern wnd_macro    *WndMacroList;
 
 extern char         *WndClipItem;
 
-extern void         WndUpdate(update_list );
+extern void         WndUpdate( update_list );

@@ -308,8 +308,8 @@ extern bool             DlgSearchAll( char **expr, void *history );
 
 extern a_window         WndMain;
 
-extern a_window         *WndFindOwner( a_window );
-extern a_window         WndFirst( void );
+//extern a_window         WndFindOwner( a_window );
+//extern a_window         WndFirst( void );
 
 extern gui_ord          WndExtentX( a_window, const char * );
 

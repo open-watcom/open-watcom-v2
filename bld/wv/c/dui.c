@@ -236,7 +236,7 @@ void DUIShow( void )
     WndDebug();
     WndShowAll();
     WndShowWndMain();
-    WND_GUIEVENT( WndGui( WndMain ), GUI_NO_EVENT, NULL );
+    WndMainGUIEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
     if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) ) {
         DlgNewProg();
     }
