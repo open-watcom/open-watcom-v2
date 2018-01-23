@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"//
 
-extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
+bool    WndSetPoint( a_window wnd, void *parm, bool exact,
                              wnd_coord *spot, wnd_row row,
                              bool doing_select )
 {
@@ -132,7 +132,7 @@ extern  bool    WndSetPoint( a_window *wnd, void *parm, bool exact,
 }
 
 
-extern  void    WndGetCurrent( a_window *wnd, wnd_row *row, int *piece )
+void    WndGetCurrent( a_window wnd, wnd_row *row, int *piece )
 {
     *row = WND_NO_ROW;
     if( !WndHasCurrent( wnd ) ) return;
@@ -141,7 +141,7 @@ extern  void    WndGetCurrent( a_window *wnd, wnd_row *row, int *piece )
 }
 
 
-extern  void    WndNewCurrent( a_window *wnd, wnd_row row, int piece )
+void    WndNewCurrent( a_window wnd, wnd_row row, int piece )
 {
     wnd->current.row = WndScreenRow( wnd, row );
     wnd->current.piece = piece;
@@ -151,7 +151,7 @@ extern  void    WndNewCurrent( a_window *wnd, wnd_row row, int piece )
 }
 
 
-extern void WndMoveCurrent( a_window *wnd, wnd_row row, int piece )
+void WndMoveCurrent( a_window wnd, wnd_row row, int piece )
 {
     WndDirtyCurr( wnd );
     if( row < WndTop( wnd ) ) {
@@ -163,13 +163,13 @@ extern void WndMoveCurrent( a_window *wnd, wnd_row row, int piece )
 }
 
 
-extern  bool    WndHasCurrent( a_window *wnd )
+bool    WndHasCurrent( a_window wnd )
 {
     return( wnd->current.row != WND_NO_ROW );
 }
 
 
-extern  void    WndNoCurrent( a_window *wnd )
+void    WndNoCurrent( a_window wnd )
 {
     wnd->current.row = WND_NO_ROW;
     wnd->current.piece = 0;
@@ -178,14 +178,14 @@ extern  void    WndNoCurrent( a_window *wnd )
 }
 
 
-extern  wnd_row WndCurrRow( a_window *wnd )
+wnd_row WndCurrRow( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) ) return( WND_NO_ROW );
     return( WndVirtualRow( wnd, wnd->current.row ) );
 }
 
 
-extern  bool    WndNextCurrent( a_window *wnd, bool wrap )
+bool    WndNextCurrent( a_window wnd, bool wrap )
 {
     int                 row;
     int                 piece;
@@ -231,7 +231,7 @@ extern  bool    WndNextCurrent( a_window *wnd, bool wrap )
 }
 
 
-extern bool WndPrevCurrent( a_window *wnd, bool wrap )
+bool WndPrevCurrent( a_window wnd, bool wrap )
 {
     int                 piece;
     int                 last_piece;
@@ -280,14 +280,14 @@ extern bool WndPrevCurrent( a_window *wnd, bool wrap )
 }
 
 
-extern  bool    WndFirstCurrent( a_window *wnd )
+bool    WndFirstCurrent( a_window wnd )
 {
     WndNoCurrent( wnd );
     return( WndNextCurrent( wnd, true ) );
 }
 
 
-extern  bool    WndLastCurrent( a_window *wnd )
+bool    WndLastCurrent( a_window wnd )
 {
     if( !WndFirstCurrent( wnd ) ) return( false );
     while( WndNextCurrent( wnd, true ) );
@@ -295,7 +295,7 @@ extern  bool    WndLastCurrent( a_window *wnd )
     return( true );
 }
 
-extern void     WndCheckCurrentValid( a_window *wnd )
+void     WndCheckCurrentValid( a_window wnd )
 {
     wnd_line_piece      line;
 
@@ -309,7 +309,7 @@ extern void     WndCheckCurrentValid( a_window *wnd )
     }
 }
 
-static void WndAdjustCurrCol( a_window *wnd, wnd_line_piece *line )
+static void WndAdjustCurrCol( a_window wnd, wnd_line_piece *line )
 {
     if( !WndHasCurrent( wnd ) ) return;
     if( line->length == 0 ) {
@@ -322,7 +322,7 @@ static void WndAdjustCurrCol( a_window *wnd, wnd_line_piece *line )
 }
 
 
-void WndCurrVisible( a_window *wnd )
+void WndCurrVisible( a_window wnd )
 {
     wnd_line_piece      line;
     int                 len;
@@ -356,7 +356,7 @@ void WndCurrVisible( a_window *wnd )
 }
 
 
-extern  void    WndDirtyCurr( a_window *wnd )
+void    WndDirtyCurr( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
         if( _Is( wnd, WSW_CHAR_CURSOR ) && _Isnt( wnd, WSW_HIGHLIGHT_CURRENT ) ) {
@@ -372,7 +372,7 @@ extern  void    WndDirtyCurr( a_window *wnd )
 }
 
 
-extern  void    WndDirtyCurrChar( a_window *wnd )
+void    WndDirtyCurrChar( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
         WndDirtyScreenChar( wnd, &wnd->current );
@@ -382,7 +382,7 @@ extern  void    WndDirtyCurrChar( a_window *wnd )
     }
 }
 
-extern void WndSetCurrCol( a_window *wnd )
+void WndSetCurrCol( a_window wnd )
 {
     wnd->current_col = wnd->current.col;
 }

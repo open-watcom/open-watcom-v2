@@ -29,22 +29,22 @@
 ****************************************************************************/
 
 
-extern void     SrcJoinAsm( a_window *wnd, a_window *asw );
-extern void     SrcNewAsmNotify( a_window *asw, mod_handle mod, bool track );
-extern void     SrcFreeAsm( a_window *wnd );
+extern void     SrcJoinAsm( a_window wnd, a_window asw );
+extern void     SrcNewAsmNotify( a_window asw, mod_handle mod, bool track );
+extern void     SrcFreeAsm( a_window wnd );
 #ifdef DEADCODE
-extern bool     SrcIsTracking( a_window *wnd );
+extern bool     SrcIsTracking( a_window wnd );
 #endif
 
-extern bool     FileOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod );
-extern void     FileBreakGadget( a_window *wnd, wnd_line_piece *line, bool curr, brkp *bp );
+extern bool     FileOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod );
+extern void     FileBreakGadget( a_window wnd, wnd_line_piece *line, bool curr, brkp *bp );
 #ifdef DEADCODE
-extern void     FileReset( a_window *wnd );
+extern void     FileReset( a_window wnd );
 #endif
-extern bool     SrcMoveDot( a_window *wnd, address addr );
-extern a_window *SrcWndFind( a_window *wnd, address addr, bool track );
-extern bool     SrcHasFileOpen( a_window *wnd );
-extern a_window *DoWndFileOpen( const char *name, void *viewhndl, cue_handle *ch, bool track, bool erase, wnd_class_wv wndclass );
-extern a_window *DoWndSrcOpen( cue_handle *ch, bool track );
-extern a_window *WndSrcOpen( void );
+extern bool     SrcMoveDot( a_window wnd, address addr );
+extern a_window SrcWndFind( a_window wnd, address addr, bool track );
+extern bool     SrcHasFileOpen( a_window wnd );
+extern a_window DoWndFileOpen( const char *name, void *viewhndl, cue_handle *ch, bool track, bool erase, wnd_class_wv wndclass );
+extern a_window DoWndSrcOpen( cue_handle *ch, bool track );
+extern a_window WndSrcOpen( void );
 extern void     ProcView( void );

@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 #include <ctype.h>
 
 static  char            *IdChars = WND_ALNUM_STR "_$";
 
-extern  char            *WndSetIDChars( a_window *wnd, char *id_chars )
+char            *WndSetIDChars( a_window wnd, char *id_chars )
 {
     char        *old;
 
@@ -45,7 +45,7 @@ extern  char            *WndSetIDChars( a_window *wnd, char *id_chars )
     return( old );
 }
 
-extern  bool            WndIDChar( a_window *wnd, char ch )
+bool            WndIDChar( a_window wnd, char ch )
 {
     char        *p;
 
@@ -71,7 +71,7 @@ extern  bool            WndIDChar( a_window *wnd, char ch )
 }
 
 
-extern  bool            WndKeyChar( char ch )
+bool            WndKeyChar( char ch )
 {
     return( isprint( ch ) != 0 );
 }

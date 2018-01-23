@@ -31,9 +31,9 @@
 
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-void WndSetColours( a_window *wnd, int num_colours, gui_colour_set *colours )
+void WndSetColours( a_window wnd, int num_colours, gui_colour_set *colours )
 {
     gui_colour_set      *main_colours;
     gui_colour_set      back;

@@ -32,16 +32,16 @@
 
 #include "app.h"
 
+
 #define NUM_ROWS 5000
 
-static int W7NumRows( a_window *wnd )
+static int W7NumRows( a_window wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );
 }
 
-static bool    W7GetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static bool    W7GetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -55,7 +55,7 @@ static bool    W7GetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void    W7Refresh( a_window *wnd )
+static void    W7Refresh( a_window wnd )
 {
     WndRepaint( wnd );
 }
@@ -77,7 +77,7 @@ static wnd_info W7Info = {
     NoPopUp
 };
 
-a_window *W7Open( void )
+a_window W7Open( void )
 {
     wnd_create_struct   info;
 

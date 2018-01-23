@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"//
 #include <stdlib.h>
 
-static  void    DoWndDirtyScreenPiece( a_window *wnd, wnd_row row,
+static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
                                        int piece, int col, int end_col )
 {
     int         i;
@@ -73,25 +73,25 @@ static  void    DoWndDirtyScreenPiece( a_window *wnd, wnd_row row,
 }
 
 
-extern  void    WndDirtyScreenRange( a_window *wnd, wnd_coord *piece, int end_col )
+void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, int end_col )
 {
     DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, end_col );
 }
 
 
-extern  void    WndDirtyScreenChar( a_window *wnd, wnd_coord *piece )
+void    WndDirtyScreenChar( a_window wnd, wnd_coord *piece )
 {
     DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, piece->col );
 }
 
 
-extern  void    WndDirtyScreenPiece( a_window *wnd, wnd_coord *piece )
+void    WndDirtyScreenPiece( a_window wnd, wnd_coord *piece )
 {
     DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, WND_NO_COL, WND_NO_COL );
 }
 
 
-extern  void    WndAdjustDirt( a_window *wnd, int by )
+void    WndAdjustDirt( a_window wnd, int by )
 {
     int         i;
 
@@ -101,7 +101,7 @@ extern  void    WndAdjustDirt( a_window *wnd, int by )
 }
 
 
-extern  void    WndDirtyScreenRow( a_window *wnd, wnd_row row )
+void    WndDirtyScreenRow( a_window wnd, wnd_row row )
 {
     wnd_coord   piece;
 
@@ -111,7 +111,7 @@ extern  void    WndDirtyScreenRow( a_window *wnd, wnd_row row )
 }
 
 
-extern  void    WndDirtyRect( a_window *wnd, gui_ord x, wnd_row y,
+void    WndDirtyRect( a_window wnd, gui_ord x, wnd_row y,
                                              gui_ord width, wnd_row height )
 {
     gui_rect    rect;
@@ -124,14 +124,14 @@ extern  void    WndDirtyRect( a_window *wnd, gui_ord x, wnd_row y,
 }
 
 
-extern  void    WndRowDirty( a_window *wnd, wnd_row row )
+void    WndRowDirty( a_window wnd, wnd_row row )
 {
     WndKillCacheEntries( wnd, row, WND_NO_PIECE );
     WndDirtyScreenRow( wnd, WndScreenRow( wnd, row ) );
 }
 
 
-extern  void    WndRowDirtyImmed( a_window *wnd, wnd_row row )
+void    WndRowDirtyImmed( a_window wnd, wnd_row row )
 {
     int         screen_row;
 
@@ -143,7 +143,7 @@ extern  void    WndRowDirtyImmed( a_window *wnd, wnd_row row )
 }
 
 
-extern  void    WndPieceDirty( a_window *wnd, wnd_row row, int piece )
+void    WndPieceDirty( a_window wnd, wnd_row row, int piece )
 {
     wnd_coord   coord;
 
@@ -156,7 +156,7 @@ extern  void    WndPieceDirty( a_window *wnd, wnd_row row, int piece )
 
 bool            WndDoingRefresh = false;
 
-extern  bool    WndStopRefresh( bool stop )
+bool    WndStopRefresh( bool stop )
 {
     bool        old;
 
@@ -165,7 +165,7 @@ extern  bool    WndStopRefresh( bool stop )
     return( old );
 }
 
-void WndPaintDirt( a_window *wnd )
+void WndPaintDirt( a_window wnd )
 {
     int                 i;
     wnd_line_piece      line;
@@ -174,8 +174,8 @@ void WndPaintDirt( a_window *wnd )
     wnd_dirt            *dirt;
     gui_coord           size;
     gui_coord           half_char;
-    a_window            *next;
-//    a_window            *last;
+    a_window            next;
+//    a_window            last;
 
 //    last = NULL;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
@@ -278,9 +278,9 @@ void WndPaintDirt( a_window *wnd )
     }
 }
 
-extern  void    WndFreshAll()
+void    WndFreshAll()
 {
-    a_window            *wnd;
+    a_window            wnd;
 
     if( WndDoingRefresh )
         return;

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 wnd_attr WndMapTabAttr( wnd_attr attr )
 {

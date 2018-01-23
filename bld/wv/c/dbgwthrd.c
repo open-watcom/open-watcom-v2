@@ -77,7 +77,7 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-OVL_EXTERN int TrdNumRows( a_window *wnd )
+OVL_EXTERN int TrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     unsigned        num;
@@ -90,7 +90,7 @@ OVL_EXTERN int TrdNumRows( a_window *wnd )
     return( num );
 }
 
-OVL_EXTERN void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -140,7 +140,7 @@ OVL_EXTERN void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-OVL_EXTERN void TrdRefresh( a_window *wnd )
+OVL_EXTERN void TrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     int                 row;
@@ -158,7 +158,7 @@ OVL_EXTERN void TrdRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool    TrdGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN bool    TrdGetLine( a_window wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
@@ -266,7 +266,7 @@ wnd_info TrdInfo = {
     DefPopUp( TrdMenu ),
 };
 
-a_window *WndTrdOpen( void )
+a_window WndTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, true ) );

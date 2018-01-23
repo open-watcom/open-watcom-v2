@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 #include "wndregx.h"
 

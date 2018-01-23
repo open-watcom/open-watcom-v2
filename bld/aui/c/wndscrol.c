@@ -30,38 +30,38 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"//
 
-extern void WndFixedThumb( a_window *wnd )
+void WndFixedThumb( a_window wnd )
 {
     WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
     WndSetThumbPercent( wnd, 50 );
 }
 
 
-extern void WndSetThumbPercent( a_window *wnd, int percent )
+void WndSetThumbPercent( a_window wnd, int percent )
 {
     GUISetVScrollThumb( wnd->gui, percent );
 }
 
-extern void WndSetThumbPos( a_window *wnd, int pos )
+void WndSetThumbPos( a_window wnd, int pos )
 {
     GUIInitVScrollRow( wnd->gui, pos );
 }
 
-extern  void    WndSetVScrollRange( a_window *wnd, wnd_row rows )
+void    WndSetVScrollRange( a_window wnd, wnd_row rows )
 {
     if( rows > wnd->max_row ) wnd->max_row = rows;
     GUISetVScrollRangeRows( wnd->gui, rows );
 }
 
-extern  void    WndResetScroll( a_window *wnd )
+void    WndResetScroll( a_window wnd )
 {
     wnd->max_indent = 0;
     wnd->max_row = 0;
 }
 
-extern gui_ord  WndVScrollWidth( a_window *wnd )
+gui_ord  WndVScrollWidth( a_window wnd )
 {
     gui_system_metrics metrics;
 
@@ -71,12 +71,12 @@ extern gui_ord  WndVScrollWidth( a_window *wnd )
     return( metrics.scrollbar_size.x );
 }
 
-extern bool WndHasNumRows( a_window *wnd )
+bool WndHasNumRows( a_window wnd )
 {
     return( wnd->info->numrows != NoNumRows );
 }
 
-extern void WndSetThumb( a_window *wnd )
+void WndSetThumb( a_window wnd )
 {
     int         thumb;
     int         rows;
@@ -110,8 +110,7 @@ extern void WndSetThumb( a_window *wnd )
     }
 }
 
-extern WNDSCROLL WndScroll;
-int WndScroll( a_window *wnd, int lines )
+int WndScroll( a_window wnd, int lines )
 {
     int         new_top;
     int         total_rows;
@@ -150,17 +149,17 @@ int WndScroll( a_window *wnd, int lines )
     return( lines );
 }
 
-extern int WndScrollAbs( a_window *wnd, int line )
+int WndScrollAbs( a_window wnd, int line )
 {
     return( WndScroll( wnd, WndScreenRow( wnd, line ) ) );
 }
 
-extern  void    WndSetHScroll( a_window *wnd, gui_ord indent )
+void    WndSetHScroll( a_window wnd, gui_ord indent )
 {
     wnd->hscroll_pending = indent;
 }
 
-static gui_ord  WndHScrollPos( a_window *wnd )
+static gui_ord  WndHScrollPos( a_window wnd )
 {
     if( wnd->hscroll_pending != -1 ) {
         return( wnd->hscroll_pending );
@@ -170,7 +169,7 @@ static gui_ord  WndHScrollPos( a_window *wnd )
 }
 
 
-static gui_ord HScrollTo( a_window *wnd, gui_ord left, gui_ord rite )
+static gui_ord HScrollTo( a_window wnd, gui_ord left, gui_ord rite )
 {
     gui_ord             hscroll;
 
@@ -185,7 +184,7 @@ static gui_ord HScrollTo( a_window *wnd, gui_ord left, gui_ord rite )
 }
 
 
-extern  gui_ord WndCurrHScrollPos( a_window *wnd, int len )
+static gui_ord WndCurrHScrollPos( a_window wnd, int len )
 {
     gui_ord             whole_extent;
     gui_ord             sel_extent;
@@ -207,7 +206,7 @@ extern  gui_ord WndCurrHScrollPos( a_window *wnd, int len )
 }
 
 
-extern  void    WndHScrollToCurr( a_window *wnd, int len )
+void    WndHScrollToCurr( a_window wnd, int len )
 {
     gui_ord     hscroll;
 
@@ -217,7 +216,7 @@ extern  void    WndHScrollToCurr( a_window *wnd, int len )
     }
 }
 
-extern void WndHScrollNotify( a_window *wnd )
+void WndHScrollNotify( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) ) return;
     if( WndHScrollPos( wnd ) != WndCurrHScrollPos( wnd, 1 ) ) {

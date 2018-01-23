@@ -32,5 +32,5 @@
 
 #include "dbginsp.h"
 
-extern a_window *WndModInspect( mod_handle mod );
-extern a_window *WndClassInspect( wnd_class_wv wndclass );
+extern a_window WndModInspect( mod_handle mod );
+extern a_window WndClassInspect( wnd_class_wv wndclass );

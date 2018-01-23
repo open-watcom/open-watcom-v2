@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 static int              DlgChosen;
 static const void       *_data_handle;

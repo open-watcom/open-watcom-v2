@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
-void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
+void WndShrinkToMouse( a_window wnd, wnd_metrics *metrics )
 {
     gui_rect            rect,client;
     gui_point           mouse;
@@ -88,17 +88,17 @@ void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
     GUISetRestoredSize( wnd->gui, &rect );
 }
 
-void WndMinimizeWindow( a_window *wnd )
+void WndMinimizeWindow( a_window wnd )
 {
     GUIMinimizeWindow( wnd->gui );
 }
 
-void WndMaximizeWindow( a_window *wnd )
+void WndMaximizeWindow( a_window wnd )
 {
     GUIMaximizeWindow( wnd->gui );
 }
 
-bool WndIsMinimized( a_window *wnd )
+bool WndIsMinimized( a_window wnd )
 {
     gui_rect    rect;
 
@@ -108,27 +108,27 @@ bool WndIsMinimized( a_window *wnd )
     return( false );
 }
 
-bool WndIsMaximized( a_window *wnd )
+bool WndIsMaximized( a_window wnd )
 {
     return( GUIIsMaximized( wnd->gui ) );
 }
 
-void WndRestoreWindow( a_window *wnd )
+void WndRestoreWindow( a_window wnd )
 {
     GUIRestoreWindow( wnd->gui );
 }
 
-void WndGetRect( a_window *wnd, gui_rect *rect )
+void WndGetRect( a_window wnd, gui_rect *rect )
 {
     GUIGetRect( wnd->gui, rect );
 }
 
-void WndShowWindow( a_window *wnd )
+void WndShowWindow( a_window wnd )
 {
     GUIShowWindow( wnd->gui );
 }
 
-void WndResizeWindow( a_window *wnd, gui_rect *rect )
+void WndResizeWindow( a_window wnd, gui_rect *rect )
 {
     GUISetRestoredSize( wnd->gui, rect );
 }

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
 char *WndLoadString( gui_res_id id )

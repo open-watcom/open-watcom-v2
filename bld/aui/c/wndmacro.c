@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-extern  bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, unsigned key )
 {
     /* unused parameters */ (void)wnd; (void)key;
 

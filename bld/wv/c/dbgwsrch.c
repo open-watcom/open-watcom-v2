@@ -96,7 +96,7 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-OVL_EXTERN int SrchNumRows( a_window *wnd )
+OVL_EXTERN int SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
@@ -212,7 +212,7 @@ static  void    SrchFreeFound( srch_window *srch )
     srch->num_rows = 0;
 }
 
-static void     SrchInit( a_window *wnd )
+static void     SrchInit( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -229,10 +229,10 @@ static void     SrchInit( a_window *wnd )
 }
 
 
-OVL_EXTERN void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     srch_window *srch = WndSrch( wnd );
-    a_window    *new;
+    a_window    new;
 
     /* unused parameters */ (void)piece;
 
@@ -253,8 +253,7 @@ OVL_EXTERN void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-OVL_EXTERN  bool    SrchGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    SrchGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -290,7 +289,7 @@ OVL_EXTERN  bool    SrchGetLine( a_window *wnd, int row, int piece,
 
 
 
-OVL_EXTERN void     SrchRefresh( a_window *wnd )
+OVL_EXTERN void     SrchRefresh( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -311,7 +310,7 @@ OVL_EXTERN void     SrchRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool SrchWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -349,7 +348,7 @@ wnd_info SrchInfo = {
     DefPopUp( SrchMenu ),
 };
 
-static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )
+static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )
 {
     srch_window *srch;
     void        *rx;
@@ -372,7 +371,7 @@ static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cooki
     return( DbgWndCreate( LIT_DUI( WindowSearch ), &SrchInfo, WND_ALL, srch, &SrchIcon ) );
 }
 
-a_window *WndSrchOpen( const char *expr )
+a_window WndSrchOpen( const char *expr )
 {
     return( DoWndSrchOpen( expr, GlobalModWalker, NULL ) );
 }

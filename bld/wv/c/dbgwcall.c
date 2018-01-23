@@ -70,12 +70,12 @@ enum {
     PIECE_SOURCE,
 };
 
-OVL_EXTERN int CallNumRows( a_window *wnd )
+OVL_EXTERN int CallNumRows( a_window wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-OVL_EXTERN void     CallMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -111,7 +111,7 @@ OVL_EXTERN void     CallMenuItem( a_window *wnd, gui_ctl_id id, int row, int pie
     }
 }
 
-OVL_EXTERN  bool    CallGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    CallGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -142,7 +142,7 @@ OVL_EXTERN  bool    CallGetLine( a_window *wnd, int row, int piece, wnd_line_pie
 }
 
 
-static void     CallInit( a_window *wnd )
+static void     CallInit( a_window wnd )
 {
     int                 row;
     call_window         *call = WndCall( wnd );
@@ -178,13 +178,13 @@ static void     CallInit( a_window *wnd )
 }
 
 
-static void CallScrollPos( a_window *wnd )
+static void CallScrollPos( a_window wnd )
 {
     WndMoveCurrent( wnd, CallNumRows(wnd) - 1 + GetStackPos(), PIECE_TABSTOP );
 }
 
 
-OVL_EXTERN void     CallRefresh( a_window *wnd )
+OVL_EXTERN void     CallRefresh( a_window wnd )
 {
 
     if( ( UpdateFlags & ~UP_STACKPOS_CHANGE ) & CallInfo.flags ) {
@@ -194,7 +194,7 @@ OVL_EXTERN void     CallRefresh( a_window *wnd )
 }
 
 
-static void CallClose( a_window *wnd )
+static void CallClose( a_window wnd )
 {
     call_window *call = WndCall( wnd );
 
@@ -203,7 +203,7 @@ static void CallClose( a_window *wnd )
 }
 
 
-OVL_EXTERN bool CallWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 
@@ -242,7 +242,7 @@ wnd_info CallInfo = {
     DefPopUp( CallMenu )
 };
 
-a_window *WndCallOpen( void )
+a_window WndCallOpen( void )
 {
     call_window *call;
 

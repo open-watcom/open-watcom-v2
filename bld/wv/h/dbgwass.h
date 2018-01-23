@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-extern void     AsmJoinSrc( a_window *wnd, a_window *src );
-extern void     AsmNewSrcNotify( a_window *src, mod_handle mod, bool track );
-extern void     AsmMoveDot( a_window *wnd, address addr );
-extern a_window *AsmWndFind( a_window *wnd, address addr, bool track );
-extern void     AsmFreeSrc( a_window *wnd );
+extern void     AsmJoinSrc( a_window wnd, a_window src );
+extern void     AsmNewSrcNotify( a_window src, mod_handle mod, bool track );
+extern void     AsmMoveDot( a_window wnd, address addr );
+extern a_window AsmWndFind( a_window wnd, address addr, bool track );
+extern void     AsmFreeSrc( a_window wnd );
 #ifdef DEADCODE
-extern bool     AsmIsTracking( a_window *wnd );
+extern bool     AsmIsTracking( a_window wnd );
 #endif
-extern bool     AsmOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod );
-extern a_window *DoWndAsmOpen( address addr, bool track );
-extern a_window *WndAsmOpen( void );
+extern bool     AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod );
+extern a_window DoWndAsmOpen( address addr, bool track );
+extern a_window WndAsmOpen( void );

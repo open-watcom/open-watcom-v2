@@ -56,14 +56,15 @@
 
 #include "clibint.h"
 
+
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
-static BOOL     PASCAL GetCommandData( HWND );
 extern HWND     MainHwnd = NULL;
-extern a_window *WndMain;
 
 volatile bool   BrkPending;
 bool            ToldWinHandle = false;
+
+static BOOL     PASCAL GetCommandData( HWND );
 
 static char     *CmdData;
 

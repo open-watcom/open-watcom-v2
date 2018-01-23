@@ -45,7 +45,7 @@ void RegChangeOptions( void )
     WndForAllClass( WND_REGISTER, MadRegChangeOptions );
 }
 
-a_window *WndRegOpen( void )
+a_window WndRegOpen( void )
 {
     return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );
 }

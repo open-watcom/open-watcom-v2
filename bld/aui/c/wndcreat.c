@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
 extern int              WndNumMenus;
@@ -45,27 +45,27 @@ gui_menu_struct *WndPopupMenuPtr;
 
 static int              NumWindows;
 
-extern  void    WndSetTitleSize( a_window *wnd, int size )
+void    WndSetTitleSize( a_window wnd, int size )
 {
     wnd->title_size = size;
     WndRepaint( wnd );
 }
 
 
-extern  void    WndSetTitle( a_window *wnd, const char *title )
+void    WndSetTitle( a_window wnd, const char *title )
 {
     GUISetWindowText( wnd->gui, title );
 }
 
-extern  int     WndGetTitle( a_window *wnd, char *buff, unsigned buff_len )
+int     WndGetTitle( a_window wnd, char *buff, unsigned buff_len )
 {
     return( GUIGetWindowText( wnd->gui, buff, buff_len ) );
 }
 
-static a_window *WndCreateWithStructBody( wnd_create_struct *info,
+static a_window WndCreateWithStructBody( wnd_create_struct *info,
                                           gui_create_info *init )
 {
-    a_window    *wnd;
+    a_window    wnd;
     gui_window  *gui;
     char        buff[256];
     int         size;
@@ -84,7 +84,7 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
         WndNoMemory();
     }
     memset( wnd, 0, size );
-    wnd->u.button_down.row = (char)-1;
+    wnd->button_down.row = (char)-1;
     wnd->gui = NULL;
     wnd->info = info->info;
     wnd->wndclass = info->wndclass;
@@ -157,14 +157,14 @@ static a_window *WndCreateWithStructBody( wnd_create_struct *info,
     return( wnd );
 }
 
-a_window *WndCreateWithStruct( wnd_create_struct *info )
+a_window WndCreateWithStruct( wnd_create_struct *info )
 {
     gui_create_info init;
     memset( &init, 0, sizeof( init ) );
     return( WndCreateWithStructBody( info, &init ) );
 }
 
-a_window *WndCreateWithStructAndMenuRes( wnd_create_struct *info,
+a_window WndCreateWithStructAndMenuRes( wnd_create_struct *info,
                                    res_name_or_id resource_menu )
 {
     gui_create_info init;
@@ -173,7 +173,7 @@ a_window *WndCreateWithStructAndMenuRes( wnd_create_struct *info,
     return( WndCreateWithStructBody( info, &init ) );
 }
 
-extern void WndInitCreateStruct( wnd_create_struct *info )
+void WndInitCreateStruct( wnd_create_struct *info )
 {
     memset( info, 0, sizeof( *info ) );
     info->title = "";
@@ -186,7 +186,7 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 }
 
 
-extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass, void *extra )
+a_window WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass, void *extra )
 {
     wnd_create_struct   info;
 
@@ -198,7 +198,7 @@ extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass, 
     return( WndCreateWithStruct( &info ) );
 }
 
-extern void     WndDestroy( a_window *wnd )
+void     WndDestroy( a_window wnd )
 {
     WNDEVENT( wnd, GUI_DESTROY, NULL );
     GUIMemFree( wnd->searchitem );
@@ -217,7 +217,7 @@ extern void     WndDestroy( a_window *wnd )
 }
 
 
-extern void WndClose( a_window *wnd )
+void WndClose( a_window wnd )
 {
     bool        old;
 
@@ -234,7 +234,7 @@ void WndSetMainMenuText( gui_menu_struct *menu )
     }
 }
 
-void WndSetIcon( a_window *wnd, gui_resource *icon )
+void WndSetIcon( a_window wnd, gui_resource *icon )
 {
     GUISetIcon( wnd->gui, icon );
 }

@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"//
 #include <string.h>
 #include "rxwrap.h"
 #include "wndregx.h"
 
 bool    WndDoingSearch = false;
 
-void WndSetSrchItem( a_window *wnd, const char *expr )
+void WndSetSrchItem( a_window wnd, const char *expr )
 {
     GUIMemFree( wnd->searchitem );
     wnd->searchitem = GUIMemAlloc( strlen( expr ) + 1 );
@@ -67,7 +67,7 @@ void WndFreeRX( void *rx )
 void WndSetMagicStr( const char *str )
 {
     char        *meta;
-    int		i;
+    int     i;
 
     i = 0;
     for( meta = SrchMetaChars; i < MAX_MAGIC_STR && *meta != '\0'; ++meta ) {
@@ -122,7 +122,7 @@ bool WndRXFind( void *_rx, const char **pos, const char **endpos )
     return( true );
 }
 
-static void NotFound( a_window *wnd, regexp *rx, const char *msg )
+static void NotFound( a_window wnd, regexp *rx, const char *msg )
 {
     Ring();
     WndNextRow( wnd, WND_NO_ROW, WND_RESTORE_ROW );
@@ -132,7 +132,7 @@ static void NotFound( a_window *wnd, regexp *rx, const char *msg )
     WndRepaint( wnd );
 }
 
-extern  bool    WndSearch( a_window *wnd, bool from_top, int direction )
+bool    WndSearch( a_window wnd, bool from_top, int direction )
 {
     wnd_line_piece      line;
     regexp              *rx;

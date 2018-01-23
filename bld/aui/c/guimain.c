@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <ctype.h>
 
 gui_coord               WndMax;
 gui_coord               WndScreen;
 gui_coord               WndScale;
-a_window                *WndMain;
+a_window                WndMain;
 wnd_switches            WndSwitches;
 int                     WndMaxDirtyRects = 6;
 int                     WndDClick = 300;
@@ -133,13 +133,13 @@ bool WndFini( void )
 }
 
 
-void WndInitNumRows( a_window *wnd )
+void WndInitNumRows( a_window wnd )
 {
     wnd->rows = GUIGetNumRows( wnd->gui );
 }
 
 
-static void WndMoveResize( a_window *wnd )
+static void WndMoveResize( a_window wnd )
 {
     gui_text_metrics    text;
     gui_rect            rect;
@@ -178,7 +178,7 @@ static void WndMoveResize( a_window *wnd )
     WndResizeHook( wnd );
 }
 
-static void WndKeyEnter( a_window *wnd )
+static void WndKeyEnter( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
         if( !WndPieceIsTab( wnd, wnd->current.row, wnd->current.piece ) &&
@@ -212,7 +212,7 @@ void WndInstallClickHook( WNDCLICKHOOK *rtn )
 
 static void DoMainGUIEventProc( spawn_parms *spawnp )
 {
-    a_window            *wnd;
+    a_window            wnd;
     bool                ret;
     gui_key             key;
     gui_keystate        state;

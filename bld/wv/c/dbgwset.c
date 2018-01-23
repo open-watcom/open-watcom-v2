@@ -68,7 +68,7 @@
 extern void             WndUserAdd( char *, unsigned int );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
-extern void             WndRestoreToFront( a_window* );
+extern void             WndRestoreToFront( a_window );
 
 extern margins          SrcMar;
 extern margins          AsmMar;
@@ -101,7 +101,7 @@ void DClickConf( void )
 void InputSet( void )
 {
     wnd_class_wv    wndclass;
-    a_window        *wnd;
+    a_window        wnd;
 
     wndclass = ReqWndName();
     ReqEOC();
@@ -116,7 +116,7 @@ void InputSet( void )
 
 void InputConf( void )
 {
-    a_window  *wnd;
+    a_window  wnd;
 
     wnd = WndFindActive();
     if( wnd != NULL && WndHasClass( wnd ) ) {

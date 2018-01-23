@@ -40,10 +40,6 @@
 #include "ntdbgpb.h"
 
 
-#ifdef __GUI__
-extern a_window *WndMain;
-#endif
-
 extern BOOL         CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam );
 
 static DWORD        PidPB;

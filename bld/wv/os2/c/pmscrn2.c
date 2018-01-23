@@ -54,7 +54,6 @@
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
 extern HMQ              GUIPMmq;
-extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;

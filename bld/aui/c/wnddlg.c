@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include "guidlg.h"
 #include "wnddlg.h"
 #include "watcom.h"

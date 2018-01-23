@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern void WndDumpPrompt( a_window *wnd );
-extern void WndDumpFile( a_window *wnd );
-extern void WndDumpLog( a_window *wnd );
+extern void WndDumpPrompt( a_window wnd );
+extern void WndDumpFile( a_window wnd );
+extern void WndDumpLog( a_window wnd );

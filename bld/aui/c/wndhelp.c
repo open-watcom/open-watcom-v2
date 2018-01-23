@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 bool WndDisplayHelp( char *file, char *topic )
 {

@@ -33,11 +33,11 @@
 #include "dbgwvar1.h"
 
 
-extern bool     WndVarAdd( a_window *wnd, const char *name, unsigned len, bool expand );
+extern bool     WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand );
 extern void     VarSaveWndToScope( void *wnd );
 extern void     VarRestoreWndFromScope( void *wnd );
 extern bool     VarInfoRelease( void );
-extern a_window *WndVarOpen( void );
-extern a_window *WndWatOpen( void );
-extern a_window *WndLclOpen( void );
-extern a_window *WndFSVOpen( void );
+extern a_window WndVarOpen( void );
+extern a_window WndWatOpen( void );
+extern a_window WndLclOpen( void );
+extern a_window WndFSVOpen( void );

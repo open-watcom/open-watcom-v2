@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 #define NUM_WND_IDS     9
 static  bool    WndIdUsed[ NUM_WND_IDS+1 ];
 
-extern  int     WndNextId()
+int     WndNextId()
 {
     int         i;
 
@@ -48,7 +48,7 @@ extern  int     WndNextId()
     return( 0 );
 }
 
-extern  void    WndFreeId( int i )
+void    WndFreeId( int i )
 {
     if( i == 0 ) return;
     WndIdUsed[ i ] = false;

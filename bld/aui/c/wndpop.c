@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"////
+#include "_aui.h"////
 #include <ctype.h>
 #include <string.h>
 
@@ -79,7 +79,7 @@ void NullPopupMenu( gui_menu_struct *menu )
     }
 }
 
-extern  void    WndAddPopupMenu( a_window *wnd )
+void    WndAddPopupMenu( a_window wnd )
 {
     int                 i,j;
     gui_menu_struct     *curr,*sub;
@@ -118,14 +118,14 @@ extern  void    WndAddPopupMenu( a_window *wnd )
     }
 }
 
-extern  void    WndNullPopItem( a_window *wnd )
+void    WndNullPopItem( a_window wnd )
 {
     WndFree( wnd->popitem );
     wnd->popitem = WndMustAlloc( 1 );
     wnd->popitem[0] = '\0';
 }
 
-static void GoBackward( a_window *wnd, wnd_coord *start,
+static void GoBackward( a_window wnd, wnd_coord *start,
                     wnd_line_piece *line )
 {
     char        ch;
@@ -144,7 +144,7 @@ static void GoBackward( a_window *wnd, wnd_coord *start,
 }
 
 
-static void GoForward( a_window *wnd, wnd_coord *end,
+static void GoForward( a_window wnd, wnd_coord *end,
                        wnd_line_piece *line )
 {
     char        ch;
@@ -164,7 +164,7 @@ static void GoForward( a_window *wnd, wnd_coord *end,
     }
 }
 
-extern  void    WndSelPopPiece( a_window *wnd, bool paint_immed )
+static void    WndSelPopPiece( a_window wnd, bool paint_immed )
 {
     wnd_row             row;
     wnd_coord           *start;
@@ -221,7 +221,7 @@ extern  void    WndSelPopPiece( a_window *wnd, bool paint_immed )
 }
 
 
-extern  void    WndSelPopItem( a_window *wnd, void *parm, bool paint_immed )
+void    WndSelPopItem( a_window wnd, void *parm, bool paint_immed )
 {
     wnd_coord   piece;
 
@@ -234,7 +234,7 @@ extern  void    WndSelPopItem( a_window *wnd, void *parm, bool paint_immed )
 }
 
 
-extern  void    WndKeyPopItem( a_window *wnd, bool paint_immed )
+void    WndKeyPopItem( a_window wnd, bool paint_immed )
 {
     if( !WndHasCurrent( wnd ) || _Isnt( wnd, WSW_CHAR_CURSOR ) ) {
         WndNullPopItem( wnd );
@@ -251,7 +251,7 @@ extern  void    WndKeyPopItem( a_window *wnd, bool paint_immed )
 }
 
 
-extern  void    WndPopUp( a_window *wnd, gui_menu_struct *menu )
+void    WndPopUp( a_window wnd, gui_menu_struct *menu )
 {
     gui_point           point;
 
@@ -292,30 +292,30 @@ void WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit )
 }
 
 
-static void MenuAll( a_window *wnd, bool on, int bit )
+static void MenuAll( a_window wnd, bool on, int bit )
 {
     WndChangeMenuAll( wnd->popupmenu, wnd->num_popups, on, bit );
 }
 
-extern  void    WndMenuEnableAll( a_window *wnd )
+void    WndMenuEnableAll( a_window wnd )
 {
     MenuAll( wnd, false, GUI_GRAYED );
 }
 
 
-extern  void    WndMenuGrayAll( a_window *wnd )
+void    WndMenuGrayAll( a_window wnd )
 {
     MenuAll( wnd, true, GUI_GRAYED );
 }
 
 
-extern  void    WndMenuIgnoreAll( a_window *wnd )
+void    WndMenuIgnoreAll( a_window wnd )
 {
     MenuAll( wnd, true, GUI_IGNORE );
 }
 
 
-extern  void    WndMenuRespectAll( a_window *wnd )
+void    WndMenuRespectAll( a_window wnd )
 {
     MenuAll( wnd, false, GUI_IGNORE );
 }
@@ -340,29 +340,29 @@ static void DoMenuBitOn( gui_menu_struct *menu, int num_popups, gui_ctl_id id, b
 }
 
 
-static void MenuBitOn( a_window *wnd, gui_ctl_id id, bool on, int bit )
+static void MenuBitOn( a_window wnd, gui_ctl_id id, bool on, int bit )
 {
     DoMenuBitOn( wnd->popupmenu, wnd->num_popups, id, on, bit );
 }
 
-extern  void    WndMenuCheck( a_window *wnd, gui_ctl_id id, bool check )
+void    WndMenuCheck( a_window wnd, gui_ctl_id id, bool check )
 {
     MenuBitOn( wnd, id, check, GUI_MENU_CHECKED );
 }
 
 
-extern  void    WndMenuEnable( a_window *wnd, gui_ctl_id id, bool enable )
+void    WndMenuEnable( a_window wnd, gui_ctl_id id, bool enable )
 {
     MenuBitOn( wnd, id, !enable, GUI_GRAYED );
 }
 
-extern  void    WndMenuIgnore( a_window *wnd, gui_ctl_id id, bool ignore )
+void    WndMenuIgnore( a_window wnd, gui_ctl_id id, bool ignore )
 {
     MenuBitOn( wnd, id, ignore, GUI_IGNORE );
 }
 
 
-void WndCreateFloatingPopup( a_window *wnd, gui_point *point,
+void WndCreateFloatingPopup( a_window wnd, gui_point *point,
                              char num_popups, gui_menu_struct *menu,
                              gui_ctl_id *last_popup )
 {
@@ -382,7 +382,7 @@ void WndCreateFloatingPopup( a_window *wnd, gui_point *point,
 }
 
 
-void    WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu )
+void    WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu )
 {
     gui_ctl_id  dummy;
 
@@ -408,7 +408,7 @@ void    WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu )
 }
 
 
-static void WndGetPopPoint( a_window *wnd, gui_point *point )
+static void WndGetPopPoint( a_window wnd, gui_point *point )
 {
     WndKeyPopItem( wnd, true );
     if( wnd->sel_start.row != WND_NO_ROW ) {
@@ -418,7 +418,7 @@ static void WndGetPopPoint( a_window *wnd, gui_point *point )
     }
 }
 
-extern  void    WndKeyPopUp( a_window *wnd, gui_menu_struct *menu )
+void    WndKeyPopUp( a_window wnd, gui_menu_struct *menu )
 {
     gui_point           point;
 
@@ -428,7 +428,7 @@ extern  void    WndKeyPopUp( a_window *wnd, gui_menu_struct *menu )
 }
 
 
-extern  void    WndRowPopUp( a_window *wnd, gui_menu_struct *menu, int row, int piece )
+void    WndRowPopUp( a_window wnd, gui_menu_struct *menu, int row, int piece )
 {
     gui_point           point;
 
@@ -439,7 +439,7 @@ extern  void    WndRowPopUp( a_window *wnd, gui_menu_struct *menu, int row, int 
 }
 
 
-extern  void    WndSetMainMenu( gui_menu_struct *menu, int num_menus )
+void    WndSetMainMenu( gui_menu_struct *menu, int num_menus )
 {
     if( WndMain == NULL ) return;
     WndMainMenuPtr = menu;
@@ -447,7 +447,7 @@ extern  void    WndSetMainMenu( gui_menu_struct *menu, int num_menus )
     GUIResetMenus( WndMain->gui, WndNumMenus, WndMainMenuPtr );
 }
 
-void WndClick( a_window *wnd, gui_ctl_id id )
+void WndClick( a_window wnd, gui_ctl_id id )
 {
     if( !WndMainMenuProc( wnd, id ) ) {
         wnd = WndFindActive();
@@ -457,7 +457,7 @@ void WndClick( a_window *wnd, gui_ctl_id id )
     }
 }
 
-static void WndSetPopupBits( a_window *wnd, gui_menu_struct *menu )
+static void WndSetPopupBits( a_window wnd, gui_menu_struct *menu )
 {
     int                 i;
     gui_menu_struct     *curr;
@@ -474,9 +474,9 @@ static void WndSetPopupBits( a_window *wnd, gui_menu_struct *menu )
 }
 
 
-extern void WndSetPopup( gui_ctl_id id )
+void WndSetPopup( gui_ctl_id id )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     if( WndMain == NULL )
         return;
@@ -498,7 +498,7 @@ extern void WndSetPopup( gui_ctl_id id )
     WndSetPopupBits( wnd, WndPopupMenuPtr );
 }
 
-extern void WndEnableMainMenu( gui_ctl_id id, bool enable )
+void WndEnableMainMenu( gui_ctl_id id, bool enable )
 {
     if( WndMain == NULL || WndMainMenuPtr == NULL )
         return;
@@ -506,7 +506,7 @@ extern void WndEnableMainMenu( gui_ctl_id id, bool enable )
     GUIEnableMenuItem( WndMain->gui, id, enable, false );
 }
 
-extern void WndCheckMainMenu( gui_ctl_id id, bool check )
+void WndCheckMainMenu( gui_ctl_id id, bool check )
 {
     if( WndMain == NULL || WndMainMenuPtr == NULL )
         return;
@@ -516,7 +516,7 @@ extern void WndCheckMainMenu( gui_ctl_id id, bool check )
 
 #if 0
 // keep commented out until GUI supports this properly
-extern void WndSetHintText( a_window *wnd, gui_ctl_id id, char *text )
+void WndSetHintText( a_window wnd, gui_ctl_id id, char *text )
 {
     GUISetHintText( wnd->gui, id, text );
 }

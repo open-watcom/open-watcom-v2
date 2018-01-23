@@ -369,7 +369,7 @@ void ProcPaint( void )
 void ProcPendingPaint( void )
 {
     gui_colour_set      *set;
-    a_window            *wnd;
+    a_window            wnd;
 
     if( _IsOff( SW_PENDING_REPAINT ) ) return;
     _SwitchOff( SW_PENDING_REPAINT );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 void WndSetWndMainSize( wnd_create_struct *info )
 {

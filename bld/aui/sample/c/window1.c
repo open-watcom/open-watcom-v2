@@ -33,7 +33,7 @@
 
 #include "app.h"
 
-static bool W1Init( a_window *wnd );
+static bool W1Init( a_window wnd );
 
 static gui_menu_struct W1Sub[] = {
     { "&Align",    MENU_W1_ALIGN, GUI_ENABLED },
@@ -57,9 +57,9 @@ typedef struct {
     unsigned    align : 1;
 } w1_window;
 
-static void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void W1MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
     char        buff[80];
 
     if( piece == 0 ) return;
@@ -94,16 +94,16 @@ static void W1MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static int W1NumRows( a_window *wnd )
+static int W1NumRows( a_window wnd )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
 
     return( w1->num_rows );
 }
 
-static void W1Modify( a_window *wnd, int row, int piece )
+static void W1Modify( a_window wnd, int row, int piece )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
 
     if( piece == 0 ) return;
     --piece;
@@ -111,10 +111,10 @@ static void W1Modify( a_window *wnd, int row, int piece )
 }
 
 
-static bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
+static bool    W1GetLine( a_window wnd, wnd_row row, int piece,
                              wnd_line_piece *line )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
     int         i;
 
     if( row >= w1->num_rows ) return( false );
@@ -154,14 +154,14 @@ static bool    W1GetLine( a_window *wnd, wnd_row row, int piece,
 }
 
 
-static void    W1Refresh( a_window *wnd )
+static void    W1Refresh( a_window wnd )
 {
     WndRepaint( wnd );
 }
 
-static void W1Fini( a_window *wnd )
+static void W1Fini( a_window wnd )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
     int         num_rows;
     int         i;
 
@@ -174,9 +174,9 @@ static void W1Fini( a_window *wnd )
 }
 
 
-static bool W1Init( a_window *wnd )
+static bool W1Init( a_window wnd )
 {
-    w1_window   *w1 = WndExtra( wnd );
+    w1_window   *w1 = (w1_window *)WndExtra( wnd );
     int         num_rows;
     int         pieces;
     int         i,j;
@@ -201,7 +201,7 @@ static bool W1Init( a_window *wnd )
     return( true );
 }
 
-static bool W1WndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
+static bool W1WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
     switch( gui_ev ) {
@@ -238,10 +238,10 @@ static wnd_info W1Info = {
 
 static gui_resource W1Icon = { ICON_WORDS, "W1" };
 
-a_window *W1Open( void )
+a_window W1Open( void )
 {
     wnd_create_struct   info;
-    a_window    *wnd;
+    a_window            wnd;
 
     WndInitCreateStruct( &info );
     info.info = &W1Info;

@@ -30,11 +30,11 @@
 
 
 extern bool ScanStatus( void );
-extern char *GetWndFont( a_window *wnd );
-extern void WndFontHook( a_window *wnd );
+extern char *GetWndFont( a_window wnd );
+extern void WndFontHook( a_window wnd );
 extern gui_coord *WndMainClientSize( void );
 extern void WndMainResized( void );
-extern void WndResizeHook( a_window *wnd );
+extern void WndResizeHook( a_window wnd );
 extern void InitFont( void );
 extern void FiniFont( void );
 extern void ProcFont( void );

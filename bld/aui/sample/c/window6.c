@@ -32,6 +32,7 @@
 
 #include "app.h"
 
+
 static char * Stuff[] = {
         "Line 1",
         "Line 2",
@@ -40,14 +41,13 @@ static char * Stuff[] = {
         "Line 5",
 };
 
-static int W6NumRows( a_window *wnd )
+static int W6NumRows( a_window wnd )
 {
     wnd=wnd;
     return( ArraySize( Stuff ) );
 }
 
-static bool    W6GetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static bool    W6GetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= ArraySize( Stuff ) ) return( false );
@@ -57,7 +57,7 @@ static bool    W6GetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void    W6Refresh( a_window *wnd )
+static void    W6Refresh( a_window wnd )
 {
     WndRepaint( wnd );
 }
@@ -81,10 +81,10 @@ static wnd_info W6Info = {
     NoPopUp
 };
 
-a_window *W6Open( void )
+a_window W6Open( void )
 {
     wnd_create_struct   info;
-    a_window            *wnd;
+    a_window            wnd;
 
     WndInitCreateStruct( &info );
     info.info = &W6Info;

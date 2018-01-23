@@ -44,16 +44,15 @@
 #define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - FingMessageSize ) / 2 ) )
 
 extern int          WndNumColours;
-extern a_window     *WndMain;
 
 static gui_coord    BitmapSize;
 static gui_ord      Width;
 static gui_ord      Height;
-static a_window     *WndFing = NULL;
+static a_window     WndFing = NULL;
 
 void FingClose( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     if( WndFing != NULL ) {
         wnd = WndFing;
@@ -63,7 +62,7 @@ void FingClose( void )
 }
 
 
-OVL_EXTERN int FingNumRows( a_window *wnd )
+OVL_EXTERN int FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -71,7 +70,7 @@ OVL_EXTERN int FingNumRows( a_window *wnd )
 }
 
 
-OVL_EXTERN  bool    FingGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    FingGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     if( piece != 0 )
         return( false );
@@ -101,7 +100,7 @@ OVL_EXTERN  bool    FingGetLine( a_window *wnd, int row, int piece, wnd_line_pie
     return( true );
 }
 
-OVL_EXTERN bool FingWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 

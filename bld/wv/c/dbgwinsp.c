@@ -65,11 +65,11 @@
 #include "clibext.h"
 
 
-extern void             MemNewAddr( a_window *wnd, address addr );
+extern void             MemNewAddr( a_window wnd, address addr );
 
-static a_window *WndFindExisting( wnd_class_wv wndclass )
+static a_window WndFindExisting( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindClass( NULL, wndclass );
     if( wnd != NULL ) {
@@ -162,7 +162,7 @@ void WndFileInspect( const char *file, bool binary )
 
 void    WndFuncInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_FUNCTIONS );
     if( wnd != NULL ) {
@@ -174,7 +174,7 @@ void    WndFuncInspect( mod_handle mod )
 
 void    WndGblFuncInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_GBLFUNCTIONS );
     if( wnd != NULL ) {
@@ -186,7 +186,7 @@ void    WndGblFuncInspect( mod_handle mod )
 
 void    WndGblVarInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_GLOBALS );
     if( wnd != NULL ) {
@@ -199,7 +199,7 @@ void    WndGblVarInspect( mod_handle mod )
 void    WndMemInspect( address addr, char *next,
                                unsigned len, mad_type_handle mth )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = DoWndMemOpen( addr, mth );
     if( next != NULL ) MemSetFollow( wnd, next );
@@ -208,7 +208,7 @@ void    WndMemInspect( address addr, char *next,
 
 void    WndIOInspect( address *addr, mad_type_handle mth )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_IO );
     if( wnd == NULL ) {
@@ -225,7 +225,7 @@ void    WndAddrInspect( address addr )
 
 void WndAsmInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
     bool        nil;
 
     nil = false;
@@ -244,13 +244,13 @@ void WndAsmInspect( address addr )
 //    return( wnd );
 }
 
-static  a_window        *DoWndSrcInspect( address addr, bool existing )
+static  a_window        DoWndSrcInspect( address addr, bool existing )
 {
-    a_window    *wnd;
+    a_window    wnd;
 //    bool        nil;
     mod_handle  mod;
     DIPHDL( cue, ch );
-    a_window    *active;
+    a_window    active;
 
     active = WndFindActive();
 //    nil = false;
@@ -278,7 +278,7 @@ static  a_window        *DoWndSrcInspect( address addr, bool existing )
 
 void WndSrcInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
     wnd = DoWndSrcInspect( addr, true );
     if( wnd == NULL )
         Warn( LIT_DUI( WARN_Source_Not_Available ) );
@@ -287,7 +287,7 @@ void WndSrcInspect( address addr )
 
 void WndSrcOrAsmInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = DoWndSrcInspect( addr, true );
     if( wnd != NULL )
@@ -304,9 +304,9 @@ void WndNewSrcInspect( address addr )
     DoWndSrcInspect( addr, false );
 }
 
-a_window *WndModInspect( mod_handle mod )
+a_window WndModInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
     DIPHDL( cue, ch );
 
     wnd = WndFindExisting( WND_SOURCE );
@@ -321,7 +321,7 @@ a_window *WndModInspect( mod_handle mod )
 
 void    WndModListInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_MODULES );
     if( wnd == NULL ) {
@@ -331,9 +331,9 @@ void    WndModListInspect( mod_handle mod )
     }
 }
 
-static a_window *WndVarNewWindow( const char *item )
+static a_window WndVarNewWindow( const char *item )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     WndSetOpenNoShow();
     wnd = WndVarOpen();
@@ -379,9 +379,9 @@ void    WndInspect( const char *item )
     }
 }
 
-a_window *WndClassInspect( wnd_class_wv wndclass )
+a_window WndClassInspect( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( wndclass );
     if( wnd == NULL ) {
@@ -393,7 +393,7 @@ a_window *WndClassInspect( wnd_class_wv wndclass )
 
 void WndVarInspect( const char *buff )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndClassInspect( WND_WATCH );
     if( wnd != NULL ) {

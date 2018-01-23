@@ -86,7 +86,7 @@ char *Word[WORD_SIZE] =
     "Censorship",
 };
 
-extern int RandNum( int max )
+int RandNum( int max )
 {
     switch( max ) {
     case 0 :

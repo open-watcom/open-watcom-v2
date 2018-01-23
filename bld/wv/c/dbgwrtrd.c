@@ -57,7 +57,7 @@ static gui_menu_struct RunTrdMenu[] = {
 #define MAX_PIECE_COUNT     4
 #define MAX_HEADER_SIZE     80
 
-static a_window         *RunThreadWnd = 0;
+static a_window         RunThreadWnd = 0;
 static int              PieceCount = 0;
 static unsigned char    Indents[MAX_PIECE_COUNT + 1];
 static unsigned char    InfoType[MAX_PIECE_COUNT];
@@ -96,7 +96,7 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-OVL_EXTERN int RunTrdNumRows( a_window *wnd )
+OVL_EXTERN int RunTrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     unsigned        num;
@@ -108,7 +108,7 @@ OVL_EXTERN int RunTrdNumRows( a_window *wnd )
     return( num );
 }
 
-OVL_EXTERN bool RunTrdWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -123,7 +123,7 @@ OVL_EXTERN bool RunTrdWndEventProc( a_window * wnd, gui_event gui_ev, void *parm
     return( false );
 }
 
-OVL_EXTERN void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -174,7 +174,7 @@ OVL_EXTERN void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int p
     DbgUpdate( UP_THREAD_STATE );
 }
 
-OVL_EXTERN void RunTrdRefresh( a_window *wnd )
+OVL_EXTERN void RunTrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     int             row;
@@ -191,8 +191,7 @@ OVL_EXTERN void RunTrdRefresh( a_window *wnd )
     WndRepaint( wnd );
 }
 
-OVL_EXTERN bool    RunTrdGetLine( a_window *wnd, int row, int piece,
-                               wnd_line_piece *line )
+OVL_EXTERN bool    RunTrdGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -299,7 +298,7 @@ wnd_info RunTrdInfo = {
 };
 
 
-a_window *WndRunTrdOpen( void )
+a_window WndRunTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, true ) );

@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-extern  bool    WndAtTop( a_window *wnd )
+bool    WndAtTop( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) ) return( false );
     if( wnd->current.row > wnd->title_size ) return( false );
@@ -40,7 +40,7 @@ extern  bool    WndAtTop( a_window *wnd )
 }
 
 
-static  bool    WndFindCloseTab( a_window *wnd, int row )
+static  bool    WndFindCloseTab( a_window wnd, int row )
 {
     int         piece;
 
@@ -54,7 +54,7 @@ static  bool    WndFindCloseTab( a_window *wnd, int row )
 }
 
 
-static  void    WndMoveUp( a_window *wnd )
+static  void    WndMoveUp( a_window wnd )
 {
     if( WndAtTop( wnd ) ) {
         WndDirtyCurr( wnd );
@@ -79,7 +79,7 @@ static  void    WndMoveUp( a_window *wnd )
 }
 
 
-static  bool    WndAtBottom( a_window *wnd )
+static  bool    WndAtBottom( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) ) return( false );
     if( wnd->current.row < wnd->rows-1 ) return( false );
@@ -87,7 +87,7 @@ static  bool    WndAtBottom( a_window *wnd )
 }
 
 
-static  void    WndMoveDown( a_window *wnd )
+static  void    WndMoveDown( a_window wnd )
 {
     if( WndAtBottom( wnd ) ) {
         WndDirtyCurr( wnd );
@@ -111,7 +111,7 @@ static  void    WndMoveDown( a_window *wnd )
     }
 }
 
-static  void    WndUpOne( a_window *wnd )
+static  void    WndUpOne( a_window wnd )
 {
     if( !WndAtBottom( wnd ) ) {
         if( WndScroll( wnd, -1 ) != 0 ) {
@@ -123,7 +123,7 @@ static  void    WndUpOne( a_window *wnd )
 }
 
 
-static  void    WndDownOne( a_window *wnd )
+static  void    WndDownOne( a_window wnd )
 {
     if( !WndAtTop( wnd ) ) {
         if( WndScroll( wnd, 1 ) != 0 ) {
@@ -134,29 +134,29 @@ static  void    WndDownOne( a_window *wnd )
     }
 }
 
-void WndScrollUp( a_window *wnd )
+void WndScrollUp( a_window wnd )
 {
     WndUpOne( wnd );
 }
 
-void WndCursorUp( a_window *wnd )
+void WndCursorUp( a_window wnd )
 {
     WndNoSelect( wnd );
     WndMoveUp( wnd );
 }
 
-void WndScrollDown( a_window *wnd )
+void WndScrollDown( a_window wnd )
 {
     WndDownOne( wnd );
 }
 
-void WndCursorDown( a_window *wnd )
+void WndCursorDown( a_window wnd )
 {
     WndNoSelect( wnd );
     WndMoveDown( wnd );
 }
 
-static int WndPageSize( a_window *wnd )
+static int WndPageSize( a_window wnd )
 {
     int rows = WndRows( wnd );
     if( rows <= 0 ) return( 0 );
@@ -164,17 +164,17 @@ static int WndPageSize( a_window *wnd )
     return( rows - 2 );
 }
 
-void WndPageUp( a_window *wnd )
+void WndPageUp( a_window wnd )
 {
     WndScroll( wnd, -WndPageSize( wnd ) );
 }
 
-void WndPageDown( a_window *wnd )
+void WndPageDown( a_window wnd )
 {
     WndScroll( wnd, WndPageSize( wnd ) );
 }
 
-bool WndTabLeft( a_window *wnd, bool wrap )
+bool WndTabLeft( a_window wnd, bool wrap )
 {
     wnd_coord   curr;
 
@@ -191,7 +191,7 @@ bool WndTabLeft( a_window *wnd, bool wrap )
     }
 }
 
-static bool WndCursorLeftCheck( a_window *wnd )
+static bool WndCursorLeftCheck( a_window wnd )
 {
     int         col;
     wnd_line_piece      line;
@@ -216,12 +216,12 @@ static bool WndCursorLeftCheck( a_window *wnd )
     }
 }
 
-void WndCursorLeft( a_window *wnd )
+void WndCursorLeft( a_window wnd )
 {
     WndCursorLeftCheck( wnd );
 }
 
-bool WndTabRight( a_window *wnd, bool wrap )
+bool WndTabRight( a_window wnd, bool wrap )
 {
     wnd_coord   curr;
 
@@ -236,7 +236,7 @@ bool WndTabRight( a_window *wnd, bool wrap )
     return( true );
 }
 
-static bool WndCursorRightCheck( a_window *wnd )
+static bool WndCursorRightCheck( a_window wnd )
 {
     wnd_line_piece      line;
     int                 col;
@@ -259,31 +259,31 @@ static bool WndCursorRightCheck( a_window *wnd )
     }
 }
 
-void WndCursorRight( a_window *wnd )
+void WndCursorRight( a_window wnd )
 {
     WndCursorRightCheck( wnd );
 }
 
-void WndScrollTop( a_window *wnd )
+void WndScrollTop( a_window wnd )
 {
     WndDirtyCurr( wnd );
     WndScrollAbs( wnd, -wnd->title_size );
     WndFirstCurrent( wnd );
 }
 
-void WndScrollBottom( a_window *wnd )
+void WndScrollBottom( a_window wnd )
 {
     WndDirtyCurr( wnd );
     WndScrollAbs( wnd, WND_MAX_ROW );
     WndLastCurrent( wnd );
 }
 
-void WndCursorStart( a_window *wnd )
+void WndCursorStart( a_window wnd )
 {
     while( WndCursorLeftCheck( wnd ) );
 }
 
-void WndCursorEnd( a_window *wnd )
+void WndCursorEnd( a_window wnd )
 {
     while( WndCursorRightCheck( wnd ) );
 }

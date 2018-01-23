@@ -125,7 +125,7 @@ static gui_resource *VarIcons[] = {
 
 static WNDMENU VarMenuItem;
 
-static void     VarSetWidth( a_window *wnd )
+static void     VarSetWidth( a_window wnd )
 /*
     Always leave room for a vertical scroll bar. It's most annoying
     having the window repaint whenever it appears/disappears.
@@ -141,7 +141,7 @@ static void     VarSetWidth( a_window *wnd )
 
 }
 
-OVL_EXTERN  void    VarRepaint( a_window *wnd )
+OVL_EXTERN  void    VarRepaint( a_window wnd )
 {
     var_window  *var = WndVar( wnd );
 
@@ -154,7 +154,7 @@ OVL_EXTERN  void    VarRepaint( a_window *wnd )
 }
 
 
-bool    WndVarAdd( a_window *wnd, const char *name, unsigned len, bool expand )
+bool    WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand )
 {
     var_node    *v;
 
@@ -164,12 +164,12 @@ bool    WndVarAdd( a_window *wnd, const char *name, unsigned len, bool expand )
 }
 
 
-OVL_EXTERN int VarNumRows( a_window *wnd )
+OVL_EXTERN int VarNumRows( a_window wnd )
 {
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
-OVL_EXTERN  void    VarModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    VarModify( a_window wnd, int row, int piece )
 {
     var_node            *v;
     type_kind           class;
@@ -237,7 +237,7 @@ OVL_EXTERN  void    VarModify( a_window *wnd, int row, int piece )
     VarOldErrState();
 }
 
-static  void    ExpandRowIfPossible( a_window *wnd, int row, int piece )
+static  void    ExpandRowIfPossible( a_window wnd, int row, int piece )
 {
     var_node            *v;
     type_kind           class;
@@ -265,7 +265,7 @@ static  void    ExpandRowIfPossible( a_window *wnd, int row, int piece )
 }
 
 
-static bool VarEdit( a_window *wnd, var_node *v )
+static bool VarEdit( a_window wnd, var_node *v )
 {
     var_window  *var = WndVar( wnd );
 
@@ -284,7 +284,7 @@ static bool VarEdit( a_window *wnd, var_node *v )
 }
 
 #if 0
-static void VarMoveToRoot( a_window *wnd, int row, var_node *v )
+static void VarMoveToRoot( a_window wnd, int row, var_node *v )
 {
     var_window  *var = WndVar( wnd );
     int         new_row;
@@ -303,7 +303,7 @@ static void VarSetOptions( var_window *var )
     VarDisplaySetMembers( &var->i, _IsOn( SW_VAR_SHOW_MEMBERS ) );
 }
 
-static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
+static void VarInitPopup( a_window wnd, var_window *var, var_node *v )
 {
     type_kind           class;
     bool                pointer;
@@ -386,7 +386,7 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
 }
 
 
-OVL_EXTERN void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     var_node            *v;
     dlg_var_expand      varx;
@@ -616,7 +616,7 @@ OVL_EXTERN void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 
 
 static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
-                     a_window *wnd, int depth, int inherited, int row )
+                     a_window wnd, int depth, int inherited, int row )
 {
     gui_ord     name_len;
 
@@ -632,7 +632,7 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->i.name_end_row = row;
 }
 
-OVL_EXTERN  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    VarGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     var_window  *var = WndVar( wnd );
     var_node    *v;
@@ -729,7 +729,7 @@ OVL_EXTERN  bool    VarGetLine( a_window *wnd, int row, int piece, wnd_line_piec
 }
 
 
-OVL_EXTERN  void    VarBegPaint( a_window *wnd, int row, int num )
+OVL_EXTERN  void    VarBegPaint( a_window wnd, int row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -739,7 +739,7 @@ OVL_EXTERN  void    VarBegPaint( a_window *wnd, int row, int num )
 }
 
 
-OVL_EXTERN  void    VarEndPaint( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    VarEndPaint( a_window wnd, int row, int piece )
 {
     var_window  *var = WndVar( wnd );
 
@@ -776,7 +776,7 @@ OVL_EXTERN void VarDirtyRow( void *wnd, int row )
     WndRowDirty( wnd, row );
 }
 
-OVL_EXTERN  void VarRefresh( a_window *wnd )
+OVL_EXTERN  void VarRefresh( a_window wnd )
 {
     var_window  *var = WndVar( wnd );
     address     addr;
@@ -809,7 +809,7 @@ OVL_EXTERN  void VarRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool VarWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     var_window  *var = WndVar( wnd );
     gui_ord     old_width;
@@ -848,7 +848,7 @@ OVL_EXTERN bool VarWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 
 static bool VarDoClass( wnd_class_wv wndclass, bool (*rtn)( var_info*, void* ), void *cookie )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndFindClass( NULL, wndclass );
          wnd != NULL; wnd = WndFindClass( wnd, wndclass ) ) {
@@ -891,13 +891,13 @@ void VarFreeScopes( void )
 }
 
 
-OVL_EXTERN void DoVarChangeOptions( a_window *wnd )
+OVL_EXTERN void DoVarChangeOptions( a_window wnd )
 {
     VarSetOptions( WndVar( wnd ) );
     VarRepaint( wnd );
 }
 
-static void VarWndDoAll( void (*rtn)( a_window *) )
+static void VarWndDoAll( void (*rtn)( a_window ) )
 {
     var_type    i;
 
@@ -941,10 +941,10 @@ wnd_info VarInfo = {
     DefPopUp( VarMenu )
 };
 
-static  a_window        *DoWndVarOpen( var_type vtype )
+static  a_window        DoWndVarOpen( var_type vtype )
 {
     var_window  *var;
-    a_window    *wnd;
+    a_window    wnd;
 
     var = WndMustAlloc( sizeof( var_window ) );
     var->vtype = vtype;
@@ -954,22 +954,22 @@ static  a_window        *DoWndVarOpen( var_type vtype )
     return( wnd );
 }
 
-a_window *WndVarOpen( void )
+a_window WndVarOpen( void )
 {
     return( DoWndVarOpen( VAR_VARIABLE ) );
 }
 
-a_window *WndWatOpen( void )
+a_window WndWatOpen( void )
 {
     return( DoWndVarOpen( VAR_WATCH ) );
 }
 
-a_window *WndLclOpen( void )
+a_window WndLclOpen( void )
 {
     return( DoWndVarOpen( VAR_LOCALS ) );
 }
 
-a_window *WndFSVOpen( void )
+a_window WndFSVOpen( void )
 {
     return( DoWndVarOpen( VAR_FILESCOPE ) );
 }
@@ -978,7 +978,7 @@ OVL_EXTERN  void    DoGraphicDisplay( void )
 {
     const char  *name;
     unsigned    len;
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndVarOpen();
     while( !ScanEOC() ) {

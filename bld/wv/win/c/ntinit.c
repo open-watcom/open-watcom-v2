@@ -59,9 +59,6 @@
 extern void     NewConsoleTitle( void );
 
 extern volatile bool    BrkPending;
-#ifdef __GUI__
-extern a_window         *WndMain;
-#endif
 
 static char             *CmdData;
 

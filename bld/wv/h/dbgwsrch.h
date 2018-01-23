@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern a_window *WndSrchOpen( const char *expr );
+extern a_window WndSrchOpen( const char *expr );

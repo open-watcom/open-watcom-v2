@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
-extern gui_message_return WndDisplayMessage( const char *msg, const char *cap,
-                                             gui_message_type type )
+#include "_aui.h"
+
+
+gui_message_return WndDisplayMessage( const char *msg, const char *cap, gui_message_type type )
 {
     gui_window  *gui;
-    a_window    *wnd;
+    a_window    wnd;
 
     gui = NULL;
     wnd = WndFindActive();

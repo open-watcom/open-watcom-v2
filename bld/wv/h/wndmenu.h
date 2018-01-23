@@ -47,4 +47,4 @@ extern void InitMenus( void );
 extern void FiniMenus( void );
 extern void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key );
 extern gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main );
-extern bool WndMainMenuProc( a_window *wnd, gui_ctl_id id );
+extern bool WndMainMenuProc( a_window wnd, gui_ctl_id id );

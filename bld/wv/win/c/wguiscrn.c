@@ -46,7 +46,6 @@
 #include "guigsysh.h"
 
 
-extern a_window         *WndMain;
 extern volatile bool    BrkPending;
 
 unsigned        ScrnLines = 50;

@@ -280,7 +280,7 @@ int FindMenuLen( gui_menu_struct *child )
 
 void AccelMenuItem( gui_menu_struct *menu, bool is_main )
 {
-    a_window    *wnd = WndFindActive();
+    a_window    wnd = WndFindActive();
 
     if( is_main ) {
         WndMainMenuProc( wnd, menu->id );
@@ -296,7 +296,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
     wnd_info            *info;
-    a_window            *wnd;
+    a_window            wnd;
     const char          *start;
     size_t              len;
 
@@ -505,7 +505,7 @@ gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wn
 
 static void     DoMatch( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindActive();
     if( wnd == NULL )
@@ -539,7 +539,7 @@ static  void    GoToPromptedAddr( void )
     }
 }
 
-bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
+bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
 {
     bool        save;
 

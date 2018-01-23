@@ -38,7 +38,7 @@ extern gui_colour_set WndColours[];
 
 #if 0
 these are optional
-extern void WndCleanUp()
+void WndCleanUp()
 {
     // hook called when the application closes down
 }
@@ -84,7 +84,7 @@ static gui_menu_struct PopTart[] = {
     { "Open &3", MENU_OPEN3, GUI_ENABLED },
 };
 
-extern  bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, unsigned key )
 {
     gui_ctl_id  menu;
     int         i;
@@ -174,7 +174,6 @@ static gui_colour_set   WndDlgColours[] = {
 
 gui_resource MainIcon = { ICON_MAIN, "main_icon" };
 
-extern a_window *WndMain;
 void GUImain( void )
 {
     char        buff[256];

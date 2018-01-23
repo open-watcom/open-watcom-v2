@@ -35,7 +35,6 @@
 
 extern int DlgOptions( void );
 
-extern void DlgCmd( void );
 extern void Password( const char *, char *, unsigned );
 extern gui_colour_set WndColours[];
 
@@ -126,7 +125,7 @@ static void TimeIt( void )
     char                buff[80];
     int                 len;
     long                iters;
-    a_window            *wnd;
+    a_window            wnd;
     gui_text_metrics    dummy;
 
     wnd = WndFindActive();
@@ -168,10 +167,10 @@ static void OpenTools( void )
     WndCreateToolBar( 867, true, ArraySize( ToolBar ), ToolBar );
 }
 
-extern bool     WndMainMenuProc( a_window *wnd, gui_ctl_id id )
+bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
 {
-    a_window            *new;
-    a_window            *active;
+    a_window            new;
+    a_window            active;
     int                 i;
     char                *p = 0;
 

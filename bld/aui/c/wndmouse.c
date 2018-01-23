@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"//
 
 static bool                     LButtonIsDown;
 static bool                     RButtonIsDown;
@@ -45,7 +45,7 @@ wnd_row WndGetMouseRow( void )
     return( MouseRow );
 }
 
-static void WndSetMouseRow( a_window *wnd, void *parm )
+static void WndSetMouseRow( a_window wnd, void *parm )
 {
     gui_point           point;
 
@@ -58,30 +58,30 @@ static void WndSetMouseRow( a_window *wnd, void *parm )
     }
 }
 
-static bool FindPoint( a_window *wnd, void *parm, bool exact, wnd_coord *spot )
+static bool FindPoint( a_window wnd, void *parm, bool exact, wnd_coord *spot )
 {
     return( WndSetPoint( wnd, parm, exact, spot, WND_NO_ROW, false ) );
 }
 
-static void WndButtonChange( a_window *wnd, wnd_coord *point, bool down )
+static void WndButtonChange( a_window wnd, wnd_coord *point, bool down )
 {
     char                old_row;
 
-    old_row = wnd->u.button_down.row;
+    old_row = wnd->button_down.row;
     if( down ) {
-        wnd->u.button_down.row = point->row;
-        wnd->u.button_down.piece = point->piece;
+        wnd->button_down.row = point->row;
+        wnd->button_down.piece = point->piece;
     } else {
-        wnd->u.button_down.row = (char)-1;
+        wnd->button_down.row = (char)-1;
     }
-    if( old_row != wnd->u.button_down.row ) {
+    if( old_row != wnd->button_down.row ) {
         WndKillCacheLines( wnd );
         WndDirtyScreenPiece( wnd, point );
     }
 }
 
 
-void WndLButtonDown( a_window *wnd, void *parm )
+void WndLButtonDown( a_window wnd, void *parm )
 {
     MouseLine.hot = false;
     if( !FindPoint( wnd, parm, true, &MouseDownLoc ) ) return;
@@ -105,7 +105,7 @@ void WndLButtonDown( a_window *wnd, void *parm )
     }
 }
 
-void WndLButtonUp( a_window *wnd, void *parm )
+void WndLButtonUp( a_window wnd, void *parm )
 {
     WndResetStatusText();
     LButtonIsDown = false;
@@ -124,7 +124,7 @@ void WndLButtonUp( a_window *wnd, void *parm )
     }
 }
 
-void WndLDblClk( a_window *wnd, void *parm )
+void WndLDblClk( a_window wnd, void *parm )
 {
     if( LButtonDownOnHot ) {
         WndLButtonUp( wnd, parm );
@@ -140,7 +140,7 @@ void WndLDblClk( a_window *wnd, void *parm )
 }
 
 
-void WndRButtonDown( a_window *wnd, void *parm )
+void WndRButtonDown( a_window wnd, void *parm )
 {
     MouseLine.hot = false;
     MouseLine.tabstop = false;
@@ -169,7 +169,7 @@ void WndRButtonDown( a_window *wnd, void *parm )
     }
 }
 
-void WndRButtonUp( a_window *wnd, void *parm )
+void WndRButtonUp( a_window wnd, void *parm )
 {
     gui_point           point;
 
@@ -192,12 +192,12 @@ bool WndMouseButtonIsDown( void )
     return( LButtonIsDown || RButtonIsDown );
 }
 
-bool WndIgnoreMouseMove( a_window *wnd )
+bool WndIgnoreMouseMove( a_window wnd )
 {
     return( _Isnt( wnd, WSW_SELECTING ) && !WndMouseButtonIsDown() );
 }
 
-void WndMouseMove( a_window *wnd, void *parm )
+void WndMouseMove( a_window wnd, void *parm )
 {
     if( _Is( wnd, WSW_SELECTING ) ) {
         WndSelChange( wnd, parm );

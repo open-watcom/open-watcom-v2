@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 static void RoundToPixel( gui_coord *new, gui_coord *pixel_size )
 {
@@ -74,7 +74,7 @@ static void RoundRect( gui_rect *rect )
 }
 
 
-extern void WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale )
+void WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale )
 {
 
     rect->x = posn->x * scale->x;
@@ -84,7 +84,7 @@ extern void WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale )
     RoundRect( rect );
 }
 
-extern void WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale )
+void WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale )
 {
 
     posn->x = (float)rect->x / scale->x;

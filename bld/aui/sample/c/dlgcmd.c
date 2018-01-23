@@ -126,7 +126,7 @@ static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-extern  void    DlgCmd( void )
+void    DlgCmd( void )
 {
     char        *cmd;
 

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 #define WSW_NOT_TO_SCREEN       WSW_UTIL_1
 
-static void WndDrawSelect( a_window *wnd, wnd_line_piece *line,
+static void WndDrawSelect( a_window wnd, wnd_line_piece *line,
                            wnd_row row, int piece )
 {
     int                 first;
@@ -52,7 +52,7 @@ static void WndDrawSelect( a_window *wnd, wnd_line_piece *line,
 }
 
 
-static void WndDrawTheLine( a_window *wnd, wnd_line_piece *line,
+static void WndDrawTheLine( a_window wnd, wnd_line_piece *line,
                             wnd_row row )
 {
     gui_ord             extent;
@@ -148,7 +148,7 @@ static void WndDrawTheLine( a_window *wnd, wnd_line_piece *line,
 }
 
 
-static void WndDrawCursor( a_window *wnd, wnd_line_piece *line,
+static void WndDrawCursor( a_window wnd, wnd_line_piece *line,
                            wnd_row row, int piece )
 {
     const char  *p;
@@ -169,7 +169,7 @@ static void WndDrawCursor( a_window *wnd, wnd_line_piece *line,
     }
 }
 
-static void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
+static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
 {
     wnd_row             row;
     wnd_row             row_to_get;
@@ -227,7 +227,7 @@ static void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
 }
 
 
-void    WndProcPaint( a_window *wnd, void *parm )
+void    WndProcPaint( a_window wnd, void *parm )
 {
     wnd_row             row;
     int                 num;
@@ -237,7 +237,7 @@ void    WndProcPaint( a_window *wnd, void *parm )
 }
 
 
-void    WndForcePaint( a_window *wnd )
+void    WndForcePaint( a_window wnd )
 {
     _Set( wnd, WSW_NOT_TO_SCREEN );
     if( wnd->max_indent == 0 ) WndPaintRows( wnd, 0, wnd->rows );

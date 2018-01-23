@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-extern void WndGetGadgetSize( wnd_gadget_type type, gui_coord *size )
+void WndGetGadgetSize( wnd_gadget_type type, gui_coord *size )
 {
     GUIGetHotSpotSize( type+1, size );
 }
 
-extern void WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type, unsigned length )
+void WndSetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_type type, unsigned length )
 {
     static char text[2] = " ";
 
@@ -52,7 +52,7 @@ extern void WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_ty
     line->tabstop = false;
 }
 
-extern void WndGadgetInit( void )
+void WndGadgetInit( void )
 {
     GUIInitHotSpots( WndGadgetArraySize, WndGadgetArray );
 }

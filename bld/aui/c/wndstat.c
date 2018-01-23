@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
 void WndCreateStatusWindow( gui_colour_set *colour )

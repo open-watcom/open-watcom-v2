@@ -65,7 +65,7 @@ enum {
     PIECE_NAME,
 };
 
-static  void    GlobInit( a_window *wnd )
+static  void    GlobInit( a_window wnd )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -76,7 +76,7 @@ static  void    GlobInit( a_window *wnd )
     WndSetKey( wnd, PIECE_NAME );
 }
 
-void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+void     GlobMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -112,12 +112,12 @@ void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-int GlobNumRows( a_window *wnd )
+int GlobNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+bool    GlobGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -133,7 +133,7 @@ bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
     }
 }
 
-void GlobNewMod( a_window *wnd, mod_handle mod )
+void GlobNewMod( a_window wnd, mod_handle mod )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -144,7 +144,7 @@ void GlobNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-void    GlobRefresh( a_window *wnd )
+void    GlobRefresh( a_window wnd )
 {
     if( UpdateFlags & UP_SYM_CHANGE ) {
         GlobInit( wnd );
@@ -153,13 +153,13 @@ void    GlobRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN void GlobSetOptions( a_window *wnd )
+OVL_EXTERN void GlobSetOptions( a_window wnd )
 {
     WndGlob( wnd )->d2_only = _IsOn( SW_GLOB_D2_ONLY );
     GlobInit( wnd );
 }
 
-OVL_EXTERN bool GlobWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -200,7 +200,7 @@ wnd_info GlobInfo = {
     DefPopUp( GlobMenu )
 };
 
-a_window *DoWndGlobOpen( mod_handle mod )
+a_window DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
@@ -209,7 +209,7 @@ a_window *DoWndGlobOpen( mod_handle mod )
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }
 
-a_window *WndGlobOpen( void )
+a_window WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
 }

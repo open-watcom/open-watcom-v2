@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"////
+#include "_aui.h"////
 
 wnd_row         WndMenuRow;
 int             WndMenuPiece;
 
 
-void WndSelectEvent( a_window *wnd, gui_event gui_ev, void *parm )
+void WndSelectEvent( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_key             key;
     gui_keystate        state;
@@ -79,7 +79,7 @@ void WndSelectEvent( a_window *wnd, gui_event gui_ev, void *parm )
 }
 
 
-extern  void    WndSelEnds( a_window *wnd, wnd_coord **pstart, wnd_coord **pend )
+void    WndSelEnds( a_window wnd, wnd_coord **pstart, wnd_coord **pend )
 {
     wnd_coord   *start;
     wnd_coord   *end;
@@ -104,7 +104,7 @@ extern  void    WndSelEnds( a_window *wnd, wnd_coord **pstart, wnd_coord **pend 
     *pend = end;
 }
 
-extern bool     WndSelected( a_window *wnd, wnd_line_piece *line, wnd_row row,
+bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row,
                              int piece, int *first, int *len )
 {
     wnd_coord   *start;
@@ -151,14 +151,14 @@ extern bool     WndSelected( a_window *wnd, wnd_line_piece *line, wnd_row row,
 }
 
 
-extern  bool    WndSelSetStart( a_window *wnd, void *parm )
+bool    WndSelSetStart( a_window wnd, void *parm )
 {
     WndNoSelect( wnd );
     return( WndSetPoint( wnd, parm, false, &wnd->sel_start, WND_NO_ROW, true ) );
 }
 
 
-extern  bool    WndSelGetEndPiece( a_window *wnd, void *parm, wnd_coord *piece )
+bool    WndSelGetEndPiece( a_window wnd, void *parm, wnd_coord *piece )
 {
     bool        success;
 
@@ -173,7 +173,7 @@ extern  bool    WndSelGetEndPiece( a_window *wnd, void *parm, wnd_coord *piece )
 }
 
 
-extern  bool    WndSelSetEnd( a_window *wnd, void *parm )
+bool    WndSelSetEnd( a_window wnd, void *parm )
 {
     bool                success;
 
@@ -183,7 +183,7 @@ extern  bool    WndSelSetEnd( a_window *wnd, void *parm )
 }
 
 
-extern void     WndSelPieceChange( a_window *wnd, wnd_coord *piece )
+void     WndSelPieceChange( a_window wnd, wnd_coord *piece )
 {
     wnd_coord           old_sel_end;
     int                 end_col;
@@ -219,7 +219,7 @@ extern void     WndSelPieceChange( a_window *wnd, wnd_coord *piece )
 }
 
 
-extern void     WndSelChange( a_window *wnd, void *parm )
+void     WndSelChange( a_window wnd, void *parm )
 {
     wnd_coord   piece;
 
@@ -227,7 +227,7 @@ extern void     WndSelChange( a_window *wnd, void *parm )
     WndSelPieceChange( wnd, &piece );
 }
 
-extern  void    WndNoSelect( a_window *wnd )
+void    WndNoSelect( a_window wnd )
 {
     wnd_coord   *start;
     wnd_coord   *end;
@@ -250,14 +250,14 @@ extern  void    WndNoSelect( a_window *wnd )
     wnd->sel_end.row = WND_NO_ROW;
 }
 
-extern  wnd_row WndSelRow( a_window *wnd )
+wnd_row WndSelRow( a_window wnd )
 {
     if( wnd->sel_start.row == WND_NO_ROW ) return( WND_NO_ROW );
     return( WndVirtualRow( wnd, wnd->sel_start.row ) );
 }
 
 
-extern  void    SetWndMenuRow( a_window *wnd )
+void    SetWndMenuRow( a_window wnd )
 {
     if( wnd->sel_end.row != WND_NO_ROW ) {
         WndMenuRow = wnd->sel_end.row;
@@ -271,7 +271,7 @@ extern  void    SetWndMenuRow( a_window *wnd )
     }
 }
 
-void WndToSelectMode( a_window *wnd )
+void WndToSelectMode( a_window wnd )
 {
     if( WndHasCurrent( wnd ) && _Is( wnd, WSW_CHAR_CURSOR ) ) {
         if( _Isnt( wnd, WSW_SELECTING ) ) {
@@ -284,7 +284,7 @@ void WndToSelectMode( a_window *wnd )
     _Set( wnd, WSW_SELECT_EVENT );
 }
 
-void WndEndSelectEvent( a_window *wnd )
+void WndEndSelectEvent( a_window wnd )
 {
     _Clr( wnd, WSW_SELECT_EVENT );
 }

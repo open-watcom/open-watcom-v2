@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-extern void WndCleanUp()
+void WndCleanUp( void )
 {
 }

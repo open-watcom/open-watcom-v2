@@ -85,7 +85,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-OVL_EXTERN void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     BrkMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     brkp        *bp;
 
@@ -134,7 +134,7 @@ OVL_EXTERN void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piec
     }
 }
 
-OVL_EXTERN void     BrkModify( a_window *wnd, int row, int piece )
+OVL_EXTERN void     BrkModify( a_window wnd, int row, int piece )
 {
     brkp        *bp;
 
@@ -164,7 +164,7 @@ OVL_EXTERN void     BrkModify( a_window *wnd, int row, int piece )
     }
 }
 
-OVL_EXTERN int BrkNumRows( a_window *wnd )
+OVL_EXTERN int BrkNumRows( a_window wnd )
 {
     brkp        *bp;
     int         count;
@@ -178,7 +178,7 @@ OVL_EXTERN int BrkNumRows( a_window *wnd )
     return( count );
 }
 
-OVL_EXTERN  bool    BrkGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    BrkGetLine( a_window wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     brkp                *bp;
@@ -230,7 +230,7 @@ OVL_EXTERN  bool    BrkGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void     BrkInit( a_window *wnd )
+static void     BrkInit( a_window wnd )
 {
     gui_ord             length, max;
     break_window        *wndbreak;
@@ -265,7 +265,7 @@ static void     BrkInit( a_window *wnd )
 }
 
 
-OVL_EXTERN void     BrkRefresh( a_window *wnd )
+OVL_EXTERN void     BrkRefresh( a_window wnd )
 {
     brkp        *bp;
     int         row;
@@ -300,7 +300,7 @@ OVL_EXTERN void     BrkRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN bool BrkWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
@@ -339,9 +339,9 @@ wnd_info BrkInfo = {
     DefPopUp( BrkMenu )
 };
 
-a_window *WndBrkOpen( void )
+a_window WndBrkOpen( void )
 {
-    a_window            *wnd;
+    a_window            wnd;
     break_window        *brkw;
 
     brkw = WndMustAlloc( sizeof( *brkw ) );

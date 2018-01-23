@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 #include <ctype.h>
 #include "walloca.h"
@@ -37,7 +37,7 @@
 #include "clibext.h"
 
 
-void WndChooseEvent( a_window *wnd, gui_event gui_ev, void *parm )
+void WndChooseEvent( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_key     key;
 
@@ -63,14 +63,14 @@ void WndChooseEvent( a_window *wnd, gui_event gui_ev, void *parm )
     WndDoneChoose( wnd );
 }
 
-extern  void    WndDoneChoose( a_window *wnd )
+void    WndDoneChoose( a_window wnd )
 {
     _Clr( wnd, WSW_CHOOSING );
     wnd->keyindex = 0;
 }
 
 
-extern  bool    WndKeyEscape( a_window *wnd )
+bool    WndKeyEscape( a_window wnd )
 {
     if( wnd->keypiece == WND_NO_PIECE )
         return( false );
@@ -80,12 +80,12 @@ extern  bool    WndKeyEscape( a_window *wnd )
 }
 
 
-extern  void    WndStartChoose( a_window *wnd )
+void    WndStartChoose( a_window wnd )
 {
     _Set( wnd, WSW_CHOOSING );
 }
 
-extern  void    WndSayMatchMode( a_window *wnd )
+void    WndSayMatchMode( a_window wnd )
 {
     char                *sofar_buff;
     wnd_line_piece      line;
@@ -105,7 +105,7 @@ extern  void    WndSayMatchMode( a_window *wnd )
     WndFree( match );
 }
 
-static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
+static  bool    DoWndKeyChoose( a_window wnd, unsigned key )
 {
     wnd_line_piece      line;
     wnd_row             row;
@@ -163,7 +163,7 @@ static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
 }
 
 
-extern  bool    WndKeyChoose( a_window *wnd, unsigned key )
+bool    WndKeyChoose( a_window wnd, unsigned key )
 {
     bool        rc;
 
@@ -172,7 +172,7 @@ extern  bool    WndKeyChoose( a_window *wnd, unsigned key )
 }
 
 
-extern  bool    WndKeyRubOut( a_window *wnd )
+bool    WndKeyRubOut( a_window wnd )
 {
     int                 newindex;
     wnd_line_piece      line;

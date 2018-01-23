@@ -67,8 +67,6 @@
 #include "dlgnewp.h"
 
 
-extern a_window         *WndMain;
-
 extern void             InitPaint( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );

@@ -44,8 +44,6 @@
 #include "guigsysh.h"
 
 
-extern a_window *WndMain;
-
 volatile bool   BrkPending;
 
 static HWND     HwndFore = NULL;

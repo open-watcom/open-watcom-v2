@@ -31,4 +31,4 @@
 ****************************************************************************/
 
 
-extern a_window *WndXMMOpen( void );
+extern a_window WndXMMOpen( void );

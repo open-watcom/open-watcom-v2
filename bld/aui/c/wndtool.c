@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 gui_ord ToolHeight;
 static gui_event ToolEvent = GUI_TOOLBAR_DESTROYED;

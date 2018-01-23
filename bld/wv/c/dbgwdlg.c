@@ -54,7 +54,7 @@ typedef struct dlg_entry {
     char                    data[1];
 } dlg_entry;
 
-static a_window         *WndDlg;
+static a_window         WndDlg;
 static dlg_entry        *DlgListTop = NULL;
 static dlg_entry        *DlgListBot = NULL;
 static unsigned         DlgListLineNum = 0;
@@ -142,7 +142,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-OVL_EXTERN int DlgNumRows( a_window *wnd )
+OVL_EXTERN int DlgNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -150,7 +150,7 @@ OVL_EXTERN int DlgNumRows( a_window *wnd )
 }
 
 
-OVL_EXTERN void DlgRefresh( a_window *wnd )
+OVL_EXTERN void DlgRefresh( a_window wnd )
 {
     if( DlgLines != 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
@@ -165,7 +165,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-OVL_EXTERN  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    DlgGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
@@ -199,7 +199,7 @@ void WndDlgFini( void )
     }
 }
 
-OVL_EXTERN bool DlgWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -240,7 +240,7 @@ wnd_info LogInfo = {
 };
 
 
-a_window *WndDlgOpen( void )
+a_window WndDlgOpen( void )
 {
     if( WndDlg != NULL )
         WndClose( WndDlg );

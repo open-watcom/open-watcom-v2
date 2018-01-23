@@ -62,7 +62,7 @@
 
 extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
 
-typedef gui_ord (MEMHEADER)(a_window *,int);
+typedef gui_ord (MEMHEADER)(a_window,int);
 
 #define TITLE_SIZE      1
 
@@ -157,7 +157,7 @@ static char *MemGetTitle( mem_window *mem )
     return( TxtBuff );
 }
 
-static unsigned MemCurrOffset( a_window *wnd )
+static unsigned MemCurrOffset( a_window wnd )
 {
     wnd_row     curr_row;
     int         curr_piece;
@@ -173,7 +173,7 @@ static unsigned MemCurrOffset( a_window *wnd )
     return( ( curr_row * mem->items_per_line + curr_piece ) * mem->item_size );
 }
 
-OVL_EXTERN gui_ord MemHeader( a_window *wnd, int piece )
+OVL_EXTERN gui_ord MemHeader( a_window wnd, int piece )
 {
     address     addr;
     mem_window  *mem;
@@ -208,7 +208,7 @@ OVL_EXTERN gui_ord MemHeader( a_window *wnd, int piece )
 }
 
 
-OVL_EXTERN gui_ord BinHeader( a_window *wnd, int piece )
+OVL_EXTERN gui_ord BinHeader( a_window wnd, int piece )
 {
     mem_window  *mem;
 
@@ -219,7 +219,7 @@ OVL_EXTERN gui_ord BinHeader( a_window *wnd, int piece )
     return( 0 );
 }
 
-static void MemGetContents( a_window *wnd, bool make_dirty )
+static void MemGetContents( a_window wnd, bool make_dirty )
 {
     int         size;
     mem_window  *mem;
@@ -259,7 +259,7 @@ static void MemGetContents( a_window *wnd, bool make_dirty )
     WndFree( old );
 }
 
-static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
+static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
 {
     mem_window  *mem;
 
@@ -270,7 +270,7 @@ static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-OVL_EXTERN  void MemRefresh( a_window *wnd )
+OVL_EXTERN  void MemRefresh( a_window wnd )
 {
     mem_window  *mem;
 
@@ -286,7 +286,7 @@ OVL_EXTERN  void MemRefresh( a_window *wnd )
     }
 }
 
-static void MemGetNewAddr( a_window *wnd )
+static void MemGetNewAddr( a_window wnd )
 {
     address         addr;
     unsigned long   offset;
@@ -321,13 +321,13 @@ static void MemGetNewAddr( a_window *wnd )
 }
 
 
-void MemSetLength( a_window *wnd, unsigned size )
+void MemSetLength( a_window wnd, unsigned size )
 {
     WndMem( wnd )->total_size = size;
 }
 
 
-void MemSetFollow( a_window *wnd, char *follow )
+void MemSetFollow( a_window wnd, char *follow )
 {
     mem_window  *mem;
 
@@ -337,7 +337,7 @@ void MemSetFollow( a_window *wnd, char *follow )
 }
 
 
-static  void    MemSetType( a_window *wnd, unsigned idx )
+static  void    MemSetType( a_window wnd, unsigned idx )
 {
     mem_window  *mem;
 
@@ -353,7 +353,7 @@ static  void    MemSetType( a_window *wnd, unsigned idx )
 }
 
 
-static  bool    CanModify( a_window *wnd, int row, int piece )
+static  bool    CanModify( a_window wnd, int row, int piece )
 {
     /* unused parameters */ (void)piece;
 
@@ -364,7 +364,7 @@ static  bool    CanModify( a_window *wnd, int row, int piece )
     return( true );
 }
 
-static void SetNewDataDot( a_window *wnd )
+static void SetNewDataDot( a_window wnd )
 {
     mem_window  *mem;
 
@@ -374,7 +374,7 @@ static void SetNewDataDot( a_window *wnd )
     }
 }
 
-static  void    MemUpdateCursor( a_window *wnd )
+static  void    MemUpdateCursor( a_window wnd )
 {
     mem_window  *mem;
     wnd_row     cursor_row;
@@ -409,7 +409,7 @@ static  void    MemUpdateCursor( a_window *wnd )
 }
 
 
-OVL_EXTERN  void    MemModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    MemModify( a_window wnd, int row, int piece )
 {
     address     addr;
     union {
@@ -450,7 +450,7 @@ OVL_EXTERN  void    MemModify( a_window *wnd, int row, int piece )
 }
 
 
-static bool MemScrollBytes( a_window *wnd, int tomove, bool new_home )
+static bool MemScrollBytes( a_window wnd, int tomove, bool new_home )
 {
     address     addr;
     char        ch;
@@ -477,7 +477,7 @@ static void MemFreeBackout( mem_window *mem )
     WndFree( junk );
 }
 
-static void MemSetCurrent( a_window *wnd, unsigned offset )
+static void MemSetCurrent( a_window wnd, unsigned offset )
 {
     wnd_row     row;
     int         line_size;
@@ -491,7 +491,7 @@ static void MemSetCurrent( a_window *wnd, unsigned offset )
     WndNewCurrent( wnd, row, piece+1 );
 }
 
-static void MemBackout( a_window *wnd )
+static void MemBackout( a_window wnd )
 {
     mem_backout *backout;
     mem_window  *mem;
@@ -521,7 +521,7 @@ static void MemBackout( a_window *wnd )
     WndRepaint( wnd );
 }
 
-static void MemNewBackout( a_window *wnd )
+static void MemNewBackout( a_window wnd )
 {
     mem_backout *backout;
     mem_window  *mem;
@@ -550,7 +550,7 @@ static void MemNewBackout( a_window *wnd )
     }
 }
 
-static void MemFollow( a_window *wnd )
+static void MemFollow( a_window wnd )
 {
     address     new_addr;
     mem_window  *mem;
@@ -588,7 +588,7 @@ static void MemFollow( a_window *wnd )
 }
 
 
-static void DoFollow( a_window *wnd, char *fmt )
+static void DoFollow( a_window wnd, char *fmt )
 {
     mem_window  *mem;
 
@@ -600,7 +600,7 @@ static void DoFollow( a_window *wnd, char *fmt )
     MemFollow( wnd );
 }
 
-static void SetBreakWrite( a_window *wnd )
+static void SetBreakWrite( a_window wnd )
 {
     mem_window  *mem;
     char        buff[TXT_LEN];
@@ -636,7 +636,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-OVL_EXTERN  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    MemGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -750,7 +750,7 @@ OVL_EXTERN  bool    MemGetLine( a_window *wnd, int row, int piece, wnd_line_piec
     return( true );
 }
 
-static void MemResize( a_window *wnd )
+static void MemResize( a_window wnd )
 {
     mem_window          *mem;
     int                 mult;
@@ -781,7 +781,7 @@ static void MemResize( a_window *wnd )
     MemRefresh( wnd );
 }
 
-OVL_EXTERN void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     mem_window  *mem;
 
@@ -869,14 +869,14 @@ OVL_EXTERN void     MemMenuItem( a_window *wnd, gui_ctl_id id, int row, int piec
     }
 }
 
-OVL_EXTERN  void StkRefresh( a_window *wnd )
+OVL_EXTERN  void StkRefresh( a_window wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-OVL_EXTERN  int     MemScroll( a_window *wnd, int lines )
+OVL_EXTERN  int     MemScroll( a_window wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -951,7 +951,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-OVL_EXTERN bool MemWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;
@@ -1065,10 +1065,10 @@ wnd_info StkInfo = {
     DefPopUp( MemMenu )
 };
 
-a_window        *DoWndMemOpen( address addr, mad_type_handle mth )
+a_window        DoWndMemOpen( address addr, mad_type_handle mth )
 {
     mem_window  *mem;
-    a_window    *wnd;
+    a_window    wnd;
 
     MemValidAddr( addr );
     mem = WndMustAlloc( sizeof( mem_window ) );
@@ -1083,15 +1083,15 @@ a_window        *DoWndMemOpen( address addr, mad_type_handle mth )
     return( wnd );
 }
 
-a_window        *WndMemOpen( void )
+a_window        WndMemOpen( void )
 {
     return( DoWndMemOpen( NilAddr, MAD_NIL_TYPE_HANDLE ) );
 }
 
 
-a_window        *WndStkOpen( void )
+a_window        WndStkOpen( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
     mem_window  *mem;
 
     mem = WndMustAlloc( sizeof( mem_window ) );
@@ -1105,10 +1105,10 @@ a_window        *WndStkOpen( void )
 }
 
 
-a_window        *DoWndBinOpen( const char *title, file_handle fh )
+a_window        DoWndBinOpen( const char *title, file_handle fh )
 {
     mem_window  *mem;
-    a_window    *wnd;
+    a_window    wnd;
 
     mem = WndMustAlloc( sizeof( mem_window ) );
     mem->file = true;

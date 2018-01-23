@@ -31,7 +31,7 @@
 
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 gui_colour_set WndColours[] = {
 

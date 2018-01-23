@@ -68,7 +68,6 @@
 
 
 extern wnd_posn         WndPosition[WND_NUM_CLASSES];
-extern a_window         *WndMain;
 extern gui_rect         WndMainRect;
 
 extern bool             UsrScrnMode( void );
@@ -78,7 +77,7 @@ extern bool             DebugScreenRecover( void );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern void             SetUpdateFlags( update_list );
 
-static void             WndBadCmd( a_window * );
+static void             WndBadCmd( a_window );
 
 #include "menudef.h"
 char *WndGadgetHint[] =
@@ -138,14 +137,14 @@ static const char WindowNameTab[] =
     "PRevious\0"
 };
 
-OVL_EXTERN void ToWndChooseNew( a_window *p )
+OVL_EXTERN void ToWndChooseNew( a_window wnd )
 {
-    /* unused parameters */ (void)p;
+    /* unused parameters */ (void)wnd;
 
     WndChooseNew();
 }
 
-static void (* const WndJmpTab[])( a_window * ) =
+static void (* const WndJmpTab[])( a_window ) =
 {
     &WndClose,
     &WndCursorStart,
@@ -194,7 +193,7 @@ wnd_metrics *WndMetrics[] = {
 
 wnd_metrics NoMetrics = { 0, 0, 0, 0 };
 
-bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
+bool DbgWndSearch( a_window wnd, bool from_top, int direction )
 {
     bool        rc;
 
@@ -202,24 +201,24 @@ bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
     return( rc );
 }
 
-void ProcPUINYI( a_window *wnd )
+void ProcPUINYI( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     Say( "NYI" );
 }
 
-void ProcWndSearch( a_window *wnd )
+void ProcWndSearch( a_window wnd )
 {
     DbgWndSearch( wnd, false, DlgSearch( wnd, SrchHistory ) );
 }
 
-void ProcWndTabLeft( a_window *wnd )
+void ProcWndTabLeft( a_window wnd )
 {
     WndTabLeft( wnd, true );
 }
 
-void ProcWndTabRight( a_window *wnd )
+void ProcWndTabRight( a_window wnd )
 {
     WndTabRight( wnd, true );
 }
@@ -233,22 +232,22 @@ void ProcSearchAll( void )
     }
 }
 
-void ProcWndPopUp( a_window *wnd )
+void ProcWndPopUp( a_window wnd )
 {
     WndKeyPopUp( wnd, NULL );
 }
 
-void ProcWndFindNext( a_window *wnd )
+void ProcWndFindNext( a_window wnd )
 {
     DbgWndSearch( wnd, false, 1 );
 }
 
-void ProcWndFindPrev( a_window *wnd )
+void ProcWndFindPrev( a_window wnd )
 {
     DbgWndSearch( wnd, false, -1 );
 }
 
-static void WndBadCmd( a_window *wnd )
+static void WndBadCmd( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -258,7 +257,7 @@ static void WndBadCmd( a_window *wnd )
 void WndProcWindow( void )
 {
     int         cmd;
-    a_window    *wnd = WndFindActive();
+    a_window    wnd = WndFindActive();
 
     cmd = ScanCmd( WindowNameTab );
     ReqEOC();
@@ -353,7 +352,7 @@ void WndDebug( void )
 
 void WndRedraw( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( WndClass( wnd ) == wndclass ) {
@@ -420,7 +419,7 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     return( NULL );
 }
 
-bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, unsigned key )
 {
     wnd_macro           *mac;
     wnd_macro           *all;
@@ -471,7 +470,7 @@ void WndSysInit( void )
     }
 }
 
-void SetUnderLine( a_window *wnd, wnd_line_piece *line )
+void SetUnderLine( a_window wnd, wnd_line_piece *line )
 {
     line->attr = WND_STANDOUT;
     line->tabstop = false;
@@ -482,7 +481,7 @@ void SetUnderLine( a_window *wnd, wnd_line_piece *line )
     line->extent = WndWidth( wnd );
 }
 
-void SetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type )
+void SetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_type type )
 {
     WndSetGadgetLine( wnd, line, type, MaxGadgetLength );
 }
@@ -514,7 +513,7 @@ void InitGadget( void )
     }
 }
 
-bool OpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod, bool src )
+bool OpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod, bool src )
 {
     if( src ) {
         return( FileOpenGadget( wnd, line, mod ) );
@@ -523,7 +522,7 @@ bool OpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod, bool src )
     }
 }
 
-bool CheckOpenGadget( a_window *wnd, wnd_row row,
+bool CheckOpenGadget( a_window wnd, wnd_row row,
                       bool open, mod_handle mod, bool src, int piece )
 {
     bool        is_open;
@@ -570,12 +569,12 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
+a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
-    a_window            *wnd;
+    a_window            wnd;
     wnd_create_struct   info;
     char                *p;
 
@@ -640,7 +639,7 @@ a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     return( wnd );
 }
 
-a_window *DbgWndCreate( const char *title, wnd_info *info,
+a_window DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );

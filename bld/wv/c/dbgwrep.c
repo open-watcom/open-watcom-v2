@@ -104,7 +104,7 @@ static event_record *RepGetEvent( int row )
 }
 
 
-OVL_EXTERN int RepNumRows( a_window *wnd )
+OVL_EXTERN int RepNumRows( a_window wnd )
 {
     int                 count;
     event_record        *ev;
@@ -119,7 +119,7 @@ OVL_EXTERN int RepNumRows( a_window *wnd )
 }
 
 
-OVL_EXTERN void RepRefresh( a_window *wnd )
+OVL_EXTERN void RepRefresh( a_window wnd )
 {
     event_record        *ev;
     gui_ord             extent, max_addr, max_cue;
@@ -158,7 +158,7 @@ OVL_EXTERN void RepRefresh( a_window *wnd )
 }
 
 
-OVL_EXTERN void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void RepMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 {
     event_record        *ev;
 
@@ -189,7 +189,7 @@ OVL_EXTERN void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-OVL_EXTERN  bool    RepGetLine( a_window *wnd, int row, int piece,
+OVL_EXTERN  bool    RepGetLine( a_window wnd, int row, int piece,
                             wnd_line_piece *line )
 {
     event_record        *ev;
@@ -221,7 +221,7 @@ OVL_EXTERN  bool    RepGetLine( a_window *wnd, int row, int piece,
 }
 
 
-OVL_EXTERN bool RepWndEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -251,7 +251,7 @@ wnd_info RepInfo = {
 };
 
 
-a_window *WndRepOpen( void )
+a_window WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );
 }

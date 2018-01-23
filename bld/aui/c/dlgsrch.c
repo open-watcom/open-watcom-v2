@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include "guidlg.h"
 #include "wndregx.h"
 #include "dlgrx.h"
@@ -176,7 +176,7 @@ static bool RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 
 
 typedef struct {
-    a_window            *wnd;
+    a_window            wnd;
     int                 direction;
     void                *history;
     bool                case_ignore;
@@ -258,7 +258,7 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
+static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
 {
     dlg_search  *dlg;
     int direction;
@@ -282,7 +282,7 @@ static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
     return( direction );
 }
 
-int DlgSearch( a_window *wnd, void *history )
+int DlgSearch( a_window wnd, void *history )
 {
     return( DoDlgSearch( wnd, history, true ) );
 }
