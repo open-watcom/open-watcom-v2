@@ -208,8 +208,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
     return( RegisterClass( &wc ) != 0 );
 #else
     return( WinRegisterClass( hinst.hab, class_name, win_call_back,
-                              CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY |
-                              style, extra ) );
+                              CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY | style, extra ) );
 #endif
 }
 /*
@@ -223,8 +222,7 @@ static bool SetupClass( void )
                          REGISTER_STYLE, EXTRA_SIZE * NUM_EXTRA_WORDS ) ) {
 
         return( DoRegisterClass( GUIMainHInst, GUIDialogClass, (WPI_CLASSPROC)GUIWindowProc,
-                                 REGISTER_DIALOG_STYLE,
-                                 EXTRA_SIZE * NUM_EXTRA_WORDS ) );
+                                 REGISTER_DIALOG_STYLE, EXTRA_SIZE * NUM_EXTRA_WORDS ) );
     }
     return( false );
 }
@@ -366,7 +364,6 @@ void GUIShowWindowNA( gui_window *wnd )
 #ifdef __OS2_PM__
     flags |= SWP_ACTIVATE;
 #endif
-
     GUIInvalidatePaintHandles( wnd );
     if( wnd->root_frame != NULLHANDLE ) {
         _wpi_showwindow( wnd->root_frame, flags );
@@ -386,8 +383,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
     Style = style;
     GUISysInit( 0 );
     _wpi_setdoubleclicktime( DClickInterval );
-    GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ),
-                        _wpi_getsystemmetrics( SM_CYSCREEN ) );
+    GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ), _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();
     return( true );
 }
@@ -866,7 +862,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         CREATESTRUCT FAR *lpcs = (CREATESTRUCT FAR *)lparam;
         wmcreateinfo = (wmcreate_info *)_wpi_getcreateparms( lpcs );
 #endif
-        if ( wmcreateinfo != NULL ) {
+        if( wmcreateinfo != NULL ) {
             wnd = wmcreateinfo->wnd;
             dlg_info = wmcreateinfo->dlg_info;
             if( wnd->hwnd == NULLHANDLE ) {
@@ -940,7 +936,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 #endif
         NumWindows++; // even if -1 is returned, window will get WM_DESTROY
         win = GUIGetParentFrameHWND( wnd );
-        if( (  wnd->root_frame != NULLHANDLE ) || (dlg_info->style & GUI_POPUP) ) {
+        if( ( wnd->root_frame != NULLHANDLE ) || (dlg_info->style & GUI_POPUP) ) {
             if( !GUIAddToSystemMenu( wnd, win, 0, NULL, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
@@ -1375,14 +1371,15 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
     wnd = GUIGetWindow( client );
     if( wnd != NULL ) {
         switch( msg ) {
-        case WM_SAVEAPPLICATION: {
+        case WM_SAVEAPPLICATION:
+            {
                 gui_end_session     es;
 
                 es.endsession = true;
                 es.logoff = false;
                 GUIEVENT( wnd, GUI_ENDSESSION, &es );
+                return( 0L );
             }
-            return( 0L );
         case WM_TRANSLATEACCEL:
             // Don't let OS/2 process F10 as an accelerator
             // Note: similar code exists in guimapky.c but we need to
@@ -1397,7 +1394,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
         case WM_MENUSELECT:
             return( GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam ) );
         case WM_SETFOCUS:
-            if( !lparam ) {
+            if( lparam == 0 ) {
                 ActivateNC( wnd, false );
             }
             break;
