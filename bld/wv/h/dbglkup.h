@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,6 @@
 extern void         InitLook( void );
 extern void         FiniLook( void );
 extern void         LookCaseSet( bool respect );
-extern void         LookSet( void );
-extern void         LookConf( void );
 extern int          Lookup( const char *tokenlist,  const char *what, size_t tokenlen );
 extern mod_handle   LookupModName( mod_handle search, const char *start, unsigned len );
 extern mod_handle   LookupImageName( const char *start, unsigned len );

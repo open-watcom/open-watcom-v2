@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,13 @@
 extern bool SwitchOnOff( void );
 extern void ShowSwitch( bool on );
 extern void ProcSet( void );
-extern void ConfigSet( void );
 extern bool LangSetInit( void );
 extern void LangSetFini( void );
 extern void NewLang( const char *lang );
 extern void PendingToggles( void );
 extern void SupportFini( void );
 extern bool IsSupportRoutine( sym_handle *sym );
+extern void ConfigDisp( void );
+extern void ConfigFont( void );
+extern void ConfigPaint( void );
+extern void ConfigSet( void );

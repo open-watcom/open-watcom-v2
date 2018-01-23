@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,7 @@ static const char PrintOps[] = { "Program\0Window\0" };
 typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
 
 
-extern void StartPrintBuff( char *buff, unsigned len )
+void StartPrintBuff( char *buff, unsigned len )
 {
     OutPtr = buff;
     OutBuff = buff;
@@ -121,7 +122,7 @@ static void PrtChar( unsigned ch )
 }
 
 
-extern void EndPrintBuff( void )
+void EndPrintBuff( void )
 {
     PrtChar( NULLCHAR );
 }

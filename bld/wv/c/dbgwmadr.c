@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -493,7 +494,7 @@ void MadRegChangeOptions( a_window *wnd )
     WndZapped( wnd );
 }
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource *icon )
+a_window *WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource *icon )
 {
     reg_window  *reg;
     a_window    *wnd;

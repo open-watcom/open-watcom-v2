@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -274,7 +275,7 @@ bool ReplaySave( bool writing )
 }
 
 
-extern void FileBrowse( void )
+void FileBrowse( void )
 {
     if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
         WndFileInspect( TxtBuff, false );
@@ -282,25 +283,25 @@ extern void FileBrowse( void )
 }
 
 
-extern bool ExeBrowse( void )
+bool ExeBrowse( void )
 {
     return( DoFileBrowse( &LastExe, LIT_DUI( Program_Name ), ExeFilter, OFN_FLAGS( 0 ) ) );
 }
 
 
-extern bool SymBrowse( char **name )
+bool SymBrowse( char **name )
 {
     return( DoFileBrowse( name, LIT_DUI( Symbol_File ), SymFilter, OFN_FLAGS( 0 ) ) );
 }
 
 
-extern bool AllBrowse( char *name )
+bool AllBrowse( char *name )
 {
     return( DlgFileBrowse( LIT_DUI( Enter_File_Name ), AllFilter, name, TXT_LEN, OFN_FLAGS( 0 ) ) );
 }
 
 
-extern char *GetDmpName( void )
+char *GetDmpName( void )
 {
     bool        rc;
 

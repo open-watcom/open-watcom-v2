@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,19 +30,11 @@
 ****************************************************************************/
 
 
-extern void         DClickSet( void );
-extern void         DClickConf( void );
-extern void         InputSet( void );
-extern void         InputConf( void );
+#include "dbgwset1.h"
+
+
 extern char         LookUpCtrlKey( unsigned key );
 extern char         *KeyName( unsigned key );
 extern wnd_macro    *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds );
-extern void         MacroSet( void );
-extern void         MacroConf( void );
-extern void         FiniMacros( void );
 extern int          TabIntervalGet( void );
 extern void         TabIntervalSet( int new );
-extern void         TabSet( void );
-extern void         TabConf( void );
-extern void         SearchSet( void );
-extern void         SearchConf( void );

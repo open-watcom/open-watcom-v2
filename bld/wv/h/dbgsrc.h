@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,4 @@ extern char_ring    **RingEnd( char_ring **owner );
 extern void         AddSourceSpec( const char *start, unsigned len );
 extern char         *SourceName( char_ring *src );
 extern char_ring    *NextSourceSpec( char_ring *curr );
-extern void         SourceSet( void );
-extern void         SourceConf( void );
 extern void         *OpenSrcFile( cue_handle *ch );

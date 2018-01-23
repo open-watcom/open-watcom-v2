@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +79,7 @@ static a_window *WndFindExisting( wnd_class_wv wndclass )
 }
 
 
-extern void WndTmpFileInspect( const char *file )
+void WndTmpFileInspect( const char *file )
 {
     void                *viewhndl;
 
@@ -128,7 +129,7 @@ static mod_handle       FindFileMod( const char *file )
     return( d.found ? d.mod : NO_MOD );
 }
 
-extern void WndFileInspect( const char *file, bool binary )
+void WndFileInspect( const char *file, bool binary )
 {
     file_handle         fh;
     void                *viewhndl;
@@ -159,7 +160,7 @@ extern void WndFileInspect( const char *file, bool binary )
 }
 
 
-extern  void    WndFuncInspect( mod_handle mod )
+void    WndFuncInspect( mod_handle mod )
 {
     a_window    *wnd;
 
@@ -171,7 +172,7 @@ extern  void    WndFuncInspect( mod_handle mod )
     }
 }
 
-extern  void    WndGblFuncInspect( mod_handle mod )
+void    WndGblFuncInspect( mod_handle mod )
 {
     a_window    *wnd;
 
@@ -183,7 +184,7 @@ extern  void    WndGblFuncInspect( mod_handle mod )
     }
 }
 
-extern  void    WndGblVarInspect( mod_handle mod )
+void    WndGblVarInspect( mod_handle mod )
 {
     a_window    *wnd;
 
@@ -195,7 +196,7 @@ extern  void    WndGblVarInspect( mod_handle mod )
     }
 }
 
-extern  void    WndMemInspect( address addr, char *next,
+void    WndMemInspect( address addr, char *next,
                                unsigned len, mad_type_handle mth )
 {
     a_window    *wnd;
@@ -205,7 +206,7 @@ extern  void    WndMemInspect( address addr, char *next,
     if( len != 0 ) MemSetLength( wnd, len );
 }
 
-extern  void    WndIOInspect( address *addr, mad_type_handle mth )
+void    WndIOInspect( address *addr, mad_type_handle mth )
 {
     a_window    *wnd;
 
@@ -217,12 +218,12 @@ extern  void    WndIOInspect( address *addr, mad_type_handle mth )
     }
 }
 
-extern  void    WndAddrInspect( address addr )
+void    WndAddrInspect( address addr )
 {
     WndMemInspect( addr, NULL, 0, MAD_NIL_TYPE_HANDLE );
 }
 
-extern  a_window        *WndAsmInspect( address addr )
+void WndAsmInspect( address addr )
 {
     a_window    *wnd;
     bool        nil;
@@ -233,12 +234,14 @@ extern  a_window        *WndAsmInspect( address addr )
         addr = Context.execution;
     }
     wnd = WndFindExisting( WND_ASSEMBLY );
-    if( nil && wnd != NULL ) return( wnd );
+    if( nil && wnd != NULL )
+//        return( wnd );
+        return;
     if( wnd == NULL ) {
         wnd = DoWndAsmOpen( addr, true );
     }
     AsmMoveDot( wnd, addr );
-    return( wnd );
+//    return( wnd );
 }
 
 static  a_window        *DoWndSrcInspect( address addr, bool existing )
@@ -273,31 +276,35 @@ static  a_window        *DoWndSrcInspect( address addr, bool existing )
     return( wnd );
 }
 
-extern  a_window        *WndSrcInspect( address addr )
+void WndSrcInspect( address addr )
 {
     a_window    *wnd;
     wnd = DoWndSrcInspect( addr, true );
     if( wnd == NULL )
         Warn( LIT_DUI( WARN_Source_Not_Available ) );
-    return( wnd );
+//    return( wnd );
 }
 
-extern  a_window        *WndSrcOrAsmInspect( address addr )
+void WndSrcOrAsmInspect( address addr )
 {
     a_window    *wnd;
 
     wnd = DoWndSrcInspect( addr, true );
-    if( wnd != NULL ) return( wnd );
-    wnd = WndAsmInspect( addr );
-    return( wnd );
+    if( wnd != NULL )
+//        return( wnd );
+        return;
+//    wnd = WndAsmInspect( addr );
+//    return( wnd );
+    WndAsmInspect( addr );
 }
 
-extern  a_window        *WndNewSrcInspect( address addr )
+void WndNewSrcInspect( address addr )
 {
-    return( DoWndSrcInspect( addr, false ) );
+//    return( DoWndSrcInspect( addr, false ) );
+    DoWndSrcInspect( addr, false );
 }
 
-extern  a_window        *WndModInspect( mod_handle mod )
+a_window *WndModInspect( mod_handle mod )
 {
     a_window    *wnd;
     DIPHDL( cue, ch );
@@ -312,7 +319,7 @@ extern  a_window        *WndModInspect( mod_handle mod )
     return( wnd );
 }
 
-extern  void    WndModListInspect( mod_handle mod )
+void    WndModListInspect( mod_handle mod )
 {
     a_window    *wnd;
 
@@ -356,14 +363,14 @@ static bool WndDoInspect( const char *item, address *paddr, inspect_type t )
     return( false );
 }
 
-extern  void    WndInspectExprSP( const char *item )
+void    WndInspectExprSP( const char *item )
 {
     address     addr;
 
     WndDoInspect( item, &addr, WndGetExprSPInspectType( &addr ) );
 }
 
-extern  void    WndInspect( const char *item )
+void    WndInspect( const char *item )
 {
 /* #####  E1052: Expression has void type */
 /* #####  E1081: Expression must be scalar type */
@@ -384,7 +391,7 @@ a_window *WndClassInspect( wnd_class_wv wndclass )
 }
 
 
-extern void WndVarInspect( const char *buff )
+void WndVarInspect( const char *buff )
 {
     a_window    *wnd;
 

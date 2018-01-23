@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,7 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
+#include "dbgchopt.h"
 
 #include "menudef.h"
 static gui_menu_struct FuncMenu[] = {
@@ -217,7 +219,7 @@ OVL_EXTERN  bool    FuncGetLine( a_window *wnd, int row, int piece,
     }
 }
 
-extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
+void    FuncNewMod( a_window *wnd, mod_handle mod )
 {
     if( WndFunc( wnd )->mod == mod )
         return;
@@ -310,7 +312,7 @@ wnd_info FuncInfo = {
     DefPopUp( FuncMenu )
 };
 
-extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
+a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
 {
     func_window     *func;
     wnd_class_wv    wndclass;
@@ -333,12 +335,12 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
     return( DbgWndCreate( title, &FuncInfo, wndclass, func, &FuncIcon ) );
 }
 
-extern a_window *WndFuncOpen( void )
+a_window *WndFuncOpen( void )
 {
     return( DoWndFuncOpen( false, NO_MOD ) );
 }
 
-extern a_window *WndGblFuncOpen( void )
+a_window *WndGblFuncOpen( void )
 {
     return( DoWndFuncOpen( true, NO_MOD ) );
 }

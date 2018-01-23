@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1065,7 +1066,7 @@ void InitScreen( void )
 }
 
 /* UsrScrnMode -- setup the user screen mode */
-extern bool UsrScrnMode( void )
+bool UsrScrnMode( void )
 {
     uint_8              user_mode;
     bool                usr_vis;
@@ -1118,7 +1119,7 @@ void DbgScrnMode( void )
 }
 
 /* DebugScreen -- swap/page to debugger screen */
-extern bool DebugScreen( void )
+bool DebugScreen( void )
 {
     bool                usr_vis;
 
@@ -1163,7 +1164,7 @@ bool DebugScreenRecover( void )
 }
 
 /* UserScreen -- swap/page to user screen */
-extern bool UserScreen( void )
+bool UserScreen( void )
 {
     bool                dbg_vis;
 
@@ -1220,7 +1221,7 @@ void SaveMainWindowPos( void )
 }
 
 /* FiniScreen -- finish screen swapping/paging */
-extern void FiniScreen( void )
+void FiniScreen( void )
 {
     if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
     uistop();
@@ -1244,7 +1245,7 @@ extern void FiniScreen( void )
  *                                                                           *
 \*****************************************************************************/
 
-extern void uiinitcursor( void )
+void uiinitcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uiinitcursor();
@@ -1276,7 +1277,7 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
     }
 }
 
-extern void uioffcursor( void )
+void uioffcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uioffcursor();
@@ -1286,14 +1287,14 @@ extern void uioffcursor( void )
     }
 }
 
-extern void uiswapcursor( void )
+void uiswapcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uiswapcursor();
     }
 }
 
-extern void uifinicursor( void )
+void uifinicursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uifinicursor();

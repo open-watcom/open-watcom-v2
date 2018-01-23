@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "dbgerr.h"
 #include "dbgscan.h"
 #include "remcore.h"
+#include "dbgstdio.h"
 
 
 static void StdioRedirect( bool input )
@@ -63,7 +65,7 @@ static void StdioRedirect( bool input )
  * StdInNew -- redirect the STDIN file
  */
 
-extern void StdInNew( void )
+void StdInNew( void )
 {
     StdioRedirect( true );
 }
@@ -73,7 +75,7 @@ extern void StdInNew( void )
  * StdOutNew -- redirect the STDOUT file
  */
 
-extern void StdOutNew( void )
+void StdOutNew( void )
 {
     StdioRedirect( false );
 }

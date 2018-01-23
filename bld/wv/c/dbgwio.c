@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -332,7 +333,7 @@ wnd_info IOInfo = {
     DefPopUp( IOMenu )
 };
 
-extern void IONewAddr( a_window *wnd, address *addr, int type )
+void IONewAddr( a_window *wnd, address *addr, int type )
 {
     IOAddNewAddr( wnd, addr, type );
     IOMenuItem( wnd, MENU_IO_READ, WndIO( wnd )->num_rows-1, PIECE_VALUE );
@@ -340,7 +341,7 @@ extern void IONewAddr( a_window *wnd, address *addr, int type )
 }
 
 
-extern a_window *DoWndIOOpen( address *addr, mad_type_handle mth )
+a_window *DoWndIOOpen( address *addr, mad_type_handle mth )
 {
     io_window   *io;
     int         i;
@@ -367,7 +368,7 @@ extern a_window *DoWndIOOpen( address *addr, mad_type_handle mth )
     return( DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon ) );
 }
 
-extern a_window *WndIOOpen( void )
+a_window *WndIOOpen( void )
 {
     io_window   *io;
     a_window    *wnd;

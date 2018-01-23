@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,12 +103,12 @@ enum {
     PIECE_SOURCE
 };
 
-extern  void    SrcJoinAsm( a_window *wnd, a_window *asw )
+void    SrcJoinAsm( a_window *wnd, a_window *asw )
 {
     WndFile( wnd )->asw = asw;
 }
 
-extern  void    SrcNewAsmNotify( a_window *asw, mod_handle mod, bool track )
+void    SrcNewAsmNotify( a_window *asw, mod_handle mod, bool track )
 {
     file_window *file;
     a_window    *wnd;
@@ -128,7 +129,7 @@ extern  void    SrcNewAsmNotify( a_window *asw, mod_handle mod, bool track )
     }
 }
 
-extern  void    SrcFreeAsm( a_window *wnd )
+void    SrcFreeAsm( a_window *wnd )
 {
     if( wnd == NULL )
         return;
@@ -136,7 +137,7 @@ extern  void    SrcFreeAsm( a_window *wnd )
 }
 
 #ifdef DEADCODE
-extern  bool    SrcIsTracking( a_window *wnd )
+bool    SrcIsTracking( a_window *wnd )
 {
     return( WndFile( wnd )->track );
 }
@@ -615,7 +616,7 @@ static void FileTrack( a_window *wnd, cue_handle *ch )
     file->active = active;
 }
 
-extern  bool    SrcMoveDot( a_window *wnd, address addr )
+bool    SrcMoveDot( a_window *wnd, address addr )
 {
     unsigned    line;
     mod_handle  mod;
@@ -651,7 +652,7 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     return( true );
 }
 
-extern a_window *SrcWndFind( a_window *wnd, address addr, bool track )
+a_window *SrcWndFind( a_window *wnd, address addr, bool track )
 {
     a_window    *new;
     mod_handle  mod;
@@ -901,13 +902,13 @@ static  a_window        *SrcFileOpen( cue_handle *ch,
 }
 
 
-extern a_window *DoWndSrcOpen( cue_handle *ch, bool track )
+a_window *DoWndSrcOpen( cue_handle *ch, bool track )
 {
     return( SrcFileOpen( ch, track, false, ch == NULL ? NO_MOD : DIPCueMod( ch ) ) );
 }
 
 
-extern a_window *WndSrcOpen( void )
+a_window *WndSrcOpen( void )
 {
     mod_handle  mod;
     address     addr;

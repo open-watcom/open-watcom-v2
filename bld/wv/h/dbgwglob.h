@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@ extern int      GlobNumRows( a_window *wnd );
 extern bool     GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line );
 extern void     GlobNewMod( a_window *wnd, mod_handle mod );
 extern void     GlobRefresh( a_window *wnd );
-extern void     GlobChangeOptions( void );
 extern a_window *DoWndGlobOpen( mod_handle mod );
 extern a_window *WndGlobOpen( void );
 extern bool     ChkFlags( wnd_update_list flags );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,8 +282,7 @@ wnd_info ImgInfo = {
     DefPopUp( ImgMenu )
 };
 
-extern WNDOPEN WndImgOpen;
-extern a_window *WndImgOpen( void )
+a_window *WndImgOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
             NULL, &ImgIcon, TITLE_SIZE, true ) );

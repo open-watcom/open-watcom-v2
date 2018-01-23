@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@
 #include "clibext.h"
 
 
-extern  bool            ModHasSourceInfo( mod_handle handle )
+bool    ModHasSourceInfo( mod_handle handle )
 {
     if( DIPModHasInfo( handle, HK_CUE ) == DS_OK )
         return( true );
@@ -62,7 +63,8 @@ OVL_EXTERN walk_result CheckAnyMod( mod_handle mh, void *d )
 {
     module_list *list = d;
 
-    if( IsInternalMod( mh ) ) return( WR_CONTINUE );
+    if( IsInternalMod( mh ) )
+        return( WR_CONTINUE );
     if( list->sort != NULL ) {
         list->sort[list->numrows] = mh;
     }
@@ -78,7 +80,8 @@ OVL_EXTERN walk_result CheckAnyMod( mod_handle mh, void *d )
 
 OVL_EXTERN walk_result CheckMod( mod_handle mh, void *d )
 {
-    if( !ModHasSourceInfo( mh ) ) return( WR_CONTINUE );
+    if( !ModHasSourceInfo( mh ) )
+        return( WR_CONTINUE );
     return( CheckAnyMod( mh, d ) );
 }
 

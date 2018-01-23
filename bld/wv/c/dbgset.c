@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,11 +50,12 @@
 #include "dbgcall.h"
 #include "dbgshow.h"
 #include "dbgovl.h"
-#include "dbgvset.h"
 #include "dbgparse.h"
 #include "dbgtrace.h"
 #include "dbgset.h"
 #include "dbglkup.h"
+#include "dbgchopt.h"
+#include "dbgsetfn.h"
 
 #include "clibext.h"
 
@@ -61,15 +63,6 @@
 extern void             WndUserAdd( char *, unsigned int );
 extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
-extern void             VarChangeOptions( void );
-extern void             RegChangeOptions( void );
-extern void             FPUChangeOptions( void );
-extern void             MMXChangeOptions( void );
-extern void             XMMChangeOptions( void );
-extern void             AsmChangeOptions( void );
-extern void             FuncChangeOptions( void );
-extern void             GlobChangeOptions( void );
-extern void             ModChangeOptions( void );
 
 extern margins          SrcMar;
 extern margins          AsmMar;
@@ -127,51 +120,6 @@ static const char SetNameTab[] = {
     "BReakonwrite\0"
     "DOntexpandhex\0"
 };
-
-OVL_EXTERN void     AutoConf( void );
-OVL_EXTERN void     BreakOnWriteConf( void );
-OVL_EXTERN void     DontExpandHexStringConf( void );
-OVL_EXTERN void     AsmConf( void );
-OVL_EXTERN void     VarConf( void );
-OVL_EXTERN void     FuncConf( void );
-OVL_EXTERN void     GlobConf( void );
-OVL_EXTERN void     ModConf( void );
-OVL_EXTERN void     RegConf( void );
-OVL_EXTERN void     FPUConf( void );
-OVL_EXTERN void     MMXConf( void );
-OVL_EXTERN void     XMMConf( void );
-extern void         DClickConf( void );
-extern void         TabConf( void );
-extern void         InputConf( void );
-extern void         MacroConf( void );
-OVL_EXTERN void     BellConf( void );
-extern void         SearchConf( void );
-OVL_EXTERN void     LangConf( void );
-OVL_EXTERN void     RecursionConf( void );
-OVL_EXTERN void     SupportConf( void );
-
-OVL_EXTERN void     BadSet( void );
-OVL_EXTERN void     AutoSet( void );
-OVL_EXTERN void     BreakOnWriteSet( void );
-OVL_EXTERN void     DontExpandHexStringSet( void );
-OVL_EXTERN void     AsmSet( void );
-OVL_EXTERN void     VarSet( void );
-OVL_EXTERN void     FuncSet( void );
-OVL_EXTERN void     GlobSet( void );
-OVL_EXTERN void     ModSet( void );
-OVL_EXTERN void     RegSet( void );
-OVL_EXTERN void     FPUSet( void );
-OVL_EXTERN void     MMXSet( void );
-OVL_EXTERN void     XMMSet( void );
-extern void         DClickSet( void );
-OVL_EXTERN void     BellSet( void );
-extern void         TabSet( void );
-OVL_EXTERN void     LangSet( void );
-extern void         InputSet( void );
-extern void         MacroSet( void );
-extern void         SearchSet( void );
-OVL_EXTERN void     RecursionSet( void );
-OVL_EXTERN void     SupportSet( void );
 
 static void (* const SetJmpTab[])( void ) = {
     &AutoSet,

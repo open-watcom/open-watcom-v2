@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -419,7 +420,7 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     return( NULL );
 }
 
-extern  bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window *wnd, unsigned key )
 {
     wnd_macro           *mac;
     wnd_macro           *all;
@@ -534,12 +535,12 @@ bool CheckOpenGadget( a_window *wnd, wnd_row row,
     return( is_open );
 }
 
-extern void WndStartFreshAll( void )
+void WndStartFreshAll( void )
 {
     WndDebug();
 }
 
-extern void WndEndFreshAll( void )
+void WndEndFreshAll( void )
 {
     UpdateFlags = 0;
     CheckBPErrors();
@@ -569,7 +570,7 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
+a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
@@ -639,7 +640,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     return( wnd );
 }
 
-extern a_window *DbgWndCreate( const char *title, wnd_info *info,
+a_window *DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
@@ -661,7 +662,7 @@ static char **RXErrTxt[] = {
     LITREF_DUI( ERR_RX_13 )
 };
 
-extern void WndRXError( int num )
+void WndRXError( int num )
 {
     Error( ERR_NONE, *RXErrTxt[num - 1] );
 }

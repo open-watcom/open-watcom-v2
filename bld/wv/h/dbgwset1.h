@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,27 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger interface configuration.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgdata.h"
-#include "dbgwind.h"
-#include "dbgitem.h"
-#include "dbgwmadr.h"
-#include "dbgwregs.h"
-#include "dbgchopt.h"
-
-
-void RegChangeOptions( void )
-{
-    WndForAllClass( WND_REGISTER, MadRegChangeOptions );
-}
-
-a_window *WndRegOpen( void )
-{
-    return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );
-}
+extern void         FiniMacros( void );

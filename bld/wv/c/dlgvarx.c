@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ OVL_EXTERN bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
 }
 
 
-extern  bool    DlgVarExpand( dlg_var_expand *pvarx )
+bool    DlgVarExpand( dlg_var_expand *pvarx )
 {
     dlg_var_expand      varx;
 

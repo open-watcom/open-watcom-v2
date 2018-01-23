@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -320,13 +321,13 @@ static void MemGetNewAddr( a_window *wnd )
 }
 
 
-extern void MemSetLength( a_window *wnd, unsigned size )
+void MemSetLength( a_window *wnd, unsigned size )
 {
     WndMem( wnd )->total_size = size;
 }
 
 
-extern void MemSetFollow( a_window *wnd, char *follow )
+void MemSetFollow( a_window *wnd, char *follow )
 {
     mem_window  *mem;
 
@@ -1064,7 +1065,7 @@ wnd_info StkInfo = {
     DefPopUp( MemMenu )
 };
 
-extern  a_window        *DoWndMemOpen( address addr, mad_type_handle mth )
+a_window        *DoWndMemOpen( address addr, mad_type_handle mth )
 {
     mem_window  *mem;
     a_window    *wnd;
@@ -1082,7 +1083,7 @@ extern  a_window        *DoWndMemOpen( address addr, mad_type_handle mth )
     return( wnd );
 }
 
-extern  a_window        *WndMemOpen( void )
+a_window        *WndMemOpen( void )
 {
     return( DoWndMemOpen( NilAddr, MAD_NIL_TYPE_HANDLE ) );
 }

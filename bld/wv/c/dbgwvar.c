@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +57,9 @@
 #include "dlgexpr.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
-#include "dbgwvar.h"
 #include "dlgnewws.h"
+#include "dbgwvar.h"
+#include "dbgchopt.h"
 
 
 extern void             WndVarNewWindow( char * );
@@ -152,8 +154,7 @@ OVL_EXTERN  void    VarRepaint( a_window *wnd )
 }
 
 
-extern  bool    WndVarAdd( a_window *wnd, const char *name,
-                             unsigned len, bool expand )
+bool    WndVarAdd( a_window *wnd, const char *name, unsigned len, bool expand )
 {
     var_node    *v;
 
@@ -953,22 +954,22 @@ static  a_window        *DoWndVarOpen( var_type vtype )
     return( wnd );
 }
 
-extern a_window *WndVarOpen( void )
+a_window *WndVarOpen( void )
 {
     return( DoWndVarOpen( VAR_VARIABLE ) );
 }
 
-extern a_window *WndWatOpen( void )
+a_window *WndWatOpen( void )
 {
     return( DoWndVarOpen( VAR_WATCH ) );
 }
 
-extern a_window *WndLclOpen( void )
+a_window *WndLclOpen( void )
 {
     return( DoWndVarOpen( VAR_LOCALS ) );
 }
 
-extern a_window *WndFSVOpen( void )
+a_window *WndFSVOpen( void )
 {
     return( DoWndVarOpen( VAR_FILESCOPE ) );
 }

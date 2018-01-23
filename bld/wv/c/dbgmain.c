@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,17 +71,17 @@
 #include "dbglkup.h"
 #include "dbgio.h"
 #include "dbgwintr.h"
+#include "dbgcapt.h"
+#include "dbgwset1.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern void             FiniMacros( void );
 extern void             FiniToolBar( void );
 extern void             GrabHandlers( void );
 extern void             InitToolBar( void );
 extern void             PredefFini( void );
 extern void             PredefInit( void );
 extern void             ProcAccel( void );
-extern void             ProcCapture( void );
 extern void             RestoreHandlers( void );
 extern void             Suicide( void );
 

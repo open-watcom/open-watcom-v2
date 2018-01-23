@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +122,7 @@ static disp_optn GetOption( void )
 }
 
 
-extern  char    *GetWndFont( a_window *wnd )
+char    *GetWndFont( a_window *wnd )
 {
     if( WndHasClass( wnd ) ) {
         if( WndFontInfo[WndClass( wnd )] != NULL ) {
@@ -139,7 +140,7 @@ static void SetFont( wnd_class_wv wndclass, char *font )
 }
 
 
-extern  void    WndFontHook( a_window *wnd )
+void    WndFontHook( a_window *wnd )
 {
     char        *font;
 
@@ -174,7 +175,7 @@ void WndMainResized( void )
 }
 
 
-extern  void    WndResizeHook( a_window *wnd )
+void    WndResizeHook( a_window *wnd )
 {
     gui_rect    rect;
 

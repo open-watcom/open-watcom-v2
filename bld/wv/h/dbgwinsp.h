@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,22 +30,7 @@
 ****************************************************************************/
 
 
+#include "dbginsp.h"
 
-extern void     WndTmpFileInspect( const char *file );
-extern void     WndFileInspect( const char *file, bool binary );
-extern void     WndFuncInspect( mod_handle mod );
-extern void     WndGblFuncInspect( mod_handle mod );
-extern void     WndGblVarInspect( mod_handle mod );
-extern void     WndMemInspect( address addr, char *next, unsigned len, mad_type_handle mth );
-extern void     WndIOInspect( address *addr, mad_type_handle mth );
-extern void     WndAddrInspect( address addr );
-extern a_window *WndAsmInspect( address addr );
-extern a_window *WndSrcInspect( address addr );
-extern a_window *WndSrcOrAsmInspect( address addr );
-extern a_window *WndNewSrcInspect( address addr );
 extern a_window *WndModInspect( mod_handle mod );
-extern void     WndModListInspect( mod_handle mod );
-extern void     WndInspectExprSP( const char *item );
-extern void     WndInspect( const char *item );
 extern a_window *WndClassInspect( wnd_class_wv wndclass );
-extern void     WndVarInspect( const char *buff );

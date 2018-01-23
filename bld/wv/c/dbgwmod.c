@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +45,8 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dbgwmod.h"
+#include "dbgchopt.h"
 
-
-extern  bool            ModHasSourceInfo( mod_handle handle );
 
 #include "menudef.h"
 static gui_menu_struct ModMenu[] = {
@@ -244,7 +244,7 @@ static void ModSetCurrent( a_window *wnd )
     }
 }
 
-extern void ModNewHandle( a_window *wnd, mod_handle handle )
+void ModNewHandle( a_window *wnd, mod_handle handle )
 {
     mod_window  *mod = WndMod( wnd );
 
@@ -331,7 +331,7 @@ wnd_info ModInfo = {
     DefPopUp( ModMenu )
 };
 
-extern a_window *DoWndModOpen( mod_handle handle )
+a_window *DoWndModOpen( mod_handle handle )
 {
     mod_window  *mod;
 
@@ -340,7 +340,7 @@ extern a_window *DoWndModOpen( mod_handle handle )
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }
 
-extern a_window *WndModOpen( void )
+a_window *WndModOpen( void )
 {
     return( DoWndModOpen( NO_MOD ) );
 }

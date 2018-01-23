@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,17 +30,14 @@
 ****************************************************************************/
 
 
+#include "dbgwvar1.h"
+
 
 extern bool     WndVarAdd( a_window *wnd, const char *name, unsigned len, bool expand );
 extern void     VarSaveWndToScope( void *wnd );
 extern void     VarRestoreWndFromScope( void *wnd );
 extern bool     VarInfoRelease( void );
-extern void     VarUnMapScopes( image_entry *image );
-extern void     VarFreeScopes( void );
-extern void     VarReMapScopes( image_entry *image );
-extern void     VarChangeOptions( void );
 extern a_window *WndVarOpen( void );
 extern a_window *WndWatOpen( void );
 extern a_window *WndLclOpen( void );
 extern a_window *WndFSVOpen( void );
-extern void     GraphicDisplay( void );

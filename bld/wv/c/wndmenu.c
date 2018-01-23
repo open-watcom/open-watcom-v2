@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +136,7 @@ wnd_info *WndInfoTab[] = {
 
 const char MainTab[] = { "MAin\0" };
 
-extern void PlayDead( bool dead )
+void PlayDead( bool dead )
 {
     WndIgnoreAllEvents = dead;
 #if defined(__GUI__) && (defined(__WINDOWS__) || defined(__NT__))
@@ -347,7 +348,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     return( false );
 }
 
-extern void ProcAccel( void )
+void ProcAccel( void )
 {
     gui_menu_struct     *menu,*parent;
     int                 num_sibs;
@@ -433,7 +434,7 @@ static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_menus ) )
     }
 }
 
-extern void InitMenus( void )
+void InitMenus( void )
 {
     int         i;
 
@@ -449,7 +450,7 @@ extern void InitMenus( void )
     SetBrkMenuItems();
 }
 
-extern void FiniMenus( void )
+void FiniMenus( void )
 {
     ForAllMenus( FreeLabels );
 }

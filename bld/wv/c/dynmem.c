@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +133,8 @@ static void * TRMemRealloc( void * ptr, size_t size )
 }
 
 
-extern void TRMemPrtUsage( void )
-/*******************************/
+void TRMemPrtUsage( void )
+/************************/
 {
     _trmem_prt_usage( TRMemHandle );
 }
@@ -144,20 +145,20 @@ static unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
-extern int TRMemValidate( void * ptr )
-/************************************/
+int TRMemValidate( void * ptr )
+/*****************************/
 {
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
 }
 
-extern void TRMemCheck( void )
-/****************************/
+void TRMemCheck( void )
+/*********************/
 {
     _trmem_validate_all( TRMemHandle );
 }
 
-extern int TRMemChkRange( void * start, size_t len )
-/**************************************************/
+int TRMemChkRange( void * start, size_t len )
+/*******************************************/
 {
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
 }
