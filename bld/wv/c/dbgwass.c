@@ -388,7 +388,7 @@ OVL_EXTERN  void    AsmModify( a_window wnd, int row, int piece )
     old_radix = NewCurrRadix( asw->hex ? 16 : 10 );
     addr = asw->ins[row].addr;
     if( piece == PIECE_BREAK ) {
-        asw->toggled_break = ( ( UpdateFlags & UP_BREAK_CHANGE ) == 0 );
+        asw->toggled_break = ( (UpdateFlags & UP_BREAK_CHANGE) == 0 );
         ToggleBreak( addr );
     } else {
         WndFirstMenuItem( wnd, row, piece );
@@ -935,12 +935,12 @@ OVL_EXTERN void     AsmRefresh( a_window wnd )
         CalcAddrLen( wnd, NilAddr );
         AsmNewSource( asw, NULL );
     }
-    if( UpdateFlags & (UP_SYM_CHANGE + UP_NEW_SRC) ) {
+    if( UpdateFlags & (UP_SYM_CHANGE | UP_NEW_SRC) ) {
         asw->mod = NO_MOD;
         AsmNewSource( asw, NULL );
         AsmNewIP( wnd );
         WndZapped( wnd );
-    } else if( UpdateFlags & (UP_STACKPOS_CHANGE + UP_CSIP_CHANGE) ) {
+    } else if( UpdateFlags & (UP_STACKPOS_CHANGE | UP_CSIP_CHANGE) ) {
         AsmNewIP( wnd );
     } else if( UpdateFlags & (UP_RADIX_CHANGE) ) {
         WndZapped( wnd );
@@ -1060,9 +1060,8 @@ wnd_info AsmInfo = {
     NoNextRow,
     AsmNotify,
     ChkFlags,
-    UP_MAD_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM+UP_NEW_SRC+
-    UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_BREAK_CHANGE+
-    UP_RADIX_CHANGE+UP_ASM_RESIZE,
+    UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
+     | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE,
     DefPopUp( AsmMenu )
 };
 

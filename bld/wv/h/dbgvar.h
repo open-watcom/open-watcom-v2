@@ -176,7 +176,10 @@ typedef enum {
     NUM_VAR_TYPE
 } var_type;
 
-typedef void            VARDIRTRTN( void *, int );
+typedef struct scope_list {
+    struct scope_list *next;
+    scope_block scope;
+} scope_list;
 
 extern type_display     *TypeDisplay;
 
@@ -224,7 +227,7 @@ extern var_node         *VarExpandNode( var_node *v );
 extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarFirstNode(var_info *i);
 extern void             VarInitInfo(var_info *i);
-extern bool             VarInfoRefresh(var_type vtype,var_info *i,address *addr,void *wnd_handle);
+extern bool             VarInfoRefresh(var_type vtype,var_info *i,address *addr);
 extern void             VarSetValue( var_node *v, const char *value );
 
 extern void             VarDisplaySetHex(var_node*v);
@@ -267,6 +270,8 @@ extern void             VarDisplaySetHidden( var_node *v, var_type_bits bit, boo
 extern bool             VarDisplayIsStruct( var_node *v );
 extern void             VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit );
 extern var_node         *VarNextVisibleSibling( var_info *i, var_node *v );
-extern void             VarRefreshVisible( var_info *, int, int, VARDIRTRTN *, void * );
 extern void             VarBaseName( var_node *v );
 extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
+
+extern scope_state      *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new );
+extern bool             SameScope( scope_block *scope, scope_state *s );

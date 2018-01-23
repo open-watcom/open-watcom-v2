@@ -107,7 +107,7 @@ typedef unsigned_8 screen_state; enum {
 #define UP_VAR_DISPLAY          0x00400000UL
 #define UP_ALL_CHANGE           0xFFFFFFFFUL
 
-#define UP_SYM_CHANGE           (UP_SYMBOLS_LOST+UP_SYMBOLS_ADDED)
+#define UP_SYM_CHANGE           (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
 
 typedef unsigned long update_list;
 

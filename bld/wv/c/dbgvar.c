@@ -64,9 +64,6 @@
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
 
-extern void             VarSaveWndToScope( void *wnd );
-extern void             VarRestoreWndFromScope( void *wnd );
-
 bool                    VarError;
 type_display            *TypeDisplay;
 
@@ -2235,7 +2232,7 @@ void VarSetValue( var_node *v, const char *value )
 }
 
 
-static bool SameScope( scope_block *scope, scope_state *s )
+bool SameScope( scope_block *scope, scope_state *s )
 {
     if( s->unmapped )
         return( false );
@@ -2312,7 +2309,7 @@ OVL_EXTERN walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
     return( WR_CONTINUE );
 }
 
-static scope_state *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new )
+scope_state *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new )
 /*
     Our scope just changed so change the variable information in
     the window. Save the old scope's structures so that we can
@@ -2497,12 +2494,7 @@ void VarOkToCache( var_info *i, bool ok )
     VarKillExprSPCache( i );
 }
 
-typedef struct scope_list {
-    struct scope_list *next;
-    scope_block scope;
-} scope_list;
-
-bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handle )
+bool VarInfoRefresh( var_type vtype, var_info *i, address *addr )
 {
     scope_list  *nested, *new;
     scope_state *s, *outer;
@@ -2516,12 +2508,10 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
     case VAR_FILESCOPE:
         if( i->s->mod != ContextMod ) {
             repaint = true;
-            VarSaveWndToScope( wnd_handle );
             noscope.start = NilAddr;
             noscope.len = 0;
             noscope.unique = 0;
             NewScope( i, &noscope, ContextMod, &repaint );
-            VarRestoreWndFromScope( wnd_handle );
         }
         break;
     case VAR_LOCALS:
@@ -2539,7 +2529,6 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
         }
         if( !SameScope( &nested->scope, i->s ) ) {
             repaint = true;
-            VarSaveWndToScope( wnd_handle );
             if( havescope ) {
                 for( ;; ) {
                     _AllocA( new, sizeof( *new ) );
@@ -2555,7 +2544,6 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
                 outer = s;
                 nested = nested->next;
             }
-            VarRestoreWndFromScope( wnd_handle );
         }
         if( outer != NULL )
             *addr = outer->scope.addr;
@@ -2612,55 +2600,6 @@ void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
             ++*pdepth;
         }
     }
-}
-
-void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty, void *wnd )
-/************************************************************************************/
-{
-    int         row;
-    var_node    *v;
-    char        *value;
-    var_gadget_type     gadget;
-    bool        standout;
-    bool        on_top;
-
-    VarAllNodesInvalid( i );
-    VarErrState();
-    VarOkToCache( i, true );
-    for( row = top; row < top + rows; ++row ) {
-        v = VarFindRow( i, row );
-        if( v == NULL ) {
-            v = VarFindRowNode( i, row );
-            if( v == NULL ) {
-                break;
-            }
-        } else {
-            ExprValue( ExprSP );
-        }
-
-        gadget = VarGetGadget( v );
-        if( gadget != v->gadget )
-            dirty( wnd, row );
-        VarSetGadget( v, gadget );
-
-        on_top = VarGetOnTop( v );
-        if( on_top != v->on_top )
-            dirty( wnd, row );
-        VarSetOnTop( v, on_top );
-
-        value = VarGetValue( i, v );
-        standout = false;
-        if( v->value != NULL ) {
-            standout = ( strcmp( value, v->value ) != 0 );
-        }
-        if( v->value == NULL || v->standout || standout )
-            dirty( wnd, row );
-        v->standout = standout;
-        VarSetValue( v, value );
-        VarDoneRow( i );
-    }
-    VarOkToCache( i, false );
-    VarOldErrState();
 }
 
 void VarDoAssign( var_info *i, var_node *v, const char *value )

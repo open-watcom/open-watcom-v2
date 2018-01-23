@@ -270,7 +270,7 @@ OVL_EXTERN void     BrkRefresh( a_window wnd )
     brkp        *bp;
     int         row;
 
-    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) {
+    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE | UP_MEM_CHANGE) ) {
         BrkInit( wnd );
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
@@ -334,8 +334,7 @@ wnd_info BrkInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_MEM_CHANGE+UP_RADIX_CHANGE+
-    UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_OPEN_CHANGE,
+    UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE,
     DefPopUp( BrkMenu )
 };
 

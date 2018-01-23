@@ -745,10 +745,10 @@ OVL_EXTERN void FileRefresh( a_window wnd )
         }
         WndZapped( wnd );
     }
-    if( UpdateFlags & (UP_CSIP_CHANGE + UP_STACKPOS_CHANGE) ) {
+    if( UpdateFlags & (UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) ) {
         FileNewIP( wnd );
     }
-    if( (UpdateFlags & (UP_NEW_SRC|UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
+    if( (UpdateFlags & (UP_NEW_SRC | UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
         ClearSrcFile( file );
         if( DIPLineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
             dotaddr = file->dotaddr;
@@ -820,7 +820,7 @@ wnd_info FileInfo = {
     NoNextRow,
     FileNotify,
     ChkFlags,
-    UP_NEW_SRC + UP_SYM_CHANGE + UP_CSIP_CHANGE + UP_STACKPOS_CHANGE + UP_BREAK_CHANGE,
+    UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE,
     DefPopUp( FileMenu )
 };
 

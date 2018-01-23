@@ -484,7 +484,7 @@ wnd_info MadRegInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_MAD_CHANGE+UP_REG_CHANGE+UP_REG_RESIZE,
+    UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE,
     DefPopUp( RegMenu )
 };
 

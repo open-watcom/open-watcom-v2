@@ -60,13 +60,13 @@ void DbgUpdate( update_list flags )
     if( flags & ( UP_SYM_CHANGE ) ) {
         BrkAddrRefresh();
     }
-    if( flags & (UP_REG_CHANGE|UP_CSIP_CHANGE) ) {
+    if( flags & (UP_REG_CHANGE | UP_CSIP_CHANGE) ) {
         InitLC( &Context, true );
     }
     if( flags & UP_NEW_PROGRAM ) {
         SetStackPos( &Context, 0 );
     }
-    if( flags & (UP_SYM_CHANGE+UP_STACKPOS_CHANGE+UP_REG_CHANGE+UP_CSIP_CHANGE+UP_CSIP_JUMPED) ) {
+    if( flags & (UP_SYM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_CSIP_CHANGE | UP_CSIP_JUMPED) ) {
         SymCompFini();
         prev_mod = ContextMod;
         if( DeAliasAddrMod( Context.execution, &ContextMod ) == SR_NONE ) ContextMod = NO_MOD;

@@ -308,7 +308,7 @@ wnd_info FuncInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_CODE_ADDR_CHANGE,
+    UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE,
     DefPopUp( FuncMenu )
 };
 

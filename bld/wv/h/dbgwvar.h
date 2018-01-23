@@ -34,8 +34,6 @@
 
 
 extern bool     WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand );
-extern void     VarSaveWndToScope( void *wnd );
-extern void     VarRestoreWndFromScope( void *wnd );
 extern bool     VarInfoRelease( void );
 extern a_window WndVarOpen( void );
 extern a_window WndWatOpen( void );

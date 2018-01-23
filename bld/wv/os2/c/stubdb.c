@@ -100,8 +100,6 @@ void ConfigFont( void );
 void ConfigPaint( void );
 int TabIntervalGet( void );
 void TabIntervalSet( int new );
-void VarSaveWndToScope( void *wnd );
-void VarRestoreWndFromScope( void *wnd );
 void PopErrBox( const char *buff );
 /*************************************************/
 
@@ -193,7 +191,7 @@ static void DumpLocals( void )
 
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
-        VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
+        VarInfoRefresh( VAR_LOCALS, &Locals, &addr );
         VarOkToCache( &Locals, true );
     }
     for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
@@ -834,14 +832,6 @@ void SetLastExe( const char *name )
 void DUIProcPendingPaint( void )
 {
     // a paint command was issued - update the screen (stub)
-}
-
-void VarSaveWndToScope( void *wnd )
-{
-}
-
-void VarRestoreWndFromScope( void *wnd )
-{
 }
 
 void PopErrBox( const char *buff )

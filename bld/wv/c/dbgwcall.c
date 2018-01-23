@@ -238,7 +238,7 @@ wnd_info CallInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_RADIX_CHANGE+UP_SYM_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE,
+    UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
     DefPopUp( CallMenu )
 };
 

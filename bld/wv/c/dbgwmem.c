@@ -431,8 +431,7 @@ OVL_EXTERN  void    MemModify( a_window wnd, int row, int piece )
     } else {
         is_char = false;
     }
-    addr = AddrAddWrap( mem->u.m.addr,
-                           ( row * mem->items_per_line + piece ) * mem->item_size );
+    addr = AddrAddWrap( mem->u.m.addr, ( row * mem->items_per_line + piece ) * mem->item_size );
     StrAddr( &addr, TxtBuff, TXT_LEN );
     ProgPeekWrap( addr, (void *)&item, mem->item_size );
     old_radix = NewCurrRadix( MemData.info[mem->piece_type].piece_radix );
@@ -488,7 +487,7 @@ static void MemSetCurrent( a_window wnd, unsigned offset )
     line_size = mem->items_per_line * mem->item_size;
     row = offset / line_size;
     piece = ( offset - row * line_size ) / mem->item_size;
-    WndNewCurrent( wnd, row, piece+1 );
+    WndNewCurrent( wnd, row, piece + 1 );
 }
 
 static void MemBackout( a_window wnd )
@@ -1044,7 +1043,7 @@ wnd_info MemInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_RADIX_CHANGE+UP_MEM_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM,
+    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
     DefPopUp( MemMenu )
 };
 
@@ -1061,7 +1060,7 @@ wnd_info StkInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_RADIX_CHANGE+UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_REG_CHANGE+UP_SYM_CHANGE+UP_NEW_PROGRAM,
+    UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM,
     DefPopUp( MemMenu )
 };
 

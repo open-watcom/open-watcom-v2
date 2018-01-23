@@ -344,7 +344,7 @@ wnd_info SrchInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYMBOLS_LOST + UP_OPEN_CHANGE,
+    UP_SYMBOLS_LOST | UP_OPEN_CHANGE,
     DefPopUp( SrchMenu ),
 };
 

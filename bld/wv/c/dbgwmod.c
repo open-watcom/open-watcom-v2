@@ -272,7 +272,7 @@ OVL_EXTERN void     ModRefresh( a_window wnd )
                                           info->source, PIECE_SOURCE );
         }
     }
-    if( UpdateFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
+    if( UpdateFlags & (UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) ) {
         ModSetCurrent( wnd );
     }
 }
@@ -327,7 +327,7 @@ wnd_info ModInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYM_CHANGE+UP_OPEN_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE,
+    UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE,
     DefPopUp( ModMenu )
 };
 
