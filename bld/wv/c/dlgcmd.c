@@ -50,10 +50,77 @@ typedef struct dlg_command {
     char            cmd[TXT_LEN];
 } dlg_command;
 
-extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
-extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
-extern void             DlgClickHistory( gui_window *gui, int edit, int list );
+static void MoveCursor( gui_window *gui, int edit, int list, int direction )
+{
+    int         i,size;
+    char        *cmd;
 
+    i = GUIGetCurrSelect( gui, list );
+    size = GUIGetListSize( gui, list );
+    if( size == 0 )
+        return;
+    --size;
+    i += direction;
+    if( i < 0 )
+        i = 0;
+    if( i > size )
+        i = size;
+    GUISetCurrSelect( gui, list, i );
+    cmd = GUIGetText( gui, list );
+    GUISetText( gui, edit, cmd );
+    GUIMemFree( cmd );
+    GUISelectAll( gui, edit, true );
+}
+
+static void DlgClickHistory( gui_window *gui, int edit, int list )
+{
+    char        *cmd;
+
+    cmd = GUIGetText( gui, list );
+    GUISetText( gui, edit, cmd );
+    GUIMemFree( cmd );
+}
+
+static void DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list )
+{
+    int         i;
+
+    GUISetFocus( gui, edit );
+    if( !WndPrevFromHistory( history, cmd ) )
+        return;
+    GUISetText( gui, edit, cmd );
+    GUISelectAll( gui, edit, true );
+    GUIClearList( gui, list );
+    while( WndPrevFromHistory( history, cmd ) ) {
+        /* nothing */
+    }
+    i = -1;
+    for( ; WndNextFromHistory( history, cmd ); ) {
+        GUIAddText( gui, list, cmd );
+        ++i;
+    }
+    if( i >= 0 ) {
+        GUISetCurrSelect( gui, list, i );
+    }
+}
+
+static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
+{
+    gui_ctl_id  id;
+    gui_key     key;
+
+    GUI_GET_KEY_CONTROL( param, id, key );
+    switch( key ) {
+    case GUI_KEY_UP:
+        MoveCursor( gui, edit, list, -1 );
+        return( true );
+    case GUI_KEY_DOWN:
+        MoveCursor( gui, edit, list, 1 );
+        return( true );
+    default:
+        return( false );
+    }
+}
 
 OVL_EXTERN bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
