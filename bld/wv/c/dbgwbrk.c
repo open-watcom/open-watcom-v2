@@ -261,7 +261,7 @@ static void     BrkInit( a_window wnd )
         return;
     }
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 

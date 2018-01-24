@@ -48,7 +48,7 @@ static int              NumWindows;
 void    WndSetTitleSize( a_window wnd, int size )
 {
     wnd->title_size = size;
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 
@@ -140,7 +140,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info,
     init->gui_call_back = WndMainGUIEventProc;
     init->extra = wnd;
 
-    _Set( wnd, WSW_ACTIVE );
+    WndSetSwitches( wnd, WSW_ACTIVE );
 
     gui = GUICreateWindow( init );
     if( gui == NULL ) {

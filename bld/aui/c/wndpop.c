@@ -176,10 +176,9 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
     int                 len;
     wnd_line_piece      line;
 
-    _Clr( wnd, WSW_SELECTING );
-    _Clr( wnd, WSW_SELECTING_WITH_KEYBOARD );
+    WndClrSwitches( wnd, WSW_SELECTING | WSW_SELECTING_WITH_KEYBOARD );
     WndSelEnds( wnd, &start, &end );
-    if( _Isnt( wnd, WSW_SUBWORD_SELECT ) ||
+    if( WndSwitchOff( wnd, WSW_SUBWORD_SELECT ) ||
         ( start->row == end->row &&
           start->piece == end->piece && start->col == end->col ) ) {
         WndGetLine( wnd, start->row, start->piece, &line );
@@ -236,7 +235,7 @@ void    WndSelPopItem( a_window wnd, void *parm, bool paint_immed )
 
 void    WndKeyPopItem( a_window wnd, bool paint_immed )
 {
-    if( !WndHasCurrent( wnd ) || _Isnt( wnd, WSW_CHAR_CURSOR ) ) {
+    if( !WndHasCurrent( wnd ) || WndSwitchOff( wnd, WSW_CHAR_CURSOR ) ) {
         WndNullPopItem( wnd );
         return;
     }
@@ -386,7 +385,8 @@ void    WndInvokePopUp( a_window wnd, gui_point *point, gui_menu_struct *menu )
 {
     gui_ctl_id  dummy;
 
-    if( _Isnt( wnd, WSW_ALLOW_POPUP ) ) return;
+    if( WndSwitchOff( wnd, WSW_ALLOW_POPUP ) )
+        return;
     WndMenuItem( wnd, MENU_INITIALIZE, WndMenuRow, WndMenuPiece );
     if( menu != NULL && wnd->num_popups == 1 ) {
         if( menu->style & GUI_GRAYED ) {

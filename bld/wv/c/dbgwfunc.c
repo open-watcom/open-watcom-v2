@@ -252,7 +252,7 @@ OVL_EXTERN void FuncRefresh( a_window wnd )
         if( func->toggled_break ) {
             func->toggled_break = false;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
     }
 }

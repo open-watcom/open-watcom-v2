@@ -174,6 +174,6 @@ void FingOpen( void )
     info.scroll = GUI_NOSCROLL;
     WndFing = WndCreateWithStruct( &info );
     if( WndFing != NULL ) {
-        WndRepaint( WndFing );
+        WndSetRepaint( WndFing );
     }
 }

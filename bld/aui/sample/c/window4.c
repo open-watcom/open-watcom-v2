@@ -169,7 +169,7 @@ static bool W4GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *lin
 
 static void W4Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static void W4MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )

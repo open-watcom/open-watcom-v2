@@ -155,7 +155,7 @@ OVL_EXTERN void DlgRefresh( a_window wnd )
     if( DlgLines != 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 

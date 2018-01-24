@@ -272,7 +272,7 @@ static void W3MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
         break;
     case MENU_W3_BUG:
         TheSize = TheSize == ArraySize( Stuff ) ? 10 : ArraySize( Stuff );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         break;
     }
 }
@@ -303,7 +303,7 @@ static bool W3GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *lin
 
 static void W3Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_info W3Info = {
@@ -332,7 +332,7 @@ a_window W3Open( void )
     info.info = &W3Info;
     wnd = WndCreateWithStruct( &info );
     if( wnd != NULL ) {
-        WndSetSwitches( wnd, WSW_LBUTTON_SELECTS+WSW_CHAR_CURSOR );
+        WndSetSwitches( wnd, WSW_LBUTTON_SELECTS | WSW_CHAR_CURSOR );
         WndClrSwitches( wnd, WSW_HIGHLIGHT_CURRENT );
     }
     return( wnd );

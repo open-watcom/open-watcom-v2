@@ -100,7 +100,7 @@ a_window        WndFindActive( void )
     a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( _Is( wnd, WSW_ACTIVE ) ) {
+        if( WndSwitchOn( wnd, WSW_ACTIVE ) ) {
             return( wnd );
         }
     }
@@ -135,7 +135,7 @@ void WndZapped( a_window wnd )
 {
     WndNoCurrent( wnd );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 gui_ord  WndExtentX( a_window wnd, const char *string )

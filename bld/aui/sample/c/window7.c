@@ -57,7 +57,7 @@ static bool    W7GetLine( a_window wnd, int row, int piece, wnd_line_piece *line
 
 static void    W7Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_info W7Info = {

@@ -133,7 +133,7 @@ OVL_EXTERN void     IOMenuItem( a_window wnd, gui_ctl_id id, int row, int piece 
         memcpy( &io->list[row], &io->list[row + 1],
                 ( io->num_rows - row ) * sizeof( io_location ) );
         WndNoSelect( wnd );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         break;
     case MENU_IO_NEW_ADDRESS:
         addr = NilAddr;
@@ -255,7 +255,7 @@ OVL_EXTERN  bool    IOGetLine( a_window wnd, int row, int piece, wnd_line_piece 
 OVL_EXTERN void     IORefresh( a_window wnd )
 {
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 
@@ -337,7 +337,7 @@ void IONewAddr( a_window wnd, address *addr, int type )
 {
     IOAddNewAddr( wnd, addr, type );
     IOMenuItem( wnd, MENU_IO_READ, WndIO( wnd )->num_rows-1, PIECE_VALUE );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 

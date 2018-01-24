@@ -196,9 +196,9 @@ static bool WndCursorLeftCheck( a_window wnd )
     int         col;
     wnd_line_piece      line;
 
-    if( _Isnt( wnd, WSW_CHAR_CURSOR )||
-        !WndHasCurrent( wnd ) || wnd->current.col == 0 ) {
-        if( !WndTabLeft( wnd, false ) ) return( false );
+    if( WndSwitchOff( wnd, WSW_CHAR_CURSOR ) || !WndHasCurrent( wnd ) || wnd->current.col == 0 ) {
+        if( !WndTabLeft( wnd, false ) )
+            return( false );
         wnd->current.col = WND_MAX_COL;
         WndSetCurrCol( wnd );
         WndCurrVisible( wnd );
@@ -243,10 +243,7 @@ static bool WndCursorRightCheck( a_window wnd )
     bool                got;
 
     got = WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line );
-    if( _Isnt( wnd, WSW_CHAR_CURSOR ) ||
-        !WndHasCurrent( wnd ) ||
-        !got ||
-        wnd->current.col + 1 >= line.length ) {
+    if( WndSwitchOff( wnd, WSW_CHAR_CURSOR ) || !WndHasCurrent( wnd ) || !got || wnd->current.col + 1 >= line.length ) {
         return( WndTabRight( wnd, false ) );
     } else {
         WndDirtyCurrChar( wnd );

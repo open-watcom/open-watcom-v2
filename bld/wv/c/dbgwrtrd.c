@@ -188,7 +188,7 @@ OVL_EXTERN void RunTrdRefresh( a_window wnd )
         ++row;
     }
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 OVL_EXTERN bool    RunTrdGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
@@ -315,7 +315,7 @@ void RunThreadNotify( void )
             for( thd = HeadThd; thd != NULL; thd = thd->link ) {
                 RemoteUpdateRunThread( thd );
             }
-            WndRepaint( RunThreadWnd );
+            WndSetRepaint( RunThreadWnd );
         }
     }
 }

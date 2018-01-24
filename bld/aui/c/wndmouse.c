@@ -99,8 +99,8 @@ void WndLButtonDown( a_window wnd, void *parm )
         WndSetCurrCol( wnd );
         WndDirtyCurr( wnd );
     }
-    if( _Is( wnd, WSW_LBUTTON_SELECTS ) ) {
-        _Set( wnd, WSW_SELECTING );
+    if( WndSwitchOn( wnd, WSW_LBUTTON_SELECTS ) ) {
+        WndSetSwitches( wnd, WSW_SELECTING );
         WndSelSetStart( wnd, parm );
     }
 }
@@ -119,7 +119,7 @@ void WndLButtonUp( a_window wnd, void *parm )
             }
         }
         WndButtonChange( wnd, &MouseDownLoc, false );
-    } else if( _Is( wnd, WSW_LBUTTON_SELECTS ) ) {
+    } else if( WndSwitchOn( wnd, WSW_LBUTTON_SELECTS ) ) {
         WndSelPopItem( wnd, parm, false );
     }
 }
@@ -134,7 +134,8 @@ void WndLDblClk( a_window wnd, void *parm )
 //      if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ) return;
         FindPoint( wnd, parm, true, &MouseUpLoc );
         WndSetMouseRow( wnd, parm );
-        if( !MouseLine.tabstop && _Is( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) return;
+        if( !MouseLine.tabstop && WndSwitchOn( wnd, WSW_ONLY_MODIFY_TABSTOP ) )
+            return;
         WndModify( wnd, MouseUpLoc.row, MouseUpLoc.piece );
     }
 }
@@ -146,8 +147,8 @@ void WndRButtonDown( a_window wnd, void *parm )
     MouseLine.tabstop = false;
     MouseLine.static_text = true;
     RButtonIsDown = true;
-    if( _Is( wnd, WSW_RBUTTON_CHANGE_CURR ) ) {
-        if( FindPoint( wnd, parm, _Is( wnd, WSW_MUST_CLICK_ON_PIECE ), &MouseDownLoc ) ) {
+    if( WndSwitchOn( wnd, WSW_RBUTTON_CHANGE_CURR ) ) {
+        if( FindPoint( wnd, parm, WndSwitchOn( wnd, WSW_MUST_CLICK_ON_PIECE ), &MouseDownLoc ) ) {
             WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine );
             WndDirtyCurr( wnd );
             if( MouseLine.tabstop ) {
@@ -163,8 +164,8 @@ void WndRButtonDown( a_window wnd, void *parm )
             WndDirtyCurr( wnd );
         }
     }
-    if( _Is( wnd, WSW_RBUTTON_SELECTS ) ) {
-        _Set( wnd, WSW_SELECTING );
+    if( WndSwitchOn( wnd, WSW_RBUTTON_SELECTS ) ) {
+        WndSetSwitches( wnd, WSW_SELECTING );
         WndSelSetStart( wnd, parm );
     }
 }
@@ -180,7 +181,7 @@ void WndRButtonUp( a_window wnd, void *parm )
     WndSelPopItem( wnd, parm, true );
     GUI_GET_POINT( parm, point );
     SetWndMenuRow( wnd );
-    if( WndMenuRow == WND_NO_ROW && _Is( wnd, WSW_MENU_ACCURATE_ROW ) ) {
+    if( WndMenuRow == WND_NO_ROW && WndSwitchOn( wnd, WSW_MENU_ACCURATE_ROW ) ) {
         WndMenuRow = MouseUpLoc.row;
         WndMenuPiece = MouseUpLoc.piece;
     }
@@ -194,12 +195,12 @@ bool WndMouseButtonIsDown( void )
 
 bool WndIgnoreMouseMove( a_window wnd )
 {
-    return( _Isnt( wnd, WSW_SELECTING ) && !WndMouseButtonIsDown() );
+    return( WndSwitchOff( wnd, WSW_SELECTING ) && !WndMouseButtonIsDown() );
 }
 
 void WndMouseMove( a_window wnd, void *parm )
 {
-    if( _Is( wnd, WSW_SELECTING ) ) {
+    if( WndSwitchOn( wnd, WSW_SELECTING ) ) {
         WndSelChange( wnd, parm );
     } else if( LButtonIsDown && LButtonDownOnHot ) {
         if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ||

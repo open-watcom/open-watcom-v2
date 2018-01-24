@@ -110,12 +110,13 @@
 #define WndMaxRow( w )              (w)->max_row
 #define WndGui( w )                 (w)->gui
 #define WndWidth( w )               (w)->width
-#define WndRepaint( w )             (w)->switches |= WSW_REPAINT
+#define WndSetRepaint( w )          (w)->switches |= WSW_REPAINT
 #define WndSetKey( w, x )           (w)->keypiece = (x)
 #define WndKeyPiece( w )            (w)->keypiece
 #define WndSetSwitches( w, x )      (w)->switches |= (x)
-#define WndSwitchOn( w, x )         (((w)->switches & (x)) != 0)
 #define WndClrSwitches( w, x )      (w)->switches &= ~(x)
+#define WndSwitchOn( w, x )         (((w)->switches & (x)) != 0)
+#define WndSwitchOff( w, x )        (((w)->switches & (x)) == 0)
 #define WndNumPopups( w )           (w)->num_popups
 #define WndPopupMenu( w )           (w)->popupmenu
 #define WndSetPopUpMenu( w, x, n )  {(w)->num_popups = (n); (w)->popupmenu = (x);}

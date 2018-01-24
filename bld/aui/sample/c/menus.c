@@ -228,9 +228,7 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
         break;
     case MENU_OPEN1:
         new = W1Open();
-        WndSetSwitches( new, WSW_MULTILINE_SELECT+WSW_RBUTTON_SELECTS+
-                             WSW_SUBWORD_SELECT+
-                             WSW_RBUTTON_CHANGE_CURR );
+        WndSetSwitches( new, WSW_MULTILINE_SELECT | WSW_RBUTTON_SELECTS | WSW_SUBWORD_SELECT | WSW_RBUTTON_CHANGE_CURR );
         break;
     case MENU_OPEN2:
         W2Open();
@@ -286,8 +284,8 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
         break;
     case MENU_OPEN1A:
         new = W1Open();
-        WndSetSwitches( new, WSW_LBUTTON_SELECTS+WSW_MAP_CURSOR_TO_SCROLL );
-        WndClrSwitches( new, WSW_SELECT_IN_TABSTOP+WSW_ALLOW_POPUP );
+        WndSetSwitches( new, WSW_LBUTTON_SELECTS | WSW_MAP_CURSOR_TO_SCROLL );
+        WndClrSwitches( new, WSW_SELECT_IN_TABSTOP | WSW_ALLOW_POPUP );
         break;
     case MENU_QUIT:
         WndFini();

@@ -85,7 +85,7 @@ void    NoEndPaint( a_window wnd, wnd_row row, int num )
 
 void NoRefresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 void NoMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
@@ -234,11 +234,11 @@ bool WndSetCache( a_window wnd, bool on )
 {
     bool        old;
 
-    old = _Is( wnd, WSW_CACHE_LINES );
+    old = WndSwitchOn( wnd, WSW_CACHE_LINES );
     if( on ) {
-        _Set( wnd, WSW_CACHE_LINES );
+        WndSetSwitches( wnd, WSW_CACHE_LINES );
     } else {
-        _Clr( wnd, WSW_CACHE_LINES );
+        WndClrSwitches( wnd, WSW_CACHE_LINES );
     }
     return( old );
 }
@@ -249,8 +249,10 @@ bool WndGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
     bool        success;
 
     virtual_row = WndVirtualRow( wnd, row );
-    if( _Is( wnd, WSW_CACHE_LINES ) ) {
-        if( FindCacheLine( wnd, virtual_row, piece, line ) ) return( true );
+    if( WndSwitchOn( wnd, WSW_CACHE_LINES ) ) {
+        if( FindCacheLine( wnd, virtual_row, piece, line ) ) {
+            return( true );
+        }
     }
     line->attr = WndPlainAttr;
     line->indent = 0;
@@ -272,10 +274,10 @@ bool WndGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
     line->hint = "";
     if( virtual_row < -wnd->title_size ) return( false );
     if( row == wnd->button_down.row && piece == wnd->button_down.piece ) {
-        _Set( wnd, WSW_ALTERNATE_BIT );
+        WndSetSwitches( wnd, WSW_ALTERNATE_BIT );
     }
     success = wnd->info->getline( wnd, virtual_row, piece, line );
-    _Clr( wnd, WSW_ALTERNATE_BIT );
+    WndClrSwitches( wnd, WSW_ALTERNATE_BIT );
     if( success ) {
         if( !(line->bitmap|line->vertical_line|line->draw_hook|line->draw_line_hook|line->draw_bar) ) {
             line->length = strlen( line->text );
@@ -283,7 +285,7 @@ bool WndGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
         if( virtual_row > wnd->max_row ) wnd->max_row = virtual_row;
     }
     if( success ) {
-        if( _Is( wnd, WSW_CACHE_LINES ) ) {
+        if( WndSwitchOn( wnd, WSW_CACHE_LINES ) ) {
             SetCacheLine( wnd, virtual_row, piece, line );
         }
     }

@@ -58,7 +58,7 @@ static bool    W8GetLine( a_window wnd, int row, int piece,
 
 static void    W8Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_info W8Info = {

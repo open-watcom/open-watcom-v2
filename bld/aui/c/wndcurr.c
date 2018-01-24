@@ -52,7 +52,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
     spot->piece = WND_NO_PIECE;
     spot->col = WND_NO_COL;
     if( doing_select ) {
-        allowed_in_tab = _Is( wnd, WSW_SELECT_IN_TABSTOP );
+        allowed_in_tab = WndSwitchOn( wnd, WSW_SELECT_IN_TABSTOP );
     } else {
         allowed_in_tab = true;
     }
@@ -359,12 +359,12 @@ void WndCurrVisible( a_window wnd )
 void    WndDirtyCurr( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
-        if( _Is( wnd, WSW_CHAR_CURSOR ) && _Isnt( wnd, WSW_HIGHLIGHT_CURRENT ) ) {
+        if( WndSwitchOn( wnd, WSW_CHAR_CURSOR ) && WndSwitchOff( wnd, WSW_HIGHLIGHT_CURRENT ) ) {
             WndDirtyScreenChar( wnd, &wnd->current );
         } else {
             WndDirtyScreenPiece( wnd, &wnd->current );
         }
-        if( _Is( wnd, WSW_SELECTING ) ) {
+        if( WndSwitchOn( wnd, WSW_SELECTING ) ) {
             WndSelPieceChange( wnd, &wnd->current );
         }
     }
@@ -376,7 +376,7 @@ void    WndDirtyCurrChar( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
         WndDirtyScreenChar( wnd, &wnd->current );
-        if( _Is( wnd, WSW_SELECTING ) ) {
+        if( WndSwitchOn( wnd, WSW_SELECTING ) ) {
             WndSelPieceChange( wnd, &wnd->current );
         }
     }

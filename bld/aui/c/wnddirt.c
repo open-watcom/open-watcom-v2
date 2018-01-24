@@ -61,7 +61,7 @@ static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
         if( same_row != -1 ) {
             wnd->dirty[same_row].piece = WND_NO_PIECE;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
         return;
     }
@@ -182,13 +182,13 @@ void WndPaintDirt( a_window wnd )
         next = WndNext( wnd );
         if( wnd->vscroll_pending != 0 ) {
             if( wnd->hscroll_pending != -1 ) {
-                _Set( wnd, WSW_REPAINT );
+                WndSetRepaint( wnd );
             }
-            if( _Is( wnd, WSW_REPAINT ) ) {
+            if( WndSwitchOn( wnd, WSW_REPAINT ) ) {
                 if( wnd->hscroll_pending != -1 ) {
                     GUIInitHScroll( wnd->gui, wnd->hscroll_pending );
                 }
-                WndRepaint( wnd );
+                WndSetRepaint( wnd );
                 wnd->hscroll_pending = -1;
                 wnd->vscroll_pending = 0;
             } else {
@@ -200,8 +200,8 @@ void WndPaintDirt( a_window wnd )
                 wnd->vscroll_pending = 0;
             }
         }
-        if( _Is( wnd, WSW_REPAINT ) ) {
-            _Clr( wnd, WSW_REPAINT );
+        if( WndSwitchOn( wnd, WSW_REPAINT ) ) {
+            WndClrSwitches( wnd, WSW_REPAINT );
             WndKillCacheLines( wnd );
             WndCheckCurrentValid( wnd );
             GUIWndDirty( wnd->gui );

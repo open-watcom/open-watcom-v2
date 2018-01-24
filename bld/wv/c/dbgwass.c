@@ -340,7 +340,7 @@ void    AsmMoveDot( a_window wnd, address addr )
         row = AsmAddrRow( wnd, addr );
         WndDirtyCurr( wnd );
         WndNewCurrent( wnd, row, PIECE_CURRENT );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         row = 0;
     } else {
         WndDirtyCurr( wnd );
@@ -948,7 +948,7 @@ OVL_EXTERN void     AsmRefresh( a_window wnd )
         if( asw->toggled_break ) {
             asw->toggled_break = false;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
     }
 }
@@ -1091,8 +1091,7 @@ a_window DoWndAsmOpen( address addr, bool track )
     asw->def_addr = MAD_NIL_TYPE_HANDLE;
     AsmSetDotAddr( wnd, addr );
     AsmSetTitle( wnd );
-    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS+WSW_RBUTTON_SELECTS+
-                         WSW_CHAR_CURSOR+WSW_SUBWORD_SELECT );
+    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS | WSW_RBUTTON_SELECTS | WSW_CHAR_CURSOR | WSW_SUBWORD_SELECT );
     WndClrSwitches( wnd, WSW_HIGHLIGHT_CURRENT );
     SrcNewAsmNotify( wnd, asw->mod, asw->track );
     return( wnd );

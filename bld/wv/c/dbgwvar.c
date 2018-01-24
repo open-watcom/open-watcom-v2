@@ -152,7 +152,7 @@ OVL_EXTERN  void    VarRepaint( a_window wnd )
     VarKillExprSPCache( &var->i );
     WndSetThumb( wnd );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
     WndResetScroll( wnd );
 }
 

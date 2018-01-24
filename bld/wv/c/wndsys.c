@@ -621,8 +621,8 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     if( wnd == NULL )
         return( wnd );
     WndSetFontInfo( wnd, GetWndFont( wnd ) );
-    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE+WSW_MENU_ACCURATE_ROW );
-    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR+WSW_CACHE_LINES );
+    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE | WSW_MENU_ACCURATE_ROW );
+    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR | WSW_CACHE_LINES );
     if( !WndHasCurrent( wnd ) )
         WndFirstCurrent( wnd );
     if( _IsOff( SW_OPEN_NO_SHOW ) ) {

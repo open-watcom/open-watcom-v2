@@ -41,7 +41,7 @@ void WndChooseEvent( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_key     key;
 
-    if( _Isnt( wnd, WSW_CHOOSING ) )
+    if( WndSwitchOff( wnd, WSW_CHOOSING ) )
         return;
     switch( gui_ev ) {
     case GUI_KEYDOWN:
@@ -65,7 +65,7 @@ void WndChooseEvent( a_window wnd, gui_event gui_ev, void *parm )
 
 void    WndDoneChoose( a_window wnd )
 {
-    _Clr( wnd, WSW_CHOOSING );
+    WndClrSwitches( wnd, WSW_CHOOSING );
     wnd->keyindex = 0;
 }
 
@@ -82,7 +82,7 @@ bool    WndKeyEscape( a_window wnd )
 
 void    WndStartChoose( a_window wnd )
 {
-    _Set( wnd, WSW_CHOOSING );
+    WndSetSwitches( wnd, WSW_CHOOSING );
 }
 
 void    WndSayMatchMode( a_window wnd )
@@ -95,7 +95,7 @@ void    WndSayMatchMode( a_window wnd )
 
     match = WndLoadString( LITERAL_Match_Mode );
     sofar_buff = alloca( MAX_KEY_SIZE + strlen( match ) + 1 );
-    if( _Is( wnd, WSW_CHOOSING ) ) {
+    if( WndSwitchOn( wnd, WSW_CHOOSING ) ) {
         strcpy( sofar_buff, match );
         WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
         strcpy( _SOFAR, line.text );

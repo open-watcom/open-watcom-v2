@@ -156,7 +156,7 @@ static bool    W1GetLine( a_window wnd, wnd_row row, int piece,
 
 static void    W1Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static void W1Fini( a_window wnd )

@@ -247,7 +247,7 @@ static void MemGetContents( a_window wnd, bool make_dirty )
         if( mem->u.m.size != old_size ||
             old == NULL ||
             mem->u.m.contents == NULL ) {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         } else {
             for( size = 0; size < old_size; ++size ) {
                 if( ((char*)old)[size] != ((char*)mem->u.m.contents)[size] ) {
@@ -517,7 +517,7 @@ static void MemBackout( a_window wnd )
     SetNewDataDot( wnd );
 //    SetDataDot( mem->u.m.home );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static void MemNewBackout( a_window wnd )
@@ -583,7 +583,7 @@ static void MemFollow( a_window wnd )
     SetNewDataDot( wnd );
 //  SetDataDot( mem->u.m.home );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 
@@ -832,7 +832,7 @@ OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, int row, int piece
         }
         MemSetStartAddr( wnd, mem->u.m.home, true );
         MemSetCurrent( wnd, 0 );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         break;
     case MENU_MEMORY_REPEAT:
         MemNewBackout( wnd );
@@ -853,12 +853,12 @@ OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, int row, int piece
     case MENU_MEMORY_LEFT:
         MemScrollBytes( wnd, -mem->item_size, false );
         WndNoSelect( wnd );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         break;
     case MENU_MEMORY_RIGHT:
         MemScrollBytes( wnd, mem->item_size, false );
         WndNoSelect( wnd );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         break;
     default:
         MemSetType( wnd, PIECE_TYPE( id ) );

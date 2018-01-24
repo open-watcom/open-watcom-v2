@@ -155,7 +155,7 @@ static void     CallInit( a_window wnd )
     prev = call->tb.prev;
     WndNoSelect( wnd );
     if( curr->clean_size == 0 || curr->total_depth < prev->total_depth ) {
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
     } else {
         row = curr->total_depth;
         if( row < prev->total_depth ) {

@@ -76,7 +76,7 @@ static bool    W5GetLine( a_window wnd, int row, int piece,
 
 static void W5Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_info W5Info = {
@@ -101,7 +101,7 @@ a_window W5Open( void )
     a_window    wnd;
 
     wnd = WndCreate( "Just some more text", &W5Info, 0, NULL );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
     WndScrollAbs( wnd, 0 );
     WndScrollAbs( wnd, NUM_ROWS );
     WndScrollAbs( wnd, NUM_ROWS/2 );

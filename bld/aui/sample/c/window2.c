@@ -83,7 +83,7 @@ static int W2Scroll( a_window wnd, int lines )
 
     old_top = w2->top;
     Pos( wnd, old_top + lines );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
     return( w2->top - old_top );
 }
 
@@ -204,7 +204,7 @@ static bool W2GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *lin
 
 static void W2Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static int WordCompare( char **a, char **b )
@@ -226,11 +226,11 @@ static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
                ( int (*) (const void *, const void *) )WordCompare );
         w2->wnd = wnd;
         w2->top = 0;
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         return( true );
     case GUI_RESIZE :
         Pos( wnd, 0 );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
         return( true );
     case GUI_DESTROY :
         WndFree( w2 );
@@ -273,10 +273,7 @@ a_window W2Open( void )
     info.extra = w2;
     wnd = WndCreateWithStruct( &info );
     if( wnd != NULL ) {
-        WndSetSwitches( wnd, WSW_RBUTTON_SELECTS+
-                             WSW_MULTILINE_SELECT+
-                             WSW_SUBWORD_SELECT+
-                             WSW_MAP_CURSOR_TO_SCROLL );
+        WndSetSwitches( wnd, WSW_RBUTTON_SELECTS | WSW_MULTILINE_SELECT | WSW_SUBWORD_SELECT | WSW_MAP_CURSOR_TO_SCROLL );
         Pos( wnd, 0 );
     }
     return( wnd );

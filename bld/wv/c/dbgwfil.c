@@ -700,7 +700,7 @@ static void     FileActive( a_window wnd, mod_handle mod )
     }
     if( file->mod != NO_MOD && ( UpdateFlags & UP_BREAK_CHANGE ) ) {
         WndNoSelect( wnd );
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
     }
     if( file->active != NOT_ACTIVE ) {
         WndNewCurrent( wnd, file->active, PIECE_SOURCE );
@@ -760,7 +760,7 @@ OVL_EXTERN void FileRefresh( a_window wnd )
         if( file->toggled_break ) {
             file->toggled_break = false;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
     }
 }
@@ -861,8 +861,7 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     }
     file->track = track;
     FileSetTitle( wnd, file->mod );
-    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS + WSW_RBUTTON_SELECTS +
-                         WSW_CHAR_CURSOR + WSW_SUBWORD_SELECT );
+    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS | WSW_RBUTTON_SELECTS | WSW_CHAR_CURSOR | WSW_SUBWORD_SELECT );
     WndClrSwitches( wnd, WSW_HIGHLIGHT_CURRENT );
     if( line != 0 ) {
         WndZapped( wnd );

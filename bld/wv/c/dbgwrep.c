@@ -144,7 +144,7 @@ OVL_EXTERN void RepRefresh( a_window wnd )
     max_cue += WndMaxCharX( wnd );
     if( Indents[PIECE_SOURCE] != max_addr ||
         Indents[PIECE_COMMAND] != max_addr + max_cue ) {
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
     } else {
         row = count;
         while( --row >= LastEventCount ) {

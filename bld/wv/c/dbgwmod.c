@@ -99,7 +99,7 @@ static void ModCalcIndent( a_window wnd )
     }
     mod->max_modlen = max_extent + WndMidCharX( wnd );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static void     ModInit( a_window wnd )

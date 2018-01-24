@@ -129,7 +129,7 @@ static void NotFound( a_window wnd, regexp *rx, const char *msg )
     WndStatusText( msg );
     WndFreeRX( rx );
     WndDoingSearch = false;
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 bool    WndSearch( a_window wnd, bool from_top, int direction )
@@ -184,10 +184,10 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 NotFound( wnd, rx, not_found );
                 rc = false;
                 goto done;
-            } else if( _Is( wnd, WSW_SEARCH_WRAP ) ) {
+            } else if( WndSwitchOn( wnd, WSW_SEARCH_WRAP ) ) {
                 rows = WndNumRows( wnd );
                 if( rows == -1 ) {
-                    WndRepaint( wnd );
+                    WndSetRepaint( wnd );
                     WndScrollAbs( wnd, -wnd->title_size );
                     rows = WndScrollAbs( wnd, WND_MAX_ROW ) + WndRows( wnd );
                 }
@@ -211,7 +211,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                     NotFound( wnd, rx, not_found );
                     rc = false;
                     goto done;
-                } else if( _Is( wnd, WSW_SEARCH_WRAP ) ) {
+                } else if( WndSwitchOn( wnd, WSW_SEARCH_WRAP ) ) {
                     curr.row = 0;
                     curr.col = 0;
                     curr.piece = -1;
@@ -254,15 +254,14 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
             WndNoSelect( wnd );
             WndNoCurrent( wnd );
             if( curr.row < WndVirtualTop( wnd ) ) {
+                WndSetRepaint( wnd );
                 if( curr.row > wnd->rows / 2 ) {
-                    WndRepaint( wnd );
                     WndScrollAbs( wnd, curr.row - wnd->rows / 2 );
                 } else {
-                    WndRepaint( wnd );
                     WndScrollAbs( wnd, -wnd->title_size );
                 }
             } else if( curr.row >= WndVirtualBottom( wnd ) ) {
-                WndRepaint( wnd );
+                WndSetRepaint( wnd );
                 WndScrollAbs( wnd, curr.row - wnd->rows / 2 );
             }
             wnd->sel_start.row = WndScreenRow( wnd, curr.row );

@@ -135,11 +135,6 @@ extern void             SetWndMenuRow( a_window wnd );
 extern wnd_row          WndMenuRow;
 extern int              WndMenuPiece;
 
-#define _Is( wnd, x )    ( ( (wnd)->switches & (x) ) != 0 )
-#define _Isnt( wnd, x )  ( ( (wnd)->switches & (x) ) == 0 )
-#define _Set( wnd, x )   (wnd)->switches |= (x)
-#define _Clr( wnd, x )   (wnd)->switches &= ~(x)
-
 #define WndVirtualRow( wnd, row ) \
         ( ( row ) == WND_NO_ROW ) ? \
         ( row ) : \

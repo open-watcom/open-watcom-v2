@@ -59,7 +59,7 @@ static bool    W6GetLine( a_window wnd, int row, int piece, wnd_line_piece *line
 
 static void    W6Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_metrics W6Metrics = { 3, 12, 0, 0 };

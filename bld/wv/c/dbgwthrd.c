@@ -154,7 +154,7 @@ OVL_EXTERN void TrdRefresh( a_window wnd )
         ++row;
     }
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 

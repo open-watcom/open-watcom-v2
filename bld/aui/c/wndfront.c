@@ -41,7 +41,7 @@ void    WndToFront( a_window wnd )
 
 void    WndRestoreToFront( a_window wnd )
 {
-    if( _Is( wnd, WSW_ICONIFIED ) ) {
+    if( WndSwitchOn( wnd, WSW_ICONIFIED ) ) {
         GUIRestoreWindow( wnd->gui );
     }
     WndToFront( wnd );
@@ -51,7 +51,7 @@ void    WndRestoreToFront( a_window wnd )
 void    WndNextNonIconToFront( a_window wnd )
 {
     for( ; wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( _Isnt( wnd, WSW_ICONIFIED ) && wnd != WndMain ) {
+        if( WndSwitchOff( wnd, WSW_ICONIFIED ) && wnd != WndMain ) {
             WndToFront( wnd );
             return;
         }
@@ -66,8 +66,10 @@ void    WndChooseNew()
 
     lastok = NULL;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( _Is( wnd, WSW_ICONIFIED ) ) continue;
-        if( wnd == WndMain ) continue;
+        if( WndSwitchOn( wnd, WSW_ICONIFIED ) )
+            continue;
+        if( wnd == WndMain )
+            continue;
         lastok = wnd;
     }
     if( lastok != NULL ) {

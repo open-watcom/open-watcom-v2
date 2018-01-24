@@ -325,7 +325,7 @@ static void MacModWhere( a_window wnd, wnd_row row )
     new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, mac->wndclass, WndGetName, WND_CURRENT );
     if( new == -1 )
         return;
-//    WndRepaint( wnd );
+//    WndSetRepaint( wnd );
     MacChangeMac( wnd, mac, mac->key, (wnd_class_wv)new, row );
 }
 
@@ -602,7 +602,7 @@ OVL_EXTERN void     MacRefresh( a_window wnd )
 {
     MacReSize( wnd );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 OVL_EXTERN bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
