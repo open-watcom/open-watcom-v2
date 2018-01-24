@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern char                 *WPSourceGetLine( a_window * wnd, int line );
+extern char                 *WPSourceGetLine( a_window wnd, int line );
 extern wp_srcfile           *WPSourceOpen( sio_data * curr_sio, bool quiet );
 extern void                 WPSourceClose( wp_srcfile * wpsrc_file );
 extern massgd_sample_addr   *WPGetMassgdSampData( sio_data * curr_sio, clicks_t click_index );

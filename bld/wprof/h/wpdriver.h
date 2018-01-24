@@ -29,5 +29,5 @@
 ****************************************************************************/
 
 
-extern bool WndMainMenuProc( a_window *wnd, gui_ctl_id id );
+extern bool WndMainMenuProc( a_window wnd, gui_ctl_id id );
 extern void OpenSample( void );

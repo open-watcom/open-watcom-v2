@@ -166,8 +166,8 @@ STATIC bool optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-void DlgGetOptions( a_window * wnd )
-/**********************************/
+void DlgGetOptions( a_window wnd )
+/********************************/
 {
     CurrSIOData = WndExtra( wnd );
     DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,

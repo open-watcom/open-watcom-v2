@@ -118,13 +118,13 @@ int WndNumMenus = { WndMenuSize( WndMainMenu ) };
 
 
 
-bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
-/**************************************************/
+bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
+/*************************************************/
 {
-    a_window *      active;
-    sio_data *      curr_sio;
+    a_window    active;
+    sio_data    *curr_sio;
 #if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2__ ) && !defined( __UNIX__ )
-    char *          sys_spec;
+    char        *sys_spec;
 #endif
 
     /* unused parameters */ (void)wnd;

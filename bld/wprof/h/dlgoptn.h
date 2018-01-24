@@ -37,4 +37,4 @@ extern bool OptSortNameGlobal;
 extern bool OptGatherGlobal;
 extern int  OptGatherCut;
 
-extern void DlgGetOptions( a_window * wnd );
+extern void DlgGetOptions( a_window wnd );

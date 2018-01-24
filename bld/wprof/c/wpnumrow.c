@@ -42,7 +42,7 @@
 #include "wpnumrow.h"
 
 
-//STATIC int              sampleNumRows( a_window * );
+//STATIC int              sampleNumRows( a_window );
 STATIC int              simageGetRows( sio_data * );
 STATIC int              smodGetRows( sio_data * );
 STATIC int              sfileGetRows( sio_data * );
@@ -63,8 +63,8 @@ static SAMPLEROWRTNS * overviewRowRtns[] = {
 
 
 
-int SampleNumRows( a_window * wnd )
-/*********************************/
+int SampleNumRows( a_window wnd )
+/*******************************/
 {
     sio_data *      curr_sio;
 

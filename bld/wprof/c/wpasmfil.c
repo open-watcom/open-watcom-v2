@@ -225,8 +225,8 @@ void WPAsmClose( wp_asmfile * wpasm_file )
 
 
 
-char * WPAsmGetLine( a_window * wnd, int line )
-/*********************************************/
+char * WPAsmGetLine( a_window wnd, int line )
+/*******************************************/
 {
     sio_data *      curr_sio;
     wp_asmfile *    wpasm_file;

@@ -169,8 +169,8 @@ STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-void DlgGetConvert( a_window * wnd )
-/**********************************/
+void DlgGetConvert( a_window wnd )
+/********************************/
 {
     ConvertFile = NULL;
     CurrSIOData = WndExtra( wnd );

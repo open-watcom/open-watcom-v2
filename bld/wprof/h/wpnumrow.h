@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int SampleNumRows( a_window * wnd );
+extern int SampleNumRows( a_window wnd );

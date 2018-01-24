@@ -43,9 +43,8 @@
 
 #include "clibext.h"
 
-#define HELPNAME            "wprof"
 
-extern a_window             *WndMain;
+#define HELPNAME            "wprof"
 
 STATIC gui_help_instance    helpHandle;
 

@@ -41,11 +41,11 @@
 #include "aboutmsg.h"
 
 
-STATIC bool aboutWndEventProc( a_window *, gui_event, void * );
-STATIC int  AboutNumRows( a_window * );
-STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
+STATIC bool aboutWndEventProc( a_window, gui_event, void * );
+STATIC int  AboutNumRows( a_window );
+STATIC bool aboutGetLine( a_window, wnd_row, int, wnd_line_piece * );
 
-static a_window     *aboutWindow = NULL;
+static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
 
 static wnd_info     AboutInfo = {
@@ -83,7 +83,7 @@ void AboutOpen( void )
 void AboutClose( void )
 /*********************/
 {
-    a_window *  wnd;
+    a_window    wnd;
 
     if( aboutWindow != NULL ) {
         wnd = aboutWindow;
@@ -93,8 +93,8 @@ void AboutClose( void )
 
 
 
-STATIC int AboutNumRows( a_window * wnd )
-/***************************************/
+STATIC int AboutNumRows( a_window wnd )
+/*************************************/
 {
     int     ret_size;
 
@@ -112,8 +112,8 @@ STATIC int AboutNumRows( a_window * wnd )
 
 
 
-STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
-/*************************************************************************************/
+STATIC bool aboutGetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *line )
+/************************************************************************************/
 {
 //    gui_coord           size;
 
@@ -139,8 +139,8 @@ STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece 
 
 
 
-STATIC bool aboutWndEventProc( a_window *wnd, gui_event gui_ev, void *parm )
-/**************************************************************************/
+STATIC bool aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+/*************************************************************************/
 {
     /* unused parameters */ (void)wnd; (void)parm;
 

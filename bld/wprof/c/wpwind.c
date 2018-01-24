@@ -37,12 +37,10 @@
 #include "wpwind.h"
 
 
-extern a_window     *WndMain;
-
 static int          wndInSetRowHeight;
 
-gui_ord WPGetClientHeight( a_window * wnd )
-/*****************************************/
+gui_ord WPGetClientHeight( a_window wnd )
+/***************************************/
 {
     gui_rect    rect;
 
@@ -52,8 +50,8 @@ gui_ord WPGetClientHeight( a_window * wnd )
 
 
 
-gui_ord WPGetClientWidth( a_window * wnd )
-/****************************************/
+gui_ord WPGetClientWidth( a_window wnd )
+/**************************************/
 {
     gui_rect    rect;
 
@@ -63,8 +61,8 @@ gui_ord WPGetClientWidth( a_window * wnd )
 
 
 
-void WPAdjustRowHeight( a_window * wnd, bool initial_set )
-/********************************************************/
+void WPAdjustRowHeight( a_window wnd, bool initial_set )
+/******************************************************/
 {
     gui_rect    main_rect;
     gui_rect    full_rect;
@@ -101,8 +99,8 @@ void WPAdjustRowHeight( a_window * wnd, bool initial_set )
 
 
 
-void WPSetRowHeight( a_window * wnd )
-/***********************************/
+void WPSetRowHeight( a_window wnd )
+/*********************************/
 {
     WPAdjustRowHeight( wnd, true );
 }
@@ -121,8 +119,8 @@ gui_ord WPPixelTruncWidth( gui_ord width )
 
 
 
-gui_ord WPPixelWidth( a_window * wnd )
-/************************************/
+gui_ord WPPixelWidth( a_window wnd )
+/**********************************/
 {
     gui_coord   pixel_size;
     gui_coord   tmp;
