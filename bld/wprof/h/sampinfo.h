@@ -239,7 +239,7 @@ typedef struct sio_data {
     int                     curr_proc_row;
     int                     curr_display_row;
     int                     sort_type;
-    void                    *sample_window;
+    a_window                sample_window;
     image_info              *curr_image;
     mod_info                *curr_mod;
     file_info               *curr_file;

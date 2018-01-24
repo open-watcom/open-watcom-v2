@@ -39,6 +39,7 @@
 #include "dip.h"
 #include "machtype.h"
 #include "msg.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "support.h"
 #include "wpdata.h"

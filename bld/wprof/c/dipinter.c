@@ -40,6 +40,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"

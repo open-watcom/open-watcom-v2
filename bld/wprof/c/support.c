@@ -39,6 +39,7 @@
 #include "common.h"
 #include "dip.h"
 #include "mad.h"
+#include "aui.h"
 #include "myassert.h"
 #include "exedefs.h"
 #include "machtype.h"

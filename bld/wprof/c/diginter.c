@@ -41,6 +41,7 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "diptypes.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"

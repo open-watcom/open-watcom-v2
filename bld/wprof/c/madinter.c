@@ -45,6 +45,7 @@
 
 #include "dip.h"
 
+#include "aui.h"
 #include "common.h"
 #include "sampinfo.h"
 #include "msg.h"

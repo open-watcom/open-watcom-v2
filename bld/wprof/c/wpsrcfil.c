@@ -51,8 +51,8 @@
 STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,
                             file_info *, rtn_info *  );
 
-char *WPSourceGetLine( a_window * wnd, int line )
-/***********************************************/
+char *WPSourceGetLine( a_window wnd, int line )
+/*********************************************/
 {
     sio_data *      curr_sio;
     wp_srcfile *    wp_src;
