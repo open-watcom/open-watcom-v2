@@ -224,13 +224,13 @@ typedef struct gui_colour_set {
     gui_colour back;
 } gui_colour_set;
 
-typedef unsigned long gui_rgb;
+typedef unsigned long       gui_rgb;
 
-#define GUIRGB(r,g,b)          ((gui_rgb)(((unsigned char)(r)) | (((unsigned short)(g))<<8) | (((unsigned long)(b))<<16)))
+#define GUIRGB(r,g,b)       ((gui_rgb)(((unsigned char)(r)) | (((unsigned short)(g))<<8) | (((unsigned long)(b))<<16)))
 
-#define GUIGETRVALUE(rgb)       ((rgb) & 0xff)
-#define GUIGETGVALUE(rgb)       (((rgb) & 0xff00 ) >> 8)
-#define GUIGETBVALUE(rgb)       (((rgb) & 0xff0000) >> 16)
+#define GUIGETRVALUE(rgb)   ((rgb) & 0xff)
+#define GUIGETGVALUE(rgb)   (((rgb) & 0xff00 ) >> 8)
+#define GUIGETBVALUE(rgb)   (((rgb) & 0xff0000) >> 16)
 
 typedef struct gui_rect {
     gui_ord     x;
@@ -319,8 +319,8 @@ typedef enum gui_bar_styles {
 } gui_bar_styles;
 
 typedef struct gui_resource {
-    gui_bitmap  res;
-    char        *chars; /* Character based              */
+    gui_bitmap          res;
+    char                *chars; /* Character based */
 } gui_resource;
 
 typedef struct gui_control_info {
@@ -383,8 +383,8 @@ typedef enum {
 } gui_message_return;
 
 typedef struct gui_text_metrics {
-    gui_coord avg;
-    gui_coord max;
+    gui_coord   avg;
+    gui_coord   max;
 } gui_text_metrics;
 
 typedef struct gui_system_metrics {
@@ -407,17 +407,19 @@ typedef enum {
 } gui_mouse_track;
 
 typedef enum {
-    GUI_KS_NONE       =    0x00,
-    GUI_KS_ALT        =    0x01,
-    GUI_KS_SHIFT      =    0x02,
-    GUI_KS_CTRL       =    0x04
+    GUI_KS_NONE         = 0x00,
+    GUI_KS_ALT          = 0x01,
+    GUI_KS_SHIFT        = 0x02,
+    GUI_KS_CTRL         = 0x04
 } gui_keystate;
 
 typedef enum {
     GUI_ARROW_CURSOR,
     GUI_HOURGLASS_CURSOR,
     GUI_CROSS_CURSOR
-} gui_mouse_cursor;
+} gui_mcursor_type;
+
+typedef void            *gui_mcursor_handle;
 
 typedef enum {
     GUI_NO_CURSOR,
@@ -563,22 +565,27 @@ typedef struct gui_timer_event {
 
 #define GUI_GET_BOOL( param, b )    ( b = *(bool *)param )
 
-#define GUI_GET_ENDSESSION( param, b, l ) {                                 \
-                                b = ((gui_end_session *)param)->endsession; \
-                                l = ((gui_end_session *)param)->logoff;     \
-                            }
+#define GUI_GET_ENDSESSION( param, b, l )           \
+    {                                               \
+        b = ((gui_end_session *)param)->endsession; \
+        l = ((gui_end_session *)param)->logoff;     \
+    }
 
 #define GUI_GET_POINT( param, point ) ( point = *(gui_point *)param )
 
-#define GUI_GET_ROWS( param, gui_start, gui_num ) {                          \
-                                gui_start = ((gui_row_num *)param)->start; \
-                                gui_num =   ((gui_row_num *)param)->num;   \
-                                                   }
+#define GUI_GET_ROWS( param, gui_start, gui_num )   \
+    {                                               \
+        gui_start = ((gui_row_num *)param)->start;  \
+        gui_num =   ((gui_row_num *)param)->num;    \
+    }
 
 #define GUI_GETID( param, id ) ( id = *(gui_ctl_id *)param )
 
-#define GUI_GET_SIZE( param, size ) { size.x = ((gui_coord *)param)->x; \
-                                      size.y = ((gui_coord *)param)->y; }
+#define GUI_GET_SIZE( param, size )         \
+    {                                       \
+        size.x = ((gui_coord *)param)->x;   \
+        size.y = ((gui_coord *)param)->y;   \
+    }
 
 #define GUI_GET_SCROLL( param, scroll ) ( scroll = *(int *)param )
 
@@ -676,8 +683,8 @@ extern bool GUISetCursorPos( gui_window *wnd, gui_point *point );
 extern bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor );
 extern bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor );
 
-extern void *GUISetMouseCursor( gui_mouse_cursor type );
-extern void GUIResetMouseCursor( void* old_cursor );
+extern gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type );
+extern void GUIResetMouseCursor( gui_mcursor_handle old_cursor );
 
 /* Font Functions */
 

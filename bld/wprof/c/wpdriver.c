@@ -195,16 +195,16 @@ bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
 void OpenSample( void )
 /*********************/
 {
-    void        *cursor_type;
+    gui_mcursor_handle  old_cursor;
 
 #if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
     AboutClose();
 #else
     AboutSetOff();
 #endif
-    cursor_type = WndHourGlass( NULL );
+    old_cursor = WndHourGlass( NULL );
     if( GetSampleInfo() ) {
         WPSampleOpen();
     }
-    WndHourGlass( cursor_type );
+    WndHourGlass( old_cursor );
 }

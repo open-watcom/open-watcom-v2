@@ -144,13 +144,13 @@ void ClearSample( sio_data * curr_sio )
     image_info *        image;
     remap_data *        remap;
     remap_data *        next_remap;
-    void *              cursor_type;
+    gui_mcursor_handle  old_cursor;
     unsigned            index;
     unsigned            buckets;
     thread_data         *thd;
     thread_data         *next;
 
-    cursor_type = WndHourGlass( NULL );
+    old_cursor = WndHourGlass( NULL );
     if( curr_sio->fp != NULL ) {
         fclose( curr_sio->fp );
     }
@@ -223,8 +223,9 @@ void ClearSample( sio_data * curr_sio )
         SIOData = NULL;
     } else if( curr_sio->next != NULL ) {
         prev_sio = SIOData;
-        for(;;) {
-            if( prev_sio->next == curr_sio ) break;
+        for( ;; ) {
+            if( prev_sio->next == curr_sio )
+                break;
             prev_sio = prev_sio->next;
         }
         prev_sio->next = curr_sio->next;
@@ -233,7 +234,7 @@ void ClearSample( sio_data * curr_sio )
         }
     }
     ProfFree( curr_sio );
-    WndHourGlass( cursor_type );
+    WndHourGlass( old_cursor );
 }
 
 

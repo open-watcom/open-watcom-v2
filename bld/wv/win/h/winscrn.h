@@ -38,8 +38,6 @@ static void RestoreScreen( void );
 static void RestoreEGA_VGA( void );
 static void SetRegenClear( void );
 #endif
-static void RestoreCursor( void );
-static void SaveCursor( void );
 static bool TstMono( void );
 static bool TstColour( void );
 static void GetDispConfig( void );

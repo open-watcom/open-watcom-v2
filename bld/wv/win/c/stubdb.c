@@ -476,10 +476,6 @@ int DUIDisambiguate( const ambig_info *ambig, int count )
     // the expression processor detected an ambiguous symbol.  Ask user which one
     return( 0 );
 }
-void *DUIHourGlass( void *x )
-{
-    return( x );
-}
 void ProcAccel( void )
 {
     // stub for old UI

@@ -337,11 +337,6 @@ bool DUIInfoRelease( void )
     return( false );
 }
 
-void *DUIHourGlass( void *x )
-{
-    return( WndHourGlass( x ) );
-}
-
 void WndDoInput( void )
 {
     InitSuppServices();

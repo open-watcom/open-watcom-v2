@@ -2394,13 +2394,13 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
 /*****************************************************/
 {
     int                 result;
-    void                *cursor;
+    gui_mcursor_handle  old_cursor;
     bool                done;
     size_t              len;
     char                *p;
 
     LineCountPointer = &NoLineCount;
-    cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     result = SIM_INIT_NOERROR;
     if( pass == PRESCAN_FILE ) {
         State = RS_UNDEFINED;
@@ -2456,7 +2456,7 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
         if( State == RS_TERMINATE )
             break;
     }
-    GUIResetMouseCursor( cursor );
+    GUIResetMouseCursor( old_cursor );
     return( result );
 }
 
@@ -3517,7 +3517,7 @@ bool SimCalcTargetSpaceNeeded( void )
 /***********************************/
 {
     int                 i;
-    void                *cursor;
+    gui_mcursor_handle  old_cursor;
     char                *temp;
 
     /* assume power of 2 */
@@ -3527,7 +3527,7 @@ bool SimCalcTargetSpaceNeeded( void )
             return( false );
         NeedGetDiskSizes = false;
     }
-    cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
         temp = SimGetTargetDriveLetter( i );
         if( temp == NULL )
@@ -3545,7 +3545,7 @@ bool SimCalcTargetSpaceNeeded( void )
         DirInfo[i].num_files = 0;
     }
     SimCalcAddRemove();
-    GUIResetMouseCursor( cursor );
+    GUIResetMouseCursor( old_cursor );
     return( true );
 }
 

@@ -61,8 +61,6 @@
 
 
 extern void             WndUserAdd( char *, unsigned int );
-extern void             WndMenuOn( void );
-extern void             WndMenuOff( void );
 
 extern margins          SrcMar;
 extern margins          AsmMar;

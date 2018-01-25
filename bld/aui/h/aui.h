@@ -296,10 +296,18 @@ typedef struct wnd_info {
         gui_menu_struct         *popupmenu;
 } wnd_info;
 
+typedef struct {
+    char        *buff;
+    size_t      buff_len;
+    bool        cancel;
+} dlgnew_ctl;
+
 extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items );
 extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pickfn );
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
-extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
+extern bool             DlgNew( const char *title, char *buff, size_t buff_len );
+extern bool             DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
+                               GUICALLBACK *gui_call_back, int rows, int cols, int max_cols );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
@@ -504,9 +512,9 @@ extern void             WndCloseToolBar( void );
 extern gui_ord          WndToolHeight( void );
 extern bool             WndToolFixed( void );
 
-extern void             *WndHourGlass( void * );
-extern void             *WndHourCursor( void );
-extern void             *WndArrowCursor( void );
+extern gui_mcursor_handle WndHourGlass( gui_mcursor_handle );
+extern gui_mcursor_handle WndHourCursor( void );
+extern gui_mcursor_handle WndArrowCursor( void );
 
 extern void             WndCreateStatusWindow( gui_colour_set * );
 extern bool             WndStatusText( const char * );

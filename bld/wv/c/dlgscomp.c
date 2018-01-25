@@ -79,8 +79,11 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
     unsigned            num;
     size_t              matchoff;
     char                *savebuff;
+    gui_mcursor_handle  old_cursor;
 
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     SortedNames = SymCompInit( true, true, false, false, NO_MOD );
+    GUIResetMouseCursor( old_cursor );
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
     if( match != NULL && match[0] != NULLCHAR ) {

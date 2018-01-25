@@ -53,7 +53,6 @@ static sorted_names *SortedNames = NULL;
 
 name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_handle mod )
 {
-    void                *old;
     sorted_names        *curr;
     walk_find           wf;
 
@@ -70,7 +69,6 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
             continue;
         return( &curr->list );
     }
-    old = DUIHourGlass( NULL );
     _Alloc( curr, sizeof( *curr ) );
     wf = 0;
     if( code )
@@ -79,7 +77,6 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
         wf |= WF_DATA;
     NameListInit( &curr->list, wf );
     NameListAddModules( &curr->list, mod, d2_only, dup_ok );
-    DUIHourGlass( old );
     curr->next = SortedNames;
     SortedNames = curr;
     curr->code = code;

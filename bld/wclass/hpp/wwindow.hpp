@@ -153,8 +153,8 @@ private:
     WToolBar                *_toolBar;
     WVList                  _children;
     WRect                   _autosize;
-    gui_mouse_cursor        _prevCursor;
-    gui_mouse_cursor        _currCursor;
+    gui_mcursor_type        _prevCursor;
+    gui_mcursor_type        _currCursor;
     WOrdinal                _firstDirtyRow;
     int                     _numDirtyRows;
     bool                    _keyHandled;

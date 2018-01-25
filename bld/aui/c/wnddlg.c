@@ -44,16 +44,16 @@ static int              Nested = -1;
 
 static bool dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
-    bool        rc;
-    void        *cursor;
+    bool                rc;
+    gui_mcursor_handle  old_cursor;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        cursor = WndHourGlass( NULL );
+        old_cursor = WndHourGlass( NULL );
         ++Nested;
         Parents[Nested] = gui;
         rc = dlgGUIEventProcs[Nested]( gui, gui_ev, parm );
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_DESTROY:
         rc = dlgGUIEventProcs[Nested]( gui, gui_ev, parm );

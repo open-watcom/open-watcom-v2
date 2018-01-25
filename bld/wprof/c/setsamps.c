@@ -783,9 +783,9 @@ STATIC void calcAggregates( void )
 void SetSampleInfo( sio_data *curr_sio )
 /**************************************/
 {
-    void            *cursor_type;
+    gui_mcursor_handle  old_cursor;
 
-    cursor_type = WndHourGlass( NULL );
+    old_cursor = WndHourGlass( NULL );
     if( curr_sio->dip_process != NULL ) {
         WPDipDestroyProc( curr_sio->dip_process );
         curr_sio->dip_process = NULL;
@@ -803,5 +803,5 @@ void SetSampleInfo( sio_data *curr_sio )
     AbsSetAll( curr_sio, true );
     RelSetAll( curr_sio, true );
     SortSetAll( curr_sio, SORT_COUNT );
-    WndHourGlass( cursor_type );
+    WndHourGlass( old_cursor );
 }

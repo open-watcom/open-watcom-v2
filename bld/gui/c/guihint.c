@@ -164,30 +164,21 @@ bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id )
 {
     gui_ctl_idx         i;
     gui_hint_struct     *new_menu;
-    gui_ctl_idx         index;
-    bool                found;
 
-    found = false;
     if( GUIHasHintType( wnd, MENU_HINT ) ) {
-        index = 0;
-        for( i = 0; (i < wnd->hint.num_menu) && !found; i++ ) {
+        for( i = 0; i < wnd->hint.num_menu; i++ ) {
             if( wnd->hint.menu[i].id == id ) {
-                found = true;
-                index = i;
+                new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct ) * ( wnd->hint.num_menu - 1 ) );
+                memcpy( new_menu, wnd->hint.menu, sizeof( gui_hint_struct ) * i );
+                memcpy( &new_menu[i], &wnd->hint.menu[i + 1], sizeof( gui_hint_struct ) * ( wnd->hint.num_menu - i - 1 ) );
+                GUIMemFree( wnd->hint.menu );
+                wnd->hint.menu = new_menu;
+                wnd->hint.num_menu--;
+                return( true );
             }
         }
-        if( found ) {
-            new_menu = (gui_hint_struct *)GUIMemAlloc( sizeof( gui_hint_struct )
-                                    * ( wnd->hint.num_menu - 1 ) );
-            memcpy( new_menu, wnd->hint.menu, sizeof( gui_hint_struct ) * index );
-            memcpy( &new_menu[index], &wnd->hint.menu[index + 1],
-                    sizeof( gui_hint_struct ) * ( wnd->hint.num_menu - index - 1 ) );
-            GUIMemFree( wnd->hint.menu );
-            wnd->hint.menu = new_menu;
-            wnd->hint.num_menu--;
-        }
     }
-    return( found );
+    return( false );
 }
 
 static int CountMenus( gui_menu_struct *menu )

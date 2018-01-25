@@ -571,11 +571,6 @@ int DUIDisambiguate( const ambig_info *ambig, int count )
     return( 0 );
 }
 
-void *DUIHourGlass( void *x )
-{
-    return( x );
-}
-
 void ProcAccel( void )
 {
     // stub for old UI

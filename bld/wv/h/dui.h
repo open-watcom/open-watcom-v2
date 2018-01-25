@@ -64,7 +64,6 @@ extern void     DUISysEnd( bool pause );
 extern void     DUIRingBell( void );
 extern void     DUIProcPendingPaint(void);
 extern bool     DUIInfoRelease( void );
-extern void     *DUIHourGlass( void *x );
 extern void     DUIEnterCriticalSection( void );
 extern void     DUIExitCriticalSection( void );
 extern void     DUIInitLiterals( void );

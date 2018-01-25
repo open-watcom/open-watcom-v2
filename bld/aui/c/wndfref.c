@@ -31,7 +31,9 @@
 
 
 #include "_aui.h"
-void WndForceRefresh()
+
+
+void WndForceRefresh( void )
 {
     GUIWndDirty( WndMain->gui );
 }
