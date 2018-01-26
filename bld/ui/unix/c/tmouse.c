@@ -249,8 +249,8 @@ static void GPM_parse( void )
     }
 }
 
-static int gpm_tm_init( void )
-/****************************/
+static bool gpm_tm_init( void )
+/*****************************/
 {
     struct {
         unsigned short  eventMask;
@@ -306,8 +306,8 @@ static int gpm_tm_init( void )
 }
 #endif
 
-static int tm_init( int install )
-/*******************************/
+static bool tm_init( init_mode install )
+/**************************************/
 {
     bool        kmous;                          // Does key_mouse exist?
 
@@ -315,7 +315,7 @@ static int tm_init( int install )
     MouseType       = M_NONE;
     kmous           = ( key_mouse != NULL );
 
-    if( install == 0 )
+    if( install == INIT_MOUSELESS )
         return( false );
 
     if( strstr( GetTermType(), "xterm" ) != NULL ) {
@@ -334,8 +334,8 @@ static int tm_init( int install )
 #endif
 }
 
-static int tm_fini( void )
-/************************/
+static bool tm_fini( void )
+/*************************/
 {
     switch( MouseType ) {
     case M_XT:
@@ -349,7 +349,7 @@ static int tm_fini( void )
     default :
         break;
     }
-    return 0;
+    return( false );
 }
 
 static int tm_set_speed( unsigned speed )

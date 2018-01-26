@@ -169,7 +169,7 @@ void permit_refresh( void )
         RefreshForbid--;
     }
     if( !RefreshForbid ) {
-        _ui_refresh( 0 );
+        _ui_refresh( false );
     }
 }
 
@@ -177,7 +177,7 @@ void intern physupdate( SAREA *area )
 {
     _physupdate( area );
     if( !RefreshForbid ) {
-        _ui_refresh( 0 );
+        _ui_refresh( false );
     }
 }
 

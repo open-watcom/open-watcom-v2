@@ -269,15 +269,15 @@ void main( void )
 
 #ifdef CHARMAP
     if( uistart() ) {
-        uiinitgmouse( 2 );  /* the 0=mouseless,1=mouse,2=initialized mouse */
+        uiinitgmouse( INIT_MOUSE_INITIALIZED ); /* the 0=mouseless,1=mouse,2=initialized mouse */
 //      uivgaattrs();
         FlipCharacterMap();
 #else
     if( uistart() ) {
 #ifdef __UNIX__
-        _initmouse( 2 );
+        _initmouse( INIT_MOUSE_INITIALIZED );
 #else
-        initmouse( 2 );
+        initmouse( INIT_MOUSE_INITIALIZED );
 #endif
 #endif
         uimenus( barmenu, pulldownuimenus, EV_F1 );

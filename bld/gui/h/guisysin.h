@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern bool GUISysInit( int );
+extern bool GUISysInit( init_mode install );

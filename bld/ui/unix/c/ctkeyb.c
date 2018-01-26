@@ -603,8 +603,8 @@ static int ck_restore( void )
     return( 0 );
 }
 
-static int ck_init( void )
-/************************/
+static bool ck_init( void )
+/*************************/
 {
     tcgetattr( UIConHandle, &SaveTermSet );
 
@@ -621,12 +621,12 @@ static int ck_init( void )
     return( true );
 }
 
-static int ck_fini( void )
-/************************/
+static bool ck_fini( void )
+/*************************/
 {
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
-    return( 0 );
+    return( false );
 }
 
 static int ck_save( void )

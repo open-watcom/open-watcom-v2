@@ -90,8 +90,8 @@ static unsigned short   shift_state;
 static unsigned short   sticky;
 static unsigned short   real_shift;
 
-static int              ck_fini( void );
-static int              init_trie( void );
+static bool             ck_fini( void );
+static bool             init_trie( void );
 
 #define NUM_IN_TERM_INFO_MAPPINGS 74
 struct an_in_term_info InTerminfo[NUM_IN_TERM_INFO_MAPPINGS];
@@ -600,8 +600,8 @@ static const char * const ConIgnore[] = {
 };
 #endif
 
-static int ck_init( void )
-/************************/
+static bool ck_init( void )
+/*************************/
 {
     unsigned    i;
     ui_event    ui_ev;
@@ -638,13 +638,13 @@ static int ck_init( void )
 }
 
 
-static int ck_fini( void )
-/************************/
+static bool ck_fini( void )
+/*************************/
 {
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     signal( SIGTERM, SIG_DFL );
-    return( 0 );
+    return( false );
 }
 
 static int ck_save( void )
@@ -665,7 +665,7 @@ static int ck_wait_keyb( int secs, int usecs )
     return( kb_wait( secs, usecs ) );
 }
 
-static int init_trie( void )
+static bool init_trie( void )
 {
     char        buff[2];
     int         i;

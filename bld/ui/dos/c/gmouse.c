@@ -308,23 +308,23 @@ void UIAPI uifinigmouse( void )
     }
 }
 
-bool UIAPI uiinitgmouse( int install )
+bool UIAPI uiinitgmouse( init_mode install )
 {
     MouseInstalled = false;
-    if( install > 0 && installed( BIOS_MOUSE ) ) {
-        if( install > 1 ) {
+    if( install > INIT_MOUSELESS && installed( BIOS_MOUSE ) ) {
+        if( install > INIT_MOUSE ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
                     UIData->mouse_yscale = _POINTS;
                     UIData->mouse_xscale = 8;
                 } else {
-                    install = 0;
+                    install = INIT_MOUSELESS;
                 }
             } else if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
-                install = 0;
+                install = INIT_MOUSELESS;
             }
         }
-        if( install > 0 ) {
+        if( install > INIT_MOUSELESS ) {
             setupmouse();
         }
     }

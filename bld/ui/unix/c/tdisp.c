@@ -929,10 +929,10 @@ static int new_attr( int nattr, int oattr )
     return( nattr );
 }
 
-static int ti_refresh( int must );
+static int ti_refresh( bool must );
 
-static int ti_init( void )
-/************************/
+static bool ti_init( void )
+/*************************/
 {
     int         rows, cols;
     const char  *tmp;
@@ -989,12 +989,12 @@ static int ti_init( void )
     //find point at which repeat chars code becomes efficient
     ti_find_cutoff();
 
-    ti_refresh( 1 );
+    ti_refresh( true );
     return( true );
 }
 
-static int ti_fini( void )
-/************************/
+static bool ti_fini( void )
+/*************************/
 {
     TI_RESTORE_ATTR();
     TI_HOME();
@@ -1010,7 +1010,7 @@ static int ti_fini( void )
 
     finikeyboard();
     uifinicursor();
-    return( 0 );
+    return( false );
 }
 
 /* update the physical screen with contents of virtual copy */
@@ -1123,8 +1123,8 @@ static void update_shadow( void )
     dirty_area.row0 = dirty_area.row1 = dirty_area.col0 = dirty_area.col1 = 0;
 }
 
-static int ti_refresh( int must )
-/*******************************/
+static int ti_refresh( bool must )
+/********************************/
 {
     int         i;
     int         incr;               // chars per line

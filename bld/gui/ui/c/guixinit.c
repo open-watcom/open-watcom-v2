@@ -59,7 +59,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
     GUIMemOpen();
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
-    if( !GUISysInit( 2 ) ) {
+    if( !GUISysInit( INIT_MOUSE_INITIALIZED ) ) {
         return( false );
     }
     uiattrs();

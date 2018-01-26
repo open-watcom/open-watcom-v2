@@ -224,15 +224,15 @@ static void DoMouseInit( int type, char *init, const char *input )
     stopmouse();
 }
 
-static int tm_init( int install )
-/*******************************/
+static bool tm_init( init_mode install )
+/**************************************/
 {
     const char      *term;
 
     MouseInstalled = false;
     MouseType = M_NONE;
 
-    if( install == 0 )
+    if( install == INIT_MOUSELESS )
         return( false );
 
     term = GetTermType();
@@ -250,8 +250,8 @@ static int tm_init( int install )
     return( true );
 }
 
-static int tm_fini( void )
-/************************/
+static bool tm_fini( void )
+/*************************/
 {
     switch( MouseType ) {
     case M_QW:
@@ -264,7 +264,7 @@ static int tm_fini( void )
         uiwritec( XT_FINI );
         break;
     }
-    return( 0 );
+    return( false );
 }
 
 static int tm_set_speed( unsigned speed )

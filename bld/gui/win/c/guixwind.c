@@ -40,6 +40,7 @@
 #include "guipaint.h"
 #include "guixwind.h"
 #include "guimapky.h"
+#include "initmode.h"
 #include "guisysin.h"
 #include "guisysfi.h"
 #include "guitool.h"
@@ -381,7 +382,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 {
     GUIMemOpen();
     Style = style;
-    GUISysInit( 0 );
+    GUISysInit( INIT_MOUSE_INITIALIZED );
     _wpi_setdoubleclicktime( DClickInterval );
     GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ), _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();

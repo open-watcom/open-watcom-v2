@@ -181,17 +181,17 @@ void intern setupmouse( void )
     uimousespeed( UIData->mouse_speed );
 }
 
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
     MouseInstalled = false;
-    if( install > 0 && installed( BIOS_MOUSE ) ) {
-        if( install > 1 ) {
+    if( install > INIT_MOUSELESS && installed( BIOS_MOUSE ) ) {
+        if( install > INIT_MOUSE ) {
             if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
-                install = 0;    /* mouse initialization failed */
+                install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
-        if( install > 0 ) {
+        if( install > INIT_MOUSELESS ) {
             UIData->mouse_yscale = 1;
             UIData->mouse_xscale = 1;
             setupmouse();

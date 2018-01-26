@@ -251,7 +251,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
         return( 0 );
     ToCharacter();
 
-    initmouse( 2 );
+    initmouse( INIT_MOUSE_INITIALIZED );
     uimenus( barmenu, pulldownuimenus, EV_F1 );
     UIData->mouse_clk_delay = uiclockdelay( 250 );
     UIData->tick_delay = uiclockdelay( 3000 );

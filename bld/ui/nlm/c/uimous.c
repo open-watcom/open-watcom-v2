@@ -62,10 +62,11 @@ void uimousespeed( unsigned speed )
     /* unused parameters */ (void)speed;
 }
 
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
-    install = install;
+    /* unused parameters */ (void)install;
+
     MouseInstalled = false;
     return( false );
 }

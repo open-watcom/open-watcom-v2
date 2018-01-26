@@ -36,6 +36,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "bool.h"
+#include "initmode.h"
 
 #ifndef         _FAR
 #define         _FAR
@@ -621,7 +622,7 @@ enum {
 extern      MONITOR   _FARD *UIData;
 
 extern      void            finimouse( void );
-extern      int             initmouse( int );
+extern      bool            initmouse( init_mode );
 extern      void            uiactivatemenus( void );
 extern      void            *uialloc( size_t );
 extern      bool            uiattrs( void );
@@ -662,9 +663,9 @@ extern      ui_event_list _FARD *uigetlist( void );
 extern      void            uigetmouse( ORD _FARD *, ORD _FARD *, bool _FARD * );
 extern      void            uiignorealt( void );
 extern      unsigned int    uiextkeyboard( void );
-extern      bool            uiinit( int );
+extern      bool            uiinit( init_mode );
 extern      void            uiinitcursor( void );
-extern      bool            uiinitgmouse( int );
+extern      bool            uiinitgmouse( init_mode );
 extern      bool            uiinlist( ui_event, ui_event _FARD * );
 extern      bool            uiinlists( ui_event );
 extern      bool            uiintoplist( ui_event );

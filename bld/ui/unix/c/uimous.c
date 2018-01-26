@@ -57,8 +57,8 @@ void intern stopmouse( void )
     _stopmouse();
 }
 
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
     return( _initmouse( install ) );
 }

@@ -31,11 +31,13 @@
 
 
 #include "guiwind.h"
+#include "initmode.h"
 #include "guisysin.h"
 
 
-bool GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
-    param=param;
+    /* unused parameters */ (void)install;
+
     return( true );
 }

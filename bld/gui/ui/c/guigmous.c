@@ -35,10 +35,10 @@
 #include "guixinit.h"
 
 #ifdef __DOS__
-static  bool    GraphicsMouse   = false;
-static  bool    GraphicsDlg     = false;
-static  bool    GMouseOn        = false;
-static  int     Param           = 0;
+static bool         GraphicsMouse   = false;
+static bool         GraphicsDlg     = false;
+static bool         GMouseOn        = false;
+static init_mode    GMinstall       = INIT_MOUSELESS;
 #endif
 
 void GUIInitGraphicsMouse( gui_window_styles style )
@@ -55,23 +55,23 @@ void GUIInitGraphicsMouse( gui_window_styles style )
 #endif
 }
 
-int GUIInitMouse( int param )
+bool GUIInitMouse( init_mode install )
 {
-    int init;
+    bool    init;
 
 #ifdef __DOS__
-    Param = param;
+    GMinstall = install;
     if( GraphicsMouse ) {
-        init = uiinitgmouse( param );
+        init = uiinitgmouse( install );
         if( GraphicsDlg ) {
             FlipCharacterMap();
         }
     } else {
-        init = initmouse( param );
+        init = initmouse( install );
     }
     GMouseOn = true;
 #else
-    init = initmouse( param );
+    init = initmouse( install );
 #endif
     return( init );
 }
@@ -101,7 +101,7 @@ void GUIGMouseOn( void )
 
     if( !GMouseOn && GraphicsMouse ) {
         uivmousepos( NULL, &row, &col );
-        GUIInitMouse( Param );
+        GUIInitMouse( GMinstall );
         uisetmouseposn( row, col );
     }
 #endif

@@ -80,7 +80,7 @@ static bool         TermIsQNXTerm;
 
 static void         TI_SETATTR( void );
 static int          new_attr( int nattr, int oattr );
-static int          ti_refresh( int must );
+static int          ti_refresh( bool must );
 
 bool TermCheck( void )
 /********************/
@@ -905,8 +905,8 @@ static bool initmonitor( void )
 
 
 #if 0
-static int td_init( void )
-/************************/
+static bool td_init( void )
+/*************************/
 {
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -926,13 +926,13 @@ static int td_init( void )
     UIData->mouse_clk_delay = 277;
     UIData->tick_delay      = 500;
     UIData->f10menus        = true;
-    td_refresh( 1 );
+    td_refresh( true );
     return( true );
 }
 #endif
 
-static int td_init( void )
-/************************/
+static bool td_init( void )
+/*************************/
 {
     int         rows, cols;
     const char  *tmp;
@@ -986,14 +986,14 @@ static int td_init( void )
     //find point at which repeat chars code becomes efficient
     ti_find_cutoff();
 
-    ti_refresh( 1 );
+    ti_refresh( true );
     return( true );
 }
 
 
 #if 0
-static int td_fini( void )
-/************************/
+static bool td_fini( void )
+/*************************/
 {
     QNX_RESTORE_ATTR();
     QNX_HOME();
@@ -1002,12 +1002,12 @@ static int td_fini( void )
     __flush_con();
     finikeyboard();
     uifinicursor();
-    return( 0 );
+    return( false );
 }
 #endif
 
-static int td_fini( void )
-/************************/
+static bool td_fini( void )
+/*************************/
 {
     TI_RESTORE_ATTR();
     TI_HOME();
@@ -1023,7 +1023,7 @@ static int td_fini( void )
 
     finikeyboard();
     uifinicursor();
-    return( 0 );
+    return( false );
 }
 
 /* update the physical screen with contents of virtual copy */
@@ -1109,8 +1109,8 @@ static void ti_hwcursor( void )
 }
 
 
-static int td_refresh( int must )
-/*******************************/
+static int td_refresh( bool must )
+/********************************/
 {
     int             i;
     int             incr;
@@ -1246,8 +1246,8 @@ static void update_shadow( void )
 }
 
 
-static int ti_refresh( int must )
-/*******************************/
+static int ti_refresh( bool must )
+/********************************/
 {
     int         i;
     int         incr;               // chars per line

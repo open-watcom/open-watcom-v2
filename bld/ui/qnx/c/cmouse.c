@@ -152,8 +152,8 @@ static int cm_stop()
     return 0;
 }
 
-static int cm_init( int install )
-/*******************************/
+static bool cm_init( init_mode install )
+/**************************************/
 {
     struct itimercb     timercb;
     struct _osinfo      osinfo;
@@ -161,7 +161,7 @@ static int cm_init( int install )
     MOUSEORD            col;
 
     MouseInstalled = false;
-    if( install == 0 )
+    if( install == INIT_MOUSELESS )
         return( false );
 
     MouseCtrl = mouse_open( 0, 0, UIConHandle );
@@ -189,15 +189,15 @@ static int cm_init( int install )
 }
 
 
-static int cm_fini( void )
-/************************/
+static bool cm_fini( void )
+/*************************/
 {
     if( MouseInstalled ) {
         uioffmouse();
         mouse_close( MouseCtrl );
         rmtimer( MouseTimer );
     }
-    return 0;
+    return( false );
 }
 
 static int cm_set_speed( unsigned speed )

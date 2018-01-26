@@ -44,10 +44,10 @@
 
 
 typedef struct Display {
-    int         (*init)( void );            /* setup */
-    int         (*fini)( void );            /* tear down */
+    bool        (*init)( void );            /* setup */
+    bool        (*fini)( void );            /* tear down */
     int         (*update)(SAREA *area);     /* change screen */
-    int         (*refresh)(int noopt);      /* force redraw of screen */
+    int         (*refresh)(bool noopt);     /* force redraw of screen */
     /*- cursor */
     int         (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, int *attr);
     int         (*setcur)(ORD row, ORD col, CURSOR_TYPE type, int attr);
@@ -56,8 +56,8 @@ typedef struct Display {
 
 
 typedef struct Keyboard {
-    int     (*init)( void );                /* set initial modes, etc... */
-    int     (*fini)( void );                /* restore saved modes, etc... */
+    bool    (*init)( void );                /* set initial modes, etc... */
+    bool    (*fini)( void );                /* restore saved modes, etc... */
     void    (*arm)( void );                 /* arm for next character */
     int     (*save)( void );                /* save current mode, restore original mode */
     int     (*restore)( void );             /* set into raw mode */
@@ -69,8 +69,8 @@ typedef struct Keyboard {
 } Keyboard;
 
 typedef struct Mouse {
-    int     (*init)( int install );
-    int     (*fini)( void );
+    bool    (*init)( init_mode install );
+    bool    (*fini)( void );
     int     (*set_speed)( unsigned speed );
     int     (*stop)( void );            /* clear input, disable events */
     int     (*check)( unsigned short *status, MOUSEORD *row,

@@ -250,8 +250,8 @@ static void my_console_write(
 }
 
 
-static int cd_init( void )
-/************************/
+static bool cd_init( void )
+/*************************/
 {
     int         initialized;
 
@@ -275,8 +275,8 @@ static int cd_init( void )
 }
 
 
-static int cd_fini( void )
-/************************/
+static bool cd_fini( void )
+/*************************/
 {
     finikeyboard();
     uifinicursor();
@@ -314,7 +314,7 @@ static int cd_update( SAREA *area )
     return( 0 );
 }
 
-static int cd_refresh( int must )
+static int cd_refresh( bool must )
 {
     /* unused parameters */ (void)must;
 

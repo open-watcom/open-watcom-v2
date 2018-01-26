@@ -186,19 +186,19 @@ static bool mouse_installed( void )
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }
 
-static void DOS_initmouse( int install )
-/**************************************/
+static void DOS_initmouse( init_mode install )
+/********************************************/
 {
     int             cx,dx;
     unsigned long   time;
 
-    if( install > 0 && mouse_installed() ) {
-        if( install > 1 ) {
+    if( install > INIT_MOUSELESS && mouse_installed() ) {
+        if( install > INIT_MOUSE ) {
             if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
-                install = 0; /* mouse initialization failed */
+                install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
-        if( install > 0 ) {
+        if( install > INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
             MouseInt( 7, 0, 0, dx );
             dx = ( UIData->height - 1 ) * MOUSE_SCALE;
@@ -221,13 +221,13 @@ static void DOS_initmouse( int install )
     }
 }
 
-static void OS2_initmouse( int install )
-/**************************************/
+static void OS2_initmouse( init_mode install )
+/********************************************/
 {
     USHORT          mouevents;
     USHORT          num_buttons;
 
-    if( install > 0 && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
+    if( install > INIT_MOUSELESS && ( MouOpen( 0L, &MouHandle ) == 0 ) ) {
         if( MouGetNumButtons( &num_buttons, MouHandle ) == 0 ) {
             if( num_buttons == 2 ) {
                 TwoButtonMouse = true;
@@ -268,8 +268,8 @@ static void OS2_initmouse( int install )
 }
 
 
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
     MouseInstalled = false;
     if( _osmode == DOS_MODE ) {

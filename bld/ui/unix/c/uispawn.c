@@ -52,7 +52,7 @@ void UIAPI uispawnend( void )
 {
     restorekeyb();
     if( MouseInstalled )
-        _initmouse( 1 );
+        _initmouse( INIT_MOUSE );
     uiswap();
-    _ui_refresh( 1 );
+    _ui_refresh( true );
 }

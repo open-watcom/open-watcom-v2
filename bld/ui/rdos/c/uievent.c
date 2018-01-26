@@ -223,11 +223,11 @@ void uimousespeed( unsigned speed )
     /* unused parameters */ (void)speed;
 }
 
-int UIAPI initmouse( int install )
+bool UIAPI initmouse( init_mode install )
 {
     unsigned long   tmp;
 
-    if( install == 0 ) {
+    if( install == INIT_MOUSELESS ) {
         return( false );
     }
     UIData->mouse_xscale = 8;

@@ -57,8 +57,8 @@ bool UIAPI uistart( void )
     return( false );
 }
 
-bool UIAPI uiinit( int install )
-/******************************/
+bool UIAPI uiinit( init_mode install )
+/************************************/
 {
     bool    initialized;
 
