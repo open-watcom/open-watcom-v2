@@ -92,7 +92,7 @@ void GUIProcessMenuCurr( UIMENUITEM *menu )
         } else {
             if( IS_CTLEVENT( menu->event ) ) {
                 id = EV2ID( menu->event );
-                if( menu->flags & ITEM_GRAYED ) {
+                if( MENUGRAYED( *menu ) ) {
                     style = GUI_GRAYED;
                 } else {
                     style = GUI_ENABLED;

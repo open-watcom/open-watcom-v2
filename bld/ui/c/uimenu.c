@@ -138,7 +138,7 @@ static void menutitle( int menu, bool current )
 
     desc = &Describe[menu - 1];
     mptr = &Menu->titles[menu - 1];
-    if( MENUGRAYED(*mptr) ) {
+    if( MENUGRAYED( *mptr ) ) {
         if( current ) {
             attr = UIData->attrs[ATTR_CURR_INACTIVE];
         } else {
@@ -181,7 +181,7 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
     ATTR                    chattr;
     int                     str_len;
 
-    active = !MENUGRAYED(*menu) && uiinlists( menu->event );
+    active = !MENUGRAYED( *menu ) && uiinlists( menu->event );
     if( active ) {
         if( curr ) {
             attr = UIData->attrs[ATTR_CURR_ACTIVE];
@@ -325,8 +325,7 @@ static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
     handled = false;
     itemptr = Menu->titles;
     for( index = 0 ; !MENUENDMARKER( itemptr[index] ); ++index ) {
-        if( !MENUSEPARATOR( itemptr[index] ) &&
-            !MENUGRAYED ( itemptr[index] ) ) {
+        if( !MENUSEPARATOR( itemptr[index] ) && !MENUGRAYED( itemptr[index] ) ) {
             hotchar = itemptr[index].name[CHAROFFSET( itemptr[index] )];
             if( tolower( hotchar ) == ch ) {
                 *desc = &Describe[index];
@@ -349,7 +348,7 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
     SAREA       return_exclude;
 
     ui_ev = EV_NO_EVENT;
-    if( MENUGRAYED(Menu->titles[Menu->menu - 1]) ) {
+    if( MENUGRAYED( Menu->titles[Menu->menu - 1] ) ) {
         curr_menu = NULL;
     } else {
         curr_menu = Menu->titles[Menu->menu - 1].popup;
@@ -565,10 +564,10 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
             }
             if( Menu->active ) {
                 if( itemevent == EV_NO_EVENT ) {
-                    if( MENUGRAYED(Menu->titles[menu-1]) )  {
+                    if( MENUGRAYED( Menu->titles[menu - 1] ) )  {
                         Menu->popuppending = false;
                     } else {
-                        itemevent = Menu->titles[menu-1].event;
+                        itemevent = Menu->titles[menu - 1].event;
                     }
                 }
                 Menu->event = itemevent;
@@ -804,7 +803,7 @@ bool uienablemenuitem( unsigned menu, unsigned item, bool enable )
     UIMENUITEM  *pitem;
 
     pitem = &Menu->titles[menu - 1].popup[item - 1];
-    prev = ( ( pitem->flags & ITEM_GRAYED ) == 0 );
+    prev = !MENUGRAYED( *pitem );
     if( enable ) {
         pitem->flags &= ~ITEM_GRAYED;
     } else {

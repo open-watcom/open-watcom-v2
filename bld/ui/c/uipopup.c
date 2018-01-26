@@ -235,7 +235,7 @@ static bool SendEvent( int num, UIMENUITEM *menu, int index,
     *ui_ev = EV_NO_EVENT;
     if( ( index < num ) && ( index >= 0 ) ) {
         DoEnd( window );
-        if( !( MENUGRAYED( menu[index] ) ) ) {
+        if( !MENUGRAYED( menu[index] ) ) {
             *ui_ev = menu[index].event;
             return( true );
         }
@@ -307,7 +307,7 @@ static bool createsubpopup( UIMENUITEM *menu, bool left, bool right,
     ui_event    default_event;
     UIMENUITEM  *curr_popup;
 
-    if ( MENUGRAYED(menu[ScrollPos]) ) {
+    if( MENUGRAYED( menu[ScrollPos] ) ) {
         curr_popup = NULL;
     } else {
         curr_popup = menu[ScrollPos].popup;

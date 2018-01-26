@@ -370,8 +370,7 @@ static bool GUISetMenuItems( gui_ctl_idx num_menus, UIMENUITEM *menu,
             if( info[i].style & GUI_SEPARATOR ) {
                 menu[j].flags |= ITEM_SEPARATOR;
             } else {
-                if( !MenuConvert( info[i].label, &menu[j].flags, &menu[j].name,
-                                  info[i].style & GUI_MENU_CHECKED ) ) {
+                if( !MenuConvert( info[i].label, &menu[j].flags, &menu[j].name, (info[i].style & GUI_MENU_CHECKED) != 0 ) ) {
                     return( false );
                 }
                 GUIChangeMenu( &menu[j], info[i].style );

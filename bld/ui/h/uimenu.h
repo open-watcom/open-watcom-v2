@@ -55,10 +55,10 @@ typedef struct describemenu {
 #define ITEM_CHECKED                0x0200
 #define ITEM_SEPARATOR              0x0400
 
-#define CHAROFFSET( menu )    ( (menu).flags & ITEM_CHAR_OFFSET )
-#define MENUGRAYED( menu )    ( (menu).flags & ITEM_GRAYED )
-#define MENUSEPARATOR( menu ) ( ( (menu).flags & ITEM_SEPARATOR ) || (*((menu).name) == '\0' ) )
-#define MENUENDMARKER( menu ) ( ( (menu).name == NULL ) && !( (menu).flags & ITEM_SEPARATOR ) )
+#define CHAROFFSET( menu )    ((menu).flags & ITEM_CHAR_OFFSET)
+#define MENUGRAYED( menu )    (((menu).flags & ITEM_GRAYED) != 0)
+#define MENUSEPARATOR( menu ) (((menu).flags & ITEM_SEPARATOR) || ((menu).name[0] == '\0'))
+#define MENUENDMARKER( menu ) (((menu).name == NULL) && ((menu).flags & ITEM_SEPARATOR) == 0)
 
 typedef struct menuitem {
         char*           name;           /* name of item         */
