@@ -40,7 +40,7 @@
 #include "guiutil.h"
 #include "guistr.h"
 
-static MENUITEM SystemMenu[NUM_SYSTEM_MENUS] = {
+static UIMENUITEM SystemMenu[NUM_SYSTEM_MENUS] = {
   { NULL,   EV_SYS_MENU_RESTORE,    0              },
   { NULL,   EV_SYS_MENU_MOVE,       0              },
   { NULL,   EV_SYS_MENU_SIZE,       0              },
@@ -53,7 +53,7 @@ static MENUITEM SystemMenu[NUM_SYSTEM_MENUS] = {
 void GUISetSystemMenuFlags( gui_window *wnd )
 {
     int         i;
-    MENUITEM    *menu;
+    UIMENUITEM  *menu;
 
     if( !( wnd->style & GUI_SYSTEM_MENU ) || ( wnd->menu == NULL ) ) {
         return;
@@ -101,7 +101,7 @@ void GUISetSystemMenuFlags( gui_window *wnd )
     }
 }
 
-bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
+bool GUISetSystemMenu( UIMENUITEM *menu, gui_create_styles style )
 {
     int     i;
     bool    ok;

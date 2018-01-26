@@ -65,13 +65,13 @@ typedef struct menuitem {
         ui_event        event;          /* item event           */
         unsigned short  flags;          /* char offset, grayed  */
         struct menuitem *popup;         /* popup from this menu */
-} MENUITEM;
+} UIMENUITEM;
 
 /* the titles and items fields must be initialized by the       */
 /* application - all other fields are for looking at only       */
 
 typedef struct vbarmenu {
-        MENUITEM*       titles;         /* titles for pull down menus       */
+        UIMENUITEM      *titles;        /* titles for pull down menus       */
         ui_event        event;          /* current menu item event          */
         unsigned        inlist:1;       /* selection will lead to the event */
         unsigned        active:1;       /* the user is browsing the menus   */
@@ -96,7 +96,7 @@ extern          char            uialtchar( ui_event );
 extern          void            uisetmenudesc( void );
 extern          VBARMENU*       uimenubar( VBARMENU * );
 extern          void            uimenuindicators( bool );
-extern          void            uimenus( MENUITEM *, MENUITEM **, ui_event );
+extern          void            uimenus( UIMENUITEM *, UIMENUITEM **, ui_event );
 extern          bool            uimenuson( void );
 extern          void            uimenudisable( bool );
 extern          bool            uimenuisdisabled( void );
@@ -105,21 +105,21 @@ extern          void            uimenusetaltpressed ( bool );
 extern          void            uinomenus( void );
 extern          void            uiactivatemenus( void );
 extern          bool            uienablemenuitem( unsigned, unsigned, bool );
-extern          void            uidescmenu( MENUITEM *, DESCMENU * );
-extern          void            uidrawmenu( MENUITEM *, DESCMENU *, int );
-extern          void            uidisplayitem( MENUITEM *, DESCMENU *, int, bool );
+extern          void            uidescmenu( UIMENUITEM *, DESCMENU * );
+extern          void            uidrawmenu( UIMENUITEM *, DESCMENU *, int );
+extern          void            uidisplayitem( UIMENUITEM *, DESCMENU *, int, bool );
 extern          void            uiclosepopup( UI_WINDOW* );
 extern          void            uiopenpopup( DESCMENU*, UI_WINDOW* );
-extern          bool            uiposfloatingpopup( MENUITEM *menu, DESCMENU *desc, ORD row, ORD col, SAREA *keep_inside, SAREA *keep_visible );
-extern          ui_event        uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right, ui_event curr_item );
-extern          ui_event        uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, bool sub );
-extern          ui_event        uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, bool sub );
-extern          ui_event        uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, DESCMENU *parent_menu, int index );
-extern          ui_event        uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, SAREA *return_inside, SAREA *return_exclude );
+extern          bool            uiposfloatingpopup( UIMENUITEM *menu, DESCMENU *desc, ORD row, ORD col, SAREA *keep_inside, SAREA *keep_visible );
+extern          ui_event        uicreatepopup( ORD row, ORD col, UIMENUITEM *menu, bool left, bool right, ui_event curr_item );
+extern          ui_event        uicreatepopupdesc( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, bool sub );
+extern          ui_event        uicreatepopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, bool sub );
+extern          ui_event        uicreatesubpopup( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, DESCMENU *parent_menu, int index );
+extern          ui_event        uicreatesubpopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, SAREA *return_inside, SAREA *return_exclude );
 extern          void            uisetbetweentitles( int );
-extern          void            uimenucurr( MENUITEM * );
+extern          void            uimenucurr( UIMENUITEM * );
 extern          void            uimenutitlebar( void );
-extern          int             uigetcurrentmenu( MENUITEM *menu );
+extern          int             uigetcurrentmenu( UIMENUITEM *menu );
 extern          unsigned        uimenuheight( void );
 
 #ifdef __cplusplus

@@ -73,14 +73,14 @@ enum {
     EV_NOTHING
 };
 
-static MENUITEM secondpopup[] = {
+static UIMENUITEM secondpopup[] = {
     { "Dialog",   EV_SAMPLE_DIALOG, 1 },
     { "",         ___,              0 },
     { "Exit",     EV_QUIT,          1 },
     NULL
 };
 
-static MENUITEM filemenu[] = {
+static UIMENUITEM filemenu[] = {
     { "Open",     EV_OPEN,          0 },
     { "Close",    EV_CLOSE,         0 },
     { "Nothing",  EV_NOTHING,       2 },
@@ -92,11 +92,11 @@ static MENUITEM filemenu[] = {
     NULL
 };
 
-static MENUITEM editmenu[] = {
+static UIMENUITEM editmenu[] = {
     { NULL,       ___,              0 },
 };
 
-static MENUITEM barmenu[] = {
+static UIMENUITEM barmenu[] = {
     { "File",               ___,    0 },
     { "Edit",               ___,    1 },
     { "LongMenuItem_1",     ___,    1 },
@@ -114,7 +114,7 @@ static MENUITEM barmenu[] = {
     NULL
 };
 
-static MENUITEM *pulldownuimenus[] = {
+static UIMENUITEM *pulldownuimenus[] = {
     filemenu,
     editmenu,
     editmenu,

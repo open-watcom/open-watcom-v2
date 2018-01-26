@@ -90,7 +90,7 @@ static bool InArea( ORD row, ORD col, SAREA *area )
  * DrawMenuText -- display the line of menu text
  */
 
-static void DrawMenuText( int index, MENUITEM *menu, bool curr, DESCMENU *desc )
+static void DrawMenuText( int index, UIMENUITEM *menu, bool curr, DESCMENU *desc )
 {
     uidisplayitem( &menu[index], desc, index + 1, curr );
     uimenucurr( &menu[index] );
@@ -187,7 +187,7 @@ static int GetNewPos( int pos, int num )
  * SkipSeparators -- calculate new position, skipping separators
  */
 
-static int SkipSeparators( int diff, int num, MENUITEM *menu )
+static int SkipSeparators( int diff, int num, UIMENUITEM *menu )
 {
     int pos;
 
@@ -198,7 +198,7 @@ static int SkipSeparators( int diff, int num, MENUITEM *menu )
     return( pos );
 }
 
-static void ChangePos( int new_pos, MENUITEM *menu, DESCMENU *desc )
+static void ChangePos( int new_pos, UIMENUITEM *menu, DESCMENU *desc )
 {
     ScrollPos = new_pos;
     if( PrevScrollPos != NO_SELECT ) {
@@ -213,7 +213,7 @@ static void ChangePos( int new_pos, MENUITEM *menu, DESCMENU *desc )
  *           Draw old selection normally, hightlight new selection
  */
 
-static void Scroll( int pos, int num, MENUITEM *menu, DESCMENU *desc )
+static void Scroll( int pos, int num, UIMENUITEM *menu, DESCMENU *desc )
 {
     ChangePos( GetNewPos( pos, num ), menu, desc );
 }
@@ -228,7 +228,7 @@ static void DoEnd( UI_WINDOW *window )
  *              popup menu
  */
 
-static bool SendEvent( int num, MENUITEM *menu, int index,
+static bool SendEvent( int num, UIMENUITEM *menu, int index,
                        UI_WINDOW *window, ui_event *ui_ev )
 {
 
@@ -249,7 +249,7 @@ static bool SendEvent( int num, MENUITEM *menu, int index,
  * KeyboardSelect -- See if the pressed key selects one of the menu items
  */
 
-static bool KeyboardSelect( ui_event ui_ev, int num, MENUITEM *menu, DESCMENU *desc )
+static bool KeyboardSelect( ui_event ui_ev, int num, UIMENUITEM *menu, DESCMENU *desc )
 
 {
     int         i;
@@ -277,7 +277,7 @@ static bool KeyboardSelect( ui_event ui_ev, int num, MENUITEM *menu, DESCMENU *d
     return( false );
 }
 
-ui_event UIAPI uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
+ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menu, DESCMENU *desc, bool left,
                                 bool right, ui_event curr_item, bool sub )
 {
     SAREA       keep_inside;
@@ -291,7 +291,7 @@ ui_event UIAPI uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
 
 }
 
-static bool createsubpopup( MENUITEM *menu, bool left, bool right,
+static bool createsubpopup( UIMENUITEM *menu, bool left, bool right,
                             SAREA *keep_inside, ui_event *new_ui_ev, UI_WINDOW *window,
                             DESCMENU *desc, bool set_default )
 {
@@ -305,7 +305,7 @@ static bool createsubpopup( MENUITEM *menu, bool left, bool right,
     DESCMENU    sub_desc;
     int         num;
     ui_event    default_event;
-    MENUITEM    *curr_popup;
+    UIMENUITEM  *curr_popup;
 
     if ( MENUGRAYED(menu[ScrollPos]) ) {
         curr_popup = NULL;
@@ -371,7 +371,7 @@ static bool createsubpopup( MENUITEM *menu, bool left, bool right,
  *
  */
 
-bool uiposfloatingpopup( MENUITEM *menu, DESCMENU *desc, ORD row, ORD col,
+bool uiposfloatingpopup( UIMENUITEM *menu, DESCMENU *desc, ORD row, ORD col,
                          SAREA *keep_inside, SAREA *keep_visible )
 {
     desc->area.row = row;
@@ -386,7 +386,7 @@ bool uiposfloatingpopup( MENUITEM *menu, DESCMENU *desc, ORD row, ORD col,
     return( true );
 }
 
-static ui_event createpopupinarea( MENUITEM *menu, DESCMENU *desc,
+static ui_event createpopupinarea( UIMENUITEM *menu, DESCMENU *desc,
                                 bool left, bool right,
                                 ui_event curr_item, SAREA *keep_inside,
                                 SAREA *return_inside, SAREA *return_exclude,
@@ -595,14 +595,14 @@ static ui_event createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     return( new_ui_ev );
 }
 
-ui_event UIAPI uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
+ui_event UIAPI uicreatepopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left,
                                   bool right, ui_event curr_item,
                                   SAREA *keep_inside, bool sub )
 {
     return( createpopupinarea( menu, desc, left, right, curr_item, keep_inside, NULL, NULL, sub ) );
 }
 
-ui_event UIAPI uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
+ui_event UIAPI uicreatesubpopup( UIMENUITEM *menu, DESCMENU *desc, bool left,
                                bool right, ui_event curr_item, SAREA *keep_inside,
                                DESCMENU *parent_menu, int index )
 {
@@ -618,7 +618,7 @@ ui_event UIAPI uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
                                     &return_exclude ) );
 }
 
-ui_event UIAPI uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
+ui_event UIAPI uicreatesubpopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left,
                                      bool right, ui_event curr_item, SAREA *keep_inside,
                                      SAREA *return_inside, SAREA *return_exclude )
 {
@@ -626,7 +626,7 @@ ui_event UIAPI uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left
                                return_inside, return_exclude, true ) );
 }
 
-ui_event UIAPI uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right, ui_event curr_item )
+ui_event UIAPI uicreatepopup( ORD row, ORD col, UIMENUITEM *menu, bool left, bool right, ui_event curr_item )
 {
     DESCMENU    desc;
     SAREA       keep_inside;

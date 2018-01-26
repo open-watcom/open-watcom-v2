@@ -49,7 +49,7 @@ typedef enum {
     MENU_SYS
 } MenuStatus;
 
-MENUITEM            *GUIPopupMenu   = NULL;
+UIMENUITEM          *GUIPopupMenu   = NULL;
 
 static MenuStatus   MenuState       = MENU_NONE;
 static gui_window   *MenuWnd        = NULL;
@@ -75,7 +75,7 @@ static void MapLocation( gui_window *wnd, gui_point *point )
  * GUIProcessMenuCurr
  */
 
-void GUIProcessMenuCurr( MENUITEM *menu )
+void GUIProcessMenuCurr( UIMENUITEM *menu )
 {
     gui_window          *top_wnd;
     gui_ctl_id          id;
@@ -130,7 +130,7 @@ void GUIProcessMenuCurr( MENUITEM *menu )
  */
 
 ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
-                          MENUITEM *menu, gui_mouse_track track,
+                          UIMENUITEM *menu, gui_mouse_track track,
                           gui_ctl_id *curr_id )
 {
     ui_event    ui_ev;
@@ -220,7 +220,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
 }
 
 static void TrackPopup( gui_window *wnd, gui_point *location,
-                        MENUITEM *new_menu, gui_mouse_track track, gui_ctl_id *curr_id )
+                        UIMENUITEM *new_menu, gui_mouse_track track, gui_ctl_id *curr_id )
 {
     MapLocation( wnd, location );
 
@@ -242,7 +242,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num_menu_items, gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
-    MENUITEM    *new_menu;
+    UIMENUITEM  *new_menu;
 
     if( !GUICreateMenuItems( num_menu_items, menu, &new_menu ) ) {
         return( false );

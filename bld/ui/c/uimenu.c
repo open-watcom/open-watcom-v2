@@ -131,8 +131,8 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, unsigned char ch, 
 static void menutitle( int menu, bool current )
 /*********************************************/
 {
-    register    DESCMENU*               desc;
-    register    MENUITEM*               mptr;
+    register    DESCMENU                *desc;
+    register    UIMENUITEM              *mptr;
     register    ATTR                    attr;
     register    ATTR                    chattr;
 
@@ -166,8 +166,8 @@ static void menutitle( int menu, bool current )
              chattr, &mptr->name[CHAROFFSET( *mptr )], 1 );
 }
 
-void UIAPI uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
-/******************************************************************************/
+void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
+/*******************************************************************************/
 {
     bool                    active;
     ORD                     choffset;
@@ -285,7 +285,7 @@ void UIAPI uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
 }
 
 
-extern void uidrawmenu( MENUITEM *menu, DESCMENU *desc, int curr )
+extern void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
 {
     register    int             item;
 
@@ -317,7 +317,7 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
 {
     register    int                     index;
-    register    MENUITEM*               itemptr;
+    register    UIMENUITEM              *itemptr;
     register    int                     handled;
     register    int                     hotchar;
 
@@ -344,7 +344,7 @@ static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
 static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 {
     ui_event    ui_ev;
-    MENUITEM    *curr_menu;
+    UIMENUITEM  *curr_menu;
     SAREA       keep_inside;
     SAREA       return_exclude;
 
@@ -679,8 +679,8 @@ ui_event intern menuevent( VSCREEN *vptr )
 }
 
 
-void UIAPI uidescmenu( MENUITEM *iptr, DESCMENU *desc )
-/******************************************************/
+void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
+/*******************************************************/
 {
     register    int                     item;
     register    int                     len;
@@ -744,8 +744,8 @@ void UIAPI uidescmenu( MENUITEM *iptr, DESCMENU *desc )
 
 static void descmenu( int menu, DESCMENU *desc )
 {
-    MENUITEM*           nptr;
-    MENUITEM*           iptr;
+    UIMENUITEM          *nptr;
+    UIMENUITEM          *iptr;
     unsigned            next;
     #define             MENUSTRLEN(x)   ((x) ? (ORD) strlen((x)) : (ORD) 0)
 
@@ -801,7 +801,7 @@ static void drawbar( SAREA area, void *dummy )
 bool uienablemenuitem( unsigned menu, unsigned item, bool enable )
 {
     bool        prev;
-    MENUITEM    *pitem;
+    UIMENUITEM  *pitem;
 
     pitem = &Menu->titles[menu - 1].popup[item - 1];
     prev = ( ( pitem->flags & ITEM_GRAYED ) == 0 );
@@ -838,8 +838,8 @@ VBARMENU* UIAPI uimenubar( VBARMENU *bar )
 /*****************************************/
 {
     register    int                     count;
-    register    MENUITEM*               menus;
-    register    VBARMENU*               prevMenu;
+    register    UIMENUITEM              *menus;
+    register    VBARMENU                *prevMenu;
 
     if( NumMenus > 0 ) {
         closewindow( &BarWin );
@@ -928,8 +928,8 @@ void UIAPI uinomenus( void )
 }
 
 
-void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, ui_event hot )
-/*******************************************************************/
+void UIAPI uimenus( UIMENUITEM *menus, UIMENUITEM **items, ui_event hot )
+/***********************************************************************/
 {
     register    int                     index;
 
@@ -963,7 +963,7 @@ void UIAPI uiignorealt( void )
     }
 }
 
-int UIAPI uigetcurrentmenu( MENUITEM *menu )
+int UIAPI uigetcurrentmenu( UIMENUITEM *menu )
 {
     if( Menu->menu ) {
         *menu = Menu->titles[Menu->menu - 1];
