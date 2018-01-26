@@ -57,7 +57,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON(     NULL, CTL_NEW_CANCEL,  B2, R1, B2 + BW ),
 };
 
-static bool passwordGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;
@@ -116,7 +116,7 @@ bool    DlgNew( const char *title, char *buff, size_t buff_len )
 
     Controls[1].text = WndLoadString( LITERAL_New_OK );
     Controls[2].text = WndLoadString( LITERAL_New_Cancel );
-    rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), passwordGUIEventProc, DLG_SIZE_DATA );
+    rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
     WndFree( (void *)Controls[1].text );
     WndFree( (void *)Controls[2].text );
     return( rc );

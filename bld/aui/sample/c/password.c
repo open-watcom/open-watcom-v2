@@ -54,7 +54,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON(         "Cancel",   CTL_NEW_CANCEL, B2, R1, B2 + BW ),
 };
 
-static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool passwordGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;
@@ -91,5 +91,5 @@ static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 
 void    Password( const char *title, char *buff, size_t buff_len )
 {
-    DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
+    DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), passwordGUIEventProc, DLG_SIZE_DATA );
 }
