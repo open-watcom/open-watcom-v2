@@ -161,8 +161,8 @@ typedef struct a_dialog {
     VFIELD          *curr;          // current VFIELD
     VFIELD          *first;         // first VFIELD
     a_ui_edit       *edit_data;
-    unsigned        dirty:1;
-    unsigned        moving:1;
+    bool            dirty       :1;
+    bool            moving      :1;
 } a_dialog;
 
 #ifdef __cplusplus

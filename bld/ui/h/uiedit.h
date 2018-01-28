@@ -34,12 +34,12 @@
 #define _UIEDIT_H_
 
 typedef struct vbuffer {
-        char            *content;
-        int             length;
-        int             index;
-        unsigned        insert:1;
-        unsigned        dirty:1;
-        unsigned        auto_clear:1;
+    char            *content;
+    int             length;
+    int             index;
+    bool            insert      :1;
+    bool            dirty       :1;
+    bool            auto_clear  :1;
 } VBUFFER;
 
 extern void         uipadblanks( char *, int );
