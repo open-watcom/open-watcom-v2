@@ -53,25 +53,31 @@ bool UIAPI uiset80col( void )
 
 bool intern initbios( void )
 {
-    short int *bufptr;
-    int i;
+    PIXEL   *bufptr;
+    int     i;
+    int     height;
+    int     width;
+    size_t  size;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
 
     UIData->colour = M_VGA;
-    RdosGetTextSize(&UIData->height, &UIData->width);
+    RdosGetTextSize( &height, &width );
+    UIData->height = height;
+    UIData->width = width;
+    UIData->screen.increment = UIData->width;
+    size = UIData->width * UIData->height;
 
-    UIData->screen.origin = uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+    UIData->screen.origin = uimalloc( size * sizeof( PIXEL ) );
 
-    bufptr = (short int *)UIData->screen.origin;
-    for( i = 0; i < UIData->width * UIData->height; i++ ) {
-        *bufptr = 0x720;
-        bufptr++;
+    bufptr = UIData->screen.origin;
+    for( i = 0; i < size; i++ ) {
+        bufptr[i].ch = ' ';
+        bufptr[i].attr = 0x07;
     }
 
-    UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
     UIData->mouse_acc_delay = 250;
