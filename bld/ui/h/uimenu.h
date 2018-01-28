@@ -66,13 +66,13 @@ typedef struct menuitem {
     ui_event        event;              /* item event           */
     unsigned short  flags;              /* char offset, grayed  */
     struct menuitem *popup;             /* popup from this menu */
-} MENUITEM;
+} UIMENUITEM;
 
 /* the titles and items fields must be initialized by the       */
 /* application - all other fields are for looking at only       */
 
 typedef struct vbarmenu {
-    MENUITEM*       titles;             /* titles for pull down menus        */
+    UIMENUITEM      *titles;            /* titles for pull down menus        */
     ui_event        event;              /* current menu item event           */
     bool            inlist       :1;    /* selection will lead to the event  */
     bool            active       :1;    /* the user is browsing the menus    */
