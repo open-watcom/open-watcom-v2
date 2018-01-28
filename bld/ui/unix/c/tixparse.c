@@ -57,7 +57,7 @@
 #endif
 
 
-#include "stdui.h"
+#include "uidef.h"
 #include "unxuiext.h"
 #include "tixparse.h"
 #include "tixsupp.h"
@@ -176,7 +176,7 @@ static int do_default( void )
     int                 i;
     char                esc_str[3];
 
-    esc_str[0] = '\033';
+    esc_str[0] = _ESC_CHAR;
     esc_str[1] = 'A';
     esc_str[2] = '\0';
     for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ; i++ ) {
@@ -259,44 +259,44 @@ tix_status ti_read_tix( const char *termname )
         /* force UTF-8 mode if the locale is set that way; *
          * we may be on a new VT on the Linux console      */
         if ( utf8_mode ) {
-            uiwritec( "\033%G" );
+            uiwritec( _ESC "%G" );
             /* use UTF-8 characters instead of ACS */
             for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {
                 wctomb( ti_char_map[i], default_tix[i].unicode );
             }
         } else {
-            uiwritec( "\033%@" );
+            uiwritec( _ESC "%@" );
         }
     }
 #endif
 
     if( strncmp( termname, "xterm", 5 ) == 0 ) {
         /* special xterm keys available in recent xterms */
-        TrieAdd( EV_CTRL_CURSOR_UP, "\033[1;5A" );
-        TrieAdd( EV_CTRL_CURSOR_DOWN, "\033[1;5B" );
-        TrieAdd( EV_CTRL_CURSOR_RIGHT, "\033[1;5C" );
-        TrieAdd( EV_CTRL_CURSOR_LEFT, "\033[1;5D" );
-        TrieAdd( EV_CTRL_HOME, "\033[1;5H" );
-        TrieAdd( EV_CTRL_END, "\033[1;5F" );
-        TrieAdd( EV_CTRL_PAGE_UP, "\033[5;5~" );
-        TrieAdd( EV_CTRL_PAGE_DOWN, "\033[6;5~" );
+        TrieAdd( EV_CTRL_CURSOR_UP,     _ESC "[1;5A" );
+        TrieAdd( EV_CTRL_CURSOR_DOWN,   _ESC "[1;5B" );
+        TrieAdd( EV_CTRL_CURSOR_RIGHT,  _ESC "[1;5C" );
+        TrieAdd( EV_CTRL_CURSOR_LEFT,   _ESC "[1;5D" );
+        TrieAdd( EV_CTRL_HOME,          _ESC "[1;5H" );
+        TrieAdd( EV_CTRL_END,           _ESC "[1;5F" );
+        TrieAdd( EV_CTRL_PAGE_UP,       _ESC "[5;5~" );
+        TrieAdd( EV_CTRL_PAGE_DOWN,     _ESC "[6;5~" );
 
         /* slightly older xterms report these sequences... */
-        TrieAdd( EV_CTRL_CURSOR_UP, "\033[O5A" );
-        TrieAdd( EV_CTRL_CURSOR_DOWN, "\033[O5B" );
-        TrieAdd( EV_CTRL_CURSOR_RIGHT, "\033[O5C" );
-        TrieAdd( EV_CTRL_CURSOR_LEFT, "\033[O5D" );
-        TrieAdd( EV_CTRL_HOME, "\033[O5H" );
-        TrieAdd( EV_CTRL_END, "\033[O5F" );
+        TrieAdd( EV_CTRL_CURSOR_UP,     _ESC "[O5A" );
+        TrieAdd( EV_CTRL_CURSOR_DOWN,   _ESC "[O5B" );
+        TrieAdd( EV_CTRL_CURSOR_RIGHT,  _ESC "[O5C" );
+        TrieAdd( EV_CTRL_CURSOR_LEFT,   _ESC "[O5D" );
+        TrieAdd( EV_CTRL_HOME,          _ESC "[O5H" );
+        TrieAdd( EV_CTRL_END,           _ESC "[O5F" );
 
         /* Red Hat 8 xterm has yet different sequences. Does
          * not differentiate between Home/End and Ctrl + Home/End,
          * but does for PgUp/PgDn (same codes as newer xterms above)
          */
-        TrieAdd( EV_CTRL_CURSOR_UP, "\033O5A" );
-        TrieAdd( EV_CTRL_CURSOR_DOWN, "\033O5B" );
-        TrieAdd( EV_CTRL_CURSOR_RIGHT, "\033O5C" );
-        TrieAdd( EV_CTRL_CURSOR_LEFT, "\033O5D" );
+        TrieAdd( EV_CTRL_CURSOR_UP,     _ESC "O5A" );
+        TrieAdd( EV_CTRL_CURSOR_DOWN,   _ESC "O5B" );
+        TrieAdd( EV_CTRL_CURSOR_RIGHT,  _ESC "O5C" );
+        TrieAdd( EV_CTRL_CURSOR_LEFT,   _ESC "O5D" );
     }
     return( ret );
 }

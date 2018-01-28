@@ -111,7 +111,7 @@ See ck_keyboard_event function for special handling of these codes.
     { EV_ENTER,         '\r' },
     { EV_ENTER,         '\n' },
     { EV_RUB_OUT,       '\x7f' },
-    { EV_ESCAPE,        '\x1b' },
+    { EV_ESCAPE,        _ESC_CHAR },
 };
 
 typedef struct {

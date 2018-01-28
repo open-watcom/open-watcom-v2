@@ -89,18 +89,18 @@ static int new_sample;
     #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
 #endif
 
-#define QW_BELL "\007"
+#define QW_BELL             "\007"
 
-#define QNX_HDR         "\x1b/"
-#define ANSI_HDR        "\x1b["
+#define QNX_HDR             _ESC "/"
+#define ANSI_HDR            _ESC "["
 
-#define QW_TEST                 "10t"
-#define QW_TEST_RESPONSE        "10;"
-#define QW_INIT                 ">1;6;7;8h\033/>9l"
-#define QW_FINI                 ">1;6;7;8l"
+#define QW_TEST             "10t"
+#define QW_TEST_RESPONSE    "10;"
+#define QW_INIT             ">1;6;7;8h" _ESC "/>9l"
+#define QW_FINI             ">1;6;7;8l"
 
-#define XT_INIT "\033[?1000h"
-#define XT_FINI "\033[?1000l"
+#define XT_INIT             _ESC "[?1000h"
+#define XT_FINI             _ESC "[?1000l"
 
 static  void tm_error( void )
 /***************************/
@@ -322,7 +322,7 @@ void tm_saveevent( void )
             }
             buf[i] = c;
             if( buf[i] == 't' ) break;
-            if( buf[i] == '\x1b' ) {
+            if( buf[i] == _ESC_CHAR ) {
                 tm_error();
                 c = nextc( 20 );
                 if( c == -1 ) {

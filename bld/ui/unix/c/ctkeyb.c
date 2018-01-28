@@ -179,7 +179,7 @@ See ck_keyboard_event function for special handling of these codes.
     { EV_ENTER,         '\r' },
     { EV_ENTER,         '\n' },
     { EV_RUB_OUT,       '\x7f' },
-    { EV_ESCAPE,        '\x1b' },
+    { EV_ESCAPE,        _ESC_CHAR },
 };
 
 typedef struct {
@@ -499,9 +499,9 @@ static int init_trie( void )
     /* attempt to adjust backspace with the terminfo definition */
     if( str != NULL && strncmp( str, "xterm", 5 ) == 0 ) {
         if( strcmp( key_backspace, "\x08" ) == 0 ) {
-            uiwritec( "\x1b[?67h" );
+            uiwritec( _ESC "[?67h" );
         } else if( strcmp( key_backspace, "\x7f" ) == 0 ) {
-            uiwritec( "\x1b[?67l" );
+            uiwritec( _ESC "[?67l" );
         }
     }
 

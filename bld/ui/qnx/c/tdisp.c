@@ -169,7 +169,6 @@ static void __puts( char *s )
  * Qnx terminal codes
  */
 
-#define _ESC    "\033"
 #define QNX_CURSOR_OFF()        __puts(_ESC "y0")
 #define QNX_CURSOR_NORMAL()     __puts(_ESC "y1")
 #define QNX_CURSOR_BOLD()       __puts(_ESC "y2")
@@ -195,14 +194,14 @@ static void __puts( char *s )
 
 static void QNX_CURSOR_MOVE( int c, int r )
 {
-    __putchar( 033 ); __putchar( '=' );
+    __putchar( _ESC_CHAR ); __putchar( '=' );
     __putchar( r + ' ' );
     __putchar( c + ' ' );
 }
 
 static void QNX_SETCOLOUR( int f, int b )
 {
-    __putchar( 033 ); __putchar( '@' );
+    __putchar( _ESC_CHAR ); __putchar( '@' );
     __putchar( '0' + f );
     __putchar( '0' + b );
 }
@@ -1160,7 +1159,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
                 lastattr = new_attr( bufp[j].attr, lastattr );
             }
             if( bufp[j].ch < 0x20 )
-                __putchar( 033 );
+                __putchar( _ESC_CHAR );
             __putchar( bufp[j].ch );
             sbufp[j] = bufp[j];
         }

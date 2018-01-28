@@ -70,6 +70,8 @@
 
 #endif
 
+#define _ESC                "\033"
+#define _ESC_CHAR           '\033'
 
 #define         UIAPI
 #define         intern          /* near */

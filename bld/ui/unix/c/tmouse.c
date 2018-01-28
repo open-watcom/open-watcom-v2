@@ -80,10 +80,10 @@ static char     buf[ MAXBUF + 1 ];
 static int      new_sample;
 static int      UIMouseHandle = -1;
 
-#define ANSI_HDR        "\x1b["
+#define ANSI_HDR    _ESC "["
 
-#define XT_INIT "\033[?1000h"
-#define XT_FINI "\033[?1000l"
+#define XT_INIT     _ESC "[?1000h"
+#define XT_FINI     _ESC "[?1000l"
 
 static  void tm_error( void )
 /***************************/
