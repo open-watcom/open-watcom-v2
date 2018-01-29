@@ -35,7 +35,7 @@ extern bool     DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
 extern bool     DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value );
 extern void     DlgSetLong( gui_window *gui, gui_ctl_id id, long value );
 extern bool     DlgLongExpr( const char *title, long *value );
-extern bool     DlgAnyExpr( const char *title, char *buff, unsigned buff_len );
+extern bool     DlgAnyExpr( const char *title, char *buff, size_t buff_len );
 extern bool     DlgCodeAddr( const char *title, address *value );
 extern bool     DlgDataAddr( const char *title, address *value );
 extern bool     DlgGivenAddr( const char *title, address *value );
