@@ -68,7 +68,7 @@
 #define FMT2RADIX(x)   (((x)<0)?(mad_radix)-(x):(mad_radix)(x))
 
 extern void             GraphicDisplay( void );
-extern bool             DlgNewWithSym( const char *title, char *, unsigned);
+extern bool             DlgNewWithSym( const char *title, char *, size_t );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )

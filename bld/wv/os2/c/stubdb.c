@@ -79,7 +79,7 @@ extern char             *CmdData;
 /*************************************************/
 /* TODO! review all these prototypes declaration if they are local(static) or external */
 
-bool DlgNewWithSym( const char *title, char *buff, int buff_len );
+bool DlgNewWithSym( const char *title, char *buff, size_t buff_len );
 bool DlgUpTheStack( void );
 bool DlgAreYouNuts( unsigned long mult );
 bool DlgBackInTime( bool warn );
@@ -415,7 +415,7 @@ bool DUIDlgGivenAddr( const char *title, address *value )
     return( false );
 }
 
-bool DlgNewWithSym( const char *title, char *buff, int buff_len )
+bool DlgNewWithSym( const char *title, char *buff, size_t buff_len )
 {
     // used by print command with no arguments
     return( true );
