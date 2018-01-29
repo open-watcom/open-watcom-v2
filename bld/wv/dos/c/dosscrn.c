@@ -914,7 +914,7 @@ bool UsrScrnMode( void )
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
             */
-            initmouse( 1 );
+            initmouse( INIT_MOUSE );
         }
     }
     return( usr_vis );

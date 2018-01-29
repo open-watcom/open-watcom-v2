@@ -81,7 +81,7 @@ void InitScreen( void )
     }
     uistart();
     if( _IsOn( SW_USE_MOUSE ) ) {
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     }
 }
 

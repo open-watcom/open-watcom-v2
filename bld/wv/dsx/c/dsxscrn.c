@@ -1061,7 +1061,7 @@ void InitScreen( void )
         StartupErr( LIT_DUI( Unable_to_init_ui ) );
     }
     if( _IsOn( SW_USE_MOUSE ) ) {
-        GUIInitMouse( 2 );
+        GUIInitMouse( INIT_MOUSE_INITIALIZED );
     }
 }
 
@@ -1099,7 +1099,7 @@ bool UsrScrnMode( void )
         if( _IsOn( SW_USE_MOUSE ) ) {
             /* This is a sideways dive into the UI to get the boundries of
                the mouse cursor properly defined. */
-            initmouse( 1 );
+            initmouse( INIT_MOUSE );
         }
     }
     return( usr_vis );

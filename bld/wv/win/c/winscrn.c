@@ -132,7 +132,7 @@ bool UsrScrnMode( void )
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
             */
-            initmouse( 1 );
+            initmouse( INIT_MOUSE );
         }
     }
 #endif
@@ -202,7 +202,7 @@ void InitScreen( void )
     uistart();
     UIData->height = ScrnLines;
     if( _IsOn( SW_USE_MOUSE ) ) {
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     }
 }
 

@@ -67,7 +67,7 @@ void InitScreen( void )
     SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger ) );
     if( uistart() ) {
         if( _IsOn( SW_USE_MOUSE ) ) {
-            GUIInitMouse( 1 );
+            GUIInitMouse( INIT_MOUSE );
         }
     }
 }

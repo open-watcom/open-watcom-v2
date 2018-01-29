@@ -294,7 +294,7 @@ void InitScreen( void )
         StartupErr( "unable to initialize user interface" );
     }
     if( _IsOn( SW_USE_MOUSE ) )
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     DebugScreen();
 }
 
