@@ -48,19 +48,28 @@ void UIAPI uitimer( uitimer_callback *proc, int ms )
     TimerPeriodMs = ms;
 }
 
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+    return( RdosGetLongSysTime() );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( 1192 * milli);
+}
+
 void UIAPI uiflush( void )
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long UIAPI uiclock( void )
-{
-    unsigned long msb;
-    unsigned long lsb;
-
-    RdosGetSysTime( &msb, &lsb );
-    return( lsb );
 }
 
 ui_event UIAPI uieventsource( bool update )

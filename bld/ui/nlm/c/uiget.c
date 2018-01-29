@@ -40,17 +40,30 @@
 // be very careful about setting this true
 static bool EnterForever = false;
 
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+    return( clock() );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    /* NetWare uses a clock tick of .01 seconds. */
+    return( milli / 10 );
+}
+
 void UIAPI uiflush( void )
 /************************/
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long UIAPI uiclock( void )
-/**********************************/
-{
-    return( clock() );
 }
 
 void UIAPI uiforceinfloop( void )

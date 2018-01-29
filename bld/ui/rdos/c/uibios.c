@@ -89,11 +89,6 @@ bool intern initbios( void )
     return( true );
 }
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    return( 1192 * milli);
-}
-
 void intern finibios( void )
 {
     uifinicursor();

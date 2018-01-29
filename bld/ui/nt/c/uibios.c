@@ -112,11 +112,6 @@ bool intern initbios( void )
     return( true );
 }
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    return( milli );
-}
-
 void intern finibios( void )
 {
     SetConsoleMode( InputHandle, oldInputMode );

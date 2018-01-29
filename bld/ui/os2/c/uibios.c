@@ -49,10 +49,6 @@ static MONITOR ui_data = {
     1
 };
 
-#ifdef __386__
-    unsigned char __near _osmode = OS2_MODE;
-#endif
-
 extern          ATTR                    BWAttrs[];
 extern          ATTR                    CGAAttrs[];
 extern          ATTR                    EGAAttrs[];
@@ -104,53 +100,36 @@ bool intern initbios( void )
 {
     bool                initialized;
     // unsigned            offset;
-#ifdef __386__
+#ifdef _M_I86
+    unsigned long       ptrLVB;
+#else
     void        __far16 *ptrLVB;
     void                *ptr;
-#else
-    unsigned    long    ptrLVB;
 #endif
-    unsigned    short   SizeOfLVB;
+    unsigned short      SizeOfLVB;
 
     initialized = false;
     if( initmonitor() ) {
         VioGetBuf( (PULONG) &ptrLVB, (PUSHORT) &SizeOfLVB, 0);
         // offset = SCREEN_OFFSET; AFS 08-feb-91
-#ifdef __386__
+#ifdef _M_I86
+        UIData->screen.origin = (LP_PIXEL)ptrLVB;
+#else
         ptr = ptrLVB;
         UIData->screen.origin = ptr;
-#else
-        UIData->screen.origin = (LP_PIXEL)ptrLVB;
 #endif
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
-        if( _osmode == DOS_MODE ) {
-            UIData->mouse_acc_delay = 5;   /* ticks */
-            UIData->mouse_rpt_delay = 1;   /* ticks */
-            UIData->mouse_clk_delay = 5;   /* ticks */
-            UIData->tick_delay = 9;        /* ticks */
-            UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
-        } else {
-            UIData->mouse_acc_delay = 250;
-            UIData->mouse_rpt_delay = 100;
-            UIData->mouse_clk_delay = 250;
-            UIData->tick_delay = 500;
-            UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
-        }
+        UIData->mouse_acc_delay = uiclockdelay( 250 );
+        UIData->mouse_rpt_delay = uiclockdelay( 100 );
+        UIData->mouse_clk_delay = uiclockdelay( 250 );
+        UIData->tick_delay      = uiclockdelay( 500 );
+        UIData->mouse_speed = 8;        /* mickeys to ticks ratio */
         initialized = true;
     }
     return( initialized );
 }
-
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    if( _osmode == DOS_MODE )  return( milli * 18 / 1000 );
-    return( milli );
-}
-
 
 
 void intern finibios( void )

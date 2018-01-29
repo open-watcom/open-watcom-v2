@@ -33,9 +33,32 @@
 #include "uidef.h"
 #include "uiforce.h"
 #include <sys/types.h>
+#include <sys/time.h>
 #include "uivirt.h"
 #include "unxuiext.h"
 
+
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+    struct timeval  timev;
+
+    gettimeofday( &timev, NULL );
+    /* return time in miliseconds */
+    return( timev.tv_usec / 1000 + timev.tv_sec * 1000 );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( milli );
+}
 
 void UIAPI uiflush( void )
 /*************************/

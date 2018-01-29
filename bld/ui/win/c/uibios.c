@@ -109,13 +109,6 @@ bool intern initbios( void )
     return( initialized );
 }
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    return( milli * 18 / 1000 );
-}
-
 
 void intern finibios( void )
 /**************************/

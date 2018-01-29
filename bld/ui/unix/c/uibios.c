@@ -53,13 +53,6 @@ bool UIAPI uiset80col( void )
     return( true );
 }
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    return( milli );
-}
-
 const char *GetTermType( void )
 {
     if( UITermType == NULL ) {

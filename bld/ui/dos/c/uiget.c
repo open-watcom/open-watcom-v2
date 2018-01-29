@@ -36,16 +36,29 @@
 #include "uiforce.h"
 
 
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+    return( *(unsigned long __far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( milli * 18 / 1000 );
+}
+
 void UIAPI uiflush( void )
 /*************************/
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long uiclock( void )
-{
-    return( *(unsigned long __far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
 }
 
 ui_event UIAPI uieventsource( bool update )

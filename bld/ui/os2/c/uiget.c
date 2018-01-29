@@ -38,39 +38,39 @@
 #include "uiforce.h"
 
 
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+#ifdef _M_I86
+    if( _osmode == DOS_MODE )
+    	/* ticks count in BIOS area */
+    	return( *(unsigned long  __far *)MK_FP( 0x40, 0x6c ) );
+#endif
+    return( clock() );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+#ifdef _M_I86
+    if( _osmode == DOS_MODE )
+    	/* convert milliseconds to ticks */
+        return( ( milli * 18L ) / 1000L );
+#endif
+    return( milli );
+}
+
 void UIAPI uiflush( void )
 /*************************/
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long UIAPI uiclock( void )
-/**********************************/
-{
-    #ifdef __386__
-//      return( clock() );
-// clock() is tricky because it is version dependent! In 10.x it used to run
-// at 100 clocks per sec, in 11.0 it's 1000. To avoid confusion we go straight
-// to the OS. MN
-        ULONG ulTime;
-        DosQuerySysInfo(QSV_MS_COUNT, QSV_MS_COUNT, &ulTime, sizeof(ulTime));
-        return ulTime;
-    #else
-        static unsigned long  __far *clock;
-        SEL gbl;
-        SEL lcl;
-
-        if( clock == NULL ) {
-            if( _osmode == DOS_MODE ) {
-                clock = MK_FP( 0x40, 0x6c );    /* time of day in BIOS area */
-            } else {
-                DosGetInfoSeg( &gbl, &lcl );
-                clock = MK_FP( gbl, offsetof( struct _GINFOSEG, msecs ) );
-            }
-        }
-        return( *clock );
-    #endif
 }
 
 ui_event UIAPI uieventsource( bool update )
@@ -106,9 +106,13 @@ ui_event UIAPI uieventsource( bool update )
             }
         }
         /* give the system a chance to run something else */
-        if( _osmode != DOS_MODE ) {
+#ifdef _M_I86
+        if( _osmode == OS2_MODE ) {
+#endif
             DosSleep( 1 );
+#ifdef _M_I86
         }
+#endif
     }
     ReturnIdle = 1;
     return( ui_ev );

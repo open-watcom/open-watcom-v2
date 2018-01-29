@@ -136,13 +136,6 @@ bool intern initbios( void )
 
 } /* end initbios */
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* NetWare uses a clock tick of .01 seconds. */
-
-    return( milli / 10 );
-}
-
 static void finimonitor( void )
 /********************/
 {

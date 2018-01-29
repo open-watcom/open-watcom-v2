@@ -36,15 +36,28 @@
 #include <windows.h>
 
 
+unsigned long UIAPI uiclock( void )
+/*********************************
+ * this routine get time in platform dependant units, 
+ * used for mouse & timer delays 
+ */
+{
+    return( GetTickCount() );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( milli );
+}
+
 void UIAPI uiflush( void )
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long UIAPI uiclock( void )
-{
-    return( GetTickCount() );
 }
 
 ui_event UIAPI uieventsource( bool update )

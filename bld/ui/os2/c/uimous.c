@@ -83,7 +83,9 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
                         0x36 0x89 0x4c 0x02 \
                         0x36 0x89 0x54 0x04 \
                         parm [ax] [si] modify [bx cx dx];
-extern void MouseState( unsigned, struct mouse_data __near * );
+extern void 
+
+State( unsigned, struct mouse_data __near * );
 
 #define MOUSE_SCALE     8
 
@@ -138,6 +140,7 @@ static void GetMouseInfo( void )
 void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
 /*****************************************************************************************************/
 {
+#ifdef _M_I86
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
 
@@ -146,11 +149,14 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol,
         *prow  = state.dx / MOUSE_SCALE;
         *pcol  = state.cx / MOUSE_SCALE;
     } else {
+#endif
         GetMouseInfo();
         *pstatus = Status;
         *prow = Row;
         *pcol = Col;
+#ifdef _M_I86
     }
+#endif
     *ptime = uiclock();
     uisetmouse( *prow, *pcol );
 }
@@ -164,16 +170,18 @@ void uimousespeed( unsigned speed )
     if( speed == 0 ) {
         speed = 1;
     }
-
+#ifdef _M_I86
     if( _osmode == DOS_MODE ) {
         MouseInt2( 15, speed, speed * 2, 0, 0 );
         UIData->mouse_speed = speed;
     }
+#endif
 }
 
 
 #define         IRET                    (char) 0xcf
 
+#ifdef _M_I86
 static bool mouse_installed( void )
 {
     unsigned short __far        *vector;
@@ -220,6 +228,7 @@ static void DOS_initmouse( init_mode install )
         }
     }
 }
+#endif
 
 static void OS2_initmouse( init_mode install )
 /********************************************/
@@ -240,15 +249,7 @@ static void OS2_initmouse( init_mode install )
         }
         MouseInstalled = true;
         {
-#ifdef __386__
-            PTIB        tib;
-            PPIB        pib;
-
-            DosGetInfoBlocks( &tib, &pib );
-            if( pib->pib_ultype != _PT_FULLSCREEN ) {
-                uimouseforceoff();      /* let PM draw the mouse cursor */
-            }
-#else
+#ifdef _M_I86
             SEL                 gbl;
             SEL                 lcl;
             __LINFOSEG          __far *linfo;
@@ -256,6 +257,14 @@ static void OS2_initmouse( init_mode install )
             DosGetInfoSeg( &gbl, &lcl );
             linfo = MK_FP( lcl, 0 );
             if( linfo->typeProcess != _PT_FULLSCREEN ) {
+                uimouseforceoff();      /* let PM draw the mouse cursor */
+            }
+#else
+            PTIB        tib;
+            PPIB        pib;
+
+            DosGetInfoBlocks( &tib, &pib );
+            if( pib->pib_ultype != _PT_FULLSCREEN ) {
                 uimouseforceoff();      /* let PM draw the mouse cursor */
             }
 #endif
@@ -272,11 +281,15 @@ bool UIAPI initmouse( init_mode install )
 /***************************************/
 {
     MouseInstalled = false;
+#ifdef _M_I86
     if( _osmode == DOS_MODE ) {
         DOS_initmouse( install );
     } else {
+#endif
         OS2_initmouse( install );
+#ifdef _M_I86
     }
+#endif
     return( MouseInstalled );
 }
 
@@ -286,20 +299,28 @@ void UIAPI finimouse( void )
 {
     if( MouseInstalled ) {
         uioffmouse();
+#ifdef _M_I86
         if( _osmode == OS2_MODE ) {
+#endif
             MouClose( MouHandle );
+#ifdef _M_I86
         }
+#endif
     }
 }
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
+#ifdef _M_I86
     if( _osmode == DOS_MODE ) {
         MouseRow = row;
         MouseCol = col;
         MouseInt( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
+#endif
         uisetmouse( row, col );
+#ifdef _M_I86
     }
+#endif
 }
 
