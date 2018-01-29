@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern bool    DlgNewWithMod( const char *title, char *buff, unsigned buff_len );
-extern bool    DlgNewWithSym( const char *title, char *buff, unsigned buff_len );
+extern bool    DlgNewWithMod( const char *title, char *buff, size_t buff_len );
+extern bool    DlgNewWithSym( const char *title, char *buff, size_t buff_len );
