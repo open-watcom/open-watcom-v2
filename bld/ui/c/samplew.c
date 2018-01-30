@@ -253,8 +253,8 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
 
     initmouse( INIT_MOUSE_INITIALIZED );
     uimenus( barmenu, pulldownuimenus, EV_F1 );
-    UIData->mouse_clk_delay = uiclockdelay( 250 );
-    UIData->tick_delay = uiclockdelay( 3000 );
+    UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
     mainwin.area.height = UIData->height - 7;
 
     area.row = 0;

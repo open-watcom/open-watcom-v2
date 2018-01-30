@@ -34,6 +34,7 @@
 #include "uidef.h"
 #include "charmap.h"
 #include "biosui.h"
+#include "uimouse.h"
 
 
 #define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
@@ -44,15 +45,11 @@
 #define VidCol          (UIData->width)
 #define VidRow          (UIData->height)
 
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-
 extern void             (intern *DrawCursor)( void );
 extern void             (intern *EraseCursor)( void );
-extern bool             MouseInstalled;
+extern unsigned short   Points;                 /* Number of lines / char  */
 
 static char             SaveChars[2][2];        /* Overwritten characters  */
-extern unsigned short   Points;                 /* Number of lines / char  */
 static unsigned char    CharDefs[64];           /* Character definitons.    */
 static unsigned char    SaveDefs[64];           /* Saved character defs     */
 
@@ -248,11 +245,11 @@ static char MouInit( void )
         savedmode = _peekb( BIOS_PAGE, 0x49 );  /* Save video mode          */
         _pokeb( BIOS_PAGE, 0x49, 6 );           /* Set magic mode           */
 
-        ret = MouseInt( 0, 0, 0, 0 );           /* Reset driver for change  */
+        ret = MouseDrvReset();                  /* Reset driver for change  */
 
         _pokeb( BIOS_PAGE, 0x49, savedmode );   /* Put the old mode back    */
 
-        if( ret != -1 ) {
+        if( ret != MOUSE_DRIVER_OK ) {
             return( false );
         }
     }
@@ -291,7 +288,7 @@ static void MouDeinit( void )
     }
     ResetSequencer();
     /* MASSIVE KLUDGE: See comment in MouInit routine
-//    MouseInt( 0, 0, 0, 0 );
+//    MouseDrvReset();
     */
 }
 
@@ -320,7 +317,7 @@ bool UIAPI uiinitgmouse( init_mode install )
                 } else {
                     install = INIT_MOUSELESS;
                 }
-            } else if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
+            } else if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;
             }
         }

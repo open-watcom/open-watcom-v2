@@ -70,7 +70,28 @@
 #endif
 #define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
 
-extern  LP_PIXEL    asmNonBlankEnd( LP_PIXEL, int, PIXEL );
+extern LP_PIXEL asmNonBlankEnd( LP_PIXEL, int, PIXEL );
+#ifdef _M_I86
+    #pragma aux asmNonBlankEnd =    \
+        "std"                       \
+        "repe scasw"                \
+        "je L1"                     \
+        "inc di"                    \
+    "L1:"                           \
+        "cld"                       \
+    parm  [es di] [cx] [ax]         \
+    value [es di];
+#else
+    #pragma aux asmNonBlankEnd =    \
+        "std"                       \
+        "repe scasw"                \
+        "je L1"                     \
+        "inc edi"                   \
+    "L1:"                           \
+        "cld"                       \
+    parm  [es edi] [ecx] [ax]       \
+    value [edi];
+#endif
 
 bool    UserForcedTermRefresh = false;
 
@@ -738,8 +759,8 @@ static bool setupscrnbuff( int srows, int scols )
 /***********************************************/
 {
     LP_PIXEL    scrn;
-    int         num;
-    int         i;
+    size_t      size;
+    size_t      i;
     int         rows;
     int         cols;
 
@@ -768,43 +789,43 @@ static bool setupscrnbuff( int srows, int scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    num = UIData->width * UIData->height * 2;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
     scrn = UIData->screen.origin;
-#if defined( __386__ )
-    scrn = uirealloc( scrn, num );
-    if( scrn == NULL )
-        return( false );
-    if( (shadow = uirealloc( shadow, num )) == NULL ) {
-        uifree( scrn );
-        return( false );
-    }
-#else
     {
+#ifdef _M_I86
         unsigned        seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), num );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
         if( shadow == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( shadow ), num );
+            seg = qnx_segment_realloc( FP_SEG( shadow ), size );
         }
         if( seg == -1 ) {
             qnx_segment_free( FP_SEG( scrn ) );
             return( false );
         }
         shadow = MK_FP( seg, 0 );
-    }
+#else
+        scrn = uirealloc( scrn, size );
+        if( scrn == NULL )
+            return( false );
+        if( (shadow = uirealloc( shadow, size )) == NULL ) {
+            uifree( scrn );
+            return( false );
+        }
 #endif
+    }
     save_cursor_type = -1; /* C_NORMAL; */
-    num /= 2;
-    for( i = 0; i < num; ++i ) {
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
     }
@@ -813,14 +834,14 @@ static bool setupscrnbuff( int srows, int scols )
     return( true );
 }
 
-static volatile int SizePending;
+static volatile bool SizePending = false;
 
 static void size_handler( int signo )
 /***********************************/
 {
     /* unused parameters */ (void)signo;
 
-    SizePending = 1;
+    SizePending = true;
 }
 
 
@@ -835,7 +856,7 @@ static ui_event td_sizeevent( void )
         return( EV_NO_EVENT );
     if( !setupscrnbuff( UIData->height, UIData->width ) )
         return( EV_NO_EVENT );
-    SizePending = 0;
+    SizePending = false;
     area.row = 0;
     area.col = 0;
     area.height = UIData->height;
@@ -920,10 +941,10 @@ static bool td_init( void )
 
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 55;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
     td_refresh( true );
     return( true );
@@ -976,10 +997,10 @@ static bool td_init( void )
     if( !initkeyboard() )
         return( false );
 
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
 
     //find point at which repeat chars code becomes efficient
@@ -1197,28 +1218,6 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 
 
 #define NonBlankEnd(b,n,c) (((c).ch == ' ')?(asmNonBlankEnd((b),(n),(c))):(b))
-
-#ifdef __386__
-    #pragma aux asmNonBlankEnd =    \
-        "std"                       \
-        "repe scasw"                \
-        "je L1"                     \
-        "inc edi"                   \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es edi] [ecx] [ax]       \
-    value [edi];
-#else
-    #pragma aux asmNonBlankEnd =    \
-        "std"                       \
-        "repe scasw"                \
-        "je L1"                     \
-        "inc di"                    \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es di] [cx] [ax]         \
-    value [es di];
-#endif
 
 
 static void update_shadow( void )

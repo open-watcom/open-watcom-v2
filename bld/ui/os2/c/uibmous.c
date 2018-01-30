@@ -36,9 +36,8 @@
 
 #define OFF_SCREEN      200
 
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
+static MOUSEORD OldMouseRow;
+static MOUSEORD OldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
 static ATTR     OldAttr;
 
@@ -48,7 +47,7 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
     LP_STRING   pos;
 
     pos = (LP_STRING)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
+          + (row * UIData->screen.increment + col) * sizeof( PIXEL ) + 1;
     return( pos );
 }
 
@@ -98,7 +97,8 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }

@@ -33,65 +33,27 @@
 #include "uidos.h"
 #include "biosui.h"
 #include "charmap.h"
+#include "uimouse.h"
 
 
-struct mouse_data {
-    unsigned short    bx,cx,dx;
-};
+#define MOUSE_SCALE     8
 
-typedef struct mouse_data __based( __segname( "_STACK" ) ) *md_stk_ptr;
-#pragma aux MouseInt2 = 0xcd BIOS_MOUSE parm [ax] [cx] [dx] [si] [di];
-extern void MouseInt2( unsigned short, unsigned short,
-                       unsigned short, unsigned short, unsigned short );
+extern void             (*DrawCursor)( void );
 
-#ifndef __386__
-
-#pragma aux MouseState = 0xcd BIOS_MOUSE \
-                        0x36 0x89 0x1c   \
-                        0x36 0x89 0x4c 0x02 \
-                        0x36 0x89 0x54 0x04 \
-                        parm [ax] [si] modify [bx cx dx];
-extern void MouseState( unsigned, md_stk_ptr );
-
-#else
-
-#pragma aux MouseState = 0xcd BIOS_MOUSE \
-                        0x36 0x66 0x89 0x1e   \
-                        0x36 0x66 0x89 0x4e 0x02 \
-                        0x36 0x66 0x89 0x56 0x04 \
-                        parm [ax] [esi] modify [bx cx dx];
-extern void MouseState( unsigned short, md_stk_ptr );
-
-#endif
-
-#define MOUSE_SCALE         8
-
-extern void         (*DrawCursor)( void );
-
-extern MOUSEORD             MouseRow;
-extern MOUSEORD             MouseCol;
-
-extern bool                 MouseOn;
-
-extern unsigned short       MouseStatus;
-extern bool                 MouseInstalled;
-
-unsigned short              Points;                 /* Number of lines / char  */
-
-unsigned long               MouseTime = 0;
+unsigned short          Points;                 /* Number of lines / char  */
 
 /* MickeyRow and MickeyCol are accurate under DOS and OS2's DOS */
-static int                  MickeyRow;
-static int                  MickeyCol;
+static int              MickeyRow;
+static int              MickeyCol;
 
-void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
-/*************************************************************************************************/
+void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/****************************************************************************************/
 {
     struct  mouse_data state;
     char    change;
 
     change = change;
-    MouseState( 3, (md_stk_ptr)&state );
+    MouseDrvState( 3, &state );
 
     *status = state.bx;
 
@@ -99,7 +61,7 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, un
         *col = state.cx / MOUSE_SCALE;
         *row = state.dx / MOUSE_SCALE;
     } else {
-        MouseState( 0x0B, (md_stk_ptr)&state );
+        MouseDrvState( 0x0B, &state );
         MickeyCol += (short int)state.cx; /* delta of mickeys */
         MickeyRow += (short int)state.dx; /* delta of mickeys */
         if( MickeyRow < 0 ) {
@@ -129,8 +91,8 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, un
         *row = MickeyRow;
         *col = MickeyCol;
         if( change ) {
-            MouseInt( 4, 0, *col, *row );
-            MouseInt( 0x0B, 0, 0, 0 );
+            MouseDrvCall2( 4, 0, *col, *row );
+            MouseDrvCall1( 0x0B );
         }
     }
 
@@ -149,7 +111,7 @@ void uimousespeed( unsigned speed )
         speed = 1;
     }
 
-    MouseInt2( 15, speed, speed * 2, 0, 0 );
+    MouseDrvCall3( 0x0F, speed, speed * 2, 0, 0 );
     UIData->mouse_speed = speed;
 }
 
@@ -162,16 +124,16 @@ void intern setupmouse( void )
     } else {
         dx =   UIData->width * MOUSE_SCALE - 1;
     }
-    MouseInt( 7, 0, 0, dx );
+    MouseDrvCall2( 7, 0, 0, dx );
 
     if( DrawCursor == NULL ) {
         dx = ( UIData->height - 1 )*MOUSE_SCALE;
     } else {
         dx = UIData->height * Points - 1;
     }
-    MouseInt( 8, 0, 0, dx );
+    MouseDrvCall2( 8, 0, 0, dx );
 
-    uisetmouseposn( UIData->height/2 - 1, UIData->width/2 - 1 );
+    uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
     MouseInstalled = true;
     MouseOn = false;
     UIData->mouse_swapped = false;
@@ -187,7 +149,7 @@ bool UIAPI initmouse( init_mode install )
     MouseInstalled = false;
     if( install > INIT_MOUSELESS && installed( BIOS_MOUSE ) ) {
         if( install > INIT_MOUSE ) {
-            if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
+            if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
@@ -215,10 +177,10 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     MouseRow = row * UIData->mouse_yscale;
     MouseCol = col * UIData->mouse_xscale;
     if( DrawCursor == NULL ) {
-        MouseInt( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+        MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
-        MouseInt( 4, 0, MouseCol, MouseRow );
-        MouseInt( 0x0B, 0, 0, 0 );
+        MouseDrvCall2( 4, 0, MouseCol, MouseRow );
+        MouseDrvCall1( 0x0B );
         MickeyRow = MouseRow; /* initialize these and syncronize the INT B */
         MickeyCol = MouseCol; /* because we keep a running total */
     }

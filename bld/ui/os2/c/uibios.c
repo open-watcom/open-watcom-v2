@@ -98,20 +98,20 @@ static bool initmonitor( void )
 bool intern initbios( void )
 /**************************/
 {
-    bool                initialized;
-    // unsigned            offset;
+    bool            initialized;
+    // unsigned        offset;
 #ifdef _M_I86
-    unsigned long       ptrLVB;
+    unsigned long   ptrLVB;
 #else
-    void        __far16 *ptrLVB;
-    void                *ptr;
+    void            __far16 *ptrLVB;
+    void            *ptr;
 #endif
-    unsigned short      SizeOfLVB;
+    unsigned short  SizeOfLVB;
 
     initialized = false;
     if( initmonitor() ) {
         VioGetBuf( (PULONG) &ptrLVB, (PUSHORT) &SizeOfLVB, 0);
-        // offset = SCREEN_OFFSET; AFS 08-feb-91
+        // offset = BIOS_SCREEN_OFFSET;
 #ifdef _M_I86
         UIData->screen.origin = (LP_PIXEL)ptrLVB;
 #else
@@ -121,10 +121,10 @@ bool intern initbios( void )
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
-        UIData->mouse_acc_delay = uiclockdelay( 250 );
-        UIData->mouse_rpt_delay = uiclockdelay( 100 );
-        UIData->mouse_clk_delay = uiclockdelay( 250 );
-        UIData->tick_delay      = uiclockdelay( 500 );
+        UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );  /* 1 ticks */
+        UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->tick_delay      = uiclockdelay( 500 /* ms */ );  /* 9 ticks */
         UIData->mouse_speed = 8;        /* mickeys to ticks ratio */
         initialized = true;
     }

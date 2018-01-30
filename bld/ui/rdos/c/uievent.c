@@ -47,19 +47,12 @@
 #define KEY_ALT_PRESSED         0x2
 #define KEY_SHIFT_PRESSED       0x1
 
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-extern bool             MouseOn;
-extern bool             MouseInstalled;
-extern unsigned short   MouseStatus;
-
 int                     WaitHandle;
 
 static int              KeyInstalled;
-
 static ORD              currMouseRow;
 static ORD              currMouseCol;
-static ORD              currMouseStatus;
+static MOUSESTAT        currMouseStatus;
 
 static shiftkey_event   ShiftkeyEvents[] = {
     EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
@@ -225,7 +218,7 @@ void uimousespeed( unsigned speed )
 
 bool UIAPI initmouse( init_mode install )
 {
-    unsigned long   tmp;
+    MOUSETIME   tmp;
 
     if( install == INIT_MOUSELESS ) {
         return( false );
@@ -269,7 +262,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;

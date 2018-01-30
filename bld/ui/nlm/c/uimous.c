@@ -47,13 +47,10 @@ void intern mousespawnend( void )
 {
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
-/*****************************************************************************************************/
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
+/********************************************************************************************/
 {
-    pstatus = pstatus;
-    prow = prow;
-    pcol = pcol;
-    ptime = ptime;
+    /* unused parameters */ (void)pstatus; (void)prow; (void)pcol; (void)ptime;
 }
 
 void uimousespeed( unsigned speed )
@@ -78,7 +75,6 @@ void UIAPI finimouse( void )
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
-    row = row;
-    col = col;
+    /* unused parameters */ (void)row; (void)col;
 }
 

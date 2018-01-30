@@ -36,18 +36,21 @@
 #include "uidef.h"
 #include "doscall.h"
 #include "uiforce.h"
+#ifdef _M_I86
+#include "biosui.h"
+#endif
 
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
 {
 #ifdef _M_I86
     if( _osmode == DOS_MODE )
-    	/* ticks count in BIOS area */
-    	return( *(unsigned long  __far *)MK_FP( 0x40, 0x6c ) );
+        /* ticks count in BIOS area */
+        return( *(unsigned long  __far *)MK_FP( BIOS_PAGE, BIOS_SYSTEM_CLOCK ) );
 #endif
     return( clock() );
 }
@@ -60,7 +63,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
 {
 #ifdef _M_I86
     if( _osmode == DOS_MODE )
-    	/* convert milliseconds to ticks */
+        /* convert milliseconds to ticks */
         return( ( milli * 18L ) / 1000L );
 #endif
     return( milli );
@@ -76,9 +79,9 @@ void UIAPI uiflush( void )
 ui_event UIAPI uieventsource( bool update )
 /*****************************************/
 {
-    register ui_event       ui_ev;
-    static   int            ReturnIdle = 1;
-    unsigned long           start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
     for( ; ; ) {

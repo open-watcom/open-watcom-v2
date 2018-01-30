@@ -103,10 +103,10 @@ bool intern initbios( void )
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 250;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 250;
-    UIData->tick_delay = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 250 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 250 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->mouse_speed = 8;
 
     return( true );

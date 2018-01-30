@@ -36,17 +36,13 @@
 #include "uiforce.h"
 
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
 {
-#ifdef _M_I86
-    return( *(unsigned long __far *)MK_FP( BIOS_PAGE, SYSTEM_CLOCK ) );
-#else
-    return( *(unsigned long __far *)MK_FP( 0x60, ( BIOS_PAGE << 4 ) + SYSTEM_CLOCK ) );
-#endif
+    return( *(unsigned long __far *)FIRSTMEG( BIOS_PAGE, BIOS_SYSTEM_CLOCK ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -68,9 +64,9 @@ void UIAPI uiflush( void )
 ui_event UIAPI uieventsource( bool update )
 /*****************************************/
 {
-    register ui_event       ui_ev;
-    static   int            ReturnIdle = 1;
-    unsigned long           start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
     for( ; ; ) {

@@ -980,10 +980,10 @@ static bool ti_init( void )
 
     uiinitcursor();
 
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 55;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
 
     //find point at which repeat chars code becomes efficient

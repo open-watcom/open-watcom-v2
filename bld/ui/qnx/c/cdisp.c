@@ -88,36 +88,37 @@ static bool setupscrnbuff( void )
 {
     int                 rows, cols;
     LP_PIXEL            scrn;
-    size_t              num;
-    int                 i;
+    size_t              size;
+    size_t              i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( false );
     }
     UIData->width = cols;
     UIData->height = rows;
-    num = UIData->width * UIData->height * 2;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
     scrn = UIData->screen.origin;
-#if defined( __386__ )
-    scrn = uirealloc( scrn, num );
-    if( scrn == NULL )
-        return( false );
-#else
     {
-        unsigned                seg;
+#ifdef _M_I86
+        unsigned    seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), num );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
-    }
+#else
+        scrn = uirealloc( scrn, size );
+        if( scrn == NULL ) {
+            return( false );
+        }
 #endif
-    num /= 2;
-    for( i = 0; i < num; ++i ) {
+    }
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
     }
@@ -266,10 +267,10 @@ static bool cd_init( void )
 
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
     return( true );
 }

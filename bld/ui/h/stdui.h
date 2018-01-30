@@ -39,12 +39,12 @@
 #include "initmode.h"
 
 
-#ifndef         _FAR
-#define         _FAR
+#ifndef _FAR
+#define _FAR
 #endif
 
-#ifndef         _FARD
-#define         _FARD
+#ifndef _FARD
+#define _FARD
 #endif
 
 typedef enum ui_event {
@@ -284,11 +284,11 @@ typedef enum ui_event {
     EV_CHECK_BOX_CLICK,
     EV_REDRAW_SCREEN,
 
-/*
- * This next one isn't all that useful on AT-class machines, I grant you.
- * But - it could be useful on the NEC, to provide a nice interface for
- * quitting or resetting.  Just a thought.
- */
+    /*
+     * This next one isn't all that useful on AT-class machines, I grant you.
+     * But - it could be useful on the NEC, to provide a nice interface for
+     * quitting or resetting.  Just a thought.
+     */
     EV_CTRL_ALT_DELETE           = 0x03FF,
 
     EV_FIRST_UNUSED              = 0x0400,
@@ -431,7 +431,8 @@ typedef unsigned int    ORD;
 
 #elif __RDOS__
 
-/*      This needs to be fixed so scaling for a mouse also need a larger range!!
+/*
+    This needs to be fixed so scaling for a mouse also need a larger range!!
     An improper reference to __GUI__ is used. Fixed for now so it works for RDOS.
 */
 
@@ -444,6 +445,7 @@ typedef unsigned char   ORD;
 #endif
 
 typedef unsigned short  MOUSEORD;
+typedef unsigned long   MOUSETIME;
 
 typedef struct sarea {
     ORD             row;
@@ -457,21 +459,21 @@ typedef unsigned char   ATTR;
 #define iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) && ( ev <= EV_LAST_EDIT_CHAR ) )
 #define iskeyboardchar( ev )    ( ( ev >= EV_FIRST_EVENT ) && ( ev <= EV_LAST_KEYBOARD ) )
 
-#if defined(__NT__)
+#if defined( _M_I86 )
+    typedef struct pixel {
+        unsigned char   ch;
+        ATTR            attr;
+    } PIXEL;
+    #define __FAR __far
+    #define HAVE_FAR
+#elif defined(__NT__)
     typedef struct pixel {
         unsigned short  ch;
         unsigned short  attr;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
-#elif defined(__OS2__) && defined(__386__)
-    typedef struct pixel {
-        unsigned char   ch;
-        ATTR            attr;
-    } PIXEL;
-    #define __FAR
-    #undef HAVE_FAR
-#elif defined(__UNIX__)
+#elif defined(__OS2__)
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -479,6 +481,13 @@ typedef unsigned char   ATTR;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__RDOS__)
+    typedef struct pixel {
+        unsigned char   ch;
+        ATTR            attr;
+    } PIXEL;
+    #define __FAR
+    #undef HAVE_FAR
+#elif defined(__UNIX__)
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -513,17 +522,17 @@ typedef struct buffer {
 } BUFFER;
 
 typedef struct image_hld {
-    struct image_hld __FAR      *next_hld;
-    SAREA                       area;
-    int                         kill_image;
-    LP_VOID                     hld;
+    struct image_hld    __FAR *next_hld;
+    SAREA               area;
+    int                 kill_image;
+    LP_VOID             hld;
 } IMAGE_HLD;
 
 typedef struct image_def {      // this gets attached to the graphic field
-    LP_VOID                     (_FAR *get_image)( void );
-    void                        (_FAR *put_image)( void );
-    void                        (_FAR *done_image)( void );
-    IMAGE_HLD __FAR             *images;
+    LP_VOID             (_FAR *get_image)( void );
+    void                (_FAR *put_image)( void );
+    void                (_FAR *done_image)( void );
+    IMAGE_HLD           __FAR *images;
 } IMAGE_DEF;
 
 
@@ -589,17 +598,17 @@ typedef struct monitor {
     unsigned char   mouse_yscale;       /* factor to divide mouse y posn    */
 } MONITOR;
 
-typedef void            (uitimer_callback)( void );
+typedef void        (uitimer_callback)( void );
 
-#define         V_DIALOGUE              0x0001
-#define         V_UNBUFFERED            0x0002
-#define         V_UNFRAMED              0x0004
-#define         V_NO_ZOOM               0x0008
-#define         V_PASSIVE               0x0010
-#define         V_UNPROTECTED           0x0020
-#define         V_HIDDEN                0x0040
-#define         V_LISTBOX               0x0100
-#define         V_GUI_WINDOW            0x1000      /* reserved for use by gui project */
+#define V_DIALOGUE              0x0001
+#define V_UNBUFFERED            0x0002
+#define V_UNFRAMED              0x0004
+#define V_NO_ZOOM               0x0008
+#define V_PASSIVE               0x0010
+#define V_UNPROTECTED           0x0020
+#define V_HIDDEN                0x0040
+#define V_LISTBOX               0x0100
+#define V_GUI_WINDOW            0x1000      /* reserved for use by gui project */
 
 enum {
     M_MONO,
@@ -657,7 +666,7 @@ extern void            uifinigmouse( void );
 extern void            uiflush( void );
 extern void            uiflushevent( void );
 extern void            uifree( void * );
-extern unsigned long   uiclock( void );
+extern MOUSETIME       uiclock( void );
 extern ui_event        uiget( void );
 extern void            uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD *, int _FARD * );
 extern ui_event_list   _FARD *uigetlist( void );

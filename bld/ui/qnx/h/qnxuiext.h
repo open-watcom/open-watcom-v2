@@ -49,7 +49,6 @@ extern pid_t            UIRemProxy;
 extern nid_t            UIConNid;
 extern pid_t            UIPGroup;
 extern bool             UIWantShiftChanges;
-extern unsigned long    MouseTime;
 extern bool             UserForcedTermRefresh;
 extern bool             UIDisableShiftChanges;
 

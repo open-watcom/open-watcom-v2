@@ -49,41 +49,16 @@
 
 #define MOUSE_SCALE         8
 
-extern ORD                  MouseRow;
-extern ORD                  MouseCol;
-
 extern struct _mouse_ctrl   *MouseCtrl;
+extern struct _timesel      __far *_SysTime;
 
-extern unsigned short       MouseStatus;
-extern bool                 MouseInstalled;
-
-static __segment            SysTimeSel;
 static int                  ScaledRow;
 static int                  ScaledCol;
-static int                  MyStatus;
+static MOUSESTAT            MyStatus;
 static timer_t              MouseTimer;
 
-#if defined( _M_I86 )
-    #define _SysTime    ((struct _timesel __far *)MK_FP( SysTimeSel, 0 ))
-    #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
-#else
-    extern unsigned long GetLong( unsigned short time_sel,
-                                  unsigned long  time_off );
-
-    #pragma aux GetLong = "mov ES,AX"           \
-                          "mov EAX,ES:[EDX]"    \
-                                                \
-                          parm   [EAX] [EDX]    \
-                          value  [EAX]          \
-                          modify [ES];
-
-    #define GET_MSECS   (GetLong( SysTimeSel, offsetof( struct _timesel, nsec ) ) / 1000000 \
-                       + GetLong( SysTimeSel, offsetof( struct _timesel, seconds ) ) * 1000)
-#endif
-
-
-static int cm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
-/**********************************************************************************************************/
+static int cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/*************************************************************************************/
 {
     struct  mouse_event    event;
     struct  itimerspec     timer;
@@ -125,7 +100,7 @@ static int cm_check( unsigned short *status, unsigned short *row, unsigned short
         timer.it_interval.tv_nsec = 0;
         reltimer( MouseTimer, &timer, NULL );
         *status = MyStatus;
-        *time = GET_MSECS;
+        *time = uiclock();
         *row = ScaledRow / MOUSE_SCALE;
         *col = ScaledCol / MOUSE_SCALE;
     }
@@ -179,7 +154,7 @@ static bool cm_init( init_mode install )
     UIData->mouse_yscale = 1;
 
     qnx_osinfo( 0, &osinfo );
-    SysTimeSel = osinfo.timesel;
+    _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
 
     checkmouse( &MouseStatus, &row, &col, &MouseTime );
     MouseRow = row;

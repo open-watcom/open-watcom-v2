@@ -36,7 +36,7 @@
 #include "uiforce.h"
 
 
-extern int      WaitHandle;
+extern int              WaitHandle;
 
 static uitimer_callback *Callback = NULL;
 static int              TimerPeriodMs = 0;
@@ -48,13 +48,13 @@ void UIAPI uitimer( uitimer_callback *proc, int ms )
     TimerPeriodMs = ms;
 }
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
 {
-    return( RdosGetLongSysTime() );
+    return( RdosGetLongSysTime() / 1192L );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -63,7 +63,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  * dependant units - used to set mouse & timer delays
  */
 {
-    return( 1192 * milli);
+    return( milli);
 }
 
 void UIAPI uiflush( void )
@@ -74,10 +74,10 @@ void UIAPI uiflush( void )
 
 ui_event UIAPI uieventsource( bool update )
 {
-    ui_event            ui_ev;
-    static int          ReturnIdle = 1;
-    unsigned long       start;
-    ui_event            ( *proc )();
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
+    ui_event        (*proc)(void);
 
     start = uiclock();
     for( ; ; ) {

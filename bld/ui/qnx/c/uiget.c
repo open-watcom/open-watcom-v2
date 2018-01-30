@@ -35,17 +35,20 @@
 #include <sys/kernel.h>
 #include <sys/dev.h>
 #include <sys/types.h>
+#include <sys/osinfo.h>
 #include "uivirt.h"
 #include "qnxuiext.h"
 
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+struct _timesel     __far *_SysTime;
+
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
 {
-    return( 0 );
+    return( _SysTime->nsec / 1000000 + _SysTime->seconds * 1000 );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -58,7 +61,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
 }
 
 void UIAPI uiflush( void )
-/*************************/
+/************************/
 {
     uiflushevent();
     flushkey();
@@ -67,9 +70,9 @@ void UIAPI uiflush( void )
 static ui_event doget( bool update )
 /**********************************/
 {
-    register ui_event       ui_ev;
-    static   short          ReturnIdle = 1;
-    SAREA                   screen;
+    static   short      ReturnIdle = 1;
+    ui_event            ui_ev;
+    SAREA               screen;
 
     for( ;; ) {
         ui_ev = forcedevent();

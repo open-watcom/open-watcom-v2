@@ -36,10 +36,10 @@
 
 #define OFF_SCREEN      200
 
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD oldMouseRow, oldMouseCol = OFF_SCREEN;
+static MOUSEORD oldMouseRow;
+static MOUSEORD oldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
+
 #if 0
 static ATTR     OldAttr;
 
@@ -49,7 +49,7 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
     LP_STRING   pos;
 
     pos = (LP_STRING)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
+          + (row * UIData->screen.increment + col) * sizeof( PIXEL ) + 1;
     vertretrace();
     return( pos );
 }
@@ -81,17 +81,18 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 {
 //    LP_STRING   new;
 
-    if( mouseOn ){
+    if( mouseOn ) {
 #if 0
         new = RegenPos( row, col );
         OldAttr = *new;
-        if( UIData->colour == M_MONO ){
+        if( UIData->colour == M_MONO ) {
             *new = (OldAttr & 0x79) ^ 0x71;
         } else {
             *new = (OldAttr & 0x7f) ^ 0x77;
         }
         {
             SAREA       area;
+
             area.row = row;
             area.col = col;
             area.height = 1;
@@ -109,7 +110,8 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
-    if( oldMouseRow == row && oldMouseCol == col ) return;
+    if( oldMouseRow == row && oldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }

@@ -37,6 +37,13 @@
 #include "uimouse.h"
 #include <windows.h>
 
+
+extern HANDLE       InputHandle;
+
+static ORD          currMouseRow;
+static ORD          currMouseCol;
+static MOUSESTAT    currMouseStatus;
+
 static unsigned char shift_state;
 
 typedef struct {
@@ -101,17 +108,6 @@ static const map events[] = {
     { VK_F11, EV_F11, EV_SHIFT_F11, EV_CTRL_F11, EV_ALT_F11 },
     { VK_F12, EV_F12, EV_SHIFT_F12, EV_CTRL_F12, EV_ALT_F12 }
 };
-
-extern MOUSEORD MouseRow;
-extern MOUSEORD MouseCol;
-extern bool     MouseOn;
-extern bool     MouseInstalled;
-extern WORD     MouseStatus;
-
-extern HANDLE   InputHandle;
-static ORD      currMouseRow;
-static ORD      currMouseCol;
-static ORD      currMouseStatus;
 
 static void setshiftstate( BOOL has_shift, BOOL has_ctrl, BOOL has_alt )
 {
@@ -185,7 +181,7 @@ void uimousespeed( unsigned speed )
 
 bool UIAPI initmouse( init_mode install )
 {
-    unsigned long   tmp;
+    MOUSETIME   tmp;
 
     if( install == INIT_MOUSELESS ) {
         return( false );
@@ -211,7 +207,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;

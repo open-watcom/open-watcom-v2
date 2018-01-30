@@ -55,17 +55,18 @@
 #include "ctkeyb.h"
 
 
+#define MOUSE_SCALE     8
+
+#define MAXBUF          30
+
+#define ANSI_HDR        _ESC "["
+
+#define XT_INIT         _ESC "[?1000h"
+#define XT_FINI         _ESC "[?1000l"
+
 #ifdef __LINUX__
 static void             GPM_parse( void );
 #endif
-
-#define MOUSE_SCALE     8
-
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-
-extern unsigned short   MouseStatus;
-extern bool             MouseInstalled;
 
 static enum {
     M_NONE,
@@ -75,15 +76,13 @@ static enum {
 #endif
 } MouseType;
 
-#define MAXBUF  30
-static char     buf[ MAXBUF + 1 ];
-static int      new_sample;
-static int      UIMouseHandle = -1;
+static char             buf[ MAXBUF + 1 ];
+static int              new_sample;
+static int              UIMouseHandle = -1;
 
-#define ANSI_HDR    _ESC "["
-
-#define XT_INIT     _ESC "[?1000h"
-#define XT_FINI     _ESC "[?1000l"
+static int              last_row;
+static int              last_col;
+static MOUSESTAT        last_status;
 
 static  void tm_error( void )
 /***************************/
@@ -96,8 +95,6 @@ static  void tm_error( void )
  *   2- Update externals if valid.
  *   3- set parameters to reflect it externals
  */
-
-static int last_row, last_col, last_status;
 
 /* Parse an xterm mouse event. */
 static void XT_parse( void )
@@ -113,8 +110,8 @@ static void XT_parse( void )
     }
 }
 
-static int tm_check( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *the_time )
-/**************************************************************************************************/
+static int tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *the_time )
+/*****************************************************************************************/
 {
     if( !MouseInstalled ) {
          uisetmouse( *row, *col );
@@ -139,7 +136,7 @@ static int tm_check( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsig
     *row        = last_row;
     *col        = last_col;
     *status     = last_status;
-    *the_time   = (long)time( NULL ) * 1000L;
+    *the_time   = uiclock();
     uisetmouse( *row, *col );
     return 0;
 }

@@ -36,9 +36,8 @@
 
 #define OFF_SCREEN      200
 
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
+static MOUSEORD OldMouseRow;
+static MOUSEORD OldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
 static ATTR     OldAttr;
 

@@ -274,15 +274,11 @@ void main( void )
         FlipCharacterMap();
 #else
     if( uistart() ) {
-#ifdef __UNIX__
-        _initmouse( INIT_MOUSE_INITIALIZED );
-#else
         initmouse( INIT_MOUSE_INITIALIZED );
 #endif
-#endif
         uimenus( barmenu, pulldownuimenus, EV_F1 );
-        UIData->mouse_clk_delay = uiclockdelay( 250 );
-        UIData->tick_delay = uiclockdelay( 3000 );
+        UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
+        UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
         mainwin.area.height = UIData->height - 7;
         if( uivopen( &mainwin ) ) {
             for( ; ; ) {

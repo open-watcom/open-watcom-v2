@@ -36,8 +36,8 @@
 #include <windows.h>
 
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
@@ -62,9 +62,9 @@ void UIAPI uiflush( void )
 
 ui_event UIAPI uieventsource( bool update )
 {
-    ui_event                ui_ev;
-    static   int            ReturnIdle = 1;
-    unsigned long           start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
     for( ; ; ) {

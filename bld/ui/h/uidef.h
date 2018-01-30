@@ -73,6 +73,13 @@
 #define _ESC                "\033"
 #define _ESC_CHAR           '\033'
 
+typedef enum {
+    MOUSE_PRESS             = 0x01,
+    MOUSE_PRESS_RIGHT       = 0x02,
+    MOUSE_PRESS_MIDDLE      = 0x04,
+    MOUSE_PRESS_ANY         = (MOUSE_PRESS | MOUSE_PRESS_RIGHT | MOUSE_PRESS_MIDDLE)
+} MOUSESTAT;
+
 #define         UIAPI
 #define         intern          /* near */
 
@@ -94,7 +101,7 @@ void            intern          braw( BUFFER *, int, int, PIXEL *, int );
 void            intern          bstring( BUFFER *, int, int, ATTR, LPC_STRING, int );
 void            intern          bunframe( struct buffer * );
 int             intern          checkkey( void );
-void            intern          checkmouse( unsigned short *, MOUSEORD *, MOUSEORD *, unsigned long * );
+void            intern          checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
 unsigned char   intern          checkshift( void );
 void            intern          closebackground( void );
 void            intern          closewindow( UI_WINDOW * );

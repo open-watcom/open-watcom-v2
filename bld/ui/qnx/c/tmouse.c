@@ -48,48 +48,11 @@
 #include "ctkeyb.h"
 
 
-#define MOUSE_SCALE     8
+#define MOUSE_SCALE         8
 
-extern ORD              MouseRow;
-extern ORD              MouseCol;
+#define MAXBUF              30
 
-extern unsigned short   MouseStatus;
-extern bool             MouseInstalled;
-
-static __segment        SysTimeSel;
-
-static enum {
-    M_NONE,
-    M_QW,       /* QNX mode QNX Windows/Photon */
-    M_AW,       /* ANSI mode QNX Windows/Photon */
-    M_XT        /* XTerm */
-} MouseType;
-
-
-#define MAXBUF    30
-
-static char buf[ MAXBUF + 1 ];
-static int new_sample;
-
-#if defined( __386__ )
-    extern unsigned long GetLong( unsigned short time_sel,
-                                  unsigned long  time_off );
-
-    #pragma aux GetLong = "mov ES,AX"           \
-                          "mov EAX,ES:[EDX]"    \
-                                                \
-                          parm   [EAX] [EDX]    \
-                          value  [EAX]          \
-                          modify [ES];
-
-    #define GET_MSECS   (GetLong( SysTimeSel, offsetof( struct _timesel, nsec ) ) / 1000000 \
-                       + GetLong( SysTimeSel, offsetof( struct _timesel, seconds ) ) * 1000)
-#else
-    #define _SysTime    ((struct _timesel __far *) MK_FP( SysTimeSel, 0 ))
-    #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
-#endif
-
-#define QW_BELL             "\007"
+#define QW_BELL             "\x07"
 
 #define QNX_HDR             _ESC "/"
 #define ANSI_HDR            _ESC "["
@@ -101,6 +64,21 @@ static int new_sample;
 
 #define XT_INIT             _ESC "[?1000h"
 #define XT_FINI             _ESC "[?1000l"
+
+extern struct _timesel  __far *_SysTime;
+
+static enum {
+    M_NONE,
+    M_QW,       /* QNX mode QNX Windows/Photon */
+    M_AW,       /* ANSI mode QNX Windows/Photon */
+    M_XT        /* XTerm */
+} MouseType;
+
+static char         buf[ MAXBUF + 1 ];
+static int          new_sample;
+static int          last_row;
+static int          last_col;
+static MOUSESTAT    last_status;
 
 static  void tm_error( void )
 /***************************/
@@ -114,8 +92,6 @@ static  void tm_error( void )
  *   2- Update externals if valid.
  *   3- set parameters to reflect it externals
  */
-
-static int last_row, last_col, last_status;
 
 /* Parse a QNX Windows/Photon mouse event. */
 static void QW_parse( void )
@@ -165,8 +141,8 @@ static void XT_parse( void )
 }
 
 
-static int tm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
-/**********************************************************************************************************/
+static int tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/*************************************************************************************/
 {
     if( !MouseInstalled ) {
          uisetmouse( *row, *col );
@@ -188,7 +164,7 @@ static int tm_check( unsigned short *status, unsigned short *row, unsigned short
     *row = last_row;
     *col = last_col;
     *status = last_status;
-    *time = GET_MSECS;
+    *time = uiclock();
     uisetmouse( *row, *col );
     return( 0 );
 }
@@ -216,7 +192,7 @@ static void DoMouseInit( int type, char *init, const char *input )
     UIData->mouse_yscale = 1;
 
     qnx_osinfo( 0, &osinfo );
-    SysTimeSel = osinfo.timesel;
+    _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
 
     checkmouse( &MouseStatus, &row, &col, &MouseTime );
     MouseRow = row;

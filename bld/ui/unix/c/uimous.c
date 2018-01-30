@@ -37,7 +37,6 @@
 #include "uimouse.h"
 #include "uivirt.h"
 
-extern ORD MouseRow, MouseCol;
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
@@ -45,8 +44,8 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     MouseCol = col;
 }
 
-void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
-/*************************************************************************************************/
+void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/****************************************************************************************/
 {
     _checkmouse( status, row, col, time );
 }

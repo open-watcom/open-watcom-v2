@@ -35,6 +35,7 @@
 #include "uidef.h"
 #include "doscall.h"
 #include "uimouse.h"
+#include "biosui.h"
 
 
 /* Local Information Segment */
@@ -67,39 +68,15 @@ typedef struct __LINFOSEG {      /* lis */
 #define _PT_PM                      3 /* Presentation Manager application      */
 #define _PT_DETACHED                4 /* Detached application                  */
 
-struct mouse_data {
-    unsigned    bx,cx,dx;
-};
 #define BIOS_MOUSE      0x33
-
-#pragma aux MouseInt = 0xcd BIOS_MOUSE parm [ax] [bx] [cx] [dx];
-extern unsigned MouseInt( unsigned, unsigned, unsigned, unsigned );
-
-#pragma aux MouseInt2 = 0xcd BIOS_MOUSE parm [ax] [cx] [dx] [si] [di];
-extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
-
-#pragma aux MouseState = 0xcd BIOS_MOUSE \
-                        0x36 0x89 0x1c   \
-                        0x36 0x89 0x4c 0x02 \
-                        0x36 0x89 0x54 0x04 \
-                        parm [ax] [si] modify [bx cx dx];
-extern void 
-
-State( unsigned, struct mouse_data __near * );
 
 #define MOUSE_SCALE     8
 
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-extern bool             MouseOn;
-
-extern bool             MouseInstalled;
 static HMOU             MouHandle;
 static bool             TwoButtonMouse = false;
-
 static ORD              Row;
 static ORD              Col;
-static unsigned short   Status;
+static MOUSESTAT        Status;
 
 
 
@@ -137,14 +114,14 @@ static void GetMouseInfo( void )
     Col  = mouinfo.col;
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
-/*****************************************************************************************************/
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
+/********************************************************************************************/
 {
 #ifdef _M_I86
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
 
-        MouseState( 3, (void __near *)&state );
+        MouseDrvState( 3, &state );
         *pstatus = state.bx;
         *prow  = state.dx / MOUSE_SCALE;
         *pcol  = state.cx / MOUSE_SCALE;
@@ -172,7 +149,7 @@ void uimousespeed( unsigned speed )
     }
 #ifdef _M_I86
     if( _osmode == DOS_MODE ) {
-        MouseInt2( 15, speed, speed * 2, 0, 0 );
+        MouseDrvCall3( 0x0F, speed, speed * 2, 0, 0 );
         UIData->mouse_speed = speed;
     }
 #endif
@@ -198,24 +175,24 @@ static void DOS_initmouse( init_mode install )
 /********************************************/
 {
     int             cx,dx;
-    unsigned long   time;
+    MOUSETIME       time;
 
     if( install > INIT_MOUSELESS && mouse_installed() ) {
         if( install > INIT_MOUSE ) {
-            if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
+            if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */
             }
         }
         if( install > INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
-            MouseInt( 7, 0, 0, dx );
+            MouseDrvCall2( 7, 0, 0, dx );
             dx = ( UIData->height - 1 ) * MOUSE_SCALE;
-            MouseInt( 8, 0, 0, dx );
+            MouseDrvCall2( 8, 0, 0, dx );
 
             cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
             dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
-            MouseInt( 10, 0, cx, dx );
-            MouseInt2( 16, 0, 0, 0, 0 );
+            MouseDrvCall2( 0x0A, 0, cx, dx );
+            MouseDrvCall3( 0x10, 0, 0, 0, 0 );
 
             UIData->mouse_swapped = false;
             UIData->mouse_xscale = 1;
@@ -315,7 +292,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     if( _osmode == DOS_MODE ) {
         MouseRow = row;
         MouseCol = col;
-        MouseInt( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+        MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
     } else {
 #endif
         uisetmouse( row, col );

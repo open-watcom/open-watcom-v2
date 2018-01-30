@@ -34,14 +34,14 @@
 #include <process.h>
 #include "uidef.h"
 #include "uiforce.h"
-#include "nw_clib.h"
+#include "nw_lib.h"
 
 
 // be very careful about setting this true
 static bool EnterForever = false;
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
@@ -91,9 +91,9 @@ static void foreverloop( void )
 ui_event UIAPI uieventsource( bool update )
 /*****************************************/
 {
-    register ui_event       ui_ev;
-    static   int            ReturnIdle = 1;
-    unsigned long           start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
     for( ; ; ) {

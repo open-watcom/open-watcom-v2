@@ -54,7 +54,5 @@ pid_t            UIPGroup;
 bool             UIWantShiftChanges = true;
         /* Disable checking on non console devices */
 bool             UIDisableShiftChanges = false;
-        /* anytime is mouse time ?!? */
-unsigned long    MouseTime = 0L;
         /* Active virtual console functions */
 VirtDisplay      UIVirt;

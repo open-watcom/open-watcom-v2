@@ -127,7 +127,7 @@ bool intern initbios( void )
 
 /* A 500 millisecond tick delay is pretty reasonable. */
 
-        UIData->tick_delay      = uiclockdelay( 500 );
+        UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
 
         initialized = true;
     } /* end if */

@@ -34,15 +34,16 @@
 #include "uidef.h"
 #include "biosui.h"
 #include "uiforce.h"
+#include "uidos.h"
 
 
-unsigned long UIAPI uiclock( void )
-/*********************************
+MOUSETIME UIAPI uiclock( void )
+/*****************************
  * this routine get time in platform dependant units, 
  * used for mouse & timer delays 
  */
 {
-    return( *(unsigned long __far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
+    return( *(unsigned long __far *)FIRSTMEG( BIOS_PAGE, BIOS_SYSTEM_CLOCK ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )
@@ -51,7 +52,7 @@ unsigned UIAPI uiclockdelay( unsigned milli )
  * dependant units - used to set mouse & timer delays
  */
 {
-    return( milli * 18 / 1000 );
+    return( ( milli * 18L ) / 1000L );
 }
 
 void UIAPI uiflush( void )
@@ -64,9 +65,9 @@ void UIAPI uiflush( void )
 ui_event UIAPI uieventsource( bool update )
 /*****************************************/
 {
-    register ui_event       ui_ev;
-    static   int            ReturnIdle = 1;
-    unsigned long           start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
     for( ; ; ) {

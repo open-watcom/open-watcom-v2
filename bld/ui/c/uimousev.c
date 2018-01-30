@@ -32,6 +32,14 @@
 #include "uidef.h"
 #include "uimouse.h"
 
+
+#define M_PRESS                 1
+#define M_RELEASE               2
+#define M_DCLICK                3
+#define M_HOLD                  4
+#define M_DRAG                  5
+#define M_REPEAT                6
+
 static ui_event     mouseevtab[6][3] = {
     { EV_MOUSE_PRESS,   EV_MOUSE_PRESS_R,       EV_MOUSE_PRESS_M },
     { EV_MOUSE_RELEASE, EV_MOUSE_RELEASE_R,     EV_MOUSE_RELEASE_M },
@@ -41,18 +49,17 @@ static ui_event     mouseevtab[6][3] = {
     { EV_MOUSE_REPEAT,  EV_MOUSE_REPEAT_R,      EV_MOUSE_REPEAT_M }
 };
 
-        MOUSEORD            MouseRow;
-        MOUSEORD            MouseCol;
-        bool                MouseOn;
-        unsigned short      MouseStatus;
-        bool                MouseInstalled;
+MOUSEORD        MouseRow;
+MOUSEORD        MouseCol;
+bool            MouseOn         = false;
+MOUSESTAT       MouseStatus;
+bool            MouseInstalled  = false;
+MOUSETIME       MouseTime       = 0L;
 
-static  int                 MouseForcedOff = 0;
-
-static  bool                MouseRepeat;
-static  unsigned long       MouseTime       = 0L;
-static  int                 MouseLast       = MOUSE_OFF;
-static  unsigned short      MouseLastButton = (unsigned short)~0;
+static  int     MouseForcedOff = 0;
+static  bool    MouseRepeat;
+static  int     MouseLast       = MOUSE_OFF;
+static  int     MouseLastButton = -1;
 
 
 bool UIAPI uimouseinstalled( void )
@@ -121,8 +128,8 @@ void UIAPI uihidemouse( void )
 }
 
 
-static unsigned short button( unsigned short status )
-/***************************************************/
+static int button( MOUSESTAT status )
+/***********************************/
 {
     status &= MOUSE_PRESS_ANY;
     if( status == MOUSE_PRESS ){
@@ -137,29 +144,32 @@ static unsigned short button( unsigned short status )
 ui_event intern mouseevent( void )
 /********************************/
 {
-    ui_event            ui_ev;
-    MOUSEORD            row;
-    MOUSEORD            col;
-    unsigned long       time;
-    unsigned short      status;
-    bool                moved;
-    unsigned short      diff;
-    signed short        butt = 0;
+    ui_event        ui_ev;
+    MOUSEORD        row;
+    MOUSEORD        col;
+    MOUSETIME       time;
+    MOUSESTAT       status;
+    bool            moved;
+    MOUSESTAT       diff;
+    int             butt;
+    int             mindex;
 
     ui_ev = EV_NO_EVENT;
+    mindex = 0;
+    butt = 0;
     if( MouseInstalled ) {
         checkmouse( &status, &row, &col, &time );
         diff = (status ^ MouseStatus) & MOUSE_PRESS_ANY;
 
-        moved = ( row/UIData->mouse_yscale != MouseRow/UIData->mouse_yscale
-               || col/UIData->mouse_xscale != MouseCol/UIData->mouse_xscale );
+        moved = ( row / UIData->mouse_yscale != MouseRow / UIData->mouse_yscale
+               || col / UIData->mouse_xscale != MouseCol / UIData->mouse_xscale );
 
         if( moved ){
             if( MouseStatus & MOUSE_PRESS_ANY ){
                 /* DO NOT TURN ON THE MOUSE IF YOU ARE DRAGGING */
                 /* i.e. don't set MouseOn = true */
                 butt = button( status );
-                ui_ev = M_DRAG;
+                mindex = M_DRAG;
             } else {
                 ui_ev = EV_MOUSE_MOVE;
                 MouseOn = true;
@@ -167,15 +177,14 @@ ui_event intern mouseevent( void )
             MouseLastButton = -1;    /* don't double click */
         } else if( diff & MOUSE_PRESS_ANY ){
             if( (diff & status) == diff ){
-                if( button(diff) == MouseLastButton  &&
-                    time - MouseTime < UIData->mouse_clk_delay ){
-                    ui_ev = M_DCLICK;
+                if( button( diff ) == MouseLastButton && time - MouseTime < UIData->mouse_clk_delay ){
+                    mindex = M_DCLICK;
                 } else {
-                    ui_ev = M_PRESS;
+                    mindex = M_PRESS;
                     MouseLastButton = button( diff );
                 }
             } else {
-                ui_ev = M_RELEASE;
+                mindex = M_RELEASE;
                 flushkey();
             }
             butt = button( diff );
@@ -185,25 +194,25 @@ ui_event intern mouseevent( void )
             MouseOn = true;
         } else if( status & MOUSE_PRESS_ANY ){
             if( UIData->busy_wait ) {
-                ui_ev = M_HOLD;
+                mindex = M_HOLD;
                 // DEN 92/3/16 - added for dbserver - menus didn't get updated
                 uirefresh();
             }
             butt = button( status );
             if( !MouseRepeat ){
                 if( time - MouseTime > UIData->mouse_acc_delay ){
-                    ui_ev = M_REPEAT;
+                    mindex = M_REPEAT;
                     MouseRepeat = true;
                     MouseTime = time;
                 }
             } else if( time - MouseTime > UIData->mouse_rpt_delay ){
-                ui_ev = M_REPEAT;
+                mindex = M_REPEAT;
                 MouseTime = time;
             }
         }
 
-        if( ui_ev != EV_NO_EVENT && ui_ev != EV_MOUSE_MOVE ){
-            ui_ev = mouseevtab[ui_ev - 1][butt];
+        if( mindex != 0 && ui_ev != EV_MOUSE_MOVE ){
+            ui_ev = mouseevtab[mindex - 1][butt];
         }
         MouseRow = row;
         MouseCol = col;
