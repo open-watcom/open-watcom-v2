@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +118,6 @@ void            intern          frontwindow( UI_WINDOW * );
 unsigned int    intern          getkey( void );
 bool            intern          initbios( void );
 bool            intern          initkeyboard( void );
-bool            intern          installed( int );
 bool            intern          isdialogue( VSCREEN * );
 bool            intern          isscreen( BUFFER * );
 bool            intern          issnow( BUFFER * );
@@ -164,6 +164,9 @@ void            intern          newcursor( void );
 #endif
 #if defined( __NETWARE__ )
 bool            intern          kbdisblocked( void );
+#endif
+#if defined( __DOS__ )
+bool            intern          mouse_installed( void );
 #endif
 
 #ifdef __cplusplus

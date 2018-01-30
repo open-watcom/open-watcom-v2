@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,13 @@
 #define M_DRAG                  5
 #define M_REPEAT                6
 
+MOUSEORD        MouseRow;
+MOUSEORD        MouseCol;
+bool            MouseOn         = false;
+MOUSESTAT       MouseStatus     = 0;
+bool            MouseInstalled  = false;
+MOUSETIME       MouseTime       = 0L;
+
 static ui_event     mouseevtab[6][3] = {
     { EV_MOUSE_PRESS,   EV_MOUSE_PRESS_R,       EV_MOUSE_PRESS_M },
     { EV_MOUSE_RELEASE, EV_MOUSE_RELEASE_R,     EV_MOUSE_RELEASE_M },
@@ -49,23 +57,14 @@ static ui_event     mouseevtab[6][3] = {
     { EV_MOUSE_REPEAT,  EV_MOUSE_REPEAT_R,      EV_MOUSE_REPEAT_M }
 };
 
-MOUSEORD        MouseRow;
-MOUSEORD        MouseCol;
-bool            MouseOn         = false;
-MOUSESTAT       MouseStatus;
-bool            MouseInstalled  = false;
-MOUSETIME       MouseTime       = 0L;
-
-static  int     MouseForcedOff = 0;
-static  bool    MouseRepeat;
-static  int     MouseLast       = MOUSE_OFF;
-static  int     MouseLastButton = -1;
-
+static  int             MouseForcedOff  = 0;
+static  bool            MouseRepeat     = false;
+static  mouse_func      MouseLast       = MOUSE_OFF;
+static  int             MouseLastButton = -1;
 
 bool UIAPI uimouseinstalled( void )
 /*********************************/
 /* call this ONLY after UI has been initialized */
-
 {
     return( MouseInstalled );
 }
@@ -102,7 +101,7 @@ void UIAPI uimouseforceon( void )
 }
 
 void UIAPI uionmouse( void )
-/***************************/
+/**************************/
 {
     if( MouseOn ) {
         mouse( MOUSE_ON );
@@ -132,9 +131,9 @@ static int button( MOUSESTAT status )
 /***********************************/
 {
     status &= UI_MOUSE_PRESS_ANY;
-    if( status == UI_MOUSE_PRESS ){
+    if( status == UI_MOUSE_PRESS ) {
         return( 0 );
-    } else if( status == UI_MOUSE_PRESS_RIGHT ){
+    } else if( status == UI_MOUSE_PRESS_RIGHT ) {
         return( 1 );
     } else {
         return( 2 );
@@ -160,12 +159,12 @@ ui_event intern mouseevent( void )
     if( MouseInstalled ) {
         checkmouse( &status, &row, &col, &time );
         diff = (status ^ MouseStatus) & UI_MOUSE_PRESS_ANY;
-
         moved = ( row / UIData->mouse_yscale != MouseRow / UIData->mouse_yscale
                || col / UIData->mouse_xscale != MouseCol / UIData->mouse_xscale );
-
-        if( moved ){
-            if( MouseStatus & UI_MOUSE_PRESS_ANY ){
+        mindex = 0;
+        butt = 0;
+        if( moved ) {
+            if( MouseStatus & UI_MOUSE_PRESS_ANY ) {
                 /* DO NOT TURN ON THE MOUSE IF YOU ARE DRAGGING */
                 /* i.e. don't set MouseOn = true */
                 butt = button( status );
@@ -175,8 +174,8 @@ ui_event intern mouseevent( void )
                 MouseOn = true;
             }
             MouseLastButton = -1;    /* don't double click */
-        } else if( diff & UI_MOUSE_PRESS_ANY ){
-            if( (diff & status) == diff ){
+        } else if( diff & UI_MOUSE_PRESS_ANY ) {
+            if( (diff & status) == diff ) {
                 if( button( diff ) == MouseLastButton && time - MouseTime < UIData->mouse_clk_delay ) {
                     mindex = M_DCLICK;
                 } else {
@@ -192,26 +191,26 @@ ui_event intern mouseevent( void )
             MouseTime = time;
             MouseStatus = status;
             MouseOn = true;
-        } else if( status & UI_MOUSE_PRESS_ANY ){
+        } else if( status & UI_MOUSE_PRESS_ANY ) {
             if( UIData->busy_wait ) {
                 mindex = M_HOLD;
                 // DEN 92/3/16 - added for dbserver - menus didn't get updated
                 uirefresh();
             }
             butt = button( status );
-            if( !MouseRepeat ){
-                if( time - MouseTime > UIData->mouse_acc_delay ){
+            if( !MouseRepeat ) {
+                if( time - MouseTime > UIData->mouse_acc_delay ) {
                     mindex = M_REPEAT;
                     MouseRepeat = true;
                     MouseTime = time;
                 }
-            } else if( time - MouseTime > UIData->mouse_rpt_delay ){
+            } else if( time - MouseTime > UIData->mouse_rpt_delay ) {
                 mindex = M_REPEAT;
                 MouseTime = time;
             }
         }
 
-        if( mindex != 0 && ui_ev != EV_MOUSE_MOVE ){
+        if( mindex != 0 && ui_ev != EV_MOUSE_MOVE ) {
             ui_ev = mouseevtab[mindex - 1][butt];
         }
         MouseRow = row;
@@ -271,7 +270,7 @@ VSCREEN * UIAPI uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
 }
 
 void UIAPI uiswapmouse( void )
-/*****************************/
+/****************************/
 {
 
     if( UIData->mouse_swapped ) {

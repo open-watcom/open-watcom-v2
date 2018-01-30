@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +58,8 @@ static int                  ScaledCol;
 static MOUSESTAT            MyStatus;
 static timer_t              MouseTimer;
 
-static int cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
-/*************************************************************************************/
+static bool cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/**************************************************************************************/
 {
     struct  mouse_event    event;
     struct  itimerspec     timer;
@@ -105,14 +106,13 @@ static int cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME 
         *col = ScaledCol / MOUSE_SCALE;
     }
     uisetmouse( *row, *col );
-    return( 0 );
+    return( false );
 }
 
-static int cm_stop()
-/*********************/
+static int cm_stop( void )
+/************************/
 {
-   struct itimerspec    timer;
-
+    struct itimerspec    timer;
 
     if( MouseInstalled ) {
 
@@ -124,7 +124,7 @@ static int cm_stop()
         while( Creceive( UILocalProxy, 0, 0 ) > 0 )
             {}
     }
-    return 0;
+    return( 0 );
 }
 
 static bool cm_init( init_mode install )
@@ -136,31 +136,30 @@ static bool cm_init( init_mode install )
     MOUSEORD            col;
 
     MouseInstalled = false;
-    if( install == INIT_MOUSELESS )
-        return( false );
+    if( install != INIT_MOUSELESS ) {
+        MouseCtrl = mouse_open( 0, 0, UIConHandle );
+        if( MouseCtrl != 0 ) {
+            timercb.itcb_event.evt_value = UIProxy;
+            MouseTimer = mktimer( TIMEOFDAY, _TNOTIFY_PROXY, &timercb );
+            if( MouseTimer == -1 ) {
+                mouse_close( MouseCtrl );
+            } else {
+                MouseInstalled = true;
 
-    MouseCtrl = mouse_open( 0, 0, UIConHandle );
-    if( MouseCtrl == 0 )
-        return( false );
-    timercb.itcb_event.evt_value = UIProxy;
-    MouseTimer = mktimer( TIMEOFDAY, _TNOTIFY_PROXY, &timercb );
-    if( MouseTimer == -1 ) {
-        mouse_close( MouseCtrl );
-        return( false );
+                qnx_osinfo( 0, &osinfo );
+                _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
+
+                UIData->mouse_xscale = 1;
+                UIData->mouse_yscale = 1;
+
+                checkmouse( &MouseStatus, &row, &col, &MouseTime );
+                MouseRow = row;
+                MouseCol = col;
+                stopmouse();
+            }
+        }
     }
-    MouseInstalled = true;
-
-    UIData->mouse_xscale = 1;
-    UIData->mouse_yscale = 1;
-
-    qnx_osinfo( 0, &osinfo );
-    _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
-
-    checkmouse( &MouseStatus, &row, &col, &MouseTime );
-    MouseRow = row;
-    MouseCol = col;
-    stopmouse();
-    return( true );
+    return( MouseInstalled );
 }
 
 

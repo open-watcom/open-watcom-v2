@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,10 @@
 #ifndef __UNIX__
 #include <process.h>
 #endif
-#include "uidef.h"
+#include "stdui.h"
 #include "uimenu.h"
 #include "uivedit.h"
 #include "uigchar.h"
-#ifdef __UNIX__
-#include "uivirt.h"
-#endif
 
 #define TEST_COLOURS
 #ifdef TEST_COLOURS
@@ -49,7 +47,7 @@
 
 #include "sampdial.h"
 
-#define Normal          UIData->attrs[ ATTR_NORMAL ]
+#define Normal          UIData->attrs[ATTR_NORMAL]
 
 extern void sample_dialog( void );
 
@@ -232,7 +230,7 @@ static void open( void )
     if( uivopen( &opwin ) ) {
         uipushlist( oplist );
         uivtextput( &opwin, 1, 2, UIData->attrs[ATTR_NORMAL], "Enter file name.", 16 );
-        inputline.attr = UIData->attrs[ ATTR_EDIT ];
+        inputline.attr = UIData->attrs[ATTR_EDIT];
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
@@ -282,7 +280,7 @@ void main( void )
         UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
         mainwin.area.height = UIData->height - 7;
         if( uivopen( &mainwin ) ) {
-            for( ; ; ) {
+            for( ;; ) {
                 uipushlist( evlist );
                 ui_ev = uivgetevent( &mainwin );
                 uipoplist( /* evlist */ );
@@ -324,7 +322,7 @@ void main( void )
                         const char  *command;
 
                         command = getenv( "COMSPEC" );
-                        if( command == NULL ){
+                        if( command == NULL ) {
                             command = "c:\\command.com";
                         }
                         system( command );
@@ -349,7 +347,7 @@ void main( void )
                 if( ui_ev == EV_QUIT ) {
                     break;
                 } else if( ui_ev != EV_NO_EVENT ) {
-                    for( ptr = evstrs; ; ++ptr ){
+                    for( ptr = evstrs; ; ++ptr ) {
                         if( ptr->ui_ev == EV_NO_EVENT ) {
                             sprintf( buff, "event 0x%4.4x", ui_ev );
                             break;
@@ -371,7 +369,7 @@ void main( void )
                         BandArea.col = mcol;
                         BandArea.width = 0;
                         BandArea.height = 0;
-                        uibandinit( BandArea, UIData->attrs[ ATTR_ACTIVE ] );
+                        uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
                         break;
                     case EV_MOUSE_DRAG:
                         if( BandOn ) {

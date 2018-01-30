@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +43,12 @@ static void *fwd_tab( VTAB *vtab, VTABAREA *curr, unsigned wrap )
 {
     VTABAREA            *chase;
 
-    if( curr == NULL ){
+    if( curr == NULL ) {
         chase = vtab->first;
     } else {
         chase = _next( curr );
     }
-    for( ; ; ) {
+    for( ;; ) {
         if( chase == NULL ) {
             if( wrap ) {
                 chase = vtab->first;
@@ -111,7 +112,7 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
         } else {
             curr = vtab->curr;
         }
-        switch( ui_ev ){
+        switch( ui_ev ) {
         case EV_NO_EVENT :
             break;
         case EV_MOUSE_PRESS :
@@ -156,7 +157,7 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
             best = NULL;
             chase = curr;
             fwd = ( ui_ev == EV_CURSOR_DOWN );
-            for( ; ; ) {
+            for( ;; ) {
                 chase = fwd ? fwd_tab( vtab, chase, vtab->wrap ) :
                               bwd_tab( vtab, chase, vtab->wrap );
                 if( chase == NULL ) {
@@ -172,13 +173,13 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
                     }
                     break;
                 } else if( chase->area.row != curr->area.row ) {
-                    if( best == NULL ){
+                    if( best == NULL ) {
                         best = chase;
                     } else if( chase->area.row != best->area.row ) {
                         curr = best;
                         break;
                     } else if( abs( chase->area.col - vtab->home ) <
-                               abs( best->area.col - vtab->home ) ){
+                               abs( best->area.col - vtab->home ) ) {
                         best = chase;
                     } else {
                         curr = best;

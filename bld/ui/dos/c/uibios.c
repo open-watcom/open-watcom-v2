@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,7 +167,7 @@ typedef struct {
  * Others return success but do not modify DS:SI (US DOS 3.x). We need
  * to return a dummy DBCS pair table in that case.
  */
-#ifndef __386__
+#ifdef _M_I86
 
 extern dbcs_pair __far *dos_dbcs_vector_table( void );
 #pragma aux             dos_dbcs_vector_table = \
@@ -215,7 +216,7 @@ static dbcs_pair __far *intern dbcs_vector_table( void )
         if( pblock.real_ds == 0xFFFF ) { // wierd OS/2 value
             return( &dbcs_dummy );
         } else {
-            return( FIRSTMEG( (unsigned)pblock.real_ds, (unsigned)regs.w.si ) );
+            return( FIRSTMEG( pblock.real_ds, regs.w.si ) );
         }
     } else if( _IsRational() ) {
         rm_call_struct dblock;

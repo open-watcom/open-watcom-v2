@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,11 +65,11 @@ void uirestorebackground( void )
 {
     ATTR        hold;
 
-    hold = UIData->attrs[ ATTR_NORMAL ];
-    UIData->attrs[ ATTR_NORMAL ] = 0x07;
+    hold = UIData->attrs[ATTR_NORMAL];
+    UIData->attrs[ATTR_NORMAL] = 0x07;
     uidirty( UIData->blank.area );
     uirefresh();
-    UIData->attrs[ ATTR_NORMAL ] = hold;
+    UIData->attrs[ATTR_NORMAL] = hold;
 }
 
 
@@ -98,7 +99,7 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 {
     bool    ok;
 
-    if( UIData->blank.type.buffer.origin != NULL ){
+    if( UIData->blank.type.buffer.origin != NULL ) {
         ok = true;
     } else {
         ok = balloc( &UIData->blank.type.buffer, UIData->height, UIData->width );
@@ -115,12 +116,12 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 bool UIAPI uiremovebackground( void )
 /************************************/
 {
-    if( UIData->blank.type.buffer.origin != NULL ){
+    if( UIData->blank.type.buffer.origin != NULL ) {
         bfree( &UIData->blank.type.buffer );
         UIData->blank.type.buffer.origin = NULL;
     }
     UIData->blank.update = backblank;
-    UIData->blank.parm = &UIData->attrs[ ATTR_NORMAL];
+    UIData->blank.parm = &UIData->attrs[ATTR_NORMAL];
     return( true );
 }
 

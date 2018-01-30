@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,17 +175,17 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         uidisplayhotspot( vs, field );
         return;
     case FLD_TEXT :
-        attr = UIData->attrs[ ATTR_NORMAL ];
+        attr = UIData->attrs[ATTR_NORMAL];
         str  = field->u.str;
         break;
     case FLD_LABEL :
-        attr = UIData->attrs[ ATTR_NORMAL ];
+        attr = UIData->attrs[ATTR_NORMAL];
         strcpy( ctrlbuf, field->u.str );
         strcat( ctrlbuf, ":" );
         length = area->width;
         break;
     case FLD_FRAME :
-        uidrawbox( vs, area, UIData->attrs[ ATTR_NORMAL ], field->u.str );
+        uidrawbox( vs, area, UIData->attrs[ATTR_NORMAL], field->u.str );
         return;
     case FLD_EDIT :
     case FLD_INVISIBLE_EDIT :
@@ -211,9 +212,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         list  = &combo->list;
 
         if( !combo->perm ) {
-            ctrlbuf[0] = UiGChar[ UI_ARROW_DOWN ];  /* JBS was 25 */
+            ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];  /* JBS was 25 */
             uivtextput( vs, area->row, area->col + area->width + 1,
-                        UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
+                        UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
             ctrlbuf[0] = '\0';
         }
         if( edit->buffer != NULL ) {
@@ -242,9 +243,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         break;
     case FLD_PULLDOWN :
         list = field->u.list;
-        ctrlbuf[0] = UiGChar[ UI_ARROW_DOWN ];  /* JBS was 25 */
+        ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];  /* JBS was 25 */
         uivtextput( vs, area->row, area->col + area->width,
-                    UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
+                    UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
         ctrlbuf[0] = '\0';
         if( list->get == NULL ) {
             list->get = uigetlistelement;
@@ -310,7 +311,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         if( current ) {
             hotattr = attr;
         } else {
-            hotattr = UIData->attrs[ ATTR_RADIO_HOTSPOT ];
+            hotattr = UIData->attrs[ATTR_RADIO_HOTSPOT];
         }
         hotkey = uidrawhottext( vs, ctrlbuf, area, attr, hotattr, false, false, false );
         if( field->typ == FLD_CHECK ) {
@@ -353,11 +354,11 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     len = t - str;
     if( len < max ) max = len;
     for( delim = 0, cr = 0, i = 0 ; i < max ; ++i ) {
-        ch = str[ i ];
+        ch = str[i];
         if( ch == '\n' ) {
             break;
         } else if( ch == '\r' ) {
-            str[ i ] = ' ';
+            str[i] = ' ';
             cr = i;
         } else if( ch == ' ' || ch == ',' || ch == ')' ) {
             delim = i;
@@ -369,7 +370,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     } else if( len == max ) {     /* everything fit */
         slen = max;
     } else if( cr > 0 ) {         /* split at the carriage return */
-        str[ cr ] = '\r';
+        str[cr] = '\r';
         max = cr+1;
         slen = cr;
     } else if( delim > 0 ) {      /* split at the space, comma, or paren */
@@ -395,8 +396,8 @@ void *uiinitdialog( const char *title, ATTR attr, char *lines[],
 
     uisetscreenarea( &area, true, false );
     width = UIData->width - 2;
-    for( depth = 0, i = 0 ; lines[ i ] != NULL ; ++i ) {
-        s = lines[ i ];
+    for( depth = 0, i = 0 ; lines[i] != NULL ; ++i ) {
+        s = lines[i];
         len = strlen( s );
         for( t = s + len ; s < t ; ) {
             ++ depth;
@@ -417,8 +418,8 @@ void *uiinitdialog( const char *title, ATTR attr, char *lines[],
     width = area.width;
     area.row = 1;
     area.height = 1;
-    for( i = 0 ; lines[ i ] != NULL ; ++i ) {
-        s = lines[ i ];
+    for( i = 0 ; lines[i] != NULL ; ++i ) {
+        s = lines[i];
         len = strlen( s );
         for( t = s + len ; s < t ; ) {
             line = s;
@@ -457,7 +458,7 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
         }
         if( ui_dlg_info->edit_data == NULL ) {
             ui_dlg_info->edit_data = uibegedit( ui_dlg_info->vs, area.row, area.col, area.width,
-                                  UIData->attrs[ ATTR_CURR_EDIT ],
+                                  UIData->attrs[ATTR_CURR_EDIT],
                                   edit->buffer, edit->length, 0, 0, true, 0,
                                   field->typ == FLD_INVISIBLE_EDIT );
         }
@@ -525,7 +526,7 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, in
     char                *lines[1];
     a_dialog            *ui_dlg_info;
 
-    lines[ 0 ] = NULL;
+    lines[0] = NULL;
     ui_dlg_info = uimalloc( sizeof( a_dialog ) );
     if( ui_dlg_info == NULL ) {
         return( NULL );
@@ -533,7 +534,7 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, in
     ui_dlg_info->field = 0;
     ui_dlg_info->edit_data = NULL;
     ui_dlg_info->moving = false;
-    ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ ATTR_NORMAL ],
+    ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ATTR_NORMAL],
                            lines, rows, cols, rpos, cpos );
     uireinitdialog( ui_dlg_info, fields );
     return( ui_dlg_info );
@@ -709,7 +710,7 @@ static void *forwardtab( a_dialog *ui_dlg_info )
 {
     VFIELD             *fld;
 
-    if( ui_dlg_info->curr == NULL ){
+    if( ui_dlg_info->curr == NULL ) {
         fld = ui_dlg_info->first;
     } else {
         fld = nextfield( ui_dlg_info->curr );
@@ -938,7 +939,7 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
     if( ui_dlg_info->first == NULL ) return( false );
     curr = ui_dlg_info->curr;
     new_ui_ev = ui_ev;
-    switch( ui_ev ){
+    switch( ui_ev ) {
     case EV_MOUSE_DCLICK:
     case EV_MOUSE_PRESS:
         {
@@ -1050,7 +1051,7 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
 
     if( ch ) {
         hotkey = '\0';
-        for( vf = ui_dlg_info->fields ; vf->typ != FLD_VOID; ++vf ){
+        for( vf = ui_dlg_info->fields ; vf->typ != FLD_VOID; ++vf ) {
             switch( vf->typ ) {
             case FLD_HOT:
                 hotkey = vf->u.hs->flags;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ VSCREEN* intern findvscreen( ORD row, ORD col )
 {
     register    UI_WINDOW*              wptr;
 
-    for( wptr = UIData->area_head ; wptr != &UIData->blank; wptr = wptr->next ){
+    for( wptr = UIData->area_head ; wptr != &UIData->blank; wptr = wptr->next ) {
         if( ( row >= wptr->area.row ) &&
             ( row < wptr->area.row + wptr->area.height ) ) {
             if( ( col >= wptr->area.col ) &&

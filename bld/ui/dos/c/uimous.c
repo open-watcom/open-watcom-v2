@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,14 +121,14 @@ void intern setupmouse( void )
     int     dx;
 
     if( DrawCursor == NULL ) {
-        dx = ( UIData->width - 1 )*MOUSE_SCALE;
+        dx = ( UIData->width - 1 ) * MOUSE_SCALE;
     } else {
         dx =   UIData->width * MOUSE_SCALE - 1;
     }
     MouseDrvCall2( 7, 0, 0, dx );
 
     if( DrawCursor == NULL ) {
-        dx = ( UIData->height - 1 )*MOUSE_SCALE;
+        dx = ( UIData->height - 1 ) * MOUSE_SCALE;
     } else {
         dx = UIData->height * Points - 1;
     }
@@ -147,7 +148,7 @@ bool UIAPI initmouse( init_mode install )
 /***************************************/
 {
     MouseInstalled = false;
-    if( install > INIT_MOUSELESS && installed( BIOS_MOUSE ) ) {
+    if( install > INIT_MOUSELESS && mouse_installed() ) {
         if( install > INIT_MOUSE ) {
             if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
                 install = INIT_MOUSELESS;   /* mouse initialization failed */

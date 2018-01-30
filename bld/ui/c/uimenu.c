@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,8 +147,8 @@ static void menutitle( int menu, bool current )
         }
         chattr = attr;
     } else {
-        if( Menu->active ){
-            if( current ){
+        if( Menu->active ) {
+            if( current ) {
                 attr = UIData->attrs[ATTR_CURR_ACTIVE];
                 chattr = UIData->attrs[ATTR_HOT_CURR];
             } else {
@@ -406,7 +407,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
     bool        mouseon;
 
     new_ui_ev = ui_ev;
-    if( iskeyboardchar( ui_ev ) ){
+    if( iskeyboardchar( ui_ev ) ) {
         /* this allows alt numeric keypad stuff to not activate the menus */
         Menu->altpressed = false;
     }
@@ -426,20 +427,20 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 oldmenu = menu = 0;
             }
             select = false;
-            if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ){
+            if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ) {
                 Menu->altpressed = true;
-            } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ){
-                if( Menu->active ){
+            } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ) {
+                if( Menu->active ) {
                     menu = 0;
                 } else {
                     desc = &Describe[0];
                     menu = 1;
                 }
                 Menu->altpressed = false;
-            } else if( ui_ev == EV_F10 && UIData->f10menus ){
+            } else if( ui_ev == EV_F10 && UIData->f10menus ) {
                 desc = &Describe[0];
                 menu = 1;
-            } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ){
+            } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ) {
                 new_ui_ev = ui_ev;
                 menu = 0;
                 Menu->draginmenu = false;
@@ -485,7 +486,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 } else {
                     new_ui_ev = ui_ev;
                 }
-                if( ui_ev != EV_MOUSE_RELEASE && menu != oldmenu ){
+                if( ui_ev != EV_MOUSE_RELEASE && menu != oldmenu ) {
                     Menu->movedmenu = true;
                 }
                 if( ui_ev == EV_MOUSE_RELEASE ) {
@@ -511,7 +512,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     break;
                 case EV_CURSOR_LEFT :
                     menu -= 1;
-                    if( menu == 0 ){
+                    if( menu == 0 ) {
                         menu = NumMenus;
                     }
                     Menu->popuppending = true;
@@ -519,7 +520,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     break;
                 case EV_CURSOR_RIGHT :
                     menu += 1;
-                    if( menu > NumMenus ){
+                    if( menu > NumMenus ) {
                         menu = 1;
                     }
                     Menu->popuppending = true;
@@ -579,10 +580,10 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
             }
         }
     }
-    if( ui_ev == EV_MOUSE_RELEASE ){
+    if( ui_ev == EV_MOUSE_RELEASE ) {
         Menu->draginmenu = false;
     }
-    if( Menu->ignorealt ){
+    if( Menu->ignorealt ) {
         Menu->ignorealt = false;
     }
     if( ( !Menu->active && ( oldmenu != 0 ) ) ||

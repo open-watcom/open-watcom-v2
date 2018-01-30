@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,14 +47,14 @@ static ATTR     OldAttr;
 static int      ColAdjust;
 
 static LP_STRING RegenPos( unsigned row, unsigned col )
-/*******************************************************/
+/*****************************************************/
 {
     LP_STRING   pos;
     LP_STRING   col0;
 
     col0 = (LP_STRING)UIData->screen.origin
-          + (row*UIData->screen.increment)*sizeof(PIXEL);
-    pos = col0 + col*sizeof( PIXEL );
+          + ( row * UIData->screen.increment ) * sizeof( PIXEL );
+    pos = col0 + col * sizeof( PIXEL );
     while( col0 < pos ) {
         col0 += uicharlen( *col0 ) * sizeof( PIXEL );
     }
@@ -74,20 +75,20 @@ static void uisetmouseoff( void )
     SAREA       area;
 
     if( mouseOn ) {
-        if( EraseCursor==NULL ) {
+        if( EraseCursor == NULL ) {
             old = RegenPos( OldMouseRow, OldMouseCol );
             if( uicharlen( *old ) == 2 ) {
                 old[3] = OldAttr;
             }
             old[1] = OldAttr;
-            area.row  = OldMouseRow;
+            area.row = OldMouseRow;
             area.col = OldMouseCol + ColAdjust;
             area.height = 1;
             area.width = 1 - ColAdjust;
             physupdate( &area );
 //            physupdate( ( old - (LP_STRING)UIData->screen.origin ), 1 );
         } else{
-            (*EraseCursor)();               /*  Hide text-graphics mouse    */
+            (*EraseCursor)();   /* Hide text-graphics mouse */
         }
     }
 }
@@ -95,7 +96,7 @@ static void uisetmouseoff( void )
 static void FlipAttr( LP_STRING p )
 {
     OldAttr = *p;
-    if( UIData->colour == M_MONO ){
+    if( UIData->colour == M_MONO ) {
         *p = (OldAttr & 0x79) ^ 0x71;
     } else {
         *p = (OldAttr & 0x7f) ^ 0x77;
@@ -112,9 +113,9 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
         if( DrawCursor == NULL ) {
             new = RegenPos( row, col );
             if( uicharlen( *new ) == 2 ) {
-                FlipAttr( new+3 );
+                FlipAttr( new + 3 );
             }
-            FlipAttr( new+1 );
+            FlipAttr( new + 1 );
             area.row = row;
             area.col = col + ColAdjust;
             area.width = 1 - ColAdjust;
@@ -130,13 +131,13 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 }
 
 int UIAPI uimousealign( void )
-/*****************************/
+/****************************/
 {
     return( ColAdjust );
 }
 
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
-/**************************************************/
+/*************************************************/
 {
     if( OldMouseRow == row && OldMouseCol == col )
         return;

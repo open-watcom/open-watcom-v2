@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ static enum {
     M_XT        /* XTerm */
 } MouseType;
 
-static char         buf[ MAXBUF + 1 ];
+static char         buf[MAXBUF + 1];
 static int          new_sample;
 static int          last_row;
 static int          last_col;
@@ -148,32 +149,30 @@ static void XT_parse( void )
 }
 
 
-static int tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
-/*************************************************************************************/
+static bool tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/**************************************************************************************/
 {
-    if( !MouseInstalled ) {
-         uisetmouse( *row, *col );
-         return( 0 );
-    }
-    QNXDebugPrintf1("mouse_string = '%s'", buf);
-    if( new_sample ) {
-        switch( MouseType ) {
-        case M_QW:
-        case M_AW:
-            QW_parse();
-            break;
-        case M_XT:
-            XT_parse();
-            break;
+    if( MouseInstalled ) {
+        QNXDebugPrintf1("mouse_string = '%s'", buf);
+        if( new_sample ) {
+            switch( MouseType ) {
+            case M_QW:
+            case M_AW:
+                QW_parse();
+                break;
+            case M_XT:
+                XT_parse();
+                break;
+            }
+            new_sample = 0;
         }
-        new_sample = 0;
+        *row = last_row;
+        *col = last_col;
+        *status = last_status;
+        *time = uiclock();
     }
-    *row = last_row;
-    *col = last_col;
-    *status = last_status;
-    *time = uiclock();
     uisetmouse( *row, *col );
-    return( 0 );
+    return( false );
 }
 
 static int tm_stop( void )
@@ -182,18 +181,18 @@ static int tm_stop( void )
     return( 0 );
 }
 
-static void DoMouseInit( int type, char *init, const char *input )
+static void DoMouseInit( int type, const char *init, const char *input )
 {
     struct _osinfo      osinfo;
     MOUSEORD            row;
     MOUSEORD            col;
 
+    MouseInstalled = true;
     MouseType = type;
+
     uimouseforceoff();
     uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
-
-    MouseInstalled = true;
 
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
@@ -221,15 +220,13 @@ static bool tm_init( init_mode install )
     term = GetTermType();
     if( strcmp( term, "xterm" ) == 0 ) {
         DoMouseInit( M_XT, XT_INIT, ANSI_HDR "M" );
-        return( true );
-    }
-    if( strstr( term, "qnx" ) != 0 ) {
+    } else if( strstr( term, "qnx" ) != 0 ) {
         uiwritec( QNX_HDR QW_TEST );
         TrieAdd( EV_MOUSE_PRESS, QNX_HDR QW_TEST_RESPONSE );
-        return( true );
+    } else {
+        uiwritec( ANSI_HDR QW_TEST );
+        TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
     }
-    uiwritec( ANSI_HDR QW_TEST );
-    TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
     return( true );
 }
 
@@ -286,8 +283,11 @@ void tm_saveevent( void )
         /* eat the remainder of the version ID response. */
         for( ;; ) {
             c = nextc( 20 );
-            if( c == -1 ) return;
-            if( c == 't' ) break;
+            if( c == -1 )
+                return;
+            if( c == 't' ) {
+                break;
+            }
         }
         if( strstr( GetTermType(), "qnx" ) != 0 ) {
             DoMouseInit( M_QW, QNX_HDR QW_INIT, QNX_HDR "3" );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 
 MOUSETIME UIAPI uiclock( void )
 /*****************************
- * this routine get time in platform dependant units, 
- * used for mouse & timer delays 
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
  */
 {
     return( GetTickCount() );
@@ -67,7 +68,7 @@ ui_event UIAPI uieventsource( bool update )
     MOUSETIME       start;
 
     start = uiclock();
-    for( ; ; ) {
+    for( ;; ) {
         ui_ev = forcedevent();
         if( ui_ev > EV_NO_EVENT )
             break;

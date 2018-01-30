@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,7 +171,7 @@ bool intern initkeyboard( void )
         if( WaitHandle == 0 )
             WaitHandle = RdosCreateWait();
 
-        RdosAddWaitForKeyboard( WaitHandle, (int)(&KeyEventProc) );
+        RdosAddWaitForKeyboard( WaitHandle, (int)KeyEventProc );
     }
     KeyInstalled = true;
 
@@ -231,7 +232,7 @@ bool UIAPI initmouse( init_mode install )
         if( WaitHandle == 0 )
             WaitHandle = RdosCreateWait();
 
-        RdosAddWaitForMouse( WaitHandle, (int)(&MouseEventProc) );
+        RdosAddWaitForMouse( WaitHandle, (int)MouseEventProc );
         RdosSetMouseWindow( 0, 0, 8 * UIData->width - 1, 8 * UIData->height - 1 );
         RdosSetMouseMickey( 8, 8 );
         RdosShowMouse();

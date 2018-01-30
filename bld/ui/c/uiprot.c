@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 void UIAPI uiunprotect( VSCREEN *vptr )
 /**************************************/
 {
-    if( !(vptr->flags & V_UNPROTECTED) && ((vptr->flags & V_UNFRAMED) == 0 ) ){
+    if( !(vptr->flags & V_UNPROTECTED) && ((vptr->flags & V_UNFRAMED) == 0 ) ) {
         vptr->area.row -= 1;
         vptr->area.col -= 1;
         vptr->area.height += 2;

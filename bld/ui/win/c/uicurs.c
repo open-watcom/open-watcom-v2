@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
 0X42            /* inc    dx                            */      \
 0X8A 0XC7       /* mov    al,bh                         */      \
 0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ bx ];
+        parm caller [dx] [bx];
 
 extern void        VIDSetPos( unsigned, unsigned );
 
@@ -62,7 +63,7 @@ extern void        VIDSetPos( unsigned, unsigned );
 0X42            /* inc    dx                            */      \
 0X58            /* pop    ax                            */      \
 0XEE            /* out    dx,al                         */      \
-        parm caller [ dx ] [ ax ];
+        parm caller [dx] [ax];
 
 extern void VIDSetCurTyp( unsigned, unsigned );
 
@@ -79,7 +80,7 @@ extern void VIDSetCurTyp( unsigned, unsigned );
 0X42            /* inc    dx                            */      \
 0XEC            /* in     al,dx                         */      \
 0X86 0XE0       /* xchg   ah,al                         */      \
-        parm caller [ dx ] value [ ax ];
+        parm caller [dx] value [ax];
 
 extern unsigned         VIDGetCurTyp( unsigned );
 

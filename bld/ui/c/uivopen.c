@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,16 +74,16 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     if( ( flags & V_DIALOGUE ) != 0 ) {
         if( flags & V_LISTBOX ) {
             box = SBOX_CHARS();
-            attr = UIData->attrs[ ATTR_NORMAL ];
+            attr = UIData->attrs[ATTR_NORMAL];
         } else {
             box = BOX_CHARS();
-            attr = UIData->attrs[ ATTR_DIAL_FRAME ];
+            attr = UIData->attrs[ATTR_DIAL_FRAME];
         }
         priority = P_DIALOGUE;
     } else {
         flags &= ~V_UNBUFFERED;
         box = SBOX_CHARS();
-        attr = UIData->attrs[ ATTR_FRAME ];
+        attr = UIData->attrs[ATTR_FRAME];
         priority = P_VSCREEN;
     }
     if( ( flags & V_UNFRAMED ) == 0 ) {
@@ -142,7 +143,7 @@ do not delete this stuff
         area.row = 0;
         area.col = 0;
         vptr->open = true;
-        uivfill( vptr, area, UIData->attrs[ ATTR_NORMAL ], ' ' );
+        uivfill( vptr, area, UIData->attrs[ATTR_NORMAL], ' ' );
         uivsetcursor( vptr );
 
         return( vptr );

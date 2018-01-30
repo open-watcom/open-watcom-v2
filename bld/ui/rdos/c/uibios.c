@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +54,11 @@ bool UIAPI uiset80col( void )
 
 bool intern initbios( void )
 {
-    PIXEL   *bufptr;
-    int     i;
-    int     height;
-    int     width;
-    size_t  size;
+    LP_PIXEL    bufptr;
+    size_t      size;
+    size_t      i;
+    int         height;
+    int         width;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -67,16 +68,15 @@ bool intern initbios( void )
     RdosGetTextSize( &height, &width );
     UIData->height = height;
     UIData->width = width;
-    UIData->screen.increment = UIData->width;
-    size = UIData->width * UIData->height;
-
-    UIData->screen.origin = uimalloc( size * sizeof( PIXEL ) );
-
-    bufptr = UIData->screen.origin;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
+    bufptr = uimalloc( size );
+    size /= sizeof( PIXEL );
     for( i = 0; i < size; i++ ) {
         bufptr[i].ch = ' ';
         bufptr[i].attr = 0x07;
     }
+    UIData->screen.origin = bufptr;
+    UIData->screen.increment = UIData->width;
 
     uiinitcursor();
     initkeyboard();

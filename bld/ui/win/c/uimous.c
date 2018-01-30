@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,18 +60,15 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
     uisetmouse( *row, *col );
 }
 
-
-
 bool UIAPI initmouse( init_mode install )
 /***************************************/
 {
     int         cx;
     int         dx;
-    MOUSESTAT   tmp;
 
     MouseInstalled = false;
-    ScreenXFudge = (WORD)((DWORD)GetSystemMetrics( SM_CXSCREEN ) / (DWORD)UIData->width);
-    ScreenYFudge = (WORD)((DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height);
+    ScreenXFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CXSCREEN ) / (DWORD)UIData->width );
+    ScreenYFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height );
     if( install > INIT_MOUSELESS ) {
         if( install > INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
@@ -89,13 +87,11 @@ bool UIAPI initmouse( init_mode install )
             uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
             MouseInstalled = true;
             MouseOn = false;
-            checkmouse( &tmp, &MouseRow, &MouseCol, &MouseTime );
-            MouseStatus = tmp;
+            checkmouse( &MouseStatus, &MouseRow, &MouseCol, &MouseTime );
         }
     }
     return( MouseInstalled );
 }
-
 
 void UIAPI finimouse( void )
 /**************************/

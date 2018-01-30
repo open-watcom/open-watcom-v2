@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UNIX mouse input handling.
 *
 ****************************************************************************/
 
@@ -39,6 +39,7 @@
 
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
+/*******************************************/
 {
     MouseRow = row;
     MouseCol = col;
@@ -69,7 +70,7 @@ void UIAPI finimouse( void )
 }
 
 void UIAPI uimousespeed( unsigned speed )
-/****************************************/
+/***************************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.

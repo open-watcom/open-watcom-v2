@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ static void _dorefresh( struct update_area *total, SAREA area,
 /************************************************************/
 {
     register    int                     i;
-    auto        SAREA                   areas[ 5 ];
+    auto        SAREA                   areas[5];
     unsigned                            start;
     unsigned                            end;
 
@@ -72,8 +73,8 @@ static void _dorefresh( struct update_area *total, SAREA area,
     } else {
         dividearea( area, cover->area, areas );
         for( i = 1; i < 5; ++i ) {
-            if( areas[ i ].height > 0 ) {
-                _dorefresh( total, areas[ i ], wptr, cover->prev );
+            if( areas[i].height > 0 ) {
+                _dorefresh( total, areas[i], wptr, cover->prev );
             }
         }
     }

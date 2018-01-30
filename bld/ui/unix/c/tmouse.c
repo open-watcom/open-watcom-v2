@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static enum {
 #endif
 } MouseType;
 
-static char             buf[ MAXBUF + 1 ];
+static char             buf[MAXBUF + 1];
 static int              new_sample;
 static int              UIMouseHandle = -1;
 
@@ -110,35 +110,33 @@ static void XT_parse( void )
     }
 }
 
-static int tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *the_time )
-/*****************************************************************************************/
+static bool tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *ptime )
+/***************************************************************************************/
 {
-    if( !MouseInstalled ) {
-         uisetmouse( *row, *col );
-         return 0;
-    }
-    UIDebugPrintf1( "mouse_string = '%s'", buf );
-    if( new_sample ) {
-        switch( MouseType ) {
-        case M_XT:
-            XT_parse();
-            break;
+    if( MouseInstalled ) {
+        UIDebugPrintf1( "mouse_string = '%s'", buf );
+        if( new_sample ) {
+            switch( MouseType ) {
+            case M_XT:
+                XT_parse();
+                break;
 #ifdef __LINUX__
-        case M_GPM:
-            GPM_parse();
-            break;
+            case M_GPM:
+                GPM_parse();
+                break;
 #endif
-        case M_NONE:
-            break;
+            case M_NONE:
+                break;
+            }
+            new_sample = 0;
         }
-        new_sample = 0;
+        *row        = last_row;
+        *col        = last_col;
+        *status     = last_status;
+        *ptime      = uiclock();
     }
-    *row        = last_row;
-    *col        = last_col;
-    *status     = last_status;
-    *the_time   = uiclock();
     uisetmouse( *row, *col );
-    return 0;
+    return( false );
 }
 
 static int tm_stop( void )

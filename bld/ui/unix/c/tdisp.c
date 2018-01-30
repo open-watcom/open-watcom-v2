@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -757,19 +757,19 @@ static bool setupscrnbuff( int srows, int scols )
 /***********************************************/
 {
     PIXEL               *scrn;
-    int                 num;
-    int                 i;
-    struct winsize      size;
+    size_t              size;
+    size_t              i;
+    struct winsize      wsize;
     int                 rows, cols;
 
     rows = 0;
     cols = 0;
     // trying to get current terminal size by ioctl
     if( isatty( UIConHandle ) ) {
-        if( ioctl( UIConHandle, TIOCGWINSZ, &size ) != -1 ) {
+        if( ioctl( UIConHandle, TIOCGWINSZ, &wsize ) != -1 ) {
             // Under EMACS gdb, zero is returned for rows and cols
-            rows = size.ws_row;
-            cols = size.ws_col;
+            rows = wsize.ws_row;
+            cols = wsize.ws_col;
         }
     }
     if( rows == 0 ) {
@@ -795,20 +795,20 @@ static bool setupscrnbuff( int srows, int scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    num = UIData->width * UIData->height * sizeof( PIXEL );
+    size = UIData->width * UIData->height * sizeof( PIXEL );
     scrn = UIData->screen.origin;
-    scrn = uirealloc( scrn, num );
 
+    scrn = uirealloc( scrn, size );
     if( scrn == NULL )
         return( false );
-    if( (shadow = uirealloc( shadow, num )) == NULL ) {
+    if( (shadow = uirealloc( shadow, size )) == NULL ) {
         uifree( scrn );
         return( false );
     }
 
     save_cursor_type = -1; /* C_NORMAL; */
-    num /= sizeof( PIXEL );
-    for( i = 0; i < num; ++i ) {
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
     }

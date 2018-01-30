@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,15 +184,15 @@ bool UIAPI initmouse( init_mode install )
 {
     MOUSETIME   tmp;
 
-    if( install == INIT_MOUSELESS ) {
-        return( false );
+    MouseInstalled = false;
+    if( install != INIT_MOUSELESS ) {
+        MouseInstalled = true;
+        UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
+        UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
+        MouseOn = false;
+        UIData->mouse_swapped = false;
+        checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     }
-    UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
-    UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
-    MouseOn = false;
-    MouseInstalled = true;
-    UIData->mouse_swapped = false;
-    checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 

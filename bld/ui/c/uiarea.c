@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "clibext.h"
 
 
-void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
+void intern dividearea( SAREA area, SAREA centre, SAREA areas[5] )
 /******************************************************************/
 /*
         This diagram shows the general case for the overlap of two
@@ -139,12 +140,12 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
             break;
         }
         if( ( row > maxrow ) || ( col > maxcol ) ) {
-            areas[ i ].height = 0;
+            areas[i].height = 0;
         } else {
-            areas[ i ].row = row;
-            areas[ i ].col = col;
-            areas[ i ].height = maxrow - row + 1;
-            areas[ i ].width = maxcol - col + 1;
+            areas[i].row = row;
+            areas[i].col = col;
+            areas[i].height = maxrow - row + 1;
+            areas[i].width = maxcol - col + 1;
         }
     }
 }

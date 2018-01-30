@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +146,7 @@ void intern physupdate( SAREA *area )
 
         for( j = sr.Top; j <= sr.Bottom; j++ ) {
             for( i = sr.Left; i <= sr.Right; i++ ) {
-                buff[i - sr.Left] = ((PIXEL *)UIData->screen.origin)[j * UIData->width + i].ch;
+                buff[i - sr.Left] = UIData->screen.origin[j * UIData->width + i].ch;
             }
             buff[i - sr.Left] = 0;
             printf( "%s\n", buff );

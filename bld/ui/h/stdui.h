@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -327,7 +327,7 @@ typedef enum ui_event {
 
 typedef struct ui_event_list {
     int             num_lists;
-    ui_event  _FARD *events[ MAX_EVENT_LISTS ];
+    ui_event  _FARD *events[MAX_EVENT_LISTS];
 } ui_event_list;
 
 enum    {
@@ -499,6 +499,13 @@ typedef unsigned char   ATTR;
     } PIXEL;
     #define __FAR
     #undef HAVE_FAR
+#elif defined( __NETWARE__ )
+    typedef struct pixel {
+        unsigned char   ch;
+        ATTR            attr;
+    } PIXEL;
+    #define __FAR __far     /* ?? on netware probably should be near ?? */
+    #define HAVE_FAR
 #elif defined( _M_IX86 )
     typedef struct pixel {
         unsigned char   ch;

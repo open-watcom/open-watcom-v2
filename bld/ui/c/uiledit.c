@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +89,7 @@ void uiedittrim( char *s )
 
 void uieditmarking( bool set, unsigned anchor )
 {
-    Eline.mark_attr = UIData->attrs[ ATTR_MARK_NORMAL ];
+    Eline.mark_attr = UIData->attrs[ATTR_MARK_NORMAL];
     if( set ) {
         if( !Eline.marking ) {
             Eline.marking = true;
@@ -205,7 +206,7 @@ ui_event uiledit( ui_event ui_ev )
     }
 
     new_ui_ev = EV_NO_EVENT;
-    switch( ui_ev ){
+    switch( ui_ev ) {
     case EV_BUFFER_FULL:
         if( !extend( Eline.length + 10 ) ) {
             Eline.index = before;       // set cursor back to correct pos'n
@@ -252,7 +253,7 @@ void uieditinsert( char *str, unsigned n )
     }
     before = Eline.length;
     if( extend( Eline.length + n ) ) {
-        ins = &UIEdit->edit_buffer[ Eline.index ];
+        ins = &UIEdit->edit_buffer[Eline.index];
         memmove( ins + n, ins, before - Eline.index );
         memcpy( ins, str, n );
         Eline.index += n;

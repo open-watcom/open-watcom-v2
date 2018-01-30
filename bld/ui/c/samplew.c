@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ extern void     ToCharacter( void );
 extern void     ToGraphical( void );
 extern ui_event keyboardevent( void );
 
-#define Normal          UIData->attrs[ ATTR_NORMAL ]
+#define Normal          UIData->attrs[ATTR_NORMAL]
 
 extern void sample_dialog( void );
 
@@ -207,12 +208,12 @@ static void open( void )
 
         uipushlist( oplist );
         uivtextput( &opwin, 1, 2, UIData->attrs[ATTR_NORMAL], "Enter file name.", 16 );
-        inputline.attr = UIData->attrs[ ATTR_EDIT ];
+        inputline.attr = UIData->attrs[ATTR_EDIT];
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
         inputline.update = true;
-        for( ; ; ) {
+        for( ;; ) {
             ui_ev = uiveditline( &opwin, &inputline );
             if( ui_ev != EV_NO_EVENT ) break;
         }
@@ -271,7 +272,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
         uirefresh();
         sprintf( buff, "screen height : %d\0", UIData->height );
         uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-        for( ; ; ) {
+        for( ;; ) {
             uipushlist( evlist );
             ui_ev = uivgetevent( NULL );
             uipoplist( /* evlist */ );
@@ -327,7 +328,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 uivsetcursor( &mainwin );
             }
             if( ui_ev != EV_NO_EVENT ) {
-                for( ptr = evstrs; ; ++ptr ){
+                for( ptr = evstrs; ; ++ptr ) {
                     if( ptr->ui_ev == EV_NO_EVENT ) {
                         sprintf( buff, "event 0x%4.4x", ui_ev );
                         break;
@@ -337,7 +338,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     }
                 }
                 uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-                if( ++evrow >= mainwin.area.height ){
+                if( ++evrow >= mainwin.area.height ) {
                     evrow = TOP_ROW;
                 }
                 uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
@@ -349,7 +350,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     BandArea.col = mcol;
                     BandArea.width = 0;
                     BandArea.height = 0;
-                    uibandinit( BandArea, UIData->attrs[ ATTR_ACTIVE ] );
+                    uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
                     break;
                 case EV_MOUSE_DRAG:
                     if( BandOn ) {

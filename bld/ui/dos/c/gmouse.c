@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,7 +227,7 @@ static char MouInit( void )
 {
     char            savedmode;
     unsigned short  off, i, j, s1, s2;
-    int             ret;
+    unsigned short  ret;
     static int      first_time = true;
 
     Points = _POINTS;
@@ -308,7 +309,7 @@ void UIAPI uifinigmouse( void )
 bool UIAPI uiinitgmouse( init_mode install )
 {
     MouseInstalled = false;
-    if( install > INIT_MOUSELESS && installed( BIOS_MOUSE ) ) {
+    if( install > INIT_MOUSELESS && mouse_installed() ) {
         if( install > INIT_MOUSE ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {

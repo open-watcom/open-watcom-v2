@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +66,7 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
         area.width = editline->fldlen;
         uivfill( vptr, area, editline->attr, ' ' );
         for( trim = editline->length ; trim > editline->index ; --trim ) {
-            if( editline->buffer[ trim - 1 ] != ' ' ) break;
+            if( editline->buffer[trim - 1] != ' ' ) break;
         }
         area.width = editline->fldlen;
         if( area.width > trim - editline->scroll )
@@ -198,7 +199,7 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
     editline->col = col;
     editline->fldlen = len;
     editline->scroll = 0;
-    editline->attr = UIData->attrs[ ATTR_CURR_EDIT ];
+    editline->attr = UIData->attrs[ATTR_CURR_EDIT];
     editline->update = true;
     editline->auto_clear = false;
     editline->buffer = buffer;

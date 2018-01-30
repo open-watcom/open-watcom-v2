@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 mouse input handling.
 *
 ****************************************************************************/
 
@@ -37,6 +37,16 @@
 #include "uimouse.h"
 #include "biosui.h"
 
+
+#define MOUSE_SCALE     8
+
+/* Process Type codes (local information segment typeProcess field)           */
+
+#define _PT_FULLSCREEN              0 /* Full screen application               */
+#define _PT_REALMODE                1 /* Real mode process                     */
+#define _PT_WINDOWABLEVIO           2 /* VIO windowable application            */
+#define _PT_PM                      3 /* Presentation Manager application      */
+#define _PT_DETACHED                4 /* Detached application                  */
 
 /* Local Information Segment */
 
@@ -60,25 +70,11 @@ typedef struct __LINFOSEG {      /* lis */
     SEL     selDS;
 } __LINFOSEG;
 
-/* Process Type codes (local information segment typeProcess field)           */
-
-#define _PT_FULLSCREEN              0 /* Full screen application               */
-#define _PT_REALMODE                1 /* Real mode process                     */
-#define _PT_WINDOWABLEVIO           2 /* VIO windowable application            */
-#define _PT_PM                      3 /* Presentation Manager application      */
-#define _PT_DETACHED                4 /* Detached application                  */
-
-#define BIOS_MOUSE      0x33
-
-#define MOUSE_SCALE     8
-
 static HMOU             MouHandle;
 static bool             TwoButtonMouse = false;
 static ORD              Row;
 static ORD              Col;
 static MOUSESTAT        Status;
-
-
 
 void intern mousespawnstart( void )
 /*********************************/
@@ -107,7 +103,7 @@ static void GetMouseInfo( void )
     Status = 0;
     if( mouinfo.fs & 0x0006 )
         Status |= UI_MOUSE_PRESS;
-    if( TwoButtonMouse ){
+    if( TwoButtonMouse ) {
         if( mouinfo.fs & 0x0078 ) {
             Status |= UI_MOUSE_PRESS_RIGHT;
         }
@@ -164,18 +160,18 @@ void uimousespeed( unsigned speed )
 #endif
 }
 
+#ifdef _M_I86
 
 #define IRET       '\xCF'
 
-#ifdef _M_I86
 static bool mouse_installed( void )
+/*********************************/
 {
-    unsigned short __far        *vector;
-    char __far                  *intrtn;
-    // 91/05/15 DEN - major kludge to fix code gen bug
-    int                         zero = 0;
+    unsigned short  __far *vector;
+    char            __far *intrtn;
 
-    vector = MK_FP( zero, BIOS_MOUSE * 4 );
+    /* get mouse driver interrupt vector */
+    vector = MK_FP( 0, BIOS_MOUSE * 4 );
     intrtn = MK_FP( vector[1], vector[0] );
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }
@@ -309,4 +305,3 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     }
 #endif
 }
-

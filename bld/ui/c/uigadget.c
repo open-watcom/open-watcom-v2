@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,9 @@
 #include "uidef.h"
 #include "uigadget.h"
 
-#define _ATTR                   (UIData->attrs[ ATTR_SCROLL_ICON ])
-#define _ATTR_BAR               (UIData->attrs[ ATTR_SCROLL_BAR ])
-#define _ATTR_SLIDER            (UIData->attrs[ ATTR_SCROLL_BAR ])
+#define _ATTR                   (UIData->attrs[ATTR_SCROLL_ICON])
+#define _ATTR_BAR               (UIData->attrs[ATTR_SCROLL_BAR])
+#define _ATTR_SLIDER            (UIData->attrs[ATTR_SCROLL_BAR])
 
 #define row( g, i )     (g->dir == HORIZONTAL ? g->anchor : i)
 #define col( g, i )     (g->dir == HORIZONTAL ? i : g->anchor)
@@ -61,7 +62,7 @@ static void drawgadget( p_gadget g )
 
     uiunprotect( g->win );
     length = g->end - g->start - 1;
-    for( i=g->start; i <= g->end; ++i ){
+    for( i=g->start; i <= g->end; ++i ) {
         if( g->dir == VERTICAL ) {
             uivtextput( g->win, row(g,i), col(g,i), _ATTR, VertScrollFrame, 0 );
         } else {
@@ -76,7 +77,7 @@ static void drawgadget( p_gadget g )
             uivtextput( g->win, g->linear, g->anchor, _ATTR_SLIDER, SliderChar, 0 );
         }
     }
-    if( g->dir == HORIZONTAL ){
+    if( g->dir == HORIZONTAL ) {
         uivtextput( g->win, g->anchor, g->start, _ATTR, LeftPoint, 0 );
         uivtextput( g->win, g->anchor, g->end, _ATTR, RightPoint, 0 );
     } else {

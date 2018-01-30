@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,12 @@
 
 #define IRET        '\xCF'
 
-bool intern installed( int intno )
+bool intern mouse_installed( void )
 {
     unsigned short  __far *vector;
     char            __far *intrtn;
 
-    vector = FIRSTMEG( 0, intno * 4 );
+    vector = FIRSTMEG( 0, BIOS_MOUSE * 4 );
     intrtn = FIRSTMEG( vector[1], vector[0] );
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }

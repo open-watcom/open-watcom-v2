@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,23 +155,26 @@ intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
         _snowcopy( dst, src, len );
         _forward();
     } else {
-        _fmemmove( dst, src, len*sizeof(PIXEL) );
+        _fmemmove( dst, src, len * sizeof( PIXEL ) );
     }
+#elif defined( __NETWARE__ )
+    /* unused parameters */ (void)snow;
+
+    // Netware compiled with "far" defined, but pointers aren't really
+    // far, and there is no _fmemmove function, and we were getting
+    // "pointer truncated" warnings before, so just cast. (SteveM)
+    // ?? why it is compiled with "far" ??
+    // LP_PIXEL should be declared as near
+    // then these cast are useless
+    memmove( (PIXEL *)dst, (PIXEL *)src, len * sizeof( PIXEL ) );
 #elif defined( __386__ ) && !defined( __UNIX__ )
     /* unused parameters */ (void)snow;
 
-    #if defined( __NETWARE__ )
-        // Netware compiled with "far" defined, but pointers aren't really
-        // far, and there is no _fmemmove function, and we were getting
-        // "pointer truncated" warnings before, so just cast. (SteveM)
-        memmove( (PIXEL *) dst, (PIXEL *) src, len*sizeof(PIXEL) );
-    #else
-        _fmemmove( dst, src, len*sizeof(PIXEL) );
-    #endif
+    _fmemmove( dst, src, len * sizeof( PIXEL ) );
 #else
     /* unused parameters */ (void)snow;
 
-    memmove( dst, src, len*sizeof(PIXEL) );
+    memmove( dst, src, len * sizeof( PIXEL ) );
 #endif
 }
 
