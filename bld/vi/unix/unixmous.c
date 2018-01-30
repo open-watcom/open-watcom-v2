@@ -32,7 +32,6 @@
 #include "vi.h"
 #include "mouse.h"
 #include "stdui.h"
-#include "uivirt.h"
 #include <term.h>
 
 extern FILE *UIConFile;
@@ -94,7 +93,7 @@ void InitMouse( void )
         /* save current xterm mouse state */
         putp( "\033[?1001s" );
 #endif
-        _initmouse( 1 );
+        initmouse( INIT_MOUSE );
         /* set xterm into full mouse tracking mode */
         putp( "\033[?1003h" );
     }
@@ -109,7 +108,7 @@ void FiniMouse( void )
     if( key_mouse ) {
         /* disable mouse tracking */
         putp( "\033[?1003l" );
-        _finimouse();
+        finimouse();
 #if 0 /* doesn't seem to work here, leave it for now */
         /* restore old xterm mouse state */
         putp( "\033[?1001r" );

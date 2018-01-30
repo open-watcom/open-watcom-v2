@@ -306,7 +306,7 @@ vi_key GetKeyboard( void )
 
 vi_mouse_event GetMouseEvent( void )
 {
-    return( MOUSE_NONE );
+    return( VI_MOUSE_NONE );
 }
 
 bool TestMouseEvent( bool mouse )

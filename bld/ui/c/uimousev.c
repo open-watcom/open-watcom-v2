@@ -131,10 +131,10 @@ void UIAPI uihidemouse( void )
 static int button( MOUSESTAT status )
 /***********************************/
 {
-    status &= MOUSE_PRESS_ANY;
-    if( status == MOUSE_PRESS ){
+    status &= UI_MOUSE_PRESS_ANY;
+    if( status == UI_MOUSE_PRESS ){
         return( 0 );
-    } else if( status == MOUSE_PRESS_RIGHT ){
+    } else if( status == UI_MOUSE_PRESS_RIGHT ){
         return( 1 );
     } else {
         return( 2 );
@@ -159,13 +159,13 @@ ui_event intern mouseevent( void )
     butt = 0;
     if( MouseInstalled ) {
         checkmouse( &status, &row, &col, &time );
-        diff = (status ^ MouseStatus) & MOUSE_PRESS_ANY;
+        diff = (status ^ MouseStatus) & UI_MOUSE_PRESS_ANY;
 
         moved = ( row / UIData->mouse_yscale != MouseRow / UIData->mouse_yscale
                || col / UIData->mouse_xscale != MouseCol / UIData->mouse_xscale );
 
         if( moved ){
-            if( MouseStatus & MOUSE_PRESS_ANY ){
+            if( MouseStatus & UI_MOUSE_PRESS_ANY ){
                 /* DO NOT TURN ON THE MOUSE IF YOU ARE DRAGGING */
                 /* i.e. don't set MouseOn = true */
                 butt = button( status );
@@ -175,7 +175,7 @@ ui_event intern mouseevent( void )
                 MouseOn = true;
             }
             MouseLastButton = -1;    /* don't double click */
-        } else if( diff & MOUSE_PRESS_ANY ){
+        } else if( diff & UI_MOUSE_PRESS_ANY ){
             if( (diff & status) == diff ){
                 if( button( diff ) == MouseLastButton && time - MouseTime < UIData->mouse_clk_delay ) {
                     mindex = M_DCLICK;
@@ -192,7 +192,7 @@ ui_event intern mouseevent( void )
             MouseTime = time;
             MouseStatus = status;
             MouseOn = true;
-        } else if( status & MOUSE_PRESS_ANY ){
+        } else if( status & UI_MOUSE_PRESS_ANY ){
             if( UIData->busy_wait ) {
                 mindex = M_HOLD;
                 // DEN 92/3/16 - added for dbserver - menus didn't get updated

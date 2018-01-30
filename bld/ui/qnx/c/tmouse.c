@@ -122,11 +122,11 @@ static void QW_parse( void )
     case 1:
         last_status = 0;
         if( mbut & 004 )
-            last_status |= MOUSE_PRESS;
+            last_status |= UI_MOUSE_PRESS;
         if( mbut & 002 )
-            last_status |= MOUSE_PRESS_MIDDLE;
+            last_status |= UI_MOUSE_PRESS_MIDDLE;
         if( mbut & 001 )
-            last_status |= MOUSE_PRESS_RIGHT;
+            last_status |= UI_MOUSE_PRESS_RIGHT;
         break;
     case 2:
         last_status = 0;
@@ -140,9 +140,9 @@ static void XT_parse( void )
     last_col = buf[1] - 0x21;
     last_row = buf[2] - 0x21;
     switch( buf[0] & 0x03 ) {
-    case 0: last_status |= MOUSE_PRESS; break;
-    case 1: last_status |= MOUSE_PRESS_MIDDLE; break;
-    case 2: last_status |= MOUSE_PRESS_RIGHT; break;
+    case 0: last_status |= UI_MOUSE_PRESS; break;
+    case 1: last_status |= UI_MOUSE_PRESS_MIDDLE; break;
+    case 2: last_status |= UI_MOUSE_PRESS_RIGHT; break;
     case 3: last_status = 0;
     }
 }

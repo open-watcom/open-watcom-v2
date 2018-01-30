@@ -59,10 +59,10 @@ static bool FileCompleteMouseHandler( window_id wid, int win_x, int win_y )
     if( wid != dir_wid ) {
         return( false );
     }
-    if( LastMouseEvent != MOUSE_PRESS && LastMouseEvent != MOUSE_DCLICK ) {
+    if( LastMouseEvent != VI_MOUSE_PRESS && LastMouseEvent != VI_MOUSE_DCLICK ) {
         return( false );
     }
-    if( LastMouseEvent == MOUSE_DCLICK ) {
+    if( LastMouseEvent == VI_MOUSE_DCLICK ) {
         isDone = true;
     }
     if( !InsideWindow( wid, win_x, win_y ) ) {

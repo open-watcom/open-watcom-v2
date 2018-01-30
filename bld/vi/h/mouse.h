@@ -41,26 +41,26 @@
 
 /* mouse events */
 typedef enum vi_mouse_event {
-    MOUSE_NONE = -1,
-    MOUSE_PRESS,
-    MOUSE_RELEASE,
-    MOUSE_DCLICK,
-    MOUSE_HOLD,
-    MOUSE_DRAG,
-    MOUSE_REPEAT,
-    MOUSE_PRESS_R,
-    MOUSE_RELEASE_R,
-    MOUSE_DCLICK_R,
-    MOUSE_HOLD_R,
-    MOUSE_DRAG_R,
-    MOUSE_REPEAT_R,
-    MOUSE_PRESS_M,
-    MOUSE_RELEASE_M,
-    MOUSE_DCLICK_M,
-    MOUSE_HOLD_M,
-    MOUSE_DRAG_M,
-    MOUSE_REPEAT_M,
-    MOUSE_MOVE
+    VI_MOUSE_NONE = -1,
+    VI_MOUSE_PRESS,
+    VI_MOUSE_RELEASE,
+    VI_MOUSE_DCLICK,
+    VI_MOUSE_HOLD,
+    VI_MOUSE_DRAG,
+    VI_MOUSE_REPEAT,
+    VI_MOUSE_PRESS_R,
+    VI_MOUSE_RELEASE_R,
+    VI_MOUSE_DCLICK_R,
+    VI_MOUSE_HOLD_R,
+    VI_MOUSE_DRAG_R,
+    VI_MOUSE_REPEAT_R,
+    VI_MOUSE_PRESS_M,
+    VI_MOUSE_RELEASE_M,
+    VI_MOUSE_DCLICK_M,
+    VI_MOUSE_HOLD_M,
+    VI_MOUSE_DRAG_M,
+    VI_MOUSE_REPEAT_M,
+    VI_MOUSE_MOVE
 } vi_mouse_event;
 
 typedef bool (*mouse_callback)( window_id, int, int );

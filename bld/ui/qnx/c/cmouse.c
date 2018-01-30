@@ -79,14 +79,14 @@ static int cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME 
             }
             MyStatus = 0;
             if( event.buttons & _MOUSE_LEFT )
-                MyStatus |= MOUSE_PRESS;
+                MyStatus |= UI_MOUSE_PRESS;
             if( event.buttons & _MOUSE_MIDDLE )
-                MyStatus |= MOUSE_PRESS_MIDDLE;
+                MyStatus |= UI_MOUSE_PRESS_MIDDLE;
             if( event.buttons & _MOUSE_RIGHT )
-                MyStatus |= MOUSE_PRESS_RIGHT;
+                MyStatus |= UI_MOUSE_PRESS_RIGHT;
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
-        } else if( (MyStatus & MOUSE_PRESS_ANY) == 0 ) {
+        } else if( (MyStatus & UI_MOUSE_PRESS_ANY) == 0 ) {
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
         } else {

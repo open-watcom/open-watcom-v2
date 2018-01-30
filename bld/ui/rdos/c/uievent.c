@@ -137,23 +137,23 @@ static ui_event MouseEventProc( void )
 
     stat = 0;
     if( RdosGetLeftButton() )
-        stat |= MOUSE_PRESS;
+        stat |= UI_MOUSE_PRESS;
     if( RdosGetRightButton() )
-        stat |= MOUSE_PRESS_RIGHT;
+        stat |= UI_MOUSE_PRESS_RIGHT;
 
     RdosGetMousePosition(  &col, &row );
 
     if( stat != currMouseStatus ) {
-        if( (stat & MOUSE_PRESS) == 0 && (currMouseStatus & MOUSE_PRESS) )
+        if( (stat & UI_MOUSE_PRESS) == 0 && (currMouseStatus & UI_MOUSE_PRESS) )
             RdosGetLeftButtonReleasePosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS_RIGHT) == 0 && (currMouseStatus & MOUSE_PRESS_RIGHT) )
+        if( (stat & UI_MOUSE_PRESS_RIGHT) == 0 && (currMouseStatus & UI_MOUSE_PRESS_RIGHT) )
             RdosGetRightButtonReleasePosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) == 0 )
+        if( (stat & UI_MOUSE_PRESS) && (currMouseStatus & UI_MOUSE_PRESS) == 0 )
             RdosGetLeftButtonPressPosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) == 0 ) {
+        if( (stat & UI_MOUSE_PRESS_RIGHT) && (currMouseStatus & UI_MOUSE_PRESS_RIGHT) == 0 ) {
             RdosGetRightButtonPressPosition( &col, &row );
         }
     }

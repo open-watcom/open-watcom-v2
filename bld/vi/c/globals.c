@@ -74,7 +74,7 @@ windim          MouseRow;
 windim          MouseCol;
 int             MouseStatus;
 #endif
-vi_mouse_event  LastMouseEvent = MOUSE_NONE;
+vi_mouse_event  LastMouseEvent = VI_MOUSE_NONE;
 
 /* generic editing data */
 long            NextAutoSave;

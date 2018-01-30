@@ -243,10 +243,10 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         if( st & (FROM_LEFT_2ND_BUTTON_PRESSED|FROM_LEFT_3RD_BUTTON_PRESSED |
                     FROM_LEFT_4TH_BUTTON_PRESSED|FROM_LEFT_1ST_BUTTON_PRESSED|
                     RIGHTMOST_BUTTON_PRESSED) ) {
-            currMouseStatus = MOUSE_PRESS;
+            currMouseStatus = UI_MOUSE_PRESS;
         }
         if( st & RIGHTMOST_BUTTON_PRESSED ) {
-            currMouseStatus = MOUSE_PRESS_RIGHT;
+            currMouseStatus = UI_MOUSE_PRESS_RIGHT;
         }
         return( true );
     }

@@ -634,7 +634,7 @@ static bool mouseHandler( window_id wid, int x, int y )
     /* unused parameters */ (void)x; (void)y;
 
     if( wid != thisWindow ) {
-        if( LastMouseEvent == MOUSE_PRESS ) {
+        if( LastMouseEvent == VI_MOUSE_PRESS ) {
             KeyAdd( VI_KEY( ESC ) );
             AddCurrentMouseEvent();
         }

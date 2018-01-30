@@ -62,7 +62,7 @@ vi_rc HandleMouseEvent( void )
     }
 
     if( dragThumb ) {
-        if( LastMouseEvent == MOUSE_RELEASE ) {
+        if( LastMouseEvent == VI_MOUSE_RELEASE ) {
             dragThumb = false;
         }
         if( wid != current_window_id ) {
@@ -75,21 +75,21 @@ vi_rc HandleMouseEvent( void )
     }
 
     if( EditFlags.Dragging ) {
-        if( LastMouseEvent == MOUSE_DRAG || LastMouseEvent == MOUSE_REPEAT ) {
+        if( LastMouseEvent == VI_MOUSE_DRAG || LastMouseEvent == VI_MOUSE_REPEAT ) {
             UpdateDrag( wid, win_x, win_y );
         } else {
-            if( LastMouseEvent == MOUSE_PRESS_R || LastMouseEvent == MOUSE_PRESS ) {
+            if( LastMouseEvent == VI_MOUSE_PRESS_R || LastMouseEvent == VI_MOUSE_PRESS ) {
                 EditFlags.Dragging = false;
-                if( LastMouseEvent == MOUSE_PRESS_R ) {
-                    LastMouseEvent = MOUSE_RELEASE_R;
+                if( LastMouseEvent == VI_MOUSE_PRESS_R ) {
+                    LastMouseEvent = VI_MOUSE_RELEASE_R;
                 }
             }
         }
     }
 
-    if( LastMouseEvent == MOUSE_RELEASE_R || LastMouseEvent == MOUSE_DCLICK ) {
+    if( LastMouseEvent == VI_MOUSE_RELEASE_R || LastMouseEvent == VI_MOUSE_DCLICK ) {
         if( wid == current_window_id && InsideWindow( wid, win_x, win_y ) ) {
-            diff_word = (LastMouseEvent == MOUSE_DCLICK);
+            diff_word = (LastMouseEvent == VI_MOUSE_DCLICK);
             if( GoToLineRelCurs( LeftTopPos.line + win_y - 1 ) ) {
                 return( ERR_NO_ERR );
             }
@@ -110,7 +110,7 @@ vi_rc HandleMouseEvent( void )
     /*
      * all kinds of stuff to do if the button was pressed
      */
-    if( LastMouseEvent == MOUSE_PRESS || LastMouseEvent == MOUSE_PRESS_R ) {
+    if( LastMouseEvent == VI_MOUSE_PRESS || LastMouseEvent == VI_MOUSE_PRESS_R ) {
         if( wid != current_window_id ) {
             /*
              * swap to another window
@@ -126,7 +126,7 @@ vi_rc HandleMouseEvent( void )
             if( !ShiftDown() ) {
                 UnselectRegion();
             }
-            if( w->has_border && LastMouseEvent == MOUSE_PRESS ) {
+            if( w->has_border && LastMouseEvent == VI_MOUSE_PRESS ) {
                 /*
                  * clicked on menu for window
                  */
@@ -181,7 +181,7 @@ vi_rc HandleMouseEvent( void )
     /*
      * allow double click to close window
      */
-    if( wid == current_window_id && LastMouseEvent == MOUSE_DCLICK ) {
+    if( wid == current_window_id && LastMouseEvent == VI_MOUSE_DCLICK ) {
         if( win_y == 0 && win_x == 0 ) {
             return( NextFile() );
         }
@@ -190,8 +190,8 @@ vi_rc HandleMouseEvent( void )
     /*
      * try to scroll screen
      */
-    if( (LastMouseEvent == MOUSE_REPEAT || LastMouseEvent == MOUSE_DCLICK ||
-         LastMouseEvent == MOUSE_PRESS) && w->has_border &&
+    if( (LastMouseEvent == VI_MOUSE_REPEAT || LastMouseEvent == VI_MOUSE_DCLICK ||
+         LastMouseEvent == VI_MOUSE_PRESS) && w->has_border &&
         wid == current_window_id && win_x == w->width - 1 ) {
         if( win_y == w->height - 2 ) {
             return( MoveScreenDown() );
@@ -225,8 +225,8 @@ vi_rc HandleMouseEvent( void )
     /*
      * start dragging
      */
-    if( wid == current_window_id && (LastMouseEvent == MOUSE_DRAG ||
-                                LastMouseEvent == MOUSE_DRAG_R ) &&
+    if( wid == current_window_id && (LastMouseEvent == VI_MOUSE_DRAG ||
+                                LastMouseEvent == VI_MOUSE_DRAG_R ) &&
         InsideWindow( wid, win_x, win_y ) ) {
         EditFlags.Dragging = true;
         UpdateDrag( wid, win_x, win_y );

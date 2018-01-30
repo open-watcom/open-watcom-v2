@@ -379,7 +379,7 @@ void EditMain( void )
             EditFlags.NoCapsLock = false;
             doclear = true;
             if( LastEvent == VI_KEY( MOUSEEVENT ) ) {
-                if( LastMouseEvent == MOUSE_MOVE ) {
+                if( LastMouseEvent == VI_MOUSE_MOVE ) {
                     doclear = false;
                 }
             }

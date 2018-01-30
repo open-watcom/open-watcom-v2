@@ -73,18 +73,18 @@ static vi_mouse_event mapButtonEvents( vi_mouse_event me, int button )
         }
     }
     if( button != MOUSE_LEFT_BUTTON ) {
-        if( me == MOUSE_PRESS ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_PRESS_R : MOUSE_PRESS_M;
-        } else if( me == MOUSE_RELEASE ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_RELEASE_R : MOUSE_RELEASE_M;
-        } else if( me == MOUSE_DCLICK ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_DCLICK_R : MOUSE_DCLICK_M;
-        } else if( me == MOUSE_HOLD ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_HOLD_R : MOUSE_HOLD_M;
-        } else if( me == MOUSE_DRAG ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_DRAG_R : MOUSE_DRAG_M;
-        } else if( me == MOUSE_REPEAT ) {
-            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_REPEAT_R : MOUSE_REPEAT_M;
+        if( me == VI_MOUSE_PRESS ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_PRESS_R : VI_MOUSE_PRESS_M;
+        } else if( me == VI_MOUSE_RELEASE ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_RELEASE_R : VI_MOUSE_RELEASE_M;
+        } else if( me == VI_MOUSE_DCLICK ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_DCLICK_R : VI_MOUSE_DCLICK_M;
+        } else if( me == VI_MOUSE_HOLD ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_HOLD_R : VI_MOUSE_HOLD_M;
+        } else if( me == VI_MOUSE_DRAG ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_DRAG_R : VI_MOUSE_DRAG_M;
+        } else if( me == VI_MOUSE_REPEAT ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? VI_MOUSE_REPEAT_R : VI_MOUSE_REPEAT_M;
         }
     }
     return( me );
@@ -96,7 +96,7 @@ static vi_mouse_event mapButtonEvents( vi_mouse_event me, int button )
 vi_mouse_event GetMouseEvent( void )
 {
 #ifdef __CURSES__
-    return( MOUSE_NONE );
+    return( VI_MOUSE_NONE );
 #else
     int             status;
     windim          row, col;
@@ -106,7 +106,7 @@ vi_mouse_event GetMouseEvent( void )
     int             diff;
 
     if( !EditFlags.UseMouse ) {
-        return( MOUSE_NONE );
+        return( VI_MOUSE_NONE );
     }
 
     PollMouse( &status, &row, &col );
@@ -125,28 +125,28 @@ vi_mouse_event GetMouseEvent( void )
     moved = (row != MouseRow || col != MouseCol);
     diff = (status ^ MouseStatus) & MOUSE_ANY_BUTTON_DOWN;
 
-    me = MOUSE_NONE;
+    me = VI_MOUSE_NONE;
     button = 0;
     if( moved ) {
         lastButton = -1;
         if( MouseStatus & MOUSE_ANY_BUTTON_DOWN ) {
             button = getButton( status );
-            me = MOUSE_DRAG;
+            me = VI_MOUSE_DRAG;
         } else {
-            me = MOUSE_MOVE;
+            me = VI_MOUSE_MOVE;
             mouseOn = true;
         }
     } else if( diff & MOUSE_ANY_BUTTON_DOWN ) {
         if( (diff & status) == diff ) {
             if( getButton( diff ) == lastButton &&
                 (ClockTicks - mouseTime) < EditVars.MouseDoubleClickSpeed ) {
-                me = MOUSE_DCLICK;
+                me = VI_MOUSE_DCLICK;
             } else {
-                me = MOUSE_PRESS;
+                me = VI_MOUSE_PRESS;
                 lastButton = getButton( diff );
             }
         } else {
-            me = MOUSE_RELEASE;
+            me = VI_MOUSE_RELEASE;
         }
         button = getButton( diff );
         MouseStatus = status;
@@ -157,12 +157,12 @@ vi_mouse_event GetMouseEvent( void )
         button = getButton( status );
         if( !mouseRepeat ) {
             if( ClockTicks - mouseTime > EditVars.MouseRepeatStartDelay ) {
-                me = MOUSE_REPEAT;
+                me = VI_MOUSE_REPEAT;
                 mouseRepeat = true;
                 mouseTime = ClockTicks;
             }
         } else if( ClockTicks - mouseTime > EditVars.MouseRepeatDelay ) {
-            me = MOUSE_REPEAT;
+            me = VI_MOUSE_REPEAT;
             mouseTime = ClockTicks;
         }
     }

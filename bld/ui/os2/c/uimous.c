@@ -106,16 +106,16 @@ static void GetMouseInfo( void )
         return;
     Status = 0;
     if( mouinfo.fs & 0x0006 )
-        Status |= MOUSE_PRESS;
+        Status |= UI_MOUSE_PRESS;
     if( TwoButtonMouse ){
         if( mouinfo.fs & 0x0078 ) {
-            Status |= MOUSE_PRESS_RIGHT;
+            Status |= UI_MOUSE_PRESS_RIGHT;
         }
     } else {
         if( mouinfo.fs & 0x0018 )
-            Status |= MOUSE_PRESS_MIDDLE;
+            Status |= UI_MOUSE_PRESS_MIDDLE;
         if( mouinfo.fs & 0x0060 ) {
-            Status |= MOUSE_PRESS_RIGHT;
+            Status |= UI_MOUSE_PRESS_RIGHT;
         }
     }
 

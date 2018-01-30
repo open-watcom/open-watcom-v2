@@ -135,16 +135,16 @@ void WindowsMouseEvent( unsigned event, unsigned info )
             MouseY = UIData->height - 1;
         break;
     case WM_LBUTTONUP:
-        MouseStatusBits &= ~MOUSE_PRESS;
+        MouseStatusBits &= ~UI_MOUSE_PRESS;
         break;
     case WM_RBUTTONUP:
-        MouseStatusBits &= ~MOUSE_PRESS_RIGHT;
+        MouseStatusBits &= ~UI_MOUSE_PRESS_RIGHT;
         break;
     case WM_LBUTTONDOWN:
-        MouseStatusBits |= MOUSE_PRESS;
+        MouseStatusBits |= UI_MOUSE_PRESS;
         break;
     case WM_RBUTTONDOWN:
-        MouseStatusBits |= MOUSE_PRESS_RIGHT;
+        MouseStatusBits |= UI_MOUSE_PRESS_RIGHT;
         break;
     } /* switch */
 
