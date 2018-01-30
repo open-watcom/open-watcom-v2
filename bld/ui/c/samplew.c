@@ -43,6 +43,9 @@
 
 #include <wwindows.h>
 
+#include "sampdial.h"
+
+
 extern void     ToCharacter( void );
 extern void     ToGraphical( void );
 extern ui_event keyboardevent( void );

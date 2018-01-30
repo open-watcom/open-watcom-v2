@@ -34,22 +34,21 @@
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"
+#include "sampdial.h"
+
 
 #define EV_SCREWUP      0x604
 
-bool    Marking = false;
-
-
 static a_hot_spot hot_msg = {
-        "OK",      EV_ENTER, 1, -1, 11, HOT_DEFAULT
+    "OK",       EV_ENTER,   1, -1, 11, HOT_DEFAULT
 };
 
 static a_hot_spot hot_num = {
-        "Cancel",       EV_ESCAPE, 3, -1, 11, 0
+    "Cancel",   EV_ESCAPE,  3, -1, 11, 0
 };
 
 static a_hot_spot hot_stuff = {
-        "&Fill",            EV_SCREWUP, 5, -1, 11, 0
+    "&Fill",    EV_SCREWUP, 5, -1, 11, 0
 };
 
 static char *strings_edit[] = {
@@ -63,32 +62,33 @@ static char *strings_edit[] = {
 static char *list_data[] = {
     "HELLO", "THIS", "IS QUITE", "FUN", "ISN'T", "IT", "I DON'T", "KNOW",
     "WHY", "THIS", "HELLO", "THIS", "IS QUITE", "FUN", "ISN'T", "IT",
-    "I DON'T", "KNOW", "WHY", "THIS", NULL
+    "I DON'T", "KNOW", "WHY", "THIS",
+    NULL
 };
 
 static char *list_data2[] = {
-//    "HELLO", "THIS", "IS QUITE", "FUN", NULL
-NULL
+//    "HELLO", "THIS", "IS QUITE", "FUN",
+    NULL
 };
 
 static a_combo_box toggle_edit = {
-        0, strings_edit, NULL, NULL, NULL, 0, 0
+    0, strings_edit, NULL, NULL, NULL, 0, 0
 };
 
 static a_check check_home = {
-        0,1,  "Home"
+    0,  1,  "Home"
 };
 
 static a_check check_clear = {
-        0, 0,  "Cl&ear"
+    0,  0,  "Cl&ear"
 };
 
 static a_list list_box = {
-        0, list_data2, NULL, NULL
+    0,  list_data2, NULL, NULL
 };
 
 static a_list list_box2 = {
-        0, list_data, NULL, NULL
+    0, list_data, NULL, NULL
 };
 
 static a_radio_group neg_group = {
@@ -96,33 +96,33 @@ static a_radio_group neg_group = {
 };
 
 static a_radio radio[] = {
-      {  0,   "&Sign",      &neg_group },
-      {  1,   "&Bill",      &neg_group }
+    {  0,   "&Sign",      &neg_group },
+    {  1,   "&Bill",      &neg_group }
 };
 
-an_edit_control     buf[5];
+static an_edit_control     buf[5];
 
 static VFIELD FieldDialog[] = {  // Define Field Dialog
-        {1,     4,      1,      8,      FLD_LABEL,      "Formula"},
-        {1,     13,     1,      27,     FLD_EDIT,       &buf[ 0 ]},
-        {3,     3,      4,      13,     FLD_FRAME,      "Auto"},
-        {4,     5,      1,      9,      FLD_CHECK,      &check_home},
-        {5,     5,      1,      9,      FLD_CHECK,      &check_clear},
-        {4,     28,     1,      8,      FLD_RADIO,      &radio[0]},
-        {5,     28,     1,      8,      FLD_RADIO,      &radio[1]},
-        {3,     26,     4,      14,     FLD_FRAME,      "Radio"},
-        {2,     46,     8,      10,     FLD_LISTBOX,    &list_box},
-        {8,     4,      1,      14,     FLD_TEXT,       "Allow edit"},
-        {8,     18,     4,      9,      FLD_COMBOBOX,   &toggle_edit},
-        {10,    4,      1,      9,      FLD_TEXT,       "Pulldown"},
-        {10,    18,     6,      10,     FLD_PULLDOWN,   &list_box2},
-        {1,     59,     1,      11,     FLD_HOT,        &hot_msg},
-        {3,     59,     1,      11,     FLD_HOT,        &hot_num},
-        {5,     59,     1,      11,     FLD_HOT,        &hot_stuff},
-        {12,    0,      0,      0,      FLD_VOID,       NULL }
+    {1,     4,      1,      8,      FLD_LABEL,      "Formula"},
+    {1,     13,     1,      27,     FLD_EDIT,       &buf[0]},
+    {3,     3,      4,      13,     FLD_FRAME,      "Auto"},
+    {4,     5,      1,      9,      FLD_CHECK,      &check_home},
+    {5,     5,      1,      9,      FLD_CHECK,      &check_clear},
+    {4,     28,     1,      8,      FLD_RADIO,      &radio[0]},
+    {5,     28,     1,      8,      FLD_RADIO,      &radio[1]},
+    {3,     26,     4,      14,     FLD_FRAME,      "Radio"},
+    {2,     46,     8,      10,     FLD_LISTBOX,    &list_box},
+    {8,     4,      1,      14,     FLD_TEXT,       "Allow edit"},
+    {8,     18,     4,      9,      FLD_COMBOBOX,   &toggle_edit},
+    {10,    4,      1,      9,      FLD_TEXT,       "Pulldown"},
+    {10,    18,     6,      10,     FLD_PULLDOWN,   &list_box2},
+    {1,     59,     1,      11,     FLD_HOT,        &hot_msg},
+    {3,     59,     1,      11,     FLD_HOT,        &hot_num},
+    {5,     59,     1,      11,     FLD_HOT,        &hot_stuff},
+    {12,    0,      0,      0,      FLD_VOID,       NULL }
 };
 
-void sample_dialog()
+void sample_dialog( void )
 {
     ui_event            ui_ev;
     a_dialog            *ui_dlg_info;

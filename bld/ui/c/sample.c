@@ -47,6 +47,8 @@
 #include "uiattrs.h"
 #endif
 
+#include "sampdial.h"
+
 #define Normal          UIData->attrs[ ATTR_NORMAL ]
 
 extern void sample_dialog( void );
@@ -267,13 +269,12 @@ void main( void )
     int                 mrow, mcol;
     int                 diff;
 
-#ifdef CHARMAP
     if( uistart() ) {
+#ifdef CHARMAP
         uiinitgmouse( INIT_MOUSE_INITIALIZED ); /* the 0=mouseless,1=mouse,2=initialized mouse */
 //      uivgaattrs();
         FlipCharacterMap();
 #else
-    if( uistart() ) {
         initmouse( INIT_MOUSE_INITIALIZED );
 #endif
         uimenus( barmenu, pulldownuimenus, EV_F1 );
@@ -403,11 +404,7 @@ void main( void )
         FlipCharacterMap();
         uifinigmouse();
 #else
-#ifdef __UNIX__
-        _finimouse();
-#else
         finimouse();
-#endif
 #endif
         uistop();
     }
