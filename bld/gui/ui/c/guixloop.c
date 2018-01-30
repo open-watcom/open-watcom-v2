@@ -32,7 +32,6 @@
 
 #include "guiwind.h"
 #include "guixutil.h"
-#include "uimouse.h"
 #include "guiscrol.h"
 #include "guixloop.h"
 #include "guiwhole.h"
