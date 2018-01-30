@@ -692,7 +692,7 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
         desc->area.width = 0;
         tab_length = 0;
         for( item = 0 ; !MENUENDMARKER( *iptr ) ; ++item ) {
-            if( !MENUSEPARATOR( *iptr) ) {
+            if( !MENUSEPARATOR( *iptr ) ) {
                 len = strlen( iptr->name );
                 tab_loc = strchr( iptr->name, TABCHAR );
                 if( tab_loc != NULL ) {

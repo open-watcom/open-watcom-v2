@@ -40,11 +40,21 @@
   #define cdecl
 #endif
 
-#define         P_UNBUFFERED            0
-#define         P_DIALOGUE              1
-#define         P_MENU                  2
-#define         P_VSCREEN               3
-#define         P_BACKGROUND            4
+#define P_UNBUFFERED        0
+#define P_DIALOGUE          1
+#define P_MENU              2
+#define P_VSCREEN           3
+#define P_BACKGROUND        4
+
+#define _ESC                "\033"
+#define _ESC_CHAR           '\033'
+
+typedef enum {
+    MOUSE_PRESS         = 1,
+    MOUSE_PRESS_RIGHT   = 2,
+    MOUSE_PRESS_MIDDLE  = 4,
+    MOUSE_PRESS_ANY     = (MOUSE_PRESS | MOUSE_PRESS_RIGHT | MOUSE_PRESS_MIDDLE)
+} MOUSESTAT;
 
 #if defined( TSR )
 
@@ -69,16 +79,6 @@
     #define _IND_SAREA(X)   (X)
 
 #endif
-
-#define _ESC                "\033"
-#define _ESC_CHAR           '\033'
-
-typedef enum {
-    MOUSE_PRESS             = 0x01,
-    MOUSE_PRESS_RIGHT       = 0x02,
-    MOUSE_PRESS_MIDDLE      = 0x04,
-    MOUSE_PRESS_ANY         = (MOUSE_PRESS | MOUSE_PRESS_RIGHT | MOUSE_PRESS_MIDDLE)
-} MOUSESTAT;
 
 #define         UIAPI
 #define         intern          /* near */

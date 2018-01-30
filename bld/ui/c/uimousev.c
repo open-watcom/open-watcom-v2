@@ -70,8 +70,8 @@ bool UIAPI uimouseinstalled( void )
     return( MouseInstalled );
 }
 
-static void mouse( int func )
-/***************************/
+static void mouse( mouse_func func )
+/**********************************/
 {
     if( MouseInstalled ) {
         if( MouseForcedOff == 0 ) {
@@ -84,7 +84,7 @@ static void mouse( int func )
 }
 
 void UIAPI uimouseforceoff( void )
-/*********************************/
+/********************************/
 /* this function will turn off the mouse and will prevent UI from turning
    it on until uimouseforceon is called (i.e. moving the mouse will NOT
    turn it on). */
@@ -94,7 +94,7 @@ void UIAPI uimouseforceoff( void )
 }
 
 void UIAPI uimouseforceon( void )
-/********************************/
+/*******************************/
 /* call this function after sometime after uimouseforceoff, if the default
    UI mouse behaviour is desired */
 {
@@ -113,7 +113,7 @@ void UIAPI uionmouse( void )
 
 
 void UIAPI uioffmouse( void )
-/****************************/
+/***************************/
 // turn mouse cursor off temporarily ( until next getprimeevent )
 {
     mouse( MOUSE_OFF );
@@ -121,7 +121,7 @@ void UIAPI uioffmouse( void )
 
 
 void UIAPI uihidemouse( void )
-/*****************************/
+/****************************/
 // turn mouse cursor off ( until user clicks or moves )
 {
     MouseOn = false;
@@ -177,7 +177,7 @@ ui_event intern mouseevent( void )
             MouseLastButton = -1;    /* don't double click */
         } else if( diff & MOUSE_PRESS_ANY ){
             if( (diff & status) == diff ){
-                if( button( diff ) == MouseLastButton && time - MouseTime < UIData->mouse_clk_delay ){
+                if( button( diff ) == MouseLastButton && time - MouseTime < UIData->mouse_clk_delay ) {
                     mindex = M_DCLICK;
                 } else {
                     mindex = M_PRESS;
@@ -220,12 +220,12 @@ ui_event intern mouseevent( void )
     return( ui_ev );
 }
 
-VSCREEN* UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
+VSCREEN * UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
 /*******************************************************************/
 {
-    register    VSCREEN*                owner;
+    register VSCREEN    *owner;
 
-    owner = findvscreen( MouseRow/UIData->mouse_yscale, MouseCol/UIData->mouse_xscale );
+    owner = findvscreen( MouseRow / UIData->mouse_yscale, MouseCol / UIData->mouse_xscale );
 
     if( vptr != NULL ) {
         *rowptr = (int)MouseRow - (int)vptr->area.row * UIData->mouse_yscale;
@@ -234,10 +234,10 @@ VSCREEN* UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
         *rowptr = MouseRow;
         *colptr = MouseCol;
     }
-    if( *rowptr < 0  &&  ( *rowptr % UIData->mouse_yscale ) != 0 ) {
+    if( *rowptr < 0 && ( *rowptr % UIData->mouse_yscale ) != 0 ) {
         *rowptr -= UIData->mouse_yscale;
     }
-    if( *colptr < 0  &&  ( *colptr % UIData->mouse_xscale ) != 0 ) {
+    if( *colptr < 0 && ( *colptr % UIData->mouse_xscale ) != 0 ) {
         *colptr -= UIData->mouse_xscale;
     }
     *rowptr /= UIData->mouse_yscale;
@@ -246,22 +246,27 @@ VSCREEN* UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
     return( owner );
 }
 
-VSCREEN* UIAPI uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
+VSCREEN * UIAPI uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
 /********************************************************************/
 {
-    VSCREEN*                            owner;
-    int                      row;
-    int                      col;
+    VSCREEN     *owner;
+    int         row;
+    int         col;
 
     owner = uimousepos( vptr, &row, &col );
     if( vptr != NULL ) {
-        if( row < 0 ) row = 0;
-        if( col < 0 ) col = 0;
-        if( row >= vptr->area.height ) row = vptr->area.height - 1;
-        if( col >= vptr->area.width ) col = vptr->area.width - 1;
+        if( row < 0 )
+            row = 0;
+        if( col < 0 )
+            col = 0;
+        if( row >= vptr->area.height )
+            row = vptr->area.height - 1;
+        if( col >= vptr->area.width ) {
+            col = vptr->area.width - 1;
+        }
     }
-    *rowptr = (ORD) row;
-    *colptr = (ORD) col;
+    *rowptr = (ORD)row;
+    *colptr = (ORD)col;
     return( owner );
 }
 
@@ -293,11 +298,11 @@ MOUSEORD UIAPI uigetmcol( void )
 }
 #endif
 
-void UIAPI uigetmouse( ORD *row, ORD *col, bool *status )
-/*******************************************************/
+void UIAPI uigetmouse( ORD _FARD *row, ORD _FARD *col, bool _FARD *status )
+/*************************************************************************/
 {
-    *row = MouseRow/UIData->mouse_yscale;
-    *col = MouseCol/UIData->mouse_xscale;
+    *row = MouseRow / UIData->mouse_yscale;
+    *col = MouseCol / UIData->mouse_xscale;
     *status = MouseOn;
 }
 
@@ -305,4 +310,3 @@ bool UIAPI uivmouseinstalled( void )
 {
     return( MouseInstalled );
 }
-

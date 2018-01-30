@@ -49,7 +49,7 @@
 
 int                     WaitHandle;
 
-static int              KeyInstalled;
+static bool             KeyInstalled;
 static ORD              currMouseRow;
 static ORD              currMouseCol;
 static MOUSESTAT        currMouseStatus;
@@ -131,30 +131,31 @@ static ui_event KeyEventProc( void )
 
 static ui_event MouseEventProc( void )
 {
-    ORD stat = 0;
-    int row;
-    int col;
+    MOUSESTAT   stat;
+    int         row;
+    int         col;
 
+    stat = 0;
     if( RdosGetLeftButton() )
         stat |= MOUSE_PRESS;
-
     if( RdosGetRightButton() )
         stat |= MOUSE_PRESS_RIGHT;
 
     RdosGetMousePosition(  &col, &row );
 
     if( stat != currMouseStatus ) {
-        if( !(stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) )
+        if( (stat & MOUSE_PRESS) == 0 && (currMouseStatus & MOUSE_PRESS) )
             RdosGetLeftButtonReleasePosition( &col, &row );
 
-        if( !(stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) )
+        if( (stat & MOUSE_PRESS_RIGHT) == 0 && (currMouseStatus & MOUSE_PRESS_RIGHT) )
             RdosGetRightButtonReleasePosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS) && !(currMouseStatus & MOUSE_PRESS) )
+        if( (stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) == 0 )
             RdosGetLeftButtonPressPosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS_RIGHT) && !(currMouseStatus & MOUSE_PRESS_RIGHT) )
+        if( (stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) == 0 ) {
             RdosGetRightButtonPressPosition( &col, &row );
+        }
     }
     currMouseRow = row;
     currMouseCol = col;

@@ -33,9 +33,6 @@
 #ifndef _UIMOUSE_H_
 #define _UIMOUSE_H_
 
-#define         MOUSE_ON                1
-#define         MOUSE_OFF               2
-
 extern MOUSEORD     MouseRow;
 extern MOUSEORD     MouseCol;
 extern bool         MouseOn;

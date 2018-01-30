@@ -35,7 +35,6 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-extern bool     MouseInstalled;
 
 void intern mousespawnstart( void )
 /*********************************/

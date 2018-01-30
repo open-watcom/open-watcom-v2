@@ -38,14 +38,6 @@
 #include <windows.h>
 
 
-extern HANDLE       InputHandle;
-
-static ORD          currMouseRow;
-static ORD          currMouseCol;
-static MOUSESTAT    currMouseStatus;
-
-static unsigned char shift_state;
-
 typedef struct {
     WORD vk;
     WORD reg;
@@ -53,6 +45,14 @@ typedef struct {
     WORD ctrl;
     WORD alt;
 } map;
+
+extern HANDLE       InputHandle;
+
+static ORD          currMouseRow;
+static ORD          currMouseCol;
+static MOUSESTAT    currMouseStatus;
+
+static unsigned char shift_state;
 
 static const map events[] = {
     { VK_BACK, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT },

@@ -117,8 +117,8 @@ void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 }
 
 
-void UIAPI uimouse( int func )
-/*****************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
     if( func == MOUSE_ON ) {
         mouseOn = true;

@@ -138,14 +138,15 @@ int UIAPI uimousealign( void )
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }
 
 
-void UIAPI uimouse( int func )
-/*****************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
     if( func == MOUSE_ON ) {
         mouseOn = true;

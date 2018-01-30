@@ -100,14 +100,18 @@ static void QW_parse( void )
     char *p = buf;
 
     mclick = 1;
-    if((func = strtol(p, &p, 10)) > 3276 || *p != ';') return;
-    if((mrow = strtol(p+1, &p, 10)) > 3276 || *p != ';') return;
-    if((mcol = strtol(p+1, &p, 10)) > 3276 || *p != ';') return;
-    mbut = strtol(p+1, &p, 10);
-    if (*p == ';') {
-        mclick = strtol(p+1, &p, 10);
+    if( (func = strtol( p, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    if( (mrow = strtol( p + 1, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    if( (mcol = strtol( p + 1, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    mbut = strtol( p + 1, &p, 10 );
+    if( *p == ';' ) {
+        mclick = strtol( p + 1, &p, 10 );
     }
-    if( *p != 't' ) return;
+    if( *p != 't' )
+        return;
     last_row = mrow;
     last_col = mcol;
     /*
@@ -117,9 +121,12 @@ static void QW_parse( void )
     switch( func ) {
     case 1:
         last_status = 0;
-        if (mbut & 004) last_status |= MOUSE_PRESS;
-        if (mbut & 002) last_status |= MOUSE_PRESS_MIDDLE;
-        if (mbut & 001) last_status |= MOUSE_PRESS_RIGHT;
+        if( mbut & 004 )
+            last_status |= MOUSE_PRESS;
+        if( mbut & 002 )
+            last_status |= MOUSE_PRESS_MIDDLE;
+        if( mbut & 001 )
+            last_status |= MOUSE_PRESS_RIGHT;
         break;
     case 2:
         last_status = 0;
@@ -320,8 +327,9 @@ void tm_saveevent( void )
         }
         break;
     }
-    if( i == MAXBUF ) tm_error();
-    buf[i+1] = '\0';
+    if( i == MAXBUF )
+        tm_error();
+    buf[i + 1] = '\0';
     new_sample = 1;
 }
 

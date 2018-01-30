@@ -34,11 +34,11 @@
 #include "uimouse.h"
 #include "uivirt.h"
 
+
 #define OFF_SCREEN      200
 
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
+static MOUSEORD OldMouseRow;
+static MOUSEORD OldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
 static ATTR     OldAttr;
 
@@ -98,14 +98,15 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /*************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }
 
 
-void UIAPI uimouse( func )
-/*************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
     if( func == MOUSE_ON ) {
         mouseOn = true;

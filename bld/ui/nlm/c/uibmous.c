@@ -42,9 +42,9 @@ void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
     col = col;
 }
 
-void UIAPI uimouse( func )
-/*************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
-    func=func;
+    func = func;
 }
 

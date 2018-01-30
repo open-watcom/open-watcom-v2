@@ -33,9 +33,8 @@
 #include <stdio.h>
 #include "uidef.h"
 #include "uivirt.h"
+#include "uimouse.h"
 
-
-extern bool     MouseInstalled;
 
 void UIAPI uispawnstart( void )
 /*****************************/

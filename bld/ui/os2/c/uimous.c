@@ -98,16 +98,25 @@ static void GetMouseInfo( void )
     USHORT                      readtype = 0;
     struct      _MOUQUEINFO     queue;
 
-    if( MouGetNumQueEl( &queue, MouHandle ) != 0 ) return;
-    if( queue.cEvents == 0 ) return;
-    if( MouReadEventQue( &mouinfo, &readtype, MouHandle ) != 0 ) return;
+    if( MouGetNumQueEl( &queue, MouHandle ) != 0 )
+        return;
+    if( queue.cEvents == 0 )
+        return;
+    if( MouReadEventQue( &mouinfo, &readtype, MouHandle ) != 0 )
+        return;
     Status = 0;
-    if( mouinfo.fs & 0x0006 ) Status |= MOUSE_PRESS;
+    if( mouinfo.fs & 0x0006 )
+        Status |= MOUSE_PRESS;
     if( TwoButtonMouse ){
-        if( mouinfo.fs & 0x0078 ) Status |= MOUSE_PRESS_RIGHT;
+        if( mouinfo.fs & 0x0078 ) {
+            Status |= MOUSE_PRESS_RIGHT;
+        }
     } else {
-        if( mouinfo.fs & 0x0018 ) Status |= MOUSE_PRESS_MIDDLE;
-        if( mouinfo.fs & 0x0060 ) Status |= MOUSE_PRESS_RIGHT;
+        if( mouinfo.fs & 0x0018 )
+            Status |= MOUSE_PRESS_MIDDLE;
+        if( mouinfo.fs & 0x0060 ) {
+            Status |= MOUSE_PRESS_RIGHT;
+        }
     }
 
     Row  = mouinfo.row;
@@ -156,7 +165,7 @@ void uimousespeed( unsigned speed )
 }
 
 
-#define         IRET                    (char) 0xcf
+#define IRET       '\xCF'
 
 #ifdef _M_I86
 static bool mouse_installed( void )

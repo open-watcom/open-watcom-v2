@@ -64,12 +64,13 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
 bool UIAPI initmouse( init_mode install )
 /***************************************/
 {
-    int             cx,dx;
-    MOUSESTAT       tmp;
+    int         cx;
+    int         dx;
+    MOUSESTAT   tmp;
 
     MouseInstalled = false;
-    ScreenXFudge = (WORD)((DWORD) GetSystemMetrics( SM_CXSCREEN )/(DWORD) UIData->width);
-    ScreenYFudge = (WORD)((DWORD) GetSystemMetrics( SM_CYSCREEN )/(DWORD) UIData->height);
+    ScreenXFudge = (WORD)((DWORD)GetSystemMetrics( SM_CXSCREEN ) / (DWORD)UIData->width);
+    ScreenYFudge = (WORD)((DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height);
     if( install > INIT_MOUSELESS ) {
         if( install > INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;

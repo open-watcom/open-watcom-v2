@@ -419,6 +419,11 @@ enum {
        they have to fit in the C0 ASCII range */
 };
 
+typedef enum {
+    MOUSE_ON  = 1,
+    MOUSE_OFF = 2
+} mouse_func;
+
 #ifdef __GUI__
 /*
     ORD needs to be an unsigned int for the WINDOWS scaling system
@@ -681,7 +686,7 @@ extern bool            uiinlists( ui_event );
 extern bool            uiintoplist( ui_event );
 extern bool            uikeepbackground( void );
 extern void            *uimalloc( size_t );
-extern void            uimouse( int );
+extern void            uimouse( mouse_func );
 extern void            uimouseforceoff( void );
 extern void            uimouseforceon( void );
 extern void            uinocursor( VSCREEN _FARD * );
