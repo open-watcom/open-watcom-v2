@@ -85,6 +85,11 @@ public:
 
     map& operator=( map const & x ){Implementation::operator=( x ); return( *this );}
 
+    size_type count(const key_type& x) const
+    {
+        return Implementation::find(x) == Implementation::end() ? 0 : 1;
+				}
+
     //element access (not in common with set)
     Type& operator[](Key const &);
 
