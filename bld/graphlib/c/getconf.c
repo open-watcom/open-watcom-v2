@@ -60,7 +60,7 @@ static short            _MemoryTab[ 8 ] = {
 
 _WCRTLINK struct videoconfig _WCI86FAR *_WCI86FAR _CGRAPH
         _getvideoconfig( struct videoconfig _WCI86FAR *config )
-/*=================================================================*/ 
+/*=================================================================*/
 /* This function returns a structure containing information about the
    current video mode. */
 
@@ -94,7 +94,7 @@ void _CalcNumPages( void )
         pg_size += 512;
     }
     /* Multiply by 2 to get closest K-byte boundary.*/
-    *(short __far *)_BIOS_data( CRT_LEN ) = pg_size << 1;
+    _BIOS_data( CRT_LEN, short ) = pg_size << 1;
     /* Adjust # of video pages for the given memory.*/
     if( _CurrState->vc.memory == 64 ) {
         buf_size = 16;                      /* in K bytes   */
@@ -174,10 +174,10 @@ void _GetState( void )
     _CurrState->vc.numcolors = NumColors;
     _CurrState->vc.numvideopages = 1;
 #else
-    rows = *(char __far *)_BIOS_data( ROWS ) + 1;     // 0 for Hercules
+    rows = _BIOS_data( ROWS, char ) + 1;     // 0 for Hercules
     if( rows == 1 ) rows = 25;
     _CurrState->vc.numtextrows = rows;
-    _CurrState->vc.numtextcols = *(short __far *)_BIOS_data( CRT_COLS );
+    _CurrState->vc.numtextcols = _BIOS_data( CRT_COLS, short );
     _CurrState->vc.numcolors = 32;
     _CurrState->vc.mode = GetVideoMode();
     display = _SysMonType() & 0x00FF;
@@ -192,7 +192,7 @@ void _GetState( void )
     } else {
         _CalcNumPages();
     }
-    _CursorShape = *(short __far *)_BIOS_data( CURSOR_MODE );
+    _CursorShape = _BIOS_data( CURSOR_MODE, short );
 #endif
 }
 
@@ -221,7 +221,7 @@ void _InitState( void )
 #else
         _DefMode = _CurrState->vc.mode;
         _DefTextRows = _CurrState->vc.numtextrows;
-        pos = *(short __far *)_BIOS_data( CURSOR_POSN );
+        pos = _BIOS_data( CURSOR_POSN, short );
         _TextPos.row = pos >> 8;        /* default cursor position  */
         _TextPos.col = pos & 0xFF;
 #endif

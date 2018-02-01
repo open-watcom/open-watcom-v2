@@ -141,7 +141,7 @@ static void TxtShift( short src_y, short dst_y,
     } else {
         p = MK_FP( _CgaSeg, _CgaOff );
     }
-    p += _CurrActivePage * *(short __far *)_BIOS_data( CRT_LEN );
+    p += _CurrActivePage * _BIOS_data( CRT_LEN, short );
     src = (short __far *) p;
     src += src_y * _CurrState->vc.numtextcols + xl;
     dst = (short __far *) p;
