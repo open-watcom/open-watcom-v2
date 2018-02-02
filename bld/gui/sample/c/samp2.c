@@ -217,7 +217,7 @@ void GUImain( void )
 {
 
     GUIMemOpen();
-    GUIWndInit( 250 );
+    GUIWndInit( 250, GUI_GMOUSE );
     GUISetScale( &Scale );
     GUISetColour( &Colours );
     GUICreateDialog( &DialogWnd, NUM_CONTROLS, &GetNew );
