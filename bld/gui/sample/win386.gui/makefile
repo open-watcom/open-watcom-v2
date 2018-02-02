@@ -1,4 +1,4 @@
-#pmake/150: nobuild guitool cpu_386 os_win
+#pmake/150: nobuild guitool cpu_386 os_win sample
 host_cpu = 386
 host_os  = win
 
