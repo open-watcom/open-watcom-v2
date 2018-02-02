@@ -1,0 +1,7 @@
+#pmake/150: nobuild cpu_i86 os_qnx sample
+host_cpu = i86
+host_os  = qnx
+
+sys  = qnx
+
+!include ../master.mif
