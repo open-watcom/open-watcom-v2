@@ -530,7 +530,7 @@ typedef enum {
 
 typedef struct buffer {
     LP_PIXEL    origin;
-    int         increment;
+    unsigned    increment;
 } BUFFER;
 
 typedef struct image_hld {

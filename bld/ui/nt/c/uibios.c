@@ -99,7 +99,7 @@ bool intern initbios( void )
     BSize.Y = UIData->height = sbi.dwMaximumWindowSize.Y;
     UIData->colour = M_VGA;
 
-    UIData->screen.origin = LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT,
+    UIData->screen.origin = (LP_PIXEL)LocalAlloc( LMEM_FIXED | LMEM_ZEROINIT,
                     UIData->width * UIData->height * sizeof( PIXEL ) );
     UIData->screen.increment = UIData->width;
     uiinitcursor();

@@ -106,7 +106,7 @@ bool intern initbios( void )
 
     if( initmonitor() ) {
 
-        UIData->screen.origin = (LPPIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+        UIData->screen.origin = (LP_PIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
 
         for( i = 0 ; i < UIData->width * UIData->height ; ++i ){
             UIData->screen.origin[i].ch = ' ';

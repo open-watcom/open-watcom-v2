@@ -750,13 +750,13 @@ static MONITOR ui_data = {
 };
 
 
-static  PIXEL _FAR *shadow;
-static  int   save_cursor_type;
+static LP_PIXEL shadow;
+static int      save_cursor_type;
 
 static bool setupscrnbuff( int srows, int scols )
 /***********************************************/
 {
-    PIXEL               *scrn;
+    LP_PIXEL            scrn;
     size_t              size;
     size_t              i;
     struct winsize      wsize;
@@ -1103,7 +1103,7 @@ static void update_shadow( void )
 /*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    int         incr = UIData->screen.increment;
+    unsigned    incr = UIData->screen.increment;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
@@ -1127,7 +1127,7 @@ static int ti_refresh( bool must )
 /********************************/
 {
     int         i;
-    int         incr;               // chars per line
+    unsigned    incr;               // chars per line
     LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete

@@ -149,7 +149,7 @@ void intern physupdate( SAREA *area )
 
     for( i = area->row; i < (area->row + area->height); i++ ) {
         VioShowBuf( (i * UIData->width + area->col) * sizeof( PIXEL ),
-                    area->width * sizeof(PIXEL), 0 );
+                    area->width * sizeof( PIXEL ), 0 );
     }
 }
 
