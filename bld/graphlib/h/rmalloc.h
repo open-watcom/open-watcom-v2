@@ -36,13 +36,12 @@
 
 typedef struct rm_alloc {
     unsigned short      rm_seg;
-    void __far            *pm_ptr;
+    void                __far *pm_ptr;
 } RM_ALLOC;
 
 
 short                   _RMAlloc( int, RM_ALLOC * );
 void                    _RMFree( RM_ALLOC * );
 short                   _RMInterrupt( short, short, short, short, short, short, short );
-long                    _RMInterrupt2( short, short );
 
 #pragma pack (pop);
