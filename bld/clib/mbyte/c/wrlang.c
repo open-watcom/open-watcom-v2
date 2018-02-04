@@ -52,6 +52,7 @@
 #endif
 #include "wreslang.h"
 
+
 #ifdef __DOS__
   #ifndef __386__
     extern  unsigned short              dos_get_code_page( void );
@@ -59,27 +60,6 @@
     static  unsigned short              dos_get_code_page( void );
   #endif
 #endif
-
-static res_language_enumeration check_code_page( void );
-
-
-_WCRTLINK res_language_enumeration _WResLanguage(void)
-{
-    char        *env;
-
-    env = getenv( "WLANG" );
-    if( env == NULL ) {
-        /* Look at the code page value to determine language */
-        return( check_code_page() );
-    }
-    if( stricmp( env, "english" )       == 0 ) return( RLE_ENGLISH );
-    if( stricmp( env, "japanese" )      == 0 ) return( RLE_JAPANESE );
-    if( env[0] >= '0' && env[0] <= '9' ) {
-        return( env[0] - '0' );
-    }
-    return( RLE_ENGLISH );
-}
-
 
 static res_language_enumeration check_code_page( void )
 /*****************************************************/
@@ -115,7 +95,22 @@ static res_language_enumeration check_code_page( void )
     }
 }
 
+_WCRTLINK res_language_enumeration _WResLanguage(void)
+{
+    char        *env;
 
+    env = getenv( "WLANG" );
+    if( env == NULL ) {
+        /* Look at the code page value to determine language */
+        return( check_code_page() );
+    }
+    if( stricmp( env, "english" )       == 0 ) return( RLE_ENGLISH );
+    if( stricmp( env, "japanese" )      == 0 ) return( RLE_JAPANESE );
+    if( env[0] >= '0' && env[0] <= '9' ) {
+        return( env[0] - '0' );
+    }
+    return( RLE_ENGLISH );
+}
 
 /****
 ***** Query DOS to find the valid lead byte ranges.
