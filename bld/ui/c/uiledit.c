@@ -50,8 +50,6 @@
 #include "uivedit.h"
 #include "uiledit.h"
 
-#define  Eline          (UIEdit->edit_eline)
-
 a_ui_edit       *UIEdit = NULL;
 
 extern ui_event     LineEvents[];
@@ -66,10 +64,10 @@ static bool extend( unsigned n )
     } else {
         UIEdit->edit_buffer = buf;
     }
-    *( UIEdit->edit_buffer + Eline.length ) = '\0';
-    Eline.buffer = UIEdit->edit_buffer;
-    Eline.length = n;                       /* so blanks will get padded on */
-    Eline.update = true;
+    *( UIEdit->edit_buffer + UIEdit->edit_eline.length ) = '\0';
+    UIEdit->edit_eline.buffer = UIEdit->edit_buffer;
+    UIEdit->edit_eline.length = n;                       /* so blanks will get padded on */
+    UIEdit->edit_eline.update = true;
     return( true );
 }
 
@@ -77,27 +75,27 @@ static unsigned trim( char *s )
 {
     char                *t;
 
-    t = s + Eline.length;
+    t = s + UIEdit->edit_eline.length;
     while( t > s && (t[-1] == ' ' || t[-1] == '\0') ) --t;
     return( t - s );
 }
 
 void uiedittrim( char *s )
 {
-    Eline.length = trim( s );
+    UIEdit->edit_eline.length = trim( s );
 }
 
 void uieditmarking( bool set, unsigned anchor )
 {
-    Eline.mark_attr = UIData->attrs[ATTR_MARK_NORMAL];
+    UIEdit->edit_eline.mark_attr = UIData->attrs[ATTR_MARK_NORMAL];
     if( set ) {
-        if( !Eline.marking ) {
-            Eline.marking = true;
-            Eline.update  = true;
-            Eline.mark_anchor = anchor;
+        if( !UIEdit->edit_eline.marking ) {
+            UIEdit->edit_eline.marking = true;
+            UIEdit->edit_eline.update  = true;
+            UIEdit->edit_eline.mark_anchor = anchor;
         }
     } else {
-        Eline.marking = false;
+        UIEdit->edit_eline.marking = false;
     }
 }
 
@@ -135,23 +133,23 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, ORD len,
     }
     UIEdit->edit_screen = vs;
     UIEdit->edit_buffer = buffer;
-    uiveditinit( vs, &Eline, UIEdit->edit_buffer, used, row, col, len );
-    Eline.index = i;
-    Eline.invisible = invisible;
-    Eline.length = used;
+    uiveditinit( vs, &UIEdit->edit_eline, UIEdit->edit_buffer, used, row, col, len );
+    UIEdit->edit_eline.index = i;
+    UIEdit->edit_eline.invisible = invisible;
+    UIEdit->edit_eline.length = used;
 
     if( i < scroll ) {
         scroll = i;
-    } else if( ( i > scroll + Eline.fldlen ) && ( max == 0 ) ) {
-        scroll = i - Eline.fldlen + 1;
+    } else if( ( i > scroll + UIEdit->edit_eline.fldlen ) && ( max == 0 ) ) {
+        scroll = i - UIEdit->edit_eline.fldlen + 1;
     }
-    Eline.scroll = scroll;
-    Eline.attr = attr;
-    Eline.auto_clear = auto_clear;
-    if( max > 0  &&  Eline.fldlen > UIEdit->edit_maxlen ) {
-        Eline.fldlen = UIEdit->edit_maxlen;
+    UIEdit->edit_eline.scroll = scroll;
+    UIEdit->edit_eline.attr = attr;
+    UIEdit->edit_eline.auto_clear = auto_clear;
+    if( max > 0  &&  UIEdit->edit_eline.fldlen > UIEdit->edit_maxlen ) {
+        UIEdit->edit_eline.fldlen = UIEdit->edit_maxlen;
     }
-    if( l > Eline.length ) {
+    if( l > UIEdit->edit_eline.length ) {
         extend( l );
     }
     return( UIEdit );
@@ -178,9 +176,9 @@ void uieditpoplist( void )
 static int mouse( int *row, int *col )
 {
     return( uimousepos( UIEdit->edit_screen, row, col ) == UIEdit->edit_screen
-            && *row == Eline.row
-            && *col >= Eline.col
-            && *col < Eline.col + Eline.fldlen );
+            && *row == UIEdit->edit_eline.row
+            && *col >= UIEdit->edit_eline.col
+            && *col < UIEdit->edit_eline.col + UIEdit->edit_eline.fldlen );
 }
 
 ui_event uiledit( ui_event ui_ev )
@@ -198,9 +196,10 @@ ui_event uiledit( ui_event ui_ev )
     if( UIEdit->edit_maxlen == 0 ) {
         uipushlist( full );
     }
-    before = Eline.index;
-    ui_ev = uiveditevent( UIEdit->edit_screen, &Eline, ui_ev );
-    if( ui_ev != EV_NO_EVENT ) Eline.update = true; // causes lots of flashing!
+    before = UIEdit->edit_eline.index;
+    ui_ev = uiveditevent( UIEdit->edit_screen, &UIEdit->edit_eline, ui_ev );
+    if( ui_ev != EV_NO_EVENT )
+        UIEdit->edit_eline.update = true; // causes lots of flashing!
     if( UIEdit->edit_maxlen == 0 ) {
         uipoplist( /* full */ );
     }
@@ -208,31 +207,31 @@ ui_event uiledit( ui_event ui_ev )
     new_ui_ev = EV_NO_EVENT;
     switch( ui_ev ) {
     case EV_BUFFER_FULL:
-        if( !extend( Eline.length + 10 ) ) {
-            Eline.index = before;       // set cursor back to correct pos'n
+        if( !extend( UIEdit->edit_eline.length + 10 ) ) {
+            UIEdit->edit_eline.index = before;       // set cursor back to correct pos'n
         }
         break;
     case EV_MOUSE_PRESS:
         if( mouse( &row, &col ) ) {
-            i = Eline.scroll + col - Eline.col;
+            i = UIEdit->edit_eline.scroll + col - UIEdit->edit_eline.col;
             if( i > trim( UIEdit->edit_buffer ) ) {
                 i = trim( UIEdit->edit_buffer );
             }
-            if( Eline.index != i ) {
+            if( UIEdit->edit_eline.index != i ) {
                 if( UIEdit->edit_maxlen > 0 ) {
                     if( i < UIEdit->edit_maxlen ) {
-                        Eline.update = true;
-                        Eline.index = i;
+                        UIEdit->edit_eline.update = true;
+                        UIEdit->edit_eline.index = i;
                     }
                 } else {
-                    Eline.update = true;
-                    Eline.index = i;
+                    UIEdit->edit_eline.update = true;
+                    UIEdit->edit_eline.index = i;
                 }
             }
         }
         if( !uiinlists( ui_ev ) )
             break;
-        /* THIS CASE FALLS INTO THE DEFAULT */
+        /* fall through */
     default:
         new_ui_ev = ui_ev;
     }
@@ -244,19 +243,20 @@ void uieditinsert( char *str, unsigned n )
     char        *ins;
     unsigned    before;
 
-    if( UIEdit == NULL || n == 0 ) return;
-    Eline.update = true;
-    Eline.dirty = true;
-    if( Eline.auto_clear && Eline.index == 0 ) {
-        Eline.length = 0;
-        Eline.auto_clear = false;
+    if( UIEdit == NULL || n == 0 )
+        return;
+    UIEdit->edit_eline.update = true;
+    UIEdit->edit_eline.dirty = true;
+    if( UIEdit->edit_eline.auto_clear && UIEdit->edit_eline.index == 0 ) {
+        UIEdit->edit_eline.length = 0;
+        UIEdit->edit_eline.auto_clear = false;
     }
-    before = Eline.length;
-    if( extend( Eline.length + n ) ) {
-        ins = &UIEdit->edit_buffer[Eline.index];
-        memmove( ins + n, ins, before - Eline.index );
+    before = UIEdit->edit_eline.length;
+    if( extend( UIEdit->edit_eline.length + n ) ) {
+        ins = &UIEdit->edit_buffer[UIEdit->edit_eline.index];
+        memmove( ins + n, ins, before - UIEdit->edit_eline.index );
         memcpy( ins, str, n );
-        Eline.index += n;
+        UIEdit->edit_eline.index += n;
     }
 }
 
@@ -267,8 +267,8 @@ unsigned uiendedit( void )
 
     uiedittrim( UIEdit->edit_buffer );
     UIEdit->edit_screen = NULL;
-    i = Eline.index - Eline.scroll;
-    uiveditfini( UIEdit->edit_screen, &Eline );
+    i = UIEdit->edit_eline.index - UIEdit->edit_eline.scroll;
+    uiveditfini( UIEdit->edit_screen, &UIEdit->edit_eline );
     edit = UIEdit;
     UIEdit = UIEdit->next;
     uifree( edit );
