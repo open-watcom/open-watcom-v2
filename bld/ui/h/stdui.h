@@ -781,7 +781,7 @@ extern void            uidoneevent( void );
 
 #if defined( __DOS__ )
 
-extern LP_VOID         dos_uivideobuffer( LP_VOID vbuff );
+extern LP_PIXEL        dos_uishadowbuffer( LP_PIXEL vbuff );
 
 #elif defined( __WINDOWS__ )
 

@@ -58,9 +58,14 @@
 #define BIOS_VIDEO      0x10
 #define BIOS_MOUSE      0x33
 
-#define BIOS_PAGE           0x40
-#define BIOS_SCREEN_OFFSET  0x4e
-#define BIOS_SYSTEM_CLOCK   0x6c
+#define BIOS_PAGE               0x40
+#define BIOS_CURR_VIDEO_MODE    0x49
+#define BIOS_SCREEN_OFFSET      0x4e
+#define BIOS_SYSTEM_CLOCK       0x6c
+#define BIOS_POINT_HEIGHT       0x85
+
+#define BIOS_data( p, t )   *(t __far *)FIRSTMEG( BIOS_PAGE, p )
+#define VIDEO_byte( s, p )  *(unsigned char __far *)FIRSTMEG( s, p )
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
 
@@ -257,6 +262,7 @@ extern unsigned short BIOSTestKeyboard( void );
         _INT_16                 \
     value [ax];
 
+extern unsigned short   Points;     /* Number of lines per char */
 
 #if defined(__OSI__)
 extern void         __Int10();
