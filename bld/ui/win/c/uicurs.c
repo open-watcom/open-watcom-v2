@@ -32,7 +32,12 @@
 
 
 #include <stdui.h>
+#include "biosui.h"
 
+
+#define NoCur   0x2000      /* outside screen */
+
+extern void VIDSetPos( unsigned, unsigned );
 #pragma aux VIDSetPos =                                         \
 0XB0 0X0F       /* mov    al,f                          */      \
 0XEE            /* out    dx,al                         */      \
@@ -47,9 +52,7 @@
 0XEE            /* out    dx,al                         */      \
         parm caller [dx] [bx];
 
-extern void        VIDSetPos( unsigned, unsigned );
-
-
+extern void VIDSetCurTyp( unsigned, unsigned );
 #pragma aux VIDSetCurTyp =                                      \
 0X50            /* push   ax                            */      \
 0XB0 0X0A       /* mov    al,a                          */      \
@@ -57,7 +60,7 @@ extern void        VIDSetPos( unsigned, unsigned );
 0X42            /* inc    dx                            */      \
 0X8A 0XC4       /* mov    al,ah                         */      \
 0XEE            /* out    dx,al                         */      \
-0X4A            /* dec dx                               */      \
+0X4A            /* dec    dx                            */      \
 0XB0 0X0B       /* mov    al,b                          */      \
 0XEE            /* out    dx,al                         */      \
 0X42            /* inc    dx                            */      \
@@ -65,9 +68,7 @@ extern void        VIDSetPos( unsigned, unsigned );
 0XEE            /* out    dx,al                         */      \
         parm caller [dx] [ax];
 
-extern void VIDSetCurTyp( unsigned, unsigned );
-
-
+extern unsigned VIDGetCurTyp( unsigned );
 #pragma aux VIDGetCurTyp =                                      \
 0XB0 0X0B       /* mov    al,b                          */      \
 0XEE            /* out    dx,al                         */      \
@@ -82,27 +83,11 @@ extern void VIDSetCurTyp( unsigned, unsigned );
 0X86 0XE0       /* xchg   ah,al                         */      \
         parm caller [dx] value [ax];
 
-extern unsigned         VIDGetCurTyp( unsigned );
-
-enum {
-        BD_SEG          = 0x40,
-        BD_EQUIP_LIST   = 0x10,
-        BD_CURR_MODE    = 0x49,
-        BD_REGEN_LEN    = 0x4c,
-        BD_CURPOS       = 0x50,
-        BD_MODE_CTRL    = 0x65,
-        BD_VID_CTRL1    = 0x87,
-};
-
-#define VIDMONOINDXREG  0X03B4
-#define VIDCOLRINDXREG  0X03D4
 
 unsigned int  VIDPort=VIDMONOINDXREG;
 
 static unsigned RegCur;
 static unsigned InsCur;
-
-#define NoCur   0x2000
 
 static char         OldRow, OldCol;
 static CURSOR_TYPE  OldTyp;
@@ -118,10 +103,10 @@ void uiinitcursor( void )
     InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
 }
 
-#pragma off( unreferenced );
 void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-#pragma off( unreferenced );
 {
+    /* unused parameters */ (void)attr;
+
     if( typ == C_OFF ) {
         uioffcursor();
     } else {

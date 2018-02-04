@@ -34,11 +34,11 @@
 
                 PUBLIC  Fork_
                 EXTRN   DOSEnvFind_             :proc
-                EXTRN   DbgPSP_                 :near
 
 _text segment byte public 'CODE'
 assume cs:_text
 
+                EXTRN   "C", DebugPSP           :word
 
 abort:          mov     dx,-1
                 mov     ax,8
@@ -67,7 +67,7 @@ Fork_           proc    near
 
                 mov     CS:savess,SS
                 mov     CS:savebp,BP
-                call    DbgPSP_
+                mov     AX,cs:DebugPSP
                 push    AX
                 mov     CX,006cH
                 push    CX

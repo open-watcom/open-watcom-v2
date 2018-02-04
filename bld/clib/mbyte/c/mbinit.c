@@ -188,7 +188,7 @@ int __mbinit( int codepage )
 #elif defined __DOS__
     /*** Initialize the __MBCSIsTable values ***/
     if( codepage != 0 )
-        return( 1 );       /* can only handle default */
+        return( 1 );        /* can only handle default */
     leadBytes = dos_get_dbcs_lead_table();
     if( leadBytes == NULL )
         return( 0 );
@@ -197,15 +197,15 @@ int __mbinit( int codepage )
 #elif defined __WINDOWS__
     /*** Initialize the __MBCSIsTable values ***/
     if( codepage != 0 )
-        return( 1 );       /* can only handle default */
+        return( 1 );        /* can only handle default */
     version = GetVersion();
     if( LOWORD(version) < 0x0A03 )
-        return( 1 );    /* 3.1+ needed */
+        return( 1 );        /* 3.1+ needed */
     clear_dbcs_table();
     for( countVal = 0; countVal < 256; countVal++ ) {
         if( IsDBCSLeadByte( (BYTE)countVal ) ) {
             __MBCSIsTable[countVal + 1] = _MB_LEAD;
-            __IsDBCS = 1;                   /* set __IsDBCS if needed */
+            __IsDBCS = 1;   /* set __IsDBCS if needed */
         }
     }
     __MBCodePage = GetKBCodePage();

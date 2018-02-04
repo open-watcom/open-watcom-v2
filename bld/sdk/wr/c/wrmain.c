@@ -230,7 +230,7 @@ void WRAPI WRFini( void )
     }
 }
 
-WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
+WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type, env_callback get_env )
 {
     WRInfo  *info;
     bool    ret;
@@ -310,9 +310,9 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 
     if( ret ) {
         if( info->internal_filename != NULL ) {
-            ret = WRCopyFileToTemp( info, info->internal_filename );
+            ret = WRCopyFileToTemp( info, info->internal_filename, get_env );
         } else {
-            ret = WRCopyFileToTemp( info, info->file_name );
+            ret = WRCopyFileToTemp( info, info->file_name, get_env );
         }
     }
 
@@ -324,7 +324,7 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
     return( info );
 }
 
-bool WRAPI WRSaveResource( WRInfo *info, bool backup )
+bool WRAPI WRSaveResource( WRInfo *info, bool backup, env_callback get_env )
 {
     bool    ret;
     char    *tmp;
@@ -352,7 +352,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     if( name != NULL && stricmp( name, info->save_name ) == 0 ) {
         tmp = info->save_name;
         _splitpath( info->save_name, NULL, NULL, NULL, ext );
-        info->save_name = WRGetTempFileName( ext );
+        info->save_name = WRGetTempFileName( ext, get_env );
         if( info->save_name == NULL ) {
             info->save_name = tmp;
             return( false );
@@ -391,12 +391,12 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRSaveResourceToWin16EXE( info, backup );
+        ret = WRSaveResourceToWin16EXE( info, backup, get_env );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRSaveResourceToWinNTEXE( info, backup );
+        ret = WRSaveResourceToWinNTEXE( info, backup, get_env );
         break;
 
     case WR_DONT_KNOW:
@@ -408,7 +408,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     if( ret && info->dir != NULL ) {
-        ret = WRRelinkInfo( info );
+        ret = WRRelinkInfo( info, get_env );
     }
 
     if( tmp != NULL ) {
@@ -420,7 +420,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     return( ret );
 }
 
-bool WRAPI WRUpdateTmp( WRInfo *info )
+bool WRAPI WRUpdateTmp( WRInfo *info, env_callback get_env )
 {
     bool        ret;
     char        *tsave;
@@ -438,7 +438,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     }
 
     if( info->tmp_file == NULL ) {
-        info->tmp_file = WRGetTempFileName( ext );
+        info->tmp_file = WRGetTempFileName( ext, get_env );
         if( info->tmp_file == NULL ) {
             return( false );
         }
@@ -451,7 +451,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     } else {
         info->save_type = info->file_type;
     }
-    info->save_name = WRGetTempFileName( ext );
+    info->save_name = WRGetTempFileName( ext, get_env );
     if( info->save_name == NULL ) {
         info->save_name = tsave;
         info->save_type = ttype;
@@ -480,12 +480,12 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRSaveResourceToWin16EXE( info, false );
+        ret = WRSaveResourceToWin16EXE( info, false, get_env );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRSaveResourceToWinNTEXE( info, false );
+        ret = WRSaveResourceToWinNTEXE( info, false, get_env );
         break;
 
     case WR_WIN_RC:
@@ -505,7 +505,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     }
 
     if( ret ) {
-        ret = WRRelinkInfo( info );
+        ret = WRRelinkInfo( info, get_env );
     }
 
     if( ret ) {
@@ -522,7 +522,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     return( ret );
 }
 
-bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
+bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata, env_callback get_env )
 {
     WRInfo      *info;
     long        type;
@@ -566,7 +566,7 @@ bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoDat
     }
 
     if( ok ) {
-        ok = WRSaveResource( info, true );
+        ok = WRSaveResource( info, true, get_env );
     }
 
     if( info != NULL ) {
@@ -578,7 +578,7 @@ bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoDat
     return( ok );
 }
 
-bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
+bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup, env_callback get_env )
 {
     WRInfo      *info;
     char        *tmp_file;
@@ -592,13 +592,13 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
     ok = (file != NULL && idata != NULL && dup != NULL);
 
     if( ok ) {
-        info = WRLoadResource( file, WR_DONT_KNOW );
+        info = WRLoadResource( file, WR_DONT_KNOW, get_env );
         ok = (info != NULL);
     }
 
     if( ok ) {
         _splitpath( info->file_name, NULL, NULL, NULL, ext );
-        ok = ((tmp_file = WRGetTempFileName( ext )) != NULL);
+        ok = ((tmp_file = WRGetTempFileName( ext, get_env )) != NULL);
     }
 
     if( ok ) {
@@ -620,7 +620,7 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
     }
 
     if( ok ) {
-        ok = WRSaveResource( info, true );
+        ok = WRSaveResource( info, true, get_env );
     }
 
     if( ok ) {

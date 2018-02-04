@@ -534,7 +534,7 @@ static  void doCall( instruction *ins )
     }
     if( code != NULL ) {
         ObjEmitSeq( code );
-        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
+        if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & (SUICIDAL | NORETURN) ) {
             GenNoReturn();
         }
     } else {

@@ -43,7 +43,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WRCopyFileToTemp( WRInfo *info, const char *filename );
-extern bool WRRelinkInfo( WRInfo *info );
+extern bool WRCopyFileToTemp( WRInfo *info, const char *filename, env_callback get_env );
+extern bool WRRelinkInfo( WRInfo *info, env_callback get_env );
 
 #endif

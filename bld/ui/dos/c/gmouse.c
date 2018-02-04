@@ -33,8 +33,8 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "charmap.h"
 #include "biosui.h"
+#include "charmap.h"
 #include "uimouse.h"
 
 

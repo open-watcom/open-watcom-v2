@@ -68,11 +68,11 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         stype = atoi( _argv[4] );
         backup = (atoi( _argv[5] ) != 0);
         if( stype != 0 ) {
-            info = WRLoadResource( _argv[1], ltype );
+            info = WRLoadResource( _argv[1], ltype, getenv );
             if( info != NULL ) {
                 info->save_name = _argv[3];
                 info->save_type = stype;
-                ret = WRSaveResource( info, backup );
+                ret = WRSaveResource( info, backup, getenv );
             } else {
                 ret = FALSE;
             }
@@ -120,7 +120,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WRFreeWRInfo( info );
     }
 
-    info = WRLoadResource( _argv[1], WR_DONT_KNOW );
+    info = WRLoadResource( _argv[1], WR_DONT_KNOW, getenv );
     sii = WRSelectImage( HWND_DESKTOP, info, NULL );
     if( sii != NULL ) {
         WRFreeSelectImageInfo( sii );

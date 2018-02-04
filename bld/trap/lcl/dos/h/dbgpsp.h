@@ -29,4 +29,5 @@
 ****************************************************************************/
 
 
+extern __segment    __based(__segname("_CODE")) DebugPSP;
 extern __segment    __near DbgPSP( void );

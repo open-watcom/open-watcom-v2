@@ -480,8 +480,7 @@ STATIC RET_T isOutOfDate( TARGET *targ, TARGET *deptarg, bool *outofdate )
     if( dateCmp( targ->date, deptarg->date ) < 0 ) {
         *outofdate = true;
         if( Glob.show_offenders ) {
-            PrtMsg( INF | WILL_BE_BUILT_BECAUSE_OF,
-                targ->node.name, deptarg->node.name);
+            PrtMsg( INF | WILL_BE_BUILT_BECAUSE_OF, targ->node.name, deptarg->node.name);
         }
     }
     if( deptarg->error ) {

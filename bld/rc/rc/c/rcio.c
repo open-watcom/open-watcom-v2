@@ -463,7 +463,7 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
     }
 }
 
-extern void ClosePass2FilesAndFreeMem( void )
+static void ClosePass2FilesAndFreeMem( void )
 /*******************************************/
 {
     ExeFileInfo         *tmp;

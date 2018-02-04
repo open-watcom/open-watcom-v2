@@ -152,7 +152,7 @@ endif
           _quif ne              ; - quit if not DOS4GW
           mov   ECX,DS          ; - just use DS
         _admit                  ; assume: Ergo OS386
-          mov   CX,34H          ; - GDT entry for first 1 meg
+          mov   CL,34H          ; - GDT entry for first 1 meg
         _endguess               ; endguess
         movzx   EAX,DX          ; get deverror
         movzx   EDX,DI          ; get error code

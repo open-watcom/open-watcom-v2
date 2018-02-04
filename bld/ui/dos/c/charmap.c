@@ -31,17 +31,25 @@
 
 
 #include <dos.h>
-#include"uidef.h"
-#include"charmap.h"
+#include "uidef.h"
+#include "biosui.h"
+#include "charmap.h"
+
+
+#ifdef _M_I86
+#define LOAD_ES_BIOS_SEGMENT    "xor ax,ax" "mov es,ax"
+#else
+#define LOAD_ES_BIOS_SEGMENT    "mov ax,_ExtenderRealModeSelector" "mov es,eax"
+#endif
 
 extern void __SetWriteMap( void );
 #pragma aux __SetWriteMap = \
         "MOV     DX,3C4h"   \
         "MOV     AX,402h"   \
         "OUT     DX,AX"     \
-    modify [dx];
+    modify [ax dx];
 
-extern void __SetSequencer( unsigned );
+extern void __SetSequencer( void );
 #pragma aux __SetSequencer = \
         "PUSHF"                 /* Disable interrupts          */   \
         "CLI"                                                       \
@@ -49,7 +57,7 @@ extern void __SetSequencer( unsigned );
         "MOV     AX,402h"       /* write to map 3              */   \
         "OUT     DX,AX"                                             \
         "PUSH    ES"                                                \
-        "MOV     ES,SI"                                             \
+        LOAD_ES_BIOS_SEGMENT                                        \
         "MOV     AL,ES:[487h]"  /* check VC state              */   \
         "POP     ES"                                                \
         "AND     AL,60h"        /* if it's not 0,              */   \
@@ -70,9 +78,9 @@ extern void __SetSequencer( unsigned );
         "OUT     DX,AX"                                             \
         "STI"                                                       \
         "POPF"                                                      \
-    parm [si] modify [dx si];
+    modify [ax dx];
 
-extern void __ResetSequencer( unsigned );
+extern void __ResetSequencer( void );
 #pragma aux __ResetSequencer = \
         "PUSHF"                 /* reset sequencer and cont.*/  \
         "CLI"                                                   \
@@ -80,7 +88,7 @@ extern void __ResetSequencer( unsigned );
         "MOV     AX,302h"       /* write to maps 0 and 1    */  \
         "OUT     DX,AX"                                         \
         "PUSH    ES"                                            \
-        "MOV     ES,SI"                                         \
+        LOAD_ES_BIOS_SEGMENT                                    \
         "MOV     AL,ES:[487h]"  /* check VC state           */  \
         "AND     AL,60h"        /* if it's not 0,           */  \
         "JNZ     rs_00"                                         \
@@ -106,7 +114,7 @@ extern void __ResetSequencer( unsigned );
         "POP     ES"                                            \
         "STI"                                                   \
         "POPF"                                                  \
-    parm [si] modify [dx si];
+    modify [ax dx];
 
 
 #if 0
@@ -122,7 +130,7 @@ extern bool __IsEgaVga( void );
         "CMP     BL,08h"    /* VGA w/colour display?    */  \
         "JNE     IsEga"     /* No                       */  \
     "IsVga:"                                                \
-        "MOV     DX,01h"                                    \
+        "MOV     AX,01h"                                    \
         "JMP short Last"                                    \
     "IsEga:"                                                \
         "MOV     AH,12h"    /* EGA BIOS function        */  \
@@ -130,19 +138,19 @@ extern bool __IsEgaVga( void );
         "INT     10h"                                       \
         "CMP     BL,10h"    /* Is EGA BIOS present?     */  \
         "JNE     IsVga"     /* EGA is on the system.    */  \
-        "XOR     DX,DX"                                     \
+        "XOR     AX,AX"                                     \
     "Last:"                                                 \
-    value [dl] modify [ax bx];
+    value [al] modify [ah bx];
 #endif
 
 void    SetSequencer( void )
 {
-    __SetSequencer( FP_SEG( FIRSTMEG( 0, 0 ) ) );
+    __SetSequencer();
 }
 
 void    ResetSequencer( void )
 {
-    __ResetSequencer( FP_SEG( FIRSTMEG( 0, 0 ) ) );
+    __ResetSequencer();
 }
 
 void    SetWriteMap( void )

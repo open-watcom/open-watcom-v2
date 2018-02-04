@@ -237,11 +237,11 @@ static void setup_slib()
 }
 
 void _CMain( free, n, cmd, stk_bot, pid )
-    void     __near *free;                  /* start of free space                  */
-    short unsigned   n;                     /* number of bytes                      */
-    struct _proc_spawn __near *cmd;         /* pointer to spawn msg                 */
-    short unsigned  stk_bot;                /* bottom of stack                      */
-    pid_t            pid;                   /* process id                           */
+    void                __near *free;       /* start of free space                  */
+    short unsigned      n;                  /* number of bytes                      */
+    struct _proc_spawn  __near *cmd;        /* pointer to spawn msg                 */
+    short unsigned      stk_bot;            /* bottom of stack                      */
+    pid_t               pid;                /* process id                           */
 {
 
     _my_pid = pid;                          /* save POSIX process id                */

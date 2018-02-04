@@ -78,6 +78,11 @@ void PPENTRY PP_Free( void *p )
     WRMemFree( p );
 }
 
+const char *PP_GetEnv( const char *name )
+{
+    return( getenv( name ) );
+}
+
 static void addsym_func( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie )
 {
     WRHashValue         value;

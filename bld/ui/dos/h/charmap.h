@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "biosui.h"
-
 #ifndef poke
 
 #define _poke(a,b,c)     (*((int __far *)FIRSTMEG(a,b)) = (int)(c))

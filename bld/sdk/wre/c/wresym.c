@@ -112,6 +112,11 @@ void PPENTRY PP_Free( void *p )
     WRMemFree( p );
 }
 
+const char *PP_GetEnv( const char *name )
+{
+    return( getenv( name ) );
+}
+
 static char *WREFindDLGInclude( WRInfo *info )
 {
     WResTypeNode        *tnode;

@@ -46,6 +46,7 @@
 #include "dosxfork.h"
 #include "dosextx.h"
 #include "dosfile.h"
+#include "dbgpsp.h"
 
 
 static char             LinkParms[256];
@@ -465,7 +466,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
         return( ver );
     }
     _DBG_EnterFunc( "TrapInit()" );
-    InitPSP();
+    DebugPSP = GetPSP();
     LoadError = NULL;
     error[0] = '\0';
     strcpy( LinkParms, parms );      // save trap parameters

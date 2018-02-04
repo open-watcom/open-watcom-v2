@@ -33,7 +33,7 @@
 #ifndef _BIOSUI_H_
 #define _BIOSUI_H_
 
-#ifdef __386__
+#ifndef _M_I86
 #include "extender.h"
 #endif
 
@@ -63,6 +63,9 @@
 #define BIOS_SYSTEM_CLOCK   0x6c
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
+
+#define VIDMONOINDXREG      0x03B4
+#define VIDCOLORINDXREG     0x03D4
 
 struct cursor_pos {
     unsigned char   col;

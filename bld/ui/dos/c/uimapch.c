@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
-#include    <dos.h>
-#include    <string.h>
-#include    "uidef.h"
-#include    "charmap.h"
-#include    "uigchar.h"
+#include <dos.h>
+#include <string.h>
+#include "uidef.h"
+#include "biosui.h"
+#include "charmap.h"
+#include "uigchar.h"
+
 
 static unsigned char UiMapChar[] = {
     #define MAPCHARS

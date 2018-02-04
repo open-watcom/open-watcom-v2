@@ -378,10 +378,10 @@ void    GenCall( instruction *ins ) {
         } else {
             CodeBytes( code->data, code->length );
         }
-        if( cclass & SUICIDAL ) {
+        if( cclass & (SUICIDAL | NORETURN) ) {
             GenNoReturn();
         }
-    } else if( ( cclass & SUICIDAL ) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
+    } else if( (cclass & (SUICIDAL | NORETURN)) && _IsntTargetModel( NEW_P5_PROFILING ) ) {
         sym = op->v.symbol;
         lbl = FEBack( sym )->lbl;
         if( (cclass & FAR_CALL) && (FEAttr( sym ) & FE_IMPORT) ) {

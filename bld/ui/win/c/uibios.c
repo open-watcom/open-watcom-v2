@@ -50,8 +50,6 @@ static MONITOR ui_data = {
 
 extern char  _B000h[],_B800h[];
 extern unsigned int  VIDPort;
-#define VIDMONOINDXREG  0X03B4
-#define VIDCOLRINDXREG  0X03D4
 
 
 void UIAPI win_uisetmono( void )
@@ -65,7 +63,7 @@ void UIAPI win_uisetcolor( int clr )
 {
         ui_data.colour = clr;
         ui_data.screen.origin = MK_FP( _B800h, 0 );
-        VIDPort = VIDCOLRINDXREG;
+        VIDPort = VIDCOLORINDXREG;
 }
 
 static bool initmonitor( void )
