@@ -231,8 +231,8 @@ void _InitSegments( void )
 
     if( os_major >= 5 ) {
         // The DBCS vector table call is not supported in earlier versions
-        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
         p = _DBCSPairs;
+        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
         if( s != NULL ) {
             while( s->start_range != 0 ) {
                 p->start_range = s->start_range;
