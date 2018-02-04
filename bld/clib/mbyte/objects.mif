@@ -62,6 +62,8 @@
 !inject fwcsto_s.obj d16 d32             nt                 o16 o32         w16 w32 osi             rdu rdk
 !inject fwctomb.obj  d16 d32             nt                 o16 o32         w16 w32 osi             rdu rdk
 !inject fwctom_s.obj d16 d32             nt                 o16 o32         w16 w32 osi             rdu rdk
+!inject getcpdos.obj d16 d32
+!inject getltdos.obj d16 d32
 !inject getmbcp.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
 !inject ismbbaln.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
 !inject ismbbalp.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
