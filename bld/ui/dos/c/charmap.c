@@ -61,16 +61,13 @@ extern void __SetSequencer( void );
         "MOV     AL,ES:[487h]"  /* check VC state              */   \
         "POP     ES"                                                \
         "AND     AL,60h"        /* if it's not 0,              */   \
-        "JNZ     VC_st1"                                            \
-        "MOV     AH,05h"                                            \
-        "JMP Short VC_st2"                                          \
-    "VC_st1:"                                                       \
         "MOV     AH,07h"                                            \
-    "VC_st2:"                                                       \
-        "MOV     AL,04h"        /* sequential addressing       */   \
+        "JNZ L1"                                                    \
+        "MOV     AH,05h"                                            \
+    "L1: MOV     AL,04h"        /* sequential addressing       */   \
         "OUT     DX,AX"                                             \
         "MOV     DX,3CEh"       /* Graphics Cntrl. port addr.  */   \
-        "MOV     AX,0406h"      /* Map starts at A000:0000     */   \
+        "MOV     AX,406h"       /* Map starts at A000:0000     */   \
         "OUT     DX,AX"         /* (64K mode)                  */   \
         "MOV     AX,204h"       /* Select map 2 for CPU reads  */   \
         "OUT     DX,AX"                                             \
@@ -91,21 +88,18 @@ extern void __ResetSequencer( void );
         LOAD_ES_BIOS_SEGMENT                                    \
         "MOV     AL,ES:[487h]"  /* check VC state           */  \
         "AND     AL,60h"        /* if it's not 0,           */  \
-        "JNZ     rs_00"                                         \
-        "MOV     AH,01h"                                        \
-        "JMP short rs_00a"                                      \
-    "rs_00:"                                                    \
         "MOV     AH,03h"                                        \
-    "rs_00a:"                                                   \
-        "MOV     AL,04h"        /* use odd-even addressing  */  \
+        "JNZ L1"                                                \
+        "MOV     AH,01h"                                        \
+    "L1: MOV     AL,04h"        /* use odd-even addressing  */  \
         "OUT     DX,AX"                                         \
+        "MOV     AL,07h"                                        \
+        "CMP     ES:[449h],AL"  /* Get current video mode   */  \
+        "MOV     AH,0Eh"        /* Map starts at B800:0000  */  \
+        "JNE L2"                                                \
+        "MOV     AH,0Ah"        /* Map starts at B000:0000  */  \
+    "L2: MOV     AL,06h"                                        \
         "MOV     DX,3CEh"       /* controller port          */  \
-        "MOV     AX,0E06h"      /* Map starts at B800:0000  */  \
-        "MOV     BL,07h"                                        \
-        "CMP     ES:[449h],BL"  /* Get current video mode   */  \
-        "JNE     rs_01"                                         \
-        "MOV     AX,0A06h"      /* Map starts at B000:0000  */  \
-    "rs_01:"                                                    \
         "OUT     DX,AX"                                         \
         "MOV     AX,04h"        /* read map 0               */  \
         "OUT     DX,AX"                                         \
