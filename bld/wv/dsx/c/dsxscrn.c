@@ -715,7 +715,7 @@ unsigned ConfigScreen( void )
         break;
     }
     if( uiisdbcs() ) {
-        VirtScreen = dos_uivideobuffer( COLOUR_VIDEO_BUFF );
+        VirtScreen = dos_uishadowbuffer( COLOUR_VIDEO_BUFF );
         if( VirtScreen == COLOUR_VIDEO_BUFF ) {
             VirtScreen = NULL;
         } else if( FlipMech == FLIP_PAGE ) {
