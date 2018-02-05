@@ -299,7 +299,7 @@ void main( void )
                     uivclose( &mainwin );
                     mainwin.area.height = UIData->height - 7;
                     uivopen( &mainwin );
-                    if( evrow > area.height ) {
+                    if( evrow > mainwin.area.height ) {
                         evrow = TOP_ROW;
                     }
                     break;
