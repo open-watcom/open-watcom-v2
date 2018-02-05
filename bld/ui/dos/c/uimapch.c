@@ -58,7 +58,7 @@ static void MapCharacter( unsigned char ch, unsigned char data[16] )
 {
     unsigned short              s;
     unsigned short              points;
-    int                         j;
+    unsigned short              j;
     unsigned char               temp;
 
     points = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );

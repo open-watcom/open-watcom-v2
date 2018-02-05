@@ -88,7 +88,7 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
             start = editline->index;
             area.width = editline->mark_anchor - editline->index;
         }
-        if( area.width + start >= editline->scroll  &&  area.width > 0 ) {
+        if( area.width + start >= editline->scroll && area.width > 0 ) {
             if( start > editline->scroll ) {
                 area.col = editline->col + start - editline->scroll;
             } else {
@@ -96,7 +96,7 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
                 area.width = area.width - editline->scroll + start;
             }
             if( area.width + area.col > editline->col + editline->fldlen ) {
-                area.width =    editline->fldlen + editline->col - area.col;
+                area.width = editline->fldlen + editline->col - area.col;
             }
             uivattribute( vptr, area, editline->mark_attr );
         }

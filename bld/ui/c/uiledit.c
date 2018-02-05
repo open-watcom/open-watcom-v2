@@ -50,6 +50,7 @@
 #include "uivedit.h"
 #include "uiledit.h"
 
+
 a_ui_edit       *UIEdit = NULL;
 
 extern ui_event     LineEvents[];
@@ -59,13 +60,11 @@ static bool extend( unsigned n )
     char    *buf;
 
     buf = uirealloc( UIEdit->edit_buffer, n );
-    if( buf == NULL ) {
+    if( buf == NULL )
         return( false );
-    } else {
-        UIEdit->edit_buffer = buf;
-    }
-    *( UIEdit->edit_buffer + UIEdit->edit_eline.length ) = '\0';
-    UIEdit->edit_eline.buffer = UIEdit->edit_buffer;
+    buf[UIEdit->edit_eline.length] = '\0';
+    UIEdit->edit_buffer = buf;
+    UIEdit->edit_eline.buffer = buf;
     UIEdit->edit_eline.length = n;                       /* so blanks will get padded on */
     UIEdit->edit_eline.update = true;
     return( true );
@@ -76,7 +75,8 @@ static unsigned trim( char *s )
     char                *t;
 
     t = s + UIEdit->edit_eline.length;
-    while( t > s && (t[-1] == ' ' || t[-1] == '\0') ) --t;
+    while( t > s && (t[-1] == ' ' || t[-1] == '\0') )
+        --t;
     return( t - s );
 }
 
@@ -146,7 +146,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, ORD len,
     UIEdit->edit_eline.scroll = scroll;
     UIEdit->edit_eline.attr = attr;
     UIEdit->edit_eline.auto_clear = auto_clear;
-    if( max > 0  &&  UIEdit->edit_eline.fldlen > UIEdit->edit_maxlen ) {
+    if( max > 0 && UIEdit->edit_eline.fldlen > UIEdit->edit_maxlen ) {
         UIEdit->edit_eline.fldlen = UIEdit->edit_maxlen;
     }
     if( l > UIEdit->edit_eline.length ) {
@@ -178,7 +178,7 @@ static int mouse( int *row, int *col )
     return( uimousepos( UIEdit->edit_screen, row, col ) == UIEdit->edit_screen
             && *row == UIEdit->edit_eline.row
             && *col >= UIEdit->edit_eline.col
-            && *col < UIEdit->edit_eline.col + UIEdit->edit_eline.fldlen );
+            && *col - UIEdit->edit_eline.col < UIEdit->edit_eline.fldlen );
 }
 
 ui_event uiledit( ui_event ui_ev )
@@ -190,7 +190,8 @@ ui_event uiledit( ui_event ui_ev )
     };
 
     unsigned    before;
-    int         row, col, i;
+    int         row, col;
+    unsigned    i;
     ui_event    new_ui_ev;
 
     if( UIEdit->edit_maxlen == 0 ) {

@@ -62,7 +62,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     int                     priority;
     void                    (_FAR *updatertn)( struct sarea, void * );
     bool                    okbuffer;
-    int                     len;
+    unsigned                len;
     ORD                     col;
     unsigned int            flags;
     bool                    covered;

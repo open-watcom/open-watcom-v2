@@ -39,7 +39,7 @@
 #include <unistd.h>
 #include "bool.h"
 #include "wterm.h"
-#include "stdui.h"
+#include "uidef.h"
 #include "trie.h"
 #ifdef __QNX__
 #include "qnxuiext.h"
@@ -177,7 +177,7 @@ static tix_token get_tix_token( char *buff )
                     c = '\b';
                     break;
                 case 'e':
-                    c = '\x1b';
+                    c = '\x1B';
                     break;
                 case 'f':
                     c = '\f';
@@ -215,13 +215,13 @@ static tix_token get_tix_token( char *buff )
                     break;
                 }
             }
-            *p++ = c;
+            *p++ = (char)c;
         }
         *p = '\0';
     } else {
         /* collect a string or number */
         for( ;; ) {
-            *p++ = c;
+            *p++ = (char)c;
             c = getc( in_file );
             if( c == EOF )
                 break;

@@ -79,31 +79,31 @@ extern void __SetSequencer( void );
 
 extern void __ResetSequencer( void );
 #pragma aux __ResetSequencer = \
-        "PUSHF"                 /* reset sequencer and cont.*/  \
+        "PUSHF"                 /* reset sequencer and cont. */ \
         "CLI"                                                   \
-        "MOV     DX,3C4h"       /* sequencer port           */  \
-        "MOV     AX,302h"       /* write to maps 0 and 1    */  \
+        "MOV     DX,3C4h"       /* sequencer port            */ \
+        "MOV     AX,302h"       /* write to maps 0 and 1     */ \
         "OUT     DX,AX"                                         \
         "PUSH    ES"                                            \
         LOAD_ES_BIOS_SEGMENT                                    \
-        "MOV     AL,ES:[487h]"  /* check VC state           */  \
-        "AND     AL,60h"        /* if it's not 0,           */  \
+        "MOV     AL,ES:[487h]"  /* check VC state            */ \
+        "AND     AL,60h"        /* if it's not 0,            */ \
         "MOV     AH,03h"                                        \
         "JNZ L1"                                                \
         "MOV     AH,01h"                                        \
-    "L1: MOV     AL,04h"        /* use odd-even addressing  */  \
+    "L1: MOV     AL,04h"        /* use odd-even addressing   */ \
         "OUT     DX,AX"                                         \
         "MOV     AL,07h"                                        \
-        "CMP     ES:[449h],AL"  /* Get current video mode   */  \
-        "MOV     AH,0Eh"        /* Map starts at B800:0000  */  \
+        "CMP     ES:[449h],AL"  /* Get current video mode    */ \
+        "MOV     AH,0Eh"        /* Map starts at B800:0000   */ \
         "JNE L2"                                                \
-        "MOV     AH,0Ah"        /* Map starts at B000:0000  */  \
+        "MOV     AH,0Ah"        /* Map starts at B000:0000   */ \
     "L2: MOV     AL,06h"                                        \
-        "MOV     DX,3CEh"       /* controller port          */  \
+        "MOV     DX,3CEh"       /* controller port           */ \
         "OUT     DX,AX"                                         \
-        "MOV     AX,04h"        /* read map 0               */  \
+        "MOV     AX,04h"        /* read map 0                */ \
         "OUT     DX,AX"                                         \
-        "MOV     AX,1005h"      /* use odd-even addressing  */  \
+        "MOV     AX,1005h"      /* use odd-even addressing   */ \
         "OUT     DX,AX"                                         \
         "POP     ES"                                            \
         "STI"                                                   \

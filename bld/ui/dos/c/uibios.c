@@ -159,7 +159,7 @@ typedef struct {
 } dbcs_pair;
 
 static dbcs_pair        Pairs[5];       // safe enough for now
-static int              Init;
+static bool             Init = false;
 
 static void intern initdbcs( void )
 {
@@ -167,13 +167,15 @@ static void intern initdbcs( void )
     dbcs_pair           __far *s;
 
     p = Pairs;
-    s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
-    if( s != NULL ) {
-        while( s->start_range != 0 ) {
-            p->start_range = s->start_range;
-            p->end_range = s->end_range;
-            ++p;
-            ++s;
+    if( UIData->colour != M_MONO ) {
+        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
+        if( s != NULL ) {
+            while( s->start_range != 0 ) {
+                p->start_range = s->start_range;
+                p->end_range = s->end_range;
+                ++p;
+                ++s;
+            }
         }
     }
     p->start_range = 0;
@@ -394,7 +396,7 @@ void intern finibios( void )
 #ifdef _M_I86
 extern void _desqview_update( LP_PIXEL, unsigned );
 #pragma aux _desqview_update = \
-        "mov  ah,0ffh"      \
+        "mov  ah,0ffh"      	\
         _INT_10                 \
     parm [es di] [cx] modify [ah];
 #endif
