@@ -4,4 +4,4 @@ host_os  = win
 
 memory_model_i86 = l
 
-!include ../win.mif
+!include ../../ui.mif

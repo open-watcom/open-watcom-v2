@@ -2,7 +2,7 @@
 host_cpu = 386
 host_os  = os2
 
-!include ../os2.mif
+!include ../../ui.mif
 
 sample2.exe : sample.obj sampdial.obj ui.lib $(__MAKEFILES__)
     $(noecho)%create $^&.lnk
