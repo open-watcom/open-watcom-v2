@@ -127,7 +127,11 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(ui_lib) $(__MAKEFILES__)
 !else
 sample.exe : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
     @%make echo_link
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags) sample.obj sampdial.obj $(ui_lib) $(ldflags)
+!else
     $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(ui_lib)}
+!endif
 !endif
 
 !ifeq host_os qnx
