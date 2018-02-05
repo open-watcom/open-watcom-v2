@@ -111,9 +111,9 @@ extern unsigned short MouseDrvReset( void );
         _INT_33             \
     value [ax] modify [ax bx];
 
-extern void MouseDrvState( unsigned short, md_stk_ptr );
-#pragma aux MouseDrvState = \
-        _INT_33             \
+extern void MouseDrvCallRetState( unsigned short, md_stk_ptr );
+#pragma aux MouseDrvCallRetState = \
+        _INT_33                         \
         INSTR( mov ss:[REG_xSI+0],bx )  \
         INSTR( mov ss:[REG_xSI+2],cx )  \
         INSTR( mov ss:[REG_xSI+4],dx )  \
@@ -133,6 +133,11 @@ extern void MouseDrvCall3( unsigned short, unsigned short, unsigned short, unsig
 #pragma aux MouseDrvCall3 = \
         _INT_33             \
     parm [ax] [cx] [dx] [si] [di];
+
+extern unsigned short MouseDrvCall4( unsigned short );
+#pragma aux MouseDrvCall4 = \
+        _INT_33             \
+    parm [ax] modify [bx cx dx];
 
 extern void BIOSSetMode( unsigned char );
 #pragma aux BIOSSetMode = \

@@ -53,7 +53,7 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
     char    change;
 
     change = change;
-    MouseDrvState( 3, &state );
+    MouseDrvCallRetState( 3, &state );
 
     *status = state.bx;
 
@@ -61,7 +61,7 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
         *col = state.cx / MOUSE_SCALE;
         *row = state.dx / MOUSE_SCALE;
     } else {
-        MouseDrvState( 0x0B, &state );
+        MouseDrvCallRetState( 0x0B, &state );
         MickeyCol += (short int)state.cx; /* delta of mickeys */
         MickeyRow += (short int)state.dx; /* delta of mickeys */
         if( MickeyRow < 0 ) {

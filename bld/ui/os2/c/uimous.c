@@ -126,7 +126,7 @@ void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUS
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
 
-        MouseDrvState( 3, &state );
+        MouseDrvCallRetState( 3, &state );
         *pstatus = state.bx;
         *prow  = state.dx / MOUSE_SCALE;
         *pcol  = state.cx / MOUSE_SCALE;

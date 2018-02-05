@@ -50,9 +50,7 @@ static int          ScreenYFudge;
 void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
 /****************************************************************************************/
 {
-    struct  mouse_data state;
-
-    MouseDrvState( 3, &state );
+    MouseDrvCall4( 3 );
     *status = MouseStatusBits;
     *col = MouseX;
     *row = MouseY;
