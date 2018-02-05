@@ -56,12 +56,13 @@
 #include "doserr.h"
 
 
-
 extern bool     GrabVects( void );
 extern void     ReleVects( void );
 
 extern void     GrabPrtScrn( void );
 extern void     RelePrtScrn( void );
+
+extern bool     SetPSP( USHORT );
 
 extern void     SetMSW(unsigned);
 

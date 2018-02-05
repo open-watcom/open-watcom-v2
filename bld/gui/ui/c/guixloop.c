@@ -59,10 +59,10 @@ ui_event GUIUserEvents[] = {
 };
 
 /* statics */
-static ORD              OldCol          = -1;      /* old column of mouse */
-static ORD              OldRow          = -1;      /* old row of mouse    */
+static  ORD             OldCol          = -1;      /* old column of mouse */
+static  ORD             OldRow          = -1;      /* old row of mouse    */
 
-static gui_window       *GUIMouseWnd    = NULL;
+static  gui_window *GUIMouseWnd      = NULL;
 
 static enum {
     MOUSE_FREE,                 /* mouse moving not in press-drag sequence */

@@ -146,9 +146,8 @@ typedef struct RMBuff {
     static jmp_buf      RealModeState;
     static jmp_buf      ProtModeState;
     static RMBuff       Buff;
+    static short        OldPSP;
     static char         BeenToProtMode;
-
-    static __segment    __based(__segname("_CODE")) OldPSP;
 
 #endif
 
@@ -246,7 +245,7 @@ void __far BackFromProtMode( void )
     BeenToProtMode = 1;
     if( setjmp( ProtModeState ) == 0 ) {
         OldPSP = GetPSP();
-        SetPSP( DebugPSP );
+        SetPSP( DbgPSP() );
         longjmp( RealModeState, 0 );
     }
     SetPSP( OldPSP );

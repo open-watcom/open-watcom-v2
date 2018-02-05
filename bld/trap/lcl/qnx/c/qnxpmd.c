@@ -316,24 +316,18 @@ static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
     struct _seginfo     info;
     unsigned            segment;
 
-    if( !PmdInfo.read_gdts )
-        return( 0 );
+    if( !PmdInfo.read_gdts ) return( 0 );
     segment = acc->mem_addr.segment;
-    if( segment & 0x04 )
-        return( 0 );
-    if( segment == 0 )
-        return( 0 );
-    if( !ver_read( segment ) )
-        return( 0 );
-    if( qnx_segment_info( PROC_PID, PROC_PID, segment, &info ) == -1 )
-        return( 0 );
+    if( segment & 0x04 ) return( 0 );
+    if( segment == 0 ) return( 0 );
+    if( !ver_read( segment ) ) return( 0 );
+    if(qnx_segment_info(PROC_PID,PROC_PID,segment,&info)==-1) return( 0 );
     if( acc->mem_addr.offset >= info.nbytes ) {
         len = 0;
-    } else if( acc->mem_addr.offset + len > info.nbytes ) {
+    } else if( acc->mem_addr.offset+len > info.nbytes ) {
         len = info.nbytes - acc->mem_addr.offset;
     }
-    if( len == 0 )
-        return( 0 );
+    if( len == 0 ) return( 0 );
     _fmemcpy( ret, MK_FP( segment, acc->mem_addr.offset ), len );
     return( len );
 }
@@ -359,11 +353,10 @@ trap_retval ReqRead_mem( void )
                 len = PmdInfo.segs[i].seg_len - acc->mem_addr.offset;
             }
             if( len != 0 ) {
-                lseek( PmdInfo.fd, PmdInfo.segs[i].file_off + acc->mem_addr.offset, SEEK_SET );
+                lseek( PmdInfo.fd, PmdInfo.segs[i].file_off + acc->mem_addr.offset,
+                         SEEK_SET );
                 len = read( PmdInfo.fd, ret, len );
-                if( len == -1 ) {
-                    len = 0;
-                }
+                if( len == -1 ) len = 0;
             }
             return( len );
         }
@@ -425,9 +418,7 @@ static void ReadFPU( struct x86_fpu *r )
     memset( r, 0, sizeof( *r ) );
     if( PmdInfo.loaded ) {
         memcpy( r, PmdInfo.hdr.x87, sizeof( PmdInfo.hdr.x87 ) );
-        if( !PmdInfo.fpu32 ) {
-            FPUExpand( r );
-        }
+        if( !PmdInfo.fpu32 ) FPUExpand( r );
     }
 }
 
@@ -484,10 +475,9 @@ static void ReadSegData()
 
     offset = sizeof( PmdInfo.hdr );
     for( ptr = PmdInfo.segs, i = PmdInfo.hdr.numsegs; i != 0; ++ptr, --i ) {
-        if( lseek( PmdInfo.fd, offset, SEEK_SET ) != offset )
-            return;
-        if( read( PmdInfo.fd, &seg_info, sizeof( seg_info ) ) != sizeof( seg_info ) )
-            return;
+        if( lseek( PmdInfo.fd, offset, SEEK_SET ) != offset ) return;
+        if( read( PmdInfo.fd, &seg_info, sizeof( seg_info ) )
+                 != sizeof( seg_info ) ) return;
         ptr->is_32 = ((seg_info.flags & _PMF_DBBIT) != 0);
         ptr->file_off = offset + sizeof( seg_info );
         ptr->seg_len = seg_info.nbytes;

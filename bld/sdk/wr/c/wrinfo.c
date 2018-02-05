@@ -45,7 +45,7 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-bool WRCopyFileToTemp( WRInfo *info, const char *filename, env_callback get_env )
+bool WRCopyFileToTemp( WRInfo *info, const char *filename )
 {
     if( filename == NULL ) {
         return( false );
@@ -56,7 +56,7 @@ bool WRCopyFileToTemp( WRInfo *info, const char *filename, env_callback get_env 
     }
 
     if( info->tmp_file == NULL ) {
-        info->tmp_file = WRGetTempFileName( NULL, get_env );
+        info->tmp_file = WRGetTempFileName( NULL );
         if( info->tmp_file == NULL ) {
             return( false );
         }
@@ -214,7 +214,7 @@ static bool WRRelinkDir( WResDir dest, WResDir src )
 
 // We really should not reread the file but, alas, time demands
 // something a little less pristine.
-bool WRRelinkInfo( WRInfo *info, env_callback get_env )
+bool WRRelinkInfo( WRInfo *info )
 {
     char        fn_path[_MAX_PATH];
     WRInfo      *tinfo;
@@ -230,11 +230,11 @@ bool WRRelinkInfo( WRInfo *info, env_callback get_env )
         } else {
             strcpy( fn_path, info->save_name );
         }
-        ok = WRCopyFileToTemp( info, fn_path, get_env );
+        ok = WRCopyFileToTemp( info, fn_path );
     }
 
     if( ok ) {
-        tinfo = WRLoadResource( fn_path, info->save_type, get_env );
+        tinfo = WRLoadResource( fn_path, info->save_type );
         ok = (tinfo != NULL);
     }
 

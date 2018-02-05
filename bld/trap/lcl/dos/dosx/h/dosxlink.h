@@ -29,18 +29,6 @@
 ****************************************************************************/
 
 
-extern __segment GetPSP( void );
-#pragma aux GetPSP = \
-    "mov ah,51h" \
-    "int 21h" \
-    value [bx] modify [ax]
-
-extern void SetPSP( __segment );
-#pragma aux SetPSP = \
-    "mov ah,50h" \
-    "int 21h" \
-    parm [bx] modify [ax]
-
 #ifndef SERVER
 extern void         BackToProtMode( void );
 extern void         __far BackFromProtMode( void );

@@ -498,7 +498,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass |= SUICIDAL;
             }
             if( sym.mods & FLAG_NORETURN ) {
-                cclass |= NORETURN;
+                cclass |= SUICIDAL;
             }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
             if( sym.mods & FLAG_FARSS ) {

@@ -250,7 +250,7 @@ void WRAPI WRFreeTempFileName( char *name )
     MemFree( name );
 }
 
-char * WRAPI WRGetTempFileName( const char *ext, env_callback get_env )
+char * WRAPI WRGetTempFileName( const char *ext )
 {
     char        *buf;
     char        tname[L_tmpnam];
@@ -262,8 +262,8 @@ char * WRAPI WRGetTempFileName( const char *ext, env_callback get_env )
     char        fn_name[_MAX_FNAME];
     char        fn_ext[_MAX_EXT];
 
-    if( (dir = get_env( "TMP" )) != NULL || (dir = get_env( "TEMP" )) != NULL ||
-        (dir = get_env( "TMPDIR" )) != NULL || (dir = get_env( "TEMPDIR" )) != NULL ) {
+    if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
+        (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {
         strncpy( fn_path, dir, _MAX_PATH );
         fn_path[_MAX_PATH] = '\0';
     } else {

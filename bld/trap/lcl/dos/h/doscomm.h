@@ -30,11 +30,5 @@
 ****************************************************************************/
 
 
-
-#ifdef DOS4G
 extern void     SetDbgTask( void );
 extern int      SetUsrTask( void );
-#else
-extern void     __near SetDbgTask( void );
-extern int      __near SetUsrTask( void );
-#endif

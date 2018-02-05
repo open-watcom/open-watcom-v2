@@ -52,11 +52,11 @@ typedef struct WRSaveIntoData {
 /****************************************************************************/
 WRDLLENTRY extern void             WRAPI WRInit( void );
 WRDLLENTRY extern void             WRAPI WRFini( void );
-WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType, env_callback get_env );
-WRDLLENTRY extern bool             WRAPI WRUpdateTmp( WRInfo *info, env_callback get_env );
-WRDLLENTRY extern bool             WRAPI WRSaveResource( WRInfo *, bool, env_callback get_env );
-WRDLLENTRY extern bool             WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData *, env_callback get_env );
-WRDLLENTRY extern bool             WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, bool *, env_callback get_env );
+WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType );
+WRDLLENTRY extern bool             WRAPI WRUpdateTmp( WRInfo *info );
+WRDLLENTRY extern bool             WRAPI WRSaveResource( WRInfo *, bool );
+WRDLLENTRY extern bool             WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData * );
+WRDLLENTRY extern bool             WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, bool * );
 WRDLLENTRY extern bool             WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name, WResLangType *lang, void *data );
 WRDLLENTRY extern WResLangNode *   WRAPI WRFindLangNode( WResDir dir, WResID *type, WResID *name, WResLangType *lang );
 

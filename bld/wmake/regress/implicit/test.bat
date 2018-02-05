@@ -16,9 +16,6 @@ if errorlevel 1 goto tst2err
     echo # Implicit Rules Test successful
     del err1.out
     del imp02.out
-    del ap?.obj
-    del ap?.exe
-    del app.lnk
     goto test2
 :tst2err
     echo ## IMPLICIT RULES TEST 1 ## >> %2
@@ -84,7 +81,7 @@ echo # IMPLICIT RULES TEST 2D
 echo # ---------------------------
 if exist imp02d1.out del imp02d1.out
 if exist imp02d2.out del imp02d2.out
-if exist hello*.* del hello*.*
+del hello.obj
 %1 -f imp02d -h > imp02d1.out
 sed "s:of .*[\\/]:of :" imp02d1.out > imp02d2.out
 diff imp02d.chk imp02d2.out
@@ -92,7 +89,6 @@ if errorlevel 1 goto err2d
     echo # Implicit Rules Test successful
     del imp02d1.out
     del imp02d2.out
-    del hello*.*
     goto test3
 :err2d
     echo ## IMPLICIT RULES TEST 2D ## >> %2
@@ -101,6 +97,9 @@ if errorlevel 1 goto err2d
 :test3
 goto done
 :done
+    :: hello.* hello?.* uses OW and Linux rm compatible wildcards. hello* no go
+    del *.obj app.lnk app.exe hello.* hello?.*
+
 goto end
 :usage
 echo usage: %0 prgname errorfile

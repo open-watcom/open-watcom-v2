@@ -41,6 +41,30 @@ assume cs:DGROUP
 
 _text segment byte public 'code'
 
+public          GetPSP_
+GetPSP_         proc    near
+                push    bx                      ; save regs
+                pushf                           ; save flags
+                mov     ah,51H                  ; get PSP request
+                int     21H                     ; do the call
+                mov     ax,bx                   ; put in AX
+                popf                            ; restore flags
+                pop     bx                      ; restore regs
+                ret                             ; return
+GetPSP_         endp
+
+public          SetPSP_
+SetPSP_         proc    near
+                push    BX              ; save BX
+                pushf                   ; save flags
+                mov     BX,AX           ; set PSP to set to
+                mov     AH,50H          ; set PSP request (internal DOS call)
+                int     21H             ; do the call
+                popf                    ; restore flags
+                pop     BX              ; restore BX
+                ret                     ; return
+SetPSP_         endp
+
 public          SaveVectors_
 SaveVectors_    proc    near
                 push    ds              ; save registers
@@ -87,8 +111,22 @@ RestoreVectors_ proc    near
                 ret                     ; return to caller
 RestoreVectors_ endp
 
-                public  "C", DebugPSP
 DebugPSP        dw  ?
+
+public          DbgPSP_
+DbgPSP_         proc    near
+                mov     ax,cs:DebugPSP
+                ret
+DbgPSP_         endp
+
+public          InitPSP_
+InitPSP_        proc    near
+                call    GetPSP_
+                mov     cs:DebugPSP,ax
+                ret
+InitPSP_        endp
+
+
 
                 public  _fork_                  ; spawn off a subprocess
 _fork_          proc    near                    ; ...

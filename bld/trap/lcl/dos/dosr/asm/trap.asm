@@ -53,8 +53,8 @@ _TEXT           segment byte public 'CODE'
                 extrn   TraceRtn                :word
                 extrn   TrapType                :byte
 
-                extrn   "C", FPUExpand          :proc
-                extrn   "C", FPUContract        :proc
+                extrn   "C", FPUExpand          :near
+                extrn   "C", FPUContract        :near
 
                 ; these macros assume ES is pointing at the interrupt vector
                 ; segment and that AX and BX are available for use
@@ -142,10 +142,8 @@ WATCH_DEPTH     equ     6+2+2   ; additional stack in watch point rtn
 _SegmentChain   dw      ?
 OurSP           dw      ?
 OurSS           dw      ?
-        public "C", DebugPSP
 DebugPSP        dw      ?
 CurrPSP         dw      ?
-        public "C", TaskPSP
 TaskPSP         dw      0
 
 
@@ -213,25 +211,24 @@ InitVectors_    proc    near
                 mov     CS:SaveBusyWait+2,ax    ; ...
 
 
-                mov     AH,51H                  ; get the current PSP
-                DbgDOSCall                      ; do the internal DOS call
-                mov     CS:DebugPSP,BX          ; and save it away
+                call    GetPSP          ; get debugger PSP
+                mov     CS:DebugPSP,AX  ; and save it away
 
                 call    near ptr ClrIntVecs_
 
-                mov     AH,34H                  ; get InDos flag
-                int     21H                     ; ...
-                mov     word ptr CS:InDos+0,BX  ; save flag pointer away
-                mov     word ptr CS:InDos+2,ES  ; ...
+                mov     AH,34H          ; get InDos flag
+                int     21H             ; ...
+                mov     word ptr CS:InDos+0,BX; save flag pointer away
+                mov     word ptr CS:InDos+2,ES; ...
 
-                mov     AX,3300H                ; request Ctrl/Brk checking status
+                mov     AX,3300H        ; request Ctrl/Brk checking status
                 int     21H
                 mov     CS:BrkStatus,DL
-                mov     AX,3301H                ; set to check for all DOS calls
+                mov     AX,3301H        ; set to check for all DOS calls
                 mov     DL,1
                 int     21H
 
-                pop     bx                      ; restore registers
+                pop     bx              ; restore registers
                 pop     cx
                 pop     dx
                 pop     di
@@ -254,7 +251,6 @@ RunProg_        proc    near
                 mov     CS:OurSS,SS     ; save SS
                 mov     CS:OurSP,SP     ; save SP
                 jmp     ExitDebugger    ; run program
-
 public EnterDebugger
 EnterDebugger:  cli                     ; interrupts off
                 mov     SS,OurSS        ; restore stack segment
@@ -377,9 +373,8 @@ ClrIntVecs_     proc    near
                 SwapIntr 28H,SaveBusyWait
                 sti
 
-                mov     AH,51H                  ; get the current PSP
-                DbgDOSCall                      ; do the internal DOS call
-                mov     CS:CurrPSP,BX
+                call    GetPSP
+                mov     CS:CurrPSP,AX
 
                 pop     AX
                 pop     BX
@@ -397,29 +392,29 @@ NullHandler:    iret
 
 
 TimerHandler:
-                pushf                           ; call old handler
-                call    dword ptr TimerIntVec   ; ...
-                cmp     byte ptr CS:UsrInt,0    ; check for requested interrupt
-                je      NullHandler             ; quit if no interrupt requested
-                push    ds                      ; save DS
-                push    bx                      ; save BX
-                lds     bx, CS:InDos            ; get InDos pointer
-                cmp     byte ptr [bx],0         ; check if InDos is non-zero
-                pop     bx                      ; restore BX
-                pop     ds                      ; restore DS
-                jne     NullHandler             ; quit if can't interrupt right now
+                pushf                   ; call old handler
+                call    dword ptr TimerIntVec; ...
+                cmp     byte ptr CS:UsrInt,0; check for requested interrupt
+                je      NullHandler     ; quit if no interrupt requested
+                push    ds              ; save DS
+                push    bx              ; save BX
+                lds     bx, CS:InDos    ; get InDos pointer
+                cmp     byte ptr [bx],0 ; check if InDos is non-zero
+                pop     bx              ; restore BX
+                pop     ds              ; restore DS
+                jne     NullHandler     ; quit if can't interrupt right now
 DoIntTask:      mov     byte ptr CS:TrapType,TRAP_USER  ; user interrupt request
                 mov     byte ptr UsrInt,0       ; clear pending request
                 jmp     DebugTask
 
 
 SysServHandler:
-                cmp     AH,85H                  ; is it a SysReq key press?
-                je      UsrIntHandler           ; if so then handle the interrupt
-                jmp     dword ptr SysServVec    ; jump to old hander
+                cmp     AH,85H          ; is it a SysReq key press?
+                je      UsrIntHandler   ; if so then handle the interrupt
+                jmp     dword ptr SysServVec ; jump to old hander
 
 
-UsrIntHandler:  mov     CS:UsrInt, -1           ; request user interrupt
+UsrIntHandler:  mov     CS:UsrInt, -1   ; request user interrupt
                 iret
 
 ChkReturn:      mov     SS,CS:SaveIntSS
@@ -547,16 +542,13 @@ OSHandler:
                 xchg    AX,2[BP]
                 pop     BP
 
-OSJmp:          jmp     dword ptr OSIntVec      ; jump to old handler
+OSJmp:          jmp     dword ptr OSIntVec  ; jump to old handler
 
 
 ProgTerminate:
                 push    AX                      ; save AX
-                push    BX                      ; save BX
-                mov     AH,51H                  ; get the current PSP
-                DbgDOSCall                      ; do the internal DOS call
-                cmp     BX,CS:TaskPSP           ; is it the debugged task?
-                pop     BX                      ; restore BX
+                call    GetPSP                  ; get the current PSP
+                cmp     AX,CS:TaskPSP           ; is it the debugged task?
                 pop     AX                      ; restore AX
                 jne     OSJmp                   ; let DOS see it if another task
 terminate:      push    BP                      ; save BP
@@ -618,15 +610,14 @@ EndUser_        proc    near
 clearatask:
                 mov     SS,CS:OurSS             ; get our stack back
                 mov     SP,CS:OurSP             ; . . .
-                mov     AH,51H                  ; get the current PSP
-                DbgDOSCall                      ; do the internal DOS call
-                cmp     BX,CS:DebugPSP          ; is it the debugger?
+                call    GetPSP                  ; get current PSP
+                cmp     AX,CS:DebugPSP          ; is it the debugger?
                 je      allcleared              ; quit loop if so
-                mov     DS,BX                   ; get access to PSP
+                mov     DS,AX                   ; get access to PSP
                 mov     DS:0AH,offset clearatask; set terminate offset
                 mov     DS:0CH,CS               ; set terminate segment
                 cli                             ; interrupts off
-                mov     SS,BX                   ; set up a safe stack
+                mov     SS,AX                   ; set up a safe stack
                 mov     SP,100H                 ; . . .
                 sti                             ; interrupts on
                 mov     AX,4C00H                ; terminate the task
@@ -652,27 +643,24 @@ public          DOSLoadProg_
 DOSLoadProg_    proc    near
                 push    DS
                 push    ES
-                push    BX
 
-                mov     CS:TaskPSP,0        ; assume we don't get a task
-                mov     ES,CX               ; get parmblock in ES:BX
-                mov     DS,DX               ; get file name in DS:DX
-                mov     DX,AX               ; . . .
-                mov     AX,4B01H            ; load program, maintain control
-                int     21H                 ; (internal DOS call)
+                mov     CS:TaskPSP,0    ; assume we don't get a task
+                mov     ES,CX           ; get parmblock in ES:BX
+                mov     DS,DX           ; get file name in DS:DX
+                mov     DX,AX           ; . . .
+                mov     AX,4B01H        ; load program, maintain control
+                int     21H             ; (internal DOS call)
 
-                sbb     DX,DX               ; set DX based on carry
+                sbb     DX,DX           ; set DX based on carry
 
-                jne     fini                ; if not equal then we have no task
-                mov     AH,51H              ; get the current PSP
-                DbgDOSCall                  ; do the internal DOS call
-                mov     CS:TaskPSP,BX       ; save task PSP address
-                mov     DS,BX               ; get access to new task
-                                            ; set new terminate address
-                mov     word ptr DS:0AH,offset debugprogend
-                mov     DS:0CH,CS
-                mov     AH,25H              ; set up vectors
-                mov     AL,23H              ; set Ctrl/C vector
+                jne     fini            ; if not equal then we have no task
+                call    GetPSP          ; get current PSP
+                mov     CS:TaskPSP,AX   ; save task PSP address
+                mov     DS,AX           ; get access to new task
+                mov     word ptr DS:0AH,offset debugprogend;set new terminate
+                mov     DS:0CH,CS                          ; address
+                mov     AH,25H          ; set up vectors
+                mov     AL,23H          ; set Ctrl/C vector
                 mov     DX,offset SetBreak
                 push    CS
                 pop     DS
@@ -684,21 +672,20 @@ DOSLoadProg_    proc    near
 
                 call    ClrIntVecs_
 
-                xor     ax,ax               ; get pointer to interrupt table
+                xor     ax,ax           ; get pointer to interrupt table
                 mov     es,ax
                 SetIntr 08H,TimerHandler
 
-                xor     AX,AX               ; return zero
-                xor     DX,DX               ; . . .
+                xor     AX,AX           ; return zero
+                xor     DX,DX           ; . . .
 fini:
-                pop     BX
                 pop     ES
                 pop     DS
                 ret
 DOSLoadProg_    endp
 
 debugprogend:
-                mov     CS:TaskPSP,0        ; don't have a task anymore
+                mov     CS:TaskPSP,0            ; don't have a task anymore
                 mov     byte ptr CS:TrapType,TRAP_TERMINATE ; program terminated
                 jmp     DebugTask
 
@@ -708,6 +695,8 @@ SetDbgTask_     proc    near
                 push    BX              ; save BX
                 mov     BX,CS:DebugPSP  ; tell DOS we're the debugger
                 jmp     short SetPSP
+SetDbgTask_     endp
+
 
 public          SetUsrTask_
 SetUsrTask_     proc    near
@@ -723,7 +712,32 @@ SetPSP:
                 pop     BX              ; restore BX
                 ret                     ; return
 SetUsrTask_     endp
-SetDbgTask_     endp
+
+
+GetPSP          proc    near
+                pushf                   ; save flags
+                push    BX              ; save BX
+                mov     AH,51H          ; get PSP request (internal DOS call)
+                DbgDOSCall              ; do the call
+                mov     AX,BX           ; put PSP in proper return register
+                pop     BX              ; restore BX
+                popf                    ; restore flags
+                ret                     ; return
+GetPSP          endp
+
+
+public          DOSTaskPSP_
+DOSTaskPSP_     proc    near
+                mov     AX,CS:TaskPSP
+                ret
+DOSTaskPSP_     endp
+
+
+public          DbgPSP_
+DbgPSP_         proc    near
+                mov     AX,CS:DebugPSP
+                ret
+DbgPSP_         endp
 
 
 ; return with carry set if we don't want to watch this interrupt

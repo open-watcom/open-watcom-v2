@@ -66,7 +66,7 @@
 /****************************************************************************/
 static int  WRExecRCPass2( void );
 static int  WRPass2( void );
-static bool WRSaveResourceToEXE( WRInfo *, bool, WRFileType, env_callback get_env );
+static bool WRSaveResourceToEXE( WRInfo *, bool, WRFileType );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -113,7 +113,7 @@ int WRExecRCPass2( void )
     return( rc );
 }
 
-bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup, env_callback get_env )
+bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup )
 {
     bool ok;
 
@@ -131,13 +131,13 @@ bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup, env_callback get_env )
     }
 
     if( ok ) {
-        ok = WRSaveResourceToEXE( info, backup, WR_WIN16W_RES, get_env );
+        ok = WRSaveResourceToEXE( info, backup, WR_WIN16W_RES );
     }
 
     return( ok );
 }
 
-bool WRSaveResourceToWinNTEXE( WRInfo *info, bool backup, env_callback get_env )
+bool WRSaveResourceToWinNTEXE( WRInfo *info, bool backup )
 {
     bool ok;
 
@@ -155,13 +155,13 @@ bool WRSaveResourceToWinNTEXE( WRInfo *info, bool backup, env_callback get_env )
     }
 
     if( ok ) {
-        ok = WRSaveResourceToEXE( info, backup, WR_WINNTW_RES, get_env );
+        ok = WRSaveResourceToEXE( info, backup, WR_WINNTW_RES );
     }
 
     return( ok );
 }
 
-bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype, env_callback get_env )
+bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
 {
     bool        ok;
     char        *tmp_res;
@@ -172,14 +172,14 @@ bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype, env_callb
 
     ok = (info->file_name != NULL);
 
-    ok = (ok && (tmp_res = WRGetTempFileName( "res", get_env )) != NULL);
+    ok = (ok && (tmp_res = WRGetTempFileName( "res" )) != NULL);
 
     if( ok ) {
         sname = info->save_name;
         stype = info->save_type;
         info->save_name = tmp_res;
         info->save_type = ttype;
-        ok = WRSaveResource( info, false, get_env );
+        ok = WRSaveResource( info, false );
     }
 
     if( ok ) {

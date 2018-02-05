@@ -56,10 +56,7 @@
 #include "dosovl.h"
 #include "dbgpsp.h"
 #include "dosfile.h"
-#include "trap.h"
 
-
-#define CMD_OFFSET      0x80
 
 typedef enum {
     EXE_UNKNOWN,
@@ -109,6 +106,8 @@ typedef struct watch_point {
 /********************************************************************/
 #include "poppck.h"
 
+#define CMD_OFFSET      0x80
+
 typedef enum {
     TRAP_SKIP = -1,
     TRAP_NONE,
@@ -138,17 +137,28 @@ extern unsigned short MyFlags( void );
        " pop ax "     \
     value [ax];
 
-/* C prototype for assembly function in trap.asm */
-extern tiny_ret_t       __near DOSLoadProg( char __far *, pblock __far * );
-
+extern tiny_ret_t       DOSLoadProg(char __far *, pblock __far *);
+extern addr_seg         DOSTaskPSP(void);
+extern void             EndUser(void);
+extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
 extern void             SetWatch386( unsigned, watch_point __far * );
 extern void             SetWatchPnt(unsigned, watch_point __far *);
 extern void             SetSingleStep(void);
 extern void             SetSingle386(void);
+extern void             InitVectors(void);
+extern void             FiniVectors(void);
 extern void             TrapTypeInit(void);
+extern void             ClrIntVecs(void);
+extern void             SetIntVecs(void);
 extern void             DoRemInt(trap_cpu_regs *, unsigned);
+extern char             Have87Emu(void);
+extern void             Null87Emu( void );
+extern void             Read87EmuState( void __far * );
+extern void             Write87EmuState( void __far * );
 extern unsigned         StringToFullPath( char * );
 extern int              __far NoOvlsHdlr( int, void * );
+
+extern word             __based(__segname("_CODE")) SegmentChain;
 
 trap_cpu_regs           TaskRegs;
 char                    DOS_major;
@@ -237,9 +247,9 @@ trap_retval ReqGet_sys_config( void )
 
 trap_retval ReqMap_addr( void )
 {
-    __segment       seg;
+    word            seg;
     int             count;
-    __segment       __far *segment;
+    word            __far *segment;
     map_addr_req    *acc;
     map_addr_ret    *ret;
 
@@ -259,7 +269,7 @@ trap_retval ReqMap_addr( void )
         }
         ret->out_addr.segment = FP_SEG( segment ) + 1;
     } else {
-        ret->out_addr.segment = TaskPSP + seg;
+        ret->out_addr.segment = DOSTaskPSP() + seg;
         if( (Flags & F_Com_file) == 0 ) {
             ret->out_addr.segment += 0x10;
         }
@@ -471,7 +481,7 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
 
 trap_retval ReqProg_load( void )
 {
-    __segment       psp;
+    addr_seg        psp;
     pblock          parmblock;
     tiny_ret_t      rc;
     char            *parm;
@@ -501,7 +511,7 @@ trap_retval ReqProg_load( void )
     TaskRegs.EFL = MyFlags() & ~USR_FLAGS;
     /* build a DOS command line parameter in our PSP command area */
     Flags &= ~F_BoundApp;
-    psp = DebugPSP;
+    psp = DbgPSP();
     parm = name = GetInPtr( sizeof( prog_load_req ) );
     if( TINY_ERROR( FindProgFile( name, exe_name, DosExtList ) ) ) {
         exe_name[0] = '\0';
@@ -583,7 +593,7 @@ trap_retval ReqProg_load( void )
         TaskRegs.ESP = parmblock.startsssp.offset + 2;
         TaskRegs.CS = parmblock.startcsip.segment;
         TaskRegs.EIP = parmblock.startcsip.offset;
-        psp = TaskPSP;
+        psp = DOSTaskPSP();
     } else {
         psp = TinyAllocBlock( TinyAllocBlock( 0xffff ) );
         TinyFreeBlock( psp );
@@ -633,7 +643,7 @@ trap_retval ReqProg_kill( void )
 out( "in AccKillProg\r\n" );
     ret = GetOutPtr( 0 );
     RedirectFini();
-    if( TaskPSP ) {
+    if( DOSTaskPSP() != NULL ) {
 out( "enduser\r\n" );
         EndUser();
 out( "done enduser\r\n" );

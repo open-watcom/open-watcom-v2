@@ -190,7 +190,7 @@ struct FsExcRec;
 
     #define FS_UNWIND_GLOBAL( a, b, c )                             \
                 RtlUnwind( (PCONTEXT)(a)                            \
-                         , (void *)(b)                              \
+                         , (void*)(b)                               \
                          , (PEXCEPTION_RECORD)(c)                   \
                          , 0 )
 
@@ -203,22 +203,22 @@ struct FsExcRec;
     #define EXC_TYPE_UNWIND_EXIT   4    // can't find def'n
     #define EXC_TYPE_UNWIND_NORMAL 2    // can't find def'n
 
-    #define GetCtxReg( ctx, reg ) (*(void **)&((ctx)->Int##reg))
+    #define GetCtxReg( ctx, reg ) (*(void**)&((ctx)->Int##reg))
 
-    typedef unsigned        RISC_INS;           // risc instruction
-    #define RISC_INS_SIZE   sizeof(RISC_INS)    // size of risc instruction
-    #define RISC_MOV_SP_FP  0x47FE040F          // mov sp,fp
-    #define RISC_REG_SIZE   8                   // size of risc register
+    typedef unsigned RISC_INS;              // risc instruction
+    #define RISC_INS_SIZE sizeof(RISC_INS)  // size of risc instruction
+    #define RISC_MOV_SP_FP 0x47FE040F       // mov sp,fp
+    #define RISC_REG_SIZE 8                 // size of risc register
 
-    struct PD_DISP_CTX {            // Dispatcher context
-        void         *pc;           // - program ctr.
-        PData        *pdata;        // - PDATA ptr
-        void         *fp_entry;     // - fp, on routine entry
-        PCONTEXT     ctx;           // - context registers
-        void         *sp_actual;    // - sp, actual
-        void         *fp_actual;    // - fp, actual
-        void         *sp_entry;     // - ?guess?
-        void         *fp_alternate; // - ?guess?
+    struct PD_DISP_CTX {        // Dispatcher context
+        void*    pc;            // - program ctr.
+        PData*   pdata;         // - PDATA ptr
+        void*    fp_entry;      // - fp, on routine entry
+        PCONTEXT ctx;           // - context registers
+        void*    sp_actual;     // - sp, actual
+        void*    fp_actual;     // - fp, actual
+        void*    sp_entry;      // - ?guess?
+        void*    fp_alternate;  // - ?guess?
     };
 
     #define ThreadLookup CPPLIB( pd_lookup )
@@ -264,12 +264,12 @@ struct FsExcRec {               // Exception record
 
 #define EXC_TYPE_UNWINDING      ( EXC_TYPE_UNWIND_NORMAL | EXC_TYPE_UNWIND_EXIT )
 
-#define EXCREC_PARM_COUNT       ( sizeof( void * ) * 2 / sizeof( unsigned ) )
-#define EXCREC_CODE_WATCOM      0x25671234
-#define EXCREC_CODE_SETJMP      0x25670123
-#define EXCREC_CODE             ( 0xC0000000 | EXCREC_CODE_WATCOM )
-#define EXCREC_SJCD             ( 0xC0000000 | EXCREC_CODE_SETJMP )
-#define EXCREC_CODE_MASK        0x3fffffff
+#define EXCREC_PARM_COUNT ( sizeof( void* ) * 2 / sizeof( unsigned ) )
+#define EXCREC_CODE_WATCOM 0x25671234
+#define EXCREC_CODE_SETJMP 0x25670123
+#define EXCREC_CODE ( 0xC0000000 | EXCREC_CODE_WATCOM )
+#define EXCREC_SJCD ( 0xC0000000 | EXCREC_CODE_SETJMP )
+#define EXCREC_CODE_MASK 0x3fffffff
 
 struct FsCtxRec {               // Context record
     uint_32 not_used;
@@ -277,29 +277,41 @@ struct FsCtxRec {               // Context record
 
 typedef FSREGAPI unsigned FS_HANDLER( FsExcRec *, RW_DTREG *, FsCtxRec *, unsigned );
 
-extern "C" FS_HANDLER CPPLIB( fs_handler );
-#if 0
 extern "C"
-FSREGAPI
-unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
-    ( FsExcRec  *rec_exc        // - exception record
-    , RW_DTREG  *rw             // - current R/W block
-    , FsCtxRec  *rec_ctx        // - context record
-    , unsigned  context         // - dispatch context
+FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
+    ( FsExcRec* rec_exc         // - exception record
+    , RW_DTREG* rw              // - current R/W block
+    , FsCtxRec* rec_ctx         // - context record
+    , unsigned context          // - dispatch context
     );
-#endif
+
 
 #if defined( FS_REGISTRATION )  // FS definitions
 
-    extern RW_DTREG     *FsLink( RW_DTREG* blk );   // link into fs stack
-    extern void         FsPop();                    // pop fs stack
-    extern RW_DTREG     *FsPush( RW_DTREG* blk );   // push on fs stack
-    extern RW_DTREG     *FsTop();                   // top of fs stack
+    extern RW_DTREG* FsLink( RW_DTREG* blk );   // link into fs stack
+    extern void      FsPop();                   // pop fs stack
+    extern RW_DTREG* FsPush( RW_DTREG* blk );   // push on fs stack
+    extern RW_DTREG* FsTop();                   // top of fs stack
 
-    #pragma aux FsLink = "mov fs:0,eax" parm [eax]
-    #pragma aux FsPop  = "mov eax,fs:0" "mov eax,[eax]" "mov fs:0,eax" modify [eax]
-    #pragma aux FsPush = "push fs:0" "pop [eax]" "mov fs:0,eax" parm [eax]
-    #pragma aux FsTop  = "mov eax,fs:0" modify [eax]
+    #pragma aux FsLink      \
+        = "mov  fs:0,eax"   \
+        , parm [eax]
+
+    #pragma aux FsPop       \
+        = "mov eax,fs:0"    \
+        , "mov eax,[eax]"   \
+        , "mov fs:0,eax"    \
+        , modify [eax]
+
+    #pragma aux FsPush      \
+        = "push fs:0"       \
+        , "pop  [eax]"      \
+        , "mov  fs:0,eax"   \
+        , parm [eax]
+
+    #pragma aux FsTop       \
+        = "mov eax,fs:0"    \
+        , modify [eax]
 
 #else
 

@@ -22,7 +22,7 @@ gui_autodepends = .AUTODEPEND
 !include wres.mif
 !include trmem.mif
 
-common_objs = &
+wv_objs = &
    guicreat.obj   &
    guihint.obj    &
    guihook.obj    &
@@ -65,7 +65,7 @@ mem_objs = &
    $(trmem_objs)
 
 
-objs = $(common_objs) $(mem_objs)
+objs = $(wv_objs) $(mem_objs)
 
 libs = $(wpi_lib) $(commonui_lib)
 

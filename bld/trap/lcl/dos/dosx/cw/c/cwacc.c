@@ -50,7 +50,6 @@
 #include "exeos2.h"
 #include "exeflat.h"
 #include "cpuglob.h"
-#include "cwintr.h"
 #include "cwacc.h"
 
 
@@ -194,7 +193,7 @@ extern void free( void * );
     "int   31h" \
     parm [esi];
 
-extern __segment GetPSP( void );
+extern unsigned short GetPSP( void );
 #pragma aux GetPSP = \
     "mov  ah,62h" \
     "int  21h" \
@@ -210,8 +209,17 @@ extern int GetExecCount( unsigned_32 * );
     parm [eax] modify [ebx];
 
 extern unsigned     MemoryCheck( unsigned_32, unsigned, unsigned );
+extern unsigned     MemoryRead( unsigned_32, unsigned, void *, unsigned );
+extern unsigned     MemoryWrite( unsigned_32, unsigned, void *, unsigned );
+extern unsigned     Execute( bool );
+extern int          DebugLoad( char *prog_name, char *cmdl );
+extern int          GrabVectors( void );
+extern void         ReleaseVectors( void );
 
-extern int          XVersion;
+extern unsigned_8       Exception;
+extern int              XVersion;
+extern trap_cpu_regs    DebugRegs;
+extern unsigned_16      DebugPSP;
 
 int                 WatchCount = 0;
 bool                FakeBreak = false;

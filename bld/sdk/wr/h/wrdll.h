@@ -49,8 +49,6 @@ typedef void (APIENTRY *HELP_CALLBACK)(void);
 typedef void (WINAPI *HELP_CALLBACK)(void);
 #endif
 
-typedef const char *(*env_callback)( const char * );
-
 #include "wrinfo.h"
 #include "wrmain.h"
 #include "wridfile.h"

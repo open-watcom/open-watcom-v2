@@ -83,17 +83,16 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 
     string_open = false;
     while( (c = *str) != NULLCHAR ) {
-        if( c == DOUBLEQUOTE ) {
-            string_open = !string_open;
-        } else if( c == BACKSLASH ) {
-            c = str[1];
-            if( c == BACKSLASH || c == '"' ) {
+        if( c == BACKSLASH ) {
+            if( string_open && str[1] != NULLCHAR ) {
                 ++str;
             }
+        } else if( c == DOUBLEQUOTE ) {
+            string_open = !string_open;
         } else if( !string_open && chk_sep( c ) ) {
             break;
         }
-        ++str;
+        str++;
     }
 
     return( (char *)str );
@@ -103,7 +102,7 @@ char *FindNextWS( const char *str )
 /***********************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
- */ 
+ */
 {
     return( FindNextSep( str, is_ws ) );
 }
@@ -117,52 +116,65 @@ char *FindNextWSorEqual( const char *str )
     return( FindNextSep( str, is_ws_or_equal ) );
 }
 
-static char *removeQuotes( char *dst, size_t maxlen, const char *src, bool (*chk_sep)( char ) )
-/**********************************************************************************************
+char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
+/************************************************************************
  * Removes doublequote characters from string and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
  * including terminating NUL character.
  */
 {
-    char    *orgdst;
-    bool    string_open;
-    size_t  pos;
-    char    c;
+    char    *orgdst = dst;
+    bool    string_open = false;
+    size_t  pos = 0;
+    char    t;
 
     assert( maxlen );
+
     // leave space for NUL terminator
     maxlen--;
 
-    pos = 0;
-    orgdst = dst;
-    string_open = false;
-    while( pos < maxlen && (c = *src++) != NULLCHAR ) {
-        if( c == DOUBLEQUOTE ) {
-            string_open = !string_open;
-            continue;
-        } else if( c == BACKSLASH ) {
-            if( *src == BACKSLASH || *src == '"' ) {
-                c = *src++;
-            }
-        } else if( !string_open && chk_sep( c ) ) {
+    while( pos < maxlen ) {
+        t = *src++;
+
+        if( t == NULLCHAR ) {
             break;
         }
-        *dst++ = c;
-        pos++;
+
+        if( t == BACKSLASH ) {
+            t = *src++;
+
+            if( t == DOUBLEQUOTE ) {
+                *dst++ = DOUBLEQUOTE;
+                pos++;
+            } else {
+                *dst++ = BACKSLASH;
+                pos++;
+
+                if( pos < maxlen ) {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        } else {
+            if( t == DOUBLEQUOTE ) {
+                string_open = !string_open;
+            } else {
+                if( string_open ) {
+                    *dst++ = t;
+                    pos++;
+                } else if( cisws( t ) ) {
+                    break;
+                } else {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        }
     }
+
     *dst = NULLCHAR;
 
     return( orgdst );
-}
-
-char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
-/********************************************************************
- * Removes doublequote characters from string and copies other content
- * from src to dst. Only maxlen number of characters are copied to dst
- * including terminating NUL character.
- */
-{
-    return( removeQuotes( dst, maxlen, src, is_ws ) );
 }
 
 char *FixName( char *name )
