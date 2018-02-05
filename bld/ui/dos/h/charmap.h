@@ -30,17 +30,6 @@
 ****************************************************************************/
 
 
-#ifndef poke
-
-#define _poke(a,b,c)     (*((int __far *)FIRSTMEG(a,b)) = (int)(c))
-#define _pokeb(a,b,c)    (*((char __far *)FIRSTMEG(a,b)) = (char)(c))
-#define _peek(a,b)       (*((int __far *)FIRSTMEG(a,b)))
-#define _peekb(a,b)      (*((char __far *)FIRSTMEG(a,b)))
-
-#endif
-
-#define _POINTS _peekb( BIOS_PAGE, 0x85 )
-
 extern  void            SetSequencer( void );
 extern  void            ResetSequencer( void );
 extern  void            SetWriteMap( void );

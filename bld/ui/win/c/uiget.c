@@ -32,8 +32,8 @@
 
 
 #include <dos.h>
-#include "biosui.h"
 #include "uidef.h"
+#include "biosui.h"
 #include "uiforce.h"
 
 
@@ -43,7 +43,7 @@ MOUSETIME UIAPI uiclock( void )
  * used for mouse & timer delays
  */
 {
-    return( *(unsigned long __far *)FIRSTMEG( BIOS_PAGE, BIOS_SYSTEM_CLOCK ) );
+    return( BIOS_data( BIOS_SYSTEM_CLOCK, unsigned long ) );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )

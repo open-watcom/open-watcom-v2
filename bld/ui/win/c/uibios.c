@@ -36,6 +36,11 @@
 #include "uidos.h"
 #include "biosui.h"
 
+
+extern char     _B000h[];
+extern char     _B800h[];
+extern unsigned VIDPort;
+
 static MONITOR ui_data = {
     25,
     80,
@@ -47,10 +52,6 @@ static MONITOR ui_data = {
     4,
     1
 };
-
-extern char  _B000h[],_B800h[];
-extern unsigned int  VIDPort;
-
 
 void UIAPI win_uisetmono( void )
 {

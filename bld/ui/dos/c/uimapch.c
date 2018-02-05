@@ -56,17 +56,18 @@ static unsigned char MappingData[][16] = {
 
 static void MapCharacter( unsigned char ch, unsigned char data[16] )
 {
-    unsigned short              s,  points;
+    unsigned short              s;
+    unsigned short              points;
     int                         j;
     unsigned char               temp;
 
-    points = _POINTS;
+    points = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );
 
     s = ch * 32;
 
     for( j = 0; j < points; j++ ) {
-        temp = _peekb( 0xA000, s );
-        _pokeb( 0xA000, s++, data[j] );
+        temp = VIDEO_byte( 0xA000, s );
+        VIDEO_byte( 0xA000, s++ ) = data[j];
         data[j] = temp;
     }
 }

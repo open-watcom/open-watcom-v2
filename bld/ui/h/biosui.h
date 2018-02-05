@@ -58,13 +58,12 @@
 #define BIOS_VIDEO      0x10
 #define BIOS_MOUSE      0x33
 
-#define BIOS_PAGE               0x40
-#define BIOS_CURR_VIDEO_MODE    0x49
-#define BIOS_SCREEN_OFFSET      0x4e
-#define BIOS_SYSTEM_CLOCK       0x6c
-#define BIOS_POINT_HEIGHT       0x85
+#define BIOS_CURR_VIDEO_MODE    0x49    /* byte */
+#define BIOS_SCREEN_OFFSET      0x4e    /* word */
+#define BIOS_SYSTEM_CLOCK       0x6c    /* dword */
+#define BIOS_POINT_HEIGHT       0x85    /* byte */
 
-#define BIOS_data( p, t )   *(t __far *)FIRSTMEG( BIOS_PAGE, p )
+#define BIOS_data( p, t )   *(t __far *)FIRSTMEG( 0x0040, p )
 #define VIDEO_byte( s, p )  *(unsigned char __far *)FIRSTMEG( s, p )
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
@@ -163,14 +162,14 @@ extern unsigned short BIOSGetCurTyp( unsigned char page );
         _INT_10             \
     parm [bh] value [cx] modify [ax dx];
 
-extern unsigned short BIOSGetCharAttr( unsigned char page );
-#pragma aux  BIOSGetCharAttr = \
+extern PIXEL BIOSGetCharPixel( unsigned char page );
+#pragma aux  BIOSGetCharPixel = \
         "mov    ah,8"           \
         _INT_10                 \
     parm [bh] value [ax];
 
-extern void BIOSSetCharAttr( unsigned short char_attr, unsigned char page );
-#pragma aux BIOSSetCharAttr = \
+extern void BIOSSetCharPixel( PIXEL char_attr, unsigned char page );
+#pragma aux BIOSSetCharPixel = \
         "mov    bl,ah"          \
         "mov    cx,1"           \
         "mov    ah,9"           \
