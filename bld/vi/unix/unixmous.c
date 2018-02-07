@@ -34,18 +34,21 @@
 #include "stdui.h"
 #include <term.h>
 
+
+#define _ESC	"\033"
+
 extern FILE *UIConFile;
 #define putp( str )   { tputs( str, 1, con_putchar ); }
+
+static int      lastStatus;
+static windim   lastRow;
+static windim   lastCol;
 
 static int con_putchar( int ch )
 {
     fputc( ch, UIConFile );
     return( 0 );
 }
-
-static int      lastStatus;
-static windim   lastRow;
-static windim   lastCol;
 
 /*
  * SetMouseSpeed - set mouse movement speed
@@ -91,11 +94,11 @@ void InitMouse( void )
     if( key_mouse ) {
 #if 0 /* doesn't seem to work here, leave it for now (bart) */
         /* save current xterm mouse state */
-        putp( "\033[?1001s" );
+        putp( _ESC "[?1001s" );
 #endif
         initmouse( INIT_MOUSE );
         /* set xterm into full mouse tracking mode */
-        putp( "\033[?1003h" );
+        putp( _ESC "[?1003h" );
     }
 
 } /* InitMouse */
@@ -107,12 +110,13 @@ void FiniMouse( void )
 {
     if( key_mouse ) {
         /* disable mouse tracking */
-        putp( "\033[?1003l" );
+        putp( _ESC "[?1003l" );
         finimouse();
 #if 0 /* doesn't seem to work here, leave it for now */
         /* restore old xterm mouse state */
-        putp( "\033[?1001r" );
+        putp( _ESC "[?1001r" );
 #endif
     }
 
 } /* FiniMouse */
+
