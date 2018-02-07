@@ -105,7 +105,7 @@ static void StopTimer( void )
 
 #elif defined( __RDOS__ )
 
-extern void uitimer( void (*proc)( void ), int ms );
+#include "guitimer.h"
 
 void GUITimer( void )
 {
@@ -115,12 +115,12 @@ void GUITimer( void )
 
 static void StartTimer( void )
 {
-    uitimer( GUITimer, TIMER_MS );
+    GUIStartTimer( NULL, 0, TIMER_MS );
 }
 
 static void StopTimer( void )
 {
-    uitimer( NULL, 0 );
+    GUIStopTimer( NULL, 0 );
 }
 
 #else

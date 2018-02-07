@@ -79,6 +79,7 @@ wv_sysobjs = &
           guirmenu.obj &
           guiclen.obj  &
           guidrain.obj &
+          guitimer.obj &
 
 help_objext=obj
 

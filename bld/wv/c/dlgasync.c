@@ -56,7 +56,7 @@ void AsyncNotify( void )
         dlg.cond = PollAsync();
         if( (dlg.cond & COND_RUNNING) == 0 ) {
 #ifdef __RDOS__
-            uisendescape();
+            rdos_uisendescape();
 #else
             GUICloseDialog( AsyncWnd );
             AsyncWnd = NULL;

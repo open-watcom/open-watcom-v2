@@ -513,7 +513,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
             close = true;
             break;
         default :
-            if( isalpha( ui_ev ) ) {
+            if( ui_ev < 0x100 && isalpha( ui_ev ) ) {
                 newevent = charselect( ui_ev, list );
             } else {
                 newevent = ui_ev;

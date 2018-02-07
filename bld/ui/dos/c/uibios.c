@@ -190,7 +190,7 @@ int UIAPI uiisdbcs( void )
     return( Pairs[0].start_range != 0 );
 }
 
-int UIAPI uicharlen( int ch )
+int UIAPI uicharlen( unsigned char ch )
 {
     dbcs_pair           *p;
 
@@ -396,7 +396,7 @@ void intern finibios( void )
 #ifdef _M_I86
 extern void _desqview_update( LP_PIXEL, unsigned );
 #pragma aux _desqview_update = \
-        "mov  ah,0ffh"      	\
+        "mov  ah,0ffh"          \
         _INT_10                 \
     parm [es di] [cx] modify [ah];
 #endif

@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors.
-*    All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,12 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Interface to GUI timer functions.
+* Description:  GUI library timer callbacks
 *
 ****************************************************************************/
 
 
-#if defined( __NT__ ) || defined( __RDOS__ )
-extern void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec );
-extern void GUIStopTimer( gui_window *wnd, gui_timer_id id );
+#include "guiwind.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "guixutil.h"
+#include "guitimer.h"
+
+
+#if defined( __RDOS__ )
+
+void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec )
+{
+    rdos_uitimer( GUITimer, msec );
+}
+
+void GUIStopTimer( gui_window *wnd, gui_timer_id id )
+{
+    rdos_uitimer( NULL, 0 );
+}
 #endif

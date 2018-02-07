@@ -39,7 +39,7 @@
 
 #define CHAR_VALUE(c)           (char)(unsigned char)(c)
 
-static bool isdelim( char ch )
+static bool isdelim( unsigned char ch )
 {
     if( uicharlen( ch ) == 2 )
         return( false );

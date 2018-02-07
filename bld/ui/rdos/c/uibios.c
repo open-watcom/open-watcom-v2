@@ -113,7 +113,7 @@ int UIAPI uiisdbcs( void )
     return( false );
 }
 
-int UIAPI uicharlen( int ch )
+int UIAPI uicharlen( unsigned char ch )
 {
     return( 1 );
 }

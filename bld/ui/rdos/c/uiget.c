@@ -41,11 +41,11 @@ typedef ui_event (*event_proc)(void);
 
 extern int              WaitHandle;
 
-static uitimer_callback *Callback = NULL;
+static rdos_uitimer_callback *Callback = NULL;
 static int              TimerPeriodMs = 0;
 static bool             HasEscape = false;
 
-void UIAPI uitimer( uitimer_callback *proc, int ms )
+void UIAPI rdos_uitimer( rdos_uitimer_callback *proc, int ms )
 {
     Callback = proc;
     TimerPeriodMs = ms;
@@ -146,7 +146,7 @@ ui_event UIAPI uiget( void )
     return( uieventsource( true ) );
 }
 
-void UIAPI uisendescape( void )
+void UIAPI rdos_uisendescape( void )
 {
     HasEscape = true;
 }
