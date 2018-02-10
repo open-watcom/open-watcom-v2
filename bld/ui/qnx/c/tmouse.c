@@ -66,8 +66,6 @@
 #define XT_INIT             _ESC "[?1000h"
 #define XT_FINI             _ESC "[?1000l"
 
-extern struct _timesel  __far *_SysTime;
-
 static enum {
     M_NONE,
     M_QW,       /* QNX mode QNX Windows/Photon */

@@ -62,8 +62,8 @@ static shiftkey_event   ShiftkeyEvents[] = {
     EV_INSERT_PRESS,    EV_INSERT_RELEASE
 };
 
-unsigned int extern uiextkeyboard( void )
-/***************************************/
+bool UIAPI uiextkeyboard( void )
+/******************************/
 {
     return( ReadReq != NRM_KEY_READ );
 }

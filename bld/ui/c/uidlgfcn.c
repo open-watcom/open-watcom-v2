@@ -34,23 +34,22 @@
 #include "uidialog.h"
 #include "uigchar.h"
 
-extern void uiupdatelistbox( a_list *list );
 
-extern void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
+void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = true;
     v->u.check->val = true;
     uiprintfield( ui_dlg_info, v );
 }
 
-extern void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
+void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = true;
     v->u.check->val = false;
     uiprintfield( ui_dlg_info, v );
 }
 
-extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
+void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 {
     int     newval = v->u.radio->value;
     int     *oldval = &v->u.radio->group->value;
@@ -78,7 +77,7 @@ extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
     uiprintfield( ui_dlg_info, oldradio );
 }
 
-extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
+void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
     unsigned *oldchoice = &v->u.list->choice;
 //    if( *oldchoice == n ) return;
@@ -91,7 +90,7 @@ extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
     uiupdatelistbox( v->u.list );
 }
 
-extern void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
+void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
     ui_dlg_info->dirty = true;
     v->u.combo->list.choice = n;

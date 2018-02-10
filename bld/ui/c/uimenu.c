@@ -49,8 +49,6 @@
 
 static  int                     BetweenTitles = BETWEEN_TITLES;
 
-extern  ui_event                Event;
-
 static  VBARMENU                MenuList;
 static  VBARMENU*               Menu;
 
@@ -82,13 +80,13 @@ static char     *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
 static bool     InitMenuPopupPending = false;
 
-extern void uisetbetweentitles( int between )
+void uisetbetweentitles( int between )
 {
     BetweenTitles = between;
 }
 
-extern char uialtchar( ui_event ui_ev )
-/*************************************/
+char uialtchar( ui_event ui_ev )
+/******************************/
 {
     if( ( ui_ev >= EV_ALT_Q ) && ( ui_ev <= EV_ALT_M ) ) {
         return( alt[ui_ev - EV_ALT_Q] );
@@ -286,7 +284,7 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
 }
 
 
-extern void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
+void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
 {
     register    int             item;
 
@@ -889,7 +887,8 @@ bool UIAPI uimenuson( void )
 unsigned UIAPI uimenuheight( void )
 /**********************************/
 {
-    if( Menu == NULL ) return( 0 );
+    if( Menu == NULL )
+        return( 0 );
     return( MENU_GET_ROW( &Describe[NumMenus - 1] ) + 1 );
 }
 
@@ -970,4 +969,3 @@ int UIAPI uigetcurrentmenu( UIMENUITEM *menu )
     }
     return( Menu->menu != 0 );
 }
-

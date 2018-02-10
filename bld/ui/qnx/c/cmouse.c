@@ -51,7 +51,6 @@
 #define MOUSE_SCALE         8
 
 extern struct _mouse_ctrl   *MouseCtrl;
-extern struct _timesel      __far *_SysTime;
 
 static int                  ScaledRow;
 static int                  ScaledCol;

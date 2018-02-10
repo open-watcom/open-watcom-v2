@@ -747,7 +747,7 @@ static void *backwardtab( a_dialog *ui_dlg_info )
     return( hold );
 }
 
-extern void uidialogexitcurr( a_dialog *ui_dlg_info )
+void uidialogexitcurr( a_dialog *ui_dlg_info )
 {
     /* you must call this function to set ui_dlg_info->dirty or to do  */
     /* blank trimming on an edit control                        */
@@ -756,7 +756,7 @@ extern void uidialogexitcurr( a_dialog *ui_dlg_info )
     }
 }
 
-extern void uidialogsetcurr( a_dialog *ui_dlg_info, VFIELD *curr )
+void uidialogsetcurr( a_dialog *ui_dlg_info, VFIELD *curr )
 {
     VFIELD      *other;
 

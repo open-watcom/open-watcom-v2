@@ -84,6 +84,8 @@ typedef enum {
 #define         UIAPI
 #define         intern          /* near */
 
+extern ui_event Event;
+
 #ifdef __cplusplus
     extern "C" {
 #endif

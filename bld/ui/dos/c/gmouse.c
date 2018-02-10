@@ -44,18 +44,11 @@
 #define DEFCHAR         0xD5
 #define DEFCHAR2        0xD7
 
-#define VidCol          (UIData->width)
-#define VidRow          (UIData->height)
-
-enum Function {
+typedef enum {
     ERASE,
     DRAW,
     SAVE
-};
-
-static char             MouInit( void );
-static void             MouDeinit( void );
-static char             CheckEgaVga( void );
+} plot_func;
 
 static unsigned char    SaveChars[2][2];        /* Overwritten characters  */
 static unsigned char    CharDefs[64];           /* Character definitons.    */
@@ -99,18 +92,18 @@ static unsigned short MouScreenMask[CURSOR_HEIGHT] =  {
 
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
-static void PlotEgaVgaCursor( unsigned action )
+static void PlotEgaVgaCursor( plot_func action )
 {
-    static int  lsavex = 0;
-    static int  lsavey = 0;
-    unsigned    width;
-    unsigned    height;
-    unsigned    disp;
-    unsigned    i;
-    unsigned    j;
-    unsigned    x;
-    unsigned    y;
-    LP_PIXEL    screen;
+    static unsigned lsavex = 0;
+    static unsigned lsavey = 0;
+    unsigned        width;
+    unsigned        height;
+    unsigned        disp;
+    unsigned        i;
+    unsigned        j;
+    unsigned        x;
+    unsigned        y;
+    LP_PIXEL        screen;
 
     switch( action ) {
     case ERASE :                        /* Erase grid, put save info    */
@@ -127,19 +120,18 @@ static void PlotEgaVgaCursor( unsigned action )
         break;
     }
 
-    width = VidCol - x;
+    width = UIData->width - x;
     if( width > 2 ) {
         width = 2;
     }
 
-    height = VidRow - y;
+    height = UIData->height - y;
     if( height > 2 ) {
         height = 2;
     }
 
-    screen = UIData->screen.origin;
-    screen += ( y * VidCol + x );
-    disp = ( VidCol - width );
+    screen = UIData->screen.origin + y * UIData->width + x ;
+    disp = UIData->width - width;
 
     switch( action ) {
     case ERASE:
@@ -171,7 +163,7 @@ static void PlotEgaVgaCursor( unsigned action )
     }
 }
 
-static void DrawEgaVgaCursor(void)
+static void DrawEgaVgaCursor( void )
 {
     unsigned short  off;
     unsigned short  shift;
@@ -230,10 +222,10 @@ static void DrawEgaVgaCursor(void)
     PlotEgaVgaCursor( DRAW );                   /* Plot the new grid        */
 }
 
-static char MouInit( void )
+static bool MouInit( void )
 {
-    static int      first_time = true;
-    char            savedmode;
+    static bool     first_time = true;
+    unsigned char   savedmode;
     unsigned short  off;
     unsigned short  i;
     unsigned short  j;
@@ -310,12 +302,18 @@ static void EraseEgaVgaCursor( void )
     PlotEgaVgaCursor( ERASE );
 }
 
-void UIAPI uifinigmouse( void )
+static bool CheckEgaVga( void )
 {
-    if( MouseInstalled && DrawCursor != NULL ) {
-        uioffmouse();
-        MouDeinit();
+    if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
+      && !UIData->desqview
+      && !UIData->no_graphics
+/*     && UIData->height == 25     */
+        ) {
+        DrawCursor  = DrawEgaVgaCursor;
+        EraseCursor = EraseEgaVgaCursor;
+        return( true );
     }
+    return( false );
 }
 
 bool UIAPI uiinitgmouse( init_mode install )
@@ -341,16 +339,10 @@ bool UIAPI uiinitgmouse( init_mode install )
     return( MouseInstalled );
 }
 
-static char CheckEgaVga( void )
+void UIAPI uifinigmouse( void )
 {
-    if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
-      && !UIData->desqview
-      && !UIData->no_graphics
-/*     && UIData->height == 25     */
-        ) {
-        DrawCursor  = DrawEgaVgaCursor;
-        EraseCursor = EraseEgaVgaCursor;
-        return( true );
+    if( MouseInstalled && DrawCursor != NULL ) {
+        uioffmouse();
+        MouDeinit();
     }
-    return( false );
 }

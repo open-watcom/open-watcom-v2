@@ -37,15 +37,23 @@
 
 #ifdef __LINUX__
 
-void intern DBCSCharacterMap( void ) {}
-
 unsigned char UiGChar[] = {
     #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) linux,
     #include "_mapchar.h"
     #undef pick
 };
 
+void intern DBCSCharacterMap( void ) {}
+
 #else
+
+extern char VertScrollFrame[2];
+extern char HorzScrollFrame[2];
+extern char SliderChar[2];
+extern char LeftPoint[2];
+extern char RightPoint[2];
+extern char UpPoint[2];
+extern char DownPoint[2];
 
 /*
     The order of items in this table is position dependent.
@@ -58,14 +66,6 @@ unsigned char UiGChar[] = {
     #include "_mapchar.h"
     #undef pick
 };
-
-extern char VertScrollFrame[2];
-extern char HorzScrollFrame[2];
-extern char SliderChar[2];
-extern char LeftPoint[2];
-extern char RightPoint[2];
-extern char UpPoint[2];
-extern char DownPoint[2];
 
 unsigned char UiDBCSChar[] = {
     #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) dbcs,

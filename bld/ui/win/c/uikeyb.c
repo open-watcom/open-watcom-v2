@@ -47,6 +47,9 @@ typedef struct {
     char            shifted;
 } keytable;
 
+extern void set_carry( void );
+#pragma aux set_carry = 0xf9;
+
 static keytable kt[] = {
     { 0xbc, ',',  '<' },
     { 0xbe, '.',  '>' },
@@ -64,9 +67,6 @@ static keytable kt[] = {
 static unsigned char    ShiftState;
 static unsigned         LastKey;
 static volatile bool    HaveKey;
-
-#pragma aux set_carry = 0xf9;
-extern void set_carry( void );
 
 static int CheckState( unsigned info, unsigned down )
 {

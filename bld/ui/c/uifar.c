@@ -42,17 +42,14 @@
 
 #if defined( _M_I86 )
 
-extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
-extern PIXEL _snowget( LP_PIXEL );
-extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
 extern void _forward( void );
+#pragma aux _forward = "cld" modify []
+
 extern void _backward( void );
+#pragma aux _backward = "std" modify []
 
-#pragma aux             _forward = "cld" modify []
-
-#pragma aux             _backward = "std" modify []
-
-#pragma aux             _snowget = \
+extern PIXEL _snowget( LP_PIXEL );
+#pragma aux _snowget = \
        0x1e                       /*     push    ds         */  \
        0x8e 0xda                  /*     mov     ds,dx      */  \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \
@@ -70,7 +67,8 @@ extern void _backward( void );
        value [ax]                                               \
        modify [ax dx];
 
-#pragma aux             _snowput = \
+extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
+#pragma aux _snowput = \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \
        0xec                       /* L3  in      al,dx      */  \
        0xd0 0xc8                  /*       ror     al,1     */  \
@@ -86,7 +84,8 @@ extern void _backward( void );
        value [es di]                                            \
        modify [ax dx];
 
-#pragma aux             _snowcopy = \
+extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
+#pragma aux _snowcopy = \
        0x1e                       /*     push    ds         */  \
        0x8e 0xda                  /*     mov     ds,dx      */  \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \

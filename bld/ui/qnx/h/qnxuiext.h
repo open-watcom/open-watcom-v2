@@ -51,6 +51,7 @@ extern pid_t            UIPGroup;
 extern bool             UIWantShiftChanges;
 extern bool             UserForcedTermRefresh;
 extern bool             UIDisableShiftChanges;
+extern struct _timesel  __far *_SysTime;
 
 extern const char       *GetTermType( void );
 extern const char       *SetTermType( const char * );

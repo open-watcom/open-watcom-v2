@@ -35,7 +35,8 @@
 #include "uiledit.h"
 #include "uidialog.h"
 
-extern void uidialogchangefield( a_dialog *ui_dlg_info )
+
+void uidialogchangefield( a_dialog *ui_dlg_info )
 {
     /* unused parameters */ (void)ui_dlg_info;
 }

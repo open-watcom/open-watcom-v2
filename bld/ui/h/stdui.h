@@ -682,7 +682,7 @@ extern void             uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD
 extern ui_event_list    _FARD *uigetlist( void );
 extern void             uigetmouse( ORD _FARD *, ORD _FARD *, bool _FARD * );
 extern void             uiignorealt( void );
-extern unsigned int     uiextkeyboard( void );
+extern bool             uiextkeyboard( void );
 extern bool             uiinit( init_mode );
 extern void             uiinitcursor( void );
 extern bool             uiinitgmouse( init_mode );
@@ -784,8 +784,8 @@ extern LP_PIXEL         dos_uishadowbuffer( LP_PIXEL vbuff );
 extern void             win_uisetmono( void );
 extern void             win_uisetcolor( int clr );
 
-#pragma aux win_uihookrtn far parm [ax] [cx] modify exact [];
-extern void __far __loadds win_uihookrtn( unsigned event, unsigned info );
+extern void __loadds __far win_uihookrtn( unsigned event, unsigned info );
+#pragma aux win_uihookrtn parm [ax] [cx];
 
 #elif defined( __RDOS__ )
 
@@ -799,6 +799,15 @@ extern void             rdos_uisendescape( void );
 extern char             *uigetscreenname( void );
 extern void             uiwakethread( void );
 extern void             uiforceinfloop( void );
+
+#elif defined( __UNIX__ )
+
+/*
+ * Somebody wants us to pretend that the specified event has occurred
+ * (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press event
+ * will be generated for the next keystroke (if that shift key is pressed).
+ */
+extern void             uishiftrelease( ui_event ui_ev );
 
 #endif
 

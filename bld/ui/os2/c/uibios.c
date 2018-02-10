@@ -49,10 +49,6 @@ static MONITOR ui_data = {
     1
 };
 
-extern          ATTR                    BWAttrs[];
-extern          ATTR                    CGAAttrs[];
-extern          ATTR                    EGAAttrs[];
-extern          ATTR                    MonoAttrs[];
 
 bool UIAPI uiset80col( void )
 /****************************/
