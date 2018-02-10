@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,13 +62,13 @@ static void MapCharacter( unsigned char ch, unsigned char data[16] )
     unsigned short              j;
     unsigned char               temp;
 
-    points = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );
+    points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
 
     s = ch * 32;
 
     for( j = 0; j < points; j++ ) {
-        temp = VIDEO_byte( 0xA000, s );
-        VIDEO_byte( 0xA000, s++ ) = data[j];
+        temp = VIDEOData( 0xA000, s );
+        VIDEOData( 0xA000, s++ ) = data[j];
         data[j] = temp;
     }
 }

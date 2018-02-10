@@ -35,14 +35,21 @@
 #include "uidef.h"
 #include "biosui.h"
 
-#define IRET        '\xCF'
+
+#define IRET        0xCF
+
+typedef union {
+    struct {
+        unsigned short  offset;
+        unsigned short  segment;
+    }               s;
+    unsigned long   a;
+} memptr;
 
 bool intern mouse_installed( void )
 {
-    unsigned short  __far *vector;
-    char            __far *intrtn;
+    memptr      vect;
 
-    vector = FIRSTMEG( 0, BIOS_MOUSE * 4 );
-    intrtn = FIRSTMEG( vector[1], vector[0] );
-    return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
+    vect = RealModeData( 0, BIOS_MOUSE * 4, memptr );
+    return( vect.a || RealModeData( vect.s.segment, vect.s.offset, unsigned char ) != IRET );
 }

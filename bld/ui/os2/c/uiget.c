@@ -51,7 +51,7 @@ MOUSETIME UIAPI uiclock( void )
 #ifdef _M_I86
     if( _osmode == DOS_MODE )
         /* ticks count in BIOS area */
-        return( BIOS_data( BIOS_SYSTEM_CLOCK, unsigned long ) );
+        return( BIOSData( BIOS_SYSTEM_CLOCK, unsigned long ) );
 #endif
     return( clock() );
 }

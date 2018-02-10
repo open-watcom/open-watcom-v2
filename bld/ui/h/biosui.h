@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,6 @@
 #include "extender.h"
 #endif
 
-#ifdef _M_I86
-#define FIRSTMEG(a,b) MK_FP((a),(b))
-#else
-#define FIRSTMEG(a,b) MK_FP( _ExtenderRealModeSelector, (((unsigned)(a)) << 4) + (b))
-#endif
 
 #if defined(__OSI__)
  #define _INT_10        "call __Int10"
@@ -74,8 +70,16 @@
 #define BIOS_SYSTEM_CLOCK       0x6c    /* dword */
 #define BIOS_POINT_HEIGHT       0x85    /* byte */
 
-#define BIOS_data( p, t )   *(t __far *)FIRSTMEG( 0x0040, p )
-#define VIDEO_byte( s, p )  *(unsigned char __far *)FIRSTMEG( s, p )
+#ifdef _M_I86
+#define RealModeDataPtr( s, o ) MK_FP((s),(o))
+#else
+#define RealModeDataPtr( s, o ) EXTENDER_RM2PM( s, o )
+#endif
+#define RealModeData( s, o, t ) *(t __far *)RealModeDataPtr( s, o )
+
+#define BIOSData( p, t )        RealModeData( 0x0040, p, t )
+#define VIDEOData( s, p )       RealModeData( s, p, unsigned char )
+
 
 #define MOUSE_DRIVER_OK     ((unsigned short)-1)
 

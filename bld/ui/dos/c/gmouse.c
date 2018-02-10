@@ -53,6 +53,10 @@ enum Function {
     SAVE
 };
 
+static char             MouInit( void );
+static void             MouDeinit( void );
+static char             CheckEgaVga( void );
+
 static unsigned char    SaveChars[2][2];        /* Overwritten characters  */
 static unsigned char    CharDefs[64];           /* Character definitons.    */
 static unsigned char    SaveDefs[64];           /* Saved character defs     */
@@ -92,10 +96,6 @@ static unsigned short MouScreenMask[CURSOR_HEIGHT] =  {
     0xf87f,  /*1111100001111111*/
     0xfcff   /*1111110011111111*/
 };
-
-static char     MouInit( void );
-static void     MouDeinit( void );
-static char     CheckEgaVga( void );
 
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
@@ -191,8 +191,8 @@ static void DrawEgaVgaCursor(void)
         s1 = SaveChars[i][0] * 32;
         s2 = SaveChars[i][1] * 32;
         for( j = 0; j < Points; j++ ) {
-            CharDefs[off++] = VIDEO_byte( 0xa000, s2++ );
-            CharDefs[off++] = VIDEO_byte( 0xa000, s1++ );
+            CharDefs[off++] = VIDEOData( 0xa000, s2++ );
+            CharDefs[off++] = VIDEOData( 0xa000, s1++ );
         }
     }
 
@@ -220,8 +220,8 @@ static void DrawEgaVgaCursor(void)
         s1 = ( DEFCHAR  + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            VIDEO_byte( 0xA000, s2++ ) = CharDefs[off++];
-            VIDEO_byte( 0xA000, s1++ ) = CharDefs[off++];
+            VIDEOData( 0xA000, s2++ ) = CharDefs[off++];
+            VIDEOData( 0xA000, s1++ ) = CharDefs[off++];
         }
     }
 
@@ -241,7 +241,7 @@ static char MouInit( void )
     unsigned short  s2;
     unsigned short  ret;
 
-    Points = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );
+    Points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
 
     /*
         MASSIVE KLUDGE: It turns out that the DOS debugger ends up
@@ -254,10 +254,10 @@ static char MouInit( void )
     */
     if( first_time ) {
         first_time = false;
-        savedmode = BIOS_data( BIOS_CURR_VIDEO_MODE, unsigned char );  /* Save video mode          */
-        BIOS_data( BIOS_CURR_VIDEO_MODE, unsigned char ) = 6;          /* Set magic mode           */
-        ret = MouseDrvReset();                                         /* Reset driver for change  */
-        BIOS_data( BIOS_CURR_VIDEO_MODE, unsigned char ) = savedmode;  /* Put the old mode back    */
+        savedmode = BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
+        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
+        ret = MouseDrvReset();                                          /* Reset driver for change */
+        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
         if( ret != MOUSE_DRIVER_OK ) {
             return( false );
         }
@@ -269,8 +269,8 @@ static char MouInit( void )
         s1 = ( DEFCHAR + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            SaveDefs[off++] = VIDEO_byte( 0xa000, s2++ );
-            SaveDefs[off++] = VIDEO_byte( 0xa000, s1++ );
+            SaveDefs[off++] = VIDEOData( 0xa000, s2++ );
+            SaveDefs[off++] = VIDEOData( 0xa000, s1++ );
         }
     }
     ResetSequencer();
@@ -295,8 +295,8 @@ static void MouDeinit( void )
         s1 = ( DEFCHAR  + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            VIDEO_byte( 0xA000, s2++ ) = SaveDefs[off++];
-            VIDEO_byte( 0xA000, s1++ ) = SaveDefs[off++];
+            VIDEOData( 0xA000, s2++ ) = SaveDefs[off++];
+            VIDEOData( 0xA000, s1++ ) = SaveDefs[off++];
         }
     }
     ResetSequencer();
@@ -325,7 +325,7 @@ bool UIAPI uiinitgmouse( init_mode install )
         if( install > INIT_MOUSE ) {
             if( CheckEgaVga() ) {
                 if( MouInit() ) {
-                    UIData->mouse_yscale = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );
+                    UIData->mouse_yscale = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
                     UIData->mouse_xscale = 8;
                 } else {
                     install = INIT_MOUSELESS;

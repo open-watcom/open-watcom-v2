@@ -52,6 +52,8 @@ typedef struct {
     long            real_edx;
 } PHARLAP_block;
 
+unsigned    BIOSVidPage;
+
 static MONITOR ui_data = {
     25,
     80,
@@ -63,9 +65,6 @@ static MONITOR ui_data = {
     4,
     1
 };
-
-
-unsigned    BIOSVidPage;
 
 void IdleInterrupt( void )
 {
@@ -146,7 +145,7 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
         dblock.es = FP_OFF( vbuff ) >> 4;
         dblock.edi = (FP_OFF( vbuff ) & 0x0f);
         DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
-        vbuff = FIRSTMEG( dblock.es, dblock.edi );
+        vbuff = RealModeDataPtr( dblock.es, dblock.edi );
     }
     return( vbuff );
 #endif
@@ -352,8 +351,8 @@ bool intern initbios( void )
     if( initmonitor() ) {
         UIData->desqview = desqview_present();
         UIData->f10menus = true;
-        UIData->screen.origin = FIRSTMEG( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
-                                        BIOS_data( BIOS_SCREEN_OFFSET, unsigned short ) );
+        UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
+                                        BIOSData( BIOS_SCREEN_OFFSET, unsigned short ) );
         if( UIData->desqview ) {
             UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
