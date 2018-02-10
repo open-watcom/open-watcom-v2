@@ -33,6 +33,7 @@
 
 #include "uidef.h"
 #include "uimouse.h"
+#include "uibmous.h"
 
 
 #define OFF_SCREEN      200
@@ -52,8 +53,7 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
     LP_STRING   pos;
     LP_STRING   col0;
 
-    col0 = (LP_STRING)UIData->screen.origin
-          + ( row * UIData->screen.increment ) * sizeof( PIXEL );
+    col0 = (LP_STRING)UIData->screen.origin + ( row * UIData->screen.increment ) * sizeof( PIXEL );
     pos = col0 + col * sizeof( PIXEL );
     while( col0 < pos ) {
         col0 += uicharlen( *col0 ) * sizeof( PIXEL );
@@ -96,6 +96,7 @@ static void uisetmouseoff( void )
 static void FlipAttr( LP_STRING p )
 {
     OldAttr = *p;
+
     if( UIData->colour == M_MONO ) {
         *p = (OldAttr & 0x79) ^ 0x71;
     } else {

@@ -36,6 +36,7 @@
 #include "biosui.h"
 #include "charmap.h"
 #include "uimouse.h"
+#include "uibmous.h"
 
 
 #define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
@@ -46,18 +47,15 @@
 #define VidCol          (UIData->width)
 #define VidRow          (UIData->height)
 
-extern void             (intern *DrawCursor)( void );
-extern void             (intern *EraseCursor)( void );
-
-static unsigned char    SaveChars[2][2];        /* Overwritten characters  */
-static unsigned char    CharDefs[64];           /* Character definitons.    */
-static unsigned char    SaveDefs[64];           /* Saved character defs     */
-
 enum Function {
     ERASE,
     DRAW,
     SAVE
 };
+
+static unsigned char    SaveChars[2][2];        /* Overwritten characters  */
+static unsigned char    CharDefs[64];           /* Character definitons.    */
+static unsigned char    SaveDefs[64];           /* Saved character defs     */
 
 // Masks for the cursor
 
@@ -95,20 +93,23 @@ static unsigned short MouScreenMask[CURSOR_HEIGHT] =  {
     0xfcff   /*1111110011111111*/
 };
 
-static void     PlotEgaVgaCursor( unsigned );
 static char     MouInit( void );
 static void     MouDeinit( void );
 static char     CheckEgaVga( void );
-
-void intern     DrawEgaVgaCursor( void );
-void intern     EraseEgaVgaCursor( void );
 
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
 static void PlotEgaVgaCursor( unsigned action )
 {
-    unsigned    width, height, disp, i, j, x, y;
-    static int  lsavex = 0, lsavey = 0;
+    static int  lsavex = 0;
+    static int  lsavey = 0;
+    unsigned    width;
+    unsigned    height;
+    unsigned    disp;
+    unsigned    i;
+    unsigned    j;
+    unsigned    x;
+    unsigned    y;
     LP_PIXEL    screen;
 
     switch( action ) {
@@ -170,10 +171,17 @@ static void PlotEgaVgaCursor( unsigned action )
     }
 }
 
-void intern DrawEgaVgaCursor(void)
+static void DrawEgaVgaCursor(void)
 {
-    unsigned short  off,  shift, addmask, i, j, s1, s2;
-    unsigned short  *defs, *masks;
+    unsigned short  off;
+    unsigned short  shift;
+    unsigned short  addmask;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  *defs;
+    unsigned short  *masks;
 
     PlotEgaVgaCursor( SAVE );                   /* Save the current grid    */
 
@@ -224,10 +232,14 @@ void intern DrawEgaVgaCursor(void)
 
 static char MouInit( void )
 {
-    char            savedmode;
-    unsigned short  off, i, j, s1, s2;
-    unsigned short  ret;
     static int      first_time = true;
+    char            savedmode;
+    unsigned short  off;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  ret;
 
     Points = BIOS_data( BIOS_POINT_HEIGHT, unsigned char );
 
@@ -269,7 +281,11 @@ static char MouInit( void )
 
 static void MouDeinit( void )
 {
-    unsigned short  i, j, s1, s2, off ;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  off;
 
     SetSequencer();
     SetWriteMap();                          /* Put characters back      */
@@ -289,7 +305,7 @@ static void MouDeinit( void )
     */
 }
 
-void intern EraseEgaVgaCursor( void )
+static void EraseEgaVgaCursor( void )
 {
     PlotEgaVgaCursor( ERASE );
 }
