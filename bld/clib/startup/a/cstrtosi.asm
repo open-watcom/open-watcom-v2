@@ -231,13 +231,9 @@ _cstart_ proc  far
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
         call    __CMain
         jmp     exit_                   ; exit
-_cstart_ endp
 
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT segment
-
-__exit  proc far
 public "C",__exit
+__exit:
         push    eax                     ; save return value
         push    edx                     ; save edx
         xor     eax,eax                 ; run finalizers
@@ -245,9 +241,18 @@ public "C",__exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
         pop     eax                     ; restore return value
-        mov     esp,_STACKTOP           ; reset stack pointer
-        ret
-__exit  endp
+
+__osi_exit:
+        mov     esp,_STACKTOP           ; reset stack pointer to the loader stack
+        ret                             ; return to the loader
+_cstart_ endp
+
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT segment
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return

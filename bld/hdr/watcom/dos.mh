@@ -110,7 +110,7 @@ struct _wfind_t {
 _WCRTLINK extern int      _islfn( const char *__path );
 _WCRTLINK extern char     *_lfntosfn( const char *__orgname, char *__shortname );
 _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx, unsigned int __al);
-_WCRTLINK extern void     _chain_intr( void (_WCINTERRUPT _DOSFAR *__handler)() );
+_WCRTLINK _WCNORETURN extern void   _chain_intr( void (_WCINTERRUPT _DOSFAR *__handler)() );
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, void **__storage );
 #else
@@ -137,7 +137,7 @@ _WCRTLINK extern unsigned _dos_getfileattr( const char *__path, unsigned *__attr
 _WCRTLINK extern unsigned _dos_getftime( int __handle, unsigned *__date, unsigned *__time );
 _WCRTLINK extern void     _dos_gettime( struct dostime_t *__time );
 _WCRTLINK extern void     (_WCINTERRUPT _DOSFAR *_dos_getvect( unsigned __intnum ))();
-_WCRTLINK extern void     _dos_keep( unsigned __retcode, unsigned __memsize );
+_WCRTLINK _WCNORETURN extern void   _dos_keep( unsigned __retcode, unsigned __memsize );
 
 _WCRTLINK extern unsigned _dos_open( const char *__path, unsigned __mode, int *__handle );
 _WCRTLINK extern unsigned _dos_read( int __handle, void _DOSFAR *__buf, unsigned __count, unsigned *__bytes );

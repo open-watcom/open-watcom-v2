@@ -34,13 +34,13 @@
 #include "tinyio.h"
 
 
-extern  void    _keep( unsigned, unsigned );
+_WCNORETURN extern  void    _keep( unsigned, unsigned );
 #pragma aux     _keep = \
     "mov ah,31h"        \
     "int 21h"           \
     parm [ax] [dx];
 
-_WCRTLINK void _dos_keep( unsigned retcode, unsigned memsize )
+_WCRTLINK _WCNORETURN void _dos_keep( unsigned retcode, unsigned memsize )
 {
     _keep( retcode, memsize );
 }

@@ -329,20 +329,9 @@ not_dll2:                               ; endif
         push    eax
         call    WINMAIN
         jmp     exit                    ; exit
-__DLLstart_ endp
-_wstart2_ endp
-_wstart_ endp
-_cstart_ endp
 
-        dd      ___begtext              ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT segment
-;
-; copyright message
-;
-include msgcpyrt.inc
-
-__exit  proc far
         public  "C",__exit
+__exit:
 ifndef __STACK__
         push    eax                     ; save return code on stack
 endif
@@ -355,10 +344,22 @@ endif
         pop     edx                     ; restore edx
 skip_fini:
         pop     eax                     ; restore return code from stack
-        mov     esp,_STACKTOP           ; reset stack pointer
-        mov     ds,_LocalPtr            ; restore ds
-        ret
-__exit endp
+
+__win386_exit:
+        mov     esp,_STACKTOP           ; reset stack pointer to the loader stack
+        mov     ds,_LocalPtr            ; restore the loader ds register
+        ret                             ; return to the loader
+__DLLstart_ endp
+_wstart2_ endp
+_wstart_ endp
+_cstart_ endp
+
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT segment
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return
