@@ -80,7 +80,7 @@ bool intern initbios( void )
                         FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                         OPEN_EXISTING, 0, NULL );
     GetConsoleMode( InputHandle, &oldInputMode );
-    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_PROCESSED_INPUT );
+    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_EXTENDED_FLAGS );
 
     oldOutputHandle = GetStdHandle( STD_OUTPUT_HANDLE );
     OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
