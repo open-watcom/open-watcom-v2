@@ -155,6 +155,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     SAREA               c_area;
     bool                use_hottext;
     char                hotkey;
+    UIPICKGETTEXT       *fn_get;
 
     if( field == NULL )
         return;
@@ -225,9 +226,6 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         } else {
             length = 0;
         }
-        if( list->get == NULL ) {
-            list->get = uigetlistelement;
-        }
         if( list->box == NULL && combo->perm ) {
             c_area = *area;
             c_area.row += vs->area.row + 2;
@@ -247,10 +245,10 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         uivtextput( vs, area->row, area->col + area->width,
                     UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
         ctrlbuf[0] = '\0';
-        if( list->get == NULL ) {
-            list->get = uigetlistelement;
-        }
-        (*list->get)( list->data_handle, list->choice, ctrlbuf, area->width );
+        fn_get = list->get;
+        if( fn_get == NULL )
+            fn_get = uigetlistelement;
+        (*fn_get)( list->data_handle, list->choice, ctrlbuf, area->width );
         length = area->width;
         break;
     case FLD_LISTBOX:
@@ -575,12 +573,16 @@ void uiupdatecombobox( a_combo_box *combo )
     char                *str;
     a_list              *list;
     an_edit_control     *edit;
+    UIPICKGETTEXT       *fn_get;
 
     edit  = &combo->edit;
     list  = &combo->list;
     str = (char *)uimalloc( CTRL_BUF_LEN );
     if( str != NULL ) {
-        if( (*list->get)( list->data_handle, list->choice, str, CTRL_BUF_LEN ) ) {
+        fn_get = list->get;
+        if( fn_get == NULL )
+            fn_get = uigetlistelement;
+        if( (*fn_get)( list->data_handle, list->choice, str, CTRL_BUF_LEN ) ) {
             uifree( edit->buffer );
             edit->buffer = str;
             edit->length = strlen( str );
@@ -652,9 +654,6 @@ static ui_event pulldownfilter( ui_event ui_ev, a_dialog *ui_dlg_info )
     } else if( fld->typ == FLD_COMBOBOX ) {
         combo = fld->u.combo;
         list = &combo->list;
-    }
-    if( list->get == NULL ) {
-        list->get = uigetlistelement;       // set get_element function
     }
     switch( ui_ev ) {
     case EV_MOUSE_DCLICK:

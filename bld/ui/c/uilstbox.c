@@ -68,11 +68,12 @@ bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsig
 
 void uipaintlistbox( a_list *list )
 {
-    ORD         i;
-    char        *buf;
-    bool        ok;
-    int         length;
-    ATTR        attr;
+    ORD             i;
+    char            *buf;
+    bool            ok;
+    int             length;
+    ATTR            attr;
+    UIPICKGETTEXT   *fn_get;
 
     if( list->box == NULL ) {
         return;
@@ -80,13 +81,15 @@ void uipaintlistbox( a_list *list )
 
     length = list->box->area.width + 1;
     buf = (char *)uimalloc( length );
-
+    fn_get = list->get;
+    if( fn_get == NULL )
+        fn_get = uigetlistelement;
     for( i = 0 ; i < list->box->area.height ; ++i ) {
         attr = ATTR_NORMAL;
         if( list->box->row == i + list->box->line ) {
             attr = list->box->attr;
         }
-        ok = (*list->get)( list->data_handle, list->box->line + i, buf, length );
+        ok = (*fn_get)( list->data_handle, list->box->line + i, buf, length );
         if( ok ) {
             uitextfield( list->box->vs, list->box->area.row + i,
                          list->box->area.col, list->box->area.width,
@@ -127,9 +130,13 @@ static bool selectoutofrange( a_list_info *box )
 
 static bool checkitem( a_list *list, char typed, int index )
 {
-    char        first;
+    char            first;
+    UIPICKGETTEXT   *fn_get;
 
-    if( (*list->get)( list->data_handle, index, &first, 1 ) ) {
+    fn_get = list->get;
+    if( fn_get == NULL )
+        fn_get = uigetlistelement;
+    if( (*fn_get)( list->data_handle, index, &first, 1 ) ) {
         if( isupper( first ) ) {
             first = tolower( first );
         }
@@ -198,11 +205,13 @@ void uiboxpoplist( void )
     uipoplist( /* listboxevents */ );
 }
 
-static int getlistsize( const void *data_handle, UIPICKGETTEXT *get )
+static int getlistsize( const void *data_handle, UIPICKGETTEXT *fn_get )
 {
     int     item;
 
-    for( item = 0; (*get)( data_handle, item, NULL, 0 ); item++ )
+    if( fn_get == NULL )
+        fn_get = uigetlistelement;
+    for( item = 0; (*fn_get)( data_handle, item, NULL, 0 ); item++ )
         ;
     return( item );
 }
@@ -231,9 +240,6 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box = uimalloc( sizeof( a_list_info ) );
     if( box == NULL ) {
         return( NULL );
-    }
-    if( list->get == NULL ) {
-        list->get = uigetlistelement;
     }
     box->vs     = vs;
     box->area   = *area;

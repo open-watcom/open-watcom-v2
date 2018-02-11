@@ -47,7 +47,7 @@ static bool FillInEmptyList( a_list *list )
     if( list->data_handle == NULL ) {
         return( false );
     }
-    *((lb_data)list->data_handle) = NULL;
+    ((lb_data)list->data_handle)[0] = NULL;
     return( true );
 }
 
@@ -99,9 +99,6 @@ void GUIFreeList( a_list *list, bool free_list )
     gui_ctl_idx i;
     lb_data     data;
 
-    if( list->get == NULL ) {
-        list->get = uigetlistelement;
-    }
     num = GUIListSize( list );
     data = (lb_data)list->data_handle;
     for( i = 0; i < num; i++ ) {
@@ -187,9 +184,6 @@ static lb_data ResizeList( a_list *list, unsigned num_to_add, gui_ctl_idx *choic
     lb_data     old_data;
     lb_data     new_data;
 
-    if( list->get == NULL ) {
-        list->get = uigetlistelement;
-    }
     num = GUIListSize( list );
     new_data = (lb_data)GUIMemAlloc( ( num + num_to_add + 1 ) * sizeof( char * ) );
     if( new_data == NULL ) {
@@ -291,9 +285,6 @@ bool GUIListCurr( a_list *list, gui_ctl_idx choice, bool set, gui_ctl_idx *ret )
 {
     if( set ) {
         /* set */
-        if( list->get == NULL ) {
-            list->get = uigetlistelement;
-        }
         if( GUIListSize( list ) >= choice ) {
             list->choice = choice;
             uiupdatelistbox( list );
