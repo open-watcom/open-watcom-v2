@@ -591,10 +591,13 @@ typedef struct monitor {
     ORD             cursor_row;         /* cursor row                       */
     ORD             cursor_col;         /* cursor column                    */
     CURSOR_TYPE     cursor_type;        /* cursor type                      */
-    unsigned char   old_shift;          /* status of shift keys             */
-    bool            no_snow;            /* snow check flag                  */
     UI_WINDOW       blank;              /* blank window                     */
     BUFFER          screen;             /* screen                           */
+    unsigned        mouse_speed;        /* mouse speed factor               */
+    unsigned short  old_shift;          /* status of shift keys             */
+    unsigned char   mouse_xscale;       /* factor to divide mouse x posn    */
+    unsigned char   mouse_yscale;       /* factor to divide mouse y posn    */
+    bool            no_snow       :1;   /* snow check flag                  */
     bool            cursor_on     :1;   /* cursor on flag                   */
     bool            desqview      :1;   /* desqview present flag            */
     bool            f10menus      :1;   /* F10 active for menus             */
@@ -605,9 +608,6 @@ typedef struct monitor {
     bool            no_graphics   :1;   /* disable character mapping        */
     bool            dbcs          :1;   /* double-byte character set        */
     bool            no_blowup     :1;   /* disable exploding windows        */
-    unsigned        mouse_speed;        /* mouse speed factor               */
-    unsigned char   mouse_xscale;       /* factor to divide mouse x posn    */
-    unsigned char   mouse_yscale;       /* factor to divide mouse y posn    */
 } MONITOR;
 
 #define V_DIALOGUE              0x0001

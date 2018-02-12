@@ -362,7 +362,7 @@ void intern finikeyboard( void )
 ui_event intern keyboardevent( void )
 /***********************************/
 {
-    register    unsigned int            key;
+    register    int                     key;
     register    unsigned int            scan;
     register    unsigned char           ascii;
     register    ui_event                ui_ev;
@@ -375,8 +375,8 @@ ui_event intern keyboardevent( void )
      * ascii code on the numeric keypad works                   */
     if( checkkey() ) {
         key = getkey();
-        scan = (unsigned char) ( key >> 8 ) ;
-        ascii = (unsigned char) key;
+        scan = (unsigned char)( key >> 8 ) ;
+        ascii = (unsigned char)key;
         ui_ev = scan + 0x100;
         if( ascii != 0 ) {
             ui_ev = ascii;
@@ -399,11 +399,10 @@ ui_event intern keyboardevent( void )
     } else {
         changed = ( newshift ^ UIData->old_shift );
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 8) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( newshift & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( newshift & scan ) {
                         UIData->old_shift |= scan;
                         return( ShiftkeyEvents[key].press );
                     } else {
@@ -412,7 +411,6 @@ ui_event intern keyboardevent( void )
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
         ui_ev = EV_NO_EVENT;

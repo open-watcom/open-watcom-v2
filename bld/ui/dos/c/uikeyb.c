@@ -137,8 +137,8 @@ bool intern initkeyboard( void )
 ui_event intern keyboardevent( void )
 /***********************************/
 {
-    register    unsigned int            key;
-    register    unsigned int            scan;
+    register    int                     key;
+    register    unsigned char           scan;
     register    unsigned char           ascii;
     register    ui_event                ui_ev;
     register    unsigned char           newshift;
@@ -150,23 +150,23 @@ ui_event intern keyboardevent( void )
      * ascii code on the numeric keypad works                   */
     if( checkkey() ) {
         key = getkey();
-        scan = (unsigned char) ( key >> 8 ) ;
-        ascii = (unsigned char) key;
+        scan = (unsigned char)( key >> 8 ) ;
+        ascii = (unsigned char)key;
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
         ui_ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
         if( ui_ev >= EV_HOME && ui_ev <= EV_DELETE ) {
-            if( ( newshift & S_NUM ) == 0 ) {
-                if( ( newshift & S_SHIFT ) != 0 ) {
+            if( (newshift & S_NUM) == 0 ) {
+                if( newshift & S_SHIFT ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
         if( ascii != 0 ) {
             ui_ev = ascii;
-            if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
+            if( (newshift & S_ALT) && ( ascii == ' ' ) ) {
                 ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
@@ -187,11 +187,10 @@ ui_event intern keyboardevent( void )
     } else {
         changed = ( newshift ^ UIData->old_shift );
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 8) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( newshift & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( newshift & scan ) {
                         UIData->old_shift |= scan;
                         return( ShiftkeyEvents[key].press );
                     } else {
@@ -200,7 +199,6 @@ ui_event intern keyboardevent( void )
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
         ui_ev = EV_NO_EVENT;

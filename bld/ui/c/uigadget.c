@@ -227,7 +227,7 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
         case EV_MOUSE_DRAG :
             /* don't do draging if total_size is less than or equal to the
                page size or mouse is too far from gadget */
-            if( ( m_anchor < ( g->anchor -1 ) ) || ( m_anchor > (g->anchor+1) ) ||
+            if( ( m_anchor < ( g->anchor - 1 ) ) || ( m_anchor > ( g->anchor + 1 ) ) ||
                 ( g->total_size <= g->page_size ) ) {
                 return( EV_NO_EVENT );
             } else {
@@ -245,7 +245,7 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
                 Drag = false;
             }
             if( Drag ) {
-                if( ( m_anchor < ( g->anchor -1 ) ) || ( m_anchor > (g->anchor+1) ) ) {
+                if( ( m_anchor < ( g->anchor - 1 ) ) || ( m_anchor > ( g->anchor + 1 ) ) ) {
                     /* note : must have got EV_MOUSE_RELEASE */
                     pos = StartPos;
                     setgadget( g, pos, false );

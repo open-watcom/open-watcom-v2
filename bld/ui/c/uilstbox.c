@@ -43,7 +43,12 @@
 static bool SelStart =  false;    // user has moused over a valid choice
 static bool Dclick =    false;    // true between DCLICK and MOUSE_RELEASE
 
-enum    { R_UP, R_DOWN, R_UNS, R_SEL };
+typedef enum {
+    R_UP,
+    R_DOWN,
+    R_UNS,
+    R_SEL
+} maction;
 
 bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsigned buff_len )
 {
@@ -68,10 +73,10 @@ bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsig
 
 void uipaintlistbox( a_list *list )
 {
-    ORD             i;
+    unsigned        i;
     char            *buf;
     bool            ok;
-    int             length;
+    unsigned        length;
     ATTR            attr;
     UIPICKGETTEXT   *fn_get;
 
@@ -108,7 +113,7 @@ void uipaintlistbox( a_list *list )
 
 static void setstartline( a_list *list )
 {
-    int             maxline;
+    unsigned        maxline;
     a_list_info     *box;
 
     maxline = uilistsize( list );
@@ -128,15 +133,17 @@ static bool selectoutofrange( a_list_info *box )
     return( box->row < box->line || box->row >= box->line + box->area.height );
 }
 
-static bool checkitem( a_list *list, char typed, int index )
+static bool checkitem( a_list *list, int typed, unsigned index )
 {
-    char            first;
+    unsigned char   chr;
+    int             first;
     UIPICKGETTEXT   *fn_get;
 
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
-    if( (*fn_get)( list->data_handle, index, &first, 1 ) ) {
+    if( (*fn_get)( list->data_handle, index, &chr, 1 ) ) {
+        first = chr;
         if( isupper( first ) ) {
             first = tolower( first );
         }
@@ -155,7 +162,7 @@ static bool checkitem( a_list *list, char typed, int index )
 
 void uiupdatelistbox( a_list *list )
 {
-    int     maxline;
+    unsigned    maxline;
 
     if( list->box == NULL ) {
         return;
@@ -163,8 +170,8 @@ void uiupdatelistbox( a_list *list )
     maxline = uilistsize( list );
     list->box->row = list->choice;
     list->box->gadget.total_size = maxline;
-    if( list->box->gadget.total_size < (int)list->box->area.height )
-        list->box->gadget.total_size = (int)list->box->area.height;
+    if( list->box->gadget.total_size < list->box->area.height )
+        list->box->gadget.total_size = list->box->area.height;
     uisetgadget( &list->box->gadget, list->choice );
     setstartline( list );
     if( selectoutofrange( list->box ) ) {
@@ -205,9 +212,9 @@ void uiboxpoplist( void )
     uipoplist( /* listboxevents */ );
 }
 
-static int getlistsize( const void *data_handle, UIPICKGETTEXT *fn_get )
+static unsigned getlistsize( const void *data_handle, UIPICKGETTEXT *fn_get )
 {
-    int     item;
+    unsigned    item;
 
     if( fn_get == NULL )
         fn_get = uigetlistelement;
@@ -216,7 +223,7 @@ static int getlistsize( const void *data_handle, UIPICKGETTEXT *fn_get )
     return( item );
 }
 
-int uilistsize( a_list *list )
+unsigned uilistsize( a_list *list )
 {
     if( list->data_handle == NULL ) {
         return( 0 );
@@ -235,7 +242,7 @@ void uimovelistbox( a_list *list, int row_diff, int col_diff )
 a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
 {
     a_list_info     *box;
-    int             maxline;
+    unsigned        maxline;
 
     box = uimalloc( sizeof( a_list_info ) );
     if( box == NULL ) {
@@ -259,9 +266,9 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->gadget.slider = EV_SCROLL_VERTICAL,
     box->gadget.pageforward = EV_SCROLL_PAGE_DOWN;
     box->gadget.pagebackward = EV_SCROLL_PAGE_UP;
-    box->gadget.total_size = (int)maxline;
-    if( box->gadget.total_size < (int)box->area.height )
-        box->gadget.total_size = (int)box->area.height;
+    box->gadget.total_size = maxline;
+    if( box->gadget.total_size < box->area.height )
+        box->gadget.total_size = box->area.height;
     box->gadget.page_size = box->area.height;
     box->gadget.pos = 0;
     box->gadget.flags = GADGET_NONE;
@@ -278,7 +285,8 @@ unsigned uiendlistbox( a_list *list )
 {
     unsigned    k;
 
-    if( list->box == NULL ) return( 0 );
+    if( list->box == NULL )
+        return( 0 );
     uiclose( list->box->vs );   // Shut down VSCREEN
     k = list->box->line;
     uifinigadget( &list->box->gadget );
@@ -287,7 +295,7 @@ unsigned uiendlistbox( a_list *list )
     return( k );
 }
 
-static int getmouseregion( a_list *list, int *row, int *col )
+static maction getmouseregion( a_list *list, int *row, int *col )
 {
     a_list_info     *box;
 
@@ -304,21 +312,18 @@ static int getmouseregion( a_list *list, int *row, int *col )
     if( *row < box->area.row ) {
         return( R_UP );
     }
-    if( ( *col >= box->area.col + box->area.width ) ||
-        ( *col <  box->area.col ) ) {
+    if( ( *col >= box->area.col + box->area.width ) || ( *col <  box->area.col ) ) {
         return( R_UNS );
     }
     return( R_SEL );
 }
 
 
-static ui_event charselect( ui_event ui_ev, a_list *list )
+static ui_event charselect( int typed, a_list *list )
 {
-    int         num;
-    int         i;
-    char        typed;
+    unsigned    num;
+    unsigned    i;
 
-    typed = (char)ui_ev;
     if( isupper( typed ) ) {
         typed = tolower( typed );
     }
@@ -338,11 +343,11 @@ static ui_event charselect( ui_event ui_ev, a_list *list )
 
 ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
 {
-    int             listsize;
-    int             maxline;
-    int             newevent;
+    unsigned        listsize;
+    unsigned        maxline;
+    ui_event        newevent;
     a_list_info     *box;
-    int             old_line;
+    unsigned        old_line;
     ORD             old_row;
     bool            close;
 
@@ -386,145 +391,145 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
 
     newevent = EV_NO_EVENT;
     switch( ui_ev ) {
-        case EV_MOUSE_DCLICK:
-            Dclick = true;
-            /* fall through */
-        case EV_MOUSE_PRESS:
-        case EV_MOUSE_RELEASE:
-        case EV_MOUSE_REPEAT:
-        case EV_MOUSE_DRAG:
-            {
-                int         row, col, mpos;
+    case EV_MOUSE_DCLICK:
+        Dclick = true;
+        /* fall through */
+    case EV_MOUSE_PRESS:
+    case EV_MOUSE_RELEASE:
+    case EV_MOUSE_REPEAT:
+    case EV_MOUSE_DRAG:
+        {
+            int     row, col;
+            maction mpos;
 
-                mpos = getmouseregion( list, &row, &col );
-                newevent = ui_ev;
+            mpos = getmouseregion( list, &row, &col );
+            newevent = ui_ev;
+            if( mpos == R_SEL ) {
+                SelStart = true;
+                box->row  = (ORD)row - box->area.row;
+                box->row += box->line;
+            }
+            if( ui_ev == EV_MOUSE_RELEASE ) {
                 if( mpos == R_SEL ) {
-                    SelStart = true;
-                    box->row  = (ORD) row - box->area.row;
-                    box->row += box->line;
+                    list->choice = list->box->row;
+                    newevent = EV_LIST_BOX_CHANGED;
                 }
-                if( ui_ev == EV_MOUSE_RELEASE ) {
-                    if( mpos == R_SEL ) {
-                        list->choice = list->box->row;
-                        newevent = EV_LIST_BOX_CHANGED;
-                    }
-                    if( SelStart ) {
-                        close = true;
-                        SelStart = false;
-                    }
-                } else if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
-                    if( mpos == R_SEL ) {
-                        if( ui_ev == EV_MOUSE_DCLICK ) {
-                            newevent = EV_LIST_BOX_DCLICK;
-                        }
-                    } else {
-                        close = true;
-                    }
-                } else if( mpos == R_UP  &&  box->line > 0  &&  SelStart ) {
-                    box->line--;
-                    box->row--;
-                } else if( mpos == R_DOWN  &&  box->line < maxline ) {
-                    box->line++;
-                    box->row++;
+                if( SelStart ) {
+                    close = true;
+                    SelStart = false;
                 }
-            }
-            break;
-        case EV_CURSOR_UP :
-            if( box->row > 0 ) {
-                if( box->row == box->line ) {
-                    box->line--;
+            } else if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
+                if( mpos == R_SEL ) {
+                    if( ui_ev == EV_MOUSE_DCLICK ) {
+                        newevent = EV_LIST_BOX_DCLICK;
+                    }
+                } else {
+                    close = true;
                 }
+            } else if( mpos == R_UP && box->line > 0 && SelStart ) {
+                box->line--;
                 box->row--;
-                list->choice = box->row;
-                newevent = EV_LIST_BOX_CHANGED;
+            } else if( mpos == R_DOWN && box->line < maxline ) {
+                box->line++;
+                box->row++;
             }
-            if( selectoutofrange( box ) ) {
-                box->line = box->row;
-                setstartline( list );
-            }
-            break;
-        case EV_SCROLL_LINE_UP :
-            if( box->line > 0 ) {
+        }
+        break;
+    case EV_CURSOR_UP :
+        if( box->row > 0 ) {
+            if( box->row == box->line ) {
                 box->line--;
             }
-            break;
-        case EV_CURSOR_DOWN :
-            if( box->row < listsize - 1 ) {
-                if( box->row - box->line == box->area.height - 1
-                    && box->line < maxline ) {
-                        ++box->line;
-                }
-                ++box->row;
-                list->choice = box->row;
-                newevent = EV_LIST_BOX_CHANGED;
+            box->row--;
+            list->choice = box->row;
+            newevent = EV_LIST_BOX_CHANGED;
+        }
+        if( selectoutofrange( box ) ) {
+            box->line = box->row;
+            setstartline( list );
+        }
+        break;
+    case EV_SCROLL_LINE_UP :
+        if( box->line > 0 ) {
+            box->line--;
+        }
+        break;
+    case EV_CURSOR_DOWN :
+        if( box->row < listsize - 1 ) {
+            if( box->row - box->line == box->area.height - 1 && box->line < maxline ) {
+                ++box->line;
             }
-            if( selectoutofrange( box ) ) {
-                box->line = box->row;
-                setstartline( list );
-            }
-            break;
-        case EV_SCROLL_LINE_DOWN :
-            if( box->line < maxline ) {
-                box->line++;
-            }
-            break;
-        case EV_PAGE_UP :
-            if( box->row == box->line ) {
-                if( box->line < ( box->area.height - 1 ) ) {
-                    box->line = 0;
-                } else {
-                    box->line -= ( box->area.height - 1 );
-                }
-                box->row -= old_line - box->line;
-            } else {
-                box->row = box->line;
-            }
-            if( box->row != old_row ) {
-                list->choice = box->row;
-                newevent = EV_LIST_BOX_CHANGED;
-            }
-            break;
-        case EV_SCROLL_PAGE_UP :
-            if( box->line < box->area.height ) {
+            ++box->row;
+            list->choice = box->row;
+            newevent = EV_LIST_BOX_CHANGED;
+        }
+        if( selectoutofrange( box ) ) {
+            box->line = box->row;
+            setstartline( list );
+        }
+        break;
+    case EV_SCROLL_LINE_DOWN :
+        if( box->line < maxline ) {
+            box->line++;
+        }
+        break;
+    case EV_PAGE_UP :
+        if( box->row == box->line ) {
+            if( box->line < ( box->area.height - 1 ) ) {
                 box->line = 0;
             } else {
-                box->line -= box->area.height;
+                box->line -= ( box->area.height - 1 );
             }
-            break;
-        case EV_PAGE_DOWN :
-            if( box->row == ( box->line + box->area.height - 1 ) ) {
-                box->line += box->area.height - 1;
-                if( box->line > maxline ) {
-                    box->line = maxline;
-                }
-                box->row += ( box->line - old_line );
-            } else {
-                box->row = box->line + box->area.height - 1;
-            }
-            if( box->row != old_row ) {
-                list->choice = box->row;
-                newevent = EV_LIST_BOX_CHANGED;
-            }
-            break;
-        case EV_SCROLL_PAGE_DOWN :
-            box->line += box->area.height;
+            box->row -= old_line - box->line;
+        } else {
+            box->row = box->line;
+        }
+        if( box->row != old_row ) {
+            list->choice = box->row;
+            newevent = EV_LIST_BOX_CHANGED;
+        }
+        break;
+    case EV_SCROLL_PAGE_UP :
+        if( box->line < box->area.height ) {
+            box->line = 0;
+        } else {
+            box->line -= box->area.height;
+        }
+        break;
+    case EV_PAGE_DOWN :
+        if( box->row == ( box->line + box->area.height - 1 ) ) {
+            box->line += box->area.height - 1;
             if( box->line > maxline ) {
                 box->line = maxline;
             }
-            break;
-        case EV_SCROLL_VERTICAL :
-            box->line = box->gadget.pos;
-            break;
-        case EV_ALT_CURSOR_UP :
-            close = true;
-            break;
-        default :
-            if( ui_ev < 0x100 && isalpha( ui_ev ) ) {
-                newevent = charselect( ui_ev, list );
-            } else {
-                newevent = ui_ev;
-            }
-            break;
+            box->row += ( box->line - old_line );
+        } else {
+            box->row = box->line + box->area.height - 1;
+        }
+        if( box->row != old_row ) {
+            list->choice = box->row;
+            newevent = EV_LIST_BOX_CHANGED;
+        }
+        break;
+    case EV_SCROLL_PAGE_DOWN :
+        box->line += box->area.height;
+        if( box->line > maxline ) {
+            box->line = maxline;
+        }
+        break;
+    case EV_SCROLL_VERTICAL :
+        box->line = box->gadget.pos;
+        break;
+    case EV_ALT_CURSOR_UP :
+        close = true;
+        break;
+    default :
+        if( ui_ev < 0x100 && isalpha( ui_ev ) ) {
+            newevent = charselect( (unsigned char)ui_ev, list );
+        } else {
+            newevent = ui_ev;
+        }
+        break;
     }
     if( ( old_line != box->line ) && ( maxline > 0 ) ) {
         uisetgadget( &box->gadget, box->line );

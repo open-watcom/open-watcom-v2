@@ -75,8 +75,8 @@ typedef struct a_gadget{
     ui_event            pageforward;
     ui_event            pagebackward;
     ui_event            slider;
-    int                 total_size;
-    int                 page_size;
+    unsigned            total_size;
+    unsigned            page_size;
     int                 pos;            /* in users units */
     unsigned char       flags;
     ORD                 linear;         /* offset of displayed scroll thumb */

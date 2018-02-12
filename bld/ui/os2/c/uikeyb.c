@@ -135,11 +135,10 @@ ui_event intern keyboardevent( void )
     } else {
         changed = ( newshift ^ UIData->old_shift ) & ~S_INSERT;
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 7) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( newshift & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( newshift & scan ) {
                         UIData->old_shift |= scan;
                         return( ShiftkeyEvents[key].press );
                     } else {
@@ -148,7 +147,6 @@ ui_event intern keyboardevent( void )
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
         ui_ev = EV_NO_EVENT;

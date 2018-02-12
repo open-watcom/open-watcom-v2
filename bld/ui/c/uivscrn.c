@@ -39,11 +39,9 @@ VSCREEN* intern findvscreen( ORD row, ORD col )
 {
     register    UI_WINDOW*              wptr;
 
-    for( wptr = UIData->area_head ; wptr != &UIData->blank; wptr = wptr->next ) {
-        if( ( row >= wptr->area.row ) &&
-            ( row < wptr->area.row + wptr->area.height ) ) {
-            if( ( col >= wptr->area.col ) &&
-                ( col < wptr->area.col + wptr->area.width ) ) {
+    for( wptr = UIData->area_head; wptr != &UIData->blank; wptr = wptr->next ) {
+        if( ( row >= wptr->area.row ) && ( row < wptr->area.row + wptr->area.height ) ) {
+            if( ( col >= wptr->area.col ) && ( col < wptr->area.col + wptr->area.width ) ) {
                 return( wptr->parm );
             }
         }
