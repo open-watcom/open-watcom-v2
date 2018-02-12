@@ -30,7 +30,7 @@ libsubdir_suffix +=p
 !endif
 !endif
 
-!ifeq release 0
+!ifeq $(proj_name)_release 0
 libsubdir_suffix +=d
 !endif
 libsubdir = $(model)$(libsubdir_suffix)
