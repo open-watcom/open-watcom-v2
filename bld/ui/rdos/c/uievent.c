@@ -56,14 +56,16 @@ static ORD              currMouseCol;
 static MOUSESTAT        currMouseStatus;
 
 static shiftkey_event   ShiftkeyEvents[] = {
-    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
-    EV_ALT_PRESS,       EV_ALT_RELEASE,
-    EV_CTRL_PRESS,      EV_CTRL_RELEASE,
-    ___,                ___,
-    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,
-    ___,                ___,
-    EV_CAPS_PRESS,      EV_CAPS_RELEASE,
-    EV_NUM_PRESS,       EV_NUM_RELEASE
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,   // 0x0001
+    EV_ALT_PRESS,       EV_ALT_RELEASE,     // 0x0002
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,    // 0x0004
+    ___,                ___,                // 0x0008
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,  // 0x0010
+    ___,                ___,                // 0x0020
+    ___,                ___,                // 0x0040
+    ___,                ___,                // 0x0080
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE,    // 0x0100
+    EV_NUM_PRESS,       EV_NUM_RELEASE      // 0x0200
 };
 
 static ui_event KeyEventProc( void )
@@ -72,10 +74,10 @@ static ui_event KeyEventProc( void )
     int                 keystate;
     int                 vk;
     int                 scan;
-    unsigned char       key;
+    int                 key;
     unsigned char       ascii;
     ui_event            ui_ev;
-    unsigned char       changed;
+    int                 changed;
 
     if( RdosReadKeyEvent( &ext, &keystate, &vk, &scan ) ) {
         ascii = ext;
@@ -85,15 +87,15 @@ static ui_event KeyEventProc( void )
         ui_ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
         if( ui_ev >= EV_HOME && ui_ev <= EV_DELETE ) {
-            if( ( keystate & KEY_NUM_ACTIVE ) == 0 ) {
-                if( ( keystate & KEY_SHIFT_PRESSED ) != 0 ) {
+            if( (keystate & KEY_NUM_ACTIVE) == 0 ) {
+                if( keystate & KEY_SHIFT_PRESSED ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
         if( ascii != 0 ) {
             ui_ev = ascii;
-            if( ( keystate & KEY_ALT_PRESSED ) && ( ascii == ' ' ) ) {
+            if( (keystate & KEY_ALT_PRESSED) && ( ascii == ' ' ) ) {
                 ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
@@ -109,11 +111,10 @@ static ui_event KeyEventProc( void )
     } else {
         changed = ( keystate ^ UIData->old_shift );
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 8) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( keystate & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( keystate & scan ) {
                         UIData->old_shift |= scan;
                         return( ShiftkeyEvents[key].press );
                     } else {
@@ -122,7 +123,6 @@ static ui_event KeyEventProc( void )
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
         ui_ev = EV_NO_EVENT;
