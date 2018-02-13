@@ -1,4 +1,4 @@
-#pmake: build flat register 32bit inline os2 iX86 rtdll os_os2 cpu_386
+#pmake: nobuild debug flat register 32bit inline os2 iX86 rtdll os_os2 cpu_386
 
 component  = wlib
 processor  = 387

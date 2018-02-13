@@ -1,4 +1,4 @@
-#pmake: build flat register 32bit calls winnt iX86 rtdll os_nt cpu_386
+#pmake: nobuild debug flat register 32bit calls winnt iX86 rtdll os_nt cpu_386
 
 component  = wlib
 processor  = 386
