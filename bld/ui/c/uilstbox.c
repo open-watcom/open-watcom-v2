@@ -51,6 +51,9 @@ typedef enum {
 } maction;
 
 bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsigned buff_len )
+/* if buffer is shorter then necessary then data is not null terminated
+ * caller must handle this if need C null terminated string
+ */
 {
     const char **p;
 
@@ -84,8 +87,8 @@ void uipaintlistbox( a_list *list )
         return;
     }
 
-    length = list->box->area.width + 1;
-    buf = (char *)uimalloc( length );
+    length = list->box->area.width;
+    buf = (char *)uimalloc( length + 1 );
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
@@ -95,6 +98,9 @@ void uipaintlistbox( a_list *list )
             attr = list->box->attr;
         }
         ok = (*fn_get)( list->data_handle, list->box->line + i, buf, length );
+        /* buf does not have to be null terminated */
+        /* terminate it at maximum length */
+        buf[length] = '\0';
         if( ok ) {
             uitextfield( list->box->vs, list->box->area.row + i,
                          list->box->area.col, list->box->area.width,
@@ -135,15 +141,15 @@ static bool selectoutofrange( a_list_info *box )
 
 static bool checkitem( a_list *list, int typed, unsigned index )
 {
-    unsigned char   chr;
+    char            chr[1];
     int             first;
     UIPICKGETTEXT   *fn_get;
 
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
-    if( (*fn_get)( list->data_handle, index, &chr, 1 ) ) {
-        first = chr;
+    if( (*fn_get)( list->data_handle, index, chr, sizeof( chr ) ) ) {
+        first = (unsigned char)chr[0];
         if( isupper( first ) ) {
             first = tolower( first );
         }

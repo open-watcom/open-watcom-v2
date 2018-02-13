@@ -144,7 +144,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     char                *str;
     ATTR                attr;
     ATTR                hotattr;
-    char                ctrlbuf[CTRL_BUF_LEN+1];
+    char                ctrlbuf[CTRL_BUF_LEN + 1];
     unsigned            length = 0;
     a_check             *check = NULL;
     a_radio             *radio = NULL;
@@ -162,7 +162,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     area = &field->area;
     str = NULL;
     use_hottext = false;
-    memset( ctrlbuf, '\0', CTRL_BUF_LEN+1 );
+    memset( ctrlbuf, '\0', CTRL_BUF_LEN + 1 );
 
     attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_EDIT];
 
@@ -248,8 +248,13 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         fn_get = list->get;
         if( fn_get == NULL )
             fn_get = uigetlistelement;
-        (*fn_get)( list->data_handle, list->choice, ctrlbuf, area->width );
-        length = area->width;
+        (*fn_get)( list->data_handle, list->choice, ctrlbuf, CTRL_BUF_LEN );
+        /* ctrlbuf does not have to be null terminated */
+        /* terminate it at maximum length */
+        str[CTRL_BUF_LEN] = '\0';
+        length = strlen( ctrlbuf );
+        if( length > area->width )
+            length = area->width;
         break;
     case FLD_LISTBOX:
     case FLD_EDIT_MLE:
@@ -577,12 +582,15 @@ void uiupdatecombobox( a_combo_box *combo )
 
     edit  = &combo->edit;
     list  = &combo->list;
-    str = (char *)uimalloc( CTRL_BUF_LEN );
+    str = (char *)uimalloc( CTRL_BUF_LEN + 1 );
     if( str != NULL ) {
         fn_get = list->get;
         if( fn_get == NULL )
             fn_get = uigetlistelement;
         if( (*fn_get)( list->data_handle, list->choice, str, CTRL_BUF_LEN ) ) {
+            /* str does not have to be null terminated */
+            /* terminate it at maximum length */
+            str[CTRL_BUF_LEN] = '\0';
             uifree( edit->buffer );
             edit->buffer = str;
             edit->length = strlen( str );
