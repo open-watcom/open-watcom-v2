@@ -97,16 +97,16 @@ char uialtchar( ui_event ui_ev )
 
 
 static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
-                             LPC_STRING string, int len )
+                             LPC_STRING string, int string_len )
 /**************************************************************/
 {
     SAREA       area;
 
-    bstring( bptr, row, col, attr, string, len );
+    bstring( bptr, row, col, attr, string, string_len );
     area.row = row;
     area.col = col;
     area.height = 1;
-    area.width = len;
+    area.width = string_len;
     physupdate( &area );
 }
 
@@ -162,7 +162,7 @@ static void menutitle( int menu, bool current )
              attr, mptr->name, desc->titlewidth );
     mstring( &UIData->screen, MENU_GET_ROW( desc ),
              desc->titlecol + TITLE_OFFSET + CHAROFFSET( *mptr ),
-             chattr, &mptr->name[CHAROFFSET( *mptr )], 1 );
+             chattr, mptr->name + CHAROFFSET( *mptr ), 1 );
 }
 
 void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
@@ -171,9 +171,9 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
     bool                    active;
     ORD                     choffset;
     int                     len;
-    char                    ch;
+    char                    ch[1];
     char*                   tab_loc;
-    int                     tab_len;
+    int                     tab_loc_len;
     ORD                     start_col;
     char*                   str;
     ATTR                    attr;
@@ -201,22 +201,22 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
         len = desc->area.width - 2;
         str = menu->name;
         if( MENUSEPARATOR( *menu ) ) {
-            ch = BOX_CHAR( SBOX_CHARS(), LEFT_TACK );
+            ch[0] = BOX_CHAR( SBOX_CHARS(), LEFT_TACK );
             mstring( &UIData->screen,
                     (ORD) desc->area.row + item,
                     (ORD) desc->area.col,
-                     UIData->attrs[ATTR_MENU], &ch, 1 );
+                     UIData->attrs[ATTR_MENU], ch, 1 );
             mfill( &UIData->screen,
                     (ORD) desc->area.row + item,
                     (ORD) desc->area.col + 1,
                     UIData->attrs[ATTR_MENU],
                     BOX_CHAR( SBOX_CHARS(), HORIZ_LINE ),
                     len, 1 );
-            ch = BOX_CHAR( SBOX_CHARS(), RIGHT_TACK );
+            ch[0] = BOX_CHAR( SBOX_CHARS(), RIGHT_TACK );
             mstring( &UIData->screen,
                     (ORD) desc->area.row + item,
                     (ORD) desc->area.col + len + 1,
-                    UIData->attrs[ATTR_MENU], &ch, 1 );
+                    UIData->attrs[ATTR_MENU], ch, 1 );
         } else {
             if( len < 0 ) {
                 len = 0;
@@ -248,18 +248,15 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
                 len--;
             }
             if( str != NULL ) {
+                tab_loc_len = 0;
                 tab_loc = strchr( str, TABCHAR );
                 if( tab_loc != NULL ) {
                     tab_loc++;
                     if( tab_loc != NULL ) {
-                        tab_len = strlen( tab_loc ) + 1;
-                    } else {
-                        tab_len = 0;
+                        tab_loc_len = strlen( tab_loc ) + 1;
                     }
-                } else {
-                    tab_len = 0;
                 }
-                str_len = strlen( str ) - tab_len;
+                str_len = strlen( str ) - tab_loc_len;
                 if( desc->flags & MENU_HAS_TAB ) {
                     if( str_len > TAB_OFFSET( desc ) ) {
                         str_len = TAB_OFFSET( desc ) - 1;
@@ -272,12 +269,12 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
                     mstring( &UIData->screen,           /* tabbed text */
                              (ORD) desc->area.row + item,
                              (ORD) start_col + TAB_OFFSET( desc ) + 2,
-                             attr, tab_loc, tab_len );
+                             attr, tab_loc, tab_loc_len );
                 }
                 mstring( &UIData->screen,               /* short cut key */
                          (ORD) desc->area.row + item,
                          (ORD) start_col + choffset + 2,
-                         chattr, &str[choffset], 1 );
+                         chattr, str + choffset, 1 );
             }
         }
     }
@@ -683,13 +680,13 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
     register    int                     item;
     register    int                     len;
     register    char*                   tab_loc;
-    register    int                     tab_length;
+    register    int                     tab_loc_len;
                 int                     to_add;
 
     desc->flags = 0;
     if( iptr != NULL ) {
         desc->area.width = 0;
-        tab_length = 0;
+        tab_loc_len = 0;
         for( item = 0 ; !MENUENDMARKER( *iptr ) ; ++item ) {
             if( !MENUSEPARATOR( *iptr ) ) {
                 len = strlen( iptr->name );
@@ -698,8 +695,8 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
                     desc->flags |= MENU_HAS_TAB;
                     tab_loc++;
                     if( tab_loc != NULL ) {
-                        if( tab_length < strlen( tab_loc ) )
-                            tab_length = strlen( tab_loc );
+                        if( tab_loc_len < strlen( tab_loc ) )
+                            tab_loc_len = strlen( tab_loc );
                         len -= strlen( tab_loc ); /* for text after TABCHAR */
                     }
                     len--;  /* for TABCHAR */
@@ -718,7 +715,7 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
         }
         to_add = 0;
         if( desc->flags & MENU_HAS_TAB ) {
-            to_add += tab_length + 1;
+            to_add += tab_loc_len + 1;
         }
         if( desc->flags & MENU_HAS_POPUP ) {
             to_add++;

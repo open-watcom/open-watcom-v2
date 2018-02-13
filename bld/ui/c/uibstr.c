@@ -40,13 +40,13 @@ void intern bstring( register BUFFER            *bptr,
                      register int               col,
                      register ATTR              attr,
                      register LPC_STRING        string,
-                     register int               len )
-/******************************************************/
+                     register int               string_len )
+/**********************************************************/
 {
     LP_PIXEL    dst;
 
     dst = bptr->origin + row * bptr->increment + col;
-    farstring( dst, attr, len, issnow( bptr ), string );
+    farstring( dst, attr, string, string_len, issnow( bptr ) );
 }
 
 

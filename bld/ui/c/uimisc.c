@@ -144,20 +144,20 @@ void uiclose( VSCREEN *s )
 void uicntrtext( VSCREEN        *vs,
                  SAREA          *area,
                  ATTR           attr,
-                 unsigned       length,
+                 unsigned       field_len,
                  const char     *text )
 /*************************************/
 {
     ORD                 col;
 
-    if( length > 0 ) {
+    if( field_len > 0 ) {
         col = area->col;
-        if( length < area->width ) {
-            col += ( area->width - length ) / 2;
+        if( field_len < area->width ) {
+            col += ( area->width - field_len ) / 2;
         } else {
-            length = area->width;
+            field_len = area->width;
         }
-        uivtextput( vs, area->row, col, attr, text, length );
+        uivtextput( vs, area->row, col, attr, text, field_len );
     }
 }
 

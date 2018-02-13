@@ -116,8 +116,7 @@ char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
 
     /* draw hotkey */
     if( hotkey != '\0' ) {
-        uivtextput( vs, area.row, area.col + offset + hotindex, hotattr,
-                    &buf[hotindex], 1 );
+        uivtextput( vs, area.row, area.col + offset + hotindex, hotattr, buf + hotindex, 1 );
     }
 
     return( hotkey );
@@ -152,24 +151,20 @@ char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
     memset( buf, '\0', HOT_BUFFER );
     if( ( flags & ( HOT_HIDDEN | HOT_ACTIVE ) ) != 0 ) {
         /* wipe out the shadow */
-        uivtextput( vs, parea->row, parea->col + parea->width - 1,
-                UIData->attrs[ATTR_NORMAL], buf, 1 );
+        uivtextput( vs, parea->row, parea->col + parea->width - 1, UIData->attrs[ATTR_NORMAL], buf, 1 );
         if( parea->height >= 2 ) {
-            uivtextput( vs, parea->row + 1, parea->col,
-                        UIData->attrs[ATTR_NORMAL], buf, parea->width );
+            uivtextput( vs, parea->row + 1, parea->col, UIData->attrs[ATTR_NORMAL], buf, parea->width );
         }
     } else {
         /* draw the shadow */
         buf[0] = UiGChar[UI_SHADOW_RIGHT];
-        uivtextput( vs, parea->row, parea->col + parea->width - 1,
-                UIData->attrs[ATTR_SHADOW], buf, 1 );
+        uivtextput( vs, parea->row, parea->col + parea->width - 1, UIData->attrs[ATTR_SHADOW], buf, 1 );
 
         if( parea->height >= 2 ) {
             buf[0] = UiGChar[UI_SHADOW_B_LEFT];
             memset( &buf[1], UiGChar[UI_SHADOW_BOTTOM], parea->width - 2 );
             buf[parea->width - 1] = UiGChar[UI_SHADOW_B_RIGHT];
-            uivtextput( vs, parea->row + 1, parea->col,
-                        UIData->attrs[ATTR_SHADOW], buf, parea->width );
+            uivtextput( vs, parea->row + 1, parea->col, UIData->attrs[ATTR_SHADOW], buf, parea->width );
         }
     }
 

@@ -94,8 +94,7 @@ void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
 void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
 /**********************************************************************/
 {
-    int         length;
-    int         col;
+    int         field_len;
 
     if( area->width < 2 ) {
         return;
@@ -107,12 +106,10 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
         return;
     }
 
-    length = strlen( title );
-    col = area->col + 1;
-
-    if( length >= area->width - 2 ) {
-        length = area->width;
+    field_len = strlen( title );
+    if( field_len > area->width - 2 ) {
+        field_len = area->width - 2;
     }
 
-    uivtextput( vs, area->row, col, attr, title, length );
+    uivtextput( vs, area->row, area->col + 1, attr, title, field_len );
 }

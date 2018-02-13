@@ -36,47 +36,48 @@
 #include "clibext.h"
 
 
-void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
-                   ATTR attr, LPC_STRING string, int slen )
+void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, int field_len,
+                   ATTR attr, LPC_STRING string, int string_len )
 /****************************************************************/
 {
     int             count;
     int             scount;
     SAREA           dirty_area;
 
-    if( len == 0 ) return;
-    if( slen < 0 ) {
-        slen = 0;
+    if( field_len == 0 )
+        return;
+    if( string_len < 0 ) {
+        string_len = 0;
     }
     count = vptr->area.width - col;
-    if( count > len )
-        count = len;
+    if( count > field_len )
+        count = field_len;
     scount = count;
-    if( scount > slen )
-        scount = slen;
+    if( scount > string_len )
+        scount = string_len;
     if( count > 0 ) {
         okopen( vptr );
         okline( row, col, count, vptr->area );
         dirty_area.row = row;
         dirty_area.col = col;
         dirty_area.height = 1;
-        dirty_area.width = (ORD) count;
+        dirty_area.width = (ORD)count;
         uivdirty( vptr, dirty_area );
         bstring( &(vptr->window.type.buffer), row, col, attr, string, scount );
         if( count > scount ) {
-            bfill( &(vptr->window.type.buffer), row, col+scount, attr, ' ', count-scount );
+            bfill( &(vptr->window.type.buffer), row, col + scount, attr, ' ', count - scount );
         }
     }
 }
 
 
-void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, int len )
-/**********************************************************************************************/
+void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, int field_len )
+/****************************************************************************************************/
 {
-    if( len == 0 && string != NULL ) {
-        len = strlen( string );
+    if( field_len == 0 && string != NULL ) {
+        field_len = strlen( string );
     }
-    uitextfield( vptr, row, col, len, attr, string, len );
+    uitextfield( vptr, row, col, field_len, attr, string, field_len );
 }
 
 

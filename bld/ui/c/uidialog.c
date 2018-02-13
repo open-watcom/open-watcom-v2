@@ -141,11 +141,10 @@ static VFIELD *nextfield( VFIELD *fld )
 static void print_field( VSCREEN *vs, VFIELD *field, bool current )
 {
     SAREA               *area;
-    char                *str;
     ATTR                attr;
     ATTR                hotattr;
     char                ctrlbuf[CTRL_BUF_LEN + 1];
-    unsigned            length = 0;
+    unsigned            ctrlbuf_len = 0;
     a_check             *check = NULL;
     a_radio             *radio = NULL;
     a_list              *list;
@@ -160,7 +159,6 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     if( field == NULL )
         return;
     area = &field->area;
-    str = NULL;
     use_hottext = false;
     memset( ctrlbuf, '\0', CTRL_BUF_LEN + 1 );
 
@@ -177,13 +175,14 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         return;
     case FLD_TEXT :
         attr = UIData->attrs[ATTR_NORMAL];
-        str  = field->u.str;
-        break;
+        uivtextput( vs, area->row, area->col, attr, field->u.str, area->width );
+        uirefresh();
+        return;
     case FLD_LABEL :
         attr = UIData->attrs[ATTR_NORMAL];
         strcpy( ctrlbuf, field->u.str );
         strcat( ctrlbuf, ":" );
-        length = area->width;
+        ctrlbuf_len = strlen( ctrlbuf );
         break;
     case FLD_FRAME :
         uidrawbox( vs, area, UIData->attrs[ATTR_NORMAL], field->u.str );
@@ -192,19 +191,16 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     case FLD_INVISIBLE_EDIT :
         edit = field->u.edit;
         if( edit->buffer != NULL ) {
-            length = edit->length;
-            if( length > CTRL_BUF_LEN )
-                length = CTRL_BUF_LEN;
-            if( length > area->width ) {
-                length = area->width;
-            }
+            ctrlbuf_len = edit->length;
+            if( ctrlbuf_len > CTRL_BUF_LEN )
+                ctrlbuf_len = CTRL_BUF_LEN;
             if( field->typ == FLD_INVISIBLE_EDIT ) {
-                memset( ctrlbuf, '*', length );
+                memset( ctrlbuf, '*', ctrlbuf_len );
             } else {
-                strncpy( ctrlbuf, edit->buffer, length );
+                strncpy( ctrlbuf, edit->buffer, ctrlbuf_len );
             }
         } else {
-            length = 0;
+            ctrlbuf_len = 0;
         }
         break;
     case FLD_COMBOBOX :
@@ -219,12 +215,12 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
             ctrlbuf[0] = '\0';
         }
         if( edit->buffer != NULL ) {
-            length = edit->length;
-            if( length > CTRL_BUF_LEN )
-                length = CTRL_BUF_LEN;
-            strncpy( ctrlbuf, edit->buffer, length );
+            ctrlbuf_len = edit->length;
+            if( ctrlbuf_len > CTRL_BUF_LEN )
+                ctrlbuf_len = CTRL_BUF_LEN;
+            strncpy( ctrlbuf, edit->buffer, ctrlbuf_len );
         } else {
-            length = 0;
+            ctrlbuf_len = 0;
         }
         if( list->box == NULL && combo->perm ) {
             c_area = *area;
@@ -251,10 +247,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         (*fn_get)( list->data_handle, list->choice, ctrlbuf, CTRL_BUF_LEN );
         /* ctrlbuf does not have to be null terminated */
         /* terminate it at maximum length */
-        str[CTRL_BUF_LEN] = '\0';
-        length = strlen( ctrlbuf );
-        if( length > area->width )
-            length = area->width;
+        ctrlbuf[CTRL_BUF_LEN] = '\0';
+        ctrlbuf_len = strlen( ctrlbuf );
         break;
     case FLD_LISTBOX:
     case FLD_EDIT_MLE:
@@ -273,6 +267,8 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         }
         return;
     case FLD_CHECK:
+        /* ctrlbuf must be null terminated for this case */
+        use_hottext = true;
         attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_NORMAL];
         check = field->u.check;
 
@@ -286,10 +282,10 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         ctrlbuf[3] = ' ';
 
         strncat( ctrlbuf, check->str, CTRL_BUF_LEN - 4 );
-        length = strlen( ctrlbuf );
-        use_hottext = true;
         break;
     case FLD_RADIO:
+        /* ctrlbuf must be null terminated for this case */
+        use_hottext = true;
         attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_NORMAL];
         radio = field->u.radio;
 
@@ -303,14 +299,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         ctrlbuf[3] = ' ';
 
         strncat( ctrlbuf, radio->str, CTRL_BUF_LEN - 4 );
-        length = strlen( ctrlbuf );
-        use_hottext = true;
         break;
     }
-    if( str != NULL ) {
-        uivtextput( vs, area->row, area->col, attr, str, area->width );
-        uirefresh();
-    } else if( use_hottext ) {
+    if( use_hottext ) {
         if( current ) {
             hotattr = attr;
         } else {
@@ -323,7 +314,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
             radio->hotkey = hotkey;
         }
     } else {
-        uitextfield( vs, area->row, area->col, area->width, attr, ctrlbuf, length );
+        uitextfield( vs, area->row, area->col, area->width, attr, ctrlbuf, ctrlbuf_len );
     }
 }
 

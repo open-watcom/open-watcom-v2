@@ -748,7 +748,7 @@ extern void             uivsetactive( VSCREEN _FARD * );
 extern void             uivsetcursor( VSCREEN _FARD * );
 extern bool             uivshow( VSCREEN _FARD * );
 extern void             uivtextput( VSCREEN _FARD *, ORD, ORD, ATTR, const char _FARD *, int );
-extern void             uitextfield( VSCREEN _FARD *, ORD, ORD, ORD, ATTR, LPC_STRING, int );
+extern void             uitextfield( VSCREEN _FARD *, ORD, ORD, int, ATTR, LPC_STRING, int );
 extern void             uimousespeed( unsigned );
 extern unsigned char    uicheckshift( void );
 extern ui_event         uikeyboardevent( void );
