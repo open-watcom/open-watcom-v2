@@ -1,4 +1,4 @@
-#pmake: build debug flat cpu_386 os_os2 dynamic
+#pmake: nobuild debug flat cpu_386 os_os2 dynamic
 #
 # plib3r -- 32-bit 3r MT PLIB, PLBX
 #

@@ -1,4 +1,4 @@
-#pmake: build debug trap register 32bit os2 threading dll startup ix86 dynamic os_os2 cpu_386
+#pmake: nobuild debug trap register 32bit os2 threading dll startup ix86 dynamic os_os2 cpu_386
 
 processor  = 386
 convention = register

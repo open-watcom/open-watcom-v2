@@ -1,4 +1,4 @@
-#pmake: build debug flat cpu_386 os_nt
+#pmake: nobuild debug flat cpu_386 os_nt
 #
 # strgmt3r.lib -- register based multi-thread 32-bit STRING library
 #

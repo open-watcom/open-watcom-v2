@@ -1,4 +1,4 @@
-#pmake/150: build debug flat register 32bit calls os2 iX86 rtdll os_os2 cpu_386 cpplib
+#pmake/150: nobuild debug flat register 32bit calls os2 iX86 rtdll os_os2 cpu_386 cpplib
 
 component  = plib
 processor  = 386

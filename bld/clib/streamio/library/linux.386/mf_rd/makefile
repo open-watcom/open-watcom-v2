@@ -1,4 +1,4 @@
-#pmake: build debug flat register threading streamio static os_linux cpu_386
+#pmake: nobuild debug flat register threading streamio static os_linux cpu_386
 
 processor  = 386
 convention = register
