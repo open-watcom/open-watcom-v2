@@ -199,19 +199,18 @@ extern void     uidialogsetcurr( a_dialog *, VFIELD *);
 extern void     uidialogexitcurr( a_dialog * );
 extern void     uidialogchangefield( a_dialog * );
 extern bool     uiisdefaulthotspot( VFIELD *, ui_event );
-extern ui_event uilistbox( ui_event , struct a_list *, bool );
+extern ui_event uilistbox( ui_event , a_list *, bool );
 extern void     uiupdateedit( a_dialog *, VFIELD * );
 extern void     uiboxpushlist( void );
 extern void     uiboxpoplist( void );
-extern void     uimovelistbox( struct a_list *, int row_diff, int col_diff );
-extern unsigned uiendlistbox( struct a_list * );
-extern void     uipaintlistbox( struct a_list * );
-extern struct a_list_info *uibeglistbox( VSCREEN *, struct sarea *,
-                                         struct a_list * );
-extern unsigned uilistsize( struct a_list * );
+extern void     uimovelistbox( a_list *, int row_diff, int col_diff );
+extern unsigned uiendlistbox( a_list * );
+extern void     uipaintlistbox( a_list * );
+extern a_list_info *uibeglistbox( VSCREEN *, SAREA *, a_list * );
+extern unsigned uilistsize( a_list * );
 extern UIPICKGETTEXT uigetlistelement;
-extern void     uiupdatelistbox( struct a_list * );
-extern void     uiupdatecombobox( struct a_combo_box * );
+extern void     uiupdatelistbox( a_list * );
+extern void     uiupdatecombobox( a_combo_box * );
 extern void     *openstream(char *,char *,char **);
 extern void     closestream(void *);
 

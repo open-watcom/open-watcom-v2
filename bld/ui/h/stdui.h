@@ -552,7 +552,7 @@ typedef struct ui_window {
     SAREA               area;
     SAREA               dirty_area;
     int                 priority;
-    void                (_FAR *update)( struct sarea, void * );
+    void                (_FAR *update)(SAREA, void *);
     void                _FARD *parm;
     struct ui_window    _FARD *next;
     struct ui_window    _FARD *prev;

@@ -60,7 +60,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     unsigned char           *box;
     ATTR                    attr;
     int                     priority;
-    void                    (_FAR *updatertn)( struct sarea, void * );
+    void                    (_FAR *updatertn)( SAREA, void * );
     bool                    okbuffer;
     unsigned                len;
     ORD                     col;
@@ -100,7 +100,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         updatertn = NULL;
     } else {
         okbuffer = balloc( &(vptr->window.type.buffer), area.height, area.width );
-        updatertn = (void(*)(struct sarea,void *))update;
+        updatertn = (void(*)(SAREA, void *))update;
     }
     if( okbuffer ) {
         vptr->window.area = area;
