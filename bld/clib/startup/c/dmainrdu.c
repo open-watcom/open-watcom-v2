@@ -91,10 +91,10 @@ int _LibMain( int hdll, int reason, void *reserved )
         __RdosRemoveThread();
         break;
     case DLL_PROCESS_DETACH:
-        __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         __RdosRemoveThread();
         RdosFreeMem( __FirstThreadData );
         __FirstThreadData = NULL;
+        __FiniRtns( 0, 255 );
         break;
     }
     return( rc );

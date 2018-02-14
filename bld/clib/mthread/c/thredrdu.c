@@ -101,7 +101,6 @@ static void begin_thread_helper( void *param )
     __sig_init_rtn(); // fills in a thread-specific copy of signal table
     (*start_addr)( arg );
     _endthread();
-    RdosFreeMem(tdata);
     return;
 }
 

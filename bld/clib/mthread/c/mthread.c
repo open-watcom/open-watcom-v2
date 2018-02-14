@@ -814,6 +814,7 @@ void __RdosRemoveThread( void )
         if( tdata == NULL )
             return;
         __RemoveThreadData( tdata->thread_id );
+        RdosFreeMem(tdata);
         __tls_set_value( __TlsIndex, NULL );
     }
 }
