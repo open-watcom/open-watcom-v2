@@ -222,9 +222,9 @@ ui_event intern mouseevent( void )
 VSCREEN * UIAPI uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
 /*******************************************************************/
 {
-    register VSCREEN    *owner;
-    int                 row;
-    int                 col;
+    VSCREEN         *owner;
+    int             row;
+    int             col;
 
     owner = findvscreen( MouseRow / UIData->mouse_yscale, MouseCol / UIData->mouse_xscale );
 

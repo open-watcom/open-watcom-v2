@@ -37,7 +37,7 @@
 static void backblank( SAREA area, void *dummy )
 /**********************************************/
 {
-    register    ORD                     row;
+    ORD         row;
 
     /* unused parameters */ (void)dummy;
 
@@ -50,7 +50,7 @@ static void backblank( SAREA area, void *dummy )
 static void backfill( SAREA area, void *dummy )
 /*********************************************/
 {
-    register    ORD                     row;
+    ORD         row;
 
     /* unused parameters */ (void)dummy;
 
@@ -128,14 +128,13 @@ bool UIAPI uiremovebackground( void )
 bool UIAPI uikeepbackground( void )
 /**********************************/
 {
-    register    ORD                     row;
-    register    BUFFER                  *buff;
+    ORD             row;
+    BUFFER          *buff;
 
     buff = uibackgroundbuffer();
     if( buff ) {
         for( row = 0; row < UIData->height; ++ row ) {
-            uibcopy( &UIData->screen, row, 0,
-                   buff, row, 0, UIData->width );
+            uibcopy( &UIData->screen, row, 0, buff, row, 0, UIData->width );
         }
     }
     return( buff != NULL );

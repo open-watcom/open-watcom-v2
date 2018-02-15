@@ -130,10 +130,10 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, unsigned char ch, 
 static void menutitle( int menu, bool current )
 /*********************************************/
 {
-    register    DESCMENU                *desc;
-    register    UIMENUITEM              *mptr;
-    register    ATTR                    attr;
-    register    ATTR                    chattr;
+    DESCMENU            *desc;
+    UIMENUITEM          *mptr;
+    ATTR                attr;
+    ATTR                chattr;
 
     desc = &Describe[menu - 1];
     mptr = &Menu->titles[menu - 1];
@@ -283,7 +283,7 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
 
 void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
 {
-    register    int             item;
+    int             item;
 
     forbid_refresh();
     if( desc->area.height > 0 ) {
@@ -312,10 +312,10 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 
 static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
 {
-    register    int                     index;
-    register    UIMENUITEM              *itemptr;
-    register    int                     handled;
-    register    int                     hotchar;
+    int                 index;
+    UIMENUITEM          *itemptr;
+    int                 handled;
+    int                 hotchar;
 
     ch = tolower( ch );
     handled = false;
@@ -622,8 +622,8 @@ ui_event uigeteventfrompos( ORD row, ORD col )
 ui_event intern menuevent( VSCREEN *vptr )
 /****************************************/
 {
-    register ui_event       new_ui_ev;
-    register ui_event       ui_ev;
+    ui_event        new_ui_ev;
+    ui_event        ui_ev;
 
     new_ui_ev = EV_NO_EVENT;
 
@@ -677,11 +677,11 @@ ui_event intern menuevent( VSCREEN *vptr )
 void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
 /*******************************************************/
 {
-    register    int                     item;
-    register    int                     len;
-    register    char*                   tab_loc;
-    register    int                     tab_loc_len;
-                int                     to_add;
+    int                 item;
+    int                 len;
+    char*               tab_loc;
+    int                 tab_loc_len;
+    int                 to_add;
 
     desc->flags = 0;
     if( iptr != NULL ) {
@@ -770,7 +770,7 @@ static void descmenu( int menu, DESCMENU *desc )
 
 void uimenutitlebar( void )
 {
-    register    int                     menu;
+    int                     menu;
 
     forbid_refresh();
     for( menu = 1; menu <= NumMenus; ++menu ) {
@@ -821,7 +821,7 @@ void UIAPI uimenuindicators( bool status )
 void UIAPI uisetmenudesc( void )
 /*******************************/
 {
-    register int  count;
+    int         count;
 
     count = NumMenus;
     for( ; count > 0 ; --count ) {
@@ -832,9 +832,9 @@ void UIAPI uisetmenudesc( void )
 VBARMENU* UIAPI uimenubar( VBARMENU *bar )
 /*****************************************/
 {
-    register    int                     count;
-    register    UIMENUITEM              *menus;
-    register    VBARMENU                *prevMenu;
+    int                     count;
+    UIMENUITEM              *menus;
+    VBARMENU                *prevMenu;
 
     if( NumMenus > 0 ) {
         closewindow( &BarWin );
@@ -927,7 +927,7 @@ void UIAPI uinomenus( void )
 void UIAPI uimenus( UIMENUITEM *menus, UIMENUITEM **items, ui_event hot )
 /***********************************************************************/
 {
-    register    int                     index;
+    int                     index;
 
     /* unused parameters */ (void)hot;
 

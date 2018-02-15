@@ -57,10 +57,10 @@ static void _dorefresh( struct update_area *total, SAREA area,
                            UI_WINDOW *wptr, UI_WINDOW *cover )
 /************************************************************/
 {
-    register    int                     i;
-    auto        SAREA                   areas[5];
-    unsigned                            start;
-    unsigned                            end;
+    int                 i;
+    SAREA               areas[5];
+    unsigned            start;
+    unsigned            end;
 
     if( cover == NULL ) {
         start = area.row * UIData->width + area.col;
@@ -84,10 +84,11 @@ static void _dorefresh( struct update_area *total, SAREA area,
 void UIREFRESH( void )
 /********************/
 {
-    register    UI_WINDOW*              wptr;
-    struct update_area                  total;
-    SAREA                               area;
-    int                                 start,end;
+    UI_WINDOW           *wptr;
+    struct update_area  total;
+    SAREA               area;
+    int                 start;
+    int                 end;
 
     _uicheckuidata();
     wptr = UIData->area_tail;

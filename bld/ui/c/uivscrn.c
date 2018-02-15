@@ -37,7 +37,7 @@
 VSCREEN* intern findvscreen( ORD row, ORD col )
 /*********************************************/
 {
-    register    UI_WINDOW*              wptr;
+    UI_WINDOW   *wptr;
 
     for( wptr = UIData->area_head; wptr != &UIData->blank; wptr = wptr->next ) {
         if( ( row >= wptr->area.row ) && ( row < wptr->area.row + wptr->area.height ) ) {
@@ -72,8 +72,8 @@ void UIAPI uivsetactive( VSCREEN *vptr )
 void UIAPI uivsetcursor( VSCREEN *vptr )
 /**************************************/
 {
-    register    ORD                     row;
-    register    ORD                     col;
+    ORD             row;
+    ORD             col;
 
     if( vptr != NULL ) {
         row = vptr->area.row + vptr->row;

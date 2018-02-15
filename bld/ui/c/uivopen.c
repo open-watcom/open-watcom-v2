@@ -42,9 +42,9 @@
 static void update( SAREA area, VSCREEN *vptr )
 /*********************************************/
 {
-    register    int                     row;
-    register    int                     vrow;
-    register    int                     vcol;
+    int             row;
+    int             vrow;
+    int             vcol;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
         vrow = row - (int)vptr->area.row;

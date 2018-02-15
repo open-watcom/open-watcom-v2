@@ -34,15 +34,13 @@
 #include "uidef.h"
 
 
-void intern vertretrace()
-/***********************/
+void intern vertretrace( void )
+/*****************************/
 {
 }
 
-
-bool intern issnow( bptr )
-/************************/
-    register        BUFFER*                 bptr;
+bool intern issnow( BUFFER *bptr )
+/********************************/
 {
     if( isscreen( bptr ) ) {
         uioffmouse();

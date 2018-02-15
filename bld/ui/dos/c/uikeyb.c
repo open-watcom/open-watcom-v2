@@ -137,12 +137,12 @@ bool intern initkeyboard( void )
 ui_event intern keyboardevent( void )
 /***********************************/
 {
-    register    unsigned                key;
-    register    unsigned char           scan;
-    register    unsigned char           ascii;
-    register    ui_event                ui_ev;
-    register    unsigned char           newshift;
-    register    unsigned char           changed;
+    unsigned            key;
+    unsigned char       scan;
+    unsigned char       ascii;
+    ui_event            ui_ev;
+    unsigned char       newshift;
+    unsigned char       changed;
 
     newshift = checkshift();
     /* checkkey must take precedence over shift change so that  *

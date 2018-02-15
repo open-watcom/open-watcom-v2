@@ -107,10 +107,10 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
 ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev )
 /*******************************************************************************/
 {
-    register    int                     scroll;
-    register    bool                    scrollable;
-    register    bool                    growing;
-    auto        VBUFFER                 buffer;
+    int                     scroll;
+    bool                    scrollable;
+    bool                    growing;
+    VBUFFER                 buffer;
 
 
     if( editline->update ) {
@@ -178,7 +178,7 @@ ui_event UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, ui_event ui_ev 
 ui_event UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
 /**************************************************************/
 {
-    register ui_event       ui_ev;
+    ui_event        ui_ev;
 
     uipushlist( LineEvents );
     ui_ev = uivgetevent( vptr );

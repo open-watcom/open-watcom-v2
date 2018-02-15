@@ -69,8 +69,8 @@ void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
 void intern dirtynext( SAREA area, UI_WINDOW *wptr )
 /**************************************************/
 {
-    register    int                     i;
-    auto        SAREA                   areas[5];
+    int         i;
+    SAREA       areas[5];
 
     dividearea( area, wptr->area, areas );
     if( areas[0].height > 0 ) {

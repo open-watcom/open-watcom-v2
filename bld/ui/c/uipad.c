@@ -40,8 +40,8 @@
 void UIAPI uipadblanks( char *buff, int len )
 /********************************************/
 {
-    register    char*                   end_buff;
-    register    char                    curr_char;
+    char            *end_buff;
+    char            curr_char;
 
     end_buff = buff + len;
     while( buff < end_buff ) {

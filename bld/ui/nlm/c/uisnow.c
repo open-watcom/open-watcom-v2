@@ -36,16 +36,15 @@
 
 /* We do not do snow checking in NetWare. */
 
-void intern vertretrace()
-/***********************/
+void intern vertretrace( void )
+/*****************************/
 {
 }
 
-bool intern issnow( bptr )
-/************************/
-    register        BUFFER*                 bptr;
+bool intern issnow( BUFFER *bptr )
+/********************************/
 {
-    bptr = bptr;
+    /* unused parameters */ (void)bptr;
+
     return( false );
 }
-

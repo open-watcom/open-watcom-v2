@@ -71,12 +71,12 @@ static int intern secondbyte( char *buff, char *which )
 ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
 /***********************************************************/
 {
-    register char           *bptr;
-    register ui_event       new;
-    register bool           allblank;
-    register bool           cleared;    /* buffer auto-cleared */
-    register bool           right;      /* cursor moved right */
-    register bool           ignore_uicharlen; /* ignore dbcs lead character when moving right */
+    char            *bptr;
+    ui_event        new;
+    bool            allblank;
+    bool            cleared;    /* buffer auto-cleared */
+    bool            right;      /* cursor moved right */
+    bool            ignore_uicharlen; /* ignore dbcs lead character when moving right */
 
     new = EV_NO_EVENT;
     cleared = false;

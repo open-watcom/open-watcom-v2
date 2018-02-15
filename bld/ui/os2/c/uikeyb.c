@@ -88,14 +88,14 @@ void intern kbdspawnend( void )
 ui_event intern keyboardevent( void )
 /***********************************/
 {
-    register    unsigned                scan;
-    register    unsigned char           key;
-    register    unsigned char           ascii;
-    register    ui_event                ui_ev;
-    register    unsigned char           newshift;
-    register    unsigned char           changed;
-    struct _KBDKEYINFO                  keyInfo;
-    struct _KBDINFO                     shiftInfo;
+    unsigned                scan;
+    unsigned char           key;
+    unsigned char           ascii;
+    ui_event                ui_ev;
+    unsigned char           newshift;
+    unsigned char           changed;
+    struct _KBDKEYINFO      keyInfo;
+    struct _KBDINFO         shiftInfo;
 
 
     shiftInfo.cb = sizeof( shiftInfo );

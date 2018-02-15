@@ -90,7 +90,7 @@ bool UIAPI uiset80col( void )
 /****************************/
 
 {
-    register    bool            status;
+    bool        status;
 
     status = false;
     if( UIData->width != 80 ) {
@@ -288,9 +288,9 @@ static int IsTextMode( void )
 static bool initmonitor( void )
 /*****************************/
 {
-    register    bool                    ega;
-    register    unsigned char           mode;
-    struct      ega_info                info;
+    bool                ega;
+    unsigned char       mode;
+    struct ega_info     info;
 
     if( UIData == NULL ) {
         UIData = &ui_data;

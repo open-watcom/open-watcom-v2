@@ -36,8 +36,8 @@
 void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
 /***********************************************************************/
 {
-    register    BUFFER                  *bptr;
-    register    ORD                     row;
+    BUFFER          *bptr;
+    ORD             row;
 
     okopen( vptr );
     bptr = &(vptr->window.type.buffer);

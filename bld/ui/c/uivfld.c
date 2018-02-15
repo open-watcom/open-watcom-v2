@@ -65,8 +65,8 @@ static ui_event deadfieldevents[] = {
 static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD col )
 /*********************************************************************************/
 {
-    register ui_event       ui_ev;
-    register VFIELD*        prev;
+    ui_event       ui_ev;
+    VFIELD*        prev;
 
     if( cur != header->curfield ) {
         prev = header->curfield;
@@ -92,9 +92,9 @@ static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD co
 static ui_event movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
 /******************************************************************************/
 {
-    register    int                      cursor;
-    register    int                      field = 0; // GCC wrongly thinks this might be uninited
-    register    VFIELD*                  cur;
+    int                 cursor;
+    int                 field = 0; // GCC wrongly thinks this might be uninited
+    VFIELD              *cur;
 
     if( col < 0 ) {
         col += vptr->area.width;
@@ -121,12 +121,12 @@ static ui_event movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col 
 
 
 static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
-/*************************************************/
+/***********************************************************************/
 {
-    register    VFIELD*                 chase;
-    register    VFIELD*                 cur;
-    register    int                     diff;
-    register    int                     closest;
+    VFIELD              *chase;
+    VFIELD              *cur;
+    int                 diff;
+    int                 closest;
 
     chase = fieldlist;
     cur = chase;
@@ -153,10 +153,10 @@ static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
 ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
 /**************************************************************/
 {
-    register ui_event           ui_ev;
-    register VFIELD*            cur;
-    auto     VBUFFER            buffer;
-    auto     SAREA              area;
+    ui_event           ui_ev;
+    VFIELD             *cur;
+    VBUFFER            buffer;
+    SAREA              area;
 
     if( header->reset ) {
         header->reset = false;

@@ -60,19 +60,19 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[5] )
 */
 
 {
-    register    int                     i;
-    register    int                     row = 0;    // GCC thinks this might be uninited
-    register    int                     col = 0;
-    register    int                     arow;
-    register    int                     acol;
-    register    int                     crow;
-    register    int                     ccol;
-    register    int                     maxrow = 0;
-    register    int                     maxcol = 0;
-    register    int                     cmaxrow;
-    register    int                     cmaxcol;
-    register    int                     amaxrow;
-    register    int                     amaxcol;
+    int         i;
+    int         row = 0;    // GCC thinks this might be uninited
+    int         col = 0;
+    int         arow;
+    int         acol;
+    int         crow;
+    int         ccol;
+    int         maxrow = 0;
+    int         maxcol = 0;
+    int         cmaxrow;
+    int         cmaxcol;
+    int         amaxrow;
+    int         amaxcol;
 
     arow = area.row;
     acol = area.col;

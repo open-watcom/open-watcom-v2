@@ -39,7 +39,7 @@ ui_event        Event = EV_NO_EVENT;
 ui_event intern saveevent( void )
 /*******************************/
 {
-    register ui_event       ui_ev;
+    ui_event        ui_ev;
 
     if( Event > EV_NO_EVENT && uiinlists( Event ) ) {
         ui_ev = Event;
@@ -80,7 +80,7 @@ ui_event UIAPI uivgetprime( VSCREEN *vptr )
 ui_event UIAPI uivgetprimevent( VSCREEN *vptr )
 /*********************************************/
 {
-    register ui_event       ui_ev;
+    ui_event        ui_ev;
 
     ui_ev = uivgetprime( vptr );
 //    switch( ui_ev ) {

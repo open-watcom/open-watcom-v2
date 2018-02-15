@@ -59,7 +59,7 @@ void intern vertretrace( void )
 bool intern issnow( BUFFER *bptr )
 /********************************/
 {
-    register    bool                    snow;
+    bool            snow;
 
     snow = false;
     if( isscreen( bptr ) ) {

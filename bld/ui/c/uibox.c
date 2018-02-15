@@ -41,7 +41,7 @@
 void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, int fill )
 /**************************************************************************************/
 {
-    register    ORD                     row;
+    ORD         row;
 
     bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
     bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
@@ -64,11 +64,11 @@ void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, in
 void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
 /***************************************************************************/
 {
-//    register    ORD                     rows;
-//    register    ORD                     cols;
-    register    int                     inccol;
-    register    int                     incrow;
-    auto        SAREA                   grow;
+//    ORD             rows;
+//    ORD             cols;
+    int             inccol;
+    int             incrow;
+    SAREA           grow;
 
 //    rows = area.height - 2;
 //    cols = area.width - 2;
