@@ -379,8 +379,6 @@
 #define usergate_req_usb_status 0x00000149
 #define usergate_write_usb_status 0x0000014A
 #define usergate_write_usb_control 0x0000014B
-#define usergate_lock_usb_pipe 0x0000014D
-#define usergate_unlock_usb_pipe 0x0000014E
 
 #define usergate_get_max_com_port 0x0000014F
 
@@ -701,7 +699,6 @@
 #define usergate_acquire_named_futex 0x0000022C
 
 #define usergate_is_usb_pipe_stalled 0x0000022D
-#define usergate_clear_usb_pipe_stalled 0x0000022E
 
 #define usergate_get_lon_modules 0x0000022F
 #define usergate_open_lon_module 0x00000230
@@ -757,7 +754,6 @@
 
 #define usergate_create_bignum 0x00000251
 #define usergate_delete_bignum 0x00000252
-#define usergate_load_bignum64 0x00000253
 #define usergate_add_bignum 0x00000254
 #define usergate_mul_bignum 0x00000255
 #define usergate_div_bignum 0x00000256
@@ -765,11 +761,11 @@
 #define usergate_get_thread_action_state 0x00000257
 #define usergate_set_thread_action 0x00000258
 
-#define usergate_get_bignum_size10 0x00000259
-#define usergate_get_bignum_str10 0x0000025A
+#define usergate_get_dec_str_size_bignum 0x00000259
+#define usergate_save_dec_str_bignum 0x0000025A
 
-#define usergate_get_bignum_size16 0x0000025B
-#define usergate_get_bignum_str16 0x0000025C
+#define usergate_get_hex_str_size_bignum 0x0000025B
+#define usergate_save_hex_str_bignum 0x0000025C
 
 #define usergate_create_random_bignum 0x0000025D
 
@@ -806,6 +802,48 @@
 
 #define usergate_fatal_error_exit 0x00000278
 #define usergate_get_thread_handle 0x00000279
+
+#define usergate_set_serial_line 0x0000027A
+#define usergate_reset_serial_line 0x0000027B
+
+#define usergate_get_dhcp_entry 0x0000027C
+
+#define usergate_create_random_odd_bignum 0x0000027D
+#define usergate_factor_pow2_bignum 0x0000027E
+
+#define usergate_load_signed_bignum 0x0000027F
+#define usergate_load_unsigned_bignum 0x00000280
+#define usergate_save_signed_bignum 0x00000281
+#define usergate_save_unsigned_bignum 0x00000282
+#define usergate_load_dec_str_bignum 0x00000283
+#define usergate_load_hex_str_bignum 0x00000284
+
+#define usergate_add_signed_bignum 0x00000285
+#define usergate_add_unsigned_bignum 0x00000286
+#define usergate_sub_signed_bignum 0x00000287
+#define usergate_sub_unsigned_bignum 0x00000288
+
+#define usergate_is_usb_connected 0x00000289
+#define usergate_start_one_usb_trans 0x0000028A
+
+#define usergate_get_thread_count 0x0000028B
+
+#define usergate_is_can_online 0x0000028C
+
+#define usergate_get_audio_codec_version 0x0000028D
+
+#define usergate_get_program_count 0x0000028E
+#define usergate_get_program_info 0x0000028F
+#define usergate_get_program_threads 0x00000290
+
+#define usergate_get_module_count 0x00000291
+#define usergate_get_module_info 0x00000292
+#define usergate_get_module_base 0x00000293
+#define usergate_get_module_size 0x00000294
+#define usergate_get_module_sel 0x00000295
+#define usergate_get_program_modules 0x00000296
+
+#define usergate_abort_debug 0x00000297
 
 
 
@@ -1191,8 +1229,6 @@
 #define CallGate_req_usb_status 0x55 0x67 0x9a 73 1 0 0 3 0 0x5d
 #define CallGate_write_usb_status 0x55 0x67 0x9a 74 1 0 0 3 0 0x5d
 #define CallGate_write_usb_control 0x55 0x67 0x9a 75 1 0 0 3 0 0x5d
-#define CallGate_lock_usb_pipe 0x55 0x67 0x9a 77 1 0 0 3 0 0x5d
-#define CallGate_unlock_usb_pipe 0x55 0x67 0x9a 78 1 0 0 3 0 0x5d
 
 #define CallGate_get_max_com_port 0x55 0x67 0x9a 79 1 0 0 3 0 0x5d
 
@@ -1513,7 +1549,6 @@
 #define CallGate_acquire_named_futex 0x55 0x67 0x9a 44 2 0 0 3 0 0x5d
 
 #define CallGate_is_usb_pipe_stalled 0x55 0x67 0x9a 45 2 0 0 3 0 0x5d
-#define CallGate_clear_usb_pipe_stalled 0x55 0x67 0x9a 46 2 0 0 3 0 0x5d
 
 #define CallGate_get_lon_modules 0x55 0x67 0x9a 47 2 0 0 3 0 0x5d
 #define CallGate_open_lon_module 0x55 0x67 0x9a 48 2 0 0 3 0 0x5d
@@ -1569,7 +1604,6 @@
 
 #define CallGate_create_bignum 0x55 0x67 0x9a 81 2 0 0 3 0 0x5d
 #define CallGate_delete_bignum 0x55 0x67 0x9a 82 2 0 0 3 0 0x5d
-#define CallGate_load_bignum64 0x55 0x67 0x9a 83 2 0 0 3 0 0x5d
 #define CallGate_add_bignum 0x55 0x67 0x9a 84 2 0 0 3 0 0x5d
 #define CallGate_mul_bignum 0x55 0x67 0x9a 85 2 0 0 3 0 0x5d
 #define CallGate_div_bignum 0x55 0x67 0x9a 86 2 0 0 3 0 0x5d
@@ -1577,11 +1611,11 @@
 #define CallGate_get_thread_action_state 0x55 0x67 0x9a 87 2 0 0 3 0 0x5d
 #define CallGate_set_thread_action 0x55 0x67 0x9a 88 2 0 0 3 0 0x5d
 
-#define CallGate_get_bignum_size10 0x55 0x67 0x9a 89 2 0 0 3 0 0x5d
-#define CallGate_get_bignum_str10 0x55 0x67 0x9a 90 2 0 0 3 0 0x5d
+#define CallGate_get_dec_str_size_bignum 0x55 0x67 0x9a 89 2 0 0 3 0 0x5d
+#define CallGate_save_dec_str_bignum 0x55 0x67 0x9a 90 2 0 0 3 0 0x5d
 
-#define CallGate_get_bignum_size16 0x55 0x67 0x9a 91 2 0 0 3 0 0x5d
-#define CallGate_get_bignum_str16 0x55 0x67 0x9a 92 2 0 0 3 0 0x5d
+#define CallGate_get_hex_str_size_bignum 0x55 0x67 0x9a 91 2 0 0 3 0 0x5d
+#define CallGate_save_hex_str_bignum 0x55 0x67 0x9a 92 2 0 0 3 0 0x5d
 
 #define CallGate_create_random_bignum 0x55 0x67 0x9a 93 2 0 0 3 0 0x5d
 
@@ -1618,6 +1652,48 @@
 
 #define CallGate_fatal_error_exit 0x55 0x67 0x9a 120 2 0 0 3 0 0x5d
 #define CallGate_get_thread_handle 0x55 0x67 0x9a 121 2 0 0 3 0 0x5d
+
+#define CallGate_set_serial_line 0x55 0x67 0x9a 122 2 0 0 3 0 0x5d
+#define CallGate_reset_serial_line 0x55 0x67 0x9a 123 2 0 0 3 0 0x5d
+
+#define CallGate_get_dhcp_entry 0x55 0x67 0x9a 124 2 0 0 3 0 0x5d
+
+#define CallGate_create_random_odd_bignum 0x55 0x67 0x9a 125 2 0 0 3 0 0x5d
+#define CallGate_factor_pow2_bignum 0x55 0x67 0x9a 126 2 0 0 3 0 0x5d
+
+#define CallGate_load_signed_bignum 0x55 0x67 0x9a 127 2 0 0 3 0 0x5d
+#define CallGate_load_unsigned_bignum 0x55 0x67 0x9a 128 2 0 0 3 0 0x5d
+#define CallGate_save_signed_bignum 0x55 0x67 0x9a 129 2 0 0 3 0 0x5d
+#define CallGate_save_unsigned_bignum 0x55 0x67 0x9a 130 2 0 0 3 0 0x5d
+#define CallGate_load_dec_str_bignum 0x55 0x67 0x9a 131 2 0 0 3 0 0x5d
+#define CallGate_load_hex_str_bignum 0x55 0x67 0x9a 132 2 0 0 3 0 0x5d
+
+#define CallGate_add_signed_bignum 0x55 0x67 0x9a 133 2 0 0 3 0 0x5d
+#define CallGate_add_unsigned_bignum 0x55 0x67 0x9a 134 2 0 0 3 0 0x5d
+#define CallGate_sub_signed_bignum 0x55 0x67 0x9a 135 2 0 0 3 0 0x5d
+#define CallGate_sub_unsigned_bignum 0x55 0x67 0x9a 136 2 0 0 3 0 0x5d
+
+#define CallGate_is_usb_connected 0x55 0x67 0x9a 137 2 0 0 3 0 0x5d
+#define CallGate_start_one_usb_trans 0x55 0x67 0x9a 138 2 0 0 3 0 0x5d
+
+#define CallGate_get_thread_count 0x55 0x67 0x9a 139 2 0 0 3 0 0x5d
+
+#define CallGate_is_can_online 0x55 0x67 0x9a 140 2 0 0 3 0 0x5d
+
+#define CallGate_get_audio_codec_version 0x55 0x67 0x9a 141 2 0 0 3 0 0x5d
+
+#define CallGate_get_program_count 0x55 0x67 0x9a 142 2 0 0 3 0 0x5d
+#define CallGate_get_program_info 0x55 0x67 0x9a 143 2 0 0 3 0 0x5d
+#define CallGate_get_program_threads 0x55 0x67 0x9a 144 2 0 0 3 0 0x5d
+
+#define CallGate_get_module_count 0x55 0x67 0x9a 145 2 0 0 3 0 0x5d
+#define CallGate_get_module_info 0x55 0x67 0x9a 146 2 0 0 3 0 0x5d
+#define CallGate_get_module_base 0x55 0x67 0x9a 147 2 0 0 3 0 0x5d
+#define CallGate_get_module_size 0x55 0x67 0x9a 148 2 0 0 3 0 0x5d
+#define CallGate_get_module_sel 0x55 0x67 0x9a 149 2 0 0 3 0 0x5d
+#define CallGate_get_program_modules 0x55 0x67 0x9a 150 2 0 0 3 0 0x5d
+
+#define CallGate_abort_debug 0x55 0x67 0x9a 151 2 0 0 3 0 0x5d
 
 #else
 
@@ -2001,8 +2077,6 @@
 #define CallGate_req_usb_status 0x3e 0x67 0x9a 73 1 0 0 3 0
 #define CallGate_write_usb_status 0x3e 0x67 0x9a 74 1 0 0 3 0
 #define CallGate_write_usb_control 0x3e 0x67 0x9a 75 1 0 0 3 0
-#define CallGate_lock_usb_pipe 0x3e 0x67 0x9a 77 1 0 0 3 0
-#define CallGate_unlock_usb_pipe 0x3e 0x67 0x9a 78 1 0 0 3 0
 
 #define CallGate_get_max_com_port 0x3e 0x67 0x9a 79 1 0 0 3 0
 
@@ -2323,7 +2397,6 @@
 #define CallGate_acquire_named_futex 0x3e 0x67 0x9a 44 2 0 0 3 0
 
 #define CallGate_is_usb_pipe_stalled 0x3e 0x67 0x9a 45 2 0 0 3 0
-#define CallGate_clear_usb_pipe_stalled 0x3e 0x67 0x9a 46 2 0 0 3 0
 
 #define CallGate_get_lon_modules 0x3e 0x67 0x9a 47 2 0 0 3 0
 #define CallGate_open_lon_module 0x3e 0x67 0x9a 48 2 0 0 3 0
@@ -2379,7 +2452,6 @@
 
 #define CallGate_create_bignum 0x3e 0x67 0x9a 81 2 0 0 3 0
 #define CallGate_delete_bignum 0x3e 0x67 0x9a 82 2 0 0 3 0
-#define CallGate_load_bignum64 0x3e 0x67 0x9a 83 2 0 0 3 0
 #define CallGate_add_bignum 0x3e 0x67 0x9a 84 2 0 0 3 0
 #define CallGate_mul_bignum 0x3e 0x67 0x9a 85 2 0 0 3 0
 #define CallGate_div_bignum 0x3e 0x67 0x9a 86 2 0 0 3 0
@@ -2387,11 +2459,11 @@
 #define CallGate_get_thread_action_state 0x3e 0x67 0x9a 87 2 0 0 3 0
 #define CallGate_set_thread_action 0x3e 0x67 0x9a 88 2 0 0 3 0
 
-#define CallGate_get_bignum_size10 0x3e 0x67 0x9a 89 2 0 0 3 0
-#define CallGate_get_bignum_str10 0x3e 0x67 0x9a 90 2 0 0 3 0
+#define CallGate_get_dec_str_size_bignum 0x3e 0x67 0x9a 89 2 0 0 3 0
+#define CallGate_save_dec_str_bignum 0x3e 0x67 0x9a 90 2 0 0 3 0
 
-#define CallGate_get_bignum_size16 0x3e 0x67 0x9a 91 2 0 0 3 0
-#define CallGate_get_bignum_str16 0x3e 0x67 0x9a 92 2 0 0 3 0
+#define CallGate_get_hex_str_size_bignum 0x3e 0x67 0x9a 91 2 0 0 3 0
+#define CallGate_save_hex_str_bignum 0x3e 0x67 0x9a 92 2 0 0 3 0
 
 #define CallGate_create_random_bignum 0x3e 0x67 0x9a 93 2 0 0 3 0
 
@@ -2428,5 +2500,47 @@
 
 #define CallGate_fatal_error_exit 0x3e 0x67 0x9a 120 2 0 0 3 0
 #define CallGate_get_thread_handle 0x3e 0x67 0x9a 121 2 0 0 3 0
+
+#define CallGate_set_serial_line 0x3e 0x67 0x9a 122 2 0 0 3 0
+#define CallGate_reset_serial_line 0x3e 0x67 0x9a 123 2 0 0 3 0
+
+#define CallGate_get_dhcp_entry 0x3e 0x67 0x9a 124 2 0 0 3 0
+
+#define CallGate_create_random_odd_bignum 0x3e 0x67 0x9a 125 2 0 0 3 0
+#define CallGate_factor_pow2_bignum 0x3e 0x67 0x9a 126 2 0 0 3 0
+
+#define CallGate_load_signed_bignum 0x3e 0x67 0x9a 127 2 0 0 3 0
+#define CallGate_load_unsigned_bignum 0x3e 0x67 0x9a 128 2 0 0 3 0
+#define CallGate_save_signed_bignum 0x3e 0x67 0x9a 129 2 0 0 3 0
+#define CallGate_save_unsigned_bignum 0x3e 0x67 0x9a 130 2 0 0 3 0
+#define CallGate_load_dec_str_bignum 0x3e 0x67 0x9a 131 2 0 0 3 0
+#define CallGate_load_hex_str_bignum 0x3e 0x67 0x9a 132 2 0 0 3 0
+
+#define CallGate_add_signed_bignum 0x3e 0x67 0x9a 133 2 0 0 3 0
+#define CallGate_add_unsigned_bignum 0x3e 0x67 0x9a 134 2 0 0 3 0
+#define CallGate_sub_signed_bignum 0x3e 0x67 0x9a 135 2 0 0 3 0
+#define CallGate_sub_unsigned_bignum 0x3e 0x67 0x9a 136 2 0 0 3 0
+
+#define CallGate_is_usb_connected 0x3e 0x67 0x9a 137 2 0 0 3 0
+#define CallGate_start_one_usb_trans 0x3e 0x67 0x9a 138 2 0 0 3 0
+
+#define CallGate_get_thread_count 0x3e 0x67 0x9a 139 2 0 0 3 0
+
+#define CallGate_is_can_online 0x3e 0x67 0x9a 140 2 0 0 3 0
+
+#define CallGate_get_audio_codec_version 0x3e 0x67 0x9a 141 2 0 0 3 0
+
+#define CallGate_get_program_count 0x3e 0x67 0x9a 142 2 0 0 3 0
+#define CallGate_get_program_info 0x3e 0x67 0x9a 143 2 0 0 3 0
+#define CallGate_get_program_threads 0x3e 0x67 0x9a 144 2 0 0 3 0
+
+#define CallGate_get_module_count 0x3e 0x67 0x9a 145 2 0 0 3 0
+#define CallGate_get_module_info 0x3e 0x67 0x9a 146 2 0 0 3 0
+#define CallGate_get_module_base 0x3e 0x67 0x9a 147 2 0 0 3 0
+#define CallGate_get_module_size 0x3e 0x67 0x9a 148 2 0 0 3 0
+#define CallGate_get_module_sel 0x3e 0x67 0x9a 149 2 0 0 3 0
+#define CallGate_get_program_modules 0x3e 0x67 0x9a 150 2 0 0 3 0
+
+#define CallGate_abort_debug 0x3e 0x67 0x9a 151 2 0 0 3 0
 
 #endif

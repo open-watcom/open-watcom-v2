@@ -766,6 +766,11 @@
     parm [eax] [es edi] \
     value [eax];
 
+#pragma aux RdosGetThreadCount = \
+    CallGate_get_thread_count  \
+    "movzx eax,ax" \
+    value [eax];
+
 #pragma aux RdosGetThreadState = \
     CallGate_get_thread_state  \
     CarryToBool \
@@ -1994,14 +1999,6 @@
 
 #pragma aux RdosResetUsbPipe = \
     CallGate_reset_usb_pipe \
-    parm [ebx];
-
-#pragma aux RdosLockUsbPipe = \
-    CallGate_lock_usb_pipe \
-    parm [ebx];
-
-#pragma aux RdosUnlockUsbPipe = \
-    CallGate_unlock_usb_pipe \
     parm [ebx];
 
 #pragma aux RdosAddWaitForUsbPipe = \

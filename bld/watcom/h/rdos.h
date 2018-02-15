@@ -123,7 +123,7 @@ typedef struct Tss
 #define uss_owner 10
 #define uss_size 12
 
-// Exception handling prototypes
+// Exception handling prototypes 
 
 #define STATUS_BREAKPOINT               0x80000003L
 #define STATUS_SINGLE_STEP              0x80000004L
@@ -158,7 +158,7 @@ typedef struct _FLOATING_SAVE_AREA {
     int   Cr0NpxState;
 } FLOATING_SAVE_AREA;
 
-typedef struct _CONTEXT
+typedef struct _CONTEXT 
 {
     long ContextFlags;
     long Dr0;
@@ -246,6 +246,7 @@ int RDOSAPI RdosGetHidReportFeatureData(int Device, int Report, int Index, char 
 
 int RDOSAPI RdosGetAudioDeviceCount();
 int RDOSAPI RdosGetAudioCodecCount(int Device);
+int RDOSAPI RdosGetAudioCodecVersion(int Device, int Codec, int *VendorID, int *DeviceID);
 int RDOSAPI RdosGetAudioWidgetInfo(int Device, int Codec, int Node, char *Info);
 int RDOSAPI RdosGetAudioWidgetConnectionList(int Device, int Codec, int Node, int *ConnectionList);
 int RDOSAPI RdosGetSelectedAudioConnection(int Device, int Codec, int Node);
@@ -286,7 +287,7 @@ void RDOSAPI RdosSetPixel(int handle, int x, int y);
 void RDOSAPI RdosBlit(int SrcHandle, int DestHandle, int width, int height,
                                 int SrcX, int SrcY, int DestX, int DestY);
 void RDOSAPI RdosDrawMask(int handle, void *mask, int RowSize, int width, int height,
-                                int SrcX, int SrcY, int DestX, int DestY);
+                                int SrcX, int SrcY, int DestX, int DestY); 
 void RDOSAPI RdosDrawLine(int handle, int x1, int y1, int x2, int y2);
 void RDOSAPI RdosDrawString(int handle, int x, int y, const char *str);
 void RDOSAPI RdosDrawRect(int handle, int x, int y, int width, int height);
@@ -302,7 +303,7 @@ int RDOSAPI RdosCreateStringBitmap(int font, const char *str);
 void RDOSAPI RdosGetBitmapInfo(int handle, int *BitPerPixel, int *width, int *height,
                                            int *linesize, void **buffer);
 
-int RDOSAPI RdosCreateSprite(int DestHandle, int BitmapHandle, int MaskHandle, int lgop);
+int RDOSAPI RdosCreateSprite(int DestHandle, int BitmapHandle, int MaskHandle, int lgop); 
 void RDOSAPI RdosCloseSprite(int handle);
 void RDOSAPI RdosShowSprite(int handle);
 void RDOSAPI RdosHideSprite(int handle);
@@ -337,7 +338,7 @@ void RDOSAPI RdosDebugGo();
 void RDOSAPI RdosDebugRun();
 void RDOSAPI RdosDebugNext();
 
-int RDOSAPI RdosPrintf(TRdosCallback *outproc, void *param, const char *format, va_list args);
+int RDOSAPI RdosPrintf(TRdosCallback *outproc, void *param, const char *format, va_list args); 
 
 #endif
 
@@ -358,10 +359,10 @@ int RDOSAPI RdosGetFreeHandles();
 int RDOSAPI RdosGetFreeHandleMem();
 
 int RDOSAPI RdosGetMaxComPort();
-int RDOSAPI RdosIsComAvailable(char ID);
-int RDOSAPI RdosGetStdComPar(char ID, int *Irq, int *Io, int *Baud);
-int RDOSAPI RdosGetUsbComPar(char ID, int *Type);
-int RDOSAPI RdosOpenCom(char ID, long BaudRate, char Parity, char DataBits, char StopBits, int SendBufSize, int RecBufSize);
+int RDOSAPI RdosIsComAvailable(char ID); 
+int RDOSAPI RdosGetStdComPar(char ID, int *Irq, int *Io, int *Baud); 
+int RDOSAPI RdosGetUsbComPar(char ID, int *Type); 
+int RDOSAPI RdosOpenCom(char ID, long BaudRate, char Parity, char DataBits, char StopBits, int SendBufSize, int RecBufSize); 
 void RDOSAPI RdosCloseCom(int Handle);
 void RDOSAPI RdosFlushCom(int Handle);
 char RDOSAPI RdosReadCom(int Handle);
@@ -422,6 +423,7 @@ int RDOSAPI RdosHadCardDevInserted(int Handle);
 void RDOSAPI RdosClearCardDevInserted(int Handle);
 int RDOSAPI RdosWaitForCard(int Handle, char *Strip);
 
+int RDOSAPI RdosIsCanOnline();
 int RDOSAPI RdosGetCanModuleInfo(int Module, int *ComCount, int *Id);
 int RDOSAPI RdosGetCanModuleVersion(int Module, int *MajorVersion, int *MinorVersion, int *SubVersion);
 int RDOSAPI RdosGetCanLoaderVersion(int Module, int *MajorVersion, int *MinorVersion, int *SubVersion);
@@ -462,7 +464,7 @@ void RDOSAPI RdosGetFileTime(int Handle, unsigned long *MsbTime, unsigned long *
 void RDOSAPI RdosSetFileTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
 
 int RDOSAPI RdosCreateMapping(int Size);
-int RDOSAPI RdosCreateNamedMapping(const char *Name, int Size);
+int RDOSAPI RdosCreateNamedMapping(const char *Name, int Size); 
 int RDOSAPI RdosCreateNamedFileMapping(const char *Name, int Size, int FileHandle);
 int RDOSAPI RdosOpenNamedMapping(const char *Name);
 void RDOSAPI RdosSyncMapping(int Handle);
@@ -495,12 +497,24 @@ int RDOSAPI RdosGetCrashCoreInfo(int Core, char *CrashBuf);
 
 void RDOSAPI RdosSetThreadAction(const char *ActionStr);
 
+int RDOSAPI RdosGetThreadCount();
 int RDOSAPI RdosGetThreadState(int ThreadNr, ThreadState *State);
 int RDOSAPI RdosGetThreadActionState(int ThreadNr, ThreadActionState *State);
 int RDOSAPI RdosSuspendThread(int Thread);
 int RDOSAPI RdosSuspendAndSignalThread(int Thread);
 void RDOSAPI RdosMoveToCore(int Core);
 void RDOSAPI RdosMoveThreadToCore(int Core, int ThreadNr);
+
+int RDOSAPI RdosGetModuleCount();
+int RDOSAPI RdosGetModuleInfo(int Index, int *ID, char *NameBuf, int NameSize);
+int RDOSAPI RdosGetModuleSel(int ID);
+long long RDOSAPI RdosGetModuleBase(int ID);
+long long RDOSAPI RdosGetModuleSize(int ID);
+
+int RDOSAPI RdosGetProgramCount();
+int RDOSAPI RdosGetProgramInfo(int Index, int *ID, char *NameBuf, int NameSize);
+int RDOSAPI RdosGetProgramThreads(int Index, unsigned short int *IdArr, int MaxThreads);
+int RDOSAPI RdosGetProgramModules(int Index, unsigned short int *IdArr, int MaxModules);
 
 int RDOSAPI RdosGetImageHeader(int Adapter, int Entry, TRdosObjectHeader *Header);
 int RDOSAPI RdosGetImageData(int Adapter, int Entry, void *Buf);
@@ -560,10 +574,10 @@ void RDOSAPI RdosDosTimeDateToTics(unsigned short date, unsigned short time, uns
 void RDOSAPI RdosTicsToDosTimeDate(unsigned long msb, unsigned long lsb, unsigned short *date, unsigned short *time);
 
 void RDOSAPI RdosDecodeMsbTics(unsigned long msb, int *year, int *month, int *day, int *hour);
-void RDOSAPI RdosDecodeLsbTics(unsigned long lsb, int *min, int *sec, int *milli, int *micro);
+void RDOSAPI RdosDecodeLsbTics(unsigned long lsb, int *min, int *sec, int *milli, int *micro); 
 
 unsigned long RDOSAPI RdosCodeMsbTics(int year, int month, int day, int hour);
-unsigned long RDOSAPI RdosCodeLsbTics(int min, int sec, int milli, int micro);
+unsigned long RDOSAPI RdosCodeLsbTics(int min, int sec, int milli, int micro); 
 
 void RDOSAPI RdosAddTics(unsigned long *msb, unsigned long *lsb, long tics);
 void RDOSAPI RdosAddMicro(unsigned long *msb, unsigned long *lsb, long us);
@@ -602,6 +616,7 @@ void RDOSAPI RdosAddWaitForSignal(int Handle, int SignalHandle, int ID);
 
 long RDOSAPI RdosGetIp();
 long RDOSAPI RdosGetGateway();
+long RDOSAPI RdosGetDhcpEntry(int Index, unsigned long *MsbTime, unsigned long *LsbTime);
 int RDOSAPI RdosNameToIp(const char *HostName);
 int RDOSAPI RdosIpToName(int Ip, char *HostName, int MaxSize);
 
@@ -743,6 +758,7 @@ char RDOSAPI RdosGetDebugEvent(int handle, int *thread);
 void RDOSAPI RdosGetDebugEventData(int handle, void *buf);
 void RDOSAPI RdosClearDebugEvent(int handle);
 void RDOSAPI RdosContinueDebugEvent(int handle, int thread);
+void RDOSAPI RdosAbortDebug(int Handle);
 
 #endif
 
@@ -760,6 +776,8 @@ long RDOSAPI RdosReadAdc(int handle);
 
 int RDOSAPI RdosReadSerialLines(int device, int *val);
 int RDOSAPI RdosToggleSerialLine(int device, int line);
+int RDOSAPI RdosSetSerialLine(int device, int line);
+int RDOSAPI RdosResetSerialLine(int device, int line);
 int RDOSAPI RdosReadSerialVal(int device, int line, int *val);
 int RDOSAPI RdosWriteSerialVal(int device, int line, int val);
 int RDOSAPI RdosReadSerialRaw(int device, int line, int *val);
@@ -810,8 +828,6 @@ int RDOSAPI RdosGetUsbInterface(int Controller, int Device, int Interface);
 int RDOSAPI RdosOpenUsbPipe(int Controller, int Device, int Pipe);
 void RDOSAPI RdosCloseUsbPipe(int handle);
 void RDOSAPI RdosResetUsbPipe(int handle);
-void RDOSAPI RdosLockUsbPipe(int handle);
-void RDOSAPI RdosUnlockUsbPipe(int handle);
 void RDOSAPI RdosAddWaitForUsbPipe(int Handle, int PipeHandle, int ID);
 void RDOSAPI RdosWriteUsbControl(int Handle, const char *buf, int size);
 void RDOSAPI RdosReqUsbData(int Handle, char *buf, int maxsize);
@@ -819,8 +835,10 @@ int RDOSAPI RdosGetUsbDataSize(int Handle);
 void RDOSAPI RdosWriteUsbData(int Handle, const char *buf, int size);
 void RDOSAPI RdosReqUsbStatus(int Handle);
 void RDOSAPI RdosWriteUsbStatus(int Handle);
+int RDOSAPI RdosIsUsbConnected(int Handle);
 int RDOSAPI RdosIsUsbTransactionDone(int Handle);
 int RDOSAPI RdosWasUsbTransactionOk(int Handle);
+void RDOSAPI RdosStartOnetransaction(int Handle);
 
 int RDOSAPI RdosOpenHid(int Controller, int Device);
 void RDOSAPI RdosCloseHid(int handle);
@@ -854,7 +872,7 @@ int RDOSAPI RdosHasAudio();
 
 int RDOSAPI RdosCreateAudioOutChannel(int SampleRate, int Bits, int Volume);
 void RDOSAPI RdosCloseAudioOutChannel(int Handle);
-void RDOSAPI RdosWriteAudio(int Handle, int Size, const int *LSamples, const int*RSamples);
+void RDOSAPI RdosWriteAudio(int Handle, int Size, const int *LSamples, const int*RSamples); 
 
 int RDOSAPI RdosOpenFm(int SampleRate);
 void RDOSAPI RdosCloseFm(int FmHandle);
@@ -871,18 +889,33 @@ int RDOSAPI RdosHasTouch();
 
 int RDOSAPI RdosCreateBigNum();
 void RDOSAPI RdosDeleteBigNum(int handle);
-void RDOSAPI RdosLoadBigNum64(int handle, long long Value);
+void RDOSAPI RdosLoadSignedBigNum(int handle, const char *buf, int size);
+void RDOSAPI RdosLoadUnsignedBigNum(int handle, const char *buf, int size);
+void RDOSAPI RdosSaveSignedBigNum(int handle, char *buf, int size);
+void RDOSAPI RdosSaveUnsignedBigNum(int handle, char *buf, int size);
+
+void RDOSAPI RdosLoadDecStrBigNum(int handle, const char *str);
+int RDOSAPI RdosGetDecStrSizeBigNum(int handle);
+void RDOSAPI RdosSaveDecStrBigNum(int handle, char *buf, int bufsize);
+
+void RDOSAPI RdosLoadHexStrBigNum(int handle, const char *str);
+int RDOSAPI RdosGetHexStrSizeBigNum(int handle);
+void RDOSAPI RdosSaveHexStrBigNum(int handle, char *buf, int bufsize);
+
+void RDOSAPI RdosAddSignedBigNum(int handle, const char *buf, int size);
+void RDOSAPI RdosAddUnsignedBigNum(int handle, const char *buf, int size);
+void RDOSAPI RdosSubSignedBigNum(int handle, const char *buf, int size);
+void RDOSAPI RdosSubUnsignedBigNum(int handle, const char *buf, int size);
+
 int RDOSAPI RdosAddBigNum(int handle1, int handle2);
 int RDOSAPI RdosSubBigNum(int handle1, int handle2);
 int RDOSAPI RdosMulBigNum(int handle1, int handle2);
 int RDOSAPI RdosDivBigNum(int handle1, int handle2);
 int RDOSAPI RdosModBigNum(int handle1, int handle2);
 int RDOSAPI RdosPowModBigNum(int base, int exp, int mod);
-int RDOSAPI RdosGetBigNumSize10(int handle);
-void RDOSAPI RdosGetBigNumString10(int handle, char *buf, int bufsize);
-int RDOSAPI RdosGetBigNumSize16(int handle);
-void RDOSAPI RdosGetBigNumString16(int handle, char *buf, int bufsize);
 int RDOSAPI RdosCreateRandomBigNum(int bits);
+int RDOSAPI RdosCreateRandomOddBigNum(int bits);
+int RDOSAPI RdosFactorPow2BigNum(int handle, int *exponent);
 
 #ifdef __cplusplus
 }

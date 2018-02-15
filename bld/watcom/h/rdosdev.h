@@ -29,7 +29,6 @@ extern "C" {
 #define SPRITE_HANDLE      0x2CF5
 #define CRC_HANDLE         0x367A
 #define FILE_HANDLE        0x3AB6
-#define PROCESS_HANDLE     0x43AF
 #define SERIAL_HANDLE      0x5A45
 #define ENV_HANDLE         0x5FAE
 #define RW_SECTION_HANDLE  0x67AF
@@ -47,7 +46,6 @@ extern "C" {
 #define PRINTER_HANDLE     0xB63A
 #define MEMMAP_HANDLE      0xBA54
 #define FM_HANDLE          0xBCAF
-#define MODULE_HANDLE      0xC3AF
 #define AUDIO_OUT_HANDLE   0xCEDA
 #define HID_HANDLE         0xD736
 #define BITMAP_HANDLE      0xDB57

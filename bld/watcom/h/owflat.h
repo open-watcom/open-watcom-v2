@@ -294,6 +294,20 @@
     parm [eax] \
     value [ecx];
 
+#pragma aux RdosGetAudioCodecVersion = \
+    CallGate_get_audio_codec_version  \
+    "jnc save" \
+    "xor eax,eax" \
+    "xor edx,edx" \
+    "save: " \
+    "movzx eax,ax" \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "mov [edi],eax" \
+    parm [eax] [edx] [esi] [edi]   \
+    value [eax] \
+    modify [eax edx];
+
 #pragma aux RdosGetAudioWidgetInfo = \
     CallGate_get_audio_widget_info  \
     "movzx eax,al" \    
@@ -1592,6 +1606,16 @@
     parm [eax] [edi] \
     value [eax];
 
+#pragma aux RdosGetThreadCount = \
+    CallGate_get_thread_count  \
+    "jc def" \
+    "movzx eax,ax" \
+    "jmp done" \
+    "def: " \
+    "mov eax,256" \
+    "done: " \
+    value [eax];
+
 #pragma aux RdosGetThreadState = \
     CallGate_get_thread_state  \
     CarryToBool \
@@ -1627,6 +1651,85 @@
 #pragma aux RdosMoveThreadToCore = \
     CallGate_move_thread_to_core  \
     parm [eax ebx];
+
+#pragma aux RdosGetModuleCount = \
+    CallGate_get_module_count  \
+    "jc fail" \
+    "movzx eax,ax" \
+    "jmp done" \
+    "fail: " \
+    "xor eax,eax" \
+    "done: " \
+    value [eax];
+
+#pragma aux RdosGetModuleInfo = \
+    CallGate_get_module_info  \
+    CarryToBool \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    parm [eax] [esi] [edi] [ecx] \
+    modify [edx] \
+    value [eax];
+
+#pragma aux RdosGetModuleSel = \
+    CallGate_get_module_sel  \
+    "jnc ok" \
+    "xor eax,eax" \
+    "ok: " \
+    "movzx eax,ax" \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetModuleBase = \
+    CallGate_get_module_base  \
+    "jnc ok" \
+    "xor eax,eax" \
+    "ok: " \
+    parm [ebx] \
+    value [edx eax];
+
+#pragma aux RdosGetModuleSize = \
+    CallGate_get_module_size  \
+    "jnc ok" \
+    "xor eax,eax" \
+    "ok: " \
+    parm [ebx] \
+    value [edx eax];
+
+#pragma aux RdosGetProgramCount = \
+    CallGate_get_program_count  \
+    "jc fail" \
+    "movzx eax,ax" \
+    "jmp done" \
+    "fail: " \
+    "xor eax,eax" \
+    "done: " \
+    value [eax];
+
+#pragma aux RdosGetProgramInfo = \
+    CallGate_get_program_info  \
+    CarryToBool \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    parm [eax] [esi] [edi] [ecx] \
+    modify [edx] \
+    value [eax];
+
+#pragma aux RdosGetProgramThreads = \
+    CallGate_get_program_threads  \
+    "jnc Ok" \
+    "xor ecx,ecx" \
+    "Ok: " \
+    parm [eax] [edi] [ecx] \
+    value [ecx];
+
+#pragma aux RdosGetProgramModules = \
+    CallGate_get_program_modules  \
+    "jnc Ok" \
+    "xor ecx,ecx" \
+    "Ok: " \
+    parm [eax] [edi] [ecx] \
+    value [ecx];
 
 #pragma aux RdosHasHardReset = \
     CallGate_has_hard_reset \
@@ -2129,6 +2232,19 @@
 #pragma aux RdosAddWaitForSignal = \
     CallGate_add_wait_for_signal  \
     parm [ebx] [eax] [ecx];
+
+#pragma aux RdosGetDhcpEntry = \
+    CallGate_get_dhcp_entry  \
+    "jnc save" \
+    "xor eax,eax" \
+    "xor edx,edx" \
+    "xor ebx,ebx" \
+    "save:" \
+    "mov [esi],edx" \
+    "mov [edi],eax" \
+    parm [eax] [esi] [edi] \
+    value [ebx] \
+    modify [edx eax];
 
 #pragma aux RdosGetIp = \
     CallGate_get_ip_address  \
@@ -2831,6 +2947,10 @@
     CallGate_clear_debug_event  \
     parm [ebx];
 
+#pragma aux RdosAbortDebug = \
+    CallGate_abort_debug  \
+    parm [ebx];
+
 #pragma aux RdosContinueDebugEvent = \
     CallGate_continue_debug_event  \
     parm [ebx] [eax];
@@ -2896,6 +3016,22 @@
 #pragma aux RdosToggleSerialLine = \
     "mov dh,cl" \
     CallGate_toggle_serial_line  \
+    CarryToBool \
+    parm [ecx] [edx] \
+    value [eax] \
+    modify [dh];
+
+#pragma aux RdosSetSerialLine = \
+    "mov dh,cl" \
+    CallGate_set_serial_line  \
+    CarryToBool \
+    parm [ecx] [edx] \
+    value [eax] \
+    modify [dh];
+
+#pragma aux RdosResetSerialLine = \
+    "mov dh,cl" \
+    CallGate_reset_serial_line  \
     CarryToBool \
     parm [ecx] [edx] \
     value [eax] \
@@ -3098,6 +3234,11 @@
 #pragma aux RdosStopLonCapture = \
     CallGate_stop_lon_capture;
 
+#pragma aux RdosIsCanOnline = \
+    CallGate_is_can_online \
+    ValidateEax \
+    value [eax];
+
 #pragma aux RdosGetUsbDevice = \
     CallGate_get_usb_device \
     ValidateEax \
@@ -3131,14 +3272,6 @@
     CallGate_reset_usb_pipe \
     parm [ebx];
 
-#pragma aux RdosLockUsbPipe = \
-    CallGate_lock_usb_pipe \
-    parm [ebx];
-
-#pragma aux RdosUnlockUsbPipe = \
-    CallGate_unlock_usb_pipe \
-    parm [ebx];
-
 #pragma aux RdosAddWaitForUsbPipe = \
     CallGate_add_wait_for_usb_pipe \
     parm [ebx] [eax] [ecx];
@@ -3169,6 +3302,12 @@
     CallGate_write_usb_status \
     parm [ebx];
 
+#pragma aux RdosIsUsbConnected = \
+    CallGate_is_usb_connected \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
 #pragma aux RdosIsUsbTransactionDone = \
     CallGate_is_usb_trans_done \
     CarryToBool \
@@ -3180,6 +3319,10 @@
     CarryToBool \
     parm [ebx] \
     value [eax];
+
+#pragma aux RdosStartOneUsbTransaction = \
+    CallGate_start_one_usb_trans \
+    parm [ebx];
 
 #pragma aux RdosGetAllocatedUsbBlocks = \
     CallGate_get_allocated_usb_blocks \
@@ -3452,10 +3595,6 @@
     CallGate_delete_bignum  \
     parm [ebx];
 
-#pragma aux RdosLoadBigNum64 = \
-    CallGate_load_bignum64  \
-    parm [ebx] [edx eax];
-
 #pragma aux RdosAddBigNum = \
     CallGate_add_bignum  \
     parm [ebx] [eax] \
@@ -3486,26 +3625,84 @@
     parm [ebx] [eax] [edx] \
     value [ebx];
 
-#pragma aux RdosGetBigNumSize10 = \
-    CallGate_get_bignum_size10  \
-    parm [ebx] \
-    value [ecx];
-
-#pragma aux RdosGetBigNumString10 = \
-    CallGate_get_bignum_str10  \
+#pragma aux RdosLoadSignedBigNum = \
+    CallGate_load_signed_bignum  \
     parm [ebx] [edi] [ecx];
 
-#pragma aux RdosGetBigNumSize16 = \
-    CallGate_get_bignum_size16  \
+#pragma aux RdosLoadUnsignedBigNum = \
+    CallGate_load_unsigned_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosSaveSignedBigNum = \
+    CallGate_save_signed_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosSaveUnsignedBigNum = \
+    CallGate_save_unsigned_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosLoadDecStrBigNum = \
+    CallGate_load_dec_str_bignum  \
+    parm [ebx] [edi];
+
+#pragma aux RdosGetDecStrSizeBigNum = \
+    CallGate_get_dec_str_size_bignum  \
     parm [ebx] \
     value [ecx];
 
-#pragma aux RdosGetBigNumString16 = \
-    CallGate_get_bignum_str16  \
+#pragma aux RdosSaveDecStrBigNum = \
+    CallGate_save_dec_str_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosLoadHexStrBigNum = \
+    CallGate_load_hex_str_bignum  \
+    parm [ebx] [edi];
+
+#pragma aux RdosGetHexStrSizeBigNum = \
+    CallGate_get_hex_str_size_bignum  \
+    parm [ebx] \
+    value [ecx];
+
+#pragma aux RdosSaveHexStrBigNum = \
+    CallGate_save_hex_str_bignum  \
     parm [ebx] [edi] [ecx];
 
 #pragma aux RdosCreateRandomBigNum = \
     CallGate_create_random_bignum  \
     ValidateHandle \
     parm [ecx] \
+    value [ebx];
+
+#pragma aux RdosAddSignedBigNum = \
+    CallGate_add_signed_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosAddUnsignedBigNum = \
+    CallGate_add_unsigned_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosSubSignedBigNum = \
+    CallGate_sub_signed_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosSubUnsignedBigNum = \
+    CallGate_sub_unsigned_bignum  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosCreateRandomOddBigNum = \
+    CallGate_create_random_odd_bignum  \
+    ValidateHandle \
+    parm [ecx] \
+    value [ebx];
+
+#pragma aux RdosFactorPow2BigNum = \
+    CallGate_factor_pow2_bignum  \
+    "jc Fail" \
+    "mov [esi],ecx" \
+    "jmp Done" \
+    "Fail:" \
+    "xor ebx,ebx" \
+    "Done:" \
+    modify [ecx] \
+    parm [ebx] [esi] \
     value [ebx];
