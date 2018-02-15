@@ -99,7 +99,7 @@ void uieditmarking( bool set, unsigned anchor )
     }
 }
 
-a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, ORD len,
+a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
                     ATTR attr, char *buffer, unsigned used,
                     unsigned i, unsigned max, bool auto_clear,
                     unsigned scroll, bool invisible )

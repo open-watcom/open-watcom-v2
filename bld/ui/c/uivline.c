@@ -188,8 +188,8 @@ ui_event UIAPI uiveditline( VSCREEN *vptr, VEDITLINE *editline )
 }
 
 bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
-                                  int bufflen, ORD row, ORD col, int len )
-/************************************************************************/
+                             unsigned bufflen, ORD row, ORD col, unsigned len )
+/*****************************************************************************/
 {
     /* unused parameters */ (void)vptr;
 

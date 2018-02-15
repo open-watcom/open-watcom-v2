@@ -34,35 +34,33 @@
 #define _UILEDIT_H
 
 typedef struct a_ui_edit {
-        char                    *edit_buffer;
-        VSCREEN                 *edit_screen;
-        VEDITLINE               edit_eline;
-        unsigned                edit_maxlen;
-        struct a_ui_edit        *next;
+    char                    *edit_buffer;
+    VSCREEN                 *edit_screen;
+    VEDITLINE               edit_eline;
+    unsigned                edit_maxlen;
+    struct a_ui_edit        *next;
 } a_ui_edit;
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
-extern a_ui_edit *uibegedit( VSCREEN *, ORD,
-            ORD, ORD, ATTR, char *, unsigned,
-            unsigned int, unsigned int, bool, unsigned int, bool );
-extern void uieditpushlist(void);
-extern void uieditpoplist(void);
+extern a_ui_edit    *uibegedit( VSCREEN *, ORD, ORD, unsigned, ATTR, char *, unsigned, unsigned, unsigned, bool, unsigned, bool );
+extern void         uieditpushlist( void );
+extern void         uieditpoplist( void );
 /* temp kludge - modify client source to use uiledit() instead */
 #undef uiedit
-#define uiedit(a)       uiledit(a)
-extern ui_event uiledit( ui_event );
-extern void     uieditinsert( char *, unsigned );
-extern unsigned int uiendedit( void );
-extern bool     uieditisdirty( void );
-extern bool     uieditautoclear( void );
-extern void     uieditdirty( void );
-extern void     uieditcursor( unsigned );
-extern void     uieditclean( void );
-extern void     uiedittrim( char * );
-extern void     uieditmarking( bool, unsigned );
+#define uiedit(a)   uiledit(a)
+extern ui_event     uiledit( ui_event );
+extern void         uieditinsert( char *, unsigned );
+extern unsigned     uiendedit( void );
+extern bool         uieditisdirty( void );
+extern bool         uieditautoclear( void );
+extern void         uieditdirty( void );
+extern void         uieditcursor( unsigned );
+extern void         uieditclean( void );
+extern void         uiedittrim( char * );
+extern void         uieditmarking( bool, unsigned );
 
 #ifdef __cplusplus
 }

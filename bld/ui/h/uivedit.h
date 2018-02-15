@@ -36,11 +36,11 @@
 typedef struct veditline {
     ORD             row;
     ORD             col;            /* position of field on vscreen     */
-    int             fldlen;         /* length of field on vscreen       */
+    unsigned        fldlen;         /* length of field on vscreen       */
     int             scroll;         /* index of first visible character */
-    int             length;         /* length of buffer                 */
+    unsigned        length;         /* length of buffer                 */
     char      _FARD *buffer;        /* buffer of characters editted     */
-    int             index;          /* cursor position in buffer        */
+    unsigned        index;          /* cursor position in buffer        */
     ATTR            attr;           /* attribute for output to vscreen  */
     bool            dirty       :1; /* boolean: user changed buffer     */
     bool            update      :1; /* boolean: application has changed */
@@ -62,8 +62,8 @@ typedef struct veditline {
 
 extern ui_event uiveditevent( VSCREEN *, VEDITLINE *, ui_event );
 extern ui_event uiveditline( VSCREEN *, VEDITLINE * );
-extern bool     uiveditinit(VSCREEN *, VEDITLINE *, char *, int, ORD, ORD, int );
-extern bool     uiveditfini(VSCREEN *, VEDITLINE *);
+extern bool     uiveditinit( VSCREEN *, VEDITLINE *, char *, unsigned, ORD, ORD, unsigned );
+extern bool     uiveditfini( VSCREEN *, VEDITLINE * );
 
 #ifdef __cplusplus
 }
