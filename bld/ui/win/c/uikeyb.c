@@ -291,10 +291,10 @@ static shiftkey_event   ShiftkeyEvents[] = {
     EV_INSERT_PRESS,    EV_INSERT_RELEASE
 };
 
-unsigned int intern getkey( void )
-/********************************/
+unsigned intern getkey( void )
+/****************************/
 {
-    int       ev;
+    unsigned    ev;
 
     while( !HaveKey )
         {}
@@ -362,12 +362,12 @@ void intern finikeyboard( void )
 ui_event intern keyboardevent( void )
 /***********************************/
 {
-    register    int                     key;
-    register    unsigned int            scan;
-    register    unsigned char           ascii;
-    register    ui_event                ui_ev;
-    register    unsigned char           newshift;
-    register    unsigned char           changed;
+    unsigned            key;
+    unsigned            scan;
+    unsigned char       ascii;
+    ui_event            ui_ev;
+    unsigned char       newshift;
+    unsigned char       changed;
 
     newshift = checkshift();
     /* checkkey must take precedence over shift change so that  *

@@ -32,26 +32,27 @@
 
 #ifndef _UISHIFT_H_
 #define _UISHIFT_H_
-#define         S_SHIFT_R               (unsigned char) 0x01
-#define         S_SHIFT_L               (unsigned char) 0x02
-#define         S_SHIFT                 (unsigned char) 0x03
-#define         S_CTRL                  (unsigned char) 0x04
-#define         S_ALT                   (unsigned char) 0x08
-#define         S_SCROLL                (unsigned char) 0x10
-#define         S_NUM                   (unsigned char) 0x20
-#define         S_CAPS                  (unsigned char) 0x40
-#define         S_INSERT                (unsigned char) 0x80
+
+#define S_SHIFT_R               (unsigned char)0x01
+#define S_SHIFT_L               (unsigned char)0x02
+#define S_SHIFT                 (unsigned char)0x03
+#define S_CTRL                  (unsigned char)0x04
+#define S_ALT                   (unsigned char)0x08
+#define S_SCROLL                (unsigned char)0x10
+#define S_NUM                   (unsigned char)0x20
+#define S_CAPS                  (unsigned char)0x40
+#define S_INSERT                (unsigned char)0x80
 // OS2 Additions:
-#define         S_CTRL_L                (unsigned short) 0x100
-#define         S_ALT_L                 (unsigned short) 0x200
-#define         S_CTRL_R                (unsigned short) 0x400
-#define         S_ALT_R                 (unsigned short) 0x800
-#define         S_SCRL                  (unsigned short) 0x1000
-#define         S_NUM_D                 (unsigned short) 0x2000
-#define         S_CAPS_D                (unsigned short) 0x4000
-#define         S_SYSRQ                 (unsigned short) 0x8000
+#define S_CTRL_L                (unsigned short)0x100
+#define S_ALT_L                 (unsigned short)0x200
+#define S_CTRL_R                (unsigned short)0x400
+#define S_ALT_R                 (unsigned short)0x800
+#define S_SCRL                  (unsigned short)0x1000
+#define S_NUM_D                 (unsigned short)0x2000
+#define S_CAPS_D                (unsigned short)0x4000
+#define S_SYSRQ                 (unsigned short)0x8000
 // Additions for NEC windows:
-#define         S_KANJI_LOCK            (unsigned int) 0x100
+#define S_KANJI_LOCK            (unsigned)0x100
 /* Shift Status Support
 
  AL - Shift status

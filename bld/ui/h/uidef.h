@@ -117,7 +117,7 @@ void            intern          finibios( void );
 void            intern          finikeyboard( void );
 void            intern          flushkey( void );
 void            intern          frontwindow( UI_WINDOW * );
-unsigned int    intern          getkey( void );
+unsigned        intern          getkey( void );
 bool            intern          initbios( void );
 bool            intern          initkeyboard( void );
 bool            intern          isdialogue( VSCREEN * );

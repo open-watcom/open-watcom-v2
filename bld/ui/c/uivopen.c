@@ -64,7 +64,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     bool                    okbuffer;
     unsigned                len;
     ORD                     col;
-    unsigned int            flags;
+    unsigned                flags;
     bool                    covered;
     SAREA                   area;
 

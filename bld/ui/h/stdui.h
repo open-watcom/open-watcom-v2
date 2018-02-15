@@ -426,13 +426,13 @@ typedef enum {
 
 #ifdef __GUI__
 /*
-    ORD needs to be an unsigned int for the WINDOWS scaling system
+    ORD needs to be an unsigned for the WINDOWS scaling system
     in WVIDEO since values in the range 0-10000 are used.
     Only the data structures are use.. No UI functions are actually
     called for Windows so UI does not need to be rebuilt
 */
 
-typedef unsigned int    ORD;
+typedef unsigned        ORD;
 
 #elif __RDOS__
 
@@ -441,7 +441,7 @@ typedef unsigned int    ORD;
     An improper reference to __GUI__ is used. Fixed for now so it works for RDOS.
 */
 
-typedef int    ORD;
+typedef int             ORD;
 
 #else
 
@@ -566,7 +566,7 @@ typedef struct vscreen {
     ui_event        event;              /* garbage                          */
     const char      _FARD *title;       /* title of virtual screen          */
     SAREA           area;               /* position on physical screen      */
-    unsigned int    flags;              /* dialogue, unframed, movable etc. */
+    unsigned        flags;              /* dialogue, unframed, movable etc. */
     ORD             row;
     ORD             col;                /* position of cursor on the screen */
     CURSOR_TYPE     cursor;             /* cursor type                      */
@@ -660,7 +660,7 @@ extern void             uiblankarea( SAREA );
 extern void             uiblankscreen( void );
 extern void             uiblankattr( ATTR );
 extern void             uiclose( VSCREEN _FARD * );
-extern void             uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );
+extern void             uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned, const char * );
 extern bool             uiconfig( char *, char ** );
 extern void             uicursor( VSCREEN _FARD *, ORD, ORD, CURSOR_TYPE );
 extern ui_event         uidialogevent( VSCREEN _FARD * );
@@ -699,7 +699,7 @@ extern void             uioffcursor( void );
 extern void             uioncursor( void );
 extern void             uioffmouse( void );
 extern void             uionmouse( void );
-extern VSCREEN          _FARD *uiopen( SAREA *, const char *, unsigned int );
+extern VSCREEN          _FARD *uiopen( SAREA *, const char *, unsigned );
 extern void             uihidemouse( void );
 extern unsigned         uiclockdelay( unsigned milli );
 extern ui_event         _FARD *uipoplist( void );

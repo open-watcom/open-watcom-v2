@@ -178,8 +178,8 @@ extern char             uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spo
 extern void             uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
 extern char             uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
-extern unsigned         ui_split_line( char **,char *,unsigned int );
-extern void             *uiinitdialog( const char *title, ATTR, char **, unsigned int, int, int, int );
+extern unsigned         ui_split_line( char **, char *, unsigned );
+extern void             *uiinitdialog( const char *title, ATTR, char **, unsigned, int, int, int );
 extern void             uifinidialog( void * );
 
 extern a_dialog         *uibegdialog( const char *title, VFIELD *, ORD, ORD, int, int );

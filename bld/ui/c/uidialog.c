@@ -377,7 +377,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
 }
 
 void *uiinitdialog( const char *title, ATTR attr, char *lines[],
-            unsigned int extra_rows, int maxlen, int rpos, int cpos )
+            unsigned extra_rows, int maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
     int                 len;

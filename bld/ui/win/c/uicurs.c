@@ -84,7 +84,7 @@ extern unsigned VIDGetCurTyp( unsigned );
         parm caller [dx] value [ax];
 
 
-unsigned int  VIDPort=VIDMONOINDXREG;
+unsigned        VIDPort = VIDMONOINDXREG;
 
 static unsigned RegCur;
 static unsigned InsCur;
