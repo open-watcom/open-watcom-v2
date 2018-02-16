@@ -36,32 +36,27 @@
 #include "clibext.h"
 
 
-void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, int field_len,
-                   ATTR attr, LPC_STRING string, int string_len )
-/****************************************************************/
+void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
+                        ATTR attr, LPC_STRING string, unsigned string_len )
+/**************************************************************************/
 {
-    int             count;
-    int             scount;
+    unsigned        count;
+    unsigned        scount;
     SAREA           dirty_area;
 
-    if( field_len == 0 )
-        return;
-    if( string_len < 0 ) {
-        string_len = 0;
-    }
-    count = vptr->area.width - col;
-    if( count > field_len )
-        count = field_len;
-    scount = count;
-    if( scount > string_len )
-        scount = string_len;
-    if( count > 0 ) {
+    if( field_len > 0 && vptr->area.width > col ) {
+        count = vptr->area.width - col;
+        if( count > field_len )
+            count = field_len;
+        scount = count;
+        if( scount > string_len )
+            scount = string_len;
         okopen( vptr );
         okline( row, col, count, vptr->area );
         dirty_area.row = row;
         dirty_area.col = col;
         dirty_area.height = 1;
-        dirty_area.width = (ORD)count;
+        dirty_area.width = count;
         uivdirty( vptr, dirty_area );
         bstring( &(vptr->window.type.buffer), row, col, attr, string, scount );
         if( count > scount ) {
@@ -71,8 +66,8 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, int field_len,
 }
 
 
-void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, int field_len )
-/****************************************************************************************************/
+void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *string, unsigned field_len )
+/*********************************************************************************************************/
 {
     if( field_len == 0 && string != NULL ) {
         field_len = strlen( string );
@@ -81,8 +76,8 @@ void UIAPI uivtextput( VSCREEN *vptr, ORD row, ORD col, ATTR attr, const char *s
 }
 
 
-void UIAPI uivrawput( VSCREEN *vptr, ORD row, ORD col, PIXEL *pixels, int len )
-/*****************************************************************************/
+void UIAPI uivrawput( VSCREEN *vptr, ORD row, ORD col, PIXEL *pixels, unsigned len )
+/**********************************************************************************/
 {
     SAREA           dirty_area;
 
@@ -91,7 +86,7 @@ void UIAPI uivrawput( VSCREEN *vptr, ORD row, ORD col, PIXEL *pixels, int len )
     dirty_area.row = row;
     dirty_area.col = col;
     dirty_area.height = 1;
-    dirty_area.width = (ORD) len;
+    dirty_area.width = len;
     uivdirty( vptr, dirty_area );
     braw( &(vptr->window.type.buffer), row, col, pixels, len );
 }

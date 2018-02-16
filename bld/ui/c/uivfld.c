@@ -62,15 +62,15 @@ static ui_event deadfieldevents[] = {
 };
 
 
-static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD col )
-/*********************************************************************************/
+static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD_EDIT *cur, ORD col )
+/**************************************************************************************/
 {
-    ui_event       ui_ev;
-    VFIELD*        prev;
+    ui_event        ui_ev;
+    VFIELD_EDIT     *prev;
 
     if( cur != header->curfield ) {
         prev = header->curfield;
-        if( prev ) {
+        if( prev != NULL ) {
             /* change attribute on field being left */
             uivtextput( vptr, prev->row, prev->col, header->exit, header->buffer, prev->length );
         }
@@ -92,9 +92,9 @@ static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD co
 static ui_event movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
 /******************************************************************************/
 {
-    int                 cursor;
-    int                 field = 0; // GCC wrongly thinks this might be uninited
-    VFIELD              *cur;
+    unsigned            cursor;
+    unsigned            field = 0; // GCC wrongly thinks this might be uninited
+    VFIELD_EDIT         *cur;
 
     if( col < 0 ) {
         col += vptr->area.width;
@@ -120,11 +120,11 @@ static ui_event movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col 
 }
 
 
-static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
-/***********************************************************************/
+static VFIELD_EDIT *tabfield( VSCREEN *vptr, VFIELD_EDIT *fieldlist, bool forward )
+/*********************************************************************************/
 {
-    VFIELD              *chase;
-    VFIELD              *cur;
+    VFIELD_EDIT         *chase;
+    VFIELD_EDIT         *cur;
     int                 diff;
     int                 closest;
 
@@ -154,7 +154,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
 /**************************************************************/
 {
     ui_event           ui_ev;
-    VFIELD             *cur;
+    VFIELD_EDIT        *cur;
     VBUFFER            buffer;
     SAREA              area;
 
@@ -164,7 +164,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
         header->curfield = NULL;
         header->cursor = true;
         area.height = 1;
-        for( cur = header->fieldlist ; cur != NULL ; cur = cur->link ) {
+        for( cur = header->fieldlist; cur != NULL; cur = cur->link ) {
             area.row = cur->row;
             area.col = cur->col;
             area.width = cur->length;
@@ -214,7 +214,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
     ui_ev = uivgetevent( vptr );
     if( ui_ev > EV_NO_EVENT ) {
         if( uiintoplist( ui_ev ) ) {
-            if( cur ) {
+            if( cur != NULL ) {
                 buffer.content = header->buffer;
                 buffer.length = cur->length;
                 buffer.index = vptr->col - cur->col;
@@ -254,7 +254,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 header->delpending = true;
                 /* fall through */
             case EV_CURSOR_LEFT:
-                if( cur ) {
+                if( cur != NULL ) {
                     if( vptr->col > cur->col ) {
                         break; /* cursor movement within field */
                     }
@@ -272,7 +272,7 @@ ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 break;
             }
             if( ui_ev != EV_FIELD_CHANGE ) {
-                if( cur ) {
+                if( cur != NULL ) {
                     ui_ev = movecursor( vptr, header, vptr->row, cur->col + buffer.index );
                     if( buffer.dirty && ( ui_ev == EV_NO_EVENT ) ) {
                         uivtextput( vptr, cur->row, cur->col, header->enter, header->buffer, cur->length );

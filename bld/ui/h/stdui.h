@@ -455,8 +455,8 @@ typedef unsigned long   MOUSETIME;
 typedef struct sarea {
     ORD             row;
     ORD             col;
-    ORD             height;
-    ORD             width;
+    unsigned short  height;
+    unsigned short  width;
 } SAREA;
 
 typedef unsigned char   ATTR;
@@ -747,8 +747,8 @@ extern void             uivrawput( VSCREEN _FARD *, ORD, ORD, PIXEL _FARD *, int
 extern void             uivsetactive( VSCREEN _FARD * );
 extern void             uivsetcursor( VSCREEN _FARD * );
 extern bool             uivshow( VSCREEN _FARD * );
-extern void             uivtextput( VSCREEN _FARD *, ORD, ORD, ATTR, const char _FARD *, int );
-extern void             uitextfield( VSCREEN _FARD *, ORD, ORD, int, ATTR, LPC_STRING, int );
+extern void             uivtextput( VSCREEN _FARD *, ORD, ORD, ATTR, const char _FARD *, unsigned );
+extern void             uitextfield( VSCREEN _FARD *, ORD, ORD, unsigned, ATTR, LPC_STRING, unsigned );
 extern void             uimousespeed( unsigned );
 extern unsigned char    uicheckshift( void );
 extern ui_event         uikeyboardevent( void );

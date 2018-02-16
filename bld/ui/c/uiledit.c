@@ -104,8 +104,8 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
                     unsigned i, unsigned max, bool auto_clear,
                     unsigned scroll, bool invisible )
 {
-    unsigned            l;
-    a_ui_edit         *edit;
+    unsigned        l;
+    a_ui_edit       *edit;
 
     edit = uimalloc( sizeof( a_ui_edit ) );
     if( edit == NULL ) {

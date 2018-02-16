@@ -75,12 +75,8 @@ void uiclose( VSCREEN *s )
     uifree( s );
 }
 
-void uicntrtext( VSCREEN        *vs,
-                 SAREA          *area,
-                 ATTR           attr,
-                 unsigned       field_len,
-                 const char     *text )
-/****************************************/
+void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const char *text )
+/******************************************************************************************/
 {
     ORD                 col;
 

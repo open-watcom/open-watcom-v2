@@ -94,7 +94,7 @@ typedef struct a_hot_spot {
     ui_event            event;
     int                 row;
     int                 startcol;
-    int                 length;
+    unsigned            length;
     a_hot_spot_flags    flags;
 } a_hot_spot;
 

@@ -133,7 +133,7 @@ void            intern          mouseoff( void );
 void            intern          mousespawnstart( void );
 void            intern          mousespawnend( void );
 void            intern          okarea( SAREA );
-void            intern          okline( ORD, ORD, int, SAREA );
+void            intern          okline( ORD, ORD, unsigned, SAREA );
 void            intern          okopen( VSCREEN * );
 void            intern          oksubarea( SAREA, SAREA );
 void            intern          openbackground( void );

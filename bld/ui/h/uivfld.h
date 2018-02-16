@@ -33,20 +33,20 @@
 #ifndef _UIVFLD_H_
 #define _UIVFLD_H_
 
-typedef struct vfield {
-    struct vfield _FARD *link;      /* next vfield on the vscreen      */
+typedef struct vfield_edit {
+    struct vfield_edit  _FARD *link;    /* next vfield on the vscreen      */
     ORD                 row;
     ORD                 col;            /* position of vfield on vscreen   */
-    int                 length;         /* length of field on vscreen      */
-} VFIELD;
+    unsigned            length;         /* length of field on vscreen      */
+} VFIELD_EDIT;
 
 typedef struct vfieldedit {
-    VFIELD    _FARD *fieldlist;     /* first vfield in linked list of vfields  */
-    VFIELD    _FARD *curfield;      /* current vfield (might be NULL)          */
-    VFIELD    _FARD *prevfield;     /* last vfield (might be NULL)             */
-    ATTR            enter;          /* attribute used to echo current field    */
-    ATTR            exit;           /* used when cursor leaves current field   */
-    char      _FARD *buffer;        /* buffer of characters being editted      */
+    VFIELD_EDIT _FARD *fieldlist;   /* first vfield in linked list of vfields  */
+    VFIELD_EDIT _FARD *curfield;    /* current vfield (might be NULL)          */
+    VFIELD_EDIT _FARD *prevfield;   /* last vfield (might be NULL)             */
+    ATTR        enter;              /* attribute used to echo current field    */
+    ATTR        exit;               /* used when cursor leaves current field   */
+    char        _FARD *buffer;      /* buffer of characters being editted      */
                                     /*                           SET  RESET    */
     bool        oktomodify   :1;    /* user can edit buffer      app   app     */
     bool        hidden       :1;    /* echo only cursor on XXX   app   app     */

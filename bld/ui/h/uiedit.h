@@ -35,14 +35,14 @@
 
 typedef struct vbuffer {
     char            *content;
-    int             length;
-    int             index;
+    unsigned        length;
+    unsigned        index;
     bool            insert      :1;
     bool            dirty       :1;
     bool            auto_clear  :1;
 } VBUFFER;
 
-extern void         uipadblanks( char *, int );
+extern void         uipadblanks( char *, unsigned );
 extern ui_event     uieditevent( ui_event, VBUFFER * );
 
 #endif

@@ -94,7 +94,7 @@ void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
 void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
 /**********************************************************************/
 {
-    int         field_len;
+    unsigned    field_len;
 
     if( area->width < 2 ) {
         return;

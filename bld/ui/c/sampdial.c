@@ -51,7 +51,7 @@ static a_hot_spot hot_stuff = {
     "&Fill",    EV_SCREWUP, 5, -1, 11, 0
 };
 
-static char *strings_edit[] = {
+static const char *strings_edit[] = {
         "yes",
         "no",
         "update",
@@ -59,14 +59,14 @@ static char *strings_edit[] = {
         NULL
 };
 
-static char *list_data[] = {
+static const char *list_data[] = {
     "HELLO", "THIS", "IS QUITE", "FUN", "ISN'T", "IT", "I DON'T", "KNOW",
     "WHY", "THIS", "HELLO", "THIS", "IS QUITE", "FUN", "ISN'T", "IT",
     "I DON'T", "KNOW", "WHY", "THIS",
     NULL
 };
 
-static char *list_data2[] = {
+static const char *list_data2[] = {
 //    "HELLO", "THIS", "IS QUITE", "FUN",
     NULL
 };

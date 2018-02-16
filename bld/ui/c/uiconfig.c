@@ -46,8 +46,8 @@ bool uiconfig( char *fn, char **envvars )
     void        *config;
     int         i;
     char        *colour;
-    int         slen;
-    int         blen;
+    unsigned    slen;
+    unsigned    blen;
     char        *s;
     ATTR        attr;
 
