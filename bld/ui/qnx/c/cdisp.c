@@ -86,7 +86,8 @@ bool QnxWCheck( void )
 static bool setupscrnbuff( void )
 /*******************************/
 {
-    int                 rows, cols;
+    int                 rows;
+    int                 cols;
     LP_PIXEL            scrn;
     size_t              size;
     size_t              i;
