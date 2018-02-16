@@ -34,14 +34,13 @@
 #include "guiwhole.h"
 #include <stdlib.h>
 
-static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir,
-                      int start, int end )
+static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int start, int end )
 {
-    SAREA       area;
-    ORD         *min;
-    ORD         *max;
-    int         xdiff;
-    int         ydiff;
+    SAREA           area;
+    ORD             *min;
+    unsigned short  *max;
+    int             xdiff;
+    int             ydiff;
 
     COPYAREA( wnd->use, area );
     if( dir == VERTICAL ) {
@@ -73,19 +72,21 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir,
             *max = end - start;
         }
     }
-    if( ( !uiisdbcs() || dir != HORIZONTAL ) && abs( diff ) < *max )  { /* some info preserved */
-        if( diff > 0 ) {
-            /* scrolled down */
-            *min += diff;
-            *max -= diff;
-            uivmoveblock( &wnd->screen, area, ydiff, xdiff );
-            *min += ( *max - diff );
-            *max = diff;
-        } else {
-            /* scrolled up */
-            *max += diff;
-            uivmoveblock( &wnd->screen, area, ydiff, xdiff );
-            *max = -diff;
+    if( !uiisdbcs() || dir != HORIZONTAL ) {
+        if( abs( diff ) < *max ) {  /* some info preserved */
+            if( diff > 0 ) {
+                /* scrolled down/left */
+                *min += diff;
+                *max -= diff;
+                uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+                *min += ( *max - diff );
+                *max = diff;
+            } else {
+                /* scrolled up/right */
+                *max += diff;
+                uivmoveblock( &wnd->screen, area, ydiff, xdiff );
+                *max = -diff;
+            }
         }
     }
     wnd->flags |= CONTENTS_INVALID;
