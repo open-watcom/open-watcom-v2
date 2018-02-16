@@ -55,7 +55,7 @@ objs = &
     uitab.obj    uivattr.obj  uivedit.obj  uivfill.obj  &
     uivfld.obj   uivhide.obj  uivline.obj  uivmove.obj  &
     uivopen.obj  uivscrn.obj  uivstr.obj   uivutil.obj  &
-    uiwin.obj    uiyield.obj
+    uiwin.obj    uiyield.obj  uipositi.obj
 
 # system type         dos  nlm  nt   os2  qnx  unix  win  rdos
 # builder builds      yes  no   yes  yes  no   yes   yes  yes
