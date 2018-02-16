@@ -101,8 +101,6 @@ typedef struct a_field {
     char                keyword[1];
 } a_field;
 
-extern a_ui_edit        *UIEdit;
-
 static VSCREEN helpScreen = {
     EV_NO_EVENT,                    /* event number */
     NULL,                           /* screen title */
@@ -224,54 +222,6 @@ static int              CheckHelpBlock( HelpFp help_file, char *topic, char *buf
 static void             replacetopic( char *word );
 static ScanCBfunc       scanCallBack;
 
-static void window_pos( ORD *start, ORD *size, int slack, int pos )
-{
-    ORD         bump;
-
-    if( slack > 0 ) {
-        if( pos == 0 ) {
-            bump = slack / 2;
-        } else if( pos > 0 ) {
-            if( --pos > slack ) {
-                pos = slack;
-            }
-            bump = pos;
-        } else {
-            pos = -pos;
-            if( --pos > slack ) {
-                pos = slack;
-            }
-            bump = slack - pos;
-        }
-        *start += bump;
-        *size -= slack;
-    }
-}
-
-
-static SAREA *hlp_ut_screen_area( SAREA *area, bool all, bool framed )
-{
-    area->col = framed;
-    area->width = UIData->width - 2*framed;
-    area->row = framed;
-    area->height = UIData->height - 2*framed;
-    if( !all && uimenuson() ) {
-        area->row += 1;
-        area->height -= 1;
-    }
-    return( area );
-}
-
-void hlp_ut_position( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
-{
-    hlp_ut_screen_area( a, overmenus, true );
-    if( h > 0 ) {
-        window_pos( &a->row, &a->height, a->height - h, rpos );
-    }
-    if( w > 0 ) {
-        window_pos( &a->col, &a->width, a->width - w, cpos );
-    }
-}
 
 static void addSearchButton( bool add )
 {
@@ -972,8 +922,7 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
         helpname[helpScreen.area.width] = '\0';
     }
     helpScreen.title = helpname;
-    hlp_ut_position( &helpScreen.area, helpScreen.area.height, helpScreen.area.width,
-                     nums[2], nums[3], true );
+    uiposition( &helpScreen.area, helpScreen.area.height, helpScreen.area.width, nums[2], nums[3], true );
 }
 
 

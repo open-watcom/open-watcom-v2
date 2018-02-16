@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-extern void hlp_ut_position( SAREA *, ORD, ORD, int, int, bool );
 extern void vvscroll( VSCREEN *, SAREA, int );
