@@ -182,14 +182,14 @@ static void intern initdbcs( void )
     Init = true;
 }
 
-int UIAPI uiisdbcs( void )
+bool UIAPI uiisdbcs( void )
 {
     if( !Init )
         initdbcs();
     return( Pairs[0].start_range != 0 );
 }
 
-int UIAPI uicharlen( unsigned char ch )
+int UIAPI uicharlen( char ch )
 {
     dbcs_pair           *p;
 
@@ -197,7 +197,7 @@ int UIAPI uicharlen( unsigned char ch )
     if( !Init )
         initdbcs();
     for( p = Pairs; p->start_range != 0; ++p ) {
-        if( ch >= p->start_range && ch <= p->end_range ) {
+        if( (unsigned char)ch >= p->start_range && (unsigned char)ch <= p->end_range ) {
             return( 2 );
         }
     }

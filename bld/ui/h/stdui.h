@@ -758,11 +758,10 @@ extern bool             FlipCharacterMap( void );
 extern bool             UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] );
 
 extern void             uiyield( void );
-extern bool             uiforceevadd( ui_event );    // int is a bool
+extern bool             uiforceevadd( ui_event );
 extern void             uiforceevflush( void );
-extern int              uiisdbcs( void );            // bool
-extern int              uionnec( void );             // bool
-extern int              uicharlen( unsigned char );  // returns 2 if dbcs lead byte
+extern bool             uiisdbcs( void );
+extern int              uicharlen( char );          // returns 2 if dbcs lead byte
 extern void             UIMemOpen( void );
 extern void             UIMemClose( void );
 

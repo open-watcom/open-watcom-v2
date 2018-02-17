@@ -39,11 +39,11 @@
 
 #define CHAR_VALUE(c)           (char)(unsigned char)(c)
 
-static bool isdelim( unsigned char ch )
+static bool isdelim( char ch )
 {
     if( uicharlen( ch ) == 2 )
         return( false );
-    if( isalnum( ch ) )
+    if( isalnum( (unsigned char)ch ) )
         return( false );
     if( ch == '_' )
         return( false );
