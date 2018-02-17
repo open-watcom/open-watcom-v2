@@ -41,16 +41,16 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
 /**************************************************************************/
 {
     unsigned        count;
-    unsigned        scount;
+    unsigned        string_count;
     SAREA           dirty_area;
 
     if( field_len > 0 && vptr->area.width > col ) {
         count = vptr->area.width - col;
         if( count > field_len )
             count = field_len;
-        scount = count;
-        if( scount > string_len )
-            scount = string_len;
+        string_count = count;
+        if( string_count > string_len )
+            string_count = string_len;
         okopen( vptr );
         okline( row, col, count, vptr->area );
         dirty_area.row = row;
@@ -58,9 +58,9 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
         dirty_area.height = 1;
         dirty_area.width = count;
         uivdirty( vptr, dirty_area );
-        bstring( &(vptr->window.type.buffer), row, col, attr, string, scount );
-        if( count > scount ) {
-            bfill( &(vptr->window.type.buffer), row, col + scount, attr, ' ', count - scount );
+        bstring( &(vptr->window.type.buffer), row, col, attr, string, string_count );
+        if( count > string_count ) {
+            bfill( &(vptr->window.type.buffer), row, col + string_count, attr, ' ', count - string_count );
         }
     }
 }
