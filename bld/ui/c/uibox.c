@@ -44,17 +44,19 @@ void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, in
     ORD         row;
 
     bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
-    bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
+    if( area.width > 2 )
+        bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
     bpixel( bptr, area.row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
     for( row = area.row + 1 ; row < area.row + area.height - 1 ; ++row ) {
         bpixel( bptr, row, area.col, attr, BOX_CHAR( box, LEFT_LINE ) );
-        if( fill ) {
+        if( fill && area.width > 2 ) {
             bfill( bptr, row, area.col + 1, attr, ' ', area.width - 2 );
         }
         bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, RIGHT_LINE ) );
     }
     bpixel( bptr, row, area.col, attr, BOX_CHAR( box, BOTTOM_LEFT ) );
-    bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
+    if( area.width > 2 )
+        bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
     bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, BOTTOM_RIGHT ) );
     physupdate( &area );
 }
