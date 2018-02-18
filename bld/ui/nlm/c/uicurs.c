@@ -34,12 +34,8 @@
 #include "uidef.h"
 #include "uiattrs.h"
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-static CATTR            OldCursorAttr;
-static WORD             OldCursorRow;
-static WORD             OldCursorCol;
-static CURSOR_TYPE      OldCursorType;
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 /* NOTE:  Not sure about these constants.  Try and see! */
 
@@ -47,6 +43,11 @@ static CURSOR_TYPE      OldCursorType;
 #define END_INSERT_CURSOR   14
 #define START_NORMAL_CURSOR 12
 #define END_NORMAL_CURSOR   14
+
+static CATTR            OldCursorAttr;
+static WORD             OldCursorRow;
+static WORD             OldCursorCol;
+static CURSOR_TYPE      OldCursorType;
 
 void UIAPI uioffcursor( void )
 /****************************/
