@@ -267,8 +267,8 @@ void intern clear_shift( void )
     shift_state = 0;
 }
 
-static void intern ck_arm( void )
-/*******************************/
+static void ck_arm( void )
+/************************/
 {
 }
 

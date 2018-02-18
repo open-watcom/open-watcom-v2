@@ -310,7 +310,7 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
     openwindow( window );
 }
 
-static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
+static int process_menuchar( int ch, DESCMENU **desc, int *menu, bool *select )
 {
     int                 index;
     UIMENUITEM          *itemptr;
@@ -387,8 +387,8 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 }
 
 
-static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
-/***********************************************************************/
+static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
+/****************************************************************/
 {
     int         index;
     int         oldmenu = 0;
@@ -493,7 +493,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     Menu->movedmenu = false;
                 }
             } else if( uialtchar( ui_ev ) != '\0'  ) {
-                process_char( uialtchar( ui_ev ), &desc, &menu, &select );
+                process_menuchar( uialtchar( ui_ev ), &desc, &menu, &select );
                 new_ui_ev = EV_NO_EVENT;
             } else if( Menu->active ) {
                 switch( ui_ev ) {
@@ -528,7 +528,7 @@ static ui_event intern process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     break;
                 default :
                     if( iskeyboardchar( ui_ev ) ) {
-                        if( process_char( ui_ev, &desc, &menu, &select ) ) {
+                        if( process_menuchar( ui_ev, &desc, &menu, &select ) ) {
                             break;
                         }
                     }

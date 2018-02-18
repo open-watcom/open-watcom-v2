@@ -303,8 +303,8 @@ static int ck_unevent( ui_event ui_ev )
     return( 0 );
 }
 
-static void intern ck_arm( void )
-/*******************************/
+static void ck_arm( void )
+/************************/
 {
     /*
         Yes I know that this can be done in the dev_read call, but there

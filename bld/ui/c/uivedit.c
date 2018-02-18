@@ -60,7 +60,7 @@ static void clear_buffer( VBUFFER *buffer )
 }
 
 
-static int intern secondbyte( char *buff, char *which )
+static bool secondbyte( char *buff, char *which )
 {
     while( buff < which ) {
         buff += uicharlen( *buff );
@@ -164,12 +164,14 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
         bptr = buffer->content + buffer->index;
         while( bptr > buffer->content ) {
             --bptr;
-            if( secondbyte( buffer->content, bptr ) ) --bptr;
+            if( secondbyte( buffer->content, bptr ) )
+                --bptr;
             if( !isdelim( *bptr ) )break;
         }
         while( bptr > buffer->content ) {
             --bptr;
-            if( secondbyte( buffer->content, bptr ) ) --bptr;
+            if( secondbyte( buffer->content, bptr ) )
+                --bptr;
             if( isdelim( *bptr ) ) {
                 ++bptr;
                 break;

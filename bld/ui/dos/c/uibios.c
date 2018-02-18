@@ -160,7 +160,7 @@ typedef struct {
 static dbcs_pair        Pairs[5];       // safe enough for now
 static bool             Init = false;
 
-static void intern initdbcs( void )
+static void initdbcs( void )
 {
     dbcs_pair           *p;
     dbcs_pair           __far *s;
