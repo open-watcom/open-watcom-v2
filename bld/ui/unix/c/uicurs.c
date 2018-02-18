@@ -35,7 +35,7 @@
 #include "uivirt.h"
 
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 static ORD              OldCursorRow;
 static ORD              OldCursorCol;

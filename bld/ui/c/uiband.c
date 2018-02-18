@@ -56,7 +56,7 @@ void UIAPI uibandinit( SAREA start, ATTR attr )
     start.height = 0;
     BandWnd.area = start;
     BandWnd.priority = P_UNBUFFERED;
-    BandWnd.update = drawband;
+    BandWnd.update_proc = drawband;
     BandWnd.parm = NULL;
     openwindow( &BandWnd );
     BandWnd.dirty_area = BandArea;
@@ -78,5 +78,5 @@ void UIAPI uibandfini( void )
 {
     uidirty( BandArea );
     closewindow( &BandWnd );
-    BandWnd.update = NULL;
+    BandWnd.update_proc = NULL;
 }

@@ -117,7 +117,7 @@ extern ui_event     uicreatepopupdesc( UIMENUITEM *menu, DESCMENU *desc, bool le
 extern ui_event     uicreatepopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, bool sub );
 extern ui_event     uicreatesubpopup( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, DESCMENU *parent_menu, int index );
 extern ui_event     uicreatesubpopupinarea( UIMENUITEM *menu, DESCMENU *desc, bool left, bool right, ui_event curr_item, SAREA *keep_inside, SAREA *return_inside, SAREA *return_exclude );
-extern void         uisetbetweentitles( int );
+extern void         uisetbetweentitles( unsigned );
 extern void         uimenucurr( UIMENUITEM * );
 extern void         uimenutitlebar( void );
 extern int          uigetcurrentmenu( UIMENUITEM *menu );

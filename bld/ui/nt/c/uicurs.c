@@ -35,13 +35,14 @@
 #include "uiattrs.h"
 #include <windows.h>
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
+
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
+
+extern HANDLE   OutputHandle;
 
 static ORD              OldCursorRow;
 static ORD              OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
-
-extern HANDLE   OutputHandle;
 
 void UIAPI uioffcursor( void )
 {
@@ -131,7 +132,7 @@ void UIAPI uiswapcursor( void )
 
 void UIAPI uiinitcursor( void )
 {
-    int tmp;
+    CATTR   tmp;
 
     UIData->cursor_row = (ORD)-1;
     UIData->cursor_col = (ORD)-1;

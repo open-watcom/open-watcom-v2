@@ -47,7 +47,7 @@
 #define TITLE_OFFSET            2
 #define BETWEEN_TITLES          2
 
-static  int                     BetweenTitles = BETWEEN_TITLES;
+static  unsigned                BetweenTitles = BETWEEN_TITLES;
 
 static  VBARMENU                MenuList;
 static  VBARMENU*               Menu;
@@ -80,7 +80,7 @@ static char     *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
 static bool     InitMenuPopupPending = false;
 
-void uisetbetweentitles( int between )
+void uisetbetweentitles( unsigned between )
 {
     BetweenTitles = between;
 }
@@ -298,14 +298,14 @@ void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
 void UIAPI uiclosepopup( UI_WINDOW *window )
 {
     closewindow( window );
-    window->update = NULL;
+    window->update_proc = NULL;
 }
 
 void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 {
     window->area = desc->area;
     window->priority = P_DIALOGUE;
-    window->update = NULL;
+    window->update_proc = NULL;
     window->parm = NULL;
     openwindow( window );
 }
@@ -739,10 +739,10 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
 
 static void descmenu( int menu, DESCMENU *desc )
 {
-    UIMENUITEM          *nptr;
-    UIMENUITEM          *iptr;
-    unsigned            next;
-    #define             MENUSTRLEN(x)   ((x) ? (ORD) strlen((x)) : (ORD) 0)
+    UIMENUITEM              *nptr;
+    UIMENUITEM              *iptr;
+    unsigned                next;
+    #define MENUSTRLEN(x)   ((x) ? (uisize)strlen((x)) : (uisize)0)
 
     --menu;
     iptr = Menu->titles[menu].popup;
@@ -750,13 +750,14 @@ static void descmenu( int menu, DESCMENU *desc )
     desc->area.col = 0;
     nptr = Menu->titles;
     for( ;; ) {
-        next =  (ORD)desc->area.col +  MENUSTRLEN( nptr->name ) + BetweenTitles;
+        next = (ORD)desc->area.col +  MENUSTRLEN( nptr->name ) + BetweenTitles;
         if( next >= UIData->width ) {
             next -= desc->area.col;
             desc->area.col = 0;
             desc->area.row++;
         }
-        if( menu == 0 ) break;
+        if( menu == 0 )
+            break;
         desc->area.col = next;
         --menu;
         ++nptr;
@@ -867,7 +868,7 @@ VBARMENU* UIAPI uimenubar( VBARMENU *bar )
         BarWin.area.height = uimenuheight();
         BarWin.area.width = UIData->width;
         BarWin.priority = P_MENU;
-        BarWin.update = drawbar;
+        BarWin.update_proc = drawbar;
         BarWin.parm = NULL;
         openwindow( &BarWin );
         InitMenuPopupPending = false;

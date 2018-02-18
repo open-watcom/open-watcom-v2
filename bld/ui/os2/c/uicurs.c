@@ -35,7 +35,8 @@
 #include "uiattrs.h"
 #include "doscall.h"
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
+
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 static CATTR            OldCursorAttr;
 static unsigned         OldCursorRow;
@@ -44,7 +45,6 @@ static CURSOR_TYPE      OldCursorType;
 static USHORT           length;
 static USHORT           r;
 static USHORT           c;
-
 
 void UIAPI uioffcursor( void )
 /*****************************/

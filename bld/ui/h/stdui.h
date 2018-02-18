@@ -325,9 +325,21 @@ typedef enum ui_event {
 
 #define MAX_EVENT_LISTS         30
 
+typedef enum {
+    V_DIALOGUE      = 0x0001,
+    V_UNBUFFERED    = 0x0002,
+    V_UNFRAMED      = 0x0004,
+    V_NO_ZOOM       = 0x0008,
+    V_PASSIVE       = 0x0010,
+    V_UNPROTECTED   = 0x0020,
+    V_HIDDEN        = 0x0040,
+    V_LISTBOX       = 0x0100,
+    V_GUI_WINDOW    = 0x1000      /* reserved for use by gui project */
+} screen_flags;
+
 typedef struct ui_event_list {
-    int             num_lists;
-    ui_event  _FARD *events[MAX_EVENT_LISTS];
+    int         num_lists;
+    ui_event    _FARD *events[MAX_EVENT_LISTS];
 } ui_event_list;
 
 enum    {
@@ -550,12 +562,13 @@ typedef struct image_def {      // this gets attached to the graphic field
     IMAGE_HLD           __FAR *images;
 } IMAGE_DEF;
 
+typedef void            (_FAR *update_func)(SAREA, void *);
 
 typedef struct ui_window {
     SAREA               area;
     SAREA               dirty_area;
     int                 priority;
-    void                (_FAR *update)(SAREA, void *);
+    update_func         update_proc;
     void                _FARD *parm;
     struct ui_window    _FARD *next;
     struct ui_window    _FARD *prev;
@@ -569,7 +582,7 @@ typedef struct vscreen {
     ui_event        event;              /* garbage                          */
     const char      _FARD *title;       /* title of virtual screen          */
     SAREA           area;               /* position on physical screen      */
-    unsigned        flags;              /* dialogue, unframed, movable etc. */
+    screen_flags    flags;              /* dialogue, unframed, movable etc. */
     ORD             row;                /* position of cursor on the screen */
     ORD             col;                /* position of cursor on the screen */
     CURSOR_TYPE     cursor;             /* cursor type                      */
@@ -613,16 +626,6 @@ typedef struct monitor {
     bool            no_blowup     :1;   /* disable exploding windows        */
 } MONITOR;
 
-#define V_DIALOGUE              0x0001
-#define V_UNBUFFERED            0x0002
-#define V_UNFRAMED              0x0004
-#define V_NO_ZOOM               0x0008
-#define V_PASSIVE               0x0010
-#define V_UNPROTECTED           0x0020
-#define V_HIDDEN                0x0040
-#define V_LISTBOX               0x0100
-#define V_GUI_WINDOW            0x1000      /* reserved for use by gui project */
-
 enum {
     M_MONO,
     M_CGA,
@@ -662,7 +665,6 @@ extern void             uibarf( void );
 extern void             uiblankarea( SAREA );
 extern void             uiblankscreen( void );
 extern void             uiblankattr( ATTR );
-extern void             uiclose( VSCREEN _FARD * );
 extern void             uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned, const char * );
 extern bool             uiconfig( char *, char ** );
 extern void             uicursor( VSCREEN _FARD *, ORD, ORD, CURSOR_TYPE );
@@ -702,7 +704,6 @@ extern void             uioffcursor( void );
 extern void             uioncursor( void );
 extern void             uioffmouse( void );
 extern void             uionmouse( void );
-extern VSCREEN          _FARD *uiopen( SAREA *, const char *, unsigned );
 extern void             uihidemouse( void );
 extern unsigned         uiclockdelay( unsigned milli );
 extern ui_event         _FARD *uipoplist( void );

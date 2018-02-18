@@ -159,6 +159,9 @@ extern void             intern  initeventlists( void );
 
 extern void             intern  SetCharacterTables( void );
 
+extern VSCREEN          intern  _FARD *uiopen( SAREA *, const char *, screen_flags );
+extern void             intern  uiclose( VSCREEN _FARD * );
+
 /*
  * below are OS specific internal shared functions
  */

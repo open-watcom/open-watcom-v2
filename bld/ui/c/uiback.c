@@ -81,7 +81,7 @@ void intern openbackground( void )
     UIData->blank.area.height = UIData->height;
     UIData->blank.area.width = UIData->width;
     UIData->blank.priority = P_BACKGROUND;
-    UIData->blank.update = backblank;
+    UIData->blank.update_proc = backblank;
     UIData->blank.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
     openwindow( &UIData->blank );
 }
@@ -105,7 +105,7 @@ BUFFER * UIAPI uibackgroundbuffer( void )
         ok = balloc( &UIData->blank.type.buffer, UIData->height, UIData->width );
     }
     if( ok ) {
-        UIData->blank.update = backfill;
+        UIData->blank.update_proc = backfill;
         UIData->blank.parm = (void *)0xbb;// NULL is reserved for CGUI screens!
         //UIData->blank.parm = NULL;       // ... just put in any old value
         return( &UIData->blank.type.buffer );
@@ -120,7 +120,7 @@ bool UIAPI uiremovebackground( void )
         bfree( &UIData->blank.type.buffer );
         UIData->blank.type.buffer.origin = NULL;
     }
-    UIData->blank.update = backblank;
+    UIData->blank.update_proc = backblank;
     UIData->blank.parm = &UIData->attrs[ATTR_NORMAL];
     return( true );
 }

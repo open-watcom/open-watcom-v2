@@ -37,16 +37,16 @@
 #include "uidbg.h"
 #include "biosui.h"
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-#define         BIOS_CURSOR_OFF         0x20
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
+
+#define BIOS_CURSOR_OFF 0x20
 
 #ifdef _M_I86
-    #define intx86 int86
+    #define intx86      int86
 #else
-    #define intx86 int386
+    #define intx86      int386
 #endif
-
 
 static CATTR            OldCursorAttr;
 static ORD              OldCursorRow;

@@ -39,12 +39,13 @@
 #include "clibext.h"
 
 
-static void update( SAREA area, VSCREEN *vptr )
-/*********************************************/
+static void update( SAREA area, void *_vptr )
+/*******************************************/
 {
     int             row;
     int             vrow;
     int             vcol;
+    VSCREEN         *vptr = (VSCREEN *)_vptr;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
         vrow = row - (int)vptr->area.row;
@@ -60,11 +61,11 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     const char              *box;
     ATTR                    attr;
     int                     priority;
-    void                    (_FAR *updatertn)( SAREA, void * );
+    update_func             updatertn;
     bool                    okbuffer;
     unsigned                len;
     ORD                     col;
-    unsigned                flags;
+    screen_flags            flags;
     bool                    covered;
     SAREA                   area;
 
@@ -100,12 +101,12 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         updatertn = NULL;
     } else {
         okbuffer = balloc( &(vptr->window.type.buffer), area.height, area.width );
-        updatertn = (void(*)(SAREA, void *))update;
+        updatertn = update;
     }
     if( okbuffer ) {
         vptr->window.area = area;
         vptr->window.priority = priority;
-        vptr->window.update = updatertn;
+        vptr->window.update_proc = updatertn;
         vptr->window.parm = vptr;
         covered = openwindow( &(vptr->window) );
         vptr->flags = flags;
