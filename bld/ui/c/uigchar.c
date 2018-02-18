@@ -35,15 +35,16 @@
 #include "uidef.h"
 #include "uigchar.h"
 
+
+char            UiGChar[UIGCHARS_SIZE];
+
 #ifdef __LINUX__
 
-unsigned char UiGChar[] = {
+static const char _UiGChar[] = {
     #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) linux,
     #include "_mapchar.h"
     #undef pick
 };
-
-void intern DBCSCharacterMap( void ) {}
 
 #else
 
@@ -61,22 +62,26 @@ extern char DownPoint[2];
     supporting character remapping (see UIMapCharacters in UIMAPCH.C).
 */
 
-unsigned char UiGChar[] = {
+static const char _UiGChar[] = {
     #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) others,
     #include "_mapchar.h"
     #undef pick
 };
 
-unsigned char UiDBCSChar[] = {
+static const unsigned char UiDBCSChar[] = {
     #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) dbcs,
     #include "_mapchar.h"
     #undef pick
 };
 
-void intern DBCSCharacterMap( void )
+#endif
+
+void intern SetCharacterTables( void )
 {
-    if ( uiisdbcs() ) {
-        memcpy( UiGChar, UiDBCSChar, sizeof( UiDBCSChar ) );
+    if( uiisdbcs() ) {
+#ifdef __LINUX__
+#else
+        memcpy( UiGChar, UiDBCSChar, sizeof( UiGChar ) );
         VertScrollFrame[0]  = 0x1A;
         HorzScrollFrame[0]  = 0x1A;
         SliderChar[0]       = 0x14;
@@ -84,7 +89,8 @@ void intern DBCSCharacterMap( void )
         RightPoint[0]       = '>';
         UpPoint[0]          = '^';
         DownPoint[0]        = 'v';
+#endif
+    } else {
+        memcpy( UiGChar, _UiGChar, sizeof( UiGChar ) );
     }
 }
-
-#endif

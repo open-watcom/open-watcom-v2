@@ -98,7 +98,7 @@ void            intern          bframe( struct buffer * );
 void            intern          bfree( struct buffer * );
 void            intern          bfake( BUFFER *, ORD, ORD );
 void            intern          bfill( BUFFER *, int, int, ATTR, unsigned char, int );
-void            intern          blowup( BUFFER *, SAREA, unsigned char *, ATTR );
+void            intern          blowup( BUFFER *, SAREA, const char *, ATTR );
 void            intern          bpixel( BUFFER *, ORD, ORD, ATTR, unsigned char );
 void            intern          braw( BUFFER *, int, int, PIXEL *, int );
 void            intern          bstring( BUFFER *, int, int, ATTR, LPC_STRING, int );
@@ -111,7 +111,7 @@ void            intern          closewindow( UI_WINDOW * );
 void            intern          dirtyarea( UI_WINDOW *, SAREA );
 void            intern          dirtynext( SAREA, UI_WINDOW * );
 void            intern          dividearea( SAREA, SAREA, SAREA * );
-void            intern          drawbox( BUFFER *, SAREA, unsigned char *, ATTR, int );
+void            intern          drawbox( BUFFER *, SAREA, const char *, ATTR, int );
 VSCREEN*        intern          findvscreen( ORD, ORD );
 void            intern          finibios( void );
 void            intern          finikeyboard( void );
@@ -156,6 +156,8 @@ void            intern          vertretrace( void );
 ui_event        intern          getanyevent( void );
 void            intern          waitforevent( void );
 void            intern          initeventlists( void );
+
+void            intern          SetCharacterTables( void );
 
 /*
  * below are OS specific internal shared functions

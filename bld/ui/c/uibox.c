@@ -38,8 +38,8 @@
 #include "clibext.h"
 
 
-void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, int fill )
-/**************************************************************************************/
+void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, int fill )
+/***********************************************************************************/
 {
     ORD         row;
 
@@ -63,8 +63,8 @@ void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, in
 
 
 
-void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
-/***************************************************************************/
+void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
+/************************************************************************/
 {
 //    ORD             rows;
 //    ORD             cols;

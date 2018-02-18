@@ -34,8 +34,8 @@
 #define _UIGCHAR_H_
 
 
-#define BOX_CHARS()         ((unsigned char *)&UiGChar[UI_BOX_TOP_LEFT])
-#define SBOX_CHARS()        ((unsigned char *)&UiGChar[UI_SBOX_TOP_LEFT])
+#define BOX_CHARS()         ((const char *)(UiGChar + UI_BOX_TOP_LEFT))
+#define SBOX_CHARS()        ((const char *)(UiGChar + UI_SBOX_TOP_LEFT))
 
 #define BOX_CHAR(x,y)       (x)[UI_SBOX_##y - UI_SBOX_TOP_LEFT]
 #define CHECKBOX_CHAR(x)    UiGChar[UI_CHECKBOX_##x]
@@ -45,9 +45,9 @@ enum    MappedChars {
     #define pick(e,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) e,
     #include "_mapchar.h"
     #undef pick
+    UIGCHARS_SIZE
 };
 
-extern unsigned char    UiGChar[];
-extern void             DBCSCharacterMap( void );
+extern char             UiGChar[UIGCHARS_SIZE];
 
 #endif

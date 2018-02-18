@@ -362,7 +362,6 @@ bool intern initbios( void )
             if( old_origin != UIData->screen.origin ) {
                 UIData->desqview = true;
             }
-            DBCSCharacterMap(); /* in UIMAPCH.C */
         }
         UIData->screen.increment = UIData->width;
 

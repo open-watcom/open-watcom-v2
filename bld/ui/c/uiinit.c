@@ -44,7 +44,7 @@ bool UIAPI uistart( void )
 {
     UIMemOpen();
     if( initbios() ) {
-        DBCSCharacterMap();
+        SetCharacterTables();
         /* need for LUI and DUI apps to avoid divide by zero    */
         /* when no mouse is found                               */
         UIData->mouse_yscale = 1;

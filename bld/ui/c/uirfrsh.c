@@ -53,8 +53,8 @@ typedef struct update_area {
 } update_area;
 
 
-static void _dorefresh( update_area *total, const SAREA *area, UI_WINDOW *wptr, UI_WINDOW *cover )
-/************************************************************************************************/
+static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WINDOW *cover )
+/*****************************************************************************************/
 {
     int             i;
     SAREA           areas[5];
@@ -62,8 +62,8 @@ static void _dorefresh( update_area *total, const SAREA *area, UI_WINDOW *wptr, 
     unsigned        end;
 
     if( cover == NULL ) {
-        start = area->row * UIData->width + area->col;
-        end = start + ( area->height - 1 ) * UIData->width + ( area->width - 1 );
+        start = area.row * UIData->width + area.col;
+        end = start + ( area.height - 1 ) * UIData->width + ( area.width - 1 );
         if( total->start > start )
             total->start = start;
         if( total->end < end )
@@ -72,10 +72,10 @@ static void _dorefresh( update_area *total, const SAREA *area, UI_WINDOW *wptr, 
             (*(wptr->update))( area, wptr->parm );
         }
     } else {
-        dividearea( area, &cover->area, areas );
+        dividearea( area, cover->area, areas );
         for( i = 1; i < 5; ++i ) {
             if( areas[i].height > 0 ) {
-                _dorefresh( total, areas + i, wptr, cover->prev );
+                _dorefresh( total, areas[i], wptr, cover->prev );
             }
         }
     }
@@ -97,7 +97,7 @@ void UIREFRESH( void )
     total.end = 0;
     for( wptr = UIData->area_tail; wptr != NULL; wptr = wptr->prev ) {
         if( wptr->dirty_area.height > 0 ) {
-            _dorefresh( &total, &wptr->dirty_area, wptr, wptr->prev );
+            _dorefresh( &total, wptr->dirty_area, wptr, wptr->prev );
             wptr->dirty_area.height = 0;
         }
     }

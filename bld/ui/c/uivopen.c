@@ -57,7 +57,7 @@ static void update( SAREA area, VSCREEN *vptr )
 VSCREEN* UIAPI uivopen( VSCREEN *vptr )
 /*************************************/
 {
-    unsigned char           *box;
+    const char              *box;
     ATTR                    attr;
     int                     priority;
     void                    (_FAR *updatertn)( SAREA, void * );
