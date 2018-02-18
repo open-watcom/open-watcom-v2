@@ -47,34 +47,35 @@
 #define UIREFRESH UIAPI uirefresh
 #endif
 
-struct update_area {
+typedef struct update_area {
     unsigned        start;
     unsigned        end;
-};
+} update_area;
 
 
-static void _dorefresh( struct update_area *total, SAREA area,
-                           UI_WINDOW *wptr, UI_WINDOW *cover )
-/************************************************************/
+static void _dorefresh( update_area *total, const SAREA *area, UI_WINDOW *wptr, UI_WINDOW *cover )
+/************************************************************************************************/
 {
-    int                 i;
-    SAREA               areas[5];
-    unsigned            start;
-    unsigned            end;
+    int             i;
+    SAREA           areas[5];
+    unsigned        start;
+    unsigned        end;
 
     if( cover == NULL ) {
-        start = area.row * UIData->width + area.col;
-        end = start + (area.height-1) * UIData->width + (area.width-1);
-        if( total->start > start ) total->start = start;
-        if( total->end < end ) total->end = end;
+        start = area->row * UIData->width + area->col;
+        end = start + ( area->height - 1 ) * UIData->width + ( area->width - 1 );
+        if( total->start > start )
+            total->start = start;
+        if( total->end < end )
+            total->end = end;
         if( wptr->update != NULL ) {
             (*(wptr->update))( area, wptr->parm );
         }
     } else {
-        dividearea( area, cover->area, areas );
+        dividearea( area, &cover->area, areas );
         for( i = 1; i < 5; ++i ) {
             if( areas[i].height > 0 ) {
-                _dorefresh( total, areas[i], wptr, cover->prev );
+                _dorefresh( total, areas + i, wptr, cover->prev );
             }
         }
     }
@@ -84,29 +85,28 @@ static void _dorefresh( struct update_area *total, SAREA area,
 void UIREFRESH( void )
 /********************/
 {
-    UI_WINDOW           *wptr;
-    struct update_area  total;
-    SAREA               area;
-    int                 start;
-    int                 end;
+    UI_WINDOW       *wptr;
+    update_area     total;
+    SAREA           area;
+    unsigned        start;
+    unsigned        end;
 
     _uicheckuidata();
-    wptr = UIData->area_tail;
+
     total.start = (unsigned)-1;
     total.end = 0;
-    while( wptr != NULL ) {
+    for( wptr = UIData->area_tail; wptr != NULL; wptr = wptr->prev ) {
         if( wptr->dirty_area.height > 0 ) {
-            _dorefresh( &total, wptr->dirty_area, wptr, wptr->prev );
+            _dorefresh( &total, &wptr->dirty_area, wptr, wptr->prev );
             wptr->dirty_area.height = 0;
         }
-        wptr = wptr->prev;
     }
     if( total.start <= total.end ) {
-        start = total.start/UIData->width;
-        end = total.end/UIData->width;
+        start = total.start / UIData->width;
+        end = total.end / UIData->width;
         area.row = start;
         area.col = 0;
-        area.height = end-start+1;
+        area.height = end - start + 1;
         area.width = UIData->width;
         physupdate( &area );
     }
