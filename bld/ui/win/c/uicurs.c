@@ -103,7 +103,7 @@ void uiinitcursor( void )
     InsCur = ( ((RegCur + 0x100) >> 1 & 0xFF00) + 0x100 ) | ( RegCur & 0x00FF );
 }
 
-void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
 {
     /* unused parameters */ (void)attr;
 

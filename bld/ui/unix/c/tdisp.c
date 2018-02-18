@@ -1387,8 +1387,8 @@ static int ti_refresh( bool must )
     return( 0 );
 }
 
-static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/**********************************************************************/
+static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/************************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -1397,8 +1397,8 @@ static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/*****************************************************************/
+static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/*******************************************************************/
 {
     /* unused parameters */ (void)attr;
 

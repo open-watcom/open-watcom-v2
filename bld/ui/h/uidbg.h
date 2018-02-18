@@ -34,9 +34,9 @@
 extern void UIDBG _uifinicursor( void );
 extern void UIDBG _uiinitcursor( void );
 extern void UIDBG _uiswapcursor( void );
-extern void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr );
+extern void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr );
 extern void UIDBG _uioffcursor( void );
 extern void UIDBG _uioncursor( void );
-extern void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *typ, int *attr );
+extern void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *typ, CATTR *attr );
 
 extern void UIDBG _uirefresh( void );

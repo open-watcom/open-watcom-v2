@@ -48,7 +48,7 @@
 #endif
 
 
-static int              OldCursorAttr;
+static CATTR            OldCursorAttr;
 static ORD              OldCursorRow;
 static ORD              OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
@@ -163,8 +163,8 @@ static void swapcursor( void )
 }
 
 
-void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/*************************************************************************/
+void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************/
 {
     union REGS      r;
 
@@ -191,8 +191,8 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 }
 
 
-void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/********************************************************************/
+void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/**********************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

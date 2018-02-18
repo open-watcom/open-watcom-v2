@@ -71,7 +71,7 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -80,7 +80,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -105,7 +105,7 @@ void UIAPI uiswapcursor( void )
 
 void UIAPI uiinitcursor( void )
 {
-    int tmp;
+    CATTR   tmp;
 
     UIData->cursor_row = (ORD)-1;
     UIData->cursor_col = (ORD)-1;

@@ -65,7 +65,8 @@ void UIAPI uioncursor( void )
 static void savecursor( void )
 /****************************/
 {
-    int dummy;
+    CATTR   dummy;
+
     _uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &dummy );
     UIData->cursor_on = true;
 }
@@ -92,15 +93,15 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/************************************************************************/
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/**************************************************************************/
 {
     _uigetcursor( row, col, type, attr );
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/*******************************************************************/
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/*********************************************************************/
 {
     _uisetcursor( row, col, typ, attr );
 }

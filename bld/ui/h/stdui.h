@@ -452,14 +452,17 @@ typedef unsigned char   ORD;
 typedef unsigned short  MOUSEORD;
 typedef unsigned long   MOUSETIME;
 
+typedef unsigned short  uisize;
+
 typedef struct sarea {
     ORD             row;
     ORD             col;
-    unsigned short  height;
-    unsigned short  width;
+    uisize          height;
+    uisize          width;
 } SAREA;
 
-typedef unsigned char   ATTR;
+typedef unsigned char   ATTR;       /* character attributes type */
+typedef int             CATTR;      /* cursor attributes type */
 
 #define iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) && ( ev <= EV_LAST_EDIT_CHAR ) )
 #define iskeyboardchar( ev )    ( ( ev >= EV_FIRST_EVENT ) && ( ev <= EV_LAST_KEYBOARD ) )
@@ -567,7 +570,7 @@ typedef struct vscreen {
     const char      _FARD *title;       /* title of virtual screen          */
     SAREA           area;               /* position on physical screen      */
     unsigned        flags;              /* dialogue, unframed, movable etc. */
-    ORD             row;
+    ORD             row;                /* position of cursor on the screen */
     ORD             col;                /* position of cursor on the screen */
     CURSOR_TYPE     cursor;             /* cursor type                      */
     bool            open;               /* bool: init to false, set by ui   */
@@ -576,8 +579,8 @@ typedef struct vscreen {
 } VSCREEN;
 
 typedef struct monitor {
-    unsigned short  height;             /* number of rows                   */
-    unsigned short  width;              /* number of columns                */
+    uisize          height;             /* number of rows                   */
+    uisize          width;              /* number of columns                */
     int             colour;             /* M_MONO, M_CGA, M_EGA             */
     ATTR            _FARD *attrs;       /* attributes                       */
     ui_event_list   _FARD *events;      /* event list pointer               */
@@ -587,7 +590,7 @@ typedef struct monitor {
     unsigned        mouse_rpt_delay;    /* repeat delay                     */
     unsigned        mouse_clk_delay;    /* double click delay               */
     unsigned        tick_delay;         /* clock tick delay                 */
-    int             cursor_attr;        /* cursor attribute                 */
+    CATTR           cursor_attr;        /* cursor attribute                 */
     ORD             cursor_row;         /* cursor row                       */
     ORD             cursor_col;         /* cursor column                    */
     CURSOR_TYPE     cursor_type;        /* cursor type                      */
@@ -678,7 +681,7 @@ extern void             uiflushevent( void );
 extern void             uifree( void * );
 extern MOUSETIME        uiclock( void );
 extern ui_event         uiget( void );
-extern void             uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD *, int _FARD * );
+extern void             uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD *, CATTR _FARD * );
 extern ui_event_list    _FARD *uigetlist( void );
 extern void             uigetmouse( ORD _FARD *, ORD _FARD *, bool _FARD * );
 extern void             uiignorealt( void );
@@ -712,7 +715,7 @@ extern void             uirefresh( void );
 extern bool             uiremovebackground( void );
 extern bool             uiset80col( void );
 extern SAREA            *uisetarea( SAREA *,  VSCREEN _FARD * );
-extern void             uisetcursor( ORD, ORD, CURSOR_TYPE, int );
+extern void             uisetcursor( ORD, ORD, CURSOR_TYPE, CATTR );
 extern void             uisetmouse( MOUSEORD, MOUSEORD );
 extern void             uisetmouseposn( ORD, ORD );
 extern SAREA            *uisetscreenarea( SAREA *, bool, bool );

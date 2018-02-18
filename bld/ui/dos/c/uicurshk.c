@@ -53,12 +53,12 @@ void UIAPI uioncursor( void )
     _uioncursor();
 }
 
-void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 {
     _uigetcursor( row, col, type, attr );
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
 {
     _uisetcursor( row, col, typ, attr );
 }

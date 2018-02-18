@@ -50,8 +50,8 @@ typedef struct Display {
     int         (*update)( SAREA *area );   /* change screen */
     int         (*refresh)( bool noopt );   /* force redraw of screen */
     /*- cursor */
-    int         (*getcur)( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr );
-    int         (*setcur)( ORD row, ORD col, CURSOR_TYPE type, int attr );
+    int         (*getcur)( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr );
+    int         (*setcur)( ORD row, ORD col, CURSOR_TYPE type, CATTR attr );
     ui_event    (*event)( void );
 } Display;
 
