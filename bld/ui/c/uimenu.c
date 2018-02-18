@@ -110,8 +110,8 @@ static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
     physupdate( &area );
 }
 
-static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, unsigned char ch, int len, int height )
-/***************************************************************************************************/
+static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, int len, int height )
+/******************************************************************************************/
 {
     SAREA       area;
 

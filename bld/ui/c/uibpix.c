@@ -35,14 +35,14 @@
 #include "uifar.h"
 
 
-void intern bpixel( BUFFER *bptr, ORD row, ORD col, ATTR attr, unsigned char ch )
-/*******************************************************************************/
+void intern bpixel( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch )
+/**********************************************************************/
 {
     LP_PIXEL    dst;
     PIXEL       fill;
 
     dst = bptr->origin + row * bptr->increment + col;
-    fill.ch = ch;
+    fill.ch = (unsigned char)ch;
     fill.attr = attr;
     farfill( dst, fill, 1, issnow( bptr ) );
 }

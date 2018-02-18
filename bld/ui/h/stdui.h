@@ -733,7 +733,7 @@ extern void             uivattrflip( VSCREEN _FARD *, SAREA );
 extern void             uivattribute( VSCREEN _FARD *, SAREA, ATTR );
 extern void             uivclose( VSCREEN _FARD * );
 extern void             uivdirty( VSCREEN _FARD *, SAREA );
-extern void             uivfill( VSCREEN _FARD *, SAREA, ATTR, unsigned char );
+extern void             uivfill( VSCREEN _FARD *, SAREA, ATTR, char );
 extern ui_event         uivget( VSCREEN  _FARD * );
 extern ui_event         uivgetevent( VSCREEN _FARD * );
 extern ui_event         uivgetprime( VSCREEN _FARD * );

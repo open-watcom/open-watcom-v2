@@ -38,8 +38,8 @@
 #include "clibext.h"
 
 
-void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, int fill )
-/***********************************************************************************/
+void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool fill )
+/************************************************************************************/
 {
     ORD         row;
 
@@ -61,8 +61,6 @@ void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, int f
     physupdate( &area );
 }
 
-
-
 void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
 /************************************************************************/
 {
@@ -76,18 +74,17 @@ void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
 //    cols = area.width - 2;
     incrow = 1;
     inccol = 3;
-    grow.row = area.row + area.height/2 - 1;
-    grow.col = area.col + area.width/2 - 1;
+    grow.row = area.row + area.height / 2 - 1;
+    grow.col = area.col + area.width / 2 - 1;
     grow.height = 2;
     grow.width = 2;
     while( ( grow.height < area.height ) || ( grow.width < area.width ) ) {
         grow.row = (ORD)max( area.row, grow.row - incrow );
         grow.col = (ORD)max( area.col, grow.col - inccol );
-        grow.height = (ORD)min( area.height, grow.height + 2*incrow );
-        grow.width = (ORD)min( area.width, grow.width + 2*inccol );
+        grow.height = (ORD)min( area.height, grow.height + 2 * incrow );
+        grow.width = (ORD)min( area.width, grow.width + 2 * inccol );
         drawbox( bptr, grow, box, attr, true );
-        if( ( grow.height == area.height ) &&
-            ( grow.width == area.width ) ) {
+        if( ( grow.height == area.height ) && ( grow.width == area.width ) ) {
             break;
         }
     }
