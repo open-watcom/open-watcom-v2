@@ -35,8 +35,8 @@
 #include "uifar.h"
 
 
-void intern bfill( BUFFER *bptr, int row, int col, ATTR attr, char ch, int len )
-/******************************************************************************/
+void intern bfill( BUFFER *bptr, int row, int col, ATTR attr, char ch, uisize len )
+/*********************************************************************************/
 {
     LP_PIXEL    dst;
     PIXEL       fill;

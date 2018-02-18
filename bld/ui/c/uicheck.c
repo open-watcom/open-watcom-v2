@@ -72,8 +72,8 @@ void intern oksubarea( SAREA inside, SAREA outside )
 }
 
 
-void intern okline( ORD row, ORD col, unsigned len, SAREA area )
-/**************************************************************/
+void intern okline( ORD row, ORD col, uisize len, SAREA area )
+/************************************************************/
 {
     SAREA       line;
 

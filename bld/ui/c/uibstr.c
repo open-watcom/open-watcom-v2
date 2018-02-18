@@ -35,8 +35,8 @@
 #include "uifar.h"
 
 
-void intern bstring( BUFFER *bptr, int row, int col, ATTR attr, LPC_STRING string, int string_len )
-/*************************************************************************************************/
+void intern bstring( BUFFER *bptr, int row, int col, ATTR attr, LPC_STRING string, uisize string_len )
+/****************************************************************************************************/
 {
     LP_PIXEL    dst;
 
@@ -45,8 +45,8 @@ void intern bstring( BUFFER *bptr, int row, int col, ATTR attr, LPC_STRING strin
 }
 
 
-void intern braw( BUFFER *bptr, int row, int col, PIXEL *pixels, int len )
-/************************************************************************/
+void intern braw( BUFFER *bptr, int row, int col, PIXEL *pixels, uisize len )
+/***************************************************************************/
 {
     LP_PIXEL    dst;
 

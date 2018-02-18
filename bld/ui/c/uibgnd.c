@@ -33,15 +33,16 @@
 #include <stdio.h>
 #include "uidef.h"
 
-bool uibackground( char *fname )
+
+bool UIAPI uibackground( const char *fname )
 {
-    FILE *              f;
+    FILE                *f;
     int                 c;
-    int                 attr;
+    ATTR                attr;
     int                 i;
     PIXEL               buff[80];
     BUFFER              *bgndbuff;
-    int                 row;
+    uisize              row;
 
     if( fname == NULL ) {
         uiremovebackground();
@@ -57,7 +58,8 @@ bool uibackground( char *fname )
     }
     i = 0;
     row = 0;
-    while( (attr = getc( f )) != EOF ) {
+    while( (c = getc( f )) != EOF ) {
+        attr = c;
         c = getc( f );
         if( c == '!' && attr == '!' ) {
             getc( f );

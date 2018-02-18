@@ -40,8 +40,8 @@ void UIAPI uitextfield( VSCREEN *vptr, ORD row, ORD col, unsigned field_len,
                         ATTR attr, LPC_STRING string, unsigned string_len )
 /**************************************************************************/
 {
-    unsigned        count;
-    unsigned        string_count;
+    uisize          count;
+    uisize          string_count;
     SAREA           dirty_area;
 
     if( field_len > 0 && vptr->area.width > col ) {

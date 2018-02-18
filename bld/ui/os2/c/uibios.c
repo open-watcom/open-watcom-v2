@@ -66,15 +66,15 @@ static bool initmonitor( void )
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-    vioMode.cb = sizeof(vioMode);
-    if( VioGetMode(&vioMode, HANDLE) != 0 )
+    vioMode.cb = sizeof( vioMode );
+    if( VioGetMode( &vioMode, HANDLE ) != 0 )
         return( false );
 
     UIData->width  = vioMode.col;
     UIData->height = vioMode.row;
 
     config.cb = sizeof( config );
-    if( VioGetConfig(0,&config,0) != 0 )
+    if( VioGetConfig( 0, &config, 0 ) != 0 )
         return( false );
     if( config.display == 3 ) {
         UIData->colour = M_BW;
@@ -106,7 +106,7 @@ bool intern initbios( void )
 
     initialized = false;
     if( initmonitor() ) {
-        VioGetBuf( (PULONG) &ptrLVB, (PUSHORT) &SizeOfLVB, 0);
+        VioGetBuf( (PULONG)&ptrLVB, (PUSHORT)&SizeOfLVB, 0 );
         // offset = BIOS_SCREEN_OFFSET;
 #ifdef _M_I86
         UIData->screen.origin = (LP_PIXEL)ptrLVB;
@@ -144,8 +144,7 @@ void intern physupdate( SAREA *area )
     int i;
 
     for( i = area->row; i < (area->row + area->height); i++ ) {
-        VioShowBuf( (i * UIData->width + area->col) * sizeof( PIXEL ),
-                    area->width * sizeof( PIXEL ), 0 );
+        VioShowBuf( ( i * UIData->width + area->col ) * sizeof( PIXEL ), area->width * sizeof( PIXEL ), 0 );
     }
 }
 

@@ -655,7 +655,7 @@ extern bool             uiattrs( void );
 extern bool             uivgaattrs( void );
 extern void             uisetblinkattr( int );
 extern char             uigetblinkattr( void );
-extern bool             uibackground( char * );
+extern bool             uibackground( const char * );
 extern BUFFER           _FARD *uibackgroundbuffer( void );
 extern void             uibandinit( SAREA, ATTR );
 extern void             uibandmove( SAREA );

@@ -755,8 +755,8 @@ static MONITOR ui_data = {
 static  LP_PIXEL    shadow;
 static  int         save_cursor_type;
 
-static bool setupscrnbuff( int srows, int scols )
-/***********************************************/
+static bool setupscrnbuff( uisize srows, uisize scols )
+/*****************************************************/
 {
     LP_PIXEL    scrn;
     size_t      size;
@@ -954,7 +954,8 @@ static bool td_init( void )
 static bool td_init( void )
 /*************************/
 {
-    int         rows, cols;
+    uisize      rows;
+    uisize      cols;
     const char  *tmp;
 
     if( UIData == NULL ) {

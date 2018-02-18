@@ -129,8 +129,8 @@ void intern physupdate( SAREA *area )
 
     bcoord.Y = sr.Top = area->row;
     bcoord.X = sr.Left = area->col;
-    sr.Bottom = sr.Top + area->height-1;
-    sr.Right = sr.Left + area->width-1;
+    sr.Bottom = sr.Top + area->height - 1;
+    sr.Right = sr.Left + area->width - 1;
     if( sr.Left < 0 || sr.Right >= UIData->width ||
         sr.Top < 0 || sr.Bottom >= UIData->height ) {
         // WriteConsoleOutput crashes if the area is not on the screen

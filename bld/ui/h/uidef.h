@@ -35,11 +35,6 @@
 #include <stdlib.h>
 #include "stdui.h"
 
-#if defined( __WATCOMC__ )
-  #define cdecl __cdecl
-#else
-  #define cdecl
-#endif
 
 #define P_UNBUFFERED        0
 #define P_DIALOGUE          1
@@ -59,49 +54,49 @@ typedef enum {
 
 #if defined( TSR )
 
-    #define _IND( X )           ind_xfer( X )
-    #define _IND_EVENT( X )     ind_xfer_event( X )
-    #define _IND_LONG( X )      ind_xfer_long( X )
-    #define _IND_INT( X )       ind_xfer_int( X )
-    #define _IND_SAREA( X )     ind_xfer_sarea( X )
+#define _IND( X )           ind_xfer( X )
+#define _IND_EVENT( X )     ind_xfer_event( X )
+#define _IND_LONG( X )      ind_xfer_long( X )
+#define _IND_INT( X )       ind_xfer_int( X )
+#define _IND_SAREA( X )     ind_xfer_sarea( X )
 
-    void __far *                (*ind_xfer( void (__far *rtn)() ) )();
-    ui_event                    (*ind_xfer_event( ui_event (__far *rtn)() ) )();
-    long                        (*ind_xfer_long( long (__far *rtn)() ) )();
-    int                         (*ind_xfer_int( int (__far *rtn)() ) )();
-    SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
+void __far *                (*ind_xfer( void (__far *rtn)() ) )();
+ui_event                    (*ind_xfer_event( ui_event (__far *rtn)() ) )();
+long                        (*ind_xfer_long( long (__far *rtn)() ) )();
+int                         (*ind_xfer_int( int (__far *rtn)() ) )();
+SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
 
 #else
 
-    #define _IND( X )       (X)
-    #define _IND_EVENT(X)   (X)
-    #define _IND_LONG( X )  (X)
-    #define _IND_INT(X)     (X)
-    #define _IND_SAREA(X)   (X)
+#define _IND( X )       (X)
+#define _IND_EVENT(X)   (X)
+#define _IND_LONG( X )  (X)
+#define _IND_INT(X)     (X)
+#define _IND_SAREA(X)   (X)
 
 #endif
 
-#define         UIAPI
-#define         intern          /* near */
+#define                 UIAPI
+#define                 intern          /* near */
 
-extern ui_event Event;
+extern ui_event         Event;
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
 extern bool             intern  balloc( BUFFER *, ORD, ORD );
-extern void             intern  battrflip( BUFFER *, int, int, int, int );
-extern void             intern  battribute( BUFFER *, int, int, int, int, ATTR );
-extern void             intern  uibcopy( BUFFER *, int, int, BUFFER *, int, int, int );
+extern void             intern  battrflip( BUFFER *, int, int, uisize, uisize );
+extern void             intern  battribute( BUFFER *, int, int, uisize, uisize, ATTR );
+extern void             intern  uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
 extern void             intern  bframe( struct buffer * );
 extern void             intern  bfree( struct buffer * );
 extern void             intern  bfake( BUFFER *, ORD, ORD );
-extern void             intern  bfill( BUFFER *, int, int, ATTR, char, int );
+extern void             intern  bfill( BUFFER *, int, int, ATTR, char, uisize );
 extern void             intern  blowup( BUFFER *, SAREA, const char *, ATTR );
 extern void             intern  bpixel( BUFFER *, ORD, ORD, ATTR, char );
-extern void             intern  braw( BUFFER *, int, int, PIXEL *, int );
-extern void             intern  bstring( BUFFER *, int, int, ATTR, LPC_STRING, int );
+extern void             intern  braw( BUFFER *, int, int, PIXEL *, uisize );
+extern void             intern  bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
 extern void             intern  bunframe( struct buffer * );
 extern int              intern  checkkey( void );
 extern void             intern  checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
@@ -133,7 +128,7 @@ extern void             intern  mouseoff( void );
 extern void             intern  mousespawnstart( void );
 extern void             intern  mousespawnend( void );
 extern void             intern  okarea( SAREA );
-extern void             intern  okline( ORD, ORD, unsigned, SAREA );
+extern void             intern  okline( ORD, ORD, uisize, SAREA );
 extern void             intern  okopen( VSCREEN * );
 extern void             intern  oksubarea( SAREA, SAREA );
 extern void             intern  openbackground( void );

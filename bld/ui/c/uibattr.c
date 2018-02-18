@@ -35,9 +35,8 @@
 #include "uifar.h"
 
 
-void intern battribute( BUFFER *bptr, int row, int col,
-                                      int height, int width, ATTR attr )
-/**********************************************************************/
+void intern battribute( BUFFER *bptr, int row, int col, uisize height, uisize width, ATTR attr )
+/**********************************************************************************************/
 {
     LP_PIXEL                dst;
     bool                    snow;
@@ -51,9 +50,8 @@ void intern battribute( BUFFER *bptr, int row, int col,
 }
 
 
-void intern battrflip( BUFFER *bptr, int row, int col,
-                                     int height, int width )
-/**********************************************************/
+void intern battrflip( BUFFER *bptr, int row, int col, uisize height, uisize width )
+/**********************************************************************************/
 {
     LP_PIXEL                dst;
     int                     r;
