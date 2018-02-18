@@ -230,7 +230,7 @@ static void open( void )
     }
 }
 
-#define TOP_ROW 8
+#define TOP_ROW         1
 
 int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd ) {

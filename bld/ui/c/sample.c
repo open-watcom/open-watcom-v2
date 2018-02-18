@@ -38,7 +38,6 @@
 #include "stdui.h"
 #include "uimenu.h"
 #include "uivedit.h"
-#include "uigchar.h"
 
 #define TEST_COLOURS
 #ifdef TEST_COLOURS
@@ -254,7 +253,7 @@ static void open( void )
     }
 }
 
-#define TOP_ROW 8
+#define TOP_ROW         1
 
 void main( void )
 /***************/
@@ -332,8 +331,8 @@ void main( void )
 //                      uibackground( "wf.img" );
                     area.row = 0;
                     area.col = 0;
-                    area.height = 25;
-                    area.width = 80;
+                    area.height = UIData->height;
+                    area.width = UIData->width;
                     uidirty( area );
                     break;
                 case EV_F1:
