@@ -130,7 +130,7 @@ static void PlotEgaVgaCursor( plot_func action )
         height = 2;
     }
 
-    screen = UIData->screen.origin + y * UIData->width + x ;
+    screen = UIData->screen.origin + y * UIData->width + x;
     disp = UIData->width - width;
 
     switch( action ) {
@@ -236,14 +236,14 @@ static bool MouInit( void )
     Points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
 
     /*
-        MASSIVE KLUDGE: It turns out that the DOS debugger ends up
-        calling MouInit & MouDeInit every time a screen swap occurs
-        (no matter what the flipping mechanism is). Doing the mouse
-        driver initialization every time is extremely slow. Things seem
-        to work if we only do the driver initialization the first time
-        through. Talk to Brian Stecher/John Dahms if you run into problems
-        with not doing the initialization all the time.
-    */
+     * MASSIVE KLUDGE: It turns out that the DOS debugger ends up
+     * calling MouInit & MouDeInit every time a screen swap occurs
+     * (no matter what the flipping mechanism is). Doing the mouse
+     * driver initialization every time is extremely slow. Things seem
+     * to work if we only do the driver initialization the first time
+     * through. Talk to Brian Stecher/John Dahms if you run into problems
+     * with not doing the initialization all the time.
+     */
     if( first_time ) {
         first_time = false;
         savedmode = BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */

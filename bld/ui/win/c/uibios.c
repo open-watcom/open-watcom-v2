@@ -55,16 +55,16 @@ static MONITOR ui_data = {
 
 void UIAPI win_uisetmono( void )
 {
-        ui_data.colour = M_MONO;
-        ui_data.screen.origin = MK_FP( _B000h, 0 );
-        VIDPort = VIDMONOINDXREG;
+    ui_data.colour = M_MONO;
+    ui_data.screen.origin = MK_FP( _B000h, 0 );
+    VIDPort = VIDMONOINDXREG;
 }
 
 void UIAPI win_uisetcolor( int clr )
 {
-        ui_data.colour = clr;
-        ui_data.screen.origin = MK_FP( _B800h, 0 );
-        VIDPort = VIDCOLORINDXREG;
+    ui_data.colour = clr;
+    ui_data.screen.origin = MK_FP( _B800h, 0 );
+    VIDPort = VIDCOLORINDXREG;
 }
 
 static bool initmonitor( void )
@@ -73,7 +73,6 @@ static bool initmonitor( void )
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-//    UIData->height = 25;
     return( true );
 }
 
@@ -88,14 +87,9 @@ bool intern initbios( void )
 
     initialized = false;
     if( initmonitor() ) {
-        UIData->desqview = 0;
+        UIData->desqview = false;
         UIData->f10menus = true;
-        if( UIData->colour == M_MONO ) {
-            UIData->screen.origin = MK_FP( _B000h, 0 );
-        } else {
-            UIData->screen.origin = MK_FP( _B800h, 0 );
-        }
-
+        UIData->screen.origin = MK_FP( ( UIData->colour == M_MONO ) ? _B000h : _B800h, 0 );
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
@@ -119,6 +113,6 @@ void intern finibios( void )
 
 void intern physupdate( SAREA *area )
 {
-    area = area;
+    /* unused parameters */ (void)area;
 }
 

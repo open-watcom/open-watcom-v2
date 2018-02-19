@@ -344,8 +344,8 @@ extern bool desqview_present( void );
 bool intern initbios( void )
 /**************************/
 {
-    bool                    initialized;
-    LP_PIXEL                old_origin;
+    bool            initialized;
+    LP_PIXEL        old_origin;
 
     initialized = false;
     if( initmonitor() ) {
