@@ -53,12 +53,9 @@ void UIAPI uioffcursor( void )
 
     if( UIData->cursor_on ) {
         /* set cursor size */
-            VioGetCurType( &vioCursor, 0 );
-
-           vioCursor.attr   = (USHORT)-1;        //invisible
-
-           VioSetCurType(&vioCursor,0);
-
+        VioGetCurType( &vioCursor, 0 );
+        vioCursor.attr = (USHORT)CATTR_OFF;        //invisible
+        VioSetCurType(&vioCursor,0);
         UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
@@ -77,37 +74,25 @@ void UIAPI uioncursor( void )
     if( UIData->cursor_type == C_INSERT ) {
         vioCursor.yStart = vioCursor.cEnd / 2;
     } else {
-        vioCursor.yStart = (vioCursor.cEnd * 7) / 8;
+        vioCursor.yStart = ( vioCursor.cEnd * 7 ) / 8;
     }
     vioCursor.cx = 1;
     vioCursor.attr = 1;
 
     VioSetCurType(&vioCursor, 0);
 
-
     /* set cursor position */
-
     VioSetCurPos( UIData->cursor_row, UIData->cursor_col, 0);
 
     if( UIData->cursor_attr != CATTR_VOFF ) {
-    /* get current character and attribute */
-
+        /* get current character and attribute */
         VioGetCurPos( &r, &c, 0 );
-        length = sizeof(CharCellPair);
-        VioReadCellStr(&CharCellPair[0],
-                       &length,
-                       UIData->cursor_row,
-                       UIData->cursor_col,
-                       0);
+        length = sizeof( CharCellPair );
+        VioReadCellStr( &CharCellPair[0], &length, UIData->cursor_row, UIData->cursor_col, 0 );
 
         /* write out the character and the new attribute */
         CharCellPair[1] = UIData->cursor_attr;
-        VioWrtNCell((PBYTE)&CharCellPair[0],
-                    24,
-                    UIData->cursor_row,
-                    UIData->cursor_col,
-                    0);
-
+        VioWrtNCell( (PBYTE)&CharCellPair[0], 24, UIData->cursor_row, UIData->cursor_col, 0 );
     }
     UIData->cursor_on = true;
 }
@@ -132,7 +117,7 @@ static void savecursor( void )
      else {
          OldCursorType = C_NORMAL;
     }
-    UIData->cursor_on = (  vioCursor.attr != (USHORT) -1 );
+    UIData->cursor_on = ( vioCursor.attr != (USHORT)CATTR_OFF );
     if( !UIData->cursor_on ) {
          OldCursorType = C_OFF;
     }
