@@ -119,10 +119,9 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, uisize le
     area.col = col;
     area.width = len;
     area.height = height;
-    while( height != 0 ) {
+    for( ; height > 0; height-- ) {
         bfill( bptr, row, col, attr, ch, len );
         ++row;
-        --height;
     }
     physupdate( &area );
 }
@@ -169,15 +168,15 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
 {
     bool                    active;
     ORD                     choffset;
-    int                     len;
+    uisize                  len;
     char                    ch[1];
-    char*                   tab_loc;
-    int                     tab_loc_len;
+    char                    *tab_loc;
+    uisize                  tab_loc_len;
     ORD                     start_col;
-    char*                   str;
+    char                    *str;
     ATTR                    attr;
     ATTR                    chattr;
-    int                     str_len;
+    uisize                  str_len;
 
     active = !MENUGRAYED( *menu ) && uiinlists( menu->event );
     if( active ) {
@@ -197,7 +196,9 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
         chattr = attr;
     }
     if( item > 0 ) {
-        len = desc->area.width - 2;
+        len = 0;
+        if( desc->area.width > 2 )
+            len = desc->area.width - 2;
         str = menu->name;
         if( MENUSEPARATOR( *menu ) ) {
             /* separator line */
@@ -218,20 +219,18 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
                     desc->area.col + len + 1,
                     UIData->attrs[ATTR_MENU], ch, 1 );
         } else {
-            if( len < 0 ) {
-                len = 0;
-            }
             choffset = CHAROFFSET( *menu );
             /* blank line */
             mfill( &UIData->screen,
                     desc->area.row + item,
                     desc->area.col + 1,
                     attr, ' ', len, 1 );
+            start_col = desc->area.col;
             if( desc->flags & MENU_HAS_CHECK ) {
-                start_col = desc->area.col + 1;
-                len--;
-            } else {
-                start_col = desc->area.col;
+                start_col++;
+                if( len > 0 ) {
+                    len--;
+                }
             }
             /* checkmark */
             if( menu->flags & ITEM_CHECKED ) {
@@ -247,8 +246,10 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
                         start_col + len,
                         attr, UiGChar[UI_POPUP_MARK], 1, 1 );
             }
-            if( desc->flags & MENU_HAS_POPUP ) {
-                len--;
+            if( (desc->flags & MENU_HAS_POPUP) ) {
+                if( len > 0 ) {
+                    len--;
+                }
             }
             if( str != NULL ) {
                 tab_loc_len = 0;
@@ -315,11 +316,11 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
     openwindow( window );
 }
 
-static int process_menuchar( int ch, DESCMENU **desc, int *menu, bool *select )
+static bool process_menuchar( int ch, DESCMENU **desc, int *menu, bool *select )
 {
     int                 index;
     UIMENUITEM          *itemptr;
-    int                 handled;
+    bool                handled;
     int                 hotchar;
 
     ch = tolower( ch );
@@ -682,10 +683,10 @@ void UIAPI uidescmenu( UIMENUITEM *iptr, DESCMENU *desc )
 /*******************************************************/
 {
     int                 item;
-    int                 len;
+    uisize              len;
     char*               tab_loc;
-    int                 tab_loc_len;
-    int                 to_add;
+    uisize              tab_loc_len;
+    uisize              to_add;
 
     desc->flags = 0;
     if( iptr != NULL ) {
@@ -775,7 +776,7 @@ static void descmenu( int menu, DESCMENU *desc )
 
 void uimenutitlebar( void )
 {
-    int                     menu;
+    int             menu;
 
     forbid_refresh();
     for( menu = 1; menu <= NumMenus; ++menu ) {
