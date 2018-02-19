@@ -79,8 +79,8 @@ void IdleInterrupt( void )
 #endif
 }
 
-void intern setvideomode( unsigned mode )
-/***************************************/
+void intern setvideomode( unsigned char mode )
+/********************************************/
 {
     BIOSSetMode( mode );
 }

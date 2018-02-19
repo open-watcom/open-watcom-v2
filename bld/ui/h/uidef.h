@@ -85,7 +85,7 @@ extern ui_event         Event;
     extern "C" {
 #endif
 
-extern bool             intern  balloc( BUFFER *, ORD, ORD );
+extern bool             intern  balloc( BUFFER *, uisize, uisize );
 extern void             intern  battrflip( BUFFER *, int, int, uisize, uisize );
 extern void             intern  battribute( BUFFER *, int, int, uisize, uisize, ATTR );
 extern void             intern  uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
@@ -145,7 +145,7 @@ extern void             intern  permit_refresh( void );
 extern ui_event         intern  saveevent( void );
 extern ui_event         intern  getprime( VSCREEN * );
 extern void             intern  setupmouse( void );
-extern void             intern  setvideomode( unsigned );
+extern void             intern  setvideomode( unsigned char );
 extern int              intern  videopage( void );
 extern void             intern  vertretrace( void );
 extern ui_event         intern  getanyevent( void );

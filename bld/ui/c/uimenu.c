@@ -76,9 +76,9 @@ static ui_event    menu_list[] = {
     __end__
 };
 
-static char     *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
+static const char   *alt = "qwertyuiop\0\0\0\0asdfghjkl\0\0\0\0\0zxcvbnm";
 
-static bool     InitMenuPopupPending = false;
+static bool         InitMenuPopupPending = false;
 
 void uisetbetweentitles( unsigned between )
 {
@@ -97,8 +97,8 @@ char uialtchar( ui_event ui_ev )
 
 
 static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
-                             LPC_STRING string, int string_len )
-/**************************************************************/
+                         LPC_STRING string, uisize string_len )
+/*************************************************************/
 {
     SAREA       area;
 
@@ -110,8 +110,8 @@ static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
     physupdate( &area );
 }
 
-static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, int len, int height )
-/******************************************************************************************/
+static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, uisize len, uisize height )
+/************************************************************************************************/
 {
     SAREA       area;
 
@@ -160,8 +160,7 @@ static void menutitle( int menu, bool current )
     }
     mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET,
              attr, mptr->name, desc->titlewidth );
-    mstring( &UIData->screen, MENU_GET_ROW( desc ),
-             desc->titlecol + TITLE_OFFSET + CHAROFFSET( *mptr ),
+    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET + CHAROFFSET( *mptr ),
              chattr, mptr->name + CHAROFFSET( *mptr ), 1 );
 }
 
@@ -201,30 +200,32 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
         len = desc->area.width - 2;
         str = menu->name;
         if( MENUSEPARATOR( *menu ) ) {
+            /* separator line */
             ch[0] = BOX_CHAR( SBOX_CHARS(), LEFT_TACK );
             mstring( &UIData->screen,
-                    (ORD) desc->area.row + item,
-                    (ORD) desc->area.col,
-                     UIData->attrs[ATTR_MENU], ch, 1 );
+                    desc->area.row + item,
+                    desc->area.col,
+                    UIData->attrs[ATTR_MENU], ch, 1 );
             mfill( &UIData->screen,
-                    (ORD) desc->area.row + item,
-                    (ORD) desc->area.col + 1,
+                    desc->area.row + item,
+                    desc->area.col + 1,
                     UIData->attrs[ATTR_MENU],
                     BOX_CHAR( SBOX_CHARS(), HORIZ_LINE ),
                     len, 1 );
             ch[0] = BOX_CHAR( SBOX_CHARS(), RIGHT_TACK );
             mstring( &UIData->screen,
-                    (ORD) desc->area.row + item,
-                    (ORD) desc->area.col + len + 1,
+                    desc->area.row + item,
+                    desc->area.col + len + 1,
                     UIData->attrs[ATTR_MENU], ch, 1 );
         } else {
             if( len < 0 ) {
                 len = 0;
             }
             choffset = CHAROFFSET( *menu );
-            mfill( &UIData->screen,                     /* blank line */
-                    (ORD) desc->area.row + item,
-                    (ORD) desc->area.col + 1,
+            /* blank line */
+            mfill( &UIData->screen,
+                    desc->area.row + item,
+                    desc->area.col + 1,
                     attr, ' ', len, 1 );
             if( desc->flags & MENU_HAS_CHECK ) {
                 start_col = desc->area.col + 1;
@@ -232,17 +233,19 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
             } else {
                 start_col = desc->area.col;
             }
+            /* checkmark */
             if( menu->flags & ITEM_CHECKED ) {
-                mfill( &UIData->screen,                 /* checkmark */
-                       (ORD) desc->area.row + item,
-                       (ORD) start_col,
-                       attr, UiGChar[UI_CHECK_MARK], 1, 1 );
+                mfill( &UIData->screen,
+                        desc->area.row + item,
+                        start_col,
+                        attr, UiGChar[UI_CHECK_MARK], 1, 1 );
             }
+            /* > for popup */
             if( menu->popup != NULL ) {
-                mfill( &UIData->screen,                 /* > for popup */
-                       (ORD) desc->area.row + item,
-                       (ORD) start_col + len,
-                       attr, UiGChar[UI_POPUP_MARK], 1, 1 );
+                mfill( &UIData->screen,
+                        desc->area.row + item,
+                        start_col + len,
+                        attr, UiGChar[UI_POPUP_MARK], 1, 1 );
             }
             if( desc->flags & MENU_HAS_POPUP ) {
                 len--;
@@ -263,18 +266,20 @@ void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr 
                     }
                 }
                 /* text */
-                mstring( &UIData->screen, (ORD) desc->area.row + item,
-                         (ORD) start_col + 2, attr, str, str_len );
+                mstring( &UIData->screen, desc->area.row + item,
+                        start_col + 2, attr, str, str_len );
+                /* tabbed text */
                 if( tab_loc != NULL ) {
-                    mstring( &UIData->screen,           /* tabbed text */
-                             (ORD) desc->area.row + item,
-                             (ORD) start_col + TAB_OFFSET( desc ) + 2,
-                             attr, tab_loc, tab_loc_len );
+                    mstring( &UIData->screen,
+                            desc->area.row + item,
+                            start_col + TAB_OFFSET( desc ) + 2,
+                            attr, tab_loc, tab_loc_len );
                 }
-                mstring( &UIData->screen,               /* short cut key */
-                         (ORD) desc->area.row + item,
-                         (ORD) start_col + choffset + 2,
-                         chattr, str + choffset, 1 );
+                /* short cut key */
+                mstring( &UIData->screen,
+                        desc->area.row + item,
+                        start_col + choffset + 2,
+                        chattr, str + choffset, 1 );
             }
         }
     }
@@ -363,8 +368,7 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
         uimenudisable( true );
 
         *new_ui_ev = uicreatesubpopupinarea( curr_menu, desc, true, false,
-                                            curr_menu[0].event, &keep_inside,
-                                            &BarWin.area, &return_exclude );
+            curr_menu[0].event, &keep_inside, &BarWin.area, &return_exclude );
         uimenudisable( false );
 
         switch( *new_ui_ev ) {
@@ -527,8 +531,8 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 case EV_NO_EVENT :
                     break;
                 default :
-                    if( iskeyboardchar( ui_ev ) ) {
-                        if( process_menuchar( ui_ev, &desc, &menu, &select ) ) {
+                    if( iseditchar( ui_ev ) ) {
+                        if( process_menuchar( (unsigned char)ui_ev, &desc, &menu, &select ) ) {
                             break;
                         }
                     }

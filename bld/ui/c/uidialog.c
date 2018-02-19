@@ -209,7 +209,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         list  = &combo->list;
 
         if( !combo->perm ) {
-            ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];  /* JBS was 25 */
+            ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];
             uivtextput( vs, area->row, area->col + area->width + 1,
                         UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
             ctrlbuf[0] = '\0';
@@ -237,7 +237,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         break;
     case FLD_PULLDOWN :
         list = field->u.list;
-        ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];  /* JBS was 25 */
+        ctrlbuf[0] = UiGChar[UI_ARROW_DOWN];
         uivtextput( vs, area->row, area->col + area->width,
                     UIData->attrs[ATTR_SCROLL_ICON], ctrlbuf, 1 );
         ctrlbuf[0] = '\0';
