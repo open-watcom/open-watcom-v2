@@ -50,8 +50,8 @@ typedef enum {
     FLD_VOID,
     FLD_FRAME,
     FLD_LABEL,
-    FLD_TEXT,          /* background text      * must be */
-    FLD_HOT,           /* hot spot             * first   */
+    FLD_TEXT,          /* background text must be first */
+    FLD_HOT,           /* hot spot must be first        */
     FLD_EDIT,
     FLD_INVISIBLE_EDIT,
     FLD_LISTBOX,
@@ -179,8 +179,8 @@ extern void             uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
 extern char             uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
 extern unsigned         ui_split_line( char **, char *, unsigned );
-extern void             *uiinitdialog( const char *title, ATTR, char **, unsigned, int, int, int );
-extern void             uifinidialog( void * );
+extern VSCREEN          *uiinitdialog( const char *title, ATTR, char **, unsigned, int, int, int );
+extern void             uifinidialog( VSCREEN * );
 
 extern a_dialog         *uibegdialog( const char *title, VFIELD *, ORD, ORD, int, int );
 extern bool             uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area );
@@ -211,8 +211,6 @@ extern unsigned         uilistsize( a_list * );
 extern UIPICKGETTEXT    uigetlistelement;
 extern void             uiupdatelistbox( a_list * );
 extern void             uiupdatecombobox( a_combo_box * );
-extern void             *openstream( char *, char *, char ** );
-extern void             closestream( void * );
 
 /*
  * functions in uidlgfcn.c

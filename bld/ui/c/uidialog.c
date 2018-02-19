@@ -376,7 +376,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     return( slen );
 }
 
-void *uiinitdialog( const char *title, ATTR attr, char *lines[],
+VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
             unsigned extra_rows, int maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
@@ -425,7 +425,7 @@ void *uiinitdialog( const char *title, ATTR attr, char *lines[],
     return( vs );
 }
 
-void uifinidialog( void *vs )
+void uifinidialog( VSCREEN *vs )
 {
     uiclose( vs );
 }
@@ -1041,8 +1041,8 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
     VFIELD      *vf;
 
     /* is the event a key press or alt-key press */
-    if( ui_ev < 0x100 && isalpha( ui_ev ) ) {
-        ch = tolower( ui_ev );
+    if( iseditchar( ui_ev ) && isalpha( ui_ev ) ) {
+        ch = tolower( (unsigned char)ui_ev );
     } else {
         ch = uialtchar( ui_ev );
     }
