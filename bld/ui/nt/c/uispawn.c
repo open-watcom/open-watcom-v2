@@ -39,7 +39,7 @@ void UIAPI uispawnstart( void )
     kbdspawnstart();
     mousespawnstart();
     uiswap();
-    uisetcursor( 0, 0, C_NORMAL, -1 );
+    uisetcursor( 0, 0, C_NORMAL, CATTR_OFF );
 }
 
 void UIAPI uispawnend( void )

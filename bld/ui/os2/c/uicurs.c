@@ -89,7 +89,7 @@ void UIAPI uioncursor( void )
 
     VioSetCurPos( UIData->cursor_row, UIData->cursor_col, 0);
 
-    if( UIData->cursor_attr != -2 ) {
+    if( UIData->cursor_attr != CATTR_VOFF ) {
     /* get current character and attribute */
 
         VioGetCurPos( &r, &c, 0 );
@@ -203,7 +203,7 @@ void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
         UIData->cursor_type = typ;
         UIData->cursor_row = row;
         UIData->cursor_col = col;
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();

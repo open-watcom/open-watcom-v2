@@ -90,7 +90,7 @@ void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
         UIData->cursor_type = typ;
         UIData->cursor_row = row;
         UIData->cursor_col = col;
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();

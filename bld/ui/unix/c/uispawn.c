@@ -40,7 +40,7 @@ void UIAPI uispawnstart( void )
 /*****************************/
 {
     uiswap();
-    uisetcursor( 0, 0, C_NORMAL, -1 );
+    uisetcursor( 0, 0, C_NORMAL, CATTR_OFF );
     if( MouseInstalled )
         _finimouse();
     savekeyb();

@@ -96,7 +96,7 @@ void UIDBG _uioncursor( void )
     r.h.dh = (signed char) UIData->cursor_row;
     r.h.dl = (signed char) UIData->cursor_col;
     intx86( BIOS_VIDEO, &r, &r );
-    if( UIData->cursor_attr != -2 ) {
+    if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get video state */
         r.h.ah = 15;
         intx86( BIOS_VIDEO, &r, &r );
@@ -201,7 +201,7 @@ void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
         UIData->cursor_type = typ;
         UIData->cursor_row = row;
         UIData->cursor_col = col;
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();

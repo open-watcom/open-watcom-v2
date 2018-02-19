@@ -81,7 +81,7 @@ void UIAPI uioncursor( void )
 
     SetPositionOfInputCursor( UIData->cursor_row, UIData->cursor_col );
 
-//NYI ???    if( UIData->cursor_attr != -2 ) { }
+//NYI ???    if( UIData->cursor_attr != CATTR_VOFF ) { }
 
     DisplayInputCursor();
 
@@ -139,7 +139,7 @@ void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
         UIData->cursor_row = row;
         UIData->cursor_col = col;
 
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();
