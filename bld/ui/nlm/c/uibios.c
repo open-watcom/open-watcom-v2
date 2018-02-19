@@ -88,7 +88,7 @@ static bool initmonitor( void )
 /* IsColorMonitor doesn't seem to be working for NetWare 3.11 */
 /* so we'll just assume a colour monitor for now. */
 
-    if( IsColorMonitor( ) ){
+    if( IsColorMonitor() ){
         UIData->colour = M_CGA;
     } else {
         UIData->colour = M_MONO;
@@ -108,7 +108,7 @@ bool intern initbios( void )
 
         UIData->screen.origin = (LP_PIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
 
-        for( i = 0 ; i < UIData->width * UIData->height ; ++i ){
+        for( i = 0; i < UIData->width * UIData->height; ++i ){
             UIData->screen.origin[i].ch = ' ';
             UIData->screen.origin[i].attr = 7;
         } /* end for */
@@ -142,14 +142,14 @@ static void finimonitor( void )
     DestroyScreen( ScreenHandle );
 } /* end finimonitor */
 
-void intern finibios()
-/********************/
+void intern finibios( void )
+/**************************/
 {
 
-    uifinicursor( );
-    finikeyboard( );
-    finimonitor( );
-    uifree( (void *) UIData->screen.origin );
+    uifinicursor();
+    finikeyboard();
+    finimonitor();
+    uifree( (void *)UIData->screen.origin );
 
 }
 
@@ -160,7 +160,7 @@ void intern physupdate( SAREA *area )
 {
     int i;
 
-    for( i = area->row ; i < area->row + area->height ; ++i ){
+    for( i = area->row; i < area->row + area->height; ++i ){
         CopyToScreenMemory( 1, area->width,
                 (BYTE *)( UIData->screen.origin + i * UIData->width + area->col ),
                 area->col, i );

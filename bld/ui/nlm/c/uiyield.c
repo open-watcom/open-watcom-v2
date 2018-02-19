@@ -32,7 +32,7 @@
 
 #include <process.h>
 #include "uidef.h"
-#include "nw_clib.h"
+#include "nw_lib.h"
 
 
 #define SWITCH_THRESHOLD    10
