@@ -480,14 +480,12 @@ void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
     ui_dlg_info->other = NULL;
     ui_dlg_info->fields = fields;
 
-    ui_dlg_info->first = &fields[0];
     /* set first to be first field in tab sequence */
-    while( notintab( ui_dlg_info->first ) ) {
+    for( ui_dlg_info->first = &fields[0]; notintab( ui_dlg_info->first ); ui_dlg_info->first++ ) {
         if( ui_dlg_info->first->typ == FLD_VOID ) {
             ui_dlg_info->first = NULL;
             break;
         }
-        ++(ui_dlg_info->first);
     }
     ui_dlg_info->curr = ui_dlg_info->first;
     if( ui_dlg_info->first != NULL ) {
@@ -727,19 +725,16 @@ static void *backwardtab( a_dialog *ui_dlg_info )
     VFIELD      *fld, *hold;
 
     hold = NULL;
-    fld = ui_dlg_info->first;
-    while( fld != ui_dlg_info->curr ) {
+    for( fld = ui_dlg_info->first; fld != ui_dlg_info->curr; fld = nextfield( fld ) ) {
         if( !radiooff( fld ) ) {
             hold = fld;
         }
-        fld = nextfield( fld );
     }
     if( hold == NULL ) {        /* wrap */
-        while( fld != NULL ) {
+        for( ; fld != NULL; fld = nextfield( fld ) ) {
             if( !radiooff( fld ) ) {
                 hold = fld;
             }
-            fld = nextfield( fld );
         }
     }
     return( hold );
@@ -946,8 +941,7 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
             VSCREEN             *mousevs;
 
             mousevs = uivmousepos( ui_dlg_info->vs, &row, &col );
-            fld = ui_dlg_info->first;
-            while( fld != NULL ) {
+            for( fld = ui_dlg_info->first; fld != NULL; fld = nextfield( fld ) ) {
                 list = NULL;
                 area = fld->area;
                 if( fld->typ == FLD_PULLDOWN ) {
@@ -974,7 +968,6 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
                             col >= area.col  && col < area.col + area.width ) {
                     break;
                 }
-                fld = nextfield( fld );
             }
             /* check boxes don't get mouse events unless mouse over them */
             if( fld == NULL && curr != NULL && curr->typ == FLD_CHECK ) {

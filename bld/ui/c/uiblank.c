@@ -38,7 +38,7 @@
 static void blankarea( SAREA area, ATTR attr )
 /********************************************/
 {
-    ORD         row;
+    uisize      row;
     SAREA       up_area;
 
     for( row = area.row; row < area.row + area.height; ++row ) {

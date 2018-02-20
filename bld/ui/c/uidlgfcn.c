@@ -53,28 +53,23 @@ void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 {
     int     newval = v->u.radio->value;
     int     *oldval = &v->u.radio->group->value;
-    VFIELD  *oldradio = NULL;
-    VFIELD  *tmp = ui_dlg_info->fields;
+    VFIELD  *tmp;
 
     if( newval == *oldval )
         return; // nothing to do
 
     ui_dlg_info->dirty = true;
-    while( tmp->u.radio != NULL ) {
+    for( tmp = ui_dlg_info->fields; tmp->u.radio != NULL; tmp++ ) {
         if( tmp->typ == FLD_RADIO ) {
             if( tmp->u.radio->value == *oldval ) {
                 // we have it!
-                oldradio = tmp;
+                *oldval = newval;
+                uiprintfield( ui_dlg_info, v );
+                uiprintfield( ui_dlg_info, tmp );
                 break;
             }
         }
-        tmp++;
     }
-    if( oldradio == NULL ) return; // error!
-
-    *oldval = newval;
-    uiprintfield( ui_dlg_info, v );
-    uiprintfield( ui_dlg_info, oldradio );
 }
 
 void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )

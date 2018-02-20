@@ -37,7 +37,7 @@
 static void backblank( SAREA area, void *dummy )
 /**********************************************/
 {
-    ORD         row;
+    uisize      row;
 
     /* unused parameters */ (void)dummy;
 
@@ -50,7 +50,7 @@ static void backblank( SAREA area, void *dummy )
 static void backfill( SAREA area, void *dummy )
 /*********************************************/
 {
-    ORD         row;
+    uisize      row;
 
     /* unused parameters */ (void)dummy;
 
@@ -95,7 +95,7 @@ void intern closebackground( void )
 
 
 BUFFER * UIAPI uibackgroundbuffer( void )
-/****************************************/
+/***************************************/
 {
     bool    ok;
 
@@ -114,7 +114,7 @@ BUFFER * UIAPI uibackgroundbuffer( void )
 }
 
 bool UIAPI uiremovebackground( void )
-/************************************/
+/***********************************/
 {
     if( UIData->blank.type.buffer.origin != NULL ) {
         bfree( &UIData->blank.type.buffer );
@@ -126,10 +126,10 @@ bool UIAPI uiremovebackground( void )
 }
 
 bool UIAPI uikeepbackground( void )
-/**********************************/
+/*********************************/
 {
-    ORD             row;
-    BUFFER          *buff;
+    uisize      row;
+    BUFFER      *buff;
 
     buff = uibackgroundbuffer();
     if( buff ) {
@@ -139,4 +139,3 @@ bool UIAPI uikeepbackground( void )
     }
     return( buff != NULL );
 }
-

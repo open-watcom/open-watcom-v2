@@ -1189,9 +1189,10 @@ static int ti_refresh( bool must )
         if( !must ) {
             int     r,c;
             int     pos;
-            bool    diff = false;
+            bool    diff;
 
-            while( dirty_area.col0 < dirty_area.col1 ) {
+            diff = false;
+            for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col0++ ) {
                 for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
                     pos = r * incr + dirty_area.col0;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1199,13 +1200,13 @@ static int ti_refresh( bool must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.col0++;
+                }
             }
 
             diff = false;
-            while( dirty_area.col0 < dirty_area.col1 ) {
+            for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col1-- ) {
                 for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
                     pos = r * incr + dirty_area.col1 - 1;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1213,13 +1214,13 @@ static int ti_refresh( bool must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.col1--;
+                }
             }
 
             diff = false;
-            while( dirty_area.row0 < dirty_area.row1 ) {
+            for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
                 for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
                     pos = dirty_area.row0 * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1227,13 +1228,13 @@ static int ti_refresh( bool must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.row0++;
+                }
             }
 
             diff = false;
-            while( dirty_area.row0 < dirty_area.row1 ) {
+            for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row1-- ) {
                 for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
                     pos = ( dirty_area.row1 - 1 ) * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1241,9 +1242,9 @@ static int ti_refresh( bool must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.row1--;
+                }
             }
         }
 

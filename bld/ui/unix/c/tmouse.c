@@ -32,6 +32,7 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 #if defined( __UNIX__ )
 #ifndef HP
@@ -283,11 +284,9 @@ static bool gpm_tm_init( void )
         }
         tty_name[len] = '\0';
     }
-    len--;
     mult = 1;
-    while( len && tty_name[len] >= '0' && tty_name[len] <= '9' ) {
+    for( len--; len > 0 && isdigit( tty_name[len] ); len-- ) {
         gpm_conn.vc += ( tty_name[len] - '0' ) * mult;
-        len--;
         mult *= 10;
     }
     write( UIMouseHandle, &gpm_conn, sizeof gpm_conn );

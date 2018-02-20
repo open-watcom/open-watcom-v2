@@ -107,9 +107,8 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             if( buffer->insert ) {
                 bptr = buffer->content + buffer->length - 1;
                 if( *bptr == ' ' ) {
-                    while( bptr >= buffer->content + buffer->index ) {
-                        *bptr = *(bptr-1);
-                        --bptr;
+                    for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
+                        *bptr = *(bptr - 1);
                     }
                     *(buffer->content + buffer->index) = CHAR_VALUE( ui_ev );
                     right = true;
@@ -120,10 +119,8 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
                 if( uicharlen( *bptr ) == 2 ) {
                     if( uicharlen( CHAR_VALUE( ui_ev ) ) == 1 ) {
                         *bptr = CHAR_VALUE( ui_ev );
-                        ++bptr;
-                        while( bptr < buffer->content + buffer->length - 1 ) {
-                            *bptr = *(bptr+1);
-                            ++bptr;
+                        for( bptr++; bptr < buffer->content + buffer->length - 1; bptr++ ) {
+                            *bptr = *(bptr + 1);
                         }
                         *bptr = ' ';
                     } else {
@@ -133,9 +130,8 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
                     if( uicharlen( CHAR_VALUE( ui_ev ) ) == 2 ) {
                         bptr = buffer->content + buffer->length - 1;
                         if( *bptr == ' ' ) {
-                            while( bptr >= buffer->content + buffer->index ) {
-                                *bptr = *(bptr-1);
-                                --bptr;
+                            for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
+                                *bptr = *(bptr - 1);
                             }
                             *(buffer->content + buffer->index) = CHAR_VALUE( ui_ev );
                             *(buffer->content + buffer->index + 1) = 'a';
@@ -152,23 +148,22 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
     } else if( ui_ev == EV_HOME ) {
         buffer->index = 0;
     } else if( ui_ev == EV_END ) {
-        bptr = buffer->content + buffer->length;
-        while( bptr > buffer->content ) {
-            if( *(bptr-1) != ' ' ) {
+        for( bptr = buffer->content + buffer->length; bptr > buffer->content; bptr-- ) {
+            if( *(bptr - 1) != ' ' ) {
                 break;
             }
-            --bptr;
         }
         buffer->index = bptr - buffer->content;
     } else if( ui_ev == EV_CTRL_CURSOR_LEFT ) {
-        bptr = buffer->content + buffer->index;
-        while( bptr > buffer->content ) {
+        for( bptr = buffer->content + buffer->index; bptr > buffer->content; ) {
             --bptr;
             if( secondbyte( buffer->content, bptr ) )
                 --bptr;
-            if( !isdelim( *bptr ) )break;
+            if( !isdelim( *bptr ) ) {
+                break;
+            }
         }
-        while( bptr > buffer->content ) {
+        for( ; bptr > buffer->content; ) {
             --bptr;
             if( secondbyte( buffer->content, bptr ) )
                 --bptr;
@@ -210,8 +205,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
         buffer->dirty = true;
     } else if( ui_ev == EV_CURSOR_RIGHT ) {
         allblank = true;
-        bptr = buffer->content + buffer->index;
-        while( bptr < buffer->content + buffer->length ) {
+        for( bptr = buffer->content + buffer->index; bptr < buffer->content + buffer->length; ) {
             if( *bptr != ' ' ) {
                 allblank = false;
                 break;
@@ -245,14 +239,12 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
 
         allblank = true;
         if( buffer->index < buffer->length ) {
-            bptr = buffer->content + buffer->index;
-            delsize = uicharlen( *bptr );
-            while( bptr < buffer->content + buffer->length - delsize ) {
+            delsize = uicharlen( *(buffer->content + buffer->index) );
+            for( bptr = buffer->content + buffer->index; bptr < buffer->content + buffer->length - delsize; bptr++ ) {
                 if( *bptr != ' ' ) {
                     allblank = false;
                 }
-                *bptr = *(bptr+delsize);
-                ++bptr;
+                *bptr = *(bptr + delsize);
             }
             *bptr = ' ';
             if( delsize == 2 ) {

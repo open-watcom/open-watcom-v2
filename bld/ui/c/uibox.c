@@ -41,7 +41,7 @@
 void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool fill )
 /************************************************************************************/
 {
-    ORD         row;
+    uisize      row;
 
     bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
     if( area.width > 2 )
@@ -79,10 +79,30 @@ void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
     grow.height = 2;
     grow.width = 2;
     while( ( grow.height < area.height ) || ( grow.width < area.width ) ) {
-        grow.row = (ORD)max( area.row, grow.row - incrow );
-        grow.col = (ORD)max( area.col, grow.col - inccol );
-        grow.height = (ORD)min( area.height, grow.height + 2 * incrow );
-        grow.width = (ORD)min( area.width, grow.width + 2 * inccol );
+        /* max */
+        if( grow.row < area.row + incrow ) {
+            grow.row = area.row;
+        } else {
+            grow.row -= incrow;
+        }
+        /* max */
+        if( grow.col < area.col + inccol ) {
+            grow.col = area.col;
+        } else {
+            grow.col -= inccol;
+        }
+        /* min */
+        if( grow.height + 2 * incrow > area.height ) {
+            grow.height = area.height;
+        } else {
+            grow.height += 2 * incrow;
+        }
+        /* min */
+        if( grow.width + 2 * inccol > area.width ) {
+            grow.width = area.width;
+        } else {
+            grow.width += 2 * inccol;
+        }
         drawbox( bptr, grow, box, attr, true );
         if( ( grow.height == area.height ) && ( grow.width == area.width ) ) {
             break;

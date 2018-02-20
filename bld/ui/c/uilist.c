@@ -70,18 +70,15 @@ void UIAPI uipushlist( ui_event *list )
 bool UIAPI uiinlist( ui_event ui_ev, ui_event *ui_ev_list )
 /*********************************************************/
 {
-    while( *ui_ev_list != __rend__ ) {
+    for( ; *ui_ev_list != __rend__; ui_ev_list += 2 ) {
         if( ( ui_ev >= *ui_ev_list ) && ( ui_ev <= *( ui_ev_list + 1 ) ) ) {
             return( true );
         }
-        ui_ev_list += 2;
     }
-    ++ui_ev_list;
-    while( *ui_ev_list != __end__ ) {
+    for( ui_ev_list++; *ui_ev_list != __end__; ui_ev_list++ ) {
         if( ui_ev == *ui_ev_list ) {
             return( true );
         }
-        ++ui_ev_list;
     }
     return( false );
 }

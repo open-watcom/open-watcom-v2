@@ -85,9 +85,10 @@ bool uiconfig( char *fn, char **envvars )
                     s = &buffer[slen];
                     for( i = 0 ; i < ATTR_LAST && *s == ' '; ++i ) {
                         attr = 0;
-                        while( *s == ' ' ) ++s;
+                        while( *s == ' ' )
+                            ++s;
                         while( *s != '\0' && *s != '\n' && *s != ' ' ) {
-                            attr = 10*attr + (*s-'0');
+                            attr = 10 * attr + (*s - '0');
                             ++s;
                         }
                         if( attr != 0 ) {

@@ -72,23 +72,18 @@ static void *bwd_tab( VTAB *vtab, VTABAREA *curr, unsigned wrap )
     VTABAREA           *chase, *hold;
 
     hold = NULL;
-    chase = vtab->first;
-    while( chase != curr ) {
+    for( chase = vtab->first; chase != curr; chase = _next( chase ) ) {
         if( _tab( chase ) ) {
             hold = chase;
         }
-        chase = _next( chase );
     }
     if( hold == NULL ) {
         if( wrap ) {
-            while( chase != NULL ) {
+            for( ; chase != NULL; chase = _next( chase ) ) {
                 if( _tab( chase ) ) {
                     hold = chase;
                 }
-                chase = _next( chase );
             }
-        } else {
-            hold = NULL;
         }
     }
     return( hold );
@@ -107,7 +102,8 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
     if( vtab->first != NULL ) {
         if( vtab->curr == NULL ) {
             curr = fwd_tab( vtab, NULL, true );
-            if( curr == NULL ) return( ui_ev );
+            if( curr == NULL )
+                return( ui_ev );
             vtab->home = curr->area.col;
         } else {
             curr = vtab->curr;
@@ -119,16 +115,15 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
         case EV_MOUSE_DRAG :
         case EV_MOUSE_RELEASE :
             if( _mouse( &r, &c ) ) {
-                chase = vtab->first;
                 best = NULL;
-                while( chase != NULL ) {
-                    if( r < chase->area.row ) break;
+                for( chase = vtab->first; chase != NULL; chase = _next( chase ) ) {
+                    if( r < chase->area.row )
+                        break;
                     if( r == chase->area.row && c >= chase->area.col &&
                         c < chase->area.col + chase->area.width ) {
                         best = chase;
                         break;
                     }
-                    chase = _next( chase );
                 }
                 if( ui_ev != EV_MOUSE_RELEASE ) {
                     vtab->other = best;
@@ -148,7 +143,8 @@ ui_event uitabfilter( ui_event ui_ev, VTAB *vtab )
             curr = bwd_tab( vtab, NULL, true );
             break;
         case EV_ENTER :
-            if( !vtab->enter ) return( ui_ev );
+            if( !vtab->enter )
+                return( ui_ev );
             vtab->home = 0;
             ui_ev = EV_CURSOR_DOWN;
             /* fall through */

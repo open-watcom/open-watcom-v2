@@ -36,7 +36,7 @@
 void UIAPI uivfill( VSCREEN *vptr, SAREA area, ATTR attr, char ch )
 /*****************************************************************/
 {
-    ORD         row;
+    uisize      row;
 
     okopen( vptr );
     oksubarea( area, vptr->area );

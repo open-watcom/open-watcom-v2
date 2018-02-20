@@ -82,13 +82,14 @@ static const char acs_default[] = "q-x|l+m+k+j+n+w+v+t+u+~o+>,<-^.v0#f\\g#a:h#";
 
 static char find_acs_map( char c, const char *acs )
 {
-    while( acs[0] != '\0' ) {
-        if( acs[0] == c )
-            return( acs[1] );
-        ++acs;
-        if( acs[0] == '\0' )
+    char    ch;
+
+    while( (ch = *acs++) != '\0' ) {
+        if( ch == c )
+            return( *acs );
+        if( *acs++ == '\0' ) {
             break;
-        ++acs;
+        }
     }
     return( '\0' );
 }
