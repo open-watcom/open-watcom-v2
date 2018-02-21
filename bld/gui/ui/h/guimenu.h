@@ -38,8 +38,6 @@ extern void         GUIFreeMenuItems( UIMENUITEM *menus );
 extern bool         GUICreateMenuItems( gui_ctl_idx num_menus, gui_menu_struct *info, UIMENUITEM ** );
 extern void         GUIChangeMenu( UIMENUITEM *menu, gui_menu_styles style );
 extern gui_ctl_idx  GUIGetNumIgnore( gui_menu_struct *info, gui_ctl_idx num_menus );
-extern void         GUIFreeVBarMenu( VBARMENU *menu );
-extern bool         GUIAllocVBarMenu( VBARMENU **pmenu );
 extern UIMENUITEM   *GUIAllocMenuItems( gui_ctl_idx num_menus );
 extern bool         GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id );
 extern bool         GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw );

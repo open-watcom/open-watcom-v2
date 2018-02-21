@@ -86,7 +86,7 @@ typedef struct vbarmenu {
     bool            ignorealt    :1;    /* ignore 1 alt press                */
     bool            popuppending :1;    /* need to open popup                */
     bool            disabled     :1;    /* menu has been disabled            */
-    signed char     menu;               /* current menu number (base 1)      */
+    int             currmenu;           /* current menu number (base 1)      */
 } VBARMENU;
 
 #ifdef __cplusplus
@@ -106,7 +106,7 @@ extern bool         uimenugetaltpressed ( void );
 extern void         uimenusetaltpressed ( bool );
 extern void         uinomenus( void );
 extern void         uiactivatemenus( void );
-extern bool         uienablemenuitem( unsigned, unsigned, bool );
+extern bool         uienablepopupitem( int, int, bool );
 extern void         uidescmenu( UIMENUITEM *, DESCMENU * );
 extern void         uidrawmenu( UIMENUITEM *, DESCMENU *, int );
 extern void         uidisplaymenuitem( UIMENUITEM *, DESCMENU *, int, bool );

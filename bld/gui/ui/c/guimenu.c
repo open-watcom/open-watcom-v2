@@ -421,7 +421,7 @@ bool GUICreateMenuItems( gui_ctl_idx num_menus, gui_menu_struct *info,
     return( true );
 }
 
-bool GUIAllocVBarMenu( VBARMENU **pmenu )
+static bool GUIAllocVBarMenu( VBARMENU **pmenu )
 {
     VBARMENU    *menu;
 
@@ -433,9 +433,20 @@ bool GUIAllocVBarMenu( VBARMENU **pmenu )
         return( false );
     }
     menu->titles = NULL;
-    menu->menu = 1;
+    menu->currmenu = 0;
     *pmenu = menu;
     return( true );
+}
+
+static void GUIFreeVBarMenu( VBARMENU *menu )
+{
+    if( menu != NULL ) {
+        uinomenus();
+        if( menu->titles != NULL ) {
+            GUIFreeMenuItems( menu->titles );
+        }
+        GUIMemFree( menu );
+    }
 }
 
 /*
@@ -569,17 +580,6 @@ bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
         return( ret );
     } else {
         return( CreateMenus( wnd, dlg_info->num_menus, dlg_info->menu, dlg_info->parent, dlg_info->style ) );
-    }
-}
-
-void GUIFreeVBarMenu( VBARMENU *menu )
-{
-    if( menu != NULL ) {
-        uinomenus();
-        if( menu->titles != NULL ) {
-            GUIFreeMenuItems( menu->titles );
-        }
-        GUIMemFree( menu );
     }
 }
 
