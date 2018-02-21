@@ -96,6 +96,7 @@ typedef struct vbarmenu {
 extern char         uialtchar( ui_event );
 extern void         uisetmenudesc( void );
 extern VBARMENU     *uimenubar( VBARMENU * );
+extern int          uimenucount( UIMENUITEM *menuitems );
 extern void         uimenuindicators( bool );
 extern void         uimenus( UIMENUITEM *, UIMENUITEM **, ui_event );
 extern bool         uimenuson( void );

@@ -835,12 +835,24 @@ void UIAPI uisetmenudesc( void )
     }
 }
 
+int UIAPI uimenucount( UIMENUITEM *menuitems )
+/********************************************/
+{
+    int         count;
+
+    count = 0;
+    if( menuitems != NULL ) {
+        while( !MENUENDMARKER( *menuitems++ ) ) {
+            count++;
+        }
+    }
+    return( count );
+}
+
 VBARMENU* UIAPI uimenubar( VBARMENU *bar )
 /*****************************************/
 {
-    int                     count;
-    UIMENUITEM              *menus;
-    VBARMENU                *prevMenu;
+    VBARMENU    *prevMenu;
 
     if( NumMenus > 0 ) {
         closewindow( &BarWin );
@@ -860,13 +872,7 @@ VBARMENU* UIAPI uimenubar( VBARMENU *bar )
         Menu->movedmenu = false;
         Menu->popuppending = false;
         Menu->disabled = false;
-        count = 0;
-        for( menus = Menu->titles; !MENUENDMARKER( *menus ); ++menus ) {
-            if( ++count >= MAX_MENUS ) {
-                break;
-            }
-        }
-        NumMenus = count;
+        NumMenus = uimenucount( Menu->titles );
         uisetmenudesc();
         BarWin.area.row = 0;
         BarWin.area.col = 0;
