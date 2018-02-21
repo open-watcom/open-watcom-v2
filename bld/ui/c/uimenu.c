@@ -873,6 +873,8 @@ VBARMENU* UIAPI uimenubar( VBARMENU *bar )
         Menu->popuppending = false;
         Menu->disabled = false;
         NumMenus = uimenucount( Menu->titles );
+        if( NumMenus > MAX_MENUS )
+            NumMenus = MAX_MENUS;
         uisetmenudesc();
         BarWin.area.row = 0;
         BarWin.area.col = 0;
