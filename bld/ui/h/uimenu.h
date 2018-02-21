@@ -108,7 +108,7 @@ extern void         uiactivatemenus( void );
 extern bool         uienablemenuitem( unsigned, unsigned, bool );
 extern void         uidescmenu( UIMENUITEM *, DESCMENU * );
 extern void         uidrawmenu( UIMENUITEM *, DESCMENU *, int );
-extern void         uidisplayitem( UIMENUITEM *, DESCMENU *, int, bool );
+extern void         uidisplaymenuitem( UIMENUITEM *, DESCMENU *, int, bool );
 extern void         uiclosepopup( UI_WINDOW* );
 extern void         uiopenpopup( DESCMENU*, UI_WINDOW* );
 extern bool         uiposfloatingpopup( UIMENUITEM *menu, DESCMENU *desc, ORD row, ORD col, SAREA *keep_inside, SAREA *keep_visible );

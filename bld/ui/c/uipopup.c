@@ -35,7 +35,6 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-#define NO_SELECT       -1
 
 static  int     ScrollPos       = NO_SELECT;
 static  int     PrevScrollPos   = NO_SELECT;
@@ -92,7 +91,7 @@ static bool InArea( ORD row, ORD col, SAREA *area )
 
 static void DrawMenuText( int index, UIMENUITEM *menu, bool curr, DESCMENU *desc )
 {
-    uidisplayitem( &menu[index], desc, index + 1, curr );
+    uidisplaymenuitem( &menu[index], desc, index + 1, curr );
     uimenucurr( &menu[index] );
 }
 

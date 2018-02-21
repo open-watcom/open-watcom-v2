@@ -163,8 +163,8 @@ static void menutitle( int menu, bool current )
              chattr, mptr->name + CHAROFFSET( *mptr ), 1 );
 }
 
-void UIAPI uidisplayitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
-/*******************************************************************************/
+void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
+/***********************************************************************************/
 {
     bool                    active;
     ORD                     choffset;
@@ -295,7 +295,7 @@ void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
     if( desc->area.height > 0 ) {
         drawbox( &UIData->screen, desc->area, SBOX_CHARS(), UIData->attrs[ATTR_MENU], false );
         for( item = 1 ; item < desc->area.height - 1 ; ++item ) {
-            uidisplayitem( &menu[item - 1], desc, item, item == curr );
+            uidisplaymenuitem( &menu[item - 1], desc, item, item == curr );
         }
     }
     permit_refresh();

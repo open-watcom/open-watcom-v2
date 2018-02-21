@@ -45,6 +45,8 @@
 #define _ESC                "\033"
 #define _ESC_CHAR           '\033'
 
+#define NO_SELECT           -1
+
 typedef enum {
     UI_MOUSE_PRESS          = 1,
     UI_MOUSE_PRESS_RIGHT    = 2,
