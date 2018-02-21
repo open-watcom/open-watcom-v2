@@ -546,6 +546,7 @@ int RDOSAPI RdosIs64BitExe(const char *prog);
 int RDOSAPI RdosExec(const char *prog, const char *param, const char *startdir, const char *env);
 int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
 int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
+int RDOSAPI RdosAttachDebugger(int pid);
 int RDOSAPI RdosFork();
 int RDOSAPI RdosIsForked();
 int RDOSAPI RdosWaitForExec(int ForkId);
