@@ -299,8 +299,8 @@ MOUSEORD UIAPI uigetmcol( void )
 }
 #endif
 
-void UIAPI uigetmouse( ORD _FARD *row, ORD _FARD *col, bool _FARD *status )
-/*************************************************************************/
+void UIAPI uigetmouse( ORD *row, ORD *col, bool *status )
+/*******************************************************/
 {
     *row = MouseRow / UIData->mouse_yscale;
     *col = MouseCol / UIData->mouse_xscale;

@@ -34,8 +34,8 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-VSCREEN *uiopen( SAREA *area, const char *title, screen_flags flags )
-/*******************************************************************/
+VSCREEN intern *uiopen( SAREA *area, const char *title, screen_flags flags )
+/**************************************************************************/
 {
     VSCREEN             *s;
 
@@ -66,8 +66,8 @@ VSCREEN *uiopen( SAREA *area, const char *title, screen_flags flags )
     return( s );
 }
 
-void uiclose( VSCREEN *s )
-/************************/
+void intern uiclose( VSCREEN *s )
+/*******************************/
 {
     uivclose( s );
     if( s->dynamic_title )
