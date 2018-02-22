@@ -497,9 +497,12 @@ ui_event ck_keyboardevent( void )
         sticky = 0;
         #define S_MASK  (S_SHIFT | S_CTRL | S_ALT)
         if( shift_state & S_MASK ) {
-            search_ev = tolower( ui_ev );
-            entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ),
-                                sizeof( ShiftMap[0] ), find_entry );
+            if( iseditchar( ui_ev ) && isupper( (unsigned char)ui_ev ) ) {
+                search_ev = tolower( (unsigned char)ui_ev );
+            } else {
+                search_ev = ui_ev;
+            }
+            entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ), sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
                 if( shift_state & S_SHIFT ) {
                     ui_ev = entry->shift;
