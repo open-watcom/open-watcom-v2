@@ -79,7 +79,6 @@ static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WIND
             }
         }
     }
-    return;
 }
 
 void UIREFRESH( void )
@@ -88,8 +87,8 @@ void UIREFRESH( void )
     UI_WINDOW       *wptr;
     update_area     total;
     SAREA           area;
-    unsigned        start;
-    unsigned        end;
+    uisize          start;
+    uisize          end;
 
     _uicheckuidata();
 

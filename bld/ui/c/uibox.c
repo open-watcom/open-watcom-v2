@@ -64,44 +64,39 @@ void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool 
 void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
 /************************************************************************/
 {
-//    ORD             rows;
-//    ORD             cols;
-    int             inccol;
-    int             incrow;
     SAREA           grow;
 
-//    rows = area.height - 2;
-//    cols = area.width - 2;
-    incrow = 1;
-    inccol = 3;
+#define INCROW      1
+#define INCCOL      3
+
     grow.row = area.row + area.height / 2 - 1;
     grow.col = area.col + area.width / 2 - 1;
     grow.height = 2;
     grow.width = 2;
     while( ( grow.height < area.height ) || ( grow.width < area.width ) ) {
         /* max */
-        if( grow.row < area.row + incrow ) {
+        if( grow.row < area.row + INCROW ) {
             grow.row = area.row;
         } else {
-            grow.row -= incrow;
+            grow.row -= INCROW;
         }
         /* max */
-        if( grow.col < area.col + inccol ) {
+        if( grow.col < area.col + INCCOL ) {
             grow.col = area.col;
         } else {
-            grow.col -= inccol;
+            grow.col -= INCCOL;
         }
         /* min */
-        if( grow.height + 2 * incrow > area.height ) {
+        if( grow.height + 2 * INCROW > area.height ) {
             grow.height = area.height;
         } else {
-            grow.height += 2 * incrow;
+            grow.height += 2 * INCROW;
         }
         /* min */
-        if( grow.width + 2 * inccol > area.width ) {
+        if( grow.width + 2 * INCCOL > area.width ) {
             grow.width = area.width;
         } else {
-            grow.width += 2 * inccol;
+            grow.width += 2 * INCCOL;
         }
         drawbox( bptr, grow, box, attr, true );
         if( ( grow.height == area.height ) && ( grow.width == area.width ) ) {
@@ -113,22 +108,17 @@ void intern blowup( BUFFER *bptr, SAREA area, const char *box, ATTR attr )
 void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
 /**********************************************************************/
 {
-    unsigned    field_len;
+    uisize      field_len;
 
-    if( area->width < 2 ) {
-        return;
+    if( area->width > 1 ) {
+        drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
+        if( title != NULL ) {
+            field_len = strlen( title );
+            if( field_len > area->width - 2 ) {
+                field_len = area->width - 2;
+            }
+            uivtextput( vs, area->row, area->col + 1, attr, title, field_len );
+        }
     }
-
-    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
-
-    if( title == NULL ) {
-        return;
-    }
-
-    field_len = strlen( title );
-    if( field_len > area->width - 2 ) {
-        field_len = area->width - 2;
-    }
-
-    uivtextput( vs, area->row, area->col + 1, attr, title, field_len );
 }
+

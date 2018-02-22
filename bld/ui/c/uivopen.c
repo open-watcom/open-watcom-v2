@@ -63,7 +63,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     int                     priority;
     update_func             updatertn;
     bool                    okbuffer;
-    unsigned                len;
+    uisize                  len;
     ORD                     col;
     screen_flags            flags;
     bool                    covered;
@@ -72,7 +72,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
     okarea( vptr->area );
     flags = vptr->flags;
     area = vptr->area;
-    if( ( flags & V_DIALOGUE ) != 0 ) {
+    if( flags & V_DIALOGUE ) {
         if( flags & V_LISTBOX ) {
             box = SBOX_CHARS();
             attr = UIData->attrs[ATTR_NORMAL];
@@ -87,14 +87,14 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         attr = UIData->attrs[ATTR_FRAME];
         priority = P_VSCREEN;
     }
-    if( ( flags & V_UNFRAMED ) == 0 ) {
+    if( (flags & V_UNFRAMED) == 0 ) {
         (area.row)--;
         (area.col)--;
         (area.height) += 2;
         (area.width) += 2;
         okarea( area );
     }
-    if( ( flags & V_UNBUFFERED ) != 0 ) {
+    if( flags & V_UNBUFFERED ) {
         priority = P_UNBUFFERED;
         bfake( &(vptr->window.type.buffer), area.row, area.col );
         okbuffer = true;
@@ -110,8 +110,8 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         vptr->window.parm = vptr;
         covered = openwindow( &(vptr->window) );
         vptr->flags = flags;
-        if( ( flags & V_UNFRAMED ) == 0 ) {
-            if( !UIData->no_blowup && !covered && ( (flags & V_NO_ZOOM) == 0 ) ) {
+        if( (flags & V_UNFRAMED) == 0 ) {
+            if( !UIData->no_blowup && !covered && (flags & V_NO_ZOOM) == 0 ) {
                 blowup( &UIData->screen, area, box, attr );
             }
             area.row = 0;
@@ -158,8 +158,8 @@ void UIAPI uivclose( VSCREEN *vptr )
 {
     if( vptr->open ) {
         closewindow( &(vptr->window) );
-        if( ( vptr->flags & V_UNBUFFERED ) == 0 ) {
-            if( ( vptr->flags & V_UNFRAMED ) == 0 ) {
+        if( (vptr->flags & V_UNBUFFERED) == 0 ) {
+            if( (vptr->flags & V_UNFRAMED) == 0 ) {
                 bunframe( &(vptr->window.type.buffer) );
             }
             bfree( &(vptr->window.type.buffer) );
