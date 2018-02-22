@@ -49,7 +49,8 @@ static unsigned char UiMapChar[] = {
 
 static unsigned char MappingData[][16] = {
     #define MAPCHARS
-    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) {d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df},
+    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) \
+                    {d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df},
     #include "_mapchar.h"
     #undef pick
     #undef MAPCHARS
@@ -96,16 +97,12 @@ bool UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] )
 bool FlipCharacterMap( void )
 {
     ATTR        old;
-    ATTR        new;
 
     if( UIMapCharacters( UiMapChar, MappingData ) ) {
         memcpy( UiGChar, UiMapChar, sizeof( UiMapChar ) );
         /* swap fore and back color for Dialog attr so you get nice title */
         old = UIData->attrs[ATTR_DIAL_FRAME];
-        new = 0;
-        new |= ( old >> 4 ) & 0x0f;
-        new |= ( old << 4 ) & 0xf0;
-        UIData->attrs[ATTR_DIAL_FRAME] = new;
+        UIData->attrs[ATTR_DIAL_FRAME] = (( old >> 4 ) & 0x0f) | ( old << 4 ) & 0xf0;
         return( true );
     }
     return( false );

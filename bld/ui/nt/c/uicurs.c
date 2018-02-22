@@ -38,7 +38,7 @@
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
-extern HANDLE   OutputHandle;
+extern HANDLE           OutputHandle;
 
 static ORD              OldCursorRow;
 static ORD              OldCursorCol;

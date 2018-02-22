@@ -55,7 +55,7 @@ void UIAPI uioffcursor( void )
         /* set cursor size */
         VioGetCurType( &vioCursor, 0 );
         vioCursor.attr = (USHORT)CATTR_OFF;        //invisible
-        VioSetCurType(&vioCursor,0);
+        VioSetCurType( &vioCursor, 0 );
         UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
@@ -70,6 +70,7 @@ void UIAPI uioncursor( void )
     VIOCURSORINFO       vioCursor;
 
 
+    /* set cursor type */
     VioGetCurType( &vioCursor, 0 );
     if( UIData->cursor_type == C_INSERT ) {
         vioCursor.yStart = vioCursor.cEnd / 2;
@@ -78,8 +79,7 @@ void UIAPI uioncursor( void )
     }
     vioCursor.cx = 1;
     vioCursor.attr = 1;
-
-    VioSetCurType(&vioCursor, 0);
+    VioSetCurType( &vioCursor, 0 );
 
     /* set cursor position */
     VioSetCurPos( UIData->cursor_row, UIData->cursor_col, 0);

@@ -48,6 +48,7 @@
 #include "uishift.h"
 #include "uivirt.h"
 
+
 /*- these are lame */
 
 void intern flushkey( void )

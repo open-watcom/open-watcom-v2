@@ -54,7 +54,7 @@ static ORD              OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
 void UIDBG _uioffcursor( void )
-/******************************/
+/*****************************/
 {
     union REGS      r;
 
@@ -71,7 +71,7 @@ void UIDBG _uioffcursor( void )
 
 
 void UIDBG _uioncursor( void )
-/*****************************/
+/****************************/
 {
     union REGS      r;
 

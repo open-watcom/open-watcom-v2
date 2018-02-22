@@ -44,6 +44,7 @@
 #include "ctkeyb.h"
 #include "qdebug.h"
 
+
 extern PossibleDisplay  DisplayList[];
 
 static const char       *UITermType = NULL; /* global so that the debugger can get at it */
