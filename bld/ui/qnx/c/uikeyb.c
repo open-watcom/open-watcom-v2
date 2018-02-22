@@ -46,6 +46,7 @@
 #include <fcntl.h>
 #include "uidef.h"
 #include "uishift.h"
+#include "uivirts.h"
 #include "uivirt.h"
 
 /*- these are lame */

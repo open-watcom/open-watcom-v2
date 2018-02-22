@@ -36,7 +36,7 @@
 #include <sys/dev.h>
 #include <sys/types.h>
 #include <sys/osinfo.h>
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uiextrn.h"
 
 
@@ -125,7 +125,7 @@ ui_event UIAPI uieventsource( bool update )
 
     ui_ev = doget( update );
     _stopmouse();
-    _stopkeyboard();
+    _stopkeyb();
     return( uieventsourcehook( ui_ev ) );
 }
 

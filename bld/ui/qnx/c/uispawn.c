@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include "uidef.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uimouse.h"
 
 

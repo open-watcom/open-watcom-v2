@@ -51,7 +51,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uishift.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uiextrn.h"
 #include "qdebug.h"
 #include "ctkeyb.h"

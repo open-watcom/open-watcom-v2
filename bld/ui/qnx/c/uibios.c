@@ -50,7 +50,7 @@
 #include <i86.h>
 #include "wterm.h"
 #include "uidef.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uiextrn.h"
 #include "qdebug.h"
 #include "uiproxy.h"

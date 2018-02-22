@@ -44,7 +44,7 @@
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 

@@ -41,6 +41,7 @@
 #include <sys/dev.h>
 #include "uidef.h"
 #include "uimouse.h"
+#include "uivirts.h"
 #include "uivirt.h"
 
 

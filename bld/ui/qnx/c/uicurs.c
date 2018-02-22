@@ -32,7 +32,7 @@
 
 #include "uidef.h"
 #include "uiattrs.h"
-#include "uivirt.h"
+#include "uivirts.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
