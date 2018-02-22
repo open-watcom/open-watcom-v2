@@ -46,8 +46,8 @@
 
 typedef struct describemenu {
     SAREA           area;           /* area of menu         */
-    ORD             titlecol;       /* column of title      */
-    ORD             titlewidth;     /* width of title       */
+    uisize          titlecol;       /* column of title      */
+    uisize          titlewidth;     /* width of title       */
     unsigned short  flags;
 } DESCMENU;
 
