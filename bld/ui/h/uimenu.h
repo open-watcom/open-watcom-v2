@@ -40,8 +40,9 @@
 #define MENU_HAS_CHECK      0x0200U
 #define MENU_HAS_POPUP      0x0400U
 
-#define TAB_OFFSET( desc )      ((desc)->flags & MENU_TAB_OFFSET)
-#define MENU_GET_ROW( desc )    ((desc)->area.row - 1)
+#define MENU_GET_TAB_OFFSET( desc )     ((desc)->flags & MENU_TAB_OFFSET)
+#define MENU_SET_TAB_OFFSET( desc, o )  (desc)->flags = ((desc)->flags & ~MENU_TAB_OFFSET) | ((o) & MENU_TAB_OFFSET)
+#define MENU_GET_ROW( desc )            ((desc)->area.row - 1)
 #define MENU_SET_ROW( desc, r )
 
 typedef struct describemenu {

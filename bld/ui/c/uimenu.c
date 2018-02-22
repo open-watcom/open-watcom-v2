@@ -50,7 +50,7 @@
 static  unsigned                BetweenTitles = BETWEEN_TITLES;
 
 static  VBARMENU                MenuList;
-static  VBARMENU*               Menu;
+static  VBARMENU                *Menu;
 
 static  DESCMENU                Describe[MAX_MENUS];
 static  int                     NumMenus = 0;
@@ -96,9 +96,8 @@ char uialtchar( ui_event ui_ev )
 }
 
 
-static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
-                         LPC_STRING string, uisize string_len )
-/*************************************************************/
+static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr, LPC_STRING string, uisize string_len )
+/****************************************************************************************************/
 {
     SAREA       area;
 
@@ -129,12 +128,12 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, uisize le
 static void menutitle( int item, bool curr_item )
 /***********************************************/
 {
-    DESCMENU            *menudesc;
+    DESCMENU            *desc;
     UIMENUITEM          *menuitem;
     ATTR                attr;
     ATTR                chattr;
 
-    menudesc = &Describe[item];
+    desc = &Describe[item];
     menuitem = &Menu->titles[item];
     if( MENUGRAYED( *menuitem ) ) {
         if( curr_item ) {
@@ -157,9 +156,9 @@ static void menutitle( int item, bool curr_item )
             chattr = UIData->attrs[ATTR_HOT_QUIET];
         }
     }
-    mstring( &UIData->screen, MENU_GET_ROW( menudesc ), menudesc->titlecol + TITLE_OFFSET,
-             attr, menuitem->name, menudesc->titlewidth );
-    mstring( &UIData->screen, MENU_GET_ROW( menudesc ), menudesc->titlecol + TITLE_OFFSET + CHAROFFSET( *menuitem ),
+    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET,
+             attr, menuitem->name, desc->titlewidth );
+    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET + CHAROFFSET( *menuitem ),
              chattr, menuitem->name + CHAROFFSET( *menuitem ), 1 );
 }
 
@@ -246,7 +245,7 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool c
                         start_col + len,
                         attr, UiGChar[UI_POPUP_MARK], 1, 1 );
             }
-            if( (desc->flags & MENU_HAS_POPUP) ) {
+            if( desc->flags & MENU_HAS_POPUP ) {
                 if( len > 0 ) {
                     len--;
                 }
@@ -262,18 +261,17 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool c
                 }
                 str_len = strlen( str ) - tab_loc_len;
                 if( desc->flags & MENU_HAS_TAB ) {
-                    if( str_len > TAB_OFFSET( desc ) ) {
-                        str_len = TAB_OFFSET( desc ) - 1;
+                    if( str_len > MENU_GET_TAB_OFFSET( desc ) ) {
+                        str_len = MENU_GET_TAB_OFFSET( desc ) - 1;
                     }
                 }
                 /* text */
-                mstring( &UIData->screen, desc->area.row + item,
-                        start_col + 2, attr, str, str_len );
+                mstring( &UIData->screen, desc->area.row + item, start_col + 2, attr, str, str_len );
                 /* tabbed text */
                 if( tab_loc != NULL ) {
                     mstring( &UIData->screen,
                             desc->area.row + item,
-                            start_col + TAB_OFFSET( desc ) + 2,
+                            start_col + MENU_GET_TAB_OFFSET( desc ) + 2,
                             attr, tab_loc, tab_loc_len );
                 }
                 /* short cut key */
@@ -730,9 +728,9 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
         to_add += 4;
         if( desc->area.width > UIData->width - to_add )
             desc->area.width = UIData->width - to_add;
-        desc->flags |= ( ( desc->area.width + 1 ) & MENU_TAB_OFFSET );
+        MENU_SET_TAB_OFFSET( desc, desc->area.width + 1 );
         desc->area.width += to_add;
-        desc->area.height = (ORD) item + 2;
+        desc->area.height = item + 2;
         if( desc->area.col + desc->area.width >= UIData->width ) {
             desc->area.col = UIData->width - desc->area.width;
         }
@@ -754,7 +752,7 @@ static void descmenu( int menu, DESCMENU *desc )
     desc->area.col = 0;
     menuitem = Menu->titles;
     for( ;; ) {
-        next = (ORD)desc->area.col +  MENUSTRLEN( menuitem->name ) + BetweenTitles;
+        next = desc->area.col + MENUSTRLEN( menuitem->name ) + BetweenTitles;
         if( next >= UIData->width ) {
             next -= desc->area.col;
             desc->area.col = 0;
@@ -789,8 +787,7 @@ static void drawbar( SAREA area, void *dummy )
 
     forbid_refresh();
     if( area.row < uimenuheight() ) {
-        mfill( &UIData->screen, area.row, 0,
-           UIData->attrs[ATTR_ACTIVE], ' ', UIData->width, area.height );
+        mfill( &UIData->screen, area.row, 0, UIData->attrs[ATTR_ACTIVE], ' ', UIData->width, area.height );
         uimenutitlebar();
     }
     permit_refresh();
@@ -823,12 +820,11 @@ void UIAPI uimenuindicators( bool status )
  * menu's without constant redrawing
  */
 void UIAPI uisetmenudesc( void )
-/*******************************/
+/******************************/
 {
     int         count;
 
-    count = NumMenus;
-    for( ; count > 0 ; --count ) {
+    for( count = NumMenus; count > 0 ; --count ) {
         descmenu( count, &Describe[count - 1] );
     }
 }
@@ -847,7 +843,7 @@ int UIAPI uimenucount( UIMENUITEM *menuitems )
     return( count );
 }
 
-VBARMENU* UIAPI uimenubar( VBARMENU *bar )
+VBARMENU * UIAPI uimenubar( VBARMENU *bar )
 /*****************************************/
 {
     VBARMENU    *prevMenu;
@@ -888,41 +884,41 @@ VBARMENU* UIAPI uimenubar( VBARMENU *bar )
 }
 
 bool UIAPI uimenuson( void )
-/***************************/
+/**************************/
 {
     return( Menu != NULL );
 }
 
 unsigned UIAPI uimenuheight( void )
-/**********************************/
+/*********************************/
 {
-    if( Menu == NULL )
-        return( 0 );
-    return( MENU_GET_ROW( &Describe[NumMenus - 1] ) + 1 );
+    if( NumMenus > 0 )
+        return( MENU_GET_ROW( &Describe[NumMenus - 1] ) + 1 );
+    return( 0 );
 }
 
 void UIAPI uimenudisable( bool disabled )
-/****************************************/
+/***************************************/
 {
-    if ( uimenuson() ) {
+    if( uimenuson() ) {
         Menu->disabled = disabled;
     }
 }
 
 bool UIAPI uimenuisdisabled( void )
-/**********************************/
+/*********************************/
 {
     return( uimenuson() && Menu->disabled );
 }
 
 bool UIAPI uimenugetaltpressed( void )
-/*************************************/
+/************************************/
 {
     return( uimenuson() && Menu->altpressed );
 }
 
 void UIAPI uimenusetaltpressed( bool altpressed )
-/************************************************/
+/***********************************************/
 {
     if( uimenuson() ) {
         Menu->altpressed = altpressed;
@@ -936,17 +932,17 @@ void UIAPI uinomenus( void )
 }
 
 
-void UIAPI uimenus( UIMENUITEM *menus, UIMENUITEM **items, ui_event hot )
-/***********************************************************************/
+void UIAPI uimenus( UIMENUITEM *menuitems, UIMENUITEM **popupitems, ui_event hot )
+/********************************************************************************/
 {
-    int                     index;
+    int             item;
 
     /* unused parameters */ (void)hot;
 
     uimenubar( NULL );
-    MenuList.titles = menus;
-    for( index = 0 ; !MENUENDMARKER( menus[index] ); ++index ) {
-        menus[index].popup = items[index];
+    MenuList.titles = menuitems;
+    for( item = 0 ; !MENUENDMARKER( menuitems[item] ); item++ ) {
+        menuitems[item].popup = popupitems[item];
     }
     MenuList.currmenu = 0;
     uimenubar( &MenuList );
