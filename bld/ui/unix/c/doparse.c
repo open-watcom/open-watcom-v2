@@ -41,11 +41,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "trie.h"
-#ifdef __QNX__
-#include "qnxuiext.h"
-#else
-#include "unxuiext.h"
-#endif
+#include "uiextrn.h"
 #include "tixparse.h"
 #include "doparse.h"
 

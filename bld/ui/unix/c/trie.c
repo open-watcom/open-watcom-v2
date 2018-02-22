@@ -53,11 +53,7 @@
 #include "uishift.h"
 #include "uivirt.h"
 #include "ctkeyb.h"
-#ifdef __QNX__
-#include "qnxuiext.h"
-#else
-#include "unxuiext.h"
-#endif
+#include "uiextrn.h"
 #include "trie.h"
 
 

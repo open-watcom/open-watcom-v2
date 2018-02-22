@@ -51,7 +51,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "qdebug.h"
 #include "uiproxy.h"
 

@@ -32,7 +32,7 @@
 
 #include <sys/proxy.h>
 #include "uidef.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "uiproxy.h"
 
 int UIProxySetup( void )

@@ -57,7 +57,7 @@
 #include "uiattrs.h"
 #include "qdebug.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
 #include "tixparse.h"
 #include "tixsupp.h"

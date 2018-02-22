@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include "uivirt.h"
-#include "unxuiext.h"
+#include "uiextrn.h"
 
 
 MOUSETIME UIAPI uiclock( void )

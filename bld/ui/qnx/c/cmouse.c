@@ -45,7 +45,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 
 
 #define MOUSE_SCALE         8

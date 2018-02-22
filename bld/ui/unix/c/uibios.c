@@ -40,7 +40,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uivirt.h"
-#include "unxuiext.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
 

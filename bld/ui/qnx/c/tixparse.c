@@ -41,7 +41,7 @@
 #include "wterm.h"
 #include "bool.h"
 #include "stdui.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "trie.h"

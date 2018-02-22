@@ -52,7 +52,7 @@
 #include "uidef.h"
 #include "uishift.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "qdebug.h"
 #include "ctkeyb.h"
 #include "trie.h"

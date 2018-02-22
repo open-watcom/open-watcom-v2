@@ -58,7 +58,7 @@
 
 
 #include "uidef.h"
-#include "unxuiext.h"
+#include "uiextrn.h"
 #include "tixparse.h"
 #include "tixsupp.h"
 #include "trie.h"

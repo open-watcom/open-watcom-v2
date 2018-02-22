@@ -39,7 +39,7 @@
 #include "wterm.h"
 #include "uidef.h"
 #include "uishift.h"
-#include "unxuiext.h"
+#include "uiextrn.h"
 #include "trie.h"
 #include "tixparse.h"
 #include "uivirt.h"
