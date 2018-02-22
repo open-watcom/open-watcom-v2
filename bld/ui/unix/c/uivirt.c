@@ -32,7 +32,9 @@
 
 #include "uidef.h"
 #include "uishift.h"
+#include "uivirts.h"
 #include "uivirt.h"
+
 
 /*
         Order of array is important! Don't futz around with it.

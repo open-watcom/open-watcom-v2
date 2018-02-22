@@ -51,7 +51,7 @@
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
 
@@ -163,7 +163,7 @@ static void TryOne( int type, char *test, char *init, const char *input )
     checkmouse( &MouseStatus, &row, &col, &MouseTime );
     MouseRow = row;
     MouseCol = col;
-    stopmouse();
+    _stopmouse();
 }
 
 #ifdef __LINUX__

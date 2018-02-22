@@ -42,7 +42,7 @@
 #include "uiextrn.h"
 #include "trie.h"
 #include "tixparse.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "qdebug.h"
 #include "ctkeyb.h"
 #include "kbwait.h"
@@ -617,14 +617,14 @@ static bool ck_init( void )
     }
     SavePGroup = tcgetpgrp( UIConHandle );
     tcsetpgrp( UIConHandle, UIPGroup );
-    restorekeyb();
+    _restorekeyb();
     return( true );
 }
 
 static bool ck_fini( void )
 /*************************/
 {
-    savekeyb();
+    _savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     return( false );
 }

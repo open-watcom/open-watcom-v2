@@ -201,7 +201,7 @@ static void DoMouseInit( int type, const char *init, const char *input )
     checkmouse( &MouseStatus, &row, &col, &MouseTime );
     MouseRow = row;
     MouseCol = col;
-    stopmouse();
+    _stopmouse();
 }
 
 static bool tm_init( init_mode install )

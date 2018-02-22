@@ -33,7 +33,7 @@
 
 #include "uidef.h"
 #include "uimouse.h"
-#include "uivirt.h"
+#include "uivirts.h"
 
 
 #define OFF_SCREEN      200

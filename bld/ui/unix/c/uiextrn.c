@@ -32,7 +32,7 @@
 
 #include "uidef.h"
 #include "uiextrn.h"
-#include "uivirt.h"
+#include "uivirts.h"
 
 
         /* filedescriptor */

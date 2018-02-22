@@ -43,13 +43,13 @@ void UIAPI uispawnstart( void )
     uisetcursor( 0, 0, C_NORMAL, CATTR_OFF );
     if( MouseInstalled )
         finimouse();
-    savekeyb();
+    _savekeyb();
 }
 
 void UIAPI uispawnend( void )
 /***************************/
 {
-    restorekeyb();
+    _restorekeyb();
     if( MouseInstalled )
         initmouse( INIT_MOUSE );
     uiswap();

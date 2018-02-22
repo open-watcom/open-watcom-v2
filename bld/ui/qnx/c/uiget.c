@@ -124,8 +124,8 @@ ui_event UIAPI uieventsource( bool update )
     ui_event    ui_ev;
 
     ui_ev = doget( update );
-    stopmouse();
-    stopkeyboard();
+    _stopmouse();
+    _stopkeyboard();
     return( uieventsourcehook( ui_ev ) );
 }
 

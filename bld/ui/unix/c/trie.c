@@ -51,7 +51,7 @@
 #include "walloca.h"
 #include "uidef.h"
 #include "uishift.h"
-#include "uivirt.h"
+#include "uivirts.h"
 #include "ctkeyb.h"
 #include "uiextrn.h"
 #include "trie.h"

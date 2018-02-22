@@ -33,7 +33,7 @@
 
 #include "uidef.h"
 #ifdef __UNIX__
-#include "uivirt.h"
+#include "uivirts.h"
 #endif
 #include "uiforce.h"
 #include "uigchar.h"

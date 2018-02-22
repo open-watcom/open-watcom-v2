@@ -154,7 +154,7 @@ static bool cm_init( init_mode install )
                 checkmouse( &MouseStatus, &row, &col, &MouseTime );
                 MouseRow = row;
                 MouseCol = col;
-                stopmouse();
+                _stopmouse();
             }
         }
     }

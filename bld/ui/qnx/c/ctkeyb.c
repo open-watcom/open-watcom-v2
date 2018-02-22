@@ -632,7 +632,7 @@ static bool ck_init( void )
     }
     SavePGroup = tcgetpgrp( UIConHandle );
     tcsetpgrp( UIConHandle, UIPGroup );
-    restorekeyb();
+    _restorekeyb();
     signal( SIGTERM, &term_handler );
     return( true );
 }
@@ -641,7 +641,7 @@ static bool ck_init( void )
 static bool ck_fini( void )
 /*************************/
 {
-    savekeyb();
+    _savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     signal( SIGTERM, SIG_DFL );
     return( false );

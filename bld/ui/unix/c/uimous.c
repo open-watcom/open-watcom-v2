@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include "uidef.h"
 #include "uimouse.h"
+#include "uivirts.h"
 #include "uivirt.h"
 
 

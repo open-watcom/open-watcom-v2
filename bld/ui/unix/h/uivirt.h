@@ -40,87 +40,8 @@
 
 */
 
-#ifndef qnx_uivirt_h
-#define qnx_uivirt_h
-
-
-typedef struct Display {
-    bool        (*init)( void );            /* setup */
-    bool        (*fini)( void );            /* tear down */
-    int         (*update)(SAREA *area);     /* change screen */
-    int         (*refresh)(bool noopt);     /* force redraw of screen */
-    /*- cursor */
-    int         (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr);
-    int         (*setcur)(ORD row, ORD col, CURSOR_TYPE type, CATTR attr);
-    ui_event    (*event)( void );
-} Display;
-
-
-typedef struct Keyboard {
-    bool    (*init)( void );                /* set initial modes, etc... */
-    bool    (*fini)( void );                /* restore saved modes, etc... */
-    void    (*arm)( void );                 /* arm for next character */
-    int     (*save)( void );                /* save current mode, restore original mode */
-    int     (*restore)( void );             /* set into raw mode */
-    int     (*flush)( void );               /* clear look-ahead */
-    int     (*stop)( void );                /* clear look-ahead, disable keyboard events */
-    int     (*shift_state)( void );         /* shift status */
-    int     (*un_event)(ui_event event);    /* allow modify of next event */
-    int     (*wait_keyb)( int, int );       /* wait for keyboard event */
-} Keyboard;
-
-typedef struct Mouse {
-    bool    (*init)( init_mode install );
-    bool    (*fini)( void );
-    int     (*set_speed)( unsigned speed );
-    int     (*stop)( void );            /* clear input, disable events */
-    bool    (*check)( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time );
-    int     (*wait_mouse)( void );      /* wait for mouse event */
-} Mouse;
-
-typedef struct {
-    Display     *disp;
-    Keyboard    *keyb;
-    Mouse       *mouse;
-} VirtDisplay;
-
-typedef struct {
-    bool        (*check)(void);
-    VirtDisplay virt;
-} PossibleDisplay;
-
-extern VirtDisplay      UIVirt;
-
-/*-
- * convenient naming, and easier changes later...
- */
-
-#define _uibiosinit     (*UIVirt.disp->init)
-#define _uibiosfini     (*UIVirt.disp->fini)
-#define _physupdate     (*UIVirt.disp->update)
-#define _ui_refresh     (*UIVirt.disp->refresh)
-#define _uigetcursor    (*UIVirt.disp->getcur)
-#define _uisetcursor    (*UIVirt.disp->setcur)
-#define _uievent        (*UIVirt.disp->event)
-
-#define _initkeyboard   (*UIVirt.keyb->init)
-#define _finikeyboard   (*UIVirt.keyb->fini)
-#define _armkeyboard    (*UIVirt.keyb->arm)
-#define _savekeyb       (*UIVirt.keyb->save)
-#define _restorekeyb    (*UIVirt.keyb->restore)
-#define _flushkey       (*UIVirt.keyb->flush)
-#define _stopkeyb       (*UIVirt.keyb->stop)
-#define _uicheckshift   (*UIVirt.keyb->shift_state)
-#define _checkshift     _uicheckshift
-#define _uishiftrelease (*UIVirt.keyb->un_event)
-#define _uiwaitkeyb     (*UIVirt.keyb->wait_keyb)
-
-#define _initmouse      (*UIVirt.mouse->init)
-#define _finimouse      (*UIVirt.mouse->fini)
-#define _checkmouse     (*UIVirt.mouse->check)
-#define _stopmouse      (*UIVirt.mouse->stop)
-#define _uimousespeed   (*UIVirt.mouse->set_speed)
-#define _uiwaitmouse    (*UIVirt.mouse->wait_mouse)
+#ifndef _UIVIRT_H_INCLUDED
+#define _UIVIRT_H_INCLUDED
 
 /*-
  The modules for each type....
