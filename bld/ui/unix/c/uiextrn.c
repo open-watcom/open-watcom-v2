@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <sys/types.h>
 #include "uidef.h"
-#include "unxuiext.h"
+#include "uiextrn.h"
 #include "uivirt.h"
 
+
         /* filedescriptor */
-int              UIConHandle;
-        /* filedescriptor */
-FILE *           UIConFile;
+int              UIConHandle = 0;
         /* proxy for all events */
 pid_t            UIProxy;
         /* remote proxy if nec.. */
@@ -52,3 +49,15 @@ bool             UIWantShiftChanges = true;
 bool             UIDisableShiftChanges = false;
         /* Active virtual console functions */
 VirtDisplay      UIVirt;
+
+#ifdef __QNX__
+        /* console number */
+int              UIConsole = 0;
+        /* proxy's incoming value (usually same as UIProxy */
+pid_t            UILocalProxy;
+        /* Node of console mgr */
+nid_t            UIConNid;
+#else
+        /* filedescriptor */
+FILE *           UIConFile;
+#endif

@@ -30,29 +30,35 @@
 ****************************************************************************/
 
 
+#ifndef _UIEXTRN_H_INCLUDED
+#define _UIEXTRN_H_INCLUDED
 
+#include <stdio.h>
+#ifndef __TYPES_H_INCLUDED
 #include <sys/types.h>
-#include "uidef.h"
-#include "qnxuiext.h"
-#include "uivirt.h"
+#endif
 
-        /* console number */
-int              UIConsole = 0;
-        /* filedescriptor */
-int              UIConHandle = 0;
-        /* proxy for all events */
-pid_t            UIProxy;
-        /* remote proxy if nec.. */
-pid_t            UIRemProxy;
-        /* proxy's incoming value (usually same as UIProxy */
-pid_t            UILocalProxy;
-        /* Node of console mgr */
-nid_t            UIConNid;
-        /* process group */
-pid_t            UIPGroup;
-        /* tell keyboard app wants to see shift, alt, ... keys... */
-bool             UIWantShiftChanges = true;
-        /* Disable checking on non console devices */
-bool             UIDisableShiftChanges = false;
-        /* Active virtual console functions */
-VirtDisplay      UIVirt;
+#define uiwrite(s)      write( UIConHandle, s, strlen( s ) )
+#define uiwritec(c)     write( UIConHandle, c, sizeof( c ) - 1 )
+
+extern int              UIConHandle;
+extern pid_t            UIProxy;
+extern pid_t            UIRemProxy;
+extern pid_t            UIPGroup;
+extern bool             UIWantShiftChanges;
+extern bool             UserForcedTermRefresh;
+extern bool             UIDisableShiftChanges;
+
+extern const char       *GetTermType( void );
+extern const char       *SetTermType( const char * );
+
+#ifdef __QNX__
+extern int              UIConsole;
+extern pid_t            UILocalProxy;
+extern nid_t            UIConNid;
+extern struct _timesel  __far *_SysTime;
+#else
+extern FILE             *UIConFile;
+#endif
+
+#endif
