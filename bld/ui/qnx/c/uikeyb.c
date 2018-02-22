@@ -46,7 +46,6 @@
 #include <fcntl.h>
 #include "uidef.h"
 #include "uishift.h"
-#include "uivirts.h"
 #include "uivirt.h"
 
 /*- these are lame */
@@ -79,12 +78,6 @@ void uishiftrelease( ui_event ui_ev )
     _uishiftrelease( ui_ev );
 }
 
-void intern restorekeyb( void )
-{
-    _restorekeyb();
-}
-
-
 bool intern initkeyboard( void )
 /******************************/
 {
@@ -95,14 +88,4 @@ void intern finikeyboard( void )
 /******************************/
 {
     _finikeyboard();
-}
-
-void intern savekeyb( void )
-{
-    _savekeyb();
-}
-
-void stopkeyboard( void )
-{
-    _stopkeyb();
 }

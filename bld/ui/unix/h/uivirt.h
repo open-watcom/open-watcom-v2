@@ -43,18 +43,27 @@
 #ifndef _UIVIRT_H_INCLUDED
 #define _UIVIRT_H_INCLUDED
 
+#include "uivirts.h"
+
 /*-
  The modules for each type....
 */
 
-extern bool             TInfCheck( void );
-extern Display          TInfDisplay;
-extern Keyboard         ConsKeyboard;
-extern Mouse            TermMouse;
+extern Display      TInfDisplay;
+extern Keyboard     ConsKeyboard;
+extern Mouse        TermMouse;
+#ifdef __QNX__
+extern Display      ConsDisplay;
+extern Display      TermDisplay;
+extern Display      QnxWDisplay;
+extern Mouse        ConsMouse;
+#endif
 
-extern void             stopmouse(void);
-extern void             stopkeyboard( void );
-extern void             savekeyb(void);
-extern void             restorekeyb(void);
+extern bool         TInfCheck( void );
+#ifdef __QNX__
+extern bool         QnxWCheck(void);
+extern bool         ConsCheck(void);
+extern bool         TermCheck(void);
+#endif
 
 #endif

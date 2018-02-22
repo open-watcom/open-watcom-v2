@@ -77,7 +77,6 @@
 #include "uiattrs.h"
 #include "qdebug.h"
 
-#include "uivirts.h"
 #include "uivirt.h"
 #include "uiextrn.h"
 #include "ctkeyb.h"
