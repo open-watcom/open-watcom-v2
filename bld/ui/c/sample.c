@@ -289,7 +289,7 @@ void main( void )
                     mrow++;
                     mcol++;
                     uipushlist( evlist );
-                    ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, (int)NULL );
+                    ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
                     uipoplist( /* evlist */ );
                 }
                 switch( ui_ev ) {

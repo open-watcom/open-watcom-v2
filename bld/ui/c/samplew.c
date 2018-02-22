@@ -283,7 +283,7 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 mrow++;
                 mcol++;
                 uipushlist( evlist );
-                ui_ev = uicreatepopup( mrow, mcol, &filemenu, false, true, NULL );
+                ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
                 uipoplist( /* evlist */ );
             }
             switch( ui_ev ) {

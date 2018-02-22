@@ -84,8 +84,8 @@ bool UIAPI uiinlist( ui_event ui_ev, ui_event *ui_ev_list )
 }
 
 
-ui_event *UIAPI uipoplist( void )
-/*******************************/
+ui_event * UIAPI uipoplist( void )
+/********************************/
 {
     ui_event    *list;
 
