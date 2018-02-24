@@ -323,7 +323,7 @@ void uiprintfield( a_dialog *ui_dlg_info, VFIELD *field )
     print_field( ui_dlg_info->vs, field, ( field == ui_dlg_info->curr ) );
 }
 
-static void *makevs( const char *title, int cols, int rows, int cpos, int rpos )
+static VSCREEN *makevs( const char *title, unsigned cols, unsigned rows, int cpos, int rpos )
 {
     SAREA               area;
 
