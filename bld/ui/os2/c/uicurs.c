@@ -106,24 +106,22 @@ static void savecursor( void )
     VIOCURSORINFO       vioCursor;
 
     /* read cursor position */
-
-    VioGetCurType(&vioCursor,0);
-    VioGetCurPos(&r, &c, 0);
-         OldCursorRow = r;
-         OldCursorCol = c;
+    VioGetCurType( &vioCursor, 0 );
+    VioGetCurPos( &r, &c, 0 );
+    OldCursorRow = r;
+    OldCursorCol = c;
     if( vioCursor.cEnd - vioCursor.yStart > 5 ) {
-         OldCursorType = C_INSERT;
-    }
-     else {
-         OldCursorType = C_NORMAL;
+        OldCursorType = C_INSERT;
+    } else {
+        OldCursorType = C_NORMAL;
     }
     UIData->cursor_on = ( vioCursor.attr != (USHORT)CATTR_OFF );
     if( !UIData->cursor_on ) {
-         OldCursorType = C_OFF;
+        OldCursorType = C_OFF;
     }
     /* read character and attribute */
-    length = sizeof(CharCellPair);
-    VioReadCellStr( &CharCellPair[0], &length, r, c, 0);
+    length = sizeof( CharCellPair );
+    VioReadCellStr( &CharCellPair[0], &length, r, c, 0 );
     OldCursorAttr = CharCellPair[1];
 }
 
@@ -159,7 +157,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
     VIOCURSORINFO       vioCursor;
 
     /* read cursor position */
-    VioGetCurType(&vioCursor,0);
+    VioGetCurType( &vioCursor,0 );
     VioGetCurPos( &r, &c, 0 );
     *row = r;
     *col = c;
@@ -172,8 +170,8 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
         *type = C_OFF;
     }
     /* read character and attribute */
-    length = sizeof(CharCellPair);
-    VioReadCellStr( &CharCellPair[0], &length, r, c, 0);
+    length = sizeof( CharCellPair );
+    VioReadCellStr( &CharCellPair[0], &length, r, c, 0 );
     *attr = CharCellPair[1];
 }
 

@@ -599,9 +599,9 @@ static void TI_SETCOLOUR( int f, int b )
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
-            QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-            QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
-            QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
+QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
             TI_FillColourSet = false;
         } else {
@@ -905,7 +905,7 @@ static bool td_initconsole( void )
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right = !TCAP_NOSCROLL;
-    QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -1067,8 +1067,7 @@ QNXDebugPrintf0("td_update: no arg");
         dirty_area.col1 = UIData->width;
         return( 0 );
     }
-QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
-                                        area->width);
+QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
     if( area->row < dirty_area.row0 ) {
         dirty_area.row0 = area->row;
     }
@@ -1279,8 +1278,7 @@ static int ti_refresh( bool must )
         return( 0 );
     }
 
-    QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0,
-                                    dirty_area.col0, dirty_area.row1, dirty_area.col1 );
+QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1 );
 
     // Disable cursor during draw if we can
     if( UIData->cursor_type != C_OFF ) {
@@ -1461,7 +1459,7 @@ static int ti_refresh( bool must )
                 }
 
                 if( !ca_valid ) {
-                    QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
+QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
@@ -1539,7 +1537,7 @@ static int new_attr( int nattr, int oattr )
             }
         }
         if( _attr_fore( nval ) != _attr_fore( oval ) || _attr_back( nval ) != _attr_back( oval ) ) {
-            QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
+QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
             QNX_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
         }
     } else {
