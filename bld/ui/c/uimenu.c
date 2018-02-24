@@ -162,6 +162,21 @@ static void menutitle( int item, bool curr_item )
              chattr, menuitem->name + CHAROFFSET( *menuitem ), 1 );
 }
 
+/*
+ * GetNewPos -- calculate new position based on circular menu
+ */
+
+int intern GetNewPos( int pos, int num )
+{
+    if( pos >= num ) {
+        return( 0 );
+    } else if( pos < 0 ) {
+        return( num - 1 );
+    } else {
+        return( pos );
+    }
+}
+
 void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
 /***********************************************************************************/
 {
@@ -829,14 +844,14 @@ void UIAPI uisetmenudesc( void )
     }
 }
 
-int UIAPI uimenucount( UIMENUITEM *menuitems )
-/********************************************/
+int UIAPI uimenuitemscount( UIMENUITEM *menuitems )
+/*************************************************/
 {
     int         count;
 
     count = 0;
     if( menuitems != NULL ) {
-        while( !MENUENDMARKER( *menuitems++ ) ) {
+        while( !MENUENDMARKER( menuitems[count] ) ) {
             count++;
         }
     }
@@ -866,7 +881,7 @@ VBARMENU * UIAPI uimenubar( VBARMENU *bar )
         Menu->movedmenu = false;
         Menu->popuppending = false;
         Menu->disabled = false;
-        NumMenus = uimenucount( Menu->titles );
+        NumMenus = uimenuitemscount( Menu->titles );
         if( NumMenus > MAX_MENUS )
             NumMenus = MAX_MENUS;
         uisetmenudesc();
@@ -967,10 +982,11 @@ void UIAPI uiignorealt( void )
     }
 }
 
-int UIAPI uigetcurrentmenu( UIMENUITEM *menuitem )
+bool UIAPI uigetcurrentmenu( UIMENUITEM *currmenuitem )
+/*****************************************************/
 {
     if( Menu->currmenu != NO_SELECT ) {
-        *menuitem = Menu->titles[Menu->currmenu];
+        *currmenuitem = Menu->titles[Menu->currmenu];
     }
     return( Menu->currmenu != NO_SELECT );
 }

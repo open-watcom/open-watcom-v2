@@ -172,7 +172,7 @@ static bool GetMenu( int *depth, gui_ctl_idx num_menus, UIMENUITEM *menu, gui_ct
             (*depth)++;
         }
         if( menu[i].popup != NULL ) {
-            num_popup_menus = uimenucount( menu[i].popup );
+            num_popup_menus = uimenuitemscount( menu[i].popup );
             if( GetMenu( depth, num_popup_menus, menu[i].popup, id, pmenu, position, to_replace ) ) {
                 if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
                     *to_replace = &menu[i].popup;
@@ -226,7 +226,7 @@ static bool GUIGetMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **menu, gui_c
             vbar = true;
         }
     }
-    num_menus = uimenucount( *the_menu );
+    num_menus = uimenuitemscount( *the_menu );
     depth = 0;
     if( GetMenu( &depth, num_menus, *the_menu, id, menu, position, to_replace ) ) {
         if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
@@ -246,7 +246,7 @@ gui_ctl_idx GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
 
     GUIGetMenu( wnd, id, &menu, NULL, NULL, false );
     if( menu != NULL && menu->popup ) {
-        return( uimenucount( menu->popup ) );
+        return( uimenuitemscount( menu->popup ) );
     } else {
         return( -1 );
     }
@@ -484,7 +484,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, gui_ctl_idx posi
     UIMENUITEM  *menu;
 
     menu = *pmenu;
-    num_menus = uimenucount( menu );
+    num_menus = uimenuitemscount( menu );
     if( ( position > num_menus ) || ( position == -1 ) ) {
         position = num_menus;
     }
@@ -611,7 +611,7 @@ bool GUIAppendMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct 
     gui_ctl_idx num_menus;
 
     if( wnd->vbarmenu != NULL ) {
-        num_menus = uimenucount( wnd->vbarmenu->titles );
+        num_menus = uimenuitemscount( wnd->vbarmenu->titles );
         if( num_menus < ( position + 1 ) ) {
             return( false );
         }
@@ -629,7 +629,7 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenu, int 
     UIMENUITEM  *sub;
 
     sub = *pmenu;
-    prev_num = uimenucount( sub );
+    prev_num = uimenuitemscount( sub );
     if( prev_num == 1 ) {
         new_menu = NULL;
     } else {
@@ -687,7 +687,7 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id )
     if( wnd->vbarmenu != NULL ) {
         ui_ev = ID2EV( id );
         menu = wnd->vbarmenu->titles;
-        num_menus = uimenucount( menu );
+        num_menus = uimenuitemscount( menu );
         for( i = 0; i < num_menus; i++ ) {
             if( menu[i].event == ui_ev ) {
                 if( !DeleteMenu( wnd, id, &wnd->vbarmenu->titles, i ) ) {

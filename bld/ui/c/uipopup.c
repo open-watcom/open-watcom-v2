@@ -168,21 +168,6 @@ static bool RepositionBox( SAREA *area, SAREA *keep_inside, SAREA *keep_visible 
 }
 
 /*
- * GetNewPos -- calculate new position based on circular menu
- */
-
-static int GetNewPos( int pos, int num )
-{
-    if( pos >= num ) {
-        return( 0 );
-    } else if( pos < 0 ) {
-        return( num - 1 );
-    } else {
-        return( pos );
-    }
-}
-
-/*
  * SkipSeparators -- calculate new position, skipping separators
  */
 

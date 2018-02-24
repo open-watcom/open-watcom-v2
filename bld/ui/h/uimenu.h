@@ -75,6 +75,7 @@ typedef struct menuitem {
 typedef struct vbarmenu {
     UIMENUITEM      *titles;            /* titles for pull down menus        */
     ui_event        event;              /* current menu item event           */
+    int             currmenu;           /* current menu index (base 0)       */
     bool            inlist       :1;    /* selection will lead to the event  */
     bool            active       :1;    /* the user is browsing the menus    */
     bool            draginmenu   :1;    /* drag operation began in menus     */
@@ -87,7 +88,6 @@ typedef struct vbarmenu {
     bool            ignorealt    :1;    /* ignore 1 alt press                */
     bool            popuppending :1;    /* need to open popup                */
     bool            disabled     :1;    /* menu has been disabled            */
-    int             currmenu;           /* current menu number (base 1)      */
 } VBARMENU;
 
 #ifdef __cplusplus
@@ -97,7 +97,7 @@ typedef struct vbarmenu {
 extern char         uialtchar( ui_event );
 extern void         uisetmenudesc( void );
 extern VBARMENU     *uimenubar( VBARMENU * );
-extern int          uimenucount( UIMENUITEM *menuitems );
+extern int          uimenuitemscount( UIMENUITEM *menuitems );
 extern void         uimenuindicators( bool );
 extern void         uimenus( UIMENUITEM *, UIMENUITEM **, ui_event );
 extern bool         uimenuson( void );
@@ -122,7 +122,7 @@ extern ui_event     uicreatesubpopupinarea( UIMENUITEM *menu, DESCMENU *desc, bo
 extern void         uisetbetweentitles( unsigned );
 extern void         uimenucurr( UIMENUITEM * );
 extern void         uimenutitlebar( void );
-extern int          uigetcurrentmenu( UIMENUITEM *menu );
+extern bool         uigetcurrentmenu( UIMENUITEM *currmenuitem );
 extern unsigned     uimenuheight( void );
 
 #ifdef __cplusplus

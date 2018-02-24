@@ -436,6 +436,8 @@ typedef enum {
     MOUSE_OFF = 2
 } mouse_func;
 
+#define NO_SELECT       -1
+
 #ifdef __GUI__
 /*
     ORD needs to be an unsigned for the WINDOWS scaling system
