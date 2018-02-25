@@ -125,18 +125,19 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, uisize le
     physupdate( &area );
 }
 
-static void menutitle( int item, bool curr_item )
-/***********************************************/
+static void menutitle( int item, bool iscurritem )
+/************************************************/
 {
     DESCMENU            *desc;
     UIMENUITEM          *menuitem;
     ATTR                attr;
     ATTR                chattr;
+    uisize              choffset;
 
     desc = &Describe[item];
     menuitem = &Menu->titles[item];
     if( MENUGRAYED( *menuitem ) ) {
-        if( curr_item ) {
+        if( iscurritem ) {
             attr = UIData->attrs[ATTR_CURR_INACTIVE];
         } else {
             attr = UIData->attrs[ATTR_INACTIVE];
@@ -144,7 +145,7 @@ static void menutitle( int item, bool curr_item )
         chattr = attr;
     } else {
         if( Menu->active ) {
-            if( curr_item ) {
+            if( iscurritem ) {
                 attr = UIData->attrs[ATTR_CURR_ACTIVE];
                 chattr = UIData->attrs[ATTR_HOT_CURR];
             } else {
@@ -156,32 +157,30 @@ static void menutitle( int item, bool curr_item )
             chattr = UIData->attrs[ATTR_HOT_QUIET];
         }
     }
-    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET,
-             attr, menuitem->name, desc->titlewidth );
-    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET + CHAROFFSET( *menuitem ),
-             chattr, menuitem->name + CHAROFFSET( *menuitem ), 1 );
+    choffset = CHAROFFSET( *menuitem );
+    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET, attr, menuitem->name, desc->titlewidth );
+    mstring( &UIData->screen, MENU_GET_ROW( desc ), desc->titlecol + TITLE_OFFSET + choffset, chattr, menuitem->name + choffset, 1 );
 }
 
 /*
  * GetNewPos -- calculate new position based on circular menu
  */
 
-int intern GetNewPos( int pos, int num )
+int intern GetNewPos( int pos, int num_items )
 {
-    if( pos >= num ) {
+    if( pos >= num_items ) {
         return( 0 );
     } else if( pos < 0 ) {
-        return( num - 1 );
+        return( num_items - 1 );
     } else {
         return( pos );
     }
 }
 
-void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool curr )
-/***********************************************************************************/
+void UIAPI uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *desc, int item, bool iscurritem )
+/*********************************************************************************************/
 {
-    bool                    active;
-    ORD                     choffset;
+    uisize                  choffset;
     uisize                  len;
     char                    ch[1];
     char                    *tab_loc;
@@ -192,9 +191,8 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool c
     ATTR                    chattr;
     uisize                  str_len;
 
-    active = !MENUGRAYED( *menu ) && uiinlists( menu->event );
-    if( active ) {
-        if( curr ) {
+    if( !MENUGRAYED( *menuitem ) && uiinlists( menuitem->event ) ) {    /* active item */
+        if( iscurritem ) {
             attr = UIData->attrs[ATTR_CURR_ACTIVE];
             chattr = UIData->attrs[ATTR_HOT_CURR];
         } else {
@@ -202,113 +200,114 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menu, DESCMENU *desc, int item, bool c
             chattr = UIData->attrs[ATTR_HOT];
         }
     } else {
-        if( curr ) {
+        if( iscurritem ) {
             attr = UIData->attrs[ATTR_CURR_INACTIVE];
         } else {
             attr = UIData->attrs[ATTR_INACTIVE];
         }
         chattr = attr;
     }
-    if( item > 0 ) {
-        len = 0;
-        if( desc->area.width > 2 )
-            len = desc->area.width - 2;
-        str = menu->name;
-        if( MENUSEPARATOR( *menu ) ) {
-            /* separator line */
-            ch[0] = BOX_CHAR( SBOX_CHARS(), LEFT_TACK );
-            mstring( &UIData->screen,
-                    desc->area.row + item,
-                    desc->area.col,
-                    UIData->attrs[ATTR_MENU], ch, 1 );
+    len = 0;
+    if( desc->area.width > 2 )
+        len = desc->area.width - 2;
+    if( MENUSEPARATOR( *menuitem ) ) {
+        /* separator line */
+        ch[0] = BOX_CHAR( SBOX_CHARS(), LEFT_TACK );
+        mstring( &UIData->screen,
+                desc->area.row + 1 + item,
+                desc->area.col,
+                UIData->attrs[ATTR_MENU], ch, 1 );
+        mfill( &UIData->screen,
+                desc->area.row + 1 + item,
+                desc->area.col + 1,
+                UIData->attrs[ATTR_MENU],
+                BOX_CHAR( SBOX_CHARS(), HORIZ_LINE ),
+                len, 1 );
+        ch[0] = BOX_CHAR( SBOX_CHARS(), RIGHT_TACK );
+        mstring( &UIData->screen,
+                desc->area.row + 1 + item,
+                desc->area.col + len + 1,
+                UIData->attrs[ATTR_MENU], ch, 1 );
+    } else {
+        /* blank line */
+        mfill( &UIData->screen,
+                desc->area.row + 1 + item,
+                desc->area.col + 1,
+                attr, ' ', len, 1 );
+        start_col = desc->area.col;
+        if( desc->flags & MENU_HAS_CHECK ) {
+            start_col++;
+            if( len > 0 ) {
+                len--;
+            }
+        }
+        /* checkmark */
+        if( menuitem->flags & ITEM_CHECKED ) {
             mfill( &UIData->screen,
-                    desc->area.row + item,
-                    desc->area.col + 1,
-                    UIData->attrs[ATTR_MENU],
-                    BOX_CHAR( SBOX_CHARS(), HORIZ_LINE ),
-                    len, 1 );
-            ch[0] = BOX_CHAR( SBOX_CHARS(), RIGHT_TACK );
-            mstring( &UIData->screen,
-                    desc->area.row + item,
-                    desc->area.col + len + 1,
-                    UIData->attrs[ATTR_MENU], ch, 1 );
-        } else {
-            choffset = CHAROFFSET( *menu );
-            /* blank line */
+                    desc->area.row + 1 + item,
+                    start_col,
+                    attr, UiGChar[UI_CHECK_MARK], 1, 1 );
+        }
+        /* > for popup */
+        if( menuitem->popup != NULL ) {
             mfill( &UIData->screen,
-                    desc->area.row + item,
-                    desc->area.col + 1,
-                    attr, ' ', len, 1 );
-            start_col = desc->area.col;
-            if( desc->flags & MENU_HAS_CHECK ) {
-                start_col++;
-                if( len > 0 ) {
-                    len--;
-                }
+                    desc->area.row + 1 + item,
+                    start_col + len,
+                    attr, UiGChar[UI_POPUP_MARK], 1, 1 );
+        }
+        if( desc->flags & MENU_HAS_POPUP ) {
+            if( len > 0 ) {
+                len--;
             }
-            /* checkmark */
-            if( menu->flags & ITEM_CHECKED ) {
-                mfill( &UIData->screen,
-                        desc->area.row + item,
-                        start_col,
-                        attr, UiGChar[UI_CHECK_MARK], 1, 1 );
-            }
-            /* > for popup */
-            if( menu->popup != NULL ) {
-                mfill( &UIData->screen,
-                        desc->area.row + item,
-                        start_col + len,
-                        attr, UiGChar[UI_POPUP_MARK], 1, 1 );
-            }
-            if( desc->flags & MENU_HAS_POPUP ) {
-                if( len > 0 ) {
-                    len--;
-                }
-            }
-            if( str != NULL ) {
-                tab_loc_len = 0;
-                tab_loc = strchr( str, TABCHAR );
+        }
+        str = menuitem->name;
+        if( str != NULL ) {
+            tab_loc_len = 0;
+            tab_loc = strchr( str, TABCHAR );
+            if( tab_loc != NULL ) {
+                tab_loc++;
                 if( tab_loc != NULL ) {
-                    tab_loc++;
-                    if( tab_loc != NULL ) {
-                        tab_loc_len = strlen( tab_loc ) + 1;
-                    }
+                    tab_loc_len = strlen( tab_loc ) + 1;
                 }
-                str_len = strlen( str ) - tab_loc_len;
-                if( desc->flags & MENU_HAS_TAB ) {
-                    if( str_len > MENU_GET_TAB_OFFSET( desc ) ) {
-                        str_len = MENU_GET_TAB_OFFSET( desc ) - 1;
-                    }
+            }
+            str_len = strlen( str ) - tab_loc_len;
+            if( desc->flags & MENU_HAS_TAB ) {
+                if( str_len > MENU_GET_TAB_OFFSET( desc ) ) {
+                    str_len = MENU_GET_TAB_OFFSET( desc ) - 1;
                 }
-                /* text */
-                mstring( &UIData->screen, desc->area.row + item, start_col + 2, attr, str, str_len );
-                /* tabbed text */
-                if( tab_loc != NULL ) {
-                    mstring( &UIData->screen,
-                            desc->area.row + item,
-                            start_col + MENU_GET_TAB_OFFSET( desc ) + 2,
-                            attr, tab_loc, tab_loc_len );
-                }
-                /* short cut key */
+            }
+            /* text */
+            mstring( &UIData->screen,
+                    desc->area.row + 1 + item,
+                    start_col + 2,
+                    attr, str, str_len );
+            /* tabbed text */
+            if( tab_loc != NULL ) {
                 mstring( &UIData->screen,
-                        desc->area.row + item,
-                        start_col + choffset + 2,
-                        chattr, str + choffset, 1 );
+                        desc->area.row + 1 + item,
+                        start_col + MENU_GET_TAB_OFFSET( desc ) + 2,
+                        attr, tab_loc, tab_loc_len );
             }
+            /* short cut key */
+            choffset = CHAROFFSET( *menuitem );
+            mstring( &UIData->screen,
+                    desc->area.row + 1 + item,
+                    start_col + choffset + 2,
+                    chattr, str + choffset, 1 );
         }
     }
 }
 
 
-void uidrawmenu( UIMENUITEM *menu, DESCMENU *desc, int curr )
+void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curr_item )
 {
-    int             item;
+    int         item;
 
     forbid_refresh();
     if( desc->area.height > 0 ) {
         drawbox( &UIData->screen, desc->area, SBOX_CHARS(), UIData->attrs[ATTR_MENU], false );
-        for( item = 1 ; item < desc->area.height - 1 ; ++item ) {
-            uidisplaymenuitem( &menu[item - 1], desc, item, item == curr );
+        for( item = 0; item < desc->area.height - 2; item++ ) {
+            uidisplaymenuitem( &menuitems[item], desc, item, item == curr_item );
         }
     }
     permit_refresh();
@@ -329,9 +328,9 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
     openwindow( window );
 }
 
-static bool process_menuchar( int ch, DESCMENU **desc, int *menu, bool *select )
+static bool process_menuchar( int ch, int *pmenu )
 {
-    int                 index;
+    int                 item;
     UIMENUITEM          *menuitems;
     bool                handled;
     int                 hotchar;
@@ -339,18 +338,17 @@ static bool process_menuchar( int ch, DESCMENU **desc, int *menu, bool *select )
     ch = tolower( ch );
     handled = false;
     menuitems = Menu->titles;
-    for( index = 0 ; !MENUENDMARKER( menuitems[index] ); ++index ) {
-        if( !MENUSEPARATOR( menuitems[index] ) && !MENUGRAYED( menuitems[index] ) ) {
-            hotchar = menuitems[index].name[CHAROFFSET( menuitems[index] )];
+    for( item = 0; item < NumMenus; item++ ) {
+        if( !MENUSEPARATOR( *menuitems ) && !MENUGRAYED( *menuitems ) ) {
+            hotchar = menuitems->name[CHAROFFSET( *menuitems )];
             if( tolower( hotchar ) == ch ) {
-                *desc = &Describe[index];
-                *menu = index + 1;
-                *select = ( (*desc)->area.height == 0 );
+                *pmenu = item;
                 Menu->popuppending = true;
                 handled = true;
                 break;
             }
         }
+        menuitems++;
     }
     return( handled );
 }
@@ -408,8 +406,8 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
 static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
 /****************************************************************/
 {
-    int         index;
-    int         oldmenu = 0;
+    int         item;
+    int         oldmenu = NO_SELECT;
     ui_event    itemevent;
     ui_event    new_ui_ev;
     DESCMENU    *desc;
@@ -435,27 +433,27 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 itemevent = EV_NO_EVENT;
             }
             if( Menu->active ) {
-                oldmenu = menu = Menu->currmenu + 1;
+                oldmenu = menu = Menu->currmenu;
             } else {
-                oldmenu = menu = 0;
+                oldmenu = menu = NO_SELECT;
             }
             select = false;
             if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ) {
                 Menu->altpressed = true;
             } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ) {
                 if( Menu->active ) {
-                    menu = 0;
+                    menu = NO_SELECT;
                 } else {
+                    menu = 0;
                     desc = &Describe[0];
-                    menu = 1;
                 }
                 Menu->altpressed = false;
             } else if( ui_ev == EV_F10 && UIData->f10menus ) {
+                menu = 0;
                 desc = &Describe[0];
-                menu = 1;
             } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ) {
                 new_ui_ev = ui_ev;
-                menu = 0;
+                menu = NO_SELECT;
                 Menu->draginmenu = false;
             } else if( ( ui_ev == EV_MOUSE_PRESS ) ||
                 ( ui_ev == EV_MOUSE_DRAG ) ||
@@ -470,15 +468,15 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     if( ui_ev == EV_MOUSE_DCLICK ) {
                         ui_ev = EV_MOUSE_PRESS;
                     }
-                    menu = 0;
-                    for( index = 0 ; !MENUENDMARKER( Menu->titles[index] ); ++index ) {
-                        desc = &Describe[index];
+                    menu = NO_SELECT;
+                    for( item = 0; item < NumMenus; item++ ) {
+                        desc = &Describe[item];
                         if( ( MENU_GET_ROW( desc ) == mouserow ) &&
                             ( desc->titlecol <= mousecol ) &&
                             ( mousecol < desc->titlecol + desc->titlewidth + 2 ) ) {
                             Menu->draginmenu = true;
                             Menu->popuppending = true;
-                            menu = index + 1;
+                            menu = item;
                             break;
                         }
                     }
@@ -490,10 +488,10 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                         Menu->movedmenu = true;
                     } else if( ui_ev == EV_MOUSE_PRESS  ) {
                         new_ui_ev = ui_ev;
-                        menu = 0;
+                        menu = NO_SELECT;
                         Menu->draginmenu = false;
                     } else if( ui_ev == EV_MOUSE_RELEASE ) {
-                        menu = 0;
+                        menu = NO_SELECT;
                         Menu->draginmenu = false;
                     }
                 } else {
@@ -504,40 +502,37 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 }
                 if( ui_ev == EV_MOUSE_RELEASE ) {
                     if( !Menu->movedmenu ) {
-                        menu = 0;
+                        menu = NO_SELECT;
                     } else {
                         select = true;
                     }
                     Menu->movedmenu = false;
                 }
             } else if( uialtchar( ui_ev ) != '\0'  ) {
-                process_menuchar( uialtchar( ui_ev ), &desc, &menu, &select );
+                if( process_menuchar( uialtchar( ui_ev ), &menu ) ) {
+                    desc = &Describe[menu];
+                    select = ( desc->area.height == 0 );
+                }
                 new_ui_ev = EV_NO_EVENT;
             } else if( Menu->active ) {
                 switch( ui_ev ) {
                 case EV_ESCAPE :
-                    menu = 0;
+                    menu = NO_SELECT;
                     break;
                 case EV_ENTER :
-                    if( menu > 0 ) {
+                    if( menu != NO_SELECT ) {
                         Menu->popuppending = true;
                     }
                     break;
                 case EV_CURSOR_LEFT :
-                    menu -= 1;
-                    if( menu == 0 ) {
-                        menu = NumMenus;
-                    }
+                    menu = GetNewPos( menu - 1, NumMenus );
                     Menu->popuppending = true;
-                    desc = &Describe[menu - 1];
+                    desc = &Describe[menu];
                     break;
                 case EV_CURSOR_RIGHT :
-                    menu += 1;
-                    if( menu > NumMenus ) {
-                        menu = 1;
-                    }
+                    menu = GetNewPos( menu + 1, NumMenus );
                     Menu->popuppending = true;
-                    desc = &Describe[menu - 1];
+                    desc = &Describe[menu];
                     break;
                 case EV_CURSOR_DOWN :
                     Menu->popuppending = true;
@@ -546,7 +541,9 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                     break;
                 default :
                     if( iseditchar( ui_ev ) ) {
-                        if( process_menuchar( (unsigned char)ui_ev, &desc, &menu, &select ) ) {
+                        if( process_menuchar( (unsigned char)ui_ev, &menu ) ) {
+                            desc = &Describe[menu];
+                            select = ( desc->area.height == 0 );
                             break;
                         }
                     }
@@ -561,27 +558,27 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
                 new_ui_ev = ui_ev;
             }
             if( menu != oldmenu ) {
-                if( menu > 0 && !Menu->active ) {
+                if( menu != NO_SELECT && !Menu->active ) {
                     new_ui_ev = EV_MENU_ACTIVE;
                 }
-                Menu->active = ( menu > 0 );
-                if( oldmenu > 0 ) {
-                    menutitle( oldmenu - 1, false );
+                Menu->active = ( menu != NO_SELECT );
+                if( oldmenu != NO_SELECT ) {
+                    menutitle( oldmenu, false );
                 }
-                if( menu > 0 ) {
-                    Menu->currmenu = menu - 1;
-                    menutitle( menu - 1, true );
+                if( menu != NO_SELECT ) {
+                    Menu->currmenu = menu;
+                    menutitle( menu, true );
                 }
-                if( menu == 0 || oldmenu == 0 ) {
+                if( menu == NO_SELECT || oldmenu == NO_SELECT ) {
                     uimenutitlebar();
                 }
             }
             if( Menu->active ) {
                 if( itemevent == EV_NO_EVENT ) {
-                    if( MENUGRAYED( Menu->titles[menu - 1] ) )  {
+                    if( MENUGRAYED( Menu->titles[menu] ) )  {
                         Menu->popuppending = false;
                     } else {
-                        itemevent = Menu->titles[menu - 1].event;
+                        itemevent = Menu->titles[menu].event;
                     }
                 }
                 Menu->event = itemevent;
@@ -599,8 +596,8 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
     if( Menu->ignorealt ) {
         Menu->ignorealt = false;
     }
-    if( ( !Menu->active && ( oldmenu != 0 ) ) ||
-        ( Menu->active && ( oldmenu != Menu->currmenu + 1 ) ) ) {
+    if( ( !Menu->active && ( oldmenu != NO_SELECT ) ) ||
+        ( Menu->active && ( oldmenu != Menu->currmenu ) ) ) {
         if( ( Menu->currmenu != NO_SELECT ) && Menu->active ) {
             uimenucurr( &Menu->titles[Menu->currmenu] );
         } else {
@@ -620,12 +617,12 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
 ui_event uigeteventfrompos( ORD row, ORD col )
 /********************************************/
 {
-    unsigned            index;
+    int                 item;
     DESCMENU*           desc;
 
     if( row < uimenuheight() ) {
-        for( index = 0 ; !MENUENDMARKER( Menu->titles[index] ); ++index ) {
-            desc = &Describe[index];
+        for( item = 0; item < NumMenus; item++ ) {
+            desc = &Describe[item];
             if( ( MENU_GET_ROW( desc ) == row ) &&
                 ( desc->titlecol <= col ) &&
                 ( col < desc->titlecol + desc->titlewidth + 2 ) ) {
@@ -705,7 +702,7 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
     if( menuitems != NULL ) {
         desc->area.width = 0;
         tab_loc_len = 0;
-        for( item = 0 ; !MENUENDMARKER( menuitems[item] ) ; ++item ) {
+        for( item = 0; !MENUENDMARKER( menuitems[item] ); item++ ) {
             if( !MENUSEPARATOR( menuitems[item] ) ) {
                 len = strlen( menuitems[item].name );
                 tab_loc = strchr( menuitems[item].name, TABCHAR );
@@ -754,43 +751,13 @@ void UIAPI uidescmenu( UIMENUITEM *menuitems, DESCMENU *desc )
     }
 }
 
-static void descmenu( int menu, DESCMENU *desc )
-{
-    UIMENUITEM              *menuitem;
-    UIMENUITEM              *popupitems;
-    unsigned                next;
-    #define MENUSTRLEN(x)   ((x) ? (uisize)strlen((x)) : (uisize)0)
-
-    --menu;
-    popupitems = Menu->titles[menu].popup;
-    desc->area.row = 1;
-    desc->area.col = 0;
-    menuitem = Menu->titles;
-    for( ;; ) {
-        next = desc->area.col + MENUSTRLEN( menuitem->name ) + BetweenTitles;
-        if( next >= UIData->width ) {
-            next -= desc->area.col;
-            desc->area.col = 0;
-            desc->area.row++;
-        }
-        if( menu == 0 )
-            break;
-        desc->area.col = next;
-        --menu;
-        menuitem++;
-    }
-    desc->titlecol = desc->area.col;
-    desc->titlewidth = MENUSTRLEN( menuitem->name );
-    uidescmenu( popupitems, desc );
-}
-
 void uimenutitlebar( void )
 {
-    int         menu;
+    int         item;
 
     forbid_refresh();
-    for( menu = 0; menu < NumMenus; ++menu ) {
-        menutitle( menu, menu == Menu->currmenu );
+    for( item = 0; item < NumMenus; item++ ) {
+        menutitle( item, item == Menu->currmenu );
     }
     permit_refresh();
 }
@@ -831,16 +798,41 @@ void UIAPI uimenuindicators( bool status )
     Menu->indicators = status;
 }
 
-/* this code was split out of uimenubar to facilitate the updating of
- * menu's without constant redrawing
- */
 void UIAPI uisetmenudesc( void )
-/******************************/
+/******************************
+ * this code facilitates the updating of menu's without constant redrawing
+ */
 {
-    int         count;
+    int                     item;
+    uisize                  col_start;
+    uisize                  col_end;
+    uisize                  row;
+    DESCMENU                *desc;
+    UIMENUITEM              *menuitem;
 
-    for( count = NumMenus; count > 0 ; --count ) {
-        descmenu( count, &Describe[count - 1] );
+    if( NumMenus > 0 ) {
+        row = 1;
+        col_end = col_start = 0;
+        desc = Describe;
+        menuitem = Menu->titles;
+        for( item = 0; item < NumMenus; item++ ) {
+            if( item > 0 ) {
+                col_start = col_end;
+                col_end += desc->titlewidth + BetweenTitles;
+                if( col_end >= UIData->width ) {
+                    col_start = 0;
+                    row++;
+                }
+                desc++;
+            }
+            desc->area.row = row;
+            desc->area.col = col_start;
+            desc->titlecol = col_start;
+            desc->titlewidth = ( menuitem->name != NULL ) ? strlen( menuitem->name ) : 0;
+            col_end = col_start + desc->titlewidth + BetweenTitles;
+            uidescmenu( menuitem->popup, desc );
+            menuitem++;
+        }
     }
 }
 
@@ -955,10 +947,10 @@ void UIAPI uimenus( UIMENUITEM *menuitems, UIMENUITEM **popupitems, ui_event hot
     /* unused parameters */ (void)hot;
 
     uimenubar( NULL );
-    MenuList.titles = menuitems;
     for( item = 0 ; !MENUENDMARKER( menuitems[item] ); item++ ) {
         menuitems[item].popup = popupitems[item];
     }
+    MenuList.titles = menuitems;
     MenuList.currmenu = 0;
     uimenubar( &MenuList );
 }
