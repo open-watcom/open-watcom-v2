@@ -356,9 +356,9 @@ void ProcAccel( void )
     DoProcAccel( false, &menu, &parent, &num_sibs, WndClass( WndFindActive() ));
 }
 
-OVL_EXTERN void FreeLabels( gui_menu_struct *menu, int num_menus )
+OVL_EXTERN void FreeLabels( gui_menu_struct *menu, int num_items )
 {
-    while( --num_menus >= 0 ) {
+    while( num_items-- > 0 ) {
         if( menu->id != MENU_MAIN_ACTION && menu->child != NULL ) {
             FreeLabels( menu->child, menu->num_child_menus );
         }
@@ -372,9 +372,9 @@ OVL_EXTERN void FreeLabels( gui_menu_struct *menu, int num_menus )
 }
 
 
-OVL_EXTERN void LoadLabels( gui_menu_struct *menu, int num_menus )
+OVL_EXTERN void LoadLabels( gui_menu_struct *menu, int num_items )
 {
-    while( --num_menus >= 0 ) {
+    while( num_items-- > 0 ) {
         if( menu->child != NULL ) {
             LoadLabels( menu->child, menu->num_child_menus );
         }
@@ -424,7 +424,7 @@ void SetTargMenuItems( void )
     SetMADMenuItems();
 }
 
-static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_menus ) )
+static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
 {
     wnd_class_wv    wndclass;
 

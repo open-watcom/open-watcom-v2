@@ -64,7 +64,7 @@ OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
     const ambig_info    *ambig = data_handle;
 
     sym = ambig->sym;
-    while( --item >= 0 ) {
+    while( item-- > 0 ) {
         sym = sym->next;
     }
     len = DIPSymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );

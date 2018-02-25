@@ -122,14 +122,17 @@ bool DUIClose( void )
 #if 0
 // The following routine is cut & pasted verbatim from dbgwvar.c
 // (which we really don't want to drag in here)
-var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
+var_node *VarGetDisplayPiece( var_info *i, int row, wnd_piece piece, int *pdepth, int *pinherit )
 {
     var_node    *row_v;
     var_node    *v;
 
-    if( piece >= VAR_PIECE_LAST ) return( NULL );
-    if( VarFirstNode( i ) == NULL ) return( NULL );
-    if( row >= VarRowTotal( i ) ) return( NULL );
+    if( piece >= VAR_PIECE_LAST )
+        return( NULL );
+    if( VarFirstNode( i ) == NULL )
+        return( NULL );
+    if( row >= VarRowTotal( i ) )
+        return( NULL );
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
         VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
@@ -184,39 +187,44 @@ HEV             Requestdonesem;
 static void DumpLocals( void )
 {
     address     addr;
-    int         row;
-    int         depth;
-    int         inherit;
-    var_node    *v;
 
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
         VarInfoRefresh( VAR_LOCALS, &Locals, &addr );
         VarOkToCache( &Locals, true );
     }
-    for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth, &inherit );
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth, &inherit );
-        switch( v->gadget ) {
-        case VARGADGET_NONE:
-            printf( "  " );
-            break;
-        case VARGADGET_OPEN:
-            printf( "+ " );
-            break;
-        case VARGADGET_CLOSED:
-            printf( "- " );
-            break;
-        case VARGADGET_POINTS:
-            printf( "->" );
-            break;
-        case VARGADGET_UNPOINTS:
-            printf( "<-" );
-            break;
+#if 0
+    {
+        int         row;
+        var_node    *v;
+        int         depth;
+        int         inherit;
+
+        for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
+            v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth, &inherit );
+            v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth, &inherit );
+            switch( v->gadget ) {
+            case VARGADGET_NONE:
+                printf( "  " );
+                break;
+            case VARGADGET_OPEN:
+                printf( "+ " );
+                break;
+            case VARGADGET_CLOSED:
+                printf( "- " );
+                break;
+            case VARGADGET_POINTS:
+                printf( "->" );
+                break;
+            case VARGADGET_UNPOINTS:
+                printf( "<-" );
+                break;
+            }
+            VarBuildName( &Locals, v, true );
+            printf( " %-20s %s\n", TxtBuff, v->value );
         }
-        VarBuildName( &Locals, v, true );
-        printf( " %-20s %s\n", TxtBuff, v->value );
     }
+#endif
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarOkToCache( &Locals, false );
         VarOldErrState();

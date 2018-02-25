@@ -404,13 +404,18 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
         *len   = 0;
         return( false );
     }
-    if( ScanQuote( start, len ) ) return( true );
+    if( ScanQuote( start, len ) )
+        return( true );
     *start = TokenStart;
     for( ;; ) {
-        if( blank_delim && isspace( *ScanPtr ) ) break;
-        if( *ScanPtr == TRAP_PARM_SEPARATOR ) break;
-        if( *ScanPtr == ';' ) break;
-        if( *ScanPtr == NULLCHAR ) break;
+        if( blank_delim && isspace( *ScanPtr ) )
+            break;
+        if( *ScanPtr == TRAP_PARM_SEPARATOR )
+            break;
+        if( *ScanPtr == ';' )
+            break;
+        if( *ScanPtr == NULLCHAR )
+            break;
         ++ScanPtr;
     }
     *len = ScanPtr - TokenStart;
@@ -454,7 +459,9 @@ bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, siz
 
 void ReqEOC( void )
 {
-    if( !ScanEOC() ) Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
+    if( !ScanEOC() ) {
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
+    }
 }
 
 
@@ -464,7 +471,9 @@ void ReqEOC( void )
 
 void FlushEOC( void )
 {
-    while( !ScanEOC() ) Scan();
+    while( !ScanEOC() ) {
+        Scan();
+    }
 }
 
 
@@ -518,8 +527,10 @@ static bool ScanRealNum( void )
     const char  *curr;
 
     curr = ScanPtr;
-    while( isdigit( *curr ) ) ++curr;
-    if( *curr != '.' ) return( false );
+    while( isdigit( *curr ) )
+        ++curr;
+    if( *curr != '.' )
+        return( false );
     SToLD( ScanPtr, &ScanPtr, &TokenVal.real_val );
     if( curr == ScanPtr ) {    /* it isn't a number, it's just a dot */
         ScanPtr++;
@@ -541,9 +552,12 @@ static int GetDig( unsigned base )
     chr = *ScanPtr;
     chr = toupper( chr );
     if( ( (chr < '0') || (chr > '9') )
-     && ( (chr < 'A') || (chr > 'Z') ) ) return( -1 );
-    if( chr >= 'A' ) chr -= 'A' - '0' - 10;
-    if( chr - '0' >= base ) return( -1 );
+      && ( (chr < 'A') || (chr > 'Z') ) )
+        return( -1 );
+    if( chr >= 'A' )
+        chr -= 'A' - '0' - 10;
+    if( chr - '0' >= base )
+        return( -1 );
     return( chr - '0' );
 }
 
@@ -641,10 +655,11 @@ size_t NameLen( void )
             --end;
         }
     }
-    if( start >= end)
+    if( start >= end ) {
         return( 0 );
-    else
+    } else {
         return( end - start );
+    }
 }
 
 /*
@@ -668,7 +683,8 @@ static bool ScanId( void )
              c = *++ScanPtr;
         }
     }
-    if( NameLen() == 0 ) return( false );
+    if( NameLen() == 0 )
+        return( false );
     CurrToken = T_NAME;
     return( true );
 }

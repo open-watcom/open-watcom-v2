@@ -341,7 +341,8 @@ void TypeSet( void )
 
     ScanLeftBrace();
     while( !ScanRightBrace() ) {
-        if( ScanCmd( TypeSettings ) != TY_STRUCT ) oops();
+        if( ScanCmd( TypeSettings ) != TY_STRUCT )
+            oops();
         parent = VarDisplayAddStruct( ScanName() );
         ScanLeftBrace();
         while( !ScanRightBrace() ) {
@@ -368,7 +369,8 @@ void TypeConf( void )
     StrCopy( " {", StrCopy( NameBuff, TxtBuff ) );
     DUIDlgTxt( TxtBuff );
     for( curr = TypeDisplay; curr != NULL; curr = curr->next ) {
-        if( !curr->dirty ) continue;
+        if( !curr->dirty )
+            continue;
         Attributes( curr,
                     StrCopy( " { ",
                     StrCopy( curr->name,
@@ -377,7 +379,8 @@ void TypeConf( void )
                     StrCopy( "  ", TxtBuff ) ) ) ) ) );
         DUIDlgTxt( TxtBuff );
         for( fcurr = curr->fields; fcurr != NULL; fcurr = fcurr->next ) {
-            if( !fcurr->dirty ) continue;
+            if( !fcurr->dirty )
+                continue;
             StrCopy( "}",
             Attributes( fcurr,
             StrCopy( " { ",

@@ -166,7 +166,7 @@ static a_symbol *NameGetRow( name_list *name, int i )
     } else {
         curr = name->list;
     }
-    while( --i >= 0 ) {
+    while( i-- > 0 ) {
         curr = curr->next;
     }
     return( curr );

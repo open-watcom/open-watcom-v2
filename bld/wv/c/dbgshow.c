@@ -83,7 +83,8 @@ void ConfigCmdList( char *cmds, int indent )
 
     indent += INDENT_AMOUNT;
 again:
-    while( *cmds == ' ' ) ++cmds;
+    while( *cmds == ' ' )
+        ++cmds;
     p = TxtBuff;
     for( i = 0; i < indent; ++i ) {
         *p++ = ' ';
