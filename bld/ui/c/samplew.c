@@ -287,41 +287,41 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 uipoplist( /* evlist */ );
             }
             switch( ui_ev ) {
-                case EV_SAMPLE_DIALOG:
-                    sample_dialog();
-                    break;
-                case EV_OPEN:
-                    open();
-                    break;
-                case EV_F1:
-                    area.width = 10;
-                    area.height = 10;
-                    area.row = 1;
-                    area.col = 1;
-                    uivattribute( &mainwin, area, (ATTR) 1 );
-                    break;
-                case EV_CURSOR_RIGHT:
-                    mainwin.col++;
-                    if( mainwin.col >= mainwin.area.width ) mainwin.col--;
+            case EV_SAMPLE_DIALOG:
+                sample_dialog();
+                break;
+            case EV_OPEN:
+                open();
+                break;
+            case EV_F1:
+                area.width = 10;
+                area.height = 10;
+                area.row = 1;
+                area.col = 1;
+                uivattribute( &mainwin, area, (ATTR) 1 );
+                break;
+            case EV_CURSOR_RIGHT:
+                mainwin.col++;
+                if( mainwin.col >= mainwin.area.width ) mainwin.col--;
+                fixup = true;
+                break;
+            case EV_CURSOR_DOWN:
+                mainwin.row++;
+                if( mainwin.row >= mainwin.area.height ) mainwin.row--;
+                fixup = true;
+                break;
+            case EV_CURSOR_LEFT:
+                if( mainwin.col > 0 ) {
+                    mainwin.col--;
                     fixup = true;
-                    break;
-                case EV_CURSOR_DOWN:
-                    mainwin.row++;
-                    if( mainwin.row >= mainwin.area.height ) mainwin.row--;
+                }
+                break;
+            case EV_CURSOR_UP:
+                if( mainwin.row > 0 ) {
+                    mainwin.row--;
                     fixup = true;
-                    break;
-                case EV_CURSOR_LEFT:
-                    if( mainwin.col > 0 ) {
-                        mainwin.col--;
-                        fixup = true;
-                    }
-                    break;
-                case EV_CURSOR_UP:
-                    if( mainwin.row > 0 ) {
-                        mainwin.row--;
-                        fixup = true;
-                    }
-                    break;
+                }
+                break;
             }
             if( fixup ) {
                 fixup = false;

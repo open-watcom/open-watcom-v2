@@ -259,7 +259,7 @@ static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems
 }
 
 ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
-                                bool right, ui_event curr_item_event, bool submenu )
+                                bool right, ui_event curr_item_event, bool issubmenu )
 {
     SAREA       keep_inside;
 
@@ -268,7 +268,7 @@ ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool le
     keep_inside.width = UIData->width;
     keep_inside.height = UIData->height;
 
-    return( uicreatepopupinarea( menuitems, desc, left, right, curr_item_event, &keep_inside, submenu ) );
+    return( uicreatepopupinarea( menuitems, desc, left, right, curr_item_event, &keep_inside, issubmenu ) );
 
 }
 
@@ -369,7 +369,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
                                 bool left, bool right,
                                 ui_event curr_item_event, SAREA *keep_inside,
                                 SAREA *return_inside, SAREA *return_exclude,
-                                bool submenu )
+                                bool issubmenu )
 {
     ui_event    ui_ev;
     ui_event    new_ui_ev;
@@ -426,7 +426,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
 
         switch( ui_ev ) {
         case EV_CURSOR_LEFT :
-            if( !submenu ) {
+            if( !issubmenu ) {
                 break;
             }
             /* fall through */
@@ -537,7 +537,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
             if( ScrollPos != NO_SELECT && menuitems[ScrollPos].popup != NULL ) { // JD
                 done = createsubpopup( menuitems, left, right, keep_inside, &new_ui_ev, &window, desc, true );
             } else {
-                if( submenu ) {
+                if( issubmenu ) {
                     new_ui_ev = ui_ev;
                     done = true;
                     DoEnd( &window );
@@ -576,9 +576,9 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
 
 ui_event UIAPI uicreatepopupinarea( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
                                   bool right, ui_event curr_item_event,
-                                  SAREA *keep_inside, bool submenu )
+                                  SAREA *keep_inside, bool issubmenu )
 {
-    return( createpopupinarea( menuitems, desc, left, right, curr_item_event, keep_inside, NULL, NULL, submenu ) );
+    return( createpopupinarea( menuitems, desc, left, right, curr_item_event, keep_inside, NULL, NULL, issubmenu ) );
 }
 
 ui_event UIAPI uicreatesubpopup( UIMENUITEM *menuitems, DESCMENU *desc, bool left,

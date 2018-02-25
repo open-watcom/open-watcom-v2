@@ -1069,19 +1069,19 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
 
         if( hotkey == ch ) {
             switch( vf->typ ) {
-                case FLD_HOT:
-                    ui_ev = vf->u.hs->event;
-                    break;
-                case FLD_CHECK:
-                    ui_dlg_info->dirty = true;
-                    vf->u.check->val = !vf->u.check->val;
-                    print_field( ui_dlg_info->vs, vf, true );
-                    ui_ev = EV_CHECK_BOX_CLICK;
-                    break;
-                case FLD_RADIO:
-                    do_radio( ui_dlg_info, vf );
-                    ui_ev = EV_CHECK_BOX_CLICK;
-                    break;
+            case FLD_HOT:
+                ui_ev = vf->u.hs->event;
+                break;
+            case FLD_CHECK:
+                ui_dlg_info->dirty = true;
+                vf->u.check->val = !vf->u.check->val;
+                print_field( ui_dlg_info->vs, vf, true );
+                ui_ev = EV_CHECK_BOX_CLICK;
+                break;
+            case FLD_RADIO:
+                do_radio( ui_dlg_info, vf );
+                ui_ev = EV_CHECK_BOX_CLICK;
+                break;
             }
         }
     }
@@ -1211,21 +1211,21 @@ ui_event uidialog( a_dialog *ui_dlg_info )
         field = ui_dlg_info->curr;
         if( field != NULL ) {
             switch( field->typ ) {
-                case FLD_EDIT:
-                case FLD_INVISIBLE_EDIT:
-                    uieditpushlist();
-                    break;
-                case FLD_PULLDOWN:
-                    uiboxpushlist( );
-                    break;
-                case FLD_COMBOBOX:
-                    uiboxpushlist( );
-                    uieditpushlist();
-                    break;
-                case FLD_LISTBOX:
-                case FLD_EDIT_MLE:
-                    uiboxpushlist();
-                    break;
+            case FLD_EDIT:
+            case FLD_INVISIBLE_EDIT:
+                uieditpushlist();
+                break;
+            case FLD_PULLDOWN:
+                uiboxpushlist( );
+                break;
+            case FLD_COMBOBOX:
+                uiboxpushlist( );
+                uieditpushlist();
+                break;
+            case FLD_LISTBOX:
+            case FLD_EDIT_MLE:
+                uiboxpushlist();
+                break;
             }
         }
         uipushlist( dialog_events );
@@ -1279,26 +1279,26 @@ void uifreedialog( a_dialog *ui_dlg_info )
     exit_field( ui_dlg_info, ui_dlg_info->curr );
     for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
         switch( fields[i].typ ) {
-            case FLD_LISTBOX:
-            case FLD_PULLDOWN:
-            case FLD_EDIT_MLE:
-                list = fields[i].u.list;
-                uiendlistbox( list );
-                break;
-//          case FLD_INVISIBLE_EDIT:
-//          case FLD_EDIT:
-//              edit = fields[i].u.edit;
-//              uifree( edit->buffer );
-//              edit->buffer = NULL;            //  Need this null for next
-//              break;                          //  time around
-            case FLD_COMBOBOX:
-                combo = fields[i].u.combo;
-                list = &combo->list;
-//              edit = &combo->edit;
-//              uifree( edit->buffer );
-//              edit->buffer = NULL;
-                uiendlistbox( list );       // Shut down listbox
-                break;
+        case FLD_LISTBOX:
+        case FLD_PULLDOWN:
+        case FLD_EDIT_MLE:
+            list = fields[i].u.list;
+            uiendlistbox( list );
+            break;
+//        case FLD_INVISIBLE_EDIT:
+//        case FLD_EDIT:
+//            edit = fields[i].u.edit;
+//            uifree( edit->buffer );
+//            edit->buffer = NULL;        //  Need this null for next
+//            break;                      //  time around
+        case FLD_COMBOBOX:
+            combo = fields[i].u.combo;
+            list = &combo->list;
+//            edit = &combo->edit;
+//            uifree( edit->buffer );
+//            edit->buffer = NULL;
+            uiendlistbox( list );       // Shut down listbox
+            break;
         }
     }
 }
