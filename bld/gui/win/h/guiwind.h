@@ -60,6 +60,8 @@
 
 #define GUI_IS_GUI
 
+#define NO_SELECT       -1
+
 typedef enum flags {
     NONE_SET            = 0x0000,
     HRANGE_SET          = 0x0001,
