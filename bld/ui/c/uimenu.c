@@ -299,7 +299,7 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *desc, int item, bo
 }
 
 
-void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curr_item )
+void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curritem )
 {
     int         item;
 
@@ -307,7 +307,7 @@ void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curr_item )
     if( desc->area.height > 0 ) {
         drawbox( &UIData->screen, desc->area, SBOX_CHARS(), UIData->attrs[ATTR_MENU], false );
         for( item = 0; item < desc->area.height - 2; item++ ) {
-            uidisplaymenuitem( &menuitems[item], desc, item, item == curr_item );
+            uidisplaymenuitem( &menuitems[item], desc, item, item == curritem );
         }
     }
     permit_refresh();
@@ -331,16 +331,16 @@ void UIAPI uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 static bool process_menuchar( int ch, int *pmenu )
 {
     int                 item;
-    UIMENUITEM          *menuitems;
+    UIMENUITEM          *menuitem;
     bool                handled;
     int                 hotchar;
 
     ch = tolower( ch );
     handled = false;
-    menuitems = Menu->titles;
+    menuitem = Menu->titles;
     for( item = 0; item < NumMenus; item++ ) {
-        if( !MENUSEPARATOR( *menuitems ) && !MENUGRAYED( *menuitems ) ) {
-            hotchar = menuitems->name[CHAROFFSET( *menuitems )];
+        if( !MENUSEPARATOR( *menuitem ) && !MENUGRAYED( *menuitem ) ) {
+            hotchar = menuitem->name[CHAROFFSET( *menuitem )];
             if( tolower( hotchar ) == ch ) {
                 *pmenu = item;
                 Menu->popuppending = true;
@@ -348,7 +348,7 @@ static bool process_menuchar( int ch, int *pmenu )
                 break;
             }
         }
-        menuitems++;
+        menuitem++;
     }
     return( handled );
 }
@@ -394,7 +394,7 @@ static ui_event createpopup( DESCMENU *desc, ui_event *new_ui_ev )
         case EV_MOUSE_PRESS_R:
         case EV_MOUSE_RELEASE:
         case EV_MOUSE_RELEASE_R:
-              break;
+            break;
         default :
             ui_ev = *new_ui_ev;
         }
@@ -423,170 +423,168 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
         Menu->altpressed = false;
     }
     if( !isdialogue( vptr ) ) {
-        if( NumMenus > 0 ) {
-            desc = &Describe[Menu->currmenu];
-            new_ui_ev = EV_NO_EVENT; /* Moved here from "else" case below */
-            if( Menu->popuppending ) {
-                Menu->popuppending = false;
-                itemevent = createpopup( desc, &ui_ev );
-            } else {
-                itemevent = EV_NO_EVENT;
-            }
+        desc = &Describe[Menu->currmenu];
+        new_ui_ev = EV_NO_EVENT; /* Moved here from "else" case below */
+        if( Menu->popuppending ) {
+            Menu->popuppending = false;
+            itemevent = createpopup( desc, &ui_ev );
+        } else {
+            itemevent = EV_NO_EVENT;
+        }
+        if( Menu->active ) {
+            oldmenu = menu = Menu->currmenu;
+        } else {
+            oldmenu = menu = NO_SELECT;
+        }
+        select = false;
+        if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ) {
+            Menu->altpressed = true;
+        } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ) {
             if( Menu->active ) {
-                oldmenu = menu = Menu->currmenu;
+                menu = NO_SELECT;
             } else {
-                oldmenu = menu = NO_SELECT;
-            }
-            select = false;
-            if( ui_ev == EV_ALT_PRESS && !Menu->ignorealt ) {
-                Menu->altpressed = true;
-            } else if( ui_ev == EV_ALT_RELEASE && Menu->altpressed ) {
-                if( Menu->active ) {
-                    menu = NO_SELECT;
-                } else {
-                    menu = 0;
-                    desc = &Describe[0];
-                }
-                Menu->altpressed = false;
-            } else if( ui_ev == EV_F10 && UIData->f10menus ) {
                 menu = 0;
                 desc = &Describe[0];
-            } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ) {
-                new_ui_ev = ui_ev;
+            }
+            Menu->altpressed = false;
+        } else if( ui_ev == EV_F10 && UIData->f10menus ) {
+            menu = 0;
+            desc = &Describe[0];
+        } else if( ui_ev == EV_MOUSE_PRESS_R || ui_ev == EV_MOUSE_PRESS_M  ) {
+            new_ui_ev = ui_ev;
+            menu = NO_SELECT;
+            Menu->draginmenu = false;
+        } else if( ( ui_ev == EV_MOUSE_PRESS ) ||
+            ( ui_ev == EV_MOUSE_DRAG ) ||
+            ( ui_ev == EV_MOUSE_REPEAT ) ||
+            ( ui_ev == EV_MOUSE_RELEASE ) ||
+            ( ui_ev == EV_MOUSE_DCLICK ) ) {
+            uigetmouse( &mouserow, &mousecol, &mouseon );
+            if( ( mouserow < uimenuheight() ) &&
+                ( Menu->active  ||
+                  ui_ev == EV_MOUSE_PRESS  || ui_ev == EV_MOUSE_DCLICK  ||
+                  ui_ev == EV_MOUSE_DRAG || ui_ev == EV_MOUSE_REPEAT ) ) {
+                if( ui_ev == EV_MOUSE_DCLICK ) {
+                    ui_ev = EV_MOUSE_PRESS;
+                }
                 menu = NO_SELECT;
-                Menu->draginmenu = false;
-            } else if( ( ui_ev == EV_MOUSE_PRESS ) ||
-                ( ui_ev == EV_MOUSE_DRAG ) ||
-                ( ui_ev == EV_MOUSE_REPEAT ) ||
-                ( ui_ev == EV_MOUSE_RELEASE ) ||
-                ( ui_ev == EV_MOUSE_DCLICK ) ) {
-                uigetmouse( &mouserow, &mousecol, &mouseon );
-                if( ( mouserow < uimenuheight() ) &&
-                    ( Menu->active  ||
-                      ui_ev == EV_MOUSE_PRESS  || ui_ev == EV_MOUSE_DCLICK  ||
-                      ui_ev == EV_MOUSE_DRAG || ui_ev == EV_MOUSE_REPEAT ) ) {
-                    if( ui_ev == EV_MOUSE_DCLICK ) {
-                        ui_ev = EV_MOUSE_PRESS;
+                desc = Describe;
+                for( item = 0; item < NumMenus; item++ ) {
+                    if( ( MENU_GET_ROW( desc ) == mouserow ) && ( desc->titlecol <= mousecol )
+                      && ( mousecol < desc->titlecol + desc->titlewidth + 2 ) ) {
+                        Menu->draginmenu = true;
+                        Menu->popuppending = true;
+                        menu = item;
+                        break;
                     }
+                    desc++;
+                }
+            } else if( Menu->active || Menu->draginmenu ) {
+                if( ( desc->area.col < mousecol )
+                    && ( mousecol < desc->area.col + desc->area.width - 1 )
+                    && ( mouserow < desc->area.row + desc->area.height - 1 )
+                    && ( desc->area.row <= mouserow ) ) {
+                    Menu->movedmenu = true;
+                } else if( ui_ev == EV_MOUSE_PRESS  ) {
+                    new_ui_ev = ui_ev;
                     menu = NO_SELECT;
-                    for( item = 0; item < NumMenus; item++ ) {
-                        desc = &Describe[item];
-                        if( ( MENU_GET_ROW( desc ) == mouserow ) &&
-                            ( desc->titlecol <= mousecol ) &&
-                            ( mousecol < desc->titlecol + desc->titlewidth + 2 ) ) {
-                            Menu->draginmenu = true;
-                            Menu->popuppending = true;
-                            menu = item;
-                            break;
-                        }
+                    Menu->draginmenu = false;
+                } else if( ui_ev == EV_MOUSE_RELEASE ) {
+                    menu = NO_SELECT;
+                    Menu->draginmenu = false;
+                }
+            } else {
+                new_ui_ev = ui_ev;
+            }
+            if( ui_ev != EV_MOUSE_RELEASE && menu != oldmenu ) {
+                Menu->movedmenu = true;
+            }
+            if( ui_ev == EV_MOUSE_RELEASE ) {
+                if( !Menu->movedmenu ) {
+                    menu = NO_SELECT;
+                } else {
+                    select = true;
+                }
+                Menu->movedmenu = false;
+            }
+        } else if( uialtchar( ui_ev ) != '\0'  ) {
+            if( process_menuchar( uialtchar( ui_ev ), &menu ) ) {
+                desc = &Describe[menu];
+                select = ( desc->area.height == 0 );
+            }
+            new_ui_ev = EV_NO_EVENT;
+        } else if( Menu->active ) {
+            switch( ui_ev ) {
+            case EV_ESCAPE :
+                menu = NO_SELECT;
+                break;
+            case EV_ENTER :
+                if( menu != NO_SELECT ) {
+                    Menu->popuppending = true;
+                }
+                break;
+            case EV_CURSOR_LEFT :
+                menu = GetNewPos( menu - 1, NumMenus );
+                Menu->popuppending = true;
+                desc = &Describe[menu];
+                break;
+            case EV_CURSOR_RIGHT :
+                menu = GetNewPos( menu + 1, NumMenus );
+                Menu->popuppending = true;
+                desc = &Describe[menu];
+                break;
+            case EV_CURSOR_DOWN :
+                Menu->popuppending = true;
+                break;
+            case EV_NO_EVENT :
+                break;
+            default :
+                if( iseditchar( ui_ev ) ) {
+                    if( process_menuchar( (unsigned char)ui_ev, &menu ) ) {
+                        desc = &Describe[menu];
+                        select = ( desc->area.height == 0 );
+                        break;
                     }
-                } else if( Menu->active || Menu->draginmenu ) {
-                    if( ( desc->area.col < mousecol )
-                        && ( mousecol < desc->area.col + desc->area.width - 1 )
-                        && ( mouserow < desc->area.row + desc->area.height - 1 )
-                        && ( desc->area.row <= mouserow ) ) {
-                        Menu->movedmenu = true;
-                    } else if( ui_ev == EV_MOUSE_PRESS  ) {
-                        new_ui_ev = ui_ev;
-                        menu = NO_SELECT;
-                        Menu->draginmenu = false;
-                    } else if( ui_ev == EV_MOUSE_RELEASE ) {
-                        menu = NO_SELECT;
-                        Menu->draginmenu = false;
-                    }
+                }
+                if( itemevent != EV_NO_EVENT ) {
+                    new_ui_ev = itemevent;
+                    select = true;
                 } else {
                     new_ui_ev = ui_ev;
                 }
-                if( ui_ev != EV_MOUSE_RELEASE && menu != oldmenu ) {
-                    Menu->movedmenu = true;
-                }
-                if( ui_ev == EV_MOUSE_RELEASE ) {
-                    if( !Menu->movedmenu ) {
-                        menu = NO_SELECT;
-                    } else {
-                        select = true;
-                    }
-                    Menu->movedmenu = false;
-                }
-            } else if( uialtchar( ui_ev ) != '\0'  ) {
-                if( process_menuchar( uialtchar( ui_ev ), &menu ) ) {
-                    desc = &Describe[menu];
-                    select = ( desc->area.height == 0 );
-                }
-                new_ui_ev = EV_NO_EVENT;
-            } else if( Menu->active ) {
-                switch( ui_ev ) {
-                case EV_ESCAPE :
-                    menu = NO_SELECT;
-                    break;
-                case EV_ENTER :
-                    if( menu != NO_SELECT ) {
-                        Menu->popuppending = true;
-                    }
-                    break;
-                case EV_CURSOR_LEFT :
-                    menu = GetNewPos( menu - 1, NumMenus );
-                    Menu->popuppending = true;
-                    desc = &Describe[menu];
-                    break;
-                case EV_CURSOR_RIGHT :
-                    menu = GetNewPos( menu + 1, NumMenus );
-                    Menu->popuppending = true;
-                    desc = &Describe[menu];
-                    break;
-                case EV_CURSOR_DOWN :
-                    Menu->popuppending = true;
-                    break;
-                case EV_NO_EVENT :
-                    break;
-                default :
-                    if( iseditchar( ui_ev ) ) {
-                        if( process_menuchar( (unsigned char)ui_ev, &menu ) ) {
-                            desc = &Describe[menu];
-                            select = ( desc->area.height == 0 );
-                            break;
-                        }
-                    }
-                    if( itemevent != EV_NO_EVENT ) {
-                        new_ui_ev = itemevent;
-                        select = true;
-                    } else {
-                        new_ui_ev = ui_ev;
-                    }
-                }
-            } else {
-                new_ui_ev = ui_ev;
             }
-            if( menu != oldmenu ) {
-                if( menu != NO_SELECT && !Menu->active ) {
-                    new_ui_ev = EV_MENU_ACTIVE;
-                }
-                Menu->active = ( menu != NO_SELECT );
-                if( oldmenu != NO_SELECT ) {
-                    menutitle( oldmenu, false );
-                }
-                if( menu != NO_SELECT ) {
-                    Menu->currmenu = menu;
-                    menutitle( menu, true );
-                }
-                if( menu == NO_SELECT || oldmenu == NO_SELECT ) {
-                    uimenutitlebar();
+        } else {
+            new_ui_ev = ui_ev;
+        }
+        if( menu != oldmenu ) {
+            if( menu != NO_SELECT && !Menu->active ) {
+                new_ui_ev = EV_MENU_ACTIVE;
+            }
+            Menu->active = ( menu != NO_SELECT );
+            if( oldmenu != NO_SELECT ) {
+                menutitle( oldmenu, false );
+            }
+            if( menu != NO_SELECT ) {
+                Menu->currmenu = menu;
+                menutitle( menu, true );
+            }
+            if( menu == NO_SELECT || oldmenu == NO_SELECT ) {
+                uimenutitlebar();
+            }
+        }
+        if( Menu->active ) {
+            if( itemevent == EV_NO_EVENT ) {
+                if( MENUGRAYED( Menu->titles[menu] ) )  {
+                    Menu->popuppending = false;
+                } else {
+                    itemevent = Menu->titles[menu].event;
                 }
             }
-            if( Menu->active ) {
-                if( itemevent == EV_NO_EVENT ) {
-                    if( MENUGRAYED( Menu->titles[menu] ) )  {
-                        Menu->popuppending = false;
-                    } else {
-                        itemevent = Menu->titles[menu].event;
-                    }
-                }
-                Menu->event = itemevent;
-                if( select ) {
-                    new_ui_ev = Menu->event;
-                    Menu->active = false;
-                    uimenutitlebar();
-                }
+            Menu->event = itemevent;
+            if( select ) {
+                new_ui_ev = Menu->event;
+                Menu->active = false;
+                uimenutitlebar();
             }
         }
     }
@@ -606,7 +604,7 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
         }
     }
 
-    if ( Menu->popuppending ) {
+    if( Menu->popuppending ) {
         InitMenuPopupPending = true;
     }
 
@@ -642,7 +640,7 @@ ui_event intern menuevent( VSCREEN *vptr )
 
     new_ui_ev = EV_NO_EVENT;
 
-    if ( InitMenuPopupPending ) {
+    if( InitMenuPopupPending ) {
         InitMenuPopupPending = false;
         if( Menu->titles[Menu->currmenu].popup != NULL ) {
             new_ui_ev = EV_MENU_INITPOPUP;
@@ -650,7 +648,7 @@ ui_event intern menuevent( VSCREEN *vptr )
     }
 
     if( new_ui_ev == EV_NO_EVENT ) {
-        if ( uimenuson() && !uimenuisdisabled() ) {
+        if( uimenuson() && !uimenuisdisabled() ) {
             uipushlist( menu_list );
             if( !Menu->active || isdialogue( vptr ) ) {
                 ui_ev = getprime( vptr );
@@ -775,13 +773,13 @@ static void drawbar( SAREA area, void *dummy )
     permit_refresh();
 }
 
-bool uienablepopupitem( int menu, int popupitem, bool enable )
-/************************************************************/
+bool uienablepopupitem( int menuitem, int popupitem, bool enable )
+/****************************************************************/
 {
     bool        prev;
     UIMENUITEM  *pitem;
 
-    pitem = &Menu->titles[menu].popup[popupitem];
+    pitem = &Menu->titles[menuitem].popup[popupitem];
     prev = !MENUGRAYED( *pitem );
     if( enable ) {
         pitem->flags &= ~ITEM_GRAYED;
@@ -947,7 +945,7 @@ void UIAPI uimenus( UIMENUITEM *menuitems, UIMENUITEM **popupitems, ui_event hot
     /* unused parameters */ (void)hot;
 
     uimenubar( NULL );
-    for( item = 0 ; !MENUENDMARKER( menuitems[item] ); item++ ) {
+    for( item = 0; !MENUENDMARKER( menuitems[item] ); item++ ) {
         menuitems[item].popup = popupitems[item];
     }
     MenuList.titles = menuitems;

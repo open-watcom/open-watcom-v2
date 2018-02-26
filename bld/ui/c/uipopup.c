@@ -259,7 +259,7 @@ static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems
 }
 
 ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
-                                bool right, ui_event curr_item_event, bool issubmenu )
+                                bool right, ui_event curritem_event, bool issubmenu )
 {
     SAREA       keep_inside;
 
@@ -268,7 +268,7 @@ ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool le
     keep_inside.width = UIData->width;
     keep_inside.height = UIData->height;
 
-    return( uicreatepopupinarea( menuitems, desc, left, right, curr_item_event, &keep_inside, issubmenu ) );
+    return( uicreatepopupinarea( menuitems, desc, left, right, curritem_event, &keep_inside, issubmenu ) );
 
 }
 
@@ -367,7 +367,7 @@ bool uiposfloatingpopup( UIMENUITEM *menuitems, DESCMENU *desc, ORD row, ORD col
 
 static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
                                 bool left, bool right,
-                                ui_event curr_item_event, SAREA *keep_inside,
+                                ui_event curritem_event, SAREA *keep_inside,
                                 SAREA *return_inside, SAREA *return_exclude,
                                 bool issubmenu )
 {
@@ -392,9 +392,9 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
     }
     uiopenpopup( desc, &window );
     ScrollPos = NO_SELECT;
-    if( curr_item_event != EV_NO_EVENT ) {
+    if( curritem_event != EV_NO_EVENT ) {
         for( item = 0; item < num_items; item++ ) {
-            if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) && ( menuitems[item].event == curr_item_event ) ) {
+            if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) && ( menuitems[item].event == curritem_event ) ) {
                 ScrollPos = item;
                 break;
             }
@@ -467,6 +467,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
         case EV_MOUSE_DRAG :
         case EV_MOUSE_DRAG_R :
             no_move = false;   /* break intentionally left out */
+            /* fall through */
         case EV_MOUSE_PRESS:
         case EV_MOUSE_PRESS_R:
         case EV_MOUSE_RELEASE:
@@ -485,8 +486,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
                     }
                 }
                 if( !done ) {
-                    if( ( col > desc->area.col ) &&
-                        ( col < ( desc->area.col + desc->area.width - 1 ) ) ) {
+                    if( ( col > desc->area.col ) && ( col < ( desc->area.col + desc->area.width - 1 ) ) ) {
                         curr_row = row - desc->area.row - 1;
                         if( ( curr_row >= 0 ) && ( curr_row < num_items ) ) {
                             no_select = false;
@@ -575,14 +575,14 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
 }
 
 ui_event UIAPI uicreatepopupinarea( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
-                                  bool right, ui_event curr_item_event,
+                                  bool right, ui_event curritem_event,
                                   SAREA *keep_inside, bool issubmenu )
 {
-    return( createpopupinarea( menuitems, desc, left, right, curr_item_event, keep_inside, NULL, NULL, issubmenu ) );
+    return( createpopupinarea( menuitems, desc, left, right, curritem_event, keep_inside, NULL, NULL, issubmenu ) );
 }
 
 ui_event UIAPI uicreatesubpopup( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
-                               bool right, ui_event curr_item_event, SAREA *keep_inside,
+                               bool right, ui_event curritem_event, SAREA *keep_inside,
                                DESCMENU *parentdesc, int item )
 {
     SAREA       return_exclude;
@@ -592,19 +592,19 @@ ui_event UIAPI uicreatesubpopup( UIMENUITEM *menuitems, DESCMENU *desc, bool lef
     return_exclude.width = parentdesc->area.width;
     return_exclude.height = 1;
 
-    return( uicreatesubpopupinarea( menuitems, desc, left, right, curr_item_event,
+    return( uicreatesubpopupinarea( menuitems, desc, left, right, curritem_event,
                                     keep_inside, &parentdesc->area, &return_exclude ) );
 }
 
 ui_event UIAPI uicreatesubpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
-                                     bool right, ui_event curr_item_event, SAREA *keep_inside,
+                                     bool right, ui_event curritem_event, SAREA *keep_inside,
                                      SAREA *return_inside, SAREA *return_exclude )
 {
-    return( createpopupinarea( menuitems, desc, left, right, curr_item_event, keep_inside,
+    return( createpopupinarea( menuitems, desc, left, right, curritem_event, keep_inside,
                                return_inside, return_exclude, true ) );
 }
 
-ui_event UIAPI uicreatepopup( ORD row, ORD col, UIMENUITEM *menuitems, bool left, bool right, ui_event curr_item_event )
+ui_event UIAPI uicreatepopup( ORD row, ORD col, UIMENUITEM *menuitems, bool left, bool right, ui_event curritem_event )
 {
     DESCMENU    desc;
     SAREA       keep_inside;
@@ -614,7 +614,7 @@ ui_event UIAPI uicreatepopup( ORD row, ORD col, UIMENUITEM *menuitems, bool left
     keep_inside.width = UIData->width;
     keep_inside.height = UIData->height;
     if( uiposfloatingpopup( menuitems, &desc, row, col, &keep_inside, NULL ) ) {
-        return( uicreatepopupdesc( menuitems, &desc, left, right, curr_item_event, false ) );
+        return( uicreatepopupdesc( menuitems, &desc, left, right, curritem_event, false ) );
     }
     return( EV_NO_EVENT );
 }
