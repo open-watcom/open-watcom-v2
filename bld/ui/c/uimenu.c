@@ -791,7 +791,7 @@ bool uienablepopupitem( int menuitem, int popupitem, bool enable )
 
 
 void UIAPI uimenuindicators( bool status )
-/*****************************************/
+/****************************************/
 {
     Menu->indicators = status;
 }

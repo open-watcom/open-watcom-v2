@@ -41,9 +41,8 @@
 #define MENU_HAS_POPUP      0x0400U
 
 #define MENU_GET_TAB_OFFSET( desc )     ((desc)->flags & MENU_TAB_OFFSET)
-#define MENU_SET_TAB_OFFSET( desc, o )  (desc)->flags = ((desc)->flags & ~MENU_TAB_OFFSET) | ((o) & MENU_TAB_OFFSET)
+#define MENU_SET_TAB_OFFSET( desc, o )  (desc)->flags |= (o) & MENU_TAB_OFFSET
 #define MENU_GET_ROW( desc )            ((desc)->area.row - 1)
-#define MENU_SET_ROW( desc, r )
 
 typedef struct describemenu {
     SAREA           area;           /* area of menu         */
@@ -99,7 +98,7 @@ extern void         uisetmenudesc( void );
 extern VBARMENU     *uimenubar( VBARMENU * );
 extern int          uimenuitemscount( UIMENUITEM *menuitems );
 extern void         uimenuindicators( bool );
-extern void         uimenus( UIMENUITEM *, UIMENUITEM **, ui_event );
+extern void         uimenus( UIMENUITEM *menuitems, UIMENUITEM **popupitems, ui_event );
 extern bool         uimenuson( void );
 extern void         uimenudisable( bool );
 extern bool         uimenuisdisabled( void );
@@ -109,8 +108,8 @@ extern void         uinomenus( void );
 extern void         uiactivatemenus( void );
 extern bool         uienablepopupitem( int menuitem, int popupitem, bool );
 extern void         uidescmenu( UIMENUITEM *, DESCMENU * );
-extern void         uidrawmenu( UIMENUITEM *, DESCMENU *, int );
-extern void         uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *, int, bool );
+extern void         uidrawmenu( UIMENUITEM *, DESCMENU *, int curritem );
+extern void         uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *, int item, bool iscurritem );
 extern void         uiclosepopup( UI_WINDOW * );
 extern void         uiopenpopup( DESCMENU *, UI_WINDOW * );
 extern bool         uiposfloatingpopup( UIMENUITEM *menuitems, DESCMENU *desc, ORD row, ORD col, SAREA *keep_inside, SAREA *keep_visible );

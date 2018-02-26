@@ -89,7 +89,7 @@ static bool InArea( ORD row, ORD col, SAREA *area )
  * DrawMenuText -- display the line of menu text
  */
 
-static void DrawMenuText( int item, UIMENUITEM *menuitems, bool iscurritem, DESCMENU *desc )
+static void DrawMenuText( int item, UIMENUITEM *menuitems, DESCMENU *desc, bool iscurritem )
 {
     uidisplaymenuitem( &menuitems[item], desc, item, iscurritem );
     uimenucurr( &menuitems[item] );
@@ -184,10 +184,10 @@ static void ChangePos( int new_pos, UIMENUITEM *menuitems, DESCMENU *desc )
 {
     ScrollPos = new_pos;
     if( PrevScrollPos != NO_SELECT ) {
-        DrawMenuText( PrevScrollPos, menuitems, false, desc );
+        DrawMenuText( PrevScrollPos, menuitems, desc, false );
     }
     PrevScrollPos = ScrollPos;
-    DrawMenuText( ScrollPos, menuitems, true, desc );
+    DrawMenuText( ScrollPos, menuitems, desc, true );
 }
 
 /*
@@ -518,7 +518,7 @@ static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
                 }
                 if( no_select && !done ) {  /* no item is selected */
                     if( ScrollPos != NO_SELECT ) {
-                        DrawMenuText( ScrollPos, menuitems, false, desc );
+                        DrawMenuText( ScrollPos, menuitems, desc, false );
                         uimenucurr( NULL );
                     }
                     ScrollPos = NO_SELECT;
