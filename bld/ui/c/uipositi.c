@@ -62,10 +62,10 @@ SAREA *uisetscreenarea( SAREA *area, bool all, bool framed )
     return( area );
 }
 
-static void window_pos( ORD *start, unsigned short *size, int slack, int pos )
-/****************************************************************************/
+static void window_pos( ORD *start, uisize *size, uisize slack, int pos )
+/***********************************************************************/
 {
-    ORD         bump;
+    unsigned    bump;
 
     if( slack > 0 ) {
         if( pos == 0 ) {
@@ -91,10 +91,10 @@ void uiposition( SAREA *a, unsigned h, unsigned w, int rpos, int cpos, bool over
 /*************************************************************************************/
 {
     uisetscreenarea( a, overmenus, true );
-    if( h > 0 ) {
+    if( h > 0 && a->height > h ) {
         window_pos( &a->row, &a->height, a->height - h, rpos );
     }
-    if( w > 0 ) {
+    if( w > 0 && a->width - w ) {
         window_pos( &a->col, &a->width, a->width - w, cpos );
     }
 }

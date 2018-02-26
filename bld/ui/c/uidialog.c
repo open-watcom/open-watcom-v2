@@ -377,10 +377,9 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
 }
 
 VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
-            unsigned extra_rows, int maxlen, int rpos, int cpos )
+                unsigned extra_rows, unsigned maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
-    int                 len;
     unsigned            width;
     int                 i;
     unsigned            depth;
@@ -390,11 +389,11 @@ VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
 
     uisetscreenarea( &area, true, false );
     width = UIData->width - 2;
-    for( depth = 0, i = 0 ; lines[i] != NULL ; ++i ) {
+    depth = 0;
+    for( i = 0; lines[i] != NULL; ++i ) {
         s = lines[i];
-        len = strlen( s );
-        for( t = s + len ; s < t ; ) {
-            ++ depth;
+        for( t = s + strlen( s ); s < t; ) {
+            depth++;
             linelen = ui_split_line( &s, t, width );
             if( maxlen < linelen + 2 ) {
                 maxlen = linelen + 2;
@@ -403,7 +402,7 @@ VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
     }
     if( depth > 0 ) {
         /* never put text on the first line of the dialog */
-        ++depth;
+        depth++;
     }
     if( maxlen > width )
         maxlen = width;
@@ -414,8 +413,7 @@ VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
     area.height = 1;
     for( i = 0 ; lines[i] != NULL ; ++i ) {
         s = lines[i];
-        len = strlen( s );
-        for( t = s + len ; s < t ; ) {
+        for( t = s + strlen( s ); s < t; ) {
             line = s;
             linelen = ui_split_line( &s, t, width );
             uicntrtext( vs, &area, attr, linelen, line );
@@ -513,7 +511,7 @@ bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area )
     return( false );
 }
 
-a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
+a_dialog *uibegdialog( const char *title, VFIELD *fields, unsigned rows, unsigned cols, int rpos, int cpos )
 {
     char                *lines[1];
     a_dialog            *ui_dlg_info;
@@ -526,8 +524,7 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, in
     ui_dlg_info->field = 0;
     ui_dlg_info->edit_data = NULL;
     ui_dlg_info->moving = false;
-    ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ATTR_NORMAL],
-                           lines, rows, cols, rpos, cpos );
+    ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ATTR_NORMAL], lines, rows, cols, rpos, cpos );
     uireinitdialog( ui_dlg_info, fields );
     return( ui_dlg_info );
 }
