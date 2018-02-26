@@ -48,16 +48,24 @@ SAREA *uisetarea( SAREA *area, VSCREEN *s )
 SAREA *uisetscreenarea( SAREA *area, bool all, bool framed )
 /**********************************************************/
 {
-    unsigned    height;
+    uisize      height;
 
     area->col = framed;
-    area->width = UIData->width - 2 * framed;
+    area->width = 0;
+    if( UIData->width > 2 * framed )
+        area->width = UIData->width - 2 * framed;
     area->row = framed;
-    area->height = UIData->height - 2 * framed;
+    area->height = 0;
+    if( UIData->height > 2 * framed )
+        area->height = UIData->height - 2 * framed;
     if( !all ) {
         height = uimenuheight();
         area->row += height;
-        area->height -= height;
+        if( area->height > height ) {
+            area->height -= height;
+        } else {
+            area->height = 0;
+        }
     }
     return( area );
 }
