@@ -102,7 +102,7 @@ void uiposition( SAREA *a, unsigned h, unsigned w, int rpos, int cpos, bool over
     if( h > 0 && a->height > h ) {
         window_pos( &a->row, &a->height, a->height - h, rpos );
     }
-    if( w > 0 && a->width - w ) {
+    if( w > 0 && a->width > w ) {
         window_pos( &a->col, &a->width, a->width - w, cpos );
     }
 }

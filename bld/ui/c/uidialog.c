@@ -411,7 +411,7 @@ VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
     width = area.width;
     area.row = 1;
     area.height = 1;
-    for( i = 0 ; lines[i] != NULL ; ++i ) {
+    for( i = 0; lines[i] != NULL; ++i ) {
         s = lines[i];
         for( t = s + strlen( s ); s < t; ) {
             line = s;
