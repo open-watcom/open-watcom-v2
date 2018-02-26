@@ -74,43 +74,43 @@ enum {
 };
 
 static UIMENUITEM secondpopup[] = {
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         ___,              0 },
-    { "Exit",     EV_QUIT,          1 },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
 static UIMENUITEM filemenu[] = {
-    { "Open",     EV_OPEN,          0 },
-    { "Close",    EV_CLOSE,         0 },
-    { "Nothing",  EV_NOTHING,       2 },
-    { "Extra",    EV_EXTRA,         0, secondpopup },
-    { NULL,       ___,              ITEM_SEPARATOR },
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         ___,              0 },
-    { "Exit",     EV_QUIT,          1 },
+    { "Open",     EV_OPEN,          0,              NULL },
+    { "Close",    EV_CLOSE,         0,              NULL },
+    { "Nothing",  EV_NOTHING,       2,              NULL },
+    { "Extra",    EV_EXTRA,         0,              secondpopup },
+    { NULL,       ___,              ITEM_SEPARATOR, NULL },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
 static UIMENUITEM editmenu[] = {
-    { NULL,       ___,              0 },
+    { NULL,       ___,              0,              NULL },
 };
 
 static UIMENUITEM barmenu[] = {
-    { "File",               ___,    0 },
-    { "Edit",               ___,    1 },
-    { "LongMenuItem_1",     ___,    1 },
-    { "LongMenuItem_2",     ___,    1 },
-    { "LongMenuItem_3",     ___,    1 },
-    { "LongMenuItem_4",     ___,    1 },
-    { "LongMenuItem_5",     ___,    1 },
-    { "MidFile",            ___,    2 },
-    { "LongMenuItem_6",     ___,    1 },
-    { "LongMenuItem_7",     ___,    1 },
-    { "LongMenuItem_8",     ___,    1 },
-    { "LongMenuItem_9",     ___,    1 },
-    { "Go!",                EV_GO,  0 },
-    { "File",               ___,    2 },
+    { "File",               ___,    0,              NULL },
+    { "Edit",               ___,    1,              NULL },
+    { "LongMenuItem_1",     ___,    1,              NULL },
+    { "LongMenuItem_2",     ___,    1,              NULL },
+    { "LongMenuItem_3",     ___,    1,              NULL },
+    { "LongMenuItem_4",     ___,    1,              NULL },
+    { "LongMenuItem_5",     ___,    1,              NULL },
+    { "MidFile",            ___,    2,              NULL },
+    { "LongMenuItem_6",     ___,    1,              NULL },
+    { "LongMenuItem_7",     ___,    1,              NULL },
+    { "LongMenuItem_8",     ___,    1,              NULL },
+    { "LongMenuItem_9",     ___,    1,              NULL },
+    { "Go!",                EV_GO,  0,              NULL },
+    { "File",               ___,    2,              NULL },
     NULL
 };
 

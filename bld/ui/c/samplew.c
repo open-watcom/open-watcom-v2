@@ -77,25 +77,25 @@ enum {
 };
 
 static UIMENUITEM filemenu[] = {
-    { "Open",     EV_OPEN,          0 },
-    { "Close",    EV_CLOSE,         0 },
-    { "Nothing",  EV_NOTHING,       2 },
-    { NULL,       ___,              ITEM_SEPARATOR },
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         ___,              0 },
-    { "Exit",     EV_QUIT,          1 },
+    { "Open",     EV_OPEN,          0,              NULL },
+    { "Close",    EV_CLOSE,         0,              NULL },
+    { "Nothing",  EV_NOTHING,       2,              NULL },
+    { NULL,       ___,              ITEM_SEPARATOR, NULL },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
 static UIMENUITEM editmenu[] = {
-    { NULL,       ___,              0 },
+    { NULL,       ___,              0,              NULL },
 };
 
 static UIMENUITEM barmenu[] = {
-    { "File",     ___,              0 },
-    { "Edit",     ___,              1 },
-    { "Go!",      EV_GO,            0 },
-    { "File",     ___,              2 },
+    { "File",     ___,              0,              NULL },
+    { "Edit",     ___,              1,              NULL },
+    { "Go!",      EV_GO,            0,              NULL },
+    { "File",     ___,              2,              NULL },
     NULL
 };
 

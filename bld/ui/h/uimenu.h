@@ -33,12 +33,12 @@
 #ifndef _UIMENU_H_
 #define _UIMENU_H_
 
-#define MAX_MENUS           15
+#define MAX_MENUS               15
 
-#define MENU_TAB_OFFSET     0x00ffU
-#define MENU_HAS_TAB        0x0100U
-#define MENU_HAS_CHECK      0x0200U
-#define MENU_HAS_POPUP      0x0400U
+#define MENU_TAB_OFFSET         0x00ffU
+#define MENU_HAS_TAB            0x0100U
+#define MENU_HAS_CHECK          0x0200U
+#define MENU_HAS_POPUP          0x0400U
 
 #define MENU_GET_TAB_OFFSET( desc )     ((desc)->flags & MENU_TAB_OFFSET)
 #define MENU_SET_TAB_OFFSET( desc, o )  (desc)->flags |= (o) & MENU_TAB_OFFSET
@@ -62,7 +62,7 @@ typedef struct describemenu {
 #define MENUENDMARKER( menu )   (((menu).name == NULL) && ((menu).flags & ITEM_SEPARATOR) == 0)
 
 typedef struct menuitem {
-    char*           name;               /* name of item         */
+    char            *name;              /* name of item         */
     ui_event        event;              /* item event           */
     unsigned short  flags;              /* char offset, grayed  */
     struct menuitem *popup;             /* popup from this menu */
