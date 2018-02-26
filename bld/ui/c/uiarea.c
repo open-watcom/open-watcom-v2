@@ -82,7 +82,7 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[5] )
     amaxcol = acol + area.width - 1;
     cmaxrow = crow + centre.height - 1;
     cmaxcol = ccol + centre.width - 1;
-    for( i = 0 ; i < 5 ; ++i ) {
+    for( i = 0; i < 5; ++i ) {
         switch( i ) {
         case 0:
             row = arow;

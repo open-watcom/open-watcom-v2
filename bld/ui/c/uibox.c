@@ -47,7 +47,7 @@ void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool 
     if( area.width > 2 )
         bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
     bpixel( bptr, area.row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
-    for( row = area.row + 1 ; row < area.row + area.height - 1 ; ++row ) {
+    for( row = area.row + 1; row < area.row + area.height - 1; ++row ) {
         bpixel( bptr, row, area.col, attr, BOX_CHAR( box, LEFT_LINE ) );
         if( fill && area.width > 2 ) {
             bfill( bptr, row, area.col + 1, attr, ' ', area.width - 2 );

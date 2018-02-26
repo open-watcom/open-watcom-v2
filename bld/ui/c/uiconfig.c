@@ -68,7 +68,7 @@ bool uiconfig( char *fn, char **envvars )
         slen = 8;
     }
 #if !defined( __NETWARE__ )
-    for( ; envvars != NULL  &&  *envvars != NULL; ++envvars ) {
+    for( ; envvars != NULL && *envvars != NULL; ++envvars ) {
         _searchenv( fn, *envvars, buffer );
         if( buffer[0] != '\0' ) {
             break;
@@ -83,7 +83,7 @@ bool uiconfig( char *fn, char **envvars )
                 blen = strlen( buffer );
                 if( blen > slen && memicmp( colour, buffer, slen ) == 0 ) {
                     s = &buffer[slen];
-                    for( i = 0 ; i < ATTR_LAST && *s == ' '; ++i ) {
+                    for( i = 0; i < ATTR_LAST && *s == ' '; ++i ) {
                         attr = 0;
                         while( *s == ' ' )
                             ++s;

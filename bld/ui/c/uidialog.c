@@ -347,7 +347,7 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     str = *sptr;
     len = t - str;
     if( len < max ) max = len;
-    for( delim = 0, cr = 0, i = 0 ; i < max ; ++i ) {
+    for( delim = 0, cr = 0, i = 0; i < max; ++i ) {
         ch = str[i];
         if( ch == '\n' ) {
             break;
@@ -493,7 +493,7 @@ void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
         }
     }
 
-    for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
+    for( i = 0; fields[i].typ != FLD_VOID; ++i ) {
         print_field( ui_dlg_info->vs, &fields[i], ( &fields[i] == ui_dlg_info->curr ) );
     }
     enter_field( ui_dlg_info, ui_dlg_info->curr );
@@ -544,7 +544,7 @@ static void do_radio( a_dialog *ui_dlg_info, VFIELD *field )
 
     ui_dlg_info->dirty = true;
 
-    for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
+    for( i = 0; fields[i].typ != FLD_VOID; ++i ) {
         if( fields[i].typ == FLD_RADIO ) {
             radio = fields[i].u.radio;
             if( radio->group == cur_radio->group  &&
@@ -804,9 +804,8 @@ void uiredrawdialog( a_dialog *ui_dlg_info )
     uivclose( vs );
     uivopen( vs );
 
-    for( i = 0 ; ui_dlg_info->fields[i].typ != FLD_VOID ; ++i ) {
-        print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i],
-                     ( &ui_dlg_info->fields[i] == ui_dlg_info->curr ) );
+    for( i = 0; ui_dlg_info->fields[i].typ != FLD_VOID; ++i ) {
+        print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i], ( &ui_dlg_info->fields[i] == ui_dlg_info->curr ) );
     }
 }
 
@@ -849,9 +848,8 @@ bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
         uimovefield( ui_dlg_info, curr, row_diff, col_diff );
     }
     if( resize ) {
-        for( i = 0 ; ui_dlg_info->fields[i].typ != FLD_VOID ; ++i ) {
-            print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i],
-                         ( &ui_dlg_info->fields[i] == ui_dlg_info->curr ) );
+        for( i = 0; ui_dlg_info->fields[i].typ != FLD_VOID; ++i ) {
+            print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i], ( &ui_dlg_info->fields[i] == ui_dlg_info->curr ) );
         }
     }
     return( true );
@@ -1031,7 +1029,7 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
     VFIELD      *vf;
 
     /* is the event a key press or alt-key press */
-    if( iseditchar( ui_ev ) && isalpha( ui_ev ) ) {
+    if( iseditchar( ui_ev ) && isalpha( (unsigned char)ui_ev ) ) {
         ch = tolower( (unsigned char)ui_ev );
     } else {
         ch = uialtchar( ui_ev );
@@ -1039,7 +1037,7 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
 
     if( ch ) {
         hotkey = '\0';
-        for( vf = ui_dlg_info->fields ; vf->typ != FLD_VOID; ++vf ) {
+        for( vf = ui_dlg_info->fields; vf->typ != FLD_VOID; ++vf ) {
             switch( vf->typ ) {
             case FLD_HOT:
                 hotkey = vf->u.hs->flags;
@@ -1274,7 +1272,7 @@ void uifreedialog( a_dialog *ui_dlg_info )
     fields = ui_dlg_info->fields;
 
     exit_field( ui_dlg_info, ui_dlg_info->curr );
-    for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
+    for( i = 0; fields[i].typ != FLD_VOID; ++i ) {
         switch( fields[i].typ ) {
         case FLD_LISTBOX:
         case FLD_PULLDOWN:
@@ -1314,7 +1312,7 @@ void uifreefields( VFIELD *fields )
     a_combo_box         *combo;
     an_edit_control     *edit;
 
-    for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
+    for( i = 0; fields[i].typ != FLD_VOID; ++i ) {
         switch( fields[i].typ ) {
         case FLD_INVISIBLE_EDIT:
         case FLD_EDIT:

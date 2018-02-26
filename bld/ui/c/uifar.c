@@ -124,14 +124,14 @@ intern void farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
 
 #ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             start = _snowput( start, fill );
         }
     } else {
 #else
     /* unused parameters */ (void)snow;
 #endif
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             *start++ = fill;
         }
 #ifdef _M_I86
@@ -182,7 +182,7 @@ intern void farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len
     p.attr = attr;
 #ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < str_len ; ++i ) {
+        for( i = 0; i < str_len; ++i ) {
             p.ch = *str++;
             if( p.ch == '\0' )
                 break;
@@ -192,7 +192,7 @@ intern void farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len
 #else
     /* unused parameters */ (void)snow;
 #endif
-        for( i = 0 ; i < str_len ; ++i ) {
+        for( i = 0; i < str_len; ++i ) {
             p.ch = *str++;
             if( p.ch == '\0' )
                 break;
@@ -213,7 +213,7 @@ intern void farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
 
 #ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = _snowget( start );
             p.attr = attr;
             start = _snowput( start, p );
@@ -222,7 +222,7 @@ intern void farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
 #else
     /* unused parameters */ (void)snow;
 #endif
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = *start;
             p.attr = attr;
             *start = p;
@@ -240,7 +240,7 @@ intern void farattrflip( LP_PIXEL start, size_t len, bool snow )
 
 #ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = _snowget( start );
             p.attr = p.attr ^ ATTR_FLIP_MASK;
             start = _snowput( start, p );
@@ -249,7 +249,7 @@ intern void farattrflip( LP_PIXEL start, size_t len, bool snow )
 #else
     /* unused parameters */ (void)snow;
 #endif
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = *start;
             p.attr = p.attr ^ ATTR_FLIP_MASK;
             *start = p;

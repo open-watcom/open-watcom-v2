@@ -179,7 +179,7 @@ static int do_default( void )
     esc_str[0] = _ESC_CHAR;
     esc_str[1] = 'A';
     esc_str[2] = '\0';
-    for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ) ; i++ ) {
+    for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {
         c = default_tix[i].vt100;
         if( (c & 0x80) == 0 )
             c = set_ti_alt_map( i, c );
@@ -196,7 +196,7 @@ static int do_default( void )
         }
     }
     for( i = 0; i < sizeof( alt_num_keys ); i++ ) {
-        if ( alt_num_keys[i] ) {
+        if( alt_num_keys[i] ) {
             esc_str[1] = alt_num_keys[i];
             TrieAdd( 0x178 + i, esc_str );
         }
@@ -258,7 +258,7 @@ tix_status ti_read_tix( const char *termname )
     if( strncmp( termname, "linux", 5 ) == 0 ) {
         /* force UTF-8 mode if the locale is set that way; *
          * we may be on a new VT on the Linux console      */
-        if ( utf8_mode ) {
+        if( utf8_mode ) {
             uiwritec( _ESC "%G" );
             /* use UTF-8 characters instead of ACS */
             for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {

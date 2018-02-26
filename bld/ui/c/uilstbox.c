@@ -92,7 +92,7 @@ void uipaintlistbox( a_list *list )
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
-    for( i = 0 ; i < list->box->area.height ; ++i ) {
+    for( i = 0; i < list->box->area.height; ++i ) {
         attr = ATTR_NORMAL;
         if( list->box->row == i + list->box->line ) {
             attr = list->box->attr;
@@ -530,7 +530,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
         close = true;
         break;
     default :
-        if( ui_ev < 0x100 && isalpha( ui_ev ) ) {
+        if( iseditchar( ui_ev ) && isalpha( (unsigned char)ui_ev ) ) {
             newevent = charselect( (unsigned char)ui_ev, list );
         } else {
             newevent = ui_ev;

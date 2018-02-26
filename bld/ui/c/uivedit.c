@@ -185,7 +185,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             if( isdelim( *bptr ) ) break;
             bptr += uicharlen( *bptr );
         }
-        for( tptr = bptr; tptr < eptr ; ) {
+        for( tptr = bptr; tptr < eptr; ) {
             if( *tptr == ' ' ) {
                 /* do nothing */
             } else if( isdelim( *tptr ) ) {

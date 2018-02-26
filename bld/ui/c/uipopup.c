@@ -240,7 +240,7 @@ static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems
     // JD - don't check uimenugetaltpressed.  The menu code may not have seen
     //      the alt key go down.
     alt_char = uialtchar( ui_ev );
-    if ( alt_char ) {
+    if( alt_char ) {
         up = toupper ( alt_char );
     } else {
         up = toupper( ui_ev );

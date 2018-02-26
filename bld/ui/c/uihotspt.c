@@ -82,7 +82,7 @@ char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
     if( str != NULL ) {
         while( slen < area.width && *str != '\0' ) {
             if( *str == '&' ) {
-                if ( !no_hotkey && hotkey == '\0' ) {
+                if( !no_hotkey && hotkey == '\0' ) {
                     hotkey = tolower( (unsigned char)str[1] );
                     hotindex = slen;
                 }

@@ -57,15 +57,13 @@ void UIAPI uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
     }
     oksubarea( area, vptr->area );
     if( drow > 0 ) {
-        for( row = area.height + area.row ; row > area.row ;  ) {
+        for( row = area.height + area.row; row > area.row;  ) {
             --row;
-            uibcopy( bptr, row, area.col,
-                   bptr, row + drow, area.col + dcol, area.width );
+            uibcopy( bptr, row, area.col, bptr, row + drow, area.col + dcol, area.width );
         }
     } else {
-        for( row = area.row ; row < area.row + area.height ; ++row ) {
-            uibcopy( bptr, row, area.col,
-                   bptr, row + drow, area.col + dcol, area.width );
+        for( row = area.row; row < area.row + area.height; ++row ) {
+            uibcopy( bptr, row, area.col, bptr, row + drow, area.col + dcol, area.width );
         }
     }
     area.row += drow;

@@ -77,7 +77,7 @@ void intern dirtynext( SAREA area, UI_WINDOW *wptr )
         dirtyarea( wptr, areas[0] );
     }
     if( wptr->next != NULL ) {
-        for( i = 1 ; i < 5 ; ++i ) {
+        for( i = 1; i < 5; ++i ) {
             if( areas[i].height > 0 ) {
                 dirtynext( areas[i], wptr->next );
             }

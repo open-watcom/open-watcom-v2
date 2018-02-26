@@ -65,8 +65,10 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
         area.height = 1;
         area.width = editline->fldlen;
         uivfill( vptr, area, editline->attr, ' ' );
-        for( trim = editline->length ; trim > editline->index ; --trim ) {
-            if( editline->buffer[trim - 1] != ' ' ) break;
+        for( trim = editline->length; trim > editline->index; --trim ) {
+            if( editline->buffer[trim - 1] != ' ' ) {
+                break;
+            }
         }
         area.width = editline->fldlen;
         if( area.width > trim - editline->scroll )

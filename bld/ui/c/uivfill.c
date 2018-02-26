@@ -40,7 +40,7 @@ void UIAPI uivfill( VSCREEN *vptr, SAREA area, ATTR attr, char ch )
 
     okopen( vptr );
     oksubarea( area, vptr->area );
-    for( row = area.row ; row < area.row + area.height ; ++row ) {
+    for( row = area.row; row < area.row + area.height; ++row ) {
         bfill( &(vptr->window.type.buffer), row, area.col, attr, ch, area.width );
     }
     uivdirty( vptr, area );
