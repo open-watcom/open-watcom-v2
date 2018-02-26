@@ -35,8 +35,9 @@
 #include "uiextrn.h"
 #include "uiproxy.h"
 
-int UIProxySetup( void )
-/**********************/
+
+bool UIProxySetup( void )
+/***********************/
 
 // This gets replaced in the database code.
 

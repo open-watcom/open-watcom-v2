@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-int UIProxySetup( void );   // return type is boolean
+bool    UIProxySetup( void );
