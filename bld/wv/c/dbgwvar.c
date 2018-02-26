@@ -40,7 +40,6 @@
 #include "dbgadget.h"
 #include "dbgitem.h"
 #include "dlgvarx.h"
-#include "dbgvar.h"
 #include "spawn.h"
 #include "dbgscan.h"
 #include "dui.h"
@@ -1113,4 +1112,62 @@ OVL_EXTERN  void    DoGraphicDisplay( void )
 void GraphicDisplay( void )
 {
     Spawn( DoGraphicDisplay );
+}
+
+var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
+{
+    var_node    *row_v;
+    var_node    *v;
+
+    if( piece >= VAR_PIECE_LAST )
+        return( NULL );
+    if( VarFirstNode( i ) == NULL )
+        return( NULL );
+    if( row >= VarRowTotal( i ) )
+        return( NULL );
+    row_v = VarFindRowNode( i, row );
+    if( !row_v->value_valid ) {
+        VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
+        row_v->value_valid = false;
+    }
+    if( !row_v->gadget_valid ) {
+        VarSetGadget( row_v, VARGADGET_NONE );
+        row_v->gadget_valid = false;
+    }
+    v = row_v;
+    if( piece == VAR_PIECE_NAME ||
+        ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
+        ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
+        VarError = false;
+    } else if( _IsOff( SW_TASK_RUNNING ) ) {
+        if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
+            VarError = false;
+            v = i->exprsp_cache;
+        } else if( row == i->exprsp_cacherow && i->exprsp_cache_is_error ) {
+            VarError = true;
+            v = NULL;
+        } else {
+            VarErrState();
+            v = VarFindRow( i, row );
+            VarOldErrState();
+            i->exprsp_cacherow = row;
+            i->exprsp_cache = v;
+            i->exprsp_cache_is_error = VarError;
+        }
+        if( v == NULL ) {
+            if( !VarError )
+                return( NULL );
+            v = row_v;
+        }
+        VarNodeInvalid( v );
+        VarErrState();
+        ExprValue( ExprSP );
+        VarSetGadget( v, VarGetGadget( v ) );
+        VarSetOnTop( v, VarGetOnTop( v ) );
+        VarSetValue( v, VarGetValue( i, v ) );
+        VarOldErrState();
+        VarDoneRow( i );
+    }
+    VarGetDepths( i, v, pdepth, pinherit );
+    return( v );
 }

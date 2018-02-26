@@ -271,7 +271,6 @@ extern bool             VarDisplayIsStruct( var_node *v );
 extern void             VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit );
 extern var_node         *VarNextVisibleSibling( var_info *i, var_node *v );
 extern void             VarBaseName( var_node *v );
-extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
 
 extern scope_state      *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new );
 extern bool             SameScope( scope_block *scope, scope_state *s );
