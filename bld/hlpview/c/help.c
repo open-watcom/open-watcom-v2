@@ -105,7 +105,7 @@ static VSCREEN helpScreen = {
     EV_NO_EVENT,                    /* event number */
     NULL,                           /* screen title */
     {0, 0, 0, 0},                   /* location and size */
-    V_NO_ZOOM | V_DIALOGUE,         /* flags */
+    V_DIALOGUE,                     /* flags */
     0, 0,                           /* initial cursor position */
     C_OFF                           /* cursor type */
 };
