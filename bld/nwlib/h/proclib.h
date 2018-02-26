@@ -31,4 +31,3 @@
 
 
 extern void ProcessCommands( void );
-void CloseInputLibs( void );

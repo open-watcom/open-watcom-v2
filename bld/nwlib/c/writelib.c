@@ -76,6 +76,7 @@ void WriteNewLib( void )
     if( ExportListFile != NULL ) {
         LibClose( ExportListFile );
     }
+    CloseInputLibs();   //closes all input libs
     if( out == tmp ) {
         bak = MakeBakName();
         if( access( bak, F_OK ) == 0 && remove( bak ) != 0 ) {
