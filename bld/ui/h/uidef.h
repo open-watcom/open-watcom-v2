@@ -93,7 +93,6 @@ extern void             intern  bframe( struct buffer * );
 extern void             intern  bfree( struct buffer * );
 extern void             intern  bfake( BUFFER *, ORD, ORD );
 extern void             intern  bfill( BUFFER *, int, int, ATTR, char, uisize );
-extern void             intern  blowup( BUFFER *, SAREA, const char *, ATTR );
 extern void             intern  bpixel( BUFFER *, ORD, ORD, ATTR, char );
 extern void             intern  braw( BUFFER *, int, int, PIXEL *, uisize );
 extern void             intern  bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );

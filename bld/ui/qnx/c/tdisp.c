@@ -973,8 +973,6 @@ static bool td_init( void )
         UIData->colour = M_TERMINFO_MONO;
     }
 
-    UIData->no_blowup = true;
-
     tmp = getenv( "TIOPTIMIZE" );
     if( tmp != NULL )
         OptimizeTerminfo = ( stricmp( tmp, "no" ) != 0 );

@@ -87,7 +87,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         attr = UIData->attrs[ATTR_FRAME];
         priority = P_VSCREEN;
     }
-    if( (flags & V_UNFRAMED) == 0 ) {
+    if( ISFRAMED( flags ) ) {
         (area.row)--;
         (area.col)--;
         (area.height) += 2;
@@ -110,10 +110,7 @@ VSCREEN* UIAPI uivopen( VSCREEN *vptr )
         vptr->window.parm = vptr;
         covered = openwindow( &(vptr->window) );
         vptr->flags = flags;
-        if( (flags & V_UNFRAMED) == 0 ) {
-            if( !UIData->no_blowup && !covered && (flags & V_NO_ZOOM) == 0 ) {
-                blowup( &UIData->screen, area, box, attr );
-            }
+        if( ISFRAMED( flags ) ) {
             area.row = 0;
             area.col = 0;
             drawbox( &(vptr->window.type.buffer), area, box, attr, false );
@@ -158,8 +155,8 @@ void UIAPI uivclose( VSCREEN *vptr )
 {
     if( vptr->open ) {
         closewindow( &(vptr->window) );
-        if( (vptr->flags & V_UNBUFFERED) == 0 ) {
-            if( (vptr->flags & V_UNFRAMED) == 0 ) {
+        if( ISBUFFERED( vptr->flags ) ) {
+            if( ISFRAMED( vptr->flags ) ) {
                 bunframe( &(vptr->window.type.buffer) );
             }
             bfree( &(vptr->window.type.buffer) );
@@ -191,7 +188,7 @@ VSCREEN * UIAPI uivresize( VSCREEN *vptr, SAREA new )
     old = vptr->area;
     if( balloc( &(wptr->type.buffer), new.height, new.width ) ) {
         vptr->area = new;
-        if( (vptr->flags & V_UNFRAMED) == 0 ) {
+        if( ISFRAMED( vptr->flags ) ) {
             (new.row)--;
             (new.col)--;
             (new.height) += 2;

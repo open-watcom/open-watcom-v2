@@ -329,13 +329,16 @@ typedef enum {
     V_DIALOGUE      = 0x0001,
     V_UNBUFFERED    = 0x0002,
     V_UNFRAMED      = 0x0004,
-    V_NO_ZOOM       = 0x0008,
-    V_PASSIVE       = 0x0010,
-    V_UNPROTECTED   = 0x0020,
-    V_HIDDEN        = 0x0040,
-    V_LISTBOX       = 0x0100,
+    V_PASSIVE       = 0x0008,
+    V_UNPROTECTED   = 0x0010,
+    V_HIDDEN        = 0x0020,
+    V_LISTBOX       = 0x0040,
     V_GUI_WINDOW    = 0x1000      /* reserved for use by gui project */
 } screen_flags;
+
+#define ISFRAMED(f)     (((f) & V_UNFRAMED) == 0)
+#define ISBUFFERED(f)   (((f) & V_UNBUFFERED) == 0)
+#define ISPROTECTED(f)  (((f) & V_UNPROTECTED) == 0)
 
 typedef struct ui_event_list {
     int         num_lists;
@@ -627,7 +630,6 @@ typedef struct monitor {
     bool            no_refresh    :1;   /* disable refresh on EV_NO_EVENT   */
     bool            no_graphics   :1;   /* disable character mapping        */
     bool            dbcs          :1;   /* double-byte character set        */
-    bool            no_blowup     :1;   /* disable exploding windows        */
 } MONITOR;
 
 enum {

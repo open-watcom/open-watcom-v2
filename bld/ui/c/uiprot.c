@@ -39,7 +39,7 @@
 void UIAPI uiunprotect( VSCREEN *vptr )
 /**************************************/
 {
-    if( !(vptr->flags & V_UNPROTECTED) && ((vptr->flags & V_UNFRAMED) == 0 ) ) {
+    if( ISPROTECTED( vptr->flags ) && ISFRAMED( vptr->flags ) ) {
         vptr->area.row -= 1;
         vptr->area.col -= 1;
         vptr->area.height += 2;

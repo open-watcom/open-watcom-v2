@@ -73,7 +73,7 @@ SAREA *uisetscreenarea( SAREA *area, bool all, bool framed )
 static void window_pos( ORD *start, uisize *size, uisize slack, int pos )
 /***********************************************************************/
 {
-    unsigned    bump;
+    uisize      bump;
 
     if( slack > 0 ) {
         if( pos == 0 ) {

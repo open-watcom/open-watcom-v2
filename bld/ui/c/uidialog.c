@@ -323,7 +323,7 @@ void uiprintfield( a_dialog *ui_dlg_info, VFIELD *field )
     print_field( ui_dlg_info->vs, field, ( field == ui_dlg_info->curr ) );
 }
 
-static VSCREEN *makevs( const char *title, unsigned cols, unsigned rows, int cpos, int rpos )
+static VSCREEN *makevs( const char *title, uisize cols, uisize rows, int cpos, int rpos )
 {
     SAREA               area;
 
@@ -377,13 +377,13 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
 }
 
 VSCREEN *uiinitdialog( const char *title, ATTR attr, char *lines[],
-                unsigned extra_rows, unsigned maxlen, int rpos, int cpos )
+                uisize extra_rows, uisize maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
-    unsigned            width;
+    uisize              width;
     int                 i;
-    unsigned            depth;
-    unsigned            linelen;
+    uisize              depth;
+    uisize              linelen;
     char                *s, *t, *line;
     SAREA               area;
 
