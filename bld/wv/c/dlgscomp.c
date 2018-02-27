@@ -102,7 +102,8 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT_DUI( Symbol_List ), &first, 0, SymGetName, num );
+        new = -1;
+        DlgPickWithRtn( LIT_DUI( Symbol_List ), &first, 0, SymGetName, num, &new );
         break;
     }
     strcpy( TxtBuff, savebuff );

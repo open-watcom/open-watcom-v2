@@ -194,10 +194,14 @@ int WEXPORT WCombo::count() {
 }
 
 
-int WEXPORT WCombo::selected() {
-/******************************/
+int WEXPORT WCombo::selected()
+/****************************/
+{
+    int     choice;
 
-    return( GUIGetCurrSelect( parent()->handle(), controlId() ) );
+    choice = -1;
+    GUIGetCurrSelect( parent()->handle(), controlId(), &choice );
+    return( choice );
 }
 
 

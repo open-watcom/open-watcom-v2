@@ -300,7 +300,8 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
@@ -325,7 +326,8 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );
@@ -338,7 +340,8 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
         case LISTBOX_CONTROL :
             text = GUIGetText( gui, LISTBOX_CONTROL );
             GUIMemFree( text );
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
@@ -361,7 +364,8 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
             }
             text = GUIGetText( gui, LISTBOX_CONTROL );
             GUIMemFree( text );
-            sel = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            sel = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &sel );
             if( gui == DialogWindow ) {
                 GUIDestroyWnd( gui );
             } else {

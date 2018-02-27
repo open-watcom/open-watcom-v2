@@ -275,7 +275,7 @@ typedef bool        (WNDCHKFLAGS)( wnd_update_list );
 typedef a_window    (WNDOPEN)( void );
 typedef a_window    (WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
 typedef void        (WNDCLOSE)( a_window );
-typedef int         (WNDPICKER)( const char *, GUIPICKCALLBACK * );
+typedef bool        (WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
 typedef bool        (WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
 
 typedef struct wnd_info {
@@ -302,9 +302,9 @@ typedef struct {
     bool        cancel;
 } dlgnew_ctl;
 
-extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items );
-extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn );
-extern int              DlgPick( const char *title, const void *data_handle, int def_item, int num_items );
+extern bool             DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
+extern bool             DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
+extern bool             DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
 extern bool             DlgNew( const char *title, char *buff, size_t buff_len );
 extern bool             DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
                                GUICALLBACK *gui_call_back, int rows, int cols, int max_cols );

@@ -72,7 +72,8 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
@@ -94,7 +95,8 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );
@@ -107,7 +109,8 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
         case LISTBOX_CONTROL :
             text = GUIGetText( gui, LISTBOX_CONTROL );
             GUIMemFree( text );
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            num = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );

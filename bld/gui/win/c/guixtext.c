@@ -215,8 +215,7 @@ char *GUIGetText( gui_window *wnd, gui_ctl_id id )
     }
     switch( control_class ) {
     case GUI_LISTBOX :
-        choice = GUIGetCurrSelect( wnd, id );
-        if( choice == -1 ) {
+        if( !GUIGetCurrSelect( wnd, id, &choice ) ) {
             return( NULL );
         }
         return( GUIGetListItem( wnd, id, choice ) );
@@ -252,15 +251,16 @@ char *GUIGetText( gui_window *wnd, gui_ctl_id id )
  *                      in the given list/combo box
  */
 
-gui_ctl_idx GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id )
+bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice )
 {
     gui_ctl_idx sel;
 
     sel = (gui_ctl_idx)GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)-1 );
     if( ( sel == LB_ERR ) || ( sel == CB_ERR ) ) {
-        sel = -1;
+        return( false );
     }
-    return( sel );
+    *choice = sel;
+    return( true );
 }
 
 /*

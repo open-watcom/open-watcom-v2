@@ -78,7 +78,7 @@ extern void     DUICopySize( void *, unsigned long );
 extern void     DUICopyCopied( void *, unsigned long );
 extern bool     DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len );
 extern void     DUIRemoveBreak( brkp *bp );
-extern int      DUIDisambiguate( const ambig_info *ambig, int count );
+extern bool     DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice );
 extern bool     DUIImageLoaded( image_entry *image, bool load, bool already_stopping, bool *force_stop );
 extern unsigned DUIDlgAsyncRun( void );
 extern void     DUISetNumLines( int num );

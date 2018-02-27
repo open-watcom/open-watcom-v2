@@ -192,7 +192,8 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
         return( true );
         break;
     case MENU_PICK:
-        i = DlgPickWithRtn( "Pick a number", NULL, 2, FmtNum, 2000 );
+        i = -1;
+        DlgPickWithRtn( "Pick a number", NULL, 2, FmtNum, 2000, &i );
 //      i = DlgPick( "Pick on of these!", PickList, 2, ArraySize( PickList ) );
         Say( i == -1 ? "None" : FmtNum( NULL, i ) );
         break;

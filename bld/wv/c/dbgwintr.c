@@ -135,7 +135,7 @@ static void XDumpMenus( void )
     char            *p;
 
     ReqEOC();
-    for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS; wndclass++ ) {
         p = StrCopy( "The ", TxtBuff );
         p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );

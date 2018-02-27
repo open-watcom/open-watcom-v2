@@ -44,7 +44,7 @@
 #include "dbglkup.h"
 
 
-OVL_EXTERN int SymPick( const char *text, GUIPICKCALLBACK *pick_call_back )
+OVL_EXTERN bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
 {
     dlg_pick    dlg;
 
@@ -53,7 +53,10 @@ OVL_EXTERN int SymPick( const char *text, GUIPICKCALLBACK *pick_call_back )
     dlg.func = pick_call_back;
     dlg.chosen = -1;
     ResDlgOpen( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
-    return( dlg.chosen );
+    if( dlg.chosen == -1 )
+        return( false );
+    *choice = dlg.chosen;
+    return( true );
 }
 
 OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
@@ -78,7 +81,7 @@ OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-int DUIDisambiguate( const ambig_info *ambig, int count )
+bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, count, SymPick ) );
+    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, num_items, SymPick, choice ) );
 }

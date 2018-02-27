@@ -180,15 +180,13 @@ static bool MacModWhat( a_window wnd, wnd_row row )
 
     mac = MacGetMacro( row );
     old = mac->type;
+    new = -1;
     if( mac->wndclass == WND_ALL ) {
-        new = DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList + 1,
-                       old - 1, WndGetName, ArraySize( WhatList ) - 1 );
-        if( new != -1 ) {
+        if( DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList + 1, old - 1, WndGetName, ArraySize( WhatList ) - 1, &new ) ) {
             ++new;
         }
     } else {
-        new = DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList,
-                       old, WndGetName, ArraySize( WhatList ) );
+        DlgPickWithRtn( LIT_DUI( Macro_Type ), WhatList, old, WndGetName, ArraySize( WhatList ), &new );
     }
     if( new != -1 ) {
         mac->type = new;
@@ -217,28 +215,27 @@ bool MacKeyHit( a_window wnd, unsigned key )
         }
         wndmac->press_key = false;
         WndZapped( wnd );
-        if( key == GUI_KEY_ESCAPE )
-            return( true );
-        if( wndmac->changing ) {
-            wndmac->changing = false;
-            mac = MacGetMacro( wndmac->change_row );
-            MacChangeMac( wnd, mac, key, mac->wndclass, wndmac->change_row );
-        } else if( wndmac->creating ) {
-            wndmac->creating = false;
-            new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
-            if( new == -1 )
-                return( true );
-            curr = MacAddDel( key, (wnd_class_wv)new, AllocCmdList( LIT_ENG( Quest_Marks ), strlen( LIT_ENG( Quest_Marks ) ) ) );
-            row = 0;
-            for( mac = WndMacroList; mac != curr; mac = mac->link ) {
-                ++row;
+        if( key != GUI_KEY_ESCAPE ) {
+            if( wndmac->changing ) {
+                wndmac->changing = false;
+                mac = MacGetMacro( wndmac->change_row );
+                MacChangeMac( wnd, mac, key, mac->wndclass, wndmac->change_row );
+            } else if( wndmac->creating ) {
+                wndmac->creating = false;
+                if( DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, NUM_WNDCLS, &new ) ) {
+                    curr = MacAddDel( key, (wnd_class_wv)new, AllocCmdList( LIT_ENG( Quest_Marks ), strlen( LIT_ENG( Quest_Marks ) ) ) );
+                    row = 0;
+                    for( mac = WndMacroList; mac != curr; mac = mac->link ) {
+                        ++row;
+                    }
+                    curr->type = -1;
+                    if( !MacModWhat( wnd, row ) ) {
+                        mac->type = MACRO_COMMAND;
+                    }
+                    WndScrollAbs( wnd, row );
+                    WndNewCurrent( wnd, row, PIECE_WHAT );
+                }
             }
-            curr->type = -1;
-            if( !MacModWhat( wnd, row ) ) {
-                mac->type = MACRO_COMMAND;
-            }
-            WndScrollAbs( wnd, row );
-            WndNewCurrent( wnd, row, PIECE_WHAT );
         }
         return( true );
     } else {
@@ -322,11 +319,10 @@ static void MacModWhere( a_window wnd, wnd_row row )
     /* unused parameters */ (void)wnd;
 
     mac = MacGetMacro( row );
-    new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, mac->wndclass, WndGetName, WND_CURRENT );
-    if( new == -1 )
-        return;
-//    WndSetRepaint( wnd );
-    MacChangeMac( wnd, mac, mac->key, (wnd_class_wv)new, row );
+    if( DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, mac->wndclass, WndGetName, NUM_WNDCLS, &new ) ) {
+//        WndSetRepaint( wnd );
+        MacChangeMac( wnd, mac, mac->key, (wnd_class_wv)new, row );
+    }
 }
 
 static void MacModKey( a_window wnd, wnd_row row )
@@ -586,7 +582,7 @@ static void MacReSize( a_window wnd )
             max_size[PIECE_WHAT] = size;
         }
     }
-    for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS; ++wndclass ) {
         size = WndExtentX( wnd, *WndDisplayNames[wndclass] );
         if( max_size[PIECE_WHERE] < size ) {
             max_size[PIECE_WHERE] = size;

@@ -55,7 +55,8 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
     int         i,size;
     char        *cmd;
 
-    i = GUIGetCurrSelect( gui, list );
+    i = -1;
+    GUIGetCurrSelect( gui, list, &i );
     size = GUIGetListSize( gui, list );
     if( size == 0 )
         return;

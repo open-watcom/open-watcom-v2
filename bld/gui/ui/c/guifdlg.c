@@ -1041,7 +1041,8 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
         }
         break;
     case CTL_DIR_LIST :
-        sel = GUIGetCurrSelect( gui, id );
+        sel = -1;
+        GUIGetCurrSelect( gui, id, &sel );
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
         path[0] = FILE_SEP_CHAR;
         path[1] = 0;
@@ -1153,7 +1154,8 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
             GUIMemFree( ptr );
             return( true );
         case CTL_DRIVES :
-            sel = GUIGetCurrSelect( gui, id );
+            sel = -1;
+            GUIGetCurrSelect( gui, id, &sel );
             strcpy( path, GetDriveTextList()[sel] );
             path[2] = 0;
             goToDir( gui, path );
@@ -1163,7 +1165,8 @@ static bool GetFileNameGUIEventProc( gui_window *gui, gui_event gui_ev, void *pa
             }
             return( true );
         case CTL_FILE_TYPES:
-            sel = GUIGetCurrSelect( gui, id );
+            sel = -1;
+            GUIGetCurrSelect( gui, id, &sel );
             if( !initDialog( gui, dlg->fileExtensions[sel], NULL ) ) {
                 dlg->dialogRC = FN_RC_RUNTIME_ERROR;
                 GUICloseDialog( gui );

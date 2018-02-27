@@ -43,25 +43,25 @@ static void PickInit( gui_window *gui, gui_ctl_id list_id )
     GUISetCurrSelect( gui, list_id, _def_item );
 }
 
-int DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn )
+bool DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice )
 {
     _def_item = def_item;
     _data_handle = data_handle;
     _getstring = getstring;
     _num_items = num_items;
-    return( pickfn( title, &PickInit ) );
+    return( pickfn( title, &PickInit, choice ) );
 }
 
 
-static int DoDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
+static bool DoDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
-    return( GUIDlgPickWithRtn( title, pickinit, DlgOpen ) );
+    return( GUIDlgPickWithRtn( title, pickinit, DlgOpen, choice ) );
 }
 
 
-int DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items )
+bool DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, DoDlgPick ) );
+    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, DoDlgPick, choice ) );
 }
 
 static const char *DlgPickText( const void *data_handle, int item )
@@ -69,7 +69,7 @@ static const char *DlgPickText( const void *data_handle, int item )
     return( ((const char **)data_handle)[item] );
 }
 
-int DlgPick( const char *title, const void *data_handle, int def_item, int num_items )
+bool DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice )
 {
-    return( DlgPickWithRtn( title, data_handle, def_item, DlgPickText, num_items ) );
+    return( DlgPickWithRtn( title, data_handle, def_item, DlgPickText, num_items, choice ) );
 }

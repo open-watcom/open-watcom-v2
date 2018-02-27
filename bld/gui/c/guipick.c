@@ -63,7 +63,8 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
-            dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
+            dlg->chosen = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->chosen );
             GUICloseDialog( gui );
             return( true );
         }
@@ -72,7 +73,8 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_PICK_OK:
-            dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
+            dlg->chosen = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->chosen );
             /* fall through */
         case CTL_PICK_CANCEL:
             GUICloseDialog( gui );
@@ -86,7 +88,7 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, gui_ctl_idx *choice )
 {
     dlg_pick    dlg;
     size_t      len;
@@ -101,12 +103,15 @@ gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.chosen = -1;
-    OpenRtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
-    return( dlg.chosen );
+    openrtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
+    if( dlg.chosen == -1 )
+        return( false );
+    *choice = dlg.chosen;
+    return( true );
 }
 
 
-gui_ctl_idx GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
+bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, gui_ctl_idx *choice )
 {
-    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
+    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen, choice ) );
 }

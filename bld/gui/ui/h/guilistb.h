@@ -43,7 +43,8 @@ extern bool GUIAddListBox( gui_control *control, gui_control_info *info,
                            gui_colour_set *plain, gui_colour_set *standout );
 extern bool GUIListBox( gui_control *control , ui_event ui_ev, gui_ord row, gui_ord col );
 extern char *GUIGetListBoxText( a_list *list, gui_ctl_idx choice, bool get_curr );
-extern bool GUIListCurr( a_list *list, gui_ctl_idx choice, bool set, gui_ctl_idx *ret );
+extern bool GUIListGetCurr( a_list *list, gui_ctl_idx *ret );
+extern bool GUIListSetCurr( a_list *list, gui_ctl_idx choice );
 extern bool GUIFillInListBox( a_list *list );
 extern bool GUIClearListBox( a_list *list );
 extern a_list *GUIGetListFromControl( gui_control *contr );

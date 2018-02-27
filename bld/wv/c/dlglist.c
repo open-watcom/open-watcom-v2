@@ -111,8 +111,8 @@ OVL_EXTERN bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
             GUISetText( gui, CTL_LIST_EDIT, TxtBuff );
             return( true );
         case CTL_LIST_DELETE:
-            i = GUIGetCurrSelect( gui, CTL_LIST_LIST );
-            if( i != -1 ) {
+            i = -1;
+            if( GUIGetCurrSelect( gui, CTL_LIST_LIST, &i ) ) {
                 GUIDeleteItem( gui, CTL_LIST_LIST, i );
             }
             size = GUIGetListSize( gui, CTL_LIST_LIST );

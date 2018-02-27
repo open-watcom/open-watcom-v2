@@ -133,19 +133,15 @@ bool GUIClearList( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-gui_ctl_idx GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id )
+bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice )
 {
     VFIELD      *field;
     a_list      *list;
-    gui_ctl_idx ret;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, 0, false, &ret ) ) {
-            return( 0 );
-        }
-        return( ret );
+        return( GUIListGetCurr( list, choice ) );
     }
-    return( -1 );
+    return( false );
 }
 
 bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
@@ -154,7 +150,7 @@ bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, choice, true, NULL ) ) {
+        if( !GUIListSetCurr( list, choice ) ) {
             return( false );
         }
         return( RefreshListCombobox( field, wnd, id ) );

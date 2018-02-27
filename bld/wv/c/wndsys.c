@@ -67,7 +67,7 @@
 #include "dbginit.h"
 
 
-extern wnd_posn         WndPosition[WND_NUM_CLASSES];
+extern wnd_posn         WndPosition[NUM_WNDCLS_ALL];
 extern gui_rect         WndMainRect;
 
 extern bool             UsrScrnMode( void );

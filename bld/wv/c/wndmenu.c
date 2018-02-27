@@ -429,7 +429,7 @@ static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
     wnd_class_wv    wndclass;
 
     rtn( WndMainMenu, ArraySize( WndMainMenu ) );
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->num_popups );
     }
 }

@@ -68,6 +68,8 @@ typedef enum {
     WND_NUM_CLASSES,
     WND_NOCLASS = WND_NO_CLASS
 } wnd_class_wv;
+#define NUM_WNDCLS      WND_CURRENT
+#define NUM_WNDCLS_ALL  WND_NUM_CLASSES
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"

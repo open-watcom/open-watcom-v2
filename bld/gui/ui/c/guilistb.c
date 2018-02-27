@@ -281,21 +281,20 @@ char *GUIGetListBoxText( a_list *list, gui_ctl_idx choice, bool get_curr )
     return( GUIStrDup( data[choice], NULL ) );
 }
 
-bool GUIListCurr( a_list *list, gui_ctl_idx choice, bool set, gui_ctl_idx *ret )
+bool GUIListGetCurr( a_list *list, gui_ctl_idx *ret )
 {
-    if( set ) {
-        /* set */
-        if( GUIListSize( list ) >= choice ) {
-            list->choice = choice;
-            uiupdatelistbox( list );
-            return( true );
-        } else {
-            return( false );
-        }
-    } else {
-        /* get */
-        *ret = list->choice;
+    *ret = list->choice;
+    return( true );
+}
+
+bool GUIListSetCurr( a_list *list, gui_ctl_idx choice )
+{
+    if( GUIListSize( list ) >= choice ) {
+        list->choice = choice;
+        uiupdatelistbox( list );
         return( true );
+    } else {
+        return( false );
     }
 }
 

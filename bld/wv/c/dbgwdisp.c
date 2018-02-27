@@ -53,8 +53,8 @@ extern gui_coord        WndScale;
 extern gui_colour_set   WndColours[];
 extern gui_colour_set   WndStatusColour;
 
-wnd_posn        WndPosition[WND_NUM_CLASSES];
-static char     *WndFontInfo[WND_NUM_CLASSES];
+wnd_posn        WndPosition[NUM_WNDCLS_ALL];
+static char     *WndFontInfo[NUM_WNDCLS_ALL];
 gui_rect        WndMainRect;
 
 static const char   DispOptions[] =
@@ -197,7 +197,7 @@ void FiniFont( void )
 {
     wnd_class_wv    wndclass;
 
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         SetFont( wndclass, NULL );
     }
 }
@@ -227,7 +227,7 @@ void ProcFont( void )
         return;
     ReqEOC();
     if( wndclass == WND_ALL ) {
-        for( wndclass1 = 0; wndclass1 < WND_NUM_CLASSES; ++wndclass1 ) {
+        for( wndclass1 = 0; wndclass1 < NUM_WNDCLS_ALL; ++wndclass1 ) {
             SetFont( wndclass1, NULL );
         }
     }
@@ -258,7 +258,7 @@ void ConfigFont( void )
     wnd_class_wv    wndclass;
 
     PrintFont( WND_ALL, NULL );
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         PrintFont( wndclass, WndFontInfo[WND_ALL] );
@@ -274,7 +274,7 @@ void FontChange( void )
     text = GUIGetFontFromUser( WndFontInfo[WND_ALL] );
     if( text == NULL )
         return;
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         SetFont( wndclass, NULL );
     }
     SetFont( WND_ALL, text );
@@ -513,7 +513,7 @@ void ConfigDisp( void )
                 buff, buff2, h );
         WndDlgTxt( TxtBuff );
     }
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         if( WndFindClass( NULL, wndclass ) != NULL )

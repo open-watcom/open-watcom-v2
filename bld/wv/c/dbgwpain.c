@@ -43,7 +43,7 @@
 #include "dbgwpain.h"
 
 
-static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
+static gui_colour_set   *WndClassColour[NUM_WNDCLS_ALL];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
 wnd_attr WndPlainAttr    = WND_PLAIN;
@@ -299,7 +299,7 @@ static void set_wndclass_attr( wnd_attr_wv wndattr, gui_colour_set *set, gui_col
         set[GUI_BACKGROUND].back = back;
     }
     if( wndall ) {
-        for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
             if( WndClassColour[wndclass] != NULL ) {
                 WndClassColour[wndclass][wndattr].fore = fore;
                 WndClassColour[wndclass][wndattr].back = back;
@@ -395,7 +395,7 @@ void FiniPaint( void )
 {
     wnd_class_wv    wndclass;
 
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( WndClassColour[wndclass] != NULL ) {
             WndFree( WndClassColour[wndclass] );
             WndClassColour[wndclass] = NULL;
@@ -531,7 +531,7 @@ void ConfigPaint( void )
         def = WndColours;
     }
     PrintColours( WND_ALL, def, NULL );
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         if( WndClassColour[wndclass] != NULL ) {

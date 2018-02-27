@@ -519,13 +519,14 @@ void GUIMDIMoreWindows( void )
     gui_ctl_idx chosen;
     gui_window  *wnd;
 
-    chosen = GUIDlgPick( LIT( Select_Window ), &PickInit );
-    if( ( chosen >= 0 ) && ( chosen < TotalWindows ) ) {
-        wnd = ChildWindows[chosen];
-        if( GUIIsMinimized( wnd ) ) {
-            GUIRestoreWindow( wnd );
+    if( GUIDlgPick( LIT( Select_Window ), &PickInit, &chosen ) ) {
+        if( ( chosen >= 0 ) && ( chosen < TotalWindows ) ) {
+            wnd = ChildWindows[chosen];
+            if( GUIIsMinimized( wnd ) ) {
+                GUIRestoreWindow( wnd );
+            }
+            GUIBringToFront( wnd );
         }
-        GUIBringToFront( wnd );
     }
     GUIMemFree( ChildWindows );
     ChildWindows = NULL;

@@ -88,8 +88,7 @@ bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_
     } else {
         InitColour = GUI_BAD_COLOUR;
     }
-    result = GUIDlgPick( title, &PickColour );
-    if( result != -1 ) {
+    if( GUIDlgPick( title, &PickColour, &result ) ) {
         *new_colour = (gui_colour)result;
         return( true );
     }

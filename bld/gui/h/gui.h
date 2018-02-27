@@ -875,8 +875,8 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
 extern gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val );
-extern gui_ctl_idx GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit );
-extern gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN * );
+extern bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, gui_ctl_idx *choice );
+extern bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *, gui_ctl_idx *choice );
 
 /* Dialog Functions */
 
@@ -914,7 +914,7 @@ extern bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
 extern bool GUIClearList( gui_window *wnd, gui_ctl_id id );
 extern bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
 extern gui_ctl_idx GUIGetListSize( gui_window *wnd, gui_ctl_id id );
-extern gui_ctl_idx GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id );
+extern bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice );
 extern bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
 extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
 

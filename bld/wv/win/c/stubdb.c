@@ -471,10 +471,11 @@ void DUIRingBell( void )
 {
     // ring ring (error)
 }
-int DUIDisambiguate( const ambig_info *ambig, int count )
+bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
     // the expression processor detected an ambiguous symbol.  Ask user which one
-    return( 0 );
+    *choice = 0;
+    return( true );
 }
 void ProcAccel( void )
 {

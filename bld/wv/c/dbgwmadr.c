@@ -305,11 +305,11 @@ OVL_EXTERN  void    RegModify( a_window wnd, int row, int piece )
             } else {
                 i = 0;
             }
-        } else {  //MJC const cast
-            i = DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible );
-        }
-        if( i != -1 ) {
             RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
+        } else {  //MJC const cast
+            if( DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible, &i ) ) {
+                RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
+            }
         }
     }
     NewCurrRadix( old_radix );
