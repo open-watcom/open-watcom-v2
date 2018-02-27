@@ -97,12 +97,12 @@ int DebuggingLog::printf( const char * format, ... )
     return rc;
 }
 
-void DebuggingLog::write( const char * buffer, int len )
-//------------------------------------------------------
+void DebuggingLog::write( const char * buffer, size_t len )
+//---------------------------------------------------------
 // write a straight buffer out.  I don't know a good
 // use for this, but trmem uses it, so...
 {
-    int numWritten;
+    size_t numWritten;
 
     numWritten = fwrite( buffer, len, 1, _fp );
     fflush( _fp );

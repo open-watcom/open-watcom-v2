@@ -64,7 +64,7 @@ public:
 
                     // printf returns # chars written, as usual
             int     printf( const char * format, ... );
-            void    write( const char * buffer, int len );
+            void    write( const char * buffer, size_t len );
             void    puts( const char * buf );
 
             void    startTiming();
@@ -86,7 +86,7 @@ public:
             ~DebuggingLog(){};
 
             int     printf( const char *, ... ) { return 0; }
-            void    write( const char *, int ) {}
+            void    write( const char *, size_t ) {}
             void    puts( const char * ) {}
 
             void    startTiming() {}
