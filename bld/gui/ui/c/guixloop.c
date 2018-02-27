@@ -350,11 +350,11 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
 
 static void ProcessInitPopupEvent( void )
 {
-    UIMENUITEM  menu;
+    UIMENUITEM  currmenuitem;
     gui_ctl_id  id;
 
-    if( uigetcurrentmenu ( &menu ) ) {
-        id = EV2ID( menu.event );
+    if( uigetcurrentmenu( &currmenuitem ) ) {
+        id = EV2ID( currmenuitem.event );
         if( id != 0 ) {
             GUIEVENT( GUICurrWnd, GUI_INITMENUPOPUP, &id );
         }
