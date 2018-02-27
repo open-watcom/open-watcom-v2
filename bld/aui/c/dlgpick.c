@@ -32,23 +32,23 @@
 
 #include "_aui.h"
 
-static int              DlgChosen;
+static int              _def_item;
 static const void       *_data_handle;
 static GUIPICKGETTEXT   *_getstring;
-static int              _items;
+static int              _num_items;
 
 static void PickInit( gui_window *gui, gui_ctl_id list_id )
 {
-    GUIAddTextList( gui, list_id, _items, _data_handle, _getstring );
-    GUISetCurrSelect( gui, list_id, DlgChosen );
+    GUIAddTextList( gui, list_id, _num_items, _data_handle, _getstring );
+    GUISetCurrSelect( gui, list_id, _def_item );
 }
 
-int DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pickfn )
+int DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn )
 {
-    DlgChosen = def;
+    _def_item = def_item;
     _data_handle = data_handle;
     _getstring = getstring;
-    _items = items;
+    _num_items = num_items;
     return( pickfn( title, &PickInit ) );
 }
 
@@ -59,9 +59,9 @@ static int DoDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
 }
 
 
-int DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items )
+int DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items )
 {
-    return( DlgPickWithRtn2( title, data_handle, def, getstring, items, DoDlgPick ) );
+    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, DoDlgPick ) );
 }
 
 static const char *DlgPickText( const void *data_handle, int item )
@@ -69,7 +69,7 @@ static const char *DlgPickText( const void *data_handle, int item )
     return( ((const char **)data_handle)[item] );
 }
 
-int DlgPick( const char *title, const void *data_handle, int def, int items )
+int DlgPick( const char *title, const void *data_handle, int def_item, int num_items )
 {
-    return( DlgPickWithRtn( title, data_handle, def, DlgPickText, items ) );
+    return( DlgPickWithRtn( title, data_handle, def_item, DlgPickText, num_items ) );
 }
