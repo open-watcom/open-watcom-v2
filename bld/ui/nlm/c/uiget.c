@@ -42,10 +42,11 @@ static bool EnterForever = false;
 
 MOUSETIME UIAPI uiclock( void )
 /*****************************
- * this routine get time in platform dependant units, 
- * used for mouse & timer delays 
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
  */
 {
+    /* NetWare uses a clock tick of .01 seconds. */
     return( clock() );
 }
 
@@ -83,7 +84,7 @@ static void foreverloop( void )
 /* is to allow the UI thread of a Netware application to unblock off the */
 /* keyboard to allow the NLM to call exit */
 {
-    for( ; ; ) {
+    for( ;; ) {
         ThreadSwitch();
     }
 }
@@ -96,7 +97,7 @@ ui_event UIAPI uieventsource( bool update )
     MOUSETIME       start;
 
     start = uiclock();
-    for( ; ; ) {
+    for( ;; ) {
         ThreadSwitch();
         if( EnterForever )
             foreverloop();

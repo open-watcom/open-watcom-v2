@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Netware mouse input handling.
 *
 ****************************************************************************/
 
@@ -76,4 +75,3 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     /* unused parameters */ (void)row; (void)col;
 }
-

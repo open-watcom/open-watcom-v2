@@ -38,13 +38,12 @@
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /*************************************************/
 {
-    row = row;
-    col = col;
+    /* unused parameters */ (void)row; (void)col;
 }
 
 void UIAPI uimouse( mouse_func func )
 /***********************************/
 {
-    func = func;
+    /* unused parameters */ (void)func;
 }
 

@@ -33,6 +33,7 @@
 #include <conio.h>
 #include "uidef.h"
 #include "uiattrs.h"
+#include "uinlm.h"
 
 
 #define _swap(a,b)      {int i; i=a; a=b; b=i;}
@@ -73,9 +74,9 @@ void UIAPI uioncursor( void )
         endline   = END_NORMAL_CURSOR;
     }
 
-/* A PROBLEM:  This sets the cursor shape of the NLM's screen, not the  */
-/* screen created in UIBios.C! Figure this out some time... until then, */
-/* the insert cursor will be small like the regular cursor. */
+    /* A PROBLEM:  This sets the cursor shape of the NLM's screen, not the  */
+    /* screen created in UIBios.C! Figure this out some time... until then, */
+    /* the insert cursor will be small like the regular cursor. */
 
     SetCursorShape( startline, endline );
 
@@ -116,7 +117,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 
     GetCursorShape( &startline, &endline );
 
-    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ){
+    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ) {
         *type = C_INSERT;
     } else {
         *type = C_NORMAL;
@@ -156,7 +157,7 @@ static void savecursor( void )
 
     GetCursorShape( &startline, &endline );
 
-    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ){
+    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ) {
         OldCursorType = C_INSERT;
     } else {
         OldCursorType = C_NORMAL;

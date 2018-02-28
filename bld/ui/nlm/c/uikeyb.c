@@ -35,21 +35,21 @@
 
 #include <malloc.h>
 #include <dos.h>
-#include <procdefs.h>
+//#include <procdefs.h>
 #include "uidef.h"
 #include "uishift.h"
+#include "uinlm.h"
 
-/* From conio.h since conio.h conflicts with procdef.h */
-extern int __GetScreenID( int __screenHandle );
 
 extern int ScreenHandle;        // from uibios.c
 
 /* Don't dereference this pointer, only pass it as a paramter to functions. */
 /* It points into the OS data area and dereferencing could interfere with the */
 /* Novell Labs Certification. */
-static struct ScreenStruct * ScreenPointer = NULL;
-static unsigned         shift_state = 0;
-static bool BlockedOnKeyboard = false;
+static struct ScreenStruct  *ScreenPointer = NULL;
+static unsigned             shift_state = 0;
+static bool                 BlockedOnKeyboard = false;
+
 static struct {
     bool    inUse;
     BYTE    keyType;
@@ -64,12 +64,8 @@ unsigned char UIAPI uicheckshift( void )
     return( shift_state );
 }
 
-static bool netwaregetkey( keyType, keyValue, keyStatus, scanCode )
-/**************************************************/
-BYTE * keyType;
-BYTE * keyValue;
-BYTE * keyStatus;
-BYTE * scanCode;
+static bool netwaregetkey( BYTE *keyType, BYTE *keyValue, BYTE *keyStatus, BYTE *scanCode )
+/*****************************************************************************************/
 {
     if( SavedKey.inUse ) {
         *keyType = SavedKey.keyType;
@@ -121,20 +117,20 @@ ui_event intern keyboardevent( void )
         return( EV_NO_EVENT );
     } /* end if */
 
-    switch( type ){
+    switch( type ) {
     case NORMAL_KEY:
-        if( ascii == 0 || ascii == 0xe0 ){
+        if( ascii == 0 || ascii == 0xe0 ) {
             ui_ev = 0x100 + scan;
         } else {
             if( ( status & ALT_KEY ) && ( ascii == ' ' ) ) {
                 ui_ev = EV_ALT_SPACE;
-            } else if( ascii + 0x100 == EV_TAB_FORWARD ){
+            } else if( ascii + 0x100 == EV_TAB_FORWARD ) {
                 ui_ev = EV_TAB_FORWARD;
-            } else if( ascii + 0x100 == EV_ESCAPE ){
+            } else if( ascii + 0x100 == EV_ESCAPE ) {
                 ui_ev = EV_ESCAPE;
-            } else if( ascii + 0x100 == EV_ENTER ){
+            } else if( ascii + 0x100 == EV_ENTER ) {
                 ui_ev = EV_ENTER;
-            } else if( ascii + 0x100 == EV_RUB_OUT ){
+            } else if( ascii + 0x100 == EV_RUB_OUT ) {
                 ui_ev = EV_RUB_OUT;
             } else {
                 ui_ev = ascii;
@@ -142,11 +138,11 @@ ui_event intern keyboardevent( void )
         } /* end if */
         break;
     case FUNCTION_KEY:
-        if( status & ALT_KEY ){
+        if( status & ALT_KEY ) {
             ui_ev = EV_ALT_F1 + ( ascii - 30 - 1 );
-        } else if( status & CONTROL_KEY ){
+        } else if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_F1 + ( ascii - 20 - 1 );
-        } else if( status & ( RIGHT_SHIFT_KEY | LEFT_SHIFT_KEY ) ){
+        } else if( status & ( RIGHT_SHIFT_KEY | LEFT_SHIFT_KEY ) ) {
             ui_ev = EV_SHIFT_F1 + ( ascii - 10 - 1 );
         } else {
             ui_ev = EV_F1 + ( ascii - 1 );
@@ -168,56 +164,56 @@ ui_event intern keyboardevent( void )
         ui_ev = EV_INSERT;
         break;
     case CURSOR_UP_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_CURSOR_UP;
         } else {
             ui_ev = EV_CURSOR_UP;
         }
         break;
     case CURSOR_DOWN_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_CURSOR_DOWN;
         } else {
             ui_ev = EV_CURSOR_DOWN;
         }
         break;
     case CURSOR_RIGHT_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_CURSOR_RIGHT;
         } else {
             ui_ev = EV_CURSOR_RIGHT;
         }
         break;
     case CURSOR_LEFT_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_CURSOR_LEFT;
         } else {
             ui_ev = EV_CURSOR_LEFT;
         }
         break;
     case CURSOR_HOME_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_HOME;
         } else {
             ui_ev = EV_HOME;
         }
         break;
     case CURSOR_END_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_END;
         } else {
             ui_ev = EV_END;
         }
         break;
     case CURSOR_PUP_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_PAGE_UP;
         } else {
             ui_ev = EV_PAGE_UP;
         }
         break;
     case CURSOR_PDOWN_KEY:
-        if( status & CONTROL_KEY ){
+        if( status & CONTROL_KEY ) {
             ui_ev = EV_CTRL_PAGE_DOWN;
         } else {
             ui_ev = EV_PAGE_DOWN;

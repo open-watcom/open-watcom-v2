@@ -36,7 +36,11 @@
 #include <string.h>
 #include <process.h>
 #include "uidef.h"
+#include "uimouse.h"
+#include "uinlm.h"
 
+
+int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
 
 static MONITOR ui_data = {
     25,
@@ -50,8 +54,6 @@ static MONITOR ui_data = {
     1
 };
 
-int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
-
 bool UIAPI uiset80col( void )
 /***************************/
 {
@@ -61,10 +63,10 @@ bool UIAPI uiset80col( void )
 static bool initmonitor( void )
 /*****************************/
 {
-    WORD height, width;
+    WORD  height;
+    WORD  width;
 
-    ScreenHandle = CreateScreen( uigetscreenname(),
-                        DONT_CHECK_CTRL_CHARS | AUTO_DESTROY_SCREEN );
+    ScreenHandle = CreateScreen( uigetscreenname(), DONT_CHECK_CTRL_CHARS | AUTO_DESTROY_SCREEN );
     if( ScreenHandle == -1 ) {
         return( false );
     }
@@ -81,18 +83,18 @@ static bool initmonitor( void )
 
     GetSizeOfScreen( &height, &width );
 
-    UIData->height = (ORD) height;
-    UIData->width  = (ORD) width;
+    UIData->height = height;
+    UIData->width  = width;
 
 
-/* IsColorMonitor doesn't seem to be working for NetWare 3.11 */
-/* so we'll just assume a colour monitor for now. */
+    /* IsColorMonitor doesn't seem to be working for NetWare 3.11 */
+    /* so we'll just assume a colour monitor for now. */
 
-    if( IsColorMonitor() ){
+    if( IsColorMonitor() ) {
         UIData->colour = M_CGA;
     } else {
         UIData->colour = M_MONO;
-    } /* end if */
+    }
 
     return( true );
 }
@@ -102,13 +104,15 @@ bool intern initbios( void )
 /**************************/
 {
     bool        initialized = false;
-    int         i;
+    size_t      size;
+    size_t      i;
 
     if( initmonitor() ) {
 
-        UIData->screen.origin = (LP_PIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
-
-        for( i = 0; i < UIData->width * UIData->height; ++i ){
+        size = UIData->width * UIData->height * sizeof( PIXEL );
+        UIData->screen.origin = (LP_PIXEL)uimalloc( size );
+        size /= sizeof( PIXEL );
+        for( i = 0; i < size; ++i ) {
             UIData->screen.origin[i].ch = ' ';
             UIData->screen.origin[i].attr = 7;
         } /* end for */
@@ -125,12 +129,12 @@ bool intern initbios( void )
         UIData->mouse_clk_delay = 0;
         UIData->mouse_speed     = 0;
 
-/* A 500 millisecond tick delay is pretty reasonable. */
+        /* A 500 millisecond tick delay is pretty reasonable. */
 
-        UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
+        UIData->tick_delay = uiclockdelay( 500 /* ms */ );
 
         initialized = true;
-    } /* end if */
+    }
 
     return( initialized );
 
@@ -160,10 +164,8 @@ void intern physupdate( SAREA *area )
 {
     int i;
 
-    for( i = area->row; i < area->row + area->height; ++i ){
-        CopyToScreenMemory( 1, area->width,
-                (BYTE *)( UIData->screen.origin + i * UIData->width + area->col ),
-                area->col, i );
+    for( i = area->row; i < area->row + area->height; ++i ) {
+        CopyToScreenMemory( 1, area->width, (void *)( UIData->screen.origin + i * UIData->width + area->col ), area->col, i );
     } /* end for */
 
 } /* end physupdate */
