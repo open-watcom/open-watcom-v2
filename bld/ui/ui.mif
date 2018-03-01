@@ -38,6 +38,8 @@ extra_c_flags_trmem = $(trmem_cflags)
 # memory tracker cover routines
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
+extra_l_flags_nov = opt osname='Sample NLM' import @$(ui_dir)/nlm/uinlm.imp
+
 objs = &
     uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
     uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
