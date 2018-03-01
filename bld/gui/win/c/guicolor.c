@@ -257,7 +257,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     guiColoursAlias = AllocAlias16( (void *)GUIColours );
     choose.lpCustColors = (void *)guiColoursAlias;
     ret = (short)InvokeIndirectFunction( hIndir, &choose ) != 0;
-    if( guiColoursAlias != NULL ) {
+    if( guiColoursAlias != 0 ) {
         FreeAlias16( guiColoursAlias );
     }
   #else

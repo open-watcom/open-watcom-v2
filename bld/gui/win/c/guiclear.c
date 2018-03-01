@@ -38,7 +38,7 @@ bool GUIClearText( gui_window *wnd, gui_ctl_id id )
     HWND                control;
 
     control = _wpi_getdlgitem( wnd->hwnd, id );
-    if( control != (HWND)NULL ) {
+    if( control != NULLHANDLE ) {
         _wpi_setwindowtext( control, NULL );
     }
     return( true );
@@ -49,7 +49,7 @@ bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
     HWND                control;
 
     control = _wpi_getdlgitem( wnd->hwnd, id );
-    if( control != (HWND)NULL ) {
+    if( control != NULLHANDLE ) {
         _wpi_enablewindow( control, ( enable ) ? TRUE : FALSE );
         return( true );
     }
@@ -61,7 +61,7 @@ bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
     HWND                control;
 
     control = _wpi_getdlgitem( wnd->hwnd, id );
-    if( control != (HWND)NULL ) {
+    if( control != NULLHANDLE ) {
         if( _wpi_iswindowenabled( control ) ) {
             return( true );
         }

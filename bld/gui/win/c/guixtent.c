@@ -83,7 +83,7 @@ static bool GetControlInfo( gui_window *wnd, gui_ctl_id id, HWND *hwnd, WPI_PRES
 {
     if ( wnd && wnd->hwnd ) {
         *hwnd = _wpi_getdlgitem( wnd->hwnd, id );
-        if ( *hwnd != (HWND)NULL ) {
+        if ( *hwnd != NULLHANDLE ) {
             *dc = _wpi_getpres( *hwnd );
             return( *dc != NULLHANDLE );
         }
@@ -109,7 +109,7 @@ static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, 
         if( wnd->font != NULL ) {
             old = _wpi_selectfont( dc, wnd->font );
         } else {
-            old = NULL;
+            old = NULLHANDLE;
         }
         _wpi_gettextextent( dc, text, my_length, &coord->x, &coord->y );
         if( old != NULL ) {

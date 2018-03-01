@@ -62,7 +62,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, const char *title, 
   #endif
     help.pszHelpLibraryName = (PSZ)help_lib;
     hwndHelpInstance = WinCreateHelpInstance( inst.hab, &help );
-    if( hwndHelpInstance != (HWND)NULL ) {
+    if( hwndHelpInstance != NULLHANDLE ) {
         if( !WinAssociateHelpInstance( hwndHelpInstance, hwnd ) ) {
             WinDestroyHelpInstance( hwndHelpInstance );
             hwndHelpInstance = NULLHANDLE;
@@ -76,7 +76,7 @@ static void FiniHelp( gui_help_instance inst, HWND hwnd, const char *file )
 {
     hwnd=hwnd;
     file=file;
-    if( (HWND)inst != (HWND)NULL ) {
+    if( (HWND)inst != NULLHANDLE ) {
         WinAssociateHelpInstance( (HWND)inst, NULLHANDLE );
         WinDestroyHelpInstance( (HWND)inst );
     }

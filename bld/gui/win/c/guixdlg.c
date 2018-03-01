@@ -749,7 +749,7 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI
 #ifndef __OS2_PM__
         _wpi_selectfont( hdc, DlgFont );
 #else
-        DlgFont = (WPI_FONT)NULL;
+        DlgFont = NULLHANDLE;
 #endif
         _wpi_gettextmetrics( hdc, &GUIDialogtm );
         _wpi_releasepres( hwnd, hdc );

@@ -80,7 +80,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     if( wnd->font != NULL ) {
         wnd->prev_font = _wpi_selectfont( wnd->hdc, wnd->font );
     } else {
-        wnd->prev_font = NULL;
+        wnd->prev_font = NULLHANDLE;
     }
 
     /* send paint to app */
@@ -92,7 +92,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     /* finish painting */
     if( wnd->prev_font != NULL ) {
         _wpi_getoldfont( wnd->hdc, wnd->prev_font );
-        wnd->prev_font = NULL;
+        wnd->prev_font = NULLHANDLE;
     }
 
 #ifdef __OS2_PM__
@@ -160,7 +160,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     wnd->ps = &ps;
     //hps = _wpi_beginpaint( hwnd, pinfo->normal_pres, wnd->ps );
     hps = _wpi_beginpaint( hwnd, NULL, wnd->ps );
-    if( pinfo->compatible_pres == (WPI_PRES)NULL ) {
+    if( pinfo->compatible_pres == NULLHANDLE ) {
         compat_created = true;
         pinfo->compatible_pres = _wpi_createcompatiblepres( hps, GUIMainHInst, &pinfo->compatible_hdc );
         pinfo->draw_bmp = _wpi_createcompatiblebitmap( hps, width, height );
@@ -275,16 +275,16 @@ void GUIFreePaintHandles( gui_paint_info *pinfo, int force )
 #ifdef __OS2_PM__
     //bmp = _wpi_selectbitmap( pinfo->compatible_pres, pinfo->old_bmp );
     _wpi_getoldbitmap( pinfo->compatible_pres, pinfo->old_bmp );
-    pinfo->old_bmp = (WPI_HANDLE)NULL;
-    if( pinfo->draw_bmp != (WPI_HANDLE)NULL ) {
+    pinfo->old_bmp = NULLHANDLE;
+    if( pinfo->draw_bmp != NULLHANDLE ) {
         _wpi_deletebitmap( pinfo->draw_bmp );
-        pinfo->draw_bmp = (WPI_HANDLE)NULL;
+        pinfo->draw_bmp = NULLHANDLE;
     }
-    if( pinfo->compatible_pres != (WPI_PRES)NULL ) {
+    if( pinfo->compatible_pres != NULLHANDLE ) {
         _wpi_deletecompatiblepres( pinfo->compatible_pres,
                                    pinfo->compatible_hdc );
-        pinfo->compatible_pres = (WPI_PRES)NULL;
-        pinfo->compatible_hdc = (HDC)NULL;
+        pinfo->compatible_pres = NULLHANDLE;
+        pinfo->compatible_hdc = NULLHANDLE;
     }
     pinfo->in_use = 0;
     pinfo->delete_when_done = false;

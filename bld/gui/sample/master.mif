@@ -83,7 +83,7 @@ sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__
 !ifneq sys_windowed 1
         @%make bind_res_wresui
 !else ifdef win386
-        @%make bind_win386
+        @%make bind_win386_add_res
 !else
         @%make bind_res
 !endif

@@ -334,9 +334,9 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     }
     if( wnd->font != NULL ) {
         _wpi_deletefont( wnd->font );
-        wnd->font = NULL;
+        wnd->font = NULLHANDLE;
     }
-    if( wnd->icon != (WPI_HICON)NULL ) {
+    if( wnd->icon != NULLHANDLE ) {
         _wpi_destroyicon( wnd->icon );
     }
     GUIFreeColours( wnd );
@@ -369,19 +369,19 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
             GUIBringNewToFront( wnd );
         }
     }
-    if( wnd->hdc != (WPI_PRES)NULL ) {
+    if( wnd->hdc != NULLHANDLE ) {
         _wpi_releasepres( wnd->hwnd, wnd->hdc );
         wnd->hdc = NULLHANDLE;
     }
 #ifdef __OS2_PM__
     GUIFreeWndPaintHandles( wnd, true );
-    if( wnd->root_pinfo.normal_pres != (WPI_PRES)NULL ) {
+    if( wnd->root_pinfo.normal_pres != NULLHANDLE ) {
         _wpi_deleteos2normpres( wnd->root_pinfo.normal_pres );
-        wnd->root_pinfo.normal_pres = (WPI_PRES)NULL;
+        wnd->root_pinfo.normal_pres = NULLHANDLE;
     }
-    if( wnd->hwnd_pinfo.normal_pres != (WPI_PRES)NULL ) {
+    if( wnd->hwnd_pinfo.normal_pres != NULLHANDLE ) {
         _wpi_deleteos2normpres( wnd->hwnd_pinfo.normal_pres );
-        wnd->hwnd_pinfo.normal_pres = (WPI_PRES)NULL;
+        wnd->hwnd_pinfo.normal_pres = NULLHANDLE;
     }
 #endif
     GUIMemFree( wnd );

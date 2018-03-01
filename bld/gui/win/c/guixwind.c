@@ -189,10 +189,11 @@ void GUIDestroyWnd( gui_window *wnd )
     }
 }
 
-static bool DoRegisterClass( WPI_INST hinst, char *class_name,
-                             WPI_CLASSPROC win_call_back, UINT style, int extra )
+static bool DoRegisterClass( WPI_INST hinst, char *class_name, WPI_CLASSPROC win_call_back, UINT style, int extra )
 {
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+    return( WinRegisterClass( hinst.hab, class_name, win_call_back, CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY | style, extra ) );
+#else
     WNDCLASS    wc;
 
     wc.style = style;
@@ -200,16 +201,13 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
     wc.cbClsExtra = 0;
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
-    wc.hIcon = _wpi_loadicon( NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (WPI_INST)NULL, IDC_ARROW );
-    wc.hbrBackground = NULL;
+    wc.hIcon = _wpi_loadicon( NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
+    wc.hbrBackground = NULLHANDLE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = class_name;
 
     return( RegisterClass( &wc ) != 0 );
-#else
-    return( WinRegisterClass( hinst.hab, class_name, win_call_back,
-                              CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY | style, extra ) );
 #endif
 }
 /*
@@ -410,7 +408,7 @@ static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *dlg_info )
 
     _wpi_createanywindow( GUIClass, NULL, style,
                           0, 0, right-left, bottom-top,
-                          wnd->root, NULL, GUIMainHInst,
+                          wnd->root, NULLHANDLE, GUIMainHInst,
                           &wmcreateinfo, &wnd->hwnd, 0, &frame_hwnd );
 
     wnd->hwnd_frame = wnd->root_frame;
@@ -1187,7 +1185,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_RBUTTONDOWN :
         WPI_MAKEPOINT( wparam, lparam, currentpoint );
         win = PM1632WinWindowFromPoint( hwnd, &currentpoint, false );
-        if( ( win != (HWND)NULL ) && ( win != hwnd ) ) {
+        if( ( win != NULLHANDLE ) && ( win != hwnd ) ) {
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
                 GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &id );
@@ -1256,7 +1254,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         if( LOWORD(wparam) == WM_RBUTTONDOWN ) {
             WPI_MAKEPOINT( wparam, lparam, currentpoint );
-            MapWindowPoints( hwnd, (HWND)NULL, &currentpoint, 1 );
+            MapWindowPoints( hwnd, NULLHANDLE, &currentpoint, 1 );
             win = _wpi_windowfrompoint( currentpoint );
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {

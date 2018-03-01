@@ -90,10 +90,10 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         return;
     }
     old_rop = 0;
-    old_brush = (HBRUSH)NULL;
-    brush = (HBRUSH)NULL;
-    old_pen = (HPEN)NULL;
-    pen = (HPEN)NULL;
+    old_brush = NULLHANDLE;
+    brush = NULLHANDLE;
+    old_pen = NULLHANDLE;
+    pen = NULLHANDLE;
     GUIGetMetrics( wnd );
     if( !bitmap ) {
         height = AVGYCHAR( GUItm );
@@ -179,16 +179,16 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         if( old_rop != 0 ) {
             _wpi_setrop2( wnd->hdc, old_rop );
         }
-        if( old_brush != (HBRUSH)NULL ) {
+        if( old_brush != NULLHANDLE ) {
             _wpi_getoldbrush( wnd->hdc, old_brush );
         }
-        if( brush != (HBRUSH)NULL ) {
+        if( brush != NULLHANDLE ) {
             _wpi_deletebrush( brush );
         }
-        if( old_pen != (HPEN)NULL ) {
+        if( old_pen != NULLHANDLE ) {
             _wpi_getoldpen( wnd->hdc, old_pen );
         }
-        if( pen != (HPEN)NULL ) {
+        if( pen != NULLHANDLE ) {
             _wpi_deletepen( pen );
         }
     }

@@ -52,7 +52,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     GUI_RECTDIM left, top, right, bottom;
     HMENU       popup;
 
-    if( ( popup = GUIHFloatingPopup ) == (HMENU)NULL ) {
+    if( ( popup = GUIHFloatingPopup ) == NULLHANDLE ) {
         return( false );
     }
 
