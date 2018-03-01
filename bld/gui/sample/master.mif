@@ -50,7 +50,11 @@ resfile = wresui.res
 sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
+!ifeq sys_windowed 1
+        @%make bind_res
+!else
         @%make bind_res_wresui
+!endif
 !else
 !ifeq host_os nov
         @%append $(lnk) debug novell
