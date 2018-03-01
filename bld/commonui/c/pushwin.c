@@ -99,8 +99,8 @@ bool RegPushWin( HANDLE instance )
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
-    wc.hIcon = (HICON)NULL;
-    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+    wc.hIcon = NULLHANDLE;
+    wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
     wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "PushWin";
@@ -132,7 +132,7 @@ HWND CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst )
         0,                      /* Initial X size */
         0,                      /* Initial Y size */
         parent,                 /* Parent window handle */
-        (HMENU)NULL,            /* Window menu handle */
+        NULLHANDLE,             /* Window menu handle */
         inst,                   /* Program instance handle */
         (LPVOID)info );         /* Create parameters */
     return( hwnd );

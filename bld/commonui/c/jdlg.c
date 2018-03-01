@@ -221,7 +221,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
     int         logpixelsy;
 
     systemFont = (HFONT)GetStockObject( SYSTEM_FONT );
-    if( systemFont == (HFONT)NULL ) {
+    if( systemFont == NULLHANDLE ) {
         return( false );
     }
 
@@ -235,9 +235,9 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
     }
     strcpy( *facename, lf.lfFaceName );
 
-    hDC = GetDC( (HWND)NULL );
+    hDC = GetDC( NULLHANDLE );
     logpixelsy = GetDeviceCaps( hDC, LOGPIXELSY );
-    ReleaseDC( (HWND)NULL, hDC );
+    ReleaseDC( NULLHANDLE, hDC );
     *pointsize = ( ( lf.lfHeight * 720L ) / (LONG)logpixelsy + 5 ) / 10;
 
     return( true );
@@ -254,7 +254,7 @@ static TEMPLATE_HANDLE loadDialogTemplate( HINSTANCE hinst, LPCSTR lpszDlgTemp, 
     HRSRC           hrsrc;
 
     hrsrc = FindResource( hinst, lpszDlgTemp, RT_DIALOG );
-    if( hrsrc == (HRSRC)NULL ) {
+    if( hrsrc == NULLHANDLE ) {
         return( (TEMPLATE_HANDLE)NULL );
     }
 
