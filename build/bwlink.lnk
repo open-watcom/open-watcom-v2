@@ -609,3 +609,18 @@ system begin qnx386
     libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_s
     format qnx ^
 end
+
+system begin netware
+    option osname='Novell NLM'
+    format novell ^
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/clib/library/nw_clib.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
+    libpath %OWSRCDIR%/cpplib/library/generic.386/ms_s
+    libpath %OWSRCDIR%/cpplib/library/netware.386/ms_smt
+    libpath %OWSRCDIR%/cpplib/complex/generic.386/ms_s
+    libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_s
+    module clib
+    import @%OWSRCDIR%/os_supp/novell/common/imp/owclib.imp
+end

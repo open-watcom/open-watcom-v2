@@ -7,7 +7,9 @@
 # 5. For large memory model windows version, define 'windows'
 #
 
-!ifdef stack
+!ifeq host_os nov
+name_model_conv = m$(memory_model_386)_s/wres.lib
+!else ifdef stack
 name_model_conv = m$(memory_model_386)_s/wres.lib
 !else
 name_model_conv = m$(memory_model_386)_r/wres.lib
