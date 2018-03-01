@@ -6,15 +6,14 @@ host_os  = nov
 
 sample2.$(EXE) : sample.obj sampdial.obj ui.lib
     %create sample.lnk
+    %append sample.lnk  sys netware
+    %append sample.lnk  option osname='Sample2 NLM'
     %append sample.lnk  name sample2
-    %append sample.lnk  format novell 'sample2 nlm'
     %append sample.lnk  debug all debug novell
-    %append sample.lnk  module clib
     %append sample.lnk  option map, caseexact, stack = 10k, quiet
-    %append sample.lnk  libpath $(%WATCOM)/lib386
-    %append sample.lnk  libpath $(%WATCOM)/lib386/netware
 
-    %append sample.lnk  import @$(%WATCOM)/novi/clib.imp
+    %append sample.lnk  module clib
+#    %append sample.lnk  import @$(%WATCOM)/novi/clib.imp
     %append sample.lnk  import @../uinlm.imp
 
     %append sample.lnk  file sample
