@@ -50,27 +50,21 @@ resfile = wresui.res
 sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
-!ifeq sys_windowed 1
-        @%make bind_res
-!else
-        @%make bind_res_wresui
-!endif
 !else
 !ifeq host_os nov
+        @%write $(lnk) sys netware
+        @%append $(lnk) option osname='Sample NLM'
         @%append $(lnk) debug novell
         @%append $(lnk) name sample
         @%append $(lnk) module clib
-        @%append $(lnk) format novell 'sample nlm'
-        @%append $(lnk) libpath %WATCOM%\lib386
-        @%append $(lnk) libpath %WATCOM%\lib386\netware
-        @%append $(lnk) import @%WATCOM%\novi\clib.imp
-        @%append $(lnk) import @$(ui_dir)\nlm\uinlm.imp
+        @%append $(lnk) import @$(ui_dir)/nlm/uinlm.imp
 !else
         @%write $(lnk) sys $(sys)
 !ifeq host_cpu axp
         @%append $(lnk) debug codeview
 !else
         @%append $(lnk) debug all
+!endif
 !endif
         @%append $(lnk) option map $(extra_option)
         @%append $(lnk) name $(lname)
@@ -82,15 +76,14 @@ sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__
         @%append $(lnk) import DEATH GDI.121 import RESURRECTION GDI.122
 !endif
 !endif
-!endif
         $(linker) @$(lnk)
+!endif
 !ifneq sys_windowed 1
         @%make bind_res_wresui
 !else ifdef win386
         @%make bind_win386_add_res
 !else
         @%make bind_res
-!endif
 !endif
 
 ################
