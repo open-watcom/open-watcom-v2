@@ -2,6 +2,4 @@
 host_cpu = i86
 host_os  = os2
 
-sys  = os2
-
 !include ../master.mif

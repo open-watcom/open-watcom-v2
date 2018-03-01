@@ -3,6 +3,5 @@ host_cpu = 386
 host_os  = win
 
 sys_windowed = 1
-sys  = win386
 
 !include ../master.mif

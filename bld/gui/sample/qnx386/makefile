@@ -2,6 +2,4 @@
 host_cpu = 386
 host_os  = qnx
 
-sys  = qnx386
-
 !include ../master.mif

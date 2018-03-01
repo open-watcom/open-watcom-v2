@@ -3,6 +3,5 @@ host_cpu = 386
 host_os  = os2
 
 sys_windowed = 1
-sys  = os2v2_pm
 
 !include ../master.mif

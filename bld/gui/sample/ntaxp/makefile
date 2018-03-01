@@ -2,6 +2,4 @@
 host_os  = nt
 host_cpu = axp
 
-sys  = ntaxp
-
 !include ../master.mif

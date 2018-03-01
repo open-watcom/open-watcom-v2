@@ -46,37 +46,30 @@ resfile = sample.res
 resfile = wresui.res
 !endif
 
+extra_l_flags_nov = import @$(ui_dir)/nlm/uinlm.imp
+!ifneq sys_windowed 1
+extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
+!endif
+
 ###############
 sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
 !else
+        @%write $(lnk) $(lflags)
 !ifeq host_os nov
-        @%write $(lnk) sys netware
         @%append $(lnk) option osname='Sample NLM'
         @%append $(lnk) debug novell
-        @%append $(lnk) name sample
-        @%append $(lnk) module clib
-        @%append $(lnk) import @$(ui_dir)/nlm/uinlm.imp
-!else
-        @%write $(lnk) sys $(sys)
-!ifeq host_cpu axp
+!else ifeq host_cpu axp
         @%append $(lnk) debug codeview
 !else
         @%append $(lnk) debug all
 !endif
-!endif
         @%append $(lnk) option map $(extra_option)
-        @%append $(lnk) name $(lname)
         @%append $(lnk) option symfile=$(name).sym
         @%append $(lnk) library {$(gui_lib) $(ui_lib) $(wres_lib)}
         @for %i in ($(objs)) do @%append $(lnk) file %i
-!ifneq sys_windowed 1
-!ifeq host_os win
-        @%append $(lnk) import DEATH GDI.121 import RESURRECTION GDI.122
-!endif
-!endif
-        $(linker) @$(lnk)
+        $(linker) name $(lname) @$(lnk)
 !endif
 !ifneq sys_windowed 1
         @%make bind_res_wresui

@@ -2,6 +2,4 @@
 host_cpu = 386
 host_os  = nt
 
-sys  = nt
-
 !include ../master.mif
