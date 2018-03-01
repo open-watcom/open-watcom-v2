@@ -75,7 +75,7 @@ static void MapLocation( gui_window *wnd, gui_point *point )
  * GUIProcessMenuCurr
  */
 
-void GUIProcessMenuCurr( UIMENUITEM *menu )
+void GUIProcessMenuCurr( UIMENUITEM *menuitem )
 {
     gui_window          *top_wnd;
     gui_ctl_id          id;
@@ -84,15 +84,15 @@ void GUIProcessMenuCurr( UIMENUITEM *menu )
     hint_type           type;
 
     id = 0;
-    if( ( menu == NULL ) || ( menu->event == EV_NO_EVENT ) ) {
+    if( ( menuitem == NULL ) || ( menuitem->event == EV_NO_EVENT ) ) {
         style = GUI_IGNORE;
     } else {
-        if( menu->flags & ITEM_SEPARATOR ) {
+        if( menuitem->flags & ITEM_SEPARATOR ) {
             style = GUI_SEPARATOR;
         } else {
-            if( IS_CTLEVENT( menu->event ) ) {
-                id = EV2ID( menu->event );
-                if( MENUGRAYED( *menu ) ) {
+            if( IS_CTLEVENT( menuitem->event ) ) {
+                id = EV2ID( menuitem->event );
+                if( MENUGRAYED( *menuitem ) ) {
                     style = GUI_GRAYED;
                 } else {
                     style = GUI_ENABLED;
@@ -130,7 +130,7 @@ void GUIProcessMenuCurr( UIMENUITEM *menu )
  */
 
 ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
-                          UIMENUITEM *menu, gui_mouse_track track,
+                          UIMENUITEM *menuitems, gui_mouse_track track,
                           gui_ctl_id *curr_id )
 {
     ui_event    ui_ev;
@@ -150,7 +150,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     if( MenuState == MENU_NONE ) {
         MenuState = MENU_SYS;
     }
-    if( menu == NULL ) {
+    if( menuitems == NULL ) {
         return( EV_NO_EVENT );
     }
     attr_active         = UIData->attrs[ATTR_ACTIVE];
@@ -178,11 +178,11 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     area.row += top->screen.area.row;
     area.col += top->screen.area.col;
 
-    if( !uiposfloatingpopup( menu, &desc, wnd->screen.area.row + location->y,
+    if( !uiposfloatingpopup( menuitems, &desc, wnd->screen.area.row + location->y,
                             wnd->screen.area.col + location->x, &area, NULL ) ) {
         return( EV_NO_EVENT );
     }
-    ui_ev = uicreatepopupinarea( menu, &desc, track & GUI_TRACK_LEFT,
+    ui_ev = uicreatepopupinarea( menuitems, &desc, track & GUI_TRACK_LEFT,
                               track & GUI_TRACK_RIGHT, ui_ev, &area, false );
 
     if( ui_ev == EV_KILL_UI ) {
@@ -220,18 +220,18 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location,
 }
 
 static void TrackPopup( gui_window *wnd, gui_point *location,
-                        UIMENUITEM *new_menu, gui_mouse_track track, gui_ctl_id *curr_id )
+                        UIMENUITEM *menuitems, gui_mouse_track track, gui_ctl_id *curr_id )
 {
     MapLocation( wnd, location );
 
     MenuState = MENU_FLOAT;
     uipushlist( NULL );
     uipushlist( GUIUserEvents );
-    GUICreateMenuPopup( wnd, location, new_menu, track, curr_id );
+    GUICreateMenuPopup( wnd, location, menuitems, track, curr_id );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* NULL */ );
     MenuState = MENU_NONE;
-    GUIFreeMenuItems( new_menu );
+    GUIFreeMenuItems( menuitems );
 }
 
 /*
@@ -242,12 +242,12 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                              int num_menu_items, gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
-    UIMENUITEM  *new_menu;
+    UIMENUITEM  *menuitems;
 
-    if( !GUICreateMenuItems( num_menu_items, menu, &new_menu ) ) {
+    if( !GUICreateMenuItems( num_menu_items, menu, &menuitems ) ) {
         return( false );
     }
-    TrackPopup( wnd, location, new_menu, track, curr_id );
+    TrackPopup( wnd, location, menuitems, track, curr_id );
     return( true );
 }
 

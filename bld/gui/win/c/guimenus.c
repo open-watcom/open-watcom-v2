@@ -656,7 +656,7 @@ bool GUICreateMenus( gui_window *wnd, int num, gui_menu_struct *menu, HMENU *hme
  *                       menu items to child windows
  */
 
-bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
+bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items,
                          gui_menu_struct *menu, gui_create_styles style )
 {
     HMENU           system;
@@ -688,9 +688,9 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
                              GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label );
         }
     }
-    if( num_menus > 0 ) {
+    if( num_items > 0 ) {
         if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-            return( AppendMenus( wnd, system, num_menus, menu ) );
+            return( AppendMenus( wnd, system, num_items, menu ) );
         }
     }
     return( true );

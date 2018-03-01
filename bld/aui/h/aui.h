@@ -589,6 +589,6 @@ extern char             WndBackgroundChar;
 
 #define WndMenuSize( x ) ArraySize( x )
 #define WndMenuFields( x ) WndMenuSize( x ), x
-extern void             WndSetMainMenu( gui_menu_struct *menu, int num_menus );
+extern void             WndSetMainMenu( gui_menu_struct *menu, int num_items );
 
 #endif // _AUI_H_INCLUDED

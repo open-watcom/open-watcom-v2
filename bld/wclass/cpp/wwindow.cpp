@@ -375,7 +375,7 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     gui_style |= exstyle;
     create_info.style = (gui_create_styles)gui_style;
     create_info.parent = hparent;
-    create_info.num_menus = 0;
+    create_info.num_items = 0;
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;

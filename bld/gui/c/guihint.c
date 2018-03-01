@@ -229,7 +229,7 @@ bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
     return( false );
 }
 
-void GUIInitHint( gui_window *wnd, gui_ctl_idx num_menus, gui_menu_struct *menu, hint_type type )
+void GUIInitHint( gui_window *wnd, gui_ctl_idx num_items, gui_menu_struct *menu, hint_type type )
 {
     int                 size;
     gui_ctl_idx         i;
@@ -245,7 +245,7 @@ void GUIInitHint( gui_window *wnd, gui_ctl_idx num_menus, gui_menu_struct *menu,
             GUIMemFree( hint_struct );
         }
         num = 0;
-        for( i = 0; i < num_menus; i++ ) {
+        for( i = 0; i < num_items; i++ ) {
             num += CountMenus( &menu[i] );
         }
         size = sizeof( gui_hint_struct ) * num;
@@ -255,7 +255,7 @@ void GUIInitHint( gui_window *wnd, gui_ctl_idx num_menus, gui_menu_struct *menu,
         } else {
             hint_struct = (gui_hint_struct *)GUIMemAlloc( size );
             index = 0;
-            for( i = 0; i < num_menus; i++ ) {
+            for( i = 0; i < num_items; i++ ) {
                 InsertHint( &menu[i], hint_struct, &index );
             }
         }

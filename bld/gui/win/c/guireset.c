@@ -57,7 +57,7 @@ static void FreeSystemMenu( gui_window *wnd )
     }
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
 {
     HMENU       hmenu;
     bool        success;
@@ -73,7 +73,7 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
             GUISetMenu( wnd, NULLHANDLE );
             GUIFreePopupList( wnd );
         } else {
-            if( GUICreateMenus( wnd, num_menus, menu, &hmenu ) ) {
+            if( GUICreateMenus( wnd, num_items, menu, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
@@ -81,11 +81,11 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
         }
     } else {
         FreeSystemMenu( wnd );
-        success = GUIAddToSystemMenu( wnd, frame, num_menus, menu, wnd->style );
+        success = GUIAddToSystemMenu( wnd, frame, num_items, menu, wnd->style );
     }
     if( success ) {
-        GUIMDIResetMenus( wnd, wnd->parent, num_menus, menu );
-        GUIInitHint( wnd, num_menus, menu, MENU_HINT );
+        GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
+        GUIInitHint( wnd, num_items, menu, MENU_HINT );
     }
     return( success );
 }

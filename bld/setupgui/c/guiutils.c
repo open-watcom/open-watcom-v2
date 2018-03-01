@@ -196,7 +196,7 @@ bool SetupInit( void )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;
-    init.num_menus = 0;
+    init.num_items = 0;
     init.menu = NULL;
     init.num_attrs = WND_NUMBER_OF_COLORS;
     init.colours = MainColours;

@@ -34,23 +34,23 @@
 #include <ctype.h>
 #include <string.h>
 
-static gui_ctl_id CalcMaxId( gui_menu_struct *curr, int num_menus )
+static gui_ctl_id CalcMenuMaxId( gui_menu_struct *menu, int num_items )
 {
     int         i;
     gui_ctl_id  submax;
     gui_ctl_id  max;
 
     max = 0;
-    for( i = 0; i < num_menus; ++i ) {
-        if( curr->id > max && (curr->style & GUI_SEPARATOR) == 0 )
-            max = curr->id;
-        if( curr->num_child_menus != 0 ) {
-            submax = CalcMaxId( curr->child, curr->num_child_menus );
-            if( submax > max ) {
+    for( i = 0; i < num_items; ++i ) {
+        if( max < menu->id && (menu->style & GUI_SEPARATOR) == 0 )
+            max = menu->id;
+        if( menu->num_child_menus != 0 ) {
+            submax = CalcMenuMaxId( menu->child, menu->num_child_menus );
+            if( max < submax ) {
                 max = submax;
             }
         }
-        ++curr;
+        menu++;
     }
     return( max );
 }
@@ -82,39 +82,40 @@ void NullPopupMenu( gui_menu_struct *menu )
 void    WndAddPopupMenu( a_window wnd )
 {
     int                 i,j;
-    gui_menu_struct     *curr,*sub;
+    gui_menu_struct     *menu;
+    gui_menu_struct     *submenu;
     gui_ctl_id          max;
 
     if( WndMain == NULL )
         return;
-    curr = WndMainMenuPtr;
-    max = CalcMaxId( WndMainMenuPtr, WndNumMenus );
+    menu = WndMainMenuPtr;
+    max = CalcMenuMaxId( WndMainMenuPtr, WndNumMenus );
     for( i = 0; i < WndNumMenus; ++i ) {
-        if( curr->style & WND_MENU_POPUP ) {
-            sub = curr->child;
-            for( j = 0; j < curr->num_child_menus; ++j ) {
-                GUIDeleteMenuItem( WndMain->gui, sub->id, false );
-                ++sub;
+        if( menu->style & WND_MENU_POPUP ) {
+            submenu = menu->child;
+            for( j = 0; j < menu->num_child_menus; ++j ) {
+                GUIDeleteMenuItem( WndMain->gui, submenu->id, false );
+                submenu++;
             }
             if( wnd->popupmenu == NULL ) {
-                curr->num_child_menus = 0;
-                curr->child = NULL;
+                menu->num_child_menus = 0;
+                menu->child = NULL;
             } else {
-                curr->num_child_menus = wnd->num_popups;
-                curr->child = wnd->popupmenu;
+                menu->num_child_menus = wnd->num_popups;
+                menu->child = wnd->popupmenu;
             }
-            WndPopupMenuPtr = curr;
-            sub = curr->child;
-            for( j = 0; j < curr->num_child_menus; ++j ) {
-                if( ( sub->style & GUI_SEPARATOR ) && ( sub->id == 0 ) ) {
-                    sub->id = ++max;
+            WndPopupMenuPtr = menu;
+            submenu = menu->child;
+            for( j = 0; j < menu->num_child_menus; ++j ) {
+                if( ( submenu->style & GUI_SEPARATOR ) && ( submenu->id == 0 ) ) {
+                    submenu->id = ++max;
                 }
-                GUIAppendMenuToPopup( WndMain->gui, curr->id, sub, false );
-                ++sub;
+                GUIAppendMenuToPopup( WndMain->gui, menu->id, submenu, false );
+                submenu++;
             }
             break;
         }
-        ++curr;
+        menu++;
     }
 }
 
@@ -439,11 +440,11 @@ void    WndRowPopUp( a_window wnd, gui_menu_struct *menu, int row, int piece )
 }
 
 
-void    WndSetMainMenu( gui_menu_struct *menu, int num_menus )
+void    WndSetMainMenu( gui_menu_struct *menu, int num_items )
 {
     if( WndMain == NULL ) return;
     WndMainMenuPtr = menu;
-    WndNumMenus = num_menus;
+    WndNumMenus = num_items;
     GUIResetMenus( WndMain->gui, WndNumMenus, WndMainMenuPtr );
 }
 

@@ -117,7 +117,7 @@ static void EnableMDIMenus( gui_window *root, bool enable )
     }
 }
 
-static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu )
+static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_items, gui_menu_struct *menu )
 {
     gui_ctl_idx i;
     bool        has_items;
@@ -127,7 +127,7 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus,
     if( GUIMDI && ( parent == NULL ) ) {
         found_flag = false;
         has_items = false;
-        for( i = 0; i < num_menus; i++ ) {
+        for( i = 0; i < num_items; i++ ) {
             if( menu[i].style & GUI_MDIWINDOW ) {
                 GUIMDIMenuID = menu[i].id;
                 found_flag = true;
@@ -195,13 +195,13 @@ void MDIDeleteMenu( gui_ctl_id id )
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu )
+void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_items, gui_menu_struct *menu )
 {
     gui_window  *root;
     gui_ctl_idx i;
     gui_ctl_idx num_mdi_items;
 
-    if( !AddMenu( wnd, parent, num_menus, menu ) ) {
+    if( !AddMenu( wnd, parent, num_items, menu ) ) {
         return;
     }
     root = GUIGetRootWindow();
@@ -246,7 +246,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->num_menus, dlg_info->menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->num_items, dlg_info->menu );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;

@@ -348,7 +348,7 @@ typedef struct gui_create_info {
     gui_scroll_styles   scroll;
     gui_create_styles   style;
     gui_window          *parent;
-    int                 num_menus;
+    int                 num_items;
     gui_menu_struct     *menu;
     int                 num_attrs;
     gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
@@ -770,7 +770,7 @@ extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
 extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
-extern bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu );
+extern bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu );
 
 extern gui_ctl_idx GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 

@@ -31,7 +31,7 @@
 
 
 extern void GUIProcessSysMenuEvent( ui_event ui_ev, gui_window * wnd );
-extern bool GUISetSystemMenu( UIMENUITEM *menu, gui_create_styles style );
+extern bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style );
 extern void GUISetSystemMenuFlags( gui_window *wnd );
 
 #define NUM_SYSTEM_MENUS 7

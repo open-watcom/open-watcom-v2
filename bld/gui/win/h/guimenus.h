@@ -36,7 +36,7 @@
 extern void         GUIInitGUIMenuHint( void );
 extern void         GUISetMenu( gui_window *wnd, HMENU hmenu );
 extern bool         GUICreateMenus( gui_window *wnd, int, gui_menu_struct *menu, HMENU *hmenu );
-extern bool         GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus, gui_menu_struct *menu, gui_create_styles style );
+extern bool         GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items, gui_menu_struct *menu, gui_create_styles style );
 extern char         *GUIAddCharacter( char *old, int index );
 extern void         GUICreateMenuFlags( gui_menu_styles style, unsigned *, unsigned * );
 extern WPI_MRESULT  GUIProcessMenuSelect( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );

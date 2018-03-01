@@ -155,7 +155,7 @@ struct gui_window {
     GUICALLBACK         *gui_call_back;
     void                *extra;
     HWND                status;
-    int                 num_menus;
+    int                 num_items;
     gui_menu_struct     *mainmenu;
     hintinfo            hint;
     int                 hrange;

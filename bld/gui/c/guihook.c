@@ -137,10 +137,10 @@ void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *,
     fReset = func;
 }
 
-void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu )
+void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_items, gui_menu_struct *menu )
 {
     if( fReset != NULL ) {
-        (*fReset )( wnd, parent, num_menus, menu );
+        (*fReset )( wnd, parent, num_items, menu );
     }
 }
 
