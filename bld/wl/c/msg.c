@@ -89,8 +89,8 @@ void ResetMsg( void )
 
 #define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
 
-static size_t MakeExeName( char *buff, size_t max )
-/*************************************************/
+static size_t MakeExeTypeString( char *buff, size_t max )
+/*******************************************************/
 /* make up the "an OS/2 executable" string. */
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
@@ -339,7 +339,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
                 MsgArgInfo.index = temp;
                 break;
             case 'f':
-                num = MakeExeName( dest, len );
+                num = MakeExeTypeString( dest, len );
                 dest += num;
                 len -= num;
                 break;
