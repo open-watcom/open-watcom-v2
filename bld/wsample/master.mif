@@ -94,27 +94,6 @@ rc_cpp_dos_pls_386 = -D__PLS__
 rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
-nlm_imports = &
-    FileServerMajorVersionNumber &
-    AllocateResourceTag &
-    ScheduleSleepAESProcessEvent &
-    MapAbsoluteAddressToDataOffset &
-    Abend  &
-    Pause  &
-    Disable  &
-    Enable  &
-    RegisterForEventNotification  &
-    UnRegisterEventNotification  &
-    systemConsoleScreen  &
-    OutputToScreen  &
-    LoadModule  &
-    LoadedList &
-    Alloc &
-    delay &
-    GetCurrentTime &
-    ImportSymbol &
-    Free
-
 extra_l_flags_os2_i86 = op stack=4k, newfiles
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 extra_l_flags_win = option heap=10k, stack=10k &
@@ -122,6 +101,9 @@ extra_l_flags_win = option heap=10k, stack=10k &
     segment class 'CODE' preload fixed &
     segment class 'DATA' preload fixed &
     lib commdlg, toolhelp
+extra_l_flags_nov = opt description 'Open Watcom Sampler' &
+    debug novell option stack=10k @nversion.tmp module clib &
+    import @$(nwoss_dir)/common/imp/ownwos.imp
 
 !ifeq target nov
 inc_dirs = -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)" -I"$(dig_dir)/h"
@@ -155,30 +137,7 @@ version_res_exe_nt_x64 = exever.res
 
 libs = $(wres_lib)
 
-!ifeq target nov
-
-libs += $(clib_dir)/library/nw_clib.386/ms_s/clib3s.lib
-
-$(xname).nlm : wresui.res $(objs) $(libs) nversion.tmp $(__MAKEFILES__)
-    @%write $(%debug) tmp.lnk name $^@
-    @%append tmp.lnk option osname='Novell NLM'
-    @%append tmp.lnk format novell nlm 'Open Watcom Sampler'
-    @%append tmp.lnk debug novell
-    @%append tmp.lnk debug all
-    @%append tmp.lnk option map
-    @%append tmp.lnk option stack=10k
-    @%append tmp.lnk option nodefault
-    @%append tmp.lnk @nversion.tmp
-    @for %i in ($objs) do @%append tmp.lnk file %i
-    @for %i in ($(nlm_imports)) do @%append tmp.lnk import %i
-    @%append tmp.lnk import @$(nwoss_dir)/common/imp/owclib.imp
-    @for %i in ($(libs)) do @%append tmp.lnk lib %i
-    @%append tmp.lnk module clib
-    @%make echo_link
-    $(linker) @tmp.lnk
-    @%make bind_res_wresui
-
-!else ifeq target pls
+!ifeq target pls
 
 libs += $(plsdir)/wdos32.lib &
     $(plsdir)/wdosx32.lib &
@@ -221,7 +180,11 @@ resfile = $(xname).res
 resfile = wresui.res
 !endif
 
+!ifeq target nov
+$(xname).nlm : $(objs) $(libs) $(resfile) nversion.tmp $(__MAKEFILES__)
+!else
 $(xname).exe : $(objs) $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!endif
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
@@ -232,13 +195,12 @@ $(xname).exe : $(objs) $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cp
     @%make echo_link
     $(linker) name $^@ @tmp.lnk
 !endif
+!endif
 !ifeq host_os win
     @%make bind_res
 !else
     @%make bind_res_version_exe
     @%make bind_res_wresui
-!endif
-
 !endif
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
