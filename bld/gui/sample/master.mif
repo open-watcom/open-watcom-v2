@@ -46,7 +46,7 @@ resfile = sample.res
 resfile = wresui.res
 !endif
 
-extra_l_flags_nov = import @$(ui_dir)/nlm/uinlm.imp
+extra_l_flags_nov = import @$(nwoss_dir)/common/imp/ownwos.imp
 !ifneq sys_windowed 1
 extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 !endif

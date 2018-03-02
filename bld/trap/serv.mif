@@ -44,12 +44,14 @@ sys_x86_nlm     = form novell nlm $(description) &
                         op exit = _LibCPostlude &
                         op screenname 'none' &
                         @nversion.tmp &
+                        import _cstart_, _argc &
                         file $(%NOVELLNDK)/../libc/imports/libcpre.obj
 !else
-sys_x86_nlm     = form novell nlm $(description) &
+sys_x86_nlm     = sys novell $(description) &
                         op st=8k &
                         @nversion.tmp &
-                        import @$(trap_dir)/common/nlm/trap.imp &
+                        import @$(nwoss_dir)/common/imp/ownwos.imp &
+                        import _cstart_, _argc &
                         op nodef
 !endif
 

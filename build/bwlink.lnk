@@ -610,7 +610,7 @@ system begin qnx386
     format qnx ^
 end
 
-system begin netware
+system begin novell
     option osname='Novell NLM'
     format novell ^
     libpath %OWSRCDIR%/fpuemu/386/stub386

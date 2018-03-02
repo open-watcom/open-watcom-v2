@@ -4,23 +4,18 @@ host_os  = nov
 
 !include ../../ui.mif
 
-sample2.$(EXE) : sample.obj sampdial.obj ui.lib
-    %create sample.lnk
-    %append sample.lnk  sys netware
-    %append sample.lnk  option osname='Sample2 NLM'
+sample2.exe : sample.obj sampdial.obj ui.lib
+    %write sample.lnk  sys novell 'Sample2 NLM'
     %append sample.lnk  name sample2
     %append sample.lnk  debug all debug novell
     %append sample.lnk  option map, caseexact, stack = 10k, quiet
 
     %append sample.lnk  module clib
-#    %append sample.lnk  import @$(%WATCOM)/novi/clib.imp
-    %append sample.lnk  import @../uinlm.imp
+    %append sample.lnk  import @$(nwoss_dir)/common/imp/ownwos.imp
 
     %append sample.lnk  file sample
     %append sample.lnk  file sampdial
 
     %append sample.lnk  library ../$(LIBNAME)
-
-    set LIB=$(watcomlib);$(%LIB)
 
     wlink @sample.lnk
