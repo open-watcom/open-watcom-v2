@@ -469,7 +469,7 @@ static bool ProcModuleTypeN( int n )
 bool ProcNovell( void )
 /*********************/
 {
-    if( !ProcOne( NovModels, SEP_NO, false ) ) {  // get file type
+    if( !ProcOne( NovModels, SEP_NO, false ) ) {    // get file type
         int     nType = 0;
 
         if( (nType = atoi( Token.this )) > 0 ) {
@@ -479,14 +479,8 @@ bool ProcNovell( void )
             ProcNLM();
         }
     }
-    if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {    // get description
-        FmtData.u.nov.description = NULL;
-        return( true );
-    }
-    if( Token.len > MAX_DESCRIPTION_LENGTH ) {
-        LnkMsg( LOC+LINE+ERR+MSG_VALUE_TOO_LARGE, "s", "description" );
-    } else {
-        FmtData.u.nov.description = tostring();
+    if( GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {  // get description
+        FmtData.description = tostring();
     }
     return( true );
 }
@@ -495,16 +489,13 @@ void SetNovFmt( void )
 /********************/
 {
     Extension = E_NLM;
-    if( (LinkState & FMT_SPECIFIED) == 0 && Name != NULL ) {
-        FmtData.u.nov.description = FileName( Name, strlen( Name ), E_NLM, CmdFlags & CF_UNNAMED );
-    }
 }
 
 void FreeNovFmt( void )
 /*********************/
 {
+    _LnkFree( FmtData.description );
     _LnkFree( FmtData.u.nov.screenname );
-    _LnkFree( FmtData.u.nov.description );
     _LnkFree( FmtData.u.nov.checkfn );
     _LnkFree( FmtData.u.nov.exitfn );
     _LnkFree( FmtData.u.nov.customdata );
@@ -683,7 +674,4 @@ bool ProcExportsDBI( void )
 void CmdNovFini( void )
 /*********************/
 {
-    if( FmtData.u.nov.description == NULL && Name != NULL ) {
-        FmtData.u.nov.description = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
-    }
 }

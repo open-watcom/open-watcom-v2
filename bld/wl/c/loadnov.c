@@ -469,8 +469,8 @@ void FiniNovellLoadFile( void )
     extended_nlm_header ext_header;
     unsigned_32         temp;
     unsigned_32         image_size;
-    const char          *filename;
     const char          *startname;
+    const char          *p;
     char                ch;
     size_t              len;
     size_t              len1;
@@ -479,17 +479,18 @@ void FiniNovellLoadFile( void )
     const char          *pPeriod = NULL;
     char                module_name[NOV_MAX_MODNAME_LEN + 1];
     bool                name_trunc;
+    const char          *desc;
 
 /* find module name (output file name without the path.) */
 
-    startname = filename = Root->outfile->fname;
-    for( ; (ch = *filename) != '\0'; ++filename ) {
+    startname = Root->outfile->fname;
+    for( p = startname; (ch = *p) != '\0'; p++ ) {
         if( '.' == ch ) {
-            pPeriod = filename;
+            pPeriod = p;
             continue;
         }
         if( IS_PATH_SEP( ch ) ) {
-            startname = filename + 1;
+            startname = p + 1;
             pPeriod = NULL;
         }
     }
@@ -527,8 +528,21 @@ void FiniNovellLoadFile( void )
     if( name_trunc ) {
         LnkMsg( WRN+MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE, "s", module_name );
     }
+    /* setup description */
+    if( FmtData.description == NULL ) {
+        desc = module_name;
+        nov_header.descriptionLength = len;
+    } else {
+        nov_header.descriptionLength = strlen( FmtData.description );
+        if( nov_header.descriptionLength > MAX_DESCRIPTION_LENGTH ) {
+            nov_header.descriptionLength = MAX_DESCRIPTION_LENGTH;
+            FmtData.description[MAX_DESCRIPTION_LENGTH] = '\0';
+            LnkMsg( WRN+MSG_VALUE_TOO_LARGE, "s", "description" );
+        }
+        desc = FmtData.description;
+    }
 
-    file_size = strlen( FmtData.u.nov.description ) + sizeof( fixed_header )
+    file_size = nov_header.descriptionLength + sizeof( fixed_header )
                 + sizeof( extended_nlm_header ) + 2 * sizeof( unsigned_32 )
                 + NOV_MAX_MODNAME_LEN;
     if( FmtData.u.nov.screenname != NULL ) {
@@ -592,10 +606,9 @@ void FiniNovellLoadFile( void )
     GetProcOffsets( &nov_header );
     nov_header.moduleType = FmtData.u.nov.moduletype;
     nov_header.flags = FmtData.u.nov.exeflags;
-    nov_header.descriptionLength = strlen( FmtData.u.nov.description );
     SeekLoad( 0L );
     WriteLoad( &nov_header, sizeof( nov_header ) );
-    WriteLoad( FmtData.u.nov.description, nov_header.descriptionLength + 1 );
+    WriteLoad( desc, nov_header.descriptionLength + 1 );
     WriteLoadU32( StackSize );
     WriteLoadU32( 0 );          // reserved.
     WriteLoad( DUMMY_THREAD_NAME, OLD_THREAD_NAME_LENGTH );

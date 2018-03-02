@@ -760,12 +760,12 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
 {
     size_t      desc_len;
 
-    desc_len = strlen( FmtData.u.os2.description );
+    desc_len = strlen( FmtData.description );
     strncpy( object->name, ".desc", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( file_align );
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
     object->physical_size = ROUND_UP( desc_len, file_align );
-    WriteLoad( FmtData.u.os2.description, desc_len );
+    WriteLoad( FmtData.description, desc_len );
     return( desc_len );
 }
 
@@ -1007,7 +1007,7 @@ static unsigned FindNumObjects( void )
         ++num_objects;
     if( LinkFlags & CV_DBI_FLAG )
         ++num_objects;
-    if( FmtData.u.os2.description != NULL )
+    if( FmtData.description != NULL )
         ++num_objects;
     if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL )
         ++num_objects;
@@ -1178,7 +1178,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.u.os2.description != NULL ) {
+        if( FmtData.description != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteDescription( tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1327,7 +1327,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.u.os2.description != NULL ) {
+        if( FmtData.description != NULL ) {
             tbl_obj->rva = image_size;
             size = WriteDescription( tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );

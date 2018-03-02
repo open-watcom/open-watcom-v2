@@ -657,14 +657,12 @@ void SetFormat( void )
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
-        size_t  len = strlen( Name );
-
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
             Extension = E_HEX;       //   has been specified
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
-        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED );
+        fname = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );

@@ -471,8 +471,8 @@ unsigned long ResNonResNameTable( bool dores )
             name = GetBaseName( Root->outfile->fname, 0, &len );
         }
     } else {     /* in non-resident names table */
-        if( FmtData.u.os2.description != NULL ) {
-            name = FmtData.u.os2.description;
+        if( FmtData.description != NULL ) {
+            name = FmtData.description;
         } else if( FmtData.type & MK_OS2_16BIT ) {
             name = Root->outfile->fname;
         } else {
@@ -491,9 +491,9 @@ unsigned long ResNonResNameTable( bool dores )
             FmtData.u.os2.module_name = NULL;
         }
     } else {     /* in non-resident names table */
-        if( FmtData.u.os2.description != NULL ) {
-            _LnkFree( FmtData.u.os2.description );
-            FmtData.u.os2.description = NULL;
+        if( FmtData.description != NULL ) {
+            _LnkFree( FmtData.description );
+            FmtData.description = NULL;
         }
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
