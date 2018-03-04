@@ -200,9 +200,8 @@ int WEXPORT WListBox::count() {
 int WEXPORT WListBox::selected()
 /******************************/
 {
-    int     choice;
+    int     choice = -1;
 
-    choice = -1;
     GUIGetCurrSelect( parent()->handle(), controlId(), &choice );
     return( choice );
 }
