@@ -88,7 +88,7 @@ _WCRTLINK int mkstemp( char *template )
     /*** Get the process/thread ID ***/
 #if defined( __NETWARE__ )
     pid = (unsigned)GetThreadID();
-#elif
+#else
     pid = getpid();
 #endif
     pid %= 100000;      /* first few digits could be repeated */
