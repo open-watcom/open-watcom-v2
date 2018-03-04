@@ -60,10 +60,10 @@
 
 STATIC void *           sampleCreateWin( void );
 STATIC void             sampleOpenMainImage( void );
-STATIC bool             sampleProcTopStatus( a_window, int, int, wnd_line_piece * );
-STATIC bool             sampleProcBotStatus( a_window, int, int, wnd_line_piece * );
-STATIC bool             sampleProcStatus( a_window, int, int, wnd_line_piece * );
-STATIC bool             sampleProcOverview( a_window, int, int, wnd_line_piece * );
+STATIC bool             sampleProcTopStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC bool             sampleProcBotStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC bool             sampleProcStatus( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC bool             sampleProcOverview( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 STATIC bool             sampleWndEventProc( a_window, gui_event, void * );
 STATIC bool             sampleSetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 STATIC bool             sampleGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
@@ -86,8 +86,8 @@ STATIC bool             sasmGetLine( a_window, wnd_row );
 STATIC void             gatherSort( sio_data * );
 STATIC void             setDisplay( a_window, sio_data *, bool );
 
-typedef bool (SAMPLEGETRTNS)( a_window wnd, int row );
-typedef int (SAMPLEDETAILRTNS)( a_window wnd, int row, bool multi_level );
+typedef bool (SAMPLEGETRTNS)( a_window wnd, wnd_row row );
+typedef int (SAMPLEDETAILRTNS)( a_window wnd, wnd_row row, bool multi_level );
 
 enum {
     PIECE_MOUSE_CATCHER,
@@ -360,9 +360,8 @@ STATIC bool sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
 
 
 
-STATIC bool sampleProcTopStatus( a_window wnd, int row, int piece,
-                                             wnd_line_piece *line )
-/*****************************************************************/
+STATIC bool sampleProcTopStatus( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*************************************************************************************************/
 {
     gui_point           start;
     gui_point           end;
@@ -404,9 +403,8 @@ STATIC bool sampleProcTopStatus( a_window wnd, int row, int piece,
 
 
 
-STATIC bool sampleProcBotStatus( a_window wnd, int row, int piece,
-                                               wnd_line_piece *line )
-/*******************************************************************/
+STATIC bool sampleProcBotStatus( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*************************************************************************************************/
 {
     gui_point           start;
     gui_point           end;
@@ -450,9 +448,8 @@ STATIC bool sampleProcBotStatus( a_window wnd, int row, int piece,
 
 
 
-STATIC bool sampleProcStatus( a_window wnd, int row, int piece,
-                                           wnd_line_piece *line )
-/***************************************************************/
+STATIC bool sampleProcStatus( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/**********************************************************************************************/
 {
     sio_data        *curr_sio;
     clicks_t        abs_count;
@@ -562,9 +559,8 @@ STATIC bool sampleProcStatus( a_window wnd, int row, int piece,
 
 
 
-STATIC bool sampleProcOverview( a_window wnd, int row, int piece,
-                                             wnd_line_piece * line )
-/******************************************************************/
+STATIC bool sampleProcOverview( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/************************************************************************************************/
 {
     sio_data *      curr_sio;
     clicks_t        tick_count;
@@ -1042,7 +1038,8 @@ STATIC void sampFixDirtyCurr( a_window wnd )
 
     curr_sio = WndExtra( wnd );
     WndGetCurrent( wnd, &row, &piece );
-    if( row == WND_NO_ROW ) return;
+    if( row == WND_NO_ROW )
+        return;
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         if( !simageGetLine( wnd, row ) ) {
             return;
@@ -1408,7 +1405,9 @@ void WPFindDoPopUp( a_window wnd, gui_ctl_id id )
     index = 0;
     for( ;; ) {
         gui_menu = &sampleMenu[index++];
-        if( gui_menu->id == id ) break;
+        if( gui_menu->id == id ) {
+            break;
+        }
     }
     WPDoPopUp( wnd, gui_menu );
 }
@@ -1452,7 +1451,8 @@ STATIC void sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
     case MENU_INITIALIZE:
         if( row <= STATUS_ROW ) {
             WndMenuGrayAll( wnd );
-            if( row < 0 || row-1 >= curr_sio->level_open ) break;
+            if( row < 0 || row - 1 >= curr_sio->level_open )
+                break;
             WndMenuEnable( wnd, MENU_SAMP_ZOOM_IN, true );
             break;
         }

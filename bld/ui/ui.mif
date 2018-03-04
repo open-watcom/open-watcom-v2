@@ -38,8 +38,6 @@ extra_c_flags_trmem = $(trmem_cflags)
 # memory tracker cover routines
 extra_c_flags_uialloc = $(trmem_cover_cflags)
 
-extra_l_flags_nov = opt osname='Sample NLM' import @$(nwoss_dir)/common/imp/ownwos.imp
-
 objs = &
     uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
     uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
@@ -127,17 +125,30 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(ui_lib) $(__MAKEFILES__)
     @%make echo_link
     $(linker) @sample.lnk
 !else
-sample.exe : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
+sample.$(exe_ext) : sample.obj sampdial.obj $(name).lib $(__MAKEFILES__)
+!ifdef __WATCOM_TOOLS__
+    $(noecho)%create $^&.lnk
+!ifeq host_os nov
+    @%append $^&.lnk opt st=10k
+    @%append $^&.lnk opt de 'Sample NLM'
+    @%append $^&.lnk debug novell
+    @%append $^&.lnk module clib
+    @%append $^&.lnk import @$(nwoss_dir)/common/imp/ownwos.imp
+!else
+    @%append $^&.lnk op st=32k
+!endif
+!endif
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) sample.obj sampdial.obj $(ui_lib) $(ldflags)
 !else
-    $(linker) name $@ $(lflags) op st=32k file {sample.obj sampdial.obj} lib {$(ui_lib)}
+    $(linker) name $@ $(lflags) file {sample.obj sampdial.obj} lib {$(ui_lib)} @$^&.lnk
 !endif
 !endif
 
 !ifeq host_os qnx
 ctkeyb.obj : ctkeyb.c conesc.gh
+!endif
 
 conesc.gh : ./buildesc.exe ../tix/qnx.tix
     $[@ ../tix/qnx.tix conesc.gh
@@ -145,4 +156,3 @@ conesc.gh : ./buildesc.exe ../tix/qnx.tix
 ./buildesc.exe : ../c/buildesc.c ../../unix/c/doparse.c
     @%make echo_bldcl
     $(bld_cl) $[@ -DBUILDDESC -I"../h" -I"../../unix/c" $(bld_clflags) $(bld_ldflags)
-!endif
