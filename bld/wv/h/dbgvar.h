@@ -117,23 +117,23 @@ typedef struct var_node {
 #define VarNodeHdl( v ) ((sym_handle*)((v)->u.__hdl))
 
 typedef struct scope_state {
-    struct scope_state  *next;              // link for memory cleanup
-    struct scope_state  *outer;             // a scope surrounding this one
-    mappable_addr       scope;              // the scope handle (for locals window)
-    addr_off            scope_len;          //
+    struct scope_state  *next;                  // link for memory cleanup
+    struct scope_state  *outer;                 // a scope surrounding this one
+    mappable_addr       scope;                  // the scope handle (for locals window)
+    addr_off            scope_len;              //
     unsigned long       scope_unique;
-    mod_handle          mod;                // the module (for filescope variables window)
-    var_node            *v;                 // the variable nodes
-    long                scope_timestamp;    // LRU timestamp used for garbage collection
-    int                 wnd_data[3];        // window can save stuff here
-    bool                unmapped        : 1;// is this scope unmapped (are we in the process of restarting the program)
+    mod_handle          mod;                    // the module (for filescope variables window)
+    var_node            *v;                     // the variable nodes
+    long                scope_timestamp;        // LRU timestamp used for garbage collection
+    void                *wnd_data;              // window can save stuff here
+    bool                unmapped        : 1;    // is this scope unmapped (are we in the process of restarting the program)
 } scope_state;
 
 typedef struct {
-    var_node            *exprsp_cache;  // if ExprSP is still around, what expression is it for
-    int                 exprsp_cacherow;//   - and on what row
-    long                exprsp_timestamp;// incremented when we blow away ExprSP
-    scope_state         *s;             // the current scope for this window
+    var_node            *exprsp_cache;          // if ExprSP is still around, what expression is it for
+    int                 exprsp_cacherow;        //   - and on what row
+    long                exprsp_timestamp;       // incremented when we blow away ExprSP
+    scope_state         *s;                     // the current scope for this window
 //  var_type_bits       hide;
     int                 name_end_row;
     bool                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?

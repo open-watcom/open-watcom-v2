@@ -158,7 +158,7 @@ OVL_EXTERN void RepRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN void RepMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     event_record        *ev;
 
@@ -189,8 +189,7 @@ OVL_EXTERN void RepMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-OVL_EXTERN  bool    RepGetLine( a_window wnd, int row, int piece,
-                            wnd_line_piece *line )
+OVL_EXTERN  bool    RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     event_record        *ev;
 

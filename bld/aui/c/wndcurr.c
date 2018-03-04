@@ -38,10 +38,10 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
 {
     gui_point           point;
     int                 col;
-    int                 piece;
-    int                 last_piece;
+    wnd_piece           piece;
+    wnd_piece           last_piece;
     int                 last_col;
-    int                 last_extended_tab_piece;
+    wnd_piece           last_extended_tab_piece;
     int                 last_extended_tab_col;
     bool                got;
     bool                allowed_in_tab;
@@ -132,16 +132,17 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
 }
 
 
-void    WndGetCurrent( a_window wnd, wnd_row *row, int *piece )
+void    WndGetCurrent( a_window wnd, wnd_row *row, wnd_piece *piece )
 {
     *row = WND_NO_ROW;
-    if( !WndHasCurrent( wnd ) ) return;
+    if( !WndHasCurrent( wnd ) )
+        return;
     *row = WndVirtualRow( wnd, wnd->current.row );
     *piece = wnd->current.piece;
 }
 
 
-void    WndNewCurrent( a_window wnd, wnd_row row, int piece )
+void    WndNewCurrent( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd->current.row = WndScreenRow( wnd, row );
     wnd->current.piece = piece;
@@ -151,7 +152,7 @@ void    WndNewCurrent( a_window wnd, wnd_row row, int piece )
 }
 
 
-void WndMoveCurrent( a_window wnd, wnd_row row, int piece )
+void WndMoveCurrent( a_window wnd, wnd_row row, wnd_piece piece )
 {
     WndDirtyCurr( wnd );
     if( row < WndTop( wnd ) ) {
@@ -187,8 +188,8 @@ wnd_row WndCurrRow( a_window wnd )
 
 bool    WndNextCurrent( a_window wnd, bool wrap )
 {
-    int                 row;
-    int                 piece;
+    wnd_row             row;
+    wnd_piece           piece;
     wnd_line_piece      line;
 
     if( WndHasCurrent( wnd ) ) {
@@ -201,7 +202,8 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
     WndNextRow( wnd, WND_NO_ROW, WND_SAVE_ROW );
     for( ;; ) {
         for( ;; ) {
-            if( !WndGetLine( wnd, row, piece, &line ) ) break;
+            if( !WndGetLine( wnd, row, piece, &line ) )
+                break;
             if( line.tabstop ) {
                 WndDirtyCurr( wnd );
                 if( row >= wnd->rows ) {
@@ -233,13 +235,14 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
 
 bool WndPrevCurrent( a_window wnd, bool wrap )
 {
-    int                 piece;
-    int                 last_piece;
-    int                 found_piece;
-    int                 row;
+    wnd_piece           piece;
+    wnd_piece           last_piece;
+    wnd_piece           found_piece;
+    wnd_row             row;
     wnd_line_piece      line;
 
-    if( !WndHasCurrent( wnd ) ) return( false );
+    if( !WndHasCurrent( wnd ) )
+        return( false );
     row = wnd->current.row;
     last_piece = wnd->current.piece;
     WndNextRow( wnd, WND_NO_ROW, WND_SAVE_ROW );
@@ -299,7 +302,8 @@ void     WndCheckCurrentValid( a_window wnd )
 {
     wnd_line_piece      line;
 
-    if( !WndHasCurrent( wnd ) ) return;
+    if( !WndHasCurrent( wnd ) )
+        return;
     if( !WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line ) ) {
         WndLastCurrent( wnd );
     } else {
@@ -311,7 +315,8 @@ void     WndCheckCurrentValid( a_window wnd )
 
 static void WndAdjustCurrCol( a_window wnd, wnd_line_piece *line )
 {
-    if( !WndHasCurrent( wnd ) ) return;
+    if( !WndHasCurrent( wnd ) )
+        return;
     if( line->length == 0 ) {
         wnd->current.col = 0;
     } else if( wnd->current_col >= line->length ) {

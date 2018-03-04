@@ -173,7 +173,7 @@ static void GotoLine( a_window wnd )
     long        line;
     mad_radix   old_radix;
     wnd_row     curr_row;
-    int         curr_piece;
+    wnd_piece   curr_piece;
 
     old_radix = NewCurrRadix( 10 );
     WndGetCurrent( wnd, &curr_row, &curr_piece );
@@ -193,7 +193,7 @@ static void GotoLine( a_window wnd )
 }
 
 
-OVL_EXTERN void     FileMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     FileMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  mod;
@@ -333,7 +333,7 @@ OVL_EXTERN int FileScroll( a_window wnd, int lines )
 }
 
 
-OVL_EXTERN  void    FileModify( a_window wnd, int row, int piece )
+OVL_EXTERN  void    FileModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -365,7 +365,7 @@ static void FileSetDotAddr( a_window wnd, address addr )
     }
 }
 
-OVL_EXTERN void FileNotify( a_window wnd, wnd_row row, int piece )
+OVL_EXTERN void FileNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -420,7 +420,7 @@ void FileBreakGadget( a_window wnd, wnd_line_piece *line, bool curr, brkp *bp )
 }
 
 
-OVL_EXTERN  bool    FileGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         len;
     file_window *file = WndFile( wnd );
@@ -552,7 +552,7 @@ static void FileTrack( a_window wnd, cue_handle *ch )
     mod_handle  mod;
     cue_fileid  id;
     wnd_row     curr_row;
-    int         curr_piece;
+    wnd_piece   curr_piece;
 
     if( ch == NULL ) {
         mod = NO_MOD;

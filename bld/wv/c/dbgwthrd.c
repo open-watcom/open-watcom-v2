@@ -90,7 +90,7 @@ OVL_EXTERN int TrdNumRows( a_window wnd )
     return( num );
 }
 
-OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -158,8 +158,7 @@ OVL_EXTERN void TrdRefresh( a_window wnd )
 }
 
 
-OVL_EXTERN bool    TrdGetLine( a_window wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 

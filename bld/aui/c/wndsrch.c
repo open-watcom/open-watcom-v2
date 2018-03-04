@@ -292,7 +292,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
             curr.row = WndNextRow( wnd, curr.row, 1 );
         } else {
             starting_pos.col = WND_MAX_COL;
-            starting_pos.piece = WND_MAX_COL;
+            starting_pos.piece = WND_NO_PIECE;
             curr.row = WndNextRow( wnd, curr.row, -1 );
         }
         curr.piece = 0;

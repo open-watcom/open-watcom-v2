@@ -31,9 +31,9 @@
 ****************************************************************************/
 
 
-extern void     GlobMenuItem( a_window wnd, gui_ctl_id id, int row, int piece );
+extern void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece );
 extern int      GlobNumRows( a_window wnd );
-extern bool     GlobGetLine( a_window wnd, int row, int piece, wnd_line_piece *line );
+extern bool     GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line );
 extern void     GlobNewMod( a_window wnd, mod_handle mod );
 extern void     GlobRefresh( a_window wnd );
 extern a_window DoWndGlobOpen( mod_handle mod );

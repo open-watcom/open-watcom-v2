@@ -34,8 +34,7 @@
 
 #define WSW_NOT_TO_SCREEN       WSW_UTIL_1
 
-static void WndDrawSelect( a_window wnd, wnd_line_piece *line,
-                           wnd_row row, int piece )
+static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece )
 {
     int                 first;
     int                 len;
@@ -53,8 +52,7 @@ static void WndDrawSelect( a_window wnd, wnd_line_piece *line,
 }
 
 
-static void WndDrawTheLine( a_window wnd, wnd_line_piece *line,
-                            wnd_row row )
+static void WndDrawTheLine( a_window wnd, wnd_line_piece *line, wnd_row row )
 {
     gui_ord             extent;
     gui_point           start,end;
@@ -149,8 +147,7 @@ static void WndDrawTheLine( a_window wnd, wnd_line_piece *line,
 }
 
 
-static void WndDrawCursor( a_window wnd, wnd_line_piece *line,
-                           wnd_row row, int piece )
+static void WndDrawCursor( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece )
 {
     const char  *p;
 
@@ -180,10 +177,10 @@ static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
 {
     wnd_row             row;
     wnd_row             row_to_get;
-    int                 piece;
+    wnd_piece           piece;
     wnd_line_piece      line;
     wnd_row             notify_row;
-    int                 notify_piece;
+    wnd_piece           notify_piece;
     wnd_attr            piece0_attr;
     wnd_attr            prev_attr;
     bool                had_cache;
@@ -199,9 +196,9 @@ static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
             } else {
                 row_to_get = row;
             }
-            if( !WndGetLine( wnd, row_to_get, piece, &line ) ) break;
-            if( line.tabstop && wnd->current.row == row &&
-                wnd->current.piece == piece ) {
+            if( !WndGetLine( wnd, row_to_get, piece, &line ) )
+                break;
+            if( line.tabstop && wnd->current.row == row && wnd->current.piece == piece ) {
                 notify_row = row;
                 notify_piece = piece;
                 if( WndSwitchOn( wnd, WSW_HIGHLIGHT_CURRENT ) ) {

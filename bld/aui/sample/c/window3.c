@@ -263,7 +263,7 @@ static char *Stuff[] =
 
 static int TheSize = ArraySize( Stuff );
 
-static void W3MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+static void W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     row=row;piece=piece;
     switch( id ) {
@@ -277,7 +277,7 @@ static void W3MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static void W3Modify( a_window wnd, int row, int piece )
+static void W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     W3MenuItem( wnd, 0, row, piece );
 }
@@ -289,11 +289,13 @@ static int W3NumRows( a_window wnd )
     return( TheSize );
 }
 
-static bool W3GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
-    if( row >= TheSize ) return( false );
-    if( piece != 0 ) return( false );
+    if( row >= TheSize )
+        return( false );
+    if( piece != 0 )
+        return( false );
     line->text = Stuff[ row ];
     line->tabstop = true;
 //  line->extent = WND_MAX_EXTEND;

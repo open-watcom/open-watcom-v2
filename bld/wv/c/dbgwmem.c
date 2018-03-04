@@ -160,7 +160,7 @@ static char *MemGetTitle( mem_window *mem )
 static unsigned MemCurrOffset( a_window wnd )
 {
     wnd_row     curr_row;
-    int         curr_piece;
+    wnd_piece   curr_piece;
     mem_window  *mem;
 
     mem = WndMem( wnd );
@@ -353,7 +353,7 @@ static  void    MemSetType( a_window wnd, unsigned idx )
 }
 
 
-static  bool    CanModify( a_window wnd, int row, int piece )
+static  bool    CanModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)piece;
 
@@ -378,7 +378,7 @@ static  void    MemUpdateCursor( a_window wnd )
 {
     mem_window  *mem;
     wnd_row     cursor_row;
-    int         cursor_piece;
+    wnd_piece   cursor_piece;
     int         shadow_piece;
 
     mem = WndMem( wnd );
@@ -409,7 +409,7 @@ static  void    MemUpdateCursor( a_window wnd )
 }
 
 
-OVL_EXTERN  void    MemModify( a_window wnd, int row, int piece )
+OVL_EXTERN  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     union {
@@ -635,7 +635,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-OVL_EXTERN  bool    MemGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -780,7 +780,7 @@ static void MemResize( a_window wnd )
     MemRefresh( wnd );
 }
 
-OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     mem_window  *mem;
 

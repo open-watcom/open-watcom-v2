@@ -33,7 +33,7 @@
 #include "_aui.h"////
 
 wnd_row         WndMenuRow;
-int             WndMenuPiece;
+wnd_piece       WndMenuPiece;
 
 
 void WndSelectEvent( a_window wnd, gui_event gui_ev, void *parm )
@@ -103,8 +103,7 @@ void    WndSelEnds( a_window wnd, wnd_coord **pstart, wnd_coord **pend )
     *pend = end;
 }
 
-bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row,
-                             int piece, int *first, int *len )
+bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece, int *first, int *len )
 {
     wnd_coord   *start;
     wnd_coord   *end;

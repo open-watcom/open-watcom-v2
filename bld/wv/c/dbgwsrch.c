@@ -229,7 +229,7 @@ static void     SrchInit( a_window wnd )
 }
 
 
-OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    new;
@@ -253,7 +253,7 @@ OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-OVL_EXTERN  bool    SrchGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -319,7 +319,7 @@ OVL_EXTERN bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         SrchInit( wnd );
-        WndSetKey( wnd, PIECE_MODULE );
+        WndSetKeyPiece( wnd, PIECE_MODULE );
         return( true );
     case GUI_DESTROY :
         WndFreeRX( srch->expr );

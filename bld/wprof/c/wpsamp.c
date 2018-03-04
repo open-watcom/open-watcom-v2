@@ -65,24 +65,24 @@ STATIC bool             sampleProcBotStatus( a_window, int, int, wnd_line_piece 
 STATIC bool             sampleProcStatus( a_window, int, int, wnd_line_piece * );
 STATIC bool             sampleProcOverview( a_window, int, int, wnd_line_piece * );
 STATIC bool             sampleWndEventProc( a_window, gui_event, void * );
-STATIC bool             sampleSetLine( a_window, int, int, wnd_line_piece * );
-STATIC bool             sampleGetLine( a_window, wnd_row, int, wnd_line_piece * );
-STATIC int              simageDetailLine( a_window, int, bool );
-STATIC int              smodDetailLine( a_window, int, bool );
-STATIC int              sfileDetailLine( a_window, int, bool );
-STATIC int              srtnDetailLine( a_window, int, bool );
-STATIC int              ssrcDetailLine( a_window, int, bool );
-STATIC int              sasmDetailLine( a_window, int, bool );
+STATIC bool             sampleSetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC bool             sampleGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
+STATIC int              simageDetailLine( a_window, wnd_row, bool );
+STATIC int              smodDetailLine( a_window, wnd_row, bool );
+STATIC int              sfileDetailLine( a_window, wnd_row, bool );
+STATIC int              srtnDetailLine( a_window, wnd_row, bool );
+STATIC int              ssrcDetailLine( a_window, wnd_row, bool );
+STATIC int              sasmDetailLine( a_window, wnd_row, bool );
 STATIC int              srtnOpenDetail( sio_data *, bool );
 STATIC void             sampleRefresh( a_window );
-STATIC void             sampleMenuItem( a_window, gui_ctl_id id, int, int );
+STATIC void             sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
 STATIC void             sampFixDirtyCurr( a_window );
-STATIC bool             simageGetLine( a_window, int );
-STATIC bool             smodGetLine( a_window, int );
-STATIC bool             sfileGetLine( a_window, int );
-STATIC bool             srtnGetLine( a_window, int );
-STATIC bool             ssrcGetLine( a_window, int );
-STATIC bool             sasmGetLine( a_window, int );
+STATIC bool             simageGetLine( a_window, wnd_row );
+STATIC bool             smodGetLine( a_window, wnd_row );
+STATIC bool             sfileGetLine( a_window, wnd_row );
+STATIC bool             srtnGetLine( a_window, wnd_row );
+STATIC bool             ssrcGetLine( a_window, wnd_row );
+STATIC bool             sasmGetLine( a_window, wnd_row );
 STATIC void             gatherSort( sio_data * );
 STATIC void             setDisplay( a_window, sio_data *, bool );
 
@@ -335,9 +335,8 @@ STATIC bool sampleWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 
 
 
-STATIC bool sampleGetLine( a_window wnd, wnd_row row, int piece,
-                                        wnd_line_piece *line )
-/*************************************************************/
+STATIC bool sampleGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*******************************************************************************************/
 {
     sio_data        *curr_sio;
 
@@ -686,8 +685,8 @@ STATIC bool sampleProcOverview( a_window wnd, int row, int piece,
 
 
 
-STATIC bool simageGetLine( a_window wnd, int row )
-/**************************************************/
+STATIC bool simageGetLine( a_window wnd, wnd_row row )
+/****************************************************/
 {
     sio_data *      curr_sio;
     image_info *    image;
@@ -715,8 +714,8 @@ STATIC bool simageGetLine( a_window wnd, int row )
 
 
 
-STATIC bool smodGetLine( a_window wnd, int row )
-/**********************************************/
+STATIC bool smodGetLine( a_window wnd, wnd_row row )
+/**************************************************/
 {
     sio_data        *curr_sio;
     mod_info        *mod;
@@ -744,8 +743,8 @@ STATIC bool smodGetLine( a_window wnd, int row )
 
 
 
-STATIC bool sfileGetLine( a_window wnd, int row )
-/***********************************************/
+STATIC bool sfileGetLine( a_window wnd, wnd_row row )
+/***************************************************/
 {
     sio_data        *curr_sio;
     file_info       *curr_file;
@@ -772,8 +771,8 @@ STATIC bool sfileGetLine( a_window wnd, int row )
 
 
 
-STATIC bool srtnGetLine( a_window wnd, int row )
-/**********************************************/
+STATIC bool srtnGetLine( a_window wnd, wnd_row row )
+/**************************************************/
 {
     sio_data        *curr_sio;
     rtn_info        *curr_rtn;
@@ -800,8 +799,8 @@ STATIC bool srtnGetLine( a_window wnd, int row )
 
 
 
-STATIC bool ssrcGetLine( a_window wnd, int row )
-/***********************************************/
+STATIC bool ssrcGetLine( a_window wnd, wnd_row row )
+/**************************************************/
 {
     sio_data        *curr_sio;
     wp_srcfile      *wp_src;
@@ -842,8 +841,8 @@ STATIC bool ssrcGetLine( a_window wnd, int row )
 
 
 
-STATIC bool sasmGetLine( a_window wnd, int row )
-/**********************************************/
+STATIC bool sasmGetLine( a_window wnd, wnd_row row )
+/**************************************************/
 {
     sio_data        *curr_sio;
     wp_asmfile      *wpasm_file;
@@ -883,9 +882,8 @@ STATIC bool sasmGetLine( a_window wnd, int row )
 
 
 
-STATIC bool sampleSetLine( a_window wnd, int row, int piece,
-                                        wnd_line_piece *line )
-/************************************************************/
+STATIC bool sampleSetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/*******************************************************************************************/
 {
     sio_data        *curr_sio;
     clicks_t        bar_range;
@@ -1039,25 +1037,37 @@ STATIC void sampFixDirtyCurr( a_window wnd )
     wp_srcfile      *src_file;
     rtn_info        *curr_rtn;
     int             src_line;
-    int             row;
-    int             piece;
+    wnd_row         row;
+    wnd_piece       piece;
 
     curr_sio = WndExtra( wnd );
     WndGetCurrent( wnd, &row, &piece );
     if( row == WND_NO_ROW ) return;
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
-        if( !simageGetLine( wnd, row ) ) return;
+        if( !simageGetLine( wnd, row ) ) {
+            return;
+        }
     } else if( curr_sio->level_open == LEVEL_IMAGE ) {
-        if( !smodGetLine( wnd, row ) ) return;
+        if( !smodGetLine( wnd, row ) ) {
+            return;
+        }
     } else if( curr_sio->level_open == LEVEL_MODULE ) {
-        if( !sfileGetLine( wnd, row ) ) return;
+        if( !sfileGetLine( wnd, row ) ) {
+            return;
+        }
     } else if( curr_sio->level_open == LEVEL_FILE ) {
-        if( !srtnGetLine( wnd, row ) ) return;
+        if( !srtnGetLine( wnd, row ) ) {
+            return;
+        }
     } else {
         if( curr_sio->level_open == LEVEL_ROUTINE ) {
-            if( !ssrcGetLine( wnd, row ) ) return;
+            if( !ssrcGetLine( wnd, row ) ) {
+                return;
+            }
         } else {
-            if( !sasmGetLine( wnd, row ) ) return;
+            if( !sasmGetLine( wnd, row ) ) {
+                return;
+            }
         }
         src_line = row + 1;
         if( curr_sio->level_open == LEVEL_SOURCE ) {
@@ -1099,8 +1109,8 @@ STATIC void sampFixDirtyCurr( a_window wnd )
 
 
 
-STATIC int simageDetailLine( a_window wnd, int row, bool multi_level )
-/********************************************************************/
+STATIC int simageDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/************************************************************************/
 {
     sio_data        *curr_sio;
     image_info      *image;
@@ -1139,8 +1149,8 @@ STATIC int simageDetailLine( a_window wnd, int row, bool multi_level )
 
 
 
-STATIC int smodDetailLine( a_window wnd, int row, bool multi_level )
-/******************************************************************/
+STATIC int smodDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
 {
     sio_data        *curr_sio;
     mod_info        *mod;
@@ -1161,8 +1171,8 @@ STATIC int smodDetailLine( a_window wnd, int row, bool multi_level )
 
 
 
-STATIC int sfileDetailLine( a_window wnd, int row, bool multi_level )
-/*******************************************************************/
+STATIC int sfileDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/***********************************************************************/
 {
     sio_data        *curr_sio;
     file_info       *curr_file;
@@ -1183,8 +1193,8 @@ STATIC int sfileDetailLine( a_window wnd, int row, bool multi_level )
 
 
 
-STATIC int srtnDetailLine( a_window wnd, int row, bool multi_level )
-/******************************************************************/
+STATIC int srtnDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
 {
     sio_data        *curr_sio;
     rtn_info        *curr_rtn;
@@ -1240,8 +1250,8 @@ STATIC int srtnOpenDetail( sio_data *curr_sio, bool go_down )
 
 
 
-STATIC int ssrcDetailLine( a_window wnd, int row, bool multi_level )
-/******************************************************************/
+STATIC int ssrcDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
 {
     sio_data        *curr_sio;
     wp_asmfile      *asm_file;
@@ -1263,8 +1273,8 @@ STATIC int ssrcDetailLine( a_window wnd, int row, bool multi_level )
 
 
 
-STATIC int sasmDetailLine( a_window wnd, int row, bool multi_level )
-/******************************************************************/
+STATIC int sasmDetailLine( a_window wnd, wnd_row row, bool multi_level )
+/**********************************************************************/
 {
     /* unused parameters */ (void)wnd; (void)multi_level;
 
@@ -1428,8 +1438,8 @@ STATIC void setDisplay( a_window wnd, sio_data * curr_sio, bool do_top )
 
 
 
-STATIC void sampleMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
-/***************************************************************************/
+STATIC void sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+/*************************************************************************************/
 {
     sio_data *      curr_sio;
     int             sort_type;

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
-                                       int piece, int col, int end_col )
+                                       wnd_piece piece, int col, int end_col )
 {
     int         i;
     int         same_row;
@@ -143,7 +143,7 @@ void    WndRowDirtyImmed( a_window wnd, wnd_row row )
 }
 
 
-void    WndPieceDirty( a_window wnd, wnd_row row, int piece )
+void    WndPieceDirty( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_coord   coord;
 

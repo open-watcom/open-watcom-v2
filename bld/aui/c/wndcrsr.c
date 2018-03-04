@@ -34,22 +34,25 @@
 
 bool    WndAtTop( a_window wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return( false );
-    if( wnd->current.row > wnd->title_size ) return( false );
+    if( !WndHasCurrent( wnd ) )
+        return( false );
+    if( wnd->current.row > wnd->title_size )
+        return( false );
     return( true );
 }
 
 
-static  bool    WndFindCloseTab( a_window wnd, int row )
+static  bool    WndFindCloseTab( a_window wnd, wnd_row row )
 {
-    int         piece;
+    wnd_piece   piece;
 
-    for( piece = wnd->current.piece; piece >= 0; --piece ) {
+    piece = wnd->current.piece;
+    do {
         if( WndPieceIsTab( wnd, row, piece ) ) {
             wnd->current.piece = piece;
             return( true );
         }
-    }
+    } while( piece-- > 0 );
     return( false );
 }
 
@@ -79,15 +82,17 @@ static  void    WndMoveUp( a_window wnd )
 }
 
 
-static  bool    WndAtBottom( a_window wnd )
+static bool     WndAtBottom( a_window wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return( false );
-    if( wnd->current.row < wnd->rows-1 ) return( false );
+    if( !WndHasCurrent( wnd ) )
+        return( false );
+    if( wnd->current.row < wnd->rows - 1 )
+        return( false );
     return( true );
 }
 
 
-static  void    WndMoveDown( a_window wnd )
+static void     WndMoveDown( a_window wnd )
 {
     if( WndAtBottom( wnd ) ) {
         WndDirtyCurr( wnd );
@@ -193,8 +198,8 @@ bool WndTabLeft( a_window wnd, bool wrap )
 
 static bool WndCursorLeftCheck( a_window wnd )
 {
-    int         col;
-    wnd_line_piece      line;
+    int             col;
+    wnd_line_piece  line;
 
     if( WndSwitchOff( wnd, WSW_CHAR_CURSOR ) || !WndHasCurrent( wnd ) || wnd->current.col == 0 ) {
         if( !WndTabLeft( wnd, false ) )

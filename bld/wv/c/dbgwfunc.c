@@ -76,7 +76,7 @@ enum {
 };
 
 
-OVL_EXTERN  void    FuncModify( a_window wnd, int row, int piece )
+OVL_EXTERN  void    FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -149,7 +149,7 @@ static void FuncNewOptions( a_window wnd )
     WndZapped( wnd );
 }
 
-OVL_EXTERN void     FuncMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -187,8 +187,7 @@ OVL_EXTERN void     FuncMenuItem( a_window wnd, gui_ctl_id id, int row, int piec
 }
 
 
-OVL_EXTERN  bool    FuncGetLine( a_window wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -276,7 +275,7 @@ OVL_EXTERN bool FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         NameListInit( NameList( func ), WF_CODE );
         func->toggled_break = false;
         FuncSetOptions( wnd );
-        WndSetKey( wnd, PIECE_NAME );
+        WndSetKeyPiece( wnd, PIECE_NAME );
         return( true );
     case GUI_RESIZE :
         CalcIndent( wnd );

@@ -2364,6 +2364,7 @@ static void VarFreeScopeList( var_info *i, scope_state *junk )
     *owner = junk->next;
     VarNodeFini( junk->v );
     FiniMappableAddr( &junk->scope );
+    DbgFree( junk->wnd_data );
     DbgFree( junk );
     for( s = i->s; s != NULL; s = s->next ) {
         if( s->outer == junk ) {

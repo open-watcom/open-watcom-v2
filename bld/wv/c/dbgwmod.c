@@ -119,7 +119,7 @@ static void     ModInit( a_window wnd )
     ModCalcIndent( wnd );
 }
 
-OVL_EXTERN void     ModMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  handle;
@@ -178,7 +178,7 @@ OVL_EXTERN void     ModMenuItem( a_window wnd, gui_ctl_id id, int row, int piece
 }
 
 
-OVL_EXTERN void     ModModify( a_window wnd, int row, int piece )
+OVL_EXTERN void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( piece == PIECE_SOURCE ) {
         if( ModHasSourceInfo( ModListMod( ModList( WndMod( wnd ) ), row ) ) ) {
@@ -194,8 +194,7 @@ OVL_EXTERN void     ModModify( a_window wnd, int row, int piece )
 }
 
 
-OVL_EXTERN  bool    ModGetLine( a_window wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     mod_handle  handle;
     mod_window  *mod = WndMod( wnd );
@@ -231,7 +230,7 @@ static void ModSetCurrent( a_window wnd )
     int         i;
     mod_window  *mod = WndMod( wnd );
     wnd_row     curr_row;
-    int         curr_piece;
+    wnd_piece   curr_piece;
 
     WndGetCurrent( wnd, &curr_row, &curr_piece );
     if( curr_row != WND_NO_ROW && ModListMod( ModList( mod ), curr_row ) == ContextMod ) {
@@ -293,7 +292,7 @@ OVL_EXTERN bool ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     case GUI_INIT_WINDOW:
         ModListInit( ModList( mod ), NULL );
         mod->info = NULL;
-        WndSetKey( wnd, PIECE_MODULE );
+        WndSetKeyPiece( wnd, PIECE_MODULE );
         ModSetOptions( wnd );
         ModSetCurrent( wnd );
         return( true );

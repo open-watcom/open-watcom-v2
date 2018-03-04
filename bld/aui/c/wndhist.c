@@ -171,16 +171,19 @@ bool WndNextFromHistory( save_area *save, char *cmd )
     unsigned  cnt;
     unsigned  curr;
 
-    if( save == NULL ) return( 0 );
+    if( save == NULL )
+        return( false );
     curr = save->curr_cmd;
     _ModIndex( curr, save->area[ curr ] + 2 );
     if( !save->last_was_next ) {
-        if( curr == save->first_free ) return( 0 );
+        if( curr == save->first_free )
+            return( false );
         save->curr_cmd = curr;
         _ModIndex( curr, save->area[ curr ] + 2 );
     }
     save->last_was_next = false;
-    if( curr == save->first_free ) return( 0 );
+    if( curr == save->first_free )
+        return( false );
     save->last_was_next = true;
     save->curr_cmd = curr;
     len = save->area[ curr ];

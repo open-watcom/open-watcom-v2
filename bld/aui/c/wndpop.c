@@ -126,8 +126,7 @@ void    WndNullPopItem( a_window wnd )
     wnd->popitem[0] = '\0';
 }
 
-static void GoBackward( a_window wnd, wnd_coord *start,
-                    wnd_line_piece *line )
+static void GoBackward( a_window wnd, wnd_coord *start, wnd_line_piece *line )
 {
     char        ch;
 
@@ -145,8 +144,7 @@ static void GoBackward( a_window wnd, wnd_coord *start,
 }
 
 
-static void GoForward( a_window wnd, wnd_coord *end,
-                       wnd_line_piece *line )
+static void GoForward( a_window wnd, wnd_coord *end, wnd_line_piece *line )
 {
     char        ch;
 
@@ -170,7 +168,7 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
     wnd_row             row;
     wnd_coord           *start;
     wnd_coord           *end;
-    int                 piece;
+    wnd_piece           piece;
     int                 buff_size;
     char                *ptr;
     int                 first;
@@ -198,7 +196,8 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
     buff_size = 0;
     for( row = start->row; row <= end->row; ++row ) {
         for( piece = 0; ; ++piece ) {
-            if( !WndGetLine( wnd, row, piece, &line ) ) break;
+            if( !WndGetLine( wnd, row, piece, &line ) )
+                break;
             if( WndSelected( wnd, &line, row, piece, &first, &len ) ) {
                 buff_size += len + 1;
             }
@@ -209,9 +208,11 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
     ptr = wnd->popitem;
     for( row = start->row; row <= end->row; ++row ) {
         for( piece = 0; ; ++piece ) {
-            if( !WndGetLine( wnd, row, piece, &line ) ) break;
+            if( !WndGetLine( wnd, row, piece, &line ) )
+                break;
             if( WndSelected( wnd, &line, row, piece, &first, &len ) ) {
-                if( ptr != wnd->popitem ) *ptr++ = ' ';
+                if( ptr != wnd->popitem )
+                    *ptr++ = ' ';
                 memcpy( ptr, line.text+first, len );
                 ptr += len;
             }
@@ -429,7 +430,7 @@ void    WndKeyPopUp( a_window wnd, gui_menu_struct *menu )
 }
 
 
-void    WndRowPopUp( a_window wnd, gui_menu_struct *menu, int row, int piece )
+void    WndRowPopUp( a_window wnd, gui_menu_struct *menu, wnd_row row, wnd_piece piece )
 {
     gui_point           point;
 

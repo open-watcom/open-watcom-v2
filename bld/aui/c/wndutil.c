@@ -79,7 +79,7 @@ void    WndCoordToGUIPoint( a_window wnd, wnd_coord *where, gui_point *point )
     point->y = where->row * wnd->max_char.y;
 }
 
-bool    WndPieceIsTab( a_window wnd, int row, int piece )
+bool    WndPieceIsTab( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_line_piece      line;
 
@@ -87,7 +87,7 @@ bool    WndPieceIsTab( a_window wnd, int row, int piece )
 }
 
 
-bool    WndPieceIsHot( a_window wnd, int row, int piece )
+bool    WndPieceIsHot( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_line_piece      line;
 

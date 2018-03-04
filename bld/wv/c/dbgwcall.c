@@ -75,7 +75,7 @@ OVL_EXTERN int CallNumRows( a_window wnd )
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -111,7 +111,7 @@ OVL_EXTERN void     CallMenuItem( a_window wnd, gui_ctl_id id, int row, int piec
     }
 }
 
-OVL_EXTERN  bool    CallGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );

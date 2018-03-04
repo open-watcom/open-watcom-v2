@@ -123,7 +123,7 @@ OVL_EXTERN bool RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-OVL_EXTERN void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -191,7 +191,7 @@ OVL_EXTERN void RunTrdRefresh( a_window wnd )
     WndSetRepaint( wnd );
 }
 
-OVL_EXTERN bool    RunTrdGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 

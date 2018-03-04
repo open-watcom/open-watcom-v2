@@ -44,20 +44,20 @@ extern  void            WndCoordToGUIPoint(a_window,wnd_coord*,gui_point*);
 
 extern void             WndSelPieceChange( a_window wnd, wnd_coord *piece );
 extern bool             WndSelGetEndPiece( a_window wnd, void *parm, wnd_coord *piece );
-extern bool             WndSelSetEnd(a_window,void*);
-extern bool             WndSelSetStart(a_window,void*);
-extern void             WndSelEnds(a_window,wnd_coord **,wnd_coord **);
-extern bool             WndSelected(a_window,wnd_line_piece*,wnd_row ,int ,int *,int *);
+extern bool             WndSelSetEnd( a_window, void * );
+extern bool             WndSelSetStart( a_window, void * );
+extern void             WndSelEnds( a_window, wnd_coord **, wnd_coord ** );
+extern bool             WndSelected( a_window, wnd_line_piece *, wnd_row, wnd_piece, int *, int * );
 extern void             WndSelChange( a_window wnd, void *parm );
 extern void             WndAdjustDirt( a_window wnd, int by );
-extern wnd_row          WndSelRow(a_window);
-extern bool             WndPieceHighlights(a_window,int ,int );
+extern wnd_row          WndSelRow( a_window );
+extern bool             WndPieceHighlights( a_window, int, int );
 extern void             WndNullPopItem( a_window wnd );
-extern void             WndRowPopUp(a_window,gui_menu_struct *,int,int);
-extern void             WndKeyPopItem( a_window wnd,bool);
-extern void             WndSelPopItem( a_window wnd,void*,bool);
-extern bool             WndSetPoint(a_window,void *,bool,wnd_coord *,wnd_row,bool);
-extern bool             WndHasCurrent(a_window);
+extern void             WndRowPopUp( a_window, gui_menu_struct *, wnd_row, wnd_piece );
+extern void             WndKeyPopItem( a_window wnd, bool );
+extern void             WndSelPopItem( a_window wnd, void *, bool );
+extern bool             WndSetPoint( a_window, void *, bool, wnd_coord *, wnd_row, bool );
+extern bool             WndHasCurrent( a_window );
 extern bool             WndNextCurrent(a_window,bool);
 extern bool             WndPrevCurrent(a_window,bool);
 extern bool             WndSetCurrent(a_window,void*);
@@ -75,11 +75,11 @@ extern bool             WndKeyChoose(a_window,unsigned int );
 extern void             WndSayMatchMode(a_window);
 extern a_window         WndNoOpen(void);
 extern void             WndReshow(void);
-extern  int             WndNextId( void );
-extern  void            WndFreeId( int i );
-extern  bool            WndPieceIsHot( a_window wnd, int row, int piece );
-extern  bool            WndPieceIsTab( a_window wnd, int row, int piece );
-extern  WNDGETLINE      WndGetLineAbs;
+extern int              WndNextId( void );
+extern void             WndFreeId( int i );
+extern bool             WndPieceIsHot( a_window wnd, wnd_row row, wnd_piece piece );
+extern bool             WndPieceIsTab( a_window wnd, wnd_row row, wnd_piece piece );
+extern WNDGETLINE       WndGetLineAbs;
 extern void             WndSetWndMax(void);
 extern void             WndSetToolBar( gui_event gui_ev );
 extern void             WndPaintDirt(a_window);
@@ -106,7 +106,7 @@ extern void             WndEndSelectEvent( a_window wnd );
 extern void             WndSetCurrCol(a_window wnd);
 extern void             WndFiniCacheLines( void );
 extern void             WndKillCacheLines( a_window wnd );
-extern void             WndKillCacheEntries( a_window wnd, int row, int piece );
+extern void             WndKillCacheEntries( a_window wnd, wnd_row row, wnd_piece piece );
 extern void             WndCheckCurrentValid( a_window wnd );
 extern bool             WndSetCache( a_window wnd, bool on );
 extern void             WndAddPopupMenu( a_window wnd );
@@ -120,7 +120,6 @@ extern int              WndPrevCharCol( const char *buff, int idx );
 extern int              WndLastCharCol( wnd_line_piece *line );
 extern int              WndCharCol( const char *buff, int col );
 
-
 extern bool             WndDoingRefresh;
 extern gui_menu_struct  *WndMainMenuPtr;
 extern gui_menu_struct  *WndPopupMenuPtr;
@@ -133,17 +132,15 @@ extern void             WndFiniStatusText( void );
 
 extern void             SetWndMenuRow( a_window wnd );
 extern wnd_row          WndMenuRow;
-extern int              WndMenuPiece;
+extern wnd_piece        WndMenuPiece;
 
 #define WndVirtualRow( wnd, row ) \
         ( ( row ) == WND_NO_ROW ) ? \
-        ( row ) : \
-        ( ( row ) + ( wnd )->top - ( wnd )->title_size )
+        ( row ) : ( ( row ) + ( wnd )->top - ( wnd )->title_size )
 
 #define WndScreenRow( wnd, row ) \
         ( ( row ) == WND_NO_ROW ) ? \
-        ( row ) : \
-        ( ( row ) - ( wnd )->top + ( wnd )->title_size )
+        ( row ) : ( ( row ) - ( wnd )->top + ( wnd )->title_size )
 
 #define WndVirtualTop( wnd )    WndVirtualRow( wnd, wnd->title_size )
 #define WndVirtualBottom( wnd ) WndVirtualRow( wnd, wnd->rows )

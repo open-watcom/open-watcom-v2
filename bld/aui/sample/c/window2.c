@@ -88,7 +88,7 @@ static int W2Scroll( a_window wnd, int lines )
 }
 
 
-static void W2Modify( a_window wnd, int row, int piece )
+static void W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -134,7 +134,7 @@ static int W2NextRow( a_window wnd, int row, int inc )
 }
 
 
-static void     W2MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     char        buff[80];
@@ -171,7 +171,7 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static bool W2GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 

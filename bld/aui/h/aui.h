@@ -32,6 +32,7 @@
 #ifndef _AUI_H_INCLUDED
 #define _AUI_H_INCLUDED
 
+#include <limits.h>
 #include "gui.h"
 #include "guikey.h"
 #include "guifdlg.h"
@@ -49,13 +50,13 @@
 #define MIN_DCLICK      100
 #define MAX_DCLICK      1500
 #define MAX_MAGIC_STR   20
-#define WND_NO_PIECE    255
+#define WND_NO_PIECE    UCHAR_MAX
 #define MAX_KEY_SIZE    256
 #define MAX_POPUPS      20
-#define WND_MAX_COL     32767
+#define WND_MAX_COL     SHRT_MAX
 #define WND_NO_COL      WND_MAX_COL
 // make sure WND_MAX_ROW + WndRows(wnd) will never wrap
-#define WND_MAX_ROW     ((wnd_row)32000)
+#define WND_MAX_ROW     (SHRT_MAX - 500)
 #define WND_NO_ROW      (-WND_MAX_ROW)
 #define WND_APPROX_SIZE 10000
 #define WND_NO_CLASS    ((wnd_class)-1)
@@ -111,7 +112,7 @@
 #define WndGui( w )                 (w)->gui
 #define WndWidth( w )               (w)->width
 #define WndSetRepaint( w )          (w)->switches |= WSW_REPAINT
-#define WndSetKey( w, x )           (w)->keypiece = (x)
+#define WndSetKeyPiece( w, x )      (w)->keypiece = (x)
 #define WndKeyPiece( w )            (w)->keypiece
 #define WndSetSwitches( w, x )      (w)->switches |= (x)
 #define WndClrSwitches( w, x )      (w)->switches &= ~(x)
@@ -123,9 +124,9 @@
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
-    int                 first_cmd;
-    int                 first_free;
-    int                 curr_cmd;
+    unsigned            first_cmd;
+    unsigned            first_free;
+    unsigned            curr_cmd;
     bool                last_was_next;
 } save_area;
 
@@ -136,6 +137,9 @@ typedef enum {
 typedef unsigned long   wnd_switches;
 
 typedef int             wnd_row;
+typedef int             wnd_col;
+typedef unsigned char   wnd_piece;
+
 typedef signed char     wnd_class;
 typedef unsigned long   wnd_update_list;
 
@@ -188,20 +192,20 @@ typedef int wnd_menu_id;
 
 typedef struct {
     wnd_row             row;
-    int                 piece;
+    wnd_piece           piece;
     int                 col;
 } wnd_coord;
 
 typedef struct {
     wnd_row             row;
-    int                 piece;
+    wnd_piece           piece;
     int                 col;
     int                 end_col;
 } wnd_dirt;
 
 typedef struct {
     wnd_row             row;
-    int                 piece;
+    wnd_piece           piece;
     int                 col;
     int                 end;
 } wnd_subpiece;
@@ -225,8 +229,8 @@ typedef struct {
 typedef struct _a_window {
     gui_window              *gui;
     struct {
-        char        row;
-        char        piece;
+        wnd_row     row;
+        wnd_piece   piece;
     }                       button_down;
     void                    *extra;
     struct wnd_info         *info;
@@ -240,9 +244,8 @@ typedef struct _a_window {
     gui_ord                 width;
     gui_ord                 max_indent;
     int                     top;
-    char                    button_down_screen_row;
     unsigned char           keyindex;
-    unsigned char           keypiece;
+    wnd_piece               keypiece;
     wnd_class               wndclass;
     wnd_switches            switches;
     int                     vscroll_pending;
@@ -262,13 +265,13 @@ typedef struct _a_window {
 
 typedef bool        (WNDCALLBACK)( a_window, gui_event, void * );
 typedef void        (WNDREFRESH)( a_window );
-typedef void        (WNDMENU)( a_window, gui_ctl_id id, int, int );
-typedef void        (WNDMODIFY)( a_window, int, int );
+typedef void        (WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
+typedef void        (WNDMODIFY)( a_window, wnd_row, wnd_piece );
 typedef int         (WNDSCROLL)( a_window, int );
 typedef int         (WNDNUMROWS)( a_window );
 typedef int         (WNDNEXTROW)( a_window, int, int );
-typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, int piece, wnd_line_piece * );
-typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, int piece );
+typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
+typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
 typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
 typedef void        (WNDENDPAINT)( a_window wnd, wnd_row row, int num );
 typedef bool        (WNDCHKFLAGS)( wnd_update_list );
@@ -344,9 +347,9 @@ extern WNDSCROLL        WndScrollAbs;
 
 extern wnd_row          WndCurrRow( a_window );
 extern bool             WndHasCurrent( a_window );
-extern void             WndNewCurrent( a_window, wnd_row, int );
-extern void             WndMoveCurrent( a_window wnd, wnd_row row, int piece );
-extern void             WndGetCurrent( a_window, wnd_row *, int *);
+extern void             WndNewCurrent( a_window, wnd_row, wnd_piece );
+extern void             WndMoveCurrent( a_window wnd, wnd_row row, wnd_piece piece );
+extern void             WndGetCurrent( a_window, wnd_row *, wnd_piece * );
 extern void             WndNoCurrent( a_window );
 extern bool             WndFirstCurrent( a_window );
 extern bool             WndLastCurrent( a_window );
@@ -478,7 +481,7 @@ extern void             WndCheckMainMenu( gui_ctl_id id, bool check );
 extern void             WndEnableMainMenu( gui_ctl_id id, bool enable );
 //extern void           WndSetHintText( a_window wnd, gui_ctl_id id, char *text );
 
-extern void             WndPieceDirty( a_window wnd, wnd_row row, int piece );
+extern void             WndPieceDirty( a_window wnd, wnd_row row, wnd_piece piece );
 extern void             WndRowDirty( a_window wnd, wnd_row row );
 extern void             WndRowDirtyImmed( a_window wnd, wnd_row row );
 extern void             WndDirty( a_window );

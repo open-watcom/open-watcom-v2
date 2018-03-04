@@ -62,10 +62,6 @@
 #include "dipinter.h"
 
 
-#define scroll( s )     s->wnd_data[0]
-#define curr_piece( s ) s->wnd_data[1]
-#define curr_row( s )   s->wnd_data[2]
-
 typedef struct {
     var_info        i;
     gui_ord         last_width;             // how wide were we last resize?
@@ -74,6 +70,12 @@ typedef struct {
     bool            initialized     : 1;    // is it just opened
     bool            show_whole_expr : 1;    // show foo->bar versus just .bar
 } var_window;
+
+typedef struct {
+    int         scroll;
+    wnd_row     row;
+    wnd_piece   piece;
+} var_wnd_data;
 
 typedef void            VARDIRTRTN( a_window, int );
 
@@ -171,7 +173,7 @@ OVL_EXTERN int VarNumRows( a_window wnd )
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
-OVL_EXTERN  void    VarModify( a_window wnd, int row, int piece )
+OVL_EXTERN  void    VarModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     type_kind           class;
@@ -388,7 +390,7 @@ static void VarInitPopup( a_window wnd, var_window *var, var_node *v )
 }
 
 
-OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     dlg_var_expand      varx;
@@ -634,7 +636,7 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->i.name_end_row = row;
 }
 
-OVL_EXTERN  bool    VarGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    VarGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     var_window  *var = WndVar( wnd );
     var_node    *v;
@@ -732,22 +734,30 @@ OVL_EXTERN  bool    VarGetLine( a_window wnd, int row, int piece, wnd_line_piece
 
 static void VarSaveWndToScope( a_window wnd )
 {
-    var_window  *var = WndVar( wnd );
+    var_wnd_data    *wnd_data;
+    var_window      *var = WndVar( wnd );
 
-    scroll( var->i.s ) = WndTop( wnd );
-    WndGetCurrent( wnd, &curr_row( var->i.s ), &curr_piece( var->i.s ) );
+    wnd_data = var->i.s->wnd_data;
+    if( wnd_data == NULL ) {
+        wnd_data = WndMustAlloc( sizeof( var_wnd_data ) );
+        var->i.s->wnd_data = wnd_data;
+    }
+    wnd_data->scroll = WndTop( wnd );
+    WndGetCurrent( wnd, &wnd_data->row, &wnd_data->piece );
 }
 
 static void VarRestoreWndFromScope( a_window wnd )
 {
-    var_window  *var = WndVar( wnd );
+    var_wnd_data    *wnd_data;
+    var_window      *var = WndVar( wnd );
 
-    if( curr_row( var->i.s ) == WND_NO_ROW ) {
+    wnd_data = var->i.s->wnd_data;
+    if( wnd_data == NULL || wnd_data->row == WND_NO_ROW ) {
         WndScrollAbs( wnd, 0 );
         WndFirstCurrent( wnd );
     } else {
-        WndScrollAbs( wnd, scroll( var->i.s ) );
-        WndNewCurrent( wnd, curr_row( var->i.s ), curr_piece( var->i.s ) );
+        WndScrollAbs( wnd, wnd_data->scroll );
+        WndNewCurrent( wnd, wnd_data->row, wnd_data->piece );
     }
 }
 
@@ -813,7 +823,7 @@ static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_win
     return( repaint );
 }
 
-OVL_EXTERN  void    VarBegPaint( a_window wnd, int row, int num )
+OVL_EXTERN  void    VarBegPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -823,11 +833,11 @@ OVL_EXTERN  void    VarBegPaint( a_window wnd, int row, int num )
 }
 
 
-OVL_EXTERN  void    VarEndPaint( a_window wnd, int row, int piece )
+OVL_EXTERN  void    VarEndPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
-    /* unused parameters */ (void)row; (void)piece;
+    /* unused parameters */ (void)row; (void)num;
 
     VarOkToCache( &var->i, false );
 }
@@ -937,7 +947,7 @@ OVL_EXTERN bool VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         var->initialized = false;
         VarRefresh( wnd );
         VarRepaint( wnd );
-        WndSetKey( wnd, VAR_PIECE_NAME );
+        WndSetKeyPiece( wnd, VAR_PIECE_NAME );
         return( true );
     case GUI_RESIZE :
         old_width = var->last_width;

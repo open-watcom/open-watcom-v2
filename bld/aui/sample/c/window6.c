@@ -47,7 +47,7 @@ static int W6NumRows( a_window wnd )
     return( ArraySize( Stuff ) );
 }
 
-static bool    W6GetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+static bool    W6GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= ArraySize( Stuff ) ) return( false );

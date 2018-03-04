@@ -41,7 +41,7 @@ static int W7NumRows( a_window wnd )
     return( NUM_ROWS );
 }
 
-static bool    W7GetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+static bool    W7GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 

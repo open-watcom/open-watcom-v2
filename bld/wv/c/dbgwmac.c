@@ -168,7 +168,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, unsigned key,
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
 
-OVL_EXTERN void     MacModify( a_window wnd, int row, int piece );
+OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
 
 static bool MacModWhat( a_window wnd, wnd_row row )
 {
@@ -356,7 +356,7 @@ static void MacModCmd( a_window wnd, wnd_row row )
 }
 
 
-OVL_EXTERN void     MacModify( a_window wnd, int row, int piece )
+OVL_EXTERN void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_macro   *mac;
 
@@ -386,7 +386,7 @@ OVL_EXTERN void     MacModify( a_window wnd, int row, int piece )
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
 
-OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac;
@@ -455,7 +455,7 @@ OVL_EXTERN int MacNumRows( a_window wnd )
     return( count );
 }
 
-OVL_EXTERN  bool MacGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;

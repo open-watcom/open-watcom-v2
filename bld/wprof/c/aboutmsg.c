@@ -43,7 +43,7 @@
 
 STATIC bool aboutWndEventProc( a_window, gui_event, void * );
 STATIC int  AboutNumRows( a_window );
-STATIC bool aboutGetLine( a_window, wnd_row, int, wnd_line_piece * );
+STATIC bool aboutGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
 
 static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
@@ -112,8 +112,8 @@ STATIC int AboutNumRows( a_window wnd )
 
 
 
-STATIC bool aboutGetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *line )
-/************************************************************************************/
+STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/******************************************************************************************/
 {
 //    gui_coord           size;
 

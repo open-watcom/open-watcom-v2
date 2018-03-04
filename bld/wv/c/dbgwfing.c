@@ -70,7 +70,7 @@ OVL_EXTERN int FingNumRows( a_window wnd )
 }
 
 
-OVL_EXTERN  bool    FingGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     if( piece != 0 )
         return( false );

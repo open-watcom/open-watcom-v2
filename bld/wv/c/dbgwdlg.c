@@ -165,7 +165,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-OVL_EXTERN  bool    DlgGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;

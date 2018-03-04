@@ -73,10 +73,10 @@ static  void    GlobInit( a_window wnd )
     NameListFree( NameList( glob ) );
     WndZapped( wnd );
     NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, true );
-    WndSetKey( wnd, PIECE_NAME );
+    WndSetKeyPiece( wnd, PIECE_NAME );
 }
 
-void     GlobMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -117,7 +117,7 @@ int GlobNumRows( a_window wnd )
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-bool    GlobGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+bool    GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 

@@ -54,8 +54,7 @@ static int W5Scroll( a_window wnd, int lines )
 }
 
 
-static bool    W5GetLine( a_window wnd, int row, int piece,
-                             wnd_line_piece *line )
+static bool    W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 

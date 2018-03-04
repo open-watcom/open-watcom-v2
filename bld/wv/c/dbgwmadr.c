@@ -260,7 +260,7 @@ OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-OVL_EXTERN  void    RegModify( a_window wnd, int row, int piece )
+OVL_EXTERN  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int                     i;
     item_mach               value;
@@ -315,7 +315,7 @@ OVL_EXTERN  void    RegModify( a_window wnd, int row, int piece )
     NewCurrRadix( old_radix );
 }
 
-OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -357,7 +357,7 @@ OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, int row, int piece
 }
 
 
-OVL_EXTERN  bool    RegGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;

@@ -103,7 +103,7 @@ static void IOAddNewAddr( a_window wnd, address *addr, int type )
     curr->value_known = false;
 }
 
-OVL_EXTERN void     IOMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     io_window   *io = WndIO( wnd );
     address     addr;
@@ -184,7 +184,7 @@ OVL_EXTERN void     IOMenuItem( a_window wnd, gui_ctl_id id, int row, int piece 
 }
 
 
-OVL_EXTERN void     IOModify( a_window wnd, int row, int piece )
+OVL_EXTERN void     IOModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( row < 0 ) {
         IOMenuItem( wnd, MENU_IO_NEW_ADDRESS, row, piece );
@@ -205,7 +205,7 @@ OVL_EXTERN void     IOModify( a_window wnd, int row, int piece )
     }
 }
 
-OVL_EXTERN  bool    IOGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
 //    bool        ret;

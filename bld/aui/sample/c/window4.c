@@ -87,7 +87,7 @@ static int W4NumRows( a_window wnd )
     return( SIZE );
 }
 
-static void    W4Modify( a_window wnd, int row, int piece )
+static void    W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd=wnd;piece=piece;
     if( row < 0 ) {
@@ -106,7 +106,7 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
 
-static bool W4GetLine( a_window wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -172,7 +172,7 @@ static void W4Refresh( a_window wnd )
     WndSetRepaint( wnd );
 }
 
-static void W4MenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+static void W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     row=row;piece=piece;
@@ -217,6 +217,6 @@ a_window W4Open( void )
 
     wnd = WndCreate( "", &W4Info, 0, NULL );
     if( wnd != NULL )
-        WndSetKey( wnd, 1 );
+        WndSetKeyPiece( wnd, 1 );
     return( wnd );
 }

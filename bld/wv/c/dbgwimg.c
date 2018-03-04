@@ -108,7 +108,7 @@ static void     ImgInit( a_window wnd )
     WndZapped( wnd );
 }
 
-OVL_EXTERN void     ImgMenuItem( a_window wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     image_entry *image;
     char        *new_name;
@@ -180,7 +180,7 @@ OVL_EXTERN int ImgNumRows( a_window wnd )
     return( count );
 }
 
-OVL_EXTERN  bool    ImgGetLine( a_window wnd, int row, int piece, wnd_line_piece *line )
+OVL_EXTERN  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     image_entry         *image;
 
