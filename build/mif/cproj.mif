@@ -752,5 +752,12 @@ lflags  = $(lflags_gen)
 # options for include source code file
 incl_file_opts  = -fi
 
+# executable file extensions
+!ifeq host_os nov
+exe_ext = nlm
+!else
+exe_ext = exe
+!endif
+
 !include bhost.mif
 !include local.mif
