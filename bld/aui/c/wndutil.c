@@ -38,7 +38,7 @@ int WndCharCol( const char *buff, int col )
     const char  *end, *curr;
 
     end = buff + col;
-    for( curr = buff; curr < end; curr += GUICharLen( *curr ) )
+    for( curr = buff; curr < end; curr += GUICharLen( *(const unsigned char *)curr ) )
         ;
     if( curr > end )
         col--;

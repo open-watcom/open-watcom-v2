@@ -445,8 +445,8 @@ extern void             Suicide( void );
 #define WND_ALNUM_STR   "@"
 extern char             *WndSetIDChars( a_window, char * );
 
-extern bool             WndIDChar( a_window, char ch );
-extern bool             WndKeyChar( char ch );
+extern bool             WndIDChar( a_window, int ch );
+extern bool             WndKeyIsPrintChar( gui_key key );
 
 extern void             WndCursorRight( a_window wnd );
 extern void             WndCursorLeft( a_window wnd );

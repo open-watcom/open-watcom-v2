@@ -253,7 +253,7 @@ static bool WndCursorRightCheck( a_window wnd )
     } else {
         WndDirtyCurrChar( wnd );
         col = wnd->current.col;
-        wnd->current.col += GUICharLen( line.text[wnd->current.col] );
+        wnd->current.col += GUICharLen( (unsigned char)line.text[wnd->current.col] );
         WndSetCurrCol( wnd );
         WndCurrVisible( wnd );
         WndDirtyCurrChar( wnd );

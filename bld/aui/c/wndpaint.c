@@ -168,8 +168,7 @@ static void WndDrawCursor( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
     } else if( wnd->current.col < line->length ) {
         line->indent += GUIGetExtentX( wnd->gui, line->text, wnd->current.col );
         p = line->text + wnd->current.col;
-        GUIDrawText( wnd->gui, p, GUICharLen( *p ),
-                     row, line->indent, WndCursorAttr );
+        GUIDrawText( wnd->gui, p, GUICharLen( *(const unsigned char *)p ), row, line->indent, WndCursorAttr );
     }
 }
 

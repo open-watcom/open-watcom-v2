@@ -232,7 +232,7 @@ void WndPaintDirt( a_window wnd )
                         rect.x = line.indent;
                         rect.x += GUIGetExtentX(wnd->gui, line.text, dirt->col);
                         rect.y = dirt->row * wnd->max_char.y;
-                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col-dirt->col+GUICharLen( line.text[dirt->col] ) );
+                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col - dirt->col + GUICharLen( (unsigned char)line.text[dirt->col] ) );
                         rect.height = wnd->max_char.y;
                     } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop ) {
                         rect.width = 0;

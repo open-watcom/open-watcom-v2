@@ -128,14 +128,16 @@ void    WndNullPopItem( a_window wnd )
 
 static void GoBackward( a_window wnd, wnd_coord *start, wnd_line_piece *line )
 {
-    char        ch;
+    int     ch;
 
-    ch = line->text[ start->col ];
-    if( isspace( ch ) || !WndIDChar( wnd, ch ) ) return;
+    ch = (unsigned char)line->text[start->col];
+    if( isspace( ch ) || !WndIDChar( wnd, ch ) )
+        return;
     for( ;; ) {
-        if( start->col == 0 ) return;
+        if( start->col == 0 )
+            return;
         start->col = WndPrevCharCol( line->text, start->col );
-        ch = line->text[ start->col ];
+        ch = (unsigned char)line->text[start->col];
         if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
             start->col += GUICharLen( ch );
             return;
@@ -146,16 +148,16 @@ static void GoBackward( a_window wnd, wnd_coord *start, wnd_line_piece *line )
 
 static void GoForward( a_window wnd, wnd_coord *end, wnd_line_piece *line )
 {
-    char        ch;
+    int         ch;
 
-    ch = line->text[ end->col ];
+    ch = (unsigned char)line->text[ end->col ];
     if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
         end->col += GUICharLen( ch ) - 1;
         return;
     }
     for( ;; ) {
         end->col += GUICharLen( ch );
-        ch = line->text[end->col];
+        ch = (unsigned char)line->text[end->col];
         if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
             end->col--;
             return;

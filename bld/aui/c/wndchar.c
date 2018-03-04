@@ -45,7 +45,7 @@ char            *WndSetIDChars( a_window wnd, char *id_chars )
     return( old );
 }
 
-bool            WndIDChar( a_window wnd, char ch )
+bool            WndIDChar( a_window wnd, int ch )
 {
     char        *p;
 
@@ -63,7 +63,7 @@ bool            WndIDChar( a_window wnd, char ch )
                 ++p;
             }
         }
-        if( ch == *p ) {
+        if( ch == *(unsigned char *)p ) {
             return( true );
         }
     }
@@ -71,7 +71,7 @@ bool            WndIDChar( a_window wnd, char ch )
 }
 
 
-bool            WndKeyChar( char ch )
+bool    WndKeyIsPrintChar( gui_key key )
 {
-    return( isprint( ch ) != 0 );
+    return( GUI_IS_ASCII( key ) && ( isprint( (unsigned char)key ) != 0 ) );
 }

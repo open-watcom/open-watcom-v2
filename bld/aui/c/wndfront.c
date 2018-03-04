@@ -59,7 +59,7 @@ void    WndNextNonIconToFront( a_window wnd )
 }
 
 
-void    WndChooseNew()
+void    WndChooseNew( void )
 {
     a_window    wnd;
     a_window    lastok;
