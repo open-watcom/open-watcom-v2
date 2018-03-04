@@ -16,7 +16,7 @@
 !inject gtctmos2.obj                                        o16 o32
 !inject gtctmwnt.obj                     nt nta ntp
 !inject gtctmrd.obj                                                                                 rdu rdk
-!inject leapyear.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject leapyear.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject localtim.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject locmktim.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject mktime.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
