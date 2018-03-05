@@ -77,7 +77,7 @@ typedef struct {
 #define ModList( mod ) ( &((mod)->___list) )
 
 
-OVL_EXTERN int ModNumRows( a_window wnd )
+OVL_EXTERN wnd_row ModNumRows( a_window wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }

@@ -111,7 +111,7 @@ static void FuncGetSourceName( a_window wnd, int row )
     NameListName( NameList( func ), row, TxtBuff, SN_QUALIFIED );
 }
 
-OVL_EXTERN int FuncNumRows( a_window wnd )
+OVL_EXTERN wnd_row FuncNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndFunc( wnd ) ) ) );
 }

@@ -114,8 +114,7 @@ gui_menu_struct WndMainMenu[] = {
       "Display Open Watcom Profiler help.", WndMenuFields( helpMenu ) },
 };
 
-int WndNumMenus = { WndMenuSize( WndMainMenu ) };
-
+int WndNumMenus = ArraySize( WndMainMenu );
 
 
 bool WndMainMenuProc( a_window wnd, gui_ctl_id id )

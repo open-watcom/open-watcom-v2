@@ -42,39 +42,7 @@
 #include "wpnumrow.h"
 
 
-//STATIC int              sampleNumRows( a_window );
-STATIC int              simageGetRows( sio_data * );
-STATIC int              smodGetRows( sio_data * );
-STATIC int              sfileGetRows( sio_data * );
-STATIC int              srtnGetRows( sio_data * );
-STATIC int              ssrcGetRows( sio_data * );
-STATIC int              sasmGetRows( sio_data * );
-
 typedef int (SAMPLEROWRTNS)( sio_data * wnd );
-
-static SAMPLEROWRTNS * overviewRowRtns[] = {
-    &simageGetRows,
-    &smodGetRows,
-    &sfileGetRows,
-    &srtnGetRows,
-    &ssrcGetRows,
-    &sasmGetRows,
-};
-
-
-
-int SampleNumRows( a_window wnd )
-/*******************************/
-{
-    sio_data *      curr_sio;
-
-    curr_sio = WndExtra( wnd );
-    if( overviewRowRtns[curr_sio->level_open] == NULL ) {
-        return( 0 );
-    }
-    return( overviewRowRtns[curr_sio->level_open]( curr_sio ) );
-}
-
 
 
 STATIC int simageGetRows( sio_data * curr_sio )
@@ -169,4 +137,27 @@ STATIC int sasmGetRows( sio_data * curr_sio )
 
     wp_asm = curr_sio->asm_file;
     return( wp_asm->asm_rows );
+}
+
+
+static SAMPLEROWRTNS * overviewRowRtns[] = {
+    &simageGetRows,
+    &smodGetRows,
+    &sfileGetRows,
+    &srtnGetRows,
+    &ssrcGetRows,
+    &sasmGetRows,
+};
+
+
+wnd_row SampleNumRows( a_window wnd )
+/***********************************/
+{
+    sio_data *      curr_sio;
+
+    curr_sio = WndExtra( wnd );
+    if( overviewRowRtns[curr_sio->level_open] == NULL ) {
+        return( 0 );
+    }
+    return( overviewRowRtns[curr_sio->level_open]( curr_sio ) );
 }

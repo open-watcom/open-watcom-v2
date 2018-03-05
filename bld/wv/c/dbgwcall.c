@@ -70,7 +70,7 @@ enum {
     PIECE_SOURCE,
 };
 
-OVL_EXTERN int CallNumRows( a_window wnd )
+OVL_EXTERN wnd_row CallNumRows( a_window wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }

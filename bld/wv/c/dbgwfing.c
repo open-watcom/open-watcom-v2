@@ -62,7 +62,7 @@ void FingClose( void )
 }
 
 
-OVL_EXTERN int FingNumRows( a_window wnd )
+OVL_EXTERN wnd_row FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -83,15 +83,14 @@ OVL_EXTERN  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
         if( !GUIIsGUI() || piece != 0 )
             return( false );
         row -= FingMessageSize;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             line->text = " ";
             return( true );
-        case 1:
+        } else if( row == 1 ) {
             SetGadgetLine( wnd, line, GADGET_SPLASH );
             line->indent = ( Width - BitmapSize.x ) / 2;
             return( true );
-        default:
+        } else {
             return( false );
         }
     }

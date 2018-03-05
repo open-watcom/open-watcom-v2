@@ -96,7 +96,7 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-OVL_EXTERN int SrchNumRows( a_window wnd )
+OVL_EXTERN wnd_row SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }

@@ -95,7 +95,7 @@ static void W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
     }
 }
 
-static int W1NumRows( a_window wnd )
+static wnd_row W1NumRows( a_window wnd )
 {
     w1_window   *w1 = (w1_window *)WndExtra( wnd );
 

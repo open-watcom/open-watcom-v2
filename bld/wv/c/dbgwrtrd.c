@@ -96,15 +96,16 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-OVL_EXTERN int RunTrdNumRows( a_window wnd )
+OVL_EXTERN wnd_row RunTrdNumRows( a_window wnd )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     /* unused parameters */ (void)wnd;
 
     num = 0;
-    for( thd = HeadThd; thd != NULL; thd = thd->link ) ++num;
+    for( thd = HeadThd; thd != NULL; thd = thd->link )
+        num++;
     return( num );
 }
 
@@ -198,19 +199,18 @@ OVL_EXTERN bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wn
     line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             if( piece < PieceCount ) {
                 line->text = HeaderArr[piece];
                 return( true );
             }
             return( false );
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {

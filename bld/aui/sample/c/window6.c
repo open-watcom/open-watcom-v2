@@ -41,7 +41,7 @@ static char * Stuff[] = {
         "Line 5",
 };
 
-static int W6NumRows( a_window wnd )
+static wnd_row W6NumRows( a_window wnd )
 {
     wnd=wnd;
     return( ArraySize( Stuff ) );

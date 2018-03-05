@@ -261,7 +261,7 @@ static char *Stuff[] =
 #endif
 };
 
-static int TheSize = ArraySize( Stuff );
+static wnd_row TheSize = ArraySize( Stuff );
 
 static void W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
@@ -283,7 +283,7 @@ static void W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static int W3NumRows( a_window wnd )
+static wnd_row W3NumRows( a_window wnd )
 {
     wnd=wnd;
     return( TheSize );

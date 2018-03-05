@@ -32,11 +32,9 @@
 
 #include "stdio.h"
 
-#define ArraySize( x ) ( sizeof( x ) / sizeof( *x ) )
+
 #define DLG_ROW( n ) (n)
 #define DLG_COL( n ) (n)
-
-
 
 #define BUTTON_GAP( c, o, w, i ) ( ( (c)-(o)*(w) - 2*(i) ) / ( (o)-1 ) )
 #define BUTTON_POS( num, of, cols, bwidth ) \

@@ -75,7 +75,7 @@ STATIC int              ssrcDetailLine( a_window, wnd_row, bool );
 STATIC int              sasmDetailLine( a_window, wnd_row, bool );
 STATIC int              srtnOpenDetail( sio_data *, bool );
 STATIC void             sampleRefresh( a_window );
-STATIC void             sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
+//STATIC void             sampleMenuItem( a_window, gui_ctl_id id, wnd_row, wnd_piece );
 STATIC void             sampFixDirtyCurr( a_window );
 STATIC bool             simageGetLine( a_window, wnd_row );
 STATIC bool             smodGetLine( a_window, wnd_row );
@@ -205,6 +205,182 @@ static bool         relGraphBar;
 static char         relData[30];
 static char         absData[30];
 static char         lineData[96];
+
+
+static void WPZoomIn( a_window wnd, int row )
+/*******************************************/
+{
+    sio_data        *curr_sio;
+    int             detail_rows;
+    int             top_line;
+    int             old_level;
+    int             curr_line;
+    bool            multi_level;
+
+    curr_sio = WndExtra( wnd );
+    if( row >= curr_sio->level_open && row < STATUS_ROW ) {
+        Ring();
+        return;
+    }
+    if( row < curr_sio->level_open ) {
+        curr_sio->level_open = row;
+        WndSetTop( wnd, 0 );
+        gatherSort( curr_sio );
+        if( curr_sio->level_open == LEVEL_ROUTINE ) {
+            curr_line = srtnOpenDetail( curr_sio, false );
+        } else {
+            curr_line = WPGetRow( curr_sio );
+        }
+    } else {
+        row = row - STATUS_ROW - 1;
+        curr_line = row;
+        detail_rows = SampleNumRows( wnd );
+        if( detail_rows < row+1 ) {
+            Ring();
+            return;
+        }
+        multi_level = false;
+        for( ;; ) {
+            old_level = curr_sio->level_open;
+            curr_line = overviewDetailRtns[curr_sio->level_open](
+                                           wnd, row, multi_level );
+            if( old_level == curr_sio->level_open ) break;
+            detail_rows = SampleNumRows( wnd );
+            if( detail_rows != 1 ) break;
+            row = 0;
+            multi_level = true;
+        }
+    }
+    curr_sio->curr_proc_row = -WND_MAX_ROW;
+    curr_sio->curr_display_row = -WND_MAX_ROW;
+    detail_rows = SampleNumRows( wnd );
+    top_line = WndTop( wnd );
+    row = curr_line - top_line;
+    if( row >= WndRows( wnd ) ) {
+        top_line = curr_line - WndRows( wnd ) / 2;
+    }
+    if( row < 0 ) {
+        top_line = curr_line;
+    }
+    if( detail_rows-top_line < WndRows( wnd ) ) {
+        top_line = detail_rows - WndRows( wnd );
+        if( top_line < 0 ) {
+            top_line = 0;
+        }
+    }
+    WndSetTop( wnd, top_line );
+    WndNewCurrent( wnd, curr_line, PIECE_DETAIL_NAME );
+    WndDirty( wnd );
+    if( curr_sio->level_open < LEVEL_SOURCE
+     && curr_sio->asm_file != NULL ) {
+        WPAsmClose( curr_sio->asm_file );
+        curr_sio->asm_file = NULL;
+    }
+    if( curr_sio->level_open < LEVEL_ROUTINE
+     && curr_sio->src_file != NULL ) {
+        WPSourceClose( curr_sio->src_file );
+        curr_sio->src_file = NULL;
+    }
+}
+
+
+static void WPBackOut( a_window wnd )
+/***********************************/
+{
+    sio_data *      curr_sio;
+
+    curr_sio = WndExtra( wnd );
+    if( curr_sio->level_open == 0 ) {
+        Ring();
+        return;
+    }
+    WPZoomIn( wnd, curr_sio->level_open-1 );
+}
+
+
+STATIC void sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+/*************************************************************************************/
+{
+    sio_data *      curr_sio;
+    int             sort_type;
+
+    /* unused parameters */ (void)piece;
+
+    curr_sio = WndExtra( wnd );
+    row += STATUS_ROW + 1;
+    switch( id ) {
+    case MENU_INITIALIZE:
+        if( row <= STATUS_ROW ) {
+            WndMenuGrayAll( wnd );
+            if( row < 0 || row - 1 >= curr_sio->level_open )
+                break;
+            WndMenuEnable( wnd, MENU_SAMP_ZOOM_IN, true );
+            break;
+        }
+        WndMenuEnableAll( wnd );
+        WndMenuCheck( wnd, MENU_SAMP_GATHER, GetCurrentGather( curr_sio ) );
+        WndMenuCheck( wnd, MENU_SAMP_BAR_MAX_TIME, GetCurrentMaxBar( curr_sio ) );
+        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentAbsBar( curr_sio ) );
+        WndMenuCheck( wnd, MENU_SAMP_REL, GetCurrentRelBar( curr_sio ) );
+        sort_type = GetCurrentSort( curr_sio );
+        WndMenuCheck( wnd, MENU_SORT_COUNT, sort_type==SORT_COUNT );
+        WndMenuCheck( wnd, MENU_SORT_NAME, sort_type==SORT_NAME );
+        if( row <= STATUS_ROW || curr_sio->level_open >= LEVEL_ROUTINE ) {
+            WndMenuEnable( wnd, MENU_SAMP_GATHER, false );
+            WndMenuEnable( wnd, MENU_SAMP_SORT, false );
+            WndMenuEnable( wnd, MENU_SORT_COUNT, false );
+            WndMenuEnable( wnd, MENU_SORT_NAME, false );
+            if( row <= STATUS_ROW ) {
+                WndMenuEnable( wnd, MENU_SAMP_BAR_MAX_TIME, false );
+                WndMenuEnable( wnd, MENU_SAMP_ABS, false );
+                WndMenuEnable( wnd, MENU_SAMP_REL, false );
+            }
+        }
+        break;
+    case MENU_SAMP_ZOOM_IN:
+        WPZoomIn( wnd, row );
+        break;
+    case MENU_SAMP_BACK_OUT:
+        WPBackOut( wnd );
+        break;
+//    case MENU_SAMP_DATA:
+//        WPSImageOpen( curr_sio );
+//        break;
+    case MENU_SAMP_GATHER:
+        FlipCurrentGather( curr_sio );
+        WndMenuCheck( wnd, MENU_SAMP_GATHER, GetCurrentGather( curr_sio ) );
+        gatherSort( curr_sio );
+        setDisplay( wnd, curr_sio, true );
+        break;
+    case MENU_SAMP_BAR_MAX_TIME:
+        FlipCurrentMaxBar( curr_sio );
+        WndMenuCheck( wnd, MENU_SAMP_BAR_MAX_TIME, GetCurrentMaxBar( curr_sio ) );
+        setDisplay( wnd, curr_sio, false );
+        break;
+    case MENU_SAMP_ABS:
+        FlipCurrentAbsBar( curr_sio );
+        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentAbsBar( curr_sio ) );
+        setDisplay( wnd, curr_sio, false );
+        break;
+    case MENU_SAMP_REL:
+        FlipCurrentRelBar( curr_sio );
+        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentRelBar( curr_sio ) );
+        setDisplay( wnd, curr_sio, false );
+        break;
+    case MENU_SORT_COUNT:
+    case MENU_SORT_NAME:
+        WndMenuCheck( wnd, MENU_SORT_COUNT, ( id == MENU_SORT_COUNT ) );
+        WndMenuCheck( wnd, MENU_SORT_NAME, ( id == MENU_SORT_COUNT ) );
+        if( id == MENU_SORT_COUNT ) {
+            SetCurrentSort( curr_sio, SORT_COUNT );
+        } else {
+            SetCurrentSort( curr_sio, SORT_NAME );
+        }
+        SortCurrent( curr_sio );
+        setDisplay( wnd, curr_sio, true );
+        break;
+    }
+}
 
 
 static wnd_info     WPSampleInfo = {
@@ -1289,99 +1465,6 @@ STATIC void sampleRefresh( a_window wnd )
 
 
 
-static void WPZoomIn( a_window wnd, int row )
-/*******************************************/
-{
-    sio_data        *curr_sio;
-    int             detail_rows;
-    int             top_line;
-    int             old_level;
-    int             curr_line;
-    bool            multi_level;
-
-    curr_sio = WndExtra( wnd );
-    if( row >= curr_sio->level_open && row < STATUS_ROW ) {
-        Ring();
-        return;
-    }
-    if( row < curr_sio->level_open ) {
-        curr_sio->level_open = row;
-        WndSetTop( wnd, 0 );
-        gatherSort( curr_sio );
-        if( curr_sio->level_open == LEVEL_ROUTINE ) {
-            curr_line = srtnOpenDetail( curr_sio, false );
-        } else {
-            curr_line = WPGetRow( curr_sio );
-        }
-    } else {
-        row = row - STATUS_ROW - 1;
-        curr_line = row;
-        detail_rows = SampleNumRows( wnd );
-        if( detail_rows < row+1 ) {
-            Ring();
-            return;
-        }
-        multi_level = false;
-        for( ;; ) {
-            old_level = curr_sio->level_open;
-            curr_line = overviewDetailRtns[curr_sio->level_open](
-                                           wnd, row, multi_level );
-            if( old_level == curr_sio->level_open ) break;
-            detail_rows = SampleNumRows( wnd );
-            if( detail_rows != 1 ) break;
-            row = 0;
-            multi_level = true;
-        }
-    }
-    curr_sio->curr_proc_row = -WND_MAX_ROW;
-    curr_sio->curr_display_row = -WND_MAX_ROW;
-    detail_rows = SampleNumRows( wnd );
-    top_line = WndTop( wnd );
-    row = curr_line - top_line;
-    if( row >= WndRows( wnd ) ) {
-        top_line = curr_line - WndRows( wnd ) / 2;
-    }
-    if( row < 0 ) {
-        top_line = curr_line;
-    }
-    if( detail_rows-top_line < WndRows( wnd ) ) {
-        top_line = detail_rows - WndRows( wnd );
-        if( top_line < 0 ) {
-            top_line = 0;
-        }
-    }
-    WndSetTop( wnd, top_line );
-    WndNewCurrent( wnd, curr_line, PIECE_DETAIL_NAME );
-    WndDirty( wnd );
-    if( curr_sio->level_open < LEVEL_SOURCE
-     && curr_sio->asm_file != NULL ) {
-        WPAsmClose( curr_sio->asm_file );
-        curr_sio->asm_file = NULL;
-    }
-    if( curr_sio->level_open < LEVEL_ROUTINE
-     && curr_sio->src_file != NULL ) {
-        WPSourceClose( curr_sio->src_file );
-        curr_sio->src_file = NULL;
-    }
-}
-
-
-
-static void WPBackOut( a_window wnd )
-/***********************************/
-{
-    sio_data *      curr_sio;
-
-    curr_sio = WndExtra( wnd );
-    if( curr_sio->level_open == 0 ) {
-        Ring();
-        return;
-    }
-    WPZoomIn( wnd, curr_sio->level_open-1 );
-}
-
-
-
 void WPDoPopUp( a_window wnd, gui_menu_struct * gui_menu )
 /********************************************************/
 {
@@ -1433,90 +1516,4 @@ STATIC void setDisplay( a_window wnd, sio_data * curr_sio, bool do_top )
         WndNewCurrent( wnd, 0, PIECE_DETAIL_NAME );
     }
     WndDirty( wnd );
-}
-
-
-
-STATIC void sampleMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
-/*************************************************************************************/
-{
-    sio_data *      curr_sio;
-    int             sort_type;
-
-    /* unused parameters */ (void)piece;
-
-    curr_sio = WndExtra( wnd );
-    row += STATUS_ROW + 1;
-    switch( id ) {
-    case MENU_INITIALIZE:
-        if( row <= STATUS_ROW ) {
-            WndMenuGrayAll( wnd );
-            if( row < 0 || row - 1 >= curr_sio->level_open )
-                break;
-            WndMenuEnable( wnd, MENU_SAMP_ZOOM_IN, true );
-            break;
-        }
-        WndMenuEnableAll( wnd );
-        WndMenuCheck( wnd, MENU_SAMP_GATHER, GetCurrentGather( curr_sio ) );
-        WndMenuCheck( wnd, MENU_SAMP_BAR_MAX_TIME, GetCurrentMaxBar( curr_sio ) );
-        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentAbsBar( curr_sio ) );
-        WndMenuCheck( wnd, MENU_SAMP_REL, GetCurrentRelBar( curr_sio ) );
-        sort_type = GetCurrentSort( curr_sio );
-        WndMenuCheck( wnd, MENU_SORT_COUNT, sort_type==SORT_COUNT );
-        WndMenuCheck( wnd, MENU_SORT_NAME, sort_type==SORT_NAME );
-        if( row <= STATUS_ROW || curr_sio->level_open >= LEVEL_ROUTINE ) {
-            WndMenuEnable( wnd, MENU_SAMP_GATHER, false );
-            WndMenuEnable( wnd, MENU_SAMP_SORT, false );
-            WndMenuEnable( wnd, MENU_SORT_COUNT, false );
-            WndMenuEnable( wnd, MENU_SORT_NAME, false );
-            if( row <= STATUS_ROW ) {
-                WndMenuEnable( wnd, MENU_SAMP_BAR_MAX_TIME, false );
-                WndMenuEnable( wnd, MENU_SAMP_ABS, false );
-                WndMenuEnable( wnd, MENU_SAMP_REL, false );
-            }
-        }
-        break;
-    case MENU_SAMP_ZOOM_IN:
-        WPZoomIn( wnd, row );
-        break;
-    case MENU_SAMP_BACK_OUT:
-        WPBackOut( wnd );
-        break;
-//    case MENU_SAMP_DATA:
-//        WPSImageOpen( curr_sio );
-//        break;
-    case MENU_SAMP_GATHER:
-        FlipCurrentGather( curr_sio );
-        WndMenuCheck( wnd, MENU_SAMP_GATHER, GetCurrentGather( curr_sio ) );
-        gatherSort( curr_sio );
-        setDisplay( wnd, curr_sio, true );
-        break;
-    case MENU_SAMP_BAR_MAX_TIME:
-        FlipCurrentMaxBar( curr_sio );
-        WndMenuCheck( wnd, MENU_SAMP_BAR_MAX_TIME, GetCurrentMaxBar( curr_sio ) );
-        setDisplay( wnd, curr_sio, false );
-        break;
-    case MENU_SAMP_ABS:
-        FlipCurrentAbsBar( curr_sio );
-        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentAbsBar( curr_sio ) );
-        setDisplay( wnd, curr_sio, false );
-        break;
-    case MENU_SAMP_REL:
-        FlipCurrentRelBar( curr_sio );
-        WndMenuCheck( wnd, MENU_SAMP_ABS, GetCurrentRelBar( curr_sio ) );
-        setDisplay( wnd, curr_sio, false );
-        break;
-    case MENU_SORT_COUNT:
-    case MENU_SORT_NAME:
-        WndMenuCheck( wnd, MENU_SORT_COUNT, ( id == MENU_SORT_COUNT ) );
-        WndMenuCheck( wnd, MENU_SORT_NAME, ( id == MENU_SORT_COUNT ) );
-        if( id == MENU_SORT_COUNT ) {
-            SetCurrentSort( curr_sio, SORT_COUNT );
-        } else {
-            SetCurrentSort( curr_sio, SORT_NAME );
-        }
-        SortCurrent( curr_sio );
-        setDisplay( wnd, curr_sio, true );
-        break;
-    }
 }

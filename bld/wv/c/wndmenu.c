@@ -126,7 +126,7 @@ gui_menu_struct WndMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
 };
 
-int     WndNumMenus = { WndMenuSize( WndMainMenu ) };
+int     WndNumMenus = ArraySize( WndMainMenu );
 
 wnd_info *WndInfoTab[] = {
     #define pick( a,b,c,d,e,f ) &d,

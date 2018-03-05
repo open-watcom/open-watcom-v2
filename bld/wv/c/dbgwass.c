@@ -677,8 +677,7 @@ OVL_EXTERN  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
     asw = WndAsm( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             old_radix = NewCurrRadix( asw->hex ? 16 : 10 );
             line->text = TxtBuff;
             if( IS_NIL_ADDR( asw->dotaddr ) ) {
@@ -705,13 +704,13 @@ OVL_EXTERN  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
             NewCurrRadix( old_radix );
             return( rc );
 #if 0
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
 #endif
-        default:
+        } else {
             return( false );
         }
     }

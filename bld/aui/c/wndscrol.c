@@ -79,15 +79,16 @@ bool WndHasNumRows( a_window wnd )
 void WndSetThumb( a_window wnd )
 {
     int         thumb;
-    int         rows;
-    int         bottom_blank;
+    wnd_row     rows;
+    wnd_row     bottom_blank;
     int         scrolled;
 
     if( WndHasNumRows( wnd ) ) {
         scrolled = 0;
         rows = WndNumRows( wnd );
         bottom_blank = wnd->rows - ( rows - wnd->top );
-        if( bottom_blank >= wnd->top ) bottom_blank = wnd->top;
+        if( bottom_blank >= wnd->top )
+            bottom_blank = wnd->top;
         if( bottom_blank > 0 ) {
             if( WndHasCurrent( wnd ) ) {
                 WndDirtyCurr( wnd );
@@ -114,10 +115,10 @@ void WndSetThumb( a_window wnd )
 
 int WndScroll( a_window wnd, int lines )
 {
-    int         new_top;
-    int         total_rows;
-    int         rows;
-    wnd_line_piece      line;
+    wnd_row         new_top;
+    wnd_row         total_rows;
+    wnd_row         rows;
+    wnd_line_piece  line;
 
     if( lines == 0 )
         return( 0 );

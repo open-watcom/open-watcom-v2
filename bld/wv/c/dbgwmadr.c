@@ -226,7 +226,7 @@ static bool RegResize( a_window wnd )
 }
 
 
-OVL_EXTERN int RegNumRows( a_window wnd )
+OVL_EXTERN wnd_row RegNumRows( a_window wnd )
 {
     return( WndReg( wnd )->rows );
 }

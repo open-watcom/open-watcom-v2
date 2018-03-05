@@ -32,7 +32,7 @@
 
 
 extern void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece );
-extern int      GlobNumRows( a_window wnd );
+extern wnd_row  GlobNumRows( a_window wnd );
 extern bool     GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line );
 extern void     GlobNewMod( a_window wnd, mod_handle mod );
 extern void     GlobRefresh( a_window wnd );

@@ -81,7 +81,7 @@ static char * Stuff[] = {
 
 #define SIZE ArraySize( Stuff )
 
-static int W4NumRows( a_window wnd )
+static wnd_row W4NumRows( a_window wnd )
 {
     wnd=wnd;
     return( SIZE );

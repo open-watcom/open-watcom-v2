@@ -101,14 +101,14 @@ int NoScroll( a_window wnd, int lines )
     return( 0 );
 }
 
-int NoNumRows( a_window wnd )
+wnd_row NoNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( -1 );
 }
 
-int NoNextRow( a_window wnd, int row, int inc )
+wnd_row NoNextRow( a_window wnd, wnd_row row, int inc )
 {
     /* unused parameters */ (void)wnd;
 
@@ -344,13 +344,13 @@ void WndRefresh( a_window wnd )
 }
 
 
-int WndNumRows( a_window wnd )
+wnd_row WndNumRows( a_window wnd )
 {
     return( wnd->info->numrows( wnd ) + wnd->title_size );
 }
 
 
-int WndNextRow( a_window wnd, int row, int inc )
+wnd_row WndNextRow( a_window wnd, wnd_row row, int inc )
 {
     return( wnd->info->nextrow( wnd, row, inc ) );
 }

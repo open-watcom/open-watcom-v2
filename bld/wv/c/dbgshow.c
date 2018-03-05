@@ -238,7 +238,7 @@ OVL_EXTERN void ShowAll( void )
     unsigned    i;
 
     DUIDlgTxt( GetCmdName( CMD_CONFIGFILE ) );
-    for( i = 0; i < sizeof( ShowJmpTab ) / sizeof( ShowJmpTab[0] ); ++i ) {
+    for( i = 0; i < ArraySize( ShowJmpTab ); ++i ) {
         if( ShowJmpTab[i].config ) {
             ShowJmpTab[i].rtn();
         }

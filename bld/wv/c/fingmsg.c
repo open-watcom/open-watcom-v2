@@ -71,7 +71,7 @@ const char * const AboutMessage[] = {
 #endif
 };
 
-#define WHOLE_SIZE (sizeof( AboutMessage ) / sizeof( AboutMessage[0] ))
+#define WHOLE_SIZE  ArraySize( AboutMessage )
 int FingMessageSize = WHOLE_SIZE;
 int AboutSize = WHOLE_SIZE - BOLT_SIZE;
 

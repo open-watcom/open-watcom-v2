@@ -35,7 +35,7 @@
 
 #define NUM_ROWS 5000
 
-static int W7NumRows( a_window wnd )
+static wnd_row W7NumRows( a_window wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );

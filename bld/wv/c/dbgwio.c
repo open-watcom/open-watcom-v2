@@ -82,7 +82,7 @@ typedef struct {
 #define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
 
 
-OVL_EXTERN int IONumRows( a_window wnd )
+OVL_EXTERN wnd_row IONumRows( a_window wnd )
 {
     return( WndIO( wnd )->num_rows );
 }

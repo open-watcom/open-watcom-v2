@@ -166,10 +166,10 @@ OVL_EXTERN void     ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN int ImgNumRows( a_window wnd )
+OVL_EXTERN wnd_row ImgNumRows( a_window wnd )
 {
     image_entry *image;
-    int         count;
+    wnd_row     count;
 
     /* unused parameters */ (void)wnd;
 
@@ -189,8 +189,7 @@ OVL_EXTERN  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
     line->indent = Indents[piece];
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             line->tabstop = false;
             switch( piece ) {
             case PIECE_IMAGE:
@@ -205,12 +204,12 @@ OVL_EXTERN  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
             default:
                 return( false );
             }
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {

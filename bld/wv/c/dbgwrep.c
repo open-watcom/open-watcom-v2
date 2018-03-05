@@ -104,9 +104,9 @@ static event_record *RepGetEvent( int row )
 }
 
 
-OVL_EXTERN int RepNumRows( a_window wnd )
+OVL_EXTERN wnd_row RepNumRows( a_window wnd )
 {
-    int                 count;
+    wnd_row             count;
     event_record        *ev;
 
     /* unused parameters */ (void)wnd;

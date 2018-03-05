@@ -139,7 +139,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
     const char          *pos;
     const char          *endpos;
     bool                wrap;
-    int                 rows;
+    wnd_row             rows;
     bool                rc;
     bool                had_cache;
     char                *not_found;
@@ -227,7 +227,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 continue;
             endpos = NULL;
             for( pos = line.text; WndRXFind( rx, &pos, &endpos ); pos++ ) {
-                curr.end = endpos - line.text;
+                curr.end_col = endpos - line.text;
                 curr.col = pos - line.text;
                 if( curr.piece < starting_pos.piece ) {
                     prev_occurence = curr;
@@ -269,7 +269,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
             wnd->sel_start.col = next_occurence.col;
 
             wnd->sel_end = wnd->sel_start;
-            wnd->sel_end.col = next_occurence.end - 1;
+            wnd->sel_end.col = next_occurence.end_col - 1;
 
             wnd->current.col = wnd->sel_end.col;
             wnd->current = wnd->sel_start;

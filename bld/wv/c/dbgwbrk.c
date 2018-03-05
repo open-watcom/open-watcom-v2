@@ -164,10 +164,10 @@ OVL_EXTERN void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
     }
 }
 
-OVL_EXTERN int BrkNumRows( a_window wnd )
+OVL_EXTERN wnd_row BrkNumRows( a_window wnd )
 {
     brkp        *bp;
-    int         count;
+    wnd_row     count;
 
     /* unused parameters */ (void)wnd;
 

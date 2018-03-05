@@ -33,6 +33,9 @@
 #include "wndmenu1.h"
 
 
+extern wnd_info     *WndInfoTab[];
+extern const char   MainTab[];
+
 extern void PlayDead( bool dead );
 extern char *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 #ifdef DEADCODE

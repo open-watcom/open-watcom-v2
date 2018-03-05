@@ -46,10 +46,11 @@
 #include "dbgwdlg.h"
 #include "namelist.h"
 #include "symcomp.h"
+#include "wndmenu.h"
 #include "dbgwintr.h"
 
 
-extern void             WndUserAdd(char *,unsigned int );
+extern void         WndUserAdd(char *,unsigned int );
 
 static void BadCmd( void )
 {
@@ -124,10 +125,6 @@ static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
         ++child;
     }
 }
-
-extern gui_menu_struct WndMainMenu[];
-extern int WndNumMenus;
-extern wnd_info *WndInfoTab[];
 
 static void XDumpMenus( void )
 {

@@ -36,7 +36,6 @@
 
 #define NUM_ROWS        60
 
-extern WNDNUMROWS W5NumRows;
 
 static int W5Scroll( a_window wnd, int lines )
 {

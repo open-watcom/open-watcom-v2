@@ -168,7 +168,7 @@ bool    WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand )
 }
 
 
-OVL_EXTERN int VarNumRows( a_window wnd )
+OVL_EXTERN wnd_row VarNumRows( a_window wnd )
 {
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }

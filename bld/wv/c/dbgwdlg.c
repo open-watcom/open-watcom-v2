@@ -142,7 +142,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-OVL_EXTERN int DlgNumRows( a_window wnd )
+OVL_EXTERN wnd_row DlgNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 

@@ -193,7 +193,6 @@ enum {
 #define SYM_NAME_NAME(n)        ((n)+1)
 #define SET_SYM_NAME_LEN(n,l)   ((n)[0]=(char)l)
 
-#undef ArraySize
 #define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )
 
 #define AddrCue Dont_call_AddrCue_directly___call_DeAliasAddrCue_instead

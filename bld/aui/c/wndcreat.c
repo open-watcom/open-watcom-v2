@@ -33,10 +33,6 @@
 #include "_aui.h"
 #include <string.h>
 
-extern int              WndNumMenus;
-extern gui_menu_struct  WndMainMenu[];
-extern gui_colour_set   WndColours[];
-extern int              WndNumColours;
 
 extern char             *StrCopy(char *,char *);
 
@@ -129,7 +125,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info,
         init->style &= ~GUI_VISIBLE;
         init->scroll = GUI_NOSCROLL;
         init->num_items = WndNumMenus;
-        init->menu = WndMainMenu;
+        init->menu = WndMainMenuPtr;
         init->parent = NULL;
     }
     if( init->style & GUI_POPUP ) {

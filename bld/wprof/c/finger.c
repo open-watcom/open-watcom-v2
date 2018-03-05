@@ -31,6 +31,7 @@
 
 
 #include "banner.h"
+#include "common.h"
 #include "aboutmsg.h"
 
 
@@ -50,7 +51,7 @@ char *AboutMessage[] = {
 #endif
 };
 
-int AboutSize = sizeof( AboutMessage ) / sizeof( AboutMessage[0] );
+int AboutSize = ArraySize( AboutMessage );
 
 #ifdef __DOS__
 char DOS4GOPTIONS[] =

@@ -77,10 +77,10 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-OVL_EXTERN int TrdNumRows( a_window wnd )
+OVL_EXTERN wnd_row TrdNumRows( a_window wnd )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     /* unused parameters */ (void)wnd;
 
@@ -165,8 +165,7 @@ OVL_EXTERN bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_l
     line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             switch( piece ) {
             case PIECE_ID:
                 line->text = LIT_DUI( ID );
@@ -181,12 +180,12 @@ OVL_EXTERN bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_l
             default:
                 return( false );
             }
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {

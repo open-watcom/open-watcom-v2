@@ -41,75 +41,26 @@
 #include "aboutmsg.h"
 
 
-STATIC bool aboutWndEventProc( a_window, gui_event, void * );
-STATIC int  AboutNumRows( a_window );
-STATIC bool aboutGetLine( a_window, wnd_row, wnd_piece, wnd_line_piece * );
-
 static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
 
-static wnd_info     AboutInfo = {
-    aboutWndEventProc,
-    NoRefresh,
-    aboutGetLine,
-    NoMenuItem,
-    NoScroll,
-    NoBegPaint,
-    NoEndPaint,
-    NoModify,
-    AboutNumRows,
-    NoNextRow,
-    NoNotify,
-    NULL,
-    0,
-    NoPopUp,
-};
 
-
-
-void AboutOpen( void )
-/********************/
+STATIC wnd_row AboutNumRows( a_window wnd )
+/*****************************************/
 {
-    if( aboutWindow == NULL ) {
-        aboutWindow = WndCreate( LIT( WPROF_TITLE ), &AboutInfo, WND_NO_CLASS, NULL );
-    }
-    if( aboutWindow != NULL ) {
-        WndShowWindow( aboutWindow );
-    }
-}
-
-
-
-void AboutClose( void )
-/*********************/
-{
-    a_window    wnd;
-
-    if( aboutWindow != NULL ) {
-        wnd = aboutWindow;
-        WndClose( wnd );
-    }
-}
-
-
-
-STATIC int AboutNumRows( a_window wnd )
-/*************************************/
-{
-    int     ret_size;
+    wnd_row     rows;
 
     /* unused parameters */ (void)wnd;
 
     if( aboutOn ) {
-        ret_size = AboutSize;
+        rows = AboutSize;
 //        if( GUIIsGUI() ) {
-//            ret_size++;
+//            rows++;
 //        }
-        return( ret_size );
+        return( rows );
     }
     return( 0 );
 }
-
 
 
 STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
@@ -138,7 +89,6 @@ STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 }
 
 
-
 STATIC bool aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 /*************************************************************************/
 {
@@ -152,6 +102,49 @@ STATIC bool aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         return( true );
     }
     return( false );
+}
+
+
+static wnd_info     AboutInfo = {
+    aboutWndEventProc,
+    NoRefresh,
+    aboutGetLine,
+    NoMenuItem,
+    NoScroll,
+    NoBegPaint,
+    NoEndPaint,
+    NoModify,
+    AboutNumRows,
+    NoNextRow,
+    NoNotify,
+    NULL,
+    0,
+    NoPopUp,
+};
+
+
+void AboutOpen( void )
+/********************/
+{
+    if( aboutWindow == NULL ) {
+        aboutWindow = WndCreate( LIT( WPROF_TITLE ), &AboutInfo, WND_NO_CLASS, NULL );
+    }
+    if( aboutWindow != NULL ) {
+        WndShowWindow( aboutWindow );
+    }
+}
+
+
+
+void AboutClose( void )
+/*********************/
+{
+    a_window    wnd;
+
+    if( aboutWindow != NULL ) {
+        wnd = aboutWindow;
+        WndClose( wnd );
+    }
 }
 
 

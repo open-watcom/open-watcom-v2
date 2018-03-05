@@ -104,9 +104,9 @@ static void W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static int W2NextRow( a_window wnd, int row, int inc )
+static wnd_row W2NextRow( a_window wnd, wnd_row row, int inc )
 {
-    int         new;
+    wnd_row     new;
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
     if( row == WND_NO_ROW ) {

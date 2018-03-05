@@ -36,6 +36,7 @@
 #include "auistr.h"
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
+#define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
 
 extern void             WndLitInit( void );
 extern void             WndLitFini( void );
@@ -122,7 +123,6 @@ extern int              WndCharCol( const char *buff, int col );
 extern bool             WndDoingRefresh;
 extern gui_menu_struct  *WndMainMenuPtr;
 extern gui_menu_struct  *WndPopupMenuPtr;
-extern int              WndNumMenus;
 
 extern bool             WndHaveUserStatusText;
 extern bool             WndInternalStatusText( const char * );

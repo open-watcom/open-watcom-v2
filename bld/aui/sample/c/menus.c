@@ -33,6 +33,7 @@
 #include "app.h"
 
 
+
 extern int DlgOptions( void );
 
 extern void Password( const char *, char *, unsigned );
@@ -96,7 +97,7 @@ gui_menu_struct WndMainMenu[] = {
       "This is help for Popup", WndMenuFields( ForthMenu ) },
 };
 
-int     WndNumMenus = { WndMenuSize( WndMainMenu ) };
+int     WndNumMenus = ArraySize( WndMainMenu );
 
 
 static char *FilterList = {
@@ -273,7 +274,7 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
             SecondMenu[0] = ThirdMenu[0];
             ThirdMenu[0] = tmp;
         }
-        WndSetMainMenu( WndMainMenu, ArraySize( WndMainMenu) );
+        WndSetMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
         break;
     case MENU_STATUS:
         if( WndHaveStatusWindow() ) {

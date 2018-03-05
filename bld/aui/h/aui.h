@@ -37,36 +37,35 @@
 #include "guikey.h"
 #include "guifdlg.h"
 
-#define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )
 
-#define SAVE_SIZE               512
+#define SAVE_SIZE           512
 
-#define GUI_IS_ASCII( x ) ( (x) < 256 )
+#define GUI_KEY_IS_ASCII(x) ((x) < 256)
 
 // debugging stuff
-#define Say(x)          WndDisplayMessage( x, "Information", GUI_INFORMATION );
-#define Say2(y,x)       WndDisplayMessage( x, y, GUI_INFORMATION );
+#define Say(x)              WndDisplayMessage( x, "Information", GUI_INFORMATION );
+#define Say2(y,x)           WndDisplayMessage( x, y, GUI_INFORMATION );
 
-#define MIN_DCLICK      100
-#define MAX_DCLICK      1500
-#define MAX_MAGIC_STR   20
-#define WND_NO_PIECE    UCHAR_MAX
-#define MAX_KEY_SIZE    256
-#define MAX_POPUPS      20
-#define WND_MAX_COL     SHRT_MAX
-#define WND_NO_COL      WND_MAX_COL
+#define MIN_DCLICK          100
+#define MAX_DCLICK          1500
+#define MAX_MAGIC_STR       20
+#define WND_NO_PIECE        UCHAR_MAX
+#define MAX_KEY_SIZE        256
+#define MAX_POPUPS          20
+#define WND_MAX_COL         SHRT_MAX
+#define WND_NO_COL          WND_MAX_COL
 // make sure WND_MAX_ROW + WndRows(wnd) will never wrap
-#define WND_MAX_ROW     (SHRT_MAX - 500)
-#define WND_NO_ROW      (-WND_MAX_ROW)
-#define WND_APPROX_SIZE 10000
-#define WND_NO_CLASS    ((wnd_class)-1)
+#define WND_MAX_ROW         (SHRT_MAX - 500)
+#define WND_NO_ROW          (-WND_MAX_ROW)
+#define WND_APPROX_SIZE     10000
+#define WND_NO_CLASS        ((wnd_class)-1)
 
-#define WND_SAVE_ROW    0
-#define WND_RESTORE_ROW 1
+#define WND_SAVE_ROW        0
+#define WND_RESTORE_ROW     1
 
-#define WND_GUIEVENT    WndMainGUIEventProc
+#define WND_GUIEVENT        WndMainGUIEventProc
 
-#define WND_MENU_POPUP  GUI_UTIL_1
+#define WND_MENU_POPUP      GUI_UTIL_1
 
 #define WSW_LBUTTON_SELECTS             0x00000001L     // default off
 #define WSW_MULTILINE_SELECT            0x00000002L     // default off
@@ -177,7 +176,7 @@ typedef struct wnd_create_struct {
     gui_scroll_styles   scroll;
     gui_colour_set      *colour;
     gui_rect            rect;
-    int                 title_size;
+    wnd_row             title_size;
 } wnd_create_struct;
 
 typedef struct wnd_posn {
@@ -207,7 +206,7 @@ typedef struct {
     wnd_row             row;
     wnd_piece           piece;
     int                 col;
-    int                 end;
+    int                 end_col;
 } wnd_subpiece;
 
 typedef struct {
@@ -243,7 +242,7 @@ typedef struct _a_window {
     gui_coord               max_char;
     gui_ord                 width;
     gui_ord                 max_indent;
-    int                     top;
+    wnd_row                 top;
     unsigned char           keyindex;
     wnd_piece               keypiece;
     wnd_class               wndclass;
@@ -252,11 +251,11 @@ typedef struct _a_window {
     int                     hscroll_pending;
     wnd_row                 max_row;
     char                    *select_chars;
-    int                     title_size;
+    wnd_row                 title_size;
     gui_ord                 avg_char_x;
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
-    int                     current_col;
+    wnd_col                 current_col;
     char                    num_popups;
     gui_menu_struct         *popupmenu;
     char                    dirtyrects;
@@ -268,8 +267,8 @@ typedef void        (WNDREFRESH)( a_window );
 typedef void        (WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
 typedef void        (WNDMODIFY)( a_window, wnd_row, wnd_piece );
 typedef int         (WNDSCROLL)( a_window, int );
-typedef int         (WNDNUMROWS)( a_window );
-typedef int         (WNDNEXTROW)( a_window, int, int );
+typedef wnd_row     (WNDNUMROWS)( a_window );
+typedef wnd_row     (WNDNEXTROW)( a_window, wnd_row, int );
 typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
 typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
 typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
@@ -587,11 +586,15 @@ extern int              WndMaxDirtyRects;
 extern gui_window_styles WndStyle;
 extern char             WndBackgroundChar;
 
-#define DefPopUp( x )   ArraySize( x ), x
+#define DefPopUp( x )   (sizeof( x ) / sizeof( (x)[0] )), x
 #define NoPopUp         0, NULL
 
-#define WndMenuSize( x ) ArraySize( x )
-#define WndMenuFields( x ) WndMenuSize( x ), x
+#define WndMenuFields( x ) (sizeof( x ) / sizeof( (x)[0] )), x
 extern void             WndSetMainMenu( gui_menu_struct *menu, int num_items );
+
+extern gui_menu_struct  WndMainMenu[];
+extern int              WndNumMenus;
+extern gui_colour_set   WndColours[];
+extern int              WndNumColours;
 
 #endif // _AUI_H_INCLUDED

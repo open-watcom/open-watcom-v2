@@ -112,7 +112,7 @@ void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece
 }
 
 
-int GlobNumRows( a_window wnd )
+wnd_row GlobNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }

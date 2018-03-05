@@ -54,9 +54,6 @@
 
 
 extern const char       MainTab[];
-extern wnd_info         *WndInfoTab[];
-extern gui_menu_struct  WndMainMenu[];
-extern int              WndNumMenus;
 
 static char **WndDisplayNames[] = {
     #define pick( a,b,c,d,e,f ) LITREF_DUI( f ),
@@ -441,10 +438,10 @@ OVL_EXTERN void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
     }
 }
 
-OVL_EXTERN int MacNumRows( a_window wnd )
+OVL_EXTERN wnd_row MacNumRows( a_window wnd )
 {
     wnd_macro   *mac;
-    int         count;
+    wnd_row     count;
 
     /* unused parameters */ (void)wnd;
 
@@ -482,20 +479,19 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     }
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             line->tabstop = false;
             if( piece >= PIECE_LAST )
                 return( false );
             line->indent = Indents[piece];
             line->text = *Titles[piece];
             return( true );
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {

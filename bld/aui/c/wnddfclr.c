@@ -52,7 +52,7 @@ gui_colour_set WndColours[] = {
     { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_RESIZE    */
 };
 
-int WndNumColours = { ArraySize( WndColours ) };
+int WndNumColours = ArraySize( WndColours );
 
 wnd_attr        WndPlainAttr = GUI_MENU_PLAIN;
 wnd_attr        WndTabStopAttr = GUI_MENU_STANDOUT;
