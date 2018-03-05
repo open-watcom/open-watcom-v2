@@ -133,9 +133,7 @@ static void GoBackward( a_window wnd, wnd_coord *start, wnd_line_piece *line )
     ch = (unsigned char)line->text[start->col];
     if( isspace( ch ) || !WndIDChar( wnd, ch ) )
         return;
-    for( ;; ) {
-        if( start->col == 0 )
-            return;
+    while( start->col != 0 ) {
         start->col = WndPrevCharCol( line->text, start->col );
         ch = (unsigned char)line->text[start->col];
         if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {

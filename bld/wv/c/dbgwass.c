@@ -990,7 +990,7 @@ static  void    AsmInit( a_window wnd )
     asw->src_list.mod = NO_MOD;
     asw->src_list.file_id = 0;
     WndFixedThumb( wnd );
-    WndSetIDChars( wnd, WND_ALNUM_STR "_$:[]+-*" );
+    WndSetIDChars( wnd, "@_$:[]+-*" );
     CalcAddrLen( wnd, Context.execution );
     WndZapped( wnd );
 }

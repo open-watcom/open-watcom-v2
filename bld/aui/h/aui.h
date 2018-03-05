@@ -250,7 +250,7 @@ typedef struct _a_window {
     int                     vscroll_pending;
     int                     hscroll_pending;
     wnd_row                 max_row;
-    char                    *select_chars;
+    const char              *select_chars;
     wnd_row                 title_size;
     gui_ord                 avg_char_x;
     gui_ord                 mid_char_x;
@@ -440,9 +440,7 @@ extern int              SpawnP( aui_spawn_funcP *, void *parm );
 extern int              Spawn( aui_spawn_func * );
 extern void             Suicide( void );
 
-#define WND_ALNUM_CHAR  '@'
-#define WND_ALNUM_STR   "@"
-extern char             *WndSetIDChars( a_window, char * );
+extern const char       *WndSetIDChars( a_window wnd, const char *id_chars );
 
 extern bool             WndIDChar( a_window, int ch );
 extern bool             WndKeyIsPrintChar( gui_key key );
