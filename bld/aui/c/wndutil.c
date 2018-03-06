@@ -33,16 +33,18 @@
 #include "_aui.h"
 #include <string.h>
 
-int WndCharCol( const char *buff, int col )
-{
-    const char  *end, *curr;
 
-    end = buff + col;
-    for( curr = buff; curr < end; curr += GUICharLen( *(const unsigned char *)curr ) )
+int WndCharCol( const char *buff, int idx )
+{
+    const char  *end;
+    const char  *curr;
+
+    end = buff + idx;
+    for( curr = buff; curr < end; curr += GUICharLen( UCHAR_VALUE( *curr ) ) )
         ;
     if( curr > end )
-        col--;
-    return( col );
+        idx--;
+    return( idx );
 }
 
 int WndLastCharCol( wnd_line_piece *line )

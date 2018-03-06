@@ -36,7 +36,10 @@
 #include "auistr.h"
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
+
 #define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
+
+#define UCHAR_VALUE( c )        (unsigned char)(c)
 
 extern void             WndLitInit( void );
 extern void             WndLitFini( void );
@@ -85,7 +88,7 @@ extern void             WndSetToolBar( gui_event gui_ev );
 extern void             WndPaintDirt(a_window);
 extern void             WndDirtyCurrChar(a_window);
 extern void             WndDirtyScreenChar( a_window wnd, wnd_coord *piece );
-extern void             WndDirtyScreenRange( a_window wnd, wnd_coord *piece, int end_col );
+extern void             WndDirtyScreenRange( a_window wnd, wnd_coord *piece, wnd_col end_col );
 extern void             WndDirtyScreenPiece( a_window wnd, wnd_coord *piece );
 extern void             WndDirtyScreenRow( a_window wnd, wnd_row row );
 extern void             WndNextNonIconToFront( a_window wnd );
@@ -118,7 +121,7 @@ extern void             WndInvokePopUp( a_window wnd, gui_point *point, gui_menu
 extern const char       *WndPrevChar( const char *buff, const char *curr );
 extern int              WndPrevCharCol( const char *buff, int idx );
 extern int              WndLastCharCol( wnd_line_piece *line );
-extern int              WndCharCol( const char *buff, int col );
+extern int              WndCharCol( const char *buff, int idx );
 
 extern bool             WndDoingRefresh;
 extern gui_menu_struct  *WndMainMenuPtr;

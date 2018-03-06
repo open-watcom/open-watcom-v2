@@ -771,7 +771,7 @@ extern void             uiyield( void );
 extern bool             uiforceevadd( ui_event );
 extern void             uiforceevflush( void );
 extern bool             uiisdbcs( void );
-extern int              uicharlen( char );          // returns 2 if dbcs lead byte
+extern int              uicharlen( int ch );        // returns 2 if dbcs lead byte
 extern void             UIMemOpen( void );
 extern void             UIMemClose( void );
 

@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 
+
 static gui_ctl_id CalcMenuMaxId( gui_menu_struct *menu, int num_items )
 {
     int         i;

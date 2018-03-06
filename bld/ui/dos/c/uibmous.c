@@ -56,7 +56,7 @@ static LP_STRING RegenPos( unsigned row, unsigned col )
     col0 = (LP_STRING)UIData->screen.origin + ( row * UIData->screen.increment ) * sizeof( PIXEL );
     pos = col0 + col * sizeof( PIXEL );
     while( col0 < pos ) {
-        col0 += uicharlen( *col0 ) * sizeof( PIXEL );
+        col0 += uicharlen( UCHAR_VALUE( *col0 ) ) * sizeof( PIXEL );
     }
     if( col0 != pos ) {
         ColAdjust = -1;
@@ -77,7 +77,7 @@ static void uisetmouseoff( void )
     if( mouseOn ) {
         if( EraseCursor == NULL ) {
             old = RegenPos( OldMouseRow, OldMouseCol );
-            if( uicharlen( *old ) == 2 ) {
+            if( uicharlen( UCHAR_VALUE( *old ) ) == 2 ) {
                 old[3] = OldAttr;
             }
             old[1] = OldAttr;
@@ -113,7 +113,7 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
     if( mouseOn ) {
         if( DrawCursor == NULL ) {
             new = RegenPos( row, col );
-            if( uicharlen( *new ) == 2 ) {
+            if( uicharlen( UCHAR_VALUE( *new ) ) == 2 ) {
                 FlipAttr( new + 3 );
             }
             FlipAttr( new + 1 );

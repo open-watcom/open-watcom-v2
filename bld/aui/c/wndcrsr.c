@@ -32,6 +32,7 @@
 
 #include "_aui.h"
 
+
 bool    WndAtTop( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) )
@@ -253,7 +254,7 @@ static bool WndCursorRightCheck( a_window wnd )
     } else {
         WndDirtyCurrChar( wnd );
         col = wnd->current.col;
-        wnd->current.col += GUICharLen( (unsigned char)line.text[wnd->current.col] );
+        wnd->current.col += GUICharLen( UCHAR_VALUE( line.text[wnd->current.col] ) );
         WndSetCurrCol( wnd );
         WndCurrVisible( wnd );
         WndDirtyCurrChar( wnd );

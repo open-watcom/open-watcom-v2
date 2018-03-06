@@ -45,6 +45,9 @@
 #define _ESC                "\033"
 #define _ESC_CHAR           '\033'
 
+#define CHAR_VALUE(c)       (char)(unsigned char)(c)
+#define UCHAR_VALUE(c)      (unsigned char)(c)
+
 typedef enum {
     UI_MOUSE_PRESS          = 1,
     UI_MOUSE_PRESS_RIGHT    = 2,

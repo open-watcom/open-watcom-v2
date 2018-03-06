@@ -189,7 +189,7 @@ bool UIAPI uiisdbcs( void )
     return( Pairs[0].start_range != 0 );
 }
 
-int UIAPI uicharlen( char ch )
+int UIAPI uicharlen( int ch )
 {
     dbcs_pair           *p;
 
@@ -197,7 +197,7 @@ int UIAPI uicharlen( char ch )
     if( !Init )
         initdbcs();
     for( p = Pairs; p->start_range != 0; ++p ) {
-        if( (unsigned char)ch >= p->start_range && (unsigned char)ch <= p->end_range ) {
+        if( ch >= p->start_range && ch <= p->end_range ) {
             return( 2 );
         }
     }

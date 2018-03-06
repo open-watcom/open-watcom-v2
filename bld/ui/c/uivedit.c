@@ -37,13 +37,11 @@
 #include "uiedit.h"
 
 
-#define CHAR_VALUE(c)           (char)(unsigned char)(c)
-
-static bool isdelim( char ch )
+static bool isdelim( int ch )
 {
     if( uicharlen( ch ) == 2 )
         return( false );
-    if( isalnum( (unsigned char)ch ) )
+    if( isalnum( ch ) )
         return( false );
     if( ch == '_' )
         return( false );
@@ -63,7 +61,7 @@ static void clear_buffer( VBUFFER *buffer )
 static bool secondbyte( char *buff, char *which )
 {
     while( buff < which ) {
-        buff += uicharlen( *buff );
+        buff += uicharlen( UCHAR_VALUE( *buff ) );
     }
     return( buff > which );
 }
@@ -110,14 +108,14 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
                     for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
                         *bptr = *(bptr - 1);
                     }
-                    *(buffer->content + buffer->index) = CHAR_VALUE( ui_ev );
+                    buffer->content[buffer->index] = CHAR_VALUE( ui_ev );
                     right = true;
                     buffer->dirty = true;
                 }
             } else {
                 bptr = (buffer->content + buffer->index);
-                if( uicharlen( *bptr ) == 2 ) {
-                    if( uicharlen( CHAR_VALUE( ui_ev ) ) == 1 ) {
+                if( uicharlen( UCHAR_VALUE( *bptr ) ) == 2 ) {
+                    if( uicharlen( UCHAR_VALUE( ui_ev ) ) == 1 ) {
                         *bptr = CHAR_VALUE( ui_ev );
                         for( bptr++; bptr < buffer->content + buffer->length - 1; bptr++ ) {
                             *bptr = *(bptr + 1);
@@ -127,14 +125,14 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
                         *bptr = CHAR_VALUE( ui_ev );
                     }
                 } else {
-                    if( uicharlen( CHAR_VALUE( ui_ev ) ) == 2 ) {
+                    if( uicharlen( UCHAR_VALUE( ui_ev ) ) == 2 ) {
                         bptr = buffer->content + buffer->length - 1;
                         if( *bptr == ' ' ) {
                             for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
                                 *bptr = *(bptr - 1);
                             }
-                            *(buffer->content + buffer->index) = CHAR_VALUE( ui_ev );
-                            *(buffer->content + buffer->index + 1) = 'a';
+                            buffer->content[buffer->index] = CHAR_VALUE( ui_ev );
+                            buffer->content[buffer->index + 1] = 'a';
                         }
                         ignore_uicharlen = true;
                     } else {
@@ -159,7 +157,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             --bptr;
             if( secondbyte( buffer->content, bptr ) )
                 --bptr;
-            if( !isdelim( *bptr ) ) {
+            if( !isdelim( UCHAR_VALUE( *bptr ) ) ) {
                 break;
             }
         }
@@ -167,7 +165,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             --bptr;
             if( secondbyte( buffer->content, bptr ) )
                 --bptr;
-            if( isdelim( *bptr ) ) {
+            if( isdelim( UCHAR_VALUE( *bptr ) ) ) {
                 ++bptr;
                 break;
             }
@@ -181,27 +179,28 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
         bptr = buffer->content + buffer->index;
         eptr = buffer->content + buffer->length;
         for( ;; ) {
-            if( bptr >= eptr ) break;
-            if( isdelim( *bptr ) ) break;
-            bptr += uicharlen( *bptr );
+            if( bptr >= eptr )
+                break;
+            if( isdelim( UCHAR_VALUE( *bptr ) ) )
+                break;
+            bptr += uicharlen( UCHAR_VALUE( *bptr ) );
         }
         for( tptr = bptr; tptr < eptr; ) {
             if( *tptr == ' ' ) {
                 /* do nothing */
-            } else if( isdelim( *tptr ) ) {
+            } else if( isdelim( UCHAR_VALUE( *tptr ) ) ) {
                 bptr = tptr + 1;       /* position after last non-blank */
             } else {
                 bptr = tptr;           /* position on next word */
                 break;
             }
-            tptr += uicharlen( *tptr );
+            tptr += uicharlen( UCHAR_VALUE( *tptr ) );
         }
         buffer->index = bptr - buffer->content;
     } else if( ui_ev == EV_CTRL_HOME ) {
         clear_buffer( buffer );
     } else if( ui_ev == EV_CTRL_END ) {
-        memset( buffer->content + buffer->index,
-                        ' ', buffer->length - buffer->index );
+        memset( buffer->content + buffer->index, ' ', buffer->length - buffer->index );
         buffer->dirty = true;
     } else if( ui_ev == EV_CURSOR_RIGHT ) {
         allblank = true;
@@ -213,7 +212,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             if( ignore_uicharlen ) {
                 ++bptr;
             } else {
-                bptr += uicharlen( *bptr );
+                bptr += uicharlen( UCHAR_VALUE( *bptr ) );
             }
         }
         if( allblank ) {
@@ -229,7 +228,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
     if( right ) {
         if( buffer->index < buffer->length ) {
             bptr = buffer->content + buffer->index;
-            buffer->index += uicharlen( *bptr );
+            buffer->index += uicharlen( UCHAR_VALUE( *bptr ) );
         }
         if( buffer->index == buffer->length ) {
             new = EV_BUMP_RIGHT;      /* 891206 */
@@ -239,7 +238,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
 
         allblank = true;
         if( buffer->index < buffer->length ) {
-            delsize = uicharlen( *(buffer->content + buffer->index) );
+            delsize = uicharlen( UCHAR_VALUE( buffer->content[buffer->index] ) );
             for( bptr = buffer->content + buffer->index; bptr < buffer->content + buffer->length - delsize; bptr++ ) {
                 if( *bptr != ' ' ) {
                     allblank = false;

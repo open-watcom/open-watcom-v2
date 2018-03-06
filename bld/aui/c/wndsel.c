@@ -189,7 +189,7 @@ bool    WndSelSetEnd( a_window wnd, void *parm )
 void     WndSelPieceChange( a_window wnd, wnd_coord *piece )
 {
     wnd_coord           old_sel_end;
-    int                 end_col;
+    wnd_col             end_col;
 
     if( wnd->keyindex != 0 )
         return;

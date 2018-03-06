@@ -71,6 +71,8 @@
     #define     _ID(X) MAKEINTRESOURCE(X)
 #endif
 
+#define UCHAR_VALUE( c )    (unsigned char)(c)
+
 // Defines used by the SETUP program.
 
 typedef enum {

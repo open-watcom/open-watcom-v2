@@ -32,6 +32,7 @@
 
 #include "_aui.h"
 
+
 #define WSW_NOT_TO_SCREEN       WSW_UTIL_1
 
 static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece )
@@ -168,7 +169,7 @@ static void WndDrawCursor( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
     } else if( wnd->current.col < line->length ) {
         line->indent += GUIGetExtentX( wnd->gui, line->text, wnd->current.col );
         p = line->text + wnd->current.col;
-        GUIDrawText( wnd->gui, p, GUICharLen( *(const unsigned char *)p ), row, line->indent, WndCursorAttr );
+        GUIDrawText( wnd->gui, p, GUICharLen( UCHAR_VALUE( *p ) ), row, line->indent, WndCursorAttr );
     }
 }
 

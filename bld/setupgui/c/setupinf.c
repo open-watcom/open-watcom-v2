@@ -831,7 +831,7 @@ static bool valid_first_char( char *p )
     int                 i;
     unsigned short      kanji_char;
 
-    if( GUICharLen( *p ) == 2 ) {
+    if( GUICharLen( UCHAR_VALUE( *p ) ) == 2 ) {
         // Kanji
         kanji_char = (*p << 8) + *(p + 1);
         if( kanji_char < InvalidFirst[0] ||
@@ -859,7 +859,7 @@ static bool valid_last_char( char *p )
     int                 i;
     unsigned short      kanji_char;
 
-    if( GUICharLen( *p ) == 2 ) {
+    if( GUICharLen( UCHAR_VALUE( *p ) ) == 2 ) {
         // Kanji
         kanji_char = (*p << 8) + *(p + 1);
         if( kanji_char < InvalidLast[0] ||
@@ -916,7 +916,7 @@ static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
             return( text );
         if( *e == '\\' && *( e + 1 ) == 'n' )
             return( e );
-        n = e + GUICharLen( *e );
+        n = e + GUICharLen( UCHAR_VALUE( *e ) );
         width = GUIGetExtentX( MainWnd, text, n - text );
         if( width >= winwidth )
             break;

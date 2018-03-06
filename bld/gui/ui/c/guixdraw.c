@@ -159,7 +159,7 @@ void GUIInitDrawingChars( bool dbcs )
 int GUIGetCharacter( gui_draw_char draw_char )
 {
     if( draw_char < GUI_NUM_DRAW_CHARS ) {
-        return( (unsigned char)DrawingChars[DrawIndex[draw_char]] );
+        return( UCHAR_VALUE( DrawingChars[DrawIndex[draw_char]] ) );
     }
     return( 0 );
 }

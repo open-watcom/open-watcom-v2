@@ -35,7 +35,6 @@
 
 #include "uichars.h"
 
-#define CHAR_VALUE(c)           (char)(unsigned char)(c)
 
 #define UP_ARROW                {CHAR_VALUE( PC_arrowup ),0}
 #define DOWN_ARROW              {CHAR_VALUE( PC_arrowdown ),0}

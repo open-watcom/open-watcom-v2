@@ -113,7 +113,9 @@ bool UIAPI uiisdbcs( void )
     return( false );
 }
 
-int UIAPI uicharlen( char ch )
+int UIAPI uicharlen( int ch )
 {
+    /* unused parameters */ (void)ch;
+
     return( 1 );
 }

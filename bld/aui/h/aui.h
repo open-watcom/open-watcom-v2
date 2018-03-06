@@ -192,28 +192,28 @@ typedef int wnd_menu_id;
 typedef struct {
     wnd_row             row;
     wnd_piece           piece;
-    int                 col;
+    wnd_col             col;
 } wnd_coord;
 
 typedef struct {
     wnd_row             row;
     wnd_piece           piece;
-    int                 col;
-    int                 end_col;
+    wnd_col             col;
+    wnd_col             end_col;
 } wnd_dirt;
 
 typedef struct {
     wnd_row             row;
     wnd_piece           piece;
-    int                 col;
-    int                 end_col;
+    wnd_col             col;
+    wnd_col             end_col;
 } wnd_subpiece;
 
 typedef struct {
     wnd_row             min_rows;
-    int                 min_cols;
+    wnd_col             min_cols;
     wnd_row             max_rows;
-    int                 max_cols;
+    wnd_col             max_cols;
 } wnd_metrics;
 
 typedef struct {
@@ -256,9 +256,9 @@ typedef struct _a_window {
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
     wnd_col                 current_col;
-    char                    num_popups;
+    int                     num_popups;
     gui_menu_struct         *popupmenu;
-    char                    dirtyrects;
+    int                     dirtyrects;
     wnd_dirt                dirty[1];
 } *a_window;
 
@@ -294,7 +294,7 @@ typedef struct wnd_info {
         WNDNOTIFY               *notify;
         WNDCHKFLAGS             *chkflags;
         wnd_update_list         flags;
-        char                    num_popups;
+        int                     num_popups;
         gui_menu_struct         *popupmenu;
 } wnd_info;
 
@@ -485,8 +485,7 @@ extern void             WndDirty( a_window );
 extern void             WndDirtyCurr( a_window );
 extern void             WndSetColours( a_window, int, gui_colour_set *);
 extern void             WndBackGround( gui_colour colour );
-extern void             WndDirtyRect( a_window wnd, gui_ord x, wnd_row y,
-                                      gui_ord width, wnd_row height );
+extern void             WndDirtyRect( a_window wnd, gui_ord x, wnd_row y, gui_ord width, wnd_row height );
 
 extern void             WndReDrawAll( void );
 extern void             WndSetIcon( a_window, gui_resource *);

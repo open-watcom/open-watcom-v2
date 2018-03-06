@@ -33,8 +33,8 @@
 
 #if defined( __NETWARE_386__ ) || defined( __UNIX__ ) || !defined( __WATCOMC__ )
 
-int UIAPI uicharlen( char ch )
-/****************************/
+int UIAPI uicharlen( int ch )
+/***************************/
 {
     /* unused parameters */ (void)ch;
 
@@ -51,10 +51,10 @@ bool UIAPI uiisdbcs( void )
 
 #include <mbctype.h>
 
-int UIAPI uicharlen( char ch )
-/****************************/
+int UIAPI uicharlen( int ch )
+/***************************/
 {
-    return( _mbislead( (unsigned char)ch ) ? 2 : 1 );
+    return( _mbislead( ch ) ? 2 : 1 );
 }
 
 bool UIAPI uiisdbcs( void )

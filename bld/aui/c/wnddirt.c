@@ -33,8 +33,7 @@
 #include "_aui.h"//
 #include <stdlib.h>
 
-static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
-                                       wnd_piece piece, int col, int end_col )
+static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, wnd_col col, wnd_col end_col )
 {
     int         i;
     int         same_row;
@@ -42,19 +41,23 @@ static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
     /* check if any piece contains this one */
     same_row = -1;
     for( i = 0; i < wnd->dirtyrects; ++i ) {
-        if( wnd->dirty[i].row != row ) continue;
+        if( wnd->dirty[i].row != row )
+            continue;
         same_row = i;
         if( wnd->dirty[i].piece == WND_NO_PIECE || piece == WND_NO_PIECE ) {
             wnd->dirty[i].piece = WND_NO_PIECE;
             return;
         }
-        if( wnd->dirty[i].piece != piece ) continue;
+        if( wnd->dirty[i].piece != piece )
+            continue;
         if( wnd->dirty[i].col == WND_NO_COL || col == WND_NO_COL ) {
             wnd->dirty[i].col = WND_NO_COL;
             return;
         }
-        if( col < wnd->dirty[i].col ) wnd->dirty[i].col = col;
-        if( end_col > wnd->dirty[i].end_col ) wnd->dirty[i].end_col = end_col;
+        if( wnd->dirty[i].col > col )
+            wnd->dirty[i].col = col;
+        if( wnd->dirty[i].end_col < end_col )
+            wnd->dirty[i].end_col = end_col;
         return;
     }
     if( wnd->dirtyrects >= WndMaxDirtyRects ) {
@@ -65,15 +68,15 @@ static  void    DoWndDirtyScreenPiece( a_window wnd, wnd_row row,
         }
         return;
     }
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].row = row;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].piece = piece;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].col = col;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].end_col = end_col;
+    wnd->dirty[wnd->dirtyrects].row = row;
+    wnd->dirty[wnd->dirtyrects].piece = piece;
+    wnd->dirty[wnd->dirtyrects].col = col;
+    wnd->dirty[wnd->dirtyrects].end_col = end_col;
     wnd->dirtyrects++;
 }
 
 
-void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, int end_col )
+void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, wnd_col end_col )
 {
     DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, end_col );
 }
@@ -111,8 +114,7 @@ void    WndDirtyScreenRow( a_window wnd, wnd_row row )
 }
 
 
-void    WndDirtyRect( a_window wnd, gui_ord x, wnd_row y,
-                                             gui_ord width, wnd_row height )
+void    WndDirtyRect( a_window wnd, gui_ord x, wnd_row y, gui_ord width, wnd_row height )
 {
     gui_rect    rect;
 
@@ -232,7 +234,7 @@ void WndPaintDirt( a_window wnd )
                         rect.x = line.indent;
                         rect.x += GUIGetExtentX(wnd->gui, line.text, dirt->col);
                         rect.y = dirt->row * wnd->max_char.y;
-                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col - dirt->col + GUICharLen( (unsigned char)line.text[dirt->col] ) );
+                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col - dirt->col + GUICharLen( UCHAR_VALUE( line.text[dirt->col] ) ) );
                         rect.height = wnd->max_char.y;
                     } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop ) {
                         rect.width = 0;
@@ -278,7 +280,7 @@ void WndPaintDirt( a_window wnd )
     }
 }
 
-void    WndFreshAll()
+void    WndFreshAll( void )
 {
     a_window            wnd;
 
