@@ -155,10 +155,6 @@ extra_a_flags_misc7386 = -fpi87
 trperr_h = _err.gh
 jtrperr_h = _jerr.gh
 
-!ifeq host_os nov
-extra_deps += nversion.tmp
-!endif
-
 all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
     @%make $(target)
 
@@ -182,9 +178,9 @@ nversion.tmp: ./mknver.exe $(__MAKEFILES__)
 extra_dobjs = $(extra_objs)
 !endif
 
-!ifeq host_os dos
-dbg_libs = dbgstr.lib
-!endif
+extra_deps_nov = nversion.tmp
+
+dbg_libs_dos = dbgstr.lib
 
 !ifdef remote_link
 remote_objs = &
@@ -199,9 +195,9 @@ objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
 objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
 !endif
 
-libs = $(extra_libs) $(dbg_libs)
+libs = $(extra_libs) $(dbg_libs_$(host_os))
 
-$(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+$(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extra_deps_$(host_os)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
