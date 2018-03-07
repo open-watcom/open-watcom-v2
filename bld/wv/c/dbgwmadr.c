@@ -82,8 +82,8 @@ typedef struct {
     unsigned                num_toggles;
     mad_type_kind           kind;
 } reg_window;
-#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
 
+#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
 
 typedef struct {
     const char              *descript;
@@ -232,7 +232,7 @@ OVL_EXTERN wnd_row RegNumRows( a_window wnd )
 }
 
 
-static int GetRegIdx( reg_window *reg, int row, int piece )
+static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 {
     int         i;
 

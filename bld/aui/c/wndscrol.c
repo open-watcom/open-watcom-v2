@@ -195,7 +195,7 @@ static gui_ord HScrollTo( a_window wnd, gui_ord left, gui_ord rite )
 }
 
 
-static gui_ord WndCurrHScrollPos( a_window wnd, int len )
+static gui_ord WndCurrHScrollPos( a_window wnd, size_t len )
 {
     gui_ord             whole_extent;
     gui_ord             sel_extent;
@@ -208,16 +208,15 @@ static gui_ord WndCurrHScrollPos( a_window wnd, int len )
     if( whole_extent <= wnd->width && WndSwitchOff( wnd, WSW_CHAR_CURSOR ) ) {
         hscroll = HScrollTo( wnd, line.indent, line.indent + whole_extent );
     } else {
-        sel_extent = GUIGetExtentX( wnd->gui, line.text + wnd->current.col, len );
-        sel_indent = GUIGetExtentX( wnd->gui, line.text, wnd->current.col );
-        hscroll = HScrollTo( wnd, line.indent + sel_indent,
-                   line.indent + sel_indent + sel_extent );
+        sel_extent = GUIGetExtentX( wnd->gui, line.text + wnd->current.colidx, len );
+        sel_indent = GUIGetExtentX( wnd->gui, line.text, wnd->current.colidx );
+        hscroll = HScrollTo( wnd, line.indent + sel_indent, line.indent + sel_indent + sel_extent );
     }
     return( hscroll );
 }
 
 
-void    WndHScrollToCurr( a_window wnd, int len )
+void    WndHScrollToCurr( a_window wnd, size_t len )
 {
     gui_ord     hscroll;
 

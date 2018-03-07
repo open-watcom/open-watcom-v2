@@ -162,10 +162,10 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
         Pos( wnd, 0 );
         break;
     case MENU_W2_BOTTOM:
-        Pos( wnd, WORD_SIZE-1 );
+        Pos( wnd, WORD_SIZE - 1 );
         break;
     case MENU_W2_TITLE:
-        buff[0]='\0';
+        buff[0] = '\0';
         DlgNew( "Enter New Title", buff, sizeof( buff ) );
         WndSetTitle( wnd, buff );
         break;

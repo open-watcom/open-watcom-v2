@@ -34,32 +34,32 @@
 #include <string.h>
 
 
-int WndCharCol( const char *buff, int idx )
+wnd_colidx WndCharColIdx( const char *buff, wnd_colidx colidx )
 {
     const char  *end;
     const char  *curr;
 
-    end = buff + idx;
+    end = buff + colidx;
     for( curr = buff; curr < end; curr += GUICharLen( UCHAR_VALUE( *curr ) ) )
         ;
     if( curr > end )
-        idx--;
-    return( idx );
+        colidx--;
+    return( colidx );
 }
 
-int WndLastCharCol( wnd_line_piece *line )
+wnd_colidx WndLastCharColIdx( wnd_line_piece *line )
 {
-    return( line->length == 0 ? 0 : WndCharCol( line->text, line->length - 1 ) );
+    return( line->length > 0 ? WndCharColIdx( line->text, line->length - 1 ) : 0 );
 }
 
-int WndPrevCharCol( const char *buff, int idx )
+wnd_colidx WndPrevCharColIdx( const char *buff, wnd_colidx colidx )
 {
-    return( idx == 0 ? 0 : WndCharCol( buff, idx - 1 ) );
+    return( colidx > 0 ? WndCharColIdx( buff, colidx - 1 ) : 0 );
 }
 
 const char *WndPrevChar( const char *buff, const char *curr )
 {
-    return( buff + WndPrevCharCol( buff, curr - buff ) );
+    return( buff + WndPrevCharColIdx( buff, curr - buff ) );
 }
 
 void WndCurrToGUIPoint( a_window wnd, gui_point *point )
@@ -77,7 +77,7 @@ void    WndCoordToGUIPoint( a_window wnd, wnd_coord *where, gui_point *point )
         return;
     if( !WndGetLine( wnd, where->row, where->piece, &line ) )
         return;
-    point->x = line.indent + GUIGetExtentX( wnd->gui, line.text, where->col );
+    point->x = line.indent + GUIGetExtentX( wnd->gui, line.text, where->colidx );
     point->y = where->row * wnd->max_char.y;
 }
 

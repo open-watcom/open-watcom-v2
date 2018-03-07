@@ -52,9 +52,9 @@
 
 #define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
 
-static mem_type_walk_data       IOData;
-static gui_menu_struct *IOTypeMenu = NULL;
-static gui_menu_struct DummyMenu[1];
+static mem_type_walk_data   IOData;
+static gui_menu_struct      *IOTypeMenu = NULL;
+static gui_menu_struct      DummyMenu[1];
 
 #include "menudef.h"
 static gui_menu_struct IOMenu[] = {
@@ -79,6 +79,7 @@ typedef struct {
     int         num_rows;
     io_location *list;
 } io_window;
+
 #define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
 
 

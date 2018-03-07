@@ -63,10 +63,10 @@ enum {
 static char     Indents[PIECE_LAST] = { 0, ID_WIDTH, ID_WIDTH+STATE_WIDTH };
 
 
-static thread_state     *GetThreadRow( int row )
+static thread_state     *GetThreadRow( wnd_row row )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -143,7 +143,7 @@ OVL_EXTERN void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 OVL_EXTERN void TrdRefresh( a_window wnd )
 {
     thread_state    *thd;
-    int                 row;
+    wnd_row         row;
 
     row = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -266,6 +266,5 @@ wnd_info TrdInfo = {
 
 a_window WndTrdOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL,
-                               &TrdIcon, TITLE_SIZE, true ) );
+    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }

@@ -88,7 +88,7 @@ static void W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
     case MENU_W1_NEWWORD:
         buff[0]='\0';
         DlgNew( "Enter New Word", buff, 80 );
-        Word[RandNum( WORD_SIZE )-1] = (char*)strdup( buff ); // nyi - never freed
+        Word[RandNum( WORD_SIZE ) - 1] = (char *)strdup( buff ); // nyi - never freed
         WndFlags |= EV_UPDATE_1;
         W1Init( wnd );
         break;
@@ -128,7 +128,7 @@ static bool    W1GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
     if( piece >= w1->rows[row].num_pieces )
         return( false );
     line->text = w1->rows[row].pieces[piece];
-    line->hint = ((row+1)&1)?"This is help for an even row":"This is help for an odd row";
+    line->hint = (( row + 1 ) & 1) ? "This is help for an even row" : "This is help for an odd row";
     if( strcmp( line->text, "Censorship" ) == 0 ) {
         line->attr = APP_COLOR_CENSORED;
         line->static_text = true;

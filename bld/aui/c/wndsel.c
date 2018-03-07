@@ -93,7 +93,7 @@ void    WndSelEnds( a_window wnd, wnd_coord **pstart, wnd_coord **pend )
             end = &wnd->sel_start;
             start = &wnd->sel_end;
         } else if( start->piece == end->piece ) {
-            if( start->col > end->col ) {
+            if( start->colidx > end->colidx ) {
                 end = &wnd->sel_start;
                 start = &wnd->sel_end;
             }
@@ -103,7 +103,7 @@ void    WndSelEnds( a_window wnd, wnd_coord **pstart, wnd_coord **pend )
     *pend = end;
 }
 
-bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece, wnd_col *first, wnd_col *len )
+bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece, wnd_colidx *first_colidx, size_t *len )
 {
     wnd_coord   *start;
     wnd_coord   *end;
@@ -116,17 +116,17 @@ bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece
     /* figure out start and end */
     WndSelEnds( wnd, &start, &end );
     if( row == start->row && piece == start->piece ) {
-        *first = start->col;
+        *first_colidx = start->colidx;
         if( row == end->row && piece == end->piece ) {
-            *len = end->col - start->col + 1;
+            *len = end->colidx - start->colidx + 1;
         } else {
-            *len = line->length - start->col;
+            *len = line->length - start->colidx;
         }
         return( true );
     }
-    *first = 0;
+    *first_colidx = 0;
     if( row == end->row && piece == end->piece ) {
-        *len = end->col + 1;
+        *len = end->colidx + 1;
         return( true );
     }
     *len = line->length;
@@ -187,7 +187,7 @@ bool    WndSelSetEnd( a_window wnd, void *parm )
 void     WndSelPieceChange( a_window wnd, wnd_coord *piece )
 {
     wnd_coord           old_sel_end;
-    wnd_col             end_col;
+    wnd_colidx          end_colidx;
 
     if( wnd->keyindex != 0 )
         return;
@@ -209,14 +209,14 @@ void     WndSelPieceChange( a_window wnd, wnd_coord *piece )
     } else if( old_sel_end.piece != wnd->sel_end.piece ) {
         WndDirtyScreenPiece( wnd, &old_sel_end );
         WndDirtyScreenPiece( wnd, &wnd->sel_end );
-    } else if( old_sel_end.col != wnd->sel_end.col ) {
-        if( old_sel_end.col > wnd->sel_end.col ) {
-            end_col = old_sel_end.col;
-            old_sel_end.col = wnd->sel_end.col;
+    } else if( old_sel_end.colidx != wnd->sel_end.colidx ) {
+        if( old_sel_end.colidx > wnd->sel_end.colidx ) {
+            end_colidx = old_sel_end.colidx;
+            old_sel_end.colidx = wnd->sel_end.colidx;
         } else {
-            end_col = wnd->sel_end.col;
+            end_colidx = wnd->sel_end.colidx;
         }
-        WndDirtyScreenRange( wnd, &old_sel_end, end_col );
+        WndDirtyScreenRange( wnd, &old_sel_end, end_colidx );
     }
 }
 
@@ -242,7 +242,7 @@ void    WndNoSelect( a_window wnd )
 
     if( start->row == end->row ) {
         if( start->piece == end->piece ) {
-            WndDirtyScreenRange( wnd, start, end->col );
+            WndDirtyScreenRange( wnd, start, end->colidx );
         } else {
             WndDirtyScreenRow( wnd, start->row );
         }

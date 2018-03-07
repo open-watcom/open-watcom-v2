@@ -124,7 +124,7 @@ static const char *FmtNum( const void *data_handle, int item )
 static void TimeIt( void )
 {
     char                buff[80];
-    int                 len;
+    size_t              len;
     long                iters;
     a_window            wnd;
     gui_text_metrics    dummy;

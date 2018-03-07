@@ -51,7 +51,7 @@ static bool    W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
         return( false );
     line->text = "";
     line->attr = APP_COLOR_SELECTED;
-    line->extent = WND_APPROX_SIZE / (row+1);
+    line->extent = WND_APPROX_SIZE / ( row + 1 );
     line->indent = 1000;
     return( true );
 }

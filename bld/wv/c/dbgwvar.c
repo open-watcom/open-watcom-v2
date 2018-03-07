@@ -241,7 +241,7 @@ OVL_EXTERN  void    VarModify( a_window wnd, wnd_row row, wnd_piece piece )
     VarOldErrState();
 }
 
-static  void    ExpandRowIfPossible( a_window wnd, int row, int piece )
+static  void    ExpandRowIfPossible( a_window wnd, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     type_kind           class;
@@ -763,11 +763,11 @@ static void VarRestoreWndFromScope( a_window wnd )
 
 static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_window wnd )
 {
-    scope_list  *nested, *new;
-    scope_state *s, *outer;
-    bool        repaint;
-    scope_block noscope;
-    bool        havescope;
+    scope_list      *nested, *new;
+    scope_state     *s, *outer;
+    bool            repaint;
+    scope_block     noscope;
+    bool            havescope;
 
     repaint = false;
     *addr = NilAddr;
@@ -1124,7 +1124,7 @@ void GraphicDisplay( void )
     Spawn( DoGraphicDisplay );
 }
 
-var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
+var_node *VarGetDisplayPiece( var_info *i, wnd_row row, wnd_piece piece, int *pdepth, int *pinherit )
 {
     var_node    *row_v;
     var_node    *v;

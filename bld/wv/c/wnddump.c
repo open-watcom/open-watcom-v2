@@ -59,8 +59,8 @@ OVL_EXTERN void WriteLog( file_handle fh, const char *buff )
 
 static void DoWndDump( a_window wnd, WRITERTN *rtn, file_handle fh )
 {
-    int                 row;
-    int                 piece;
+    wnd_row             row;
+    wnd_piece           piece;
     wnd_line_piece      line;
     int                 indent_per_char;
     int                 chars_written;

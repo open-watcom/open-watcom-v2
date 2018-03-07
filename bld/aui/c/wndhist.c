@@ -33,7 +33,7 @@
 #include "_aui.h"
 #include <string.h>
 
-#define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE-1));
+#define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE - 1));
 
 /*
  * InitHistory -- initialize retrieving of commands

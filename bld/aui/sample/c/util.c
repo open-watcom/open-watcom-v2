@@ -97,5 +97,5 @@ int RandNum( int max )
         return( 1 + ( (long)rand() % max ) );
     }
 
-//    return( 1 + ( (long)rand() * max ) / (RAND_MAX+1) );
+//    return( 1 + ( (long)rand() * max ) / ( RAND_MAX + 1 ) );
 }

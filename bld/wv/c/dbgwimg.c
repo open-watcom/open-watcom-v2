@@ -205,7 +205,7 @@ OVL_EXTERN  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
                 return( false );
             }
         } else if( row == 1 ) {
-            if( piece != 0 )
+            if( piece != PIECE_IMAGE )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );

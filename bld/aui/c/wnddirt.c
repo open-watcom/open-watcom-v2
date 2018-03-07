@@ -33,7 +33,7 @@
 #include "_aui.h"
 #include <stdlib.h>
 
-static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, wnd_col col, wnd_col end_col )
+static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, wnd_colidx colidx, wnd_colidx end_colidx )
 {
     int         i;
     int         same_row;
@@ -50,14 +50,14 @@ static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, w
         }
         if( wnd->dirty[i].piece != piece )
             continue;
-        if( wnd->dirty[i].col == WND_NO_COL || col == WND_NO_COL ) {
-            wnd->dirty[i].col = WND_NO_COL;
+        if( wnd->dirty[i].colidx == WND_NO_COLIDX || colidx == WND_NO_COLIDX ) {
+            wnd->dirty[i].colidx = WND_NO_COLIDX;
             return;
         }
-        if( wnd->dirty[i].col > col )
-            wnd->dirty[i].col = col;
-        if( wnd->dirty[i].end_col < end_col )
-            wnd->dirty[i].end_col = end_col;
+        if( wnd->dirty[i].colidx > colidx )
+            wnd->dirty[i].colidx = colidx;
+        if( wnd->dirty[i].end_colidx < end_colidx )
+            wnd->dirty[i].end_colidx = end_colidx;
         return;
     }
     if( wnd->dirtyrects >= WndMaxDirtyRects ) {
@@ -70,27 +70,27 @@ static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, w
     }
     wnd->dirty[wnd->dirtyrects].row = row;
     wnd->dirty[wnd->dirtyrects].piece = piece;
-    wnd->dirty[wnd->dirtyrects].col = col;
-    wnd->dirty[wnd->dirtyrects].end_col = end_col;
+    wnd->dirty[wnd->dirtyrects].colidx = colidx;
+    wnd->dirty[wnd->dirtyrects].end_colidx = end_colidx;
     wnd->dirtyrects++;
 }
 
 
-void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, wnd_col end_col )
+void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, wnd_colidx end_colidx )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, end_col );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->colidx, end_colidx );
 }
 
 
 void    WndDirtyScreenChar( a_window wnd, wnd_coord *piece )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, piece->col );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->colidx, piece->colidx );
 }
 
 
 void    WndDirtyScreenPiece( a_window wnd, wnd_coord *piece )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, WND_NO_COL, WND_NO_COL );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, WND_NO_COLIDX, WND_NO_COLIDX );
 }
 
 
@@ -173,7 +173,7 @@ void WndPaintDirty( a_window wnd )
     wnd_line_piece      line;
     wnd_line_piece      next_piece_line;
     gui_rect            rect;
-    wnd_dirt            *dirt;
+    wnd_rect            *dirty;
     gui_coord           size;
     gui_coord           half_char;
     a_window            next;
@@ -214,39 +214,39 @@ void WndPaintDirty( a_window wnd )
             next = wnd;
         } else {
             for( i = 0; i < wnd->dirtyrects; ++i ) {
-                dirt = &wnd->dirty[i];
-                if( dirt->row < 0 )
+                dirty = &wnd->dirty[i];
+                if( dirty->row < 0 )
                     continue;
-                if( dirt->row >= wnd->rows )
+                if( dirty->row >= wnd->rows )
                     continue;
-                if( dirt->piece == WND_NO_PIECE ) {
-                    if( !WndGetLine( wnd, dirt->row, 0, &line ) )
+                if( dirty->piece == WND_NO_PIECE ) {
+                    if( !WndGetLine( wnd, dirty->row, 0, &line ) )
                         continue;
-                    GUIWndDirtyRow( wnd->gui, dirt->row );
+                    GUIWndDirtyRow( wnd->gui, dirty->row );
                 } else {
-                    if( !WndGetLine( wnd, dirt->row, dirt->piece, &line ) )
+                    if( !WndGetLine( wnd, dirty->row, dirty->piece, &line ) )
                         continue;
                     if( line.bitmap ) {
                         GUIGetHotSpotSize( line.text[0], &size );
                         rect.x = line.indent;
-                        rect.y = dirt->row * wnd->max_char.y;
+                        rect.y = dirty->row * wnd->max_char.y;
                         rect.width = line.length;
                         rect.height = size.y;
-                    } else if( dirt->col != WND_NO_COL ) {
+                    } else if( dirty->colidx != WND_NO_COLIDX ) {
                         if( line.length == 0 )
                             line.text = " ";
                         rect.x = line.indent;
-                        rect.x += GUIGetExtentX(wnd->gui, line.text, dirt->col);
-                        rect.y = dirt->row * wnd->max_char.y;
-                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col - dirt->col + GUICharLen( UCHAR_VALUE( line.text[dirt->col] ) ) );
+                        rect.x += GUIGetExtentX(wnd->gui, line.text, dirty->colidx);
+                        rect.y = dirty->row * wnd->max_char.y;
+                        rect.width = GUIGetExtentX( wnd->gui, line.text + dirty->colidx, dirty->end_colidx - dirty->colidx + GUICharLen( UCHAR_VALUE( line.text[dirty->colidx] ) ) );
                         rect.height = wnd->max_char.y;
                     } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop ) {
                         rect.width = 0;
                         rect.height = 0;
-                        GUIWndDirtyRow( wnd->gui, dirt->row );
+                        GUIWndDirtyRow( wnd->gui, dirty->row );
                     } else {
                         rect.x = line.indent;
-                        if( WndGetLine( wnd, dirt->row, dirt->piece + 1, &next_piece_line ) ) {
+                        if( WndGetLine( wnd, dirty->row, dirty->piece + 1, &next_piece_line ) ) {
                             if( next_piece_line.indent < line.indent ) {
                                 rect.width = WND_APPROX_SIZE;
                             } else {
@@ -255,7 +255,7 @@ void WndPaintDirty( a_window wnd )
                         } else {
                             rect.width = WND_APPROX_SIZE;
                         }
-                        rect.y = dirt->row * wnd->max_char.y;
+                        rect.y = dirty->row * wnd->max_char.y;
                         rect.height = wnd->max_char.y;
                     }
                     /* begin kludge for Kerning problem */

@@ -1,8 +1,8 @@
-proj_name = sample
+proj_name = guisample
 name = sample
 
-!ifndef sample_autodepends
-sample_autodepends = .AUTODEPEND
+!ifndef guisample_autodepends
+guisample_autodepends = .AUTODEPEND
 !endif
 
 rcname=$(name)
@@ -52,18 +52,14 @@ extra_l_flags_win = import DEATH GDI.121 import RESURRECTION GDI.122
 !endif
 
 ###############
-sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
+sample.$(exe_ext) : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(resfile) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
 !else
         @%write $(lnk) $(lflags)
 !ifeq host_os nov
-        @%append $(lnk) option osname='Sample NLM'
+        @%append $(lnk) option description 'Sample NLM'
         @%append $(lnk) debug novell
-!else ifeq host_cpu axp
-        @%append $(lnk) debug codeview
-!else
-        @%append $(lnk) debug all
 !endif
         @%append $(lnk) option map $(extra_option)
         @%append $(lnk) option symfile=$(name).sym
@@ -85,7 +81,7 @@ pmsample.exe : pmsample.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFILE
         $(linker) @$(lnk)
 
 ################
-samp2.exe : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFILES__)
+samp2.$(exe_ext) : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(lnk) $(__MAKEFILES__)
         @%append $(lnk) file samp2.obj
         $(linker) @$(lnk)
 

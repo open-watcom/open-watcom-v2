@@ -133,14 +133,14 @@ static void GoBackward( a_window wnd, wnd_coord *start, wnd_line_piece *line )
 {
     int     ch;
 
-    ch = UCHAR_VALUE( line->text[start->col] );
+    ch = UCHAR_VALUE( line->text[start->colidx] );
     if( isspace( ch ) || !WndIDChar( wnd, ch ) )
         return;
-    while( start->col != 0 ) {
-        start->col = WndPrevCharCol( line->text, start->col );
-        ch = UCHAR_VALUE( line->text[start->col] );
+    while( start->colidx != 0 ) {
+        start->colidx = WndPrevCharColIdx( line->text, start->colidx );
+        ch = UCHAR_VALUE( line->text[start->colidx] );
         if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
-            start->col += GUICharLen( ch );
+            start->colidx += GUICharLen( ch );
             return;
         }
     }
@@ -151,16 +151,16 @@ static void GoForward( a_window wnd, wnd_coord *end, wnd_line_piece *line )
 {
     int         ch;
 
-    ch = UCHAR_VALUE( line->text[end->col] );
+    ch = UCHAR_VALUE( line->text[end->colidx] );
     if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
-        end->col += GUICharLen( ch ) - 1;
+        end->colidx += GUICharLen( ch ) - 1;
         return;
     }
     for( ;; ) {
-        end->col += GUICharLen( ch );
-        ch = UCHAR_VALUE( line->text[end->col] );
+        end->colidx += GUICharLen( ch );
+        ch = UCHAR_VALUE( line->text[end->colidx] );
         if( isspace( ch ) || !WndIDChar( wnd, ch ) ) {
-            end->col--;
+            end->colidx--;
             return;
         }
     }
@@ -172,17 +172,17 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
     wnd_coord           *start;
     wnd_coord           *end;
     wnd_piece           piece;
-    int                 buff_size;
+    size_t              buff_size;
     char                *ptr;
-    wnd_col             first;
-    wnd_col             len;
+    wnd_colidx          first_colidx;
+    size_t              len;
     wnd_line_piece      line;
 
     WndClrSwitches( wnd, WSW_SELECTING | WSW_SELECTING_WITH_KEYBOARD );
     WndSelEnds( wnd, &start, &end );
     if( WndSwitchOff( wnd, WSW_SUBWORD_SELECT ) ||
         ( start->row == end->row &&
-          start->piece == end->piece && start->col == end->col ) ) {
+          start->piece == end->piece && start->colidx == end->colidx ) ) {
         WndGetLine( wnd, start->row, start->piece, &line );
         GoBackward( wnd, start, &line );
         WndGetLine( wnd, end->row, end->piece, &line );
@@ -193,7 +193,7 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
         } else if( paint_immed ) {
             GUIWndDirtyRow( wnd->gui, start->row );
         } else {
-            WndDirtyScreenRange( wnd, start, end->col );
+            WndDirtyScreenRange( wnd, start, end->colidx );
         }
     }
     buff_size = 0;
@@ -201,7 +201,7 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
         for( piece = 0; ; ++piece ) {
             if( !WndGetLine( wnd, row, piece, &line ) )
                 break;
-            if( WndSelected( wnd, &line, row, piece, &first, &len ) ) {
+            if( WndSelected( wnd, &line, row, piece, &first_colidx, &len ) ) {
                 buff_size += len + 1;
             }
         }
@@ -213,10 +213,10 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
         for( piece = 0; ; ++piece ) {
             if( !WndGetLine( wnd, row, piece, &line ) )
                 break;
-            if( WndSelected( wnd, &line, row, piece, &first, &len ) ) {
+            if( WndSelected( wnd, &line, row, piece, &first_colidx, &len ) ) {
                 if( ptr != wnd->popitem )
                     *ptr++ = ' ';
-                memcpy( ptr, line.text + first, len );
+                memcpy( ptr, line.text + first_colidx, len );
                 ptr += len;
             }
         }
@@ -267,7 +267,7 @@ void    WndPopUp( a_window wnd, gui_menu_struct *menu )
     }
     if( WndHasCurrent( wnd ) ) {
         WndNoSelect( wnd );
-        wnd->current.col = 0; // just to be sure
+        wnd->current.colidx = 0; // just to be sure
         WndCurrToGUIPoint( wnd, &point );
         wnd->sel_end = wnd->current;
         wnd->sel_start = wnd->current;

@@ -522,8 +522,7 @@ bool OpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod, bool src )
     }
 }
 
-bool CheckOpenGadget( a_window wnd, wnd_row row,
-                      bool open, mod_handle mod, bool src, int piece )
+bool CheckOpenGadget( a_window wnd, wnd_row row, bool open, mod_handle mod, bool src, wnd_piece piece )
 {
     bool        is_open;
 

@@ -36,9 +36,8 @@
 #include "guigetx.h"
 
 
-static gui_ord DoReturn( gui_ord ret, gui_window * wnd, bool got_new )
+static gui_ord DoReturn( gui_ord ret, gui_window *wnd, bool got_new )
 {
-    wnd=wnd;
     if( got_new ) {
         GUIReleaseTheDC( wnd );
     }

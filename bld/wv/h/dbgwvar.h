@@ -40,4 +40,4 @@ extern a_window     WndVarOpen( void );
 extern a_window     WndWatOpen( void );
 extern a_window     WndLclOpen( void );
 extern a_window     WndFSVOpen( void );
-extern var_node     *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
+extern var_node     *VarGetDisplayPiece( var_info *i, wnd_row row, wnd_piece piece, int *pdepth, int *pinherit );

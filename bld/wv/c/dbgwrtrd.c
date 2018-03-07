@@ -82,10 +82,10 @@ void InitRunThreadInfo( void )
     }
 }
 
-static thread_state     *GetThreadRow( int row )
+static thread_state     *GetThreadRow( wnd_row row )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -178,7 +178,7 @@ OVL_EXTERN void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wn
 OVL_EXTERN void RunTrdRefresh( a_window wnd )
 {
     thread_state    *thd;
-    int             row;
+    wnd_row         row;
 
     row = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -308,7 +308,7 @@ void RunThreadNotify( void )
 {
     thread_state    *thd;
 
-    if( HeadThd && HaveRemoteRunThread() ) {
+    if( HeadThd != NULL && HaveRemoteRunThread() ) {
         RemotePollRunThread();
 
         if( RunThreadWnd ) {

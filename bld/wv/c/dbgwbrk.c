@@ -60,8 +60,8 @@ typedef struct break_window {
     gui_ord     source_indent;
     bool        toggled_break   : 1;
 } break_window;
-#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
+#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
 #include "menudef.h"
 static gui_menu_struct BrkMenu[] = {

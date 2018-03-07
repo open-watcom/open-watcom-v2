@@ -152,8 +152,8 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
             WndNoSelect( wnd );
             wnd->sel_start = wnd->current;
             wnd->sel_end = wnd->current;
-            wnd->sel_start.col = 0;
-            wnd->sel_end.col = wnd->keyindex - 1;
+            wnd->sel_start.colidx = 0;
+            wnd->sel_end.colidx = wnd->keyindex - 1;
             return( true );
         }
     }

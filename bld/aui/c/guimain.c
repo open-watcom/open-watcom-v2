@@ -142,7 +142,7 @@ bool WndFini( void )
 
 void WndInitNumRows( a_window wnd )
 {
-    wnd->rows = GUIGetNumRows( wnd->gui );
+    wnd->rows = (wnd_row)GUIGetNumRows( wnd->gui );
 }
 
 static void WndMoveResize( a_window wnd )

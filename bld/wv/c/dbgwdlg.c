@@ -58,7 +58,7 @@ static a_window         WndDlg;
 static dlg_entry        *DlgListTop = NULL;
 static dlg_entry        *DlgListBot = NULL;
 static unsigned         DlgListLineNum = 0;
-static unsigned         DlgLines = 0;
+static int              DlgLines = 0;
 
 
 static void DlgListPush( const char *buff, size_t len, wnd_attr_wv wndattr )
@@ -152,7 +152,7 @@ OVL_EXTERN wnd_row DlgNumRows( a_window wnd )
 
 OVL_EXTERN void DlgRefresh( a_window wnd )
 {
-    if( DlgLines != 0 )
+    if( DlgLines > 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
     WndNoSelect( wnd );
     WndSetRepaint( wnd );

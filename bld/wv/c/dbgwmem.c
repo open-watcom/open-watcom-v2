@@ -60,9 +60,9 @@
 #include "dbgwmem.h"
 
 
-extern bool             DlgDataAddrFormat( char *, void *, void (*fmt)(void*,char*));
+extern bool     DlgDataAddrFormat( char *, void *, void (*fmt)(void *,char *));
 
-typedef gui_ord (MEMHEADER)(a_window,int);
+typedef gui_ord (MEMHEADER)( a_window, wnd_piece );
 
 #define TITLE_SIZE      1
 
@@ -76,7 +76,7 @@ static gui_menu_struct MemMenu[] = {
     #include "menumem.h"
 };
 
-#define PIECE_TYPE( x ) ( (x)-MENU_MEMORY_FIRST_TYPE )
+#define PIECE_TYPE( x ) ((x) - MENU_MEMORY_FIRST_TYPE)
 
 static unsigned         MemByteType;
 
@@ -126,8 +126,8 @@ typedef struct mem_window {
     long            bp_offset;
     long            sp_offset;
     wnd_row         cursor_row;
-    int             cursor_piece;
-    int             shadow_piece;
+    wnd_piece       cursor_piece;
+    wnd_piece       shadow_piece;
     mad_type_handle init_mth;      //MAD: what if active MAD changes?
     bool            file    : 1;
     bool            stack   : 1;
@@ -173,7 +173,7 @@ static unsigned MemCurrOffset( a_window wnd )
     return( ( curr_row * mem->items_per_line + curr_piece ) * mem->item_size );
 }
 
-OVL_EXTERN gui_ord MemHeader( a_window wnd, int piece )
+OVL_EXTERN gui_ord MemHeader( a_window wnd, wnd_piece piece )
 {
     address     addr;
     mem_window  *mem;
@@ -208,7 +208,7 @@ OVL_EXTERN gui_ord MemHeader( a_window wnd, int piece )
 }
 
 
-OVL_EXTERN gui_ord BinHeader( a_window wnd, int piece )
+OVL_EXTERN gui_ord BinHeader( a_window wnd, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -379,7 +379,7 @@ static  void    MemUpdateCursor( a_window wnd )
     mem_window  *mem;
     wnd_row     cursor_row;
     wnd_piece   cursor_piece;
-    int         shadow_piece;
+    wnd_piece   shadow_piece;
 
     mem = WndMem( wnd );
     WndGetCurrent( wnd, &cursor_row, &cursor_piece );
@@ -480,7 +480,7 @@ static void MemSetCurrent( a_window wnd, unsigned offset )
 {
     wnd_row     row;
     int         line_size;
-    int         piece;
+    wnd_piece   piece;
     mem_window  *mem;
 
     mem = WndMem( wnd );

@@ -37,18 +37,18 @@
 
 static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece )
 {
-    wnd_col             first;
-    wnd_col             len;
+    wnd_colidx          first_colidx;
+    size_t              len;
     gui_ord             indent;
 
     if( WndSwitchOn( wnd, WSW_NOT_TO_SCREEN ) )
         return;
-    if( WndSelected( wnd, line, row, piece, &first, &len ) ){
+    if( WndSelected( wnd, line, row, piece, &first_colidx, &len ) ){
         indent = line->indent;
-        if( first != 0 ) {
-            indent += GUIGetExtentX( wnd->gui, line->text, first );
+        if( first_colidx != 0 ) {
+            indent += GUIGetExtentX( wnd->gui, line->text, first_colidx );
         }
-        GUIDrawText( wnd->gui, line->text + first, len, row, indent, WndSelectedAttr );
+        GUIDrawText( wnd->gui, line->text + first_colidx, len, row, indent, WndSelectedAttr );
     }
 }
 
@@ -162,13 +162,13 @@ static void WndDrawCursor( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
         return;
     if( wnd->current.piece != piece )
         return;
-    if( wnd->current.col < 0 )
+    if( wnd->current.colidx < 0 )
         return;
     if( line->length == 0 ) {
         GUIDrawText( wnd->gui, " ", 1, row, line->indent, WndCursorAttr );
-    } else if( wnd->current.col < line->length ) {
-        line->indent += GUIGetExtentX( wnd->gui, line->text, wnd->current.col );
-        p = line->text + wnd->current.col;
+    } else if( wnd->current.colidx < line->length ) {
+        line->indent += GUIGetExtentX( wnd->gui, line->text, wnd->current.colidx );
+        p = line->text + wnd->current.colidx;
         GUIDrawText( wnd->gui, p, GUICharLen( UCHAR_VALUE( *p ) ), row, line->indent, WndCursorAttr );
     }
 }

@@ -555,7 +555,7 @@ OVL_EXTERN int MacCompare( void *pa, void *pb )
 static void MacReSize( a_window wnd )
 {
     wnd_macro       *mac;
-    int             piece;
+    wnd_piece       piece;
     gui_ord         size;
     wnd_class_wv    wndclass;
     gui_ord         max_size[PIECE_LAST];

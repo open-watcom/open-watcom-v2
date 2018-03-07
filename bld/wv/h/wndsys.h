@@ -54,7 +54,7 @@ extern void     SetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_ty
 extern void     FiniGadget( void );
 extern void     InitGadget( void );
 extern bool     OpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod, bool src );
-extern bool     CheckOpenGadget( a_window wnd, wnd_row row, bool open, mod_handle mod, bool src, int piece );
+extern bool     CheckOpenGadget( a_window wnd, wnd_row row, bool open, mod_handle mod, bool src, wnd_piece piece );
 extern void     WndStartFreshAll( void );
 extern void     WndEndFreshAll( void );
 extern void     WndFlushKeys( void );
