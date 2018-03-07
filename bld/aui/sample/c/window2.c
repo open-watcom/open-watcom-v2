@@ -142,7 +142,8 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
     row=row;piece=piece;
     switch( id ) {
     case MENU_INITIALIZE:
-        if( row < 0 ) break;
+        if( row < 0 )
+            break;
         if( row & 1 ) {
             WndSetPopUpMenu( wnd, W2PopUp, 1 );
 //            WndSetPopUp( wnd, W2PopUp );
@@ -186,16 +187,19 @@ static bool W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
                 return( false );
             }
         } else if( row == 1 ) {
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             line->text = "--------------------------------------------";
             line->static_text = true;
             line->tabstop = false;
             return( true );
         }
     } else {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         row += w2->top - TITLE_SIZE;
-        if( row >= WORD_SIZE ) return( false );
+        if( row >= WORD_SIZE )
+            return( false );
         line->text = w2->words[row];
     }
     return( true );
@@ -223,7 +227,7 @@ static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
         qsort( w2->words,
                WORD_SIZE,
                sizeof( char** ),
-               ( int (*) (const void *, const void *) )WordCompare );
+               (int (*)(const void *, const void *))WordCompare );
         w2->wnd = wnd;
         w2->top = 0;
         WndSetRepaint( wnd );
@@ -264,7 +268,7 @@ a_window W2Open( void )
     a_window    wnd;
     wnd_create_struct   info;
 
-    w2 = WndMustAlloc( WORD_SIZE*sizeof( char* )+sizeof( *w2 ) );
+    w2 = WndMustAlloc( WORD_SIZE * sizeof( char * ) + sizeof( *w2 ) );
     WndInitCreateStruct( &info );
     info.scroll &= ~GUI_VDRAG;
     info.title = "window with a title";

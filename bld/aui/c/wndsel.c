@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "_aui.h"////
+#include "_aui.h"
 
 wnd_row         WndMenuRow;
 wnd_piece       WndMenuPiece;
@@ -103,7 +103,7 @@ void    WndSelEnds( a_window wnd, wnd_coord **pstart, wnd_coord **pend )
     *pend = end;
 }
 
-bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece, int *first, int *len )
+bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece, wnd_col *first, wnd_col *len )
 {
     wnd_coord   *start;
     wnd_coord   *end;
@@ -114,24 +114,22 @@ bool     WndSelected( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece
         return( false );
 
     /* figure out start and end */
-
     WndSelEnds( wnd, &start, &end );
-    *first = 0;
-    *len = line->length;
     if( row == start->row && piece == start->piece ) {
+        *first = start->col;
         if( row == end->row && piece == end->piece ) {
-            *first = start->col;
             *len = end->col - start->col + 1;
         } else {
-            *first = start->col;
-            *len -= start->col;
+            *len = line->length - start->col;
         }
         return( true );
     }
+    *first = 0;
     if( row == end->row && piece == end->piece ) {
         *len = end->col + 1;
         return( true );
     }
+    *len = line->length;
     if( start->row != end->row ) {
         if( row == start->row ) {
             if( piece > start->piece ) {

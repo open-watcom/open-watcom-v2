@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "_aui.h"//
+#include "_aui.h"
 #include <string.h>
 #include "rxwrap.h"
 #include "wndregx.h"

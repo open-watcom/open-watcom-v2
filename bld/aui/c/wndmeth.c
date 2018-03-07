@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "_aui.h"//
+#include "_aui.h"
 #include <string.h>
 
 wnd_info NoInfo = {
@@ -142,7 +142,7 @@ void WndMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 typedef struct {
     wnd_line_piece      line;
     a_window            wnd;
-    int                 row;
+    wnd_row             row;
     wnd_piece           piece;
     char                *text;
 } cache_line;
@@ -181,7 +181,7 @@ void WndKillCacheLines( a_window wnd )
     WndKillCacheEntries( wnd, WND_NO_ROW, WND_NO_PIECE );
 }
 
-static void DoSet( int i, a_window wnd, int row, wnd_piece piece, wnd_line_piece *line )
+static void DoSet( int i, a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     CacheLine[i].line = *line;
     CacheLine[i].wnd = wnd;
@@ -211,7 +211,8 @@ static void SetCacheLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
         }
     }
     ++CacheCurr;
-    if( CacheCurr == NUM_CACHE_ENTRIES ) CacheCurr = 0;
+    if( CacheCurr == NUM_CACHE_ENTRIES )
+        CacheCurr = 0;
     DoSet( CacheCurr, wnd, row, piece, line );
 }
 
@@ -286,7 +287,9 @@ bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *lin
         if( !(line->bitmap|line->vertical_line|line->draw_hook|line->draw_line_hook|line->draw_bar) ) {
             line->length = strlen( line->text );
         }
-        if( virtual_row > wnd->max_row ) wnd->max_row = virtual_row;
+        if( wnd->max_row < virtual_row ) {
+            wnd->max_row = virtual_row;
+        }
     }
     if( success ) {
         if( WndSwitchOn( wnd, WSW_CACHE_LINES ) ) {
@@ -305,7 +308,7 @@ bool WndGetLineAbs( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *
 
 void WndFirstMenuItem( a_window wnd, wnd_row row, wnd_piece piece )
 {
-    WndRowPopUp( wnd, &wnd->popupmenu[ 0 ], row, piece );
+    WndRowPopUp( wnd, &wnd->popupmenu[0], row, piece );
 }
 
 #if 0

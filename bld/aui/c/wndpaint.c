@@ -37,8 +37,8 @@
 
 static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_piece piece )
 {
-    int                 first;
-    int                 len;
+    wnd_col             first;
+    wnd_col             len;
     gui_ord             indent;
 
     if( WndSwitchOn( wnd, WSW_NOT_TO_SCREEN ) )
@@ -48,7 +48,7 @@ static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
         if( first != 0 ) {
             indent += GUIGetExtentX( wnd->gui, line->text, first );
         }
-        GUIDrawText( wnd->gui, line->text+first, len, row, indent, WndSelectedAttr );
+        GUIDrawText( wnd->gui, line->text + first, len, row, indent, WndSelectedAttr );
     }
 }
 

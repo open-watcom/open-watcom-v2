@@ -280,7 +280,7 @@ bool     WndMainMenuProc( a_window wnd, gui_ctl_id id )
         if( WndHaveStatusWindow() ) {
             WndCloseStatusWindow();
         } else {
-            WndCreateStatusWindow( &WndColours[ GUI_BACKGROUND ] );
+            WndCreateStatusWindow( &WndColours[GUI_BACKGROUND] );
             WndStatusText( "Hello World!" );
         }
         break;

@@ -41,7 +41,7 @@ void WndSetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_type type,
 {
     static char text[2] = " ";
 
-    line->hint = WndGadgetHint[ type ];
+    line->hint = WndGadgetHint[type];
     if( WndSwitchOn( wnd, WSW_ALTERNATE_BIT ) ) type += WndGadgetSecondary;
     text[0] = type+1;
     line->text = text;

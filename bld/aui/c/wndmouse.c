@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "_aui.h"//
+#include "_aui.h"
 
 static bool                     LButtonIsDown;
 static bool                     RButtonIsDown;

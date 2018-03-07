@@ -38,14 +38,14 @@ void WndSetColours( a_window wnd, int num_colours, gui_colour_set *colours )
     gui_colour_set      *main_colours;
     gui_colour_set      back;
 
-    back = colours[ GUI_BACKGROUND ];
+    back = colours[GUI_BACKGROUND];
     if( wnd == WndMain ) {
         main_colours = GUIGetWindowColours( WndMain->gui );
-        colours[ GUI_BACKGROUND ] = main_colours[ GUI_BACKGROUND ];
+        colours[GUI_BACKGROUND] = main_colours[GUI_BACKGROUND];
         GUIMemFree( main_colours );
     }
     GUISetWindowColours( wnd->gui, num_colours, colours );
-    colours[ GUI_BACKGROUND ] = back;
+    colours[GUI_BACKGROUND] = back;
 }
 
 void WndBackGround( gui_colour colour )

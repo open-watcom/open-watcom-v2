@@ -296,7 +296,7 @@ static bool W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
         return( false );
     if( piece != 0 )
         return( false );
-    line->text = Stuff[ row ];
+    line->text = Stuff[row];
     line->tabstop = true;
 //  line->extent = WND_MAX_EXTEND;
     return( true );

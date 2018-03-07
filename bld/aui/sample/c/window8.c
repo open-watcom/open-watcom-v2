@@ -45,8 +45,10 @@ static bool    W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 {
     wnd=wnd;
 
-    if( row >= NUM_ROWS ) return( false );
-    if( piece != 0 ) return( false );
+    if( row >= NUM_ROWS )
+        return( false );
+    if( piece != 0 )
+        return( false );
     line->text = "";
     line->attr = APP_COLOR_SELECTED;
     line->extent = WND_APPROX_SIZE / (row+1);

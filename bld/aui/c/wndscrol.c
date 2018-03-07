@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "_aui.h"//
+#include "_aui.h"
 
 void WndFixedThumb( a_window wnd )
 {
@@ -51,7 +51,8 @@ void WndSetThumbPos( a_window wnd, int pos )
 
 void    WndSetVScrollRange( a_window wnd, wnd_row rows )
 {
-    if( rows > wnd->max_row ) wnd->max_row = rows;
+    if( wnd->max_row < rows )
+        wnd->max_row = rows;
     GUISetVScrollRangeRows( wnd->gui, rows );
 }
 
@@ -107,7 +108,8 @@ void WndSetThumb( a_window wnd )
         } else {
             thumb =  wnd->top * 100L / ( rows - wnd->rows );
         }
-        if( thumb == 0 && wnd->top != 0 ) thumb = 1;
+        if( thumb == 0 && wnd->top != 0 )
+            thumb = 1;
         WndSetVScrollRange( wnd, rows );
         WndSetThumbPos( wnd, wnd->top );
     }
@@ -130,7 +132,7 @@ int WndScroll( a_window wnd, int lines )
         lines = wnd->info->scroll( wnd, lines );
         if( lines != 0 ) {
             if( WndSwitchOff( wnd, WSW_REPAINT ) ) {
-                WndAdjustDirt( wnd, -lines );
+                WndAdjustDirty( wnd, -lines );
                 GUIDoVScrollClip( wnd->gui, lines, wnd->title_size, wnd->rows - 1 );
             }
         }
@@ -147,7 +149,7 @@ int WndScroll( a_window wnd, int lines )
         wnd->top = new_top;
         WndSetThumb( wnd );
         wnd->vscroll_pending += lines;
-        WndAdjustDirt( wnd, -lines );
+        WndAdjustDirty( wnd, -lines );
     }
     WndDirtyCurr( wnd );
     if( !WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line ) ) {
@@ -206,7 +208,7 @@ static gui_ord WndCurrHScrollPos( a_window wnd, int len )
     if( whole_extent <= wnd->width && WndSwitchOff( wnd, WSW_CHAR_CURSOR ) ) {
         hscroll = HScrollTo( wnd, line.indent, line.indent + whole_extent );
     } else {
-        sel_extent = GUIGetExtentX( wnd->gui, line.text+wnd->current.col, len );
+        sel_extent = GUIGetExtentX( wnd->gui, line.text + wnd->current.col, len );
         sel_indent = GUIGetExtentX( wnd->gui, line.text, wnd->current.col );
         hscroll = HScrollTo( wnd, line.indent + sel_indent,
                    line.indent + sel_indent + sel_extent );
@@ -227,8 +229,7 @@ void    WndHScrollToCurr( a_window wnd, int len )
 
 void WndHScrollNotify( a_window wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return;
-    if( WndHScrollPos( wnd ) != WndCurrHScrollPos( wnd, 1 ) ) {
+    if( WndHasCurrent( wnd ) && WndHScrollPos( wnd ) != WndCurrHScrollPos( wnd, 1 ) ) {
         WndDirtyScreenPiece( wnd, &wnd->current );
         WndNoCurrent( wnd );
     }

@@ -393,7 +393,7 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
             }
         }
         if( WndKeyIsPrintChar( key ) && WndSwitchOn( wnd, WSW_CHOOSING ) && wnd->keypiece != WND_NO_PIECE ) {
-            if( !WndKeyChoose( wnd, (unsigned char)key ) ) {
+            if( !WndKeyChoose( wnd, UCHAR_VALUE( key ) ) ) {
                 Ring();
             }
             break;

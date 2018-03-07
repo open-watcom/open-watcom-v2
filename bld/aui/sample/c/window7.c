@@ -47,8 +47,10 @@ static bool    W7GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 
     wnd=wnd;
 
-    if( row >= NUM_ROWS ) return( false );
-    if( piece != 0 ) return( false );
+    if( row >= NUM_ROWS )
+        return( false );
+    if( piece != 0 )
+        return( false );
     line->text = buff;
     itoa( row, buff, 10 );
     return( true );

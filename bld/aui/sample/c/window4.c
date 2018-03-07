@@ -93,7 +93,7 @@ static void    W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
     if( row < 0 ) {
         Say( "Shouldn't get this event" );
     } else {
-        Say2( "Modify", Stuff[ row ] );
+        Say2( "Modify", Stuff[row] );
     }
 }
 
@@ -112,12 +112,14 @@ static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
 
     wnd=wnd;
     if( row == -2 ) {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         line->text = "Title line 1";
         line->tabstop = false;
         line->static_text = true;
     } else if( row == -1 ) {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         line->tabstop = false;
         line->static_text = true;
         #if 0
@@ -148,7 +150,7 @@ static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
         case 2:
             line->tabstop = false;
             line->use_prev_attr = true;
-            line->text = Stuff[ row ];
+            line->text = Stuff[row];
             line->extent = WND_MAX_EXTEND;
             line->indent = 2000;
             return( true );
@@ -179,7 +181,8 @@ static void W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
-        if( row < 0 ) break;
+        if( row < 0 )
+            break;
         WndMenuEnableAll( wnd );
         break;
     case MENU_W2_SAY:

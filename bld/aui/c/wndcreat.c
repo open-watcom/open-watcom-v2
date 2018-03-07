@@ -73,7 +73,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info,
     }
     if( info->title != NULL )
         strcpy( buff, info->title ); // might be clobbered by create
-    size = sizeof( *wnd ) + ( WndMaxDirtyRects - 1 ) * sizeof( wnd->dirty ); //
+    size = sizeof( *wnd ) + ( WndMaxDirtyRects - 1 ) * sizeof( wnd->dirty );
     wnd = WndAlloc( size );
     if( wnd == NULL ) {
         WndFree( info->extra );

@@ -64,7 +64,7 @@ bool    WndIDChar( a_window wnd, int ch )
                 p++;
             }
         }
-        if( ch == *(const unsigned char *)p ) {
+        if( ch == UCHAR_VALUE( *p ) ) {
             return( true );
         }
     }
@@ -74,5 +74,5 @@ bool    WndIDChar( a_window wnd, int ch )
 
 bool    WndKeyIsPrintChar( gui_key key )
 {
-    return( GUI_KEY_IS_ASCII( key ) && ( isprint( (unsigned char)key ) != 0 ) );
+    return( GUI_KEY_IS_ASCII( key ) && ( isprint( UCHAR_VALUE( key ) ) != 0 ) );
 }

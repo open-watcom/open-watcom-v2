@@ -32,16 +32,18 @@
 
 #include "_aui.h"
 
+
 #define NUM_WND_IDS     9
-static  bool    WndIdUsed[ NUM_WND_IDS+1 ];
+
+static  bool    WndIdUsed[NUM_WND_IDS + 1];
 
 int     WndNextId()
 {
     int         i;
 
     for( i = 1; i <= NUM_WND_IDS; ++i ) {
-        if( !WndIdUsed[ i ] ) {
-            WndIdUsed[ i ] = true;
+        if( !WndIdUsed[i] ) {
+            WndIdUsed[i] = true;
             return( i );
         }
     }
@@ -51,5 +53,5 @@ int     WndNextId()
 void    WndFreeId( int i )
 {
     if( i == 0 ) return;
-    WndIdUsed[ i ] = false;
+    WndIdUsed[i] = false;
 }

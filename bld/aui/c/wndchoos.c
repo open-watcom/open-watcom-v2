@@ -136,7 +136,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
 //        len = line.length;
         if( strnicmp( line.text, sofar, wnd->keyindex + 1 ) == 0 ) {
             if( !WndGetLine( wnd, row + 1, wnd->keypiece, &line ) || line.length < wnd->keyindex
-              || tolower( (unsigned char)line.text[wnd->keyindex] ) != tolower( ch ) ) {
+              || tolower( UCHAR_VALUE( line.text[wnd->keyindex] ) ) != tolower( ch ) ) {
                 /* ??? */
             }
             wnd->keyindex++;
@@ -188,7 +188,7 @@ bool    WndKeyRubOut( a_window wnd )
     newindex = wnd->keyindex - 1;
     WndKeyEscape( wnd );
     for( i = 0; i < newindex; ++i ) {
-        DoWndKeyChoose( wnd, (unsigned char)sofar[i] );
+        DoWndKeyChoose( wnd, UCHAR_VALUE( sofar[i] ) );
     }
     sofar[i] = '\0';
     return( true );

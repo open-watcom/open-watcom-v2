@@ -74,13 +74,13 @@
 #define WSW_RBUTTON_CHANGE_CURR         0x00000010L     // default off
 #define WSW_SELECT_IN_TABSTOP           0x00000020L     // default on
 #define WSW_MUST_CLICK_ON_PIECE         0x00000040L     // default off
-#define WSW_RBUTTON_SELECTS             0x00000080L  // default off
-#define WSW_CHOOSING                    0x00000100L  // default off
-#define WSW_CHAR_CURSOR                 0x00000200L  // default off
-#define WSW_ALLOW_POPUP                 0x00000400L  // default on
-#define WSW_SEARCH_WRAP                 0x00000800L  // default on
-#define WSW_HIGHLIGHT_CURRENT           0x00001000L  // default on
-#define WSW_ONLY_MODIFY_TABSTOP         0x00002000L  // default on
+#define WSW_RBUTTON_SELECTS             0x00000080L     // default off
+#define WSW_CHOOSING                    0x00000100L     // default off
+#define WSW_CHAR_CURSOR                 0x00000200L     // default off
+#define WSW_ALLOW_POPUP                 0x00000400L     // default on
+#define WSW_SEARCH_WRAP                 0x00000800L     // default on
+#define WSW_HIGHLIGHT_CURRENT           0x00001000L     // default on
+#define WSW_ONLY_MODIFY_TABSTOP         0x00002000L     // default on
 #define WSW_UTIL_1                      0x00100000L
 #define WSW_CLICKED                     0x00200000L
 #define WSW_DCLICKED                    0x00400000L
@@ -88,7 +88,7 @@
 #define WSW_SELECTING_WITH_KEYBOARD     0x01000000L
 #define WSW_SELECT_EVENT                0x02000000L
 #define WSW_REPAINT                     0x04000000L
-#define WSW_ALTERNATE_BIT               0x08000000L  // default off
+#define WSW_ALTERNATE_BIT               0x08000000L     // default off
 #define WSW_ICONIFIED                   0x10000000L
 #define WSW_SELECTING                   0x20000000L
 #define WSW_ACTIVE                      0x40000000L
@@ -184,7 +184,6 @@ typedef struct wnd_posn {
     float               width,height;
 } wnd_posn;
 
-
 typedef int wnd_menu_id;
 
 #define MENU_INITIALIZE ((wnd_menu_id)-1)
@@ -243,7 +242,7 @@ typedef struct _a_window {
     gui_ord                 width;
     gui_ord                 max_indent;
     wnd_row                 top;
-    unsigned char           keyindex;
+    int                     keyindex;
     wnd_piece               keypiece;
     wnd_class               wndclass;
     wnd_switches            switches;
@@ -335,7 +334,7 @@ extern void             *WndRealloc( void *, size_t );
 extern void             WndFree( void * );
 extern void             *WndMustAlloc( size_t );
 extern void             *WndMustRealloc( void *, size_t );
-extern void             WndCreateFloatingPopup( a_window, gui_point *, char, gui_menu_struct *, gui_ctl_id *id );
+extern void             WndCreateFloatingPopup( a_window, gui_point *, int, gui_menu_struct *, gui_ctl_id *id );
 
 extern void             WndFixedThumb( a_window );
 extern void             WndSetThumbPos( a_window, int );

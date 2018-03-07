@@ -30,19 +30,19 @@
 ****************************************************************************/
 
 
-#include "_aui.h"//
+#include "_aui.h"
 
 bool    WndSetPoint( a_window wnd, void *parm, bool exact,
                              wnd_coord *spot, wnd_row row,
                              bool doing_select )
 {
     gui_point           point;
-    int                 col;
+    wnd_col             col;
     wnd_piece           piece;
     wnd_piece           last_piece;
-    int                 last_col;
+    wnd_col             last_col;
     wnd_piece           last_extended_tab_piece;
-    int                 last_extended_tab_col;
+    wnd_col             last_extended_tab_col;
     bool                got;
     bool                allowed_in_tab;
     wnd_line_piece      line;
@@ -100,7 +100,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
         if( line.bitmap ) {
             if( doing_select )
                 continue;
-            if( line.indent <= point.x && line.indent+line.length > point.x ) {
+            if( line.indent <= point.x && line.indent + line.length > point.x ) {
                 spot->row = row;
                 spot->piece = piece;
                 spot->col = 0;
@@ -207,8 +207,8 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
             if( line.tabstop ) {
                 WndDirtyCurr( wnd );
                 if( row >= wnd->rows ) {
-                    WndScroll( wnd, row - wnd->rows+1 );
-                    row = wnd->rows-1;
+                    WndScroll( wnd, row - wnd->rows + 1 );
+                    row = wnd->rows - 1;
                 }
                 wnd->current.row = row;
                 wnd->current.piece = piece;

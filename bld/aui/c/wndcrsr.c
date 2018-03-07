@@ -121,7 +121,9 @@ static  void    WndUpOne( a_window wnd )
 {
     if( !WndAtBottom( wnd ) ) {
         if( WndScroll( wnd, -1 ) != 0 ) {
-            if( WndHasCurrent( wnd ) ) WndMoveDown( wnd );
+            if( WndHasCurrent( wnd ) ) {
+                WndMoveDown( wnd );
+            }
         }
     } else {
         WndScroll( wnd, -1 );
@@ -133,7 +135,9 @@ static  void    WndDownOne( a_window wnd )
 {
     if( !WndAtTop( wnd ) ) {
         if( WndScroll( wnd, 1 ) != 0 ) {
-            if( WndHasCurrent( wnd ) ) WndMoveUp( wnd );
+            if( WndHasCurrent( wnd ) ) {
+                WndMoveUp( wnd );
+            }
         }
     } else {
         WndScroll( wnd, 1 );
@@ -164,9 +168,13 @@ void WndCursorDown( a_window wnd )
 
 static int WndPageSize( a_window wnd )
 {
-    int rows = WndRows( wnd );
-    if( rows <= 0 ) return( 0 );
-    if( rows <= 8 ) return( rows - 1 );
+    int     rows;
+
+    rows = WndRows( wnd );
+    if( rows <= 0 )
+        return( 0 );
+    if( rows <= 8 )
+        return( rows - 1 );
     return( rows - 2 );
 }
 
@@ -199,7 +207,7 @@ bool WndTabLeft( a_window wnd, bool wrap )
 
 static bool WndCursorLeftCheck( a_window wnd )
 {
-    int             col;
+    wnd_col         col;
     wnd_line_piece  line;
 
     if( WndSwitchOff( wnd, WSW_CHAR_CURSOR ) || !WndHasCurrent( wnd ) || wnd->current.col == 0 ) {
@@ -245,7 +253,7 @@ bool WndTabRight( a_window wnd, bool wrap )
 static bool WndCursorRightCheck( a_window wnd )
 {
     wnd_line_piece      line;
-    int                 col;
+    wnd_col             col;
     bool                got;
 
     got = WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line );
