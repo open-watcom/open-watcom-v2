@@ -140,7 +140,15 @@ static  const_string_table os2_obj_msg[] = {
 };
 
 static  const_string_table map_flgs[] = {
-    "Valid", "Iterated", "Invalid", "Zeroed", "Range", "Compressed"
+    "Valid",
+    "Iterated",
+    "Invalid",
+    "Zeroed",
+    "Range",
+    "Compressed",
+    "Unknown",
+    "Unknown",
+    "M3-packed"
 };
 
 
@@ -361,9 +369,14 @@ static void dmp_obj_page( object_record obj )
             Wdputs( "H size = " );
             Puthex( map.lx.data_size, 4 );
             Wdputs( "H flgs = " );
-            Puthex( map.le.flags, 2 );
+            Puthex( map.lx.flags, 2 );
             Wdputs( "H " );
             Wdputs( map_flgs[ map.lx.flags ] );
+            if( map.lx.flags < sizeof( map_flgs ) / sizeof( map_flgs[0] ) ) {
+                Wdputs( map_flgs[map.lx.flags] );
+            } else {
+                Wdputs( "Unknown" );
+            }
             if( Options_dmp & OS2_SEG_DMP ) {
                 Dmp_lx_page_seg( map );
             }
