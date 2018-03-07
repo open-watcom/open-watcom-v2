@@ -166,5 +166,6 @@ Absolute and relative units cannot be used at the same time.
 Footnotes are special.
 .note "Footnote cannot be opened from a split window"
 Footnotes are special.
+.note "Missing res number in a .HLP file"
+HLP files headers are required have res numbers. INF files are not unless they are being concatenated. HLP files appear to work fine without them as long as they aren't concatenated and don't use global links.
 .endnote
-

@@ -521,7 +521,9 @@ STD1::uint32_t Document::bitmapByName( std::wstring& bmn )
 /***************************************************************************/
 void Document::addRes( STD1::uint16_t key, TocRef& value )
 {
-    if( resMap.find( key ) == resMap.end() )    //add it to the list
+    if ( !key )
+        throw Class3Error( ERR3_MISSINGRES );
+    else if( resMap.find( key ) == resMap.end() )    //add it to the list
         resMap.insert( std::map< STD1::uint16_t, TocRef >::value_type( key, value ) );
     else {
         throw Class3Error( ERR3_DUPRES );
