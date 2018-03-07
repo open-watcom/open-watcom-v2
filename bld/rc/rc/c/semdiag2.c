@@ -725,6 +725,30 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     return( control );
 }
 
+FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
+                    uint_32 id, DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclassname,
+                    IntMask style, IntMask framectl, PresParamListOS2 *presparams,
+                    FullDiagCtrlListOS2 *childctls )
+/**********************************************************************************/
+{
+    FullDialogBoxControlOS2     *control;
+
+    control = SemOS2InitDiagCtrl();
+
+    control->ctrl.ID         = id;
+    control->ctrl.SizeInfo   = sizeinfo;
+    control->ctrl.Text       = name;
+    control->ctrl.ClassID    = ResNameOrOrdToControlClass( ctlclassname );
+    control->ctrl.Style      = style.Value;
+    control->children        = childctls;
+    control->ctrl.ExtraBytes = 4;
+    control->framectl        = framectl.Value;
+    control->presParams      = presparams;
+    RESFREE( ctlclassname );
+
+    return( control );
+}
+
 FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
                     IntMask framectl, PresParamListOS2 *presparams,
                     FullDiagCtrlListOS2 *childctls, YYTOKENTYPE token )
