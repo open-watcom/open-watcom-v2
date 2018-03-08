@@ -175,7 +175,8 @@ PICK( ERR3_FNNOSPLIT, "Footnote cannot be opened from a split window" )
 PICK( ERR3_MISSINGRES, "Missing res number in a .HLP file")
 PICK( ERR3_LAST, "Last level 3 error code" )
 /*
-Class3 Errors301 Ignoring attribute
+Class3 Errors
+301 Ignoring attribute
 302 Duplicate ID                    // Explanation: Cannot specify the same ID in the same panel or index. 
 303 Duplicate symbol in symbol file
 304 Duplicate res number
@@ -183,5 +184,4 @@ Class3 Errors301 Ignoring attribute
 306 Missing panel text in head level tag
 307 Missing footnote text in :fn. tag
 308 Missing res number in a .HLP file
-
 */
