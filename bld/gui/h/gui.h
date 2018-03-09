@@ -32,18 +32,6 @@
 #include "bool.h"
 #include "guimem.h"
 
-typedef int         gui_ord;
-
-typedef unsigned    gui_ctl_id;
-typedef int         gui_ctl_idx;
-typedef unsigned    gui_res_id;
-typedef unsigned    gui_hlp_id;
-
-#if defined( _M_I86 )
-typedef const char __far    *res_name_or_id;
-#else
-typedef const char          *res_name_or_id;
-#endif
 
 #define GUI_LAST_INTERNAL_MSG 255
 
@@ -110,18 +98,6 @@ typedef enum {
     GUI_TIMER_EVENT
 } gui_event;
 
-typedef struct gui_coord {
-    gui_ord x;
-    gui_ord y;
-} gui_coord;
-
-typedef struct gui_point {
-    int x;
-    int y;
-} gui_point;
-
-typedef struct gui_window gui_window;
-
 typedef enum {
     GUI_BAD_CLASS = -1,
     GUI_PUSH_BUTTON,
@@ -165,8 +141,6 @@ typedef enum {
     GUI_UTIL_2          = 0x80
 } gui_menu_styles ;
 
-typedef void    *gui_help_instance;
-
 typedef enum {
     GUI_HELP_CONTENTS
 ,   GUI_HELP_ON_HELP
@@ -174,25 +148,6 @@ typedef enum {
 ,   GUI_HELP_CONTEXT
 ,   GUI_HELP_KEY
 } gui_help_actions;
-
-typedef long gui_bitmap;
-
-typedef struct gui_toolbar_struct {
-    const char          *label;
-    gui_bitmap          bitmap;
-    gui_ctl_id          id;
-    const char          *hinttext;
-    const char          *tip;
-} gui_toolbar_struct;
-
-typedef struct gui_menu_struct {
-    const char                  *label;
-    gui_ctl_id                  id;
-    gui_menu_styles             style;
-    const char                  *hinttext;
-    int                         num_child_menus;
-    struct gui_menu_struct      *child;
-} gui_menu_struct;
 
 typedef enum {
     GUI_BAD_COLOUR = -1,
@@ -219,25 +174,11 @@ typedef enum {
     GUI_NUM_COLOURS,
 } gui_colour;
 
-typedef struct gui_colour_set {
-    gui_colour fore;
-    gui_colour back;
-} gui_colour_set;
-
-typedef unsigned long       gui_rgb;
-
 #define GUIRGB(r,g,b)       ((gui_rgb)(((unsigned char)(r)) | (((unsigned short)(g))<<8) | (((unsigned long)(b))<<16)))
 
 #define GUIGETRVALUE(rgb)   ((rgb) & 0xff)
 #define GUIGETGVALUE(rgb)   (((rgb) & 0xff00 ) >> 8)
 #define GUIGETBVALUE(rgb)   (((rgb) & 0xff0000) >> 16)
-
-typedef struct gui_rect {
-    gui_ord     x;
-    gui_ord     y;
-    gui_ord     width;
-    gui_ord     height;
-} gui_rect;
 
 typedef enum gui_scroll_styles {
     GUI_NOSCROLL        = 0x00,
@@ -318,46 +259,6 @@ typedef enum gui_bar_styles {
     GUI_FULL_BAR        = 0x10
 } gui_bar_styles;
 
-typedef struct gui_resource {
-    gui_bitmap          res;
-    char                *chars; /* Character based */
-} gui_resource;
-
-typedef struct gui_control_info {
-    gui_control_class   control_class;
-    const char          *text;
-    gui_rect            rect;
-    gui_window          *parent;
-    gui_scroll_styles   scroll;
-    gui_control_styles  style;
-    gui_ctl_id          id;
-} gui_control_info;
-
-typedef bool (GUICALLBACK)( gui_window *, gui_event gui_ev, void *param );
-typedef void (ENUMCALLBACK)( gui_window *, void *param );
-typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
-typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
-typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
-                             gui_control_info *controls_info, int num_controls,
-                             GUICALLBACK *gui_call_back, void *extra );
-typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
-
-typedef struct gui_create_info {
-    const char          *title;
-    gui_rect            rect;
-    gui_scroll_styles   scroll;
-    gui_create_styles   style;
-    gui_window          *parent;
-    int                 num_items;
-    gui_menu_struct     *menu;
-    int                 num_attrs;
-    gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
-    GUICALLBACK         *gui_call_back;
-    void                *extra;
-    gui_resource        *icon;
-    res_name_or_id      resource_menu;
-} gui_create_info;
-
 typedef enum {
     GUI_ABORT_RETRY_IGNORE      = 0x001,
     GUI_EXCLAMATION             = 0x002,
@@ -382,23 +283,6 @@ typedef enum {
     GUI_RET_YES
 } gui_message_return;
 
-typedef struct gui_text_metrics {
-    gui_coord   avg;
-    gui_coord   max;
-} gui_text_metrics;
-
-typedef struct gui_system_metrics {
-    gui_coord   resize_border;
-    bool        colour;
-    bool        mouse;
-    gui_coord   top_left;
-    gui_coord   bottom_right;
-    gui_coord   scrollbar_size;
-    gui_coord   dialog_top_left_size;
-    gui_coord   dialog_bottom_right_size;
-    gui_ord     caption_size;
-} gui_system_metrics;
-
 typedef enum {
     GUI_TRACK_NONE      = 0x00,
     GUI_TRACK_LEFT      = 0x01,
@@ -418,8 +302,6 @@ typedef enum {
     GUI_HOURGLASS_CURSOR,
     GUI_CROSS_CURSOR
 } gui_mcursor_type;
-
-typedef void            *gui_mcursor_handle;
 
 typedef enum {
     GUI_NO_CURSOR,
@@ -509,8 +391,127 @@ typedef enum {
 #define GUI_CHECKED             1
 #define GUI_INDETERMINANT       2
 
+typedef int         gui_ord;
+
+typedef unsigned    gui_ctl_id;
+typedef int         gui_ctl_idx;
+typedef unsigned    gui_res_id;
+typedef unsigned    gui_hlp_id;
+
+#if defined( _M_I86 )
+typedef const char __far    *res_name_or_id;
+#else
+typedef const char          *res_name_or_id;
+#endif
+
+typedef struct gui_coord {
+    gui_ord x;
+    gui_ord y;
+} gui_coord;
+
+typedef struct gui_point {
+    int x;
+    int y;
+} gui_point;
+
+typedef struct gui_window gui_window;
+
+typedef void    *gui_help_instance;
+
+typedef long gui_bitmap;
+
+typedef struct gui_toolbar_struct {
+    const char          *label;
+    gui_bitmap          bitmap;
+    gui_ctl_id          id;
+    const char          *hinttext;
+    const char          *tip;
+} gui_toolbar_struct;
+
+typedef struct gui_menu_struct {
+    const char                  *label;
+    gui_ctl_id                  id;
+    gui_menu_styles             style;
+    const char                  *hinttext;
+    int                         num_child_menus;
+    struct gui_menu_struct      *child;
+} gui_menu_struct;
+
+typedef struct gui_colour_set {
+    gui_colour fore;
+    gui_colour back;
+} gui_colour_set;
+
+typedef unsigned long       gui_rgb;
+
+typedef struct gui_rect {
+    gui_ord     x;
+    gui_ord     y;
+    gui_ord     width;
+    gui_ord     height;
+} gui_rect;
+
+typedef struct gui_resource {
+    gui_bitmap          res;
+    char                *chars; /* Character based */
+} gui_resource;
+
+typedef struct gui_control_info {
+    gui_control_class   control_class;
+    const char          *text;
+    gui_rect            rect;
+    gui_window          *parent;
+    gui_scroll_styles   scroll;
+    gui_control_styles  style;
+    gui_ctl_id          id;
+} gui_control_info;
+
+typedef bool (GUICALLBACK)( gui_window *, gui_event gui_ev, void *param );
+typedef void (ENUMCALLBACK)( gui_window *, void *param );
+typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
+typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
+typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
+                             gui_control_info *controls_info, int num_controls,
+                             GUICALLBACK *gui_call_back, void *extra );
+typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
+
+typedef struct gui_create_info {
+    const char          *title;
+    gui_rect            rect;
+    gui_scroll_styles   scroll;
+    gui_create_styles   style;
+    gui_window          *parent;
+    int                 num_items;
+    gui_menu_struct     *menu;
+    int                 num_attrs;
+    gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
+    GUICALLBACK         *gui_call_back;
+    void                *extra;
+    gui_resource        *icon;
+    res_name_or_id      resource_menu;
+} gui_create_info;
+
+typedef struct gui_text_metrics {
+    gui_coord   avg;
+    gui_coord   max;
+} gui_text_metrics;
+
+typedef struct gui_system_metrics {
+    gui_coord   resize_border;
+    bool        colour;
+    bool        mouse;
+    gui_coord   top_left;
+    gui_coord   bottom_right;
+    gui_coord   scrollbar_size;
+    gui_coord   dialog_top_left_size;
+    gui_coord   dialog_bottom_right_size;
+    gui_ord     caption_size;
+} gui_system_metrics;
+
+typedef void            *gui_mcursor_handle;
+
 /*
- **************************************************************
+ *************************************************************************
  * GUI_MOUSEMOVE :
  * GUI_LBUTTONUDOWN :
  * GUI_LBUTTONUP :
@@ -518,25 +519,25 @@ typedef enum {
  * GUI_RBUTTONUDOWN :
  * GUI_RBUTTONUP :
  * GUI_RBUTTONDBLCLK : 1 parameter - gui_point : GUI_GET_POINT
- **************************************************************
+ *************************************************************************
  * GUI_PAINT : 2 parameters - gui_ord, int : GUI_GET_ROWS
- **************************************************************
+ *************************************************************************
  * GUI_ENDSESSION :
  * GUI_QUERYENDSESSION : 2 parameters - bool, bool : GUI_GET_ENDSESSION
- **************************************************************
+ *************************************************************************
  * GUI_CONTROL_NOT_ACTIVE :
  * GUI_CLICKED :
  * GUI_CONTROL_CLICKED
  * GUI_CONTROL_DCLICKED : 1 parameter - gui_ctl_id : GUI_GETID
- **************************************************************
+ *************************************************************************
  * GUI_RESIZE : 1 parameter - gui_coord : GUI_GET_SIZE
- **************************************************************
+ *************************************************************************
  * GUI_SCROLL_VERTICAL :
  * GUI_SCROLL_HORIZONTAL : 1 parametr - int : GUI_GET_SCROLL
- **************************************************************
+ *************************************************************************
  * GUI_ACTIVATEAPP :
  * GUI_CONTEXTHELP : 1 parametr - bool : GUI_GET_BOOL
- **************************************************************
+ *************************************************************************
  *
  *
  */
