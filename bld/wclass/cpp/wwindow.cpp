@@ -357,7 +357,6 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
 /***************************************************************************/
 {
     gui_create_info     create_info;
-    unsigned long       gui_style;
 
     WRect r;
     autoPosition( r );
@@ -371,9 +370,7 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.rect.width = r.w();
     create_info.rect.height = r.h();
     create_info.scroll = _WStyleToScrollStyle( style );
-    gui_style = GUI_INIT_INVISIBLE | GUI_VISIBLE | _WStyleToCreateStyle( style );
-    gui_style |= exstyle;
-    create_info.style = (gui_create_styles)gui_style;
+    create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
     create_info.num_items = 0;
     create_info.menu = NULL;

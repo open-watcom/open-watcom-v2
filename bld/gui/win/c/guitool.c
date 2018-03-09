@@ -110,7 +110,7 @@ static void guiToolBarHelp( HWND hwnd, ctl_id id, bool down )
 
     wnd = GetToolWnd( hwnd );
     if( wnd != NULL ) {
-        style = ( down ) ? GUI_ENABLED : GUI_IGNORE;
+        style = ( down ) ? GUI_STYLE_MENU_ENABLED : GUI_STYLE_MENU_IGNORE;
         GUIDisplayHintText( wnd, wnd, id, TOOL_HINT, style );
     }
 }

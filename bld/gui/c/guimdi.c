@@ -57,13 +57,13 @@ typedef struct {
 bool GUIMDI = false;
 
 static gui_menu_struct MDISecondSepMenu[] = {
-    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }
+    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR, NULL }
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];
 
 static gui_menu_struct MDIMoreMenu[] = {
-    { NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL }
+    { NULL, GUI_MDI_MORE_WINDOWS, GUI_STYLE_MENU_ENABLED, NULL }
 };
 
 static  gui_ctl_id      GUIMDIMenuID    = 0;
@@ -76,14 +76,14 @@ static  gui_ctl_idx     TotalWindows    = 0;
 static  gui_window      **ChildWindows  = NULL;
 
 static gui_menu_struct MDIMenu[] = {
-    {  NULL,    GUI_MDI_CASCADE,        GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_VERT,      GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL    },
 };
 
 static gui_menu_struct MDIFirstSepMenu[] = {
-    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_SEPARATOR,    NULL }
+    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_STYLE_MENU_SEPARATOR,    NULL }
 };
 
 static bool MDIMenuStructInitialized = false;
@@ -128,7 +128,7 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_items,
         found_flag = false;
         has_items = false;
         for( i = 0; i < num_items; i++ ) {
-            if( menu[i].style & GUI_MDIWINDOW ) {
+            if( menu[i].style & GUI_STYLE_MENU_MDIWINDOW ) {
                 GUIMDIMenuID = menu[i].id;
                 found_flag = true;
                 has_items = ( menu[i].num_child_menus > 0 );
@@ -175,9 +175,9 @@ static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx positi
     MakeLabel( index, name, label );
     menu.label = label;
     menu.id = MDIWIN2ID( index );
-    menu.style = GUI_ENABLED;
+    menu.style = GUI_STYLE_MENU_ENABLED;
     if( index == CurrMDIWindow ) {
-        menu.style |= GUI_CHECKED;
+        menu.style |= GUI_STYLE_MENU_CHECKED;
     }
     menu.num_child_menus = 0;
     menu.child = NULL;

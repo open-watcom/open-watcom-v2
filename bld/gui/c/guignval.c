@@ -133,7 +133,7 @@ gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_
     GetNew[CANCEL].text = LIT( Cancel );
     GetNew[OK].text = LIT( OK );
 
-    GetNew[EDIT].style |= GUI_FOCUS;
+    GetNew[EDIT].style |= GUI_STYLE_CONTROL_FOCUS;
 
     GetNew[STATIC].rect.width = DLG_COL( disp_length );
     GetNew[STATIC].text = old;

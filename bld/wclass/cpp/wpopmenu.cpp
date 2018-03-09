@@ -150,21 +150,21 @@ void WPopupMenu::attachItem( WWindow *win, gui_ctl_idx position )
 /***************************************************************/
 {
     gui_menu_struct     menu_item;
-    unsigned long       menu_style;
+    gui_menu_styles     menu_style;
 
     menu_item.label = (char *)text();
     menu_item.id = menuId();
-    menu_style = GUI_ENABLED;
+    menu_style = GUI_STYLE_MENU_ENABLED;
     if( checked() ) {
-        menu_style |= GUI_MENU_CHECKED;
+        menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_CHECKED );
     }
     if( !enabled() ) {
-        menu_style |= GUI_GRAYED;
+        menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_GRAYED );
     }
     if( _isMdiPopup ) {
-        menu_style |= GUI_MDIWINDOW;
+        menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_MDIWINDOW );
     }
-    menu_item.style = (gui_menu_styles)menu_style;
+    menu_item.style = menu_style;
     menu_item.hinttext = NULL;
     menu_item.num_child_menus = 0;
     menu_item.child = NULL;

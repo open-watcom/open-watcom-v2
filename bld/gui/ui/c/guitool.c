@@ -42,8 +42,9 @@
 #define FIX_TOOLBAR     1
 
 static gui_menu_struct Menu = {
-    NULL, FIX_TOOLBAR, GUI_ENABLED, NULL
+    NULL, FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL
 };
+
 #define NUM_MENU_ITEMS ( sizeof( Menu ) / sizeof( gui_menu_struct ) )
 
 static gui_control_info Button = {
@@ -52,7 +53,7 @@ static gui_control_info Button = {
     { 0, 0, 0, 0 },
     NULL,
     GUI_NOSCROLL,
-    GUI_NONE,
+    GUI_STYLE_CONTROL_NOSTYLE,
     0
 };
 
@@ -68,7 +69,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
     tbar->fixed = true;
     menu.num_child_menus = 0;
     menu.child = NULL;
-    menu.style = GUI_ENABLED;
+    menu.style = GUI_STYLE_MENU_ENABLED;
 
     for( i = 0; i < tbar->num_items; i++ ) {
         with_excl = NULL;

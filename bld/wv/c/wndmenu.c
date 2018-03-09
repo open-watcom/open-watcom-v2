@@ -378,7 +378,7 @@ OVL_EXTERN void LoadLabels( gui_menu_struct *menu, int num_items )
         if( menu->child != NULL ) {
             LoadLabels( menu->child, menu->num_child_menus );
         }
-        if( !( menu->style & (GUI_SEPARATOR|WND_MENU_ALLOCATED) ) ) {
+        if( (menu->style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
             menu->label = WndLoadString( (gui_res_id)(pointer_int)menu->label );
             menu->hinttext = WndLoadString( (gui_res_id)(pointer_int)menu->hinttext );
             menu->style |= WND_MENU_ALLOCATED;
@@ -443,7 +443,7 @@ void InitMenus( void )
             WndMainMenu[i].style |= WND_MENU_POPUP;
         }
         if( WndMainMenu[i].id == MENU_MAIN_WINDOW ) {
-            WndMainMenu[i].style |= GUI_MDIWINDOW;
+            WndMainMenu[i].style |= GUI_STYLE_MENU_MDIWINDOW;
         }
     }
     ForAllMenus( LoadLabels );

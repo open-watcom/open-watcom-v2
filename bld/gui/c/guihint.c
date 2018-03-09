@@ -134,7 +134,7 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
     const char      *text;
 
     if( GUIHasStatus( wnd_with_status ) && GUIHasHintType( wnd, type ) ) {
-        if( ( style & GUI_IGNORE ) || ( style & GUI_SEPARATOR ) ) {
+        if( (style & GUI_STYLE_MENU_IGNORE) || (style & GUI_STYLE_MENU_SEPARATOR) ) {
             GUIClearStatusText( wnd_with_status );
         } else {
             text = HintTextGet( &wnd->hint, id, type );

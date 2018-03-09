@@ -99,14 +99,13 @@ enum {
 };
 
 static gui_control_info GetNew[] = {
-    { GUI_STATIC,         "Please enter install path:",     { 4, 4, 30, HEIGHT }, NULL, GUI_NOSCROLL, GUI_NONE, ctr_static },
-    { GUI_EDIT,           NULL,     { 4, 15, 30, HEIGHT }, NULL, GUI_NOSCROLL, GUI_NONE, ctr_edit },
-    { GUI_PUSH_BUTTON,   "CANCEL",  { 6, 30, WIDTH, HEIGHT }, NULL, GUI_NOSCROLL, GUI_NONE, ctr_cancelbutton },
-    { GUI_DEFPUSH_BUTTON, "OK",     { 26, 30, WIDTH, HEIGHT }, NULL, GUI_NOSCROLL, GUI_NONE, ctr_okbutton }
+    { GUI_STATIC,         "Please enter install path:", { 4, 4, 30, HEIGHT },       NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_static },
+    { GUI_EDIT,           NULL,                         { 4, 15, 30, HEIGHT },      NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_edit },
+    { GUI_PUSH_BUTTON,   "CANCEL",                      { 6, 30, WIDTH, HEIGHT },   NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_cancelbutton },
+    { GUI_DEFPUSH_BUTTON, "OK",                         { 26, 30, WIDTH, HEIGHT },  NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_okbutton }
 };
 
-static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] =
-{
+static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] = {
     { GUI_BRIGHT_WHITE, GUI_BLUE },
     { GUI_BRIGHT_WHITE, GUI_BLUE }
 };

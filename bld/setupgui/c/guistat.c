@@ -94,8 +94,7 @@ static const char *Messages[] = {
 };
 
 static gui_control_info Cancel = {
-    GUI_DEFPUSH_BUTTON, NULL, 0, 0, 0, 0, NULL, // nyi - kanji
-    GUI_NOSCROLL, GUI_TAB_GROUP | GUI_AUTOMATIC, CTL_CANCEL
+    GUI_DEFPUSH_BUTTON, NULL, {0, 0, 0, 0}, NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, CTL_CANCEL
 };
 
 void StatusShow( bool show )

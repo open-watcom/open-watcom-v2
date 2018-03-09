@@ -104,7 +104,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
         item->hwnd = _wpi_getdlgitem( wnd->hwnd, item->id );
     }
     ctrl = item->hwnd;
-    if( ( focus_id != NULL ) && item->style & GUI_FOCUS ) {
+    if( ( focus_id != NULL ) && (item->style & GUI_STYLE_CONTROL_FOCUS) ) {
         *focus_id = item->id;
     }
     /* will subclass if required */
@@ -681,7 +681,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         if( !in_group ) {
             style |= WS_GROUP;
         }
-        if( style & GUI_GROUP ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_GROUP ) {
             in_group = !in_group;
         }
 #ifdef __OS2_PM__

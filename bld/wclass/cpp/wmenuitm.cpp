@@ -85,19 +85,19 @@ void WMenuItem::attachMenu( WWindow *win, gui_ctl_idx position )
 /**************************************************************/
 {
     gui_menu_struct     menu_item;
-    unsigned long       menu_style;
+    gui_menu_styles     menu_style;
 
     menu_item.label = (char *)text();
     menu_item.id = menuId();
-    menu_style = GUI_ENABLED;
+    menu_style = GUI_STYLE_MENU_ENABLED;
     if( checked() ) {
-        menu_style |= GUI_MENU_CHECKED;
+        menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_CHECKED );
     }
     if( !enabled() ) {
-        menu_style |= GUI_GRAYED;
+        menu_style = (gui_menu_styles)( menu_style | GUI_STYLE_MENU_GRAYED );
     }
+    menu_item.style = menu_style;
     const char *c_hinttext = _hintText;
-    menu_item.style = (gui_menu_styles)menu_style;
     menu_item.hinttext = (char *)c_hinttext;
     menu_item.num_child_menus = 0;
     menu_item.child = NULL;
@@ -106,8 +106,7 @@ void WMenuItem::attachMenu( WWindow *win, gui_ctl_idx position )
         GUIInsertMenuByIdx( win->handle(), position, &menu_item, true );
     } else {
         // appending menu item to popup menu
-        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), position,
-                              &menu_item, parent()->isFloatingPopup() );
+        GUIInsertMenuToPopup( win->handle(), parent()->menuId(), position, &menu_item, parent()->isFloatingPopup() );
     }
     setOwner( win );
 }

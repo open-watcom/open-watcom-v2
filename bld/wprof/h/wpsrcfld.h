@@ -31,6 +31,7 @@
 
 
 #ifndef _WPSRCFIL_H
+#define _WPSRCFIL_H
 
 typedef struct wp_srcline {
     unsigned long               line;
@@ -38,17 +39,16 @@ typedef struct wp_srcline {
 } wp_srcline;
 
 typedef struct wp_srcfile {
-    void *                      src_file;
-    char *                      src_buff;
-    wp_srcline *                src_lines;
+    void                        *src_file;
+    char                        *src_buff;
+    wp_srcline                  *src_lines;
     clicks_t                    max_time;
     int                         wp_line_count;
     int                         rtn_line;
     int                         samp_line;
     int                         src_buff_len;
     int                         src_rows;
-    uint_8                      src_eof : 1;
+    bool                        src_eof         : 1;
 } wp_srcfile;
 
-#define _WPSRCFIL_H
 #endif

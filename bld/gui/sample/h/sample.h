@@ -56,8 +56,6 @@
 #define BUTTON_WIDTH  125
 #define BUTTON_HEIGHT 45
 
-#define AUTOMATIC GUI_AUTOMATIC
-
 #define WIDTH 1000
 #define HEIGHT 1100
 

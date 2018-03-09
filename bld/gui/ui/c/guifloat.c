@@ -85,20 +85,20 @@ void GUIProcessMenuCurr( UIMENUITEM *menuitem )
 
     id = 0;
     if( ( menuitem == NULL ) || ( menuitem->event == EV_NO_EVENT ) ) {
-        style = GUI_IGNORE;
+        style = GUI_STYLE_MENU_IGNORE;
     } else {
         if( menuitem->flags & ITEM_SEPARATOR ) {
-            style = GUI_SEPARATOR;
+            style = GUI_STYLE_MENU_SEPARATOR;
         } else {
             if( IS_CTLEVENT( menuitem->event ) ) {
                 id = EV2ID( menuitem->event );
                 if( MENUGRAYED( *menuitem ) ) {
-                    style = GUI_GRAYED;
+                    style = GUI_STYLE_MENU_GRAYED;
                 } else {
-                    style = GUI_ENABLED;
+                    style = GUI_STYLE_MENU_ENABLED;
                 }
             } else {
-                style = GUI_IGNORE;
+                style = GUI_STYLE_MENU_IGNORE;
             }
         }
     }

@@ -44,7 +44,7 @@
 extern UIMENUITEM       *GUIPopupMenu;
 
 static gui_menu_struct GUISeparator = {
-    NULL,       0,      GUI_SEPARATOR
+    NULL,       0,      GUI_STYLE_MENU_SEPARATOR
 };
 
 static void SetChecked( UIMENUITEM *menuitem, bool check )
@@ -262,9 +262,9 @@ bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floati
         return( false );
     }
     if( enable ) {
-        GUIChangeMenu( menuitem, GUI_ENABLED );
+        GUIChangeMenu( menuitem, GUI_STYLE_MENU_ENABLED );
     } else {
-        GUIChangeMenu( menuitem, GUI_GRAYED );
+        GUIChangeMenu( menuitem, GUI_STYLE_MENU_GRAYED );
     }
 
     if( vbar ) {
@@ -330,15 +330,14 @@ bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating
 
 void GUIChangeMenu( UIMENUITEM *menuitem, gui_menu_styles style )
 {
-    if( style & GUI_GRAYED ) {
+    if( style & GUI_STYLE_MENU_GRAYED ) {
         menuitem->flags |= ITEM_GRAYED;
     } else {
         menuitem->flags &= ~ITEM_GRAYED;
     }
 }
 
-static bool GUISetMenuItems( gui_ctl_idx num_items, UIMENUITEM *menuitems,
-                             gui_menu_struct *info )
+static bool GUISetMenuItems( gui_ctl_idx num_items, UIMENUITEM *menuitems, gui_menu_struct *info )
 {
     gui_ctl_idx i;
     gui_ctl_idx j;
@@ -346,11 +345,11 @@ static bool GUISetMenuItems( gui_ctl_idx num_items, UIMENUITEM *menuitems,
     j = 0;
     for( i = 0; i < num_items; i ++ ) {
         uiyield();
-        if( (info[i].style & GUI_IGNORE) == 0 ) {
-            if( info[i].style & GUI_SEPARATOR ) {
+        if( (info[i].style & GUI_STYLE_MENU_IGNORE) == 0 ) {
+            if( info[i].style & GUI_STYLE_MENU_SEPARATOR ) {
                 menuitems[j].flags |= ITEM_SEPARATOR;
             } else {
-                if( !MenuConvert( info[i].label, &menuitems[j].flags, &menuitems[j].name, (info[i].style & GUI_MENU_CHECKED) != 0 ) ) {
+                if( !MenuConvert( info[i].label, &menuitems[j].flags, &menuitems[j].name, (info[i].style & GUI_STYLE_MENU_CHECKED) != 0 ) ) {
                     return( false );
                 }
                 GUIChangeMenu( &menuitems[j], info[i].style );
@@ -369,7 +368,7 @@ gui_ctl_idx GUIGetNumIgnore( gui_menu_struct *info, gui_ctl_idx num_items )
 
     num_ignore = 0;
     for( i = 0; i < num_items; i++ ) {
-        if( info[i].style & GUI_IGNORE ) {
+        if( info[i].style & GUI_STYLE_MENU_IGNORE ) {
             num_ignore++;
         }
     }
@@ -380,8 +379,7 @@ gui_ctl_idx GUIGetNumIgnore( gui_menu_struct *info, gui_ctl_idx num_items )
  * GUICreateMenuItems -- converts the gui_menu_struct to an array of UIMENUITEM
  */
 
-bool GUICreateMenuItems( gui_ctl_idx num_items, gui_menu_struct *info,
-                         UIMENUITEM **pmenuitems )
+bool GUICreateMenuItems( gui_ctl_idx num_items, gui_menu_struct *info, UIMENUITEM **pmenuitems )
 {
     gui_ctl_idx num_ignore;
     gui_ctl_idx i;
@@ -408,10 +406,9 @@ bool GUICreateMenuItems( gui_ctl_idx num_items, gui_menu_struct *info,
     j = 0;
     for( i = 0; i < num_items; i++ ) {
         uiyield();
-        if( (info[i].style & GUI_IGNORE) == 0 ) {
+        if( (info[i].style & GUI_STYLE_MENU_IGNORE) == 0 ) {
             if( info[i].num_child_menus > 0 ) {
-                if( !GUICreateMenuItems( info[i].num_child_menus,
-                                         info[i].child, &menuitems[j].popup ) ) {
+                if( !GUICreateMenuItems( info[i].num_child_menus, info[i].child, &menuitems[j].popup ) ) {
                     return( false );
                 }
             }
@@ -504,8 +501,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, gui_ctl_idx posi
         GUIMemFree( newmenuitems );
         return( false );
     }
-    if( !GUICreateMenuItems( info->num_child_menus, info->child,
-                             &newmenuitems[position].popup ) ) {
+    if( !GUICreateMenuItems( info->num_child_menus, info->child, &newmenuitems[position].popup ) ) {
         GUIMemFree( newmenuitems );
         return( false );
     }
@@ -554,7 +550,7 @@ static bool CreateMenus( gui_window *wnd, int num_items, gui_menu_struct *menu,
             }
             for( i = 0; i < num_items; i ++ ) {
                 uiyield();
-                if( (menu[i].style & GUI_IGNORE) == 0 ) {
+                if( (menu[i].style & GUI_STYLE_MENU_IGNORE) == 0 ) {
                     if( !InsertMenu( wnd, &menu[i], -1, &wnd->menu, true, MENU_HINT ) ) {
                         return( false );
                     }
@@ -739,9 +735,9 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
         return( false );
     }
     if( enable ) {
-        style = GUI_ENABLED;
+        style = GUI_STYLE_MENU_ENABLED;
     } else {
-        style = GUI_GRAYED;
+        style = GUI_STYLE_MENU_GRAYED;
     }
     for( i = 0; !MENUENDMARKER( wnd->vbarmenu->titles[i] ); i++ ) {
         GUIChangeMenu( &wnd->vbarmenu->titles[i], style );

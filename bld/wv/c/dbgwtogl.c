@@ -60,7 +60,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
     for( i = 0; i < num_toggles; ++i ) {
         MADCli( String )( toggles[i].menu, TxtBuff, TXT_LEN );
         menu->id = id++;
-        menu->style = GUI_ENABLED;
+        menu->style = GUI_STYLE_MENU_ENABLED;
         menu->hinttext = LIT_ENG( Empty );
         menu->label = DupStr( TxtBuff );
         menu->num_child_menus = 0;

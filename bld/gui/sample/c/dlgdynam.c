@@ -68,16 +68,14 @@ static void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
     for( i = 0; i < NUM_CONTROLS; i ++ ) {
         if( Controls[i].id == id ) {
             (*num)++;
-            if( !GUIGetControlClass( gui, id, &control_class ) ||
-                ( control_class != Controls[i].control_class ) ) {
-                GUIDisplayMessage( gui, "Got Invalid Control Class",
-                                   "Doing Enum Controls", GUI_INFORMATION );
+            if( !GUIGetControlClass( gui, id, &control_class )
+              || ( control_class != Controls[i].control_class ) ) {
+                GUIDisplayMessage( gui, "Got Invalid Control Class", "Doing Enum Controls", GUI_INFORMATION );
             }
             return;
         }
     }
-    GUIDisplayMessage( gui, "Got Invalid ID", "Doing Enum Controls",
-                       GUI_INFORMATION );
+    GUIDisplayMessage( gui, "Got Invalid ID", "Doing Enum Controls", GUI_INFORMATION );
 }
 
 static void CheckNumControls( gui_window *gui, int act_num )
@@ -88,12 +86,10 @@ static void CheckNumControls( gui_window *gui, int act_num )
     GUIEnumControls( gui, ContrCallBack, &num );
     if( num == act_num ) {
 #if 0
-        GUIDisplayMessage( gui, "Got Correct Number of Controls",
-                           "Doing Enum Controls", GUI_INFORMATION );
+        GUIDisplayMessage( gui, "Got Correct Number of Controls", "Doing Enum Controls", GUI_INFORMATION );
 #endif
     } else {
-        GUIDisplayMessage( gui, "Got Incorrect Number of Controls",
-                           "Doing Enum Controls", GUI_STOP );
+        GUIDisplayMessage( gui, "Got Incorrect Number of Controls", "Doing Enum Controls", GUI_STOP );
     }
 }
 
@@ -133,17 +129,16 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
         GUIGetClientRect( gui, &rect );
         InitDialog( gui );
         CheckNumControls( gui, NUM_CONTROLS );
-        for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
-            if( ( Controls[i].style & GUI_CHECKED ) &&
-                !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, GUI_CHECKED );
+        for( i = RADIOBUTTON_CONTROL1_IDX; i <= RADIOBUTTON_CONTROL2_IDX; i++ ) {
+            if( (Controls[i].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[i].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[i].id, GUI_CHECKED );
             }
         }
-        num = CHECKBOX_CONTROL2;
-        for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
-            if( ( Controls[i].style & GUI_CHECKED ) &&
-                !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, GUI_CHECKED );
+        for( i = CHECKBOX_CONTROL1_IDX; i <= CHECKBOX_CONTROL2_IDX; i++ ) {
+            if( (Controls[i].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[i].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[i].id, GUI_CHECKED );
             }
         }
 
@@ -221,19 +216,18 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
             // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
             return( true );
         case OKBUTTON_CONTROL :
-            for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
-                if( GUIIsChecked( gui, id ) ) {
-                    Controls[id].style |= GUI_CHECKED;
+            for( id = RADIOBUTTON_CONTROL1_IDX; id <= RADIOBUTTON_CONTROL2_IDX; id++ ) {
+                if( GUIIsChecked( gui, Controls[id].id ) ) {
+                    Controls[id].style |= GUI_STYLE_CONTROL_CHECKED;
                 } else {
-                    Controls[id].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_STYLE_CONTROL_CHECKED;
                 }
             }
-            num = CHECKBOX_CONTROL2;
-            for( id = CHECKBOX_CONTROL1; id <= num; id++ ) {
-                if( GUIIsChecked( gui, id ) ) {
-                    Controls[id].style |= GUI_CHECKED;
+            for( id = CHECKBOX_CONTROL1_IDX; id <= CHECKBOX_CONTROL2_IDX; id++ ) {
+                if( GUIIsChecked( gui, Controls[id].id ) ) {
+                    Controls[id].style |= GUI_STYLE_CONTROL_CHECKED;
                 } else {
-                    Controls[id].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_STYLE_CONTROL_CHECKED;
                 }
             }
             text = GUIGetText( gui, LISTBOX_CONTROL );
@@ -243,8 +237,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
             if( gui == DialogWindow ) {
                 GUIDestroyWnd( gui );
             } else {
-                GUIDisplayMessage( gui, "OK Button", "Got dialog item : ",
-                                   GUI_ABORT_RETRY_IGNORE );
+                GUIDisplayMessage( gui, "OK Button", "Got dialog item : ", GUI_ABORT_RETRY_IGNORE );
                 GUIGetNewVal( "Enter New Value", "wesley", &text );
                 if( text != NULL ) {
                     GUIMemFree( text );
@@ -254,16 +247,15 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
                 new = GUIGetText( gui, EDIT_CONTROL );
                 GUIMemFree( OldValue );
                 OldValue = new;
-                GUIDisplayMessage( gui, "OK Button", "Got dialog item : ",
-                                   GUI_ABORT_RETRY_IGNORE );
+                GUIDisplayMessage( gui, "OK Button", "Got dialog item : ", GUI_ABORT_RETRY_IGNORE );
                 GUICloseDialog( gui );
 #endif
             }
             return( true );
         case CANCELBUTTON_CONTROL :
 #if 0
-            GUIDisplayMessage( gui, "Cancel\nButton CancelButton CancelButtonCancelButton Cancel Button Cancel Button Cancel Button Cancel Button Cancel\tButton Cancel Button\t\t\tCancel Button", "Got dialog item : ",
-                               GUI_STOP );
+            GUIDisplayMessage( gui, "Cancel\nButton CancelButton CancelButtonCancelButton Cancel Button Cancel Button "
+            "Cancel Button Cancel Button Cancel\tButton Cancel Button\t\t\tCancel Button", "Got dialog item : ", GUI_STOP );
 #endif
             GUICloseDialog( gui );
             return( true );
@@ -283,8 +275,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
             } else {
                 GUIHideControl( gui, RADIOBUTTON_CONTROL1 );
             }
-            GUIEnableControl( gui, RADIOBUTTON_CONTROL2,
-                              !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
+            GUIEnableControl( gui, RADIOBUTTON_CONTROL2, !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
             GUIDisplayMessage( gui, "Clearing", "Sample Application", GUI_OK_CANCEL );
             GUISetChecked( gui, RADIOBUTTON_CONTROL2, GUI_CHECKED );
             GUIClearText( gui, STATIC_CONTROL );
@@ -328,8 +319,8 @@ void DynamicDialogCreate( gui_window *parent )
 {
     int i;
 
-    Controls[STATIC_CONTROL].text = OldValue;
-    Controls[EDIT_CONTROL].text = OldValue;
+    Controls[STATIC_CONTROL_IDX].text = OldValue;
+    Controls[EDIT_CONTROL_IDX].text = OldValue;
     DialogControl.parent = parent;
 
     if( !DialogScaled ) {
@@ -339,8 +330,8 @@ void DynamicDialogCreate( gui_window *parent )
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
         for( i = 0; i < NUM_CONTROLS; i ++ ) {
-            if( ( Controls[i].control_class == GUI_PUSH_BUTTON ) ||
-                ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
+            if( ( Controls[i].control_class == GUI_PUSH_BUTTON )
+              || ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
                 Controls[i].rect.height *= 2;
             }
         }

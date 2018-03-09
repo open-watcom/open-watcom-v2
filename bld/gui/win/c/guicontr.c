@@ -55,9 +55,9 @@ extern  bool            EditControlHasFocus;
 
 controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
 #if defined( __NT__ ) && !defined( _WIN64 )
-    #define pick(uitype,classn,classn_os2,style,xstyle_nt) {classn,style,xstyle_nt},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style,xstyle_nt},
 #else
-    #define pick(uitype,classn,classn_os2,style,xstyle_nt) {classn,style},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style},
 #endif
     #include "_guicont.h"
     #undef pick
@@ -170,7 +170,7 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class control_cl
     item->control_class = control_class;
     item->text = ctl_info->text;
     item->style = ctl_info->style;
-    item->checked = ctl_info->style & GUI_CHECKED;
+    item->checked = ctl_info->style & GUI_STYLE_CONTROL_CHECKED;
     item->id = ctl_info->id;
     item->next = NULL;
     item->hwnd = hwnd;
@@ -430,14 +430,14 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
 
     ret_style = GUIControls[ctl_info->control_class].style;
 
-    /* The GUI library has a group marked by GUI_GROUP on the first and
+    /* The GUI library has a group marked by GUI_STYLE_CONTROL_GROUP on the first and
      * last group item.  Windows has the WS_GROUP style mark the start
      * of each group.  So, I mark everything as WS_GROUP, excluding
-     * the second, third, etc. member of a GUI_GROUP.  That way,
-     * everything is in a group of one, except GUI_GROUPs, which are
+     * the second, third, etc. member of a GUI_STYLE_CONTROL_GROUP.  That way,
+     * everything is in a group of one, except GUI_STYLE_CONTROL_GROUPs, which are
      * grouped properly.
      */
-    if( !( ctl_info->scroll & GUI_CONTROL_INIT_INVISIBLE ) ) {
+    if( !( ctl_info->scroll & GUI_INIT_INVISIBLE ) ) {
         ret_style |= WS_VISIBLE;
     }
 #ifndef __OS2_PM__
@@ -448,49 +448,49 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
         ret_style |= WS_HSCROLL;
     }
 #endif
-    if( ctl_info->style & GUI_EDIT_INVISIBLE ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_EDIT_INVISIBLE ) {
 #ifndef __OS2_PM__
         ret_style |= ES_PASSWORD;
 #else
         ret_style |= ES_UNREADABLE;
 #endif
     }
-    if( ctl_info->style & GUI_CONTROL_LEFTNOWORDWRAP ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_LEFTNOWORDWRAP ) {
         ret_style |= SS_LEFTNOWORDWRAP;
     }
-    if( ctl_info->style & GUI_CONTROL_CENTRE ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_CENTRE ) {
         ret_style |= SS_CENTER;
     }
-    if( ctl_info->style & GUI_CONTROL_NOPREFIX ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_NOPREFIX ) {
 #ifndef __OS2_PM__
         ret_style |= SS_NOPREFIX;
 #else
         ret_style &= ~DT_MNEMONIC;
 #endif
     }
-    if( ctl_info->style & GUI_CONTROL_MULTILINE ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_MULTILINE ) {
         ret_style |= ES_MULTILINE;
     }
-    if( ctl_info->style & GUI_CONTROL_WANTRETURN ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_WANTRETURN ) {
         ret_style |= ES_WANTRETURN;
     }
-    if( ctl_info->style & GUI_CONTROL_3STATE ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_3STATE ) {
         ret_style |= BS_3STATE;
     }
-    if( ctl_info->style & GUI_TAB_GROUP ) {
+    if( ctl_info->style & GUI_STYLE_CONTROL_TAB_GROUP ) {
         ret_style |= WS_TABSTOP;
     }
 
     switch( ctl_info->control_class ) {
     case GUI_LISTBOX :
-        if( ctl_info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= LBS_NOINTEGRALHEIGHT;
         }
-        if( ctl_info->style & GUI_CONTROL_SORTED ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_SORTED ) {
             ret_style |= LBS_SORT;
         }
 #ifndef __OS2_PM__
-        if( ctl_info->style & GUI_CONTROL_WANTKEYINPUT ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_WANTKEYINPUT ) {
             ret_style |= LBS_WANTKEYBOARDINPUT;
         }
 #endif
@@ -502,31 +502,31 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
         break;
     case GUI_COMBOBOX :
     case GUI_EDIT_COMBOBOX :
-        if( ctl_info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= CBS_NOINTEGRALHEIGHT;
         }
-        if( ctl_info->style & GUI_CONTROL_SORTED ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_SORTED ) {
             ret_style |= CBS_SORT;
         }
         break;
 #ifdef __OS2_PM__
     case GUI_EDIT:
-        if( ctl_info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_READONLY ) {
             ret_style |= ES_READONLY;
         }
         break;
     case GUI_EDIT_MLE:
-        if( ctl_info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_READONLY ) {
             ret_style |= MLS_READONLY;
         }
         break;
 #else
     case GUI_EDIT:
     case GUI_EDIT_MLE:
-        if( ctl_info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_READONLY ) {
             ret_style |= ES_READONLY;
         }
-        if( ctl_info->style & GUI_CONTROL_BORDER ) {
+        if( ctl_info->style & GUI_STYLE_CONTROL_BORDER ) {
             ret_style |= WS_BORDER;
         }
         break;
@@ -670,7 +670,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colou
         GUISendMessage( parent->hwnd, DM_SETDEFID, ctl_info->id, 0 );
     }
 #endif
-    if( (ctl_info->style & GUI_CONTROL_INIT_INVISIBLE) == 0 ) {
+    if( (ctl_info->style & GUI_STYLE_CONTROL_INIT_INVISIBLE) == 0 ) {
         _wpi_showwindow( hwnd, SW_SHOW );
     }
     return( true );
@@ -703,7 +703,7 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
         if( curr->id == id ) {
             found_id = true;
         }
-        if( curr->style & GUI_GROUP ) {
+        if( curr->style & GUI_STYLE_CONTROL_GROUP ) {
             in_group = !in_group;
             if( in_group ) {
                 first = curr->id;

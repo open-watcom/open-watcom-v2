@@ -60,7 +60,7 @@ WEXPORT WMultiLineEditBox::WMultiLineEditBox( WWindow *p, const WRect& r,
                                               const char *text,
                                               WStyle wstyle )
         : WEdit( p, GUI_EDIT_MLE, r, text,
-                 wstyle | _ControlStyleToWStyle( GUI_CONTROL_WANTRETURN ) ) {
+                 wstyle | _ControlStyleToWStyle( GUI_STYLE_CONTROL_WANTRETURN ) ) {
 /***************************************************************************/
 
 }
@@ -68,7 +68,7 @@ WEXPORT WMultiLineEditBox::WMultiLineEditBox( WWindow *p, const WRect& r,
 WEXPORT WMultiLineEditBox::WMultiLineEditBox( WStatDialog *p, WControlId id,
                                               WStyle wstyle )
         : WEdit( p, id,
-                 wstyle | _ControlStyleToWStyle( GUI_CONTROL_WANTRETURN ) ) {
+                 wstyle | _ControlStyleToWStyle( GUI_STYLE_CONTROL_WANTRETURN ) ) {
 /***************************************************************************/
 
 }
@@ -110,7 +110,7 @@ int WEXPORT WEdit::getSelectBounds( int *first, int *last ) {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 #pragma warning 657 9
 #endif

@@ -36,7 +36,7 @@
 #include "dlgbutn.h"
 #include "dbgicon.h"
 
-#define WND_MENU_ALLOCATED      GUI_UTIL_2
+#define WND_MENU_ALLOCATED      GUI_STYLE_MENU_UTIL_2
 
 typedef enum {
     WND_ATTR_PLAIN = WND_FIRST_UNUSED,

@@ -67,7 +67,7 @@ bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
 #ifdef __OS2_PM__
         item = GUIGetControlByID( wnd, id );
         if( item != NULL ) {
-            if( item->style & GUI_CONTROL_SORTED ) {
+            if( item->style & GUI_STYLE_CONTROL_SORTED ) {
                 pos = LIT_SORTASCENDING;
             }
         }

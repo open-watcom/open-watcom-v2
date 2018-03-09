@@ -47,8 +47,7 @@
  * GUIAddControl -- add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
-                    gui_colour_set *standout )
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
     gui_control *control;
     bool        first_control;

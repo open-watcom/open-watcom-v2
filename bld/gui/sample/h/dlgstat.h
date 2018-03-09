@@ -32,21 +32,34 @@
 
 #define NUM_CONTROLS            13
 
+#define CTRLS \
+    pick( STATIC_CONTROL ) \
+    pick( EDIT_CONTROL ) \
+    pick( GROUP_CONTROL1 ) \
+    pick( RADIOBUTTON_CONTROL1 ) \
+    pick( RADIOBUTTON_CONTROL2 ) \
+    pick( GROUP_CONTROL2 ) \
+    pick( CHECKBOX_CONTROL1 ) \
+    pick( CHECKBOX_CONTROL2 ) \
+    pick( OKBUTTON_CONTROL ) \
+    pick( CANCELBUTTON_CONTROL ) \
+    pick( LISTBOX_CONTROL ) \
+    pick( ADDBUTTON_CONTROL ) \
+    pick( CLEARBUTTON_CONTROL )
+
 enum {
-    STATIC_CONTROL,
-    EDIT_CONTROL,
-    GROUP_CONTROL1,
-    RADIOBUTTON_CONTROL1,
-    RADIOBUTTON_CONTROL2,
-    GROUP_CONTROL2,
-    CHECKBOX_CONTROL1,
-    CHECKBOX_CONTROL2,
-    OKBUTTON_CONTROL,
-    CANCELBUTTON_CONTROL,
-    LISTBOX_CONTROL,
-    ADDBUTTON_CONTROL,
-    CLEARBUTTON_CONTROL,
+    #define pick(x) x ## _IDX,
+    CTRLS
+    #undef pick
 };
+
+enum {
+    DUMMY_START = 0,
+    #define pick(x) x,
+    CTRLS
+    #undef pick
+};
+
 
 extern gui_control_info Controls[];
 

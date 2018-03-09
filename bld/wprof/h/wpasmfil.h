@@ -35,7 +35,7 @@
 
 typedef struct src_info {
     unsigned long               line;
-    void *                      src_file;
+    void                        *src_file;
 } src_info;
 
 typedef struct asm_info {
@@ -44,7 +44,7 @@ typedef struct asm_info {
 } asm_info;
 
 typedef struct wp_asmline {
-    uint_8                      source_line : 1;
+    bool                        source_line : 1;
     union {
         asm_info                asm_line;
         src_info                src;
@@ -52,13 +52,13 @@ typedef struct wp_asmline {
 } wp_asmline;
 
 typedef struct wp_asm_groups {
-    wp_asmline *                asm_lines;
+    wp_asmline                  *asm_lines;
 } wp_asm_groups;
 
 typedef struct wp_asmfile {
-    wp_asm_groups *             asm_data;
+    wp_asm_groups               *asm_data;
     FILE                        *fp;
-    char *                      asm_buff;
+    char                        *asm_buff;
     clicks_t                    max_time;
     int                         asm_buff_len;
     int                         asm_rows;
@@ -66,13 +66,13 @@ typedef struct wp_asmfile {
     int                         entry_line;
 } wp_asmfile;
 
-#define MAX_ASM_LINE_INDEX      (SHRT_MAX/sizeof(wp_asmline))
-#define MAX_ASM_LINE_SIZE       (MAX_ASM_LINE_INDEX*sizeof(wp_asmline))
+#define MAX_ASM_LINE_INDEX      (SHRT_MAX / sizeof( wp_asmline ))
+#define MAX_ASM_LINE_SIZE       (MAX_ASM_LINE_INDEX * sizeof( wp_asmline ))
 
-extern wp_asmline   *WPGetAsmLoc( wp_asmfile * wpasm_file, int row, int * group_loc, int * row_loc );
-extern wp_asmfile   *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet );
-extern void         WPAsmClose( wp_asmfile * wpasm_file );
+extern wp_asmline   *WPGetAsmLoc( wp_asmfile *wpasm_file, int row, int *group_loc, int *row_loc );
+extern wp_asmfile   *WPAsmOpen( sio_data *curr_sio, int src_row, bool quiet );
+extern void         WPAsmClose( wp_asmfile *wpasm_file );
 extern char         *WPAsmGetLine( a_window wnd, int line );
-extern int          WPAsmFindSrcLine( sio_data * curr_sio, int line );
+extern int          WPAsmFindSrcLine( sio_data *curr_sio, int line );
 
 #endif

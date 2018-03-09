@@ -159,62 +159,62 @@ static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_c
 {
     gui_control_styles  styles;
 
-    styles = GUI_NOSTYLE;
+    styles = GUI_STYLE_CONTROL_NOSTYLE;
 
     if( ctl->Style & WS_TABSTOP ) {
-        styles |= GUI_TAB_GROUP;
+        styles |= GUI_STYLE_CONTROL_TAB_GROUP;
     }
 
     switch( control_class ) {
     case GUI_CHECK_BOX:
-        styles |= GUI_GROUP;
+        styles |= GUI_STYLE_CONTROL_GROUP;
         if( ( ctl->Style & 0xf ) == BS_3STATE ) {
-            styles |= GUI_CONTROL_3STATE;
+            styles |= GUI_STYLE_CONTROL_3STATE;
         }
         if( ( ctl->Style & 0xf ) == BS_AUTO3STATE ) {
-            styles |= GUI_CONTROL_3STATE | GUI_AUTOMATIC;
+            styles |= GUI_STYLE_CONTROL_3STATE | GUI_STYLE_CONTROL_AUTOMATIC;
         }
         break;
     case GUI_RADIO_BUTTON:
         if( ( ctl->Style & 0xf ) == BS_AUTORADIOBUTTON ) {
-            styles |= GUI_AUTOMATIC;
+            styles |= GUI_STYLE_CONTROL_AUTOMATIC;
         }
         break;
     case GUI_LISTBOX:
         if( ctl->Style & LBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( ctl->Style & LBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_STATIC:
         if( ctl->Style & SS_NOPREFIX ) {
-            styles |= GUI_CONTROL_NOPREFIX;
+            styles |= GUI_STYLE_CONTROL_NOPREFIX;
         }
         if( ( ctl->Style & 0xf ) == SS_CENTER ) {
-            styles |= GUI_CONTROL_CENTRE;
+            styles |= GUI_STYLE_CONTROL_CENTRE;
         }
         if( ( ctl->Style & 0xf ) == SS_LEFTNOWORDWRAP ) {
-            styles |= GUI_CONTROL_LEFTNOWORDWRAP;
+            styles |= GUI_STYLE_CONTROL_LEFTNOWORDWRAP;
         }
         break;
     case GUI_EDIT_COMBOBOX:
     case GUI_COMBOBOX:
         if( ctl->Style & CBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( ctl->Style & CBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_EDIT:
     case GUI_EDIT_MLE:
         if( ctl->Style & ES_MULTILINE ) {
-            styles |= GUI_CONTROL_MULTILINE;
+            styles |= GUI_STYLE_CONTROL_MULTILINE;
         }
         if( ctl->Style & ES_WANTRETURN ) {
-            styles |= GUI_CONTROL_WANTRETURN;
+            styles |= GUI_STYLE_CONTROL_WANTRETURN;
         }
         break;
     default :
@@ -452,12 +452,12 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
             if( ok ) {
                 if( controls_info[index].control_class == GUI_RADIO_BUTTON ) {
                     if( last_was_radio != 1 ) {
-                        controls_info[index].style |= GUI_GROUP;
+                        controls_info[index].style |= GUI_STYLE_CONTROL_GROUP;
                     }
                     last_was_radio = 1;
                 } else {
                     if( last_was_radio == 1 ) {
-                        controls_info[index - 1].style |= GUI_GROUP;
+                        controls_info[index - 1].style |= GUI_STYLE_CONTROL_GROUP;
                     }
                     last_was_radio = 0;
                 }

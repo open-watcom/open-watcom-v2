@@ -213,16 +213,16 @@ static gui_menu_styles GetGUIMenuStyles( MenuFlags flags )
 {
     gui_menu_styles     styles;
 
-    styles = GUI_ENABLED;
+    styles = GUI_STYLE_MENU_ENABLED;
 
     if( flags & MENU_CHECKED ) {
-        styles |= GUI_MENU_CHECKED;
+        styles |= GUI_STYLE_MENU_CHECKED;
     }
     if( flags & MENU_GRAYED ) {
-        styles |= GUI_GRAYED;
+        styles |= GUI_STYLE_MENU_GRAYED;
     }
     if( flags & MENU_SEPARATOR ) {
-        styles |= GUI_SEPARATOR;
+        styles |= GUI_STYLE_MENU_SEPARATOR;
     }
 
     return( styles );

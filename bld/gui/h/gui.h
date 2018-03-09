@@ -100,18 +100,9 @@ typedef enum {
 
 typedef enum {
     GUI_BAD_CLASS = -1,
-    GUI_PUSH_BUTTON,
-    GUI_DEFPUSH_BUTTON,
-    GUI_RADIO_BUTTON,
-    GUI_CHECK_BOX,
-    GUI_COMBOBOX,
-    GUI_EDIT,
-    GUI_LISTBOX,
-    GUI_SCROLLBAR,
-    GUI_STATIC,
-    GUI_GROUPBOX,
-    GUI_EDIT_COMBOBOX,
-    GUI_EDIT_MLE,
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) enumcls,
+    #include "_guicont.h"
+    #undef pick
     GUI_NUM_CONTROL_CLASSES
 } gui_control_class;
 
@@ -121,6 +112,7 @@ typedef enum {
     #undef pick
     GUI_FIRST_UNUSED
 } gui_attr;
+
 #define GUI_NUM_ATTRS   GUI_FIRST_UNUSED
 
 typedef enum {
@@ -131,14 +123,14 @@ typedef enum {
 } gui_dlg_attr;
 
 typedef enum {
-    GUI_ENABLED         = 0x00,
-    GUI_MENU_CHECKED    = 0x01,
-    GUI_GRAYED          = 0x02,
-    GUI_SEPARATOR       = 0x04,
-    GUI_IGNORE          = 0x08, // don't display
-    GUI_MDIWINDOW       = 0x10,
-    GUI_UTIL_1          = 0x40, // can be used by the application
-    GUI_UTIL_2          = 0x80
+    GUI_STYLE_MENU_ENABLED      = 0x00,
+    GUI_STYLE_MENU_CHECKED      = 0x01,
+    GUI_STYLE_MENU_GRAYED       = 0x02,
+    GUI_STYLE_MENU_SEPARATOR    = 0x04,
+    GUI_STYLE_MENU_IGNORE       = 0x08, // don't display
+    GUI_STYLE_MENU_MDIWINDOW    = 0x10,
+    GUI_STYLE_MENU_UTIL_1       = 0x40, // can be used by the application
+    GUI_STYLE_MENU_UTIL_2       = 0x80
 } gui_menu_styles ;
 
 typedef enum {
@@ -222,25 +214,25 @@ typedef enum gui_create_styles {
 } gui_create_styles;
 
 typedef enum gui_control_styles {
-    GUI_NOSTYLE                         = 0x00000000,
-    GUI_CHECKED                         = 0x00000001,
-    GUI_TAB_GROUP                       = 0x00000002,
-    GUI_AUTOMATIC                       = 0x00000004,
-    GUI_GROUP                           = 0x00000008,
-    GUI_FOCUS                           = 0x00000010,
-    GUI_CONTROL_INIT_INVISIBLE          = 0x00000020,
-    GUI_CONTROL_LEFTNOWORDWRAP          = 0x00000040,
-    GUI_CONTROL_NOPREFIX                = 0x00000080,
-    GUI_CONTROL_CENTRE                  = 0x00000100,
-    GUI_CONTROL_NOINTEGRALHEIGHT        = 0x00000200,
-    GUI_CONTROL_SORTED                  = 0x00000400,
-    GUI_CONTROL_MULTILINE               = 0x00000800,
-    GUI_CONTROL_WANTRETURN              = 0x00001000,
-    GUI_EDIT_INVISIBLE                  = 0x00002000,
-    GUI_CONTROL_3STATE                  = 0x00004000,
-    GUI_CONTROL_WANTKEYINPUT            = 0x00008000,
-    GUI_CONTROL_READONLY                = 0x00010000,
-    GUI_CONTROL_BORDER                  = 0x00020000
+    GUI_STYLE_CONTROL_NOSTYLE           = 0x00000000,
+    GUI_STYLE_CONTROL_CHECKED           = 0x00000001,
+    GUI_STYLE_CONTROL_TAB_GROUP         = 0x00000002,
+    GUI_STYLE_CONTROL_AUTOMATIC         = 0x00000004,
+    GUI_STYLE_CONTROL_GROUP             = 0x00000008,
+    GUI_STYLE_CONTROL_FOCUS             = 0x00000010,
+    GUI_STYLE_CONTROL_INIT_INVISIBLE    = 0x00000020,
+    GUI_STYLE_CONTROL_LEFTNOWORDWRAP    = 0x00000040,
+    GUI_STYLE_CONTROL_NOPREFIX          = 0x00000080,
+    GUI_STYLE_CONTROL_CENTRE            = 0x00000100,
+    GUI_STYLE_CONTROL_NOINTEGRALHEIGHT  = 0x00000200,
+    GUI_STYLE_CONTROL_SORTED            = 0x00000400,
+    GUI_STYLE_CONTROL_MULTILINE         = 0x00000800,
+    GUI_STYLE_CONTROL_WANTRETURN        = 0x00001000,
+    GUI_STYLE_CONTROL_EDIT_INVISIBLE    = 0x00002000,
+    GUI_STYLE_CONTROL_3STATE            = 0x00004000,
+    GUI_STYLE_CONTROL_WANTKEYINPUT      = 0x00008000,
+    GUI_STYLE_CONTROL_READONLY          = 0x00010000,
+    GUI_STYLE_CONTROL_BORDER            = 0x00020000
 } gui_control_styles;
 
 typedef enum gui_line_styles {
@@ -383,20 +375,20 @@ typedef enum {
 #define GUI_ALT_STATE( state )      ((state & GUI_KS_ALT) != 0)
 #define GUI_CTRL_STATE( state )     ((state & GUI_KS_CTRL) != 0)
 
-#define GUI_NO_COLUMN           ((gui_ord)-1)
-#define GUI_NO_ROW              ((gui_ord)-1)
+#define GUI_NO_COLUMN       ((gui_ord)-1)
+#define GUI_NO_ROW          ((gui_ord)-1)
 
 // GUIIsChecked and GUISetChecked values
-#define GUI_NOT_CHECKED         0
-#define GUI_CHECKED             1
-#define GUI_INDETERMINANT       2
+#define GUI_NOT_CHECKED     0
+#define GUI_CHECKED         1
+#define GUI_INDETERMINANT   2
 
-typedef int         gui_ord;
+typedef int                 gui_ord;
 
-typedef unsigned    gui_ctl_id;
-typedef int         gui_ctl_idx;
-typedef unsigned    gui_res_id;
-typedef unsigned    gui_hlp_id;
+typedef unsigned            gui_ctl_id;
+typedef int                 gui_ctl_idx;
+typedef unsigned            gui_res_id;
+typedef unsigned            gui_hlp_id;
 
 #if defined( _M_I86 )
 typedef const char __far    *res_name_or_id;
@@ -414,56 +406,56 @@ typedef struct gui_point {
     int y;
 } gui_point;
 
-typedef struct gui_window gui_window;
+typedef struct gui_window   gui_window;
 
-typedef void    *gui_help_instance;
+typedef void                *gui_help_instance;
 
-typedef long gui_bitmap;
+typedef long                gui_bitmap;
 
 typedef struct gui_toolbar_struct {
-    const char          *label;
-    gui_bitmap          bitmap;
-    gui_ctl_id          id;
-    const char          *hinttext;
-    const char          *tip;
+    const char              *label;
+    gui_bitmap              bitmap;
+    gui_ctl_id              id;
+    const char              *hinttext;
+    const char              *tip;
 } gui_toolbar_struct;
 
 typedef struct gui_menu_struct {
-    const char                  *label;
-    gui_ctl_id                  id;
-    gui_menu_styles             style;
-    const char                  *hinttext;
-    int                         num_child_menus;
-    struct gui_menu_struct      *child;
+    const char              *label;
+    gui_ctl_id              id;
+    gui_menu_styles         style;
+    const char              *hinttext;
+    int                     num_child_menus;
+    struct gui_menu_struct  *child;
 } gui_menu_struct;
 
 typedef struct gui_colour_set {
-    gui_colour fore;
-    gui_colour back;
+    gui_colour              fore;
+    gui_colour              back;
 } gui_colour_set;
 
 typedef unsigned long       gui_rgb;
 
 typedef struct gui_rect {
-    gui_ord     x;
-    gui_ord     y;
-    gui_ord     width;
-    gui_ord     height;
+    gui_ord                 x;
+    gui_ord                 y;
+    gui_ord                 width;
+    gui_ord                 height;
 } gui_rect;
 
 typedef struct gui_resource {
-    gui_bitmap          res;
-    char                *chars; /* Character based */
+    gui_bitmap              res;
+    char                    *chars; /* Character based */
 } gui_resource;
 
 typedef struct gui_control_info {
-    gui_control_class   control_class;
-    const char          *text;
-    gui_rect            rect;
-    gui_window          *parent;
-    gui_scroll_styles   scroll;
-    gui_control_styles  style;
-    gui_ctl_id          id;
+    gui_control_class       control_class;
+    const char              *text;
+    gui_rect                rect;
+    gui_window              *parent;
+    gui_scroll_styles       scroll;
+    gui_control_styles      style;
+    gui_ctl_id              id;
 } gui_control_info;
 
 typedef bool (GUICALLBACK)( gui_window *, gui_event gui_ev, void *param );

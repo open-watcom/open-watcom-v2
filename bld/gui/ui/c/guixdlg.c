@@ -68,7 +68,7 @@ static ui_event GUIDlgEvents[] = {
 };
 
 static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
-    #define pick(uitype,classn,classn_os2,style,xstyle_nt) uitype,
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) uitype,
     #include "_guicont.h"
     #undef pick
 };
@@ -428,8 +428,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     bool                ok;
 
     group_allocated = false;
-    if( (ctl_info->style & GUI_GROUP) &&
-        (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
+    if( (ctl_info->style & GUI_STYLE_CONTROL_GROUP) && (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( !Group ) {
             RadioGroup = (a_radio_group *)GUIMemAlloc( sizeof( a_radio_group ) );
             if( RadioGroup == NULL ) {
@@ -452,7 +451,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     }
 
     field->typ = ui_types[ctl_info->control_class];
-    if( field->typ == FLD_EDIT && ( ctl_info->style & GUI_EDIT_INVISIBLE ) ) {
+    if( field->typ == FLD_EDIT && (ctl_info->style & GUI_STYLE_CONTROL_EDIT_INVISIBLE) ) {
         field->typ = FLD_INVISIBLE_EDIT;
     }
 
@@ -477,8 +476,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         radio->value = ID2EV( ctl_info->id );
         radio->group = RadioGroup;
-        if( ( ctl_info->style & GUI_CHECKED ) &&
-            ( ctl_info->style & GUI_AUTOMATIC ) ) {
+        if( (ctl_info->style & GUI_STYLE_CONTROL_CHECKED) && (ctl_info->style & GUI_STYLE_CONTROL_AUTOMATIC) ) {
             RadioGroup->def = radio->value;
             RadioGroup->value = radio->value;
         }
@@ -493,8 +491,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             return( false );
         }
         check->val = 0;
-        if( ( ctl_info->style & GUI_CHECKED ) &&
-            ( ctl_info->style & GUI_AUTOMATIC ) ) {
+        if( (ctl_info->style & GUI_STYLE_CONTROL_CHECKED) && (ctl_info->style & GUI_STYLE_CONTROL_AUTOMATIC) ) {
             check->def = true;
         } else {
             check->def = false;
@@ -552,8 +549,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         return( false );
         break;
     }
-    if( (ctl_info->style & GUI_GROUP)  &&
-        (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
+    if( (ctl_info->style & GUI_STYLE_CONTROL_GROUP) && (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( Group && !group_allocated ) {
             RadioGroup = NULL;
             Group = false;
@@ -829,7 +825,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
             return( false );
         } else {
-            if( ( focus == NULL ) && ( controls_info[i].style & GUI_FOCUS ) ) {
+            if( ( focus == NULL ) && (controls_info[i].style & GUI_STYLE_CONTROL_FOCUS) ) {
                 focus = &fields[i];
             }
         }

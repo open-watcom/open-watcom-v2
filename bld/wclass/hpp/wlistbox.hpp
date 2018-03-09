@@ -37,8 +37,8 @@
 #include "wstring.hpp"
 
 #define LStyleDefault           0
-#define LStyleNoIntegral        _ControlStyleToWStyle( GUI_CONTROL_NOINTEGRALHEIGHT )
-#define LStyleSorted            _ControlStyleToWStyle( GUI_CONTROL_SORTED )
+#define LStyleNoIntegral        _ControlStyleToWStyle( GUI_STYLE_CONTROL_NOINTEGRALHEIGHT )
+#define LStyleSorted            _ControlStyleToWStyle( GUI_STYLE_CONTROL_SORTED )
 
 WCLASS WListBox : public WControl {
     public:

@@ -29,16 +29,21 @@
 *
 ****************************************************************************/
 
-    /* uitype        classn         classn_os2  style               xstyle_nt                 gui_control_classs  */
-pick( FLD_HOT,      WC_BUTTON,        "#3",     PUSH_STYLE,           0 )                   /* GUI_PUSH_BUTTON    */
-pick( FLD_HOT,      WC_BUTTON,        "#3",     DEFPUSH_STYLE,        0 )                   /* GUI_DEFPUSH_BUTTON */
-pick( FLD_RADIO,    WC_BUTTON,        "#3",     RADIO_STYLE,          0 )                   /* GUI_RADIO_BUTTON   */
-pick( FLD_CHECK,    WC_BUTTON,        "#3",     CHECK_STYLE,          0 )                   /* GUI_CHECK_BOX      */
-pick( FLD_PULLDOWN, WC_COMBOBOX,      "#2",     COMBOBOX_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_COMBOBOX       */
-pick( FLD_EDIT,     WC_ENTRYFIELD,    "#6",     EDIT_STYLE,           WS_EX_CLIENTEDGE )    /* GUI_EDIT           */
-pick( FLD_LISTBOX,  WC_LISTBOX,       "#7",     LISTBOX_STYLE,        WS_EX_CLIENTEDGE )    /* GUI_LISTBOX        */
-pick( FLD_VOID,     WC_SCROLLBAR,     "#8",     SCROLLBAR_STYLE,      0 )                   /* GUI_SCROLLBAR      */
-pick( FLD_TEXT,     WC_STATIC,        "#5",     STATIC_STYLE,         0 )                   /* GUI_STATIC         */
-pick( FLD_FRAME,    WC_GROUPBOX,      "#5",     GROUPBOX_STYLE,       0 )                   /* GUI_GROUPBOX       */
-pick( FLD_COMBOBOX, WC_COMBOBOX,      "#2",     EDIT_COMBOBOX_STYLE,  WS_EX_CLIENTEDGE )    /* GUI_EDIT_COMBOBOX  */
-pick( FLD_EDIT_MLE, WC_MLE,           "#10",    EDIT_MLE_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_EDIT_MLE       */
+/*    gui_control_classs  uitype        classn          classn_os2  style                xstyle_nt */
+pick( GUI_PUSH_BUTTON,    FLD_HOT,      WC_BUTTON,        "#3",     PUSH_STYLE,           0 )
+pick( GUI_DEFPUSH_BUTTON, FLD_HOT,      WC_BUTTON,        "#3",     DEFPUSH_STYLE,        0 )
+pick( GUI_RADIO_BUTTON,   FLD_RADIO,    WC_BUTTON,        "#3",     RADIO_STYLE,          0 )
+pick( GUI_CHECK_BOX,      FLD_CHECK,    WC_BUTTON,        "#3",     CHECK_STYLE,          0 )
+pick( GUI_COMBOBOX,       FLD_PULLDOWN, WC_COMBOBOX,      "#2",     COMBOBOX_STYLE,       WS_EX_CLIENTEDGE )
+pick( GUI_EDIT,           FLD_EDIT,     WC_ENTRYFIELD,    "#6",     EDIT_STYLE,           WS_EX_CLIENTEDGE )
+pick( GUI_LISTBOX,        FLD_LISTBOX,  WC_LISTBOX,       "#7",     LISTBOX_STYLE,        WS_EX_CLIENTEDGE )
+pick( GUI_SCROLLBAR,      FLD_VOID,     WC_SCROLLBAR,     "#8",     SCROLLBAR_STYLE,      0 )
+pick( GUI_STATIC,         FLD_TEXT,     WC_STATIC,        "#5",     STATIC_STYLE,         0 )
+pick( GUI_GROUPBOX,       FLD_FRAME,    WC_GROUPBOX,      "#5",     GROUPBOX_STYLE,       0 )
+pick( GUI_EDIT_COMBOBOX,  FLD_COMBOBOX, WC_COMBOBOX,      "#2",     EDIT_COMBOBOX_STYLE,  WS_EX_CLIENTEDGE )
+pick( GUI_EDIT_MLE,       FLD_EDIT_MLE, WC_MLE,           "#10",    EDIT_MLE_STYLE,       WS_EX_CLIENTEDGE )
+
+
+
+
+

@@ -65,7 +65,7 @@
 
 #define WND_GUIEVENT        WndMainGUIEventProc
 
-#define WND_MENU_POPUP      GUI_UTIL_1
+#define WND_MENU_POPUP      GUI_STYLE_MENU_UTIL_1
 
 #define WSW_LBUTTON_SELECTS             0x00000001L     // default off
 #define WSW_MULTILINE_SELECT            0x00000002L     // default off

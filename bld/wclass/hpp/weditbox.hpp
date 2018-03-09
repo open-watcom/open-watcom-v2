@@ -36,7 +36,7 @@
 #include "wcontrol.hpp"
 
 #define EStyleDefault           0
-#define EStyleInvisible         _ControlStyleToWStyle( GUI_EDIT_INVISIBLE )
+#define EStyleInvisible         _ControlStyleToWStyle( GUI_CONTROL_EDIT_INVISIBLE )
 
 WCLASS WEdit : public WControl {
     public:

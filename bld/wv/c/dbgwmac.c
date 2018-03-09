@@ -303,7 +303,7 @@ static void MacModMenu( a_window wnd, wnd_row row )
         wndmac->menu = info->popupmenu;
         wndmac->size = info->num_popups;
         wndmac->mac = mac;
-        WndChangeMenuAll( info->popupmenu, info->num_popups, false, GUI_GRAYED );
+        WndChangeMenuAll( info->popupmenu, info->num_popups, false, GUI_STYLE_MENU_GRAYED );
         WndCreateFloatingPopup( wnd, &point, wndmac->size, wndmac->menu, &dummy );
     }
 }

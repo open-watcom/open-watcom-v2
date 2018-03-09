@@ -40,7 +40,7 @@
 // Combo box styles
 
 #define CStyleDefault           0
-#define CStyleSorted            _ControlStyleToWStyle( GUI_CONTROL_SORTED )
+#define CStyleSorted            _ControlStyleToWStyle( GUI_STYLE_CONTROL_SORTED )
 
 WCLASS WCombo : public WControl {
     public:

@@ -36,7 +36,7 @@
 #include "wboolsw.hpp"
 
 #define CStyleDefault 0
-#define CStyleThreeState    _ControlStyleToWStyle( GUI_CONTROL_3STATE )
+#define CStyleThreeState    _ControlStyleToWStyle( GUI_STYLE_CONTROL_3STATE )
 
 WCLASS WCheckBox : public WBoolSwitch {
     public:

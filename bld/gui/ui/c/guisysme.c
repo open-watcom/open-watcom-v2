@@ -64,37 +64,37 @@ void GUISetSystemMenuFlags( gui_window *wnd )
         switch( menuitems[i].event ) {
         case EV_SYS_MENU_MOVE :
             if( GUI_WND_MAXIMIZED( wnd ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
-                GUIChangeMenu( &menuitems[i], GUI_ENABLED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_SIZE :
             if( GUI_WND_MINIMIZED( wnd ) || !( wnd->style & GUI_RESIZEABLE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
-                GUIChangeMenu( &menuitems[i], GUI_ENABLED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_MINIMIZE :
             if( GUI_WND_MINIMIZED( wnd ) || !( wnd->style & GUI_MINIMIZE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
-                GUIChangeMenu( &menuitems[i], GUI_ENABLED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_MAXIMIZE :
             if( GUI_WND_MAXIMIZED( wnd ) || !( wnd->style & GUI_MAXIMIZE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
-                GUIChangeMenu( &menuitems[i], GUI_ENABLED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_RESTORE :
             if( GUI_WND_MAXIMIZED( wnd ) || GUI_WND_MINIMIZED( wnd ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_ENABLED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             } else {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
         }
@@ -122,7 +122,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 return( false );
             }
             if( !( style & GUI_RESIZEABLE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
         case EV_SYS_MENU_RESTORE :
@@ -130,7 +130,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             if( !ok ) {
                 return( false );
             }
-            GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+            GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             break;
         case EV_SYS_MENU_MINIMIZE :
             menuitems[i].name = GUIStrDup( LIT( Minimize ), &ok );
@@ -138,7 +138,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 return( false );
             }
             if( !( style & GUI_MINIMIZE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
         case EV_SYS_MENU_MAXIMIZE :
@@ -147,7 +147,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 return( false );
             }
             if( !( style & GUI_MAXIMIZE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
         case EV_SYS_MENU_CLOSE :
@@ -156,7 +156,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
                 return( false );
             }
             if( !( style & GUI_CLOSEABLE ) ) {
-                GUIChangeMenu( &menuitems[i], GUI_GRAYED );
+                GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
         }
@@ -168,7 +168,7 @@ void GUIProcessSysMenuEvent( ui_event ui_ev, gui_window *wnd )
 {
     switch( ui_ev ) {
     case EV_SYS_MENU_RESTORE :
-        GUIZoomWnd( wnd, NONE );
+        GUIZoomWnd( wnd, GUI_NONE );
         break;
     case EV_SYS_MENU_MOVE :
         GUIStartKeyboardMoveResize( wnd, true );

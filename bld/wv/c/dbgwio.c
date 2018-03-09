@@ -276,7 +276,7 @@ void InitIOWindow( void )
     IOTypeMenu = WndMustAlloc( IOData.num_types * sizeof( *IOTypeMenu ) );
     for( i = 0; i < IOData.num_types; ++i ) {
         IOTypeMenu[i].id = MENU_IO_FIRST_TYPE + i;
-        IOTypeMenu[i].style = GUI_ENABLED | WND_MENU_ALLOCATED;
+        IOTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         IOTypeMenu[i].label = DupStr( IOData.labels[i] );
         IOTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
         IOTypeMenu[i].num_child_menus = 0;

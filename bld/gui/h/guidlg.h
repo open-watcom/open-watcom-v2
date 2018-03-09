@@ -54,7 +54,7 @@ enum {
       DLG_RECT( x1, y1, x2, y2 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_AUTOMATIC, \
+      GUI_STYLE_CONTROL_AUTOMATIC, \
       (gui_ctl_id)-1 }
 
 #define DLG_DYNSTRING( s, i, x1, y1, x2 ) \
@@ -62,7 +62,7 @@ enum {
       DLG_RECT( x1, y1, x2, y1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_CONTROL_NOPREFIX | GUI_AUTOMATIC, \
+      GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC, \
       i }
 
 #define DLG_STRING( s, x1, y1, x2 ) \
@@ -73,7 +73,7 @@ enum {
       DLG_RECT( x1, y1, x2, y1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_TAB_GROUP | GUI_AUTOMATIC, \
+      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       i }
 
 #define DLG_BUTTON( s, i, x1, y1, x2 ) \
@@ -87,7 +87,7 @@ enum {
     DLG_RECT( x1, y1, x2, y1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    GUI_TAB_GROUP | GUI_AUTOMATIC, \
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
     i }
 
 #define DLG_DORADIO( g, s, i, x1, y1, x2 ) \
@@ -95,38 +95,38 @@ enum {
     DLG_RECT( x1, y1, x2, y1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    g | GUI_TAB_GROUP | GUI_AUTOMATIC, \
+    g | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
     i }
 
 #define DLG_RADIO_START( s, i, x1, y1, x2 ) \
-    DLG_DORADIO( GUI_GROUP, s, i, x1, y1, x2 )
+    DLG_DORADIO( GUI_STYLE_CONTROL_GROUP, s, i, x1, y1, x2 )
 
 #define DLG_RADIO( s, i, x1, y1, x2 ) \
-    DLG_DORADIO( GUI_NONE, s, i, x1, y1, x2 )
+    DLG_DORADIO( GUI_STYLE_CONTROL_NOSTYLE, s, i, x1, y1, x2 )
 
 #define DLG_RADIO_END( s, i, x1, y1, x2 ) \
-    DLG_DORADIO( GUI_GROUP, s, i, x1, y1, x2 )
+    DLG_DORADIO( GUI_STYLE_CONTROL_GROUP, s, i, x1, y1, x2 )
 
 #define DLG_DOEDIT( s, i, x1, y1, x2, v ) \
   { GUI_EDIT, s, \
     DLG_RECT( x1, y1, x2, y1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    GUI_TAB_GROUP+(v), \
+    GUI_STYLE_CONTROL_TAB_GROUP + (v), \
     i }
 
 #define DLG_EDIT( s, i, x1, y1, x2 ) \
     DLG_DOEDIT( s, i, x1, y1, x2, 0 )
 
 #define DLG_INVISIBLE_EDIT( s, i, x1, y1, x2 ) \
-    DLG_DOEDIT( s, i, x1, y1, x2, GUI_EDIT_INVISIBLE )
+    DLG_DOEDIT( s, i, x1, y1, x2, GUI_STYLE_CONTROL_EDIT_INVISIBLE )
 
 #define DLG_LIST_BOX( s, id, x1, y1, x2, y2 ) \
     { GUI_LISTBOX, s, \
       DLG_RECT( x1, y1, x2, y2 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_TAB_GROUP | GUI_AUTOMATIC, \
+      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 #define DLG_COMBO_BOX( s, id, x1, y1, x2, y2 ) \
@@ -134,7 +134,7 @@ enum {
       DLG_RECT( x1, y1, x2, y2 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_TAB_GROUP | GUI_AUTOMATIC, \
+      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 extern void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,

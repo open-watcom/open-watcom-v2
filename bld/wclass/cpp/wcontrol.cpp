@@ -43,7 +43,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
 
     gui_control_info    control_info;
     WRect               rr;
-    unsigned long       gui_style;
+    gui_control_styles  control_style;
 
     if( parent == NULL )
         return;
@@ -58,11 +58,11 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     control_info.rect.height = rr.h();
     control_info.parent = parent->handle();
     control_info.scroll = _WStyleToScrollStyle( style );
-    gui_style = GUI_CONTROL_INIT_INVISIBLE | _WStyleToControlStyle( style );
+    control_style = (gui_control_styles)( _WStyleToControlStyle( style ) | GUI_STYLE_CONTROL_INIT_INVISIBLE );
     if( (control_class != GUI_STATIC) && (control_class != GUI_GROUPBOX) ) {
-        gui_style |= GUI_TAB_GROUP;
+        control_style = (gui_control_styles)( control_style | GUI_STYLE_CONTROL_TAB_GROUP );
     }
-    control_info.style = (gui_control_styles)gui_style;
+    control_info.style = control_style;
     control_info.id = _id;
     WWindow::_idMap.setThis( this, (WHANDLE)(pointer_int)_id );
     parent->addChild( this );

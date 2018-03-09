@@ -120,61 +120,61 @@ gui_control_styles GUIGetControlStylesFromHWND( HWND cntl, gui_control_class con
     gui_control_styles  styles;
     DWORD               style;
 
-    styles = GUI_NOSTYLE;
+    styles = GUI_STYLE_CONTROL_NOSTYLE;
     style = _wpi_getwindowlong( cntl, GWL_STYLE );
 
     if( style & WS_TABSTOP ) {
-        styles |= GUI_TAB_GROUP;
+        styles |= GUI_STYLE_CONTROL_TAB_GROUP;
     }
 
     switch( control_class ) {
     case GUI_CHECK_BOX:
         if( ( style & BS_3STATE ) == BS_3STATE ) {
-            styles |= GUI_CONTROL_3STATE;
+            styles |= GUI_STYLE_CONTROL_3STATE;
         }
         break;
     case GUI_LISTBOX:
         if( style & LBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( style & LBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_STATIC:
         if( style & SS_NOPREFIX ) {
-            styles |= GUI_CONTROL_NOPREFIX;
+            styles |= GUI_STYLE_CONTROL_NOPREFIX;
         }
         if( ( style & SS_CENTER ) == SS_CENTER ) {
-            styles |= GUI_CONTROL_CENTRE;
+            styles |= GUI_STYLE_CONTROL_CENTRE;
         }
         if( ( style & SS_LEFTNOWORDWRAP ) == SS_LEFTNOWORDWRAP ) {
-            styles |= GUI_CONTROL_LEFTNOWORDWRAP;
+            styles |= GUI_STYLE_CONTROL_LEFTNOWORDWRAP;
         }
         break;
     case GUI_EDIT_COMBOBOX:
     case GUI_COMBOBOX:
         if( style & CBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( style & CBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_EDIT:
     case GUI_EDIT_MLE:
         if( style & ES_MULTILINE ) {
-            styles |= GUI_CONTROL_MULTILINE;
+            styles |= GUI_STYLE_CONTROL_MULTILINE;
         }
         if( style & ES_WANTRETURN ) {
-            styles |= GUI_CONTROL_WANTRETURN;
+            styles |= GUI_STYLE_CONTROL_WANTRETURN;
         }
         if( style & ES_READONLY ) {
-            styles |= GUI_CONTROL_READONLY;
+            styles |= GUI_STYLE_CONTROL_READONLY;
         }
 #ifdef __OS2_PM__
         if( style & MLS_READONLY ) {
-            styles |= GUI_CONTROL_READONLY;
+            styles |= GUI_STYLE_CONTROL_READONLY;
         }
 #endif
         break;

@@ -61,10 +61,10 @@
 #endif
 
 static struct {
-    uint_8              end_of_file : 1;        /* EOF was reached */
-    uint_8              end_of_segment : 1;     /* EOS was reached */
-    uint_8              is_32_bit : 1;          /* 386/486 application */
-    uint_8              segment_split : 1;      /* cached seg isnt continuous */
+    bool                end_of_file     : 1;    /* EOF was reached */
+    bool                end_of_segment  : 1;    /* EOS was reached */
+    bool                is_32_bit       : 1;    /* 386/486 application */
+    bool                segment_split   : 1;    /* cached seg isnt continuous */
 } exeFlags;
 
 static uint_16          cacheSegment;

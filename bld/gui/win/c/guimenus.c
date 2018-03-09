@@ -47,8 +47,8 @@
 #define MAX_STR 256
 
 gui_menu_struct GUIHint[] = {
- { NULL, GUI_CHANGE_FONT, GUI_ENABLED, NULL },
- { NULL, GUI_FIX_TOOLBAR, GUI_ENABLED, NULL }
+ { NULL, GUI_CHANGE_FONT, GUI_STYLE_MENU_ENABLED, NULL },
+ { NULL, GUI_FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL }
 };
 
 void GUIInitGUIMenuHint( void )
@@ -567,16 +567,16 @@ void GUICreateMenuFlags( gui_menu_styles style, unsigned *menu_flags, unsigned *
 {
     *menu_flags = 0;
     *attr_flags = 0;
-    if( style == GUI_ENABLED ) {
+    if( style == GUI_STYLE_MENU_ENABLED ) {
         *attr_flags |= MF_ENABLED;
     }
-    if( style & GUI_MENU_CHECKED ) {
+    if( style & GUI_STYLE_MENU_CHECKED ) {
         *attr_flags |= MF_CHECKED;
     }
-    if( style & GUI_GRAYED ) {
+    if( style & GUI_STYLE_MENU_GRAYED ) {
         *attr_flags |= MF_GRAYED;
     }
-    if( style & GUI_SEPARATOR ) {
+    if( style & GUI_STYLE_MENU_SEPARATOR ) {
         *menu_flags |= MF_SEPARATOR;
     }
 }
@@ -764,16 +764,16 @@ static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam,
 
 
     if( menu_closed ) {
-        style = GUI_IGNORE; /* will display blank */
+        style = GUI_STYLE_MENU_IGNORE; /* will display blank */
     } else {
         if( is_separator ) {
-            style = GUI_SEPARATOR; /* will display blank */
+            style = GUI_STYLE_MENU_SEPARATOR; /* will display blank */
         } else {
             /* must be MF_HILITE */
             if( is_enabled ) {
-                style = GUI_GRAYED;
+                style = GUI_STYLE_MENU_GRAYED;
             } else {
-                style = GUI_ENABLED;
+                style = GUI_STYLE_MENU_ENABLED;
             }
             if( is_sysmenu ) {
                 if( id > GUI_LAST_MENU_ID ) {
@@ -783,7 +783,7 @@ static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam,
             }
             if( is_popup ) {
                 if( !GetPopupId( wnd, hpopup, &id ) ) {
-                    style = GUI_IGNORE; /* will display blank */
+                    style = GUI_STYLE_MENU_IGNORE; /* will display blank */
                 }
             }
         }

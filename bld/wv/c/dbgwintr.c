@@ -105,7 +105,7 @@ static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
         i = indent;
         while( i-- > 0 )
             *p++ = ' ';
-        if( child->style & GUI_SEPARATOR ) {
+        if( child->style & GUI_STYLE_MENU_SEPARATOR ) {
             StrCopy( "---------", p );
         } else {
             MenuCopy( TxtBuff, child->label, p );
