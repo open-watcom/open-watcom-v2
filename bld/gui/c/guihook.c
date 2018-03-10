@@ -34,6 +34,7 @@
 #include "guihook.h"
 #include "guimdi.h"
 
+
 static  void    (*fCleanupHotSpots)(void)               = NULL;
 static  void    (*fXChangeTitle)( gui_window *)         = NULL;
 static  bool    (*fXInitMDI)( gui_window *)             = NULL;
@@ -41,7 +42,7 @@ static  void    (*fInitMDI)( gui_window *, gui_create_info *) = NULL;
 static  void    (*fChangeTitle)(gui_window * )          = NULL;
 static  void    (*fBroughtToFront)(gui_window * )       = NULL;
 static  void    (*fDelete)(gui_window * )               = NULL;
-static  void    (*fReset)( gui_window *, gui_window *, gui_ctl_idx, gui_menu_struct *) = NULL;
+static  void    (*fReset)( gui_window *, gui_window *, int, gui_menu_struct *) = NULL;
 static  void    (*fDeleteMenuItem)(gui_ctl_id id)       = NULL;
 static  void    (*fEnableMDIActions)( bool enable )     = NULL;
 static  void    (*fAddMDIActions)( bool has_items, gui_window *wnd )    = NULL;
@@ -131,16 +132,15 @@ void GUIMDIDelete( gui_window *wnd )
     }
 }
 
-void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *,
-                          gui_ctl_idx, gui_menu_struct * ) )
+void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, int, gui_menu_struct * ) )
 {
     fReset = func;
 }
 
-void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_items, gui_menu_struct *menu )
+void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
 {
     if( fReset != NULL ) {
-        (*fReset )( wnd, parent, num_items, menu );
+        (*fReset)( wnd, parent, num_items, menu );
     }
 }
 

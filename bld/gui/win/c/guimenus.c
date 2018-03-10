@@ -73,22 +73,22 @@ static bool GetMenuFlags( HMENU hmenu, gui_ctl_id id_position, bool by_position,
     return( false );
 }
 
-static bool GetParentMenuPos( HMENU hmenu, HMENU popup, HMENU *parent, gui_ctl_idx *position )
+static bool GetParentMenuPos( HMENU hmenu, HMENU popup, HMENU *parent, int *position )
 {
-    gui_ctl_idx num;
-    gui_ctl_idx pos;
+    int         num_items;
+    int         item;
     HMENU       submenu;
 
-    num = _wpi_getmenuitemcount( hmenu );
-    for( pos = 0; pos < num; pos++ ) {
-        submenu = _wpi_getsubmenu( hmenu, pos );
+    num_items = _wpi_getmenuitemcount( hmenu );
+    for( item = 0; item < num_items; item++ ) {
+        submenu = _wpi_getsubmenu( hmenu, item );
         if( submenu != NULLHANDLE ) {
             if( submenu == popup ) {
                 if( parent != NULL ) {
                     *parent = hmenu;
                 }
                 if( position != NULL ) {
-                    *position = pos;
+                    *position = item;
                 }
                 return( true );
             } else {
@@ -102,7 +102,7 @@ static bool GetParentMenuPos( HMENU hmenu, HMENU popup, HMENU *parent, gui_ctl_i
 }
 
 static HMENU GetPopupHMENU( gui_window *wnd, HMENU hmenu, gui_ctl_id id,
-                            HMENU *parent, gui_ctl_idx *position, hint_type type )
+                            HMENU *parent, int *position, hint_type type )
 {
     popup_info  *info;
 
@@ -129,8 +129,8 @@ static HMENU GetPopupHMENU( gui_window *wnd, HMENU hmenu, gui_ctl_id id,
 #if 0
 void GetStateForMenu( gui_window *wnd, gui_ctl_id id, WPI_MENUSTATE *mstate )
 {
-    HMENU               hmenu, popup, parent;
-    gui_ctl_idx         position;
+    HMENU           hmenu, popup, parent;
+    int             position;
 
     hmenu = GUIGetHMENU( wnd );
     if( hmenu == NULLHANDLE ) {
@@ -327,10 +327,10 @@ static void GUIDrawMenuBar( gui_window *wnd )
     }
 }
 
-gui_ctl_idx GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
+int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
 {
     HMENU       hmenu, popup;
-    gui_ctl_idx count;
+    int         num_items;
 
     hmenu = GUIGetHMENU( wnd );
     if( hmenu == NULLHANDLE ) {
@@ -340,12 +340,12 @@ gui_ctl_idx GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
     popup = GetPopupHMENU( wnd, hmenu, id, NULL, NULL, MENU_HINT );
 
     if( popup != NULLHANDLE ) {
-        count = _wpi_getmenuitemcount( popup );
+        num_items = _wpi_getmenuitemcount( popup );
     } else {
-        count = -1;
+        num_items = -1;
     }
 
-    return( count );
+    return( num_items );
 }
 
 static HMENU GetOrMakeHMENU( gui_window *wnd, bool floating, bool *made_root )
@@ -384,7 +384,7 @@ static HMENU GetOrMakeHMENU( gui_window *wnd, bool floating, bool *made_root )
 bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating )
 {
     HMENU       hmenu, popup, parent;
-    gui_ctl_idx position;
+    int         position;
     hint_type   type;
 
     if( floating ) {
@@ -421,7 +421,7 @@ static void CheckItem( HMENU hmenu, gui_ctl_id id, bool check )
     _wpi_checkmenuitem( hmenu, id, ( check ) ? TRUE : FALSE, FALSE );
 }
 
-static void CheckPopup( HMENU hmenu, gui_ctl_idx position, bool check )
+static void CheckPopup( HMENU hmenu, int position, bool check )
 {
     _wpi_checkmenuitem( hmenu, position, ( check ) ? TRUE : FALSE, TRUE );
 }
@@ -433,7 +433,7 @@ static void CheckPopup( HMENU hmenu, gui_ctl_idx position, bool check )
 bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating )
 {
     HMENU       hmenu, popup, parent;
-    gui_ctl_idx position;
+    int         position;
     hint_type   type;
 
     if( floating ) {
@@ -466,7 +466,7 @@ static void EnableItem( HMENU hmenu, gui_ctl_id id, bool enable )
     _wpi_enablemenuitem( hmenu, id, ( enable ) ? TRUE : FALSE, FALSE );
 }
 
-static void EnablePopup( HMENU hmenu, gui_ctl_idx position, bool enable )
+static void EnablePopup( HMENU hmenu, int position, bool enable )
 {
     _wpi_enablemenuitem( hmenu, position, ( enable ) ? TRUE : FALSE, TRUE );
 }
@@ -494,7 +494,7 @@ bool GUIEnableSysMenuItem( gui_window *wnd, gui_ctl_id id, bool enable )
 bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floating )
 {
     HMENU       hmenu, popup, parent;
-    gui_ctl_idx position;
+    int         position;
     hint_type   type;
 
     if( floating ) {
@@ -529,7 +529,7 @@ bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enable, bool floati
 bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating )
 {
     HMENU       hmenu, popup, parent;
-    gui_ctl_idx position;
+    int         position;
     hint_type   type;
     bool        ret;
 
@@ -656,11 +656,11 @@ bool GUICreateMenus( gui_window *wnd, int num, gui_menu_struct *menu, HMENU *hme
  *                       menu items to child windows
  */
 
-bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items,
+bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
                          gui_menu_struct *menu, gui_create_styles style )
 {
     HMENU           system;
-    gui_ctl_idx     num;
+    int             num_items;
 
     if( !( style & GUI_SYSTEM_MENU ) ) {
         return( true );
@@ -670,11 +670,11 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items,
         return( false );
     }
     if( GUIMDI && ( _wpi_getparent( hwnd ) != NULLHANDLE ) ) {
-        num = _wpi_getmenuitemcount( system );
+        num_items = _wpi_getmenuitemcount( system );
 #ifndef __OS2_PM__
-        ModifyMenu( system, num - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
+        ModifyMenu( system, num_items - 1, MF_STRING | MF_BYPOSITION | MF_GRAYED,
                     SC_NEXTWINDOW, LIT( NexXt ) ); // add \tCtrl+F6" );
-        ModifyMenu( system, num - 3, MF_STRING | MF_BYPOSITION | MF_ENABLED,
+        ModifyMenu( system, num_items - 3, MF_STRING | MF_BYPOSITION | MF_ENABLED,
                     SC_CLOSE, LIT( XClose ) ); // add \tctrl+f4" );
 #endif
     }
@@ -688,9 +688,9 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_items,
                              GUIHint[GUI_MENU_IDX( GUI_CHANGE_FONT )].label );
         }
     }
-    if( num_items > 0 ) {
+    if( num_to_add > 0 ) {
         if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
-            return( AppendMenus( wnd, system, num_items, menu ) );
+            return( AppendMenus( wnd, system, num_to_add, menu ) );
         }
     }
     return( true );
@@ -853,7 +853,7 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, gui_menu_struct *menu,
     }
     if( insert ) {
         if( by_position ) {
-            if( ( (gui_ctl_idx)id_position != -1 ) && GUIMDIUpdatedMenu() ) {
+            if( ( (int)id_position != -1 ) && GUIMDIUpdatedMenu() ) {
                 id_position++;
             }
         }
@@ -871,7 +871,7 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, gui_menu_struct *menu,
     return( true );
 }
 
-bool GUIInsertMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct *menu, bool floating )
+bool GUIInsertMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu, bool floating )
 {
     HMENU       hmenu;
     hint_type   type;
@@ -895,7 +895,7 @@ bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu )
 {
     WPI_MENUSTATE   mstate;
     HMENU           hmenu;
-    gui_ctl_idx     position;
+    int             position;
     HMENU           parent;
     bool            made_root;
     bool            ret;
@@ -935,7 +935,7 @@ bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating )
     return( ret );
 }
 
-bool GUIAppendMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct *menu )
+bool GUIAppendMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu )
 {
     HMENU       hmenu;
     HMENU       submenu;
@@ -978,7 +978,7 @@ static HMENU ChangeMenuToPopup ( gui_window *wnd, HMENU hmenu, gui_ctl_id id, hi
 }
 
 static bool AddPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu,
-                      bool insert, gui_ctl_idx position, bool floating )
+                      bool insert, int position, bool floating )
 {
     HMENU               hmenu;
     HMENU               popup;
@@ -1003,7 +1003,7 @@ static bool AddPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu,
     return( AddMenu( popup, wnd, menu, insert, position, true, type ) );
 }
 
-bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_ctl_idx position,
+bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position,
                            gui_menu_struct *menu, bool floating )
 {
     return( AddPopup( wnd, id, menu, true, position, floating ) );

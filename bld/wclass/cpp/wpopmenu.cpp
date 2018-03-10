@@ -146,8 +146,8 @@ void WEXPORT WPopupMenu::track( WWindow *owner ) {
 }
 
 
-void WPopupMenu::attachItem( WWindow *win, gui_ctl_idx position )
-/***************************************************************/
+void WPopupMenu::attachItem( WWindow *win, int position )
+/*******************************************************/
 {
     gui_menu_struct     menu_item;
     gui_menu_styles     menu_style;
@@ -185,7 +185,7 @@ void WPopupMenu::attachItem( WWindow *win, gui_ctl_idx position )
 void WEXPORT WPopupMenu::attachChildren( WWindow *win )
 /*****************************************************/
 {
-    gui_ctl_idx     position;
+    int         position;
 
     for( position = 0; position < _children.count(); ++position ) {
         WMenuObject *menu_object = (WMenuObject *)_children[position];
@@ -194,8 +194,8 @@ void WEXPORT WPopupMenu::attachChildren( WWindow *win )
 }
 
 
-void WEXPORT WPopupMenu::attachMenu( WWindow *win, gui_ctl_idx position )
-/***********************************************************************/
+void WEXPORT WPopupMenu::attachMenu( WWindow *win, int position )
+/***************************************************************/
 {
     setOwner( win );
     attachItem( win, position );

@@ -32,7 +32,7 @@
 
 typedef struct {
     GUIPICKCALLBACK     *func;
-    gui_ctl_idx         chosen;
+    int                 choice;
 } dlg_pick;
 
 #define CTL_PICK_OK             100

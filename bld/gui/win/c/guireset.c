@@ -40,8 +40,8 @@
 
 static void FreeSystemMenu( gui_window *wnd )
 {
-    gui_ctl_idx     num;
-    gui_ctl_idx     pos;
+    int             num_items;
+    int             item;
     HMENU           system;
     HWND            frame;
 
@@ -49,9 +49,9 @@ static void FreeSystemMenu( gui_window *wnd )
     if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && ( wnd->style & GUI_SYSTEM_MENU ) ) {
         system = _wpi_getsystemmenu( frame );
         if( system != NULLHANDLE ) {
-            num = _wpi_getmenuitemcount( system );
-            for( pos = num; pos >= NUM_SYSTEM_MENUS; pos-- ) {
-                _wpi_deletemenu( system, pos, TRUE );
+            num_items = _wpi_getmenuitemcount( system );
+            for( item = num_items; item >= NUM_SYSTEM_MENUS; item-- ) {
+                _wpi_deletemenu( system, item, TRUE );
             }
         }
     }

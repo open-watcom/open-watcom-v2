@@ -63,8 +63,8 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
-            dlg->chosen = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->chosen );
+            dlg->choice = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
             GUICloseDialog( gui );
             return( true );
         }
@@ -73,8 +73,8 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_PICK_OK:
-            dlg->chosen = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->chosen );
+            dlg->choice = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
             /* fall through */
         case CTL_PICK_CANCEL:
             GUICloseDialog( gui );
@@ -88,7 +88,7 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 
-bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, gui_ctl_idx *choice )
+bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, int *choice )
 {
     dlg_pick    dlg;
     size_t      len;
@@ -102,16 +102,16 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
     Controls[1].text = LIT( OK );
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
-    dlg.chosen = -1;
+    dlg.choice = -1;
     openrtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
-    if( dlg.chosen == -1 )
+    if( dlg.choice == -1 )
         return( false );
-    *choice = dlg.chosen;
+    *choice = dlg.choice;
     return( true );
 }
 
 
-bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, gui_ctl_idx *choice )
+bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
     return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen, choice ) );
 }

@@ -229,9 +229,9 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
     char        *new;
     unsigned    i;
     char        *text;
-    gui_ctl_idx sel;
+    int         sel;
     int         size;
-    gui_ctl_idx num;
+    int         num;
     gui_rect    rect;
     int         extent, top, start, end;
     gui_rgb     rgb, green;
@@ -304,7 +304,7 @@ bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param
             text = GUIGetListItem( gui, id, num );
             GUIMemFree( text );
             GUISetListItemData( gui, id, num, (void *)num );
-            num = (gui_ctl_idx)GUIGetListItemData( gui, id, num );
+            num = (int)GUIGetListItemData( gui, id, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, id );

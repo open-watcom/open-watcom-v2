@@ -51,11 +51,11 @@ OVL_EXTERN bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int 
     /* unused parameters */ (void)text;
 
     dlg.func = pick_call_back;
-    dlg.chosen = -1;
+    dlg.choice = -1;
     ResDlgOpen( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
-    if( dlg.chosen == -1 )
+    if( dlg.choice == -1 )
         return( false );
-    *choice = dlg.chosen;
+    *choice = dlg.choice;
     return( true );
 }
 

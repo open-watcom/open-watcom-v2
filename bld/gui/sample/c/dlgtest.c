@@ -63,7 +63,7 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
     gui_ctl_id  id;
     char        *new;
     char        *text;
-    gui_ctl_idx num;
+    int         num;
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
@@ -77,7 +77,7 @@ static bool TestDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );

@@ -352,14 +352,15 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     for( i = 0; i < num_toolbar_items; i++ ) {
         info.u.bmp = tbar->bitmaps[i];
-        info.id = toolinfo[i].id;
+        info.id = toolinfo->id;
         info.flags = 0;
-        if( use_tips && toolinfo[i].tip != NULL ) {
-            strncpy( info.tip, toolinfo[i].tip, MAX_TIP );
+        if( use_tips && toolinfo->tip != NULL ) {
+            strncpy( info.tip, toolinfo->tip, MAX_TIP );
         } else {
             info.tip[0] = '\0';
         }
         ToolBarAddItem( tbar->hdl, &info );
+        toolinfo++;
     }
     toolhwnd = ToolBarWindow( tbar->hdl );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );

@@ -117,9 +117,9 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
     char        *new;
     unsigned    i;
     char        *text;
-    gui_ctl_idx sel;
+    int         sel;
     int         size;
-    gui_ctl_idx num;
+    int         num;
     gui_rect    rect;
     int         extent, top, start, end;
 
@@ -177,7 +177,7 @@ static bool DynamicDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, voi
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );

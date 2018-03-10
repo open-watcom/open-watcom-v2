@@ -36,10 +36,10 @@
 extern bool         GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info );
 extern void         GUIFreeMenus( gui_window *wnd );
 extern void         GUIFreeMenuItems( UIMENUITEM *menuitems );
-extern bool         GUICreateMenuItems( gui_ctl_idx num_items, gui_menu_struct *info, UIMENUITEM **menuitems );
+extern bool         GUICreateMenuItems( int num_items, gui_menu_struct *info, UIMENUITEM **menuitems );
 extern void         GUIChangeMenu( UIMENUITEM *menuitem, gui_menu_styles style );
-extern gui_ctl_idx  GUIGetNumIgnore( gui_menu_struct *info, gui_ctl_idx num_items );
-extern UIMENUITEM   *GUIAllocMenuItems( gui_ctl_idx num_items );
+extern int          GUIGetNumIgnore( gui_menu_struct *info, int num_items );
+extern UIMENUITEM   *GUIAllocMenuItems( int num_items );
 extern bool         GUIDeleteToolbarMenuItem( gui_window *wnd, gui_ctl_id id );
 extern bool         GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw );
 

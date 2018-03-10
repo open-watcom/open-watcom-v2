@@ -61,28 +61,28 @@ bool GUIClearListBox( a_list *list )
     return( ret );
 }
 
-bool GUIListBoxDeleteItem( a_list *list, gui_ctl_idx choice )
+bool GUIListBoxDeleteItem( a_list *list, int choice )
 {
-    gui_ctl_idx size;
+    int         num_items;
     lb_data     old_data;
     lb_data     new_data;
-    gui_ctl_idx i;
+    int         item;
 
-    size = GUIListSize( list );
-    if( choice >= size ) {
+    num_items = GUIListSize( list );
+    if( choice >= num_items ) {
         return( false );
     }
-    new_data = (lb_data)GUIMemAlloc( sizeof( char * ) * size );
+    new_data = (lb_data)GUIMemAlloc( sizeof( char * ) * num_items );
     if( new_data == NULL ) {
         return( false );
     }
     old_data = (lb_data)list->data_handle;
-    for( i = 0; i < choice; i++ ) {
-        new_data[i] = old_data[i];
+    for( item = 0; item < choice; item++ ) {
+        new_data[item] = old_data[item];
     }
     GUIMemFree( (void *)old_data[choice] );
-    for( i = choice; i < size; i++ ) {
-        new_data[i] = old_data[i + 1];
+    for( item = choice; item < num_items; item++ ) {
+        new_data[item] = old_data[item + 1];
     }
     GUIMemFree( (void *)old_data );
     list->data_handle = (const void *)new_data;
@@ -95,14 +95,14 @@ bool GUIListBoxDeleteItem( a_list *list, gui_ctl_idx choice )
 
 void GUIFreeList( a_list *list, bool free_list )
 {
-    gui_ctl_idx num;
-    gui_ctl_idx i;
+    int         num_items;
+    int         item;
     lb_data     data;
 
-    num = GUIListSize( list );
+    num_items = GUIListSize( list );
     data = (lb_data)list->data_handle;
-    for( i = 0; i < num; i++ ) {
-        GUIMemFree( (void *)data[i] );
+    for( item = 0; item < num_items; item++ ) {
+        GUIMemFree( (void *)data[item] );
     }
     GUIMemFree( (void *)data );
     list->choice = 0;
@@ -173,31 +173,31 @@ a_list *GUICreateEditMLE( const char *text )
     return( list );
 }
 
-gui_ctl_idx GUIListSize( a_list *list )
+int GUIListSize( a_list *list )
 {
     return( uilistsize( list ) );
 }
 
-static lb_data ResizeList( a_list *list, unsigned num_to_add, gui_ctl_idx *choice )
+static lb_data ResizeList( a_list *list, unsigned num_to_add, int *choice )
 {
-    gui_ctl_idx num;
+    int         num_items;
     lb_data     old_data;
     lb_data     new_data;
 
-    num = GUIListSize( list );
-    new_data = (lb_data)GUIMemAlloc( ( num + num_to_add + 1 ) * sizeof( char * ) );
+    num_items = GUIListSize( list );
+    new_data = (lb_data)GUIMemAlloc( ( num_items + num_to_add + 1 ) * sizeof( char * ) );
     if( new_data == NULL ) {
         return( NULL );
     }
     if( *choice == -1 ) {
-        *choice = num;
+        *choice = num_items;
     }
     old_data = (lb_data)list->data_handle;
     if( old_data != NULL ) {
         memcpy( (void *)new_data, old_data, *choice * sizeof( char * ) );
-        memcpy( (void *)&new_data[*choice + num_to_add], &old_data[*choice], ( num - *choice ) * sizeof( char * ) );
+        memcpy( (void *)&new_data[*choice + num_to_add], &old_data[*choice], ( num_items - *choice ) * sizeof( char * ) );
     }
-    new_data[num + num_to_add] = NULL;
+    new_data[num_items + num_to_add] = NULL;
     return( new_data );
 }
 
@@ -227,7 +227,7 @@ static bool AddString( lb_data data, const char *text, int choice )
     return( true );
 }
 
-bool GUIListBoxAddText( a_list *list, const char *text, gui_ctl_idx choice )
+bool GUIListBoxAddText( a_list *list, const char *text, int choice )
 {
     lb_data     new_data;
     lb_data     old_data;
@@ -251,7 +251,7 @@ bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, GU
     int         item;
     lb_data     old_data;
     lb_data     new_data;
-    gui_ctl_idx choice;
+    int         choice;
 
     choice = -1;
     old_data = (lb_data)list->data_handle;
@@ -270,7 +270,7 @@ bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, GU
     return( true );
 }
 
-char *GUIGetListBoxText( a_list *list, gui_ctl_idx choice, bool get_curr )
+char *GUIGetListBoxText( a_list *list, int choice, bool get_curr )
 {
     lb_data     data;
 
@@ -281,13 +281,13 @@ char *GUIGetListBoxText( a_list *list, gui_ctl_idx choice, bool get_curr )
     return( GUIStrDup( data[choice], NULL ) );
 }
 
-bool GUIListGetCurr( a_list *list, gui_ctl_idx *ret )
+bool GUIListGetCurr( a_list *list, int *choice )
 {
-    *ret = list->choice;
+    *choice = list->choice;
     return( true );
 }
 
-bool GUIListSetCurr( a_list *list, gui_ctl_idx choice )
+bool GUIListSetCurr( a_list *list, int choice )
 {
     if( GUIListSize( list ) >= choice ) {
         list->choice = choice;
@@ -298,17 +298,22 @@ bool GUIListSetCurr( a_list *list, gui_ctl_idx choice )
     }
 }
 
-bool GUIListBoxTopIndex( a_list *list, gui_ctl_idx choice, bool set, gui_ctl_idx *ret )
+bool GUIListBoxGetTopIndex( a_list *list, int *choice )
 {
     if( list->box == NULL ) {
         return( false );
     }
-    if( set ) {
-        list->box->line = choice;
-        uiupdatelistbox( list );
-    } else {
-        *ret = list->box->line;
+    *choice = list->box->line;
+    return( true );
+}
+
+bool GUIListBoxSetTopIndex( a_list *list, int choice )
+{
+    if( list->box == NULL ) {
+        return( false );
     }
+    list->box->line = choice;
+    uiupdatelistbox( list );
     return( true );
 }
 
@@ -321,14 +326,14 @@ bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
     return( false );
 }
 
-bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, void *data )
+bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)choice; (void)data;
 
     return( false );
 }
 
-void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)choice;
 

@@ -42,8 +42,8 @@ WEXPORT WMenuSeparator::WMenuSeparator()
 }
 
 
-void WMenuSeparator::attachMenu( WWindow *win, gui_ctl_idx position )
-/*******************************************************************/
+void WMenuSeparator::attachMenu( WWindow *win, int position )
+/***********************************************************/
 {
     gui_menu_struct     menu_item;
 

@@ -81,8 +81,8 @@ void WEXPORT WMenuItem::hilighted( bool ) {
 }
 
 
-void WMenuItem::attachMenu( WWindow *win, gui_ctl_idx position )
-/**************************************************************/
+void WMenuItem::attachMenu( WWindow *win, int position )
+/******************************************************/
 {
     gui_menu_struct     menu_item;
     gui_menu_styles     menu_style;

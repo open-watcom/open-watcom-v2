@@ -34,6 +34,7 @@
 #include <string.h>
 #include "guistr.h"
 
+
 static const char *ColourNames[GUI_NUM_COLOURS];
 
 static bool ColourNamesInitialized = false;
@@ -72,13 +73,13 @@ static void PickColour( gui_window *wnd, gui_ctl_id list_id )
         GUIAddText( wnd, list_id, ColourNames[i] );
     }
     if(( InitColour >= 0 ) && ( InitColour < GUI_NUM_COLOURS )) {
-        GUISetCurrSelect( wnd, list_id, (gui_ctl_idx)InitColour );
+        GUISetCurrSelect( wnd, list_id, (int)InitColour );
     }
 }
 
 bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour )
 {
-    gui_ctl_idx result;
+    int     result;
 
     if( new_colour == NULL ) {
         return( false );

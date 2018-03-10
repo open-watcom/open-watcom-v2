@@ -422,13 +422,13 @@ static bool addToList( const char ***list, int num, const char *data, size_t len
  */
 static void freeStringList( const char ***list )
 {
-    int         cnt;
+    int         item;
 
     if( *list == NULL ) {
         return;
     }
-    for( cnt = 0; (*list)[cnt] != NULL; ++cnt ) {
-        GUIMemFree( (void *)(*list)[cnt] );
+    for( item = 0; (*list)[item] != NULL; item++ ) {
+        GUIMemFree( (void *)(*list)[item] );
     }
     GUIMemFree( (void *)*list );
     *list = NULL;
@@ -442,22 +442,22 @@ static void freeStringList( const char ***list )
 static bool buildDriveList( void )
 {
     char        drv;
-    int         cnt;
+    int         item;
     char        str[_MAX_PATH];
     const char  **list;
 
-    cnt = 0;
+    item = 0;
     list = NULL;
     for( drv = 'A'; drv <= 'Z'; drv++ ) {
         if( getDriveType( drv ) != DRIVE_NONE ) {
             str[0] = drv;
             str[1] = ':';
             str[2] = '\0';
-            if( !addToList( &list, cnt, str, 2 ) ) {
+            if( !addToList( &list, item, str, 2 ) ) {
                 freeStringList( &list );
                 break;
             }
-            cnt++;
+            item++;
         }
     }
     SetDriveTextList( list );
@@ -686,12 +686,12 @@ static bool setFileList( gui_window *gui, const char *ext )
     struct dirent       *dent;
     char                *ptr;
     const char          **list;
-    int                 cnt;
+    int                 num_items;
     char                ext1[_MAX_PATH];
-    int                 i;
+    int                 item;
     dlg_info            *dlg = GUIGetExtra( gui );
 
-    cnt = 0;
+    num_items = 0;
     list = NULL;
     strcpy( ext1, ext );
 
@@ -720,22 +720,22 @@ static bool setFileList( gui_window *gui, const char *ext )
                         continue;
                     }
 #endif
-                    if( !addToList( &list, cnt, dent->d_name, strlen( dent->d_name ) ) ) {
+                    if( !addToList( &list, num_items, dent->d_name, strlen( dent->d_name ) ) ) {
                         freeStringList( &list );
                         closedir( directory );
                         return( false );
                     }
-                    cnt++;
+                    num_items++;
                 }
             }
             closedir( directory );
         }
     }
     GUIClearList( gui, CTL_FILE_LIST );
-    if( cnt > 0 ) {
-        qsort( (void *)list, cnt, sizeof( char * ), Compare );
-        for( i = 0; i < cnt; i++ ) {
-            GUIAddText( gui, CTL_FILE_LIST, list[i] );
+    if( num_items > 0 ) {
+        qsort( (void *)list, num_items, sizeof( char * ), Compare );
+        for( item = 0; item < num_items; item++ ) {
+            GUIAddText( gui, CTL_FILE_LIST, list[item] );
         }
         freeStringList( &list );
     }
@@ -759,9 +759,10 @@ static bool setDirList( gui_window *gui )
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     const char          **drvlist;
 #endif
-    gui_ctl_idx         i;
+    int                 i;
     size_t              len;
-    gui_ctl_idx         curr, cnt;
+    int                 curr;
+    int                 cnt;
     const char          **list;
 
     GUIClearList( gui, CTL_DIR_LIST );
@@ -1006,12 +1007,12 @@ static process_rc processFileName( gui_window *gui )
 static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
 {
     process_rc  prc;
-    gui_ctl_idx sel;
-    gui_ctl_idx realsel;
+    int         sel;
+    int         realsel;
     char        path[_MAX_PATH];
     char        *optr;
     char        *ptr;
-    gui_ctl_idx i;
+    int         i;
     gui_ctl_id  focusid;
     dlg_info    *dlg = GUIGetExtra( gui );
 

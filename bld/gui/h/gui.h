@@ -386,7 +386,6 @@ typedef enum {
 typedef int                 gui_ord;
 
 typedef unsigned            gui_ctl_id;
-typedef int                 gui_ctl_idx;
 typedef unsigned            gui_res_id;
 typedef unsigned            gui_hlp_id;
 
@@ -765,14 +764,14 @@ extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
 extern bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu );
 
-extern gui_ctl_idx GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
+extern int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 
-extern bool GUIInsertMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu, bool floating );
 extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu );
 extern bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating );
-extern bool GUIAppendMenuByIdx( gui_window *wnd, gui_ctl_idx position, gui_menu_struct *menu );
+extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, gui_menu_struct *menu );
 extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, gui_ctl_idx position, gui_menu_struct *menu, bool floating );
+extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
 
@@ -868,8 +867,8 @@ extern gui_ord GUIGetNumRows( gui_window *wnd );
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
 extern gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val );
-extern bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, gui_ctl_idx *choice );
-extern bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *, gui_ctl_idx *choice );
+extern bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice );
+extern bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *, int *choice );
 
 /* Dialog Functions */
 
@@ -896,20 +895,20 @@ extern bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id );
 /* combo/list box functions */
 extern bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw );
 extern bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
-extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, void *data );
-extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
+extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
+extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
 extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
                             const void *data_handle, GUIPICKGETTEXT *getstring );
-extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, const char *text );
-extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
-extern gui_ctl_idx GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
+extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
+extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
+extern int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
 extern bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent );
 extern bool GUIClearList( gui_window *wnd, gui_ctl_id id );
-extern bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
-extern gui_ctl_idx GUIGetListSize( gui_window *wnd, gui_ctl_id id );
-extern bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice );
-extern bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
-extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice );
+extern bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice );
+extern int GUIGetListSize( gui_window *wnd, gui_ctl_id id );
+extern bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice );
+extern bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice );
+extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice );
 
 extern bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text );
 extern bool GUIClearText( gui_window *wnd, gui_ctl_id id );

@@ -96,7 +96,7 @@ bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items, const void *data
  *                  indicated
  */
 
-bool GUIInsertText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, const char *text )
+bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text )
 {
     if( text != NULL ) {
         GUIToComboList( wnd, id, LB_INSERTSTRING, CB_INSERTSTRING, (WPI_PARAM1)choice, (WPI_PARAM2)(LPSTR)text, (WPI_MRESULT)0 );
@@ -109,7 +109,7 @@ bool GUIInsertText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, const ch
  * GUISetTopIndex -- change which item is at the top of the list/combo box
  */
 
-bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
 {
     GUIToComboList( wnd, id, LB_SETTOPINDEX, LB_SETTOPINDEX, (WPI_PARAM1)choice, (WPI_PARAM2)0, (WPI_MRESULT)0 );
     return( true );
@@ -120,9 +120,9 @@ bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
  *                   box
  */
 
-gui_ctl_idx GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
+int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 {
-    return( (gui_ctl_idx)GUIToComboList( wnd, id, LB_GETTOPINDEX, LB_GETTOPINDEX, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)-1 ) );
+    return( (int)GUIToComboList( wnd, id, LB_GETTOPINDEX, LB_GETTOPINDEX, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)-1 ) );
 }
 
 /*
@@ -150,12 +150,12 @@ bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
  *  GUIGetListSize
  */
 
-gui_ctl_idx GUIGetListSize( gui_window *wnd, gui_ctl_id id )
+int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
 {
-    return( (gui_ctl_idx)GUIToComboList( wnd, id, LB_GETCOUNT, CB_GETCOUNT, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)0 ) );
+    return( (int)GUIToComboList( wnd, id, LB_GETCOUNT, CB_GETCOUNT, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)0 ) );
 }
 
-bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     if( ( choice >= 0 ) && ( choice < GUIGetListSize( wnd, id ) ) ) {
         GUIToComboList( wnd, id, LB_DELETESTRING, CB_DELETESTRING, (WPI_PARAM1)choice, (WPI_PARAM2)0, (WPI_MRESULT)0 );
@@ -208,7 +208,7 @@ char *GUIGetText( gui_window *wnd, gui_ctl_id id )
     char                *text;
     gui_control_class   control_class;
     HWND                hwnd;
-    gui_ctl_idx         choice;
+    int                 choice;
 
     if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( NULL );
@@ -251,11 +251,11 @@ char *GUIGetText( gui_window *wnd, gui_ctl_id id )
  *                      in the given list/combo box
  */
 
-bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice )
+bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice )
 {
-    gui_ctl_idx sel;
+    int     sel;
 
-    sel = (gui_ctl_idx)GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)-1 );
+    sel = (int)GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL, (WPI_PARAM1)0, (WPI_PARAM2)0, (WPI_MRESULT)-1 );
     if( ( sel == LB_ERR ) || ( sel == CB_ERR ) ) {
         return( false );
     }
@@ -268,7 +268,7 @@ bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx *choice )
  *                      current selection to the indicated choice
  */
 
-bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
 {
 #ifndef __OS2_PM__
     GUIToComboList( wnd, id, LB_SETCURSEL, CB_SETCURSEL, (WPI_PARAM1)choice, (WPI_PARAM2)false, (WPI_MRESULT)-1 );
@@ -278,7 +278,7 @@ bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
     return( true );
 }
 
-char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     int         length;
     char        *text;
@@ -299,7 +299,7 @@ char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
     return( text );
 }
 
-bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, void *data )
+bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data )
 {
     WPI_MRESULT ret;
 
@@ -314,7 +314,7 @@ bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, voi
 #endif
 }
 
-void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice )
 {
     return( (void *)GUIToComboList( wnd, id, LB_GETITEMDATA, CB_GETITEMDATA, (WPI_PARAM1)choice, (WPI_PARAM2)0, (WPI_MRESULT)0 ) );
 }
