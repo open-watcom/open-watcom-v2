@@ -462,18 +462,18 @@ void WndClick( a_window wnd, gui_ctl_id id )
 static void WndSetPopupBits( a_window wnd, gui_menu_struct *menu )
 {
     int                 item;
-    gui_menu_struct     *curr;
+    gui_menu_struct     *child;
 
-    curr = menu->child;
+    child = menu->child;
     for( item = 0; item < menu->num_child_menus; item++ ) {
-        if( (curr->style & GUI_STYLE_MENU_SEPARATOR) == 0 ) {
-            GUIEnableMenuItem( WndMain->gui, curr->id, wnd && (curr->style & GUI_STYLE_MENU_GRAYED) == 0, false );
-            GUICheckMenuItem( WndMain->gui, curr->id, wnd && (curr->style & GUI_STYLE_MENU_CHECKED) != 0, false );
-            if( curr->child ) {
-                WndSetPopupBits( wnd, curr );
+        if( (child->style & GUI_STYLE_MENU_SEPARATOR) == 0 ) {
+            GUIEnableMenuItem( WndMain->gui, child->id, wnd && (child->style & GUI_STYLE_MENU_GRAYED) == 0, false );
+            GUICheckMenuItem( WndMain->gui, child->id, wnd && (child->style & GUI_STYLE_MENU_CHECKED) != 0, false );
+            if( child->child ) {
+                WndSetPopupBits( wnd, child );
             }
         }
-        ++curr;
+        child++;
     }
 }
 
@@ -482,7 +482,7 @@ void WndSetPopup( gui_ctl_id id )
 {
     a_window    wnd;
 
-    if( WndMain != NULL && WndPopupMenuPtr == NULL ) {
+    if( WndMain != NULL && WndPopupMenuPtr != NULL ) {
         if( WndPopupMenuPtr->id != id )
             return;
         if( WndMouseButtonIsDown() )
