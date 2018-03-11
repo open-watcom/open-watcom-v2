@@ -215,11 +215,10 @@ static bool ResetFieldSize( dialog_node *dlg_node, int new_num )
 {
     VFIELD      *fields;
 
-    fields = (VFIELD *)GUIMemRealloc( dlg_node->ui_dlg_info->fields,
-                                   ( new_num + 1 ) * sizeof( VFIELD ) );
+    fields = (VFIELD *)GUIMemRealloc( dlg_node->ui_dlg_info->fields, ( new_num + 1 ) * sizeof( VFIELD ) );
     if( fields != NULL ) {
+        fields[new_num].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
         dlg_node->ui_dlg_info->fields = fields;
-        memset( &fields[new_num], 0, sizeof( VFIELD ) );
         return( true );
     }
     return( false );
@@ -402,7 +401,7 @@ static void FreeFields( VFIELD *fields )
         return;
     }
     group = NULL;
-    for( i = 0; fields[i].typ != FLD_VOID; i++ ) {
+    for( i = 0; fields[i].typ != FLD_NONE; i++ ) {
         if( fields[i].u.ptr != NULL ) {
             GUIDoFreeField( &fields[i], &group );
         }
@@ -578,7 +577,7 @@ bool GUIDeleteField( gui_window *wnd, gui_ctl_id id )
     if( GetIndexOfField( ui_dlg_info, field, dlg_node->num_controls, &index ) ) {
         GUIDoFreeField( field, NULL );
         new_fields = (VFIELD *)GUIMemAlloc( sizeof( VFIELD ) * dlg_node->num_controls );
-        for( i=0; i <= dlg_node->num_controls; i++ ) {
+        for( i = 0; i <= dlg_node->num_controls; i++ ) {
             new_index = i;
             if( i != index ) {
                 if( i > index ) {
@@ -831,7 +830,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         }
     }
     CleanUpRadioGroups();
-    fields[num_controls].typ = FLD_VOID; /* mark end of list */
+    fields[num_controls].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
     title = GUIStrDup( dlg_info->title, &ok );
     if( !ok ) {
         GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );

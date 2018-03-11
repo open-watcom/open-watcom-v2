@@ -59,7 +59,7 @@ void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
         return; // nothing to do
 
     ui_dlg_info->dirty = true;
-    for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         if( fields->typ == FLD_RADIO ) {
             if( fields->u.radio->value == *oldval ) {
                 // we have it!

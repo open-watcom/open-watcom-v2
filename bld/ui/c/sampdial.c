@@ -119,7 +119,7 @@ static VFIELD FieldDialog[] = {  // Define Field Dialog
     {1,     59,     1,      11,     FLD_HOT,        &hot_msg},
     {3,     59,     1,      11,     FLD_HOT,        &hot_num},
     {5,     59,     1,      11,     FLD_HOT,        &hot_stuff},
-    {12,    0,      0,      0,      FLD_VOID,       NULL }
+    {12,    0,      0,      0,      FLD_NONE,       NULL }
 };
 
 void sample_dialog( void )

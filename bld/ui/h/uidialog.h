@@ -47,6 +47,7 @@ typedef enum {
 } a_hot_spot_flags;
 
 typedef enum {
+    FLD_NONE,
     FLD_VOID,
     FLD_FRAME,
     FLD_LABEL,

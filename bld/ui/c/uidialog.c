@@ -130,7 +130,7 @@ static bool radiooff( VFIELD *fld )
 static VFIELD *nextfield( VFIELD *fld )
 {
     while( notintab( ++fld ) ) {                // unselectable field types!
-        if( fld->typ == FLD_VOID ) {
+        if( fld->typ == FLD_NONE ) {
             fld = NULL;
             break;
         }
@@ -480,7 +480,7 @@ void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
 
     /* set first to be first field in tab sequence */
     for( ui_dlg_info->first = fields; notintab( ui_dlg_info->first ); ui_dlg_info->first++ ) {
-        if( ui_dlg_info->first->typ == FLD_VOID ) {
+        if( ui_dlg_info->first->typ == FLD_NONE ) {
             ui_dlg_info->first = NULL;
             break;
         }
@@ -493,7 +493,7 @@ void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
         }
     }
 
-    for( ; fields->typ != FLD_VOID; fields++ ) {
+    for( ; fields->typ != FLD_NONE; fields++ ) {
         print_field( ui_dlg_info->vs, fields, ( fields == ui_dlg_info->curr ) );
     }
     enter_field( ui_dlg_info, ui_dlg_info->curr );
@@ -543,7 +543,7 @@ static void do_radio( a_dialog *ui_dlg_info, VFIELD *field )
 
     ui_dlg_info->dirty = true;
 
-    for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         if( fields->typ == FLD_RADIO ) {
             radio = fields->u.radio;
             if( radio->group == cur_radio->group && radio->value == radio->group->value ) {
@@ -803,7 +803,7 @@ void uiredrawdialog( a_dialog *ui_dlg_info )
     uivclose( vs );
     uivopen( vs );
 
-    for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         print_field( ui_dlg_info->vs, fields, ( fields == ui_dlg_info->curr ) );
     }
 }
@@ -843,11 +843,11 @@ bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
         uivmove( ui_dlg_info->vs, new_area->row, new_area->col );
     }
     /* close all open pull down boxes */
-    for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         uimovefield( ui_dlg_info, fields, row_diff, col_diff );
     }
     if( resize ) {
-        for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+        for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
             print_field( ui_dlg_info->vs, fields, ( fields == ui_dlg_info->curr ) );
         }
     }
@@ -1036,7 +1036,7 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
 
     if( ch ) {
         hotkey = '\0';
-        for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+        for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
             switch( fields->typ ) {
             case FLD_HOT:
                 hotkey = fields->u.hs->flags;
@@ -1057,7 +1057,7 @@ ui_event uihotkeyfilter( a_dialog *ui_dlg_info, ui_event ui_ev )
         }
 
         /* make sure the new field is hilighted */
-        if( ui_dlg_info->curr != fields && fields->typ != FLD_VOID ) {
+        if( ui_dlg_info->curr != fields && fields->typ != FLD_NONE ) {
             uidialogsetcurr( ui_dlg_info, fields );
         }
 
@@ -1270,7 +1270,7 @@ void uifreedialog( a_dialog *ui_dlg_info )
 
     exit_field( ui_dlg_info, ui_dlg_info->curr );
 
-    for( fields = ui_dlg_info->fields; fields->typ != FLD_VOID; fields++ ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
         switch( fields->typ ) {
         case FLD_LISTBOX:
         case FLD_PULLDOWN:
@@ -1310,7 +1310,7 @@ void uifreefields( VFIELD *fields )
     a_combo_box         *combo;
     an_edit_control     *edit;
 
-    for( ; fields->typ != FLD_VOID; fields++ ) {
+    for( ; fields->typ != FLD_NONE; fields++ ) {
         switch( fields->typ ) {
         case FLD_INVISIBLE_EDIT:
         case FLD_EDIT:

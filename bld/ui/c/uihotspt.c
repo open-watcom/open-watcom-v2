@@ -178,7 +178,7 @@ void uidisplayhotspot( VSCREEN *w, VFIELD *field )
 
 void uiposnhotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ) {
+    for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
             if( field->u.hs->length == 0 ) {
                 if( field->u.hs->str != NULL ) {
@@ -206,7 +206,7 @@ void uiposnhotspots( VSCREEN *w, VFIELD *field )
 
 void uiprinthotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ) {
+    for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
             uidisplayhotspot( w, field );
         }
@@ -215,7 +215,7 @@ void uiprinthotspots( VSCREEN *w, VFIELD *field )
 
 void uioffhotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ) {
+    for( ; field->typ != FLD_NONE; ++field ) {
         if( field->typ == FLD_HOT ) {
             uihotspot( w, field->u.hs->str, &field->area, field->u.hs->flags | HOT_ACTIVE );
         }
@@ -228,7 +228,7 @@ ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
     int         row, col;
     VFIELD      *field;
 
-    for( field = fields; field->typ != FLD_VOID; ++field ) {
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
         if( field->typ != FLD_HOT )
             continue;
         switch( ui_ev ) {
@@ -240,7 +240,7 @@ ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
             break;
         }
     }
-    for( field = fields; field->typ != FLD_VOID; ++field ) {
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
         if( field->typ != FLD_HOT )
             continue;
         if( field->u.hs->flags & HOT_HIDDEN )
@@ -290,11 +290,11 @@ bool uiisdefaulthotspot( VFIELD *fields, ui_event ui_ev )
 {
     VFIELD  *field;
 
-    for( field = fields; field->typ != FLD_VOID; ++field ) {
-        if( field->typ != FLD_HOT )
-            continue;
-        if( field->u.hs->flags & HOT_DEFAULT ) {
-            return( field->u.hs->event == ui_ev );
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
+        if( field->typ == FLD_HOT ) {
+            if( field->u.hs->flags & HOT_DEFAULT ) {
+                return( field->u.hs->event == ui_ev );
+            }
         }
     }
     return( false );
