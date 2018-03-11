@@ -293,9 +293,8 @@ bool GUIListSetCurr( a_list *list, int choice )
         list->choice = choice;
         uiupdatelistbox( list );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool GUIListBoxGetTopIndex( a_list *list, int *choice )

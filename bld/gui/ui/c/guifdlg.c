@@ -1073,21 +1073,20 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
             GUIMemFree( optr );
         }
         ptr = GUIGetListItem( gui, id, sel );
-        if( ptr == NULL ) {
-            return;
-        }
-        optr = ptr;
-        while( *ptr == INDENT_CHAR ) {
-            ptr++;
-        }
-        strcat( path, ptr+1 );
-        GUIMemFree( optr );
-        goToDir( gui, path );
-        if( !initDialog( gui, NULL, NULL ) ) {
-            dlg->dialogRC = FN_RC_RUNTIME_ERROR;
-            GUICloseDialog( gui );
-        } else {
-            GUISetCurrSelect( gui, id, realsel );
+        if( ptr !== NULL ) {
+            optr = ptr;
+            while( *ptr == INDENT_CHAR ) {
+                ptr++;
+            }
+            strcat( path, ptr+1 );
+            GUIMemFree( optr );
+            goToDir( gui, path );
+            if( !initDialog( gui, NULL, NULL ) ) {
+                dlg->dialogRC = FN_RC_RUNTIME_ERROR;
+                GUICloseDialog( gui );
+            } else {
+                GUISetCurrSelect( gui, id, realsel );
+            }
         }
         break;
    }
