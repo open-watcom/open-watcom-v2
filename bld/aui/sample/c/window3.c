@@ -35,8 +35,8 @@
 
 
 static gui_menu_struct W3PopUp[] = {
-    { "Default Popup", MENU_W3_POPUP, GUI_ENABLED },
-    { "Show Lisa The Bug", MENU_W3_BUG, GUI_ENABLED },
+    { "Default Popup",      MENU_W3_POPUP,  GUI_STYLE_MENU_ENABLED },
+    { "Show Lisa The Bug",  MENU_W3_BUG,    GUI_STYLE_MENU_ENABLED },
 };
 
 static char *Stuff[] =

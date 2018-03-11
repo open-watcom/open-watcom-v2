@@ -34,9 +34,9 @@
 
 
 static gui_menu_struct W4PopUp[] = {
-    { "&Say",       MENU_W2_SAY, GUI_ENABLED },
-    { "&Top",       MENU_W2_TOP, GUI_ENABLED },
-    { "&Open 1",    MENU_W2_OPEN1, GUI_ENABLED },
+    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED },
+    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
+    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED },
 };
 
 static char * Stuff[] = {

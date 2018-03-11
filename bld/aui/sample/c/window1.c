@@ -36,14 +36,14 @@
 static bool W1Init( a_window wnd );
 
 static gui_menu_struct W1Sub[] = {
-    { "&Align",    MENU_W1_ALIGN, GUI_ENABLED },
-    { "&UnAlign",  MENU_W1_UNALIGN, GUI_ENABLED },
+    { "&Align",    MENU_W1_ALIGN,   GUI_STYLE_MENU_ENABLED },
+    { "&UnAlign",  MENU_W1_UNALIGN, GUI_STYLE_MENU_ENABLED },
 };
 
 static gui_menu_struct W1PopUp[] = {
-    { "&Say",      MENU_W1_SAY, GUI_ENABLED },
-    { "&More",     MENU_W1_MORE, GUI_ENABLED, NULL, ArraySize( W1Sub ), W1Sub },
-    { "&NewWord",  MENU_W1_NEWWORD, GUI_ENABLED },
+    { "&Say",      MENU_W1_SAY,     GUI_STYLE_MENU_ENABLED },
+    { "&More",     MENU_W1_MORE,    GUI_STYLE_MENU_ENABLED, NULL, ArraySize( W1Sub ), W1Sub },
+    { "&NewWord",  MENU_W1_NEWWORD, GUI_STYLE_MENU_ENABLED },
 };
 
 typedef struct {

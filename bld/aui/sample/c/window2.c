@@ -49,18 +49,18 @@ typedef struct {
 
 #define TITLE_SIZE 2
 static gui_menu_struct W2PopUp[] = {
-    { "&Say",       MENU_W2_SAY, GUI_ENABLED },
-    { "&Top",       MENU_W2_TOP, GUI_ENABLED },
-    { "&Bottom",    MENU_W2_BOTTOM, GUI_ENABLED },
-    { "&New Title", MENU_W2_TITLE, GUI_ENABLED },
-    { "&Open 1",    MENU_W2_OPEN1, GUI_ENABLED },
+    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED },
+    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
+    { "&Bottom",    MENU_W2_BOTTOM, GUI_STYLE_MENU_ENABLED },
+    { "&New Title", MENU_W2_TITLE,  GUI_STYLE_MENU_ENABLED },
+    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED },
 };
 
 static gui_menu_struct W2AltPopUp[] = {
-    { "&New Title", MENU_W2_TITLE, GUI_ENABLED },
-    { "&Open 1",    MENU_W2_OPEN1, GUI_ENABLED },
-    { "&Say",       MENU_W2_SAY, GUI_ENABLED },
-    { "&Top",       MENU_W2_TOP, GUI_ENABLED },
+    { "&New Title", MENU_W2_TITLE,  GUI_STYLE_MENU_ENABLED },
+    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED },
+    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED },
+    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
 };
 
 static void Pos( a_window wnd, int pos )

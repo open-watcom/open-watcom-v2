@@ -79,9 +79,9 @@ keymap Key[] = {
 };
 
 static gui_menu_struct PopTart[] = {
-    { "Open &1", MENU_OPEN1, GUI_ENABLED },
-    { "Open &2", MENU_OPEN2, GUI_ENABLED },
-    { "Open &3", MENU_OPEN3, GUI_ENABLED },
+    { "Open &1", MENU_OPEN1, GUI_STYLE_MENU_ENABLED },
+    { "Open &2", MENU_OPEN2, GUI_STYLE_MENU_ENABLED },
+    { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
 
 bool    WndProcMacro( a_window wnd, unsigned key )
