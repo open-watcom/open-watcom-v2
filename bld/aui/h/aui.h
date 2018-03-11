@@ -117,9 +117,9 @@
 #define WndClrSwitches( w, x )      (w)->switches &= ~(x)
 #define WndSwitchOn( w, x )         (((w)->switches & (x)) != 0)
 #define WndSwitchOff( w, x )        (((w)->switches & (x)) == 0)
-#define WndNumPopups( w )           (w)->num_popups
+#define WndNumPopups( w )           (w)->popup_num_items
 #define WndPopupMenu( w )           (w)->popupmenu
-#define WndSetPopUpMenu( w, x, n )  {(w)->num_popups = (n); (w)->popupmenu = (x);}
+#define WndSetPopUpMenu( w, x, n )  {(w)->popup_num_items = (n); (w)->popupmenu = (x);}
 
 typedef struct {
     unsigned char       area[SAVE_SIZE];
@@ -250,7 +250,7 @@ typedef struct _a_window {
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
     wnd_colidx              current_colidx;
-    int                     num_popups;
+    int                     popup_num_items;
     gui_menu_struct         *popupmenu;
     int                     dirtyrects;
     wnd_rect                dirty[1];
@@ -288,7 +288,7 @@ typedef struct wnd_info {
     WNDNOTIFY               *notify;
     WNDCHKFLAGS             *chkflags;
     wnd_update_list         flags;
-    int                     num_popups;
+    int                     popup_num_items;
     gui_menu_struct         *popupmenu;
 } wnd_info;
 
@@ -546,7 +546,7 @@ extern int                  WndGetDClick( void );
 extern char                 *WndLoadString( gui_res_id id );
 extern void                 NullPopupMenu( gui_menu_struct *menu );
 
-extern void                 WndChangeMenuAll( gui_menu_struct *menu, int num_popups, bool on, int bit );
+extern void                 WndChangeMenuAll( gui_menu_struct *menu, int num_items, bool on, int bit );
 extern gui_message_return   WndDisplayMessage( const char *msg, const char *cap, gui_message_type type );
 
 extern void                 WndRectToPos( gui_rect *rect, wnd_posn *posn, gui_coord *scale );

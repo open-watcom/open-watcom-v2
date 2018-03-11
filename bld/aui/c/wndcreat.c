@@ -34,12 +34,12 @@
 #include <string.h>
 
 
-extern char             *StrCopy(char *,char *);
+extern char         *StrCopy(char *,char *);
 
-gui_menu_struct *WndMainMenuPtr = WndMainMenu;
-gui_menu_struct *WndPopupMenuPtr;
+gui_menu_struct     *WndMainMenuPtr = WndMainMenu;
+gui_menu_struct     *WndPopupMenuPtr;
 
-static int              NumWindows;
+static int          NumWindows;
 
 void    WndSetTitleSize( a_window wnd, int size )
 {

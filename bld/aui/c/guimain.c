@@ -255,7 +255,7 @@ static void DoMainGUIEventProc( spawn_parms *spawnp )
         break;
     case GUI_INIT_WINDOW:
         wnd->gui = gui;
-        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->num_popups );
+        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->popup_num_items );
         old_cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
         ret = WNDEVENT( wnd, gui_ev, parm );

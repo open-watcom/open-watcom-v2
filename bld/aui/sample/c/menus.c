@@ -37,7 +37,6 @@
 extern int DlgOptions( void );
 
 extern void Password( const char *, char *, unsigned );
-extern gui_colour_set WndColours[];
 
 void *SrchHistory;
 

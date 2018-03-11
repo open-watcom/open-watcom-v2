@@ -34,7 +34,6 @@
 //#include "stdui.h"
 
 wnd_update_list WndFlags = 0;
-extern gui_colour_set WndColours[];
 
 #if 0
 these are optional
@@ -142,7 +141,7 @@ extern void BIOSSetPage( char pagenb );
         modify exact [ah];
 #endif
 
-gui_window_styles WndStyle = GUI_PLAIN+GUI_GMOUSE;
+gui_window_styles WndStyle = GUI_PLAIN | GUI_GMOUSE;
 char *WndGadgetHint[] =
 {
     "this is help for the folder",
