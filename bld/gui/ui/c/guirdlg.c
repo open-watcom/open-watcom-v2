@@ -232,7 +232,7 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
 
     control_class = GUI_BAD_CLASS;
 
-    if( ctl != NULL && ctl->ClassID && ( ctl->ClassID->Class & 0x80 ) ) {
+    if( ctl != NULL && ctl->ClassID && (ctl->ClassID->Class & 0x80) ) {
         switch( ctl->ClassID->Class ) {
         case CLASS_BUTTON:
             control_class = GUI_PUSH_BUTTON;

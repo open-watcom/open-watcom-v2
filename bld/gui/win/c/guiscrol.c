@@ -265,7 +265,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             }
             break;
         case SB_THUMBTRACK:
-            if( ( wnd->scroll & GUI_VDRAG ) && ( wnd->scroll & GUI_VTRACK ) ) {
+            if( (wnd->scroll & GUI_VDRAG) && (wnd->scroll & GUI_VTRACK) ) {
                 param = GET_WM_VSCROLL_POS( wparam, lparam );
                 diff = param - GUIGetScrollPos( wnd, bar );
                 GUIVScroll( diff, wnd, GUI_SCROLL_VERTICAL );
@@ -310,7 +310,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             }
             break;
         case SB_THUMBTRACK:
-            if( ( wnd->scroll & GUI_HDRAG ) && ( wnd->scroll & GUI_HTRACK ) ) {
+            if( (wnd->scroll & GUI_HDRAG) && (wnd->scroll & GUI_HTRACK) ) {
                 param = GET_WM_VSCROLL_POS( wparam, lparam );
                 diff = param - GUIGetScrollPos( wnd, bar );
                 GUIHScroll( diff, wnd, GUI_SCROLL_HORIZONTAL );
@@ -365,11 +365,9 @@ void GUISetScroll( gui_window *wnd )
 {
 
     if( GUI_HSCROLL_ON( wnd ) && GUI_DO_HSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ),
-                     wnd->flags & HRANGE_COL, &wnd->hscroll_range );
+        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ), wnd->flags & HRANGE_COL, &wnd->hscroll_range );
     }
     if( GUI_VSCROLL_ON( wnd ) && GUI_DO_VSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ),
-                     wnd->flags & VRANGE_ROW, &wnd->vscroll_range );
+        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ), wnd->flags & VRANGE_ROW, &wnd->vscroll_range );
     }
 }

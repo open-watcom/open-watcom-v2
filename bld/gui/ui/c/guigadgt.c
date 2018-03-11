@@ -52,11 +52,11 @@ bool GUIUseGadget( gui_window *wnd, p_gadget gadget )
     if( gadget == NULL ) {
         return( false );
     }
-    return( !GUI_WND_MINIMIZED( wnd ) && ( wnd->style & GUI_VISIBLE ) &&
+    return( !GUI_WND_MINIMIZED( wnd ) && (wnd->style & GUI_VISIBLE) &&
         ( ( gadget->end - gadget->start + 1 ) >= MIN_GADGET_SIZE ) &&
         ( gadget->total_size > gadget->page_size ) &&
         ( ( wnd == GUICurrWnd ) || ( wnd->parent == NULL ) ||
-        ( GUIGetWindowStyles() & ( GUI_INACT_GADGETS | GUI_INACT_SAME ) ) ) );
+        (GUIGetWindowStyles() & (GUI_INACT_GADGETS | GUI_INACT_SAME)) ) );
 }
 
 bool GUIDrawGadgetLine( p_gadget gadget )
@@ -81,7 +81,7 @@ static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
         UIData->attrs[ATTR_SCROLL_BAR] = wnd->colours[GUI_FRAME_ACTIVE];
         UIData->attrs[ATTR_SCROLL_ICON] = wnd->colours[GUI_FRAME_ACTIVE];
     } else {
-        if( !(GUIGetWindowStyles() & GUI_INACT_SAME ) ) {
+        if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             offset = GUI_INACTIVE_OFFSET;
         }
         UIData->attrs[ATTR_SCROLL_BAR] = wnd->colours[GUI_FRAME_INACTIVE];
@@ -180,7 +180,7 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
 {
     p_gadget    gadget;
 
-    if( !( wnd->style & GUI_VISIBLE ) ) {
+    if( (wnd->style & GUI_VISIBLE) == 0 ) {
         *gadget_ptr = NULL;
         return( true );
     }

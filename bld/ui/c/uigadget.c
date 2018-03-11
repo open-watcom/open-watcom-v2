@@ -205,7 +205,8 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
             }
             /* don't do page up and page down when total size is less than
                or equal to the page size */
-            if( g->total_size <= g->page_size ) break;
+            if( g->total_size <= g->page_size )
+                break;
             start = g->linear; //CalcStart( g, g->pos, length );
             if( m_linear < start ) {
                 if( RepeatEvent == g->pageforward ) {

@@ -286,7 +286,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
         parent->child = wnd;
         wnd->parent = parent;
     } else {
-        if( !( dlg_info->style & GUI_POPUP ) ) {
+        if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
         }
     }

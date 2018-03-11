@@ -102,11 +102,11 @@ gui_control_class GUIGetControlClassFromHWND( HWND cntl )
     control_class = GUI_BAD_CLASS;
 
     for( index = 0; ( index < ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
-        if(( Map[index].classname != NULL ) && !stricmp( Map[index].classname, classname ) ) {
+        if( ( Map[index].classname != NULL ) && stricmp( Map[index].classname, classname ) == 0 ) {
             if( Map[index].mask == 0xffff ) {
                 control_class = Map[index].control_class;
             } else {
-                if( ( style & Map[index].mask ) == Map[index].style ) {
+                if( (style & Map[index].mask) == Map[index].style ) {
                     control_class = Map[index].control_class;
                 }
             }

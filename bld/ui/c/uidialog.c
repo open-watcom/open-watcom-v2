@@ -346,7 +346,8 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
 
     str = *sptr;
     len = t - str;
-    if( len < max ) max = len;
+    if( len < max )
+        max = len;
     for( delim = 0, cr = 0, i = 0; i < max; ++i ) {
         ch = str[i];
         if( ch == '\n' ) {
@@ -435,7 +436,8 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
     a_list              *list;
     SAREA               area;
 
-    if( field == NULL )  return;
+    if( field == NULL )
+        return;
 
     area = field->area;
     switch( field->typ ) {
@@ -665,8 +667,11 @@ static ui_event pulldownfilter( ui_event ui_ev, a_dialog *ui_dlg_info )
             /* mouse press must be on top line */
             area.height = 1;
         }
-        if( row < area.row  || row >= area.row + area.height ) break;
-        if( col < area.col  || col >= area.col + area.width ) break;
+        if( row < area.row || row >= area.row + area.height )
+            break;
+        if( col < area.col || col >= area.col + area.width ) {
+            break;
+        }
         /* FALLS into next case */
     }
     case EV_CURSOR_DOWN:
@@ -923,7 +928,8 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
     SAREA           area;
     ui_event        new_ui_ev;
 
-    if( ui_dlg_info->first == NULL ) return( false );
+    if( ui_dlg_info->first == NULL )
+        return( false );
     curr = ui_dlg_info->curr;
     new_ui_ev = ui_ev;
     switch( ui_ev ) {
@@ -958,8 +964,8 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
                             break;
                         }
                     }
-                } else if( row >= area.row  && row < area.row + area.height &&
-                            col >= area.col  && col < area.col + area.width ) {
+                } else if( row >= area.row && row < area.row + area.height &&
+                            col >= area.col && col < area.col + area.width ) {
                     break;
                 }
             }

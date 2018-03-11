@@ -597,7 +597,7 @@ static void getstatus( struct dirent *dent, char *path )
 {
     char        fullname[_MAX_PATH];
 
-    if( !(dent->d_stat.st_status & _FILE_USED) ) {
+    if( (dent->d_stat.st_status & _FILE_USED) == 0 ) {
         _makepath( fullname, NULL, path, dent->d_name, NULL );
         stat( fullname, &dent->d_stat );
     }
@@ -627,7 +627,7 @@ static bool isrdonly( struct dirent *dent, char *path )
     } else {
         bit = S_IWOTH;
     }
-    return( !(dent->d_stat.st_mode & bit) );
+    return( (dent->d_stat.st_mode & bit) == 0 );
 }
 #elif defined( __UNIX__ )
 static bool isdir( struct dirent *dent, char *path )
@@ -712,7 +712,7 @@ static bool setFileList( gui_window *gui, const char *ext )
         if( directory != NULL ) {
             while( ( dent = readdir( directory ) ) != NULL ) {
                 if( !isdir( dent, path ) ) {
-                    if( ( dlg->currOFN->flags & FN_HIDEREADONLY ) && isrdonly( dent, path ) ) {
+                    if( (dlg->currOFN->flags & FN_HIDEREADONLY) && isrdonly( dent, path ) ) {
                         continue;
                     }
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -1216,7 +1216,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
                     dlgControls, ARRAY_SIZE( dlgControls ), &GetFileNameGUIEventProc, &dlg );
 
-        if( !(ofn->flags & FN_CHANGEDIR) ) {
+        if( (ofn->flags & FN_CHANGEDIR) == 0 ) {
             goToDir( gui, olddir );
         }
     }

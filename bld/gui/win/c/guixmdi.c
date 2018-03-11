@@ -86,7 +86,7 @@ static void SetStyle( HWND hwnd, bool max )
         if( wnd->style & GUI_RESIZEABLE ) {
             style |= WS_THICKFRAME;
         }
-        if( !(wnd->style & GUI_NOFRAME) ) {
+        if( (wnd->style & GUI_NOFRAME) == 0 ) {
             style |= WS_CAPTION;
         }
         style |= COMMON_STYLES;

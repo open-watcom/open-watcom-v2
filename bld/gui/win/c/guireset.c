@@ -46,7 +46,7 @@ static void FreeSystemMenu( gui_window *wnd )
     HWND            frame;
 
     frame = GUIGetParentFrameHWND( wnd );
-    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && ( wnd->style & GUI_SYSTEM_MENU ) ) {
+    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && (wnd->style & GUI_SYSTEM_MENU) ) {
         system = _wpi_getsystemmenu( frame );
         if( system != NULLHANDLE ) {
             num_items = _wpi_getmenuitemcount( system );
@@ -68,7 +68,7 @@ bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
     success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
-    if( ( parent == HWND_DESKTOP ) || ( wnd->style & GUI_POPUP ) ) {
+    if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
         if( menu == NULL ) {
             GUISetMenu( wnd, NULLHANDLE );
             GUIFreePopupList( wnd );

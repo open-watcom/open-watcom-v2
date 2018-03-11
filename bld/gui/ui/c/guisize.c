@@ -136,7 +136,7 @@ void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area,
     SAREA       use;
     SAREA       old_use;
 
-    if( ( wnd->flags & CHECK_CHILDREN_ON_RESIZE ) == 0 ) {
+    if( (wnd->flags & CHECK_CHILDREN_ON_RESIZE) == 0 ) {
         return;
     }
 
@@ -387,7 +387,7 @@ void GUICheckArea( SAREA *area, resize_dir dir )
 
     diff = area->row + area->height - screen.row - screen.height;
     if( diff > 0 ) {
-        if( ( dir & RESIZE_DOWN ) || ( dir & RESIZE_UP ) ) {
+        if( (dir & RESIZE_DOWN) || (dir & RESIZE_UP) ) {
             area->height -= diff;
         }
         if( dir & RESIZE_UP ) {
@@ -399,7 +399,7 @@ void GUICheckArea( SAREA *area, resize_dir dir )
     }
     diff = area->col + area->width - screen.col - screen.width;
     if( diff > 0 ) {
-        if( ( dir & RESIZE_RIGHT ) || ( dir & RESIZE_LEFT ) ) {
+        if( (dir & RESIZE_RIGHT) || (dir & RESIZE_LEFT) ) {
             area->width -= diff;
         }
         if( dir & RESIZE_LEFT ) {
@@ -582,7 +582,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
             wnd->flags = old;
         }
     } else {
-        if( !( wnd->style & action ) ) {
+        if( (wnd->style & action) == 0 ) {
              return;
         }
         /* make fullsized or minimized */
@@ -689,11 +689,11 @@ void GUIRestoreWindow( gui_window * wnd )
 
 bool GUIIsMaximized( gui_window *wnd )
 {
-    return( ( wnd->flags & MAXIMIZED ) != 0 );
+    return( (wnd->flags & MAXIMIZED) != 0 );
 }
 
 bool GUIIsMinimized( gui_window *wnd )
 {
-    return( ( wnd->flags & MINIMIZED ) != 0 );
+    return( (wnd->flags & MINIMIZED) != 0 );
 }
 

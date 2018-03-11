@@ -461,8 +461,8 @@ static ui_event process_menuevent( VSCREEN *vptr, ui_event ui_ev )
             ( ui_ev == EV_MOUSE_DCLICK ) ) {
             uigetmouse( &mouserow, &mousecol, &mouseon );
             if( ( mouserow < uimenuheight() ) &&
-                ( Menu->active  ||
-                  ui_ev == EV_MOUSE_PRESS  || ui_ev == EV_MOUSE_DCLICK  ||
+                ( Menu->active ||
+                  ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ||
                   ui_ev == EV_MOUSE_DRAG || ui_ev == EV_MOUSE_REPEAT ) ) {
                 if( ui_ev == EV_MOUSE_DCLICK ) {
                     ui_ev = EV_MOUSE_PRESS;

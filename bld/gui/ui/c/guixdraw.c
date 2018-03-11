@@ -207,8 +207,7 @@ static void DrawFrame( gui_window *wnd )
     bool        inact_gadgets;
     int         len;
 
-    if( (wnd->style & GUI_NOFRAME) ||
-        !( (wnd->flags & FRAME_INVALID) || (wnd->flags & TITLE_INVALID) ) ) {
+    if( (wnd->style & GUI_NOFRAME) || !( (wnd->flags & FRAME_INVALID) || (wnd->flags & TITLE_INVALID) ) ) {
         return;
     }
     inact = 0;
@@ -216,7 +215,7 @@ static void DrawFrame( gui_window *wnd )
         attr = wnd->colours[GUI_FRAME_ACTIVE];
         title_attr = attr;
     } else {
-        if( !( GUIGetWindowStyles() & GUI_INACT_SAME ) ) {
+        if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
             inact = 1;
         }
         attr = wnd->colours[GUI_FRAME_INACTIVE];
@@ -224,11 +223,10 @@ static void DrawFrame( gui_window *wnd )
     }
     inact_gadgets = GUIGetWindowStyles() & GUI_INACT_GADGETS;
     if( wnd->flags & FRAME_INVALID ) {
-        DrawChar( wnd, wnd->screen.area.height-1, 0, attr, LL_CORNER( inact ) );
+        DrawChar( wnd, wnd->screen.area.height - 1, 0, attr, LL_CORNER( inact ) );
         DrawChar( wnd, 0, 0, attr, UL_CORNER( inact ) );
-        DrawChar( wnd, 0, wnd->screen.area.width-1, attr, UR_CORNER( inact ) );
-        DrawChar( wnd, wnd->screen.area.height-1, wnd->screen.area.width-1,
-                    attr, LR_CORNER( inact ) );
+        DrawChar( wnd, 0, wnd->screen.area.width - 1, attr, UR_CORNER( inact ) );
+        DrawChar( wnd, wnd->screen.area.height - 1, wnd->screen.area.width - 1, attr, LR_CORNER( inact ) );
         /* bottom border */
         if( GUIUseGadget( wnd, wnd->hgadget ) ) {
             if( GUIDrawGadgetLine( wnd->hgadget ) ) {
@@ -238,7 +236,7 @@ static void DrawFrame( gui_window *wnd )
             }
         } else {
             area.col = 1;
-            area.row = wnd->screen.area.height-1;
+            area.row = wnd->screen.area.height - 1;
             area.height = 1;
             area.width = wnd->screen.area.width - 2;
             uivfill( &wnd->screen, area, attr, BOTTOM( inact ) );
@@ -246,12 +244,12 @@ static void DrawFrame( gui_window *wnd )
         /* right border */
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( GUIDrawGadgetLine( wnd->vgadget ) ) {
-                DrawChar( wnd, wnd->screen.area.height-1-GUIGetScrollOffset(),
-                            wnd->screen.area.width-1, attr, LRH_BAR( inact ) );
+                DrawChar( wnd, wnd->screen.area.height - 1 - GUIGetScrollOffset(),
+                            wnd->screen.area.width - 1, attr, LRH_BAR( inact ) );
             }
         } else {
             area.row = 1;
-            area.height = wnd->screen.area.height- 2;
+            area.height = wnd->screen.area.height - 2;
             area.col = wnd->screen.area.width - 1;
             area.width = 1;
             uivfill( &wnd->screen, area, attr, RIGHT( inact ) );
@@ -260,14 +258,14 @@ static void DrawFrame( gui_window *wnd )
         /* left border */
         area.row = 1;
         area.col = 0;
-        area.height = wnd->screen.area.height-2;
+        area.height = wnd->screen.area.height - 2;
         area.width = 1;
         uivfill( &wnd->screen, area, attr, LEFT( inact ) );
 
         wnd->flags &= ~FRAME_INVALID;
     }
 
-    if( !( wnd->flags & TITLE_INVALID ) ) {
+    if( (wnd->flags & TITLE_INVALID) == 0 ) {
         return;
     }
 
@@ -285,9 +283,9 @@ static void DrawFrame( gui_window *wnd )
                 mgadget = MAX_GAD( inact );
             }
             rgadget = RG_MARK( inact );
-            DrawChar( wnd, 0, CLOSER_COL-1, attr, LG_MARK( inact ) );
+            DrawChar( wnd, 0, CLOSER_COL - 1, attr, LG_MARK( inact ) );
             DrawChar( wnd, 0, CLOSER_COL,   attr, CLOSER( inact ) );
-            DrawChar( wnd, 0, CLOSER_COL+1, attr, RG_MARK( inact ) );
+            DrawChar( wnd, 0, CLOSER_COL + 1, attr, RG_MARK( inact ) );
         }
         if( GUI_RESIZE_GADGETS_USEABLE( wnd ) ) {
             width -= 2 * GADGET_WIDTH;
@@ -344,8 +342,7 @@ static void DrawFrame( gui_window *wnd )
             len++;
         }
         if( len > 0 ) {
-            DrawText( wnd, 0, wnd->use.col + closer_amount, attr,
-                      buffer, len );
+            DrawText( wnd, 0, wnd->use.col + closer_amount, attr, buffer, len );
         }
         indent = len;
         buff += len;
@@ -361,8 +358,7 @@ static void DrawFrame( gui_window *wnd )
             len++;
         }
         if( len > 0 ) {
-            DrawText( wnd, 0, wnd->use.col + closer_amount + indent,
-                      title_attr, buff, len) ;
+            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, title_attr, buff, len) ;
         }
         indent += len;
         buff += len;
@@ -372,12 +368,10 @@ static void DrawFrame( gui_window *wnd )
             len++;
         }
         if( width - indent > 0 ) {
-            DrawText( wnd, 0, wnd->use.col + closer_amount + indent,
-                      attr, buff, width - indent );
+            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, attr, buff, width - indent );
         }
     } else {
-        DrawText( wnd, 0, wnd->use.col + closer_amount, attr,
-                  buffer, width );
+        DrawText( wnd, 0, wnd->use.col + closer_amount, attr, buffer, width );
     }
     wnd->flags &= ~TITLE_INVALID;
 }
@@ -406,8 +400,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
     /* if this window has a parent that is minimized or this window is
      * minimized, don't draw anything
      */
-    if( GUI_WND_MINIMIZED( wnd ) ||
-        ( ( wnd->parent != NULL ) && ( GUI_WND_MINIMIZED( wnd->parent ) ) ) ) {
+    if( GUI_WND_MINIMIZED( wnd ) || ( ( wnd->parent != NULL ) && ( GUI_WND_MINIMIZED( wnd->parent ) ) ) ) {
         return;
     }
 
@@ -417,7 +410,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
         frame_adjust = 1;
     }
 
-    if( ( wnd->flags & CONTENTS_INVALID ) && !EMPTY_AREA( *area ) ) {
+    if( (wnd->flags & CONTENTS_INVALID) && !EMPTY_AREA( *area ) ) {
         hscroll = 0;
         vscroll = 0;
         if( GUI_WND_VISIBLE( wnd ) ) {
@@ -442,7 +435,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
         uivfill( &wnd->screen, wnd->dirty, wnd->colours[GUI_BACKGROUND],
                     wnd->background );
 
-        if( GUI_WND_VISIBLE( wnd ) && !( wnd->flags & DONT_SEND_PAINT ) ) {
+        if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {
             rownum.start = vscroll + area->row - frame_adjust;
             rownum.num = area->height;
             GUIEVENT( wnd, GUI_PAINT, &rownum );
@@ -457,7 +450,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
 
 static void DrawGadget( gui_window *wnd, p_gadget gadget, gui_flags flag )
 {
-    if( ( wnd->flags & flag ) && ( gadget != NULL ) ) {
+    if( (wnd->flags & flag) && ( gadget != NULL ) ) {
         GUISetShowGadget( gadget, true, false, 0 );
         wnd->flags &= ~flag;
     }

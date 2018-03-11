@@ -257,7 +257,7 @@ ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
             new = EV_NO_EVENT;
         }
     }
-    if( (new == EV_NO_EVENT  ||  new == EV_BUFFER_CLEAR) && ui_ev != EV_INSERT ) {
+    if( (new == EV_NO_EVENT || new == EV_BUFFER_CLEAR) && ui_ev != EV_INSERT ) {
         buffer->auto_clear = false;
     }
     if( cleared ) {

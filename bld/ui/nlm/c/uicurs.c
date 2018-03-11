@@ -133,8 +133,8 @@ void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
 void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
 /*********************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row )  ||
-        ( col != UIData->cursor_col )  || ( attr != UIData->cursor_attr ) ) {
+    if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row ) ||
+        ( col != UIData->cursor_col ) || ( attr != UIData->cursor_attr ) ) {
 
         UIData->cursor_type = typ;
         UIData->cursor_row = row;

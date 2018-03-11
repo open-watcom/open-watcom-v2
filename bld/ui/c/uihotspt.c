@@ -270,8 +270,7 @@ ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
                     uidisplayhotspot( w, ActiveField );
                     ActiveField = NULL;
                     ui_ev = field->u.hs->event;
-                } else if( field == ActiveField  &&
-                        !( field->u.hs->flags & HOT_ACTIVE ) ) {
+                } else if( field == ActiveField && (field->u.hs->flags & HOT_ACTIVE) == 0 ) {
                     field->u.hs->flags |= HOT_ACTIVE;
                     uidisplayhotspot( w, field );
                     ui_ev = EV_NO_EVENT;

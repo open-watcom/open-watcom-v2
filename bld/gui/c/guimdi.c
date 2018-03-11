@@ -109,8 +109,10 @@ static void EnableMDIMenus( gui_window *root, bool enable )
 {
     GUIEnableMDIActions( enable );
     if( enable ) {
-        if( GUIMDIMenuID != 0 && GUIGetMenuPopupCount( root, GUIMDIMenuID ) != 0 ){
-            GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
+        if( GUIMDIMenuID != 0 ) {
+            if( GUIGetMenuPopupCount( root, GUIMDIMenuID ) > 0 ) {
+                GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
+            }
         }
     } else {
         GUIDeleteMenuItem( root, GUI_MDI_SECOND_SEPARATOR, false );

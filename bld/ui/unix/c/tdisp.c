@@ -109,7 +109,7 @@
 #define __flush_con()   {fflush( UIConFile );}
 #if defined( SUN )
 #define __putp( str )   {tputs( str, 1, (int (*)(char))_con_putchar );}
-#elif defined( HP )  && ( OSVER >= 1100 ) && !defined( __GNUC__ )
+#elif defined( HP ) && ( OSVER >= 1100 ) && !defined( __GNUC__ )
 #define __putp( str )   {tputs( str, 1, _con_putchar );}
 #elif defined( HP )
 #define __putp( str )   {tputs( str, 1, (void (*)(int))_con_putchar );}

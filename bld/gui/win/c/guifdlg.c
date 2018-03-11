@@ -312,7 +312,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     if( hookFileDlg ) {
         wofn.Flags |= OFN_ENABLEHOOK;
     }
-    if( !(ofn->flags & FN_CHANGEDIR) ) {
+    if( (ofn->flags & FN_CHANGEDIR) == 0 ) {
         wofn.Flags |= OFN_NOCHANGEDIR;
     }
 
@@ -363,7 +363,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
 
-    if( LastPath && ( !rc || !( ofn->flags & FN_WANT_LAST_PATH ) ) ) {
+    if( LastPath && ( !rc || (ofn->flags & FN_WANT_LAST_PATH) == 0 ) ) {
         GUIMemFree( LastPath );
         LastPath = NULL;
     }

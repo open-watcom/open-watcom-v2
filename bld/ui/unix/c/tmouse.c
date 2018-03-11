@@ -387,7 +387,8 @@ void tm_saveevent( void )
             }
             buf[i] = c;
         }
-        if( i == MAXBUF ) tm_error();
+        if( i == MAXBUF )
+            tm_error();
         buf[i + 1] = '\0';
         break;
 #ifdef __LINUX__

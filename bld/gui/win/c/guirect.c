@@ -93,6 +93,6 @@ void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool is_popup )
 
 void GUIGetRect( gui_window *wnd, gui_rect *rect )
 {
-    GUIGetRelRect( GUIGetParentFrameHWND( wnd ), rect, ( wnd->style & GUI_POPUP ) != 0 );
+    GUIGetRelRect( GUIGetParentFrameHWND( wnd ), rect, (wnd->style & GUI_POPUP) != 0 );
 }
 

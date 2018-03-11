@@ -107,8 +107,7 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
     SAREA       area;
     gui_coord   coord;
 
-    if( ( rect->width == 0 ) || ( rect->height == 0 ) ||
-        ( ( wnd->flags & CONTENTS_INVALID ) == 0 ) ) {
+    if( ( rect->width == 0 ) || ( rect->height == 0 ) || ( (wnd->flags & CONTENTS_INVALID) == 0 ) ) {
         return( false );
     }
     coord.x = rect->x;

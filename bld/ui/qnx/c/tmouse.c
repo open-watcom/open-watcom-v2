@@ -302,7 +302,8 @@ void tm_saveevent( void )
                return;
             }
             buf[i] = c;
-            if( buf[i] == 't' ) break;
+            if( buf[i] == 't' )
+                break;
             if( buf[i] == _ESC_CHAR ) {
                 tm_error();
                 c = nextc( 20 );

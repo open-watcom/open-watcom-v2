@@ -581,13 +581,13 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
     scan        = CHAR2FROMMP( p2 );
     pm_scan     = CHAR4FROMMP( p1 );
 
-    if( flags & ( KC_DEADKEY | KC_COMPOSITE ) ) {
+    if( flags & (KC_DEADKEY | KC_COMPOSITE) ) {
         return( false );
     } else if( flags & KC_VIRTUALKEY ) {
         return( GUIConvertVirtKeyToGUIKey( vk, key ) );
-    } else if( ( flags & KC_CHAR ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
+    } else if( (flags & KC_CHAR) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
         return( convert_ascii( ch, key ) );
-    } else if( ( flags & KC_LONEKEY ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
+    } else if( (flags & KC_LONEKEY) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
         return( convert_ascii( ch, key ) );
     } else if( flags & KC_SCANCODE ) {
         if( CHK_KS_CTRL ) {

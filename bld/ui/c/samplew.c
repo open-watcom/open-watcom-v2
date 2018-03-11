@@ -215,7 +215,9 @@ static void open( void )
         inputline.update = true;
         for( ;; ) {
             ui_ev = uiveditline( &opwin, &inputline );
-            if( ui_ev != EV_NO_EVENT ) break;
+            if( ui_ev != EV_NO_EVENT ) {
+                break;
+            }
         }
         if( ui_ev == EV_ENTER ) {
             /* open file */
@@ -276,8 +278,10 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
             uipushlist( evlist );
             ui_ev = uivgetevent( NULL );
             uipoplist( /* evlist */ );
-            if( ui_ev == EV_QUIT ) break;
-            if( ui_ev == EV_ALT_R ) break;
+            if( ui_ev == EV_QUIT )
+                break;
+            if( ui_ev == EV_ALT_R )
+                break;
             if( ui_ev == EV_MOUSE_PRESS_R ) {
                 uimousepos( NULL, &mrow, &mcol );
                 mrow++;
@@ -302,12 +306,14 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                 break;
             case EV_CURSOR_RIGHT:
                 mainwin.col++;
-                if( mainwin.col >= mainwin.area.width ) mainwin.col--;
+                if( mainwin.col >= mainwin.area.width )
+                    mainwin.col--;
                 fixup = true;
                 break;
             case EV_CURSOR_DOWN:
                 mainwin.row++;
-                if( mainwin.row >= mainwin.area.height ) mainwin.row--;
+                if( mainwin.row >= mainwin.area.height )
+                    mainwin.row--;
                 fixup = true;
                 break;
             case EV_CURSOR_LEFT:
@@ -356,16 +362,19 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     if( BandOn ) {
                         uimousepos( NULL, &mrow, &mcol );
                         diff = mcol - BandArea.col;
-                        if( diff < 0 ) diff = 0;
+                        if( diff < 0 )
+                            diff = 0;
                         BandArea.width = diff;
                         diff = mrow - BandArea.row;
-                        if( diff < 0 ) diff = 0;
+                        if( diff < 0 )
+                            diff = 0;
                         BandArea.height = diff;
                         uibandmove( BandArea );
                     }
                     break;
                 case EV_MOUSE_RELEASE:
-                    if( BandOn ) uibandfini();
+                    if( BandOn )
+                        uibandfini();
                     BandOn = 0;
                     break;
                 }

@@ -329,12 +329,13 @@ static void GUIDrawMenuBar( gui_window *wnd )
 
 int GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id )
 {
-    HMENU       hmenu, popup;
+    HMENU       hmenu;
+    HMENU       popup;
     int         num_items;
 
     hmenu = GUIGetHMENU( wnd );
     if( hmenu == NULLHANDLE ) {
-        return( false );
+        return( 0 );
     }
 
     popup = GetPopupHMENU( wnd, hmenu, id, NULL, NULL, MENU_HINT );
@@ -662,7 +663,7 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
     HMENU           system;
     int             num_items;
 
-    if( !( style & GUI_SYSTEM_MENU ) ) {
+    if( (style & GUI_SYSTEM_MENU) == 0 ) {
         return( true );
     }
     system = _wpi_getsystemmenu( hwnd );
@@ -678,7 +679,7 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
                     SC_CLOSE, LIT( XClose ) ); // add \tctrl+f4" );
 #endif
     }
-    if( !( style & GUI_CLOSEABLE ) ) {
+    if( (style & GUI_CLOSEABLE) == 0 ) {
         _wpi_enablemenuitem( system, SC_CLOSE, FALSE, FALSE );
     }
     if( style & GUI_CHANGEABLE_FONT ) {
@@ -739,11 +740,11 @@ static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam,
     hmenu = (HMENU)lparam;
     if( !menu_closed &&
         WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, true), MPFROMP(&mstate) ) ) {
-        is_sysmenu = ( mstate.afStyle & MF_SYSMENU );
+        is_sysmenu = ( (mstate.afStyle & MF_SYSMENU) != 0 );
         is_separator = false;
-        is_popup = ( mstate.afStyle & MF_POPUP );
-        is_hilite = ( mstate.afAttribute & MF_HILITE );
-        is_enabled = ( mstate.afAttribute & MF_DISABLED );
+        is_popup = ( (mstate.afStyle & MF_POPUP) != 0 );
+        is_hilite = ( (mstate.afAttribute & MF_HILITE) != 0 );
+        is_enabled = ( (mstate.afAttribute & MF_DISABLED) != 0 );
         hpopup = NULLHANDLE;
         if( is_popup ) {
             hpopup = mstate.hwndSubMenu;

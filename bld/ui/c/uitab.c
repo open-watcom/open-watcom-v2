@@ -57,7 +57,8 @@ static void *fwd_tab( VTAB *vtab, VTABAREA *curr, unsigned wrap )
                 break;
             }
         }
-        if( _tab( chase ) ) break;
+        if( _tab( chase ) )
+            break;
         if( chase == curr ) {
             chase = NULL;
             break;

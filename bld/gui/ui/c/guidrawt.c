@@ -57,7 +57,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
     if( attr >= wnd->num_attrs ) {
         return;
     }
-    if( !( wnd->style & GUI_VISIBLE ) ) {
+    if( (wnd->style & GUI_VISIBLE) == 0 ) {
          return;
     }
 

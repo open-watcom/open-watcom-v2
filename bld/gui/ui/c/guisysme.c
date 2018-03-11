@@ -55,7 +55,7 @@ void GUISetSystemMenuFlags( gui_window *wnd )
     int         i;
     UIMENUITEM  *menuitems;
 
-    if( !( wnd->style & GUI_SYSTEM_MENU ) || ( wnd->menu == NULL ) ) {
+    if( (wnd->style & GUI_SYSTEM_MENU) == 0 || ( wnd->menu == NULL ) ) {
         return;
     }
     menuitems = wnd->menu;
@@ -70,21 +70,21 @@ void GUISetSystemMenuFlags( gui_window *wnd )
             }
             break;
         case EV_SYS_MENU_SIZE :
-            if( GUI_WND_MINIMIZED( wnd ) || !( wnd->style & GUI_RESIZEABLE ) ) {
+            if( GUI_WND_MINIMIZED( wnd ) || (wnd->style & GUI_RESIZEABLE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_MINIMIZE :
-            if( GUI_WND_MINIMIZED( wnd ) || !( wnd->style & GUI_MINIMIZE ) ) {
+            if( GUI_WND_MINIMIZED( wnd ) || (wnd->style & GUI_MINIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
             }
             break;
         case EV_SYS_MENU_MAXIMIZE :
-            if( GUI_WND_MAXIMIZED( wnd ) || !( wnd->style & GUI_MAXIMIZE ) ) {
+            if( GUI_WND_MAXIMIZED( wnd ) || (wnd->style & GUI_MAXIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             } else {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_ENABLED );
@@ -121,7 +121,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             if( !ok ) {
                 return( false );
             }
-            if( !( style & GUI_RESIZEABLE ) ) {
+            if( (style & GUI_RESIZEABLE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
@@ -137,7 +137,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             if( !ok ) {
                 return( false );
             }
-            if( !( style & GUI_MINIMIZE ) ) {
+            if( (style & GUI_MINIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
@@ -146,7 +146,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             if( !ok ) {
                 return( false );
             }
-            if( !( style & GUI_MAXIMIZE ) ) {
+            if( (style & GUI_MAXIMIZE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;
@@ -155,7 +155,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             if( !ok ) {
                 return( false );
             }
-            if( !( style & GUI_CLOSEABLE ) ) {
+            if( (style & GUI_CLOSEABLE) == 0 ) {
                 GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             }
             break;

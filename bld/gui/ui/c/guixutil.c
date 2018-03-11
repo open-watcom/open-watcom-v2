@@ -69,7 +69,7 @@ void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use )
     COPYAREA( *area, *use );
     use->row = 0;
     use->col = 0;
-    if( wnd->style & GUI_VISIBLE && !( wnd->style & GUI_NOFRAME ) ) {
+    if( (wnd->style & GUI_VISIBLE) && (wnd->style & GUI_NOFRAME) == 0 ) {
         use->row += HALF_BORDER_AMOUNT;
         use->col += HALF_BORDER_AMOUNT;
         use->width -= BORDER_AMOUNT;

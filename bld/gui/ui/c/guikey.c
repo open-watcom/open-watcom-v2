@@ -47,8 +47,7 @@ bool GUIProcessAltMenuEvent( ui_event ui_ev )
     if( GUICurrWnd != NULL ) {
         key = (gui_key)ui_ev;
         wnd = NULL;
-        top = ( GUICurrWnd->parent == NULL ) ||
-             !( GUICurrWnd->parent->style & GUI_VISIBLE );
+        top = ( GUICurrWnd->parent == NULL ) || (GUICurrWnd->parent->style & GUI_VISIBLE) == 0;
         if( ui_ev == EV_ALT_SPACE ) {
             if( top ) {
                 wnd = GUICurrWnd;
@@ -59,7 +58,7 @@ bool GUIProcessAltMenuEvent( ui_event ui_ev )
         if( ( key == GUI_KEY_ALT_MINUS ) && !top ) {
             wnd = GUICurrWnd;
         }
-        if( ( wnd != NULL ) && ( wnd->style & GUI_VISIBLE ) ) {
+        if( ( wnd != NULL ) && (wnd->style & GUI_VISIBLE) ) {
             point.x = wnd->screen.area.col;
             point.y = wnd->screen.area.row;
             GUICreatePopup( wnd, &point );

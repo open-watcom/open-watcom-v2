@@ -34,7 +34,7 @@
 #include "guifloat.h"
 
 
-void uimenucurr( UIMENUITEM *menuitem )
+void uimenucurr( UIMENUITEM *currmenuitem )
 {
-    GUIProcessMenuCurr( menuitem );
+    GUIProcessMenuCurr( currmenuitem );
 }

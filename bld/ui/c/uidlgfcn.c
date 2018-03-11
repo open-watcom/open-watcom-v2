@@ -75,7 +75,8 @@ void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
     unsigned *oldchoice = &v->u.list->choice;
-//    if( *oldchoice == n ) return;
+//    if( *oldchoice == n )
+//        return;
     // This line is commented out because sometimes the selection will not be
     // highlighted, and we change to the same selection.  Result - selection
     // does not get highlighted.
