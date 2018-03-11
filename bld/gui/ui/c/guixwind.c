@@ -46,14 +46,17 @@
 
 gui_window      *GUICurrWnd = NULL;
 
-static void DeleteChild( gui_window * parent, gui_window * child )
+static void DeleteChild( gui_window *parent, gui_window *child )
 {
-    gui_window * curr;
-    gui_window * prev;
+    gui_window  *curr;
+    gui_window  *prev;
 
     prev = NULL;
-    for( curr = parent->child; curr != NULL; prev = curr, curr=curr->sibling ) {
-        if( curr == child ) break;
+    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
+        if( curr == child ) {
+            break;
+        }
+        prev = curr;
     }
     if( curr != NULL ) {
         if( prev != NULL ) {

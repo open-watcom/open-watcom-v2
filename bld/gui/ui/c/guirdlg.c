@@ -113,7 +113,7 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
 {
     bool        ok;
-    int         index;
+    int         item;
 
     ok = ( hdr != NULL && cntls != NULL );
 
@@ -133,8 +133,11 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
     }
 
     if( ok ) {
-        for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-            ok = !GUIResReadDialogBoxControl( *cntls + index );
+        for( item = 0; item < (*hdr)->NumOfItems; item++ ) {
+            ok = !GUIResReadDialogBoxControl( *cntls + item );
+            if( !ok ) {
+                break;
+            }
         }
     }
 
@@ -144,8 +147,8 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
             *hdr = NULL;
         }
         if( *cntls != NULL ) {
-            for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-                GUIFreeDialogBoxControlPtrs( *cntls + index );
+            for( item = 0; item < (*hdr)->NumOfItems; item++ ) {
+                GUIFreeDialogBoxControlPtrs( *cntls + item );
             }
             GUIMemFree( *cntls );
             *cntls = NULL;
@@ -415,7 +418,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     DialogBoxControl    *cntls;
     gui_create_info     *dlg_info;
     gui_control_info    *controls_info;
-    int                 index;
+    int                 item;
     int                 last_was_radio;
     bool                ok;
 
@@ -447,20 +450,20 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     last_was_radio = -1;
     if( ok ) {
         memset( controls_info, 0, sizeof( gui_control_info ) * hdr->NumOfItems );
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            ok = DialogBoxControl2GUI( &cntls[index], &controls_info[index] );
-            if( ok ) {
-                if( controls_info[index].control_class == GUI_RADIO_BUTTON ) {
-                    if( last_was_radio != 1 ) {
-                        controls_info[index].style |= GUI_STYLE_CONTROL_GROUP;
-                    }
-                    last_was_radio = 1;
-                } else {
-                    if( last_was_radio == 1 ) {
-                        controls_info[index - 1].style |= GUI_STYLE_CONTROL_GROUP;
-                    }
-                    last_was_radio = 0;
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            ok = DialogBoxControl2GUI( &cntls[item], &controls_info[item] );
+            if( !ok )
+                break;
+            if( controls_info[item].control_class == GUI_RADIO_BUTTON ) {
+                if( last_was_radio != 1 ) {
+                    controls_info[item].style |= GUI_STYLE_CONTROL_GROUP;
                 }
+                last_was_radio = 1;
+            } else {
+                if( last_was_radio == 1 ) {
+                    controls_info[item - 1].style |= GUI_STYLE_CONTROL_GROUP;
+                }
+                last_was_radio = 0;
             }
         }
     }
@@ -473,8 +476,8 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
 
     if( controls_info != NULL ) {
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIMemFree( (void *)controls_info[index].text );
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            GUIMemFree( (void *)controls_info[item].text );
         }
         GUIMemFree( controls_info );
     }
@@ -484,8 +487,8 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
 
     if( cntls != NULL ) {
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIFreeDialogBoxControlPtrs( &cntls[index] );
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            GUIFreeDialogBoxControlPtrs( &cntls[item] );
         }
         GUIMemFree( cntls );
     }
