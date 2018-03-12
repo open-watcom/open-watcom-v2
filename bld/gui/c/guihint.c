@@ -190,7 +190,7 @@ static int CountMenus( gui_menu_struct *menu )
         return( 0 );
     }
     num_items = 1;
-    for( item = 0; item < menu->num_child_menus; item++ ) {
+    for( item = 0; item < menu->child_num_items; item++ ) {
         num_items += CountMenus( &menu->child[item] );
     }
     return( num_items );
@@ -203,7 +203,7 @@ static void InsertHint( gui_menu_struct *menu, gui_hint_struct *hint, int *index
     hint[*index].id = menu->id;
     hint[*index].hinttext = menu->hinttext;
     (*index)++;
-    for( item = 0; item < menu->num_child_menus; item++ ) {
+    for( item = 0; item < menu->child_num_items; item++ ) {
         InsertHint( &menu->child[item], hint, index );
     }
 }

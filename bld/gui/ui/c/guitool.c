@@ -67,7 +67,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
 
     tbar = wnd->tbinfo;
     tbar->fixed = true;
-    menu.num_child_menus = 0;
+    menu.child_num_items = 0;
     menu.child = NULL;
     menu.style = GUI_STYLE_MENU_ENABLED;
 

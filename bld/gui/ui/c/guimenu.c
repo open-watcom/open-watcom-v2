@@ -193,7 +193,7 @@ static bool GetMenu( int *depth, int num_items, UIMENUITEM *menuitems, gui_ctl_i
  *               was found in the vbarmenu.
  */
 
-static bool GUIGetMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **menuitems, int *position,
+static bool GUIGetMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitem, int *position,
                         UIMENUITEM ***to_replace, bool floating )
 {
     UIMENUITEM  **the_menu;
@@ -227,7 +227,7 @@ static bool GUIGetMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **menuitems, 
     }
     num_items = uimenuitemscount( *the_menu );
     depth = 0;
-    if( GetMenu( &depth, num_menus, *the_menu, id, pmenuitem, position, to_replace ) ) {
+    if( GetMenu( &depth, num_items, *the_menu, id, pmenuitem, position, to_replace ) ) {
         if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
             *to_replace = the_menu;
         }
@@ -400,8 +400,8 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *info, UIMENUITEM **pmen
     while( num_items-- > 0 ) {
         uiyield();
         if( (info->style & GUI_STYLE_MENU_IGNORE) == 0 ) {
-            if( info->num_child_menus > 0 ) {
-                if( !GUICreateMenuItems( info->num_child_menus, info->child, &menuitems[item].popup ) ) {
+            if( info->child_num_items > 0 ) {
+                if( !GUICreateMenuItems( info->child_num_items, info->child, &menuitems[item].popup ) ) {
                     return( false );
                 }
             }
@@ -409,23 +409,6 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *info, UIMENUITEM **pmen
         }
         info++;
     }
-    return( true );
-}
-
-static bool GUIAllocVBarMenu( VBARMENU **pmenu )
-{
-    VBARMENU    *menu;
-
-    if( pmenu == NULL ) {
-        return( false );
-    }
-    menu = (VBARMENU *)GUIMemAlloc( sizeof( VBARMENU ) );
-    if( menu == NULL ) {
-        return( false );
-    }
-    menu->titles = NULL;
-    menu->currmenu = 0;
-    *pmenu = menu;
     return( true );
 }
 
@@ -456,13 +439,12 @@ static void GUIFreeVBarMenu( VBARMENU *vbarmenu )
  * CreateVBarMenu -- converts the gui_menu_struct into a VBARMENU
  */
 
-static bool CreateVBarMenu( gui_window *wnd, int num_items,
-                            gui_menu_struct *main_menu, VBARMENU **pvbarmenu )
+static bool CreateVBarMenu( gui_window *wnd, int num_items, gui_menu_struct *main_menu, VBARMENU **pvbarmenu )
 {
     VBARMENU    *vbarmenu;
 
     *pvbarmenu = NULL;
-    if( num_menus == 0 ) {
+    if( num_items == 0 ) {
         return( true );
     }
     vbarmenu = GUIAllocVBarMenu();
@@ -506,7 +488,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int position,
         GUIMemFree( newmenuitems );
         return( false );
     }
-    if( !GUICreateMenuItems( info->num_child_menus, info->child, &newmenuitems[position].popup ) ) {
+    if( !GUICreateMenuItems( info->child_num_items, info->child, &newmenuitems[position].popup ) ) {
         GUIMemFree( newmenuitems );
         return( false );
     }
@@ -544,7 +526,7 @@ static bool CreateMenus( gui_window *wnd, int num_items, gui_menu_struct *menu,
         }
         num_ignore = 0;
         if( num_items > 0 ) {
-            num_ignore = GUIGetNumIgnore( menu->child, menu->num_child_menus );
+            num_ignore = GUIGetNumIgnore( menu->child, menu->child_num_items );
         }
         if( num_items > num_ignore ) {
             if( style & GUI_SYSTEM_MENU ) {
@@ -742,8 +724,8 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
     } else {
         style = GUI_STYLE_MENU_GRAYED;
     }
-    for( i = 0; !MENUENDMARKER( wnd->vbarmenu->titles[i] ); i++ ) {
-        GUIChangeMenu( &wnd->vbarmenu->titles[i], style );
+    for( item = 0; !MENUENDMARKER( wnd->vbarmenu->titles[item] ); item++ ) {
+        GUIChangeMenu( &wnd->vbarmenu->titles[item], style );
     }
     screen.row = 0; /* leave this 0! */
     screen.col = 0;

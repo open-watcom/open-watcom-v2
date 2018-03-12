@@ -424,7 +424,7 @@ typedef struct gui_menu_struct {
     gui_ctl_id              id;
     gui_menu_styles         style;
     const char              *hinttext;
-    int                     num_child_menus;
+    int                     child_num_items;
     struct gui_menu_struct  *child;
 } gui_menu_struct;
 

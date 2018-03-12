@@ -597,8 +597,8 @@ HMENU GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu,
     }
     for( i = 0; i < num; i++ ) {
         GUICreateMenuFlags( menu[i].style, &menu_flags, &attr_flags );
-        if( menu[i].num_child_menus ) {
-            submenu = GUICreateSubMenu( wnd, menu[i].num_child_menus,
+        if( menu[i].child_num_items ) {
+            submenu = GUICreateSubMenu( wnd, menu[i].child_num_items,
                                         menu[i].child, type );
             _wpi_appendmenu( hmenu, MF_POPUP | menu_flags, attr_flags,
                              menu[i].id, submenu, menu[i].label );
@@ -621,7 +621,7 @@ static bool AppendMenus( gui_window *wnd, HMENU main, int num, gui_menu_struct *
     HMENU               hmenu;
 
     for( i = 0; i < num; i++ ) {
-        hmenu = GUICreateSubMenu( wnd, menu[i].num_child_menus,
+        hmenu = GUICreateSubMenu( wnd, menu[i].child_num_items,
                                   menu[i].child, MENU_HINT );
         if( hmenu != NULLHANDLE ) {
             _wpi_appendmenu( main, MF_STRING | MF_POPUP, MF_ENABLED,
@@ -840,10 +840,10 @@ static bool AddMenu( HMENU hmenu, gui_window *wnd, gui_menu_struct *menu,
     if( hmenu == NULLHANDLE ) {
         return( false );
     }
-    if( menu->num_child_menus == 0 ) {
+    if( menu->child_num_items == 0 ) {
         GUICreateMenuFlags( menu->style, &menu_flags, &attr_flags );
     } else {
-        submenu = GUICreateSubMenu( wnd, menu->num_child_menus, menu->child, type );
+        submenu = GUICreateSubMenu( wnd, menu->child_num_items, menu->child, type );
         if( submenu == NULLHANDLE ) {
             return( false );
         } else {

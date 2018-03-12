@@ -279,13 +279,13 @@ void InitIOWindow( void )
         IOTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         IOTypeMenu[i].label = DupStr( IOData.labels[i] );
         IOTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
-        IOTypeMenu[i].num_child_menus = 0;
+        IOTypeMenu[i].child_num_items = 0;
         IOTypeMenu[i].child = NULL;
     }
     for( i = 0; i < ArraySize( IOMenu ); ++i ) {
         if( IOMenu[i].id == MENU_IO_TYPE ) {
             IOMenu[i].child = IOTypeMenu;
-            IOMenu[i].num_child_menus = IOData.num_types;
+            IOMenu[i].child_num_items = IOData.num_types;
             break;
         }
     }

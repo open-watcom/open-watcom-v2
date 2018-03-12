@@ -99,7 +99,7 @@ void WMenuItem::attachMenu( WWindow *win, int position )
     menu_item.style = menu_style;
     const char *c_hinttext = _hintText;
     menu_item.hinttext = (char *)c_hinttext;
-    menu_item.num_child_menus = 0;
+    menu_item.child_num_items = 0;
     menu_item.child = NULL;
     if( parent()->isFloatingMain() ) {
         // appending menu item to top level floating popup menu

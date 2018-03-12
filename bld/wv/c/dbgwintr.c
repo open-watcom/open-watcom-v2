@@ -95,12 +95,12 @@ static void MenuCopy( char *dst, const char *from, char *to )
 }
 
 
-static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
+static void MenuDump( int indent, int popup_num_items, gui_menu_struct *child )
 {
     char        *p;
     int         i;
 
-    while( --num_popups >= 0 ) {
+    while( --popup_num_items >= 0 ) {
         p = TxtBuff;
         i = indent;
         while( i-- > 0 )
@@ -119,8 +119,8 @@ static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
             p = StrCopy( child->hinttext, p );
             WndDlgTxt( TxtBuff );
         }
-        if( child->num_child_menus != 0 ) {
-            MenuDump( indent + 4, child->num_child_menus, child->child );
+        if( child->child_num_items != 0 ) {
+            MenuDump( indent + 4, child->child_num_items, child->child );
         }
         ++child;
     }
@@ -137,7 +137,7 @@ static void XDumpMenus( void )
         p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[wndclass]->num_popups, WndInfoTab[wndclass]->popupmenu );
+        MenuDump( 4, WndInfoTab[wndclass]->popup_num_items, WndInfoTab[wndclass]->popupmenu );
     }
     WndDlgTxt( "The main menu" );
     MenuDump( 4, WndNumMenus, WndMainMenu );

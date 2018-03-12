@@ -224,8 +224,8 @@ static void MyHookRtn( unsigned event, unsigned info )
                     } else if( ShiftState & S_CTRL ) {
                         key -= 'A'-1;
                     } else if( !(ShiftState & S_SHIFT) ) {
-                        if( !(ShiftState & S_CAPS) ) key {
-                            += 'a' - 'A';
+                        if( !(ShiftState & S_CAPS) ) {
+                            key += 'a' - 'A';
                         }
                     } else if( ShiftState & S_CAPS ) {
                         key += 'a' - 'A';

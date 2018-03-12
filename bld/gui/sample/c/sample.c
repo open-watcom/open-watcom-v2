@@ -1288,23 +1288,23 @@ static bool Enabled = true;
 
 static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
 {
-    gui_menu_struct     *sub_menu;
-    int                 num_sub;
+    gui_menu_struct     *child;
+    int                 child_num_items;
 
-    for( num_items-- > 0 ) {
+    while( num_items-- > 0 ) {
         if( sub ) {
             GUIAppendMenuToPopup( gui, popup_id, menu, true );
         } else {
-            sub_menu = menu->child;
-            num_sub = menu->num_child_menus;
-            menu->num_child_menus = 0;
+            child = menu->child;
+            child_num_items = menu->child_num_items;
+            menu->child_num_items = 0;
             menu->child = NULL;
             GUIAppendMenu( gui, menu, true );
-            menu->num_child_menus = num_sub;
-            menu->child = sub_menu;
+            menu->child_num_items = child_num_items;
+            menu->child = child;
         }
         if( menu->child != NULL ) {
-            CreatePopup( gui, menu->num_child_menus, menu->child, menu->id, true );
+            CreatePopup( gui, menu->child_num_items, menu->child, menu->id, true );
         }
         menu++;
     }

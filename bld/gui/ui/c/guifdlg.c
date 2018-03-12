@@ -786,7 +786,7 @@ static bool setDirList( gui_window *gui )
     drvlist = GetDriveTextList();
     for( item = 0; drvlist[item] != NULL; item++ ) {
         if( drvlist[item][0] == drive[1] ) {
-            GUISetCurrSelect( gui, CTL_DRIVES, i );
+            GUISetCurrSelect( gui, CTL_DRIVES, item );
             break;
         }
     }
@@ -1061,7 +1061,7 @@ static void ProcessOKorDClick( gui_window *gui, gui_ctl_id id  )
             GUIMemFree( optr );
         }
         ptr = GUIGetListItem( gui, id, sel );
-        if( ptr !== NULL ) {
+        if( ptr != NULL ) {
             optr = ptr;
             while( *ptr == INDENT_CHAR ) {
                 ptr++;

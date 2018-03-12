@@ -63,7 +63,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
         menu->style = GUI_STYLE_MENU_ENABLED;
         menu->hinttext = LIT_ENG( Empty );
         menu->label = DupStr( TxtBuff );
-        menu->num_child_menus = 0;
+        menu->child_num_items = 0;
         menu->child = NULL;
         ++menu;
     }

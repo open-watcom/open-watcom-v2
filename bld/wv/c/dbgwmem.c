@@ -923,13 +923,13 @@ void InitMemWindow( void )
         MemTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
         MemTypeMenu[i].label = DupStr( MemData.labels[i] );
         MemTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
-        MemTypeMenu[i].num_child_menus = 0;
+        MemTypeMenu[i].child_num_items = 0;
         MemTypeMenu[i].child = NULL;
     }
     for( i = 0; i < ArraySize( MemMenu ); ++i ) {
         if( MemMenu[i].id == MENU_MEMORY_TYPE ) {
             MemMenu[i].child = MemTypeMenu;
-            MemMenu[i].num_child_menus = MemData.num_types;
+            MemMenu[i].child_num_items = MemData.num_types;
             break;
         }
     }

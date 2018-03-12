@@ -472,8 +472,6 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
 
 void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
 {
-    unsigned            i;
-
     uiposnhotspots( ui_dlg_info->vs, fields );
     ui_dlg_info->dirty = false;
     ui_dlg_info->first = NULL;
@@ -536,7 +534,6 @@ static void do_radio( a_dialog *ui_dlg_info, VFIELD *field )
     a_radio *cur_radio;
     VFIELD  *fields;
     a_radio *radio;
-    int i;
 
     // might want to use ui_dlg_info->first, kind of unsure
     cur_radio = field->u.radio;
@@ -800,7 +797,6 @@ void uimovefield( a_dialog *ui_dlg_info, VFIELD *curr, int row_diff, int col_dif
 void uiredrawdialog( a_dialog *ui_dlg_info )
 {
     VSCREEN     *vs;
-    int         i;
     VFIELD      *fields;
 
     vs = ui_dlg_info->vs;
@@ -819,7 +815,6 @@ bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
     int         col_diff;
     VSCREEN     *vs;
     VFIELD      *fields;
-    int         i;
     bool        resize;
 
     vs = ui_dlg_info->vs;
@@ -1270,7 +1265,6 @@ void uifreedialog( a_dialog *ui_dlg_info )
 {
     VFIELD              *fields;  // pointer to array of fields in dialog box
     a_list              *list;
-    short unsigned      i;
     a_combo_box         *combo;
 //  an_edit_control     *edit;
 

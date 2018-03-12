@@ -198,8 +198,8 @@ void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
 
     if( entry != NULL ) {
         for( i = 0; i < num; i++ ) {
-            if( entry[i].num_child_menus > 0 ) {
-                GUIFreeGUIMenuStruct( entry[i].child, entry[i].num_child_menus );
+            if( entry[i].child_num_items > 0 ) {
+                GUIFreeGUIMenuStruct( entry[i].child, entry[i].child_num_items );
             }
             if( entry[i].label != NULL ) {
                 GUIMemFree( (void *)entry[i].label );
@@ -243,7 +243,7 @@ static bool SetGUIMenuStruct( GUIRMenuEntry *rentry, gui_menu_struct *menu )
             menu->style = GetGUIMenuStyles( rentry->item->Item.Popup.ItemFlags );
             num_submenus = WCountMenuChildren( rentry->child );
             if( num_submenus ) {
-                menu->num_child_menus = num_submenus;
+                menu->child_num_items = num_submenus;
                 menu->child = MakeGUIMenuStruct( rentry->child );
                 ok = ( menu->child != NULL );
             }

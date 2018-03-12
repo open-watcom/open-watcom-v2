@@ -227,8 +227,8 @@ char *GetMenuLabel( unsigned size,
             *buff = NULLCHAR;
             return( buff );
         }
-        if( menu->num_child_menus != 0 ) {
-            p = GetMenuLabel( menu->num_child_menus, menu->child, id, buff, strip_amp );
+        if( menu->child_num_items != 0 ) {
+            p = GetMenuLabel( menu->child_num_items, menu->child, id, buff, strip_amp );
             if( p != NULL ) {
                 return( p );
             }
@@ -247,8 +247,8 @@ static gui_menu_struct *FindSubMenu( const char *start, unsigned len, gui_menu_s
         if( StrAmpEqual( start, child->label, len ) ) {
             return( child );
         }
-        if( child->num_child_menus != 0 ) {
-            sub = FindSubMenu( start, len, child->child, child->num_child_menus );
+        if( child->child_num_items != 0 ) {
+            sub = FindSubMenu( start, len, child->child, child->child_num_items );
             if( sub != NULL ) {
                 return( sub );
             }
@@ -310,7 +310,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
             Error( ERR_NONE, LIT_DUI( ERR_WANT_MENU_ITEM ) );
         }
         if( ScanItem( true, &start, &len ) ) {
-            child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
+            child = FindSubMenu( start, len, main_menu->child, main_menu->child_num_items );
         }
         if( child == NULL ) {
             if( add_to_menu )
@@ -319,7 +319,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         }
         *menu = child;
         *parent = main_menu->child;
-        *num_siblings = main_menu->num_child_menus;
+        *num_siblings = main_menu->child_num_items;
         if( add_to_menu )
             return( true );
         ReqEOC();
@@ -327,7 +327,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     } else {
         info = WndInfoTab[wndclass];
         if( ScanItem( true, &start, &len ) ) {
-            child = FindSubMenu( start, len, info->popupmenu, info->num_popups );
+            child = FindSubMenu( start, len, info->popupmenu, info->popup_num_items );
         }
         if( child == NULL ) {
             if( add_to_menu )
@@ -336,7 +336,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
         }
         *menu = child;
         *parent = info->popupmenu;
-        *num_siblings = info->num_popups;
+        *num_siblings = info->popup_num_items;
         if( add_to_menu )
             return( false );
         wnd = WndFindActive();
@@ -360,7 +360,7 @@ OVL_EXTERN void FreeLabels( gui_menu_struct *menu, int num_items )
 {
     while( num_items-- > 0 ) {
         if( menu->id != MENU_MAIN_ACTION && menu->child != NULL ) {
-            FreeLabels( menu->child, menu->num_child_menus );
+            FreeLabels( menu->child, menu->child_num_items );
         }
         if( menu->style & WND_MENU_ALLOCATED ) {
             menu->style &= ~WND_MENU_ALLOCATED;
@@ -376,7 +376,7 @@ OVL_EXTERN void LoadLabels( gui_menu_struct *menu, int num_items )
 {
     while( num_items-- > 0 ) {
         if( menu->child != NULL ) {
-            LoadLabels( menu->child, menu->num_child_menus );
+            LoadLabels( menu->child, menu->child_num_items );
         }
         if( (menu->style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
             menu->label = WndLoadString( (gui_res_id)(pointer_int)menu->label );
@@ -430,7 +430,7 @@ static void ForAllMenus( void (*rtn)( gui_menu_struct *menu, int num_items ) )
 
     rtn( WndMainMenu, ArraySize( WndMainMenu ) );
     for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
-        rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->num_popups );
+        rtn( WndInfoTab[wndclass]->popupmenu, WndInfoTab[wndclass]->popup_num_items );
     }
 }
 
