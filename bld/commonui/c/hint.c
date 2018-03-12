@@ -41,7 +41,7 @@ typedef struct {
     const MenuItemHint  *hints;
     msg_id              curmsg;
     HWND                parent;
-    WORD                hintlen;
+    int                 hint_num_items;
 } HintWndInfo;
 
 #define HINT_PROP_ID    "info"
@@ -51,7 +51,7 @@ typedef struct {
  */
 static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
 {
-    WORD                i;
+    int                 item;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
@@ -64,9 +64,9 @@ static msg_id getItemMsg( statwnd *wnd, ctl_id menuid )
     hinttable = info->hints;
     msgid = HINT_EMPTY;
     if( hinttable != NULL ) {
-        for( i = 0; i < info->hintlen; i++ ) {
-            if( hinttable[i].menuid == menuid ) {
-                msgid = hinttable[i].msgid;
+        for( item = 0; item < info->hint_num_items; item++ ) {
+            if( hinttable[item].menuid == menuid ) {
+                msgid = hinttable[item].msgid;
                 break;
             }
         }
@@ -182,7 +182,7 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 /*
  * SetHintsText - set the hint text for the specified menu items
  */
-const MenuItemHint *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt )
+const MenuItemHint *SetHintsText( statwnd *wnd, const MenuItemHint *hints, int num_items )
 {
     HintWndInfo         *info;
     const MenuItemHint  *ret;
@@ -194,7 +194,7 @@ const MenuItemHint *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD 
     info = LocalLock( hinfo );
     ret = info->hints;
     info->hints = hints;
-    info->hintlen = cnt;
+    info->hint_num_items = num_items;
     LocalUnlock( hinfo );
     return( ret );
 
@@ -215,7 +215,7 @@ statwnd *HintWndCreate( HWND parent, RECT *size, HINSTANCE hinstance, LPVOID lpv
     info = LocalLock( hinfo );
     info->curmsg = HINT_EMPTY;
     info->hints = NULL;
-    info->hintlen = 0;
+    info->hint_num_items = 0;
     info->parent = parent;
     LocalUnlock( hinfo );
 
