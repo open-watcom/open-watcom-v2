@@ -4,8 +4,6 @@
 #
 processor    = axp
 system       = winnt
-model        =
-convention   =
 linkage      = static
 mthreaded    = 1
 
