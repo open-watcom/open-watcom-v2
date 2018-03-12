@@ -585,7 +585,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         }
         VfyNewSym( sym->info.hash, sym->name );
         sym->attribs.stg_class = info->stg;
-    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
+        AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         sym_handle = SymAdd( sym->info.hash, sym );
     } else {
         sym->attribs.declspec = info->decl;
@@ -599,7 +599,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                  CErr1( ERR_INVALID_DECLSPEC );
             }
         }
-    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
+        AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         if( typ->decl_type == TYPE_FUNCTION ) {
             sym_handle = FuncDecl( sym, info->stg, state );
         } else {
@@ -1014,7 +1014,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             }
             MustRecog( T_RIGHT_PAREN );
             info->modifier &= ~MASK_ALL_MEM_MODELS;
-            info->modifier = FLAG_NEAR | FLAG_BASED;
+            info->modifier |= FLAG_NEAR | FLAG_BASED;
         }
         if( CurToken == T_TIMES ) {
             NextToken();
@@ -1492,7 +1492,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             }
         }
         sym->attribs.stg_class = stg_class;
-    	AdjModsTypeNode( &sym->sym_type, info.decl_mod, sym );
+        AdjModsTypeNode( &sym->sym_type, info.decl_mod, sym );
         AdjParmType( sym );
         parmlist = NewParm( sym->sym_type, parmlist );
         if( parm_count == 0 ) {
