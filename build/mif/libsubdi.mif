@@ -5,6 +5,7 @@ libsubdir_16bit_287 = 1
 
 libsubdir_register = _r
 libsubdir_stack    = _s
+libsubdir_         = _s
 
 !ifdef libsubdir_16bit_$(processor)
 !ifdef overlay
@@ -17,11 +18,7 @@ libsubdir_suffix = _dll
 libsubdir_suffix = _mt
 !endif
 !else
-!ifdef libsubdir_$(convention)
 libsubdir_suffix = $(libsubdir_$(convention))
-!else
-libsubdir_suffix = _s
-!endif
 !ifdef mthreaded
 libsubdir_suffix +=mt
 !endif
