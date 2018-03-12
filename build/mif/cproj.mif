@@ -183,6 +183,12 @@ nomapfile   = 0
 nomapfile   = 0
 !endif
 
+!ifdef $(proj_name)_dos_extender
+dos_extender = $($(proj_name)_dos_extender)
+!else
+dos_extender = dos4g
+!endif
+
 !ifeq debugfmt codeview
 cdebug_fmt  = -hc
 ldebug_fmt  = debug codeview
@@ -432,10 +438,10 @@ clflags_qnx_386     = -l=qnx
 clflags_osi_386     = -l=osi
 !ifdef __UNIX__
 clflags_dos_i86     = -l=dos -\"lib doslfn$(memory_model_i86).lib\"
-clflags_dos_386     = -l=dos4g -\"lib doslfn3r.lib\"
+clflags_dos_386     = -l=$(dos_extender) -\"lib doslfn3r.lib\"
 !else
 clflags_dos_i86     = -l=dos -"lib doslfn$(memory_model_i86).lib"
-clflags_dos_386     = -l=dos4g -"lib doslfn3r.lib"
+clflags_dos_386     = -l=$(dos_extender) -"lib doslfn3r.lib"
 !endif
 clflags_zdos_386    = -l=zdos
 clflags_rdos_386    = -l=rdos
@@ -518,7 +524,7 @@ aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(pr
 # LINKER SETINGS
 ######
 # generic application macros
-lflags_dos_386      = sys dos4g lib doslfn3r.lib
+lflags_dos_386      = sys $(dos_extender) lib doslfn3r.lib
 lflags_dos_i86      = sys dos lib doslfn$(memory_model_i86).lib
 lflags_linux_386    = sys linux
 lflags_linux_mps    = sys linuxmips
