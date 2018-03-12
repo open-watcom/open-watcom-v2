@@ -246,7 +246,7 @@ bool GUIListBoxAddText( a_list *list, const char *text, int choice )
     return( true );
 }
 
-bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, GUIPICKGETTEXT *getstring )
+bool GUIListBoxAddTextList( a_list *list, int num_items, const void *data_handle, GUIPICKGETTEXT *getstring )
 {
     int         item;
     lb_data     old_data;
@@ -255,11 +255,11 @@ bool GUIListBoxAddTextList( a_list *list, int items, const void *data_handle, GU
 
     choice = -1;
     old_data = (lb_data)list->data_handle;
-    new_data = ResizeList( list, items, &choice );
+    new_data = ResizeList( list, num_items, &choice );
     if( new_data == NULL ) {
         return( false );
     }
-    for( item = 0; item < items; ++item ) {
+    for( item = 0; item < num_items; ++item ) {
         if( !AddString( new_data, getstring( data_handle, item ), choice + item ) ) {
             return( false );
         }

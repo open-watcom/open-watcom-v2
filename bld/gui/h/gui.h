@@ -897,7 +897,7 @@ extern bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw );
 extern bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
 extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
 extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
-extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
+extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
                             const void *data_handle, GUIPICKGETTEXT *getstring );
 extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
 extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
