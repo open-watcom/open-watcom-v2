@@ -239,7 +239,7 @@ static void defineFeatureMacros( void )
     };
 
     end_watcom = stxpcpy( buff, "__WATCOM_" );
-    for( p = feature; *p != '\0'; ++p ) {
+    for( p = feature; *p != NULL; ++p ) {
         end_feature = stxpcpy( end_watcom, *p );
         strcpy( end_feature, "__" );
         PreDefineStringMacro( buff );

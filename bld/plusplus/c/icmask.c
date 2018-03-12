@@ -113,7 +113,7 @@ static void dumpUsage( void )
 {
     const char **p;
 
-    for( p = usageMsg; *p != '\0'; ++p ) {
+    for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
     }
 }

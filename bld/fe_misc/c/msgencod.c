@@ -393,7 +393,7 @@ static tag_id getId( const char *p, const char **update_p )
     }
     p += skipSpace( p );
     *update_p = p;
-    for( tc = tagNames; *tc != '\0'; ++tc ) {
+    for( tc = tagNames; *tc != NULL; ++tc ) {
         if( stricmp( tag, *tc ) == 0 ) {
             return( tc - tagNames );
         }
