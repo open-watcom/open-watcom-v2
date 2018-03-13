@@ -71,22 +71,8 @@
 
 #define NO_IMAGE_IDX    ((image_idx)-1)
 
-typedef unsigned_16     image_idx;
-
-struct process_info {
-    image_idx           last_addr_mod_found;
-    image_idx           map_entries;
-    image_handle        **ih_map;
-    image_handle        *ih_list;
-    image_handle        **ih_add;
-};
-
-struct image_handle {
-    dip_imp_routines    *dip;
-    image_handle        *next;
-    void                *extra;
-    image_idx           ii;
-};
+#define STRXX(x)        #x
+#define STRX(x)         STRXX(x)
 
 enum artificial_pointers {
     AP_NEAR2 = 1,
@@ -96,6 +82,16 @@ enum artificial_pointers {
     AP_MASK = 0x7,
     AP_SHIFT = 3,
     AP_FULL  = 0xe000
+};
+
+typedef unsigned_16     image_idx;
+
+struct image_handle {
+    dip_imp_routines    *dip;
+    image_handle        *next;
+    void                *extra;
+    image_idx           ii;
+    unsigned            : 0;    /* for alignment */
 };
 
 struct type_handle {
@@ -114,6 +110,14 @@ struct sym_handle {
     unsigned            : 0;    /* for alignment */
 };
 
+struct process_info {
+    image_idx           last_addr_mod_found;
+    image_idx           map_entries;
+    image_handle        **ih_map;
+    image_handle        *ih_list;
+    image_handle        **ih_add;
+};
+
 static image_idx        LoadingImageIdx = NO_IMAGE_IDX;
 
 static process_info     *ActProc;
@@ -122,7 +126,7 @@ static struct {
     dip_sys_handle      sys_hdl;
 }                       LoadedDIPs[MAX_DIPS];
 
-static unsigned         MaxImpHdlSize[] = {
+static unsigned         MaxHdlSize[] = {
     #define pick(e,h,ih,wid)    0,
     #include "diphndls.h"
     #undef pick
@@ -133,9 +137,6 @@ static const unsigned_8 MgrHdlSize[] = {
     #include "diphndls.h"
     #undef pick
 };
-
-#define STRXX(x)    #x
-#define STRX(x)     STRXX(x)
 
 char DIPDefaults[] = {
 #ifdef USE_FILENAME_VERSION
@@ -200,9 +201,9 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     unsigned    size;
 
     for( hk = 0; hk < MAX_HK; ++hk ) {
-        size = rtns->HandleSize( hk );
-        if( size > MaxImpHdlSize[hk] ) {
-            MaxImpHdlSize[hk] = size;
+        size = rtns->HandleSize( hk ) + MgrHdlSize[hk];
+        if( MaxHdlSize[hk] < size ) {
+            MaxHdlSize[hk] = size;
         }
     }
 }
@@ -272,13 +273,14 @@ void DIPFini( void )
     }
 }
 
-size_t DIPHandleSize( handle_kind hk, bool mgr_size )
+size_t DIPHandleSize( handle_kind hk )
 {
-    if( mgr_size ) {
-        return( MgrHdlSize[hk] );
-    } else {
-        return( MgrHdlSize[hk] + MaxImpHdlSize[hk] );
-    }
+    return( MaxHdlSize[hk] );
+}
+
+size_t DIPHandleSizeWV( handle_kind hk )
+{
+    return( MgrHdlSize[hk] );
 }
 
 dip_status DIPMoreMem( size_t amount )
@@ -490,7 +492,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
     ii = FindImageMapSlot( ActProc );
     if( ii == NO_IMAGE_IDX )
         return( NO_MOD );
-    ih = DIGCli( Alloc )( DIPHandleSize( HK_IMAGE, false ) + extra );
+    ih = DIGCli( Alloc )( MaxHdlSize[HK_IMAGE] + extra );
     if( ih == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NO_MOD );
@@ -507,7 +509,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
             *ActProc->ih_add = ih;
             ActProc->ih_add = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
-            ih->extra = (unsigned_8 *)ih + DIPHandleSize( HK_IMAGE, false );
+            ih->extra = (unsigned_8 *)ih + MaxHdlSize[HK_IMAGE];
             ih->ii = ii;
             LoadingImageIdx = ii;
             return( MK_MH( ii, 0 ) );
@@ -637,7 +639,7 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    type_handle         *th = walloca( DIPHandleSize( HK_TYPE, false ) );
+    type_handle         *th = walloca( MaxHdlSize[HK_TYPE] );
     walk_result         wr;
 
     wr = WR_CONTINUE;
@@ -676,7 +678,7 @@ OVL_EXTERN walk_result GblSymWalk( mod_handle mh, void *d )
 static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
 {
     image_handle        *ih;
-    sym_handle          *sh = walloca( DIPHandleSize( HK_SYM, false ) );
+    sym_handle          *sh = walloca( MaxHdlSize[HK_SYM] );
     image_idx           ii = 0;
     imp_mod_handle      imh;
     mod_handle          mh;
@@ -764,7 +766,7 @@ walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    cue_handle          *ch = walloca( DIPHandleSize( HK_CUE, false ) );
+    cue_handle          *ch = walloca( MaxHdlSize[HK_CUE] );
 
     ih = MH2IH( mh );
     if( ih == NULL )
@@ -903,7 +905,7 @@ dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size
 {
     if( base_th->ap & AP_FULL )
         return( DS_ERR | DS_TOO_MANY_POINTERS );
-    memcpy( ptr_th, base_th, DIPHandleSize( HK_TYPE, false ) );
+    memcpy( ptr_th, base_th, MaxHdlSize[HK_TYPE] );
     ptr_th->ap <<= AP_SHIFT;
     if( tm == TM_NEAR ) {
         if( size == 2 ) {
@@ -926,7 +928,7 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
     image_handle        *ih;
 
     if( th->ap != 0 ) {
-        memcpy( base_th, th, DIPHandleSize( HK_TYPE, false ) );
+        memcpy( base_th, th, MaxHdlSize[HK_TYPE] );
         base_th->ap >>= AP_SHIFT;
         return( DS_OK );
     }

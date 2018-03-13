@@ -102,8 +102,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
 
     /* unused parameters */ (void)quiet;
 
-    ch = alloca( DIPHandleSize( HK_CUE, false ) );
-    ch2 = alloca( DIPHandleSize( HK_CUE, false ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
+    ch2 = alloca( DIPHandleSize( HK_CUE) );
     curr_file = curr_sio->curr_file;
     curr_mod = curr_sio->curr_mod;
     if( curr_file->fid == 0 || DIPLineCue( curr_mod->mh, curr_sio->curr_file->fid,

@@ -30,13 +30,23 @@
 ****************************************************************************/
 
 
-#include "diptypes.h"
+#include "dip.h"
 #include "madtypes.h"
 
 
-#define SL2ISH( l )     ((imp_sym_handle *)((l)->h+DIPHandleSize(HK_SYM,true)))
-#define IIH2IH( i )     ((image_handle *)((char *)(i)-DIPHandleSize(HK_IMAGE,true)))
-#define TH2ITH( t )     ((imp_type_handle *)((char *)(t)+DIPHandleSize(HK_TYPE,true)))
+#define cue_SIZE        DIPHandleSize( HK_CUE )
+#define sym_SIZE        DIPHandleSize( HK_SYM )
+#define type_SIZE       DIPHandleSize( HK_TYPE )
+
+#define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
+
+#define DIPHDL( t, v )  t##_handle *v = (t##_handle*)walloca( t##_SIZE )
+
+#define SL2SH( l )      ((sym_handle *)((l)->h))
+#define IIH2IH( i )     ((image_handle *)((char *)(i) - DIPHandleSizeWV( HK_IMAGE )))
+
+#define SL2ISH( l )     ((imp_sym_handle *)((l)->h + DIPHandleSizeWV( HK_SYM )))
+#define TH2ITH( t )     ((imp_type_handle *)((char *)(t) + DIPHandleSizeWV( HK_TYPE )))
 
 typedef struct {
     type_kind           k;

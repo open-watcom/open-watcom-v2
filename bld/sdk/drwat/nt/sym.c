@@ -56,7 +56,7 @@ bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
     cue_handle  *cue;
 
-    cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
+    cue = MemAlloc( DIPHandleSize( HK_CUE ) );
     if( DIPAddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
         MemFree( cue );
         return( false );
@@ -78,7 +78,7 @@ bool GetSymbolName( address *addr, char *name, DWORD *symoff )
     search_result       sr;
     location_list       ll;
 
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM, false ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
     sr = DIPAddrSym( NO_MOD, *addr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:

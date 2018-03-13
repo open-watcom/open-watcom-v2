@@ -118,7 +118,7 @@ wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
     wpsrc_file->src_file = src_file;
     curr_sio->src_file = wpsrc_file;
     if( DIPSymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
-        ch = alloca( DIPHandleSize( HK_CUE, false ) );
+        ch = alloca( DIPHandleSize( HK_CUE ) );
         DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
         wpsrc_file->rtn_line = DIPCueLine( ch );
     }
@@ -180,7 +180,7 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
     int                     count;
     int                     count2;
 
-    ch = alloca( DIPHandleSize( HK_CUE, false ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
     lines = NULL;
     line_index = -1;
     last_srcline = 0;

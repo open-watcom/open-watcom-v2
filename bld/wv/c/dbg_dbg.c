@@ -31,7 +31,6 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dipwv.h"
 #include "dbgmem.h"
 #include "dbglit.h"
 #include "madinter.h"

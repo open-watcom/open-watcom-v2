@@ -35,7 +35,6 @@
 #include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dipwv.h"
 #include "dip.h"
 #include "i64.h"
 #include "dbgscan.h"

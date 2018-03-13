@@ -324,7 +324,7 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 
     /* Get more stuff, mainly to test the APIs. */
     if( 1 ) {
-        type_handle *type = alloca( DIPHandleSize( HK_TYPE, false ) );
+        type_handle *type = alloca( DIPHandleSize( HK_TYPE ) );
 
         rc = DIPSymType( sym, type );
         if( rc ) {
@@ -472,9 +472,9 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 {
     address         prev_addr = {0};
     long            prev_line = -1;
-    cue_handle      *next_cue = alloca( DIPHandleSize( HK_CUE, false ) );
+    cue_handle      *next_cue = alloca( DIPHandleSize( HK_CUE ) );
     cue_handle      *prev_cue = NULL;
-    cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE, false ) );
+    cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE ) );
     mod_handle      mod       = DIPCueMod( cue );
     cue_fileid      file_id   = DIPCueFileId( cue );
     search_result   search_rc;

@@ -36,7 +36,6 @@
 #include "dbgmem.h"
 #include "dbgerr.h"
 #include "dbgtback.h"
-#include "dipwv.h"
 #include "dbgrep.h"
 #include "dbgitem.h"
 #include "madinter.h"
