@@ -152,37 +152,3 @@ void __CEndThread( void )
     __DoneExceptionFilter();
     __RdosRemoveThread();
 }
-
-
-void __CBeginFork( void )
-{
-    thread_data         *tdata;
-    REGISTRATION_RECORD rr;
-
-    tdata = (thread_data *)RdosAllocateMem( __ThreadDataSize );
-
-    if( tdata != NULL ) {
-        memset( tdata, 0, __ThreadDataSize );
-        tdata->__data_size = __ThreadDataSize;
-
-        __RdosAddThread( tdata );
-    }
-
-    tdata = __THREADDATAPTR;
-
-    __NewExceptionFilter( &rr );
-    __sig_init_rtn(); // fills in a thread-specific copy of signal table
-}
-
-void __CEndFork( void )
-{
-    thread_data         *tdata = __THREADDATAPTR;
-    _endthread();
-    if( tdata ) {
-        RdosFreeMem(tdata);
-    }
-    __sig_fini_rtn();
-    __DoneExceptionFilter();
-    __RdosRemoveThread();
-    RdosTerminateThread();
-}

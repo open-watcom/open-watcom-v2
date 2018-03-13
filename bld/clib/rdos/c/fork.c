@@ -38,8 +38,5 @@
 _WCRTLINK pid_t fork( void )
 {
     pid_t   fork_id = RdosFork();
-    if( fork_id == 0) {
-        __CBeginFork();
-    }
     return( fork_id );
 }

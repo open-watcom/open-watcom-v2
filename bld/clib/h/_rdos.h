@@ -11,5 +11,3 @@
 ****************************************************************************/
 
 
-extern void     __CBeginFork( void );
-extern void     __CEndFork( void );
