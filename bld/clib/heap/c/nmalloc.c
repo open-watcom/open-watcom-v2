@@ -146,15 +146,6 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     unsigned char   use_obj_any;
 #endif // __WARP__
 
-#if defined(__RDOS__)
-    void *v_cstg;
-
-    if( RdosIsForked() ) {
-        v_cstg = RdosAllocateMem( amt );
-        return( (void_nptr)v_cstg );
-    }
-#endif
-
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
         return( NULL );
     }
