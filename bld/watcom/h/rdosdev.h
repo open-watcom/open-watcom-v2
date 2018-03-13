@@ -626,6 +626,7 @@ void RdosCreateKernelThread(
             void *parm);
 
 void RdosCreateKernelProcess(
+            int progid,
             int prio,
             int stack,
             __rdos_thread_callback *startup,
@@ -640,8 +641,6 @@ void RdosHookTerminateProcess(__rdos_hook_callback *callb_proc);
 void RdosHookCreateThread(__rdos_hook_callback *callb_proc);
 void RdosHookTerminateThread(__rdos_hook_callback *callb_proc);
 void RdosHookInitPci(__rdos_hook_callback *callb_proc);
-
-void RdosHookEnableFocus(__rdos_hook_callback *callb_proc);
 
 void RdosHookState(__rdos_hook_state_callback *callb_proc);
 
@@ -665,7 +664,6 @@ int RdosLockProcEnv();
 void RdosUnlockProcEnv();
 
 int RdosGetFocusThread();
-char RdosGetThreadFocusKey(int thread);
 
 void RdosRegisterNetClass(char class_id, int ads_size, void *broadcast_ads);
 int RdosRegisterNetProtocol(int ads_size, short int packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
@@ -964,7 +962,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "cmp eax,ebx" \
     "jne NoReloadGs" \
     "mov gs,eax" \
-    "NoReloadGs: "\     
+    "NoReloadGs: "\
     parm [ebx] \
     modify [eax];
 
@@ -1485,10 +1483,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_hook_terminate_thread \
     parm [es edi];
 
-#pragma aux RdosHookEnableFocus = \
-    OsGate_hook_enable_focus \
-    parm [es edi];
-
 #pragma aux RdosHookState = \
     OsGate_hook_state \
     parm [es edi];
@@ -1585,7 +1579,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     "jmp done" \
     "ok: "\
     "mov dx,ds" \
-    "done: "\    
+    "done: "\
     "pop ds" \
     parm [ax] [ebx] \
     value [dx ebx];
@@ -1612,11 +1606,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_get_focus_thread \
     "movzx eax,ax" \
     value [eax];
-
-#pragma aux RdosGetThreadFocusKey = \
-    OsGate_get_thread_focus_key \
-    parm [ebx] \
-    value [al];
 
 #pragma aux RdosRegisterNetClass = \
     "push ds" \
@@ -2009,7 +1998,7 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosSetCFileSize = \
     OsGate_set_c_file_size  \
     parm [ebx] [eax];
-    
+
 #pragma aux RdosReadCFile = \
     OsGate_read_c_file  \
     ValidateEax \

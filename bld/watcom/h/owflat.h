@@ -806,6 +806,11 @@
     "movzx eax,ax"  \
     value [eax];
 
+#pragma aux RdosGetFreeLdt = \
+    CallGate_get_free_ldt  \
+    "movzx eax,ax"  \
+    value [eax];
+
 #pragma aux RdosGetFreeSmallKernelLinear = \
     CallGate_available_small_linear  \
     value [eax];
@@ -1696,6 +1701,49 @@
     parm [ebx] \
     value [edx eax];
 
+#pragma aux RdosGetProcessCount = \
+    CallGate_get_process_count  \
+    "jc fail" \
+    "movzx eax,ax" \
+    "jmp done" \
+    "fail: " \
+    "xor eax,eax" \
+    "done: " \
+    value [eax];
+
+#pragma aux RdosGetProcessInfo = \
+    CallGate_get_process_info  \
+    CarryToBool \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    parm [eax] [esi] [edi] [ecx] \
+    modify [edx] \
+    value [eax];
+
+#pragma aux RdosGetProcessThreads = \
+    CallGate_get_process_threads  \
+    "jnc Ok" \
+    "xor ecx,ecx" \
+    "Ok: " \
+    parm [ebx] [edi] [ecx] \
+    value [ecx];
+
+#pragma aux RdosGetProcessModules = \
+    CallGate_get_process_modules  \
+    "jnc Ok" \
+    "xor ecx,ecx" \
+    "Ok: " \
+    parm [ebx] [edi] [ecx] \
+    value [ecx];
+
+#pragma aux RdosGetProcessModuleUsage = \
+    CallGate_get_process_module_usage  \
+    "jnc Ok" \
+    "xor ecx,ecx" \
+    "Ok: " \
+    parm [ebx] [edx] \
+    value [ecx];
+    
 #pragma aux RdosGetProgramCount = \
     CallGate_get_program_count  \
     "jc fail" \
@@ -1715,16 +1763,16 @@
     modify [edx] \
     value [eax];
 
-#pragma aux RdosGetProgramThreads = \
-    CallGate_get_program_threads  \
+#pragma aux RdosGetProgramModules = \
+    CallGate_get_program_modules  \
     "jnc Ok" \
     "xor ecx,ecx" \
     "Ok: " \
     parm [eax] [edi] [ecx] \
     value [ecx];
 
-#pragma aux RdosGetProgramModules = \
-    CallGate_get_program_modules  \
+#pragma aux RdosGetProgramProcesses = \
+    CallGate_get_program_processes  \
     "jnc Ok" \
     "xor ecx,ecx" \
     "Ok: " \
@@ -1819,11 +1867,6 @@
 #pragma aux RdosFork = \
     CallGate_fork  \
     "movzx eax,ax"  \
-    value [eax];
-
-#pragma aux RdosIsForked = \
-    CallGate_is_forked  \
-    CarryToBool \
     value [eax];
 
 #pragma aux RdosUnloadExe = \

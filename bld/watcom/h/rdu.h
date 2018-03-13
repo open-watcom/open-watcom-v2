@@ -280,8 +280,6 @@
 #define usergate_create_file_drive 0x000000FE
 #define usergate_open_file_drive 0x000000FF
 
-#define usergate_dos_ext_exec 0x00000100
-
 #define usergate_open_sys_env 0x00000101
 #define usergate_open_proc_env 0x00000102
 #define usergate_close_env 0x00000103
@@ -795,7 +793,6 @@
 
 #define usergate_dup_ini 0x00000273
 
-#define usergate_is_forked 0x00000274
 #define usergate_wait_for_exec 0x00000275
 #define usergate_get_console_cursor_position 0x00000276
 #define usergate_set_console_cursor_position 0x00000277
@@ -834,7 +831,6 @@
 
 #define usergate_get_program_count 0x0000028E
 #define usergate_get_program_info 0x0000028F
-#define usergate_get_program_threads 0x00000290
 
 #define usergate_get_module_count 0x00000291
 #define usergate_get_module_info 0x00000292
@@ -846,6 +842,15 @@
 #define usergate_abort_debug 0x00000297
 
 #define usergate_attach_debugger 0x00000298
+
+#define usergate_get_process_count 0x00000299
+#define usergate_get_process_info 0x0000029A
+#define usergate_get_program_processes 0x0000029B
+#define usergate_get_process_threads 0x0000029C
+#define usergate_get_process_modules 0x0000029D
+#define usergate_get_process_module_usage 0x0000029E
+
+#define usergate_get_free_ldt 0x0000029F
 
 
 
@@ -1131,8 +1136,6 @@
 
 #define CallGate_create_file_drive 0x55 0x67 0x9a 254 0 0 0 3 0 0x5d
 #define CallGate_open_file_drive 0x55 0x67 0x9a 255 0 0 0 3 0 0x5d
-
-#define CallGate_dos_ext_exec 0x55 0x67 0x9a 0 1 0 0 3 0 0x5d
 
 #define CallGate_open_sys_env 0x55 0x67 0x9a 1 1 0 0 3 0 0x5d
 #define CallGate_open_proc_env 0x55 0x67 0x9a 2 1 0 0 3 0 0x5d
@@ -1647,7 +1650,6 @@
 
 #define CallGate_dup_ini 0x55 0x67 0x9a 115 2 0 0 3 0 0x5d
 
-#define CallGate_is_forked 0x55 0x67 0x9a 116 2 0 0 3 0 0x5d
 #define CallGate_wait_for_exec 0x55 0x67 0x9a 117 2 0 0 3 0 0x5d
 #define CallGate_get_console_cursor_position 0x55 0x67 0x9a 118 2 0 0 3 0 0x5d
 #define CallGate_set_console_cursor_position 0x55 0x67 0x9a 119 2 0 0 3 0 0x5d
@@ -1686,7 +1688,6 @@
 
 #define CallGate_get_program_count 0x55 0x67 0x9a 142 2 0 0 3 0 0x5d
 #define CallGate_get_program_info 0x55 0x67 0x9a 143 2 0 0 3 0 0x5d
-#define CallGate_get_program_threads 0x55 0x67 0x9a 144 2 0 0 3 0 0x5d
 
 #define CallGate_get_module_count 0x55 0x67 0x9a 145 2 0 0 3 0 0x5d
 #define CallGate_get_module_info 0x55 0x67 0x9a 146 2 0 0 3 0 0x5d
@@ -1698,6 +1699,15 @@
 #define CallGate_abort_debug 0x55 0x67 0x9a 151 2 0 0 3 0 0x5d
 
 #define CallGate_attach_debugger 0x55 0x67 0x9a 152 2 0 0 3 0 0x5d
+
+#define CallGate_get_process_count 0x55 0x67 0x9a 153 2 0 0 3 0 0x5d
+#define CallGate_get_process_info 0x55 0x67 0x9a 154 2 0 0 3 0 0x5d
+#define CallGate_get_program_processes 0x55 0x67 0x9a 155 2 0 0 3 0 0x5d
+#define CallGate_get_process_threads 0x55 0x67 0x9a 156 2 0 0 3 0 0x5d
+#define CallGate_get_process_modules 0x55 0x67 0x9a 157 2 0 0 3 0 0x5d
+#define CallGate_get_process_module_usage 0x55 0x67 0x9a 158 2 0 0 3 0 0x5d
+
+#define CallGate_get_free_ldt 0x55 0x67 0x9a 159 2 0 0 3 0 0x5d
 
 #else
 
@@ -1981,8 +1991,6 @@
 
 #define CallGate_create_file_drive 0x3e 0x67 0x9a 254 0 0 0 3 0
 #define CallGate_open_file_drive 0x3e 0x67 0x9a 255 0 0 0 3 0
-
-#define CallGate_dos_ext_exec 0x3e 0x67 0x9a 0 1 0 0 3 0
 
 #define CallGate_open_sys_env 0x3e 0x67 0x9a 1 1 0 0 3 0
 #define CallGate_open_proc_env 0x3e 0x67 0x9a 2 1 0 0 3 0
@@ -2497,7 +2505,6 @@
 
 #define CallGate_dup_ini 0x3e 0x67 0x9a 115 2 0 0 3 0
 
-#define CallGate_is_forked 0x3e 0x67 0x9a 116 2 0 0 3 0
 #define CallGate_wait_for_exec 0x3e 0x67 0x9a 117 2 0 0 3 0
 #define CallGate_get_console_cursor_position 0x3e 0x67 0x9a 118 2 0 0 3 0
 #define CallGate_set_console_cursor_position 0x3e 0x67 0x9a 119 2 0 0 3 0
@@ -2536,7 +2543,6 @@
 
 #define CallGate_get_program_count 0x3e 0x67 0x9a 142 2 0 0 3 0
 #define CallGate_get_program_info 0x3e 0x67 0x9a 143 2 0 0 3 0
-#define CallGate_get_program_threads 0x3e 0x67 0x9a 144 2 0 0 3 0
 
 #define CallGate_get_module_count 0x3e 0x67 0x9a 145 2 0 0 3 0
 #define CallGate_get_module_info 0x3e 0x67 0x9a 146 2 0 0 3 0
@@ -2548,5 +2554,14 @@
 #define CallGate_abort_debug 0x3e 0x67 0x9a 151 2 0 0 3 0
 
 #define CallGate_attach_debugger 0x3e 0x67 0x9a 152 2 0 0 3 0
+
+#define CallGate_get_process_count 0x3e 0x67 0x9a 153 2 0 0 3 0
+#define CallGate_get_process_info 0x3e 0x67 0x9a 154 2 0 0 3 0
+#define CallGate_get_program_processes 0x3e 0x67 0x9a 155 2 0 0 3 0
+#define CallGate_get_process_threads 0x3e 0x67 0x9a 156 2 0 0 3 0
+#define CallGate_get_process_modules 0x3e 0x67 0x9a 157 2 0 0 3 0
+#define CallGate_get_process_module_usage 0x3e 0x67 0x9a 158 2 0 0 3 0
+
+#define CallGate_get_free_ldt 0x3e 0x67 0x9a 159 2 0 0 3 0
 
 #endif

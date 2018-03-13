@@ -350,6 +350,7 @@ int RDOSAPI RdosGetPhysicalEntryType(int Entry);
 long long RDOSAPI RdosGetPhysicalEntryBase(int Entry);
 long long RDOSAPI RdosGetPhysicalEntrySize(int Entry);
 int RDOSAPI RdosGetFreeGdt();
+int RDOSAPI RdosGetFreeLdt();
 int RDOSAPI RdosGetFreeSmallKernelLinear();
 int RDOSAPI RdosGetFreeBigKernelLinear();
 int RDOSAPI RdosGetFreeSmallLocalLinear();
@@ -511,10 +512,16 @@ int RDOSAPI RdosGetModuleSel(int ID);
 long long RDOSAPI RdosGetModuleBase(int ID);
 long long RDOSAPI RdosGetModuleSize(int ID);
 
+int RDOSAPI RdosGetProcessCount();
+int RDOSAPI RdosGetProcessInfo(int Index, int *ID, char *NameBuf, int NameSize);
+int RDOSAPI RdosGetProcessThreads(int pid, unsigned short int *IdArr, int MaxThreads);
+
 int RDOSAPI RdosGetProgramCount();
 int RDOSAPI RdosGetProgramInfo(int Index, int *ID, char *NameBuf, int NameSize);
-int RDOSAPI RdosGetProgramThreads(int Index, unsigned short int *IdArr, int MaxThreads);
 int RDOSAPI RdosGetProgramModules(int Index, unsigned short int *IdArr, int MaxModules);
+int RDOSAPI RdosGetProgramProcesses(int Index, unsigned short int *IdArr, int MaxProcesses);
+int RDOSAPI RdosGetProcessModules(int Index, unsigned short int *IdArr, int MaxModules);
+int RDOSAPI RdosGetProcessModuleUsage(int Index, int ID);
 
 int RDOSAPI RdosGetImageHeader(int Adapter, int Entry, TRdosObjectHeader *Header);
 int RDOSAPI RdosGetImageData(int Adapter, int Entry, void *Buf);
@@ -548,7 +555,6 @@ int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir,
 int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
 int RDOSAPI RdosAttachDebugger(int pid);
 int RDOSAPI RdosFork();
-int RDOSAPI RdosIsForked();
 int RDOSAPI RdosWaitForExec(int ForkId);
 void RDOSAPI RdosFatalErrorExit();
 void RDOSAPI RdosUnloadExe(int ExitCode);
