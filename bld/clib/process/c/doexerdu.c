@@ -59,11 +59,8 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *ep;
     int rc = -1;
     int fh;
-    int pid;
     char *drive;
     char *dir;
-    int wait;
-    int res;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
