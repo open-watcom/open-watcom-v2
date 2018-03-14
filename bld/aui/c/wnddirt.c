@@ -33,6 +33,9 @@
 #include "_aui.h"
 #include <stdlib.h>
 
+
+bool    WndDoingRefresh = false;
+
 static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, wnd_colidx colidx, wnd_colidx end_colidx )
 {
     int         i;
@@ -155,8 +158,6 @@ void    WndPieceDirty( a_window wnd, wnd_row row, wnd_piece piece )
     WndDirtyScreenPiece( wnd, &coord );
 }
 
-
-bool            WndDoingRefresh = false;
 
 bool    WndStopRefresh( bool stop )
 {

@@ -117,7 +117,7 @@ main(
 
     src = argv[1];
     dst = buf;
-    while( *src ) {
+    while( *src != '\0' ) {
         if( *src == '\\' ) {
             *dst++ = '\\';
         }

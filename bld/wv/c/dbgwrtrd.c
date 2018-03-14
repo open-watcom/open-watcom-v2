@@ -67,18 +67,15 @@ void InitRunThreadInfo( void )
 {
     int     Width;
     int     i;
-    bool    ok;
 
     PieceCount = 0;
     Indents[0] = 0;
 
     for(i  = 0; i < MAX_PIECE_COUNT; i++ ) {
-        ok = RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE );
-        if( ok ) {
-            Indents[PieceCount + 1] = Indents[PieceCount] + (unsigned char)Width;
-            PieceCount++;
-        } else
+        if( !RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE ) )
             break;
+        Indents[PieceCount + 1] = Indents[PieceCount] + (unsigned char)Width;
+        PieceCount++;
     }
 }
 

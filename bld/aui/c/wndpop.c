@@ -176,9 +176,8 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
 
     WndClrSwitches( wnd, WSW_SELECTING | WSW_SELECTING_WITH_KEYBOARD );
     WndSelEnds( wnd, &start, &end );
-    if( WndSwitchOff( wnd, WSW_SUBWORD_SELECT ) ||
-        ( start->row == end->row &&
-          start->piece == end->piece && start->colidx == end->colidx ) ) {
+    if( WndSwitchOff( wnd, WSW_SUBWORD_SELECT )
+      || ( start->row == end->row && start->piece == end->piece && start->colidx == end->colidx ) ) {
         WndGetLine( wnd, start->row, start->piece, &line );
         GoBackward( wnd, start, &line );
         WndGetLine( wnd, end->row, end->piece, &line );

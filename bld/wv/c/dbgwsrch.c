@@ -305,8 +305,7 @@ OVL_EXTERN void     SrchRefresh( a_window wnd )
     } else {
         for( i = 0; i < srch->num_rows; ++i ) {
             found = &srch->found[i];
-            found->open = CheckOpenGadget( wnd, i, found->open,
-                           found->mod, true, PIECE_OPENER );
+            found->open = CheckOpenGadget( wnd, i, found->open, found->mod, true, PIECE_OPENER );
         }
     }
 }

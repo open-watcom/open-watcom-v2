@@ -32,4 +32,4 @@
 
 extern ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *menuitems,
                                         gui_mouse_track track, gui_ctl_id *curr_id );
-extern void     GUIProcessMenuCurr( UIMENUITEM *menuitem );
+extern void     GUIProcessMenuCurr( UIMENUITEM *currmenuitem );

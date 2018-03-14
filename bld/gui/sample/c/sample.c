@@ -617,14 +617,16 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             ResDialogCreate( MainWnd );
             {
                 gui_menu_struct *menu;
-                int             num;
-                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num );
-                if( menu && num ) {
-                    int     i;
-                    for( i = 0; i < num; i++ ) {
-                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[i], false );
+                int             num_items;
+
+                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num_items );
+                if( menu != NULL && num_items > 0 ) {
+                    int     item;
+
+                    for( item = 0; item < num_items; item++ ) {
+                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[item], false );
                     }
-                    GUIFreeGUIMenuStruct( menu, num );
+                    GUIFreeGUIMenuStruct( menu, num_items );
                 }
             }
             break;
@@ -991,8 +993,7 @@ static void InitIndent( gui_window *gui, int num_rows, out_info *out )
 
     max_length = 0;
     for( i = 0; i < num_rows; i++ ) {
-        extent = GUIGetExtentX( gui, out->display[i].data,
-                        strlen( out->display[i].data ) );
+        extent = GUIGetExtentX( gui, out->display[i].data, strlen( out->display[i].data ) );
         if( extent > max_length ) {
             max_length = extent;
         }
@@ -1002,8 +1003,7 @@ static void InitIndent( gui_window *gui, int num_rows, out_info *out )
     }
 }
 
-static int GetStringIndent( int *indent, gui_ord hscroll,
-                            gui_text_metrics *metrics )
+static int GetStringIndent( int *indent, gui_ord hscroll, gui_text_metrics *metrics )
 {
     int string_indent;
 
@@ -1286,13 +1286,13 @@ bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 static bool Enabled = true;
 #endif
 
-static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
+static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
 {
     gui_menu_struct     *child;
     int                 child_num_items;
 
     while( num_items-- > 0 ) {
-        if( sub ) {
+        if( submenu ) {
             GUIAppendMenuToPopup( gui, popup_id, menu, true );
         } else {
             child = menu->child;

@@ -33,7 +33,7 @@
 #ifndef _GUIRMENU_H_
 #define _GUIRMENU_H_
 
-bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num );
-void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num );
+bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num_items );
+void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num_items );
 
 #endif

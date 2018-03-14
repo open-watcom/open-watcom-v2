@@ -58,6 +58,7 @@
 #include "toolbr.h"
 #include "guihint.h"
 
+
 #define GUI_IS_GUI
 
 typedef enum flags {
@@ -80,10 +81,10 @@ typedef enum flags {
     UTILITY_BIT         = 0x8000,
 } gui_flags;
 
-#define GUI_HRANGE_SET( wnd ) ( ( wnd->flags & HRANGE_SET ) != 0 )
-#define GUI_VRANGE_SET( wnd ) ( ( wnd->flags & VRANGE_SET ) != 0 )
+#define GUI_HRANGE_SET( wnd )   ( (wnd->flags & HRANGE_SET) != 0 )
+#define GUI_VRANGE_SET( wnd )   ( (wnd->flags & VRANGE_SET) != 0 )
 
-#define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & IS_DIALOG ) != 0 )
+#define GUI_IS_DIALOG( wnd )    ( (wnd->flags & IS_DIALOG) != 0 )
 
 typedef struct wnd_colour {
     WPI_COLOUR fore;
@@ -156,7 +157,7 @@ struct gui_window {
     void                *extra;
     HWND                status;
     int                 num_items;
-    gui_menu_struct     *mainmenu;
+    gui_menu_struct     *menu;
     hintinfo            hint;
     int                 hrange;
     int                 vrange;
@@ -173,14 +174,14 @@ struct gui_window {
     gui_paint_info      hwnd_pinfo;
 };
 
-#define GUI_DO_HSCROLL( wnd )   ( ( ( wnd->scroll & GUI_HSCROLL ) != 0 ) && \
-                                  ( ( wnd->style & GUI_HSCROLL_EVENTS ) == 0 ) )
-#define GUI_DO_VSCROLL( wnd )   ( ( ( wnd->scroll & GUI_VSCROLL ) != 0 ) && \
-                                  ( ( wnd->style & GUI_VSCROLL_EVENTS ) == 0 ) )
-#define GUI_VSCROLL_ON( wnd )   ( ( wnd->scroll & GUI_VSCROLL ) != 0 )
-#define GUI_HSCROLL_ON( wnd )   ( ( wnd->scroll & GUI_HSCROLL ) != 0 )
-#define GUI_HSCROLL_COLS( wnd ) ( ( wnd->scroll & GUI_HCOLS ) != 0 )
-#define GUI_VSCROLL_ROWS( wnd ) ( ( wnd->scroll & GUI_VROWS ) != 0 )
+#define GUI_DO_HSCROLL( wnd )   ( ( (wnd->scroll & GUI_HSCROLL) != 0 ) && \
+                                  ( (wnd->style & GUI_HSCROLL_EVENTS) == 0 ) )
+#define GUI_DO_VSCROLL( wnd )   ( ( (wnd->scroll & GUI_VSCROLL) != 0 ) && \
+                                  ( (wnd->style & GUI_VSCROLL_EVENTS) == 0 ) )
+#define GUI_VSCROLL_ON( wnd )   ( (wnd->scroll & GUI_VSCROLL) != 0 )
+#define GUI_HSCROLL_ON( wnd )   ( (wnd->scroll & GUI_HSCROLL) != 0 )
+#define GUI_HSCROLL_COLS( wnd ) ( (wnd->scroll & GUI_HCOLS) != 0 )
+#define GUI_VSCROLL_ROWS( wnd ) ( (wnd->scroll & GUI_VROWS) != 0 )
 
 #define AVGXCHAR( tm ) ( _wpi_metricavecharwidth(tm) + _wpi_metricoverhang( tm ) )
 #define AVGYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )

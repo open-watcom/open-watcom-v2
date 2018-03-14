@@ -217,8 +217,7 @@ bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type )
 
     if( GetStructNum( &wnd->hint, type, &hint, &hint_num_items ) ) {
         new_num = CountMenus( menu );
-        new_hint = (gui_hint_struct *)GUIMemRealloc( hint,
-                        ( hint_num_items + new_num ) * sizeof( gui_hint_struct ) );
+        new_hint = (gui_hint_struct *)GUIMemRealloc( hint, ( hint_num_items + new_num ) * sizeof( gui_hint_struct ) );
         if( new_hint == NULL ) {
             return( false );
         }

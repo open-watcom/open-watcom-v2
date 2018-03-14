@@ -337,7 +337,7 @@ wnd_info IOInfo = {
 void IONewAddr( a_window wnd, address *addr, int type )
 {
     IOAddNewAddr( wnd, addr, type );
-    IOMenuItem( wnd, MENU_IO_READ, WndIO( wnd )->num_rows-1, PIECE_VALUE );
+    IOMenuItem( wnd, MENU_IO_READ, WndIO( wnd )->num_rows - 1, PIECE_VALUE );
     WndSetRepaint( wnd );
 }
 

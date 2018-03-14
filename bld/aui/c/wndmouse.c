@@ -50,8 +50,10 @@ static void WndSetMouseRow( a_window wnd, void *parm )
     gui_point           point;
 
     GUI_GET_POINT( parm, point );
-    if( point.x < 0 ) point.x = 0;
-    if( point.y < 0 ) point.y = 0;
+    if( point.x < 0 )
+        point.x = 0;
+    if( point.y < 0 )
+        point.y = 0;
     MouseRow = GUIGetRow( wnd->gui, &point );
     if( MouseRow > wnd->rows ) {
         MouseRow = WND_NO_ROW;
@@ -84,8 +86,10 @@ static void WndButtonChange( a_window wnd, wnd_coord *point, bool down )
 void WndLButtonDown( a_window wnd, void *parm )
 {
     MouseLine.hot = false;
-    if( !FindPoint( wnd, parm, true, &MouseDownLoc ) ) return;
-    if( !WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine ) ) return;
+    if( !FindPoint( wnd, parm, true, &MouseDownLoc ) )
+        return;
+    if( !WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine ) )
+        return;
     LButtonDownOnHot = MouseLine.hot;
     LButtonIsDown = true;
     if( MouseLine.hot ) {
@@ -130,7 +134,8 @@ void WndLDblClk( a_window wnd, void *parm )
         WndLButtonUp( wnd, parm );
     } else {
         LButtonIsDown = false;
-        if( MouseLine.static_text ) return;
+        if( MouseLine.static_text )
+            return;
 //      if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ) return;
         FindPoint( wnd, parm, true, &MouseUpLoc );
         WndSetMouseRow( wnd, parm );
@@ -175,7 +180,8 @@ void WndRButtonUp( a_window wnd, void *parm )
     gui_point           point;
 
     RButtonIsDown = false;
-//    if( !FindPoint( wnd, parm, false, &MouseUpLoc ) ) return;
+//    if( !FindPoint( wnd, parm, false, &MouseUpLoc ) )
+//        return;
     FindPoint( wnd, parm, false, &MouseUpLoc );
     WndSetMouseRow( wnd, parm );
     WndSelPopItem( wnd, parm, true );

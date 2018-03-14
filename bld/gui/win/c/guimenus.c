@@ -582,11 +582,10 @@ void GUICreateMenuFlags( gui_menu_styles style, unsigned *menu_flags, unsigned *
     }
 }
 
-HMENU GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu,
-                        hint_type type )
+HMENU GUICreateSubMenu( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type )
 {
     HMENU       hmenu;
-    int         i;
+    int         item;
     HMENU       submenu;
     unsigned    menu_flags;
     unsigned    attr_flags;
@@ -595,17 +594,14 @@ HMENU GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu,
     if( hmenu == NULLHANDLE ) {
         return( NULLHANDLE );
     }
-    for( i = 0; i < num; i++ ) {
-        GUICreateMenuFlags( menu[i].style, &menu_flags, &attr_flags );
-        if( menu[i].child_num_items ) {
-            submenu = GUICreateSubMenu( wnd, menu[i].child_num_items,
-                                        menu[i].child, type );
-            _wpi_appendmenu( hmenu, MF_POPUP | menu_flags, attr_flags,
-                             menu[i].id, submenu, menu[i].label );
-            InsertPopup( wnd, menu[i].id, submenu, type );
+    for( item = 0; item < num_items; item++ ) {
+        GUICreateMenuFlags( menu[item].style, &menu_flags, &attr_flags );
+        if( menu[item].child_num_items ) {
+            submenu = GUICreateSubMenu( wnd, menu[item].num_child_menus, menu[item].child, type );
+            _wpi_appendmenu( hmenu, MF_POPUP | menu_flags, attr_flags, menu[item].id, submenu, menu[item].label );
+            InsertPopup( wnd, menu[item].id, submenu, type );
         } else {
-            _wpi_appendmenu( hmenu, menu_flags, attr_flags,
-                             menu[i].id, NULLHANDLE, menu[i].label );
+            _wpi_appendmenu( hmenu, menu_flags, attr_flags, menu[item].id, NULLHANDLE, menu[item].label );
         }
     }
     return( hmenu );
@@ -615,18 +611,16 @@ HMENU GUICreateSubMenu( gui_window *wnd, int num, gui_menu_struct *menu,
  * AppendMenus -- menu items to a HMENU
  */
 
-static bool AppendMenus( gui_window *wnd, HMENU main, int num, gui_menu_struct *menu )
+static bool AppendMenus( gui_window *wnd, HMENU main, int num_items, gui_menu_struct *menu )
 {
-    int                 i;
+    int                 item;
     HMENU               hmenu;
 
     for( i = 0; i < num; i++ ) {
-        hmenu = GUICreateSubMenu( wnd, menu[i].child_num_items,
-                                  menu[i].child, MENU_HINT );
+        hmenu = GUICreateSubMenu( wnd, menu[item].child_num_items, menu[item].child, MENU_HINT );
         if( hmenu != NULLHANDLE ) {
-            _wpi_appendmenu( main, MF_STRING | MF_POPUP, MF_ENABLED,
-                             menu[i].id, hmenu, menu[i].label );
-            InsertPopup( wnd, menu[i].id, hmenu, MENU_HINT );
+            _wpi_appendmenu( main, MF_STRING | MF_POPUP, MF_ENABLED, menu[item].id, hmenu, menu[item].label );
+            InsertPopup( wnd, menu[item].id, hmenu, MENU_HINT );
         }
     }
     return( true );
@@ -636,20 +630,20 @@ static bool AppendMenus( gui_window *wnd, HMENU main, int num, gui_menu_struct *
  * GUICreateMenus -- create a menu resourse
  */
 
-bool GUICreateMenus( gui_window *wnd, int num, gui_menu_struct *menu, HMENU *hmenu )
+bool GUICreateMenus( gui_window *wnd, int num_items, gui_menu_struct *menu, HMENU *hmenu )
 {
     if( hmenu == NULL ) {
         return( false );
     }
     *hmenu = NULLHANDLE;
-    if( num == 0 ) {
+    if( num_items == 0 ) {
         return( true );
     }
     *hmenu = _wpi_createmenu();
     if( *hmenu == NULLHANDLE ) {
         return( false );
     }
-    return( AppendMenus( wnd, *hmenu, num, menu ) );
+    return( AppendMenus( wnd, *hmenu, num_items, menu ) );
 }
 
 /*
@@ -701,8 +695,7 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_to_add,
  * DisplayMenuHintText -- display hint text for a menu item
  */
 
-static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam,
-                                 WPI_PARAM2 lparam, hint_type type )
+static void DisplayMenuHintText( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam, hint_type type )
 {
     gui_window          *top_wnd;
     gui_menu_styles     style;

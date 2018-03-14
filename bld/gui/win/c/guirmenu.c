@@ -33,17 +33,14 @@
 #include "guiwind.h"
 #include "guirmenu.h"
 
-void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
+void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num_items )
 {
-    entry=entry;
-    num=num;
+    /* unused parameters */ (void)entry; (void)num_items;
 }
 
-bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num )
+bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num_items )
 {
-    menu_id=menu_id;
-    menu=menu;
-    num=num;
+    /* unused parameters */ (void)menu_id; (void)menu; (void)num_items;
 
     return( false );
 }
