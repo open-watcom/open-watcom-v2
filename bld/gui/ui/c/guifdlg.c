@@ -217,7 +217,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname, char *ex
     /* process node/drive specification */
     startp = path;
     if( path[0] == FILE_SEP_CHAR && path[1] == FILE_SEP_CHAR ) {
-        for( path += 2; (ch = *path) == '\0'; path++ ) {
+        for( path += 2; (ch = *path) != '\0'; path++ ) {
             if( ch == FILE_SEP_CHAR || ch == '.' ) {
                 break;
             }
@@ -242,7 +242,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname, char *ex
     fnamep = path;
     startp = path;
 
-    for( ; (ch = *path) == '\0'; path++ ) {
+    for( ; (ch = *path) != '\0'; path++ ) {
         if( ch == '.' ) {
             dotp = path;
             continue;
@@ -387,11 +387,11 @@ static bool hasWild( const char *txt )
 /*
  * addToList - add an item to a list of items
  */
-static bool addToList( const char ***list, int num, const char *data, size_t len )
+static bool addToList( const char ***list, int num_items, const char *data, size_t len )
 {
     char    *str;
 
-    *list = (const char **)GUIMemRealloc( (void *)*list, ( num + 2 ) * sizeof( char * ) );
+    *list = (const char **)GUIMemRealloc( (void *)*list, ( num_items + 2 ) * sizeof( char * ) );
     if( *list == NULL ) {
         return( false );
     }
@@ -401,8 +401,8 @@ static bool addToList( const char ***list, int num, const char *data, size_t len
         return( false );
     }
     memcpy( str, data, len );
-    (*list)[num] = str;
-    (*list)[num + 1] = NULL;
+    (*list)[num_items] = str;
+    (*list)[num_items + 1] = NULL;
     return( true );
 
 } /* addToList */
@@ -432,22 +432,22 @@ static void freeStringList( const char ***list )
 static bool buildDriveList( void )
 {
     char        drv;
-    int         item;
+    int         num_items;
     char        str[_MAX_PATH];
     const char  **list;
 
-    item = 0;
+    num_items = 0;
     list = NULL;
     for( drv = 'A'; drv <= 'Z'; drv++ ) {
         if( getDriveType( drv ) != DRIVE_NONE ) {
             str[0] = drv;
             str[1] = ':';
             str[2] = '\0';
-            if( !addToList( &list, item, str, 2 ) ) {
+            if( !addToList( &list, num_items, str, 2 ) ) {
                 freeStringList( &list );
                 break;
             }
-            item++;
+            num_items++;
         }
     }
     SetDriveTextList( list );
@@ -464,27 +464,27 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
     size_t      len;
     const char  **list1;
     const char  **list2;
-    int         num;
+    int         num_items;
     bool        ok;
 
     list1 = NULL;
     list2 = NULL;
     if( data != NULL ) {
-        num = 0;
+        num_items = 0;
         ok = true;
         for( ; *data != '\0'; data += len + 1 ) {
             len = strlen( data );
-            ok = addToList( &list1, num, data, len );
+            ok = addToList( &list1, num_items, data, len );
             if( !ok ) {
                 break;
             }
             data += len + 1;
             len = strlen( data );
-            ok = addToList( &list2, num, data, len );
+            ok = addToList( &list2, num_items, data, len );
             if( !ok ) {
                 break;
             }
-            num++;
+            num_items++;
         }
         if( !ok ) {
             freeStringList( &list1 );
