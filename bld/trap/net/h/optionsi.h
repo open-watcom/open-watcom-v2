@@ -31,5 +31,3 @@
 
 
 #define IDDI_SOCKET_NUMBER   101
-
-extern WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

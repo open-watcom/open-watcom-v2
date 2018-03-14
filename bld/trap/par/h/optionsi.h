@@ -35,5 +35,3 @@
 #define IDDI_LPT3        103
 #define IDDI_PORT        104
 #define IDDI_PORT_EDIT   105
-
-extern WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
