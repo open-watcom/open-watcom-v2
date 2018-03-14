@@ -34,7 +34,7 @@
 #include "srcmgt.h"
 #include "srcmgt.def"
 
-main()
+int main( void )
 {
     char        buff[256];
     struct browser *fp;
@@ -43,12 +43,13 @@ main()
     int         got;
 
     fp = FOpenSource( "testsrcm.c", 0, 0 );
-    if( fp == NULL ) return;
-    for( i = 1; FReadLine( fp, i, 0, buff, 256 ) != -1; ++i ) {
+    if( fp != NULL ) {
+        for( i = 1; FReadLine( fp, i, 0, buff, 256 ) != FREADLINE_ERROR; ++i ) {
+        }
+        for( --i; i >= 1; --i ) {
+            buff[FReadLine( fp, i, 0, buff, 256 )] = '\0';
+            printf( "%s\n", buff );
+        }
+        FDoneSource( fp );
     }
-    for( --i; i >= 1; --i ) {
-        buff[ FReadLine( fp, i, 0, buff, 256 ) ] = '\0';
-        printf( "%s\n", buff );
-    }
-    FDoneSource( fp );
 }

@@ -131,7 +131,7 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
         return( WR_CONTINUE );
     DIPCueFile( ch, TxtBuff, TXT_LEN );
     WndStatusText( TxtBuff );
-    for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) >= 0; ++i ) {
+    for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) != FREADLINE_ERROR; ++i ) {
         TxtBuff[len] = NULLCHAR;
         pos = TxtBuff;
         endpos = NULL;
@@ -151,6 +151,8 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             break;
         }
     }
+    if( len == FREADLINE_ERROR )
+        TxtBuff[0] = NULLCHAR;
     FDoneSource( viewhndl );
     return( WR_CONTINUE );
 }

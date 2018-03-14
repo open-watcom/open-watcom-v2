@@ -48,15 +48,14 @@
 #include "wpsrcfil.h"
 
 
-STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,
-                            file_info *, rtn_info *  );
+STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *, file_info *, rtn_info *  );
 
 char *WPSourceGetLine( a_window wnd, int line )
 /*********************************************/
 {
-    sio_data *      curr_sio;
-    wp_srcfile *    wp_src;
-    int             buff_len;
+    sio_data        *curr_sio;
+    wp_srcfile      *wp_src;
+    size_t          buff_len;
 
     curr_sio = WndExtra( wnd );
     wp_src = curr_sio->src_file;
@@ -65,15 +64,15 @@ char *WPSourceGetLine( a_window wnd, int line )
         wp_src->src_buff_len = 100;
     }
     for( ;; ) {
-        buff_len = FReadLine( wp_src->src_file, line, 0, wp_src->src_buff,
-                              wp_src->src_buff_len );
-        if( buff_len != wp_src->src_buff_len ) break;
+        buff_len = FReadLine( wp_src->src_file, line, 0, wp_src->src_buff, wp_src->src_buff_len );
+        if( buff_len != wp_src->src_buff_len )
+            break;
         wp_src->src_buff_len += 120;
-        wp_src->src_buff = ProfRealloc( wp_src->src_buff,
-                                        wp_src->src_buff_len );
+        wp_src->src_buff = ProfRealloc( wp_src->src_buff, wp_src->src_buff_len );
     }
-    if( buff_len < 0 ) {
+    if( buff_len == FREADLINE_ERROR ) {
         wp_src->src_eof = true;
+        wp_src->src_buff[0] = NULLCHAR;
         return( NULL );
     }
     wp_src->src_eof = false;

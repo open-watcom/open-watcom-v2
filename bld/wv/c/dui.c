@@ -351,14 +351,17 @@ void DUIExitCriticalSection( void )
 {
 }
 
-bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
+bool DUIGetSourceLine( cue_handle *ch, char *buff, size_t len )
 {
     void        *viewhndl;
 
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL )
         return( false );
-    buff[FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len )] = NULLCHAR;
+    len = FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len );
+    if( len == FREADLINE_ERROR )
+        len = 0;
+    buff[len] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }

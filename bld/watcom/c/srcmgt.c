@@ -178,7 +178,7 @@ void FDoneSource( browser *hndl )
 
 static int get_block( browser *hndl, unsigned long off )
 {
-    int                 len;
+    sm_read_len         len;
     unsigned long       loc;
 
     if( off >= hndl->eof_off )
@@ -192,7 +192,7 @@ static int get_block( browser *hndl, unsigned long off )
     if( off + len > hndl->eof_off )
         len = hndl->eof_off - off;
     len = SMReadStream( hndl->fp, hndl->line_buf, len );
-    if( len <= 0 ) {       /*sf ReadStream returns -1 on error */
+    if( SMReadError( hndl->fp, len ) ) {
         hndl->eof_off = off;
         return( 0 );
     }
@@ -283,7 +283,7 @@ int FCurrLine( browser *hndl )
 }
 
 
-int FReadLine( browser *hndl, int line, int off, char *buff, int size )
+size_t FReadLine( browser *hndl, int line, int off, char *buff, size_t buff_len )
 {
     int         i;
     char        *ptr;
@@ -303,17 +303,17 @@ int FReadLine( browser *hndl, int line, int off, char *buff, int size )
     if( i < 0 ) {
         do {
             if( !next_src_line( hndl ) ) {
-                return( -1 );
+                return( FREADLINE_ERROR );
             }
         } while( ++i != 0 );
     } else if( i > 0 ) {
         do {
             if( !prev_src_line( hndl ) ) {
-                return( -1 );
+                return( FREADLINE_ERROR );
             }
         } while( --i != 0 );
     }
-    if( size == 0 )
+    if( buff_len == 0 )
         return( 0 );
     ptr = buff;
     i = 0;
@@ -323,7 +323,7 @@ int FReadLine( browser *hndl, int line, int off, char *buff, int size )
         } while( ch == SM_CR );
         if( ch == -1 ) {
             if( i == 0 ) {
-                return( -1 );
+                return( FREADLINE_ERROR );
             } else {
                 ch = SM_LF;
             }
@@ -342,7 +342,7 @@ int FReadLine( browser *hndl, int line, int off, char *buff, int size )
                     break;
                 if( i >= off ) {
                     *ptr++ = ' ';
-                    if( --size == 0 ) {
+                    if( --buff_len == 0 ) {
                         break;
                     }
                 }
@@ -351,11 +351,11 @@ int FReadLine( browser *hndl, int line, int off, char *buff, int size )
         } else {
             if( i >= off ) {
                 *ptr++ = ch;
-                --size;
+                --buff_len;
             }
             ++i;
         }
-    } while( size > 0 );
+    } while( buff_len > 0 );
     while( ch != SM_LF ) {
         ch = next_src_chr( hndl );
         if( ch == -1 ) {

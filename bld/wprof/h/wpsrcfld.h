@@ -46,7 +46,7 @@ typedef struct wp_srcfile {
     int                         wp_line_count;
     int                         rtn_line;
     int                         samp_line;
-    int                         src_buff_len;
+    size_t                      src_buff_len;
     int                         src_rows;
     bool                        src_eof         : 1;
 } wp_srcfile;

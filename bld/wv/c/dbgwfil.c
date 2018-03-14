@@ -291,6 +291,7 @@ static void FilePos( a_window wnd, int pos )
 {
     unsigned long       range;
     file_window *file = WndFile( wnd );
+    size_t              len;
 
     if( pos < 0 )
         pos = 0;
@@ -300,12 +301,15 @@ static void FilePos( a_window wnd, int pos )
         WndSetTop( wnd, pos );
         return;
     }
-    if( FReadLine( file->viewhndl, pos + WndRows( wnd ), 0, TxtBuff, TXT_LEN ) < 0 ) {
+    len = FReadLine( file->viewhndl, pos + WndRows( wnd ), 0, TxtBuff, TXT_LEN );
+    if( len == FREADLINE_ERROR ) {
+        len = 0;
         pos = FCurrLine( file->viewhndl ) - WndRows( wnd ) - 1;
         if( pos < 0 ) {
             pos = 0;
         }
     }
+    TxtBuff[len] = NULLCHAR;
     WndSetTop( wnd, pos );
     if( pos >= file->rows ) {
         file->rows = pos + 1;
@@ -422,7 +426,7 @@ void FileBreakGadget( a_window wnd, wnd_line_piece *line, bool curr, brkp *bp )
 
 OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
-    int         len;
+    size_t      len;
     file_window *file = WndFile( wnd );
     address     addr;
     brkp        *bp;
@@ -467,12 +471,16 @@ OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
             }
             return( true );
         }
-        len = FReadLine( file->viewhndl, row + 1, 0, TxtBuff, MAX_LINE_LEN );
-        if( len < 0 ) {
+        len = FReadLine( file->viewhndl, row + 1, 0, TxtBuff, MAX_LINE_LEN + 1 );
+        if( len == FREADLINE_ERROR ) {
+            TxtBuff[0] = NULLCHAR;
             file->eof = row;
             return( false );
         }
-        if( len == MAX_LINE_LEN ) {
+        if( len > MAX_LINE_LEN ) {
+            /* TxtBuff has length TXT_LEN which is significantly bigger
+             * then MAX_LINE_LEN + 4, there is enough space to add overflow mark
+             */
             StrCopy( " ...", TxtBuff + MAX_LINE_LEN );
         } else {
             TxtBuff[len] = NULLCHAR;
@@ -490,8 +498,13 @@ OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
 
 static void SeekToTheEnd( file_window *file )
 {
+    size_t  len;
+
     if( file->viewhndl != NULL && !FileIsRemote( file->viewhndl ) ) {
-        FReadLine( file->viewhndl, INT_MAX, 0, TxtBuff, TXT_LEN );
+        len = FReadLine( file->viewhndl, INT_MAX, 0, TxtBuff, TXT_LEN );
+        if( len == FREADLINE_ERROR )
+            len = 0;
+        TxtBuff[len] = NULLCHAR;
         file->rows = FCurrLine( file->viewhndl ) - 1;
         file->rows_offset = FLastOffset( file->viewhndl );
     } else {

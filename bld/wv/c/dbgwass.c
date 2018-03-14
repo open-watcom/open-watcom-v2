@@ -667,7 +667,7 @@ OVL_EXTERN  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
     int         indent;
     bool        curr;
     unsigned    src_line;
-    int         len;
+    size_t      len;
     bool        rc;
     mad_radix   old_radix;
     char        buff[TXT_LEN];
@@ -744,9 +744,9 @@ OVL_EXTERN  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_
                 Format( TxtBuff, LIT_DUI( No_Source_Line ), src_line );
                 if( asw->viewhndl != NULL ) {
                     len = FReadLine( asw->viewhndl, src_line, 0, TxtBuff, TXT_LEN );
-                    if( len > 0 ) {
-                        TxtBuff[len] = NULLCHAR;
-                    }
+                    if( len == FREADLINE_ERROR )
+                        len = 0;
+                    TxtBuff[len] = NULLCHAR;
                 }
             }
         } else {

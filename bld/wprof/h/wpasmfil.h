@@ -60,7 +60,7 @@ typedef struct wp_asmfile {
     FILE                        *fp;
     char                        *asm_buff;
     clicks_t                    max_time;
-    int                         asm_buff_len;
+    size_t                      asm_buff_len;
     int                         asm_rows;
     int                         asm_groups;
     int                         entry_line;

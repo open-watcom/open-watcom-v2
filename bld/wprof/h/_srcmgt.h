@@ -41,6 +41,7 @@
 #define sm_file_handle                  FILE *
 #define sm_mod_handle                   int
 #define sm_cue_fileid                   int
+#define sm_read_len                     size_t
 
 #define SM_NO_MOD                       ((sm_mod_handle)-1)
 #define SM_BUF_SIZE                     512UL
@@ -57,6 +58,7 @@
 #define SMClose( fp )                   fclose( fp )
 
 #define SMReadStream( fp, buff, len )   fread( buff, 1, len, fp )
+#define SMReadError( fp, len )          ( ferror( fp ) != 0 )
 
 #define SMFileRemote( fp )              0
 
