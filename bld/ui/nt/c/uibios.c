@@ -76,15 +76,12 @@ bool intern initbios( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO  sbi;
 
-    InputHandle = CreateFile( "CONIN$", GENERIC_READ | GENERIC_WRITE,
-                        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                        OPEN_EXISTING, 0, NULL );
+    InputHandle = CreateFile( "CONIN$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
     GetConsoleMode( InputHandle, &oldInputMode );
     SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_EXTENDED_FLAGS );
 
     oldOutputHandle = GetStdHandle( STD_OUTPUT_HANDLE );
-    OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
-                0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
+    OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
     SetConsoleMode( OutputHandle, 0 );
     SetConsoleActiveScreenBuffer( OutputHandle );
     SetConsoleCtrlHandler( consoleHandler, true );
