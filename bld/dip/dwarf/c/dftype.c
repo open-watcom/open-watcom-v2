@@ -821,15 +821,15 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
 }
 
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                                imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
 {
-    long diff;
-
     /* unused parameters */ (void)ii;
 
-    diff = it1->type - it2->type;
-    return( diff );
+    if( it1->type < it2->type )
+        return( -1 );
+    if( it1->type > it2->type )
+        return( 1 );
+    return( 0 );
 }
 /*****************************/
 /* Structure Enum Walks      */

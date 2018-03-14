@@ -2219,7 +2219,11 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type
 {
     /* unused parameters */ (void)ii;
 
-    return( it2->idx - it1->idx );
+    if( it2->idx < it1->idx )
+        return( -1 );
+    if( it2->idx > it1->idx )
+        return( 1 );
+    return( 0 );
 }
 
 size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,

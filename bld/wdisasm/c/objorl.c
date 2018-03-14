@@ -133,7 +133,11 @@ static void finiBuffer( buffer_info *file )
 static int numberCmp( hash_value n1, hash_value n2 )
 //**************************************************
 {
-    return( n1 - n2 );
+    if( n1 < n2 )
+        return( -1 );
+    if( n1 > n2 )
+        return( 1 );
+    return( 0 );
 }
 
 static void createHashTables( void )

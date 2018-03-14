@@ -322,14 +322,19 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( ret.ret );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                                imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
 {
-    if( ic1->cc     < ic2->cc     ) return( -1 );
-    if( ic1->cc     > ic2->cc     ) return( +1 );
-    if( ic1->mb_idx < ic2->mb_idx ) return( -1 );
-    if( ic1->mb_idx > ic2->mb_idx ) return( +1 );
-    if( ic1->ln_idx < ic2->ln_idx ) return( -1 );
-    if( ic1->ln_idx > ic2->ln_idx ) return( +1 );
+    if( ic1->cc < ic2->cc )
+        return( -1 );
+    if( ic1->cc > ic2->cc )
+        return( 1 );
+    if( ic1->mb_idx < ic2->mb_idx )
+        return( -1 );
+    if( ic1->mb_idx > ic2->mb_idx )
+        return( 1 );
+    if( ic1->ln_idx < ic2->ln_idx )
+        return( -1 );
+    if( ic1->ln_idx > ic2->ln_idx )
+        return( 1 );
     return( 0 );
 }

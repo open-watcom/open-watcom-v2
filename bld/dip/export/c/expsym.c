@@ -270,8 +270,7 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
 {
     void        *g1;
     void        *g2;
@@ -287,11 +286,22 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 
         s1 = FP_SEG( g1 );
         s2 = FP_SEG( g2 );
-        if( s1 != s2 ) return( s1 - s2 );
-        return( FP_OFF( g1 ) - FP_OFF( g2 ) );
+        if( s1 < s2 )
+            return( -1 );
+        if( s1 > s2 )
+            return( 1 );
+        if( FP_OFF( g1 ) < FP_OFF( g2 ) )
+            return( -1 );
+        if( FP_OFF( g1 ) > FP_OFF( g2 ) )
+            return( 1 );
+        return( 0 );
     }
 #else
-    return( (char*)g1 - (char*)g2 );
+    if( (char*)g1 < (char*)g2 )
+        return( -1 );
+    if( (char*)g1 > (char*)g2 )
+        return( 1 );
+    return( 0 );
 #endif
 }
 

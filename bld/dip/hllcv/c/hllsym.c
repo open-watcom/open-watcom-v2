@@ -2483,35 +2483,34 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
  * The reason for the constraints is so that a client can sort a
  * list of handles and binary search them.
  */
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii,
-                           imp_sym_handle *is1, imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
 {
-    ii = ii;
-    if( is1->handle < is2->handle ) {
+    /* unused parameters */ (void)ii;
+
+    if( is1->handle < is2->handle )
         return( -1 );
-    }
-    if( is1->handle > is2->handle ) {
+    if( is1->handle > is2->handle )
         return( 1 );
-    }
     return( 0 );
 }
 
 dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     return( DS_OK );
 }

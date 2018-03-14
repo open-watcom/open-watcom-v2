@@ -527,16 +527,21 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( SR_CLOSEST );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                                imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
 {
     /* unused parameters */ (void)ii;
 
-    if( ic1->im != ic2->im )
-        return( ic1->im - ic2->im );
+    if( ic1->im < ic2->im )
+        return( -1 );
+    if( ic1->im > ic2->im )
+        return( 1 );
     if( ic1->line < ic2->line )
         return( -1 );
     if( ic1->line > ic2->line )
-        return( +1 );
-    return( ic1->pair - ic2->pair );
+        return( 1 );
+    if( ic1->pair < ic2->pair )
+        return( -1 );
+    if( ic1->pair > ic2->pair )
+        return( 1 );
+    return( 0 );
 }

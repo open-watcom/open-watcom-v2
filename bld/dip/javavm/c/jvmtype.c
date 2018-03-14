@@ -283,11 +283,12 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
     return( DS_OK );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                                imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
 {
-    if( it1->sig < it2->sig ) return( -1 );
-    if( it1->sig > it2->sig ) return( +1 );
+    if( it1->sig < it2->sig )
+        return( -1 );
+    if( it1->sig > it2->sig )
+        return( 1 );
     return( 0 );
 }
 

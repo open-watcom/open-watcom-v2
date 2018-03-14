@@ -511,11 +511,21 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
 
     s1 = FP_SEG( g1 );
     s2 = FP_SEG( g2 );
-    if( s1 != s2 )
-        return( s1 - s2 );
-    return( FP_OFF( g1 ) - FP_OFF( g2 ) );
+    if( s1 < s2 )
+        return( -1 );
+    if( s1 > s2 )
+        return( 1 );
+    if( FP_OFF( g1 ) < FP_OFF( g2 ) )
+        return( -1 );
+    if( FP_OFF( g1 ) > FP_OFF( g2 ) )
+        return( 1 );
+    return( 0 );
 #else
-    return( (char*)g1 - (char*)g2 );
+    if( (char*)g1 < (char*)g2 )
+        return( -1 );
+    if( (char*)g1 > (char*)g2 )
+        return( 1 );
+    return( 0 );
 #endif
 }
 
@@ -524,8 +534,10 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 {
     /* unused parameters */ (void)ii;
 
-    if( is1->im != is2->im )
-        return( is1->im - is2->im );
+    if( is1->im < is2->im )
+        return( -1 );
+    if( is1->im > is2->im )
+        return( 1 );
     switch( is1->type ) {
     case SH_GBL:
         switch( is2->type ) {
@@ -537,7 +549,7 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
             }
             /* fall through */
         default:
-             return( -1 );
+            return( -1 );
         }
     case SH_LCL:
         switch( is2->type ) {
@@ -547,7 +559,11 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
             }
             return( 1 );
         case SH_LCL:
-            return( is1->u.lcl.offset - is2->u.lcl.offset );
+            if( is1->u.lcl.offset < is2->u.lcl.offset )
+                return( -1 );
+            if( is1->u.lcl.offset > is2->u.lcl.offset )
+                return( 1 );
+            return( 0 );
         default:
             return( -1 );
         }
@@ -558,10 +574,15 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
         case SH_MBR:
         case SH_TYP:
         case SH_CST:
-            if( is1->u.typ.t.entry != is2->u.typ.t.entry ) {
-                return( is1->u.typ.t.entry - is2->u.typ.t.entry );
-            }
-            return( is1->u.typ.t.offset - is2->u.typ.t.offset );
+            if( is1->u.typ.t.entry < is2->u.typ.t.entry )
+                return( -1 );
+            if( is1->u.typ.t.entry > is2->u.typ.t.entry )
+                return( 1 );
+            if( is1->u.typ.t.offset < is2->u.typ.t.offset )
+                return( -1 );
+            if( is1->u.typ.t.offset > is2->u.typ.t.offset )
+                return( 1 );
+            return( 0 );
         default:
             return( 1 );
         }

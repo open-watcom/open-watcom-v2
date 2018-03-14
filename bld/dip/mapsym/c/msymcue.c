@@ -117,8 +117,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                                imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
 {
     /* unused parameters */ (void)ii; (void)ic1; (void)ic2;
 

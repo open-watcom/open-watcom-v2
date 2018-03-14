@@ -1216,16 +1216,21 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
  * The reason for the constraints is so that a client can sort a list of handles
  * and binary search them.
  */
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                           imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
 {
     ii = ii;
-    if( ic1->im != ic2->im )
-        return( ic1->im - ic2->im );
+    if( ic1->im < ic2->im )
+        return( -1 );
+    if( ic1->im > ic2->im )
+        return( 1 );
     if( ic1->lines < ic2->lines )
         return( -1 );
     if( ic1->lines > ic2->lines )
-        return( +1 );
-    return( ic1->cur_line - ic2->cur_line );
+        return( 1 );
+    if( ic1->cur_line < ic2->cur_line )
+        return( -1 );
+    if( ic1->cur_line > ic2->cur_line )
+        return( 1 );
+    return( 0 );
 }
 

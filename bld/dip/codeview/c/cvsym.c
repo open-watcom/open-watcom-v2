@@ -1986,15 +1986,14 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
     return( SR_CLOSEST );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
 {
     /* unused parameters */ (void)ii;
 
     if( is1->handle < is2->handle )
         return( -1 );
     if( is1->handle > is2->handle )
-        return( +1 );
+        return( 1 );
     return( 0 );
 }
 

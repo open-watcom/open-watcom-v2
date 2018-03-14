@@ -2151,12 +2151,15 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                                imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
 {
     /* unised parameters */ (void)ii;
 
-    return( it2->idx - it1->idx );
+    if( it2->idx < it1->idx )
+        return( -1 );
+    if( it2->idx > it1->idx )
+        return( 1 );
+    return( 0 );
 }
 
 size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,

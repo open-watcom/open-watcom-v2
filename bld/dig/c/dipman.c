@@ -1062,8 +1062,10 @@ int DIPTypeCmp( type_handle *th1, type_handle *th2 )
     ih = II2IH( th1->ii );
     if( ih == NULL )
         return( 0 );
-    if( th1->ii != th2->ii )
-        return( th1->ii - th2->ii );
+    if( th1->ii < th2->ii )
+        return( -1 );
+    if( th1->ii > th2->ii )
+        return( 1 );
     return( ih->dip->TypeCmp( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ) ) );
 }
 
@@ -1191,8 +1193,10 @@ int DIPSymCmp( sym_handle *sh1, sym_handle *sh2 )
     ih = II2IH( sh1->ii );
     if( ih == NULL )
         return( 0 );
-    if( sh1->ii != sh2->ii )
-        return( sh1->ii - sh2->ii );
+    if( sh1->ii < sh2->ii )
+        return( -1 );
+    if( sh1->ii > sh2->ii )
+        return( 1 );
     return( ih->dip->SymCmp( IH2IIH( ih ), SH2ISH( sh1 ), SH2ISH( sh2 ) ) );
 }
 
@@ -1350,8 +1354,10 @@ int DIPCueCmp( cue_handle *ch1, cue_handle *ch2 )
     ih = II2IH( ch1->ii );
     if( ih == NULL )
         return( 0 );
-    if( ch1->ii != ch2->ii )
-        return( ch1->ii - ch2->ii );
+    if( ch1->ii < ch2->ii )
+        return( -1 );
+    if( ch1->ii > ch2->ii )
+        return( 1 );
     return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( ch1 ), CH2ICH( ch2 ) ) );
 }
 

@@ -982,10 +982,11 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
     return( FindAScope( ii, out ) );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
 {
-    if( is1->u.fb < is2->u.fb ) return( -1 );
-    if( is1->u.fb > is2->u.fb ) return( +1 );
+    if( is1->u.fb < is2->u.fb )
+        return( -1 );
+    if( is1->u.fb > is2->u.fb )
+        return( 1 );
     return( 0 );
 }

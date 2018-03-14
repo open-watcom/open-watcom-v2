@@ -1773,10 +1773,11 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
 }
 
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
-/*******************************************************************/
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
+/*****************************************************************************************/
 {
+    /* unused parameters */ (void)ii;
+
     /* Compare two sym handles and return 0 if they refer to the same
      * information. If they refer to differnt things return either a
      * positive or negative value to impose an 'order' on the information.
@@ -1787,12 +1788,11 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
      * The reason for the constraints is so that a client can sort a
      * list of handles and binary search them.
      */
-    long    diff;
-
-    /* unused parameters */ (void)ii;
-
-    diff = is1->sym - is2->sym;
-    return( diff );
+    if( is1->sym < is2->sym )
+        return( -1 );
+    if( is1->sym > is2->sym )
+        return( 1 );
+    return( 0 );
 }
 
 

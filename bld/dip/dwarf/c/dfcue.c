@@ -622,10 +622,11 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
 }
 
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                                imp_cue_handle *ic2 )
-/*******************************************************************/
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
+/*****************************************************************************************/
 {
+    /* unused parameters */ (void)ii;
+
     /* Compare two cue handles and return 0 if they refer to the same
      * information. If they refer to differnt things return either a
      * positive or negative value to impose an 'order' on the information.
@@ -636,19 +637,21 @@ int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
      * The reason for the constraints is so that a client can sort a
      * list of handles and binary search them.
      */
-    long    ret;
-
-    /* unused parameters */ (void)ii;
-
-    ret = ic1->im - ic2->im;
-    if( ret != 0 )
-        return( ret );
-    ret = ic1->fno - ic2->fno;
-    if( ret != 0 )
-        return( ret );
-    ret = ic1->line - ic2->line;
-    if( ret != 0 )
-        return( ret );
-    ret = ic1->col - ic2->col;
-    return( ret );
+    if( ic1->im < ic2->im )
+        return( -1 );
+    if( ic1->im > ic2->im )
+        return( 1 );
+    if( ic1->fno < ic2->fno )
+        return( -1 );
+    if( ic1->fno > ic2->fno )
+        return( 1 );
+    if( ic1->line < ic2->line )
+        return( -1 );
+    if( ic1->line > ic2->line )
+        return( 1 );
+    if( ic1->col < ic2->col )
+        return( -1 );
+    if( ic1->col > ic2->col )
+        return( 1 );
+    return( 0 );
 }

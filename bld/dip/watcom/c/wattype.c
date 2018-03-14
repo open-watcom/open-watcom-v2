@@ -1874,16 +1874,23 @@ missing:
     return( NULL );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                        imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
 {
     /* unused parameters */ (void)ii;
 
-    if( it1->im != it2->im )
-        return( it1->im - it2->im );
-    if( it1->t.entry != it2->t.entry )
-        return( it1->t.entry - it2->t.entry );
-    return( it1->t.offset - it2->t.offset );
+    if( it1->im < it2->im )
+        return( -1 );
+    if( it1->im > it2->im )
+        return( 1 );
+    if( it1->t.entry < it2->t.entry )
+        return( -1 );
+    if( it1->t.entry > it2->t.entry )
+        return( 1 );
+    if( it1->t.offset < it2->t.offset )
+        return( -1 );
+    if( it1->t.offset > it2->t.offset )
+        return( 1 );
+    return( 0 );
 }
 
 
