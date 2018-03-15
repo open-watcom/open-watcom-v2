@@ -10,4 +10,6 @@ which = SERVER
 gui = 1
 remote_link = 1
 
+extra_cppflags = -DGUISERVER
+
 !include $(trap_dir)/master.mif

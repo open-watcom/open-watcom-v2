@@ -107,6 +107,11 @@
 // TODO: need rework to POSIX if_nameindex in <net/if.h>
 #include "ifi.h"
 #endif
+#if defined( GUISERVER )
+    #include <wwindows.h>
+    #include "servio.h"
+    #include "options.h"
+#endif
 
 #if defined( __WATCOMC__ )
 #if defined( __NT__ )
@@ -454,6 +459,12 @@ const char *RemoteLink( const char *parms, bool server )
     if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
+   #ifdef GUISERVER
+    if( *ServParms == '\0' ) {
+        sprintf( ServParms, "%u", ntohs( port ) );
+    }
+   #endif
+
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -472,8 +483,8 @@ const char *RemoteLink( const char *parms, bool server )
     _DBG_NET((buff));
     _DBG_NET(("\r\n"));
 
-#ifdef LIST_INTERFACES
-// TODO: need rework to POSIX if_nameindex in <net/if.h>
+   #ifdef LIST_INTERFACES
+    // TODO: need rework to POSIX if_nameindex in <net/if.h>
     /* Find and print TCP/IP interface addresses, ignore aliases */
     {
         struct ifi_info     *ifi, *ifihead;
@@ -492,7 +503,7 @@ const char *RemoteLink( const char *parms, bool server )
         }
         free_ifi_info( ifihead );
     }
-#endif
+   #endif
   #endif
 
     _DBG_NET(("Start accepting connections\r\n"));
