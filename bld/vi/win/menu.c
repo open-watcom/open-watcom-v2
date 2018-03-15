@@ -832,11 +832,14 @@ vi_rc MenuCommand( int menuid )
 
 static void tabs_to_slash_t( char *buffer, const char *text )
 {
-    for( ; *text != '\0'; text++ ) {
-        if( *text == '\t' ) {
+    char    c;
+
+    for( ; (c = *text) != '\0'; text++ ) {
+        if( c == '\t' ) {
             *buffer++ = '\\';
+            c = 't';
         }
-        *buffer++ = *text;
+        *buffer++ = c;
     }
     *buffer = '\0';
 }
