@@ -192,20 +192,20 @@ static int WCountMenuChildren( GUIRMenuEntry *entry )
     return( num_items );
 }
 
-void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num_items )
+void GUIFreeGUIMenuStruct( gui_menu_struct *menu, int num_items )
 {
     int         item;
 
-    if( entry != NULL ) {
+    if( menu != NULL ) {
         for( item = 0; item < num_items; item++ ) {
-            if( entry[i].child_num_items > 0 ) {
-                GUIFreeGUIMenuStruct( entry[item].child, entry[item].num_child_menus );
+            if( menu[item].child_num_items > 0 ) {
+                GUIFreeGUIMenuStruct( menu[item].child, menu[item].child_num_items );
             }
-            if( entry[item].label != NULL ) {
-                GUIMemFree( (void *)entry[item].label );
+            if( menu[item].label != NULL ) {
+                GUIMemFree( (void *)menu[item].label );
             }
         }
-        GUIMemFree( entry );
+        GUIMemFree( menu );
     }
 }
 
@@ -230,27 +230,27 @@ static gui_menu_styles GetGUIMenuStyles( MenuFlags flags )
 
 static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu );
 
-static bool SetGUIMenuStruct( GUIRMenuEntry *rentry, gui_menu_struct *menu )
+static bool SetGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_struct *menu )
 {
     int                 num_items;
     bool                ok;
 
-    ok = ( rentry != NULL && menu != NULL );
+    ok = ( rmenu != NULL && menu != NULL );
 
     if( ok ) {
-        if( rentry->item->IsPopup ) {
-            menu->label = GUIStrDup( rentry->item->Item.Popup.ItemText, NULL );
-            menu->style = GetGUIMenuStyles( rentry->item->Item.Popup.ItemFlags );
-            num_items = WCountMenuChildren( rentry->child );
+        if( rmenu->item->IsPopup ) {
+            menu->label = GUIStrDup( rmenu->item->Item.Popup.ItemText, NULL );
+            menu->style = GetGUIMenuStyles( rmenu->item->Item.Popup.ItemFlags );
+            num_items = WCountMenuChildren( rmenu->child );
             if( num_items > 0 ) {
-                menu->num_child_menus = num_items;
-                menu->child = MakeGUIMenuStruct( rentry->child );
+                menu->child_num_items = num_items;
+                menu->child = MakeGUIMenuStruct( rmenu->child );
                 ok = ( menu->child != NULL );
             }
         } else {
-            menu->label = GUIStrDup( rentry->item->Item.Normal.ItemText, NULL );
-            menu->id = rentry->item->Item.Normal.ItemID;
-            menu->style = GetGUIMenuStyles( rentry->item->Item.Normal.ItemFlags );
+            menu->label = GUIStrDup( rmenu->item->Item.Normal.ItemText, NULL );
+            menu->id = rmenu->item->Item.Normal.ItemID;
+            menu->style = GetGUIMenuStyles( rmenu->item->Item.Normal.ItemFlags );
         }
     }
 

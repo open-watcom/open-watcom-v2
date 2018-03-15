@@ -399,7 +399,7 @@ bool GUICreateMenuItems( int num_items, gui_menu_struct *info, UIMENUITEM **pmen
         uiyield();
         if( (info->style & GUI_STYLE_MENU_IGNORE) == 0 ) {
             if( info->child_num_items > 0 ) {
-                if( !GUICreateMenuItems( info->child_num_items, info->child, &menuitems[item].popup ) ) {
+                if( !GUICreateMenuItems( info->child_num_items, info->child, &menuitems->popup ) ) {
                     return( false );
                 }
             }
