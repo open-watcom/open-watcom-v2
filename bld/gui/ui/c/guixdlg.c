@@ -145,16 +145,17 @@ static dialog_node *GetDialog( a_dialog *ui_dlg_info )
     return( NULL );
 }
 
-static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int num_controls,
-                             int *index )
+static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int num_controls, int *index )
 {
-    int i;
+    int     item;
 
-    for( i = 0; i < num_controls; i++ ) {
-        if( &ui_dlg_info->fields[i] == field ) {
-            *index = i;
+    item = 0;
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
+        if( fields == field ) {
+            *index = item;
             return( true );
         }
+        item++;
     }
     return( false );
 }
