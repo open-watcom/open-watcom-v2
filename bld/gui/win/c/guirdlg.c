@@ -200,27 +200,26 @@ bool GUIInsertResDialogControls( gui_window *wnd )
     return( true );
 }
 
-bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
 {
     WPI_DLGPROC     dlgproc;
+    HWND            parent_hwnd;
 
+    /* unused parameters */ (void)gui_call_back;
+
+    parent_hwnd = parent_wnd->hwnd;
+    if( parent_hwnd == NULLHANDLE )
+        parent_hwnd = HWND_DESKTOP;
     dlgproc = _wpi_makedlgprocinstance( GUIDialogDlgProc, GUIMainHInst );
     if( dlgproc == NULL ) {
         return( false );
     }
-    if( _wpi_dialogbox( parent, dlgproc, GUIResHInst, dlg_id, data ) == -1 ) {
+    if( _wpi_dialogbox( parent_hwnd, dlgproc, GUIResHInst, dlg_id, extra ) == -1 ) {
         _wpi_freedlgprocinstance( dlgproc );
         return( false );
     }
     _wpi_freedlgprocinstance( dlgproc );
 
     return( true );
-}
-
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra )
-{
-    /* unused parameters */ (void)dlg_id; (void)parent; (void)gui_call_back; (void)extra;
-
-    return( false );
 }
 

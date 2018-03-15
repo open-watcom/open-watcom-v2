@@ -41,23 +41,22 @@ typedef struct dialog_node {
     struct dialog_node  *next;
 } dialog_node;
 
-extern VFIELD *GUIGetField( gui_window * wnd, gui_ctl_id id );
-extern a_dialog *GUIGetDialog( gui_window * wnd );
-extern void GUIFocusChangeNotify( a_dialog *ui_dlg_info );
-extern bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field );
-extern void GUIDoFreeField( VFIELD *field, a_radio_group **group );
-extern void GUIRefreshControl( gui_window *wnd, gui_ctl_id id );
-extern bool GUIInsertDialog( gui_window *wnd );
-extern dialog_node *GUIGetDlgByWnd( gui_window *wnd );
-extern gui_control *GUIAddAControl( gui_control_info *ctl_info, gui_window *wnd );
-extern bool GUIResizeDialog( gui_window *wnd, SAREA *area );
-extern void GUIDeleteDialog( a_dialog *ui_dlg_info );
-extern bool GUIDeleteField( gui_window *wnd, gui_ctl_id id );
-extern a_list *GUIGetList( VFIELD *field );
-extern gui_ctl_id GUIGetControlId( gui_window *wnd, VFIELD *field );
-extern ui_event GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd );
-extern void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
-                           bool colours_set, bool is_dialog );
+extern VFIELD       *GUIGetField( gui_window * wnd, gui_ctl_id id );
+extern a_dialog     *GUIGetDialog( gui_window * wnd );
+extern void         GUIFocusChangeNotify( a_dialog *ui_dlg_info );
+extern bool         GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field );
+extern void         GUIDoFreeField( VFIELD *field, a_radio_group **group );
+extern void         GUIRefreshControl( gui_window *wnd, gui_ctl_id id );
+extern bool         GUIInsertDialog( gui_window *wnd );
+extern dialog_node  *GUIGetDlgByWnd( gui_window *wnd );
+extern gui_control  *GUIAddAControl( gui_control_info *ctl_info, gui_window *wnd );
+extern bool         GUIResizeDialog( gui_window *wnd, SAREA *area );
+extern void         GUIDeleteDialog( a_dialog *ui_dlg_info );
+extern bool         GUIDeleteField( gui_window *wnd, gui_ctl_id id );
+extern a_list       *GUIGetList( VFIELD *field );
+extern gui_ctl_id   GUIGetControlId( gui_window *wnd, VFIELD *field );
+extern ui_event     GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd );
+extern void         GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set );
+extern bool         GUIGetDlgRect( gui_window *wnd, SAREA *area );
 
-extern bool GUIGetDlgRect( gui_window *wnd, SAREA *area );
 #endif

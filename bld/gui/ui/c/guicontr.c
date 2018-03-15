@@ -192,8 +192,7 @@ void GUIFreeAllControls( gui_window *wnd )
     wnd->controls = NULL;
     dlg_node = GUIGetDlgByWnd( wnd );
     if( dlg_node != NULL ) {
-        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields,
-                dlg_node->name, dlg_node->colours_set, GUI_IS_DIALOG( wnd ) );
+        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name, dlg_node->colours_set );
     }
 }
 

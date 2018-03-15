@@ -632,7 +632,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     wnd->flags |= HAS_CAPTION;
     if( dlg_id != NULL ) {
         wnd->flags |= IS_RES_DIALOG;
-        return( GUIDoCreateResDialog( dlg_id, parent_hwnd, (void *)wnd ) );
+        return( GUICreateDialogFromRes( dlg_id, dlg_info->parent, NULL, (void *)wnd ) );
     }
 
     AdjustForFrame( &parent_pos, &size );

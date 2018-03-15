@@ -44,19 +44,16 @@ static bool CreateDlg( gui_create_info *dlg_info, int num_controls,
     gui_window *wnd;
 
     wnd = GUISetupWnd( dlg_info );
-    if( wnd == NULL ) {
-        return( false );
-    }
-    if( GUIXCreateDialog( dlg_info, wnd, num_controls, controls_info, sys, dlg_id ) ) {
-        return( true );
-    } else {
+    if( wnd != NULL ) {
+        if( GUIXCreateDialog( dlg_info, wnd, num_controls, controls_info, sys, dlg_id ) ) {
+            return( true );
+        }
         GUIFreeWindowMemory( wnd, false, true );
-        return( false );
     }
+    return( false );
 }
 
-bool GUICreateDialog( gui_create_info *dlg_info, int num_controls,
-                      gui_control_info *controls_info )
+bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
 {
     return( CreateDlg( dlg_info, num_controls, controls_info, false, NULL ) );
 }
@@ -66,8 +63,7 @@ bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id )
     return( CreateDlg( dlg_info, 0, NULL, false, dlg_id ) );
 }
 
-bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls,
-                              gui_control_info *controls_info )
+bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
 {
     return( CreateDlg( dlg_info, num_controls, controls_info, true, NULL ) );
 }
