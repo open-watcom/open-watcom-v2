@@ -120,9 +120,11 @@ static void GetTrueEntry( stack_entry *entry )
 
     for( ;; ) {
         mod = entry->info.modifier;
-        if( !(mod & TM_FLAG_DEREF) ) break;
+        if( !(mod & TM_FLAG_DEREF) )
+            break;
         DoAPoints( entry, TK_NONE );
-        if( entry->info.kind == TK_VOID ) Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
+        if( entry->info.kind == TK_VOID )
+            Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
         switch( mod & TM_MOD_MASK ) {
         case TM_NEAR:
             if( entry->info.kind == TK_FUNCTION ) {
@@ -184,7 +186,8 @@ bool NameResolve( stack_entry *entry, bool source_only )
 
     if( entry->flags & SF_NAME ) {
         syms = ExprGetSymList( entry, source_only );
-        if( syms == NULL ) return( false );
+        if( syms == NULL )
+            return( false );
         if( syms->next != NULL ) {
             syms = Disambiguate( syms, entry->lc );
         }
@@ -301,9 +304,12 @@ void ClassNum( stack_entry *entry )
 
 static bool AddressExpression( stack_entry *entry )
 {
-    if( !(entry->flags & SF_LOCATION) ) return( false );
-    if( !(entry->flags & SF_IMP_ADDR) ) return( false );
-    if( ExprAddrDepth != 0 ) return( false );
+    if( !(entry->flags & SF_LOCATION) )
+        return( false );
+    if( !(entry->flags & SF_IMP_ADDR) )
+        return( false );
+    if( ExprAddrDepth != 0 )
+        return( false );
     /* doing an address expression (unnested) */
     entry->th = NULL;
     LocationToAddr( entry );
@@ -314,14 +320,21 @@ static bool DoNameResolve( stack_entry *entry )
 {
     unsigned_64 val;
 
-    if( NameResolve( entry, false ) ) return( true );
+    if( NameResolve( entry, false ) )
+        return( true );
     /* check for raw name */
-    if( entry->lc->sh != NULL ) return( false );
-    if( entry->lc->th != NULL ) return( false );
-    if( entry->v.li.mod != NO_MOD ) return( false );
-    if( entry->v.li.file_scope ) return( false );
-    if( entry->v.li.type != ST_NONE ) return( false );
-    if( entry->v.li.scope.start != NULL ) return( false );
+    if( entry->lc->sh != NULL )
+        return( false );
+    if( entry->lc->th != NULL )
+        return( false );
+    if( entry->v.li.mod != NO_MOD )
+        return( false );
+    if( entry->v.li.file_scope )
+        return( false );
+    if( entry->v.li.type != ST_NONE )
+        return( false );
+    if( entry->v.li.scope.start != NULL )
+        return( false );
 
     if( !ForceSym2Num( entry->v.li.name.start, entry->v.li.name.len, &val ) )
         return( false );
@@ -434,7 +447,8 @@ void LRValue( stack_entry *entry )
             case TK_CHAR:
             case TK_ENUM:
             case TK_INTEGER:
-                if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) extend = true;
+                if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED )
+                    extend = true;
                 /* fall through */
             default:
                 LocationCreate( &ll, LT_INTERNAL, &tmp );

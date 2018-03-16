@@ -65,7 +65,7 @@ static void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
 
     gui = gui;
     num = (int *)param;
-    for( i = 0; i < NUM_CONTROLS; i ++ ) {
+    for( i = 0; i < NUM_CONTROLS; i++ ) {
         if( Controls[i].id == id ) {
             (*num)++;
             if( !GUIGetControlClass( gui, id, &control_class )
@@ -97,7 +97,7 @@ static void InitDialog( gui_window *parent )
 {
     int i;
 
-    for( i = 0; i < NUM_CONTROLS; i ++ ) {
+    for( i = 0; i < NUM_CONTROLS; i++ ) {
         Controls[i].parent = parent;
         if( !ControlsScaled ) {
             SetWidthHeight( &Controls[i].rect, Controls[i].parent != NULL );
@@ -329,7 +329,7 @@ void DynamicDialogCreate( gui_window *parent )
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
             if( ( Controls[i].control_class == GUI_PUSH_BUTTON )
               || ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
                 Controls[i].rect.height *= 2;
@@ -339,7 +339,7 @@ void DynamicDialogCreate( gui_window *parent )
     }
 
     if( !ControlsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
             Controls[i].parent = NULL;
             SetWidthHeight( &Controls[i].rect, true );
         }

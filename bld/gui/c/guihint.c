@@ -288,7 +288,7 @@ void GUIFreeHint( gui_window *wnd )
 {
     hint_type   type;
 
-    for( type = FIRST_HINT; type <= LAST_HINT; type ++ ) {
+    for( type = FIRST_HINT; type <= LAST_HINT; type++ ) {
         GUIInitHint( wnd, 0, NULL, type );
     }
 }

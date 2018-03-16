@@ -149,7 +149,7 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 static void SetBKBrush( gui_window *wnd )
 {
-    if (!init_rgb){
+    if( !init_rgb ) {
         InitSystemRGB();
         init_rgb = 1;
     }

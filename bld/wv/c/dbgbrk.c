@@ -425,7 +425,8 @@ brkp *FindBreak( address addr )
 {
     brkp    *bp;
 
-    if( IS_NIL_ADDR( addr ) ) return( NULL );
+    if( IS_NIL_ADDR( addr ) )
+        return( NULL );
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if( ( AddrComp( bp->loc.addr, addr ) == 0 ) ) {
             return( bp );
@@ -539,8 +540,11 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
 
     cmds = cond = LIT_ENG( Empty );
     if( bp != NULL ) {
-        if( bp->cmds != NULL ) cmds = bp->cmds->buff;
-        if( bp->condition != NULL ) cond = bp->condition;
+        if( bp->cmds != NULL )
+            cmds = bp->cmds->buff;
+        if( bp->condition != NULL ) {
+            cond = bp->condition;
+        }
     }
     p = Format( buff, "%s", GetCmdName( CMD_BREAK ) );
     switch( event ) {

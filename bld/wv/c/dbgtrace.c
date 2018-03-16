@@ -221,7 +221,9 @@ mad_trace_how TraceHow( bool force_into )
     }
     if( DbgTmpBrk.status.b.active ) {
         /* for recursion detection */
-        if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+        if( !TraceState.unwinding ) {
+            TraceState.watch_stack = GetRegSP();
+        }
     }
     TraceState.how = how;
     return( how );
@@ -234,7 +236,8 @@ bool TraceSimulate( void )
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     ms = MADTraceSimulate( TraceState.td, TraceState.dd,
         &DbgRegs->mr, &DbgRegs->mr );
-    if( ms != MS_OK ) return( false );
+    if( ms != MS_OK )
+        return( false );
     WriteDbgRegs();
     return( true );
 }
@@ -245,7 +248,8 @@ bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
     case MTRH_SIMULATE:
     case MTRH_STEP:
     case MTRH_STEPBREAK:
-        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK ) return( false );
+        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK )
+            return( false );
         if( MADDisasmMemRefWalk( TraceState.dd, wk, &DbgRegs->mr, d ) == WR_CONTINUE ) {
             return( true );
         }
@@ -312,7 +316,8 @@ static bool CheckTraceSourceStop( bool *have_source )
     *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, line ) != SR_NONE;
     if( *have_source && _IsOn( SW_CHECK_SOURCE_EXISTS ) &&
         ( viewhndl = OpenSrcFile( line ) ) != NULL ) {
-        if( viewhndl != NULL ) FDoneSource( viewhndl );
+        if( viewhndl != NULL )
+            FDoneSource( viewhndl );
         line_addr = DIPCueAddr( line );
         if( AddrComp( TraceState.oldaddr, line_addr ) != 0 ) {
             if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, oldline ) != SR_NONE
@@ -348,8 +353,11 @@ static bool CheckTraceSourceStop( bool *have_source )
         return( false );
     }
     if( TraceState.req_level == MIX ) {
-        if( sr == SR_NONE ) return( true );
-        if( !IsSupportRoutine( sym ) ) return( true );
+        if( sr == SR_NONE )
+            return( true );
+        if( !IsSupportRoutine( sym ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -400,7 +408,8 @@ unsigned TraceCheck( unsigned conditions )
         conditions &= ~COND_STOPPERS;
         conditions |= COND_TRACE;
     }
-    if( !(conditions & COND_TRACE) ) return( conditions );
+    if( !(conditions & COND_TRACE) )
+        return( conditions );
     if( DbgTmpBrk.status.b.hit && TraceState.type == TRACE_OVER ) {
         recursed =  MADTraceHaveRecursed( TraceState.watch_stack, &DbgRegs->mr ) == MS_OK;
         if( _IsOn( SW_RECURSE_CHECK ) && recursed && ( TraceState.doing_call || TraceState.unwinding ) ) {
@@ -428,9 +437,11 @@ unsigned TraceCheck( unsigned conditions )
         DbgTmpBrk.status.b.active = true;
         return( conditions & ~COND_STOPPERS );
     }
-    if( TraceState.cur_level == ASM ) return( conditions | COND_TRACE );
+    if( TraceState.cur_level == ASM )
+        return( conditions | COND_TRACE );
     if( CheckTraceSourceStop( &have_source ) ) {
-        if( CheckForDLLThunk() ) return( conditions & ~COND_STOPPERS );
+        if( CheckForDLLThunk() )
+            return( conditions & ~COND_STOPPERS );
         return( conditions | COND_TRACE );
     }
     /*
@@ -439,7 +450,9 @@ unsigned TraceCheck( unsigned conditions )
     if( TraceState.in_dll_thunk ) {
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
             TraceState.trace_out = true;
-            if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+            if( !TraceState.unwinding ) {
+                TraceState.watch_stack = GetRegSP();
+            }
         }
         return( conditions & ~COND_STOPPERS );
     }
@@ -458,10 +471,13 @@ unsigned TraceCheck( unsigned conditions )
             TraceState.in_dll_thunk = true;
             return( conditions & ~COND_STOPPERS );
         }
-        if( TraceState.stop_on_call ) TraceState.stop_now = true;
+        if( TraceState.stop_on_call )
+            TraceState.stop_now = true;
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
             TraceState.trace_out = true;
-            if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+            if( !TraceState.unwinding ) {
+                TraceState.watch_stack = GetRegSP();
+            }
         }
         return( conditions & ~COND_STOPPERS );
     }
@@ -501,7 +517,8 @@ static char DoTrace( debug_level curr_level )
         _SwitchOff( SW_TRAP_CMDS_PUSHED );
         return( PROCCMD );
     }
-    if( conditions & COND_TRACE ) return( STOP );
+    if( conditions & COND_TRACE )
+        return( STOP );
     return( KEEPGOING );
 }
 
@@ -565,7 +582,8 @@ OVL_EXTERN bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
         ReScan( cmds );
         return( true );
     case INP_RTN_EOL:
-        if( TraceState.state == TS_NONE ) return( false );
+        if( TraceState.state == TS_NONE )
+            return( false );
         PerformTrace();
         return( true );
     case INP_RTN_FINI:

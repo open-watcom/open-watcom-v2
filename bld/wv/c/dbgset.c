@@ -445,13 +445,15 @@ static int SwitchIsOn( int which )
 
 static const mad_toggle_strings *GetMADToggleList( const mad_reg_set_data *rsd )
 {
-    if( rsd == NULL ) return( MADDisasmToggleList() );
+    if( rsd == NULL )
+        return( MADDisasmToggleList() );
     return( MADRegSetDisplayToggleList( rsd ) );
 }
 
 static unsigned DoMADToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
-    if( rsd == NULL ) return( MADDisasmToggle( on, off ) );
+    if( rsd == NULL )
+        return( MADDisasmToggle( on, off ) );
     return( MADRegSetDisplayToggle( rsd, on, off ) );
 }
 
@@ -480,7 +482,8 @@ static bool DoOneToggle( mad_window_toggles wt )
     const mad_toggle_strings    *toggles;
     const mad_reg_set_data      *rsd;
 
-    if( !ScanItem( true, &start, &len ) ) return( false );
+    if( !ScanItem( true, &start, &len ) )
+        return( false );
     switch( wt ) {
     case MWT_ASM:
         rsd = NULL;

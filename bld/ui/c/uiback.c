@@ -133,7 +133,7 @@ bool UIAPI uikeepbackground( void )
 
     buff = uibackgroundbuffer();
     if( buff != NULL ) {
-        for( row = 0; row < UIData->height; ++ row ) {
+        for( row = 0; row < UIData->height; row++ ) {
             uibcopy( &UIData->screen, row, 0, buff, row, 0, UIData->width );
         }
     }

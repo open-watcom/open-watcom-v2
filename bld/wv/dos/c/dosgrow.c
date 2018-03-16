@@ -61,10 +61,13 @@ int __GrowSeg( unsigned short seg, unsigned int amount )
         old_heaplen = p->heaplen;
         if( old_heaplen != 0 ) {                /* if not already 64K */
             amount += sizeof(tag);                      /* 25-feb-91 */
-            if( amount < sizeof(tag) ) amount = ~0;
-            if( amount < _amblksiz )  amount = _amblksiz;
+            if( amount < sizeof(tag) )
+                amount = ~0;
+            if( amount < _amblksiz )
+                amount = _amblksiz;
             n = ( amount + 0x0f ) >> 4;
-            if( n == 0 )  n = PARAS_IN_64K;     /* 23-may-89 */
+            if( n == 0 )
+                n = PARAS_IN_64K;     /* 23-may-89 */
             old_heap_paras = old_heaplen >> 4;
             n += old_heap_paras;
             /*
@@ -73,22 +76,21 @@ int __GrowSeg( unsigned short seg, unsigned int amount )
                 environments, it should be possible to extend segments
                 later on when we know we can use the space.
             */
-            if( n > PARAS_IN_64K ) n = PARAS_IN_64K;
-
-
+            if( n > PARAS_IN_64K )
+                n = PARAS_IN_64K;
 
             if( LastSeg != MK_FP( seg, 0 ) ) {
                 if( seg <= FP_SEG( SyMemEnd ) && seg >= FP_SEG( SyMemBeg ) ) {
                     return( 0 );
                 } else if ( _IsOn( SW_REMOTE_LINK ) ) {
-                    if( TINY_ERROR( TinySetBlock( n, seg ) ) ) return( 0 );
+                    if( TINY_ERROR( TinySetBlock( n, seg ) ) ) {
+                        return( 0 );
+                    }
                 }
             } else if( FP_SEG( LastSeg ) + n < FP_SEG( LastSeg )
                         || FP_SEG( LastSeg ) + n > FP_SEG( SyMemEnd ) ) {
                 return( 0 );
             }
-
-
 
             p->heaplen = n << 4;        /* put in new heap length */
             pfree = MK_FP( seg, p->freehead.prev );
@@ -104,7 +106,8 @@ int __GrowSeg( unsigned short seg, unsigned int amount )
                 pfree = pnew;
             }
             pfree->len = p->heaplen - FP_OFF(pfree) - sizeof(tag)*2;
-            if( pfree->len > p->largest_blk )  p->largest_blk = pfree->len;
+            if( pfree->len > p->largest_blk )
+                p->largest_blk = pfree->len;
             last_tag = MK_FP( seg, p->heaplen - sizeof(tag)*2 );
             *last_tag = END_TAG;
             last_tag[1] = 0;            /* link to next piece of near heap */

@@ -105,8 +105,10 @@ bool DebugScreen( void )
     HWND        hwnd;
     HWND        fore;
 
-    if( ScreenState == DEBUG_SCREEN ) return( false );
-    if( _IsOn( SW_POWERBUILDER ) ) return( false );
+    if( ScreenState == DEBUG_SCREEN )
+        return( false );
+    if( _IsOn( SW_POWERBUILDER ) )
+        return( false );
     if( WndMain ) {
         ScreenState = DEBUG_SCREEN;
         hwnd = GUIGetSysHandle( WndGui( WndMain ) );
@@ -114,8 +116,10 @@ bool DebugScreen( void )
         if( fore != hwnd ) {
             HwndFore = fore;
         }
-        if( GUIIsMinimized( WndGui( WndMain ) ) ) GUIRestoreWindow( WndGui( WndMain ) );
-        if( IsWindow( hwnd ) ) SetForegroundWindow( hwnd );
+        if( GUIIsMinimized( WndGui( WndMain ) ) )
+            GUIRestoreWindow( WndGui( WndMain ) );
+        if( IsWindow( hwnd ) )
+            SetForegroundWindow( hwnd );
         if( _IsOn( SW_POWERBUILDER ) ) {
             WndRestoreWindow( WndMain );
         }
@@ -131,8 +135,10 @@ bool DebugScreenRecover( void )
 
 bool UserScreen( void )
 {
-    if( ScreenState == USER_SCREEN ) return( false );
-    if( _IsOn( SW_POWERBUILDER ) ) return( false );
+    if( ScreenState == USER_SCREEN )
+        return( false );
+    if( _IsOn( SW_POWERBUILDER ) )
+        return( false );
     if( WndMain ) {
         ScreenState = USER_SCREEN;
         if( _IsOn( SW_POWERBUILDER ) ) {
@@ -155,7 +161,8 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_POWERBUILDER ) ) return;
+    if( _IsOn( SW_POWERBUILDER ) )
+        return;
     if( IsWindow( FirstForeWnd ) ) {
         SetForegroundWindow( FirstForeWnd );
     }

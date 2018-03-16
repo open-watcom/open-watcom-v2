@@ -507,7 +507,8 @@ void MacroSet( void )
             --i;
         }
         while( --i >= 0 ) {
-            if( *q != '\r' ) *p++ = *q;
+            if( *q != '\r' )
+                *p++ = *q;
             ++q;
         }
         *p = NULLCHAR;

@@ -261,7 +261,7 @@ gui_window *GUIFindFirstChild( gui_window *parent )
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent && (wnd->flags & UTILITY_BIT) == 0 ){
+        if( wnd->parent == parent && (wnd->flags & UTILITY_BIT) == 0 ) {
             return( wnd );
         }
     }
@@ -287,7 +287,7 @@ static void GUIMarkChildrenWithFlag( gui_window *parent, gui_flags flag )
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent ){
+        if( wnd->parent == parent ) {
             wnd->flags |= flag;
         }
     }
@@ -614,7 +614,8 @@ HWND GUIGetTopParentHWND( HWND hwnd )
     curr_hwnd = hwnd;
     for( ;; ) {
         parent = _wpi_getparent( curr_hwnd );
-        if( parent == HWND_DESKTOP ) break;
+        if( parent == HWND_DESKTOP )
+            break;
         curr_hwnd = parent;
     }
     return( curr_hwnd );

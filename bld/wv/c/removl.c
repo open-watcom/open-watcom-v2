@@ -69,11 +69,13 @@ bool RemoteOvlSectPos( unsigned sect, mem_block *where )
     ovl_get_data_req    acc;
     ovl_get_data_ret    ret;
 
-    if( SuppOvlId == 0 ) return( false );
+    if( SuppOvlId == 0 )
+        return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_GET_DATA );
     acc.sect_id = sect;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( ret.segment == 0 ) return( false );
+    if( ret.segment == 0 )
+        return( false );
     where->len = ret.size;
     where->start.mach.segment = ret.segment;
     where->start.mach.offset = 0;
@@ -91,7 +93,8 @@ static void CheckRemapping( void )
     acc.ovl_addr.sect_id = 0;
     for( ;; ) {
         TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-        if( !ret.remapped ) break;
+        if( !ret.remapped )
+            break;
         RemapSection( ret.ovl_addr.sect_id, ret.ovl_addr.mach.segment );
         acc.ovl_addr = ret.ovl_addr;
     }
@@ -127,7 +130,8 @@ bool RemoteOvlTransAddr( address *addr )
     ovl_trans_vect_addr_ret     ret;
     address                     real;
 
-    if( SuppOvlId == 0 ) return( false );
+    if( SuppOvlId == 0 )
+        return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_TRANS_VECT_ADDR );
     real = *addr;
     AddrFix( &real );
@@ -151,7 +155,8 @@ bool RemoteOvlRetAddr( address *addr, unsigned ovl_level )
     ovl_trans_vect_addr_ret     ret;
     address                     real;
 
-    if( SuppOvlId == 0 ) return( false );
+    if( SuppOvlId == 0 )
+        return( false );
     SUPP_OVL_SERVICE( acc, REQ_OVL_TRANS_RET_ADDR );
     real = *addr;
     AddrFix( &real );

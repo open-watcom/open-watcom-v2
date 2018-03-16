@@ -177,7 +177,8 @@ static bool convert_numeric( WORD ch, gui_key *key )
 
     if( isdigit( ch ) ) {
         if( CHK_KS_SHIFT ) {
-            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) ) return( true );
+            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) )
+                return( true );
             *key = ch;
             return( true );
         } else if( CHK_KS_ALT ) {

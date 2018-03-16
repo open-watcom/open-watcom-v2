@@ -203,7 +203,7 @@ static char *tabFilter( const char *message )
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
     new_message = (char *)GUIStrDup( message, NULL );
-    for( ; ; ){
+    for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         if( tab_pos == strlen( new_message ) )
             break;      /* no more tabs */

@@ -323,8 +323,10 @@ static void ProcSize( wnd_class_wv wndclass )
     WndPosToRect( &WndPosition[wndclass], &def_rect, &WndScreen );
     size.x = range( size.x, 0, WndScreen.x, def_rect.x );
     size.y = range( size.y, 0, WndScreen.y, def_rect.y );
-    if( size.x + size.width > WndScreen.x ) size.width = WndScreen.x - size.x;
-    if( size.y + size.height > WndScreen.y ) size.height = WndScreen.y - size.y;
+    if( size.x + size.width > WndScreen.x )
+        size.width = WndScreen.x - size.x;
+    if( size.y + size.height > WndScreen.y )
+        size.height = WndScreen.y - size.y;
     size.width = range( size.width, min.x, WndScreen.x, def_rect.width );
     size.height = range( size.height, min.y, WndScreen.y, def_rect.height );
     if( coord_specified ) {
@@ -350,7 +352,9 @@ static void ProcSize( wnd_class_wv wndclass )
         if( wndclass == WND_ALL ) {
             for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
                 next = WndNext( wnd );
-                if( WndHasClass( wnd ) ) WndClose( wnd );
+                if( WndHasClass( wnd ) ) {
+                    WndClose( wnd );
+                }
             }
         } else {
             if( wnd != NULL ) {

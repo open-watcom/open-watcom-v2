@@ -551,8 +551,7 @@ static int GetDig( unsigned base )
 
     chr = *ScanPtr;
     chr = toupper( chr );
-    if( ( (chr < '0') || (chr > '9') )
-      && ( (chr < 'A') || (chr > 'Z') ) )
+    if( ( (chr < '0') || (chr > '9') ) && ( (chr < 'A') || (chr > 'Z') ) )
         return( -1 );
     if( chr >= 'A' )
         chr -= 'A' - '0' - 10;
@@ -805,9 +804,12 @@ void Scan( void )
                 return;
             }
         }
-        if( ScanCmdLnDelim() )      return;   /*sf do this if the others fail */
-        if( ScanRealNum() )         return;
-        if( ScanNumber() )          return;
+        if( ScanCmdLnDelim() )
+            return;   /*sf do this if the others fail */
+        if( ScanRealNum() )
+            return;
+        if( ScanNumber() )
+            return;
         if( ScanId() ) {
             if( ExprTokens != NULL && CurrToken == T_NAME ) {
                 ScanKeyword( ExprTokens->keywords );
@@ -835,7 +837,9 @@ char RawScanChar( void )
 
 void RawScanAdvance( void )
 {
-    if( *ScanPtr != NULLCHAR ) ++ScanPtr;
+    if( *ScanPtr != NULLCHAR ) {
+        ++ScanPtr;
+    }
 }
 
 void RawScanFini( void )

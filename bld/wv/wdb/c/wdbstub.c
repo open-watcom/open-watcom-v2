@@ -562,7 +562,7 @@ void ShowModuleList( void )
     ModListInit( &list, NULL );
     ModListAddModules( &list, NO_MOD, false );
     mod_nums = ModListNumRows( &list );
-    for( row = 0; row < mod_nums; ++row ){
+    for( row = 0; row < mod_nums; ++row ) {
         ModListName( &list, row, mod_name );
         ShowDebuggerMsg( mod_name );
     }
@@ -1047,7 +1047,7 @@ bool ProcessCmdDisable( const char *param )
         ShowDebuggerError( "no subcommand specified." );
     }
     free( disable_cmd );
-    if( disable_param != NULL ){
+    if( disable_param != NULL ) {
         free( disable_param );
     }
     return( true );

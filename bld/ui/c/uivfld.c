@@ -127,11 +127,10 @@ static VFIELD_EDIT *tabfield( VSCREEN *vptr, VFIELD_EDIT *fieldlist, bool forwar
     VFIELD_EDIT         *cur;
     int                 diff;
     int                 closest;
-
-    chase = fieldlist;
-    cur = chase;
+    
+    cur = fieldlist;
     closest = vptr->area.height * vptr->area.width;
-    while( chase != NULL ) {
+    for( chase = fieldlist; chase != NULL; chase = chase->link ) {
         if( forward ) {
             diff = ( chase->row - vptr->row ) * vptr->area.width + ( chase->col - vptr->col );
         } else {
@@ -144,7 +143,6 @@ static VFIELD_EDIT *tabfield( VSCREEN *vptr, VFIELD_EDIT *fieldlist, bool forwar
             cur = chase;
             closest = diff;
         }
-        chase = chase->link;
     }
     return( cur );
 }

@@ -159,7 +159,8 @@ bool    WndEvalInspectExpr( const char *item, bool pop )
     _SwitchOff( SW_NO_DISAMBIGUATOR );
     _SwitchOff( SW_ERR_IN_TXTBUFF );
     ReScan( old );
-    if( pop && rc ) PopEntry();
+    if( pop && rc )
+        PopEntry();
     return( rc );
 }
 

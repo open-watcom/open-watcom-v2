@@ -356,7 +356,8 @@ OVL_EXTERN walk_result CheckOneHandle( mad_type_handle mth, void *d )
     mad_type_info       mti;
 
     MADTypeInfo( mth, &mti );
-    if( mti.b.bits != fd->bits ) return( WR_CONTINUE );
+    if( mti.b.bits != fd->bits )
+        return( WR_CONTINUE );
     fd->mth = mth;
     return( WR_STOP );
 }

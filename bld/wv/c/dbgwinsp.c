@@ -202,8 +202,11 @@ void    WndMemInspect( address addr, char *next,
     a_window    wnd;
 
     wnd = DoWndMemOpen( addr, mth );
-    if( next != NULL ) MemSetFollow( wnd, next );
-    if( len != 0 ) MemSetLength( wnd, len );
+    if( next != NULL )
+        MemSetFollow( wnd, next );
+    if( len != 0 ) {
+        MemSetLength( wnd, len );
+    }
 }
 
 void    WndIOInspect( address *addr, mad_type_handle mth )
@@ -270,7 +273,8 @@ static  a_window        DoWndSrcInspect( address addr, bool existing )
         wnd = DoWndSrcOpen( ch, existing );
     }
     if( !SrcMoveDot( wnd, addr ) || !SrcHasFileOpen( wnd ) ) {
-        if( active != NULL ) WndRestoreToFront( active );
+        if( active != NULL )
+            WndRestoreToFront( active );
         return( NULL );
     }
     return( wnd );

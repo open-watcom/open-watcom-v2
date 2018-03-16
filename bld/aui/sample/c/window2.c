@@ -69,8 +69,10 @@ static void Pos( a_window wnd, int pos )
     int         last;
 
     last = WORD_SIZE - WndRows( wnd ) + TITLE_SIZE;
-    if( pos < 0 ) pos = 0;
-    if( pos > last ) pos = last;
+    if( pos < 0 )
+        pos = 0;
+    if( pos > last )
+        pos = last;
     w2->top = pos;
     WndSetThumbPercent( w2->wnd, pos * 100L / last );
 }

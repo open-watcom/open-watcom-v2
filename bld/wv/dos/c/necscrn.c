@@ -75,7 +75,8 @@ void GetGdcCursor( int *CurPos )
 
     for(;;) {                                   /* read gdc status register */
         GdcMask();                              /* disable interrupts */
-        if( (inp( 0x60 ) & 0x04) ) break;       /* quit if fifo empty */
+        if( (inp( 0x60 ) & 0x04) )
+            break;                              /* quit if fifo empty */
         GdcDelay();
         GdcUnMask();                            /* restore interrupts */
     }
@@ -83,7 +84,9 @@ void GetGdcCursor( int *CurPos )
     outp( 0x62, 0xE0 );                         /* gdc CURD command */
     for(;;) {                                   /* read gdc status register */
         GdcDelay();
-        if( (inp( 0x60 ) & 0x01) ) break;       /* quit if data ready */
+        if( (inp( 0x60 ) & 0x01) ) {
+            break;                              /* quit if data ready */
+        }
     }
     GdcDelay();
     ead = inp( 0x62 );                          /* read gdc EAD low */
@@ -255,7 +258,8 @@ void InitScreen()
 
     /* check for Microsoft mouse */
     vect = *((char __far * __far *)MK_FP( 0, 4*0x33 ));
-    if( vect == NULL || *vect == IRET ) _SwitchOff( SW_USE_MOUSE );
+    if( vect == NULL || *vect == IRET )
+        _SwitchOff( SW_USE_MOUSE );
 
     PageSize =  ( UIData->height == 25 ) ? 4096 :
                 ( UIData->height * UIData->width * 2 + 256 );

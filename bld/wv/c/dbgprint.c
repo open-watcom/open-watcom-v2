@@ -512,8 +512,8 @@ static void PrintCharBlock( void )
      *  we adjust things so we can display them with a hint that the string is longer than can be displayed
      */
 
-    if(len + 2 > BUFLEN){   /* or UTIL_LEN/TXT_LEN? */
-        len = BUFLEN - 7;   /* 'string'....<NUL> */
+    if( len + 2 > BUFLEN ) {    /* or UTIL_LEN/TXT_LEN? */
+        len = BUFLEN - 7;       /* 'string'....<NUL> */
         overflow = 1;
     }
 
@@ -542,16 +542,18 @@ static void PrintCharBlock( void )
         break;
     }
     PrtChar( '\'' );
-    if( overflow && len == 0 ){
+    if( overflow && len == 0 ) {
         PrtStr( " ...",  4 );
     }
 }
 
 static void GetExpr( void )
 {
-    if( !First && CurrToken == T_COMMA ) Scan();
+    if( !First && CurrToken == T_COMMA )
+        Scan();
     NormalExpr();
-    if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE ) ReqEOC();
+    if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE )
+        ReqEOC();
     First = false;
 }
 
@@ -684,7 +686,9 @@ OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl,
             /* not the first time through */
             PrtChar( ',' );
             /* print a space if not at start of a line */
-            if( OutPtr != OutBuff ) PrtChar( ' ' );
+            if( OutPtr != OutBuff ) {
+                PrtChar( ' ' );
+            }
         }
         d->first_time = false;
         DupStack();
@@ -729,7 +733,9 @@ static void PrintArray( void )
             /* not the first time through */
             PrtChar( ',' );
             /* print a space if not at start of a line */
-            if( OutPtr != OutBuff ) PrtChar( ' ' );
+            if( OutPtr != OutBuff ) {
+                PrtChar( ' ' );
+            }
         }
         DupStack();
         StartSubscript();

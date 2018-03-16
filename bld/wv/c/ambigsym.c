@@ -50,7 +50,8 @@ sym_list *Disambiguate( sym_list *sym, location_context *lc )
     int         new;
     ambig_info  ambig;
 
-    if( _IsOn( SW_AMBIGUITY_FATAL ) ) Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+    if( _IsOn( SW_AMBIGUITY_FATAL ) )
+        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
     ambig.sym = sym;
     ambig.lc = lc;
     count = 0;

@@ -286,7 +286,8 @@ void DlgCmd( void )
                 FARPROC proc;
                 hmod = GetModuleHandle( TrapParms );
                 proc = GetProcAddress( hmod, (LPSTR)5 );
-                if( proc != NULL ) proc();
+                if( proc != NULL )
+                    proc();
                 CloseHandle( hmod );
             }
             // break the task

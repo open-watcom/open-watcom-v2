@@ -85,7 +85,8 @@ bool DebugScreen( void )
     if( fore != DebuggerHwnd ) {
         HwndFore = fore;
     }
-    if( !IsIconic( DebuggerHwnd ) ) SetForegroundWindow( DebuggerHwnd );
+    if( !IsIconic( DebuggerHwnd ) )
+        SetForegroundWindow( DebuggerHwnd );
     return( false );
 }
 
@@ -98,7 +99,9 @@ bool DebugScreenRecover( void )
 bool UserScreen( void )
 {
     if( IsWindow( HwndFore ) ) {
-        if( !IsIconic( DebuggerHwnd ) ) SetForegroundWindow( HwndFore );
+        if( !IsIconic( DebuggerHwnd ) ) {
+            SetForegroundWindow( HwndFore );
+        }
     } else {
         HwndFore = NULL;
     }
@@ -113,7 +116,8 @@ void FiniScreen( void )
 {
     SetConsoleTitle( OldTitle );
     DebugScreen();
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
 }
 

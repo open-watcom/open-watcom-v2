@@ -132,8 +132,10 @@ int LDCmp( xreal *left, xreal *rite )
 
     l = LDToD( left );
     r = LDToD( rite );
-    if( l < r ) return( -1 );
-    if( l > r ) return( +1 );
+    if( l < r )
+        return( -1 );
+    if( l > r )
+        return( +1 );
     return( 0 );
 }
 

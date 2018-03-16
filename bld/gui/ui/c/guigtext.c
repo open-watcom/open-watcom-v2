@@ -92,7 +92,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
         case FLD_LISTBOX :
         case FLD_EDIT_MLE :
             list = GUIGetList( field );
-            if( list != NULL  ){
+            if( list != NULL ) {
                 return( GUIGetListBoxText( list, choice, get_curr ) );
             }
             break;

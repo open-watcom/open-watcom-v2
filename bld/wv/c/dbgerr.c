@@ -88,7 +88,8 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_LINE ), ptr );
             break;
         default:
-            if( ScanLen() == 0 ) Scan();
+            if( ScanLen() == 0 )
+                Scan();
             ptr = Format( ptr, LIT_ENG( ERR_NEAR_TOKEN ), ScanPos(), ScanLen() );
             break;
         }

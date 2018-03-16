@@ -38,8 +38,11 @@ static void RoundToPixel( gui_coord *new, gui_coord *pixel_size )
 
     old = *new;
     GUITruncToPixel( new );
-    if( old.x - new->x >= pixel_size->x / 2 ) new->x += pixel_size->x;
-    if( old.y - new->y >= pixel_size->y / 2 ) new->y += pixel_size->y;
+    if( old.x - new->x >= pixel_size->x / 2 )
+        new->x += pixel_size->x;
+    if( old.y - new->y >= pixel_size->y / 2 ) {
+        new->y += pixel_size->y;
+    }
 }
 
 

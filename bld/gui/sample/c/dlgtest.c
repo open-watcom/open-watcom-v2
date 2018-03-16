@@ -172,7 +172,7 @@ void TestDialogCreate( gui_window *parent )
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
             if( ( Controls[i].control_class == GUI_PUSH_BUTTON ) ||
                 ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
                 Controls[i].rect.height *= 2;
@@ -182,7 +182,7 @@ void TestDialogCreate( gui_window *parent )
     }
 
     if( !ControlsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
             Controls[i].parent = NULL;
             SetWidthHeight( &Controls[i].rect, true );
         }
@@ -199,7 +199,9 @@ void TestDialogCreate( gui_window *parent )
             }
             GUIMemFree( text );
         }
-        if( i == -1 ) break;
+        if( i == -1 ) {
+            break;
+        }
     }
 
     if( i >=0 && i < 13 ) {

@@ -53,7 +53,8 @@ trap_shandle    SuppRFXId;
 bool InitRFXSupp( void )
 {
     SuppRFXId = GetSuppId( RFX_SUPP_NAME );
-    if( SuppRFXId == 0 ) return( false );
+    if( SuppRFXId == 0 )
+        return( false );
     return( true );
 }
 

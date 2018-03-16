@@ -68,7 +68,8 @@ static void W1MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
-        if( row < 0 ) break;
+        if( row < 0 )
+            break;
         WndMenuEnable( wnd, MENU_W1_ALIGN, ( row & 1 ) == 0 );
         WndMenuEnable( wnd, MENU_W1_UNALIGN, ( row & 1 ) != 0 );
         WndMenuEnable( wnd, MENU_W1_SAY, ( row & 2 ) == 0 );

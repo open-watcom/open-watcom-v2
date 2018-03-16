@@ -462,7 +462,8 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
     const char          *cp;
     size_t              len;
 
-    if( menu == NULL ) return;
+    if( menu == NULL )
+        return;
     for( cp = menu->label; *cp != NULLCHAR; ++cp ) {
         if( *cp == '\t' ) {
             break;

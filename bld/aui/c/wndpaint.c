@@ -43,7 +43,7 @@ static void WndDrawSelect( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
 
     if( WndSwitchOn( wnd, WSW_NOT_TO_SCREEN ) )
         return;
-    if( WndSelected( wnd, line, row, piece, &first_colidx, &len ) ){
+    if( WndSelected( wnd, line, row, piece, &first_colidx, &len ) ) {
         indent = line->indent;
         if( first_colidx != 0 ) {
             indent += GUIGetExtentX( wnd->gui, line->text, first_colidx );
@@ -244,6 +244,7 @@ void    WndProcPaint( a_window wnd, void *parm )
 void    WndForcePaint( a_window wnd )
 {
     WndSetSwitches( wnd, WSW_NOT_TO_SCREEN );
-    if( wnd->max_indent == 0 ) WndPaintRows( wnd, 0, wnd->rows );
+    if( wnd->max_indent == 0 )
+        WndPaintRows( wnd, 0, wnd->rows );
     WndClrSwitches( wnd, WSW_NOT_TO_SCREEN );
 }

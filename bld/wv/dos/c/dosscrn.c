@@ -256,14 +256,16 @@ static void DoSetMode( unsigned char mode )
 
 static bool TstMono( void )
 {
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
+    if( !ChkCntrlr( VIDMONOINDXREG ) )
+        return( false );
     return( true );
 }
 
 
 static bool TstColour( void )
 {
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
+    if( !ChkCntrlr( VIDCOLRINDXREG ) )
+        return( false );
     return( true );
 }
 
@@ -278,7 +280,8 @@ static void GetDispConfig( void )
     hw_display_type     temp;
 
     HWDisplay = BIOSDevCombCode();
-    if( HWDisplay.active != DISP_NONE ) return;
+    if( HWDisplay.active != DISP_NONE )
+        return;
     /* have to figure it out ourselves */
     curr_mode = BIOSGetMode() & 0x7f;
     info = BIOSEGAInfo();
@@ -289,15 +292,17 @@ static void GetDispConfig( void )
         /* we have an EGA */
         if( colour == 0 ) {
             HWDisplay.active = DISP_EGA_COLOUR;
-            if( TstMono() ) HWDisplay.alt = DISP_MONOCHROME;
+            if( TstMono() ) {
+                HWDisplay.alt = DISP_MONOCHROME;
+            }
         } else {
             HWDisplay.active = DISP_EGA_MONO;
-            if( TstColour() ) HWDisplay.alt = DISP_CGA;
+            if( TstColour() ) {
+                HWDisplay.alt = DISP_CGA;
+            }
         }
-        if( HWDisplay.active == DISP_EGA_COLOUR
-                && (curr_mode==7 || curr_mode==15)
-         || HWDisplay.active == DISP_EGA_MONO
-                && (curr_mode!=7 && curr_mode!=15) ) {
+        if( HWDisplay.active == DISP_EGA_COLOUR && ( curr_mode == 7 || curr_mode == 15 )
+         || HWDisplay.active == DISP_EGA_MONO && ( curr_mode != 7 && curr_mode != 15 ) ) {
             /* EGA is not the active display */
 
             temp = HWDisplay.active;
@@ -326,7 +331,8 @@ static void GetDispConfig( void )
 
 static bool ChkForColour( hw_display_type display )
 {
-    if( ColourAdapters[display] <= 0 ) return( false );
+    if( ColourAdapters[display] <= 0 )
+        return( false );
     ScrnMode = MD_COLOUR;
     return( true );
 
@@ -345,7 +351,8 @@ static void SwapActAlt( void )
 
 static bool ChkColour( void )
 {
-    if( ChkForColour( HWDisplay.active ) ) return( true );
+    if( ChkForColour( HWDisplay.active ) )
+        return( true );
     if( ChkForColour( HWDisplay.alt    ) ) {
         SwapActAlt();
         return( true );
@@ -356,7 +363,8 @@ static bool ChkColour( void )
 
 static bool ChkForMono( hw_display_type display )
 {
-    if( ColourAdapters[display] >= 0 ) return( false );
+    if( ColourAdapters[display] >= 0 )
+        return( false );
     ScrnMode = MD_MONO;
     return( true );
 }
@@ -364,7 +372,8 @@ static bool ChkForMono( hw_display_type display )
 
 static bool ChkMono( void )
 {
-    if( ChkForMono( HWDisplay.active ) ) return( true );
+    if( ChkForMono( HWDisplay.active ) )
+        return( true );
     if( ChkForMono( HWDisplay.alt    ) ) {
         SwapActAlt();
         return( true );
@@ -391,7 +400,8 @@ static bool ChkForEGA( hw_display_type display )
 
 static bool ChkEGA( void )
 {
-    if( ChkForEGA( HWDisplay.active ) ) return( true );
+    if( ChkForEGA( HWDisplay.active ) )
+        return( true );
     if( ChkForEGA( HWDisplay.alt    ) ) {
         SwapActAlt();
         return( true );
@@ -404,7 +414,7 @@ static void GetDefault( void )
 {
     if( StrtMode == 0x07 || StrtMode == 0x0f ) {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkColour() == false ) {
+            if( !ChkColour() ) {
                 FlipMech = FLIP_SWAP;
                 ChkMono();
             }
@@ -413,7 +423,7 @@ static void GetDefault( void )
         }
     } else {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkMono() == false ) {
+            if( !ChkMono() ) {
                 FlipMech = FLIP_PAGE;
                 ChkColour();
             }
@@ -459,8 +469,10 @@ static void SetChrSet( unsigned set )
 
 static unsigned GetChrSet( unsigned char rows )
 {
-    if( rows >= 43 ) return( DOUBLE_DOT_CHR_SET );
-    if( rows >= 28 ) return( COMPRESSED_CHR_SET );
+    if( rows >= 43 )
+        return( DOUBLE_DOT_CHR_SET );
+    if( rows >= 28 )
+        return( COMPRESSED_CHR_SET );
     return( USER_CHR_SET );
 }
 
@@ -525,7 +537,8 @@ static void SetMonitor( void )
         SetEGA_VGA( 50 );
         break;
     }
-    if( DbgRows == 0 ) DbgRows = 25;
+    if( DbgRows == 0 )
+        DbgRows = 25;
     if( DbgBiosMode == 7 ) {
         VIDPort = VIDMONOINDXREG;
     } else {
@@ -604,13 +617,16 @@ unsigned ConfigScreen( void )
         GetDefault();
         break;
     case MD_MONO:
-        if( ChkMono() == false ) GetDefault();
+        if( !ChkMono() )
+            GetDefault();
         break;
     case MD_COLOUR:
-        if( ChkColour() == false ) GetDefault();
+        if( !ChkColour() )
+            GetDefault();
         break;
     case MD_EGA:
-        if( ChkEGA() == false ) GetDefault();
+        if( !ChkEGA() )
+            GetDefault();
         break;
     }
     /* get flip mechanism to use */
@@ -630,7 +646,8 @@ unsigned ConfigScreen( void )
 
 static bool SetMode( unsigned char mode )
 {
-    if( (BIOSGetMode() & 0x7f) == (mode & 0x7f) ) return( false );
+    if( (BIOSGetMode() & 0x7f) == (mode & 0x7f) )
+        return( false );
     DoSetMode( mode );
     return( true );
 }
@@ -771,12 +788,16 @@ static void SwapRestore( void )
 
 static void SaveMouse( unsigned to )
 {
-    if( to != 0 ) MouseSaveState( SwapSeg, to );
+    if( to != 0 ) {
+        MouseSaveState( SwapSeg, to );
+    }
 }
 
 static void RestoreMouse( unsigned from )
 {
-    if( from != 0 ) MouseRestoreState( SwapSeg, from );
+    if( from != 0 ) {
+        MouseRestoreState( SwapSeg, from );
+    }
 }
 
 
@@ -1027,7 +1048,9 @@ static void ReInitScreen( void )
         break;
     }
     BIOSSetCurTyp( StrtCurTyp );
-    if( StrtAttr != 0 ) BIOSSetAttr( StrtAttr );
+    if( StrtAttr != 0 ) {
+        BIOSSetAttr( StrtAttr );
+    }
 }
 
 /*
@@ -1151,7 +1174,8 @@ void uisetmouse( ORD row, ORD col )
     char        __far *old;
     char        __far *new;
 
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     if( OldMouseCol != OFF_SCREEN ) {
         old = RegenPos( OldMouseRow, OldMouseCol );
         *old = OldAttr;

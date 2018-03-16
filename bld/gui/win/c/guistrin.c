@@ -84,7 +84,7 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, in
     } else {
         guess--;
     }
-    for( ; ; ) {
+    for( ;; ) {
         new_curr = GUIGetTextExtentX( wnd, string, guess );
 
         if( new_curr == diff.x ) {

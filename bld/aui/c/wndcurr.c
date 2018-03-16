@@ -184,7 +184,8 @@ void    WndNoCurrent( a_window wnd )
 
 wnd_row WndCurrRow( a_window wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return( WND_NO_ROW );
+    if( !WndHasCurrent( wnd ) )
+        return( WND_NO_ROW );
     return( WndVirtualRow( wnd, wnd->current.row ) );
 }
 
@@ -295,7 +296,8 @@ bool    WndFirstCurrent( a_window wnd )
 
 bool    WndLastCurrent( a_window wnd )
 {
-    if( !WndFirstCurrent( wnd ) ) return( false );
+    if( !WndFirstCurrent( wnd ) )
+        return( false );
     while( WndNextCurrent( wnd, true ) );
     while( WndTabLeft( wnd, false ) );
     return( true );

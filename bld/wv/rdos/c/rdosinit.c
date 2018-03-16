@@ -87,7 +87,8 @@ void WndCleanUp( void )
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 
@@ -95,10 +96,11 @@ void SetCmdArgStart( int num, char *ptr )
 {
     num = num;
 
-    if( ptr )
+    if( ptr ) {
         strcpy( CmdData, ptr );
-    else
+    } else {
         CmdData[0] = 0;
+    }
 }
 
 void KillDebugger( int ret_code )

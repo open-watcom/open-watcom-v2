@@ -61,9 +61,11 @@ __segment __AllocSeg( unsigned int amount )
         }
         /*        heapinfo + frl,        allocated blk,  end tags */
         amount += sizeof(struct heapblk) + sizeof(tag) + sizeof(tag) * 2;
-        if( amount < _amblksiz )  amount = _amblksiz;
+        if( amount < _amblksiz )
+            amount = _amblksiz;
         n = ( amount + 0x0f ) >> 4;
-        if( n == 0 )  n = 0x1000;                       /* 23-may-89 */
+        if( n == 0 )
+            n = 0x1000;
         if( LastSeg == NULL ) {
             seg = FP_SEG( SyMemBeg );
         } else if( LastSeg->h.heaplen == 0 ) {

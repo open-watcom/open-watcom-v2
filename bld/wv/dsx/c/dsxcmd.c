@@ -99,8 +99,10 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         break;
     case OPT_CHECKSIZE:
         num = GetMemory();
-        if( num < 32*1024UL ) num = 32*1024UL;
-        if( num > 640*1024UL ) num = 640*1024UL;
+        if( num < 32*1024UL )
+            num = 32*1024UL;
+        if( num > 640*1024UL )
+            num = 640*1024UL;
         CheckSize = num / 16; /* Checksize is in paragraphs */
         break;
     case OPT_HEAPENABLE:

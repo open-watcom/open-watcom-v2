@@ -183,7 +183,8 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     if( FlipMech == FLIP_SWAP ) {
         FiniSwapper();
@@ -223,13 +224,15 @@ static bool ChkCntrlr( int port )
 
 static bool TstMono( void )
 {
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
+    if( !ChkCntrlr( VIDMONOINDXREG ) )
+        return( false );
     return( true );
 }
 
 static bool TstColour( void )
 {
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
+    if( !ChkCntrlr( VIDCOLRINDXREG ) )
+        return( false );
     return( true );
 }
 
@@ -243,7 +246,8 @@ static void GetDispConfig( void )
     hw_display_type     temp;
 
     HWDisplay = BIOSDevCombCode();
-    if( HWDisplay.active != DISP_NONE ) return;
+    if( HWDisplay.active != DISP_NONE )
+        return;
     /* have to figure it out ourselves */
     curr_mode = BIOSGetMode() & 0x7f;
     info = BIOSEGAInfo();
@@ -254,10 +258,14 @@ static void GetDispConfig( void )
         /* we have an EGA */
         if( colour == 0 ) {
             HWDisplay.active = DISP_EGA_COLOUR;
-            if( TstMono() ) HWDisplay.alt = DISP_MONOCHROME;
+            if( TstMono() ) {
+                HWDisplay.alt = DISP_MONOCHROME;
+            }
         } else {
             HWDisplay.active = DISP_EGA_MONO;
-            if( TstColour() ) HWDisplay.alt = DISP_CGA;
+            if( TstColour() ) {
+                HWDisplay.alt = DISP_CGA;
+            }
         }
         if( HWDisplay.active == DISP_EGA_COLOUR
                 && (curr_mode==7 || curr_mode==15)

@@ -170,7 +170,8 @@ void DebugInit( void )
 
 OVL_EXTERN void ProcNil( void )
 {
-    if( ScanLen() == 0 ) Scan();
+    if( ScanLen() == 0 )
+        Scan();
     Error( ERR_NONE, LIT_ENG( ERR_BAD_COMMAND ), ScanPos(), ScanLen() );
 }
 
@@ -209,7 +210,9 @@ void ReportTask( task_status task, error_handle errh )
 
 void ChkBreak( void )
 {
-    if( TBreak() ) Error( ERR_NONE, LIT_ENG( ERR_DBG_INTERRUPT ) );
+    if( TBreak() ) {
+        Error( ERR_NONE, LIT_ENG( ERR_DBG_INTERRUPT ) );
+    }
 }
 
 

@@ -371,7 +371,8 @@ void ProcPendingPaint( void )
     gui_colour_set      *set;
     a_window            wnd;
 
-    if( _IsOff( SW_PENDING_REPAINT ) ) return;
+    if( _IsOff( SW_PENDING_REPAINT ) )
+        return;
     _SwitchOff( SW_PENDING_REPAINT );
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( WndHasClass( wnd ) ) {

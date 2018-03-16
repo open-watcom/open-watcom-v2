@@ -52,6 +52,7 @@ int     WndNextId()
 
 void    WndFreeId( int i )
 {
-    if( i == 0 ) return;
+    if( i == 0 )
+        return;
     WndIdUsed[i] = false;
 }

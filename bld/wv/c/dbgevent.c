@@ -98,8 +98,10 @@ void ShowReplay( void )
 
 bool OkToSaveReplay( void )
 {
-    if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( true );
-    if( DUIAskIfAsynchOk() ) return( true );
+    if( _IsOff( SW_HAD_ASYNCH_EVENT ) )
+        return( true );
+    if( DUIAskIfAsynchOk() )
+        return( true );
     return( false );
 }
 
@@ -190,7 +192,8 @@ void ReplayTo( event_record *ev )
 {
     event_record *prev;
 
-    if( ev != NULL && ev->after_asynch && !DUIAskIfAsynchOk() ) return;
+    if( ev != NULL && ev->after_asynch && !DUIAskIfAsynchOk() )
+        return;
     PointFini();
     if( EventList != NULL ) {
         if( ev == NULL ) {

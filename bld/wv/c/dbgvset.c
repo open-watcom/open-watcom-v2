@@ -222,14 +222,16 @@ static void oops( void )
 static void ScanLeftBrace( void )
 /*******************************/
 {
-    if( CurrToken != T_LEFT_BRACE ) oops();
+    if( CurrToken != T_LEFT_BRACE )
+        oops();
     Scan();
 }
 
 static bool ScanRightBrace( void )
 /********************************/
 {
-    if( CurrToken != T_RIGHT_BRACE ) return( false );
+    if( CurrToken != T_RIGHT_BRACE )
+        return( false );
     Scan();
     return( true );
 }

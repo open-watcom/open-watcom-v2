@@ -84,9 +84,11 @@ static bool ReAllocChain( traceback *curr, int new_size )
     call_chain  *chain;
 
     chain = curr->chain;
-    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( false );
+    if( new_size >= (UINT_MAX / sizeof(call_chain)) )
+        return( false );
     new_chain = DbgAlloc( new_size * sizeof(call_chain) );
-    if( new_chain == NULL ) return( false );
+    if( new_chain == NULL )
+        return( false );
     memset( new_chain, 0, new_size*sizeof( call_chain ) );
     memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
     DbgFree( chain );
@@ -156,7 +158,8 @@ OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
             execution.mach.offset -= MADDisasmInsSize( dd );
         }
     }
-    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( false );
+    if( EarlyOut( tb, execution, entry->lc.frame ) )
+        return( false );
     chain = &curr->chain[curr->current_depth];
     chain->lc = entry->lc;
     chain->lc.execution = execution;

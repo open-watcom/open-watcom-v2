@@ -61,7 +61,8 @@ long RemoteGetFileDate( const char *name )
     file_info_get_date_req      acc;
     file_info_get_date_ret      ret;
 
-    if( SuppFileInfoId == 0 ) return( -1 );
+    if( SuppFileInfoId == 0 )
+        return( -1 );
     SUPP_FILE_INFO_SERVICE( acc, REQ_FILE_INFO_GET_DATE );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -85,7 +86,8 @@ bool RemoteSetFileDate( const char *name, long date )
     file_info_set_date_req      acc;
     file_info_set_date_ret      ret;
 
-    if( SuppFileInfoId == 0 ) return( false );
+    if( SuppFileInfoId == 0 )
+        return( false );
     SUPP_FILE_INFO_SERVICE( acc, REQ_FILE_INFO_SET_DATE );
     acc.date = date;
     in[0].ptr = &acc;

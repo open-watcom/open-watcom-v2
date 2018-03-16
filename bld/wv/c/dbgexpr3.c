@@ -77,8 +77,10 @@ static conv_class ConvIdx( dip_type_info *info )
 {
     unsigned    size;
 
-    if( info->kind == TK_STRING ) return( STR );
-    if( info->size > sizeof( item_mach ) ) return( ERR );
+    if( info->kind == TK_STRING )
+        return( STR );
+    if( info->size > sizeof( item_mach ) )
+        return( ERR );
     size = info->size;
     switch( info->kind ) {
     case TK_BOOL:
@@ -370,42 +372,48 @@ OVL_EXTERN bool ConvU8( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvU1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_8)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvU2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_16)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvU4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_32)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_8)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_16)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_32)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
@@ -453,14 +461,16 @@ OVL_EXTERN bool ConvR10( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvR4( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( false );
+    if( !ConvR10( entry, from ) )
+        return( false );
     DToLD( (float)LDToD( &entry->v.real ), &entry->v.real );
     return( true );
 }
 
 OVL_EXTERN bool ConvR8( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( false );
+    if( !ConvR10( entry, from ) )
+        return( false );
     DToLD( (double)LDToD( &entry->v.real ), &entry->v.real );
     return( true );
 }
@@ -504,7 +514,8 @@ OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( false );
+    if( !ConvC20( entry, from ) )
+        return( false );
     DToLD( (float)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (float)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
     return( true );
@@ -512,7 +523,8 @@ OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvC16( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( false );
+    if( !ConvC20( entry, from ) )
+        return( false );
     DToLD( (double)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (double)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
     return( true );
@@ -557,7 +569,8 @@ OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvNP2( stack_entry *entry, conv_class from )
 {
-    if( !ConvNP4( entry, from ) ) return( false );
+    if( !ConvNP4( entry, from ) )
+        return( false );
     entry->v.addr.mach.offset = (addr32_off)entry->v.addr.mach.offset;
     return( true );
 }
@@ -663,9 +676,8 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     if( s == 0 && k == TK_INTEGER ) {
         s = DefaultSize( DK_INT );
     }
-    if( entry->info.kind == k
-     && entry->info.modifier == m
-     && entry->info.size == s ) return;
+    if( entry->info.kind == k && entry->info.modifier == m && entry->info.size == s )
+        return;
     from = ConvIdx( &entry->info );
     switch( from ) {
     case U1:
@@ -807,12 +819,10 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     promote_left = false;
     if( lclass != result_class ) {
         promote_left = true;
-        ConvertTo( left, result_info->kind,
-                result_info->modifier, result_info->size );
+        ConvertTo( left, result_info->kind, result_info->modifier, result_info->size );
     }
     if( rclass != result_class ) {
-        ConvertTo( right, result_info->kind,
-                result_info->modifier, result_info->size );
+        ConvertTo( right, result_info->kind, result_info->modifier, result_info->size );
     }
     /* set up result type in left operand */
     if( left->th != NULL && right->th != NULL ) {

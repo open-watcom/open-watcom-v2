@@ -582,7 +582,7 @@ OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
                 var_node    *v_iter;
 
                 for( v_iter = v->parent->expand; v_iter != NULL; v_iter = v_iter->next ) {
-                    if( v_iter == v ){
+                    if( v_iter == v ) {
                         v_sibling = v_iter->next;
                         break;
                     }

@@ -59,11 +59,13 @@ dtid_t RemoteGetNextThread( dtid_t tid, unsigned *state )
     thread_get_next_req acc;
     thread_get_next_ret ret;
 
-    if( SuppThreadId == 0 ) return( tid == 0 ? DEFAULT_TID : 0 );
+    if( SuppThreadId == 0 )
+        return( tid == 0 ? DEFAULT_TID : 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_GET_NEXT );
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
-    if( state != NULL ) *state = ret.state;
+    if( state != NULL )
+        *state = ret.state;
     return( ret.thread );
 }
 
@@ -89,7 +91,8 @@ long RemoteFreezeThread( dtid_t tid )
     thread_freeze_req   acc;
     thread_freeze_ret   ret;
 
-    if( SuppThreadId == 0 ) return( 0 );
+    if( SuppThreadId == 0 )
+        return( 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_FREEZE );
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
@@ -101,7 +104,8 @@ long RemoteThawThread( dtid_t tid )
     thread_thaw_req     acc;
     thread_thaw_ret     ret;
 
-    if( SuppThreadId == 0 ) return( 0 );
+    if( SuppThreadId == 0 )
+        return( 0 );
     SUPP_THREAD_SERVICE( acc, REQ_THREAD_THAW );
     acc.thread = tid;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );

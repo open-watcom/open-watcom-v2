@@ -302,14 +302,13 @@ int main( int argc, char ** argv )
                 rc = ( MyHandlers[rq_id] )( buffer, len );
             last_id = rq_id;
 
-        } else if( type == 3 ){
-            if( last_id < REQ__LAST )
+        } else if( type == 3 ) {
+            if( last_id < REQ__LAST ) {
                 rc = ( MyReplyHandlers[last_id] )( buffer, len );
+            }
         }
 
         if( rc == 0 ) {
-
-
             if( type == 1 )
                 printf( "Debugger request(1). Length %u\n", len );
             else if( type == 2 )
@@ -351,13 +350,16 @@ void DumpPacket( unsigned char * pkt, unsigned short len, int tabit )
     unsigned offset = 0;
     unsigned char * ptr = pkt;
 
-    if( tabit ) printf( "    " );
+    if( tabit )
+        printf( "    " );
     printf( "      00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f ; 0123456789abcdef\n" );
-    if( tabit ) printf( "    " );
+    if( tabit )
+        printf( "    " );
     printf( "      -----------------------------------------------   ----------------\n" );
 
     while( copy_len >= 16 ) {
-        if( tabit ) printf( "    " );
+        if( tabit )
+            printf( "    " );
         printf( "%.04x: %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x %.02x ; %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
             offset,
             ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7],
@@ -373,7 +375,7 @@ void DumpPacket( unsigned char * pkt, unsigned short len, int tabit )
     }
     if( copy_len ) {
         sprintf(output_buffer_1, "%.04x: ", offset );
-        while( copy_len ){
+        while( copy_len ) {
             char local[4];
 
             sprintf( local, "%.02x ", *ptr );
@@ -388,7 +390,8 @@ void DumpPacket( unsigned char * pkt, unsigned short len, int tabit )
             strcat( output_buffer_1, " " );
         strcat( output_buffer_1, "; " );
         strcat( output_buffer_1, output_buffer_2 );
-        if( tabit ) printf( "    " );
+        if( tabit )
+            printf( "    " );
         printf( "%s\n", output_buffer_1 );
     }
 }
@@ -526,8 +529,9 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE_REPLY( unsigned char * pkt, unsigne
 {
     int rc = -1;
     if( last_service ) {
-        if( last_service && last_service->service_decode )
+        if( last_service && last_service->service_decode ) {
             rc = last_service->service_decode( 0, pkt, len );
+        }
     }
 
     if( 0 != rc ) {
@@ -577,12 +581,13 @@ int handle_REQ_MAP_ADDR( unsigned char * pkt, unsigned short )
 {
     map_addr_req * prq = ( map_addr_req * ) pkt;
     printf( "Debugger request: REQ_MAP_ADDR\n" );
-    if( prq->in_addr.segment == MAP_FLAT_CODE_SELECTOR )
+    if( prq->in_addr.segment == MAP_FLAT_CODE_SELECTOR ) {
         printf( "    Address:    FLAT_CODE:%.08x\n", prq->in_addr.offset );
-    else if( prq->in_addr.segment == MAP_FLAT_DATA_SELECTOR )
+    } else if( prq->in_addr.segment == MAP_FLAT_DATA_SELECTOR ) {
         printf( "    Address:    FLAT_DATA:%.08x\n", prq->in_addr.offset );
-    else
+    } else {
         printf( "    Address:    %.04x:%.08x\n", prq->in_addr.segment, prq->in_addr.offset );
+    }
     printf( "    MAD Handle: %.08x\n", prq->mod_handle );
 
     return 1;
@@ -633,7 +638,7 @@ int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len )
     printf( "Trap reply: REQ_READ_MEM\n" );
     printf( "    Length: 0x%.04x\n", len );
 
-    if( len ){
+    if( len ) {
         printf( "    Data:\n" );
         DumpPacket( pkt, len, 1 );
     }
@@ -680,7 +685,7 @@ int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len )
     printf( "Trap reply: REQ_READ_IO\n" );
     printf( "    Length: 0x%.04x\n", len );
 
-    if( len ){
+    if( len ) {
         printf( "    Data:\n" );
         DumpPacket( pkt, len, 1 );
     }
@@ -819,12 +824,18 @@ int handle_REQ_PROG_LOAD_REPLY( unsigned char * pkt, unsigned short )
         printf( "    Flags:          0x%.02x\n", pr->flags );
         printf( "                    " );
 
-        if( pr->flags & LD_FLAG_IS_BIG )            printf( "LD_FLAG_IS_BIG " );
-        if( pr->flags & LD_FLAG_IS_PROT )           printf( "LD_FLAG_IS_PROT " );
-        if( pr->flags & LD_FLAG_IS_STARTED )        printf( "LD_FLAG_IS_STARTED " );
-        if( pr->flags & LD_FLAG_IGNORE_SEGMENTS )   printf( "LD_FLAG_IGNORE_SEGMENTS " );
-        if( pr->flags & LD_FLAG_HAVE_RUNTIME_DLLS ) printf( "LD_FLAG_HAVE_RUNTIME_DLLS " );
-        if( pr->flags & LD_FLAG_DISPLAY_DAMAGED )   printf( "LD_FLAG_DISPLAY_DAMAGED " );
+        if( pr->flags & LD_FLAG_IS_BIG )
+            printf( "LD_FLAG_IS_BIG " );
+        if( pr->flags & LD_FLAG_IS_PROT )
+            printf( "LD_FLAG_IS_PROT " );
+        if( pr->flags & LD_FLAG_IS_STARTED )
+            printf( "LD_FLAG_IS_STARTED " );
+        if( pr->flags & LD_FLAG_IGNORE_SEGMENTS )
+            printf( "LD_FLAG_IGNORE_SEGMENTS " );
+        if( pr->flags & LD_FLAG_HAVE_RUNTIME_DLLS )
+            printf( "LD_FLAG_HAVE_RUNTIME_DLLS " );
+        if( pr->flags & LD_FLAG_DISPLAY_DAMAGED )
+            printf( "LD_FLAG_DISPLAY_DAMAGED " );
         printf( "\n" );
     }
     return 1;
@@ -1149,7 +1160,7 @@ void DumpRegistersMAX_X86( mad_registers * pregs )
 
 void DumpRegisters( mad_registers * pregs )
 {
-    switch( read_mad_handle ){
+    switch( read_mad_handle ) {
     case MAD_X86:
         DumpRegistersMAX_X86( pregs );
         break;
@@ -1216,7 +1227,7 @@ int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len )
     printf( "    Start:  %.08x\n", pr->cache_start );
     printf( "    End:    %.08x\n", pr->cache_end );
 
-    if( msd_len ){
+    if( msd_len ) {
         printf( "Machine specific data - to be decoded:\n" );
         DumpPacket( msd, msd_len, 1 );
     }

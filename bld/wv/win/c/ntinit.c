@@ -107,7 +107,8 @@ void WndCleanUp( void )
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 

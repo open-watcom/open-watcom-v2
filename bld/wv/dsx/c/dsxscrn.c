@@ -504,7 +504,7 @@ static void GetDefault( void )
 {
     if( StartScrn.mode == 0x07 || StartScrn.mode == 0x0f ) {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkColour() == false ) {
+            if( !ChkColour() ) {
                 FlipMech = FLIP_SWAP;
                 ChkMono();
             }
@@ -513,7 +513,7 @@ static void GetDefault( void )
         }
     } else {
         if( FlipMech == FLIP_TWO ) {
-            if( ChkMono() == false ) {
+            if( !ChkMono() ) {
                 FlipMech = FLIP_PAGE;
                 ChkColour();
             }
@@ -667,17 +667,17 @@ static void GetAdapter( void )
         GetDefault();
         break;
     case MD_MONO:
-        if( ChkMono() == false ) {
+        if( !ChkMono() ) {
             GetDefault();
         }
         break;
     case MD_COLOUR:
-        if( ChkColour() == false ) {
+        if( !ChkColour() ) {
             GetDefault();
         }
         break;
     case MD_EGA:
-        if( ChkEGA() == false ) {
+        if( !ChkEGA() ) {
             GetDefault();
         }
         break;
@@ -941,7 +941,8 @@ static void AllocSave( void )
     case FLIP_CHEAPSWAP:
         FlipMech = FLIP_CHEAPSWAP;
         regen_size = RegenSize();
-        if( VirtScreen != NULL ) regen_size += PageSize;
+        if( VirtScreen != NULL )
+            regen_size += PageSize;
         _Alloc( RegenSave, regen_size );
         if( RegenSave == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
@@ -1223,7 +1224,8 @@ void SaveMainWindowPos( void )
 /* FiniScreen -- finish screen swapping/paging */
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     if( ( SaveScrn.swtchs != StartScrn.swtchs ) ||
         ( SaveScrn.mode != StartScrn.mode ) ||

@@ -120,7 +120,8 @@ void ProcSysOptInit( void )
 
 char __far *GetCmdArg( int num )
 {
-    if( num != 0 || cmdStart == 0 ) return( NULL );
+    if( num != 0 || cmdStart == 0 )
+        return( NULL );
     return( MK_FP( _psp, cmdStart ) );
 }
 

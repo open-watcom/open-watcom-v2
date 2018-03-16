@@ -277,7 +277,7 @@ bool ReplaySave( bool writing )
 
 void FileBrowse( void )
 {
-    if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )){
+    if( DoFileBrowse( &LastFile, LIT_DUI( Enter_File_Name ), SourceFilter, OFN_FLAGS( 0 ) )) {
         WndFileInspect( TxtBuff, false );
     }
 }

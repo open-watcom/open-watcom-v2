@@ -136,7 +136,8 @@ void WndLDblClk( a_window wnd, void *parm )
         LButtonIsDown = false;
         if( MouseLine.static_text )
             return;
-//      if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ) return;
+//        if( !FindPoint( wnd, parm, true, &MouseUpLoc ) )
+//            return;
         FindPoint( wnd, parm, true, &MouseUpLoc );
         WndSetMouseRow( wnd, parm );
         if( !MouseLine.tabstop && WndSwitchOn( wnd, WSW_ONLY_MODIFY_TABSTOP ) )

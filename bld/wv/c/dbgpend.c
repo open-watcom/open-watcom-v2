@@ -51,21 +51,26 @@ static bool ProcPending( void )
 {
     for( ;; ) {
         for( ;; ) {
-            if( InpStack == NULL ) return( false );
+            if( InpStack == NULL )
+                return( false );
             if( InpStack->type & INP_NEW_LANG ) {
                 InpStack->type &= ~INP_NEW_LANG;
                 if( (CodeAddrMod != NO_MOD) && !IsInternalMod( CodeAddrMod ) ) {
                     NewLang( DIPModSrcLang( CodeAddrMod ) );
                 }
             }
-            if( InpStack->type & INP_STOP_PURGE ) return( false );
-            if( InpStack->type & INP_NO_CMD ) break;
-            if( CurrToken == T_LINE_SEPARATOR ) break;
+            if( InpStack->type & INP_STOP_PURGE )
+                return( false );
+            if( InpStack->type & INP_NO_CMD )
+                break;
+            if( CurrToken == T_LINE_SEPARATOR )
+                break;
             _SwitchSet( SW_CMD_INTERACTIVE, !(InpStack->type & (INP_BREAK_POINT|INP_HOOK)));
             _SwitchSet( SW_IN_REPLAY_MODE, (InpStack->type & INP_REPLAYED) );
             ProcACmd();
         }
-        if( InpStack->rtn( InpStack->handle, INP_RTN_EOL ) ) continue;
+        if( InpStack->rtn( InpStack->handle, INP_RTN_EOL ) )
+            continue;
         PopInpStack();
     }
 }
@@ -93,8 +98,11 @@ void DoInput( void )
 {
     if( _IsOff( SW_WND_DOING_INPUT ) ) {
         for ( ;; ) {
-            if( ProcInput() ) break;
-            if( !HookPendingPush() ) break;
+            if( ProcInput() )
+                break;
+            if( !HookPendingPush() ) {
+                break;
+            }
         }
     }
 }

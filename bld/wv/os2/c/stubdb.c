@@ -163,7 +163,8 @@ var_node *VarGetDisplayPiece( var_info *i, int row, wnd_piece piece, int *pdepth
             i->exprsp_cache_is_error = VarError;
         }
         if( v == NULL ) {
-            if( !VarError ) return( NULL );
+            if( !VarError )
+                return( NULL );
             v = row_v;
         }
         VarNodeInvalid( v );
@@ -286,7 +287,8 @@ static void RunRequest( int req )
 {
     ULONG   ulCount;
 
-    if( _IsOn( SW_TASK_RUNNING ) ) return;
+    if( _IsOn( SW_TASK_RUNNING ) )
+        return;
     DosWaitEventSem( Requestdonesem, SEM_INDEFINITE_WAIT ); // wait for last request to finish
     DosResetEventSem( Requestdonesem, &ulCount );
     Req = req;

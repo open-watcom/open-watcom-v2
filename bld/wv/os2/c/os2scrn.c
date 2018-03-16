@@ -75,8 +75,10 @@ void InitScreen( void )
     VioGetMode( &SaveMode, 0 );
     if( NumLines != 0 || NumColumns != 0 ) {
         new = SaveMode;
-        if( NumLines != 0 ) new.row = NumLines;
-        if( NumColumns != 0 ) new.col = NumColumns;
+        if( NumLines != 0 )
+            new.row = NumLines;
+        if( NumColumns != 0 )
+            new.col = NumColumns;
         VioSetMode( &new, 0 );
     }
     uistart();
@@ -131,9 +133,12 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
-    if( NumLines != 0 || NumColumns != 0 ) VioSetMode( &SaveMode, 0 );
+    if( NumLines != 0 || NumColumns != 0 ) {
+        VioSetMode( &SaveMode, 0 );
+    }
 }
 
 

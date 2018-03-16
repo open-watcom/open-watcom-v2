@@ -72,7 +72,8 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
     InitLC( &entry.lc, true );
     _AllocA( mcud, MADCallUpStackSize() );
     mr = (entry.lc.regs != NULL) ? &entry.lc.regs->mr : NULL;
-    if( MADCallUpStackInit( mcud, mr ) != MS_OK ) return( false );
+    if( MADCallUpStackInit( mcud, mr ) != MS_OK )
+        return( false );
     OvlLevel = 0;
     levels = 0;
     for( ;; ) {
@@ -116,8 +117,10 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
                                 &entry.lc.frame,
                                 &entry.lc.stack,
                                 &mr );
-        if( mr == NULL ) entry.lc.regs = NULL;
-        if( ms != MS_OK ) break;
+        if( mr == NULL )
+            entry.lc.regs = NULL;
+        if( ms != MS_OK )
+            break;
         entry.lc.up_stack_level = true;
         OvlLevel += FixOvlRetAddr( &entry.lc.execution );
     }

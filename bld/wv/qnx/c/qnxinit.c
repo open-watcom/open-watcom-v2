@@ -120,7 +120,8 @@ char *GetCmdArg( int num )
 void SetCmdArgStart( int num, char *ptr )
 {
     NumArgs -= num;
-    if( ptr != NULL && *ptr == NULLCHAR ) ++ptr;
+    if( ptr != NULL && *ptr == NULLCHAR )
+        ++ptr;
     cmdStart = ptr;
 }
 

@@ -108,7 +108,8 @@ again:
                 }
                 *p = NULLCHAR;
             }
-            if( p != TxtBuff ) DUIDlgTxt( TxtBuff );
+            if( p != TxtBuff )
+                DUIDlgTxt( TxtBuff );
             p = TxtBuff;
             for( i = 0; i < indent-INDENT_AMOUNT; ++i ) {
                 *p++ = ' ';

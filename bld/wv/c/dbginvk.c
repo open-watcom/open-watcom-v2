@@ -225,7 +225,8 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
-        if( !GetInvkCmd( inv ) ) return( false );
+        if( !GetInvkCmd( inv ) )
+            return( false );
         ReScan( inv->buff );
         return( true );
     case INP_RTN_FINI:

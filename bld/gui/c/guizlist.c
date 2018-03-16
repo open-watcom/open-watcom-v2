@@ -58,7 +58,9 @@ void GUIDeleteFromList( gui_window *wnd )
 
     prev = NULL;
     for( curr = GUIHead; curr != NULL; prev = curr, curr=curr->next ) {
-        if( curr == wnd ) break;
+        if( curr == wnd ) {
+            break;
+        }
     }
     if( curr != NULL ) {
         if( prev != NULL ) {
