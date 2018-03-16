@@ -80,8 +80,8 @@ void GUImain( void )
 }
 
 
-bool WndProcMacro( a_window wnd, unsigned key )
-/*********************************************/
+bool WndProcMacro( a_window wnd, gui_key key )
+/********************************************/
 {
 #if 0
     int     menu;

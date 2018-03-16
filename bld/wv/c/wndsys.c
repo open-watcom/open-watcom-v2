@@ -419,7 +419,7 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     return( NULL );
 }
 
-bool    WndProcMacro( a_window wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, gui_key key )
 {
     wnd_macro           *mac;
     wnd_macro           *all;
@@ -449,7 +449,7 @@ bool    WndProcMacro( a_window wnd, unsigned key )
     ch = LookUpCtrlKey( key );
     if( ch == 0 )
         return( false );
-    menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );//
+    menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );
     if( menu == NULL )
         return( false );
     AccelMenuItem( menu, false );

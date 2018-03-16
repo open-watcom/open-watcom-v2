@@ -142,7 +142,7 @@ typedef enum {
 
 typedef struct {
     key_desc    desc;
-    unsigned    key;
+    gui_key     key;
 } key_name;
 
 static key_name KeyNames[] = {
@@ -230,7 +230,7 @@ static key_name KeyNames[] = {
 
 typedef struct {
     char        name;
-    unsigned    key;
+    gui_key     key;
 } alt_key_name;
 
 static alt_key_name AltKeyNames[] = {
@@ -298,12 +298,14 @@ static alt_key_name CtrlKeyNames[] = {
 #define STR_SHIFT       "SHIFT-"
 #define STR_ALT         "ALT-"
 
-char LookUpCtrlKey( unsigned key )
+char LookUpCtrlKey( gui_key key )
 {
     alt_key_name        *alt;
 
     for( alt = CtrlKeyNames; alt->name != 0; ++alt ) {
-        if( alt->key == key ) break;
+        if( alt->key == key ) {
+            break;
+        }
     }
     return( alt->name );
 }
@@ -323,7 +325,7 @@ static char *AddOn( char *buff, key_desc desc )
 }
 
 
-char *KeyName( unsigned key )
+char *KeyName( gui_key key )
 {
     static char         buff[20];
     key_name            *k;
@@ -337,8 +339,8 @@ char *KeyName( unsigned key )
             return( buff );
         }
     }
-    if( key <= 255 && isprint( key ) ) {
-        buff[0] = key;
+    if( WndKeyIsPrintChar( key ) ) {
+        buff[0] = (char)key;
         buff[1] = NULLCHAR;
         return( buff );
     }
@@ -376,7 +378,7 @@ static key_desc StripOff( const char **start, size_t *len,
 }
 
 
-static unsigned MapKey( const char *start, size_t len )
+static gui_key MapKey( const char *start, size_t len )
 {
     key_name            *k;
     key_desc            desc;
@@ -413,7 +415,9 @@ static unsigned MapKey( const char *start, size_t len )
             if( strlen( KeyNamePieces[i] ) == len ) {
                 desc += i;
                 for( k = KeyNames; k->key != 0; ++k ) {
-                    if( k->desc == desc ) return( k->key );
+                    if( k->desc == desc ) {
+                        return( k->key );
+                    }
                 }
                 return( 0 );
             }
@@ -423,7 +427,7 @@ static unsigned MapKey( const char *start, size_t len )
 }
 
 
-wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
+wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
 {
     wnd_macro           **owner,*curr;
     bool                is_main;
@@ -476,7 +480,7 @@ void MacroSet( void )
 {
     wnd_class_wv    wndclass;
     cmd_list        *cmds;
-    unsigned        key;
+    gui_key         key;
     const char      *start;
     size_t          len;
     bool            scanned;

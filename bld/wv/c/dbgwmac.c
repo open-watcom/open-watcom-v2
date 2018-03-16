@@ -107,7 +107,7 @@ OVL_EXTERN const char *WndGetName( const void *data_handle, int item )
 }
 
 #ifdef DEADCODE
-wnd_macro *MacFindMac( unsigned key, wnd_class_wv wndclass )
+wnd_macro *MacFindMac( gui_key key, wnd_class_wv wndclass )
 {
     wnd_macro   *mac;
 
@@ -137,8 +137,7 @@ static wnd_macro *MacGetMacro( int row )
 }
 
 
-static void MacChangeMac( a_window wnd, wnd_macro *mac, unsigned key,
-                          wnd_class_wv wndclass, wnd_row row )
+static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_wv wndclass, wnd_row row )
 {
     cmd_list    *cmds;
     wnd_macro   **owner,*curr;
@@ -197,7 +196,7 @@ static bool MacModWhat( a_window wnd, wnd_row row )
 }
 
 
-bool MacKeyHit( a_window wnd, unsigned key )
+bool MacKeyHit( a_window wnd, gui_key key )
 {
     mac_window  *wndmac;
     wnd_macro   *mac, *curr;
@@ -549,7 +548,11 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 
 OVL_EXTERN int MacCompare( void *pa, void *pb )
 {
-    return( (*(wnd_macro **)pa)->key - (*(wnd_macro **)pb)->key );
+    if( (*(wnd_macro **)pa)->key < (*(wnd_macro **)pb)->key )
+        return( -1 );
+    if( (*(wnd_macro **)pa)->key > (*(wnd_macro **)pb)->key )
+        return( 1 );
+    return( 0 );
 }
 
 static void MacReSize( a_window wnd )

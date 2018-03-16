@@ -47,7 +47,6 @@ extern void     WndStop( void );
 extern void     WndUser( void );
 extern void     WndDebug( void );
 extern void     WndRedraw( wnd_class_wv wndclass );
-extern bool     WndProcMacro( a_window wnd, unsigned key );
 extern void     WndSysInit( void );
 extern void     SetUnderLine( a_window wnd, wnd_line_piece *line );
 extern void     SetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_type type );

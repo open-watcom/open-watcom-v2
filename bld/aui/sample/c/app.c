@@ -69,7 +69,7 @@ void WndEndFreshAll( void )
 }
 
 typedef struct {
-    unsigned    key;
+    gui_key     key;
     char        *name;
 } keymap;
 
@@ -83,7 +83,7 @@ static gui_menu_struct PopTart[] = {
     { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
 
-bool    WndProcMacro( a_window wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, gui_key key )
 {
     gui_ctl_id  menu;
     int         i;

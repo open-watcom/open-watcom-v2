@@ -32,7 +32,7 @@
 
 #include "_aui.h"
 
-bool    WndProcMacro( a_window wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, gui_key key )
 {
     /* unused parameters */ (void)wnd; (void)key;
 

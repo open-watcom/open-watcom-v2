@@ -88,7 +88,7 @@ typedef enum macro_type {
 typedef struct wnd_macro {
     struct wnd_macro        *link;
     void                    *cmd;
-    unsigned                key;
+    gui_key                 key;
     wnd_class_wv            wndclass;
     int                     menu_item;
     gui_menu_struct         *menu;

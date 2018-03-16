@@ -31,7 +31,7 @@
 
 
 #ifdef DEADCODE
-extern wnd_macro    *MacFindMac( unsigned key, wnd_class_wv wndclass );
+extern wnd_macro    *MacFindMac( gui_key key, wnd_class_wv wndclass );
 #endif
-extern bool         MacKeyHit( a_window wnd, unsigned key );
+extern bool         MacKeyHit( a_window wnd, gui_key key );
 extern a_window     WndMacOpen( void );

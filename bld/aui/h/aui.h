@@ -49,6 +49,7 @@
 #define MIN_DCLICK          100
 #define MAX_DCLICK          1500
 #define MAX_MAGIC_STR       20
+#define WND_MAX_PIECE       UCHAR_MAX
 #define WND_NO_PIECE        UCHAR_MAX
 #define MAX_KEY_SIZE        256
 #define MAX_POPUPS          20
@@ -413,7 +414,7 @@ extern gui_coord            WndScreen;
 extern bool                 WndOkToShow;
 extern bool                 WndIgnoreAllEvents;
 
-extern bool                 WndProcMacro( a_window wnd, unsigned key );
+extern bool                 WndProcMacro( a_window wnd, gui_key key );
 
 extern void                 WndSetTitle( a_window wnd, const char *title );
 extern int                  WndGetTitle( a_window wnd, char *buff, unsigned buff_len );

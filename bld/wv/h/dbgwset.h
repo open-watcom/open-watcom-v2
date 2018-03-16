@@ -33,8 +33,8 @@
 #include "dbgwset1.h"
 
 
-extern char         LookUpCtrlKey( unsigned key );
-extern char         *KeyName( unsigned key );
-extern wnd_macro    *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds );
+extern char         LookUpCtrlKey( gui_key key );
+extern char         *KeyName( gui_key key );
+extern wnd_macro    *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds );
 extern int          TabIntervalGet( void );
 extern void         TabIntervalSet( int new );
