@@ -93,7 +93,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
     wnd->dirtyrects= 0; // wndnoselect changes this!
     wnd->vscroll_pending = 0;
     wnd->hscroll_pending = -1;
-    wnd->keypiece = WND_NO_PIECE;
+    WndSetKeyPiece( wnd, WND_NO_PIECE );
 
     wnd->switches = WSW_SELECT_IN_TABSTOP | WSW_MUST_CLICK_ON_PIECE |
                     WSW_ALLOW_POPUP | WSW_SEARCH_WRAP | WSW_HIGHLIGHT_CURRENT |

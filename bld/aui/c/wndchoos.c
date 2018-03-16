@@ -72,7 +72,7 @@ void    WndDoneChoose( a_window wnd )
 
 bool    WndKeyEscape( a_window wnd )
 {
-    if( wnd->keypiece == WND_NO_PIECE )
+    if( WndKeyPiece( wnd ) == WND_NO_PIECE )
         return( false );
     WndNoSelect( wnd );
     wnd->keyindex = 0;
@@ -97,7 +97,7 @@ void    WndSayMatchMode( a_window wnd )
     if( WndSwitchOn( wnd, WSW_CHOOSING ) ) {
         sofar_buff = alloca( match_len + MAX_KEY_SIZE + 1 );
         memcpy( sofar_buff, match, match_len );
-        WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
+        WndGetLine( wnd, wnd->current.row, WndKeyPiece( wnd ), &line );
         strcpy( sofar_buff + match_len, line.text );
         sofar_buff[match_len + wnd->keyindex] = '\0';
         WndStatusText( sofar_buff );
@@ -124,18 +124,18 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
     if( !WndHasCurrent( wnd ) ) {
         WndFirstCurrent( wnd );
     }
-    WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
+    WndGetLine( wnd, wnd->current.row, WndKeyPiece( wnd ), &line );
     strcpy( sofar, line.text );
     sofar[wnd->keyindex] = ch;
     sofar[wnd->keyindex + 1] = '\0';
     for( row = wnd->current.row; ; ++row ) {
-        if( !WndGetLine( wnd, row, wnd->keypiece, &line ) )
+        if( !WndGetLine( wnd, row, WndKeyPiece( wnd ), &line ) )
             break;
         if( !line.use_key )
             continue;
 //        len = line.length;
         if( strnicmp( line.text, sofar, wnd->keyindex + 1 ) == 0 ) {
-            if( !WndGetLine( wnd, row + 1, wnd->keypiece, &line ) || line.length < wnd->keyindex
+            if( !WndGetLine( wnd, row + 1, WndKeyPiece( wnd ), &line ) || line.length < wnd->keyindex
               || tolower( UCHAR_VALUE( line.text[wnd->keyindex] ) ) != tolower( ch ) ) {
                 /* ??? */
             }
@@ -148,7 +148,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
                 wnd->current.row = row - scrolled;
             }
             WndDirtyCurr( wnd );
-            wnd->current.piece = wnd->keypiece;
+            wnd->current.piece = WndKeyPiece( wnd );
             WndNoSelect( wnd );
             wnd->sel_start = wnd->current;
             wnd->sel_end = wnd->current;
@@ -179,11 +179,11 @@ bool    WndKeyRubOut( a_window wnd )
     int                 i;
     char                sofar[MAX_KEY_SIZE + 1];
 
-    if( wnd->keypiece == WND_NO_PIECE )
+    if( WndKeyPiece( wnd ) == WND_NO_PIECE )
         return( false );
     if( wnd->keyindex == 0 )
         return( false );
-    WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
+    WndGetLine( wnd, wnd->current.row, WndKeyPiece( wnd ), &line );
     strcpy( sofar, line.text );
     newindex = wnd->keyindex - 1;
     WndKeyEscape( wnd );
