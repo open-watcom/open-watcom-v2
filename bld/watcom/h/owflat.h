@@ -1864,6 +1864,11 @@
     "movzx eax,ax"  \
     value [eax];
 
+#pragma aux RdosGetProcessHandle = \
+    CallGate_get_process_handle \
+    "movzx eax,ax"  \
+    value [eax];
+
 #pragma aux RdosIs64BitExe = \
     CallGate_is_64_bit_exe  \
     CarryToBool \    

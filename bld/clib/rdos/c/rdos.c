@@ -476,6 +476,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     int ok = 0;
     int threadid = 0;
     int handle = 0;
+    int debug = RdosGetProcessHandle();
 
     __asm {
         mov eax,ds
@@ -511,7 +512,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     __asm {
         mov esi,prog
         mov edi,pp
-        mov edx,fs:[0x24]
+        mov edx,debug
     }
     RdosSpawnBase();
     __asm {

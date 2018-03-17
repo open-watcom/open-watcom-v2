@@ -541,6 +541,7 @@ void RDOSAPI RdosCreateThread(void (*Start)(void *Param), const char *Name, void
 void RDOSAPI RdosCreatePrioThread(void (*Start)(void *Param), int Prio, const char *Name, void *Param, int StackSize);
 void RDOSAPI RdosTerminateThread();
 int RDOSAPI RdosGetThreadHandle();
+int RDOSAPI RdosGetProcessHandle();
 
 int RDOSAPI RdosHasGlobalTimer();
 int RDOSAPI RdosGetActiveCores();
