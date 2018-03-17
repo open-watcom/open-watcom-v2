@@ -1728,6 +1728,12 @@
     parm [ebx] [edi] [ecx] \
     value [ecx];
 
+#pragma aux RdosIsProcessRunning = \
+    CallGate_is_process_running  \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
 #pragma aux RdosGetProcessModules = \
     CallGate_get_process_modules  \
     "jnc Ok" \
@@ -1876,20 +1882,10 @@
 #pragma aux RdosFatalErrorExit = \
     CallGate_fatal_error_exit;
 
-#pragma aux RdosWaitForExec = \
-    CallGate_wait_for_exec  \
-    "movzx eax,ax" \
-    parm [eax] \
-    value [eax];
-
 #pragma aux RdosGetExitCode = \
     CallGate_get_exit_code  \
     "movsx eax,ax" \
     value [eax];
-
-#pragma aux RdosFreeProcessHandle = \
-    CallGate_free_proc_handle  \
-    parm [ebx];
 
 #pragma aux RdosAddWaitForProcessEnd = \
     CallGate_add_wait_for_proc_end  \

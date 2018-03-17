@@ -447,7 +447,6 @@
 
 #define usergate_set_codec_gpio0 0x0000017C
 
-#define usergate_free_proc_handle 0x0000017D
 #define usergate_add_wait_for_proc_end 0x0000017E
 #define usergate_get_proc_exit_code 0x0000017F
 
@@ -793,7 +792,6 @@
 
 #define usergate_dup_ini 0x00000273
 
-#define usergate_wait_for_exec 0x00000275
 #define usergate_get_console_cursor_position 0x00000276
 #define usergate_set_console_cursor_position 0x00000277
 
@@ -851,6 +849,7 @@
 #define usergate_get_process_module_usage 0x0000029E
 
 #define usergate_get_free_ldt 0x0000029F
+#define usergate_is_process_running 0x000002A0
 
 
 
@@ -1304,7 +1303,6 @@
 
 #define CallGate_set_codec_gpio0 0x55 0x67 0x9a 124 1 0 0 3 0 0x5d
 
-#define CallGate_free_proc_handle 0x55 0x67 0x9a 125 1 0 0 3 0 0x5d
 #define CallGate_add_wait_for_proc_end 0x55 0x67 0x9a 126 1 0 0 3 0 0x5d
 #define CallGate_get_proc_exit_code 0x55 0x67 0x9a 127 1 0 0 3 0 0x5d
 
@@ -1650,7 +1648,6 @@
 
 #define CallGate_dup_ini 0x55 0x67 0x9a 115 2 0 0 3 0 0x5d
 
-#define CallGate_wait_for_exec 0x55 0x67 0x9a 117 2 0 0 3 0 0x5d
 #define CallGate_get_console_cursor_position 0x55 0x67 0x9a 118 2 0 0 3 0 0x5d
 #define CallGate_set_console_cursor_position 0x55 0x67 0x9a 119 2 0 0 3 0 0x5d
 
@@ -1708,6 +1705,7 @@
 #define CallGate_get_process_module_usage 0x55 0x67 0x9a 158 2 0 0 3 0 0x5d
 
 #define CallGate_get_free_ldt 0x55 0x67 0x9a 159 2 0 0 3 0 0x5d
+#define CallGate_is_process_running 0x55 0x67 0x9a 160 2 0 0 3 0 0x5d
 
 #else
 
@@ -2159,7 +2157,6 @@
 
 #define CallGate_set_codec_gpio0 0x3e 0x67 0x9a 124 1 0 0 3 0
 
-#define CallGate_free_proc_handle 0x3e 0x67 0x9a 125 1 0 0 3 0
 #define CallGate_add_wait_for_proc_end 0x3e 0x67 0x9a 126 1 0 0 3 0
 #define CallGate_get_proc_exit_code 0x3e 0x67 0x9a 127 1 0 0 3 0
 
@@ -2505,7 +2502,6 @@
 
 #define CallGate_dup_ini 0x3e 0x67 0x9a 115 2 0 0 3 0
 
-#define CallGate_wait_for_exec 0x3e 0x67 0x9a 117 2 0 0 3 0
 #define CallGate_get_console_cursor_position 0x3e 0x67 0x9a 118 2 0 0 3 0
 #define CallGate_set_console_cursor_position 0x3e 0x67 0x9a 119 2 0 0 3 0
 
@@ -2563,5 +2559,6 @@
 #define CallGate_get_process_module_usage 0x3e 0x67 0x9a 158 2 0 0 3 0
 
 #define CallGate_get_free_ldt 0x3e 0x67 0x9a 159 2 0 0 3 0
+#define CallGate_is_process_running 0x3e 0x67 0x9a 160 2 0 0 3 0
 
 #endif

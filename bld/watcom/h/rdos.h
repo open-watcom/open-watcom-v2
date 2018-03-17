@@ -514,6 +514,7 @@ long long RDOSAPI RdosGetModuleSize(int ID);
 
 int RDOSAPI RdosGetProcessCount();
 int RDOSAPI RdosGetProcessInfo(int Index, int *ID, char *NameBuf, int NameSize);
+int RDOSAPI RdosIsProcessRunning(int pid);
 int RDOSAPI RdosGetProcessThreads(int pid, unsigned short int *IdArr, int MaxThreads);
 
 int RDOSAPI RdosGetProgramCount();
@@ -555,11 +556,9 @@ int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir,
 int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
 int RDOSAPI RdosAttachDebugger(int pid);
 int RDOSAPI RdosFork();
-int RDOSAPI RdosWaitForExec(int ForkId);
 void RDOSAPI RdosFatalErrorExit();
 void RDOSAPI RdosUnloadExe(int ExitCode);
 int RDOSAPI RdosGetExitCode();
-void RDOSAPI RdosFreeProcessHandle(int handle);
 int RDOSAPI RdosGetProcessExitCode(int handle);
 void RDOSAPI RdosAddWaitForProcessEnd(int Handle, int ProcessHandle, void *ID);
 int RDOSAPI RdosShowExceptionText();
