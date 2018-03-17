@@ -56,4 +56,5 @@ extern void GUIGetUpdateRows( gui_window *, HWND, gui_ord *, int * );
 extern void GUIGetMetrics( gui_window * );
 extern bool GUIGetTheDC( gui_window *wnd );
 extern void GUIReleaseTheDC( gui_window *wnd );
+
 #endif // _GUIXSCAL_H_

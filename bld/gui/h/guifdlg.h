@@ -119,4 +119,4 @@ typedef struct
     char                *last_path;
 } open_file_name;
 
-int GUIGetFileName( gui_window *wnd, open_file_name *ofn );
+extern int  GUIGetFileName( gui_window *wnd, open_file_name *ofn );

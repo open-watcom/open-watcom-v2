@@ -32,6 +32,7 @@
 
 #ifndef _GUIHOOK_H_
 #define _GUIHOOK_H_
+
 extern void GUISetHotSpotCleanup( void (*func)(void) );
 extern void GUICleanupHotSpots( void );
 extern void GUIXChangeTitle( gui_window *wnd );
@@ -54,4 +55,5 @@ extern void GUISetEnableMDIActions( void (*func)(bool enable) );
 extern void GUIEnableMDIActions( bool enable );
 extern void GUISetAddMDIActions( void (*func)(bool has_items, gui_window *wnd) );
 extern void GUIAddMDIActions( bool has_items, gui_window *wnd );
+
 #endif // _GUIHOOK_H_

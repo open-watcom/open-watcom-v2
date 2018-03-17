@@ -32,7 +32,9 @@
 
 #ifndef _GUIHOTSP_H_
 #define _GUIHOTSP_H_
+
 extern bool GUICreateHot( gui_control_info *ctl_info, VFIELD * );
 extern void GUIFreeHotSpot( a_hot_spot * hot_spot );
 extern bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text );
+
 #endif // _GUIHOTSP_H

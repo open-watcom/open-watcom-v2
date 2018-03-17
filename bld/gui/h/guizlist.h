@@ -32,6 +32,8 @@
 
 #ifndef _GUIZLIST_H_
 #define _GUIZLIST_H_
+
 extern void GUIDeleteFromList( gui_window *wnd );
 extern void GUIFrontOfList( gui_window *wnd );
+
 #endif // _GUIZLIST_H_

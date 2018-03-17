@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-void GUIWholeWndDirty( gui_window * );
+extern void     GUIWholeWndDirty( gui_window * );

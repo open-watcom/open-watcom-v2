@@ -32,5 +32,7 @@
 
 #ifndef _GUIXINIT_H_
 #define _GUIXINIT_H_
+
 extern gui_window_styles GUIGetWindowStyles( void );
+
 #endif // _GUIXINIT_H_

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern HWND GUIGetSysHandle( gui_window *wnd );
+extern HWND     GUIGetSysHandle( gui_window *wnd );
 #ifdef __OS2__
-extern HAB GUIGetHAB( void );
+extern HAB      GUIGetHAB( void );
 #endif

@@ -32,6 +32,7 @@
 
 #ifndef _GUISDEF_H_
 #define _GUISDEF_H_
+
 typedef enum {
     SCALE,
     SCREEN,
@@ -45,4 +46,5 @@ extern void GUIConvertPoint( gui_systems from, gui_systems to, gui_point *point 
 #define COPYRECT( old, new ) {                                  \
         (new).x = (old).x; (new).y = (old).y;                   \
         (new).width = (old).width; (new).height = (old).height; }
+
 #endif // _GUISDEF_H_

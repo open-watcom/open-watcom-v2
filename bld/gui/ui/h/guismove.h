@@ -32,6 +32,7 @@
 
 #ifndef _GUISMOVE_H_
 #define _GUISMOVE_H_
+
 typedef enum {
     RESIZE_NONE         = 0x00,
     RESIZE_UP           = 0x01,

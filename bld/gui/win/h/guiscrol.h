@@ -32,9 +32,11 @@
 
 #ifndef _GUISCROL_H_
 #define _GUISCROL_H_
+
 extern void GUIScroll( gui_window *wnd, int bar, int change );
 extern void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern int GUIGetScrollScreenSize( gui_window *wnd, int bar );
 extern int GUIGetScrollInc( gui_window *wnd, int bar );
 extern void GUISetScroll( gui_window * wnd );
+
 #endif // _GUISCROL_H_

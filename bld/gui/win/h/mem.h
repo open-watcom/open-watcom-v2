@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-void MemFree( void *ptr );
-void *MemAlloc( size_t size );
-void *MemReAlloc( void *ptr, size_t size );
+extern void     MemFree( void *ptr );
+extern void     *MemAlloc( size_t size );
+extern void     *MemReAlloc( void *ptr, size_t size );
