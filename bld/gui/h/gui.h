@@ -749,7 +749,7 @@ extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row,
 /* Menu Functions */
 
 extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                    int num_menu_items, gui_menu_struct *menu,
+                                    int num_items, gui_menu_struct *menu,
                                     gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
                                gui_mouse_track track, gui_ctl_id *curr_id );

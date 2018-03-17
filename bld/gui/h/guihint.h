@@ -48,13 +48,13 @@ typedef struct gui_hint_struct {
 } gui_hint_struct;
 
 typedef struct hintinfo {
-    int                 num_menu;
+    int                 menu_num_items;
     gui_hint_struct     *menu;
-    int                 num_float;
+    int                 floating_num_items;
     gui_hint_struct     *floating;
-    int                 num_tool;
+    int                 tool_num_items;
     gui_hint_struct     *tool;
-    int                 num_gui;
+    int                 gui_num_items;
     gui_hint_struct     *gui;
 } hintinfo;
 
@@ -67,4 +67,5 @@ extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_stru
 extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
 extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id );
 extern void GUIFreeHint( gui_window *wnd );
+
 #endif

@@ -34,16 +34,16 @@
 
 
 bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num_menu_items, gui_menu_struct *menu,
+                             int num_items, gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     bool        ret;
 
-    if( ( num_menu_items == 0 ) || ( menu == NULL ) ) {
+    if( ( num_items == 0 ) || ( menu == NULL ) ) {
         return( false );
     }
-    GUIInitHint( wnd, num_menu_items, menu, FLOAT_HINT );
-    ret = GUIXCreateFloatingPopup( wnd, location, num_menu_items, menu, track, curr_id );
+    GUIInitHint( wnd, num_items, menu, FLOAT_HINT );
+    ret = GUIXCreateFloatingPopup( wnd, location, num_items, menu, track, curr_id );
     GUIInitHint( wnd, 0, NULL, FLOAT_HINT );
     return( ret );
 }

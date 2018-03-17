@@ -109,7 +109,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
  */
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num, gui_menu_struct *menu,
+                             int num_items, gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {
@@ -117,7 +117,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
         GUIHFloatingPopup = NULLHANDLE;
     }
 
-    GUIHFloatingPopup = GUICreateSubMenu( wnd, num, menu, FLOAT_HINT );
+    GUIHFloatingPopup = GUICreateSubMenu( wnd, num_items, menu, FLOAT_HINT );
     if( GUIHFloatingPopup == NULLHANDLE ) {
         GUIError( LIT( Open_Failed ) );
         return( false );

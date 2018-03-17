@@ -35,17 +35,17 @@
 #include "guimdi.h"
 
 
-static  void    (*fCleanupHotSpots)(void)               = NULL;
-static  void    (*fXChangeTitle)( gui_window *)         = NULL;
-static  bool    (*fXInitMDI)( gui_window *)             = NULL;
-static  void    (*fInitMDI)( gui_window *, gui_create_info *) = NULL;
-static  void    (*fChangeTitle)(gui_window * )          = NULL;
-static  void    (*fBroughtToFront)(gui_window * )       = NULL;
-static  void    (*fDelete)(gui_window * )               = NULL;
-static  void    (*fReset)( gui_window *, gui_window *, int, gui_menu_struct *) = NULL;
-static  void    (*fDeleteMenuItem)(gui_ctl_id id)       = NULL;
-static  void    (*fEnableMDIActions)( bool enable )     = NULL;
-static  void    (*fAddMDIActions)( bool has_items, gui_window *wnd )    = NULL;
+static  void    (*fCleanupHotSpots)(void)                           = NULL;
+static  void    (*fXChangeTitle)(gui_window *)                      = NULL;
+static  bool    (*fXInitMDI)(gui_window *)                          = NULL;
+static  void    (*fInitMDI)(gui_window *, gui_create_info *)        = NULL;
+static  void    (*fChangeTitle)(gui_window *)                       = NULL;
+static  void    (*fBroughtToFront)(gui_window *)                    = NULL;
+static  void    (*fDelete)(gui_window *)                            = NULL;
+static  void    (*fReset)(gui_window *, gui_window *, int, gui_menu_struct *) = NULL;
+static  void    (*fDeleteMenuItem)(gui_ctl_id id)                   = NULL;
+static  void    (*fEnableMDIActions)(bool enable)                   = NULL;
+static  void    (*fAddMDIActions)(bool has_items, gui_window *wnd)  = NULL;
 
 void GUISetHotSpotCleanup( void (*func)(void) )
 {
