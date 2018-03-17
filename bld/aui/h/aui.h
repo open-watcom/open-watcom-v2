@@ -414,8 +414,6 @@ extern gui_coord            WndScreen;
 extern bool                 WndOkToShow;
 extern bool                 WndIgnoreAllEvents;
 
-extern bool                 WndProcMacro( a_window wnd, gui_key key );
-
 extern void                 WndSetTitle( a_window wnd, const char *title );
 extern int                  WndGetTitle( a_window wnd, char *buff, unsigned buff_len );
 
@@ -573,6 +571,10 @@ extern char                 WndBackgroundChar;
 
 #define WndMenuFields( x )  (sizeof( x ) / sizeof( (x)[0] )), x
 extern void                 WndSetMainMenu( gui_menu_struct *menu, int num_items );
+
+/* following function may be defined in application otherwise default will be used */
+
+extern bool                 WndProcMacro( a_window wnd, gui_key key );
 
 /* following data may be setup in application */
 

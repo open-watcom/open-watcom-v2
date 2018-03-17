@@ -234,8 +234,8 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 continue;
             endpos = NULL;
             for( pos = line.text; WndRXFind( rx, &pos, &endpos ); pos++ ) {
-                curr.end_colidx = endpos - line.text;
-                curr.colidx = pos - line.text;
+                curr.end_colidx = (wnd_colidx)( endpos - line.text );
+                curr.colidx = (wnd_colidx)( pos - line.text );
                 if( curr.piece < starting_pos.piece ) {
                     prev_occurence = curr;
                 } else if( curr.piece > starting_pos.piece ) {

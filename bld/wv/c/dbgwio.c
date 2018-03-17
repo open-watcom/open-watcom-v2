@@ -50,7 +50,7 @@
 #include "dbgwio.h"
 
 
-#define PIECE_TYPE( x ) ( (x)-MENU_IO_FIRST_TYPE )
+#define PIECE_TYPE( x )     ((x) - MENU_IO_FIRST_TYPE)
 
 static mem_type_walk_data   IOData;
 static gui_menu_struct      *IOTypeMenu = NULL;

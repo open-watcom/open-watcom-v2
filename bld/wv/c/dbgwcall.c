@@ -66,8 +66,8 @@ typedef struct call_window {
 
 enum {
     PIECE_SYMBOL,
-    PIECE_TABSTOP = PIECE_SYMBOL,
     PIECE_SOURCE,
+    PIECE_TABSTOP = PIECE_SYMBOL,
 };
 
 OVL_EXTERN wnd_row CallNumRows( a_window wnd )

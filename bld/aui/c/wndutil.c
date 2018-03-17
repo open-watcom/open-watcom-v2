@@ -49,7 +49,7 @@ wnd_colidx WndCharColIdx( const char *buff, wnd_colidx colidx )
 
 wnd_colidx WndLastCharColIdx( wnd_line_piece *line )
 {
-    return( line->length > 0 ? WndCharColIdx( line->text, line->length - 1 ) : 0 );
+    return( ( line->length > 0 ) ? WndCharColIdx( line->text, (wnd_colidx)( line->length - 1 ) ) : 0 );
 }
 
 wnd_colidx WndPrevCharColIdx( const char *buff, wnd_colidx colidx )
@@ -59,7 +59,7 @@ wnd_colidx WndPrevCharColIdx( const char *buff, wnd_colidx colidx )
 
 const char *WndPrevChar( const char *buff, const char *curr )
 {
-    return( buff + WndPrevCharColIdx( buff, curr - buff ) );
+    return( buff + WndPrevCharColIdx( buff, (wnd_colidx)( curr - buff ) ) );
 }
 
 void WndCurrToGUIPoint( a_window wnd, gui_point *point )
