@@ -8,7 +8,6 @@ coverity_load_proc()
     TOOL_ARCHIVE=/tmp/cov-analysis-${PLATFORM}.tgz
     TOOL_BASE=/tmp/coverity-scan-analysis
 
-    curl -s https://flatcap.org/scan.coverity.com.crt | sudo tee -a /etc/ssl/certs/ca-certificates.crt
     wget -nv -O $TOOL_ARCHIVE https://scan.coverity.com/download/${PLATFORM} --post-data "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
 #    curl -o $TOOL_ARCHIVE https://scan.coverity.com/download/${PLATFORM} -d "project=$TRAVIS_REPO_SLUG&token=$COVERITY_SCAN_TOKEN"
 
