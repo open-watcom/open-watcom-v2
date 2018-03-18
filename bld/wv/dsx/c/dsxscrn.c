@@ -78,6 +78,8 @@
 
 #define CURSOR_REG2INS(r)               (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
 
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+
 enum {
     BD_EQUIP_LIST   = 0x10,
     BD_CURR_MODE    = 0x49,

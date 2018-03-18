@@ -106,8 +106,7 @@ extern unsigned_32      MyGetRMVector( unsigned );
 extern void             MySetRMVector( unsigned, unsigned, unsigned );
 extern unsigned_8       RMSegEnd[];
 
-#define _NBPARAS( bytes )       ( ( (bytes) + 15UL ) / 16 )
-#define RM_OFF( sym )           ((unsigned)(sym)-(unsigned)RMSegStart)
+#define RM_OFF( sym )   ((unsigned)(sym)-(unsigned)RMSegStart)
 
 extern void Boom( unsigned );
 #pragma aux Boom = "db 0xf, 0xff" parm [eax]

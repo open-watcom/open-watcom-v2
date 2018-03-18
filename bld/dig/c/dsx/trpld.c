@@ -59,6 +59,8 @@
 
 #define TRAP_SIGNATURE          0xdeaf
 
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+
 #include "pushpck1.h"
 typedef struct {
     unsigned_16         sig;

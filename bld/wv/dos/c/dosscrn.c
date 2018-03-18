@@ -48,6 +48,8 @@
 
 #define VID_STATE_SWAP  (VID_STATE_ALL)
 
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+
 extern void WndDirty( void );
 
 flip_types              FlipMech;
@@ -814,7 +816,7 @@ static void AllocSave( void )
     }
     state_size = _vidstatesize( VID_STATE_SWAP ) * 64;
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseSaveSize() : 0;
-    ret = TinyAllocBlock( (regen_size + state_size + 2*mouse_size + 0xf) >> 4 );
+    ret = TinyAllocBlock( _NBPARAS( regen_size + state_size + 2 * mouse_size ) );
     if( ret < 0 )
         StartupErr( "unable to allocate swap area" );
     SwapSeg = ret;
