@@ -281,27 +281,25 @@ enum vid_state_info {
 };
 
 
-extern char        VIDGetRow( unsigned );
-extern void        VIDSetRow( unsigned, unsigned );
-extern void        VIDWait( void );
-
+extern unsigned char    VIDGetRow( unsigned );
 #pragma aux VIDGetRow = \
         "mov    al,0fh" \
         "out    dx,al"  \
         "inc    dx"     \
         "in     al,dx"  \
-    parm caller [dx];
+    parm [dx] value [al] modify exact [al dx]
 
 
-#pragma aux VIDSetRow =                                         \
-        "mov    ah,al"  \
+extern void     VIDSetRow( unsigned, unsigned char );
+#pragma aux VIDSetRow = \
         "mov    al,0fh" \
         "out    dx,al"  \
         "inc    dx"     \
         "mov    al,ah"  \
         "out    dx,al"  \
-    parm caller [dx] [ax];
+    parm [dx] [ah] modify exact [al dx]
 
-#pragma aux VIDWait =                                           \
-0XEB 0X00       /* jmp    ip                            */      \
-        parm caller;
+extern void     VIDWait( void );
+#pragma aux VIDWait =           \
+        "jmp short L1" "L1:"    \
+    modify exact

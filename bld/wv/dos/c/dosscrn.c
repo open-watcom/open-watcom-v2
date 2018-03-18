@@ -142,7 +142,7 @@ extern void MouseRestoreState();
                 modify [ax];
 
 
-extern display_configuration BIOSDevCombCode();
+extern unsigned BIOSDevCombCode();
 #pragma aux BIOSDevCombCode =                                   \
 0X55            /* push   bp                            */      \
 0XB8 0X00 0X1A  /* mov    ax,1a00                       */      \
@@ -210,17 +210,17 @@ void Ring_Bell( void )
 }
 
 
-static bool ChkCntrlr( int port )
+static bool ChkCntrlr( unsigned port )
 {
-    char curr;
-    bool rtrn;
+    unsigned char   curr;
+    bool            rtrn;
 
     curr = VIDGetRow( port );
-    VIDSetRow( port, 0X5A );
+    VIDSetRow( port, 0x5A );
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = ( VIDGetRow( port ) == 0X5A );
+    rtrn = ( VIDGetRow( port ) == 0x5A );
     VIDSetRow( port, curr );
     return( rtrn );
 }
@@ -280,8 +280,11 @@ static void GetDispConfig( void )
     unsigned char       swtchs;
     unsigned char       curr_mode;
     hw_display_type     temp;
+    unsigned            dev_config;
 
-    HWDisplay = BIOSDevCombCode();
+    dev_config = BIOSDevCombCode();
+    HWDisplay.active = dev_config & 0xff;
+    HWDisplay.alt = (dev_config >> 8) & 0xff;
     if( HWDisplay.active != DISP_NONE )
         return;
     /* have to figure it out ourselves */

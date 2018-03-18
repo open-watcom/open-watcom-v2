@@ -180,8 +180,18 @@ static int_8                    ColourAdapters[] = {
     ADAPTER_COLOUR    /* MODEL 30 COLOUR   */
 };
 
-static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg,
-                           addr32_off buff_offset )
+static uint_16 _VidStateSize( uint_16 requested_state )
+{
+    memset( &CallStruct, 0, sizeof( CallStruct ) );
+    CallStruct.eax = 0x1c00;
+    CallStruct.ecx = requested_state;
+    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    if( (CallStruct.eax & 0xff) != 0x1c )
+        return( 0 );
+    return( CallStruct.ebx );
+}
+
+static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1c01;
@@ -191,8 +201,7 @@ static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg,
     DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
 }
 
-static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg,
-                              addr32_off buff_offset )
+static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1c02;
@@ -216,7 +225,25 @@ static void BIOSCharSet( uint_8 vidroutine, uint_8 bytesperchar,
     DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
 }
 
-static void MouseSaveState( addr_seg buff_rmseg, addr32_off buff_offset )
+static uint_16 BIOSDevCombCode( void )
+{
+    memset( &CallStruct, 0, sizeof( CallStruct ) );
+    CallStruct.eax = 0x1a00;
+    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    if( (CallStruct.eax & 0xff) != 0x1a )
+        return( 0 );
+    return( CallStruct.ebx );
+}
+
+static uint_16 MouseSaveSize( void )
+{
+    memset( &CallStruct, 0, sizeof( CallStruct ) );
+    CallStruct.eax = 0x15;
+    DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
+    return( CallStruct.ebx );
+}
+
+static void MouseSaveState( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x16;
@@ -225,7 +252,7 @@ static void MouseSaveState( addr_seg buff_rmseg, addr32_off buff_offset )
     DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
 }
 
-static void MouseRestoreState( addr_seg buff_rmseg, addr32_off buff_offset )
+static void MouseRestoreState( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x17;
@@ -234,30 +261,12 @@ static void MouseRestoreState( addr_seg buff_rmseg, addr32_off buff_offset )
     DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
 }
 
-extern uint_16 MouseSaveSize( void );
-#pragma aux MouseSaveSize =     \
-        "mov    ax,15h"         \
-        "int    33h"            \
-    modify exact [ax bx] value [bx];
-
-extern display_configuration BIOSDevCombCode( void );
-#pragma aux BIOSDevCombCode =   \
-        "push   ebp"            \
-        "mov    ax,1a00h"       \
-        _INT_10                 \
-        "cmp    al,1ah"         \
-        "jz short end"          \
-        "xor    bx,bx"          \
-   "end: pop    ebp"            \
-        modify exact [ax bx] value [bx];
-
-extern void DoRingBell( void );
-#pragma aux DoRingBell =        \
-        "push   ebp"            \
-        "mov    ax,0e07h"       \
-        _INT_10                 \
-        "pop    ebp"            \
-        modify exact [ax];
+static void DoRingBell( void )
+{
+    memset( &CallStruct, 0, sizeof( CallStruct ) );
+    CallStruct.eax = 0x0e07;
+    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+}
 
 void Ring_Bell( void )
 {
@@ -297,7 +306,7 @@ static uint_16 VIDGetCurTyp( uint_16 vidport )
             _ReadCRTCReg( vidport, CURS_END_SCANLINE ) );
 }
 
-static bool ChkCntrlr( int_16 port )
+static bool ChkCntrlr( uint_16 port )
 {
     uint_8              curr;
     bool                rtrn;
@@ -381,13 +390,16 @@ static void GetMonoConfig( uint_8 curr_mode )
 
 static void GetDispConfig( void )
 {
-    int_32       info;
-    uint_8       colour;
-    uint_8       memory;
-    uint_8       swtchs;
-    uint_8       curr_mode;
+    int_32      info;
+    uint_8      colour;
+    uint_8      memory;
+    uint_8      swtchs;
+    uint_8      curr_mode;
+    uint_16     dev_config;
 
-    HWDisplay = BIOSDevCombCode();
+    dev_config = BIOSDevCombCode();
+    HWDisplay.active = dev_config & 0xff;
+    HWDisplay.alt = (dev_config >> 8) & 0xff;
     if( HWDisplay.active == DISP_NONE ) {
         /* have to figure it out ourselves */
         curr_mode = BIOSGetMode() & 0x7f;
@@ -892,14 +904,14 @@ static void SwapRestore( void )
 static void SaveMouse( addr32_off to )
 {
     if( to != 0 ) {
-        MouseSaveState( SwapSeg.segm.rm, to );
+        MouseSaveState( SwapSeg.segm.rm, to, (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
 static void RestoreMouse( addr32_off from )
 {
     if( from != 0 ) {
-        MouseRestoreState( SwapSeg.segm.rm, from );
+        MouseRestoreState( SwapSeg.segm.rm, from, (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
@@ -935,10 +947,9 @@ static void AllocSave( void )
         regen_size = 2;
         break;
     }
-    state_size = _vidstatesize( VID_STATE_SWAP ) * 64;
+    state_size = _VidStateSize( VID_STATE_SWAP ) * 64;
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseSaveSize() : 0;
-    SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size +
-                                          mouse_size * 2 ) );
+    SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size + mouse_size * 2 ) );
     if( SwapSeg.segm.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
@@ -1241,7 +1252,7 @@ void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
         _uisetcursor( row, col, typ, attr );
     } else if( typ == C_OFF ) {
         uioffcursor();
-    } else if( VIDPort && (ScrnState & DBG_SCRN_ACTIVE) &&
+    } else if( VIDPort != 0 && (ScrnState & DBG_SCRN_ACTIVE) &&
                ( ( row != OldRow ) || ( col != OldCol ) ||
                ( typ != OldTyp ) ) ) {
         OldTyp = typ;
@@ -1262,7 +1273,7 @@ void uioffcursor( void )
 {
     if( FlipMech != FLIP_TWO ) {
         _uioffcursor();
-    } else if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != NULL ) ) {
+    } else if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != 0 ) ) {
         OldTyp = C_OFF;
         VIDSetCurTyp( VIDPort, NoCur );
     }

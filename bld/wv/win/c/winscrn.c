@@ -207,17 +207,17 @@ void InitScreen( void )
     }
 }
 
-static bool ChkCntrlr( int port )
+static bool ChkCntrlr( unsigned port )
 {
-    char curr;
-    bool rtrn;
+    unsigned char   curr;
+    bool            rtrn;
 
     curr = VIDGetRow( port );
-    VIDSetRow( port, 0X5A );
+    VIDSetRow( port, 0x5A );
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = ( VIDGetRow( port ) == 0X5A );
+    rtrn = ( VIDGetRow( port ) == 0x5A );
     VIDSetRow( port, curr );
     return( rtrn );
 }
