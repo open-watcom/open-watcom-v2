@@ -32,7 +32,6 @@
 
 #include <dos.h>
 #include <string.h>
-#include "pcscrnio.h"
 #include "dbgdefn.h"
 #include "kbio.h"
 #include "dbgmem.h"

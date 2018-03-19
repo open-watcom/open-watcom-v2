@@ -30,11 +30,7 @@
 ****************************************************************************/
 
 
-typedef
-  enum { FLIP_OVERWRITE, FLIP_SWAP, FLIP_PAGE, FLIP_TWO, FLIP_CHEAPSWAP } flip_types;
-
-typedef
-  enum { MD_DEFAULT, MD_MONO, MD_COLOUR, MD_EGA, MD_HERC } mode_types;
+#include "pcscrnio.h"
 
 #ifndef __NT__
 static void SetupEGA( void );

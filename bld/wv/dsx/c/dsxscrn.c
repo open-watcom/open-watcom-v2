@@ -38,7 +38,6 @@
 #include "stdui.h"
 #include "dbgmem.h"
 #include "dsxutil.h"
-#include "pcscrnio.h"
 #include "dpmi.h"
 #include "dbgscrn.h"
 #include "uidbg.h"

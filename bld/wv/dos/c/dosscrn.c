@@ -31,7 +31,6 @@
 
 
 #include <dos.h>
-#include "pcscrnio.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "kbio.h"
