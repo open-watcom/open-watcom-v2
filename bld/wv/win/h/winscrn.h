@@ -32,17 +32,6 @@
 
 #include "pcscrnio.h"
 
-#ifndef __NT__
-static void SetupEGA( void );
-static void SaveScreen( void );
-static void DoAnInt10( void );
-static void RestoreScreen( void );
-static void RestoreEGA_VGA( void );
-static void SetRegenClear( void );
-#endif
-static bool TstMono( void );
-static bool TstColour( void );
-static void GetDispConfig( void );
 
 extern char _A000H[];
 

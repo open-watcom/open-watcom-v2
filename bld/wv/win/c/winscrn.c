@@ -89,36 +89,6 @@ void Ring_Bell( void )
 }
 
 /*
- * ConfigScreen -- figure out screen configuration we're going to use.
- */
-unsigned ConfigScreen( void )
-{
-    GetDispConfig();
-    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME) ) {
-        FlipMech = FLIP_SWAP;
-        switch( HWDisplay.active ) {
-        case DISP_VGA_MONO:
-        case DISP_VGA_COLOUR:
-            if( ScrnLines > 25 )
-                ScrnLines = 50;
-            win_uisetcolor( M_VGA );
-            break;
-        case DISP_EGA_COLOUR:
-        case DISP_EGA_MONO:
-            if( ScrnLines > 25 )
-                ScrnLines = 43;
-            // fall thru
-        default:
-            win_uisetcolor( M_EGA );
-            break;
-        }
-    } else {
-        win_uisetmono();
-    }
-    return( 0 );
-}
-
-/*
  * UsrScrnMode -- setup the user screen mode
  */
 bool UsrScrnMode( void )
@@ -293,6 +263,36 @@ static void GetDispConfig( void )
     }
     /* only thing left is a single CGA display */
     HWDisplay.active = DISP_CGA;
+}
+
+/*
+ * ConfigScreen -- figure out screen configuration we're going to use.
+ */
+unsigned ConfigScreen( void )
+{
+    GetDispConfig();
+    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME) ) {
+        FlipMech = FLIP_SWAP;
+        switch( HWDisplay.active ) {
+        case DISP_VGA_MONO:
+        case DISP_VGA_COLOUR:
+            if( ScrnLines > 25 )
+                ScrnLines = 50;
+            win_uisetcolor( M_VGA );
+            break;
+        case DISP_EGA_COLOUR:
+        case DISP_EGA_MONO:
+            if( ScrnLines > 25 )
+                ScrnLines = 43;
+            // fall thru
+        default:
+            win_uisetcolor( M_EGA );
+            break;
+        }
+    } else {
+        win_uisetmono();
+    }
+    return( 0 );
 }
 
 /*****************************************************************************\
