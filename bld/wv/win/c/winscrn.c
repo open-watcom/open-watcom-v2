@@ -37,7 +37,6 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "stdui.h"
-#include "dosscrn.h"
 #include "winscrn.h"
 #include "swap.h"
 #include "dbgscrn.h"

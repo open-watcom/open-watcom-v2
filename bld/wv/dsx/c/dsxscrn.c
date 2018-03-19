@@ -36,7 +36,6 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "stdui.h"
-#include "dosscrn.h"
 #include "dbgmem.h"
 #include "dsxutil.h"
 #include "pcscrnio.h"
@@ -992,7 +991,7 @@ static void SetCursorTypes( void )
     InsCur = CURSOR_REG2INS( RegCur );
 }
 
-void InitScreenMode( void )
+static void InitScreenMode( void )
 {
     CurOffst = 0;
     switch( FlipMech ) {

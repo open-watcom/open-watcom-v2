@@ -35,7 +35,7 @@
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dosscrn.h"
+#include "dsxscrn.h"
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgwind.h"

@@ -35,7 +35,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dosscrn.h"
+#include "winscrn.h"
 #include "dbgscrn.h"
 #include "dbgcmdln.h"
 #include "wndsys.h"
