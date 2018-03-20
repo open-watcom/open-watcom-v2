@@ -67,8 +67,8 @@ typedef union {
     unsigned_32 a;
 } memptr;
 
-extern unsigned MouseSaveSize();
-#pragma aux MouseSaveSize =                                     \
+extern unsigned MouseStateSize();
+#pragma aux MouseStateSize =                                    \
 0X29 0XDB       /* sub    bx,bx                         */      \
 0XB8 0X15 0X00  /* mov    ax,0015                       */      \
 0XCD 0X33       /* int    33                            */      \
@@ -76,7 +76,7 @@ extern unsigned MouseSaveSize();
                 modify [ax];
 
 
-extern void MouseSaveState();
+extern void MouseStateSave();
 #pragma aux MouseSaveState =                                    \
 0XB8 0X16 0X00  /* mov    ax,0016                       */      \
 0XCD 0X33       /* int    33                            */      \
@@ -84,7 +84,7 @@ extern void MouseSaveState();
                 modify [ax];
 
 
-extern void MouseRestoreState();
+extern void MouseStateRestore();
 #pragma aux MouseRestoreState =                                 \
 0XB8 0X17 0X00  /* mov    ax,0017                       */      \
 0XCD 0X33       /* int    33                            */      \
@@ -187,15 +187,19 @@ static bool ChkCntrlr( unsigned port )
 
 static void DoSetMode( unsigned char mode )
 {
+    unsigned char   equip;
+
+    equip = StrtSwtchs & ~0x30;
     switch( mode & 0x7f ) {
     case 0x7:
     case 0xf:
-        BIOSData( BD_EQUIP_LIST, unsigned char ) = (StrtSwtchs & ~0x30) | 0x30;
+        equip |= 0x30;
         break;
     default:
-        BIOSData( BD_EQUIP_LIST, unsigned char ) = (StrtSwtchs & ~0x30) | 0x20;
+        equip |= 0x20;
         break;
     }
+    BIOSData( BD_EQUIP_LIST, unsigned char ) = equip;
     BIOSSetMode( mode );
 }
 
@@ -718,14 +722,14 @@ static void SwapRestore( void )
 static void SaveMouse( unsigned to )
 {
     if( to != 0 ) {
-        MouseSaveState( SwapSeg, to );
+        MouseStateSave( SwapSeg, to, (unsigned)( DbgMouse - PgmMouse ) );
     }
 }
 
 static void RestoreMouse( unsigned from )
 {
     if( from != 0 ) {
-        MouseRestoreState( SwapSeg, from );
+        MouseStateRestore( SwapSeg, from, (unsigned)( DbgMouse - PgmMouse ) );
     }
 }
 
@@ -742,7 +746,7 @@ static void AllocSave( void )
         regen_size = RegenSize();
     }
     state_size = _vidstatesize( VID_STATE_SWAP ) * 64;
-    mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseSaveSize() : 0;
+    mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseStateSize() : 0;
     ret = TinyAllocBlock( _NBPARAS( regen_size + state_size + 2 * mouse_size ) );
     if( ret < 0 )
         StartupErr( "unable to allocate swap area" );

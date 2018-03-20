@@ -65,6 +65,7 @@
 
 #define CURSOR_REG2INS(r)   (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
 
+#define VIDEO_VECTOR        0x10
 #define MSMOUSE_VECTOR      0x33
 
 #define IRET                0xCF

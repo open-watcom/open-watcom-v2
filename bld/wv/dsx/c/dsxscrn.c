@@ -137,7 +137,7 @@ static uint_16 _VidStateSize( uint_16 requested_state )
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1c00;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
     if( (CallStruct.eax & 0xff) != 0x1c )
         return( 0 );
     return( CallStruct.ebx );
@@ -150,7 +150,7 @@ static void _VidStateSave( uint_16 requested_state, addr_seg buff_rmseg, addr32_
     CallStruct.es = buff_rmseg;
     CallStruct.ebx = buff_offset;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
 }
 
 static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr32_off buff_offset )
@@ -160,7 +160,7 @@ static void _VidStateRestore( uint_16 requested_state, addr_seg buff_rmseg, addr
     CallStruct.es = buff_rmseg;
     CallStruct.ebx = buff_offset;
     CallStruct.ecx = requested_state;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
 }
 
 static void BIOSCharSet( uint_8 vidroutine, uint_8 bytesperchar,
@@ -174,50 +174,52 @@ static void BIOSCharSet( uint_8 vidroutine, uint_8 bytesperchar,
     CallStruct.edx = charoffset;
     CallStruct.es = table_rmseg;
     CallStruct.ebp = table_offset;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
 }
 
 static uint_16 BIOSDevCombCode( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x1a00;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
     if( (CallStruct.eax & 0xff) != 0x1a )
         return( 0 );
     return( CallStruct.ebx );
 }
 
-static uint_16 MouseSaveSize( void )
+static uint_16 MouseStateSize( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x15;
-    DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
     return( CallStruct.ebx );
 }
 
-static void MouseSaveState( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
+static void MouseStateSave( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x16;
+    CallStruct.ebx = size;
     CallStruct.es = buff_rmseg;
     CallStruct.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
 }
 
-static void MouseRestoreState( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
+static void MouseStateRestore( addr_seg buff_rmseg, addr32_off buff_offset, uint_16 size )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x17;
+    CallStruct.ebx = size;
     CallStruct.es = buff_rmseg;
     CallStruct.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( 0x33, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( MSMOUSE_VECTOR, 0, 0, &CallStruct );
 }
 
 static void DoRingBell( void )
 {
     memset( &CallStruct, 0, sizeof( CallStruct ) );
     CallStruct.eax = 0x0e07;
-    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &CallStruct );
+    DPMISimulateRealModeInterrupt( VIDEO_VECTOR, 0, 0, &CallStruct );
 }
 
 void Ring_Bell( void )
@@ -844,14 +846,14 @@ static void SwapRestore( void )
 static void SaveMouse( addr32_off to )
 {
     if( to != 0 ) {
-        MouseSaveState( SwapSeg.segm.rm, to, (uint_16)( DbgMouse - PgmMouse ) );
+        MouseStateSave( SwapSeg.segm.rm, to, (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
 static void RestoreMouse( addr32_off from )
 {
     if( from != 0 ) {
-        MouseRestoreState( SwapSeg.segm.rm, from, (uint_16)( DbgMouse - PgmMouse ) );
+        MouseStateRestore( SwapSeg.segm.rm, from, (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
@@ -888,7 +890,7 @@ static void AllocSave( void )
         break;
     }
     state_size = _VidStateSize( VID_STATE_SWAP ) * 64;
-    mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseSaveSize() : 0;
+    mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseStateSize() : 0;
     SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size + mouse_size * 2 ) );
     if( SwapSeg.segm.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
