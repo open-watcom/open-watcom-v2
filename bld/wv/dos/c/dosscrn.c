@@ -176,20 +176,10 @@ static signed char ColourAdapters[] = {  0,     /* NONE                 */
                                          1,     /* MODEL 30 MONO        */
                                          1 };   /* MODEL 30 COLOUR      */
 
-enum {
-        BD_SEG          = 0x40,
-        BD_EQUIP_LIST   = 0x10,
-        BD_CURR_MODE    = 0x49,
-        BD_REGEN_LEN    = 0x4c,
-        BD_CURPOS       = 0x50,
-        BD_MODE_CTRL    = 0x65,
-        BD_VID_CTRL1    = 0x87,
-};
-
 #define GetBIOSData( offset, var ) \
-    movedata( BD_SEG, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
+    movedata( 0x0040, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
-    movedata( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
+    movedata( FP_SEG( &var ), FP_OFF( &var ), 0x0040, offset, sizeof( var ) );
 
 
 

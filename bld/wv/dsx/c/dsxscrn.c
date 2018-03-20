@@ -78,15 +78,6 @@
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
-enum {
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87,
-};
-
 typedef enum {
     DISP_NONE,
     DISP_MONOCHROME,

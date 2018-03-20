@@ -35,25 +35,13 @@
 
 extern char _A000H[];
 
-#define VIDMONOINDXREG  0X03B4
-#define VIDCOLRINDXREG  0X03D4
 #define FONT_SIZE       8*1024
 #define VID_STATE       5
 
-enum {
-    BD_SEG          = 0x40,
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87,
-};
-
 #define GetBIOSData( offset, var ) \
-    movedata( BD_SEG, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
+    movedata( 0x0040, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
-    movedata( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
+    movedata( FP_SEG( &var ), FP_OFF( &var ), 0x0040, offset, sizeof( var ) );
 
 typedef enum {
     DISP_NONE,
@@ -111,102 +99,6 @@ extern signed long BIOSEGAInfo( void );
 0X5D            /* pop    bp                            */      \
         parm modify [bx cx];
 
-enum ega_seqencer {
-        SEQ_PORT        = 0x3c4,
-        SEQ_RESET       = 0,
-        SEQ_CLOCK_MODE  = 1,
-        SEQ_MAP_MASK    = 2,
-        SEQ_CHAR_MAP_SEL= 3,
-        SEQ_MEM_MODE    = 4,
-        /* reset register */
-        RES_NOT_ASYNCH  = 0x01,
-        RES_NOT_SYNCH   = 0x02,
-        /* clock mode register */
-        CLK_8_DOTS      = 0x01,
-        CLK_SHIFT_LOAD  = 0x04,
-        CLK_DOT_CLOCK   = 0x08,
-        /* map mask register */
-        MSK_MAP_0       = 0x01,
-        MSK_MAP_1       = 0x02,
-        MSK_MAP_2       = 0x04,
-        MSK_MAP_3       = 0x08,
-        /* character map register */
-        CHR_MAPA_0      = 0x00,
-        CHR_MAPA_1      = 0x01,
-        CHR_MAPA_2      = 0x02,
-        CHR_MAPA_3      = 0x03,
-        CHR_MAPB_0      = 0x00,
-        CHR_MAPB_1      = 0x04,
-        CHR_MAPB_2      = 0x08,
-        CHR_MAPB_3      = 0x0c,
-        /* memory mode register */
-        MEM_ALPHA       = 0x01,
-        MEM_EXTENDED    = 0x02,
-        MEM_NOT_ODD_EVEN= 0x04
-};
-
-enum ega_graphics_controller {
-        GRA_PORT        = 0x3ce,
-        GRA_SET_RESET   = 0,
-        GRA_ENABLE_SR   = 1,
-        GRA_COLOR_COMP  = 2,
-        GRA_DATA_ROT    = 3,
-        GRA_READ_MAP    = 4,
-        GRA_GRAPH_MODE  = 5,
-        GRA_MISC        = 6,
-        GRA_COLOR_CARE  = 7,
-        GRA_BIT_MASK    = 8,
-        /* set/reset register */
-        SR_MAP_0        = 0x01,
-        SR_MAP_1        = 0x02,
-        SR_MAP_2        = 0x04,
-        SR_MAP_3        = 0x08,
-        /* enable set/reset register */
-        ESR_MAP_0       = 0x01,
-        ESR_MAP_1       = 0x02,
-        ESR_MAP_2       = 0x04,
-        ESR_MAP_3       = 0x08,
-        /* colour compare register */
-        COL_MAP_0       = 0x01,
-        COL_MAP_1       = 0x02,
-        COL_MAP_2       = 0x04,
-        COL_MAP_3       = 0x08,
-        /* data rotate register */
-        /* bottom three bits are the right rotate count */
-        ROT_UNMOD       = 0x00,
-        ROT_AND         = 0x08,
-        ROT_OR          = 0x10,
-        ROT_XOR         = 0x18,
-        /* read map select register */
-        RMS_MAP_0       = 0x00,
-        RMS_MAP_1       = 0x01,
-        RMS_MAP_2       = 0x02,
-        RMS_MAP_3       = 0x03,
-        /* graphics mode register */
-        GRM_EN_ROT      = 0x00,
-        GRM_SYS_LATCH   = 0x01,
-        GRM_BIT_PLANE   = 0x02,
-        GRM_ILL         = 0x03,
-        GRM_TEST        = 0x04,
-        GRM_READ_MODE   = 0x08,
-        GRM_ODD_EVEN    = 0x10,
-        GRM_SHIFT       = 0x20,
-        /* miscellaneous register */
-        MIS_GRAPH_MODE  = 0x01,
-        MIS_CHAIN       = 0x02,
-        MIS_A000_128    = 0x00,
-        MIS_A000_64     = 0x04,
-        MIS_B000_32     = 0x08,
-        MIS_B800_32     = 0x0c,
-        /* colour don't care register */
-        CDC_CARE_MAP_0  = 0x01,
-        CDC_CARE_MAP_1  = 0x02,
-        CDC_CARE_MAP_2  = 0x04,
-        CDC_CARE_MAP_3  = 0x08
-        /* bit mask register */
-        /* bit N set to one causes that bit in each plane not to be written */
-};
-
 #pragma aux     _ega_write =            /* write ega/vga registers */   \
                 0xef                    /* out dx,ax */                 \
                 parm [dx] [al] [ah]                                     \
@@ -233,12 +125,6 @@ extern char        _vga_read( unsigned, char );
 extern void        _disablev( unsigned );
 extern void        _enablev( unsigned );
 
-#define _seq_write( reg, val )          _ega_write( SEQ_PORT, reg, val )
-#define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
-#define _seq_read( reg )                _vga_read( SEQ_PORT, reg )
-#define _graph_read( reg )              _vga_read( GRA_PORT, reg )
-
-
 /* disable video */
 #pragma aux     _disablev = \
     "L1: in   al,dx"    \
@@ -262,14 +148,6 @@ extern void        _enablev( unsigned );
         "xor  al,al"    \
         "out  dx,al"    \
     parm [dx] modify [ax dx];
-
-
-enum vid_state_info {
-        VID_STATE_HARDWARE      = 0x1,
-        VID_STATE_BIOS          = 0x2,
-        VID_STATE_DAC_N_COLOURS = 0x4,
-        VID_STATE_ALL           = 0x7
-};
 
 
 extern unsigned char    VIDGetRow( unsigned );

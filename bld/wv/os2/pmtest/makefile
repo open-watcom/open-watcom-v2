@@ -25,7 +25,7 @@ LINK    = WLINK  $(LFLAGS)
 .itl.hlp:
         cc  -P $*.itl
         ipfc $*.i
-        del $*.i
+        rm $*.i
 
 .rc.res:
         rc -r $*.rc
@@ -98,7 +98,7 @@ dbg.exe: dbg.obj hello.res
     copy/b dbg.exe+dbg.sym
 
 clean: .SYMBOLIC
-    @if exist *.obj @del *.obj
-    @if exist *.res @del *.res
-    @if exist *.exe @del *.exe
-    @if exist *.lnk @del *.lnk
+    @if exist *.obj @rm *.obj
+    @if exist *.res @rm *.res
+    @if exist *.exe @rm *.exe
+    @if exist *.lnk @rm *.lnk
