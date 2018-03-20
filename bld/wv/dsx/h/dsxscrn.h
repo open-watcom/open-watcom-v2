@@ -87,14 +87,6 @@ extern void BIOSSetAttr( unsigned_8 attr );
         CALL_INT10( 6 )     \
     parm [bh] modify exact [ax cx dx]
 
-extern unsigned BIOSEGAInfo( void );
-#pragma aux BIOSEGAInfo =   \
-        "mov  bx,0ff10h"    \
-        CALL_INT10( 18 )    \
-        "shl  ebx,10h"      \
-        "mov  bx,cx"        \
-    value [ebx] modify exact [ah ebx cx]
-
 extern unsigned_8 BIOSGetRows( void );
 #pragma aux BIOSGetRows =   \
         "push es"           \
@@ -122,63 +114,4 @@ extern void BIOSEGAChrSet( unsigned_8 vidroutine );
         CALL_INT10( 17 )    \
     parm [al] modify exact [ah bl]
 
-extern void VIDWait( void );
-#pragma aux VIDWait =       \
-        "jmp short L1" "L1:"      \
-    modify exact []
 
-extern uint_8 _ReadCRTCReg( uint_16 vidport, uint_8 regnb );
-#pragma aux _ReadCRTCReg =  \
-        "out  dx,al"        \
-        "inc  dx"           \
-        "in   al,dx"        \
-    parm [dx] [al] modify exact [al dx]
-
-extern void _WriteCRTCReg( uint_16 vidport, uint_8 regnb, uint_8 value );
-#pragma aux _WriteCRTCReg = \
-        "out  dx,al"        \
-        "inc  dx"           \
-        "mov  al,ah"        \
-        "out  dx,al"        \
-    parm [dx] [al] [ah] modify exact [al dx]
-
-extern void _ega_write( uint_16, uint_8, uint_8 );
-#pragma aux _ega_write =    \
-        "out  dx,ax"        \
-    parm [dx] [al] [ah]
-
-extern uint_8 _vga_read( uint_16, uint_8 );
-#pragma aux _vga_read =     \
-        "out  dx,al"        \
-        "inc  dx"           \
-        "in   al,dx"        \
-    parm [dx] [al] value [al] modify exact [al dx]
-
-extern void _disablev( unsigned_16 );
-#pragma aux _disablev =     \
-    "L1: in   al,dx"        \
-        "test al,8"         \
-        "je short L1"       \
-        "mov  dx,3c0h"      \
-        "mov  al,11h"       \
-        "out  dx,al"        \
-        "xor  al,al"        \
-        "out  dx,al"        \
-    parm [dx] modify exact [al dx]
-
-extern void _enablev( unsigned_16 );
-#pragma aux _enablev =      \
-    "L1: in   al,dx"        \
-        "test al,8"         \
-        "je short L1"       \
-        "mov  dx,3c0h"      \
-        "mov  al,31h"       \
-        "out  dx,al"        \
-        "xor  al,al"        \
-        "out  dx,al"        \
-    parm [dx] modify exact [al dx]
-
-extern void Fillb( void __far *dst, uint_8 value, uint count );
-#pragma aux Fillb =         \
-        "rep stosb"         \
-    parm [es edi] [al] [ecx] modify exact [edi ecx]

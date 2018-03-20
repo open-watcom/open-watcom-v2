@@ -64,11 +64,6 @@
 #define VIDMONOINDXREG      0x03B4
 #define VIDCOLRINDXREG      0x03D4
 
-#define _seq_write( reg, val )          _ega_write( SEQ_PORT, reg, val )
-#define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
-#define _seq_read( reg )                _ReadCRTCReg( SEQ_PORT, reg )
-#define _graph_read( reg )              _ReadCRTCReg( GRA_PORT, reg )
-
 #define DOUBLE_DOT_CHR_SET  0x12
 #define COMPRESSED_CHR_SET  0x11
 #define USER_CHR_SET        0
@@ -84,6 +79,16 @@
 #define CURS_END_SCANLINE   0xb
 
 #define CURSOR_REG2INS(r)   (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
+
+#define _seq_write( reg, val )      _ega_write( SEQ_PORT, reg, val )
+#define _graph_write( reg, val )    _ega_write( GRA_PORT, reg, val )
+#define _seq_read( reg )            _ReadCRTCReg( SEQ_PORT, reg )
+#define _graph_read( reg )          _ReadCRTCReg( GRA_PORT, reg )
+
+#define VIDGetRow( vidport )	    _ReadCRTCReg( vidport, CURS_LOCATION_LOW )
+#define VIDSetRow( vidport, row )   _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row )
+#define VIDGetCol( vidport )	    _ReadCRTCReg( vidport, CURS_LOCATION_HI )
+#define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
 
 #define VIDEO_VECTOR        0x10
 #define MSMOUSE_VECTOR      0x33
@@ -281,4 +286,114 @@ typedef enum {
         SCREEN_OPTS()
     #undef pick_opt
 } screen_opt;
+
+#ifdef _M_I86
+extern unsigned BIOSDevCombCode( void );
+#pragma aux BIOSDevCombCode =   \
+        "xor    al,al"          \
+        CALL_INT10( 0x1a )      \
+        "cmp    al,1ah"         \
+        "jz short L1"           \
+        "sub    bx,bx"          \
+    "L1:"                       \
+    value [bx] modify exact [ax]
+#endif
+
+extern unsigned char BIOSGetMode( void );
+#pragma aux BIOSGetMode =       \
+        CALL_INT10( 0x0f )      \
+    value [al] modify exact [ah bh];
+
+extern long BIOSEGAInfo( void );
+#ifdef _M_I86
+#pragma aux BIOSEGAInfo =       \
+        "mov    bx,0ff10h"      \
+        CALL_INT10( 0x12 )      \
+        "mov    ax,bx"          \
+        "mov    dx,cx"          \
+    value [dx ax] modify exact [bx cx]
+#else
+#pragma aux BIOSEGAInfo =   \
+        "mov  bx,0ff10h"    \
+        CALL_INT10( 0x12 )    \
+        "shl  ebx,10h"      \
+        "mov  bx,cx"        \
+    value [ebx] modify exact [ah ebx cx]
+#endif
+
+#ifdef _M_I86
+extern void DoRingBell( void );
+#pragma aux DoRingBell =    \
+        "mov    al,7"       \
+        CALL_INT10( 0x0e )  \
+    modify exact [ax];
+#endif
+
+#ifdef _M_I86
+extern void Fillb( unsigned, unsigned, unsigned char, unsigned );
+#pragma aux Fillb =     \
+        "rep stosb"     \
+    parm [es] [di] [al] [cx] modify exact [cx di]
+#else
+extern void Fillb( void __far *dst, unsigned char, unsigned );
+#pragma aux Fillb =     \
+        "rep stosb"     \
+    parm [es edi] [al] [ecx] modify exact [ecx edi]
+#endif
+
+extern void VIDWait( void );
+#pragma aux VIDWait = "jmp short L1" "L1:"
+
+extern unsigned char _ReadCRTCReg( unsigned short vidport, unsigned char regnb );
+#pragma aux _ReadCRTCReg =  \
+        "out  dx,al"        \
+        "inc  dx"           \
+        "in   al,dx"        \
+    parm [dx] [al] value [al] modify exact [dx]
+
+extern void _WriteCRTCReg( unsigned short vidport, unsigned char regnb, unsigned char value );
+#pragma aux _WriteCRTCReg = \
+        "out  dx,al"        \
+        "inc  dx"           \
+        "mov  al,ah"        \
+        "out  dx,al"        \
+    parm [dx] [al] [ah] modify exact [al dx]
+
+/* write ega/vga registers */
+extern void _ega_write( unsigned short, unsigned char, unsigned char );
+#pragma aux _ega_write =    \
+        "out  dx,ax"        \
+    parm [dx] [al] [ah] modify exact []
+
+/* read vga registers */
+extern unsigned char _vga_read( unsigned short, unsigned char );
+#pragma aux _vga_read =     \
+        "out  dx,al"        \
+        "inc  dx"           \
+        "in   al,dx"        \
+    parm [dx] [al] value [al] modify exact [dx]
+
+extern void _disablev( unsigned short );
+#pragma aux _disablev =     \
+    "L1: in   al,dx"        \
+        "test al,8"         \
+        "jz short L1"       \
+        "mov  dx,3c0h"      \
+        "mov  al,11h"       \
+        "out  dx,al"        \
+        "xor  al,al"        \
+        "out  dx,al"        \
+    parm [dx] modify exact [al dx]
+
+extern void _enablev( unsigned short );
+#pragma aux _enablev =      \
+    "L1: in   al,dx"        \
+        "test al,8"         \
+        "jz short L1"       \
+        "mov  dx,3c0h"      \
+        "mov  al,31h"       \
+        "out  dx,al"        \
+        "xor  al,al"        \
+        "out  dx,al"        \
+    parm [dx] modify exact [al dx]
 

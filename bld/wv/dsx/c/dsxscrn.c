@@ -213,21 +213,6 @@ void Ring_Bell( void )
     DoRingBell();
 }
 
-static uint_8 VIDGetRow( uint_16 vidport )
-{
-    return( _ReadCRTCReg( vidport, CURS_LOCATION_LOW ) );
-}
-
-static void VIDSetRow( uint_16 vidport, uint_8 row )
-{
-    _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row );
-}
-
-static void VIDSetCol( uint_16 vidport, uint_8 col )
-{
-    _WriteCRTCReg( vidport, CURS_LOCATION_HI, col );
-}
-
 static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
 {
     VIDSetRow( vidport, cursorpos & 0xff );
@@ -553,8 +538,7 @@ static void SetMonitor( void )
         DbgRows = 25;
     }
     VIDPort = DbgBiosMode == 7 ? VIDMONOINDXREG : VIDCOLRINDXREG;
-    if( ( (StartScrn.mode & 0x7f) == DbgBiosMode ) &&
-        ( StartScrn.strt.rows == DbgRows ) ) {
+    if( ( (StartScrn.mode & 0x7f) == DbgBiosMode ) && ( StartScrn.strt.rows == DbgRows ) ) {
         PageSize = BIOSData( BD_REGEN_LEN, uint_16 );   /* get size from BIOS */
     } else {
         PageSize = ( DbgRows == 25 ) ? 4096 : ( DbgRows * 80 * 2 + 256 );
@@ -773,7 +757,7 @@ static uint_8 RestoreEGA_VGA( void )
                 DoSetMode( SaveScrn.mode | 0x80 );
             } else {
                 DoSetMode( SaveScrn.mode | 0x80 );
-                BIOSCharSet( 0, 32, 256, 0, SwapSegPtr( 0 ) );
+                BIOSCharSet( 0, FONT_TABLE_SIZE / 256, 256, 0, SwapSegPtr( 0 ) );
             }
         } else {
             _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );

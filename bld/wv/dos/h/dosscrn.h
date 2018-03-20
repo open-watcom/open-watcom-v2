@@ -45,12 +45,6 @@ extern unsigned char BIOSGetPage( void );
     value [bh] modify exact [ax bh];
 
 
-extern unsigned char    BIOSGetMode( void );
-#pragma aux BIOSGetMode =       \
-        CALL_INT10( 15 )        \
-    value [al] modify exact [ax bh];
-
-
 extern void     BIOSSetMode( unsigned char );
 #pragma aux BIOSSetMode =       \
         CALL_INT10( 0 )         \
@@ -96,102 +90,9 @@ extern void        BIOSSetAttr( unsigned char );
     parm [bh];
 
 
-extern unsigned char    VIDGetRow( unsigned );
-#pragma aux VIDGetRow =         \
-        "mov    al,0fh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-    parm [dx] modify exact [al dx]
-
-
-extern void     VIDSetRow( unsigned, unsigned char );
-#pragma aux VIDSetRow =         \
-        "mov    al,0fh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "mov    al,ah"          \
-        "out    dx,al"          \
-    parm [dx] [ah] modify exact [al dx]
-
-
-extern void        VIDSetPos( unsigned, unsigned );
-#pragma aux VIDSetPos =         \
-        "mov    al,0fh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "mov    al,bl"          \
-        "out    dx,al"          \
-        "dec    dx"             \
-        "mov    al,0eh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "mov    al,bh"          \
-        "out    dx,al"          \
-    parm [dx] [bx] modify exact [al dx]
-
-
-extern unsigned VIDGetPos( unsigned );
-#pragma aux VIDGetPos =                                         \
-        "mov    al,0fh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-        "mov    ah,al"          \
-        "dec    dx"             \
-        "mov    al,0eh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-        "xchg   ah,al"          \
-    parm [dx] value [ax] modify exact [ax dx]
-
-
-extern unsigned char    VIDGetCol( unsigned );
-#pragma aux VIDGetCol =         \
-        "mov    al,0eh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-    parm [dx] value [al] modify exact [al dx]
-
-
 extern void        VIDWait( void );
 #pragma aux VIDWait = "jmp short L1" "L1:" \
     parm [] modify exact []
-
-
-extern void        VIDSetCurTyp();
-#pragma aux VIDSetCurTyp =      \
-        "push   ax"             \
-        "mov    al,0ah"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "mov    al,ah"          \
-        "out    dx,al"          \
-        "dec    dx"             \
-        "mov    al,0bh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "pop    ax"             \
-        "out    dx,al"          \
-    parm [dx] [ax];
-
-
-extern unsigned    VIDGetCurTyp();
-#pragma aux VIDGetCurTyp =      \
-        "mov    al,0bh"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-        "mov    ah,al"          \
-        "dec    dx"             \
-        "mov    al,0ah"         \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-        "xchg   ah,al"          \
-    parm [dx] value [ax];
 
 
 extern signed long BIOSEGAInfo();
@@ -240,47 +141,6 @@ extern void        BIOSCharSet();
         "xchg   bp,si"          \
     parm [al] [bh] [cx] [dx] [es] [si] modify [ax bx cx dx];
 
-/* write ega/vga registers */
-extern void     _ega_write( unsigned, unsigned char, unsigned char );
-#pragma aux     _ega_write =    \
-        "out    dx,ax"          \
-    parm [dx] [al] [ah] modify exact [];
-
-/* read vga registers */
-extern unsigned char    _vga_read( unsigned, unsigned char );
-#pragma aux     _vga_read =                     \
-        "out    dx,al"          \
-        "inc    dx"             \
-        "in     al,dx"          \
-    parm [dx] [al] value [al];
-
-/* disable video */
-extern void     _disablev( unsigned );
-#pragma aux     _disablev = \
-    "L1: in   al,dx"    \
-        "test al,8"     \
-        "jz short L1"   \
-        "mov  dx,03c0h" \
-        "mov  al,11h"   \
-        "out  dx,al"    \
-        "xor  al,al"    \
-        "out  dx,al"    \
-    parm [dx] modify [ax dx];
-
-/* enable video  */
-extern void     _enablev( unsigned );
-#pragma aux     _enablev = \
-    "L1: in   al,dx"    \
-        "test al,8"     \
-        "jz short L1"   \
-        "mov  dx,03c0h" \
-        "mov  al,31h"   \
-        "out  dx,al"    \
-        "xor  al,al"    \
-        "out  dx,al"    \
-    parm [dx] modify [ax dx];
-
-
 /* get video save size */
 extern unsigned _VidStateSize( unsigned );
 #pragma aux     _VidStateSize = \
@@ -306,6 +166,3 @@ extern void     _VidStateRestore( unsigned, unsigned, unsigned );
         "int    10h"            \
     parm [cx] [es] [bx] modify exact [ax];
 
-extern void     Fillb( unsigned, unsigned, unsigned char, unsigned );
-#pragma aux Fillb = "rep stosb" \
-    parm [es] [di] [al] [cx] modify exact [cx di]

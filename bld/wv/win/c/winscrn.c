@@ -51,8 +51,11 @@
 #include "wininit.h"
 
 
-#define         NEC_20_LINES        0x01
-#define         NEC_31_LINES        0x10
+#define NEC_20_LINES        0x01
+#define NEC_31_LINES        0x10
+
+#define TstMono()           ChkCntrlr( VIDMONOINDXREG )
+#define TstColour()         ChkCntrlr( VIDCOLRINDXREG )
 
 extern unsigned char    NECBIOSGetMode(void);
 #pragma aux NECBIOSGetMode =                                    \
@@ -193,20 +196,6 @@ static bool ChkCntrlr( unsigned port )
     rtrn = ( VIDGetRow( port ) == 0x5A );
     VIDSetRow( port, curr );
     return( rtrn );
-}
-
-static bool TstMono( void )
-{
-    if( !ChkCntrlr( VIDMONOINDXREG ) )
-        return( false );
-    return( true );
-}
-
-static bool TstColour( void )
-{
-    if( !ChkCntrlr( VIDCOLRINDXREG ) )
-        return( false );
-    return( true );
 }
 
 static void GetDispConfig( void )

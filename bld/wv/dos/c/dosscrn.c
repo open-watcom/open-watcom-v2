@@ -89,29 +89,6 @@ extern void MouseStateRestore();
                 modify [ax];
 
 
-extern unsigned BIOSDevCombCode();
-#pragma aux BIOSDevCombCode =                                   \
-0X55            /* push   bp                            */      \
-0XB8 0X00 0X1A  /* mov    ax,1a00                       */      \
-0XCD 0X10       /* int    10                            */      \
-0X3C 0X1A       /* cmp    al,1a                         */      \
-0X74 0X02       /* jz     *+2                           */      \
-0X29 0XDB       /* sub    bx,bx                         */      \
-0X5D            /* pop    bp                            */      \
-                value   [bx]                                  \
-                modify  [ax];
-
-
-extern void DoRingBell( void );
-#pragma aux DoRingBell =                                        \
-0X55            /* push   bp                            */      \
-0XB8 0X07 0X0E  /* mov    ax,0E07                       */      \
-0XCD 0X10       /* int    10                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ax]                                      \
-        modify [bx];
-
-
 extern void             WndDirty( void );
 
 char                    ActFontTbls;  /* assembly file needs access */
@@ -164,6 +141,24 @@ static const char               ScreenOptNameTab[] = {
 void Ring_Bell( void )
 {
     DoRingBell();
+}
+
+static void VIDSetPos( unsigned vidport, unsigned cursorpos )
+{
+    VIDSetRow( vidport, cursorpos & 0xff );
+    VIDSetCol( vidport, cursorpos >> 8 );
+}
+
+static void VIDSetCurTyp( unsigned vidport, unsigned cursortyp )
+{
+    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp >> 8 );
+    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp & 0xf );
+}
+
+static unsigned VIDGetCurTyp( unsigned vidport )
+{
+    return( _ReadCRTCReg( vidport, CURS_START_SCANLINE ) * 256
+            | _ReadCRTCReg( vidport, CURS_END_SCANLINE ) );
 }
 
 static bool ChkCntrlr( unsigned port )
@@ -480,7 +475,7 @@ static void SetMonitor( void )
         VIDPort = VIDCOLRINDXREG;
     }
     if( ((StrtMode & 0x7f) == DbgBiosMode) && (StrtRows == DbgRows) ) {
-        PageSize = BIOSData( BD_REGEN_LEN, unsigned short );    /* get size from BIOS */
+        PageSize = BIOSData( BD_REGEN_LEN, unsigned );  /* get size from BIOS */
     } else {
         PageSize = (DbgRows == 25) ? 4096 : ( DbgRows * 80 * 2 + 256 );
     }
@@ -600,13 +595,13 @@ static unsigned RegenSize( void )
 
     switch( HWDisplay.active ) {
     case DISP_MONOCHROME:
-        regen_size = (DbgRows * 80 * 2 + 0x3ff) & ~0x3ff;
+        regen_size = RoundTo1K( DbgRows * 80 * 2 );
         break;
     case DISP_CGA:
     case DISP_PGA:
     case DISP_MODEL30_MONO:
     case DISP_MODEL30_COLOUR:
-        regen_size = 4 * ((DbgRows * 80 * 2 + 0x3ff) & ~0x3ff);
+        regen_size = 4 * RoundTo1K( DbgRows * 80 * 2 );
         break;
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
@@ -675,7 +670,7 @@ static unsigned char RestoreEGA_VGA( void )
     mode = SaveMode & 0x7f;
     if( mode < 4 || mode == 7 ) {
         DoSetMode( SaveMode | 0x80 );
-        BIOSCharSet( 0x00, 32, 256, 0, SwapSegPtr( PageSize * 2 ) );
+        BIOSCharSet( 0, FONT_TABLE_SIZE / 256, 256, 0, SwapSegPtr( PageSize * 2 ) );
 //        BIOSCharSet( 0x10, SavPoints, 0, 0, 0, 0 );
     } else {
         _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
@@ -741,13 +736,13 @@ static void AllocSave( void )
     if( FlipMech == FLIP_SWAP ) {
         regen_size = RegenSize();
     }
-    state_size = _VidStateSize( VID_STATE_SWAP ) * 64;
+    state_size = 64 * _VidStateSize( VID_STATE_SWAP );
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseStateSize() : 0;
     ret = TinyAllocBlock( _NBPARAS( regen_size + state_size + 2 * mouse_size ) );
     if( ret < 0 )
         StartupErr( "unable to allocate swap area" );
     SwapSeg = ret;
-    if( mouse_size != 0 ) {
+    if( mouse_size > 0 ) {
         PgmMouse = regen_size + state_size;
         DbgMouse = PgmMouse + mouse_size;
     }
@@ -767,7 +762,7 @@ static void CheckMSMouse( void )
 
 static void SetCursorTypes( void )
 {
-    uint_16     scan_lines;
+    unsigned    scan_lines;
 
     switch( HWDisplay.active ) {
     case DISP_MONOCHROME:
