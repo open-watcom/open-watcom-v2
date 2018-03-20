@@ -282,8 +282,8 @@ extern void     _enablev( unsigned );
 
 
 /* get video save size */
-extern unsigned _vidstatesize( unsigned );
-#pragma aux     _vidstatesize = \
+extern unsigned _VidStateSize( unsigned );
+#pragma aux     _VidStateSize = \
         "mov    ax,1c00h"       \
         "int    10h"            \
         "cmp    al,1ch"         \
@@ -293,15 +293,15 @@ extern unsigned _vidstatesize( unsigned );
     parm [cx] value [bx] modify exact [ax bx];
 
 /* save video state */
-extern void     _vidstatesave( unsigned, unsigned, unsigned );
-#pragma aux     _vidstatesave = \
+extern void     _VidStateSave( unsigned, unsigned, unsigned );
+#pragma aux     _VidStateSave = \
         "mov    ax,1c01h"       \
         "int    10h"            \
     parm [cx] [es] [bx] modify exact [ax];
 
 /* restore video state */
-extern void     _vidstaterestore( unsigned, unsigned, unsigned );
-#pragma aux     _vidstaterestore = \
+extern void     _VidStateRestore( unsigned, unsigned, unsigned );
+#pragma aux     _VidStateRestore = \
         "mov    ax,1c02h"       \
         "int    10h"            \
     parm [cx] [es] [bx] modify exact [ax];

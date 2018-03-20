@@ -54,11 +54,9 @@ enum {
 
 extern volatile bool    BrkPending;
 
-unsigned            ScrnLines = 50;
-HWND                DebuggerHwnd;
-bool                WantFast;
-bool                TrapForceHardMode = false;
-
+static unsigned     ScrnLines = 50;
+static bool         WantFast;
+static bool         TrapForceHardMode = false;
 static unsigned     FlipMech;
 static unsigned     ScrnMode;
 static HWND         FocusWnd;

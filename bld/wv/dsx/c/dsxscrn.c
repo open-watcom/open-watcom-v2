@@ -52,8 +52,10 @@
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
 
-#define TstMono()   ChkCntrlr( VIDMONOINDXREG )
-#define TstColour() ChkCntrlr( VIDCOLRINDXREG )
+#define SwapSegPtr( offs )      SwapSeg.segm.rm, offs
+
+#define TstMono()               ChkCntrlr( VIDMONOINDXREG )
+#define TstColour()             ChkCntrlr( VIDCOLRINDXREG )
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
@@ -97,7 +99,7 @@ static uint_8                   DbgBiosMode;
 static uint_8                   DbgChrSet;
 static uint_8                   DbgRows;
 static dos_memory               SwapSeg;
-static addr32_off               StateOff;
+static addr32_off               VidStateOff;
 static addr32_off               PgmMouse;
 static addr32_off               DbgMouse;
 static display_config           HWDisplay;
@@ -679,7 +681,7 @@ static uint_16 RegenSize( void )
     case DISP_PGA:
     case DISP_MODEL30_MONO:
     case DISP_MODEL30_COLOUR:
-        regen_size = ( ( DbgRows * 80 * 2 + 0x3ff ) & ~0x3ff ) * 4;
+        regen_size = 4 * (( DbgRows * 80 * 2 + 0x3ff ) & ~0x3ff);
         break;
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
@@ -706,7 +708,7 @@ static void SwapSave( void )
     switch( HWDisplay.active ) {
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
-        _VidStateSave( VID_STATE_SWAP, SwapSeg.segm.rm, StateOff );
+        _VidStateSave( VID_STATE_SWAP, SwapSegPtr( VidStateOff ) );
         /* fall through */
     case DISP_EGA_MONO:
     case DISP_EGA_COLOUR:
@@ -717,21 +719,21 @@ static void SwapSave( void )
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
             _fmemcpy( RegenSave + PageSize, EGA_VIDEO_BUFF, PageSize );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-            _fmemcpy( RealModeSegmPtr( SwapSeg.segm.rm ), EGA_VIDEO_BUFF, 8 * 1024 );
+            _fmemcpy( RealModeSegmPtr( SwapSeg.segm.rm ), EGA_VIDEO_BUFF, FONT_TABLE_SIZE );
             if( VirtScreen != NULL ) {
                 _fmemcpy( RegenSave + PageSize * 2, VirtScreen,  PageSize );
             }
         } else {
             _graph_write( GRA_READ_MAP, RMS_MAP_0 );
-            _fmemcpy( RegenSave + 0 * _64K, EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 0 * _64k, EGA_VIDEO_BUFF, _64k );
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
-            _fmemcpy( RegenSave + 1 * _64K, EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 1 * _64k, EGA_VIDEO_BUFF, _64k );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-            _fmemcpy( RegenSave + 2 * _64K, EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 2 * _64k, EGA_VIDEO_BUFF, _64k );
             _graph_write( GRA_READ_MAP, RMS_MAP_3 );
-            _fmemcpy( RegenSave + 3 * _64K, EGA_VIDEO_BUFF, _64K );
+            _fmemcpy( RegenSave + 3 * _64k, EGA_VIDEO_BUFF, _64k );
             if( VirtScreen != NULL ) {
-                _fmemcpy( RegenSave + 4 * _64K, VirtScreen,  PageSize );
+                _fmemcpy( RegenSave + 4 * _64k, VirtScreen,  PageSize );
             }
         }
         _graph_write( GRA_READ_MAP, RMS_MAP_0 );
@@ -767,32 +769,32 @@ static uint_8 RestoreEGA_VGA( void )
             if( VirtScreen != NULL ) {
                 _fmemcpy( VirtScreen, RegenSave + PageSize * 2, PageSize );
                 _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-                _fmemcpy( EGA_VIDEO_BUFF, RealModeSegmPtr( SwapSeg.segm.rm ), 8 * 1024 );
+                _fmemcpy( EGA_VIDEO_BUFF, RealModeSegmPtr( SwapSeg.segm.rm ), FONT_TABLE_SIZE );
                 DoSetMode( SaveScrn.mode | 0x80 );
             } else {
                 DoSetMode( SaveScrn.mode | 0x80 );
-                BIOSCharSet( 0, 32, 256, 0, SwapSeg.segm.rm, 0 );
+                BIOSCharSet( 0, 32, 256, 0, SwapSegPtr( 0 ) );
             }
         } else {
             _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-            _fmemcpy( EGA_VIDEO_BUFF, RealModeSegmPtr( SwapSeg.segm.rm ), 8 * 1024 );
+            _fmemcpy( EGA_VIDEO_BUFF, RealModeSegmPtr( SwapSeg.segm.rm ), FONT_TABLE_SIZE );
             DoSetMode( SaveScrn.mode | 0x80 );
         }
     } else {
         /* stupid thing doesn't respect the no-clear bit in DBCS mode */
         DoSetMode( SaveScrn.mode );
         if( VirtScreen != NULL ) {
-            _fmemcpy( VirtScreen, RegenSave + 4 * _64K, PageSize );
+            _fmemcpy( VirtScreen, RegenSave + 4 * _64k, PageSize );
         }
         SetupEGA();
         _seq_write( SEQ_MAP_MASK, MSK_MAP_0 );
-        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 0 * _64K, _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 0 * _64k, _64k );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 1 * _64K, _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 1 * _64k, _64k );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 2 * _64K, _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 2 * _64k, _64k );
         _seq_write( SEQ_MAP_MASK, MSK_MAP_3 );
-        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 3 * _64K, _64K );
+        _fmemcpy( EGA_VIDEO_BUFF, RegenSave + 3 * _64k, _64k );
     }
     SetRegenClear();
     return( mode );
@@ -814,7 +816,7 @@ static void SwapRestore( void )
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
         RestoreEGA_VGA();
-        _VidStateRestore( VID_STATE_SWAP, SwapSeg.segm.rm, StateOff );
+        _VidStateRestore( VID_STATE_SWAP, SwapSegPtr( VidStateOff ) );
         break;
     case DISP_MONOCHROME:
         SetMode( SaveScrn.mode );
@@ -830,14 +832,14 @@ static void SwapRestore( void )
 static void SaveMouse( addr32_off to )
 {
     if( to != 0 ) {
-        MouseStateSave( SwapSeg.segm.rm, to, (uint_16)( DbgMouse - PgmMouse ) );
+        MouseStateSave( SwapSegPtr( to ), (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
 static void RestoreMouse( addr32_off from )
 {
     if( from != 0 ) {
-        MouseStateRestore( SwapSeg.segm.rm, from, (uint_16)( DbgMouse - PgmMouse ) );
+        MouseStateRestore( SwapSegPtr( from ), (uint_16)( DbgMouse - PgmMouse ) );
     }
 }
 
@@ -850,7 +852,7 @@ static void AllocSave( void )
     switch( FlipMech ) {
     case FLIP_SWAP:
         if( VirtScreen != NULL ) {
-            _Alloc( RegenSave, _64K*4 + PageSize );
+            _Alloc( RegenSave, 4 * _64k + PageSize );
             if( RegenSave == NULL ) {
                 StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
             }
@@ -866,20 +868,20 @@ static void AllocSave( void )
         if( RegenSave == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
-        regen_size = 8 * 1024;  /* Font table has to go in low memory */
+        regen_size = FONT_TABLE_SIZE;   /* Font table has to go in low memory */
         break;
     default:
         /* regen_size is at least 2 to allow mouse swap detection to work */
         regen_size = 2;
         break;
     }
-    state_size = _VidStateSize( VID_STATE_SWAP ) * 64;
+    state_size = 64 * _VidStateSize( VID_STATE_SWAP );
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseStateSize() : 0;
     SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size + mouse_size * 2 ) );
     if( SwapSeg.segm.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
-    StateOff = regen_size;
+    VidStateOff = regen_size;
     if( mouse_size != 0 ) {
         PgmMouse = regen_size + state_size;
         DbgMouse = PgmMouse + mouse_size;

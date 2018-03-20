@@ -45,10 +45,16 @@
 #include "dbglkup.h"
 
 
-#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+#define EGA_VIDEO_BUFF          0xa000, 0
+#define MONO_VIDEO_BUFF         0xb000, 0
+#define COLOUR_VIDEO_BUFF       0xb800, 0
 
-#define TstMono()   ChkCntrlr( VIDMONOINDXREG )
-#define TstColour() ChkCntrlr( VIDCOLRINDXREG )
+#define SwapSegPtr( offs )      SwapSeg, offs
+
+#define TstMono()               ChkCntrlr( VIDMONOINDXREG )
+#define TstColour()             ChkCntrlr( VIDCOLRINDXREG )
+
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
 typedef union {
     struct {
@@ -476,7 +482,7 @@ static void SetMonitor( void )
     if( ((StrtMode & 0x7f) == DbgBiosMode) && (StrtRows == DbgRows) ) {
         PageSize = BIOSData( BD_REGEN_LEN, unsigned short );    /* get size from BIOS */
     } else {
-        PageSize = (DbgRows == 25) ? 4096 : ( DbgRows * (80 * 2) + 256 );
+        PageSize = (DbgRows == 25) ? 4096 : ( DbgRows * 80 * 2 + 256 );
     }
 }
 
@@ -594,20 +600,19 @@ static unsigned RegenSize( void )
 
     switch( HWDisplay.active ) {
     case DISP_MONOCHROME:
-        regen_size = (DbgRows * (80*2) + 0x3ff) & ~0x3ff;
+        regen_size = (DbgRows * 80 * 2 + 0x3ff) & ~0x3ff;
         break;
     case DISP_CGA:
     case DISP_PGA:
     case DISP_MODEL30_MONO:
     case DISP_MODEL30_COLOUR:
-        regen_size = (DbgRows * (80*2) + 0x3ff) & ~0x3ff;
-        regen_size *= 4;
+        regen_size = 4 * ((DbgRows * 80 * 2 + 0x3ff) & ~0x3ff);
         break;
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
     case DISP_EGA_COLOUR:
     case DISP_EGA_MONO:
-        regen_size = PageSize*2 + 8*1024;
+        regen_size = PageSize * 2 + FONT_TABLE_SIZE;
         break;
     }
     return( regen_size );
@@ -629,30 +634,30 @@ static void SwapSave( void )
     switch( HWDisplay.active ) {
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
-        _vidstatesave( VID_STATE_SWAP, SwapSeg, PageSize * 2 + 8*1024 );
+        _VidStateSave( VID_STATE_SWAP, SwapSegPtr( PageSize * 2 + FONT_TABLE_SIZE ) );
         /* fall through */
     case DISP_EGA_MONO:
     case DISP_EGA_COLOUR:
         SetupEGA();
         _graph_write( GRA_READ_MAP, RMS_MAP_0 );
-        movedata( 0xA000, 0, SwapSeg, 0, PageSize );
+        movedata( EGA_VIDEO_BUFF, SwapSegPtr( 0 ), PageSize );
         _graph_write( GRA_READ_MAP, RMS_MAP_1 );
-        movedata( 0xA000, 0, SwapSeg, PageSize, PageSize );
+        movedata( EGA_VIDEO_BUFF, SwapSegPtr( PageSize ), PageSize );
         _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-        movedata( 0xA000, 0, SwapSeg, PageSize * 2, 8 * 1024 );
+        movedata( EGA_VIDEO_BUFF, SwapSegPtr( PageSize * 2 ), FONT_TABLE_SIZE );
         _graph_write( GRA_READ_MAP, RMS_MAP_0 );
         /* blank regen area (attributes) */
         _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-        Fillb( 0xA000, 0, 0, PageSize );
+        Fillb( EGA_VIDEO_BUFF, 0, PageSize );
         DoSetMode( DbgBiosMode | 0x80 );
         SetChrSet( DbgChrSet );
         break;
     case DISP_MONOCHROME:
-        movedata( 0xb000, 0, SwapSeg, 0, RegenSize() );
+        movedata( MONO_VIDEO_BUFF, SwapSegPtr( 0 ), RegenSize() );
         SetMode( DbgBiosMode );
         break;
     default:
-        movedata( 0xb800, 0, SwapSeg, 0, RegenSize() );
+        movedata( COLOUR_VIDEO_BUFF, SwapSegPtr( 0 ), RegenSize() );
         SetMode( DbgBiosMode );
         break;
     }
@@ -664,17 +669,17 @@ static unsigned char RestoreEGA_VGA( void )
 
     SetupEGA();
     _seq_write( SEQ_MAP_MASK, MSK_MAP_0 );
-    movedata( SwapSeg, 0, 0xA000, 0, PageSize );
+    movedata( SwapSegPtr( 0 ), EGA_VIDEO_BUFF, PageSize );
     _seq_write( SEQ_MAP_MASK, MSK_MAP_1 );
-    movedata( SwapSeg, PageSize, 0xA000, 0, PageSize );
+    movedata( SwapSegPtr( PageSize ), EGA_VIDEO_BUFF, PageSize );
     mode = SaveMode & 0x7f;
     if( mode < 4 || mode == 7 ) {
         DoSetMode( SaveMode | 0x80 );
-        BIOSCharSet( 0x00, 32, 256, 0, SwapSeg, PageSize*2 );
+        BIOSCharSet( 0x00, 32, 256, 0, SwapSegPtr( PageSize * 2 ) );
 //        BIOSCharSet( 0x10, SavPoints, 0, 0, 0, 0 );
     } else {
         _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-        movedata( SwapSeg, PageSize*2, 0xA000, 0, 8*1024 );
+        movedata( SwapSegPtr( PageSize * 2 ), EGA_VIDEO_BUFF, FONT_TABLE_SIZE );
         DoSetMode( SaveMode | 0x80 );
     }
     SetRegenClear();
@@ -697,15 +702,15 @@ static void SwapRestore( void )
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
         RestoreEGA_VGA();
-        _vidstaterestore( VID_STATE_SWAP, SwapSeg, PageSize * 2 + 8*1024 );
+        _VidStateRestore( VID_STATE_SWAP, SwapSegPtr( PageSize * 2 + FONT_TABLE_SIZE ) );
         break;
     case DISP_MONOCHROME:
         SetMode( SaveMode );
-        movedata( SwapSeg, 0, 0xb000, 0, RegenSize() );
+        movedata( SwapSegPtr( 0 ), MONO_VIDEO_BUFF, RegenSize() );
         break;
     default:
         SetMode( SaveMode );
-        movedata( SwapSeg, 0, 0xb800, 0, RegenSize() );
+        movedata( SwapSegPtr( 0 ), COLOUR_VIDEO_BUFF, RegenSize() );
         break;
     }
 }
@@ -713,14 +718,14 @@ static void SwapRestore( void )
 static void SaveMouse( unsigned to )
 {
     if( to != 0 ) {
-        MouseStateSave( SwapSeg, to, (unsigned)( DbgMouse - PgmMouse ) );
+        MouseStateSave( SwapSegPtr( to ), (unsigned)( DbgMouse - PgmMouse ) );
     }
 }
 
 static void RestoreMouse( unsigned from )
 {
     if( from != 0 ) {
-        MouseStateRestore( SwapSeg, from, (unsigned)( DbgMouse - PgmMouse ) );
+        MouseStateRestore( SwapSegPtr( from ), (unsigned)( DbgMouse - PgmMouse ) );
     }
 }
 
@@ -736,7 +741,7 @@ static void AllocSave( void )
     if( FlipMech == FLIP_SWAP ) {
         regen_size = RegenSize();
     }
-    state_size = _vidstatesize( VID_STATE_SWAP ) * 64;
+    state_size = _VidStateSize( VID_STATE_SWAP ) * 64;
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseStateSize() : 0;
     ret = TinyAllocBlock( _NBPARAS( regen_size + state_size + 2 * mouse_size ) );
     if( ret < 0 )

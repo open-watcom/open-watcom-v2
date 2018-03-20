@@ -66,10 +66,8 @@ extern unsigned char    NECBIOSGetMode(void);
 
 extern volatile bool    BrkPending;
 
-bool                    WantFast;
-int                     ScrnLines = 25;
-bool                    WndUseGMouse = false;
-
+static bool             WantFast;
+static int              ScrnLines = 25;
 static flip_types       FlipMech;
 static mode_types       ScrnMode;
 static display_config   HWDisplay;
