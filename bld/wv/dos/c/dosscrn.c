@@ -47,15 +47,6 @@
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
-#define DOUBLE_DOT_CHR_SET      0x12
-#define COMPRESSED_CHR_SET      0x11
-#define USER_CHR_SET            0x00
-
-#define EGA_CURSOR_OFF  0x1e00
-#define NORM_CURSOR_OFF 0x2000
-#define CGA_CURSOR_ON   0x0607
-#define MON_CURSOR_ON   0x0b0c
-
 #define TstMono()   ChkCntrlr( VIDMONOINDXREG )
 #define TstColour() ChkCntrlr( VIDCOLRINDXREG )
 
@@ -175,11 +166,11 @@ static bool ChkCntrlr( unsigned port )
     bool            rtrn;
 
     curr = VIDGetRow( port );
-    VIDSetRow( port, 0x5A );
+    VIDSetRow( port, 0x5a );
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = ( VIDGetRow( port ) == 0x5A );
+    rtrn = ( VIDGetRow( port ) == 0x5a );
     VIDSetRow( port, curr );
     return( rtrn );
 }

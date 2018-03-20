@@ -64,11 +64,11 @@ extern unsigned char    NECBIOSGetMode(void);
         modify [bx];
 
 
-extern volatile bool   BrkPending;
+extern volatile bool    BrkPending;
 
-bool            WantFast;
-int             ScrnLines = 25;
-bool            WndUseGMouse = false;
+bool                    WantFast;
+int                     ScrnLines = 25;
+bool                    WndUseGMouse = false;
 
 static flip_types       FlipMech;
 static mode_types       ScrnMode;

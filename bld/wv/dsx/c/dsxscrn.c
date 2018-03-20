@@ -48,25 +48,9 @@
 #include "dsxscrn.h"
 
 
-#define _64K                    (64UL * 1024)
-
 #define EGA_VIDEO_BUFF          (LP_PIXEL)RealModeSegmPtr( 0xa000 )
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
-
-#define CURS_LOCATION_LOW       0xf
-#define CURS_LOCATION_HI        0xe
-#define CURS_START_SCANLINE     0xa
-#define CURS_END_SCANLINE       0xb
-
-#define DOUBLE_DOT_CHR_SET      0x12
-#define COMPRESSED_CHR_SET      0x11
-#define USER_CHR_SET            0
-
-#define EGA_CURSOR_OFF          0x1e00
-#define NORM_CURSOR_OFF         0x2000
-#define CGA_CURSOR_ON           0x0607
-#define MON_CURSOR_ON           0x0b0c
 
 #define TstMono()   ChkCntrlr( VIDMONOINDXREG )
 #define TstColour() ChkCntrlr( VIDCOLRINDXREG )

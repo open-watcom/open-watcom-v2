@@ -55,13 +55,33 @@
 #endif
 #define BIOSData( off, type )           RealModeData( 0x0040, off, type )
 
-#define VIDMONOINDXREG  0x03B4
-#define VIDCOLRINDXREG  0x03D4
+#define _1k                 1024UL
+#define _64k                (64 * _1k)
+#define RoundTo1K(s)        (((s) + ( _1k - 1 )) & ~( _1k - 1 ))
+
+#define FONT_TABLE_SIZE     (8 * _1k)
+
+#define VIDMONOINDXREG      0x03B4
+#define VIDCOLRINDXREG      0x03D4
 
 #define _seq_write( reg, val )          _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
-#define _seq_read( reg )                _vga_read( SEQ_PORT, reg )
-#define _graph_read( reg )              _vga_read( GRA_PORT, reg )
+#define _seq_read( reg )                _ReadCRTCReg( SEQ_PORT, reg )
+#define _graph_read( reg )              _ReadCRTCReg( GRA_PORT, reg )
+
+#define DOUBLE_DOT_CHR_SET  0x12
+#define COMPRESSED_CHR_SET  0x11
+#define USER_CHR_SET        0
+
+#define EGA_CURSOR_OFF      0x1e00
+#define NORM_CURSOR_OFF     0x2000
+#define CGA_CURSOR_ON       0x0607
+#define MON_CURSOR_ON       0x0b0c
+
+#define CURS_LOCATION_LOW   0xf
+#define CURS_LOCATION_HI    0xe
+#define CURS_START_SCANLINE 0xa
+#define CURS_END_SCANLINE   0xb
 
 #define CURSOR_REG2INS(r)   (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
 
@@ -182,13 +202,13 @@ typedef enum {
     MD_HERC
 } mode_types;
 
-enum vid_state_info {
+typedef enum {
     VID_STATE_HARDWARE      = 0x1,
     VID_STATE_BIOS          = 0x2,
     VID_STATE_DAC_N_COLOURS = 0x4,
     VID_STATE_ALL           = 0x7,
     VID_STATE_SWAP          = VID_STATE_ALL
-};
+} vid_state_info;
 
 enum {
     BD_EQUIP_LIST   = 0x10,
