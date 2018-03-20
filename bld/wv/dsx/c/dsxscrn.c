@@ -49,6 +49,7 @@
 
 
 #define _64K                    (64UL * 1024)
+
 #define EGA_VIDEO_BUFF          (LP_PIXEL)RealModeSegmPtr( 0xa000 )
 #define MONO_VIDEO_BUFF         (LP_PIXEL)RealModeSegmPtr( 0xb000 )
 #define COLOUR_VIDEO_BUFF       (LP_PIXEL)RealModeSegmPtr( 0xb800 )
@@ -67,43 +68,10 @@
 #define CGA_CURSOR_ON           0x0607
 #define MON_CURSOR_ON           0x0b0c
 
-#define MSMOUSE_VECTOR          0x33
-#define VID_STATE_SWAP          VID_STATE_ALL
-
-#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
-#define RealModeData( segm, off, type ) *(type __far *)EXTENDER_RM2PM( segm, off )
-#define BIOSData( off, type )           RealModeData( 0x0040, off, type )
-
-#define CURSOR_REG2INS(r)               (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
+#define TstMono()   ChkCntrlr( VIDMONOINDXREG )
+#define TstColour() ChkCntrlr( VIDCOLRINDXREG )
 
 #define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
-
-typedef enum {
-    DISP_NONE,
-    DISP_MONOCHROME,
-    DISP_CGA,
-    DISP_RESERVED1,
-    DISP_EGA_COLOUR,
-    DISP_EGA_MONO,
-    DISP_PGA,
-    DISP_VGA_MONO,
-    DISP_VGA_COLOUR,
-    DISP_RESERVED2,
-    DISP_RESERVED3,
-    DISP_MODEL30_MONO,
-    DISP_MODEL30_COLOUR
-} hw_display_type;
-
-enum {
-    ADAPTER_MONO   = -1,
-    ADAPTER_NONE   = 0,
-    ADAPTER_COLOUR = 1
-};
-
-typedef struct {
-    hw_display_type     active;
-    hw_display_type     alt;
-} display_configuration;
 
 typedef struct {
     uint_8              points;
@@ -124,11 +92,10 @@ typedef struct {
 
 extern bool                     UserScreen( void );
 
-extern flip_types               FlipMech = 0;
-extern mode_types               ScrnMode = 0;
 extern gui_window_styles        WndStyle;
 
-
+static flip_types               FlipMech;
+static mode_types               ScrnMode;
 static rm_call_struct           CallStruct;
 static uint_8                   OldRow;
 static uint_8                   OldCol;
@@ -149,24 +116,20 @@ static dos_memory               SwapSeg;
 static addr32_off               StateOff;
 static addr32_off               PgmMouse;
 static addr32_off               DbgMouse;
-static display_configuration    HWDisplay;
+static display_config           HWDisplay;
 static unsigned_8               *RegenSave;
 static void                     __far *VirtScreen;
 
-static int_8                    ColourAdapters[] = {
-    ADAPTER_NONE,     /* NONE              */
-    ADAPTER_MONO,     /* MONOCHROME        */
-    ADAPTER_COLOUR,   /* CGA               */
-    ADAPTER_NONE,     /* RESERVED          */
-    ADAPTER_COLOUR,   /* EGA COLOUR        */
-    ADAPTER_MONO,     /* EGA MONO          */
-    ADAPTER_COLOUR,   /* PGA               */
-    ADAPTER_COLOUR,   /* VGA MONO          */
-    ADAPTER_COLOUR,   /* VGA COLOUR        */
-    ADAPTER_NONE,     /* RESERVED          */
-    ADAPTER_NONE,     /* RESERVED          */
-    ADAPTER_COLOUR,   /* MODEL 30 MONO     */
-    ADAPTER_COLOUR    /* MODEL 30 COLOUR   */
+static adapter_type             ColourAdapters[] = {
+    #define pick_disp(e,t) t,
+        DISP_TYPES()
+    #undef pick_disp
+};
+
+static const char               ScreenOptNameTab[] = {
+    #define pick_opt(e,t) t "\0"
+        SCREEN_OPTS()
+    #undef pick_opt
 };
 
 static uint_16 _VidStateSize( uint_16 requested_state )
@@ -305,7 +268,7 @@ static bool ChkCntrlr( uint_16 port )
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = VIDGetRow( port ) == 0x5a;
+    rtrn = ( VIDGetRow( port ) == 0x5a );
     VIDSetRow( port, curr );
     return( rtrn );
 }
@@ -328,16 +291,6 @@ static void DoSetMode( uint_8 mode )
     BIOSSetMode( mode );
 }
 
-static bool TstMono( void )
-{
-    return( ChkCntrlr( VIDMONOINDXREG ) ? true : false );
-}
-
-static bool TstColour( void )
-{
-    return( ChkCntrlr( VIDCOLRINDXREG ) ? true : false );
-}
-
 static void GetEGAConfig( uint_8 colour, uint_8 curr_mode )
 {
     hw_display_type     temp;
@@ -353,10 +306,8 @@ static void GetEGAConfig( uint_8 colour, uint_8 curr_mode )
             HWDisplay.alt = DISP_MONOCHROME;
         }
     }
-    if( ( ( HWDisplay.active == DISP_EGA_COLOUR ) &&
-          ( ( curr_mode == 7 ) || ( curr_mode == 15 ) ) ) ||
-        ( ( HWDisplay.active == DISP_EGA_MONO ) &&
-          ( ( curr_mode != 7 ) && ( curr_mode != 15 ) ) ) ) {
+    if( ( ( HWDisplay.active == DISP_EGA_COLOUR ) && ( ( curr_mode == 7 ) || ( curr_mode == 15 ) ) )
+      || ( ( HWDisplay.active == DISP_EGA_MONO ) && ( ( curr_mode != 7 ) && ( curr_mode != 15 ) ) ) ) {
         /* EGA is not the active display */
         temp = HWDisplay.active;
         HWDisplay.active = HWDisplay.alt;
@@ -411,11 +362,11 @@ static void GetDispConfig( void )
 
 static bool ChkForColour( hw_display_type display )
 {
-    if( ColourAdapters[display] <= 0 ) {
-        return( false );
+    if( ColourAdapters[display] == ADAPTER_COLOUR ) {
+        ScrnMode = MD_COLOUR;
+        return( true );
     }
-    ScrnMode = MD_COLOUR;
-    return( true );
+    return( false );
 }
 
 static void SwapActAlt( void )
@@ -442,11 +393,11 @@ static bool ChkColour( void )
 
 static bool ChkForMono( hw_display_type display )
 {
-    if( ColourAdapters[display] >= 0 ) {
-        return( false );
+    if( ColourAdapters[display] == ADAPTER_MONO ) {
+        ScrnMode = MD_MONO;
+        return( true );
     }
-    ScrnMode = MD_MONO;
-    return( true );
+    return( false );
 }
 
 static bool ChkMono( void )
@@ -949,6 +900,18 @@ static void AllocSave( void )
     }
 }
 
+
+static void CheckMSMouse( void )
+/* check for Microsoft mouse */
+{
+    memptr          vect;
+
+    vect = RealModeData( 0, MSMOUSE_VECTOR * 4, memptr );
+    if( vect.a == 0 || RealModeData( vect.s.segment, vect.s.offset, uint_8 ) == IRET ) {
+        _SwitchOff( SW_USE_MOUSE );
+    }
+}
+
 static void SetCursorTypes( void )
 {
     uint_16     scan_lines;
@@ -1008,20 +971,6 @@ static void InitScreenMode( void )
         SetChrSet( DbgChrSet );
         SaveBIOSSettings();
         break;
-    }
-}
-
-/* check for Microsoft mouse */
-
-#define IRET        0xCF
-
-static void CheckMSMouse( void )
-{
-    memptr          vect;
-
-    vect = RealModeData( 0, MSMOUSE_VECTOR * 4, memptr );
-    if( vect.a == 0 || RealModeData( vect.s.segment, vect.s.offset, uint_8 ) == IRET ) {
-        _SwitchOff( SW_USE_MOUSE );
     }
 }
 
@@ -1288,31 +1237,6 @@ void uirefresh( void )
         _uirefresh();
     }
 }
-
-static const char ScreenOptNameTab[] = {
-    "Monochrome\0"
-    "Color\0"
-    "Colour\0"
-    "Ega43\0"
-    "Vga50\0"
-    "Overwrite\0"
-    "Page\0"
-    "Swap\0"
-    "Two\0"
-};
-
-enum {
-    OPT_MONO,
-    OPT_COLOR,
-    OPT_COLOUR,
-    OPT_EGA43,
-    OPT_VGA50,
-
-    OPT_OVERWRITE,
-    OPT_PAGE,
-    OPT_SWAP,
-    OPT_TWO
-};
 
 void SetNumLines( int num )
 {

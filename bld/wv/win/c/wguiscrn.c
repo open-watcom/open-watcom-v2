@@ -46,15 +46,28 @@
 #include "guigsysh.h"
 
 
+enum {
+    DEBUG_SCREEN,
+    USER_SCREEN,
+    UNKNOWN_SCREEN
+} ScreenState = UNKNOWN_SCREEN;
+
 extern volatile bool    BrkPending;
 
-unsigned        ScrnLines = 50;
-unsigned        FlipMech;
-unsigned        ScrnMode;
-HWND            DebuggerHwnd;
-bool            WantFast;
-bool            TrapForceHardMode = false;
-static HWND     FocusWnd;
+unsigned            ScrnLines = 50;
+HWND                DebuggerHwnd;
+bool                WantFast;
+bool                TrapForceHardMode = false;
+
+static unsigned     FlipMech;
+static unsigned     ScrnMode;
+static HWND         FocusWnd;
+
+static const char ScreenOptNameTab[] = {
+    #define pick_opt(e,t) t "\0"
+        SCREEN_OPTS()
+    #undef pick_opt
+};
 
 #if 0
 void ToggleHardMode( void )
@@ -118,12 +131,6 @@ void DbgScrnMode( void )
 {
 }
 
-enum {
-    DEBUG_SCREEN,
-    USER_SCREEN,
-    UNKNOWN_SCREEN
-} ScreenState = UNKNOWN_SCREEN;
-
 void UnknownScreen( void )
 {
     ScreenState = UNKNOWN_SCREEN;
@@ -171,32 +178,6 @@ char *GUIGetWindowClassName( void )
 {
     return( "WatcomDebugger" );
 }
-
-static const char ScreenOptNameTab[] = {
-    "Monochrome\0"
-    "Color\0"
-    "Colour\0"
-    "Ega43\0"
-    "FAstswap\0"
-    "Vga50\0"
-    "Overwrite\0"
-    "Page\0"
-    "Swap\0"
-    "Two\0"
-};
-
-enum {
-    OPT_MONO,
-    OPT_COLOR,
-    OPT_COLOUR,
-    OPT_EGA43,
-    OPT_FASTSWAP,
-    OPT_VGA50,
-    OPT_OVERWRITE,
-    OPT_PAGE,
-    OPT_SWAP,
-    OPT_TWO
-};
 
 int SwapScrnLines( void )
 {

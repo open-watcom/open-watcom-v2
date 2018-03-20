@@ -33,40 +33,7 @@
 #include "pcscrnio.h"
 
 
-extern char _A000H[];
-
-#define FONT_SIZE       8*1024
-#define VID_STATE       5
-
-#define GetBIOSData( offset, var ) \
-    movedata( 0x0040, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
-#define SetBIOSData( offset, var ) \
-    movedata( FP_SEG( &var ), FP_OFF( &var ), 0x0040, offset, sizeof( var ) );
-
-typedef enum {
-    DISP_NONE,
-    DISP_MONOCHROME,
-    DISP_CGA,
-    DISP_RESERVED1,
-    DISP_EGA_COLOUR,
-    DISP_EGA_MONO,
-    DISP_PGA,
-    DISP_VGA_MONO,
-    DISP_VGA_COLOUR,
-    DISP_RESERVED2,
-    DISP_RESERVED3,
-    DISP_MODEL30_MONO,
-    DISP_MODEL30_COLOUR
-} hw_display_type;
-
-
-typedef struct {
-     hw_display_type active;
-     hw_display_type alt;
-} display_configuration;
-
-
-extern display_configuration BIOSDevCombCode( void );
+extern unsigned BIOSDevCombCode( void );
 #pragma aux BIOSDevCombCode =                                   \
 0X55            /* push   bp                            */      \
 0XB8 0X00 0X1A  /* mov    ax,1a00                       */      \
@@ -99,11 +66,13 @@ extern signed long BIOSEGAInfo( void );
 0X5D            /* pop    bp                            */      \
         parm modify [bx cx];
 
+extern void        _ega_write( unsigned, char, char );
 #pragma aux     _ega_write =            /* write ega/vga registers */   \
                 0xef                    /* out dx,ax */                 \
                 parm [dx] [al] [ah]                                     \
                 modify exact [];
 
+extern char        _vga_read( unsigned, char );
 #pragma aux     _vga_read =             /* read vga registers */        \
                 0xee                    /* out dx,al    */              \
                 0x42                    /* inc    dx    */              \
@@ -111,6 +80,7 @@ extern signed long BIOSEGAInfo( void );
                 parm [dx] [al]                                          \
                 value [al];
 
+extern void        Fillb( unsigned, unsigned, unsigned, unsigned );
 #pragma aux Fillb =                                             \
 /*      Fillb( toseg, tooff, val, len );                */      \
 0XF3            /* rep                                  */      \
@@ -119,13 +89,8 @@ extern signed long BIOSEGAInfo( void );
         modify  [di es];
 
 
-extern void        Fillb( unsigned, unsigned, unsigned, unsigned );
-extern void        _ega_write( unsigned, char, char );
-extern char        _vga_read( unsigned, char );
-extern void        _disablev( unsigned );
-extern void        _enablev( unsigned );
-
 /* disable video */
+extern void        _disablev( unsigned );
 #pragma aux     _disablev = \
     "L1: in   al,dx"    \
         "test al,8"     \
@@ -138,6 +103,7 @@ extern void        _enablev( unsigned );
     parm [dx] modify [ax dx];
 
 /* enable video  */
+extern void        _enablev( unsigned );
 #pragma aux     _enablev = \
     "L1: in   al,dx"    \
         "test al,8"     \

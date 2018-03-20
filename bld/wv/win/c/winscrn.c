@@ -51,6 +51,9 @@
 #include "wininit.h"
 
 
+#define         NEC_20_LINES        0x01
+#define         NEC_31_LINES        0x10
+
 extern unsigned char    NECBIOSGetMode(void);
 #pragma aux NECBIOSGetMode =                                    \
 0X55            /* push   bp                            */      \
@@ -61,18 +64,21 @@ extern unsigned char    NECBIOSGetMode(void);
         modify [bx];
 
 
-#define         NEC_20_LINES        0x01
-#define         NEC_31_LINES        0x10
-
 extern volatile bool   BrkPending;
 
 bool            WantFast;
-flip_types      FlipMech;
-mode_types      ScrnMode = MD_EGA;
 int             ScrnLines = 25;
 bool            WndUseGMouse = false;
 
-static display_configuration    HWDisplay;
+static flip_types       FlipMech;
+static mode_types       ScrnMode;
+static display_config   HWDisplay;
+
+static const char ScreenOptNameTab[] = {
+    #define pick_opt(e,t) t "\0"
+        SCREEN_OPTS()
+    #undef pick_opt
+};
 
 void InitHookFunc( void )
 {
@@ -213,8 +219,11 @@ static void GetDispConfig( void )
     unsigned char       swtchs;
     unsigned char       curr_mode;
     hw_display_type     temp;
+    unsigned            dev_config;
 
-    HWDisplay = BIOSDevCombCode();
+    dev_config = BIOSDevCombCode();
+    HWDisplay.active = dev_config & 0xff;
+    HWDisplay.alt = (dev_config >> 8) & 0xff;
     if( HWDisplay.active != DISP_NONE )
         return;
     /* have to figure it out ourselves */
@@ -312,32 +321,6 @@ bool SysGUI( void )
 {
     return( false );
 }
-
-static const char ScreenOptNameTab[] = {
-    "Monochrome\0"
-    "Color\0"
-    "Colour\0"
-    "Ega43\0"
-    "FAstswap\0"
-    "Vga50\0"
-    "Overwrite\0"
-    "Page\0"
-    "Swap\0"
-    "Two\0"
-};
-
-enum {
-    OPT_MONO,
-    OPT_COLOR,
-    OPT_COLOUR,
-    OPT_EGA43,
-    OPT_FASTSWAP,
-    OPT_VGA50,
-    OPT_OVERWRITE,
-    OPT_PAGE,
-    OPT_SWAP,
-    OPT_TWO
-};
 
 int SwapScrnLines( void )
 {

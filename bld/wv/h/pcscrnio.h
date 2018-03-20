@@ -46,6 +46,15 @@
 #define CALL_INT10(n)   "push ebp" INSTR( mov ah, n ) _INT_10 "pop ebp"
 #endif
 
+#ifdef _M_I86
+#define RealModeSegmPtr( segm )         MK_FP( segm, 0 )
+#define RealModeData( segm, off, type ) *(type __far *)MK_FP( segm, off )
+#else
+#define RealModeSegmPtr( segm )         EXTENDER_RM2PM( segm, 0 )
+#define RealModeData( segm, off, type ) *(type __far *)EXTENDER_RM2PM( segm, off )
+#endif
+#define BIOSData( off, type )           RealModeData( 0x0040, off, type )
+
 #define VIDMONOINDXREG  0x03B4
 #define VIDCOLRINDXREG  0x03D4
 
@@ -53,6 +62,12 @@
 #define _graph_write( reg, val )        _ega_write( GRA_PORT, reg, val )
 #define _seq_read( reg )                _vga_read( SEQ_PORT, reg )
 #define _graph_read( reg )              _vga_read( GRA_PORT, reg )
+
+#define CURSOR_REG2INS(r)   (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
+
+#define MSMOUSE_VECTOR      0x33
+
+#define IRET                0xCF
 
 enum ega_seqencer {
     SEQ_PORT        = 0x3c4,
@@ -182,4 +197,67 @@ enum {
     BD_MODE_CTRL    = 0x65,
     BD_VID_CTRL1    = 0x87,
 };
+
+typedef enum {
+    ADAPTER_MONO = -1,  // -1
+    ADAPTER_NONE,       // 0
+    ADAPTER_COLOUR      // 1
+} adapter_type;
+
+#define DISP_TYPES() \
+    pick_disp( DISP_NONE,           ADAPTER_NONE ) \
+    pick_disp( DISP_MONOCHROME,     ADAPTER_MONO ) \
+    pick_disp( DISP_CGA,            ADAPTER_COLOUR ) \
+    pick_disp( DISP_RESERVED1,      ADAPTER_NONE ) \
+    pick_disp( DISP_EGA_COLOUR,     ADAPTER_COLOUR ) \
+    pick_disp( DISP_EGA_MONO,       ADAPTER_MONO ) \
+    pick_disp( DISP_PGA,            ADAPTER_COLOUR ) \
+    pick_disp( DISP_VGA_MONO,       ADAPTER_COLOUR ) \
+    pick_disp( DISP_VGA_COLOUR,     ADAPTER_COLOUR ) \
+    pick_disp( DISP_RESERVED2,      ADAPTER_NONE ) \
+    pick_disp( DISP_RESERVED3,      ADAPTER_NONE ) \
+    pick_disp( DISP_MODEL30_MONO,   ADAPTER_COLOUR ) \
+    pick_disp( DISP_MODEL30_COLOUR, ADAPTER_COLOUR )
+
+typedef enum {
+    #define pick_disp(e,t) e,
+        DISP_TYPES()
+    #undef pick_disp
+} hw_display_type;
+
+typedef struct {
+     hw_display_type active;
+     hw_display_type alt;
+} display_config;
+
+#ifdef __WINDOWS__
+#define SCREEN_OPTS() \
+    pick_opt( OPT_MONO,         "Monochrome" ) \
+    pick_opt( OPT_COLOR,        "Color" ) \
+    pick_opt( OPT_COLOUR,       "Colour" ) \
+    pick_opt( OPT_EGA43,        "Ega43" ) \
+    pick_opt( OPT_FASTSWAP,     "FAstswap" ) \
+    pick_opt( OPT_VGA50,        "Vga50" ) \
+    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
+    pick_opt( OPT_PAGE,         "Page" ) \
+    pick_opt( OPT_SWAP,         "Swap" ) \
+    pick_opt( OPT_TWO,          "Two" )
+#else
+#define SCREEN_OPTS() \
+    pick_opt( OPT_MONO,         "Monochrome" ) \
+    pick_opt( OPT_COLOR,        "Color" ) \
+    pick_opt( OPT_COLOUR,       "Colour" ) \
+    pick_opt( OPT_EGA43,        "Ega43" ) \
+    pick_opt( OPT_VGA50,        "Vga50" ) \
+    pick_opt( OPT_OVERWRITE,    "Overwrite" ) \
+    pick_opt( OPT_PAGE,         "Page" ) \
+    pick_opt( OPT_SWAP,         "Swap" ) \
+    pick_opt( OPT_TWO,          "Two" )
+#endif
+
+typedef enum {
+    #define pick_opt(e,t) e,
+        SCREEN_OPTS()
+    #undef pick_opt
+} screen_opt;
 
