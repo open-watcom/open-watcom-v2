@@ -34,10 +34,7 @@
 #include "machtype.h"
 
 typedef union {
-    struct {
-        addr32_off      offset;
-        addr_seg        segment;
-    }           s;
+    addr32_ptr  s;
     unsigned_32 a;
 } memptr;
 

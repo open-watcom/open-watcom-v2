@@ -31,55 +31,49 @@
 
 
 #include "pcscrnio.h"
-#include "watcom.h"
 
 
-extern void BIOSSetPage( uint_8 pagenb );
+extern void BIOSSetPage( unsigned char pagenb );
 #pragma aux BIOSSetPage =   \
         CALL_INT10( 5 )     \
     parm [al] modify exact [ah]
 
-extern uint_8 BIOSGetPage( void );
+extern unsigned char BIOSGetPage( void );
 #pragma aux BIOSGetPage =   \
-        CALL_INT10( 15 )    \
+        CALL_INT10( 0x0f )  \
     value [bh] modify exact [ax bh]
 
-extern unsigned_8 BIOSGetMode( void );
-#pragma aux BIOSGetMode =   \
-        CALL_INT10( 15 )    \
-    value [al] modify exact [ax bh]
-
-extern void BIOSSetMode( uint_8 mode );
+extern void BIOSSetMode( unsigned char mode );
 #pragma aux BIOSSetMode =   \
         CALL_INT10( 0 )     \
-    parm [al] modify exact [ah]
+    parm [al] modify exact [ax]
 
-extern uint_16 BIOSGetCurPos( uint_8 pagenb );
+extern unsigned short BIOSGetCurPos( unsigned char pagenb );
 #pragma aux BIOSGetCurPos = \
         CALL_INT10( 3 )     \
     parm [bh] value [dx] modify exact [ax cx dx]
 
-extern void BIOSSetCurPos( uint_16 rowcol, uint_8 pagenb );
+extern void BIOSSetCurPos( unsigned short rowcol, unsigned char pagenb );
 #pragma aux BIOSSetCurPos = \
         CALL_INT10( 2 )     \
     parm [dx] [bh] modify exact [ah]
 
-extern unsigned_16 BIOSGetCurTyp( unsigned_8 pagenb );
+extern unsigned short BIOSGetCurTyp( unsigned char pagenb );
 #pragma aux BIOSGetCurTyp = \
         CALL_INT10( 3 )     \
     parm [bh] value [cx] modify exact [ax cx dx]
 
-extern void BIOSSetCurTyp( unsigned_16 startend );
+extern void BIOSSetCurTyp( unsigned short startend );
 #pragma aux BIOSSetCurTyp = \
         CALL_INT10( 1 )     \
     parm [cx] modify exact [ah]
 
-extern unsigned_8 BIOSGetAttr( unsigned_8 pagenb );
+extern unsigned char BIOSGetAttr( unsigned char pagenb );
 #pragma aux BIOSGetAttr =   \
         CALL_INT10( 8 )     \
-        parm [bh] value [ah] modify exact [ax]
+    parm [bh] value [ah] modify exact [ax]
 
-extern void BIOSSetAttr( unsigned_8 attr );
+extern void BIOSSetAttr( unsigned char attr );
 #pragma aux BIOSSetAttr =   \
         "xor  cx,cx"        \
         "mov  dx,3250h"     \
@@ -87,31 +81,29 @@ extern void BIOSSetAttr( unsigned_8 attr );
         CALL_INT10( 6 )     \
     parm [bh] modify exact [ax cx dx]
 
-extern unsigned_8 BIOSGetRows( void );
+extern unsigned char BIOSGetRows( void );
 #pragma aux BIOSGetRows =   \
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \
-        CALL_INT10( 17 )    \
+        CALL_INT10( 0x11 )  \
         "inc  dl"           \
         "pop  es"           \
 /*      modify exact [ax bh cx dl] */   \
     value [dl] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
 
-extern unsigned_16 BIOSGetPoints( void );
+extern unsigned short BIOSGetPoints( void );
 #pragma aux BIOSGetPoints = \
         "push es"           \
         "mov  al,30h"       \
         "xor  bh,bh"        \
-        CALL_INT10( 17 )    \
+        CALL_INT10( 0x11 )  \
         "pop  es"           \
 /*      modify exact [ax bh cx dl] */   \
     value [cx] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
 
-extern void BIOSEGAChrSet( unsigned_8 vidroutine );
+extern void BIOSEGAChrSet( unsigned char vidroutine );
 #pragma aux BIOSEGAChrSet = \
         "xor  bl,bl"        \
-        CALL_INT10( 17 )    \
+        CALL_INT10( 0x11 )  \
     parm [al] modify exact [ah bl]
-
-

@@ -232,10 +232,8 @@ static void GetDispConfig( void )
                 HWDisplay.alt = DISP_CGA;
             }
         }
-        if( HWDisplay.active == DISP_EGA_COLOUR
-                && (curr_mode==7 || curr_mode==15)
-         || HWDisplay.active == DISP_EGA_MONO
-                && (curr_mode!=7 && curr_mode!=15) ) {
+        if( HWDisplay.active == DISP_EGA_COLOUR && (curr_mode == 7 || curr_mode == 15)
+         || HWDisplay.active == DISP_EGA_MONO && (curr_mode != 7 && curr_mode != 15) ) {
             /* EGA is not the active display */
 
             temp = HWDisplay.active;

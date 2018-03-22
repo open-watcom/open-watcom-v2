@@ -73,21 +73,21 @@
 #define CGA_CURSOR_ON       0x0607
 #define MON_CURSOR_ON       0x0b0c
 
-#define CURS_LOCATION_LOW   0xf
-#define CURS_LOCATION_HI    0xe
-#define CURS_START_SCANLINE 0xa
-#define CURS_END_SCANLINE   0xb
+#define CURS_LOCATION_LOW   0x0f
+#define CURS_LOCATION_HI    0x0e
+#define CURS_START_SCANLINE 0x0a
+#define CURS_END_SCANLINE   0x0b
 
-#define CURSOR_REG2INS(r)   (((r + 0x100)/2 + 0x100) & 0xff00) + (r & 0x00ff)
+#define CURSOR_REG2INS(r)   (((r + 0x100) / 2 + 0x100) & 0xff00) + (r & 0x00ff)
 
 #define _seq_write( reg, val )      _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )    _ega_write( GRA_PORT, reg, val )
 #define _seq_read( reg )            _ReadCRTCReg( SEQ_PORT, reg )
 #define _graph_read( reg )          _ReadCRTCReg( GRA_PORT, reg )
 
-#define VIDGetRow( vidport )	    _ReadCRTCReg( vidport, CURS_LOCATION_LOW )
+#define VIDGetRow( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_LOW )
 #define VIDSetRow( vidport, row )   _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row )
-#define VIDGetCol( vidport )	    _ReadCRTCReg( vidport, CURS_LOCATION_HI )
+#define VIDGetCol( vidport )        _ReadCRTCReg( vidport, CURS_LOCATION_HI )
 #define VIDSetCol( vidport, col )   _WriteCRTCReg( vidport, CURS_LOCATION_HI, col )
 
 #define VIDEO_VECTOR        0x10
@@ -220,6 +220,7 @@ enum {
     BD_CURR_MODE    = 0x49,
     BD_REGEN_LEN    = 0x4c,
     BD_CURPOS       = 0x50,
+    BD_ACT_VPAGE    = 0x62,
     BD_MODE_CTRL    = 0x65,
     BD_VID_CTRL1    = 0x87,
 };
@@ -296,13 +297,13 @@ extern unsigned BIOSDevCombCode( void );
         "jz short L1"           \
         "sub    bx,bx"          \
     "L1:"                       \
-    value [bx] modify exact [ax]
+    value [bx] modify exact [ax bx]
 #endif
 
 extern unsigned char BIOSGetMode( void );
 #pragma aux BIOSGetMode =       \
         CALL_INT10( 0x0f )      \
-    value [al] modify exact [ah bh];
+    value [al] modify exact [ax bh]
 
 extern long BIOSEGAInfo( void );
 #ifdef _M_I86
@@ -311,7 +312,7 @@ extern long BIOSEGAInfo( void );
         CALL_INT10( 0x12 )      \
         "mov    ax,bx"          \
         "mov    dx,cx"          \
-    value [dx ax] modify exact [bx cx]
+    value [dx ax] modify exact [ax bx cx dx]
 #else
 #pragma aux BIOSEGAInfo =   \
         "mov  bx,0ff10h"    \
@@ -322,11 +323,11 @@ extern long BIOSEGAInfo( void );
 #endif
 
 #ifdef _M_I86
-extern void DoRingBell( void );
-#pragma aux DoRingBell =    \
+extern void _DoRingBell( unsigned char );
+#pragma aux _DoRingBell =   \
         "mov    al,7"       \
         CALL_INT10( 0x0e )  \
-    modify exact [ax];
+    parm [bh] modify exact [ax]
 #endif
 
 #ifdef _M_I86
@@ -349,7 +350,7 @@ extern unsigned char _ReadCRTCReg( unsigned short vidport, unsigned char regnb )
         "out  dx,al"        \
         "inc  dx"           \
         "in   al,dx"        \
-    parm [dx] [al] value [al] modify exact [dx]
+    parm [dx] [al] value [al] modify exact [al dx]
 
 extern void _WriteCRTCReg( unsigned short vidport, unsigned char regnb, unsigned char value );
 #pragma aux _WriteCRTCReg = \
@@ -371,7 +372,7 @@ extern unsigned char _vga_read( unsigned short, unsigned char );
         "out  dx,al"        \
         "inc  dx"           \
         "in   al,dx"        \
-    parm [dx] [al] value [al] modify exact [dx]
+    parm [dx] [al] value [al] modify exact [al dx]
 
 extern void _disablev( unsigned short );
 #pragma aux _disablev =     \
