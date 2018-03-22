@@ -51,7 +51,33 @@
 #include "dbgwmac.h"
 #include "dbgwset.h"
 #include "wndmenu.h"
+#include "menudef.h"
 
+
+#define TITLE_SIZE      2
+
+#define MIN_KEY_SIZE( wnd ) (8 * WndAvgCharX( wnd )) // something big enough to click on
+
+#define WndMac( wnd ) ( (mac_window *)WndExtra( wnd ) )
+
+enum {
+    PIECE_KEY,
+    PIECE_WHERE,
+    PIECE_WHAT,
+    PIECE_TEXT,
+    PIECE_LAST
+};
+
+typedef struct {
+    unsigned            last_id;
+    wnd_row             change_row;
+    unsigned            size;
+    gui_menu_struct     *menu;
+    wnd_macro           *mac;
+    bool                press_key : 1;
+    bool                creating  : 1;
+    bool                changing  : 1;
+} mac_window;
 
 extern const char       MainTab[];
 
@@ -67,39 +93,18 @@ static char **WhatList[] = {
     LITREF_DUI( mac_command_string ),
 };
 
-#define TITLE_SIZE      2
-static char **Titles[] = { LITREF_DUI( Key_Name ), LITREF_DUI( Mac_Window ),
-                         LITREF_DUI( Macro_Type ), LITREF_DUI( Definition ) };
-
-enum {
-    PIECE_KEY,
-    PIECE_WHERE,
-    PIECE_WHAT,
-    PIECE_TEXT,
-    PIECE_LAST
+static char **Titles[] = {
+    LITREF_DUI( Key_Name ),
+    LITREF_DUI( Mac_Window ),
+    LITREF_DUI( Macro_Type ),
+    LITREF_DUI( Definition )
 };
-
-#define MIN_KEY_SIZE( wnd ) (8 * WndAvgCharX(wnd)) // something big enough to click on
 
 static gui_ord  Indents[PIECE_LAST];
 
-typedef struct {
-    unsigned            last_id;
-    wnd_row             change_row;
-    unsigned            size;
-    gui_menu_struct     *menu;
-    wnd_macro           *mac;
-    bool                press_key : 1;
-    bool                creating  : 1;
-    bool                changing  : 1;
-} mac_window;
-#define WndMac( wnd ) ( (mac_window *)WndExtra( wnd ) )
-
-#include "menudef.h"
 static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
-
 
 OVL_EXTERN const char *WndGetName( const void *data_handle, int item )
 {

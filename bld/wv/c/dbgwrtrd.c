@@ -39,12 +39,8 @@
 #include "dbgupdt.h"
 #include "dbgwglob.h"
 #include "dbgwrtrd.h"
-
-
 #include "menudef.h"
-static gui_menu_struct RunTrdMenu[] = {
-    #include "menurtrd.h"
-};
+
 
 #define RUN_THREAD_INFO_TYPE_NONE       0
 #define RUN_THREAD_INFO_TYPE_NAME       1
@@ -62,6 +58,10 @@ static int              PieceCount = 0;
 static unsigned char    Indents[MAX_PIECE_COUNT + 1];
 static unsigned char    InfoType[MAX_PIECE_COUNT];
 static char             HeaderArr[MAX_PIECE_COUNT][MAX_HEADER_SIZE + 1];
+
+static gui_menu_struct  RunTrdMenu[] = {
+    #include "menurtrd.h"
+};
 
 void InitRunThreadInfo( void )
 {

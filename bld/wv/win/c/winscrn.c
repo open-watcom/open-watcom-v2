@@ -52,8 +52,8 @@
 #include "wininit.h"
 
 
-#define TstMono()           ChkCntrlr( VIDMONOINDXREG )
-#define TstColour()         ChkCntrlr( VIDCOLRINDXREG )
+#define TstMono()       ChkCntrlr( VIDMONOINDXREG )
+#define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
 
 extern volatile bool    BrkPending;
 
@@ -177,11 +177,11 @@ static bool ChkCntrlr( unsigned port )
     bool            rtrn;
 
     curr = VIDGetRow( port );
-    VIDSetRow( port, 0x5A );
+    VIDSetRow( port, 0x5a );
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = ( VIDGetRow( port ) == 0x5A );
+    rtrn = ( VIDGetRow( port ) == 0x5a );
     VIDSetRow( port, curr );
     return( rtrn );
 }

@@ -42,9 +42,10 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
+#include "menudef.h"
 
 
-extern char             *AddrLineNum( address *addr, char *buff );
+#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
 enum {
 #ifdef OPENER_GADGET
@@ -61,13 +62,11 @@ typedef struct break_window {
     bool        toggled_break   : 1;
 } break_window;
 
-#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
+extern char             *AddrLineNum( address *addr, char *buff );
 
-#include "menudef.h"
 static gui_menu_struct BrkMenu[] = {
     #include "menubrk.h"
 };
-
 
 static brkp     *BrkGetBP( int row )
 {

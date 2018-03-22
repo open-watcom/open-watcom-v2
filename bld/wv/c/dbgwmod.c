@@ -46,12 +46,11 @@
 #include "dbgwinsp.h"
 #include "dbgwmod.h"
 #include "dbgchopt.h"
-
-
 #include "menudef.h"
-static gui_menu_struct ModMenu[] = {
-    #include "menumod.h"
-};
+
+
+#define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )
+#define ModList( mod ) ( &((mod)->___list) )
 
 enum {
     PIECE_SOURCE,
@@ -73,9 +72,9 @@ typedef struct {
     bool        all_modules : 1;
 } mod_window;
 
-#define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )
-#define ModList( mod ) ( &((mod)->___list) )
-
+static gui_menu_struct ModMenu[] = {
+    #include "menumod.h"
+};
 
 OVL_EXTERN wnd_row ModNumRows( a_window wnd )
 {

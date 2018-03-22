@@ -60,7 +60,14 @@
 #include "dbgwvar.h"
 #include "dbgchopt.h"
 #include "dipinter.h"
+#include "menudef.h"
 
+
+#define WndVar( wnd )       ((var_window *)WndExtra( wnd ))
+#define WndVarInfo( wnd )   (&WndVar( wnd )->i)
+
+#define INDENT_AMOUNT           2
+#define REASONABLE_NAME_WIDTH   30
 
 typedef struct {
     var_info        i;
@@ -81,7 +88,26 @@ typedef void            VARDIRTRTN( a_window, int );
 
 extern void             WndVarNewWindow( char * );
 
-#include "menudef.h"
+static char **VarNames[] = {
+    #define pick(e,name,wndclass,icon)    name,
+    #include "_dbgvar.h"
+    #undef pick
+};
+
+static wnd_class_wv VarWndClass[] = {
+    #define pick(e,name,wndclass,icon)    wndclass,
+    #include "_dbgvar.h"
+    #undef pick
+};
+
+static gui_resource *VarIcons[] = {
+    #define pick(e,name,wndclass,icon)    icon,
+    #include "_dbgvar.h"
+    #undef pick
+};
+
+static WNDMENU      VarMenuItem;
+
 static gui_menu_struct VarTypeMenu[] = {
     #include "mvartype.h"
 };
@@ -101,33 +127,6 @@ static gui_menu_struct VarOptMenu[] = {
 static gui_menu_struct VarMenu[] = {
     #include "menuvar.h"
 };
-
-
-#define WndVar( wnd )       ((var_window *)WndExtra( wnd ))
-#define WndVarInfo( wnd )   (&WndVar( wnd )->i)
-
-#define INDENT_AMOUNT           2
-#define REASONABLE_NAME_WIDTH   30
-
-static char **VarNames[] = {
-    #define pick(e,name,wndclass,icon)    name,
-    #include "_dbgvar.h"
-    #undef pick
-};
-
-static wnd_class_wv VarWndClass[] = {
-    #define pick(e,name,wndclass,icon)    wndclass,
-    #include "_dbgvar.h"
-    #undef pick
-};
-
-static gui_resource *VarIcons[] = {
-    #define pick(e,name,wndclass,icon)    icon,
-    #include "_dbgvar.h"
-    #undef pick
-};
-
-static WNDMENU VarMenuItem;
 
 static void     VarSetWidth( a_window wnd )
 /*

@@ -65,21 +65,11 @@
 #include "wndmenu.h"
 #include "dbgwpain.h"
 #include "dbginit.h"
+#include "menudef.h"
 
-
-extern wnd_posn         WndPosition[NUM_WNDCLS_ALL];
-extern gui_rect         WndMainRect;
-
-extern bool             UsrScrnMode( void );
-extern bool             UserScreen( void );
-extern bool             DebugScreen( void );
-extern bool             DebugScreenRecover( void );
-extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
-extern void             SetUpdateFlags( update_list );
 
 static void             WndBadCmd( a_window );
 
-#include "menudef.h"
 char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,

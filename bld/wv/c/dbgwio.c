@@ -48,18 +48,12 @@
 #include "dlgexpr.h"
 #include "dbgwglob.h"
 #include "dbgwio.h"
+#include "menudef.h"
 
 
 #define PIECE_TYPE( x )     ((x) - MENU_IO_FIRST_TYPE)
 
-static mem_type_walk_data   IOData;
-static gui_menu_struct      *IOTypeMenu = NULL;
-static gui_menu_struct      DummyMenu[1];
-
-#include "menudef.h"
-static gui_menu_struct IOMenu[] = {
-    #include "menuio.h"
-};
+#define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_READ,
@@ -80,14 +74,20 @@ typedef struct {
     io_location *list;
 } io_window;
 
-#define WndIO( wnd ) ( (io_window *)WndExtra( wnd ) )
+static mem_type_walk_data   IOData;
 
+static gui_menu_struct      *IOTypeMenu = NULL;
+
+static gui_menu_struct      DummyMenu[1];
+
+static gui_menu_struct IOMenu[] = {
+    #include "menuio.h"
+};
 
 OVL_EXTERN wnd_row IONumRows( a_window wnd )
 {
     return( WndIO( wnd )->num_rows );
 }
-
 
 static void IOAddNewAddr( a_window wnd, address *addr, int type )
 {

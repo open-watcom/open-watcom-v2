@@ -67,18 +67,14 @@
 #include "dbgwtogl.h"
 #include "dbgmad.h"
 #include "dbgchopt.h"
-
 #include "menudef.h"
 
 
-static gui_menu_struct AsmShowMenu[] = {
-    #include "masmshow.h"
-};
+#define AVG_INS_SIZE    7
 
-static gui_menu_struct AsmMenu[] = {
-    #include "menuasm.h"
-};
+#define TITLE_SIZE      1
 
+#define WndAsm( wnd ) ( (asm_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_BREAK,
@@ -89,10 +85,6 @@ enum {
     PIECE_MEMREF,
     PIECE_CURRENT = PIECE_ADDRESS
 };
-
-#define AVG_INS_SIZE    7
-
-#define TITLE_SIZE      1
 
 typedef struct {
     address     addr;
@@ -126,7 +118,16 @@ typedef struct {
     bool            source          : 1;
     bool            hex             : 1;
 } asm_window;
-#define WndAsm( wnd ) ( (asm_window *)WndExtra( wnd ) )
+
+static  void    AsmResize( a_window wnd );
+
+static gui_menu_struct AsmShowMenu[] = {
+    #include "masmshow.h"
+};
+
+static gui_menu_struct AsmMenu[] = {
+    #include "menuasm.h"
+};
 
 static bool ExactCueAt( asm_window *asw, address addr, cue_handle *ch )
 {
@@ -138,8 +139,6 @@ static bool ExactCueAt( asm_window *asw, address addr, cue_handle *ch )
         return( false );
     return( true );
 }
-
-static  void    AsmResize( a_window wnd );
 
 static void AsmSetFirst( a_window wnd, address addr, bool use_first_source )
 {

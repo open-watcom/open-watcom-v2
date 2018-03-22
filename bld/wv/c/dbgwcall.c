@@ -48,26 +48,27 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
-
-
-extern address          FindLclBlock( address addr );
-extern unsigned         LineNumLkup( address );
-
 #include "menudef.h"
-static gui_menu_struct CallMenu[] = {
-    #include "menucall.h"
-};
 
-typedef struct call_window {
-    cached_traceback    tb;
-    gui_ord             max_sym_len;
-} call_window;
-#define WndCall( wnd ) ( (call_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_SYMBOL,
     PIECE_SOURCE,
     PIECE_TABSTOP = PIECE_SYMBOL,
+};
+
+#define WndCall( wnd ) ( (call_window *)WndExtra( wnd ) )
+
+typedef struct call_window {
+    cached_traceback    tb;
+    gui_ord             max_sym_len;
+} call_window;
+
+extern address          FindLclBlock( address addr );
+extern unsigned         LineNumLkup( address );
+
+static gui_menu_struct CallMenu[] = {
+    #include "menucall.h"
 };
 
 OVL_EXTERN wnd_row CallNumRows( a_window wnd )

@@ -61,21 +61,18 @@
 #include "dbgwfil.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
+#include "menudef.h"
 
-
-extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
-extern unsigned         ExprSize( stack_entry * );
 
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord
 
-#include "menudef.h"
+#define WndFile( wnd ) ( (file_window *)WndExtra( wnd ) )
 
-static gui_menu_struct FileShowMenu[] = {
-    #include "mfilshow.h"
-};
+#define NOT_ACTIVE ((unsigned)-1)
 
-static gui_menu_struct FileMenu[] = {
-    #include "menufile.h"
+enum {
+    PIECE_BREAK,
+    PIECE_SOURCE
 };
 
 typedef struct {
@@ -95,12 +92,16 @@ typedef struct {
     bool                erase           : 1;
     bool                toggled_break   : 1;
 } file_window;
-#define WndFile( wnd ) ( (file_window *)WndExtra( wnd ) )
 
-#define NOT_ACTIVE ((unsigned)-1)
-enum {
-    PIECE_BREAK,
-    PIECE_SOURCE
+extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
+extern unsigned         ExprSize( stack_entry * );
+
+static gui_menu_struct FileShowMenu[] = {
+    #include "mfilshow.h"
+};
+
+static gui_menu_struct FileMenu[] = {
+    #include "menufile.h"
 };
 
 void    SrcJoinAsm( a_window wnd, a_window asw )

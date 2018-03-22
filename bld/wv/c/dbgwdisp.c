@@ -48,43 +48,47 @@
 #include "dbgwpain.h"
 
 
-extern gui_coord        WndScreen;
-extern gui_coord        WndMax;
-extern gui_coord        WndScale;
-extern gui_colour_set   WndColours[];
+#define DISP_OPTS() \
+    pick( OPEN,         "Open" ) \
+    pick( CLOSE,        "Close" ) \
+    pick( NEW,          "New" ) \
+    pick( MINIMIZE,     "MInimize" ) \
+    pick( MAXIMIZE,     "MAximize" ) \
+    pick( RESTORE,      "Restore" ) \
+    pick( FLOATING,     "FLoating" ) \
+    pick( FIXED,        "Fixed" )
 
-wnd_posn        WndPosition[NUM_WNDCLS_ALL];
-static char     *WndFontInfo[NUM_WNDCLS_ALL];
-gui_rect        WndMainRect;
-
-static const char   DispOptions[] =
-{
-    "Open\0"
-    "Close\0"
-    "New\0"
-    "MInimize\0"
-    "MAximize\0"
-    "Restore\0"
-    "FLoating\0"
-    "Fixed\0"
-};
+#define MISC_OPTS() \
+    pick( MISC_TOOL,    "TOolbar" ) \
+    pick( MISC_STATUS,  "Status" )
 
 typedef enum {
-    OPEN,
-    CLOSE,
-    NEW,
-    MINIMIZE,
-    MAXIMIZE,
-    RESTORE,
-    FLOATING,
-    FIXED
+    #define pick(e,t)   e,
+        DISP_OPTS()
+    #undef pick
 } disp_optn;
 
-static const char   MiscTab[] = { "TOolbar\0Status\0" };
+typedef enum {
+    #define pick(e,t)   e,
+        MISC_OPTS()
+    #undef pick
+} misc_optn;
 
-enum {
-    MISC_TOOL,
-    MISC_STATUS
+wnd_posn            WndPosition[NUM_WNDCLS_ALL];
+gui_rect            WndMainRect;
+
+static char         *WndFontInfo[NUM_WNDCLS_ALL];
+
+static const char   DispOptions[] = {
+    #define pick(e,t)   t "\0"
+        DISP_OPTS()
+    #undef pick
+};
+
+static const char   MiscTab[] = {
+    #define pick(e,t)   t "\0"
+        MISC_OPTS()
+    #undef pick
 };
 
 bool ScanStatus( void )

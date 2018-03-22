@@ -58,36 +58,16 @@
 #include "dbgwinsp.h"
 #include "dbgmad.h"
 #include "dbgwmem.h"
+#include "menudef.h"
 
-
-extern bool     DlgDataAddrFormat( char *, void *, void (*fmt)(void *,char *));
-
-typedef gui_ord (MEMHEADER)( a_window, wnd_piece );
 
 #define TITLE_SIZE      1
 
-
-static mem_type_walk_data       MemData;
-static gui_menu_struct *MemTypeMenu = NULL;
-static gui_menu_struct DummyMenu[1];
-
-#include "menudef.h"
-static gui_menu_struct MemMenu[] = {
-    #include "menumem.h"
-};
-
 #define PIECE_TYPE( x ) ((x) - MENU_MEMORY_FIRST_TYPE)
 
-static unsigned         MemByteType;
+#define WndMem( wnd ) ( (mem_window *)WndExtra( wnd ) )
 
-static  MEMHEADER       MemHeader;
-static  MEMHEADER       BinHeader;
-
-static MEMHEADER *HeadTab[] =
-{
-    MemHeader,
-    BinHeader
-};
+typedef gui_ord (MEMHEADER)( a_window, wnd_piece );
 
 typedef struct mem_backout {
     struct mem_backout *next;
@@ -133,7 +113,26 @@ typedef struct mem_window {
     bool            stack   : 1;
 } mem_window;
 
-#define WndMem( wnd ) ( (mem_window *)WndExtra( wnd ) )
+extern bool     DlgDataAddrFormat( char *, void *, void (*fmt)(void *,char *));
+
+static mem_type_walk_data   MemData;
+static unsigned             MemByteType;
+
+static MEMHEADER    MemHeader;
+static MEMHEADER    BinHeader;
+
+static MEMHEADER    *HeadTab[] = {
+    MemHeader,
+    BinHeader
+};
+
+static gui_menu_struct *MemTypeMenu = NULL;
+
+static gui_menu_struct DummyMenu[1];
+
+static gui_menu_struct MemMenu[] = {
+    #include "menumem.h"
+};
 
 static void MemValidAddr( address addr )
 {

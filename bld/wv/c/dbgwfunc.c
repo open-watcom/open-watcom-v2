@@ -51,10 +51,16 @@
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
 #include "dbgchopt.h"
-
 #include "menudef.h"
-static gui_menu_struct FuncMenu[] = {
-    #include "menufunc.h"
+
+
+#define WndFunc( wnd )  ( (func_window*)WndExtra( wnd ) )
+#define NameList( f )   ( &(f)->___n )
+
+enum {
+    PIECE_BREAK,
+    PIECE_NAME,
+    PIECE_DEMANGLED,
 };
 
 typedef struct {
@@ -66,15 +72,9 @@ typedef struct {
     bool                d2_only       : 1;
 } func_window;
 
-#define WndFunc( wnd ) ( (func_window*)WndExtra( wnd ) )
-#define NameList( f ) ( &(f)->___n )
-
-enum {
-    PIECE_BREAK,
-    PIECE_NAME,
-    PIECE_DEMANGLED,
+static gui_menu_struct FuncMenu[] = {
+    #include "menufunc.h"
 };
-
 
 OVL_EXTERN  void    FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
 {

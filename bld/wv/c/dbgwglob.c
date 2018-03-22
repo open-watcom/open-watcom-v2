@@ -43,13 +43,14 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dbgchopt.h"
-
-
-extern int              HasLinInfo( address );
-
 #include "menudef.h"
-gui_menu_struct GlobMenu[] = {
-    #include "menuglob.h"
+
+
+#define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )
+#define NameList( f ) ( &(f)->___n )
+
+enum {
+    PIECE_NAME,
 };
 
 typedef struct {
@@ -58,11 +59,10 @@ typedef struct {
     bool                d2_only : 1;
 } glob_window;
 
-#define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )
-#define NameList( f ) ( &(f)->___n )
+extern int              HasLinInfo( address );
 
-enum {
-    PIECE_NAME,
+gui_menu_struct GlobMenu[] = {
+    #include "menuglob.h"
 };
 
 static  void    GlobInit( a_window wnd )

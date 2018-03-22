@@ -126,7 +126,7 @@ static void MenuDump( int indent, int popup_num_items, gui_menu_struct *child )
     }
 }
 
-static void XDumpMenus( void )
+OVL_EXTERN void XDumpMenus( void )
 {
     wnd_class_wv    wndclass;
     char            *p;
@@ -143,7 +143,7 @@ static void XDumpMenus( void )
     MenuDump( 4, WndNumMenus, WndMainMenu );
 }
 
-static void XTimeSymComp( void )
+OVL_EXTERN void XTimeSymComp( void )
 {
     int         i, num;
 

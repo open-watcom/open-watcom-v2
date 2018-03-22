@@ -40,12 +40,8 @@
 #include "remthrd.h"
 #include "dbgupdt.h"
 #include "dbgwglob.h"
-
-
 #include "menudef.h"
-static gui_menu_struct TrdMenu[] = {
-    #include "menutrd.h"
-};
+
 
 // gud enuf for now
 #define ID_WIDTH        11
@@ -62,6 +58,9 @@ enum {
 
 static char     Indents[PIECE_LAST] = { 0, ID_WIDTH, ID_WIDTH+STATE_WIDTH };
 
+static gui_menu_struct TrdMenu[] = {
+    #include "menutrd.h"
+};
 
 static thread_state     *GetThreadRow( wnd_row row )
 {

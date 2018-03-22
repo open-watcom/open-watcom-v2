@@ -48,15 +48,10 @@
 #include "dbgwinsp.h"
 #include "dbgwmadr.h"
 #include "dbgwtogl.h"
-
-
-extern address          AddrRegIP( machine_state *regs );
-extern unsigned         GetInsSize( address addr );
-
 #include "menudef.h"
-static gui_menu_struct RegMenu[] = {
-    #include "menureg.h"
-};
+
+
+#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
 
 typedef struct {
     unsigned char           standout;
@@ -83,8 +78,6 @@ typedef struct {
     mad_type_kind           kind;
 } reg_window;
 
-#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
-
 typedef struct {
     const char              *descript;
     size_t                  max_descript;
@@ -92,6 +85,13 @@ typedef struct {
     mad_type_handle         disp_mth;
     size_t                  max_value;
 } reg_display_piece;
+
+extern address              AddrRegIP( machine_state *regs );
+extern unsigned             GetInsSize( address addr );
+
+static gui_menu_struct RegMenu[] = {
+    #include "menureg.h"
+};
 
 static bool GetDisplayPiece( reg_display_piece *disp, reg_window *reg, machine_state *mach, int i )
 {

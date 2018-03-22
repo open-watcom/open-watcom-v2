@@ -279,7 +279,7 @@ static void GetMonoConfig( unsigned char curr_mode )
     HWDisplay.active = DISP_MONOCHROME;
     if( TstColour() ) {
         if( curr_mode == 7 ) {
-            HWDisplay.alt    = DISP_CGA;
+            HWDisplay.alt = DISP_CGA;
         } else {
             HWDisplay.active = DISP_CGA;
             HWDisplay.alt = DISP_MONOCHROME;

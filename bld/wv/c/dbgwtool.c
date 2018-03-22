@@ -34,9 +34,9 @@
 #include "rcdef.h"
 #include "dbgwtool.h"
 #include "dbginit.h"
-
-
 #include "menudef.h"
+
+
 static gui_toolbar_struct ToolBar[] = {
     { "", BITMAP_GO, MENU_TOOL_GO, MENU_LIT( HELP_XGo ), MENU_LIT( TIP_XGo ) },
     { "", BITMAP_OVER, MENU_TOOL_TRACE_OVER, MENU_LIT( HELP_XOver ),

@@ -45,14 +45,16 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dbgwsrch.h"
+#include "menudef.h"
 
+
+#define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_OPENER,
     PIECE_MODULE,
     PIECE_SOURCE,
 };
-
 
 typedef struct {
     char        *source_line;
@@ -85,13 +87,10 @@ struct srch_window {
     bool        use_rx      : 1;
 };
 
-#define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
-
 extern wnd_info SrchInfo;
 
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 
-#include "menudef.h"
 static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };

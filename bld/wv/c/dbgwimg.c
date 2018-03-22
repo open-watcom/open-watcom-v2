@@ -43,9 +43,8 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgfile.h"
+#include "menudef.h"
 
-
-extern void             SetLastSym( char *to );
 
 #define TITLE_SIZE      2
 
@@ -56,13 +55,13 @@ enum {
     PIECE_LAST
 };
 
+extern void             SetLastSym( char *to );
+
 static gui_ord  Indents[PIECE_LAST];
 
-#include "menudef.h"
 static gui_menu_struct ImgMenu[] = {
     #include "menuimg.h"
 };
-
 
 static void CalcIndents( a_window wnd )
 {

@@ -49,6 +49,7 @@
 #include "dbgreg.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
+#include "menudef.h"
 
 
 enum {
@@ -58,17 +59,15 @@ enum {
     PIECE__LAST
 };
 
-static gui_ord          Indents[PIECE__LAST];
+extern event_record *EventList;
 
+static gui_ord      Indents[PIECE__LAST];
 
-#include "menudef.h"
+static int          LastEventCount;
 
 static gui_menu_struct RepMenu[] = {
     #include "menurep.h"
 };
-
-extern event_record *EventList;
-static int      LastEventCount;
 
 static void RepInitEv( event_record *ev )
 {

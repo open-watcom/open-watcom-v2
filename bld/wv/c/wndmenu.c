@@ -71,9 +71,9 @@
 #include "dlgnewp.h"
 #include "dlgcmd.h"
 #include "dlgwind.h"
-
-
 #include "menudef.h"
+
+
 static gui_menu_struct FileMenu[] = {
     #include "mmfile.h"
 };
@@ -110,7 +110,7 @@ static gui_menu_struct HelpMenu[] = {
     #include "mmhelp.h"
 };
 
-static gui_menu_struct DummyMenu;
+static gui_menu_struct DummyMenu[1];
 
 
 gui_menu_struct WndMainMenu[] = {
@@ -122,7 +122,7 @@ gui_menu_struct WndMainMenu[] = {
     MENU_CASCADE( MENU_MAIN_UNDO, MainMenuUndo, UndoMenu )
     MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuSearch, SearchMenu )
     MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuWindow, WindowMenu )
-    MENU_CASCADE( MENU_MAIN_ACTION, MainMenuAction, &DummyMenu )
+    MENU_CASCADE( MENU_MAIN_ACTION, MainMenuAction, DummyMenu )
     MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
 };
 
