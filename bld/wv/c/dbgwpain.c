@@ -43,13 +43,17 @@
 #include "dbgwpain.h"
 
 
-static gui_colour_set   *WndClassColour[NUM_WNDCLS_ALL];
-gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
+gui_colour_set          WndStatusColour = {
+    GUI_BRIGHT_WHITE,
+    GUI_BLUE
+};
 
 wnd_attr WndPlainAttr    = WND_PLAIN;
 wnd_attr WndSelectedAttr = WND_SELECTED;
 wnd_attr WndCursorAttr   = WND_SELECTED;
 wnd_attr WndTabStopAttr  = WND_TABSTOP;
+
+static gui_colour_set   *WndClassColour[NUM_WNDCLS_ALL];
 
 static gui_colour_set   WndDlgColours[] = {
     #define pick(e,f,b)     { f, b },
@@ -79,49 +83,38 @@ gui_colour_set WndColours[] = {
     { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_HOTSPOT */
     { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
 };
+
 int WndNumColours = { ArraySize( WndColours ) };
 
+#define ATTR_BITS() \
+    pick( DBG_ATTR_ACTIVE,      0x0001,    "Active" ) \
+    pick( DBG_ATTR_SELECTED,    0x0002,    "SElected" ) \
+    pick( DBG_ATTR_STANDOUT,    0x0004,    "STandout" ) \
+    pick( DBG_ATTR_DISABLED,    0x0008,    "Disabled" ) \
+    pick( DBG_ATTR_PLAIN,       0x0010,    "Plain" ) \
+    pick( DBG_ATTR_FRAME,       0x0020,    "Frame" ) \
+    pick( DBG_ATTR_ICON,        0x0040,    "ICon" ) \
+    pick( DBG_ATTR_MENU,        0x0080,    "MEnu" ) \
+    pick( DBG_ATTR_TITLE,       0x0100,    "TItle" ) \
+    pick( DBG_ATTR_BUTTON,      0x0200,    "BUtton" ) \
+    pick( DBG_ATTR_SHADOW,      0x0400,    "SHadow" )
 
 typedef enum {
-    DBG_ATTR_ACTIVE     = 0x0001,
-    DBG_ATTR_SELECTED   = 0x0002,
-    DBG_ATTR_STANDOUT   = 0x0004,
-    DBG_ATTR_DISABLED   = 0x0008,
-    DBG_ATTR_PLAIN      = 0x0010,
-    DBG_ATTR_FRAME      = 0x0020,
-    DBG_ATTR_ICON       = 0x0040,
-    DBG_ATTR_MENU       = 0x0080,
-    DBG_ATTR_TITLE      = 0x0100,
-    DBG_ATTR_BUTTON     = 0x0200,
-    DBG_ATTR_SHADOW     = 0x0400,
+    #define pick(e,v,t) e = v,
+        ATTR_BITS()
+    #undef pick
 } attr_bits;
 
 static const char AttrNameTab[] = {
-    "Active\0"
-    "SElected\0"
-    "STandout\0"
-    "Disabled\0"
-    "Plain\0"
-    "Frame\0"
-    "ICon\0"
-    "MEnu\0"
-    "TItle\0"
-    "BUtton\0"
-    "SHadow\0"
+    #define pick(e,v,t) t "\0"
+        ATTR_BITS()
+    #undef pick
 };
 
 static attr_bits AttrBits[] = {
-    DBG_ATTR_ACTIVE,
-    DBG_ATTR_SELECTED,
-    DBG_ATTR_STANDOUT,
-    DBG_ATTR_DISABLED,
-    DBG_ATTR_PLAIN,
-    DBG_ATTR_FRAME,
-    DBG_ATTR_ICON,
-    DBG_ATTR_MENU,
-    DBG_ATTR_TITLE,
-    DBG_ATTR_BUTTON,
-    DBG_ATTR_SHADOW,
+    #define pick(e,v,t) e,
+        ATTR_BITS()
+    #undef pick
 };
 
 typedef struct {
@@ -159,50 +152,37 @@ static attr_map DlgAttrMap[] = {
     { GUI_DLG_BUTTON_ACTIVE_STANDOUT,   DBG_ATTR_BUTTON+DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
 };
 
+#define COLOUR_BITS() \
+    pick( CLR_BLACK,    0x0001,    "BLAck" ) \
+    pick( CLR_BLUE,     0x0002,    "BLUe" ) \
+    pick( CLR_BRIGHT,   0x0004,    "BRIght" ) \
+    pick( CLR_BROWN,    0x0008,    "BROwn" ) \
+    pick( CLR_CYAN,     0x0010,    "Cyan" ) \
+    pick( CLR_GRAY,     0x0020,    "GRAy" ) \
+    pick( CLR_GREEN,    0x0040,    "GREEn" ) \
+    pick( CLR_GREY,     0x0080,    "GREY" ) \
+    pick( CLR_MAGENTA,  0x0100,    "MAgenta" ) \
+    pick( CLR_RED,      0x0200,    "Red" ) \
+    pick( CLR_WHITE,    0x0400,    "White" ) \
+    pick( CLR_YELLOW,   0x0800,    "Yellow" )
+
 typedef enum {
     CLR_NONE = 0,
-    CLR_BLACK           = 0x0001,
-    CLR_BLUE            = 0x0002,
-    CLR_BRIGHT          = 0x0004,
-    CLR_BROWN           = 0x0008,
-    CLR_CYAN            = 0x0010,
-    CLR_GRAY            = 0x0020,
-    CLR_GREEN           = 0x0040,
-    CLR_GREY            = 0x0080,
-    CLR_MAGENTA         = 0x0100,
-    CLR_RED             = 0x0200,
-    CLR_WHITE           = 0x0400,
-    CLR_YELLOW          = 0x0800,
+    #define pick(e,v,t) e = v,
+        COLOUR_BITS()
+    #undef pick
 } colour_bits;
 
 static const char ColourNameTab[] = {
-    "BLAck\0"
-    "BLUe\0"
-    "BRIght\0"
-    "BROwn\0"
-    "Cyan\0"
-    "GRAy\0"
-    "GREEn\0"
-    "GREY\0"
-    "MAgenta\0"
-    "Red\0"
-    "White\0"
-    "Yellow\0"
+    #define pick(e,v,t) t "\0"
+        COLOUR_BITS()
+    #undef pick
 };
 
 static colour_bits ColourBits[] = {
-    CLR_BLACK,
-    CLR_BLUE,
-    CLR_BRIGHT,
-    CLR_BROWN,
-    CLR_CYAN,
-    CLR_GRAY,
-    CLR_GREEN,
-    CLR_GREY,
-    CLR_MAGENTA,
-    CLR_RED,
-    CLR_WHITE,
-    CLR_YELLOW,
+    #define pick(e,v,t) e,
+        COLOUR_BITS()
+    #undef pick
 };
 
 typedef struct {

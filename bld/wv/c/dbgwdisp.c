@@ -45,13 +45,13 @@
 #include "dbgwdlg.h"
 #include "dbgwdisp.h"
 #include "dbgwtool.h"
+#include "dbgwpain.h"
 
 
 extern gui_coord        WndScreen;
 extern gui_coord        WndMax;
 extern gui_coord        WndScale;
 extern gui_colour_set   WndColours[];
-extern gui_colour_set   WndStatusColour;
 
 wnd_posn        WndPosition[NUM_WNDCLS_ALL];
 static char     *WndFontInfo[NUM_WNDCLS_ALL];
