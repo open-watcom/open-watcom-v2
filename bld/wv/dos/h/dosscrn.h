@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,90 +33,6 @@
 
 #include "pcscrnio.h"
 
-
-extern void        BIOSSetPage( unsigned char );
-#pragma aux BIOSSetPage =       \
-        CALL_INT10( 5 )         \
-    parm [al] modify exact [ah]
-
-
-extern unsigned char BIOSGetPage( void );
-#pragma aux BIOSGetPage =       \
-        CALL_INT10( 0x0f )      \
-    value [bh] modify exact [ax bh]
-
-
-extern void     BIOSSetMode( unsigned char );
-#pragma aux BIOSSetMode =       \
-        CALL_INT10( 0 )         \
-    parm [al] modify exact [ax]
-
-
-extern unsigned BIOSGetCurPos( unsigned char );
-#pragma aux BIOSGetCurPos =     \
-        CALL_INT10( 3 )         \
-    parm [bh] value [dx] modify exact [ax cx dx]
-
-
-extern void     BIOSSetCurPos( unsigned, unsigned char );
-#pragma aux BIOSSetCurPos =     \
-        CALL_INT10( 2 )         \
-    parm [dx] [bh] modify exact [ah]
-
-
-extern unsigned BIOSGetCurTyp( unsigned char );
-#pragma aux BIOSGetCurTyp =     \
-        CALL_INT10( 3 )         \
-    parm [bh] value [cx] modify exact [ax cx dx]
-
-
-extern void     BIOSSetCurTyp( unsigned );
-#pragma aux BIOSSetCurTyp =     \
-        CALL_INT10( 1 )         \
-    parm [cx] modify exact [ah]
-
-
-extern unsigned char    BIOSGetAttr( unsigned char );
-#pragma aux BIOSGetAttr =       \
-        CALL_INT10( 8 )         \
-    parm [bh] value [ah] modify exact [ax]
-
-
-extern void        BIOSSetAttr( unsigned char );
-#pragma aux BIOSSetAttr =       \
-        "sub    cx,cx"          \
-        "mov    dx,3250h"       \
-        "xor    al,al"          \
-        CALL_INT10( 6 )         \
-    parm [bh] modify exact [ax cx dx]
-
-
-extern unsigned char    BIOSGetRows( void );
-#pragma aux BIOSGetRows =       \
-        "push   es"             \
-        "mov    al,30h"         \
-        "xor    bh,bh"          \
-        CALL_INT10( 0x11 )      \
-        "inc    dl"             \
-        "pop    es"             \
-    value [dl] modify exact [ax bh cx dl]
-
-
-extern unsigned    BIOSGetPoints( void );
-#pragma aux BIOSGetPoints =     \
-        "push   es"             \
-        "mov    al,30h"         \
-        "xor    bh,bh"          \
-        CALL_INT10( 0x11 )      \
-        "pop    es"             \
-    value [cx] modify exact [ax bh cx dl]
-
-
-extern void        BIOSEGAChrSet( unsigned char );
-#pragma aux BIOSEGAChrSet =     \
-        "xor    bl,bl"          \
-        CALL_INT10( 0x11 )      \
-    parm [al] modify exact [ah bl]
 
 extern void        BIOSCharSet( unsigned char, unsigned char, unsigned, unsigned, unsigned, unsigned  );
 #pragma aux BIOSCharSet =       \
@@ -181,3 +98,5 @@ extern void vertsync( void );
         "jz short L1"   \
     modify exact [al dx]
 #endif
+
+extern unsigned char    ActFontTbls;

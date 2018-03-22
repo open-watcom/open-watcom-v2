@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,9 @@
 #define VIDMONOINDXREG      0x03B4
 #define VIDCOLRINDXREG      0x03D4
 
+#define ISTEXTMODE( mode )  ((mode) < 4 || (mode) == 7)
+#define ISMONOMODE( mode )  ((mode) == 7 || (mode) == 15)
+
 #define DOUBLE_DOT_CHR_SET  0x12
 #define COMPRESSED_CHR_SET  0x11
 #define USER_CHR_SET        0
@@ -78,7 +82,7 @@
 #define CURS_START_SCANLINE 0x0a
 #define CURS_END_SCANLINE   0x0b
 
-#define CURSOR_REG2INS(r)   (((r + 0x100) / 2 + 0x100) & 0xff00) + (r & 0x00ff)
+#define CURSOR_REG2INS(r)   ((((r) + 0x100U) / 2U + 0x100U) & 0xff00U) + ((r) & 0x00ffU)
 
 #define _seq_write( reg, val )      _ega_write( SEQ_PORT, reg, val )
 #define _graph_write( reg, val )    _ega_write( GRA_PORT, reg, val )
@@ -288,6 +292,23 @@ typedef enum {
     #undef pick_opt
 } screen_opt;
 
+typedef struct {
+    unsigned char           points;
+    unsigned char           mode;
+    unsigned char           swtchs;
+    unsigned short          curtyp;
+    union {
+        struct {
+            unsigned char   rows;
+            unsigned char   attr;
+        } strt;
+        struct {
+            unsigned char   page;
+            unsigned short  curpos;
+        } save;
+    };
+} screen_info;
+
 #ifdef _M_I86
 extern unsigned BIOSDevCombCode( void );
 #pragma aux BIOSDevCombCode =   \
@@ -305,21 +326,19 @@ extern unsigned char BIOSGetMode( void );
         CALL_INT10( 0x0f )      \
     value [al] modify exact [ax bh]
 
-extern long BIOSEGAInfo( void );
+extern unsigned long BIOSEGAInfo( void );
 #ifdef _M_I86
 #pragma aux BIOSEGAInfo =       \
         "mov    bx,0ff10h"      \
         CALL_INT10( 0x12 )      \
-        "mov    ax,bx"          \
-        "mov    dx,cx"          \
-    value [dx ax] modify exact [ax bx cx dx]
+    value [cx bx] modify exact [ah bx cx]
 #else
 #pragma aux BIOSEGAInfo =   \
         "mov  bx,0ff10h"    \
         CALL_INT10( 0x12 )    \
-        "shl  ebx,10h"      \
-        "mov  bx,cx"        \
-    value [ebx] modify exact [ah ebx cx]
+        "shl  ecx,10h"      \
+        "mov  cx,bx"        \
+    value [ecx] modify exact [ah bx ecx]
 #endif
 
 #ifdef _M_I86
@@ -398,3 +417,97 @@ extern void _enablev( unsigned short );
         "out  dx,al"        \
     parm [dx] modify exact [al dx]
 
+
+extern void BIOSSetPage( unsigned char pagenb );
+#pragma aux BIOSSetPage =   \
+        CALL_INT10( 5 )     \
+    parm [al] modify exact [ah]
+
+extern unsigned char BIOSGetPage( void );
+#pragma aux BIOSGetPage =   \
+        CALL_INT10( 0x0f )  \
+    value [bh] modify exact [ax bh]
+
+extern void BIOSSetMode( unsigned char mode );
+#pragma aux BIOSSetMode =   \
+        CALL_INT10( 0 )     \
+    parm [al] modify exact [ax]
+
+extern unsigned short BIOSGetCurPos( unsigned char pagenb );
+#pragma aux BIOSGetCurPos = \
+        CALL_INT10( 3 )     \
+    parm [bh] value [dx] modify exact [ax cx dx]
+
+extern void BIOSSetCurPos( unsigned short rowcol, unsigned char pagenb );
+#pragma aux BIOSSetCurPos = \
+        CALL_INT10( 2 )     \
+    parm [dx] [bh] modify exact [ah]
+
+extern unsigned short BIOSGetCurTyp( unsigned char pagenb );
+#pragma aux BIOSGetCurTyp = \
+        CALL_INT10( 3 )     \
+    parm [bh] value [cx] modify exact [ax cx dx]
+
+extern void BIOSSetCurTyp( unsigned short startend );
+#pragma aux BIOSSetCurTyp = \
+        CALL_INT10( 1 )     \
+    parm [cx] modify exact [ah]
+
+extern unsigned char BIOSGetAttr( unsigned char pagenb );
+#pragma aux BIOSGetAttr =   \
+        CALL_INT10( 8 )     \
+    parm [bh] value [ah] modify exact [ax]
+
+extern void BIOSSetAttr( unsigned char attr );
+#pragma aux BIOSSetAttr =   \
+        "xor  cx,cx"        \
+        "mov  dx,3250h"     \
+        "xor  al,al"        \
+        CALL_INT10( 6 )     \
+    parm [bh] modify exact [ax cx dx]
+
+extern unsigned char BIOSGetRows( void );
+#ifdef _M_I86
+#pragma aux BIOSGetRows =       \
+        "push   es"             \
+        "mov    al,30h"         \
+        "xor    bh,bh"          \
+        CALL_INT10( 0x11 )      \
+        "inc    dl"             \
+        "pop    es"             \
+    value [dl] modify exact [ax bh cx dl]
+#else
+#pragma aux BIOSGetRows =   \
+        "push es"           \
+        "mov  al,30h"       \
+        "xor  bh,bh"        \
+        CALL_INT10( 0x11 )  \
+        "inc  dl"           \
+        "pop  es"           \
+    value [dl] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
+#endif
+
+extern unsigned short BIOSGetPoints( void );
+#ifdef _M_I86
+#pragma aux BIOSGetPoints =     \
+        "push   es"             \
+        "mov    al,30h"         \
+        "xor    bh,bh"          \
+        CALL_INT10( 0x11 )      \
+        "pop    es"             \
+    value [cx] modify exact [ax bh cx dl]
+#else
+#pragma aux BIOSGetPoints = \
+        "push es"           \
+        "mov  al,30h"       \
+        "xor  bh,bh"        \
+        CALL_INT10( 0x11 )  \
+        "pop  es"           \
+    value [cx] modify exact [ax ebx ecx edx edi] /* workaround bug in DOS4G */
+#endif
+
+extern void BIOSEGAChrSet( unsigned char vidroutine );
+#pragma aux BIOSEGAChrSet = \
+        "xor  bl,bl"        \
+        CALL_INT10( 0x11 )  \
+    parm [al] modify exact [ah bl]

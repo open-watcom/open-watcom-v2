@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 #include "dbgmain.h"
 #include "dbginit.h"
 #include "dbgio.h"
+#include "dosscrn.h"
 
-extern void             WndRefresh( void );
 
 static void (__interrupt *_old10)();
 static void (__interrupt *_old1b)();
@@ -48,9 +49,6 @@ static void (__interrupt *_old23)();
 static void (__interrupt *_old24)();
 static void (__interrupt *_old28)();
 static void (__interrupt *orig28)();
-
-
-extern char ActFontTbls;
 
 OVL_EXTERN void __interrupt Interrupt10( union REGS r )
 {
@@ -61,6 +59,7 @@ OVL_EXTERN void __interrupt Interrupt10( union REGS r )
 }
 
 static volatile bool Pending;
+
 OVL_EXTERN void __interrupt Interrupt1b_23( void )
 {
     Pending = true;
@@ -77,6 +76,7 @@ bool TBreak( void ) {
 
 
 static char Fail;
+
 OVL_EXTERN void __interrupt Interrupt24( union REGS r )
 {
     r.h.al = Fail;

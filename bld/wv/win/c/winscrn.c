@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,21 +52,8 @@
 #include "wininit.h"
 
 
-#define NEC_20_LINES        0x01
-#define NEC_31_LINES        0x10
-
 #define TstMono()           ChkCntrlr( VIDMONOINDXREG )
 #define TstColour()         ChkCntrlr( VIDCOLRINDXREG )
-
-extern unsigned char    NECBIOSGetMode(void);
-#pragma aux NECBIOSGetMode =                                    \
-0X55            /* push   bp                            */      \
-0XB4 0X0B       /* mov    ah,b                          */      \
-0XCD 0X18       /* int    18                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ax]                                      \
-        modify [bx];
-
 
 extern volatile bool    BrkPending;
 
@@ -200,7 +188,7 @@ static bool ChkCntrlr( unsigned port )
 
 static void GetDispConfig( void )
 {
-    signed long         info;
+    unsigned long       info;
     unsigned char       colour;
     unsigned char       memory;
     unsigned char       swtchs;
@@ -232,8 +220,8 @@ static void GetDispConfig( void )
                 HWDisplay.alt = DISP_CGA;
             }
         }
-        if( HWDisplay.active == DISP_EGA_COLOUR && (curr_mode == 7 || curr_mode == 15)
-         || HWDisplay.active == DISP_EGA_MONO && (curr_mode != 7 && curr_mode != 15) ) {
+        if( HWDisplay.active == DISP_EGA_COLOUR && ISMONOMODE( curr_mode )
+         || HWDisplay.active == DISP_EGA_MONO && !ISMONOMODE( curr_mode ) ) {
             /* EGA is not the active display */
 
             temp = HWDisplay.active;
@@ -246,11 +234,11 @@ static void GetDispConfig( void )
         /* have a monochrome display */
         HWDisplay.active = DISP_MONOCHROME;
         if( TstColour() ) {
-            if( curr_mode != 7 ) {
+            if( curr_mode == 7 ) {
+                HWDisplay.alt    = DISP_CGA;
+            } else {
                 HWDisplay.active = DISP_CGA;
                 HWDisplay.alt    = DISP_MONOCHROME;
-            } else {
-                HWDisplay.alt    = DISP_CGA;
             }
         }
         return;
@@ -278,7 +266,7 @@ unsigned ConfigScreen( void )
         case DISP_EGA_MONO:
             if( ScrnLines > 25 )
                 ScrnLines = 43;
-            // fall thru
+            // fall through
         default:
             win_uisetcolor( M_EGA );
             break;

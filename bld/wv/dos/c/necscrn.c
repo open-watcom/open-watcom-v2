@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,6 @@
 
 extern unsigned inp(unsigned __port);
 extern unsigned outp(unsigned __port, unsigned __value);
-extern void WndDirty(void);
 extern void uisetcurrpage(int);
 
 flip_types              FlipMech;
@@ -310,7 +310,7 @@ void DbgScrnMode( void )
 {
     if( FlipMech == FLIP_PAGE ) {
         SetPage( NEC_DEBUG_SCREEN );
-        WndDirty();
+        WndDirty( NULL );
     }
 }
 
@@ -334,17 +334,17 @@ bool DebugScreen()
     case FLIP_SWAP:
         movedata( 0xA000, 0, SwapSeg, 0, PageSize );
         movedata( 0xA200, 0, SwapSeg, PageSize, PageSize );
-        WndDirty();
+        WndDirty( NULL );
         usr_vis = false;
         break;
     case FLIP_PAGE:
         SetPage( NEC_DEBUG_SCREEN );
-        WndDirty();
+        WndDirty( NULL );
         usr_vis = false;
         break;
     case FLIP_OVERWRITE:
         SaveBIOSSettings();
-        WndDirty();
+        WndDirty( NULL );
         usr_vis = false;
         break;
     }

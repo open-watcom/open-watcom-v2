@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1156,7 +1157,7 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle mth )
     unsigned long       mult;
     brkp                *wp;
     mad_type_info       mti;
-    uint_8              size;
+    unsigned char       size;
 
     if( !IS_BP_EXECUTE( mth ) ) {
         MADTypeInfo( mth, &mti );
