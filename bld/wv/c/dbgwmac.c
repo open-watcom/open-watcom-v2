@@ -71,7 +71,7 @@ enum {
 typedef struct {
     unsigned            last_id;
     wnd_row             change_row;
-    unsigned            size;
+    int                 num_items;
     gui_menu_struct     *menu;
     wnd_macro           *mac;
     bool                press_key : 1;
@@ -264,14 +264,14 @@ OVL_EXTERN bool MacPopupClicked( a_window wnd, gui_ctl_id id )
         *p++ = ' ';
         main_id = id - id % MAIN_MENU_MULT;
         *p++ = '{';
-        p = GetMenuLabel( wndmac->size, wndmac->menu, main_id, p, false );
+        p = GetMenuLabel( wndmac->num_items, wndmac->menu, main_id, p, false );
         *p++ = '}';
         *p++ = ' ';
         *p++ = '{';
-        p = GetMenuLabel( wndmac->size, wndmac->menu, id, p, false );
+        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
     } else {
         *p++ = '{';
-        p = GetMenuLabel( wndmac->size, wndmac->menu, id, p, false );
+        p = GetMenuLabel( wndmac->num_items, wndmac->menu, id, p, false );
     }
     if( p != NULL ) {
         *p++ = '}';
@@ -299,16 +299,16 @@ static void MacModMenu( a_window wnd, wnd_row row )
     if( mac->type == MACRO_MAIN_MENU ) {
         wndmac->last_id = 0;
         wndmac->menu = WndMainMenu;
-        wndmac->size = WndNumMenus-2;
+        wndmac->num_items = WndNumMenus - 2;
         wndmac->mac = mac;
-        WndCreateFloatingPopup( wnd, &point, wndmac->size, wndmac->menu, &dummy );
+        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     } else {
         wndmac->last_id = 0;
         wndmac->menu = info->popupmenu;
-        wndmac->size = info->popup_num_items;
+        wndmac->num_items = info->popup_num_items;
         wndmac->mac = mac;
         WndChangeMenuAll( info->popupmenu, info->popup_num_items, false, GUI_STYLE_MENU_GRAYED );
-        WndCreateFloatingPopup( wnd, &point, wndmac->size, wndmac->menu, &dummy );
+        WndCreateFloatingPopup( wnd, &point, wndmac->num_items, wndmac->menu, &dummy );
     }
 }
 

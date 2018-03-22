@@ -33,21 +33,21 @@
 #include "wndmenu1.h"
 
 
-extern wnd_info     *WndInfoTab[];
-extern const char   MainTab[];
+extern wnd_info         *WndInfoTab[];
+extern const char       MainTab[];
 
-extern void PlayDead( bool dead );
-extern char *GetMenuLabel( unsigned size, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
+extern void             PlayDead( bool dead );
+extern char             *GetMenuLabel( int num_items, gui_menu_struct *menu, gui_ctl_id id, char *buff, bool strip_amp );
 #ifdef DEADCODE
-extern int FindMenuLen( gui_menu_struct *child );
+extern int              FindMenuLen( gui_menu_struct *child );
 #endif
-extern void AccelMenuItem( gui_menu_struct *menu, bool is_main );
-extern void ProcAccel( void );
-extern void SetBrkMenuItems( void );
-extern void SetLogMenuItems( bool active );
-extern void SetTargMenuItems( void );
-extern void InitMenus( void );
-extern void FiniMenus( void );
-extern void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key );
-extern gui_menu_struct *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main );
-extern bool WndMainMenuProc( a_window wnd, gui_ctl_id id );
+extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
+extern void             ProcAccel( void );
+extern void             SetBrkMenuItems( void );
+extern void             SetLogMenuItems( bool active );
+extern void             SetTargMenuItems( void );
+extern void             InitMenus( void );
+extern void             FiniMenus( void );
+extern void             WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key );
+extern gui_menu_struct  *AddMenuAccel( const char *key, const char *cmd, wnd_class_wv wndclass, bool *is_main );
+extern bool             WndMainMenuProc( a_window wnd, gui_ctl_id id );

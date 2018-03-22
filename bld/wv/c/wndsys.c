@@ -397,7 +397,7 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     gui_menu_struct     *sub;
     curr = child;
     for( i = 0; i < size; ++i ) {
-        if( curr->child_num_items != NULL ) {
+        if( curr->child_num_items > 0 ) {
             sub = FindLocalMenu( ch, curr->child, curr->child_num_items );
             if( sub != NULL ) {
                 return( sub );

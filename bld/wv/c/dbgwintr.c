@@ -119,7 +119,7 @@ static void MenuDump( int indent, int popup_num_items, gui_menu_struct *child )
             p = StrCopy( child->hinttext, p );
             WndDlgTxt( TxtBuff );
         }
-        if( child->child_num_items != 0 ) {
+        if( child->child_num_items > 0 ) {
             MenuDump( indent + 4, child->child_num_items, child->child );
         }
         ++child;
