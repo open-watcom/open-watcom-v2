@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+extern gui_colour_set   WndStatusColour;
+
 extern void             ProcPaint( void );
 extern void             ProcPendingPaint( void );
 extern void             FiniPaint( void );

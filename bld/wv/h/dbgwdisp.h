@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+extern wnd_posn        WndPosition[];
+extern gui_rect        WndMainRect;
+
 extern bool ScanStatus( void );
 extern char *GetWndFont( a_window wnd );
 extern void WndFontHook( a_window wnd );
