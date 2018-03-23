@@ -411,6 +411,7 @@ extern wnd_switches         WndSwitches;
 extern a_window             Windows;
 extern gui_coord            WndMax;
 extern gui_coord            WndScreen;
+extern gui_coord            WndScale;
 extern bool                 WndOkToShow;
 extern bool                 WndIgnoreAllEvents;
 
