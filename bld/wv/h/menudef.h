@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#undef MENU_ITEM
-#undef MENU_CASCADE
-#undef MENU_BAR
-#undef MENU_LIT
 #define MENU_LIT( x ) ((char *)(pointer_int)DBG_DUI_MENU_##x )
-#define _DO_ITEM( a, b, c, d ) { MENU_LIT( b ), a, GUI_STYLE_MENU_ENABLED, MENU_LIT( HELP_##b ), c, d },
-#define MENU_ITEM( a, b ) _DO_ITEM( a, b, 0, 0 )
-#define MENU_CASCADE( a, b, c ) _DO_ITEM( a, b, ArraySize( c ), c )
+#define MENU_DO_ITEM( a, b, c, d ) { MENU_LIT( b ), a, GUI_STYLE_MENU_ENABLED, MENU_LIT( HELP_##b ), c, d },
+#define MENU_ITEM( a, b ) MENU_DO_ITEM( a, b, 0, 0 )
+#define MENU_CASCADE( a, b, c ) MENU_DO_ITEM( a, b, ArraySize( c ), c )
 #define MENU_BAR          { "", 0, GUI_STYLE_MENU_SEPARATOR },
