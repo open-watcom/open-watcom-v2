@@ -69,7 +69,7 @@ typedef void (SRCH_WALKER)( srch_window * );
 
 typedef struct a_cue {
     struct a_cue        *next;
-    cue_handle          *ch;
+    cue_handle          *cueh;
     char                name[1];
 } a_cue;
 
@@ -101,23 +101,23 @@ OVL_EXTERN wnd_row SrchNumRows( a_window wnd )
 }
 
 
-OVL_EXTERN walk_result AddSrcFile( cue_handle *ch, void *d )
+OVL_EXTERN walk_result AddSrcFile( cue_handle *cueh, void *d )
 {
     a_cue       *file;
     srch_window *srch = d;
     int         len;
 
-    len = DIPCueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( cueh, NULL, 0 ) + 1;
     file = WndMustAlloc( sizeof( a_cue ) + cue_SIZE + len );
-    file->ch = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
-    DIPCueFile( ch, file->name, len );
-    HDLAssign( cue, file->ch, ch );
+    file->cueh = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
+    DIPCueFile( cueh, file->name, len );
+    HDLAssign( cue, file->cueh, cueh );
     file->next = srch->file_list;
     srch->file_list = file;
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
+OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
 {
     void        *viewhndl;
     const char  *pos,*endpos;
@@ -125,10 +125,10 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
     unsigned    i;
     int         len;
 
-    viewhndl = OpenSrcFile( ch );
+    viewhndl = OpenSrcFile( cueh );
     if( viewhndl == NULL )
         return( WR_CONTINUE );
-    DIPCueFile( ch, TxtBuff, TXT_LEN );
+    DIPCueFile( cueh, TxtBuff, TXT_LEN );
     WndStatusText( TxtBuff );
     for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) != FREADLINE_ERROR; ++i ) {
         TxtBuff[len] = NULLCHAR;
@@ -139,12 +139,12 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             if( found == NULL )
                 break;
             srch->found = found;
-            found[srch->num_rows].mod = DIPCueMod( ch );
-            found[srch->num_rows].file_id = DIPCueFileId( ch );
+            found[srch->num_rows].mod = DIPCueMod( cueh );
+            found[srch->num_rows].file_id = DIPCueFileId( cueh );
             found[srch->num_rows].open = false;
             found[srch->num_rows].source_line = DupStr( TxtBuff );
             srch->num_rows++;
-            len = DIPModName( DIPCueMod( ch ), NULL, 0 );
+            len = DIPModName( DIPCueMod( cueh ), NULL, 0 );
             if( srch->max_mod_name < len )
                 srch->max_mod_name = len;
             break;
@@ -180,7 +180,7 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
     for( file = srch->file_list; file != NULL; file = file->next ) {
         if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 )
             continue;
-        SearchSrcFile( srch, file->ch );
+        SearchSrcFile( srch, file->cueh );
     }
     for( file = srch->file_list; file != NULL; file = next ) {
         next = file->next;

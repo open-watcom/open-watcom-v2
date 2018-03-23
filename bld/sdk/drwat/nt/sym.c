@@ -54,16 +54,16 @@ bool InitDip( void )
  */
 bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
-    cue_handle  *cue;
+    cue_handle  *cueh;
 
-    cue = MemAlloc( DIPHandleSize( HK_CUE ) );
-    if( DIPAddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
-        MemFree( cue );
+    cueh = MemAlloc( DIPHandleSize( HK_CUE ) );
+    if( DIPAddrCue( NO_MOD, *addr, cueh ) == SR_NONE ) {
+        MemFree( cueh );
         return( false );
     }
-    DIPCueFile( cue, fname, bufsize );
-    *line = DIPCueLine( cue );
-    MemFree( cue );
+    DIPCueFile( cueh, fname, bufsize );
+    *line = DIPCueLine( cueh );
+    MemFree( cueh );
     return( true );
 }
 

@@ -39,4 +39,4 @@ extern char_ring    **RingEnd( char_ring **owner );
 extern void         AddSourceSpec( const char *start, unsigned len );
 extern char         *SourceName( char_ring *src );
 extern char_ring    *NextSourceSpec( char_ring *curr );
-extern void         *OpenSrcFile( cue_handle *ch );
+extern void         *OpenSrcFile( cue_handle *cueh );

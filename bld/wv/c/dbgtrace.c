@@ -293,8 +293,8 @@ bool SourceStep( void )
 
 static bool CheckTraceSourceStop( bool *have_source )
 {
-    DIPHDL( cue, line );
-    DIPHDL( cue, oldline );
+    DIPHDL( cue, cueh_line );
+    DIPHDL( cue, cueh_oldline );
     DIPHDL( sym, sym );
     address                     line_addr;
     search_result               sr;
@@ -313,18 +313,18 @@ static bool CheckTraceSourceStop( bool *have_source )
         return( false );
     }
     viewhndl = NULL;
-    *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, line ) != SR_NONE;
+    *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, cueh_line ) != SR_NONE;
     if( *have_source && _IsOn( SW_CHECK_SOURCE_EXISTS ) &&
-        ( viewhndl = OpenSrcFile( line ) ) != NULL ) {
+        ( viewhndl = OpenSrcFile( cueh_line ) ) != NULL ) {
         if( viewhndl != NULL )
             FDoneSource( viewhndl );
-        line_addr = DIPCueAddr( line );
+        line_addr = DIPCueAddr( cueh_line );
         if( AddrComp( TraceState.oldaddr, line_addr ) != 0 ) {
-            if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, oldline ) != SR_NONE
-                && DIPCueLine( line ) == DIPCueLine( oldline )
-                && DIPCueColumn( line ) == DIPCueColumn( oldline )
-                && DIPCueFileId( line ) == DIPCueFileId( oldline )
-                && DIPCueMod( line ) == DIPCueMod( oldline ) ) {
+            if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, cueh_oldline ) != SR_NONE
+                && DIPCueLine( cueh_line ) == DIPCueLine( cueh_oldline )
+                && DIPCueColumn( cueh_line ) == DIPCueColumn( cueh_oldline )
+                && DIPCueFileId( cueh_line ) == DIPCueFileId( cueh_oldline )
+                && DIPCueMod( cueh_line ) == DIPCueMod( cueh_oldline ) ) {
                 /*
                     We've moved to a different starting address for the
                     cue, but all the source information is the same, so
@@ -366,7 +366,7 @@ bool CheckForDLLThunk( void )
 /***************************/
 {
     address     next_ins;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     switch( TraceState.prev_control & MDC_TYPE_MASK ) {
     case MDC_CALL:
@@ -384,7 +384,7 @@ bool CheckForDLLThunk( void )
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     switch( MADDisasmInsNext( TraceState.dd, &DbgRegs->mr, &next_ins ) ) {
     case MS_OK:
-        return( DeAliasAddrCue( NO_MOD, next_ins, line ) == SR_EXACT );
+        return( DeAliasAddrCue( NO_MOD, next_ins, cueh_line ) == SR_EXACT );
     //NYI: this next case can be removed once all the MAD's are up to snuff
     case MS_ERR|MS_UNSUPPORTED:
         return( true );
@@ -487,21 +487,21 @@ unsigned TraceCheck( unsigned conditions )
 static char DoTrace( debug_level curr_level )
 {
     unsigned    conditions;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     if( curr_level == SOURCE ) {
         if( TraceState.type == TRACE_NEXT ) {
-            if( DeAliasAddrCue( NO_MOD, GetCodeDot(), line ) == SR_NONE
-              || DIPCueAdjust( line, 1, line ) != DS_OK ) {
+            if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line ) == SR_NONE
+              || DIPCueAdjust( cueh_line, 1, cueh_line ) != DS_OK ) {
                 Warn( LIT_ENG( WARN_No_Nxt_Src_Ln ) );
                 return( STOP );
             }
-            DbgTmpBrk.loc.addr = DIPCueAddr( line );
+            DbgTmpBrk.loc.addr = DIPCueAddr( cueh_line );
             DbgTmpBrk.status.b.active = true;
         }
         if( TraceState.state == TS_ACTIVE ) {
-            DeAliasAddrCue( NO_MOD, GetCodeDot(), line );
-            TraceState.oldaddr = DIPCueAddr( line );
+            DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line );
+            TraceState.oldaddr = DIPCueAddr( cueh_line );
             TraceState.stop_on_call = false;
             TraceState.stop_now = false;
         }

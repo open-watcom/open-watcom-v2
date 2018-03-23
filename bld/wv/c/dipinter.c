@@ -260,10 +260,10 @@ search_result DeAliasAddrScope( mod_handle mh, address a, scope_block *sb )
     return( DIPAddrScope( mh, a, sb ) );
 }
 
-search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch )
+search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *cueh )
 {
     DeAlias( &a.mach );
-    return( DIPAddrCue( mh, a, ch ) );
+    return( DIPAddrCue( mh, a, cueh ) );
 }
 
 /*

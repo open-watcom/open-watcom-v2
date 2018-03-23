@@ -35,7 +35,7 @@ extern dip_status       RegLocation( machine_state *regs, const mad_reg_info *ri
 extern search_result    DeAliasAddrMod( address a, mod_handle *mh );
 extern search_result    DeAliasAddrSym( mod_handle mh, address a, sym_handle *sh );
 extern search_result    DeAliasAddrScope( mod_handle mh, address a, scope_block *sb );
-extern search_result    DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch );
+extern search_result    DeAliasAddrCue( mod_handle mh, address a, cue_handle *cueh );
 extern char             *DIPMsgText( dip_status status );
 extern void             InitDbgInfo( void );
 extern void             FiniDbgInfo( void );

@@ -766,7 +766,7 @@ walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    cue_handle          *ch = walloca( MaxHdlSize[HK_CUE] );
+    cue_handle          *cueh = walloca( MaxHdlSize[HK_CUE] );
 
     ih = MH2IH( mh );
     if( ih == NULL )
@@ -774,9 +774,8 @@ walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
     glue.walk.c = cw;
     glue.d = d;
     glue.lc = NULL;
-    ch->ii = MH_IMAGE( mh );
-    return( ih->dip->WalkFileList( IH2IIH( ih ), MH2IMH( mh ),
-                CueGlue, CH2ICH( ch ), &glue ) );
+    cueh->ii = MH_IMAGE( mh );
+    return( ih->dip->WalkFileList( IH2IIH( ih ), MH2IMH( mh ), CueGlue, CH2ICH( cueh ), &glue ) );
 }
 
 /*
@@ -1248,75 +1247,75 @@ dip_status DIPSymFreeAll( void )
 /*
  * Source Cue Information
  */
-mod_handle DIPCueMod( cue_handle *ch )
+mod_handle DIPCueMod( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
-    return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( ch ) ) ) );
+    ih = II2IH( cueh->ii );
+    return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( cueh ) ) ) );
 }
 
-size_t DIPCueFile( cue_handle *ch, char *buff, size_t buff_size )
+size_t DIPCueFile( cue_handle *cueh, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( ch ), buff, buff_size ) );
+    return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( cueh ), buff, buff_size ) );
 }
 
-cue_fileid DIPCueFileId( cue_handle *ch )
+cue_fileid DIPCueFileId( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
-    return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( ch ) ) );
+    ih = II2IH( cueh->ii );
+    return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-dip_status DIPCueAdjust( cue_handle *ch, int adj, cue_handle *ach )
+dip_status DIPCueAdjust( cue_handle *src_cueh, int adj, cue_handle *dst_cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( src_cueh->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    ach->ii = ch->ii;
-    return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( ch ), adj, CH2ICH( ach ) ) );
+    dst_cueh->ii = src_cueh->ii;
+    return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( src_cueh ), adj, CH2ICH( dst_cueh ) ) );
 }
 
-unsigned long DIPCueLine( cue_handle *ch )
+unsigned long DIPCueLine( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-unsigned DIPCueColumn( cue_handle *ch )
+unsigned DIPCueColumn( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-address DIPCueAddr( cue_handle *ch )
+address DIPCueAddr( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( NilAddr );
-    return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
 search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
-                        unsigned column, cue_handle *ch )
+                        unsigned column, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1327,11 +1326,11 @@ search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
         DIPCli( Status )( DS_ERR | DS_BAD_PARM );
         return( SR_FAIL );
     }
-    ch->ii = ih->ii;
-    return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( ch ) ) );
+    cueh->ii = ih->ii;
+    return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( cueh ) ) );
 }
 
-search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *ch )
+search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1343,22 +1342,22 @@ search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *ch )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( SR_NONE );
-    ch->ii = ih->ii;
-    return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( ch ) ) );
+    cueh->ii = ih->ii;
+    return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( cueh ) ) );
 }
 
-int DIPCueCmp( cue_handle *ch1, cue_handle *ch2 )
+int DIPCueCmp( cue_handle *cueh1, cue_handle *cueh2 )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch1->ii );
+    ih = II2IH( cueh1->ii );
     if( ih == NULL )
         return( 0 );
-    if( ch1->ii < ch2->ii )
+    if( cueh1->ii < cueh2->ii )
         return( -1 );
-    if( ch1->ii > ch2->ii )
+    if( cueh1->ii > cueh2->ii )
         return( 1 );
-    return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( ch1 ), CH2ICH( ch2 ) ) );
+    return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( cueh1 ), CH2ICH( cueh2 ) ) );
 }
 
 /*

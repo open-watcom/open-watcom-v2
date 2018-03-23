@@ -1161,22 +1161,22 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
 {
     file_info           *curr_file;
     rtn_info            *curr_rtn;
-    cue_handle          *ch;
+    cue_handle          *cueh;
     sym_handle          *sh;
     int                 index;
     mod_handle          mh;
     address             addr;
 
-    ch = alloca( DIPHandleSize( HK_CUE ) );
+    cueh = alloca( DIPHandleSize( HK_CUE ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
-    if( DIPLineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
-        if( DIPLineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) {
+    if( DIPLineCue( mh, curr_sio->curr_file->fid, row, 0, cueh ) == SR_NONE ) {
+        if( DIPLineCue( mh, curr_sio->curr_file->fid, 0, 0, cueh ) == SR_NONE ) {
             return;
         }
     }
     sh = alloca( DIPHandleSize( HK_SYM ) );
-    addr = DIPCueAddr( ch );
+    addr = DIPCueAddr( cueh );
     if( DIPAddrSym( mh, addr, sh ) == SR_NONE )
         return;
     for( index = 0; index < curr_file->rtn_count; ++index ) {

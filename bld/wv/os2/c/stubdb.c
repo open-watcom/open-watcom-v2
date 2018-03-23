@@ -235,13 +235,13 @@ static void DumpLocals( void )
 static void DumpSource( void )
 {
     char        buff[256];
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( _IsOn( SW_TASK_RUNNING ) ) {
         printf( "I don't know where the task is. It's running\n" );
     }
-    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), ch ) == SR_NONE ||
-        !DUIGetSourceLine( ch, buff, sizeof( buff ) ) ) {
+    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh ) == SR_NONE ||
+        !DUIGetSourceLine( cueh, buff, sizeof( buff ) ) ) {
         UnAsm( GetCodeDot(), buff, sizeof( buff ) );
     }
     printf( "%s\n", buff );
@@ -863,14 +863,14 @@ void DUIFiniLiterals( void )
 {
 }
 
-bool DUIGetSourceLine( cue_handle *ch, char *buff, size_t len )
+bool DUIGetSourceLine( cue_handle *cueh, char *buff, size_t len )
 {
     void        *viewhndl;
 
-    viewhndl = OpenSrcFile( ch );
+    viewhndl = OpenSrcFile( cueh );
     if( viewhndl == NULL )
         return( false );
-    len = FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len );
+    len = FReadLine( viewhndl, DIPCueLine( cueh ), 0, buff, len );
     if( len == FREADLINE_ERROR )
         len = 0;
     buff[len] = NULLCHAR;

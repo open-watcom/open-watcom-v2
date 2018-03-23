@@ -414,8 +414,8 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
  * Compares two cues, the first one being the one which information we use
  * searching for the 2nd.
  *
- * @param   cue             The first cue.
- * @param   cue2            The result cue (depends on search_rc).
+ * @param   cueh1           The first cue.
+ * @param   cueh2           The result cue (depends on search_rc).
  * @param   expected_rc     The expected search result.
  * @param   actual_rc       The actual search result.
  * @param   exp_exact_line  Set if we're to expect a matching line number.
@@ -424,39 +424,34 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
  * @param   exp_le_line     Set if we're to expect a less or equal address.
  * @param   operation       The name of the search operation.
  */
-static void CompareCues( cue_handle *cue, cue_handle *cue2,
+static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
                          search_result expected_rc, search_result actual_rc,
                          bool exp_exact_line, bool exp_le_line,
                          bool exp_exact_addr, bool exp_le_addr,
                          const char *operation )
 {
     if( actual_rc != expected_rc ) {
-        printf( "FAILED: %s returned %d instead of %d\n", operation,
-                actual_rc, expected_rc );
+        printf( "FAILED: %s returned %d instead of %d\n", operation, actual_rc, expected_rc );
     }
     if( actual_rc == SR_CLOSEST || actual_rc == SR_EXACT ) {
-        address         addr  = DIPCueAddr( cue );
-        unsigned long   line  = DIPCueLine( cue );
-        address         addr2 = DIPCueAddr( cue2 );
-        unsigned long   line2 = DIPCueLine( cue2 );
-        int             failed;
+        address         addr1 = DIPCueAddr( cueh1 );
+        unsigned long   line1 = DIPCueLine( cueh1 );
+        address         addr2 = DIPCueAddr( cueh2 );
+        unsigned long   line2 = DIPCueLine( cueh2 );
+        bool            failed;
 
-        failed  = DIPCueFileId( cue2 ) != DIPCueFileId( cue );
-        failed |= exp_exact_line && line2 != line;
-        failed |= exp_le_line && line2 <= line;
-        failed |= exp_exact_addr
-            && (    addr2.mach.segment != addr.mach.segment
-                ||  addr2.mach.offset != addr.mach.offset );
-        failed |= exp_le_addr
-            && (    addr2.mach.segment != addr.mach.segment
-                ||  addr2.mach.offset <= addr.mach.offset );
+        failed  = DIPCueFileId( cueh2 ) != DIPCueFileId( cueh1 );
+        failed |= exp_exact_line && line2 != line1;
+        failed |= exp_le_line && line2 <= line1;
+        failed |= exp_exact_addr && ( addr2.mach.segment != addr1.mach.segment || addr2.mach.offset != addr1.mach.offset );
+        failed |= exp_le_addr && ( addr2.mach.segment != addr1.mach.segment || addr2.mach.offset <= addr1.mach.offset );
         if( failed ) {
             printf( "FAILED: %s: cue2:{file=%#x line=%lu addr=%04x:%08lx}\n"
                     "       %*s != cue:{file=%#x line=%lu addr=%04x:%08lx}\n",
                     operation,
-                    DIPCueFileId( cue2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
+                    DIPCueFileId( cueh2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
                     strlen( operation ), "",
-                    DIPCueFileId( cue ), line, addr.mach.segment, (long)addr.mach.offset );
+                    DIPCueFileId( cueh1 ), line1, addr1.mach.segment, (long)addr1.mach.offset );
         }
     }
 }
@@ -468,15 +463,15 @@ static void CompareCues( cue_handle *cue, cue_handle *cue2,
  * @param   cue     The file.
  * @param   ignored Unused user argument.
  */
-static walk_result File2Callback( cue_handle *cue, void *ignored )
+static walk_result File2Callback( cue_handle *cueh1, void *ignored )
 {
     address         prev_addr = {0};
     long            prev_line = -1;
-    cue_handle      *next_cue = alloca( DIPHandleSize( HK_CUE ) );
-    cue_handle      *prev_cue = NULL;
-    cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE ) );
-    mod_handle      mod       = DIPCueMod( cue );
-    cue_fileid      file_id   = DIPCueFileId( cue );
+    cue_handle      *next_cueh = alloca( DIPHandleSize( HK_CUE ) );
+    cue_handle      *prev_cueh = NULL;
+    cue_handle      *cueh2     = alloca( DIPHandleSize( HK_CUE ) );
+    mod_handle      mod       = DIPCueMod( cueh1 );
+    cue_fileid      file_id   = DIPCueFileId( cueh1 );
     search_result   search_rc;
     char            buff[1024];
     size_t          len;
@@ -484,7 +479,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
     /* filename */
     buff[0] = '\0';
-    len = DIPCueFile( cue, buff, sizeof( buff ) );
+    len = DIPCueFile( cueh1, buff, sizeof( buff ) );
     if( len > 0 ) {
         printf( " %lx %s\n", file_id, buff );
     } else {
@@ -493,16 +488,16 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
     /* check the LineCue function */
     if( Opts.do_cue_tests ) {
-        search_rc = DIPLineCue( mod, file_id, 0, 0, cue2 );
-        CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, true, false,
+        search_rc = DIPLineCue( mod, file_id, 0, 0, cueh2 );
+        CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false,
                      "DIPLineCue(,,0,)" );
     }
 
     /* lines */
     do {
-        long        line   = DIPCueLine( cue );
-        unsigned    column = DIPCueColumn( cue );
-        address     addr   = DIPCueAddr( cue );
+        long        line   = DIPCueLine( cueh1 );
+        unsigned    column = DIPCueColumn( cueh1 );
+        address     addr   = DIPCueAddr( cueh1 );
 
 
         printf( "  Line %5ld ", line );
@@ -516,39 +511,39 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
         /* do tests */
         if( Opts.do_cue_tests ) {
-            if( DIPCueFileId( cue ) !=  file_id ) {
+            if( DIPCueFileId( cueh1 ) !=  file_id ) {
                 printf( "ERROR: file id changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueFileId( cue ), (long)file_id );
+                        (long)DIPCueFileId( cueh1 ), (long)file_id );
             }
-            if( DIPCueMod( cue ) !=  mod ) {
+            if( DIPCueMod( cueh1 ) !=  mod ) {
                 printf( "ERROR: module changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueMod( cue ), (long)file_id );
+                        (long)DIPCueMod( cueh1 ), (long)file_id );
             }
 
             /* line searches */
-            search_rc = DIPLineCue( mod, file_id, line, 0, cue2 );
-            CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, false, false,
+            search_rc = DIPLineCue( mod, file_id, line, 0, cueh2 );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false,
                          "DIPLineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
-                search_rc = DIPLineCue( mod, file_id, line - 1, 0, cue2 );
-                CompareCues( prev_cue, cue2,
+                search_rc = DIPLineCue( mod, file_id, line - 1, 0, cueh2 );
+                CompareCues( prev_cueh, cueh2,
                              prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
                              search_rc, true, false, false, false,
                              "DIPLineCue(,,n-1,)" );
             }
 
             /* address searches */
-            search_rc = DIPAddrCue( mod, addr, cue2 );
-            CompareCues( cue, cue2, SR_EXACT, search_rc, false, false, true, false,
+            search_rc = DIPAddrCue( mod, addr, cueh2 );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false,
                          "DIPAddrCue(,,n,)" );
         }
 
 
         /* next */
-        rc = DIPCueAdjust( cue, 1, next_cue );
-        prev_cue  = cue;
-        cue       = next_cue;
-        next_cue  = prev_cue;
+        rc = DIPCueAdjust( cueh1, 1, next_cueh );
+        prev_cueh  = cueh1;
+        cueh1      = next_cueh;
+        next_cueh  = prev_cueh;
         prev_addr = addr;
         prev_line = line;
     } while( rc == DS_OK );

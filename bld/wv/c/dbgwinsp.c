@@ -93,15 +93,15 @@ typedef struct cue_mod {
     bool        found;
 } cue_mod;
 
-OVL_EXTERN walk_result CheckFirstFile( cue_handle *ch, void *_d )
+OVL_EXTERN walk_result CheckFirstFile( cue_handle *cueh, void *_d )
 {
     cue_mod     *d = _d;
     char        *buff;
     unsigned    len;
 
-    len = DIPCueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( cueh, NULL, 0 ) + 1;
     _AllocA( buff, len );
-    DIPCueFile( ch, buff, len );
+    DIPCueFile( cueh, buff, len );
     if( stricmp( buff, d->file ) == 0 ) {
         d->found = true;
     }
@@ -134,7 +134,7 @@ void WndFileInspect( const char *file, bool binary )
     file_handle         fh;
     void                *viewhndl;
     mod_handle          mod;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     viewhndl = NULL;
     if( binary ) {
@@ -147,15 +147,15 @@ void WndFileInspect( const char *file, bool binary )
         if( mod == NO_MOD ) {
             mod = FindFileMod( file );
         }
-        if( FindFirstCue( mod, ch ) ) {
-            viewhndl = OpenSrcFile( ch );
+        if( FindFirstCue( mod, cueh ) ) {
+            viewhndl = OpenSrcFile( cueh );
         } else {
             viewhndl = FOpenSource( file, NO_MOD, 0 );
-            ch = NULL;
+            cueh = NULL;
         }
         if( viewhndl == NULL )
             Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
-        DoWndFileOpen( file, viewhndl, ch, false, false, WND_FILE );
+        DoWndFileOpen( file, viewhndl, cueh, false, false, WND_FILE );
     }
 }
 
@@ -252,7 +252,7 @@ static  a_window        DoWndSrcInspect( address addr, bool existing )
     a_window    wnd;
 //    bool        nil;
     mod_handle  mod;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     a_window    active;
 
     active = WndFindActive();
@@ -267,10 +267,10 @@ static  a_window        DoWndSrcInspect( address addr, bool existing )
     }
     if( wnd == NULL ) {
         if( DeAliasAddrMod( addr, &mod ) == SR_NONE
-         || DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-            ch = NULL;
+         || DeAliasAddrCue( mod, addr, cueh ) == SR_NONE ) {
+            cueh = NULL;
         }
-        wnd = DoWndSrcOpen( ch, existing );
+        wnd = DoWndSrcOpen( cueh, existing );
     }
     if( !SrcMoveDot( wnd, addr ) || !SrcHasFileOpen( wnd ) ) {
         if( active != NULL )
@@ -311,11 +311,11 @@ void WndNewSrcInspect( address addr )
 a_window WndModInspect( mod_handle mod )
 {
     a_window    wnd;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     wnd = WndFindExisting( WND_SOURCE );
-    if( wnd == NULL && DIPLineCue( mod, 0, 0, 0, ch ) != SR_NONE ) {
-        wnd = DoWndSrcOpen( ch, true );
+    if( wnd == NULL && DIPLineCue( mod, 0, 0, 0, cueh ) != SR_NONE ) {
+        wnd = DoWndSrcOpen( cueh, true );
     }
     if( wnd != NULL ) {
         SrcMoveDot( wnd, ModFirstAddr( mod ) );

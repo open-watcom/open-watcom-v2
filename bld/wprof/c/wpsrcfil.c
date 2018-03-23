@@ -90,7 +90,7 @@ wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
     wp_srcfile *        wpsrc_file;
     void *              src_file;
     mod_info *          curr_mod;
-    cue_handle *        ch;
+    cue_handle *        cueh;
     location_list       ll;
     int                 line;
 
@@ -117,9 +117,9 @@ wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
     wpsrc_file->src_file = src_file;
     curr_sio->src_file = wpsrc_file;
     if( DIPSymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
-        ch = alloca( DIPHandleSize( HK_CUE ) );
-        DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
-        wpsrc_file->rtn_line = DIPCueLine( ch );
+        cueh = alloca( DIPHandleSize( HK_CUE ) );
+        DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, cueh );
+        wpsrc_file->rtn_line = DIPCueLine( cueh );
     }
     setSrcLineData( wpsrc_file, curr_sio, curr_mod, curr_file, curr_rtn );
     line = 1;
@@ -170,7 +170,7 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
     massgd_sample_addr      *samp_data;
     wp_srcline              *lines;
     rtn_info                *rtn_rover;
-    cue_handle              *ch;
+    cue_handle              *cueh;
     clicks_t                click_index;
     unsigned long           last_srcline;
     unsigned long           new_line;
@@ -179,7 +179,7 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
     int                     count;
     int                     count2;
 
-    ch = alloca( DIPHandleSize( HK_CUE ) );
+    cueh = alloca( DIPHandleSize( HK_CUE ) );
     lines = NULL;
     line_index = -1;
     last_srcline = 0;
@@ -198,9 +198,9 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
         }
         while( count2-- > 0 ) {
             samp_data = WPGetMassgdSampData( curr_sio, click_index );
-            if( DIPAddrCue( curr_mod->mh, *samp_data->raw, ch ) != SR_NONE ) {
-                if( DIPCueFileId( ch ) == curr_file->fid ) {
-                    new_line = DIPCueLine( ch );
+            if( DIPAddrCue( curr_mod->mh, *samp_data->raw, cueh ) != SR_NONE ) {
+                if( DIPCueFileId( cueh ) == curr_file->fid ) {
+                    new_line = DIPCueLine( cueh );
                 }
             }
             if( last_srcline != new_line || line_index == -1 ) {

@@ -317,17 +317,17 @@ char *LineAddr( address  *addr, char *buff, size_t buff_len )
 {
     mod_handle          mod;
     char                *end;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     AddrFloat( addr );
     if( DeAliasAddrMod( *addr, &mod ) == SR_NONE )
         return( NULL );
-    if( DeAliasAddrCue( mod, *addr, line ) == SR_NONE )
+    if( DeAliasAddrCue( mod, *addr, cueh_line ) == SR_NONE )
         return( NULL );
     end = buff + buff_len;
     buff += DIPModName( mod, buff, buff_len - 1 );
     *buff++ = '@';
-    buff = CnvULongDec( DIPCueLine( line ), buff, end - buff );
+    buff = CnvULongDec( DIPCueLine( cueh_line ), buff, end - buff );
     *buff = NULLCHAR;
     return( buff );
 }

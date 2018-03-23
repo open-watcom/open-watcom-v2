@@ -244,7 +244,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
 /********************************************************************/
 {
     file_info       *sym_file;
-    cue_handle      *ch;
+    cue_handle      *cueh;
     cue_fileid      fid;
     int             file_count;
     int             count;
@@ -253,13 +253,13 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     if( DIPSymLocation( sym, NULL, &ll ) != DS_OK ) {
         return( curr_mod->mod_file[0] );
     }
-    ch = alloca( DIPHandleSize( HK_CUE ) );
-    switch( DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, ch ) ) {
+    cueh = alloca( DIPHandleSize( HK_CUE ) );
+    switch( DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, cueh ) ) {
     case SR_NONE:
     case SR_FAIL:
         return( curr_mod->mod_file[0] );
     }
-    fid = DIPCueFileId( ch );
+    fid = DIPCueFileId( cueh );
     file_count = curr_mod->file_count;
     for( count = 0; count < file_count; ++count ) {
         sym_file = curr_mod->mod_file[count];
@@ -269,10 +269,10 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     }
     curr_mod->file_count++;
     curr_mod->mod_file = ProfRealloc( curr_mod->mod_file, curr_mod->file_count * sizeof( pointer ) );
-    count = DIPCueFile( ch, NULL, 0 ) + 1;
+    count = DIPCueFile( cueh, NULL, 0 ) + 1;
     sym_file = ProfCAlloc( sizeof( file_info ) + count );
     sym_file->fid = fid;
-    DIPCueFile( ch, sym_file->name, count );
+    DIPCueFile( cueh, sym_file->name, count );
     initRoutineInfo( sym_file );
     curr_mod->mod_file[file_count] = sym_file;
     return( sym_file );

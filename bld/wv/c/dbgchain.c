@@ -141,7 +141,7 @@ OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     call_chain  *chain;
     traceback   *curr;
     mad_disasm_data     *dd;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     cached_traceback *tb = _tb;
 
     execution = entry->lc.execution;
@@ -166,8 +166,8 @@ OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     chain->open = false;
     chain->source_line = NULL;
     chain->symbol = NULL;
-    if( DeAliasAddrCue( NO_MOD, execution, ch ) != SR_NONE ) {
-        chain->source_line = CopySourceLine( ch );
+    if( DeAliasAddrCue( NO_MOD, execution, cueh ) != SR_NONE ) {
+        chain->source_line = CopySourceLine( cueh );
     }
     CnvNearestAddr( chain->lc.execution, TxtBuff, TXT_LEN );
     DbgFree( chain->symbol );

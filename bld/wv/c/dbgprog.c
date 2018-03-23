@@ -672,8 +672,8 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
     mod_handle  himage, mod;
     bool        ok;
     address     addr;
-    DIPHDL( cue, ch );
-    DIPHDL( cue, ch2 );
+    DIPHDL( cue, cueh );
+    DIPHDL( cue, cueh2 );
     remap_return        rc = REMAP_REMAPPED;
 
     if( !bp->status.b.unmapped )
@@ -699,11 +699,11 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
         if( !ok )
             return( REMAP_ERROR );
         if( bp->cue_diff != 0 ) {
-            if( DeAliasAddrCue( mod, addr, ch ) != SR_EXACT )
+            if( DeAliasAddrCue( mod, addr, cueh ) != SR_EXACT )
                 return( REMAP_ERROR );
-            if( DIPLineCue( mod, DIPCueFileId( ch ), DIPCueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
+            if( DIPLineCue( mod, DIPCueFileId( cueh ), DIPCueLine( cueh ) + bp->cue_diff, 0, cueh2 ) != SR_EXACT )
                 return( REMAP_ERROR );
-            addr = DIPCueAddr( ch2 );
+            addr = DIPCueAddr( cueh2 );
         }
         if( bp->addr_diff != 0 ) {
             addr.mach.offset += bp->addr_diff;

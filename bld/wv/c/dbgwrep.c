@@ -71,10 +71,10 @@ static gui_menu_struct RepMenu[] = {
 
 static void RepInitEv( event_record *ev )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     if( ev->cue == NULL ) {
-        if( DeAliasAddrCue( NO_MOD, ev->ip, ch ) != SR_NONE ) {
-            ev->cue = CopySourceLine( ch );
+        if( DeAliasAddrCue( NO_MOD, ev->ip, cueh ) != SR_NONE ) {
+            ev->cue = CopySourceLine( cueh );
         }
         if( ev->cue == NULL ) {
             UnAsm( ev->ip, TxtBuff, TXT_LEN );

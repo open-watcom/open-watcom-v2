@@ -519,7 +519,7 @@ address SetBreakPointInFile( char *filename,int line_num )
     int                 row;
     char                mod_name[200];
     bool                bp_handled = false;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     // Line numbers in Window start from 0, so we'll subtract one
     line_num = line_num - 1;
@@ -531,9 +531,9 @@ address SetBreakPointInFile( char *filename,int line_num )
         if( IsCmdEqualCmd2( mod_name, filename ) ) {
             ShowDebuggerMsg( mod_name );
             mod_address = ModFirstAddr( ModListMod ( &list, row ) );
-            if( DeAliasAddrCue( ModListMod ( &list, row ), mod_address, ch ) == SR_NONE ) {
+            if( DeAliasAddrCue( ModListMod ( &list, row ), mod_address, cueh ) == SR_NONE ) {
             } else {
-                bp_address = GetRowAddrDirectly( DIPCueMod( ch ), DIPCueFileId( ch ), line_num, false );
+                bp_address = GetRowAddrDirectly( DIPCueMod( cueh ), DIPCueFileId( cueh ), line_num, false );
                 if( !IS_NIL_ADDR( bp_address ) ) {
                     bp = AddBreak( bp_address );
                     bp_handled = true;
@@ -745,13 +745,13 @@ is broken
 void DumpSource( void )
 {
     char        buff[256];
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( _IsOn( SW_TASK_RUNNING ) ) {
         ShowDebuggerMsg( "I don't know where the task is.  It's running\n" );
     }
-    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), ch ) == SR_NONE ||
-        !DUIGetSourceLine( ch, buff, sizeof( buff ) ) ) {
+    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh ) == SR_NONE ||
+        !DUIGetSourceLine( cueh, buff, sizeof( buff ) ) ) {
         UnAsm( GetCodeDot(), buff, sizeof( buff ) );
     }
     printf( "%s\n", buff );
@@ -1937,14 +1937,14 @@ void DUIFiniLiterals( void )
 {
 }
 
-bool DUIGetSourceLine( cue_handle *ch, char *buff, size_t len )
+bool DUIGetSourceLine( cue_handle *cueh, char *buff, size_t len )
 {
     void        *viewhndl;
 
-    viewhndl = OpenSrcFile( ch );
+    viewhndl = OpenSrcFile( cueh );
     if( viewhndl == NULL )
         return( false );
-    len = FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len );
+    len = FReadLine( viewhndl, DIPCueLine( cueh ), 0, buff, len );
     if( len == FREADLINE_ERROR )
         len = 0;
     buff[len] = NULLCHAR;

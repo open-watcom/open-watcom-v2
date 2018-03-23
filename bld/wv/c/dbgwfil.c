@@ -146,11 +146,11 @@ bool    SrcIsTracking( a_window wnd )
 
 static address GetRowAddr( file_window *file, wnd_row row, bool exact )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( file->mod == NO_MOD || row < 0 )
         return( NilAddr );
-    switch( DIPLineCue( file->mod, file->file_id, row + 1, 0, ch ) ) {
+    switch( DIPLineCue( file->mod, file->file_id, row + 1, 0, cueh ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:
@@ -158,7 +158,7 @@ static address GetRowAddr( file_window *file, wnd_row row, bool exact )
             return( NilAddr );
         break;
     }
-    return( DIPCueAddr( ch ) );
+    return( DIPCueAddr( cueh ) );
 }
 
 
@@ -432,7 +432,7 @@ OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
     address     addr;
     brkp        *bp;
     bool        curr;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     line->text = LIT_ENG( Empty );
     if( file->viewhndl == NULL && DIPModHasInfo( file->mod, HK_CUE ) != DS_OK ) {
@@ -465,9 +465,9 @@ OVL_EXTERN  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
         }
         if( file->viewhndl == NULL ) {
             Format( TxtBuff, LIT_DUI( No_Source_Line ), row + 1 );
-            if( DIPLineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
-                if( (DIPCueAdjust( ch, -1, ch ) & DS_ERR) ) {
-                    file->eof = DIPCueLine( ch );
+            if( DIPLineCue( file->mod, file->file_id, 0, 0, cueh ) != SR_NONE ) {
+                if( (DIPCueAdjust( cueh, -1, cueh ) & DS_ERR) ) {
+                    file->eof = DIPCueLine( cueh );
                 }
             }
             return( true );
@@ -517,11 +517,11 @@ static void SeekToTheEnd( file_window *file )
 
 static unsigned ActiveLine( void )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
-    if( DeAliasAddrCue( ContextMod, Context.execution, ch ) == SR_NONE )
+    if( DeAliasAddrCue( ContextMod, Context.execution, cueh ) == SR_NONE )
         return( 0 );
-    return( DIPCueLine( ch ) - 1 );
+    return( DIPCueLine( cueh ) - 1 );
 }
 
 
@@ -557,7 +557,7 @@ static void FileSetTitle( a_window wnd, mod_handle mod )
     WndSetTitle( wnd, TxtBuff );
 }
 
-static void FileTrack( a_window wnd, cue_handle *ch )
+static void FileTrack( a_window wnd, cue_handle *cueh )
 {
     unsigned    active, old_active;
     unsigned    end_line;
@@ -568,12 +568,12 @@ static void FileTrack( a_window wnd, cue_handle *ch )
     wnd_row     curr_row;
     wnd_piece   curr_piece;
 
-    if( ch == NULL ) {
+    if( cueh == NULL ) {
         mod = NO_MOD;
         id = 0;
     } else {
-        mod = DIPCueMod( ch );
-        id = DIPCueFileId( ch );
+        mod = DIPCueMod( cueh );
+        id = DIPCueFileId( cueh );
     }
     if( file->viewhndl == NULL
       || file->mod != mod
@@ -587,7 +587,7 @@ static void FileTrack( a_window wnd, cue_handle *ch )
         if( file->mod == NO_MOD ) {
             file->viewhndl = NULL;
         } else {
-            file->viewhndl = OpenSrcFile( ch );
+            file->viewhndl = OpenSrcFile( cueh );
         }
         FileSetTitle( wnd, mod );
         SeekToTheEnd( file );
@@ -635,7 +635,7 @@ bool    SrcMoveDot( a_window wnd, address addr )
     unsigned    line;
     mod_handle  mod;
     file_window *file;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( wnd == NULL )
         return( false );
@@ -647,22 +647,22 @@ bool    SrcMoveDot( a_window wnd, address addr )
         return( false );
     }
     DeAliasAddrMod( addr, &mod );
-    if( DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-        if( DIPLineCue( mod, 0, 0, 0, ch ) == SR_NONE ) {
+    if( DeAliasAddrCue( mod, addr, cueh ) == SR_NONE ) {
+        if( DIPLineCue( mod, 0, 0, 0, cueh ) == SR_NONE ) {
             return( false );
         }
     }
-    line = DIPCueLine( ch );
-    if( mod != file->mod || DIPCueFileId( ch ) != file->file_id ) {
+    line = DIPCueLine( cueh );
+    if( mod != file->mod || DIPCueFileId( cueh ) != file->file_id ) {
         if( !file->track )
             return( false );
-        FileTrack( wnd, ch );
+        FileTrack( wnd, cueh );
     }
     --line;
     WndScrollAbs( wnd, line ); //
     WndMoveCurrent( wnd, line, PIECE_SOURCE );
     FileSetDotAddr( wnd, addr );
-    FileSetTitle( wnd, DIPCueMod( ch ) );
+    FileSetTitle( wnd, DIPCueMod( cueh ) );
     return( true );
 }
 
@@ -670,16 +670,16 @@ a_window SrcWndFind( a_window wnd, address addr, bool track )
 {
     a_window    new;
     mod_handle  mod;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( wnd == NULL ) {
         if( DeAliasAddrMod( addr, &mod ) == SR_NONE ) {
             new = NULL;
         } else {
-            if( DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-                ch = NULL;
+            if( DeAliasAddrCue( mod, addr, cueh ) == SR_NONE ) {
+                cueh = NULL;
             }
-            new = DoWndSrcOpen( ch, track );
+            new = DoWndSrcOpen( cueh, track );
         }
     } else {
         WndRestoreToFront( wnd );
@@ -724,11 +724,11 @@ static void     FileActive( a_window wnd, mod_handle mod )
 
 static  void    FileNewIP( a_window wnd )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( WndFile( wnd )->track ) {
-        if( DeAliasAddrCue( ContextMod, Context.execution, ch ) != SR_NONE ) {
-            FileTrack( wnd, ch );
+        if( DeAliasAddrCue( ContextMod, Context.execution, cueh ) != SR_NONE ) {
+            FileTrack( wnd, cueh );
         } else {
             FileTrack( wnd, NULL );
         }
@@ -749,7 +749,7 @@ OVL_EXTERN void FileRefresh( a_window wnd )
 {
     file_window *file = WndFile( wnd );
     address     dotaddr;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( UpdateFlags & UP_SYM_CHANGE ) {
         if( file->mod != NO_MOD )
@@ -764,9 +764,9 @@ OVL_EXTERN void FileRefresh( a_window wnd )
     }
     if( (UpdateFlags & (UP_NEW_SRC | UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
         ClearSrcFile( file );
-        if( DIPLineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
+        if( DIPLineCue( file->mod, file->file_id, 0, 0, cueh ) != SR_NONE ) {
             dotaddr = file->dotaddr;
-            FileTrack( wnd, ch );
+            FileTrack( wnd, cueh );
             SrcMoveDot( wnd, dotaddr );
         }
     }
@@ -839,7 +839,7 @@ wnd_info FileInfo = {
 };
 
 a_window    DoWndFileOpen( const char *name, void *viewhndl,
-                                        cue_handle *ch, bool track,
+                                        cue_handle *cueh, bool track,
                                         bool erase, wnd_class_wv wndclass )
 {
     file_window *file;
@@ -848,14 +848,14 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
 
     file = WndMustAlloc( sizeof( file_window ) );
     file->viewhndl = viewhndl;
-    if( ch == NULL ) {
+    if( cueh == NULL ) {
         file->mod = NO_MOD;
         file->file_id = 0;
         line = 0;
     } else {
-        file->mod = DIPCueMod( ch );
-        file->file_id = DIPCueFileId( ch );
-        line = DIPCueLine( ch );
+        file->mod = DIPCueMod( cueh );
+        file->file_id = DIPCueFileId( cueh );
+        line = DIPCueLine( cueh );
     }
     file->track = false;
     file->erase = erase;
@@ -866,8 +866,8 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndclass, file, &SrcIcon );
     if( wnd == NULL )
         return( wnd );
-    if( ch != NULL ) {
-        FileSetDotAddr( wnd, DIPCueAddr( ch ) );
+    if( cueh != NULL ) {
+        FileSetDotAddr( wnd, DIPCueAddr( cueh ) );
         FileSetTitle( wnd, file->mod );
     } else {
         FileSetDotAddr( wnd, NilAddr );
@@ -888,25 +888,24 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     return( wnd );
 }
 
-static  a_window    SrcFileOpen( cue_handle *ch,
-                                bool track, bool erase, mod_handle mod )
+static  a_window    SrcFileOpen( cue_handle *cueh, bool track, bool erase, mod_handle mod )
 {
     a_window    wnd;
     file_window *file;
     void        *viewhndl;
 
-    if( ch == NULL ) {
+    if( cueh == NULL ) {
         viewhndl = NULL;
     } else {
-        viewhndl = OpenSrcFile( ch );
+        viewhndl = OpenSrcFile( cueh );
     }
-    wnd = DoWndFileOpen( LIT_DUI( WindowSource ), viewhndl, ch,
+    wnd = DoWndFileOpen( LIT_DUI( WindowSource ), viewhndl, cueh,
                            track, erase, track ? WND_SOURCE : WND_FILE );
     if( wnd == NULL )
         return( wnd );
     file = WndFile( wnd );
     file->mod = mod;
-    if( ch == NULL ) {
+    if( cueh == NULL ) {
         AsmNewSrcNotify( wnd, mod, file->track );
     } else {
         AsmNewSrcNotify( wnd, file->mod, file->track );
@@ -915,9 +914,9 @@ static  a_window    SrcFileOpen( cue_handle *ch,
 }
 
 
-a_window DoWndSrcOpen( cue_handle *ch, bool track )
+a_window DoWndSrcOpen( cue_handle *cueh, bool track )
 {
-    return( SrcFileOpen( ch, track, false, ch == NULL ? NO_MOD : DIPCueMod( ch ) ) );
+    return( SrcFileOpen( cueh, track, false, cueh == NULL ? NO_MOD : DIPCueMod( cueh ) ) );
 }
 
 
@@ -925,16 +924,16 @@ a_window WndSrcOpen( void )
 {
     mod_handle  mod;
     address     addr;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     addr = GetCodeDot();
     if( IS_NIL_ADDR( addr ) ) {
         addr = Context.execution;
     }
-    if( DeAliasAddrMod( addr, &mod ) == SR_NONE || DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-        ch = NULL;
+    if( DeAliasAddrMod( addr, &mod ) == SR_NONE || DeAliasAddrCue( mod, addr, cueh ) == SR_NONE ) {
+        cueh = NULL;
     }
-    return( SrcFileOpen( ch, true, false, mod ) );
+    return( SrcFileOpen( cueh, true, false, mod ) );
 }
 
 

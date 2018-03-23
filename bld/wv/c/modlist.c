@@ -189,10 +189,10 @@ void ModListName( const module_list *list, int i, char *buff )
 address ModFirstAddr( mod_handle mod )
 {
     address     addr;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
-    if( FindFirstCue( mod, ch ) ) {
-        addr = DIPCueAddr( ch );
+    if( FindFirstCue( mod, cueh ) ) {
+        addr = DIPCueAddr( cueh );
     } else {
         addr = NilAddr;
     }

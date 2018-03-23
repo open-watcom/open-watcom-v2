@@ -152,7 +152,7 @@ bool LoadDbgInfo( void )
 static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
 {
     sym_handle          *symhdl;
-    cue_handle          *cue;
+    cue_handle          *cueh;
     search_result       sr;
     location_list       ll;
     address             dipaddr;
@@ -185,14 +185,14 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
 //      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cue = MemAlloc( DIPHandleSize( HK_CUE ) );
-            if( DIPAddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
-                MemFree( cue );
+            cueh = MemAlloc( DIPHandleSize( HK_CUE ) );
+            if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {
+                MemFree( cueh );
                 ret = FALSE;
             } else {
-                DIPCueFile( cue, si->filename, MAX_FILE_NAME );
-                si->linenum = DIPCueLine( cue );
-                MemFree( cue );
+                DIPCueFile( cueh, si->filename, MAX_FILE_NAME );
+                si->linenum = DIPCueLine( cueh );
+                MemFree( cueh );
                 ret = TRUE;
             }
         }
