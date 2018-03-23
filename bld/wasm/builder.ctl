@@ -41,6 +41,8 @@ set PROJDIR=<CWD>
     <CCCMD> ntaxp/wasm.sym      <OWRELROOT>/axpnt/
     <CCCMD> qnx386/wasm.exe     <OWRELROOT>/qnx/binq/wasm
     <CCCMD> qnx386/wasm.sym     <OWRELROOT>/qnx/sym/
+    <CCCMD> rdos386/wasm.exe    <OWRELROOT>/rdos/
+    <CCCMD> rdos386/wasm.sym    <OWRELROOT>/rdos/
 
     <CCCMD> linuxx64/wasm.exe   <OWRELROOT>/binl64/wasm
     <CCCMD> linuxarm/wasm.exe   <OWRELROOT>/arml/wasm
