@@ -71,3 +71,11 @@ type="e" usr="ms2wlink"
 type="e" usr="fcenable"
 type="e" usr="exe2bin"
 type="s" usr="wlink.lnk"
+
+#######################
+# RDOS - 386
+#
+[ DEFAULT dir="rdos" cond="rdoshost" where="c jc f77 jf77" ]
+type="e" usr="wlink.exe"
+type="e" usr="exe2bin.exe"
+type="s" usr="wlink.lnk"
