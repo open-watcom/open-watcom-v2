@@ -92,6 +92,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> rdos386/wlink.exe               <OWRELROOT>/rdos/
     <CCCMD> rdos386/wlink.sym               <OWRELROOT>/rdos/
+    <CCCMD> exe2bin/rdos386/exe2bin.exe     <OWRELROOT>/rdos/
     <CCCMD> lnk/rdos386/wlink.lnk           <OWRELROOT>/rdos/
 
 [ BLOCK . . ]
