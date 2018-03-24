@@ -258,7 +258,7 @@ vi_rc NewFile( const char *name, bool same_file )
     SetModifiedVar( false );
     UpdateCurrentStatus( oldstatus );
     if( !same_file && !inReadHook ) {
-        UpdateLastFileList( CurrentFile->name );
+        UpdateLastFilesList( CurrentFile->name );
     }
 #ifdef __WIN__
     DCUpdateAll();

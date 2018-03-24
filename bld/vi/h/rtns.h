@@ -337,7 +337,7 @@ vi_rc   GotoFile( window_id );
 void    BringUpFile( info *, bool );
 
 /* filelast.c */
-void    UpdateLastFileList( char *fname );
+void    UpdateLastFilesList( char *fname );
 char    *GetFileInLastFileList( int num );
 
 /* filenew.c */

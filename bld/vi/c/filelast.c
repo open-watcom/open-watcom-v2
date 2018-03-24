@@ -39,9 +39,9 @@ extern char *helpFiles[1];
 extern int  nHelpFiles;
 
 /*
- * UpdateLastFileList - update the list of the last files edited
+ * UpdateLastFilesList - update the list of the last files edited
  */
-void UpdateLastFileList( char *fname )
+void UpdateLastFilesList( char *fname )
 {
     history_data        *h;
     int                 i;
@@ -83,4 +83,4 @@ void UpdateLastFileList( char *fname )
     ReplaceString( &(h->data[h->curr % h->max]), buff );
     h->curr += 1;
 
-} /* UpdateLastFileList */
+} /* UpdateLastFilesList */

@@ -170,7 +170,7 @@ vi_rc SaveFileAs( void )
 #endif
     sprintf( cmd, "set filename \"%s\"", fn );
     RunCommandLine( cmd );
-    UpdateLastFileList( fn );
+    UpdateLastFilesList( fn );
 
     // flag dammit as user must have already said overwrite ok
     return( SaveFile( fn, -1, -1, true ) );
@@ -507,7 +507,7 @@ vi_rc FancyFileSave( void )
     rc = SaveFile( CurrentFile->name, -1, -1, true );
     if( rc == ERR_NO_ERR ) {
         CurrentFile->modified = false;
-        UpdateLastFileList( CurrentFile->name );
+        UpdateLastFilesList( CurrentFile->name );
     }
     return( rc );
 
