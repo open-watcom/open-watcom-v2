@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define HISTDATA_INIT      {{10 CM 0 CM NULL},{10 CM 0 CM NULL},{10 CM 0 CM NULL},{4 CM 0 CM NULL}}
+
 /*    vartype       varname                 initval */
 PICK( int,          CurrFIgnore,            0  )
 PICK( int,          MouseRepeatStartDelay,  5  )
@@ -37,3 +39,4 @@ PICK( int,          NumStatusSections,      0  )
 PICK( windim,       WindMaxWidth,           80 )
 PICK( windim,       WindMaxHeight,          25 )
 PICK( char,         ExtendedKeyboard,       0 )
+PICK( history_data, Hist[MAX_HIST],         HISTDATA_INIT )

@@ -440,10 +440,7 @@ linenum GetHiddenLineBreaks( linenum s, linenum e );
 /* hist.c */
 void    LoadHistory( const char *cmd );
 void    SaveHistory( void );
-void    CLHistInit( int );
-void    FilterHistInit( int );
-void    FindHistInit( int );
-void    LastFilesHistInit( int );
+void    HistInit( history_data *, int );
 void    HistFini( void );
 
 #ifdef __IDE__

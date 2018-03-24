@@ -74,7 +74,7 @@ vi_rc EnterExMode( void )
         } else {
             prompt = ":";
         }
-        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.CLHist );
+        ret = ReadStringInWindow( wid, 1, prompt, st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
         MyPrintf( "\n" );
         if( !ret ) {
             continue;

@@ -365,7 +365,7 @@ vi_rc Filter( range *r )
     vi_rc       rc;
     char        cmd[MAX_STR];
 
-    rc = PromptForString( "Command: ", cmd, sizeof( cmd ), &EditVars.FilterHist );
+    rc = PromptForString( "Command: ", cmd, sizeof( cmd ), &EditVars.Hist[HIST_FILTER] );
     if( rc == ERR_NO_ERR ) {
         rc = DoGenericFilter( r->start.line, r->end.line, cmd );
     } else {

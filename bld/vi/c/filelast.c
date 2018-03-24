@@ -70,9 +70,9 @@ void UpdateLastFilesList( char *fname )
     _fullpath( buff, fname, FILENAME_MAX );
 
     // if name already in list, dont add it.
-    h = &EditVars.LastFilesHist;
+    h = &EditVars.Hist[HIST_LASTFILES];
     for( i = 0; i < h->max; i++ ) {
-        if( h->data[i] ) {
+        if( h->data[i] != NULL ) {
             if( stricmp( buff, h->data[i] ) == 0 ) {
                 return;
             }

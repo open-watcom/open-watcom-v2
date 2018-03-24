@@ -1016,7 +1016,7 @@ static void addLastFiles( menu *cmenu )
     char                *menu_text;
     int                 i, j;
 
-    h = &EditVars.LastFilesHist;
+    h = &EditVars.Hist[HIST_LASTFILES];
     if( h->curr == 0 ) {
         cmenu->orig_num_items = cmenu->num_items;
         return;

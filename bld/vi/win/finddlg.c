@@ -67,16 +67,17 @@ WINEXPORT INT_PTR CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
             SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
-        EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );
+        h = &EditVars.Hist[HIST_FIND];
+        EditSubClass( hwnd, FIND_EDIT, h );
         CheckDlgButton( hwnd, FIND_IGNORE_CASE, ( findData.case_ignore ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( hwnd, FIND_REGULAR_EXPRESSIONS, ( findData.use_regexp ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( hwnd, FIND_SEARCH_BACKWARDS, ( !findData.search_forward ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( hwnd, FIND_SEARCH_WRAP, ( findData.search_wrap ) ? BST_CHECKED : BST_UNCHECKED );
         SetDlgItemText( hwnd, FIND_EDIT, findData.find );
-        curr = EditVars.FindHist.curr + EditVars.FindHist.max - 1;
-        for( i = 0; i < EditVars.FindHist.max; i++ ) {
-            if( EditVars.FindHist.data[curr % EditVars.FindHist.max] != NULL ) {
-                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0, (LPARAM)EditVars.FindHist.data[curr % EditVars.FindHist.max] );
+        curr = h->curr + h->max - 1;
+        for( i = 0; i < h->max; i++ ) {
+            if( h->data[curr % h->max] != NULL ) {
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0, (LPARAM)h->data[curr % h->max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -119,13 +120,13 @@ WINEXPORT INT_PTR CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
             findData.use_regexp = IsDlgButtonChecked( hwnd, FIND_REGULAR_EXPRESSIONS );
             findData.search_forward = !IsDlgButtonChecked( hwnd, FIND_SEARCH_BACKWARDS );
             findData.search_wrap = IsDlgButtonChecked( hwnd, FIND_SEARCH_WRAP );
-            h = &EditVars.FindHist;
+            h = &EditVars.Hist[HIST_FIND];
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {
                 ptr = h->data[curr % h->max];
             }
-            if( ptr == NULL || strcmp( ptr, findData.find ) ) {
+            if( ptr == NULL || strcmp( ptr, findData.find ) != 0 ) {
                 ReplaceString( &(h->data[h->curr % h->max]), findData.find );
                 h->curr += 1;
             }

@@ -258,16 +258,16 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
                 j = EditVars.SpinY;
                 break;
             case SETVAR_T_MAXCLHISTORY:
-                j = EditVars.CLHist.max;
+                j = EditVars.Hist[HIST_CMD].max;
                 break;
             case SETVAR_T_MAXFILTERHISTORY:
-                j = EditVars.FilterHist.max;
+                j = EditVars.Hist[HIST_FILTER].max;
                 break;
             case SETVAR_T_MAXFINDHISTORY:
-                j = EditVars.FindHist.max;
+                j = EditVars.Hist[HIST_FIND].max;
                 break;
             case SETVAR_T_MAXLASTFILESHISTORY:
-                j = EditVars.LastFilesHist.max;
+                j = EditVars.Hist[HIST_LASTFILES].max;
                 break;
             case SETVAR_T_MAXLINELEN:
                 j = EditVars.MaxLine;
@@ -955,16 +955,16 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
   #endif
                 break;
             case SETVAR_T_MAXFILTERHISTORY:
-                FilterHistInit( lval );
+                HistInit( &EditVars.Hist[HIST_FILTER], lval );
                 break;
             case SETVAR_T_MAXCLHISTORY:
-                CLHistInit( lval );
+                HistInit( &EditVars.Hist[HIST_CMD], lval );
                 break;
             case SETVAR_T_MAXFINDHISTORY:
-                FindHistInit( lval );
+                HistInit( &EditVars.Hist[HIST_FIND], lval );
                 break;
             case SETVAR_T_MAXLASTFILESHISTORY:
-                LastFilesHistInit( lval );
+                HistInit( &EditVars.Hist[HIST_LASTFILES], lval );
                 break;
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;

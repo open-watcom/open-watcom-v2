@@ -126,7 +126,7 @@ static vi_rc doProcessCommandLine( bool is_fancy )
         }
     } else {
 #endif
-        rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.CLHist );
+        rc = PromptForString( ":", st, EditVars.MaxLine, &EditVars.Hist[HIST_CMD] );
         if( rc != ERR_NO_ERR ) {
             MemFree( st );
             if( rc == NO_VALUE_ENTERED ) {

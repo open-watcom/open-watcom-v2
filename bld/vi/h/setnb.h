@@ -59,11 +59,15 @@ PICK(  "LANGUAGE",              "SF", ,                 ,                      ,
 #endif
 PICK(  "LINENUMWINWIdth",       "SF", int,              LineNumWinWidth,       8,                  SETVAR_T_LINENUMWINWIDTH )
 PICK(  "MAGICSTRing",           "SF", char *,           Majick,                NULL,               SETVAR_T_MAGICSTRING )
-PICK(  "MAXCLHistory",          "SF", history_data,     CLHist,                {10 CM 0 CM NULL},  SETVAR_T_MAXCLHISTORY )
+#ifndef INITVARS
+PICK(  "MAXCLHistory",          "SF", ,                 ,                      ,                   SETVAR_T_MAXCLHISTORY )
+#endif
 PICK(  "MAXEMSK",               "SF", int,              MaxEMSBlocks,          2048,               SETVAR_T_MAXEMSK )
-PICK(  "MAXFILTERHistory",      "SF", history_data,     FilterHist,            {10 CM 0 CM NULL},  SETVAR_T_MAXFILTERHISTORY )
-PICK(  "MAXFINDHistory",        "SF", history_data,     FindHist,              {10 CM 0 CM NULL},  SETVAR_T_MAXFINDHISTORY )
-PICK(  "MAXLASTFILESHistory",   "SF", history_data,     LastFilesHist,         {4 CM 0 CM NULL},   SETVAR_T_MAXLASTFILESHISTORY )
+#ifndef INITVARS
+PICK(  "MAXFILTERHistory",      "SF", ,                 ,                      ,                   SETVAR_T_MAXFILTERHISTORY )
+PICK(  "MAXFINDHistory",        "SF", ,                 ,                      ,                   SETVAR_T_MAXFINDHISTORY )
+PICK(  "MAXLASTFILESHistory",   "SF", ,                 ,                      ,                   SETVAR_T_MAXLASTFILESHISTORY )
+#endif
 PICK(  "MAXLINElen",            "SF", int,              MaxLine,               512,                SETVAR_T_MAXLINELEN )
 PICK(  "MAXPUSH",               "SF", int,              MaxPush,               15,                 SETVAR_T_MAXPUSH )
 PICK(  "MAXSWAPK",              "SF", int,              MaxSwapBlocks,         2048,               SETVAR_T_MAXSWAPK )

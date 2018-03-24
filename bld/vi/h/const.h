@@ -244,6 +244,14 @@ typedef enum font_type {
 #define FMT_RIGHT       0x02
 #define FMT_CENTRE      0x03
 
+typedef enum {
+    HIST_CMD,
+    HIST_FIND,
+    HIST_FILTER,
+    HIST_LASTFILES,
+    MAX_HIST
+} hist_type;
+
 /*
  * Event type constants for the event list
  */
