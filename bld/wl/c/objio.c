@@ -76,7 +76,11 @@ static infilelist *AllocEntry( const char *name, const path_entry *path )
     entry->handle = NIL_FHANDLE;
     entry->cache = NULL;
     entry->len = 0;
+#if defined(__RDOS__)
+    entry->flags = INSTAT_USE_LIBPATH;
+#else
     entry->flags = 0;
+#endif
     return entry;
 }
 
