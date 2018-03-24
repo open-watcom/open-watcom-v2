@@ -39,7 +39,7 @@ WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam,
 
 static WNDPROC      oldEditProc;
 static WNDPROC      editProc;
-static history_data *hData;
+static history_data *histData;
 static int          currHist;
 
 /*
@@ -103,24 +103,24 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
         }
         break;
     case VI_KEY( UP ):
-        if( process ) {
+        if( process && histData->curr > 0 ) {
             currHist--;
-            if( currHist < 0 || currHist < (hData->curr - hData->max) ) {
-                currHist = hData->curr - 1;
+            if( currHist < 0 || currHist < (histData->curr - histData->max) ) {
+                currHist = histData->curr - 1;
             }
-            setEditText( hwnd, hData->data[currHist % hData->max] );
+            setEditText( hwnd, histData->data[currHist % histData->max] );
         }
         break;
     case VI_KEY( DOWN ):
-        if( process ) {
+        if( process && histData->curr > 0 ) {
             currHist++;
-            if( currHist >= hData->curr ) {
-                currHist = hData->curr - hData->max;
+            if( currHist >= histData->curr ) {
+                currHist = histData->curr - histData->max;
                 if( currHist < 0 ) {
                     currHist = 0;
                 }
             }
-            setEditText( hwnd, hData->data[currHist % hData->max] );
+            setEditText( hwnd, histData->data[currHist % histData->max] );
         }
         break;
     case VI_KEY( CTRL_F ):
@@ -166,7 +166,7 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
 {
     HWND    edit;
 
-    hData = h;
+    histData = h;
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
     oldEditProc = (WNDPROC)GET_WNDPROC( edit );

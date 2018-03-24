@@ -126,7 +126,8 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
 static vi_rc getFile( const char *fname )
 {
     char            dir[MAX_STR];
-    char            *dirptr, ch;
+    char            *dirptr;
+    char            ch;
     vi_rc           rc;
     history_data    *h;
 

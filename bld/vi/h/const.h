@@ -244,6 +244,10 @@ typedef enum font_type {
 #define FMT_RIGHT       0x02
 #define FMT_CENTRE      0x03
 
+/*
+ * history constants
+ */
+
 typedef enum {
     HIST_CMD,
     HIST_FIND,
@@ -256,11 +260,11 @@ typedef enum {
  * Event type constants for the event list
  */
 typedef enum event_type {
-    EVENT_OP       = 0,
-    EVENT_REL_MOVE = 1,
-    EVENT_ABS_MOVE = 2,
-    EVENT_MISC     = 3,
-    EVENT_INS      = 4
+    EVENT_OP,
+    EVENT_REL_MOVE,
+    EVENT_ABS_MOVE,
+    EVENT_MISC,
+    EVENT_INS
 } event_type;
 
 /*

@@ -40,11 +40,11 @@ static bool historyLoaded;
 /*
  * updateHist - add a string to a history list
  */
-static void updateHist( history_data *hist, const char *str )
+static void updateHist( history_data *h, const char *str )
 {
-    if( hist->curr < hist->max ) {
-        ReplaceString( &hist->data[hist->curr], str );
-        hist->curr++;
+    if( h->curr < h->max ) {
+        ReplaceString( &h->data[h->curr], str );
+        h->curr++;
     }
 
 } /* updateHist */
@@ -172,7 +172,8 @@ void HistInit( history_data *h, int max )
     h->curr = 0;
     h->data = MemReAlloc( h->data, ( h->max + 1 ) * sizeof( char * ) );
 
-} /* FilterHistInit */
+} /* HistInit */
+
 
 void HistFini( void )
 {

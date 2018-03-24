@@ -58,7 +58,7 @@ typedef struct input_buffer {
 #endif
     char            *last_str;
     int             buffer_length;
-    history_data    *history;
+    history_data    *h;
     int             curr_hist;
     input_win_info  window;
     int             curr_pos;
@@ -298,8 +298,8 @@ static bool getHistory( input_buffer *input )
     int             offset;
     char            *cmd;
 
-    offset = input->curr_hist % input->history->max;
-    cmd = input->history->data[offset];
+    offset = input->curr_hist % input->h->max;
+    cmd = input->h->data[offset];
     if( cmd != NULL ) {
         saveStr( input );
         strcpy( input->buffer, cmd );
@@ -314,7 +314,7 @@ static bool addHistory( input_buffer *input )
 {
     history_data    *h;
 
-    h = input->history;
+    h = input->h;
     if( h != NULL && input->buffer[0] != '\0' ) {
         ReplaceString( &(h->data[h->curr % h->max]), input->buffer );
         h->curr += 1;
@@ -329,7 +329,7 @@ static int searchHistory( input_buffer *input, char *str, int curr )
     int             index, i, len;
     history_data    *h;
 
-    h = input->history;
+    h = input->h;
     len = strlen( str );
     for( i = 0; i < h->max; i++ ) {
         curr -= 1;
@@ -354,7 +354,7 @@ static void doHistorySearch( input_buffer *input )
     char            *str;
     vi_key          event;
 
-    curr = input->history->curr;
+    curr = input->h->curr;
     str = alloca( strlen( input->buffer ) + 1 );
     strcpy( str, input->buffer );
     event = VI_KEY( CTRL_TAB );
@@ -376,27 +376,31 @@ static vi_key historyFilter( input_buffer *input, vi_key event )
 {
     history_data    *h;
 
-    if( input->history == NULL || input->history->curr == 0 ) {
+    if( input->h == NULL || input->h->curr == 0 ) {
         return( event );
     }
-    h = input->history;
+    h = input->h;
     switch( event ) {
     case VI_KEY( UP ):
-        input->curr_hist -= 1;
-        if( input->curr_hist < 0 || input->curr_hist < h->curr - h->max ) {
-            input->curr_hist = h->curr - 1;
+        if( h->curr > 0 ) {
+            input->curr_hist -= 1;
+            if( input->curr_hist < 0 || input->curr_hist < h->curr - h->max ) {
+                input->curr_hist = h->curr - 1;
+            }
+            getHistory( input );
         }
-        getHistory( input );
         break;
     case VI_KEY( DOWN ):
-        input->curr_hist += 1;
-        if( input->curr_hist >= h->curr ) {
-            input->curr_hist = h->curr - h->max;
-            if( input->curr_hist < 0 ) {
-                input->curr_hist = 0;
+        if( h->curr > 0 ) {
+            input->curr_hist += 1;
+            if( input->curr_hist >= h->curr ) {
+                input->curr_hist = h->curr - h->max;
+                if( input->curr_hist < 0 ) {
+                    input->curr_hist = 0;
+                }
             }
+            getHistory( input );
         }
-        getHistory( input );
         break;
     case VI_KEY( CTRL_TAB ):
     case VI_KEY( ALT_TAB ):
@@ -650,8 +654,8 @@ static void initInput( input_buffer *input )
 
     memset( input->buffer, 0, input->buffer_length );
     input->curr_pos = 0;
-    if( input->history != NULL ) {
-        input->curr_hist = input->history->curr;
+    if( input->h != NULL ) {
+        input->curr_hist = input->h->curr;
     }
     input->left_column = 0;
     input->overstrike = true;
@@ -692,8 +696,8 @@ static bool getStringInWindow( input_buffer *input )
     initInput( input );
     input->last_str = alloca( input->buffer_length );
     memset( input->last_str, 0, input->buffer_length );
-    if( input->history != NULL ) {
-        input->curr_hist = input->history->curr;
+    if( input->h != NULL ) {
+        input->curr_hist = input->h->curr;
     }
     for( ;; ) {
         event = GetNextEvent( false );
@@ -777,8 +781,7 @@ static bool getStringInWindow( input_buffer *input )
 
 } /* getStringInWindow */
 
-bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
-                         int max_len, history_data *history )
+bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, int max_len, history_data *h )
 {
     input_buffer        input;
     bool                rc;
@@ -786,7 +789,7 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
     input.prompt = prompt;
     input.buffer = str;
     input.buffer_length = max_len;
-    input.history = history;
+    input.h = h;
     input.window.id = wid;
     input.window.line = line;
 #ifdef __WIN__
@@ -801,8 +804,7 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str,
 
 } /* ReadStringInWindow */
 
-vi_rc PromptForString( char *prompt, char *buffer,
-                        int buffer_length, history_data *history )
+vi_rc PromptForString( char *prompt, char *buffer, int buffer_length, history_data *h )
 {
     window_id           wid;
     vi_rc               rc;
@@ -821,7 +823,7 @@ vi_rc PromptForString( char *prompt, char *buffer,
         rc = ERR_PROMPT_TOO_LONG;
     } else {
         rc = NO_VALUE_ENTERED;
-        if( ReadStringInWindow( wid, 1, prompt, buffer, buffer_length, history ) ) {
+        if( ReadStringInWindow( wid, 1, prompt, buffer, buffer_length, h ) ) {
             rc = ERR_NO_ERR;
         }
     }
