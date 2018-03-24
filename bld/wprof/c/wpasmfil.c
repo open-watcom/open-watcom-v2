@@ -79,7 +79,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
 /*******************************************************************/
 {
     wp_asmfile          *wpasm_file;
-    cue_handle          *cueh;
+    cue_handle          *cueh1;
     cue_handle          *cueh2;
     mod_info            *curr_mod;
     file_info           *curr_file;
@@ -99,8 +99,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
 
     /* unused parameters */ (void)quiet;
 
-    cueh = alloca( DIPHandleSize( HK_CUE ) );
-    cueh2 = alloca( DIPHandleSize( HK_CUE) );
+    cueh1 = alloca( DIPHandleSize( HK_CUE ) );
+    cueh2 = alloca( DIPHandleSize( HK_CUE ) );
     curr_file = curr_sio->curr_file;
     curr_mod = curr_sio->curr_mod;
     if( curr_file->fid == 0 || DIPLineCue( curr_mod->mh, curr_sio->curr_file->fid, src_row, 0, cueh2 ) == SR_NONE ) {
@@ -131,18 +131,18 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
         mh = curr_mod->mh;
         if( EndOfSegment() || DIPAddrMod( addr, &mh ) == SR_NONE || mh != curr_mod->mh )
             break;
-        cue_find = (DIPAddrCue( curr_mod->mh, addr, cueh ) == SR_EXACT);
-        if( cueh2 != NULL && DIPCueCmp( cueh, cueh2 ) == 0 ) {
+        cue_find = (DIPAddrCue( curr_mod->mh, addr, cueh1 ) == SR_EXACT);
+        if( cueh2 != NULL && DIPCueCmp( cueh1, cueh2 ) == 0 ) {
             wpasm_file->entry_line = rows;
             cueh2 = NULL;
         }
         asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         if( cue_find ) {
             asm_line->source_line = true;
-            asm_line->u.src.line = DIPCueLine( cueh );
+            asm_line->u.src.line = DIPCueLine( cueh1 );
             asm_line->u.src.src_file = NULL;
             if( !curr_file->unknown_file ) {
-                fid = DIPCueFileId( cueh );
+                fid = DIPCueFileId( cueh1 );
                 for( file_index = 0; file_index < curr_mod->file_count; ++file_index ) {
                     curr_file = curr_mod->mod_file[file_index];
                     if( curr_file->fid == fid ) {
