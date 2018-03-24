@@ -247,6 +247,7 @@ static const char *validTargets[] = {
     "osx",
     "qnx",
     "haiku",
+    "rdos",
     NULL
 };
 

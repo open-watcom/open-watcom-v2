@@ -292,6 +292,8 @@ static void SetTargSystem( void )
         _SetConstTarg( "dos" );
     #elif defined( __BSD__ )
         _SetConstTarg( "bsd" );
+    #elif defined( __RDOS__ )
+        _SetConstTarg( "rdos" );
     #else
         #error "Target OS not defined"
     #endif

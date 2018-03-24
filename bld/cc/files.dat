@@ -79,3 +79,9 @@ type="e" usr="wcc"              conda="tools16"
 type="s" usr="wcci8601.int"     conda="tools16"
 type="e" usr="wcc386"
 type="s" usr="wcc38601.int"
+
+#######################
+# RDOS - 386
+#
+[ DEFAULT dir="rdos" cond="rdoshost" where="c jc" ]
+type="e" usr="wcc386"

@@ -48,6 +48,17 @@ unix_objs = &
     doblips.obj &
     stack.obj
 
+rdos_objs = &
+    objio.obj &
+    memlimit.obj &
+    envvar.obj &
+    onexit.obj &
+    qtimer.obj &
+    qblip.obj &
+    cgmemmgr.obj &
+    doblips.obj &
+    stack.obj
+
 linux_objs = $(unix_objs)
 qnx_objs   = $(unix_objs)
 bsd_objs   = $(unix_objs)

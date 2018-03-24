@@ -687,7 +687,8 @@ enum {
     TS_OS2,
     TS_QNX,
     TS_NETWARE5,
-    TS_LINUX
+    TS_LINUX,
+    TS_RDOS
 };
 
 /* values for ESCChar routine */
