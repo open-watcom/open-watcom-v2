@@ -33,6 +33,7 @@
 #include <io.h>
 #include <malloc.h>
 #include "drwatcom.h"
+#include "walloca.h"
 #include "mem.h"
 #include "mad.h"
 
@@ -56,14 +57,12 @@ bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
     cue_handle  *cueh;
 
-    cueh = MemAlloc( DIPHandleSize( HK_CUE ) );
+    cueh = walloca( DIPHandleSize( HK_CUE ) );
     if( DIPAddrCue( NO_MOD, *addr, cueh ) == SR_NONE ) {
-        MemFree( cueh );
         return( false );
     }
     DIPCueFile( cueh, fname, bufsize );
     *line = DIPCueLine( cueh );
-    MemFree( cueh );
     return( true );
 }
 

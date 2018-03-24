@@ -39,6 +39,7 @@
 #include <malloc.h>
 #include <io.h>
 #include "drwatcom.h"
+#include "walloca.h"
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -185,14 +186,12 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
 //      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cueh = MemAlloc( DIPHandleSize( HK_CUE ) );
+            cueh = walloca( DIPHandleSize( HK_CUE ) );
             if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {
-                MemFree( cueh );
                 ret = FALSE;
             } else {
                 DIPCueFile( cueh, si->filename, MAX_FILE_NAME );
                 si->linenum = DIPCueLine( cueh );
-                MemFree( cueh );
                 ret = TRUE;
             }
         }
