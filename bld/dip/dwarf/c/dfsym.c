@@ -1666,9 +1666,9 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 }
 
 
-search_result   DoLookupSym( imp_image_handle *ii, symbol_source ss, void *source,
-                                lookup_item *li, location_context *lc, void *d )
-/********************************************************************************/
+static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss, void *source,
+                                    lookup_item *li, location_context *lc, void *d )
+/*************************************************************************************/
 {
     imp_mod_handle      im;
     imp_sym_handle      *is;
