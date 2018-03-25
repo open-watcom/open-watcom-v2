@@ -148,7 +148,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
 
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it )
+                    imp_sym_handle *is, imp_type_handle *ith )
 /***********************************************************/
 {
     /* Get the implementation type handle for the type of the given symbol. */
@@ -162,24 +162,24 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
     case DR_TAG_FUNCTION:
     case DR_TAG_CLASS:
     case DR_TAG_ENUM:
-        it->type = is->sym;
+        ith->type = is->sym;
         break;
     default:
-        it->type = DRGetTypeAT( is->sym );
+        ith->type = DRGetTypeAT( is->sym );
         break;
     }
     ret = DS_OK;
-    it->im = is->im;
-    if( it->type != DRMEM_HDL_NULL ) {
-        it->state = DF_NOT;
+    ith->im = is->im;
+    if( ith->type != DRMEM_HDL_NULL ) {
+        ith->state = DF_NOT;
     } else {
-        it->state = DF_SET;         // default the type
-        it->sub_array = false;
-        it->typeinfo.kind = DR_TYPEK_DATA;
-        it->typeinfo.size = 0;
-        it->typeinfo.mclass = DR_MOD_NONE;
+        ith->state = DF_SET;         // default the type
+        ith->sub_array = false;
+        ith->typeinfo.kind = DR_TYPEK_DATA;
+        ith->typeinfo.size = 0;
+        ith->typeinfo.mclass = DR_MOD_NONE;
         if( is->stype == DR_TAG_LABEL ) {
-            it->typeinfo.kind = DR_TYPEK_CODE;
+            ith->typeinfo.kind = DR_TYPEK_CODE;
         }
     }
     return( ret );
@@ -685,7 +685,7 @@ static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 /******************************************************************************/
 {
     /* Fill in the imp_type_handle with the type of the 'this' object
@@ -707,9 +707,9 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
             DRGetTypeInfo( dr_type, &typeinfo );
             MapImpTypeInfo( &typeinfo, ti );
             dr_type = DRSkipTypeChain( dr_type );
-            it->type = DRGetTypeAT( dr_type );
-            it->state = DF_NOT;
-            it->im = is->im;
+            ith->type = DRGetTypeAT( dr_type );
+            ith->state = DF_NOT;
+            ith->im = is->im;
             ret = DS_OK;
         } else {
             ret = DS_FAIL;
@@ -1326,21 +1326,21 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
             if( cont ) {
                 sc = DRGetTagType( curr );
                 if( sc == DR_TAG_FUNCTION ) {
-                    imp_type_handle     it;
+                    imp_type_handle     ith;
 
                     curr = GetContainingClass( curr );
                     if( curr != DRMEM_HDL_NULL ) {
-                        it.state = DF_NOT;
-                        it.type = curr;
-                        it.im = im;
+                        ith.state = DF_NOT;
+                        ith.type = curr;
+                        ith.im = im;
                         if( df->com.kind == WLK_WLK ) {
-                            df->wlk.wr = WalkTypeSymList( ii, &it,
+                            df->wlk.wr = WalkTypeSymList( ii, &ith,
                                  df->wlk.wk, df->wlk.is, df->com.d );
                             if( df->wlk.wr != WR_CONTINUE ) {
                                 cont = false;
                             }
                         } else {
-                            df->lookup.sr = SearchMbr( ii, &it,
+                            df->lookup.sr = SearchMbr( ii, &ith,
                                           df->lookup.li, df->com.d );
                             if( df->lookup.sr == SR_EXACT ) {
                                 cont = false;
@@ -1382,15 +1382,15 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
         blk = cu_tag + scope->unique;               /* make absolute */
         sc = DRGetTagType( blk );
         if( sc == DR_TAG_CLASS ) {
-            imp_type_handle     it;
+            imp_type_handle     ith;
 
-            it.state = DF_NOT;
-            it.type = blk;
-            it.im = im;
+            ith.state = DF_NOT;
+            ith.type = blk;
+            ith.im = im;
             if( df->com.kind == WLK_WLK ) {
-                df->wlk.wr = WalkTypeSymList( ii, &it, df->wlk.wk, df->wlk.is, df->com.d );
+                df->wlk.wr = WalkTypeSymList( ii, &ith, df->wlk.wk, df->wlk.is, df->com.d );
             } else {
-                df->lookup.sr = SearchMbr( ii, &it, df->lookup.li, df->com.d );
+                df->lookup.sr = SearchMbr( ii, &ith, df->lookup.li, df->com.d );
             }
         } else {
             cont = WalkOneBlock( df, fn, blk );

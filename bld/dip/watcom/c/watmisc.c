@@ -380,19 +380,19 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
 
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it )
+                                imp_type_handle *ith )
 {
     switch( is->type ) {
     case SH_GBL:
-        return( SymHdl2GblType( ii, is, it ) );
+        return( SymHdl2GblType( ii, is, ith ) );
     case SH_LCL:
-        return( SymHdl2LclType( ii, is, it ) );
+        return( SymHdl2LclType( ii, is, ith ) );
     case SH_MBR:
-        return( SymHdl2MbrType( ii, is, it ) );
+        return( SymHdl2MbrType( ii, is, ith ) );
     case SH_TYP:
-        return( SymHdl2TypType( ii, is, it ) );
+        return( SymHdl2TypType( ii, is, ith ) );
     case SH_CST:
-        return( SymHdl2CstType( ii, is, it ) );
+        return( SymHdl2CstType( ii, is, ith ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }

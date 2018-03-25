@@ -51,7 +51,7 @@ extern unsigned         SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is
 extern unsigned         SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
                                 char *buff, unsigned buff_size );
 extern dip_status       SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+                                imp_type_handle *ith );
 extern type_kind        GblTypeClassify( unsigned kind );
 extern walk_result      WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
                                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );

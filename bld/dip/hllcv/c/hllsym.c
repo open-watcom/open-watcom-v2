@@ -883,19 +883,19 @@ static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
                                 DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
-    imp_type_handle     it;
+    imp_type_handle     ith;
     s_all               *p;
     imp_sym_handle      is;
 
     p = VMBlock( ii, scope->scope, sizeof( *p ) );
     if( p == NULL ) return( WR_FAIL );
-    ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &it );
+    ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &ith );
     if( ds & DS_ERR ) return( WR_FAIL );
     if( ds != DS_OK ) return( WR_CONTINUE );
-    ds = TypeMemberFuncInfo( ii, &it, &it, NULL, NULL );
+    ds = TypeMemberFuncInfo( ii, &ith, &ith, NULL, NULL );
     if( ds & DS_ERR ) return( WR_FAIL );
     if( ds != DS_OK ) return( WR_CONTINUE );
-    return( TypeSymWalkList( ii, &it, wk, &is, d ) );
+    return( TypeSymWalkList( ii, &ith, wk, &is, d ) );
 }
 
 static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
@@ -1358,7 +1358,7 @@ static walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
     //scope_info          sc_info;
     //dip_status          ds;
     walk_result         wr;
-    //imp_type_handle     it;
+    //imp_type_handle     ith;
 
     glue.wk = wk;
     glue.is = is;
@@ -1403,13 +1403,13 @@ static walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
         if( ds != DS_OK ) return( WR_CONTINUE );
         if( sc_block->unique & SCOPE_CLASS_FLAG ) {
             /* Walk the member function class scope */
-            ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &it );
+            ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &ith );
             if( ds & DS_ERR ) return( WR_FAIL );
             if( ds != DS_OK ) return( WR_CONTINUE );
-            ds = TypeMemberFuncInfo( ii, &it, &it, NULL, NULL );
+            ds = TypeMemberFuncInfo( ii, &ith, &ith, NULL, NULL );
             if( ds & DS_ERR ) return( WR_FAIL );
             if( ds != DS_OK ) return( WR_CONTINUE );
-            return( TypeSymWalkList( ii, &it, wk, is, d ) );
+            return( TypeSymWalkList( ii, &ith, wk, is, d ) );
         } else {
             return( ScopeWalkOne( ii, &sc_info, WalkGlue, &glue ) );
         }
@@ -1575,13 +1575,13 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get the type of the given symbol.
  */
-dip_status hllSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *it )
+dip_status hllSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
 {
     unsigned    type_idx;
     void        *p;
 
     if( is->containing_type != 0 ) {
-        return( hllTypeSymGetType( ii, is, it ) );
+        return( hllTypeSymGetType( ii, is, ith ) );
     }
 
     /*
@@ -1605,16 +1605,16 @@ dip_status hllSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle
         type_idx = 0; //TODO hllSymTypeIdxCV3( ii, p );
     }
 
-    return( hllTypeIndexFillIn( ii, type_idx, it ) );
+    return( hllTypeIndexFillIn( ii, type_idx, ith ) );
 }
 
 /*
  * Get the type of the given symbol.
  */
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
-                                   imp_type_handle *it )
+                                   imp_type_handle *ith )
 {
-    return( hllSymType( ii, is, it ) );
+    return( hllSymType( ii, is, ith ) );
 }
 
 /*
@@ -1664,7 +1664,7 @@ dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
     s_all               *p;
     numeric_leaf        val;
     dip_status          ds;
-    imp_type_handle     it;
+    imp_type_handle     ith;
     dip_type_info       ti;
 
     if( is->containing_type != 0 ) {
@@ -1676,9 +1676,9 @@ dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
     case S_CONSTANT:
         GetNumLeaf( (unsigned_8 *)p + sizeof( s_constant ), &val );
         memcpy( buff, val.valp, val.size );
-        ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &it );
+        ds = hllTypeIndexFillIn( ii, hllSymTypeIdx( ii, p ), &ith );
         if( ds != DS_OK ) return( ds );
-        ds = hllTypeInfo( ii, &it, lc, &ti );
+        ds = hllTypeInfo( ii, &ith, lc, &ti );
         if( ds != DS_OK ) return( ds );
         memset( (unsigned_8 *)buff + val.size, 0, ti.size - val.size );
         return( DS_OK );
@@ -1922,7 +1922,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
     cv_calls            call;
     dip_status          ds;
     unsigned_8          *reg_list;
-    imp_type_handle     it;
+    imp_type_handle     ith;
     dip_type_info       ti;
 
     p = VMBlock( ii, is->handle, is->len );
@@ -1966,11 +1966,11 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
             return( DS_ERR|DS_BAD_LOCATION );
         }
         /* find out about return type */
-        ds = hllTypeIndexFillIn( ii, type, &it );
+        ds = hllTypeIndexFillIn( ii, type, &ith );
         if( ds != DS_OK ) return( ds );
-        ds = hllTypeBase( ii, &it, &it );
+        ds = hllTypeBase( ii, &ith, &ith );
         if( ds != DS_OK ) return( ds );
-        ds = hllTypeInfo( ii, &it, lc, &ti );
+        ds = hllTypeInfo( ii, &ith, lc, &ti );
         if( ds != DS_OK ) return( ds );
         switch( ti.kind ) {
         case TK_VOID:
@@ -2051,21 +2051,21 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)it; (void)ti;
+    /* unused parameters */ (void)ii; (void)is; (void)ith; (void)ti;
 
 #if 0
     dip_status          ds;
-    imp_type_handle     func_it;
-    imp_type_handle     this_it;
+    imp_type_handle     func_ith;
+    imp_type_handle     this_ith;
 
-    ds = ImpSymType( ii, is, &func_it );
+    ds = ImpSymType( ii, is, &func_ith );
     if( ds != DS_OK ) return( ds );
-    ds = TypeMemberFuncInfo( ii, &func_it, it, &this_it, NULL );
+    ds = TypeMemberFuncInfo( ii, &func_ith, ith, &this_ith, NULL );
     if( ds != DS_OK ) return( ds );
     if( ti != NULL ) {
-        ds = hllTypeInfo( ii, &this_it, NULL, ti );
+        ds = hllTypeInfo( ii, &this_ith, NULL, ti );
         if( ds != DS_OK ) return( ds );
     }
     return( DS_OK );
@@ -2088,15 +2088,15 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
     virt_mem            next;
     s_all               *p;
     imp_sym_handle      parm;
-    imp_type_handle     it;
+    imp_type_handle     ith;
     dip_type_info       ti;
     unsigned long       adjust;
 
-    ds = ImpSymType( ii, is, &it );
+    ds = ImpSymType( ii, is, &ith );
     if( ds != DS_OK ) return( ds );
-    ds = TypeMemberFuncInfo( ii, &it, NULL, &it, &adjust );
+    ds = TypeMemberFuncInfo( ii, &ith, NULL, &ith, &adjust );
     if( ds != DS_OK ) return( ds );
-    if( it.idx == 0 ) return( DS_FAIL );
+    if( ith.idx == 0 ) return( DS_FAIL );
     check = is->handle + is->len;
 #define THIS_NAME       "this"
     for( ;; ) {
@@ -2119,7 +2119,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
     /* We have a 'this' pointer! Repeat, we have a this pointer! */
     ds = hllSymLocation( ii, &parm, lc, ll );
     if( ds != DS_OK ) return( ds );
-    ds = hllTypeInfo( ii, &it, lc, &ti );
+    ds = hllTypeInfo( ii, &ith, lc, &ti );
     if( ds != DS_OK ) return( ds );
     ds = hllDoIndirection( ii, &ti, lc, ll );
     if( ds != DS_OK ) return( ds );

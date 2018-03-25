@@ -177,7 +177,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
-                imp_sym_handle *is, imp_type_handle *it )
+                imp_sym_handle *is, imp_type_handle *ith )
 {
     //TODO:
     /*
@@ -235,7 +235,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
     //TODO:
     /*

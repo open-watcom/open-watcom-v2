@@ -37,28 +37,28 @@
  */
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
-                imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it, void *d )
+                imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)it; (void)d;
+    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)ith; (void)d;
 
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *it )
+imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)ii; (void)ith;
 
     return( IMH_MAP );
 }
 
 dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, dip_type_info *ti )
+                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
 {
     /* unused parameters */ (void)ii; (void)lc;
 
     ti->modifier = TM_NONE;
     ti->size = 0;
-    if( it->code ) {
+    if( ith->code ) {
         ti->kind = TK_CODE;
     } else {
         ti->kind = TK_DATA;
@@ -67,18 +67,18 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
-                        imp_type_handle *it, imp_type_handle *base,
+                        imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
 {
     /* unused parameters */ (void)ii; (void)lc; (void)ll;
 
-    *base = *it;
+    *base_ith = *ith;
     return( DS_FAIL );
 }
 
 dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
-                        imp_type_handle *array, location_context *lc,
-                        array_info *ai, imp_type_handle *index )
+                        imp_type_handle *array_ith, location_context *lc,
+                        array_info *ai, imp_type_handle *index_ith )
 {
     /* unused parameters */ (void)ii; (void)lc;
 
@@ -87,65 +87,66 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
     ai->stride = 0;
     ai->num_dims = 0;
     ai->column_major = 0;
-    if( index != NULL ) *index = *array;
+    if( index_ith != NULL )
+        *index_ith = *array_ith;
     return( DS_FAIL );
 }
 
 dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
-                imp_type_handle *proc, imp_type_handle *parm, unsigned n )
+                imp_type_handle *proc_ith, imp_type_handle *parm_ith, unsigned n )
 {
     /* unused parameters */ (void)ii; (void)n;
 
-    *parm = *proc;
+    *parm_ith = *proc_ith;
     return( DS_FAIL );
 }
 
 dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
-                    imp_type_handle *it, location_context *lc, address *a )
+                    imp_type_handle *ith, location_context *lc, address *a )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)lc; (void)a;
+    /* unused parameters */ (void)ii; (void)ith; (void)lc; (void)a;
 
     return( DS_FAIL );
 }
 
 dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
-                        imp_type_handle *base, imp_type_handle *derived,
+                        imp_type_handle *base_ith, imp_type_handle *derived_ith,
                         location_context *lc, address *addr )
 {
-    /* unused parameters */ (void)ii; (void)base; (void)derived; (void)lc; (void)addr;
+    /* unused parameters */ (void)ii; (void)base_ith; (void)derived_ith; (void)lc; (void)addr;
 
     return( DS_FAIL );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1, imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
     /* unused parameters */ (void)ii;
 
-    if( it1 < it2 )
+    if( ith1 < ith2 )
         return( -1 );
-    if( it1 > it2 )
+    if( ith1 > ith2 )
         return( 1 );
     return( 0 );
 }
 
-size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
+size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)num; (void)tag; (void)buff; (void)buff_size;
+    /* unused parameters */ (void)ii; (void)ith; (void)num; (void)tag; (void)buff; (void)buff_size;
 
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)ii; (void)ith;
 
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)ii; (void)ith;
 
     return( DS_OK );
 }

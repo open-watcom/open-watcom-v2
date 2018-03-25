@@ -567,12 +567,12 @@ unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
     return( len );
 }
 
-dip_status SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *it )
+dip_status SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
 {
-    it->im = is->im;
-    it->f.all = 0;
-    it->f.s.gbl = 1;
-    it->t.offset = GBL_KIND( ii, is->u.gbl );
+    ith->im = is->im;
+    ith->f.all = 0;
+    ith->f.s.gbl = 1;
+    ith->t.offset = GBL_KIND( ii, is->u.gbl );
     return( DS_OK );
 }
 

@@ -907,13 +907,13 @@ OVL_EXTERN walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_
 static bool PointerToChar( void )
 /*******************************/
 {
-    DIPHDL( type, type );
+    DIPHDL( type, th );
 
     switch( ExprSP->info.kind ) {
     case TK_POINTER:
     case TK_ARRAY:
-        DIPTypeBase( ExprSP->th, type, NULL, NULL );
-        if( TypeKind( type ) == TK_CHAR )
+        DIPTypeBase( ExprSP->th, th, NULL, NULL );
+        if( TypeKind( th ) == TK_CHAR )
             return( true );
         break;
     }

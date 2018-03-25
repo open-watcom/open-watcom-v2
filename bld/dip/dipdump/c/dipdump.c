@@ -324,9 +324,9 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
 
     /* Get more stuff, mainly to test the APIs. */
     if( 1 ) {
-        type_handle *type = alloca( DIPHandleSize( HK_TYPE ) );
+        type_handle *th = alloca( DIPHandleSize( HK_TYPE ) );
 
-        rc = DIPSymType( sym, type );
+        rc = DIPSymType( sym, th );
         if( rc ) {
         }
     }

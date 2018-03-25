@@ -994,7 +994,7 @@ static item_type DerefToSCB( type_handle *th )
             /* for Fortran CHARACTER type arguments, must pass
                a pointer to an SCB of the character block */
 
-static void Addressable( bool build_scb, type_handle *parm_type )
+static void Addressable( bool build_scb, type_handle *parm_th )
 {
     unsigned            len;
     address             addr;
@@ -1018,7 +1018,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
         if( ExprSP->info.kind == TK_STRING ) {
             src = ExprSP->v.string.loc;
         } else {
-            DIPTypeBase( parm_type, th, NULL, NULL );
+            DIPTypeBase( parm_th, th, NULL, NULL );
             PushType( th );
             SwapStack( 1 );
             DoConvert();
@@ -1028,7 +1028,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
         addr = PokePgmStack( &src, ExprSP->info.size );
     }
     if( build_scb && ExprSP->info.kind == TK_STRING ) {
-        len = MakeSCB( &item, addr, DerefToSCB( parm_type ) );
+        len = MakeSCB( &item, addr, DerefToSCB( parm_th ) );
         if( len != 0 ) {
             LocationCreate( &src, LT_INTERNAL, &item );
             addr = PokePgmStack( &src, len );

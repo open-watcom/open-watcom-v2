@@ -102,16 +102,15 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
     return( is->p->len );
 }
 
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
-                imp_sym_handle *is, imp_type_handle *it )
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
 {
     exp_block   *b;
 
     b = FindAddrBlock( ii, is->p->addr );
     if( b != NULL ) {
-        it->code = b->code;
+        ith->code = b->code;
     } else {
-        it->code = 0;
+        ith->code = 0;
     }
     return( DS_OK );
 }
@@ -168,9 +167,9 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)it; (void)ti;
+    /* unused parameters */ (void)ii; (void)is; (void)ith; (void)ti;
 
     return( DS_FAIL );
 }

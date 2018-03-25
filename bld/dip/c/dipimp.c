@@ -268,9 +268,9 @@ unsigned DCMachineData( address a, dig_info_type info_type,
     return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *ith, imp_type_handle *base_ith )
 {
-    return( ImpInterface.TypeBase( ii, it, base, NULL, NULL ) );
+    return( ImpInterface.TypeBase( ii, ith, base_ith, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )

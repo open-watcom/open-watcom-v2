@@ -391,7 +391,7 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     size_t              len;
     search_result       sr;
     lookup_item         type_li;
-    imp_type_handle     it;
+    imp_type_handle     ith;
     imp_sym_handle      *is;
 
     if( li->case_sensitive ) {
@@ -407,10 +407,10 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
         type_li.case_sensitive = li->case_sensitive;
         type_li.scope.start = NULL;
         type_li.type = ST_TYPE;
-        sr = LookupTypeName( ii, im, &type_li, &it );
+        sr = LookupTypeName( ii, im, &type_li, &ith );
         if( sr == SR_NONE )
             return( SR_NONE );
-        return( SearchMbr( ii, &it, li, d ) );
+        return( SearchMbr( ii, &ith, li, d ) );
     }
     ptr = local->start;
     for( ;; ) {
@@ -427,8 +427,8 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     sr = SR_NONE;
     for( ;; ) {
         if( blk.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) ) {
-            if( FindTypeHandle( ii, im, blk.i.type_index, &it ) == DS_OK ) {
-                sr = SearchMbr( ii, &it, li, d );
+            if( FindTypeHandle( ii, im, blk.i.type_index, &ith ) == DS_OK ) {
+                sr = SearchMbr( ii, &ith, li, d );
             }
         } else {
             for( ;; ) {
@@ -564,7 +564,7 @@ dip_status SymHdl2LclLoc( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-dip_status SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *it )
+dip_status SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
 {
     lcl_defn    defn;
     dip_status  ret;
@@ -576,7 +576,7 @@ dip_status SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is, imp_type_ha
         return( ret );
     local->base_off = 0;
     ProcDefn( ii, local->start + is->u.lcl.offset, &defn, local );
-    ret = FindTypeHandle( ii, is->im, defn.i.type_index, it );
+    ret = FindTypeHandle( ii, is->im, defn.i.type_index, ith );
     PopLoad( local );
     return( ret );
 }
@@ -729,7 +729,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
     lcl_defn    defn;
     dip_status  ret;
@@ -774,7 +774,7 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
         }
     }
     PopLoad( local );
-    return( FindTypeHandle( ii, is->im, defn.i.type_index, it ) );
+    return( FindTypeHandle( ii, is->im, defn.i.type_index, ith ) );
 }
 
 dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
@@ -825,7 +825,7 @@ static const char *FindBlockScope( imp_image_handle *ii, const char *ptr, lcl_de
 static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn *blk,
                     DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d, lclinfo *local )
 {
-    imp_type_handle             it;
+    imp_type_handle             ith;
     const char                  *next;
     lcl_defn                    defn;
     walk_result                 wr;
@@ -833,8 +833,8 @@ static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn
     switch( blk->i.class ) {
     case CODE_SYMBOL | CODE_MEMBER_SCOPE:
         /* process member list */
-        if( FindTypeHandle( ii, local->im, blk->i.type_index, &it ) == DS_OK ) {
-            wr = WalkTypeSymList( ii, &it, wk, is, d );
+        if( FindTypeHandle( ii, local->im, blk->i.type_index, &ith ) == DS_OK ) {
+            wr = WalkTypeSymList( ii, &ith, wk, is, d );
             if( wr != WR_CONTINUE ) {
                 return( wr );
             }

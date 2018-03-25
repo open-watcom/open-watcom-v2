@@ -178,7 +178,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
     walk_result         wr;
     unsigned            i;
     ji_ptr              clazz;
-    imp_type_handle     *it;
+    imp_type_handle     *ith;
     struct walk_data    data;
 
     data.wk = wk;
@@ -214,15 +214,15 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
         wr = WalkAllScopes( ii, i, a->mach.offset, WalkSymGlue, is, &data );
         break;
     case SS_TYPE:
-        it = source;
-        switch( it->kind ) {
+        ith = (imp_type_handle)source;
+        switch( ith->kind ) {
         case JT_RAWNAME:
-            clazz = GetClass( it->sig );
+            clazz = GetClass( ith->sig );
             break;
         case JT_WANTOBJECT:
         case JT_SIGNATURE:
-            if( GetU8( it->sig ) != SIGNATURE_CLASS ) return( WR_CONTINUE );
-            clazz = GetClass( it->sig + 1 );
+            if( GetU8( ith->sig ) != SIGNATURE_CLASS ) return( WR_CONTINUE );
+            clazz = GetClass( ith->sig + 1 );
             break;
         default:
             return( WR_CONTINUE );
@@ -407,23 +407,23 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
-                imp_sym_handle *is, imp_type_handle *it )
+                imp_sym_handle *is, imp_type_handle *ith )
 {
-    it->sig = GetSignature( ii, is );
+    ith->sig = GetSignature( ii, is );
     switch( is->kind ) {
     case JS_TYPE:
     case JS_PACKAGE:
-        it->kind = JT_RAWNAME;
+        ith->kind = JT_RAWNAME;
         return( DS_OK );
     }
-    switch( GetU8( it->sig ) ) {
+    switch( GetU8( ith->sig ) ) {
     case SIGNATURE_ARRAY:
     case SIGNATURE_CLASS:
-        it->u.is = *is;
-        it->kind = JT_WANTOBJECT;
+        ith->u.is = *is;
+        ith->kind = JT_WANTOBJECT;
         break;
     default:
-        it->kind = JT_SIGNATURE;
+        ith->kind = JT_SIGNATURE;
         break;
     }
 
@@ -601,7 +601,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
     struct methodblock  method;
     dip_status          ds;
@@ -618,9 +618,9 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
             ti->size = sizeof( ji_ptr );
         }
     }
-    it->sig = GetPointer( GetPointer( (ji_ptr)method.fb.clazz )
+    ith->sig = GetPointer( GetPointer( (ji_ptr)method.fb.clazz )
                                 + offsetof( ClassClass, name ) );
-    it->kind = JT_RAWNAME;
+    ith->kind = JT_RAWNAME;
     return( DS_FAIL );
 }
 
@@ -768,7 +768,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
     unsigned            i;
     imp_sym_handle      is;
     address             *a;
-    imp_type_handle     *it;
+    imp_type_handle     *ith;
     ji_ptr              clazz;
     imp_sym_handle      *new;
     search_result       sr;
@@ -876,15 +876,15 @@ return( SR_NONE );
         return( data.sr );
     case SS_TYPE:
         if( li->type != ST_NONE ) return( SR_NONE );
-        it = source;
-        switch( it->kind ) {
+        ith = (imp_type_handle)source;
+        switch( ith->kind ) {
         case JT_RAWNAME:
-            clazz = GetClass( it->sig );
+            clazz = GetClass( ith->sig );
             break;
         case JT_WANTOBJECT:
         case JT_SIGNATURE:
-            if( GetU8( it->sig ) != SIGNATURE_CLASS ) return( SR_NONE );
-            clazz = GetClass( it->sig + 1 );
+            if( GetU8( ith->sig ) != SIGNATURE_CLASS ) return( SR_NONE );
+            clazz = GetClass( ith->sig + 1 );
             break;
         default:
             return( SR_NONE );

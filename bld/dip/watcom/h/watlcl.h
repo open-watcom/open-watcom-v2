@@ -132,7 +132,7 @@ extern unsigned         SymHdl2LclName( imp_image_handle *ii, imp_sym_handle *is
 extern dip_status       SymHdl2LclLoc( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, location_list *ll );
 extern dip_status       SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+                                imp_type_handle *ith );
 extern void             SetGblLink( imp_sym_handle *is, gbl_info *link );
 extern dip_status       Lcl2GblHdl( imp_image_handle *ii, imp_sym_handle *lcl_is,
                                 imp_sym_handle *gbl_is );

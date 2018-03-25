@@ -123,9 +123,9 @@
 extern void             KillTypeLoadStack( void );
 extern void             ClearTypeCache( imp_image_handle *ii );
 extern dip_status       FindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
-                                unsigned index, imp_type_handle *it );
+                                unsigned index, imp_type_handle *ith );
 extern search_result    LookupTypeName( imp_image_handle *ii, imp_mod_handle im,
-                                lookup_item *li, imp_type_handle *it );
+                                lookup_item *li, imp_type_handle *ith );
 extern search_result    SearchEnumName( imp_image_handle *ii, imp_mod_handle im,
                                 lookup_item *li, void *d );
 extern search_result    SearchTypeName( imp_image_handle *ii, imp_mod_handle im,
@@ -139,18 +139,18 @@ extern unsigned         SymHdl2MbrName( imp_image_handle *ii, imp_sym_handle *is
 extern dip_status       SymHdl2CstValue( imp_image_handle *ii, imp_sym_handle *is,
                                 void *d );
 extern dip_status       SymHdl2CstType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+                                imp_type_handle *ith );
 extern dip_status       SymHdl2TypType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+                                imp_type_handle *ith );
 extern dip_status       SymHdl2MbrType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+                                imp_type_handle *ith );
 extern dip_status       SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, location_list *ll );
 extern dip_status       SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is,
                                 sym_info *si, location_context *lc );
-extern search_result    SearchMbr( imp_image_handle *ii, imp_type_handle *it,
+extern search_result    SearchMbr( imp_image_handle *ii, imp_type_handle *ith,
                                 lookup_item *li, void *d );
-extern walk_result      WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
+extern walk_result      WalkTypeSymList( imp_image_handle *ii, imp_type_handle *ith,
                                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern const char       *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im,
                                 const char **base );
