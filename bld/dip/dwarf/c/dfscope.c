@@ -37,8 +37,9 @@
 #include "dfscope.h"
 
 
-extern scope_node *FindScope( scope_node *last, addr_off in ){
-/******** find the down scope of start, len ************************/
+scope_node *FindScope( scope_node *last, addr_off in )
+/***** find the down scope of start, len ************/
+{
     scope_node *down;
 
     down = NULL;
@@ -83,10 +84,9 @@ static void FreeScope( scope_node *last ){
     }
 }
 
-extern scope_node *AddScope( scope_node *where, addr_off start,
-                                                addr_off end,
-                                               drmem_hdl what ){
-/**************************************************************/
+scope_node *AddScope( scope_node *where, addr_off start, addr_off end, drmem_hdl what )
+/*************************************************************************************/
+{
     scope_node *new;
     scope_node *down;
 
@@ -108,15 +108,17 @@ extern scope_node *AddScope( scope_node *where, addr_off start,
     return( new );
 }
 
-extern void InitScope( scope_ctl *ctl ){
-/*****************************************/
+void InitScope( scope_ctl *ctl )
+/******************************/
+{
     ctl->root = NULL;
     ctl->edge = NULL;
     ctl->base = NilAddr;
 }
 
-extern void FiniScope( scope_ctl *ctl ){
-/**************************************/
+void FiniScope( scope_ctl *ctl )
+/******************************/
+{
     FreeScope( ctl->root );
     ctl->root = NULL;
     ctl->edge = NULL;

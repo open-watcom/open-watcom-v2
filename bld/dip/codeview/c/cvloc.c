@@ -32,7 +32,6 @@
 
 #include "cvinfo.h"
 
-extern address          NilAddr;
 
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {

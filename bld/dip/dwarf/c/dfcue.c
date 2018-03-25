@@ -36,14 +36,16 @@
 #include "dfline.h"
 #include "dfmod.h"
 #include "dfmodinf.h"
+#include "dfcue.h"
+
 
 /************************/
 /*** cue cache **********/
 /************************/
 
 
-extern void InitImpCueInfo( imp_image_handle *ii )
-/************************************************/
+void InitImpCueInfo( imp_image_handle *ii )
+/*****************************************/
 {
     cue_list    *list;
 
@@ -67,8 +69,8 @@ static void ResetCueInfo(  cue_list *list )
 }
 
 
-extern bool FiniImpCueInfo( imp_image_handle *ii )
-/************************************************/
+bool FiniImpCueInfo( imp_image_handle *ii )
+/*****************************************/
 {
     bool        ret;
     cue_list    *list;
@@ -300,7 +302,7 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im, 
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
                           DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 /***********************************************************************************/
 {

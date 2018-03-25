@@ -34,9 +34,9 @@
 #include "dfsegs.h"
 
 
-extern void  InitSegList( seg_list *ctl, unsigned_16 item_size ){
-/*********************************/
-
+void  InitSegList( seg_list *ctl, unsigned_16 item_size )
+/*******************************************************/
+{
     ctl->head = NULL;
     ctl->item_size = item_size;
     ctl->count = 0;

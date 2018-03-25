@@ -73,8 +73,9 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 
 static imp_image_handle *Images;
 
-extern void DFAddImage( imp_image_handle *ii ){
-/**************************************/
+void DFAddImage( imp_image_handle *ii )
+/*************************************/
+{
     ii->next = Images;
     Images = ii;
 }

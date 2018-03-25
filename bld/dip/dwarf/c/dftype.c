@@ -373,7 +373,7 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
     return( it->im );
 }
 
-extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
+void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
 {
     /*
         Map dwarf info to dip imp
@@ -766,9 +766,10 @@ drmem_hdl GetParmN( imp_image_handle *ii, drmem_hdl proc, int count )
     return( ret );
 }
 
-extern int GetParmCount(  imp_image_handle *ii, drmem_hdl proc ){
-/******************************************************/
+int GetParmCount(  imp_image_handle *ii, drmem_hdl proc )
+/*******************************************************/
 // return handle of the n parm
+{
     parm_wlk df;
 
     df.count = 0;
@@ -1143,8 +1144,9 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     return( true );
 }
 
-extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d ){
+walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+{
     drmem_hdl       btype;
     type_wlk_wlk    df;
     df_cleaner      cleanup;
@@ -1311,9 +1313,9 @@ static bool AInhFind( drmem_hdl inh, int index, void *_df )
     return( df->cont );
 }
 
-extern dip_status  DFBaseAdjust( imp_image_handle *ii,
-                                drmem_hdl base, drmem_hdl derived,
-                                location_context *lc, address *addr ){
+dip_status  DFBaseAdjust( imp_image_handle *ii, drmem_hdl base, drmem_hdl derived,
+                                            location_context *lc, address *addr )
+{
     type_wlk_inherit df;
     drmem_hdl        dr_base;
 

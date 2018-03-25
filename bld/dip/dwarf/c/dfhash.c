@@ -149,8 +149,8 @@ static uint_32 elf_hash( char const *name )
 
 #define BNUM( key )  ((key >> 4) % NAME_BUCKETS)
 
-extern name_ctl *InitHashName( void )
-/***********************************/
+name_ctl *InitHashName( void )
+/****************************/
 {
     int         bnum;
     name_ctl    *ctl;
@@ -166,8 +166,8 @@ extern name_ctl *InitHashName( void )
 }
 
 
-extern void FiniHashName( name_ctl *ctl )
-/***************************************/
+void FiniHashName( name_ctl *ctl )
+/********************************/
 // Kill hash table
 {
     unsigned    bnum;
@@ -201,8 +201,8 @@ extern void FiniHashName( name_ctl *ctl )
 }
 
 
-extern void AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym )
-/***********************************************************************/
+void AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym )
+/****************************************************************/
 // Add name, sym to foray
 {
     uint_32     key;

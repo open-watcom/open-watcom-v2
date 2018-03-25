@@ -598,8 +598,8 @@ static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 }
 
 
-extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
-/**************************************************************/
+drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
+/******************************************************/
 {
     /* Find handle of Watcom return symbol. */
     drmem_hdl ret = DRMEM_HDL_NULL;
@@ -1666,10 +1666,9 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 }
 
 
-extern search_result   DoLookupSym( imp_image_handle *ii,
-                symbol_source ss, void *source, lookup_item *li,
-                location_context *lc, void *d )
-/**************************************************************/
+search_result   DoLookupSym( imp_image_handle *ii, symbol_source ss, void *source,
+                                lookup_item *li, location_context *lc, void *d )
+/********************************************************************************/
 {
     imp_mod_handle      im;
     imp_sym_handle      *is;

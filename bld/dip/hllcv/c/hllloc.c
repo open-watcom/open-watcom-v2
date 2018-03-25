@@ -35,16 +35,14 @@
 #include "cv4w.h"
 
 enum {
-#define _CVREG( name, num )     CV_X86_##name = num,
-#include "cv4intl.h"
-#undef _CVREG
-#define _CVREG( name, num )     CV_AXP_##name = num,
-#include "cv4axp.h"
-CV_LAST_REG
+    #define _CVREG( name, num )     CV_X86_##name = num,
+    #include "cv4intl.h"
+    #undef _CVREG
+    #define _CVREG( name, num )     CV_AXP_##name = num,
+    #include "cv4axp.h"
+    CV_LAST_REG
 };
 
-
-extern address          NilAddr;
 
 void hllLocationCreate( location_list *ll, location_type lt, void *d )
 {
