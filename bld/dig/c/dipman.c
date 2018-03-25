@@ -753,13 +753,13 @@ walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, v
 }
 
 OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
-                                imp_cue_handle *ich, void *d )
+                                imp_cue_handle *imp_cueh, void *d )
 {
     walk_glue   *wd = d;
 
     /* unused parameters */ (void)iih;
 
-    return( wd->walk.c( ICH2CH( ich ), wd->d ) );
+    return( wd->walk.c( ICH2CH( imp_cueh ), wd->d ) );
 }
 
 walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )

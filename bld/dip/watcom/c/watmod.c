@@ -507,13 +507,13 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
  * PrimaryCueFile -- return the module source file
  */
 
-size_t PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+size_t PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *imp_cueh,
                         char *buff, size_t buff_size )
 {
     size_t      len;
     char        *name;
 
-    name = ModPointer( ii, ic->im )->name;
+    name = ModPointer( ii, imp_cueh->im )->name;
     len = (unsigned char)name[0];
     if( buff_size > 0 ) {
         --buff_size;

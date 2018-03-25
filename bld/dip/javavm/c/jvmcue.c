@@ -36,41 +36,40 @@
 
 //NYI: handle methods with zero length line number table
 
-static dip_status GetMethodBlock( imp_cue_handle *ic, struct methodblock *mb )
+static dip_status GetMethodBlock( imp_cue_handle *imp_cueh, struct methodblock *mb )
 {
     ji_ptr      mbp;
 
-    mbp = GetPointer( ic->cc + offsetof( ClassClass, methods ) );
+    mbp = GetPointer( imp_cueh->cc + offsetof( ClassClass, methods ) );
     if( mbp == 0 ) return( DS_FAIL );
-    return( GetData( mbp + ic->mb_idx * sizeof( *mb ), mb, sizeof( *mb ) ) );
+    return( GetData( mbp + imp_cueh->mb_idx * sizeof( *mb ), mb, sizeof( *mb ) ) );
 }
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
-                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh,
                     void *d )
 {
     //NYI: handle native methods at the front
-    ic->mb_idx = 0;
-    ic->ln_idx = 0;
-    ic->cc = ii->cc;
-    return( wk( ii, ic, d ) );
+    imp_cueh->mb_idx = 0;
+    imp_cueh->ln_idx = 0;
+    imp_cueh->cc = ii->cc;
+    return( wk( ii, imp_cueh, d ) );
 }
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
-                                imp_cue_handle *ic )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
      return( IMH_JAVA );
 }
 
 size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, size_t buff_size )
+                        imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
 {
     ji_ptr      name;
     size_t      len;
     size_t      class_len = 0;
 
     /* Stick the package name on the front of the source file name */
-    name = GetPointer( ic->cc + offsetof( ClassClass, name ) );
+    name = GetPointer( imp_cueh->cc + offsetof( ClassClass, name ) );
     class_len = GetString( name, NameBuff, sizeof( NameBuff ) );
     for( ;; ) {
         if( class_len == 0 ) break;
@@ -78,42 +77,41 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
         if( NameBuff[class_len-1] == '\\' ) break;
         --class_len;
     }
-    name = GetPointer( ic->cc + offsetof( ClassClass, source_name ) );
+    name = GetPointer( imp_cueh->cc + offsetof( ClassClass, source_name ) );
     len = GetString( name, &NameBuff[class_len], sizeof( NameBuff ) - class_len );
     return( NameCopy( buff, NameBuff, buff_size, len + class_len ) );
 }
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     return( 1 );
 }
 
-static dip_status FillInLastIC( imp_cue_handle *ic, unsigned mb_idx )
+static dip_status FillInLastIC( imp_cue_handle *imp_cueh, unsigned mb_idx )
 {
     struct methodblock  mb;
     dip_status          ds;
 
-    ic->mb_idx = mb_idx;
-    ds = GetMethodBlock( ic, &mb );
+    imp_cueh->mb_idx = mb_idx;
+    ds = GetMethodBlock( imp_cueh, &mb );
     if( ds != DS_OK ) return( ds );
-    ic->ln_idx = mb.line_number_table_length - 1;
+    imp_cueh->ln_idx = mb.line_number_table_length - 1;
     return( DS_OK );
 }
 
-static void FillInFirstIC( imp_cue_handle *ic, unsigned mb_idx )
+static void FillInFirstIC( imp_cue_handle *imp_cueh, unsigned mb_idx )
 {
-    ic->mb_idx = mb_idx;
-    ic->ln_idx = 0;
+    imp_cueh->mb_idx = mb_idx;
+    imp_cueh->ln_idx = 0;
 }
 
-static unsigned GetNumMethods( imp_cue_handle *ic )
+static unsigned GetNumMethods( imp_cue_handle *imp_cueh )
 {
-    return( GetU16( ic->cc + offsetof( ClassClass, methods_count ) ) );
+    return( GetU16( imp_cueh->cc + offsetof( ClassClass, methods_count ) ) );
 }
 
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
-                imp_cue_handle *src, int adj, imp_cue_handle *dst )
+                imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
 {
     unsigned            mb_idx;
     dip_status          ds;
@@ -121,81 +119,79 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
     unsigned            backup;
 
     ds = DS_OK;
-    dst->mb_idx = src->mb_idx;
-    dst->ln_idx = src->ln_idx;
-    dst->cc = src->cc;
+    dst_imp_cueh->mb_idx = src_imp_cueh->mb_idx;
+    dst_imp_cueh->ln_idx = src_imp_cueh->ln_idx;
+    dst_imp_cueh->cc = src_imp_cueh->cc;
     if( adj < 0 ) {
-        backup = dst->ln_idx;
+        backup = dst_imp_cueh->ln_idx;
         for( ;; ) {
             for( ;; ) {
-                if( dst->ln_idx >= -adj ) {
-                    dst->ln_idx += adj;
+                if( dst_imp_cueh->ln_idx >= -adj ) {
+                    dst_imp_cueh->ln_idx += adj;
                     return( ds );
                 }
                 /* have to back up to previous method */
                 adj += backup;
-                mb_idx = dst->mb_idx;
+                mb_idx = dst_imp_cueh->mb_idx;
                 if( mb_idx == 0 ) break;
-                FillInLastIC( dst, mb_idx - 1 );
-                backup = dst->ln_idx + 1;
+                FillInLastIC( dst_imp_cueh, mb_idx - 1 );
+                backup = dst_imp_cueh->ln_idx + 1;
             }
             /* have to wrap around to last method */
             ds = DS_WRAPPED;
-            FillInLastIC( dst, GetNumMethods( dst ) - 1 );
-            backup = dst->ln_idx + 1;
+            FillInLastIC( dst_imp_cueh, GetNumMethods( dst_imp_cueh ) - 1 );
+            backup = dst_imp_cueh->ln_idx + 1;
         }
     } else {
         for( ;; ) {
             for( ;; ) {
-                if( !GetMethodBlock( dst, &mb ) != DS_OK ) {
+                if( !GetMethodBlock( dst_imp_cueh, &mb ) != DS_OK ) {
                     return( DS_ERR|DS_FAIL );
                 }
-                if( adj < (mb.line_number_table_length - dst->ln_idx) ) {
-                    dst->ln_idx += adj;
+                if( adj < (mb.line_number_table_length - dst_imp_cueh->ln_idx) ) {
+                    dst_imp_cueh->ln_idx += adj;
                     return( ds );
                 }
-                adj -= mb.line_number_table_length - dst->ln_idx;
+                adj -= mb.line_number_table_length - dst_imp_cueh->ln_idx;
                 /* advance to next method */
-                mb_idx = dst->mb_idx;
-                if( mb_idx >= GetNumMethods( dst ) ) break;
-                FillInFirstIC( dst, mb_idx + 1 );
+                mb_idx = dst_imp_cueh->mb_idx;
+                if( mb_idx >= GetNumMethods( dst_imp_cueh ) ) break;
+                FillInFirstIC( dst_imp_cueh, mb_idx + 1 );
             }
             /* have to wrap around to first method */
             ds = DS_WRAPPED;
-            FillInFirstIC( dst, 0 );
+            FillInFirstIC( dst_imp_cueh, 0 );
         }
     }
 }
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     struct methodblock  mb;
 
-    if( GetMethodBlock( ic, &mb ) != DS_OK ) return( 0 );
+    if( GetMethodBlock( imp_cueh, &mb ) != DS_OK ) return( 0 );
     return( GetU32( (ji_ptr)mb.line_number_table
-                + ic->ln_idx * sizeof( struct lineno )
+                + imp_cueh->ln_idx * sizeof( struct lineno )
                 + offsetof( struct lineno, line_number ) ) );
 }
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     return( 0 );
 }
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     ji_ptr              ln_tbl;
     address             a;
     struct methodblock  mb;
 
-    if( GetMethodBlock( ic, &mb ) != DS_OK ) return( NilAddr );
+    if( GetMethodBlock( imp_cueh, &mb ) != DS_OK ) return( NilAddr );
 
     a = DefCodeAddr;
     ln_tbl = (ji_ptr)mb.line_number_table;
     a.mach.offset = (ji_ptr)mb.code + GetU32( ln_tbl
-                            + ic->ln_idx * sizeof( struct lineno )
+                            + imp_cueh->ln_idx * sizeof( struct lineno )
                             + offsetof( struct lineno, pc ) );
     return( a );
 }
@@ -204,7 +200,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
 
 search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
-                unsigned column, imp_cue_handle *ic )
+                unsigned column, imp_cue_handle *imp_cueh )
 {
 #if 0
     unsigned            mb_idx;
@@ -217,7 +213,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
     unsigned            get;
     unsigned            i;
 
-    ic->cc = ii->cc;
+    imp_cueh->cc = ii->cc;
     best_ln = ~0L;
     for( mb_idx = 0; mb_idx < ii->num_methods; ++mb_idx ) {
         ln_idx = 0;
@@ -231,14 +227,14 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
             for( i = 0; i < get; ++i ) {
                 curr_ln = cache[i].line_number;
                 if( curr_ln == line ) {
-                    ic->mb_idx = mb_idx;
-                    ic->ln_idx = ln_idx + i;
+                    imp_cueh->mb_idx = mb_idx;
+                    imp_cueh->ln_idx = ln_idx + i;
                     return( SR_EXACT );
                 }
                 if( (curr_ln > line) && (curr_ln < best_ln) ) {
                     best_ln = curr_ln;
-                    ic->mb_idx = mb_idx;
-                    ic->ln_idx = ln_idx + i;
+                    imp_cueh->mb_idx = mb_idx;
+                    imp_cueh->ln_idx = ln_idx + i;
                 }
             }
             ln_idx += get;
@@ -258,15 +254,15 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
         DCStatus( ds );
         return( SR_FAIL );
     }
-    ic->cc = ret.class_pointer;
-    ic->mb_idx = ret.method_index;
-    ic->ln_idx = ret.line_index;
+    imp_cueh->cc = ret.class_pointer;
+    imp_cueh->mb_idx = ret.method_index;
+    imp_cueh->ln_idx = ret.line_index;
     return( ret.ret );
 }
 
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
-                imp_mod_handle im, address addr, imp_cue_handle *ic )
+                imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 {
 #if 0
     ji_ptr              ln_tbl;
@@ -275,17 +271,17 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     long                hi;
     long                target;
 
-    switch( FindMBIndex( ii, addr.mach.offset, &ic->mb_idx ) ) {
+    switch( FindMBIndex( ii, addr.mach.offset, &ich->mb_idx ) ) {
     case SR_EXACT:
     case SR_CLOSEST:
         break;
     default:
         return( SR_NONE );
     }
-    ic->cc = ii->cc;
-    addr.mach.offset -= (ji_ptr)ii->methods[ic->mb_idx].code;
-    ln_tbl = (ji_ptr)ii->methods[ic->mb_idx].line_number_table;
-    hi = ii->methods[ic->mb_idx].line_number_table_length - 1;
+    imp_cueh->cc = ii->cc;
+    addr.mach.offset -= (ji_ptr)ii->methods[imp_cueh->mb_idx].code;
+    ln_tbl = (ji_ptr)ii->methods[imp_cueh->mb_idx].line_number_table;
+    hi = ii->methods[imp_cueh->mb_idx].line_number_table_length - 1;
     lo = 0;
     while( lo <= hi ) {
         target = (lo + hi) >> 1;
@@ -297,12 +293,12 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
         } else if( addr.mach.offset > pc ) {
             lo = target + 1;
         } else {                  /* exact match */
-            ic->ln_idx = target;
+            imp_cueh->ln_idx = target;
             return( SR_EXACT );
         }
     }
     if( hi < 0 ) return( SR_NONE );
-    ic->ln_idx = hi;
+    imp_cueh->ln_idx = hi;
     return( SR_CLOSEST );
 #endif
     mad_jvm_findaddrcue_acc     acc;
@@ -316,25 +312,25 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
         DCStatus( ds );
         return( SR_FAIL );
     }
-    ic->cc = ret.class_pointer;
-    ic->mb_idx = ret.method_index;
-    ic->ln_idx = ret.line_index;
+    imp_cueh->cc = ret.class_pointer;
+    imp_cueh->mb_idx = ret.method_index;
+    imp_cueh->ln_idx = ret.line_index;
     return( ret.ret );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
-    if( ic1->cc < ic2->cc )
+    if( imp_cueh1->cc < imp_cueh2->cc )
         return( -1 );
-    if( ic1->cc > ic2->cc )
+    if( imp_cueh1->cc > imp_cueh2->cc )
         return( 1 );
-    if( ic1->mb_idx < ic2->mb_idx )
+    if( imp_cueh1->mb_idx < imp_cueh2->mb_idx )
         return( -1 );
-    if( ic1->mb_idx > ic2->mb_idx )
+    if( imp_cueh1->mb_idx > imp_cueh2->mb_idx )
         return( 1 );
-    if( ic1->ln_idx < ic2->ln_idx )
+    if( imp_cueh1->ln_idx < imp_cueh2->ln_idx )
         return( -1 );
-    if( ic1->ln_idx > ic2->ln_idx )
+    if( imp_cueh1->ln_idx > imp_cueh2->ln_idx )
         return( 1 );
     return( 0 );
 }

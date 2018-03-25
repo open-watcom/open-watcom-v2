@@ -40,7 +40,7 @@ typedef struct {
 } off_range;
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
-                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh,
                     void *d )
 {
     cv_directory_entry                  *cde;
@@ -70,15 +70,15 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
     */
     file_off = walloca( file_tab_size );
     memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
-    ic->im = im;
+    imp_cueh->im = im;
     for( i = 0; i < file_tab_count; ++i ) {
-        ic->pair = 0;
-        ic->file = cde->lfo + file_off[i];
-        fp = VMBlock( ii, ic->file, sizeof( *fp ) );
+        imp_cueh->pair = 0;
+        imp_cueh->file = cde->lfo + file_off[i];
+        fp = VMBlock( ii, imp_cueh->file, sizeof( *fp ) );
         if( fp == NULL )
             return( WR_FAIL );
-        ic->line = cde->lfo + fp->baseSrcLn[0];
-        wr = wk( ii, ic, d );
+        imp_cueh->line = cde->lfo + fp->baseSrcLn[0];
+        wr = wk( ii, imp_cueh, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
@@ -86,16 +86,14 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
-                                imp_cue_handle *ic )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     /* unused parameters */ (void)ii;
 
-    return( ic->im );
+    return( imp_cueh->im );
 }
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
-                        imp_cue_handle *ic, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
 {
     void                                *p;
     unsigned_16                         name_len;
@@ -103,7 +101,7 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
     virt_mem                            offset;
 
 
-    offset = ic->file;
+    offset = imp_cueh->file;
     fp = VMBlock( ii, offset, sizeof( *fp ) );
     if( fp == 0 )
         return( 0 );
@@ -120,59 +118,56 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
     return( NameCopy( buff, p, buff_size, name_len ) );
 }
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     /* unused parameters */ (void)ii;
 
-    return( ic->file );
+    return( imp_cueh->file );
 }
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     cv_sst_src_module_line_number       *lp;
     unsigned long                       offset;
     unsigned_16                         *num;
 
-    lp = VMBlock( ii, ic->line, sizeof( *lp ) );
+    lp = VMBlock( ii, imp_cueh->line, sizeof( *lp ) );
     if( lp == NULL )
         return( 0 );
     if( lp->cPair == 0 )
         return( 0 );
     offset = offsetof( cv_sst_src_module_line_number, offset )
                 + (unsigned long)lp->cPair * sizeof( unsigned_32 )
-                + ic->pair * sizeof( unsigned_16 );
-    num = VMBlock( ii, ic->line + offset, sizeof( unsigned_16 ) );
+                + imp_cueh->pair * sizeof( unsigned_16 );
+    num = VMBlock( ii, imp_cueh->line + offset, sizeof( unsigned_16 ) );
     if( num == NULL )
         return( 0 );
     return( *num );
 }
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     return( 0 );
 }
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
-                        imp_cue_handle *ic )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
     cv_sst_src_module_line_number       *lp;
     address                             addr;
     unsigned long                       offset;
     unsigned_32                         *off_p;
 
-    lp = VMBlock( ii, ic->line, sizeof( *lp ) );
+    lp = VMBlock( ii, imp_cueh->line, sizeof( *lp ) );
     if( lp == NULL )
         return( NilAddr );
     if( lp->cPair == 0 )
         return( NilAddr );
     addr.mach.segment = lp->Seg;
     offset = offsetof( cv_sst_src_module_line_number, offset )
-                + (unsigned long)ic->pair * sizeof( unsigned_32 );
-    off_p = VMBlock( ii, ic->line + offset, sizeof( unsigned_16 ) );
+                + (unsigned long)imp_cueh->pair * sizeof( unsigned_32 );
+    off_p = VMBlock( ii, imp_cueh->line + offset, sizeof( unsigned_16 ) );
     if( off_p == NULL )
         return( NilAddr );
     addr.mach.offset = *off_p;
@@ -180,8 +175,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
     return( addr );
 }
 
-static dip_status AdjForward( imp_image_handle *ii, unsigned long bias,
-                                imp_cue_handle *ic )
+static dip_status AdjForward( imp_image_handle *ii, unsigned long bias, imp_cue_handle *imp_cueh )
 {
     cv_sst_src_module_line_number       *lp;
     cv_sst_src_module_file_table        *fp;
@@ -189,22 +183,22 @@ static dip_status AdjForward( imp_image_handle *ii, unsigned long bias,
     unsigned                            i;
 
     ds = DS_OK;
-    ic->pair++;
+    imp_cueh->pair++;
     for( ;; ) {
-        lp = VMBlock( ii, ic->line, sizeof( *lp ) );
+        lp = VMBlock( ii, imp_cueh->line, sizeof( *lp ) );
         if( lp == NULL )
             return( DS_ERR|DS_FAIL );
-        if( ic->pair < lp->cPair )
+        if( imp_cueh->pair < lp->cPair )
             return( ds );
-        fp = VMBlock( ii, ic->file, sizeof( *fp ) );
+        fp = VMBlock( ii, imp_cueh->file, sizeof( *fp ) );
         if( fp == NULL )
             return( DS_ERR|DS_FAIL );
-        fp = VMBlock( ii, ic->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
+        fp = VMBlock( ii, imp_cueh->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
         if( fp == NULL )
             return( DS_ERR|DS_FAIL );
         i = 0;
         for( ;; ) {
-            if( (fp->baseSrcLn[i] + bias) == ic->line )
+            if( (fp->baseSrcLn[i] + bias) == imp_cueh->line )
                 break;
             ++i;
         }
@@ -212,13 +206,12 @@ static dip_status AdjForward( imp_image_handle *ii, unsigned long bias,
             i = 0;
             ds = DS_WRAPPED;
         }
-        ic->line = fp->baseSrcLn[i] + bias;
-        ic->pair = 0;
+        imp_cueh->line = fp->baseSrcLn[i] + bias;
+        imp_cueh->pair = 0;
     }
 }
 
-static dip_status AdjBackward( imp_image_handle *ii, unsigned long bias,
-                                imp_cue_handle *ic )
+static dip_status AdjBackward( imp_image_handle *ii, unsigned long bias, imp_cue_handle *imp_cueh )
 {
     cv_sst_src_module_line_number       *lp;
     cv_sst_src_module_file_table        *fp;
@@ -226,24 +219,24 @@ static dip_status AdjBackward( imp_image_handle *ii, unsigned long bias,
     unsigned                            i;
 
     ds = DS_OK;
-    ic->pair--;
-    lp = VMBlock( ii, ic->line, sizeof( *lp ) );
+    imp_cueh->pair--;
+    lp = VMBlock( ii, imp_cueh->line, sizeof( *lp ) );
     if( lp == NULL )
         return( DS_ERR|DS_FAIL );
     for( ;; ) {
-        /* if ic->pair went negative, the following compare will fail
+        /* if imp_cueh->pair went negative, the following compare will fail
            because of unsigned comparison */
-        if( ic->pair < lp->cPair )
+        if( imp_cueh->pair < lp->cPair )
             return( ds );
-        fp = VMBlock( ii, ic->file, sizeof( *fp ) );
+        fp = VMBlock( ii, imp_cueh->file, sizeof( *fp ) );
         if( fp == NULL )
             return( DS_ERR|DS_FAIL );
-        fp = VMBlock( ii, ic->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
+        fp = VMBlock( ii, imp_cueh->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
         if( fp == NULL )
             return( DS_ERR|DS_FAIL );
         i = 0;
         for( ;; ) {
-            if( (fp->baseSrcLn[i] + bias) == ic->line )
+            if( (fp->baseSrcLn[i] + bias) == imp_cueh->line )
                 break;
             ++i;
         }
@@ -251,30 +244,30 @@ static dip_status AdjBackward( imp_image_handle *ii, unsigned long bias,
             i = fp->cSeg - 1;
             ds = DS_WRAPPED;
         }
-        ic->line = fp->baseSrcLn[i] + bias;
-        lp = VMBlock( ii, ic->line, sizeof( *lp ) );
+        imp_cueh->line = fp->baseSrcLn[i] + bias;
+        lp = VMBlock( ii, imp_cueh->line, sizeof( *lp ) );
         if( lp == NULL )
             return( DS_ERR|DS_FAIL );
-        ic->pair = lp->cPair - 1;
+        imp_cueh->pair = lp->cPair - 1;
     }
 }
 
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
-                imp_cue_handle *ic, int adj, imp_cue_handle *aic )
+                imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
 {
     cv_directory_entry  *cde;
     dip_status          status;
     dip_status          ok;
 
-    cde = FindDirEntry( ii, ic->im, sstSrcModule );
+    cde = FindDirEntry( ii, src_imp_cueh->im, sstSrcModule );
     if( cde == NULL ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
-    *aic = *ic;
+    *dst_imp_cueh = *src_imp_cueh;
     ok = DS_OK;
     while( adj > 0 ) {
-        status = AdjForward( ii, cde->lfo, aic );
+        status = AdjForward( ii, cde->lfo, dst_imp_cueh );
         if( status & DS_ERR )
             return( status );
         if( status != DS_OK )
@@ -282,7 +275,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
         --adj;
     }
     while( adj < 0 ) {
-        status = AdjBackward( ii, cde->lfo, aic );
+        status = AdjBackward( ii, cde->lfo, dst_imp_cueh );
         if( status & DS_ERR )
             return( status );
         if( status != DS_OK )
@@ -294,7 +287,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
 
 search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
-                unsigned column, imp_cue_handle *ic )
+                unsigned column, imp_cue_handle *imp_cueh )
 {
     cv_directory_entry                  *cde;
     cv_sst_src_module_header            *hdr;
@@ -321,8 +314,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
             return( SR_NONE );
         file = hdr->baseSrcFile[0] + cde->lfo;
     }
-    ic->im = im;
-    ic->file = file;
+    imp_cueh->im = im;
+    imp_cueh->file = file;
     fp = VMBlock( ii, file, sizeof( *fp ) );
     if( fp == NULL )
         return( SR_NONE );
@@ -348,8 +341,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
             line_number = VMBlock( ii, num_base, sizeof( *line_number ) );
             if( *line_number >= line && *line_number < best_line ) {
                 best_line = *line_number;
-                ic->line = line_base;
-                ic->pair = pair;
+                imp_cueh->line = line_base;
+                imp_cueh->pair = pair;
                 if( best_line == line ) {
                     return( SR_EXACT );
                 }
@@ -422,12 +415,8 @@ static unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
     return( hi_idx );
 }
 
-static search_result SearchFile( imp_image_handle              *ii,
-                          address                       addr,
-                          imp_cue_handle                *ic,
-                          virt_mem                      file_base,
-                          cv_directory_entry            *cde,
-                          addr_off                      *best_offset)
+static search_result SearchFile( imp_image_handle *ii, address addr, imp_cue_handle *imp_cueh,
+                          virt_mem file_base, cv_directory_entry *cde, addr_off *best_offset )
 {
     cv_sst_src_module_file_table        *fp;
     cv_sst_src_module_line_number       *lp;
@@ -474,9 +463,9 @@ static search_result SearchFile( imp_image_handle              *ii,
             offsetof( cv_sst_src_module_line_number, offset[0] ),
             lp->cPair, addr.mach.offset, best_offset, curr_addr.mach.offset );
         if( pair != NO_IDX ) {
-            ic->file = file_base;
-            ic->line = line_base;
-            ic->pair = pair;
+            imp_cueh->file = file_base;
+            imp_cueh->line = line_base;
+            imp_cueh->pair = pair;
             if( *best_offset == addr.mach.offset ) {
                 return( SR_EXACT );
             }
@@ -490,7 +479,7 @@ static search_result SearchFile( imp_image_handle              *ii,
 }
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
-                imp_mod_handle im, address addr, imp_cue_handle *ic )
+                imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 {
     cv_directory_entry                  *cde;
     cv_sst_src_module_header            *hdr;
@@ -508,7 +497,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL )
         return( SR_NONE );
-    ic->im = im;
+    imp_cueh->im = im;
     num_files = hdr->cFile;
     file_tab_size = num_files * sizeof( unsigned_32 );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) + file_tab_size );
@@ -517,7 +506,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     best_offset = (addr_off)-1L;
     for( file_idx = 0; file_idx < num_files; ++file_idx ) {
         file_base = files[file_idx] + cde->lfo;
-        rc = SearchFile( ii, addr, ic, file_base, cde, &best_offset );
+        rc = SearchFile( ii, addr, imp_cueh, file_base, cde, &best_offset );
         if( rc != SR_FAIL ) {
             return( rc );   /* see comment in SearchFile above */
         }
@@ -527,21 +516,21 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( SR_CLOSEST );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
     /* unused parameters */ (void)ii;
 
-    if( ic1->im < ic2->im )
+    if( imp_cueh1->im < imp_cueh2->im )
         return( -1 );
-    if( ic1->im > ic2->im )
+    if( imp_cueh1->im > imp_cueh2->im )
         return( 1 );
-    if( ic1->line < ic2->line )
+    if( imp_cueh1->line < imp_cueh2->line )
         return( -1 );
-    if( ic1->line > ic2->line )
+    if( imp_cueh1->line > imp_cueh2->line )
         return( 1 );
-    if( ic1->pair < ic2->pair )
+    if( imp_cueh1->pair < imp_cueh2->pair )
         return( -1 );
-    if( ic1->pair > ic2->pair )
+    if( imp_cueh1->pair > imp_cueh2->pair )
         return( 1 );
     return( 0 );
 }

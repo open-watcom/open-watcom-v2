@@ -708,66 +708,66 @@ OVL_EXTERN search_result WVIMPENTRY( ScopeOuter )( imp_image_handle *ii, imp_mod
 
 
 OVL_EXTERN walk_result WVIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
-            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
+            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)ic; (void)d;
+    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)imp_cueh; (void)d;
 
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN imp_mod_handle WVIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN imp_mod_handle WVIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     /* will never get called */
     return( WV_INT_MH );
 }
 
-OVL_EXTERN size_t WVIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
+OVL_EXTERN size_t WVIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, char *name, size_t max )
 {
-    /* unused parameters */ (void)ii; (void)ic; (void)name; (void)max;
+    /* unused parameters */ (void)ii; (void)imp_cueh; (void)name; (void)max;
 
     /* will never get called */
     return( 0 );
 }
 
 
-OVL_EXTERN cue_fileid   WVIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN cue_fileid   WVIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-OVL_EXTERN dip_status WVIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *orig_ic,
-                        int adj, imp_cue_handle *adj_ic )
+OVL_EXTERN dip_status WVIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *src_imp_cueh,
+                        int adj, imp_cue_handle *dst_imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)orig_ic; (void)adj; (void)adj_ic;
+    /* unused parameters */ (void)ii; (void)src_imp_cueh; (void)adj; (void)dst_imp_cueh;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-OVL_EXTERN unsigned long WVIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN unsigned long WVIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-OVL_EXTERN unsigned WVIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN unsigned WVIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-OVL_EXTERN address WVIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN address WVIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ii; (void)imp_cueh;
 
     /* will never get called */
     return( NilAddr );
@@ -775,17 +775,17 @@ OVL_EXTERN address WVIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *
 
 
 OVL_EXTERN search_result WVIMPENTRY( LineCue )( imp_image_handle *ii,imp_mod_handle im, cue_fileid file,
-                    unsigned long line, unsigned column, imp_cue_handle *ic )
+                    unsigned long line, unsigned column, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)file; (void)line; (void)column; (void)ic;
+    /* unused parameters */ (void)ii; (void)im; (void)file; (void)line; (void)column; (void)imp_cueh;
 
     return( SR_NONE );
 }
 
 OVL_EXTERN search_result WVIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
-                                address a, imp_cue_handle *ic )
+                                address a, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)a; (void)ic;
+    /* unused parameters */ (void)ii; (void)im; (void)a; (void)imp_cueh;
 
     return( SR_NONE );
 }
@@ -811,10 +811,9 @@ OVL_EXTERN int WVIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 }
 
 
-OVL_EXTERN int WVIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                        imp_cue_handle *ic2 )
+OVL_EXTERN int WVIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
-    /* unused parameters */ (void)ii; (void)ic1; (void)ic2;
+    /* unused parameters */ (void)ii; (void)imp_cueh1; (void)imp_cueh2;
 
     /* never called */
     return( 0 );
