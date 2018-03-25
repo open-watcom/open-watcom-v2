@@ -32,10 +32,10 @@
 
 #include <stddef.h>
 #include "dbgdefn.h"
-#undef AddrMod
-#undef AddrSym
-#undef AddrScope
-#undef AddrCue
+#undef DIPAddrMod
+#undef DIPAddrSym
+#undef DIPAddrScope
+#undef DIPAddrCue
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgmem.h"

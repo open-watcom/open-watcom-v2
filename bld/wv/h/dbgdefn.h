@@ -195,7 +195,7 @@ enum {
 
 #define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )
 
-#define AddrCue Dont_call_AddrCue_directly___call_DeAliasAddrCue_instead
-#define AddrScope Dont_call_AddrScope_directly___call_DeAliasAddrScope_instead
-#define AddrSym Dont_call_AddrSym_directly___call_DeAliasAddrSym_instead
-#define AddrMod Dont_call_AddrMod_directly___call_DeAliasAddrMod_instead
+#define DIPAddrCue      Dont_call_DIPAddrCue_directly___call_DeAliasAddrCue_instead
+#define DIPAddrScope    Dont_call_DIPAddrScope_directly___call_DeAliasAddrScope_instead
+#define DIPAddrSym      Dont_call_DIPAddrSym_directly___call_DeAliasAddrSym_instead
+#define DIPAddrMod      Dont_call_DIPAddrMod_directly___call_DeAliasAddrMod_instead
