@@ -185,7 +185,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
     VarString           *newstring; /* a new value */
     YYTOKENTYPE         token;
 #ifdef SCANDEBUG
-    char                debugstring[10];
+    char                debugstring[21];
 #endif
     char                *stringFromFile;
     int                 i;
