@@ -175,9 +175,9 @@ void DCMapAddr( addr_ptr *a, void *d )
     DIPClient->MapAddr( a, d );
 }
 
-imp_sym_handle *DCSymCreate( imp_image_handle *ii, void *d )
+imp_sym_handle *DCSymCreate( imp_image_handle *iih, void *d )
 {
-    return( DIPClient->SymCreate( ii, d ) );
+    return( DIPClient->SymCreate( iih, d ) );
 }
 
 dip_status DCItemLocation( location_context *lc, context_item ci, location_list *ll )
@@ -268,9 +268,9 @@ unsigned DCMachineData( address a, dig_info_type info_type,
     return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *ith, imp_type_handle *base_ith )
+dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *iih, imp_type_handle *ith, imp_type_handle *base_ith )
 {
-    return( ImpInterface.TypeBase( ii, ith, base_ith, NULL, NULL ) );
+    return( ImpInterface.TypeBase( iih, ith, base_ith, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )

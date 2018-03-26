@@ -90,13 +90,13 @@ void DIPCLIENTRY( MapAddr )( addr_ptr *addr, void *ptr )
 /*
  * DIPCliSymCreate
  */
-imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
 {
+    /* unused parameters */ (void)iih; (void)d;
+
 #ifdef DEBUG
     MessageBox( NULL, "symcreate called", "dipcli.c", MB_OK );
 #endif
-    ih=ih;
-    d=d;
     return( NULL );
 }
 

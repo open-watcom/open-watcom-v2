@@ -167,10 +167,10 @@ void DIPCLIENTRY( MapAddr )( addr_ptr *addr, void *info )
 /*
  * DIPCliSymCreate
  */
-imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
 {
-    ih=ih;
-    d=d;
+    /* unused parameters */ (void)iih; (void)d;
+
     return( NULL );
 }
 
