@@ -181,7 +181,7 @@ void DWLineSeg( dw_client cli, dw_sym_handle sym )
     }
 }
 
-void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_list, unsigned inc_list_len )
+void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_list, size_t inc_list_len )
 {
     stmt_prologue prol = {
         0,
