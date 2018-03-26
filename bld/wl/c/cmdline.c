@@ -248,6 +248,8 @@ void DoCmdFile( char *fname )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
 #elif defined( __NT__ )
 #define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#elif defined( __RDOS__ )
+#define LAST_CHANCE ( MK_RDOS | MK_PE )
 #else
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
 #endif
