@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void InitImpCueInfo( imp_image_handle *ii );
-extern bool FiniImpCueInfo( imp_image_handle *ii );
+extern void InitImpCueInfo( imp_image_handle * );
+extern bool FiniImpCueInfo( imp_image_handle * );

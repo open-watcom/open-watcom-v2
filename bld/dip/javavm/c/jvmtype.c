@@ -35,16 +35,16 @@
 #include "java_lang_String.h"
 
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
                     imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
-    ith->sig = ii->cc + offsetof( ClassClass, name );
+    ith->sig = iih->cc + offsetof( ClassClass, name );
     ith->kind = JT_RAWNAME;
-    return( wk( ii, ith, d ) );
+    return( wk( iih, ith, d ) );
 }
 
-imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *ith )
+imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )
 {
     return( IMH_JAVA );
 }
@@ -134,7 +134,7 @@ static unsigned ElementSize( ji_ptr sig )
     return( ti.size );
 }
 
-static dip_status ImpTypeInfo( imp_image_handle *ii, imp_type_handle *ith,
+static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
                         location_context *lc, dip_type_info *ti )
 {
     ji_ptr                      clazz;
@@ -146,7 +146,7 @@ static dip_status ImpTypeInfo( imp_image_handle *ii, imp_type_handle *ith,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( ii, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }
@@ -196,14 +196,14 @@ static dip_status ImpTypeInfo( imp_image_handle *ii, imp_type_handle *ith,
 }
 
 
-dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
                 imp_type_handle *ith, location_context *lc, dip_type_info *ti )
 {
-    return( ImpTypeInfo( ii, ith, lc, ti ) );
+    return( ImpTypeInfo( iih, ith, lc, ti ) );
 
 }
 
-dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
                         imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
 {
@@ -213,7 +213,7 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( ii, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }
@@ -241,7 +241,7 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
                         imp_type_handle *ith, location_context *lc,
                         array_info *ai, imp_type_handle *index_ith )
 {
@@ -249,7 +249,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( ii, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }
@@ -263,27 +263,27 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
                 imp_type_handle *proc_ith, imp_type_handle *parm_ith, unsigned n )
 {
     *parm_ith = *proc_ith;
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
                     imp_type_handle *ith, location_context *lc, address *a )
 {
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
                         imp_type_handle *base_ith, imp_type_handle *derived_ith,
                         location_context *lc, address *addr )
 {
     return( DS_OK );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *ith1, imp_type_handle *ith2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
     if( ith1->sig < ith2->sig )
         return( -1 );
@@ -292,7 +292,7 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *ith1, imp_typ
     return( 0 );
 }
 
-size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *ith,
+size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     char        *p;

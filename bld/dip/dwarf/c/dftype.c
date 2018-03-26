@@ -79,7 +79,7 @@ static drmem_hdl GetArrayDim( drmem_hdl index, int skip  ){
     return( index );
 }
 
-static bool GetStrLen( imp_image_handle *ii,
+static bool GetStrLen( imp_image_handle *iih,
                         drmem_hdl dr_sym,
                         location_context *lc,
                         dr_typeinfo  *ret ){
@@ -96,17 +96,17 @@ static bool GetStrLen( imp_image_handle *ii,
     unsigned        idx_size;
     mod_info        *modinfo;
 
-    im = DwarfMod( ii, dr_sym );
+    im = DwarfMod( iih, dr_sym );
     if( im == IMH_NOMOD ){
         return( false );
     }
-    modinfo = IMH2MODI( ii, im );
+    modinfo = IMH2MODI( iih, im );
     if( modinfo->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
-        EvalSeg( ii, dr_sym, &seg );
+        EvalSeg( iih, dr_sym, &seg );
     }
-    if( EvalLocation( ii, lc, dr_sym, seg, &src ) != DS_OK ){
+    if( EvalLocation( iih, lc, dr_sym, seg, &src ) != DS_OK ){
         return( false );
     }
     idx_size = ret->size;
@@ -137,7 +137,7 @@ static bool GetStrLen( imp_image_handle *ii,
 typedef struct {
     int_32           low;
     uint_32          count;
-    imp_image_handle *ii;
+    imp_image_handle *iih;
     imp_type_handle  *ith;
     location_context *lc;
     uint_32          num_elts;
@@ -154,7 +154,7 @@ static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
     NULL
 };
 
-static void GetArraySize( imp_image_handle *ii,
+static void GetArraySize( imp_image_handle *iih,
                           imp_type_handle  *ith,
                           location_context *lc ){
 //Calculate size of array starting at ith->array.index;
@@ -163,7 +163,7 @@ static void GetArraySize( imp_image_handle *ii,
     uint_32       base_stride;
     uint_32       n_el;
 
-    df.ii = ii;
+    df.iih = iih;
     df.ith = ith;
     df.lc = lc;
     df.count = 1;
@@ -189,7 +189,7 @@ static void GetArraySize( imp_image_handle *ii,
     ith->array.is_based = false;
 }
 
-static void GetArraySubSize( imp_image_handle *ii,
+static void GetArraySubSize( imp_image_handle *iih,
                           imp_type_handle  *ith,
                           location_context *lc ){
 // Calc array size one in from previous dim
@@ -198,7 +198,7 @@ static void GetArraySubSize( imp_image_handle *ii,
     uint_32         base_stride;
     uint_32         n_el;
 
-    df.ii = ii;
+    df.iih = iih;
     df.ith = ith;
     df.lc = lc;
     df.count = 1;
@@ -225,7 +225,7 @@ static void GetArraySubSize( imp_image_handle *ii,
     ith->array.is_based = false;
 }
 
-static void InitTypeHandle( imp_image_handle *ii,
+static void InitTypeHandle( imp_image_handle *iih,
                             imp_type_handle  *ith,
                             location_context *lc  ){
 /***********************************************************************/
@@ -239,7 +239,7 @@ static void InitTypeHandle( imp_image_handle *ii,
     uint_32         n_el;
 
     if( ith->state == DF_NOT ) {
-        DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+        DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
         DRGetTypeInfo( ith->type, &ith->typeinfo );
         ith->state = DF_SET;
         ith->sub_array = false;
@@ -254,7 +254,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                     sub_ith.type = btype;
                     sub_ith.im = ith->im;
                     sub_ith.state = DF_NOT;
-                    InitTypeHandle( ii, &sub_ith, lc );
+                    InitTypeHandle( iih, &sub_ith, lc );
                     base_stride = sub_ith.typeinfo.size;
                 }
                 ith->array.base_stride = base_stride;
@@ -263,7 +263,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                     if( info.ordering == DW_ORD_col_major ){
                         ith->array.column_major = 1;
                     }
-                }else if( IMH2MODI( ii, ith->im )->lang == DR_LANG_FORTRAN ){
+                }else if( IMH2MODI( iih, ith->im )->lang == DR_LANG_FORTRAN ){
                     ith->array.column_major = 1;
                 }
                 if( info.child == DRMEM_HDL_NULL ) { // set info now
@@ -296,7 +296,7 @@ static void InitTypeHandle( imp_image_handle *ii,
             }
         }else if( ith->typeinfo.kind == DR_TYPEK_STRING ){
             if( DRStringLengthAT( ith->type ) ) {
-                if( !GetStrLen( ii, ith->type, lc, &ith->typeinfo ) ){
+                if( !GetStrLen( iih, ith->type, lc, &ith->typeinfo ) ){
                     ith->typeinfo.size = 1;
                 }
             }
@@ -304,15 +304,15 @@ static void InitTypeHandle( imp_image_handle *ii,
     }
     if( ith->typeinfo.kind == DR_TYPEK_ARRAY ){
         if( !ith->array.is_set ){
-            GetArraySize( ii, ith, lc );
+            GetArraySize( iih, ith, lc );
         }else if( ith->array.is_based ){
-            GetArraySubSize( ii, ith, lc );
+            GetArraySubSize( iih, ith, lc );
         }
     }
 }
 
 struct mod_type{
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     imp_mod_handle      im;
     DIP_IMP_TYPE_WALKER *wk;
     imp_type_handle     *ith;
@@ -336,7 +336,7 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
     ith->state = DF_NOT;
     ith->type = type;
     saved = DRGetDebug();
-    typ_wlk->wr = typ_wlk->wk( typ_wlk->ii, ith, typ_wlk->d );
+    typ_wlk->wr = typ_wlk->wk( typ_wlk->iih, ith, typ_wlk->d );
     DRSetDebug( saved );
     if( typ_wlk->wr != WR_CONTINUE ){
         ret = false;
@@ -344,15 +344,15 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
     return( ret );
 }
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im, 
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle im,
                          DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
     drmem_hdl       cu_tag;
     struct mod_type typ_wlk;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
-    cu_tag = IMH2MODI( ii, im )->cu_tag;
-    typ_wlk.ii = ii;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each interface */
+    cu_tag = IMH2MODI( iih, im )->cu_tag;
+    typ_wlk.iih = iih;
     typ_wlk.im = im;
     typ_wlk.wk = wk;
     typ_wlk.ith = ith;
@@ -361,9 +361,9 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im
     return( typ_wlk.wr );
 }
 
-imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *ith )
+imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     /*
         Return the module that the type handle comes from.
@@ -471,7 +471,7 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
     }
 }
 
-dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
                 imp_type_handle *ith, location_context *lc, dip_type_info *ti )
 {
     /*
@@ -480,7 +480,7 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
         the size of the type (variable dimensioned arrays and the like).
     */
 
-    InitTypeHandle( ii, ith, lc );
+    InitTypeHandle( iih, ith, lc );
     MapImpTypeInfo( &ith->typeinfo, ti );
     if( ti->kind == TK_INTEGER ){  // this can be removed when 10.5 gets updated
         char *name;
@@ -498,7 +498,7 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
                         imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
 {
@@ -513,7 +513,7 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
     if( base_ith != ith ){
         *base_ith = *ith;
     }
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( base_ith->state == DF_SET && base_ith->sub_array  ){
         base_ith->array.index = GetArrayDim( base_ith->array.index, 1 );
         if( base_ith->array.is_based ){
@@ -580,7 +580,7 @@ static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
     return( df->cont );
 }
 
-static bool GetSymVal( imp_image_handle *ii,
+static bool GetSymVal( imp_image_handle *iih,
                        drmem_hdl dr_sym, location_context *lc,
                        int_32 *ret ){
 //  Find value of scalar
@@ -599,16 +599,16 @@ static bool GetSymVal( imp_image_handle *ii,
     if( typeinfo->size > sizeof( *ret ) ){
         return( false );
     }
-    im = DwarfMod( ii, dr_sym );
+    im = DwarfMod( iih, dr_sym );
     if( im == IMH_NOMOD ){
         return( false );
     }
-    if( IMH2MODI( ii, im )->is_segment == false ){
+    if( IMH2MODI( iih, im )->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
-        EvalSeg( ii, dr_sym, &seg );
+        EvalSeg( iih, dr_sym, &seg );
     }
-    if( EvalLocation( ii, lc, dr_sym, seg, &src ) != DS_OK ){
+    if( EvalLocation( iih, lc, dr_sym, seg, &src ) != DS_OK ){
         return( false );
     }
     LocationCreate( &dst, LT_INTERNAL, ret );
@@ -629,7 +629,7 @@ static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
     case DR_VAL_REF:
         if( DRConstValAT( val->val.ref, (uint_32*)ret ) ){
             return( true );
-        } else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ) {
+        } else if( GetSymVal( df->iih, val->val.ref, df->lc, ret ) ) {
             return( true );
         }
     }
@@ -650,7 +650,7 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     DRGetSubrangeInfo( tsub, &info );
     /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
     if( info.low.val_class == DR_VAL_NOT ) {
-        if( IMH2MODI( df->ii, df->ith->im )->lang == DR_LANG_FORTRAN )
+        if( IMH2MODI( df->iih, df->ith->im )->lang == DR_LANG_FORTRAN )
             low = 1;
         else
             low = 0;
@@ -672,7 +672,7 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     return( df->cont );
 }
 
-dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
                         imp_type_handle *array_ith, location_context *lc,
                         array_info *ai, imp_type_handle *index_ith )
 {
@@ -684,9 +684,9 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
         the array. It may be NULL, in which case no information is returned.
     */
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( array_ith->state == DF_NOT ){
-        InitTypeHandle( ii, array_ith, lc );
+        InitTypeHandle( iih, array_ith, lc );
     }
     if( array_ith->state == DF_NOT ){
         DCStatus( DS_ERR | DS_BAD_PARM );
@@ -746,8 +746,8 @@ static bool AParm( drmem_hdl var, int index, void *_df )
     }
 }
 
-drmem_hdl GetParmN( imp_image_handle *ii, drmem_hdl proc, int count )
-/******************************************************/
+drmem_hdl GetParmN( imp_image_handle *iih, drmem_hdl proc, int count )
+/********************************************************************/
 // return handle of the n parm
 {
     parm_wlk    df;
@@ -755,7 +755,7 @@ drmem_hdl GetParmN( imp_image_handle *ii, drmem_hdl proc, int count )
 
     df.count = 0;
     df.last = count;
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df ) ) {
         ret = DRMEM_HDL_NULL;
     }else{
@@ -764,30 +764,30 @@ drmem_hdl GetParmN( imp_image_handle *ii, drmem_hdl proc, int count )
     return( ret );
 }
 
-int GetParmCount(  imp_image_handle *ii, drmem_hdl proc )
-/*******************************************************/
+int GetParmCount(  imp_image_handle *iih, drmem_hdl proc )
+/********************************************************/
 // return handle of the n parm
 {
     parm_wlk df;
 
     df.count = 0;
     df.last = 0;
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df );
     return( df.count );
 }
 
-dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
                 imp_type_handle *proc_ith, imp_type_handle *parm_ith, unsigned n )
 {
     drmem_hdl       btype;
     drmem_hdl       parm_type = DRMEM_HDL_NULL;
     dip_status      ret;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     btype = DRSkipTypeChain( proc_ith->type ); /* skip modifiers and typedefs */
     if( n > 0 ){
-        btype = GetParmN( ii, btype, n );
+        btype = GetParmN( iih, btype, n );
     }// if n == 0 just fall through and get type of function
     if( btype != DRMEM_HDL_NULL ) {
         parm_type = DRGetTypeAT( btype );    /* get type */
@@ -803,7 +803,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
     return( ret );
 }
 
-dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
                     imp_type_handle *ith, location_context *lc, address *a )
 {
     /*
@@ -815,14 +815,14 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
     */
     dip_status ret;
 
-    ret = EvalBasedPtr( ii, lc, ith->type, a );
+    ret = EvalBasedPtr( iih, lc, ith->type, a );
     return( ret );
 }
 
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *ith1, imp_type_handle *ith2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     if( ith1->type < ith2->type )
         return( -1 );
@@ -840,7 +840,7 @@ typedef struct inh_vbase {
 
 typedef struct {
     imp_mod_handle      im;
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     sym_sclass          sclass;
     void                *d;
     drmem_hdl           root;
@@ -963,7 +963,7 @@ static bool AMem( drmem_hdl var, int index, void *_d )
         break;
     }
     saved = DRGetDebug();
-    d->wr = d->wk( d->com.ii, SWI_SYMBOL, is, d->com.d );
+    d->wr = d->wk( d->com.iih, SWI_SYMBOL, is, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
         cont = false;
@@ -999,7 +999,7 @@ static bool AInherit( drmem_hdl inh, int index, void *_d )
     is->sym = inh;
     is->sclass = SYM_MEM;     //  treat inherit like a var
     saved = DRGetDebug();
-    wr = d->wk( d->com.ii, SWI_INHERIT_START, is, d->com.d );
+    wr = d->wk( d->com.iih, SWI_INHERIT_START, is, d->com.d );
     DRSetDebug( saved );
     if( wr == WR_CONTINUE ) {
         old_inh = d->com.inh;
@@ -1007,7 +1007,7 @@ static bool AInherit( drmem_hdl inh, int index, void *_d )
         DRWalkStruct( btype, StrucWlk, d );
         d->com.inh = old_inh;
         saved = DRGetDebug();
-        d->wk( d->com.ii, SWI_INHERIT_END, NULL, d->com.d );
+        d->wk( d->com.iih, SWI_INHERIT_END, NULL, d->com.d );
         DRSetDebug( saved );
         if( d->wr != WR_CONTINUE ){
             cont = false;
@@ -1043,7 +1043,7 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
-        is = DCSymCreate( d->com.ii, d->com.d );
+        is = DCSymCreate( d->com.iih, d->com.d );
         SetSymHandle( (type_wlk *)d, is );
         is->sym = var;
         switch( index ){
@@ -1108,7 +1108,7 @@ static bool AEnumMem( drmem_hdl var, int index, void *_d )
     SetSymHandle( (type_wlk *)d, is );
     is->sym = var;
     saved = DRGetDebug();
-    d->wr = d->wk( d->com.ii, SWI_SYMBOL, is, d->com.d );
+    d->wr = d->wk( d->com.iih, SWI_SYMBOL, is, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
         cont = false;
@@ -1133,7 +1133,7 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
-        is = DCSymCreate( d->com.ii, d->com.d );
+        is = DCSymCreate( d->com.iih, d->com.d );
         SetSymHandle( (type_wlk *)d, is );
         is->sym = var;
         d->sr = SR_EXACT;
@@ -1142,14 +1142,14 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     return( true );
 }
 
-walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *ith,
+walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
                  DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     drmem_hdl       btype;
     type_wlk_wlk    df;
     df_cleaner      cleanup;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( ith->state == DF_NOT ){
         if(  DRGetTypeInfo( ith->type, &ith->typeinfo ) ){
             ith->state = DF_SET;
@@ -1159,7 +1159,7 @@ walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *ith,
         return( WR_STOP );
     }
     df.com.im = ith->im;
-    df.com.ii = ii;
+    df.com.iih = iih;
     df.com.d = d;
     df.com.root = ith->type;
     df.com.inh = DRMEM_HDL_NULL;
@@ -1194,14 +1194,14 @@ walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *ith,
     return( df.wr );
 }
 
-search_result SearchMbr( imp_image_handle *ii, imp_type_handle *ith, lookup_item *li, void *d )
+search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith, lookup_item *li, void *d )
 //Search for matching lookup item
 {
     drmem_hdl       btype;
     type_wlk_lookup df;
     df_cleaner      cleanup;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( ith->state == DF_NOT ){
         if( DRGetTypeInfo( ith->type, &ith->typeinfo ) ){
             ith->state = DF_SET;
@@ -1211,7 +1211,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *ith, lookup_item
         return( SR_NONE );
     }
     df.com.im = ith->im;
-    df.com.ii = ii;
+    df.com.iih = iih;
     df.com.d = d;
     df.com.root = ith->type;
     df.com.inh = DRMEM_HDL_NULL;
@@ -1258,7 +1258,7 @@ typedef struct inh_path {
 }inh_path;
 
 typedef struct type_wlk_inherit {
-    imp_image_handle *ii;
+    imp_image_handle *iih;
     drmem_hdl         dr_derived;
     location_context *lc;
     address          *addr;
@@ -1297,7 +1297,7 @@ static bool AInhFind( drmem_hdl inh, int index, void *_df )
     dr_derived = DRGetTypeAT( inh );        /* get base type */
     if( dr_derived == df->dr_derived ){
         for( curr = df->head; curr != NULL; curr = curr->next ) {
-            df->wr = EvalLocAdj( df->ii, df->lc, curr->inh, df->addr );
+            df->wr = EvalLocAdj( df->iih, df->lc, curr->inh, df->addr );
             if( df->wr != DS_OK ) {
                 break;
             }
@@ -1311,13 +1311,13 @@ static bool AInhFind( drmem_hdl inh, int index, void *_df )
     return( df->cont );
 }
 
-dip_status  DFBaseAdjust( imp_image_handle *ii, drmem_hdl base, drmem_hdl derived,
+dip_status  DFBaseAdjust( imp_image_handle *iih, drmem_hdl base, drmem_hdl derived,
                                             location_context *lc, address *addr )
 {
     type_wlk_inherit df;
     drmem_hdl        dr_base;
 
-    df.ii = ii;
+    df.iih = iih;
     df.dr_derived = derived;
     df.lc =  lc;
     df.addr = addr;
@@ -1330,7 +1330,7 @@ dip_status  DFBaseAdjust( imp_image_handle *ii, drmem_hdl base, drmem_hdl derive
     return( df.wr );
 }
 
-dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
                         imp_type_handle *base_ith, imp_type_handle *derived_ith,
                         location_context *lc, address *addr )
 {
@@ -1343,10 +1343,10 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
         be the displacement between the 'base' type and the 'derived' type.
         You need to do the following. "addr->mach.offset += disp;".
     */
-    return( DFBaseAdjust( ii, base_ith->type, derived_ith->type, lc, addr ) );
+    return( DFBaseAdjust( iih, base_ith->type, derived_ith->type, lc, addr ) );
 }
 
-size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *ith,
+size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     /*
@@ -1374,7 +1374,7 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *ith,
     dr_typeinfo typeinfo;
     size_t      len;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     ++num;
     len = 0;
     for( dr_type = ith->type; dr_type != DRMEM_HDL_NULL; dr_type = DRGetTypeAT( dr_type ) ) {
@@ -1410,23 +1410,23 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *ith,
     return( len );
 }
 
-dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *ith )
+dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)ith;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *ith )
+dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)ith;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
+dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return(DS_OK);
 }

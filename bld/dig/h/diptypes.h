@@ -70,7 +70,7 @@ typedef unsigned_32             mod_handle;
 typedef unsigned_32             cue_fileid;
 
 typedef enum {
-    #define pick(e,h,ih,wih)    e,
+    #define pick(e,hdl,imphdl,wvimphdl) e,
     #include "diphndls.h"
     #undef pick
     MAX_HK

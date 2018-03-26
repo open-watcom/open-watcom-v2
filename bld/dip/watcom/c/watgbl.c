@@ -101,11 +101,11 @@ static unsigned GblNameHash( const char *name, size_t name_len )
     return( rtrn & (SYM_TAB_SIZE - 1) );
 }
 
-static void GblCreate( imp_image_handle *ii, imp_sym_handle *is, gbl_info *gbl )
+static void GblCreate( imp_image_handle *iih, imp_sym_handle *is, gbl_info *gbl )
 {
     is->type = SH_GBL;
     is->im = GBL_MOD( gbl );
-    is->name_off = (byte)( GBL_NAME( ii, gbl ) - (char *)gbl - 1 );
+    is->name_off = (byte)( GBL_NAME( iih, gbl ) - (char *)gbl - 1 );
     is->u.gbl = gbl;
 }
 
@@ -140,7 +140,7 @@ static int source_name( const char *gstart, size_t glen, const char **rstart, si
 /*
  * SearchGbl -- look up a global symbol name
  */
-static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_mod_handle cim,
+static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_mod_handle cim,
                         imp_mod_handle im, lookup_item *li, void *d )
 {
     gbl_link            *lnk;
@@ -194,7 +194,7 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
             if( lnk->dtor != lkup_dtor )
                 continue;
             if( lkup_full ) {
-                if( GBL_NAMELEN( ii, gbl ) != namlen ) {
+                if( GBL_NAMELEN( iih, gbl ) != namlen ) {
                     continue;
                 }
             } else {
@@ -203,7 +203,7 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
                 }
             }
             if( im == IMH_NOMOD ) {
-                if( (GBL_KIND( ii, gbl ) & GBL_KIND_STATIC) && cim != GBL_MOD( gbl ) ) {
+                if( (GBL_KIND( iih, gbl ) & GBL_KIND_STATIC) && cim != GBL_MOD( gbl ) ) {
                     continue;
                 }
             } else {
@@ -211,7 +211,7 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
                     continue;
                 }
             }
-            mangled_name = GBL_NAME( ii, gbl );
+            mangled_name = GBL_NAME( iih, gbl );
             gblname = mangled_name;
             if( !lkup_full )
                 gblname += lnk->src_off;
@@ -220,7 +220,7 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
             if( li->scope.start != NULL ) {
                 int     rc;
 
-                mangled_len = GBL_NAMELEN( ii, gbl );
+                mangled_len = GBL_NAMELEN( iih, gbl );
                 for( entry = 0;
                   (rc = __scope_name( mangled_name, mangled_len, entry, &gblname, &gbllen )) != 0;
                   ++entry ) {
@@ -232,18 +232,18 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
                     continue;
                 }
             }
-            is = DCSymCreate( ii, d );
+            is = DCSymCreate( iih, d );
             is->im = GBL_MOD( gbl );
             MK_ADDR( addr, gbl->addr, inf->sect_id );
             /* need to see if there's a local symbol at the right
                     address and use that instead */
             if( cim == is->im ) {
                 /* We've already checked the local symbols. It ain't there. */
-                GblCreate( ii, is, gbl );
-            } else if( LookupLclAddr( ii, addr, is ) == SR_EXACT ) {
+                GblCreate( iih, is, gbl );
+            } else if( LookupLclAddr( iih, addr, is ) == SR_EXACT ) {
                 SetGblLink( is, gbl );
             } else {
-                GblCreate( ii, is, gbl );
+                GblCreate( iih, is, gbl );
             }
             sr = SR_EXACT;
         }
@@ -251,7 +251,7 @@ static search_result LkupGblName( imp_image_handle *ii, section_info *inf, imp_m
     return( sr );
 }
 
-search_result SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
+search_result SearchGbl( imp_image_handle *iih, imp_mod_handle cim,
                         imp_mod_handle im, lookup_item *li, void *d )
 {
     section_info        *inf;
@@ -259,9 +259,9 @@ search_result SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
     search_result       sr;
 
     sr = SR_NONE;
-    end = ii->sect + ii->num_sects;
-    for( inf = ii->sect; inf < end; ++inf ) {
-        if( LkupGblName( ii, inf, cim, im, li, d ) != SR_NONE ) {
+    end = iih->sect + iih->num_sects;
+    for( inf = iih->sect; inf < end; ++inf ) {
+        if( LkupGblName( iih, inf, cim, im, li, d ) != SR_NONE ) {
             sr = SR_EXACT;
         }
     }
@@ -332,14 +332,14 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is, addr_ptr 
 }
 
 
-search_result LookupGblAddr( imp_image_handle *ii, address addr, imp_sym_handle *is )
+search_result LookupGblAddr( imp_image_handle *iih, address addr, imp_sym_handle *is )
 {
     section_info        *inf;
     info_block          *curr;
     search_result       sr = SR_NONE;
 
     is->u.gbl = NULL;
-    inf = FindInfo( ii, is->im );
+    inf = FindInfo( iih, is->im );
     for( curr = inf->gbl; curr != NULL; curr = curr->next ) {
         if( addr.sect_id == 0 || addr.sect_id == inf->sect_id ) {
             sr = LkupGblAddr( curr, is, addr.mach );
@@ -350,7 +350,7 @@ search_result LookupGblAddr( imp_image_handle *ii, address addr, imp_sym_handle 
     }
     if( is->u.gbl == NULL )
         return( SR_NONE );
-    GblCreate( ii, is, is->u.gbl );
+    GblCreate( iih, is, is->u.gbl );
     return( ( sr == SR_EXACT ) ? SR_EXACT : SR_CLOSEST );
 }
 
@@ -359,7 +359,7 @@ search_result LookupGblAddr( imp_image_handle *ii, address addr, imp_sym_handle 
  * Insert -- insert into hash table
  */
 
-static void Insert( imp_image_handle *ii, info_block *inf, gbl_link *new )
+static void Insert( imp_image_handle *iih, info_block *inf, gbl_link *new )
 {
     hash_link           *owner;
     gbl_info            *gbl;
@@ -369,8 +369,8 @@ static void Insert( imp_image_handle *ii, info_block *inf, gbl_link *new )
 
     gbl = new->gbl;
     /* only want to hash the source code portion of the name */
-    mangled_name = GBL_NAME( ii, gbl );
-    new->dtor = ( source_name( mangled_name, GBL_NAMELEN( ii, gbl ), &name, &name_len ) == __MANGLED_DTOR );
+    mangled_name = GBL_NAME( iih, gbl );
+    new->dtor = ( source_name( mangled_name, GBL_NAMELEN( iih, gbl ), &name, &name_len ) == __MANGLED_DTOR );
     new->src_off = name - mangled_name;
     new->src_len = name_len;
     owner = LINK( inf )->hash + GblNameHash( name, name_len );
@@ -391,7 +391,7 @@ static int CmpInfo( const void *a, const void *b )
 /*
  * AdjustSyms -- adjust symbol table info according to start segment location
  */
-void AdjustSyms( imp_image_handle *ii, unsigned sectno )
+void AdjustSyms( imp_image_handle *iih, unsigned sectno )
 {
     info_block      *ginf;
     gbl_link        *lnk;
@@ -399,25 +399,25 @@ void AdjustSyms( imp_image_handle *ii, unsigned sectno )
     unsigned        count;
     section_info    *inf;
 
-    inf = ii->sect + sectno;
+    inf = iih->sect + sectno;
     for( ginf = inf->gbl; ginf != NULL; ginf = ginf->next ) {
         count = 0;
         for( lnk = LINK( ginf )->link; lnk < LINK( ginf )->end; ++lnk ) {
             gbl = lnk->gbl;
-            if( ii->v2 )
+            if( iih->v2 )
                 gbl->mod = ModOff2Idx( inf, gbl->mod );
             gbl->mod += inf->mod_base_idx;
-            AddressMap( ii, &gbl->addr );
+            AddressMap( iih, &gbl->addr );
             ++count;
         }
         qsort( LINK( ginf )->link, count, sizeof( gbl_link ), CmpInfo );
         for( lnk = LINK( ginf )->link; lnk < LINK( ginf )->end; ++lnk ) {
-            Insert( ii, ginf, lnk );
+            Insert( iih, ginf, lnk );
         }
     }
 }
 
-static dip_status DoMakeGblLst( imp_image_handle *ii, info_block *inf, unsigned size )
+static dip_status DoMakeGblLst( imp_image_handle *iih, info_block *inf, unsigned size )
 {
     unsigned            num_syms;
     gbl_link            *lnk;
@@ -431,7 +431,7 @@ static dip_status DoMakeGblLst( imp_image_handle *ii, info_block *inf, unsigned 
     start = inf->info;
     end = start + size;
     num_syms = 0;
-    for( ptr = start; ptr < end; ptr += GBL_SIZE( ii, (gbl_info *)ptr ) ) {
+    for( ptr = start; ptr < end; ptr += GBL_SIZE( iih, (gbl_info *)ptr ) ) {
         ++num_syms;
     }
     link_data = DCAlloc( sizeof( gbl_link_info ) + ( num_syms - 1 ) * sizeof( gbl_link ) );
@@ -450,18 +450,18 @@ static dip_status DoMakeGblLst( imp_image_handle *ii, info_block *inf, unsigned 
     for( lnk = link_data->link; lnk < link_data->end; ++lnk ) {
         lnk->gbl = (gbl_info *)ptr;
         lnk->hash_off = HL_END;
-        ptr += GBL_SIZE( ii, (gbl_info *)ptr );
+        ptr += GBL_SIZE( iih, (gbl_info *)ptr );
     }
     return( DS_OK );
 }
 
-dip_status MakeGblLst( imp_image_handle *ii, section_info *inf )
+dip_status MakeGblLst( imp_image_handle *iih, section_info *inf )
 {
     info_block          *gbl;
     dip_status          status;
 
     for( gbl = inf->gbl; gbl != NULL; gbl = gbl->next ) {
-        status = DoMakeGblLst( ii, gbl, gbl->size );
+        status = DoMakeGblLst( iih, gbl, gbl->size );
         if( status != DS_OK ) {
             return( status );
         }
@@ -470,7 +470,7 @@ dip_status MakeGblLst( imp_image_handle *ii, section_info *inf )
 }
 
 
-unsigned GblSymSplit( imp_image_handle *ii, info_block *gbl, section_info *inf )
+unsigned GblSymSplit( imp_image_handle *iih, info_block *gbl, section_info *inf )
 {
     byte            *ptr;
     unsigned        size;
@@ -480,7 +480,7 @@ unsigned GblSymSplit( imp_image_handle *ii, info_block *gbl, section_info *inf )
     ptr = gbl->info;
     /* check if there is enough there to pick up the name length field */
     for( total = 0; ( total + sizeof( gbl_info ) + 1 ) <= gbl->size; total = next ) {
-        size = GBL_SIZE( ii, (gbl_info *)ptr );
+        size = GBL_SIZE( iih, (gbl_info *)ptr );
         next = total + size;
         if( next > gbl->size )
             break;
@@ -492,29 +492,29 @@ unsigned GblSymSplit( imp_image_handle *ii, info_block *gbl, section_info *inf )
 }
 
 
-dip_status SymHdl2GblLoc( imp_image_handle *ii, imp_sym_handle *is,
+dip_status SymHdl2GblLoc( imp_image_handle *iih, imp_sym_handle *is,
                         location_list *ll )
 {
     gbl_info            *gbl;
     address             addr;
 
     gbl = is->u.gbl;
-    MK_ADDR( addr, gbl->addr, FindInfo( ii, is->im )->sect_id );
+    MK_ADDR( addr, gbl->addr, FindInfo( iih, is->im )->sect_id );
     LocationCreate( ll, LT_ADDR, &addr );
     return( DS_OK );
 }
 
 
-dip_status SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
+dip_status SymHdl2GblInfo( imp_image_handle *iih, imp_sym_handle *is,
                         sym_info *si )
 {
     gbl_info            *gbl;
     unsigned            kind;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     gbl = is->u.gbl;
-    kind = GBL_KIND( ii, gbl );
+    kind = GBL_KIND( iih, gbl );
     if( kind & GBL_KIND_DATA ) {
         si->kind = SK_DATA;
     } else if( kind & GBL_KIND_CODE ) {
@@ -526,13 +526,13 @@ dip_status SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
     return( DS_OK );
 }
 
-unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
+unsigned SymHdl2GblName( imp_image_handle *iih, imp_sym_handle *is,
                         char *buff, unsigned buff_size )
 {
     size_t      len;
     const char  *gbl;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     gbl = (const char *)is->u.gbl + is->name_off;
     len = GETU8( gbl++ );
@@ -547,13 +547,13 @@ unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
     return( len );
 }
 
-unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
+unsigned SymHdl2ObjGblName( imp_image_handle *iih, imp_sym_handle *is,
                         char *buff, unsigned buff_size )
 {
     unsigned    len;
     const char  *gbl;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     gbl = (const char *)is->u.gbl + is->name_off;
     len = GETU8( gbl++ );
@@ -567,12 +567,12 @@ unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
     return( len );
 }
 
-dip_status SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
+dip_status SymHdl2GblType( imp_image_handle *iih, imp_sym_handle *is, imp_type_handle *ith )
 {
     ith->im = is->im;
     ith->f.all = 0;
     ith->f.s.gbl = 1;
-    ith->t.offset = GBL_KIND( ii, is->u.gbl );
+    ith->t.offset = GBL_KIND( iih, is->u.gbl );
     return( DS_OK );
 }
 
@@ -586,7 +586,7 @@ type_kind GblTypeClassify( unsigned kind )
 }
 
 
-walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
+walk_result WalkGblModSymList( imp_image_handle *iih, imp_mod_handle im,
                         DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     section_info        *inf;
@@ -598,23 +598,23 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
     bool                seen_module;
 
     seen_module = false;
-    inf = ii->sect;
-    for( i = 0; i < ii->num_sects; ++i, ++inf ) {
+    inf = iih->sect;
+    for( i = 0; i < iih->num_sects; ++i, ++inf ) {
         for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
             end = blk->info + blk->size;
-            for( ptr = blk->info; ptr < end; ptr += GBL_SIZE( ii, (gbl_info *)ptr ) ) {
+            for( ptr = blk->info; ptr < end; ptr += GBL_SIZE( iih, (gbl_info *)ptr ) ) {
                 is->im = GBL_MOD( (gbl_info *)ptr );
                 if( im == IMH_NOMOD ) {
-                    if( ImpInterface.ModInfo( ii, is->im, HK_SYM ) != DS_OK ) {
-                        GblCreate( ii, is, (gbl_info *)ptr );
-                        wr = wk( ii, SWI_SYMBOL, is, d );
+                    if( ImpInterface.ModInfo( iih, is->im, HK_SYM ) != DS_OK ) {
+                        GblCreate( iih, is, (gbl_info *)ptr );
+                        wr = wk( iih, SWI_SYMBOL, is, d );
                         if( wr != WR_CONTINUE ) {
                             return( wr );
                         }
                     }
                 } else if( is->im == im ) {
-                    GblCreate( ii, is, (gbl_info *)ptr );
-                    wr = wk( ii, SWI_SYMBOL, is, d );
+                    GblCreate( iih, is, (gbl_info *)ptr );
+                    wr = wk( iih, SWI_SYMBOL, is, d );
                     if( wr != WR_CONTINUE )
                         return( wr );
                     seen_module = true;
@@ -632,8 +632,8 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
     return( WR_CONTINUE );
 }
 
-dip_status Link2GblHdl( imp_image_handle *ii, gbl_info *gbl, imp_sym_handle *is )
+dip_status Link2GblHdl( imp_image_handle *iih, gbl_info *gbl, imp_sym_handle *is )
 {
-    GblCreate( ii, is, gbl );
+    GblCreate( iih, is, gbl );
     return( DS_OK );
 }

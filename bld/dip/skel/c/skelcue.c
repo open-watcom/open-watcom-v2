@@ -36,7 +36,7 @@
         Stuff for source line cues
 */
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im, 
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
                           DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 {
     //TODO:
@@ -46,14 +46,14 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
         for( each source file in the given module ) {
             *imp_cueh = fill in cue handle information for the first
                         source cue for the file;
-            wr = wk( ii, imp_cueh, d );
+            wr = wk( iih, imp_cueh, d );
             if( wr != WR_CONTINUE ) return( wr );
         }
     */
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     //TODO:
     /*
@@ -62,7 +62,7 @@ imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_
      return( IMH_NOMOD );
 }
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
 {
     /*
         Given the imp_cue_handle, copy the name of the source file into 'buff'.
@@ -78,7 +78,7 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, c
     return( 0 );
 }
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     //TODO:
     /*
@@ -92,13 +92,13 @@ cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_c
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
 {
     //TODO:
     /*
         Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
-        That is, If you get called with "DIPImpCueAdjust( ii, src, 1, dst )",
+        That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
         the 'dst' handle should be filled in with implementation cue handle
         representing the source cue immediately following the 'src' cue.
         Passing in an 'adj' of -1 will get the immediately preceeding source
@@ -115,7 +115,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
     return( DS_ERR|DS_FAIL );
 }
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     //TODO:
     /*
@@ -126,7 +126,7 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_
     return( 0 );
 }
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     //TODO:
     /*
@@ -137,7 +137,7 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cue
     return( 0 );
 }
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     //TODO:
     /*
@@ -148,7 +148,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
     return( NilAddr );
 }
 
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *imp_cueh )
 {
@@ -168,7 +168,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 {
     //TODO:
@@ -181,7 +181,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
     //TODO:
     /*

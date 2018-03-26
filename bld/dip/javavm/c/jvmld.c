@@ -34,7 +34,7 @@
 
 #define JAVA_SIG        "JAVA"
 
-dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
     struct {
         char    sig[sizeof( JAVA_SIG ) - 1];
@@ -50,33 +50,33 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
         return( DS_FAIL );
     if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 )
         return( DS_FAIL );
-    ii->cc = jcf.cc;
-    if( GetU16( ii->cc + offsetof( ClassClass, major_version ) ) != JAVA_VERSION ) {
+    iih->cc = jcf.cc;
+    if( GetU16( iih->cc + offsetof( ClassClass, major_version ) ) != JAVA_VERSION ) {
         return( DS_INFO_BAD_VERSION );
     }
-    if( GetU16( ii->cc + offsetof( ClassClass, minor_version ) ) < JAVA_MINOR_VERSION ) {
+    if( GetU16( iih->cc + offsetof( ClassClass, minor_version ) ) < JAVA_MINOR_VERSION ) {
         return( DS_INFO_BAD_VERSION );
     }
-    ii->cp = GetPointer( ii->cc + offsetof( ClassClass, constantpool ) );
-    ii->num_methods = GetU16( ii->cc + offsetof( ClassClass, methods_count ) );
-    mb_size = ii->num_methods * sizeof( ii->methods[0] );
-    ii->methods = DCAlloc( (mb_size != 0) ? mb_size : 1 );
-    if( ii->methods == NULL ) {
+    iih->cp = GetPointer( iih->cc + offsetof( ClassClass, constantpool ) );
+    iih->num_methods = GetU16( iih->cc + offsetof( ClassClass, methods_count ) );
+    mb_size = iih->num_methods * sizeof( iih->methods[0] );
+    iih->methods = DCAlloc( (mb_size != 0) ? mb_size : 1 );
+    if( iih->methods == NULL ) {
         return( DS_NO_MEM );
     }
-    ii->mb = GetPointer( ii->cc + offsetof( ClassClass, methods ) );
+    iih->mb = GetPointer( iih->cc + offsetof( ClassClass, methods ) );
     if( mb_size != 0 ) {
-        ds = GetData( ii->mb, ii->methods, mb_size );
+        ds = GetData( iih->mb, iih->methods, mb_size );
         if( ds != DS_OK ) {
-            DCFree( ii->methods );
+            DCFree( iih->methods );
         }
     }
-    ii->last_method = 0;
-    ii->object_class = 0;
+    iih->last_method = 0;
+    iih->object_class = 0;
     return( ds );
 }
 
-void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
     DefCodeAddr = NilAddr;
     DefCodeAddr.mach.segment = MAP_FLAT_CODE_SELECTOR;
@@ -86,7 +86,7 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
     DCMapAddr( &DefDataAddr.mach, d );
 }
 
-void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
-    DCFree( ii->methods );
+    DCFree( iih->methods );
 }

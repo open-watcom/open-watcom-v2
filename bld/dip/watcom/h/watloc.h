@@ -158,7 +158,7 @@ extern const char       *SkipLocation( const char * );
 extern location_info    InfoLocation( const char *e );
 extern unsigned         RegSize( unsigned idx );
 extern void             PushBaseLocation( location_list *ll );
-extern dip_status       EvalLocation( imp_image_handle *ii, location_context *lc,
+extern dip_status       EvalLocation( imp_image_handle *, location_context *lc,
                                 const char *e, location_list *ll );
 
 #endif

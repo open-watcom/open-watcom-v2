@@ -275,7 +275,7 @@ static char     WVImp( Name )[] = "Debugger Internal";
 OVL_EXTERN unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    wih,
+        #define pick(e,hdl,imphdl,wvimphdl) wvimphdl,
         #include "diphndls.h"
         #undef pick
     };

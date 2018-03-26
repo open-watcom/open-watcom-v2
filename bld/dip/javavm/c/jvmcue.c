@@ -45,23 +45,23 @@ static dip_status GetMethodBlock( imp_cue_handle *imp_cueh, struct methodblock *
     return( GetData( mbp + imp_cueh->mb_idx * sizeof( *mb ), mb, sizeof( *mb ) ) );
 }
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih,
                     imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh,
                     void *d )
 {
     //NYI: handle native methods at the front
     imp_cueh->mb_idx = 0;
     imp_cueh->ln_idx = 0;
-    imp_cueh->cc = ii->cc;
-    return( wk( ii, imp_cueh, d ) );
+    imp_cueh->cc = iih->cc;
+    return( wk( iih, imp_cueh, d ) );
 }
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
      return( IMH_JAVA );
 }
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih,
                         imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
 {
     ji_ptr      name;
@@ -82,7 +82,7 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
     return( NameCopy( buff, NameBuff, buff_size, len + class_len ) );
 }
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     return( 1 );
 }
@@ -110,7 +110,7 @@ static unsigned GetNumMethods( imp_cue_handle *imp_cueh )
     return( GetU16( imp_cueh->cc + offsetof( ClassClass, methods_count ) ) );
 }
 
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
 {
     unsigned            mb_idx;
@@ -165,7 +165,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
     }
 }
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     struct methodblock  mb;
 
@@ -175,12 +175,12 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_
                 + offsetof( struct lineno, line_number ) ) );
 }
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     return( 0 );
 }
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     ji_ptr              ln_tbl;
     address             a;
@@ -198,7 +198,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
 
 #define LN_CACHE_SIZE   100
 
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *imp_cueh )
 {
@@ -213,12 +213,12 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
     unsigned            get;
     unsigned            i;
 
-    imp_cueh->cc = ii->cc;
+    imp_cueh->cc = iih->cc;
     best_ln = ~0L;
-    for( mb_idx = 0; mb_idx < ii->num_methods; ++mb_idx ) {
+    for( mb_idx = 0; mb_idx < iih->num_methods; ++mb_idx ) {
         ln_idx = 0;
-        ln_tbl = (ji_ptr)ii->methods[mb_idx].line_number_table;
-        for( left = ii->methods[mb_idx].line_number_table_length; left > 0; left -= get ) {
+        ln_tbl = (ji_ptr)iih->methods[mb_idx].line_number_table;
+        for( left = iih->methods[mb_idx].line_number_table_length; left > 0; left -= get ) {
             get = left;
             if( get > LN_CACHE_SIZE ) get = LN_CACHE_SIZE;
             if( GetData( ln_tbl, cache, get * sizeof( cache[0] ) ) != DS_OK ) {
@@ -247,7 +247,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
     mad_jvm_findline_ret        ret;
     dip_status                  ds;
 
-    acc.class_pointer = ii->cc;
+    acc.class_pointer = iih->cc;
     acc.line_num = line;
     ds = GetLineCue( &acc, &ret );
     if( ds != DS_OK ) {
@@ -261,7 +261,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
 }
 
 
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 {
 #if 0
@@ -271,17 +271,17 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     long                hi;
     long                target;
 
-    switch( FindMBIndex( ii, addr.mach.offset, &ich->mb_idx ) ) {
+    switch( FindMBIndex( iih, addr.mach.offset, &ich->mb_idx ) ) {
     case SR_EXACT:
     case SR_CLOSEST:
         break;
     default:
         return( SR_NONE );
     }
-    imp_cueh->cc = ii->cc;
-    addr.mach.offset -= (ji_ptr)ii->methods[imp_cueh->mb_idx].code;
-    ln_tbl = (ji_ptr)ii->methods[imp_cueh->mb_idx].line_number_table;
-    hi = ii->methods[imp_cueh->mb_idx].line_number_table_length - 1;
+    imp_cueh->cc = iih->cc;
+    addr.mach.offset -= (ji_ptr)iih->methods[imp_cueh->mb_idx].code;
+    ln_tbl = (ji_ptr)iih->methods[imp_cueh->mb_idx].line_number_table;
+    hi = iih->methods[imp_cueh->mb_idx].line_number_table_length - 1;
     lo = 0;
     while( lo <= hi ) {
         target = (lo + hi) >> 1;
@@ -305,7 +305,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     mad_jvm_findline_ret        ret;
     dip_status                  ds;
 
-    acc.class_pointer = ii->cc;
+    acc.class_pointer = iih->cc;
     acc.addr = addr.mach.offset;
     ds = GetAddrCue( &acc, &ret );
     if( ds != DS_OK ) {
@@ -318,7 +318,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     return( ret.ret );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
     if( imp_cueh1->cc < imp_cueh2->cc )
         return( -1 );

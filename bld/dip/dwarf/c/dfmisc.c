@@ -63,7 +63,7 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
         should be OK as given.
 */
     static unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    ih,
+        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
         #include "diphndls.h"
         #undef pick
     };
@@ -73,20 +73,20 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 
 static imp_image_handle *Images;
 
-void DFAddImage( imp_image_handle *ii )
-/*************************************/
+void DFAddImage( imp_image_handle *iih )
+/**************************************/
 {
-    ii->next = Images;
-    Images = ii;
+    iih->next = Images;
+    Images = iih;
 }
 
-void DFFreeImage( imp_image_handle *ii )
-/**************************************/
+void DFFreeImage( imp_image_handle *iih )
+/***************************************/
 {
     imp_image_handle *curr, **lnk;
 
     for( lnk = &Images; (curr = *lnk) != NULL; lnk = &curr->next ) {
-       if( curr == ii ) {
+       if( curr == iih ) {
            *lnk = curr->next;
        }
     }

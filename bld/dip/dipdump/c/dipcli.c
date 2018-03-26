@@ -66,11 +66,11 @@ void DIPCLIENTRY( MapAddr )( addr_ptr *addr, void *ptr )
 /*
  * DIPCliSymCreate
  */
-imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
 {
-    dprintf(( "DIPCliSymCreate: iih=%p, ptr=%p\n", ih, d ));
-    ih=ih;
-    d=d;
+    /* unused parameters */ (void)iih; (void)d;
+
+    dprintf(( "DIPCliSymCreate: iih=%p, ptr=%p\n", iih, d ));
     return( NULL );
 }
 

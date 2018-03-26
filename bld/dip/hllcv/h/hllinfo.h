@@ -176,20 +176,20 @@ extern imp_image_handle     *ImageList;
 
 extern dip_status           VMInit( imp_image_handle *, unsigned long );
 extern void                 VMFini( imp_image_handle * );
-extern dip_status           VMAddDtor( imp_image_handle *ii, virt_mem start,
-                                       void ( *dtor )( imp_image_handle *ii, void *user ),
+extern dip_status           VMAddDtor( imp_image_handle *, virt_mem start,
+                                       void ( *dtor )( imp_image_handle *, void *user ),
                                        void *user );
 extern void                 *VMBlock( imp_image_handle *, virt_mem, size_t );
-extern bool                 VMGetU8( imp_image_handle *ii, virt_mem start, unsigned_8 *valp );
-extern bool                 VMGetU16( imp_image_handle *ii, virt_mem start, unsigned_16 *valp );
-extern bool                 VMGetU32( imp_image_handle *ii, virt_mem start, unsigned_32 *valp );
+extern bool                 VMGetU8( imp_image_handle *, virt_mem start, unsigned_8 *valp );
+extern bool                 VMGetU16( imp_image_handle *, virt_mem start, unsigned_16 *valp );
+extern bool                 VMGetU32( imp_image_handle *, virt_mem start, unsigned_32 *valp );
 extern void                 *VMRecord( imp_image_handle *, virt_mem, virt_mem *, unsigned_16 * );
 
 extern void                 *VMSsBlock( imp_image_handle *, hll_dir_entry *, virt_mem, size_t );
 extern bool                 VMSsGetU8( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_8 * );
 extern bool                 VMSsGetU16( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_16 * );
 extern bool                 VMSsGetU32( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_32 * );
-extern void                *VMSsRecord( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 rec_off,
+extern void                *VMSsRecord( imp_image_handle *, hll_dir_entry *hde, unsigned_32 rec_off,
                                          unsigned_32 *next_rec, unsigned_16 *sizep );
 extern unsigned             VMShrink(void);
 
@@ -217,7 +217,7 @@ extern dip_status           hllTypeSymGetInfo( imp_image_handle *, imp_sym_handl
 #ifdef _CVREG  /* FIXME */
 extern dip_status           hllTypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
 #endif
-extern walk_result          hllTypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, DIP_IMP_SYM_WALKER* wk, imp_sym_handle *is, void *d );
+extern walk_result          hllTypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER* wk, imp_sym_handle *is, void *d );
 extern dip_status           hllTypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result        hllTypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result        hllTypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

@@ -46,7 +46,7 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
         should be OK as given.
 */
     static unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    ih,
+        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
         #include "diphndls.h"
         #undef pick
     };

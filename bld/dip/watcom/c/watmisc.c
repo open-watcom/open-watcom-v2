@@ -45,7 +45,7 @@ const char DIPImp( Name )[] = "WATCOM";
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    ih,
+        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
         #include "diphndls.h"
         #undef pick
     };
@@ -77,34 +77,34 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
     return( InfoRelease() );
 }
 
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( is->im );
 }
 
-search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_handle im,
                         address addr, imp_sym_handle *is )
 {
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.AddrMod( ii, addr, &is->im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( iih, addr, &is->im ) == SR_NONE ) {
             return( SR_NONE );
         }
     } else {
         is->im = im;
     }
-    sr = LookupLclAddr( ii, addr, is );
+    sr = LookupLclAddr( iih, addr, is );
     if( sr != SR_NONE )
         return( sr );
-    return( LookupGblAddr( ii, addr, is ) );
+    return( LookupGblAddr( iih, addr, is ) );
 }
 
 #define SH_ESCAPE       0xf0
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
                                 location_context *lc,
                                 symbol_name sn, char *buff, size_t buff_size )
 {
@@ -146,47 +146,47 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
             *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
-        len = ImpInterface.SymName( ii, is, lc, SN_OBJECT, NULL, 0 );
+        len = ImpInterface.SymName( iih, is, lc, SN_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
         mangled_name = walloca( len + 1 );
-        ImpInterface.SymName( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
+        ImpInterface.SymName( iih, is, lc, SN_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
         return( __demangle_l( mangled_name, len, buff, buff_size ) );
     case SN_OBJECT:
         switch( is->type ) {
         case SH_LCL:
-            if( Lcl2GblHdl( ii, is, &gbl_is ) != DS_OK )
+            if( Lcl2GblHdl( iih, is, &gbl_is ) != DS_OK )
                 break;
-            return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
+            return( SymHdl2ObjGblName( iih, &gbl_is, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.SymLocation( ii, is, lc, &ll ) != DS_OK )
+            if( ImpInterface.SymLocation( iih, is, lc, &ll ) != DS_OK )
                 break;
             if( ll.num != 1 || ll.e[0].type != LT_ADDR )
                 break;
-            if( ImpInterface.AddrMod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+            if( ImpInterface.AddrMod( iih, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
                 break;
-            if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
+            if( LookupGblAddr(iih,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
                 break;
             is = &gbl_is;
             /* fall through */
         case SH_GBL:
-            return( SymHdl2ObjGblName( ii, is, buff, buff_size ) );
+            return( SymHdl2ObjGblName( iih, is, buff, buff_size ) );
         }
         /* fall through */
     case SN_SOURCE:
         switch( is->type ) {
         case SH_GBL:
-            return( SymHdl2GblName( ii, is, buff, buff_size ) );
+            return( SymHdl2GblName( iih, is, buff, buff_size ) );
         case SH_LCL:
-            return( SymHdl2LclName( ii, is, buff, buff_size ) );
+            return( SymHdl2LclName( iih, is, buff, buff_size ) );
         case SH_MBR:
-            return( SymHdl2MbrName( ii, is, buff, buff_size ) );
+            return( SymHdl2MbrName( iih, is, buff, buff_size ) );
         case SH_TYP:
-            return( SymHdl2TypName( ii, is, buff, buff_size ) );
+            return( SymHdl2TypName( iih, is, buff, buff_size ) );
         case SH_CST:
-            return( SymHdl2CstName( ii, is, buff, buff_size ) );
+            return( SymHdl2CstName( iih, is, buff, buff_size ) );
         }
         break;
     }
@@ -211,7 +211,7 @@ static void CollectSymHdl( const char *ep, imp_sym_handle *is )
     }
 }
 
-static search_result SearchFileScope( imp_image_handle *ii,
+static search_result SearchFileScope( imp_image_handle *iih,
                         imp_mod_handle im, lookup_item *li, void *d )
 {
     search_result       sr;
@@ -220,19 +220,19 @@ static search_result SearchFileScope( imp_image_handle *ii,
         return( SR_NONE );
     switch( li->type ) {
     case ST_NONE:
-        sr = SearchLclMod( ii, im, li, d );
+        sr = SearchLclMod( iih, im, li, d );
         if( sr != SR_NONE )
             return( sr );
-        return( SearchEnumName( ii, im, li, d ) );
+        return( SearchEnumName( iih, im, li, d ) );
     case ST_DESTRUCTOR:
     case ST_OPERATOR:
         return( SR_NONE );
     default:
-        return( SearchTypeName( ii, im, li, d ) );
+        return( SearchTypeName( iih, im, li, d ) );
     }
 }
 
-static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
+static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
                          void *source, lookup_item *li, location_context *lc, void *d )
 {
     imp_mod_handle      im;
@@ -248,7 +248,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     /* unused parameters */ (void)lc;
 
     if( GETU8( li->name.start ) == SH_ESCAPE ) {
-        CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
+        CollectSymHdl( li->name.start, DCSymCreate( iih, d ) );
         return( SR_EXACT );
     }
     if( li->type == ST_NAMESPACE )
@@ -257,9 +257,9 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
         scope_is = source;
-        len = ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
+        len = ImpInterface.SymName( iih, scope_is, NULL, SN_SOURCE, NULL, 0 );
         scope_name = walloca( len + 1 );
-        ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpInterface.SymName( iih, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;
@@ -295,23 +295,23 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     im = IMH_NOMOD;
     switch( ss ) {
     case SS_SCOPED:
-        if( ImpInterface.AddrMod( ii, *(address *)source, &im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( iih, *(address *)source, &im ) == SR_NONE ) {
             im = MH2IMH( sym_li.mod );
         } else if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
             if( !sym_li.file_scope && sym_li.type == ST_NONE ) {
-                sr = SearchLclScope( ii, im, (address *)source, &sym_li, d );
+                sr = SearchLclScope( iih, im, (address *)source, &sym_li, d );
             }
         } else {
             im = MH2IMH( sym_li.mod );
         }
         if( im != IMH_NOMOD && sr == SR_NONE ) {
-            sr = SearchFileScope( ii, im, &sym_li, d );
+            sr = SearchFileScope( iih, im, &sym_li, d );
         }
         break;
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
         if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
-            sr = SearchFileScope( ii, im, &sym_li, d );
+            sr = SearchFileScope( iih, im, &sym_li, d );
         }
         break;
     case SS_TYPE:
@@ -325,89 +325,89 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         case ST_ENUM_TAG:
             return( SR_NONE );
         }
-        return( SearchMbr( ii, (imp_type_handle *)source, &sym_li, d ) );
+        return( SearchMbr( iih, (imp_type_handle *)source, &sym_li, d ) );
     }
     if( sr == SR_NONE ) {
         switch( sym_li.type ) {
         case ST_NONE:
         case ST_DESTRUCTOR:
         case ST_OPERATOR:
-            sr = SearchGbl( ii, im, MH2IMH( sym_li.mod ), &sym_li, d );
+            sr = SearchGbl( iih, im, MH2IMH( sym_li.mod ), &sym_li, d );
             break;
         }
     }
     return( sr );
 }
 
-search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii, symbol_source ss,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih, symbol_source ss,
                          void *source, lookup_item *li, void *d )
 {
-    return( DoLookupSym( ii, ss, source, li, NULL, d ) );
+    return( DoLookupSym( iih, ss, source, li, NULL, d ) );
 }
 
-search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii, symbol_source ss,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih, symbol_source ss,
                          void *source, lookup_item *li, location_context *lc, void *d )
 {
-    return( DoLookupSym( ii, ss, source, li, lc, d ) );
+    return( DoLookupSym( iih, ss, source, li, lc, d ) );
 }
 
-dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *is,
                                 location_context *lc, location_list *ll )
 {
     switch( is->type ) {
     case SH_GBL:
-        return( SymHdl2GblLoc( ii, is, ll ) );
+        return( SymHdl2GblLoc( iih, is, ll ) );
     case SH_LCL:
-        return( SymHdl2LclLoc( ii, is, lc, ll ) );
+        return( SymHdl2LclLoc( iih, is, lc, ll ) );
     case SH_MBR:
-        return( SymHdl2MbrLoc( ii, is, lc, ll ) );
+        return( SymHdl2MbrLoc( iih, is, lc, ll ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
 
-dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *is,
                                 location_context *lc, void *value )
 {
     /* unused parameters */ (void)lc;
 
     switch( is->type ) {
     case SH_CST:
-        return( SymHdl2CstValue( ii, is, value ) );
+        return( SymHdl2CstValue( iih, is, value ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
 
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *is,
                                 imp_type_handle *ith )
 {
     switch( is->type ) {
     case SH_GBL:
-        return( SymHdl2GblType( ii, is, ith ) );
+        return( SymHdl2GblType( iih, is, ith ) );
     case SH_LCL:
-        return( SymHdl2LclType( ii, is, ith ) );
+        return( SymHdl2LclType( iih, is, ith ) );
     case SH_MBR:
-        return( SymHdl2MbrType( ii, is, ith ) );
+        return( SymHdl2MbrType( iih, is, ith ) );
     case SH_TYP:
-        return( SymHdl2TypType( ii, is, ith ) );
+        return( SymHdl2TypType( iih, is, ith ) );
     case SH_CST:
-        return( SymHdl2CstType( ii, is, ith ) );
+        return( SymHdl2CstType( iih, is, ith ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
-dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *is,
                         location_context *lc, sym_info *si )
 {
     memset( si, 0, sizeof( *si ) );
     switch( is->type ) {
     case SH_GBL:
-        return( SymHdl2GblInfo( ii, is, si ) );
+        return( SymHdl2GblInfo( iih, is, si ) );
     case SH_LCL:
-        return( SymHdl2LclInfo( ii, is, si ) );
+        return( SymHdl2LclInfo( iih, is, si ) );
     case SH_MBR:
-        return( SymHdl2MbrInfo( ii, is, si, lc ) );
+        return( SymHdl2MbrInfo( iih, is, si, lc ) );
     case SH_TYP:
         si->kind = SK_TYPE;
         break;
@@ -421,12 +421,12 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
 
 }
 
-dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     imp_sym_handle *is, location_context *lc, location_list *ll, unsigned parm )
 {
     if( is->type != SH_LCL )
         return( DS_FAIL );
-    return( SymHdl2LclParmLoc( ii, is, lc, ll, parm ) );
+    return( SymHdl2LclParmLoc( iih, is, lc, ll, parm ) );
 }
 
 typedef struct {
@@ -435,17 +435,17 @@ typedef struct {
     void                *d;
 } sym_glue;
 
-static walk_result WalkMySyms( imp_image_handle *ii,
+static walk_result WalkMySyms( imp_image_handle *iih,
                         imp_mod_handle im, void *d )
 {
     sym_glue    *wd = d;
     walk_result wr;
 
-    WalkLclModSymList( ii, im, wd->walk, wd->is, wd->d, &wr );
+    WalkLclModSymList( iih, im, wd->walk, wd->is, wd->d, &wr );
     return( wr );
 }
 
-static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
+static walk_result DoWalkSymList( imp_image_handle *iih, symbol_source ss,
                 void *t, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
@@ -455,24 +455,24 @@ static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
     wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE:
-        return( WalkTypeSymList( ii, (imp_type_handle *)t, wk, is, d ) );
+        return( WalkTypeSymList( iih, (imp_type_handle *)t, wk, is, d ) );
     case SS_SCOPED:
-        return( WalkScopedSymList( ii, (address *)t, wk, is, d ) );
+        return( WalkScopedSymList( iih, (address *)t, wk, is, d ) );
     case SS_BLOCK:
-        return( WalkBlockSymList( ii, (scope_block *)t, wk, is, d ) );
+        return( WalkBlockSymList( iih, (scope_block *)t, wk, is, d ) );
     case SS_MODULE:
         im = *(imp_mod_handle *)t;
         if( im == IMH_NOMOD ) {
             glue.walk = wk;
             glue.is   = is;
             glue.d    = d;
-            wr = MyWalkModList( ii, WalkMySyms, &glue );
+            wr = MyWalkModList( iih, WalkMySyms, &glue );
             if( wr == WR_CONTINUE ) {
-                wr = WalkGblModSymList( ii, im, wk, is, d );
+                wr = WalkGblModSymList( iih, im, wk, is, d );
             }
         } else {
-            if( WalkLclModSymList( ii, im, wk, is, d, &wr ) != DS_OK ) {
-                wr = WalkGblModSymList( ii, im, wk, is, d );
+            if( WalkLclModSymList( iih, im, wk, is, d, &wr ) != DS_OK ) {
+                wr = WalkGblModSymList( iih, im, wk, is, d );
             }
         }
         break;
@@ -480,25 +480,25 @@ static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
     return( wr );
 }
 
-walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih, symbol_source ss,
                 void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
-    return( DoWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
 }
 
-walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
                 void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
     /* unused parameters */ (void)lc;
 
-    return( DoWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle im,
                         default_kind dk, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)dk; (void)ti;
+    /* unused parameters */ (void)iih; (void)im; (void)dk; (void)ti;
 
     return( DS_FAIL );
 }
@@ -529,10 +529,10 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
 #endif
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     if( is1->im < is2->im )
         return( -1 );
@@ -590,23 +590,23 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return(DS_OK);
 }

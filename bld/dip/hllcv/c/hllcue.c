@@ -119,12 +119,12 @@ static int hllLinnumCmpHL3(const void *_e1, const void *_e2)
 /*
  * VM destructure callback for tracking sorted linnum blocks.
  */
-static void hllLinnumDtor( imp_image_handle *ii, void *entries)
+static void hllLinnumDtor( imp_image_handle *iih, void *entries)
 {
     int i;
     for( i = 0; i < HLLINFO_NUM_SORTED; i++ ) {
-        if( ii->sorted_linnum_blocks[i] == entries ) {
-            ii->sorted_linnum_blocks[i] = NULL;
+        if( iih->sorted_linnum_blocks[i] == entries ) {
+            iih->sorted_linnum_blocks[i] = NULL;
             break;
         }
     }
@@ -139,20 +139,20 @@ static void hllLinnumDtor( imp_image_handle *ii, void *entries)
  * return them as if they were ordered by [sfi,] line. So, since I'm lazy
  * (don't sue me) we'll do that.
  */
-static void *hllGetSortedLinnums( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+static void *hllGetSortedLinnums( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     const unsigned  entry_size = hllLinnumSize( imp_cueh );
     void           *entries;
     int             i;
 
-    entries = VMBlock( ii, imp_cueh->lines, imp_cueh->num_lines * entry_size );
+    entries = VMBlock( iih, imp_cueh->lines, imp_cueh->num_lines * entry_size );
     if( !entries ) {
         return( NULL );
     }
 
     /* already sorted? */
     for( i = 0; i < HLLINFO_NUM_SORTED; i++ ) {
-        if( ii->sorted_linnum_blocks[i] == entries ) {
+        if( iih->sorted_linnum_blocks[i] == entries ) {
             return( entries );
         }
     }
@@ -178,17 +178,17 @@ static void *hllGetSortedLinnums( imp_image_handle *ii, imp_cue_handle *imp_cueh
         break;
     }
 
-    VMAddDtor( ii, imp_cueh->lines, hllLinnumDtor, entries );
+    VMAddDtor( iih, imp_cueh->lines, hllLinnumDtor, entries );
 
     for( i = 0; i < HLLINFO_NUM_SORTED; i++ ) {
-        if( !ii->sorted_linnum_blocks[i] ) {
-            ii->sorted_linnum_blocks[i] = entries;
+        if( !iih->sorted_linnum_blocks[i] ) {
+            iih->sorted_linnum_blocks[i] = entries;
             return( entries );
         }
     }
 
     i = ((uintptr_t)entries >> 7) % HLLINFO_NUM_SORTED;
-    ii->sorted_linnum_blocks[i] = entries;
+    iih->sorted_linnum_blocks[i] = entries;
     return( entries );
 }
 
@@ -196,7 +196,7 @@ static void *hllGetSortedLinnums( imp_image_handle *ii, imp_cue_handle *imp_cueh
 /*
  * Walk the list of source files of a module.
  */
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
                        DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 {
     hll_dir_entry                       *hde;
@@ -209,7 +209,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
     /*
      * Really old line numbers.
      */
-    hde = hllFindDirEntry( ii, im, hll_sstSrcLines );
+    hde = hllFindDirEntry( iih, im, hll_sstSrcLines );
     if( hde ) {
         /*
          *  while (more data) {
@@ -235,8 +235,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
 
             /* read the header */
             imp_cueh->num_lines = 0;
-            if( !VMSsGetU8( ii, hde, pos, &name_len )
-             || !VMSsGetU16( ii, hde, pos + 1 + name_len, (unsigned_16 *)&imp_cueh->num_lines )
+            if( !VMSsGetU8( iih, hde, pos, &name_len )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len, (unsigned_16 *)&imp_cueh->num_lines )
                 ) {
                 return( WR_FAIL );
             }
@@ -250,7 +250,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
             }
 
             if( imp_cueh->num_lines > 0  ) {
-                wr = wk( ii, imp_cueh, d );
+                wr = wk( iih, imp_cueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
@@ -261,7 +261,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
     /*
      * Old line numbers.
      */
-    hde = hllFindDirEntry( ii, im, hll_sstSrcLnSeg );
+    hde = hllFindDirEntry( iih, im, hll_sstSrcLnSeg );
     if( hde ) {
         /*
          * while (more data) {
@@ -283,8 +283,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
         unsigned_32 pos;
         unsigned_32 entry_size;
 
-        if( ii->format_lvl == HLL_LVL_NB00
-         || ii->format_lvl == HLL_LVL_NB02 ) {
+        if( iih->format_lvl == HLL_LVL_NB00
+         || iih->format_lvl == HLL_LVL_NB02 ) {
             entry_size = sizeof( cv3_linnum_entry_16 );
             imp_cueh->style  = HLL_LINE_STYLE_SRC_LINES_SEG_16;
         } else {
@@ -299,9 +299,9 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
 
             /* read the header */
             imp_cueh->num_lines = 0;
-            if( !VMSsGetU8( ii, hde, pos, &name_len )
-             || !VMSsGetU16( ii, hde, pos + 1 + name_len, &imp_cueh->segment )
-             || !VMSsGetU16( ii, hde, pos + 1 + name_len + 2, (unsigned_16 *)&imp_cueh->num_lines )
+            if( !VMSsGetU8( iih, hde, pos, &name_len )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len, &imp_cueh->segment )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len + 2, (unsigned_16 *)&imp_cueh->num_lines )
                 ) {
                 return( WR_FAIL );
             }
@@ -315,7 +315,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
             }
 
             if( imp_cueh->num_lines > 0  ) {
-                wr = wk( ii, imp_cueh, d );
+                wr = wk( iih, imp_cueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
@@ -331,7 +331,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
      * with the code in this file! I.e. path tables, listing, and source + listing
      * blocks are completely ignored.
      */
-    hde = hllFindDirEntry( ii, im, hll_sstHLLSrc );
+    hde = hllFindDirEntry( iih, im, hll_sstHLLSrc );
     if( hde )  {
         unsigned_32     pos = 0;
         unsigned_32     num_files;
@@ -354,7 +354,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
         /*
          * Find the two tables.
          */
-        switch( hllGetModStyle( ii, im ) ) {
+        switch( hllGetModStyle( iih, im ) ) {
             /*
              * In HLL V1, there is only one block which starts with
              * line numbers, continues with paths and finishes off
@@ -369,7 +369,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                 imp_cueh->style  = HLL_LINE_STYLE_HLL_01;
 
                 /* get the 'first' record. */
-                first = VMSsBlock( ii, hde, pos, sizeof( *first ) );
+                first = VMSsBlock( iih, hde, pos, sizeof( *first ) );
                 if( !first ) {
                     return( WR_FAIL );
                 }
@@ -387,7 +387,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                          + first->num_path_entries * sizeof( hl1_pathtab_entry );
 
                 /* get the file table header */
-                hdr = VMSsBlock( ii, hde, imp_cueh->file, sizeof( *hdr ) );
+                hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
                 if( !hdr ) {
                     return( WR_FAIL );
                 }
@@ -413,7 +413,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                 unsigned_32         pos_next;
 
                 /* get the 'first' record. */
-                first = VMSsBlock( ii, hde, pos, sizeof( *first ) );
+                first = VMSsBlock( iih, hde, pos, sizeof( *first ) );
                 if( !first ) {
                     return( WR_FAIL );
                 }
@@ -438,7 +438,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                     end_files = imp_cueh->file + first->file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( ii, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -463,7 +463,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                 unsigned_32         pos_next;
 
                 /* get the 'first' record. */
-                first = VMSsBlock( ii, hde, pos, sizeof( *first ) );
+                first = VMSsBlock( iih, hde, pos, sizeof( *first ) );
                 if( !first ) {
                     return( WR_FAIL );
                 }
@@ -488,7 +488,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                     end_files = imp_cueh->file + first->file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( ii, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -522,7 +522,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                 unsigned_32         pos_next;
 
                 /* get the 'first' record. */
-                first = VMSsBlock( ii, hde, pos, sizeof( *first ) );
+                first = VMSsBlock( iih, hde, pos, sizeof( *first ) );
                 if( !first ) {
                     return( WR_FAIL );
                 }
@@ -533,9 +533,9 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                     imp_cueh->num_lines = first->lines.num_line_entries;
                     imp_cueh->u.hll.base_offset = first->lines.base_offset;
                     if( imp_cueh->segment
-                     && ii->seg_count > imp_cueh->segment
-                     && imp_cueh->u.hll.base_offset >= ii->segments[imp_cueh->segment-1].address ){
-                        imp_cueh->u.hll.base_offset -= ii->segments[imp_cueh->segment-1].address;
+                     && iih->seg_count > imp_cueh->segment
+                     && imp_cueh->u.hll.base_offset >= iih->segments[imp_cueh->segment-1].address ){
+                        imp_cueh->u.hll.base_offset -= iih->segments[imp_cueh->segment-1].address;
                     }
                     pos_next = pos
                              + first->lines.num_line_entries * sizeof( hl3_linnum_entry );
@@ -546,7 +546,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                     end_files = imp_cueh->file + first->files.file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( ii, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -592,7 +592,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
             unsigned_8      file_len;
 
             /* get the line numbers (again). */
-            entries = hllGetSortedLinnums( ii, imp_cueh );
+            entries = hllGetSortedLinnums( iih, imp_cueh );
             if( !entries ) {
                 return( WR_FAIL );
             }
@@ -613,7 +613,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
                 imp_cueh->file = hde->lfo + pos;
 
                 /* do the callback */
-                wr = wk( ii, imp_cueh, d );
+                wr = wk( iih, imp_cueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
@@ -626,7 +626,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
             }
 
             /* next file name */
-            if (!VMSsGetU8( ii, hde, pos, &file_len )) {
+            if (!VMSsGetU8( iih, hde, pos, &file_len )) {
                 return( WR_FAIL );
             }
             pos += 1 + file_len;
@@ -640,23 +640,23 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
 /*
  * Get the module of a cue.
  */
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    ii = ii;
+    iih = iih;
     return( imp_cueh->im );
 }
 
 /*
  * Get the filename of a cue.
  */
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh,
                                  char *buff, size_t buff_size )
 {
     unsigned_8  name_len;
     const char *file_name;
 
-    if( VMGetU8( ii, imp_cueh->file, &name_len)
-     && (file_name = VMBlock( ii, imp_cueh->file + 1, name_len ) ) != NULL ) {
+    if( VMGetU8( iih, imp_cueh->file, &name_len)
+     && (file_name = VMBlock( iih, imp_cueh->file + 1, name_len ) ) != NULL ) {
         return( hllNameCopy( buff, file_name, buff_size, name_len ) );
     }
 
@@ -666,21 +666,22 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh,
 /*
  * Get the 'file id'.
  */
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    ii = ii;
+    /* unused parameters */ (void)iih;
+
     return( imp_cueh->file );
 }
 
 /*
  * Get the linenumber.
  */
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     unsigned_8 * entries;
 
     /* Load and sort the line number. */
-    entries = hllGetSortedLinnums( ii, imp_cueh );
+    entries = hllGetSortedLinnums( iih, imp_cueh );
     if( !entries ) {
         return( DS_ERR | DS_FAIL );
     }
@@ -727,9 +728,9 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_
 /*
  * Get the column number - we've got no such information.
  */
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( 0 );
 }
@@ -737,13 +738,13 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cue
 /*
  * Get the address.
  */
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
     unsigned_8 *entries;
     address     addr;
 
     /* Load and sort the line number. */
-    entries = hllGetSortedLinnums( ii, imp_cueh );
+    entries = hllGetSortedLinnums( iih, imp_cueh );
     if( !entries ) {
         return( NilAddr );
     }
@@ -790,14 +791,14 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
     addr.indirect = 0;
     addr.sect_id = 0;
     addr.mach.segment = imp_cueh->segment;
-    hllMapLogical( ii, &addr );
+    hllMapLogical( iih, &addr );
     return( addr );
 }
 
 /*
  * Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
  *
- * That is, If you get called with "DIPImpCueAdjust( ii, src, 1, dst )",
+ * That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
  * the 'dst' handle should be filled in with implementation cue handle
  * representing the source cue immediately following the 'src' cue.
  * Passing in an 'adj' of -1 will get the immediately preceeding source
@@ -814,12 +815,12 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
  * Reminder: A cue is a source file location. For HLL/CV it's a line for
  *           which code was generated.
  */
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *src_imp_cueh,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_imp_cueh,
                                      int adj, imp_cue_handle *dst_imp_cueh )
 {
     dip_status rc;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     HLL_LOG(( "DIPImpCueAdjust: ic=%p:{cur_line=%lu file=%#lx} adj=%d aic=%p",
               src_imp_cueh, (long)ic->cur_line, (long)src_imp_cueh->file, adj, dst_imp_cueh ));
@@ -895,7 +896,7 @@ typedef struct {
 /*
  * Search a file for a line number in a file.
  */
-static walk_result hllFindLineCueInFile( imp_image_handle *ii, imp_cue_handle *imp_cueh, void *_state )
+static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *imp_cueh, void *_state )
 {
     hll_find_line_cue_in_file  *state = _state;
     unsigned_16                 entry_size;
@@ -927,7 +928,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *ii, imp_cue_handle *i
      * We exploit the fact that all the linnum entry structs starts with
      * the a 16-bit linenumber member.
      */
-    entries = hllGetSortedLinnums( ii, imp_cueh );
+    entries = hllGetSortedLinnums( iih, imp_cueh );
     if( !entries ) {
         return( WR_FAIL );
     }
@@ -1013,7 +1014,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *ii, imp_cue_handle *i
  * passed in values and return SR_CLOSEST. If there are no cues with
  * the proper characteristics, return SR_NONE
  */
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle im,
                                       cue_fileid file, unsigned long line,
                                       unsigned column, imp_cue_handle *imp_cueh )
 {
@@ -1033,7 +1034,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
 //    if( state.line > UINT16_MAX )
 //        state.line = UINT16_MAX;
     state.rc   = SR_NONE;
-    walk_rc = DIPImpWalkFileList( ii, im, hllFindLineCueInFile, imp_cueh, &state );
+    walk_rc = DIPImpWalkFileList( iih, im, hllFindLineCueInFile, imp_cueh, &state );
     HLL_LOG(( "DIPImpLineCue: mod=%x file=%lx line=%lx -> %d (%lx)\n",
               im, file, line, state.rc, state.best_imp_cueh.cur_line ));
     if( walk_rc == WR_FAIL) {
@@ -1057,7 +1058,7 @@ typedef struct {
 /*
  * Search a file for the line number closes to a given address.
  */
-static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *imp_cueh, void *_state )
+static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *imp_cueh, void *_state )
 {
     hll_find_addr_cue_in_file  *state = _state;
     void                       *entries;
@@ -1069,13 +1070,13 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
      * Check if this segment is the right one, and get the mapping offset of the segment.
      */
     addr.mach.segment = imp_cueh->segment;
-    hllMapLogical( ii, &addr );
+    hllMapLogical( iih, &addr );
     if( addr.mach.segment != state->addr.mach.segment ) {
         return( WR_CONTINUE );
     }
     /* logical mapping offset. */
-    if( imp_cueh->segment <= ii->seg_count ) {
-        map_offset = ii->segments[imp_cueh->segment - 1].map.offset;
+    if( imp_cueh->segment <= iih->seg_count ) {
+        map_offset = iih->segments[imp_cueh->segment - 1].map.offset;
     } else {
         map_offset = 0;
     }
@@ -1083,7 +1084,7 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
     /*
      * Traverse the line numbers.
      */
-    entries = hllGetSortedLinnums( ii, imp_cueh );
+    entries = hllGetSortedLinnums( iih, imp_cueh );
     if( !entries ) {
         return( WR_FAIL );
     }
@@ -1168,7 +1169,7 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
  * return SR_NONE. If there is one exactly at the address return
  * SR_EXACT. Otherwise, return SR_CLOSEST.
  */
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
                                       address addr, imp_cue_handle *imp_cueh )
 {
     /*
@@ -1187,7 +1188,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
     hll_find_addr_cue_in_file   state = {0};
     state.addr = addr;
     state.best_delta = INT32_MAX;
-    walk_rc = DIPImpWalkFileList( ii, im, hllFindAddrCueInFile, imp_cueh, &state );
+    walk_rc = DIPImpWalkFileList( iih, im, hllFindAddrCueInFile, imp_cueh, &state );
     if( walk_rc != WR_FAIL) {
         if( state.best_delta != INT32_MAX ) {
             *imp_cueh = state.best_imp_cueh;
@@ -1214,9 +1215,9 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
  * The reason for the constraints is so that a client can sort a list of handles
  * and binary search them.
  */
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
-    ii = ii;
+    iih = iih;
     if( imp_cueh1->im < imp_cueh2->im )
         return( -1 );
     if( imp_cueh1->im > imp_cueh2->im )

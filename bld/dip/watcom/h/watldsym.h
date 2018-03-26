@@ -31,4 +31,4 @@
 
 
 extern dip_status           InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff );
-extern void                 AddressMap( imp_image_handle *ii, addr_ptr *addr );
+extern void                 AddressMap( imp_image_handle *, addr_ptr *addr );

@@ -36,78 +36,78 @@
 /*
         This guy needs to be *FAST*. He's called from all over.
 */
-search_result FindMBIndex( imp_image_handle *ii, addr_off off, unsigned *idx )
+search_result FindMBIndex( imp_image_handle *iih, addr_off off, unsigned *idx )
 {
     ji_ptr              code_start;
     unsigned            i;
     struct methodblock  *mb;
 
-    if( ii->num_methods > 0 ) {
-        i = ii->last_method;
-        mb = &ii->methods[i];
+    if( iih->num_methods > 0 ) {
+        i = iih->last_method;
+        mb = &iih->methods[i];
         for( ;; ) {
             if( !(mb->fb.access & ACC_NATIVE) ) {
                 code_start = (ji_ptr)mb->code;
                 if( off == code_start ) {
                     *idx = i;
-                    ii->last_method = i;
+                    iih->last_method = i;
                     return( SR_EXACT );
                 }
                 if( off > code_start && off < (code_start + mb->code_length) ) {
                     *idx = i;
-                    ii->last_method = i;
+                    iih->last_method = i;
                     return( SR_CLOSEST );
                 }
             }
             ++mb;
             ++i;
-            if( i >= ii->num_methods ) {
+            if( i >= iih->num_methods ) {
                 i = 0;
-                mb = ii->methods;
+                mb = iih->methods;
             }
-            if( i == ii->last_method ) break;
+            if( i == iih->last_method ) break;
         }
     }
     *idx = (unsigned)-1;
     return( SR_NONE );
 }
 
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
                         DIP_IMP_MOD_WALKER *wk, void *d )
 {
-    return( wk( ii, IMH_JAVA, d ) );
+    return( wk( iih, IMH_JAVA, d ) );
 }
 
-size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
                     imp_mod_handle im, char *buff, size_t buff_size )
 {
     ji_ptr      name;
     size_t      len;
 
-    name = GetPointer( ii->cc + offsetof( ClassClass, name ) );
+    name = GetPointer( iih->cc + offsetof( ClassClass, name ) );
     len = GetString( name, NameBuff, sizeof( NameBuff ) );
     NormalizeClassName( NameBuff, len );
     return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 {
     return( "java" );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
                                 imp_mod_handle im, handle_kind hk )
 {
     return( DS_OK );
 }
 
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a,
                 imp_mod_handle *im )
 {
     search_result       sr;
     unsigned            i;
 
-    sr = FindMBIndex( ii, a.mach.offset, &i );
+    sr = FindMBIndex( iih, a.mach.offset, &i );
     switch( sr ) {
     case SR_EXACT:
     case SR_CLOSEST:
@@ -117,23 +117,23 @@ search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
     return( sr );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
                                 imp_mod_handle im )
 {
     address     a;
     unsigned    i;
 
-    for( i = 0; i < ii->num_methods; ++i ) {
-        if( !(ii->methods[i].fb.access & ACC_NATIVE) ) {
+    for( i = 0; i < iih->num_methods; ++i ) {
+        if( !(iih->methods[i].fb.access & ACC_NATIVE) ) {
             a = DefCodeAddr;
-            a.mach.offset = (ji_ptr)ii->methods[i].code;
+            a.mach.offset = (ji_ptr)iih->methods[i].code;
             return( a );
         }
     }
     return( NilAddr );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
      return( DS_FAIL );

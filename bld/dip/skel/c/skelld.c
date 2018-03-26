@@ -36,12 +36,12 @@
         Loading/unloading symbolic information.
 */
 
-dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
     //TODO:
     /*
         See if the given file handle has our kind of symbolic information
-        on it. If so, fill in the "*ii" structure and return DS_OK. If it
+        on it. If so, fill in the "*iih" structure and return DS_OK. If it
         isn't our type of information, return DS_FAIL. If it's our information,
         but something goes wrong during the load, return a DS_ERR|DS_?
         constant. If the load succeeds the client will not close the
@@ -52,7 +52,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
      return( DS_FAIL );
 }
 
-void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
     //TODO:
     /*
@@ -67,12 +67,12 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
     */
 }
 
-void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
     //TODO:
     /*
         The indicated image is going away. Free any structures pointed to
-        by the 'ii' parameter. Don't try and free the 'ii' pointer itself.
+        by the 'iih' parameter. Don't try and free the 'iih' pointer itself.
         The DIP manager will take care of that. If you hung onto the file
         handle passed in to the DIPImpLoadInfo function, you should close
         it now.

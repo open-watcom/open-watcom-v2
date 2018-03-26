@@ -43,7 +43,7 @@
 */
 
 
-static walk_result     DoWalkSymList( imp_image_handle *ii,
+static walk_result     DoWalkSymList( imp_image_handle *iih,
                 symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -53,43 +53,43 @@ static walk_result     DoWalkSymList( imp_image_handle *ii,
 
     if( ss != SS_MODULE ) return( WR_CONTINUE );
     wr = WR_CONTINUE;
-    for( is->p = ii->gbl; is->p != NULL; is->p = is->p->next ) {
-        wr = wk( ii, SWI_SYMBOL, is, d );
+    for( is->p = iih->gbl; is->p != NULL; is->p = is->p->next ) {
+        wr = wk( iih, SWI_SYMBOL, is, d );
         if( wr != WR_CONTINUE ) break;
     }
     return( wr );
 }
 
-walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
                 symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
-    return( DoWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
 }
 
-walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
                 void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
     /* unused parameters */ (void)lc;
 
-    return( DoWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
 }
 
 
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih,
                         imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return( IMH_EXPORT );
 }
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
                         imp_sym_handle *is, location_context *lc,
                         symbol_name sn, char *buff, size_t buff_size )
 {
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
     if( sn == SN_DEMANGLED ) return( 0 );
     if( buff_size > 0 ) {
@@ -102,11 +102,11 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
     return( is->p->len );
 }
 
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle *ith )
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *is, imp_type_handle *ith )
 {
     exp_block   *b;
 
-    b = FindAddrBlock( ii, is->p->addr );
+    b = FindAddrBlock( iih, is->p->addr );
     if( b != NULL ) {
         ith->code = b->code;
     } else {
@@ -115,10 +115,10 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is, imp
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 {
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
     ll->num = 1;
     ll->flags = 0;
@@ -130,15 +130,15 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
                 imp_sym_handle *is, location_context *lc, void *buff )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)lc; (void)buff;
+    /* unused parameters */ (void)iih; (void)is; (void)lc; (void)buff;
 
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 {
     exp_block   *b;
@@ -146,7 +146,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
     /* unused parameters */ (void)lc;
 
     memset( si, 0, sizeof( *si ) );
-    b = FindAddrBlock( ii, is->p->addr );
+    b = FindAddrBlock( iih, is->p->addr );
     if( b != NULL && b->code ) {
         si->kind = SK_CODE;
     } else {
@@ -157,33 +157,33 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)lc; (void)ll; (void)n;
+    /* unused parameters */ (void)iih; (void)is; (void)lc; (void)ll; (void)n;
 
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
                     imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)ith; (void)ti;
+    /* unused parameters */ (void)iih; (void)is; (void)ith; (void)ti;
 
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
-    /* unused parameters */ (void)ii; (void)is; (void)lc; (void)ll;
+    /* unused parameters */ (void)iih; (void)is; (void)lc; (void)ll;
 
      return( DS_FAIL );
 }
 
-search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
     exp_sym     *s;
@@ -191,7 +191,7 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
     /* unused parameters */ (void)im;
 
     is->p = NULL;
-    s = ii->gbl;
+    s = iih->gbl;
     for( ;; ) {
         if( s == NULL ) break;
         if( SameAddrSpace( s->addr, a.mach )
@@ -208,7 +208,7 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
 }
 
 
-static search_result   DoLookupSym( imp_image_handle *ii,
+static search_result   DoLookupSym( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
@@ -231,50 +231,50 @@ static search_result   DoLookupSym( imp_image_handle *ii,
     } else {
         cmp = memicmp;
     }
-    for( s = ii->gbl; s != NULL; s = s->next ) {
+    for( s = iih->gbl; s != NULL; s = s->next ) {
         if( s->len==li->name.len && cmp(s->name,li->name.start,s->len)==0 ) {
-            DCSymCreate( ii, d )->p = s;
+            DCSymCreate( iih, d )->p = s;
             return( SR_EXACT );
         }
     }
     return( SR_NONE );
 }
 
-search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 {
-    return( DoLookupSym( ii, ss, source, li, NULL, d ) );
+    return( DoLookupSym( iih, ss, source, li, NULL, d ) );
 }
 
-search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
-    return( DoLookupSym( ii, ss, source, li, lc, d ) );
+    return( DoLookupSym( iih, ss, source, li, lc, d ) );
 }
 
-search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, scope_block *scope )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)addr; (void)scope;
+    /* unused parameters */ (void)iih; (void)im; (void)addr; (void)scope;
 
     return( SR_NONE );
 }
 
-search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)in; (void)out;
+    /* unused parameters */ (void)iih; (void)im; (void)in; (void)out;
 
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1, imp_sym_handle *is2 )
 {
     void        *g1;
     void        *g2;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     g1 = is1->p;
     g2 = is2->p;
@@ -304,23 +304,23 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1, imp_sym_ha
 #endif
 }
 
-dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return(DS_OK);
 }

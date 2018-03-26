@@ -44,12 +44,12 @@
 /************************/
 
 
-void InitImpCueInfo( imp_image_handle *ii )
-/*****************************************/
+void InitImpCueInfo( imp_image_handle *iih )
+/******************************************/
 {
     cue_list    *list;
 
-    list = ii->cue_map;
+    list = iih->cue_map;
     InitCueList( list );
     list->im = IMH_NOMOD;
     list->last.mach.segment = 0;
@@ -69,13 +69,13 @@ static void ResetCueInfo(  cue_list *list )
 }
 
 
-bool FiniImpCueInfo( imp_image_handle *ii )
-/*****************************************/
+bool FiniImpCueInfo( imp_image_handle *iih )
+/******************************************/
 {
     bool        ret;
     cue_list    *list;
 
-    list = ii->cue_map;
+    list = iih->cue_map;
     if( list->im != IMH_NOMOD ) {
         ResetCueInfo( list );
         ret = true;
@@ -86,10 +86,10 @@ bool FiniImpCueInfo( imp_image_handle *ii )
 }
 
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
-/************************************************************************************/
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+/*************************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     /* Return the module the source cue comes from. */
      return( imp_cueh->im );
@@ -175,8 +175,8 @@ static bool IsRelPathname( const char *name )
 }
 
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
-/******************************************************************************************************/
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
+/************************************************************************************************************/
 {
     char            *name;
     file_walk_name  wlk;
@@ -186,8 +186,8 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *imp_cueh, c
     int             i;
     mod_info        *modinfo;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
-    modinfo = IMH2MODI( ii, imp_cueh->im );
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into dwarf */
+    modinfo = IMH2MODI( iih, imp_cueh->im );
     stmts = modinfo->stmts;
     cu_tag = modinfo->cu_tag;
     if( stmts == DRMEM_HDL_NULL || cu_tag == DRMEM_HDL_NULL ) {
@@ -266,7 +266,7 @@ static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *imp_cueh )
 
 typedef struct {
     drmem_hdl           stmts;
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     imp_mod_handle      im;
     DIP_IMP_CUE_WALKER  *wk;
     imp_cue_handle      *imp_cueh;
@@ -291,7 +291,7 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
         imp_cueh->col = 0;
     }
     saved = DRGetDebug();
-    fc->wr = fc->wk( fc->ii, imp_cueh, fc->d );
+    fc->wr = fc->wk( fc->iih, imp_cueh, fc->d );
     DRSetDebug( saved );
     if( fc->wr == WR_CONTINUE ) {
         cont = true;
@@ -302,21 +302,21 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
                           DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 /***********************************************************************************/
 {
     file_walk_cue   wlk;
     drmem_hdl       stmts;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( ii, im )->stmts;
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    stmts = IMH2MODI( iih, im )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
     }
     wlk.stmts = stmts;
-    wlk.ii = ii;
+    wlk.iih = iih;
     wlk.im = im;
     wlk.wk = wk;
     wlk.imp_cueh = imp_cueh;
@@ -327,10 +327,10 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
 }
 
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
-/***********************************************************************************/
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+/************************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( imp_cueh->fno );
 }
@@ -372,7 +372,7 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
 
 /*
     Adjust the 'src' cue by 'adj' amount and return the result in 'dst'.
-    That is, If you get called with "DIPImpCueAdjust( ii, src, 1, dst )",
+    That is, If you get called with "DIPImpCueAdjust( iih, src, 1, dst )",
     the 'dst' handle should be filled in with implementation cue handle
     representing the source cue immediately following the 'src' cue.
     Passing in an 'adj' of -1 will get the immediately preceeding source
@@ -386,7 +386,7 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
     imp_cue_handle *src_imp_cueh, int adj, imp_cue_handle *dst_imp_cueh )
 /***********************************************************************/
 {
@@ -398,13 +398,13 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
     cue_list        *cue_map;
     address         map_addr;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( ii, src_imp_cueh->im )->stmts;
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    stmts = IMH2MODI( iih, src_imp_cueh->im )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
     }
-    cue_map = ii->cue_map;
+    cue_map = iih->cue_map;
     if( cue_map->im != src_imp_cueh->im ) {
         ResetCueInfo( cue_map );
         cue_map->im = src_imp_cueh->im;
@@ -449,19 +449,19 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
 }
 
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
-/************************************************************************************/
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+/*************************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( imp_cueh->line );
 }
 
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
-/*********************************************************************************/
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+/**********************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     /* Return the column number of source cue. Return zero if there
      * is no column number associated with the cue, or an error occurs in
@@ -471,8 +471,8 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cue
 }
 
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
-/******************************************************************************/
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+/*******************************************************************************/
 {
     address     ret;
     /* Return the address of source cue. Return NilAddr if there
@@ -480,12 +480,12 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
      * getting the information.
      */
     ret = imp_cueh->a;
-    DCMapAddr( &ret.mach, ii->dcmap );
+    DCMapAddr( &ret.mach, iih->dcmap );
     return( ret );
 }
 
 
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 /*************************************************************************/
 {
@@ -504,14 +504,14 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    stmts = IMH2MODI( ii, im )->stmts;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    stmts = IMH2MODI( iih, im )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
     map_addr = addr;
-    cue_map = ii->cue_map;
-    Real2Map( ii->addr_map, &map_addr );
+    cue_map = iih->cue_map;
+    Real2Map( iih->addr_map, &map_addr );
     if( cue_map->im != im ) {
         ResetCueInfo( cue_map );
         cue_map->im = im;
@@ -553,7 +553,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
 }
 
 
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *imp_cueh )
 /**********************************************************************/
@@ -570,12 +570,12 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts = IMH2MODI( ii, im )->stmts;
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    stmts = IMH2MODI( iih, im )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
-    cue_map= ii->cue_map;
+    cue_map= iih->cue_map;
     if( cue_map->im != im ) {
         ResetCueInfo( cue_map );
         cue_map->im = im;
@@ -619,10 +619,10 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
 }
 
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
-/*****************************************************************************************************/
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+/******************************************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     /* Compare two cue handles and return 0 if they refer to the same
      * information. If they refer to differnt things return either a

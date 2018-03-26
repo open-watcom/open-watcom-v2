@@ -127,13 +127,13 @@ static size_t BRead( FILE *fp, void *b, size_t s )
 
 #define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
 
-static void *HunkAlloc( imp_image_handle *ii, size_t size )
+static void *HunkAlloc( imp_image_handle *iih, size_t size )
 {
     msym_hunk   *hunk;
     size_t      alloc;
 
     size = ROUND_UP( size, sizeof( void * ) );
-    hunk = ii->hunks;
+    hunk = iih->hunks;
     if( hunk == NULL || size > hunk->left ) {
         alloc = HUNK_SIZE;
         if( alloc < size )
@@ -141,31 +141,31 @@ static void *HunkAlloc( imp_image_handle *ii, size_t size )
         hunk = DCAlloc( (sizeof( *hunk ) - HUNK_SIZE) + alloc );
         if( hunk == NULL )
             return( NULL );
-        hunk->next = ii->hunks;
-        ii->hunks = hunk;
+        hunk->next = iih->hunks;
+        iih->hunks = hunk;
         hunk->left = alloc;
     }
     hunk->left -= size;
     return( &hunk->data[hunk->left] );
 }
 
-static void ImpUnloadInfo( imp_image_handle *ii )
+static void ImpUnloadInfo( imp_image_handle *iih )
 {
     msym_hunk   *curr;
     msym_hunk   *next;
 
-    for( curr = ii->hunks; curr != NULL; curr = next ) {
+    for( curr = iih->hunks; curr != NULL; curr = next ) {
         next = curr->next;
         DCFree( curr );
     }
-    ii->hunks = NULL;
+    iih->hunks = NULL;
 }
 
-msym_block *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
+msym_block *FindAddrBlock( imp_image_handle *iih, addr_ptr addr )
 {
     msym_block  *b;
 
-    for( b = ii->addr; b != NULL; b = b->next ) {
+    for( b = iih->addr; b != NULL; b = b->next ) {
         if( SameAddrSpace( b->start, addr )
           && b->start.offset <= addr.offset
           && (b->start.offset + b->len) > addr.offset ) {
@@ -175,7 +175,7 @@ msym_block *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
     return( NULL );
 }
 
-static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
+static dip_status AddName( imp_image_handle *iih, unsigned len, char *name )
 {
     char        *start;
     char        *end;
@@ -198,45 +198,45 @@ static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
     }
     if( end == NULL )
         end = name;
-    ii->len = end - start;
-    ii->name = HunkAlloc( ii, ii->len );
-    if( ii->name == NULL )
+    iih->len = end - start;
+    iih->name = HunkAlloc( iih, iih->len );
+    if( iih->name == NULL )
         return( DS_ERR | DS_NO_MEM );
-    memcpy( ii->name, start, ii->len );
+    memcpy( iih->name, start, iih->len );
     return( DS_OK );
 }
 
-static dip_status AddBlock( imp_image_handle *ii, addr_seg seg, addr_off off,
+static dip_status AddBlock( imp_image_handle *iih, addr_seg seg, addr_off off,
                         unsigned_32 len, unsigned_8 code )
 {
     msym_block  *new;
 
-    new = HunkAlloc( ii, sizeof( *new ) );
+    new = HunkAlloc( iih, sizeof( *new ) );
     if( new == NULL )
         return( DS_ERR | DS_NO_MEM );
     new->start.segment = seg;
     new->start.offset = off;
     new->len = len;
     new->code = code;
-    new->next = ii->addr;
-    ii->addr = new;
+    new->next = iih->addr;
+    iih->addr = new;
     return( DS_OK );
 }
 
-static dip_status AddSymbol( imp_image_handle *ii, addr_seg seg, addr_off off,
+static dip_status AddSymbol( imp_image_handle *iih, addr_seg seg, addr_off off,
                         unsigned len, char *name )
 {
     msym_sym    *new;
 
-    new = HunkAlloc( ii, (sizeof( *new ) - 1) + len );
+    new = HunkAlloc( iih, (sizeof( *new ) - 1) + len );
     if( new == NULL )
         return( DS_ERR | DS_NO_MEM );
     new->addr.segment = seg;
     new->addr.offset = off;
     new->len = len;
     memcpy( new->name, name, len );
-    new->next = ii->gbl;
-    ii->gbl = new;
+    new->next = iih->gbl;
+    iih->gbl = new;
     return( DS_OK );
 }
 
@@ -293,7 +293,7 @@ static dip_status ReadString( FILE *fp, char *buf, unsigned *len_ptr )
 }
 
 /* Load symbols for a segment */
-static dip_status LoadSymTable( FILE *fp, imp_image_handle *ii, unsigned count,
+static dip_status LoadSymTable( FILE *fp, imp_image_handle *iih, unsigned count,
                         unsigned long base_ofs, unsigned_32 table_ofs,
                         addr_seg seg, int big_syms )
 {
@@ -335,7 +335,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *ii, unsigned count,
             ds = ReadString( fp, name, &name_len );
             if( ds != DS_OK )
                 goto done;
-            ds = AddSymbol( ii, seg, sym_32.offset, name_len, name );
+            ds = AddSymbol( iih, seg, sym_32.offset, name_len, name );
             if( ds != DS_OK ) {
                 goto done;
             }
@@ -347,7 +347,7 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *ii, unsigned count,
             ds = ReadString( fp, name, &name_len );
             if( ds != DS_OK )
                 goto done;
-            ds = AddSymbol( ii, seg, sym.offset, name_len, name );
+            ds = AddSymbol( iih, seg, sym.offset, name_len, name );
             if( ds != DS_OK ) {
                 goto done;
             }
@@ -358,9 +358,9 @@ static dip_status LoadSymTable( FILE *fp, imp_image_handle *ii, unsigned count,
     // sorted by offset, just use the last offset as segment size. Should be
     // close enough.
     if( big_syms ) {
-        ii->addr->len = sym_32.offset;
+        iih->addr->len = sym_32.offset;
     } else {
-        ii->addr->len = sym.offset;
+        iih->addr->len = sym.offset;
     }
 
     ds = DS_OK;
@@ -371,7 +371,7 @@ done:
 }
 
 /* Load all segments for a map */
-static dip_status LoadSegments( FILE *fp, imp_image_handle *ii, int count )
+static dip_status LoadSegments( FILE *fp, imp_image_handle *iih, int count )
 {
     dip_status      ds;
     sym_segdef      seg;
@@ -401,11 +401,11 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *ii, int count )
         } else {
             is_code = 1;
         }
-        ds = AddBlock( ii, seg.load_addr, 0, 0, is_code );
+        ds = AddBlock( iih, seg.load_addr, 0, 0, is_code );
         if( ds != DS_OK )
             return( ds );
 
-        LoadSymTable( fp, ii, seg.num_syms, seg_start, seg.sym_tab_ofs,
+        LoadSymTable( fp, iih, seg.num_syms, seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
         if( BSeek( fp, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
@@ -416,7 +416,7 @@ static dip_status LoadSegments( FILE *fp, imp_image_handle *ii, int count )
 }
 
 /* Load all symbols in a .sym file */
-static dip_status LoadSymFile( FILE *fp, imp_image_handle *ii )
+static dip_status LoadSymFile( FILE *fp, imp_image_handle *iih )
 {
     dip_status      ds;
     sym_mapdef      map;
@@ -436,58 +436,58 @@ static dip_status LoadSymFile( FILE *fp, imp_image_handle *ii )
     if( ds != DS_OK )
         return( ds );
 
-    ds = AddName( ii, name_len, name );
+    ds = AddName( iih, name_len, name );
     if( ds != DS_OK )
         return( ds );
 
     if( BSeek( fp, SYM_PTR_TO_OFS( map.seg_ptr ), DIG_ORG ) == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    ds = LoadSegments( fp, ii, map.num_segs );
+    ds = LoadSegments( fp, iih, map.num_segs );
     if( ds != DS_OK )
         return( ds );
 
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
     dip_status  ds;
 
-    ii->gbl = NULL;
-    ii->addr = NULL;
-    ii->name = NULL;
-    ii->hunks = NULL;
+    iih->gbl = NULL;
+    iih->addr = NULL;
+    iih->name = NULL;
+    iih->hunks = NULL;
     Buff.len = 0;
     Buff.off = 0;
 
     ds = CheckSymFile( fp );
     if( ds == DS_OK )
-        ds = LoadSymFile( fp, ii );
+        ds = LoadSymFile( fp, iih );
 
     if( ds != DS_OK ) {
         DCStatus( ds );
         /* clean up any allocations */
-        ImpUnloadInfo( ii );
+        ImpUnloadInfo( iih );
         return( ds );
     }
     return( DS_OK );
 }
 
-void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
     msym_block  *b;
     msym_sym    *s;
 
-    for( s = ii->gbl; s != NULL; s = s->next ) {
+    for( s = iih->gbl; s != NULL; s = s->next ) {
         DCMapAddr( &s->addr, d );
     }
-    for( b = ii->addr; b != NULL; b = b->next ) {
+    for( b = iih->addr; b != NULL; b = b->next ) {
         DCMapAddr( &b->start, d );
     }
 }
 
-void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
-    ImpUnloadInfo( ii );
+    ImpUnloadInfo( iih );
 }

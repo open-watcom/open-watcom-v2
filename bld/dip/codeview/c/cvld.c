@@ -48,7 +48,7 @@ int __nullarea;
 
 imp_image_handle        *ImageList;
 
-static void Cleanup( imp_image_handle *ii )
+static void Cleanup( imp_image_handle *iih )
 {
     imp_image_handle    **owner;
     imp_image_handle    *curr;
@@ -56,24 +56,24 @@ static void Cleanup( imp_image_handle *ii )
     unsigned            i;
 
     for( owner = &ImageList; (curr = *owner) != NULL; owner = &curr->next_image ) {
-        if( curr == ii ) {
+        if( curr == iih ) {
             /* if found then remove it from list */
             *owner = curr->next_image;
             break;
         }
     }
     /* destroy entry */
-    if( ii->directory != NULL ) {
-        blocks = BLOCK_FACTOR( ii->dir_count, DIRECTORY_BLOCK_ENTRIES );
+    if( iih->directory != NULL ) {
+        blocks = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES );
         for( i = 0; i < blocks; ++i ) {
-            if( ii->directory[i] != NULL ) {
-                DCFree( ii->directory[i] );
+            if( iih->directory[i] != NULL ) {
+                DCFree( iih->directory[i] );
             }
         }
-        DCFree( ii->directory );
+        DCFree( iih->directory );
     }
-    DCFree( ii->mapping );
-    VMFini( ii );
+    DCFree( iih->mapping );
+    VMFini( iih );
 }
 
 static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep )
@@ -194,7 +194,7 @@ static dip_status FindCV( FILE *fp, unsigned long *offp, unsigned long *sizep )
     return( DS_OK );
 }
 
-static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
+static dip_status LoadDirectory( imp_image_handle *iih, unsigned long off )
 {
     unsigned_32                 directory;
     cv_subsection_directory     dir_header;
@@ -204,41 +204,41 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     size_t                      block_size;
     unsigned                    num;
 
-    if( DCSeek( ii->sym_fp, off, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( ii->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
+    if( DCRead( iih->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( ii->sym_fp, ii->bias + directory, DIG_ORG ) ) {
+    if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_ORG ) ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( ii->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {
+    if( DCRead( iih->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( dir_header.cbDirHeader != sizeof( dir_header )
       || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
         return( DS_ERR|DS_INFO_INVALID );
     }
-    ii->dir_count = dir_header.cDir;
-    block_count = BLOCK_FACTOR( ii->dir_count, DIRECTORY_BLOCK_ENTRIES );
-    ii->directory = DCAlloc( block_count * sizeof( cv_directory_entry * ) );
-    if( ii->directory == NULL ) {
+    iih->dir_count = dir_header.cDir;
+    block_count = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES );
+    iih->directory = DCAlloc( block_count * sizeof( cv_directory_entry * ) );
+    if( iih->directory == NULL ) {
         return( DS_ERR|DS_NO_MEM );
     }
-    memset( ii->directory, 0, block_count * sizeof( cv_directory_entry * ) );
+    memset( iih->directory, 0, block_count * sizeof( cv_directory_entry * ) );
     i = 0;
-    left = ii->dir_count;
+    left = iih->dir_count;
     for( ;; ) {
         num = left;
         if( num > DIRECTORY_BLOCK_ENTRIES )
             num = DIRECTORY_BLOCK_ENTRIES;
         block_size = num * sizeof( cv_directory_entry );
-        ii->directory[i] = DCAlloc( block_size );
-        if( ii->directory[i] == NULL ) {
+        iih->directory[i] = DCAlloc( block_size );
+        if( iih->directory[i] == NULL ) {
             return( DS_ERR|DS_NO_MEM );
         }
-        if( DCRead( ii->sym_fp, ii->directory[i], block_size ) != block_size ) {
+        if( DCRead( iih->sym_fp, iih->directory[i], block_size ) != block_size ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         ++i;
@@ -250,55 +250,55 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     return( DS_OK );
 }
 
-static dip_status LoadMapping( imp_image_handle *ii )
+static dip_status LoadMapping( imp_image_handle *iih )
 {
     cv_directory_entry  *cde;
     cv_sst_seg_map      *map;
     size_t              size;
 
-    cde = FindDirEntry( ii, IMH_GBL, sstSegMap );
+    cde = FindDirEntry( iih, IMH_GBL, sstSegMap );
     if( cde == NULL )
         return( DS_ERR|DS_INFO_INVALID );
-    map = VMBlock( ii, cde->lfo, cde->cb );
+    map = VMBlock( iih, cde->lfo, cde->cb );
     if( map == NULL )
         return( DS_ERR|DS_FAIL );
     size = map->cSegLog * sizeof( map->segdesc[0] );
-    ii->mapping = DCAlloc( size );
-    if( ii->mapping == NULL )
+    iih->mapping = DCAlloc( size );
+    if( iih->mapping == NULL )
         return( DS_ERR|DS_NO_MEM );
-    map = VMBlock( ii, cde->lfo, cde->cb ); /* malloc might have unloaded */
-    memcpy( ii->mapping, &map->segdesc[0], size );
-    ii->map_count = map->cSegLog;
+    map = VMBlock( iih, cde->lfo, cde->cb ); /* malloc might have unloaded */
+    memcpy( iih->mapping, &map->segdesc[0], size );
+    iih->map_count = map->cSegLog;
     return( DS_OK );
 }
 
-static walk_result FindCompUnit( imp_image_handle *ii,
+static walk_result FindCompUnit( imp_image_handle *iih,
                                 cv_directory_entry *cde, void *d )
 {
     cs_compile          **rec = d;
 
     if( cde->subsection != sstModule )
         return( WR_CONTINUE );
-    *rec = GetCompInfo( ii, cde->iMod );
+    *rec = GetCompInfo( iih, cde->iMod );
     if( *rec == NULL )
         return( WR_CONTINUE );
     return( WR_STOP );
 }
 
-static dip_status SetMADType( imp_image_handle *ii )
+static dip_status SetMADType( imp_image_handle *iih )
 {
     cs_compile                  *rec;
     walk_result                 wr;
 
-    wr = WalkDirList( ii, &FindCompUnit, &rec );
+    wr = WalkDirList( iih, &FindCompUnit, &rec );
     if( wr != WR_STOP )
         return( DS_OK );
     switch( rec->machine & 0xf0 ) {
     case MACH_INTEL_8080:
-        ii->mad = MAD_X86;
+        iih->mad = MAD_X86;
         break;
     case MACH_DECALPHA:
-        ii->mad = MAD_AXP;
+        iih->mad = MAD_AXP;
         break;
     default:
         return( DS_ERR|DS_INFO_INVALID );
@@ -306,7 +306,7 @@ static dip_status SetMADType( imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
     dip_status                  ds;
     unsigned long               off;
@@ -314,80 +314,80 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
     cv_directory_entry          *cde;
     cv_sst_global_types_header  *hdr;
 
-    memset( ii, 0, sizeof( *ii ) );
+    memset( iih, 0, sizeof( *iih ) );
     ds = FindCV( fp, &off, &size );
     if( ds != DS_OK )
         return( ds );
-    ii->bias = off;
-    ds = VMInit( ii, size );
+    iih->bias = off;
+    ds = VMInit( iih, size );
     if( ds != DS_OK )
         return( ds );
-    ii->sym_fp = fp;
-    ii->next_image = ImageList;
-    ImageList = ii;
-    ds = LoadDirectory( ii, off + CV_SIG_SIZE );
+    iih->sym_fp = fp;
+    iih->next_image = ImageList;
+    ImageList = iih;
+    ds = LoadDirectory( iih, off + CV_SIG_SIZE );
     if( ds == DS_OK ) {
-        ds = LoadMapping( ii );
+        ds = LoadMapping( iih );
         if( ds == DS_OK ) {
-            cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
+            cde = FindDirEntry( iih, IMH_GBL, sstGlobalTypes );
             if( cde != NULL ) {
-                hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
+                hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) );
                 if( hdr == NULL ) {
                     ds = DS_ERR | DS_FAIL;
                 } else {
-                    ii->types_base = cde->lfo
+                    iih->types_base = cde->lfo
                         + offsetof(cv_sst_global_types_header, offType )
                         + hdr->cType * sizeof( hdr->offType[0] );
                 }
             }
             if( ds == DS_OK ) {
-                ds = SetMADType( ii );
+                ds = SetMADType( iih );
                 if( ds == DS_OK ) {
                     return( DS_OK );
                 }
             }
         }
     }
-    ii->sym_fp = NULL;
+    iih->sym_fp = NULL;
     DCStatus( ds );
-    Cleanup( ii );
+    Cleanup( iih );
     return( ds );
 }
 
-void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
     unsigned    i;
     addr_ptr    addr;
 
-    for( i = 0; i < ii->map_count; ++i ) {
-        addr.segment = ii->mapping[i].frame;
-        addr.offset  = ii->mapping[i].offset;
+    for( i = 0; i < iih->map_count; ++i ) {
+        addr.segment = iih->mapping[i].frame;
+        addr.offset  = iih->mapping[i].offset;
         DCMapAddr( &addr, d );
-        ii->mapping[i].frame  = addr.segment;
-        ii->mapping[i].offset = addr.offset;
+        iih->mapping[i].frame  = addr.segment;
+        iih->mapping[i].offset = addr.offset;
     }
 }
 
-dip_status SegIsExecutable( imp_image_handle *ii, unsigned log )
+dip_status SegIsExecutable( imp_image_handle *iih, unsigned log )
 {
     seg_desc    *map;
 
-    map = &ii->mapping[log-1];
+    map = &iih->mapping[log-1];
     return( map->u.b.fExecute ? DS_OK : DS_FAIL );
 }
 
-void MapLogical( imp_image_handle *ii, address *a )
+void MapLogical( imp_image_handle *iih, address *a )
 {
     seg_desc    *map;
 
-    map = &ii->mapping[a->mach.segment-1];
+    map = &iih->mapping[a->mach.segment-1];
     a->mach.segment = map->frame;
     a->mach.offset += map->offset;
     a->sect_id = map->ovl;
     a->indirect = 1;
 }
 
-void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
-    Cleanup( ii );
+    Cleanup( iih );
 }

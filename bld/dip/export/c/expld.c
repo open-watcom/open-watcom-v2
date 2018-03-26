@@ -133,13 +133,13 @@ static size_t BRead( FILE *fp, void *b, size_t s )
 
 #define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
 
-static void *HunkAlloc( imp_image_handle *ii, size_t size )
+static void *HunkAlloc( imp_image_handle *iih, size_t size )
 {
     exp_hunk    *hunk;
     size_t      alloc;
 
     size = ROUND_UP( size, sizeof( void * ) );
-    hunk = ii->hunks;
+    hunk = iih->hunks;
     if( hunk == NULL || size > hunk->left ) {
         alloc = HUNK_SIZE;
         if( alloc < size )
@@ -147,31 +147,31 @@ static void *HunkAlloc( imp_image_handle *ii, size_t size )
         hunk = DCAlloc( (sizeof( *hunk ) - HUNK_SIZE) + alloc );
         if( hunk == NULL )
             return( NULL );
-        hunk->next = ii->hunks;
-        ii->hunks = hunk;
+        hunk->next = iih->hunks;
+        iih->hunks = hunk;
         hunk->left = alloc;
     }
     hunk->left -= size;
     return( &hunk->data[hunk->left] );
 }
 
-static void ImpUnloadInfo( imp_image_handle *ii )
+static void ImpUnloadInfo( imp_image_handle *iih )
 {
     exp_hunk    *curr;
     exp_hunk    *next;
 
-    for( curr = ii->hunks; curr != NULL; curr = next ) {
+    for( curr = iih->hunks; curr != NULL; curr = next ) {
         next = curr->next;
         DCFree( curr );
     }
-    ii->hunks = NULL;
+    iih->hunks = NULL;
 }
 
-exp_block       *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
+exp_block       *FindAddrBlock( imp_image_handle *iih, addr_ptr addr )
 {
     exp_block   *b;
 
-    for( b = ii->addr; b != NULL; b = b->next ) {
+    for( b = iih->addr; b != NULL; b = b->next ) {
         if( SameAddrSpace( b->start, addr )
           && b->start.offset <= addr.offset
           && (b->start.offset+b->len) > addr.offset ) {
@@ -181,7 +181,7 @@ exp_block       *FindAddrBlock( imp_image_handle *ii, addr_ptr addr )
     return( NULL );
 }
 
-static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
+static dip_status AddName( imp_image_handle *iih, unsigned len, char *name )
 {
     char        *start;
     char        *end;
@@ -204,49 +204,49 @@ static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
     }
     if( end == NULL )
         end = name;
-    ii->len = end - start;
-    ii->name = HunkAlloc( ii, ii->len );
-    if( ii->name == NULL )
+    iih->len = end - start;
+    iih->name = HunkAlloc( iih, iih->len );
+    if( iih->name == NULL )
         return( DS_ERR | DS_NO_MEM );
-    memcpy( ii->name, start, ii->len );
+    memcpy( iih->name, start, iih->len );
     return( DS_OK );
 }
 
-static dip_status AddBlock( imp_image_handle *ii, addr_seg seg, addr_off off,
+static dip_status AddBlock( imp_image_handle *iih, addr_seg seg, addr_off off,
                         unsigned_32 len, unsigned_8 code )
 {
     exp_block   *new;
 
-    new = HunkAlloc( ii, sizeof( *new ) );
+    new = HunkAlloc( iih, sizeof( *new ) );
     if( new == NULL )
         return( DS_ERR | DS_NO_MEM );
     new->start.segment = seg;
     new->start.offset = off;
     new->len = len;
     new->code = code;
-    new->next = ii->addr;
-    ii->addr = new;
+    new->next = iih->addr;
+    iih->addr = new;
     return( DS_OK );
 }
 
-static dip_status AddSymbol( imp_image_handle *ii, addr_seg seg, addr_off off,
+static dip_status AddSymbol( imp_image_handle *iih, addr_seg seg, addr_off off,
                         unsigned len, char *name )
 {
     exp_sym     *new;
 
-    new = HunkAlloc( ii, (sizeof( *new ) - 1) + len );
+    new = HunkAlloc( iih, (sizeof( *new ) - 1) + len );
     if( new == NULL )
         return( DS_ERR | DS_NO_MEM );
     new->addr.segment = seg;
     new->addr.offset = off;
     new->len = len;
     memcpy( new->name, name, len );
-    new->next = ii->gbl;
-    ii->gbl = new;
+    new->next = iih->gbl;
+    iih->gbl = new;
     return( DS_OK );
 }
 
-static dip_status ProcTable( FILE *fp, imp_image_handle *ii, unsigned resident )
+static dip_status ProcTable( FILE *fp, imp_image_handle *iih, unsigned resident )
 {
     unsigned_8  len;
     char        buff[256 + sizeof(unsigned_16)];
@@ -267,13 +267,13 @@ static dip_status ProcTable( FILE *fp, imp_image_handle *ii, unsigned resident )
         ord = *(unsigned_16 *)&buff[len];
         if( resident && first ) {
             first = 0;
-            ds = AddName( ii, len, buff );
+            ds = AddName( iih, len, buff );
             if( ds != DS_OK ) {
                 return( ds );
             }
         } else if( ord != 0 ) {
             /* this is putting in entry number, we'll get real addr later */
-            ds = AddSymbol( ii, 0, ord, len, buff );
+            ds = AddSymbol( iih, 0, ord, len, buff );
             if( ds != DS_OK ) {
                 return( ds );
             }
@@ -282,7 +282,7 @@ static dip_status ProcTable( FILE *fp, imp_image_handle *ii, unsigned resident )
     return( DS_OK );
 }
 
-static dip_status TryNE( FILE *fp, imp_image_handle *ii, any_header *head, unsigned_32 off )
+static dip_status TryNE( FILE *fp, imp_image_handle *iih, any_header *head, unsigned_32 off )
 {
     segment_record      seg;
     dip_status          ds;
@@ -302,7 +302,7 @@ static dip_status TryNE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
         if( BRead( fp, &seg, sizeof( seg ) ) != sizeof( seg ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
-        ds = AddBlock( ii, i + 1, 0, seg.size == 0 ? 0x10000 : seg.size, (seg.info & SEG_DATA) == 0 );
+        ds = AddBlock( iih, i + 1, 0, seg.size == 0 ? 0x10000 : seg.size, (seg.info & SEG_DATA) == 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -310,14 +310,14 @@ static dip_status TryNE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
     if( BSeek( fp, off + head->ne.resident_off, DIG_ORG ) != off + head->ne.resident_off ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    ds = ProcTable( fp, ii, 1 );
+    ds = ProcTable( fp, iih, 1 );
     if( ds != DS_OK )
         return( ds );
     if( head->ne.nonres_size != 0 ) {
         if( BSeek( fp, head->ne.nonres_off, DIG_ORG ) != head->ne.nonres_off ) {
             return( DS_ERR|DS_FSEEK_FAILED );
         }
-        ds = ProcTable( fp, ii, 0 );
+        ds = ProcTable( fp, iih, 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -349,7 +349,7 @@ static dip_status TryNE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
                     entry.mov.entrynum = pref.type;
                 }
                 if( entry.mov.info & ENTRY_EXPORTED ) {
-                    for( s = ii->gbl; s != NULL; s = s->next ) {
+                    for( s = iih->gbl; s != NULL; s = s->next ) {
                         if( s->addr.segment == 0 && s->addr.offset == ord ) {
                             s->addr.segment = entry.mov.entrynum;
                             s->addr.offset = entry.mov.entry;
@@ -364,7 +364,7 @@ static dip_status TryNE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
     return( DS_OK );
 }
 
-static dip_status TryLX( FILE *fp, imp_image_handle *ii, any_header *head, unsigned_32 off )
+static dip_status TryLX( FILE *fp, imp_image_handle *iih, any_header *head, unsigned_32 off )
 {
     object_record       seg;
     dip_status          ds;
@@ -387,7 +387,7 @@ static dip_status TryLX( FILE *fp, imp_image_handle *ii, any_header *head, unsig
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( (seg.flags & OBJ_RESOURCE) == 0 ) {
-            ds = AddBlock( ii, i + 1, 0, seg.size, (seg.flags&OBJ_EXECUTABLE)!=0 );
+            ds = AddBlock( iih, i + 1, 0, seg.size, (seg.flags&OBJ_EXECUTABLE)!=0 );
             if( ds != DS_OK ) {
                 return( ds );
             }
@@ -396,14 +396,14 @@ static dip_status TryLX( FILE *fp, imp_image_handle *ii, any_header *head, unsig
     if( BSeek( fp, off + head->lx.resname_off, DIG_ORG ) != off + head->lx.resname_off ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    ds = ProcTable( fp, ii, 1 );
+    ds = ProcTable( fp, iih, 1 );
     if( ds != DS_OK )
         return( ds );
     if( head->lx.nonres_size != 0 ) {
         if( BSeek( fp, head->lx.nonres_off, DIG_ORG ) != head->lx.nonres_off ) {
             return( DS_ERR|DS_FSEEK_FAILED );
         }
-        ds = ProcTable( fp, ii, 0 );
+        ds = ProcTable( fp, iih, 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -452,7 +452,7 @@ static dip_status TryLX( FILE *fp, imp_image_handle *ii, any_header *head, unsig
                     break;
                 }
                 if( entry.e32.e32_flags & ENTRY_EXPORTED ) {
-                    for( s = ii->gbl; s != NULL; s = s->next ) {
+                    for( s = iih->gbl; s != NULL; s = s->next ) {
                         if( s->addr.segment == 0 && s->addr.offset == ord ) {
                             s->addr.segment = pref.b32_obj;
                             s->addr.offset = entry.e32.e32_offset;
@@ -535,7 +535,7 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
     return( (char *)&exp->name_cache[off] );
 }
 
-static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp, unsigned num )
+static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, unsigned num )
 {
     unsigned            i;
     unsigned            j;
@@ -569,7 +569,7 @@ static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp, unsi
                     if( name == NULL ) {
                         return( DS_ERR|DS_FAIL );
                     }
-                    ds = AddSymbol( ii, j + 1, exp_rva - exp->obj[j].rva, strlen( name ), name );
+                    ds = AddSymbol( iih, j + 1, exp_rva - exp->obj[j].rva, strlen( name ), name );
                     if( ds != DS_OK ) {
                         return( ds );
                     }
@@ -580,7 +580,7 @@ static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp, unsi
     return( DS_OK );
 }
 
-static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsigned_32 off )
+static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsigned_32 off )
 {
     unsigned            i;
     pe_object           *obj;
@@ -608,7 +608,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
         return( DS_ERR|DS_FREAD_FAILED );
     }
     for( i = 0; i < head->pe.num_objects; ++i ) {
-        ds = AddBlock( ii, i + 1, 0, ObjSize( &obj[i] ), (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
+        ds = AddBlock( iih, i + 1, 0, ObjSize( &obj[i] ), (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -639,7 +639,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
             ds = DS_ERR|DS_FAIL;
             name = CacheName( exp, dir.name_rva );
             if( name != NULL ) {
-                ds = AddName( ii, strlen( name ), name );
+                ds = AddName( iih, strlen( name ), name );
                 if( ds == DS_OK ) {
                     exp->name_ptr_base = RVAToPos( dir.name_ptr_table_rva, head, obj );
                     exp->ord_base      = RVAToPos( dir.ordinal_table_rva, head, obj );
@@ -647,7 +647,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
                         chunk = dir.num_name_ptrs;
                         if( chunk > MAX_EXPORTS_PER )
                             chunk = MAX_EXPORTS_PER;
-                        ds = PEExportBlock( ii, exp, chunk );
+                        ds = PEExportBlock( iih, exp, chunk );
                         if( ds != DS_OK ) {
                             break;
                         }
@@ -665,7 +665,7 @@ static dip_status TryPE( FILE *fp, imp_image_handle *ii, any_header *head, unsig
     return( ds );
 }
 
-static dip_status TryStub( FILE *fp, imp_image_handle *ii )
+static dip_status TryStub( FILE *fp, imp_image_handle *iih )
 {
     unsigned_32         off;
     any_header          head;
@@ -697,22 +697,22 @@ static dip_status TryStub( FILE *fp, imp_image_handle *ii )
     switch( head.ne.signature ) {
     case OS2_SIGNATURE_WORD:
         /* Hey, it's an NE executable */
-        return( TryNE( fp, ii, &head, off ) );
+        return( TryNE( fp, iih, &head, off ) );
     case OSF_FLAT_SIGNATURE:
     case OSF_FLAT_LX_SIGNATURE:
         /* Hey, it's an LX/LE executable */
-        return( TryLX( fp, ii, &head, off ) );
+        return( TryLX( fp, iih, &head, off ) );
     case PE_SIGNATURE:
     case PL_SIGNATURE:
         /* Hey, it's a PE executable (or Pharlap's variant of it) */
-        return( TryPE( fp, ii, &head, off ) );
+        return( TryPE( fp, iih, &head, off ) );
     }
     return( DS_FAIL );
 }
 
 #define CODE_SEGMENT    1
 #define DATA_SEGMENT    2
-static dip_status TryNLM( FILE *fp, imp_image_handle *ii )
+static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
 {
     nlm_header          head;
     dip_status          ds;
@@ -737,18 +737,18 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *ii )
         /* one of those funky packed NLM's */
         return( DS_FAIL );
     }
-    ds = AddName( ii, head.moduleName[0], &head.moduleName[1] );
+    ds = AddName( iih, head.moduleName[0], &head.moduleName[1] );
     if( ds != DS_OK )
         return( ds );
     if( head.codeImageSize != 0 ) {
-        ds = AddBlock( ii, CODE_SEGMENT, 0, head.codeImageSize, 1 );
+        ds = AddBlock( iih, CODE_SEGMENT, 0, head.codeImageSize, 1 );
         if( ds != DS_OK ) {
             return( ds );
         }
     }
     data_size = head.dataImageSize + head.uninitializedDataSize;
     if( data_size != 0 ) {
-        ds = AddBlock( ii, DATA_SEGMENT, 0, data_size, 0 );
+        ds = AddBlock( iih, DATA_SEGMENT, 0, data_size, 0 );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -766,7 +766,7 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *ii )
                 return( DS_ERR|DS_FREAD_FAILED );
             }
             seg = (dbg.type == DBG_DATA) ? DATA_SEGMENT : CODE_SEGMENT;
-            ds = AddSymbol( ii, seg, dbg.offset, dbg.namelen, name );
+            ds = AddSymbol( iih, seg, dbg.offset, dbg.namelen, name );
             if( ds != DS_OK ) {
                 return( ds );
             }
@@ -792,7 +792,7 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *ii )
         } else {
             seg = DATA_SEGMENT;
         }
-        ds = AddSymbol( ii, seg, dbg.offset, dbg.namelen, name );
+        ds = AddSymbol( iih, seg, dbg.offset, dbg.namelen, name );
         if( ds != DS_OK ) {
             return( ds );
         }
@@ -841,7 +841,7 @@ static void ByteSwapSym( Elf32_Sym *elf_sym, bool byteswap )
     }
 }
 
-static dip_status TryELF( FILE *fp, imp_image_handle *ii )
+static dip_status TryELF( FILE *fp, imp_image_handle *iih )
 {
     Elf32_Ehdr          head;
     Elf32_Phdr          phe;
@@ -919,7 +919,7 @@ static dip_status TryELF( FILE *fp, imp_image_handle *ii )
             } else {
                 code = 0;
             }
-            ds = AddBlock( ii,
+            ds = AddBlock( iih,
                 code ? MAP_FLAT_CODE_SELECTOR : MAP_FLAT_DATA_SELECTOR,
                 phe.p_vaddr, phe.p_memsz, code );
             if( ds != DS_OK ) {
@@ -957,7 +957,7 @@ static dip_status TryELF( FILE *fp, imp_image_handle *ii )
     }
     if( tab_type == SHT_NULL ) {
         /* We didn't find any symbol tables - must be stripped */
-        ImpUnloadInfo( ii );
+        ImpUnloadInfo( iih );
         return( DS_FAIL );
     }
 
@@ -1000,19 +1000,19 @@ static dip_status TryELF( FILE *fp, imp_image_handle *ii )
                 switch( ELF32_ST_TYPE( sym.st_info ) ) {
                 case STT_FILE:
                     /* Make first filename we see be the module name */
-                    if( ii->name == NULL ) {
-                        ds = AddName( ii, len, name );
+                    if( iih->name == NULL ) {
+                        ds = AddName( iih, len, name );
                     }
                     break;
                 case STT_NOTYPE:
                 case STT_OBJECT:
                     if( sym.st_shndx < head.e_shnum ) {
-                        ds = AddSymbol( ii, MAP_FLAT_DATA_SELECTOR, sym.st_value, len, name );
+                        ds = AddSymbol( iih, MAP_FLAT_DATA_SELECTOR, sym.st_value, len, name );
                     }
                     break;
                 case STT_FUNC:
                     if( sym.st_shndx < head.e_shnum ) {
-                        ds = AddSymbol( ii, MAP_FLAT_CODE_SELECTOR, sym.st_value, len, name );
+                        ds = AddSymbol( iih, MAP_FLAT_CODE_SELECTOR, sym.st_value, len, name );
                     }
                     break;
                 }
@@ -1025,17 +1025,17 @@ static dip_status TryELF( FILE *fp, imp_image_handle *ii )
         }
     }
     DCFree( strings );
-    if( ii->gbl == NULL ) {
+    if( iih->gbl == NULL ) {
         /* We didn't find any symbols - must be stripped */
-        ImpUnloadInfo( ii );
+        ImpUnloadInfo( iih );
         return( DS_FAIL );
     }
 
     /* No module name yet, make something up */
-    if( ii->name == NULL ) {
+    if( iih->name == NULL ) {
         static char     unknown[] = "Unknown000";
 
-        ds = AddName( ii, sizeof( unknown ) - 1, unknown );
+        ds = AddName( iih, sizeof( unknown ) - 1, unknown );
         if( ds != DS_OK )
             return( ds );
         for( name = &unknown[sizeof( unknown ) - 2]; ++*name == ('9' + 1); --name ) {
@@ -1053,15 +1053,15 @@ static dip_status (*Try[])( FILE *, imp_image_handle * ) = {
     NULL
 };
 
-dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
     dip_status  ds;
     int         i;
 
-    ii->gbl = NULL;
-    ii->addr = NULL;
-    ii->name = NULL;
-    ii->hunks = NULL;
+    iih->gbl = NULL;
+    iih->addr = NULL;
+    iih->name = NULL;
+    iih->hunks = NULL;
     Buff.len = 0;
     Buff.off = 0;
 
@@ -1077,11 +1077,11 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
         default:
             return( DS_FAIL );
         }
-        ds = Try[i]( fp, ii );
+        ds = Try[i]( fp, iih );
         if( ds & DS_ERR ) {
             DCStatus( ds );
             /* clean up any allocations */
-            ImpUnloadInfo( ii );
+            ImpUnloadInfo( iih );
             return( ds );
         }
         if( ds == DS_OK )
@@ -1091,20 +1091,20 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
     exp_block   *b;
     exp_sym     *s;
 
-    for( s = ii->gbl; s != NULL; s = s->next ) {
+    for( s = iih->gbl; s != NULL; s = s->next ) {
         DCMapAddr( &s->addr, d );
     }
-    for( b = ii->addr; b != NULL; b = b->next ) {
+    for( b = iih->addr; b != NULL; b = b->next ) {
         DCMapAddr( &b->start, d );
     }
 }
 
-void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
-    ImpUnloadInfo( ii );
+    ImpUnloadInfo( iih );
 }

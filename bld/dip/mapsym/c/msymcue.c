@@ -39,85 +39,85 @@
  * have .sym files for executables for which no source code is available.
  */
 
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih,
                 imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)imp_cueh; (void)d;
+    /* unused parameters */ (void)iih; (void)im; (void)wk; (void)imp_cueh; (void)d;
 
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( IMH_NOMOD );
 }
 
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih,
                         imp_cue_handle *imp_cueh, char *buff, size_t buff_size )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh; (void)buff; (void)buff_size;
+    /* unused parameters */ (void)iih; (void)imp_cueh; (void)buff; (void)buff_size;
 
     return( 0 );
 }
 
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
-    /* unused parameters */ (void)ii; (void)src; (void)adj; (void)dst;
+    /* unused parameters */ (void)iih; (void)src; (void)adj; (void)dst;
 
     return( DS_ERR|DS_FAIL );
 }
 
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( 0 );
 }
 
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( 0 );
 }
 
-address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *imp_cueh )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     return( NilAddr );
 }
 
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)file; (void)line; (void)column; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)im; (void)file; (void)line; (void)column; (void)imp_cueh;
 
     return( SR_NONE );
 }
 
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)addr; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)im; (void)addr; (void)imp_cueh;
 
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
-    /* unused parameters */ (void)ii; (void)imp_cueh1; (void)imp_cueh2;
+    /* unused parameters */ (void)iih; (void)imp_cueh1; (void)imp_cueh2;
 
     return( 0 );
 }

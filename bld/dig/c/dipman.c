@@ -127,13 +127,13 @@ static struct {
 }                       LoadedDIPs[MAX_DIPS];
 
 static unsigned         MaxHdlSize[] = {
-    #define pick(e,h,ih,wid)    0,
+    #define pick(e,hdl,imphdl,wvimphdl) 0,
     #include "diphndls.h"
     #undef pick
 };
 
 static const unsigned_8 MgrHdlSize[] = {
-    #define pick(e,h,ih,wid)    h,
+    #define pick(e,hdl,imphdl,wvimphdl) hdl,
     #include "diphndls.h"
     #undef pick
 };

@@ -187,7 +187,7 @@ static const reg_entry AXP_RegTable[] = {
     #include "cv4axp.h"
 };
 
-dip_status hllLocationManyReg( imp_image_handle *ii, unsigned count,
+dip_status hllLocationManyReg( imp_image_handle *iih, unsigned count,
                                const unsigned_8 *reg_list,
                                location_context *lc, location_list *ll )
 {
@@ -201,7 +201,7 @@ dip_status hllLocationManyReg( imp_image_handle *ii, unsigned count,
     j = 0;
     for( i = count; i-- > 0; ) {
         idx = reg_list[i];
-        switch( ii->mad ) {
+        switch( iih->mad ) {
         case MAD_X86:
             if( idx >= CV_X86_AL && idx <= CV_X86_EFLAGS ) {
                 reg = &X86_CPURegTable[idx-CV_X86_AL];
@@ -242,11 +242,11 @@ dip_status hllLocationManyReg( imp_image_handle *ii, unsigned count,
     return( DS_OK );
 }
 
-dip_status hllLocationOneReg( imp_image_handle *ii, unsigned reg,
+dip_status hllLocationOneReg( imp_image_handle *iih, unsigned reg,
                               location_context *lc, location_list *ll )
 {
     unsigned_8  reg_list;
 
     reg_list = reg;
-    return( hllLocationManyReg( ii, 1, &reg_list, lc, ll ) );
+    return( hllLocationManyReg( iih, 1, &reg_list, lc, ll ) );
 }
