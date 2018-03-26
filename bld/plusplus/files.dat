@@ -103,3 +103,10 @@
 #  axp target
 #    type="e" usr="wppaxp"
 #    type="s" usr="wppaxp01.int"
+
+#######################
+# RDOS - 386
+#
+[ DEFAULT dir="rdos" cond="rdoshost cplusplus" where="c jc ac" ]
+#  386 target
+    type="e" usr="wpp386.exe"

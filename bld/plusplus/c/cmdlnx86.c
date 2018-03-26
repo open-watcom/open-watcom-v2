@@ -229,6 +229,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         SetTargetLiteral( &target_name, "DOS" );
 #elif defined( __BSD__ )
         SetTargetLiteral( &target_name, "BSD" );
+#elif defined( __RDOS__ )
+        SetTargetLiteral( &target_name, "RDOS" );
 #else
         #error "Target System not defined"
 #endif
@@ -256,6 +258,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     } else if( 0 == strcmp( target_name, "LINUX" ) ) {
         TargetSystem = TS_LINUX;
         PreDefineStringMacro( "__UNIX__" );
+    } else if( 0 == strcmp( target_name, "RDOS" ) ) {
+        TargetSystem = TS_RDOS;
+        PreDefineStringMacro( "_RDOS" );
 #endif
     } else if( 0 == strcmp( target_name, "OS2" ) ) {
         TargetSystem = TS_OS2;

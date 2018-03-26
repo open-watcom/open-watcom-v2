@@ -45,7 +45,7 @@
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
     #define SYS_EOF_CHAR    0x1A
-#elif defined(__UNIX__)
+#elif defined(__UNIX__) || defined(__RDOS__)
     #undef SYS_EOF_CHAR
 #else
     #error SYS_EOF_CHAR is not set for this system
