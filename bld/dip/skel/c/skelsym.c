@@ -40,7 +40,7 @@
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
                 symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
-                imp_sym_handle *is, void *d )
+                imp_sym_handle *ish, void *d )
 {
     //TODO:
     /*
@@ -106,8 +106,8 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             } else if( ending list of inherited base class ) {
                  wk( iih, SWI_INHERIT_END, NULL, d );
             } else {
-                *is = fill in symbol handle information;
-                wr = wk( iih, SWI_SYMBOL, is, d );
+                *ish = fill in symbol handle information;
+                wr = wk( iih, SWI_SYMBOL, ish, d );
                 if( wr != WR_CONTINUE ) return( wr );
             }
         }
@@ -117,7 +117,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
 
 
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
-                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish,
                 location_context *lc, void *d )
 {
     /*
@@ -129,7 +129,7 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source s
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     //TODO:
     /*
@@ -139,7 +139,7 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *is 
 }
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                        imp_sym_handle *is, location_context *lc,
+                        imp_sym_handle *ish, location_context *lc,
                         symbol_name sn, char *buff, size_t buff_size )
 {
     //TODO:
@@ -176,7 +176,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
-                imp_sym_handle *is, imp_type_handle *ith )
+                imp_sym_handle *ish, imp_type_handle *ith )
 {
     //TODO:
     /*
@@ -187,7 +187,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, location_list *ll )
+                imp_sym_handle *ish, location_context *lc, location_list *ll )
 {
     /*
         Get the location of the given symbol.
@@ -196,7 +196,7 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, void *buff )
+                imp_sym_handle *ish, location_context *lc, void *buff )
 {
     //TODO:
     /*
@@ -207,7 +207,7 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, sym_info *si )
+                imp_sym_handle *ish, location_context *lc, sym_info *si )
 {
     //TODO:
     /*
@@ -218,7 +218,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
-                    imp_sym_handle *is, location_context *lc,
+                    imp_sym_handle *ish, location_context *lc,
                     location_list *ll, unsigned n )
 {
     //TODO:
@@ -234,7 +234,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
 {
     //TODO:
     /*
@@ -248,7 +248,7 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
-                                imp_sym_handle *is, location_context *lc,
+                                imp_sym_handle *ish, location_context *lc,
                                  location_list *ll )
 {
     //TODO:
@@ -261,14 +261,14 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *is )
+                            imp_mod_handle im, address a, imp_sym_handle *ish )
 {
     //TODO:
     /*
         Search the given module for a symbol who's address is less than
         or equal to 'addr'. If none is found return SR_NONE. If you find
-        a symbol at that address exactly, fill in '*is' and return SR_EXACT.
-        Otherwise, fill in '*is' and return SR_CLOSEST.
+        a symbol at that address exactly, fill in '*ish' and return SR_EXACT.
+        Otherwise, fill in '*ish' and return SR_CLOSEST.
     */
     return( SR_NONE );
 }
@@ -381,7 +381,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
         Instead, when the DIP finds a symbol that matches the lookup
         parameters it should do the following call:
 
-                is = DCSymCreate( iih, d );
+                ish = DCSymCreate( iih, d );
 
         Where 'iih' and 'd' are the parameters that were passed into
         the DIPImpLookupSym functions. If the client returns NULL, the
@@ -444,8 +444,8 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
     return( SR_NONE );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1,
+                                imp_sym_handle *ish2 )
 {
     //TODO:
     /*
@@ -462,7 +462,7 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     /*
     see DIPImpTypeAddRef
@@ -470,7 +470,7 @@ dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     /*
     see DIPImpTypeRelease

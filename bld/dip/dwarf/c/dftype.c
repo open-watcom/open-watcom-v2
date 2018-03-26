@@ -853,7 +853,7 @@ typedef struct {
 typedef struct {
     type_wlk_com        com;
     DIP_IMP_SYM_WALKER  *wk;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     walk_result         wr;
 }type_wlk_wlk;
 
@@ -920,16 +920,17 @@ static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
     NULL
 };
 
-static void SetSymHandle( type_wlk *d, imp_sym_handle  *is ){
+static void SetSymHandle( type_wlk *d, imp_sym_handle *ish )
+{
 // Set is with info from com
-    is->sclass = d->com.sclass;
-    is->im = d->com.im;
-    is->state = DF_NOT;
+    ish->sclass = d->com.sclass;
+    ish->im = d->com.im;
+    ish->state = DF_NOT;
     if( d->com.sclass == SYM_ENUM ){
-        is->f.einfo = d->com.einfo;
+        ish->f.einfo = d->com.einfo;
     }else{
-        is->f.minfo.root = d->com.root;
-        is->f.minfo.inh = d->com.inh;
+        ish->f.minfo.root = d->com.root;
+        ish->f.minfo.inh = d->com.inh;
     }
 }
 
@@ -938,32 +939,32 @@ static bool AMem( drmem_hdl var, int index, void *_d )
 {
     type_wlk_wlk    *d = _d;
     bool            cont;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     dr_dbg_handle   saved;
 
     cont = true;
-    is = d->is;
-    SetSymHandle( (type_wlk *)d, is );
-    is->sym = var;
+    ish = d->ish;
+    SetSymHandle( (type_wlk *)d, ish );
+    ish->sym = var;
     switch( index ){
     case 0:
-        is->sclass = SYM_MEM;
+        ish->sclass = SYM_MEM;
         break;
     case 2:
-        is->sclass = SYM_MEMVAR;      // static member
+        ish->sclass = SYM_MEMVAR;      // static member
         break;
     case 3:
         if( DRGetVirtuality( var ) == DR_VIRTUALITY_VIRTUAL  ){
-            is->sclass = SYM_VIRTF;   // virtual func
+            ish->sclass = SYM_VIRTF;   // virtual func
         }else if( !DRIsSymDefined( var ) ){
-            is->sclass = SYM_MEMF;    // memfunc decl
+            ish->sclass = SYM_MEMF;    // memfunc decl
         }else{
-           is->sclass = SYM_MEMVAR;   // inlined defn treat like a var
+            ish->sclass = SYM_MEMVAR;   // inlined defn treat like a var
         }
         break;
     }
     saved = DRGetDebug();
-    d->wr = d->wk( d->com.iih, SWI_SYMBOL, is, d->com.d );
+    d->wr = d->wk( d->com.iih, SWI_SYMBOL, ish, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
         cont = false;
@@ -979,7 +980,7 @@ static bool AInherit( drmem_hdl inh, int index, void *_d )
     bool            cont;
     drmem_hdl       btype;
     drmem_hdl       old_inh;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     dr_dbg_handle   saved;
     walk_result     wr;
 
@@ -994,12 +995,12 @@ static bool AInherit( drmem_hdl inh, int index, void *_d )
             return( cont );
         }
     }
-    is = d->is;
-    SetSymHandle( (type_wlk *)d, is );
-    is->sym = inh;
-    is->sclass = SYM_MEM;     //  treat inherit like a var
+    ish = d->ish;
+    SetSymHandle( (type_wlk *)d, ish );
+    ish->sym = inh;
+    ish->sclass = SYM_MEM;     //  treat inherit like a var
     saved = DRGetDebug();
-    wr = d->wk( d->com.iih, SWI_INHERIT_START, is, d->com.d );
+    wr = d->wk( d->com.iih, SWI_INHERIT_START, ish, d->com.d );
     DRSetDebug( saved );
     if( wr == WR_CONTINUE ) {
         old_inh = d->com.inh;
@@ -1032,7 +1033,7 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
 /**********************************************************/
 {
     type_wlk_lookup *d = _d;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     char            *name;
     size_t          len;
 
@@ -1043,23 +1044,23 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
-        is = DCSymCreate( d->com.iih, d->com.d );
-        SetSymHandle( (type_wlk *)d, is );
-        is->sym = var;
+        ish = DCSymCreate( d->com.iih, d->com.d );
+        SetSymHandle( (type_wlk *)d, ish );
+        ish->sym = var;
         switch( index ){
         case 0:
-            is->sclass = SYM_MEM;
+            ish->sclass = SYM_MEM;
             break;
         case 2:
-            is->sclass = SYM_MEMVAR;     // static member
+            ish->sclass = SYM_MEMVAR;     // static member
             break;
         case 3:
             if( DRGetVirtuality( var ) == DR_VIRTUALITY_VIRTUAL  ){
-                is->sclass = SYM_VIRTF;   // virtual func
+                ish->sclass = SYM_VIRTF;   // virtual func
             }else if( !DRIsSymDefined( var ) ){
-                is->sclass = SYM_MEMF;    // memfunc decl
+                ish->sclass = SYM_MEMF;    // memfunc decl
             }else{
-                is->sclass = SYM_MEMVAR;   // inlined defn treat like a var
+                ish->sclass = SYM_MEMVAR;   // inlined defn treat like a var
             }
             break;
         }
@@ -1098,17 +1099,17 @@ static bool AEnumMem( drmem_hdl var, int index, void *_d )
 {
     type_wlk_wlk    *d = _d;
     bool            cont;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     dr_dbg_handle   saved;
 
     /* unused parameters */ (void)index;
 
     cont = true;
-    is = d->is;
-    SetSymHandle( (type_wlk *)d, is );
-    is->sym = var;
+    ish = d->ish;
+    SetSymHandle( (type_wlk *)d, ish );
+    ish->sym = var;
     saved = DRGetDebug();
-    d->wr = d->wk( d->com.iih, SWI_SYMBOL, is, d->com.d );
+    d->wr = d->wk( d->com.iih, SWI_SYMBOL, ish, d->com.d );
     DRSetDebug( saved );
     if( d->wr != WR_CONTINUE ){
         cont = false;
@@ -1120,7 +1121,7 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
 /**************************************************************/
 {
     type_wlk_lookup *d = _d;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     char            *name;
     size_t          len;
 
@@ -1133,9 +1134,9 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     }
     len = strlen( name );
     if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
-        is = DCSymCreate( d->com.iih, d->com.d );
-        SetSymHandle( (type_wlk *)d, is );
-        is->sym = var;
+        ish = DCSymCreate( d->com.iih, d->com.d );
+        SetSymHandle( (type_wlk *)d, ish );
+        ish->sym = var;
         d->sr = SR_EXACT;
     }
     DCFree( name );
@@ -1143,7 +1144,7 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
 }
 
 walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
-                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
     drmem_hdl       btype;
     type_wlk_wlk    df;
@@ -1169,7 +1170,7 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
     cleanup.prev = Cleaners;
     Cleaners = &cleanup;
     btype = DRSkipTypeChain( ith->type );
-    df.is = is;
+    df.ish = ish;
     df.wk = wk;
     df.wr = WR_CONTINUE;
     switch( ith->typeinfo.kind ){

@@ -39,7 +39,7 @@
 typedef walk_result WALK_GLUE( imp_image_handle *, sym_walk_info, imp_sym_handle *, void * );
 
 static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
-                ji_ptr clazz, WALK_GLUE *wk, imp_sym_handle *is, void *d )
+                ji_ptr clazz, WALK_GLUE *wk, imp_sym_handle *ish, void *d )
 {
     ji_ptr      super;
     ji_ptr      super_name;
@@ -52,8 +52,8 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
     super = GetPointer( clazz + offsetof( ClassClass, superclass ) );
     if( super != 0 ) {
         super = GetPointer( super + offsetof( JHandle, obj ) );
-        is->kind = JS_TYPE;
-        is->u.cn = super;
+        ish->kind = JS_TYPE;
+        ish->u.cn = super;
         if( iih->object_class == 0 ) {
             super_name = GetPointer( super + offsetof( ClassClass, name ) );
             GetString( super_name, NameBuff, sizeof( NameBuff ) );
@@ -63,9 +63,9 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
         }
         /* Don't bother walking java.lang.Object fields - nothing interesting */
         if( super != iih->object_class ) {
-            wr = wk( iih, SWI_INHERIT_START, is, d );
+            wr = wk( iih, SWI_INHERIT_START, ish, d );
             if( wr == WR_CONTINUE ) {
-                wr = WalkObject( iih, statics_only, super, wk, is, d );
+                wr = WalkObject( iih, statics_only, super, wk, ish, d );
                 if( wr != WR_CONTINUE ) return( wr );
                 wk( iih, SWI_INHERIT_END, NULL, d );
             }
@@ -74,26 +74,26 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
     /* walk the fields */
     block = GetPointer( clazz + offsetof( ClassClass, fields ) );
     num = GetU16( clazz + offsetof( ClassClass, fields_count ) );
-    is->kind = JS_FIELD;
+    ish->kind = JS_FIELD;
     for( i = 0; i < num; ++i, block += sizeof( struct fieldblock ) ) {
         if( statics_only ) {
             acc = GetU16( block + offsetof( struct fieldblock, access ) );
             if( !(acc & ACC_STATIC) ) continue;
         }
-        is->u.fb = block;
-        wr = wk( iih, SWI_SYMBOL, is, d );
+        ish->u.fb = block;
+        wr = wk( iih, SWI_SYMBOL, ish, d );
         if( wr != WR_CONTINUE ) return( wr );
     }
     /* walk the methods */
     block = GetPointer( clazz + offsetof( ClassClass, methods ) );
     num = GetU16( clazz + offsetof( ClassClass, methods_count ) );
-    is->kind = JS_METHOD;
+    ish->kind = JS_METHOD;
     for( i = 0; i < num; ++i ) {
         acc = GetU16( block + offsetof( struct methodblock, fb.access ) );
         if( !(acc & ACC_NATIVE) ) {
             /* Don't bother telling debugger about native methods */
-            is->u.mb = block;
-            wr = wk( iih, SWI_SYMBOL, is, d );
+            ish->u.mb = block;
+            wr = wk( iih, SWI_SYMBOL, ish, d );
             if( wr != WR_CONTINUE ) return( wr );
         }
         block += sizeof( struct methodblock );
@@ -102,7 +102,7 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
 }
 
 static walk_result WalkAScope( imp_image_handle *iih, unsigned mb_idx,
-            scope_block *scope, WALK_GLUE *wk, imp_sym_handle *is, void *d )
+            scope_block *scope, WALK_GLUE *wk, imp_sym_handle *ish, void *d )
 {
     ji_ptr              lv_tbl;
     unsigned            lv_num;
@@ -111,26 +111,26 @@ static walk_result WalkAScope( imp_image_handle *iih, unsigned mb_idx,
     ji_ptr              code_start;
     walk_result         wr;
 
-    is->kind = JS_LOCAL;
+    ish->kind = JS_LOCAL;
     code_start = (ji_ptr)iih->methods[mb_idx].code;
     lv_tbl = (ji_ptr)iih->methods[mb_idx].localvar_table;
     lv_num = iih->methods[mb_idx].localvar_table_length;
     for( idx = scope->unique; idx < lv_num; ++idx ) {
-        is->u.lv = lv_tbl + idx * sizeof( var );
-        if( GetData( is->u.lv, &var, sizeof( var ) ) != DS_OK ) {
+        ish->u.lv = lv_tbl + idx * sizeof( var );
+        if( GetData( ish->u.lv, &var, sizeof( var ) ) != DS_OK ) {
             return( WR_FAIL );
         }
         if( var.length != scope->len || (code_start+var.pc0) != scope->start.mach.offset ) {
             return( WR_CONTINUE );
         }
-        wr = wk( iih, SWI_SYMBOL, is, d );
+        wr = wk( iih, SWI_SYMBOL, ish, d );
         if( wr != WR_CONTINUE ) return( wr );
     }
     return( WR_CONTINUE );
 }
 
 static walk_result WalkAllScopes( imp_image_handle *iih, unsigned mb_idx,
-            addr_off off, WALK_GLUE *wk, imp_sym_handle *is, void *d )
+            addr_off off, WALK_GLUE *wk, imp_sym_handle *ish, void *d )
 {
     ji_ptr              lv_tbl;
     unsigned            lv_num;
@@ -138,21 +138,21 @@ static walk_result WalkAllScopes( imp_image_handle *iih, unsigned mb_idx,
     struct localvar     var;
     walk_result         wr;
 
-    is->kind = JS_LOCAL;
+    ish->kind = JS_LOCAL;
     off -= (ji_ptr)iih->methods[mb_idx].code;
     lv_tbl = (ji_ptr)iih->methods[mb_idx].localvar_table;
     lv_num = iih->methods[mb_idx].localvar_table_length;
     for( idx = 0; idx < lv_num; ++idx ) {
-        is->u.lv = lv_tbl + idx * sizeof( var );
-        if( GetData( is->u.lv, &var, sizeof( var ) ) != DS_OK ) {
+        ish->u.lv = lv_tbl + idx * sizeof( var );
+        if( GetData( ish->u.lv, &var, sizeof( var ) ) != DS_OK ) {
             return( WR_FAIL );
         }
         if( (off >= var.pc0) && (off < (var.pc0+var.length)) ) {
-            wr = wk( iih, SWI_SYMBOL, is, d );
+            wr = wk( iih, SWI_SYMBOL, ish, d );
             if( wr != WR_CONTINUE ) return( wr );
         }
     }
-    return( WalkObject( iih, FALSE, iih->cc, wk, is, d ) );
+    return( WalkObject( iih, FALSE, iih->cc, wk, ish, d ) );
 }
 
 struct walk_data {
@@ -161,17 +161,17 @@ struct walk_data {
 };
 
 static walk_result WalkSymGlue( imp_image_handle *iih, sym_walk_info swi,
-                        imp_sym_handle *is, void *d )
+                        imp_sym_handle *ish, void *d )
 {
     struct walk_data    *wd = d;
 
-    return( wd->wk( iih, swi, is, wd->d ) );
+    return( wd->wk( iih, swi, ish, wd->d ) );
 }
 
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
                 symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
-                imp_sym_handle *is, void *d )
+                imp_sym_handle *ish, void *d )
 {
     scope_block         *scope;
     address             *a;
@@ -194,9 +194,9 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             return( WR_CONTINUE );
         }
         if( scope->unique == OBJECT_SCOPE ) {
-            wr = WalkObject( iih, FALSE, iih->cc, WalkSymGlue, is, &data );
+            wr = WalkObject( iih, FALSE, iih->cc, WalkSymGlue, ish, &data );
         } else {
-            wr = WalkAScope( iih, i, scope, WalkSymGlue, is, &data );
+            wr = WalkAScope( iih, i, scope, WalkSymGlue, ish, &data );
         }
         return( wr );
     case SS_MODULE:
@@ -211,7 +211,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
         default:
             return( WR_CONTINUE );
         }
-        wr = WalkAllScopes( iih, i, a->mach.offset, WalkSymGlue, is, &data );
+        wr = WalkAllScopes( iih, i, a->mach.offset, WalkSymGlue, ish, &data );
         break;
     case SS_TYPE:
         ith = (imp_type_handle)source;
@@ -228,7 +228,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             return( WR_CONTINUE );
         }
         if( clazz != 0 ) {
-            return( WalkObject( iih, FALSE, clazz, WalkSymGlue, is, &data ) );
+            return( WalkObject( iih, FALSE, clazz, WalkSymGlue, ish, &data ) );
         }
         break;
     }
@@ -236,55 +236,55 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
 }
 
 imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih,
-                        imp_sym_handle *is )
+                        imp_sym_handle *ish )
 {
     return( IMH_JAVA );
 }
 
-static unsigned GetName( imp_image_handle *iih, imp_sym_handle *is )
+static unsigned GetName( imp_image_handle *iih, imp_sym_handle *ish )
 {
     ji_ptr      name;
     unsigned    cp_idx;
 
-    switch( is->kind ) {
+    switch( ish->kind ) {
     case JS_METHOD:
-        name = GetPointer( is->u.mb + offsetof( struct methodblock, fb.name ) );
+        name = GetPointer( ish->u.mb + offsetof( struct methodblock, fb.name ) );
         break;
     case JS_FIELD:
-        name = GetPointer( is->u.fb + offsetof( struct fieldblock, name ) );
+        name = GetPointer( ish->u.fb + offsetof( struct fieldblock, name ) );
         break;
     case JS_LOCAL:
-        cp_idx = GetU16( is->u.lv + offsetof( struct localvar, nameoff ) );
+        cp_idx = GetU16( ish->u.lv + offsetof( struct localvar, nameoff ) );
         name = GetPointer( iih->cp + cp_idx * sizeof( union cp_item_type ) );
         break;
     case JS_TYPE:
     case JS_PACKAGE:
-        name = GetPointer( is->u.cn + offsetof( ClassClass, name ) );
+        name = GetPointer( ish->u.cn + offsetof( ClassClass, name ) );
         break;
     }
     return( GetString( name, NameBuff, sizeof( NameBuff ) ) );
 }
 
-static ji_ptr GetSignature( imp_image_handle *iih, imp_sym_handle *is )
+static ji_ptr GetSignature( imp_image_handle *iih, imp_sym_handle *ish )
 {
     ji_ptr      sig;
     unsigned    cp_idx;
 
     sig = 0;
-    switch( is->kind ) {
+    switch( ish->kind ) {
     case JS_METHOD:
-        sig = GetPointer( is->u.mb + offsetof( struct methodblock, fb.signature ) );
+        sig = GetPointer( ish->u.mb + offsetof( struct methodblock, fb.signature ) );
         break;
     case JS_FIELD:
-        sig = GetPointer( is->u.fb + offsetof( struct fieldblock, signature ) );
+        sig = GetPointer( ish->u.fb + offsetof( struct fieldblock, signature ) );
         break;
     case JS_LOCAL:
-        cp_idx = GetU16( is->u.lv + offsetof( struct localvar, sigoff ) );
+        cp_idx = GetU16( ish->u.lv + offsetof( struct localvar, sigoff ) );
         sig = GetPointer( iih->cp + cp_idx * sizeof( union cp_item_type ) );
         break;
     case JS_TYPE:
     case JS_PACKAGE:
-        sig = GetPointer( is->u.cn + offsetof( ClassClass, name ) );
+        sig = GetPointer( ish->u.cn + offsetof( ClassClass, name ) );
         break;
     }
     return( sig );
@@ -382,17 +382,17 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
 }
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                    imp_sym_handle *is, location_context *lc,
+                    imp_sym_handle *ish, location_context *lc,
                     symbol_name sn, char *buff, size_t buff_size )
 {
     size_t      len;
     ji_ptr      sig;
 
-    len = GetName( iih, is );
-    switch( is->kind ) {
+    len = GetName( iih, ish );
+    switch( ish->kind ) {
     case JS_METHOD:
         if( sn == SN_DEMANGLED ) {
-            sig = GetSignature( iih, is );
+            sig = GetSignature( iih, ish );
             if( sig != 0 ) {
                 len = Demangle( NameBuff, len, sig );
             }
@@ -407,10 +407,10 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
-                imp_sym_handle *is, imp_type_handle *ith )
+                imp_sym_handle *ish, imp_type_handle *ith )
 {
-    ith->sig = GetSignature( iih, is );
-    switch( is->kind ) {
+    ith->sig = GetSignature( iih, ish );
+    switch( ish->kind ) {
     case JS_TYPE:
     case JS_PACKAGE:
         ith->kind = JT_RAWNAME;
@@ -419,7 +419,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
     switch( GetU8( ith->sig ) ) {
     case SIGNATURE_ARRAY:
     case SIGNATURE_CLASS:
-        ith->u.is = *is;
+        ith->u.ish = *ish;
         ith->kind = JT_WANTOBJECT;
         break;
     default:
@@ -468,7 +468,7 @@ dip_status FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle )
     return( DS_OK );
 }
 
-dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *is,
+dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
                 location_context *lc, location_list *ll, ji_ptr *obj_handle )
 {
     address             a;
@@ -479,28 +479,28 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *is,
     unsigned_32         off;
     ji_ptr              sig;
 
-    switch( is->kind ) {
+    switch( ish->kind ) {
     case JS_METHOD:
         sig = 0;
-        acc = GetU16( is->u.mb + offsetof( struct methodblock, fb.access ) );
+        acc = GetU16( ish->u.mb + offsetof( struct methodblock, fb.access ) );
         if( acc & ACC_NATIVE ) return( DS_ERR | DS_BAD_LOCATION );
         a = DefCodeAddr;
-        a.mach.offset = GetPointer( is->u.mb + offsetof( struct methodblock, code ) );
+        a.mach.offset = GetPointer( ish->u.mb + offsetof( struct methodblock, code ) );
         LocationCreate( ll, LT_ADDR, &a );
         break;
     case JS_FIELD:
-        sig = GetPointer( is->u.fb + offsetof( struct fieldblock, signature ) );
-        acc = GetU16( is->u.fb + offsetof( struct fieldblock, access ) );
+        sig = GetPointer( ish->u.fb + offsetof( struct fieldblock, signature ) );
+        acc = GetU16( ish->u.fb + offsetof( struct fieldblock, access ) );
         if( acc & ACC_STATIC ) {
             a = DefDataAddr;
             switch( GetU8( sig ) ) {
             case SIGNATURE_LONG:
             case SIGNATURE_DOUBLE:
-                a.mach.offset = GetPointer( is->u.fb
+                a.mach.offset = GetPointer( ish->u.fb
                             + offsetof( struct fieldblock, u.static_address ) );
                 break;
             default:
-                a.mach.offset = is->u.fb
+                a.mach.offset = ish->u.fb
                             + offsetof( struct fieldblock, u.static_value );
                 break;
             }
@@ -508,7 +508,7 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *is,
         } else {
             ds = DCItemLocation( lc, CI_OBJECT, ll );
             if( ds != DS_OK ) return( ds );
-            off = GetU32( is->u.fb + offsetof( struct fieldblock, u.offset ) );
+            off = GetU32( ish->u.fb + offsetof( struct fieldblock, u.offset ) );
             LocationAdd( ll, off * 8 );
         }
         break;
@@ -519,10 +519,10 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *is,
         LocationCreate( ll, LT_INTERNAL, &a.mach.offset );
         ds = DCAssignLocation( ll, &var, sizeof( a.mach.offset ) );
         if( ds != DS_OK ) return( ds );
-        a.mach.offset += GetU32( is->u.lv + offsetof( struct localvar, slot ) )
+        a.mach.offset += GetU32( ish->u.lv + offsetof( struct localvar, slot ) )
                                 * sizeof( unsigned_32 );
         LocationCreate( ll, LT_ADDR, &a );
-        cp_idx = GetU16( is->u.lv + offsetof( struct localvar, sigoff ) );
+        cp_idx = GetU16( ish->u.lv + offsetof( struct localvar, sigoff ) );
         sig = GetPointer( iih->cp + cp_idx * sizeof( union cp_item_type ) );
         break;
     case JS_TYPE:
@@ -534,15 +534,15 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *is,
 }
 
 dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, location_list *ll )
+                imp_sym_handle *ish, location_context *lc, location_list *ll )
 {
     ji_ptr      handle;
 
-    return( ImpSymLocation( iih, is, lc, ll, &handle ) );
+    return( ImpSymLocation( iih, ish, lc, ll, &handle ) );
 }
 
 dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, void *buff )
+                imp_sym_handle *ish, location_context *lc, void *buff )
 {
     return( DS_FAIL );
 }
@@ -560,16 +560,16 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
 //    addr_off          epilog_size;
 
 dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
-                imp_sym_handle *is, location_context *lc, sym_info *si )
+                imp_sym_handle *ish, location_context *lc, sym_info *si )
 {
     unsigned    acc;
 
     memset( si, 0, sizeof( si ) );
-    switch( is->kind ) {
+    switch( ish->kind ) {
     case JS_METHOD:
         si->kind = SK_PROCEDURE;
         si->is_member = 1;
-        si->rtn_size = GetU32( is->u.mb + offsetof( struct methodblock, code_length ) );
+        si->rtn_size = GetU32( ish->u.mb + offsetof( struct methodblock, code_length ) );
         break;
     case JS_FIELD:
         si->kind = SK_DATA;
@@ -585,7 +585,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
         si->kind = SK_NAMESPACE;
         return( DS_OK );
     }
-    acc = GetU16( is->u.fb + offsetof( struct fieldblock, access ) );
+    acc = GetU16( ish->u.fb + offsetof( struct fieldblock, access ) );
     if( acc & ACC_PUBLIC ) si->is_public = 1;
     if( acc & ACC_PRIVATE ) si->is_private = 1;
     if( acc & ACC_PROTECTED ) si->is_protected = 1;
@@ -594,20 +594,20 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
-                    imp_sym_handle *is, location_context *lc,
+                    imp_sym_handle *ish, location_context *lc,
                     location_list *ll, unsigned n )
 {
     return( DS_FAIL );
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *is, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
 {
     struct methodblock  method;
     dip_status          ds;
 
-    if( is->kind != JS_METHOD ) return( DS_FAIL );
-    ds = GetData( is->u.mb, &method, sizeof( method ) );
+    if( ish->kind != JS_METHOD ) return( DS_FAIL );
+    ds = GetData( ish->u.mb, &method, sizeof( method ) );
     if( ds != DS_OK ) return( ds );
     if( method.fb.access & ACC_NATIVE ) return( DS_FAIL );
     if( ti != NULL ) {
@@ -625,7 +625,7 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
-                                imp_sym_handle *is, location_context *lc,
+                                imp_sym_handle *ish, location_context *lc,
                                  location_list *ll )
 {
     struct methodblock  method;
@@ -637,8 +637,8 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     unsigned            cp_idx;
     ji_ptr              handle;
 
-    if( is->kind != JS_METHOD ) return( DS_FAIL );
-    ds = GetData( is->u.mb, &method, sizeof( method ) );
+    if( ish->kind != JS_METHOD ) return( DS_FAIL );
+    ds = GetData( ish->u.mb, &method, sizeof( method ) );
     if( ds != DS_OK ) return( ds );
     if( method.fb.access & (ACC_NATIVE | ACC_STATIC) ) return( DS_FAIL );
     cp = GetPointer( (ji_ptr)method.fb.clazz + offsetof( ClassClass, constantpool ) );
@@ -658,7 +658,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *is )
+                            imp_mod_handle im, address a, imp_sym_handle *ish )
 {
     search_result       sr;
     unsigned            i;
@@ -667,8 +667,8 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
     switch( sr ) {
     case SR_EXACT:
     case SR_CLOSEST:
-        is->u.mb = IDX_TO_METHOD_BLOCK( iih, i );
-        is->kind = JS_METHOD;
+        ish->u.mb = IDX_TO_METHOD_BLOCK( iih, i );
+        ish->kind = JS_METHOD;
         break;
     }
     return( sr );
@@ -684,7 +684,7 @@ struct lookup_data {
 };
 
 static walk_result CheckOneSym( imp_image_handle *iih, sym_walk_info swi,
-                        imp_sym_handle *is, void *d )
+                        imp_sym_handle *ish, void *d )
 {
     struct lookup_data  *ld = d;
     imp_sym_handle      *new;
@@ -693,12 +693,12 @@ static walk_result CheckOneSym( imp_image_handle *iih, sym_walk_info swi,
     if( swi != SWI_SYMBOL ) {
         return( ld->static_only ? WR_STOP : WR_CONTINUE );
     }
-    len = GetName( iih, is );
+    len = GetName( iih, ish );
     if( ld->li->name.len != len ) return( WR_CONTINUE );
     if( ld->cmp( NameBuff, ld->li->name.start, len ) != 0 ) return( WR_CONTINUE );
     new = DCSymCreate( iih, ld->d );
     if( new == NULL ) return( WR_FAIL );
-    *new = *is;
+    *new = *ish;
     ld->sr = SR_EXACT;
     return( WR_CONTINUE );
 }
@@ -766,7 +766,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
 {
     struct lookup_data  data;
     unsigned            i;
-    imp_sym_handle      is;
+    imp_sym_handle      ish;
     address             *a;
     imp_type_handle     *ith;
     ji_ptr              clazz;
@@ -847,7 +847,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
             return( SR_NONE );
         }
         if( ss == SS_MODULE ) {
-            if( WalkObject( iih, TRUE, iih->cc, CheckOneSym, &is, &data ) == WR_FAIL ) {
+            if( WalkObject( iih, TRUE, iih->cc, CheckOneSym, &ish, &data ) == WR_FAIL ) {
                 return( SR_FAIL );
             }
         } else {
@@ -859,7 +859,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
             case SR_NONE:
 #if 1
                 data.static_only = 1;
-                if( WalkObject( iih, TRUE, iih->cc, CheckOneSym, &is, &data ) == WR_FAIL ) {
+                if( WalkObject( iih, TRUE, iih->cc, CheckOneSym, &ish, &data ) == WR_FAIL ) {
                     return( SR_FAIL );
                 }
                 return( data.sr );
@@ -869,7 +869,7 @@ return( SR_NONE );
             default:
                 return( SR_FAIL );
             }
-            if( WalkAllScopes( iih, i, a->mach.offset, CheckOneSym, &is, &data ) == WR_FAIL ) {
+            if( WalkAllScopes( iih, i, a->mach.offset, CheckOneSym, &ish, &data ) == WR_FAIL ) {
                 return( SR_FAIL );
             }
         }
@@ -890,7 +890,7 @@ return( SR_NONE );
             return( SR_NONE );
         }
         if( clazz == 0 ) return( SR_NONE );
-        if( WalkObject( iih, FALSE, clazz, CheckOneSym, &is, &data ) == WR_FAIL ) {
+        if( WalkObject( iih, FALSE, clazz, CheckOneSym, &ish, &data ) == WR_FAIL ) {
             return( SR_FAIL );
         }
         return( data.sr );
@@ -982,11 +982,11 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
     return( FindAScope( iih, out ) );
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1, imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
 {
-    if( is1->u.fb < is2->u.fb )
+    if( ish1->u.fb < ish2->u.fb )
         return( -1 );
-    if( is1->u.fb > is2->u.fb )
+    if( ish1->u.fb > ish2->u.fb )
         return( 1 );
     return( 0 );
 }

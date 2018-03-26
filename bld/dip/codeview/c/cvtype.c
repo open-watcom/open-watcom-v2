@@ -255,10 +255,10 @@ dip_status TypeMemberFuncInfo( imp_image_handle *iih, imp_type_handle *func_ith,
     return( DS_OK );
 }
 
-dip_status TypeSymGetName( imp_image_handle *iih, imp_sym_handle *is,
+dip_status TypeSymGetName( imp_image_handle *iih, imp_sym_handle *ish,
                         const char **name_p, size_t *name_len_p )
 {
-    return( TypeVMGetName( iih, is->handle, name_p, name_len_p, NULL ) );
+    return( TypeVMGetName( iih, ish->handle, name_p, name_len_p, NULL ) );
 }
 
 
@@ -720,7 +720,7 @@ static walk_result FindVTab( imp_image_handle *iih, sym_walk_info swi,
     return( WR_CONTINUE );
 }
 
-static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *is,
+static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *ish,
             unsigned_32 vfunc_off, location_context *lc, location_list *ll )
 {
     lf_all              *p;
@@ -733,13 +733,13 @@ static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *is,
     addr_off            save;
     dip_status          ds;
 
-    p = VMBlock( iih, is->containing_type, sizeof( *p ) );
+    p = VMBlock( iih, ish->containing_type, sizeof( *p ) );
     if( p == NULL )
         return( DS_ERR|DS_FAIL );
     base = TypeIndexVM( iih, p->class_.f.field );
     if( base == 0 )
         return( DS_ERR|DS_FAIL );
-    switch( TypeListWalk( iih, base, is->containing_type, FindVTab, &data ) ) {
+    switch( TypeListWalk( iih, base, ish->containing_type, FindVTab, &data ) ) {
     case WR_STOP:
         break;
     default:
@@ -762,11 +762,11 @@ static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *is,
     ds = ImpTypeBase( iih, &ith, &ith );
     if( ds != DS_OK )
         return( ds );
-    vfsp = VMBlock( iih, ith.handle + sizeof(unsigned_16)*2 + is->mfunc_idx/2,
+    vfsp = VMBlock( iih, ith.handle + sizeof(unsigned_16)*2 + ish->mfunc_idx/2,
                         sizeof( *vfsp ) );
     if( vfsp == NULL )
         return( DS_ERR|DS_FAIL );
-    if( (is->mfunc_idx % 2) != 0 ) {
+    if( (ish->mfunc_idx % 2) != 0 ) {
         vfshape = *vfsp >> 4;
     } else {
         vfshape = *vfsp & 0x0f;
@@ -809,7 +809,7 @@ static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *is,
     return( DS_OK );
 }
 
-static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *is,
+static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
                     unsigned idx, location_context *lc, location_list *ll )
 {
     const char          *name;
@@ -823,7 +823,7 @@ static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *is,
         Have to lookup "<scope>::<name>" with given type index to get
         address. Ugh :-(.
     */
-    ds = TypeVMGetName( iih, is->handle, &name, &len, NULL );
+    ds = TypeVMGetName( iih, ish->handle, &name, &len, NULL );
     if( ds != DS_OK )
         return( ds );
     /* name can't be longer than 256 because of CV format */
@@ -833,7 +833,7 @@ static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *is,
     memcpy( start, name, len );
     start -= SCOPE_TOKEN_LEN;
     memcpy( start, SCOPE_TOKEN, SCOPE_TOKEN_LEN );
-    ds = TypeVMGetName( iih, is->containing_type, &name, &len, NULL );
+    ds = TypeVMGetName( iih, ish->containing_type, &name, &len, NULL );
     if( ds != DS_OK )
         return( ds );
     start -= len;
@@ -844,7 +844,7 @@ static dip_status MatchSymLocation( imp_image_handle *iih, imp_sym_handle *is,
     return( ImpSymLocation( iih, &real, lc, ll ) );
 }
 
-dip_status TypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *is,
+dip_status TypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, location_list *ll )
 {
     lf_all              *p;
@@ -855,7 +855,7 @@ dip_status TypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *is,
     unsigned long       disp;
     method_info         *minfo;
 
-    p = VMBlock( iih, is->handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
+    p = VMBlock( iih, ish->handle, sizeof( *p ) + sizeof( unsigned_32 ) * 2 );
     switch( p->common.code ) {
     case LF_MEMBER:
         /* save type index from scurges of VM system */
@@ -864,14 +864,14 @@ dip_status TypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *is,
         ds = DCItemLocation( lc, CI_OBJECT, ll );
         if( ds != DS_OK )
             return( ds );
-        if( is->adjustor_type != 0 ) {
+        if( ish->adjustor_type != 0 ) {
             /* have to fish displacement out of virtual base table */
-            ds = GetVirtBaseDisp( iih, is->adjustor_type, lc, *ll, &disp );
+            ds = GetVirtBaseDisp( iih, ish->adjustor_type, lc, *ll, &disp );
             if( ds != DS_OK )
                 return( ds );
             LocationAdd( ll, disp * 8 );
         }
-        LocationAdd( ll, (is->adjustor_offset + val.int_val) * 8 );
+        LocationAdd( ll, (ish->adjustor_offset + val.int_val) * 8 );
         if( idx >= CV_FIRST_USER_TYPE ) {
             /* have to check type in case it's a bit field */
             ds = TypeIndexFillIn( iih, idx, &base_ith );
@@ -887,12 +887,12 @@ dip_status TypeSymGetAddr( imp_image_handle *iih, imp_sym_handle *is,
         }
         break;
     case LF_STMEMBER:
-        return( MatchSymLocation( iih, is, p->stmember.f.type, lc, ll ) );
+        return( MatchSymLocation( iih, ish, p->stmember.f.type, lc, ll ) );
     case LF_ONEMETHOD:
         minfo = (method_info *)&p->onemethod.f.attr;
         goto method_addr;
     case LF_METHOD:
-        minfo = GetMethodInfo( iih, p->method.f.mList, is->mfunc_idx );
+        minfo = GetMethodInfo( iih, p->method.f.mList, ish->mfunc_idx );
         if( minfo == NULL )
             return( DS_ERR|DS_FAIL );
 method_addr:
@@ -902,9 +902,9 @@ method_addr:
             return( DS_FAIL );
         case CV_INTROVIRT:
         case CV_PUREINTROVIRT:
-            return( VFuncLocation( iih, is, minfo->vtab_off, lc, ll ) );
+            return( VFuncLocation( iih, ish, minfo->vtab_off, lc, ll ) );
         }
-        return( MatchSymLocation( iih, is, minfo->type, lc, ll ) );
+        return( MatchSymLocation( iih, ish, minfo->type, lc, ll ) );
     case LF_ENUMERATE:
         return( DS_FAIL );
     default:
@@ -914,14 +914,14 @@ method_addr:
     return( DS_OK );
 }
 
-dip_status TypeSymGetType( imp_image_handle *iih, imp_sym_handle *is, imp_type_handle *ith )
+dip_status TypeSymGetType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
 {
     lf_all              *p;
     dip_status          ds;
     unsigned            idx;
     method_info         *minfo;
 
-    p = VMBlock( iih, is->handle, sizeof( *p ) );
+    p = VMBlock( iih, ish->handle, sizeof( *p ) );
     switch( p->common.code ) {
     case LF_STMEMBER:
     case LF_MEMBER:
@@ -943,19 +943,19 @@ dip_status TypeSymGetType( imp_image_handle *iih, imp_sym_handle *is, imp_type_h
         idx = p->onemethod.f.type;
         break;
     case LF_METHOD:
-        minfo = GetMethodInfo( iih, p->method.f.mList, is->mfunc_idx );
+        minfo = GetMethodInfo( iih, p->method.f.mList, ish->mfunc_idx );
         if( minfo == NULL )
             return( DS_ERR|DS_FAIL );
         idx = minfo->type;
         break;
     case LF_ENUMERATE:
-        ith->handle = is->containing_type;
+        ith->handle = ish->containing_type;
         ith->idx = UNKNOWN_TYPE_IDX;
         ith->array_dim = 0;
         return( DS_OK );
     default:
         /* type name */
-        ith->handle = is->handle;
+        ith->handle = ish->handle;
         ith->idx = UNKNOWN_TYPE_IDX;
         ith->array_dim = 0;
         return( DS_OK );
@@ -963,7 +963,7 @@ dip_status TypeSymGetType( imp_image_handle *iih, imp_sym_handle *is, imp_type_h
     return( TypeIndexFillIn( iih, idx, ith ) );
 }
 
-dip_status TypeSymGetValue( imp_image_handle *iih, imp_sym_handle *is,
+dip_status TypeSymGetValue( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, void *buff )
 {
     lf_all              *p;
@@ -975,14 +975,14 @@ dip_status TypeSymGetValue( imp_image_handle *iih, imp_sym_handle *is,
        The "+ sizeof( unsigned_32 )" is to make sure that the GetNumLeaf
        has enough stuff mapped in to work.
     */
-    p = VMBlock( iih, is->handle, sizeof( *p ) + sizeof( unsigned_32 ) );
+    p = VMBlock( iih, ish->handle, sizeof( *p ) + sizeof( unsigned_32 ) );
     if( p == NULL )
         return( DS_ERR|DS_FAIL );
     switch( p->common.code ) {
     case LF_ENUMERATE:
         GetNumLeaf( &p->enumerate + 1, &val );
         /* make sure everything is mapped in */
-        p = VMBlock( iih, is->handle,
+        p = VMBlock( iih, ish->handle,
                 val.size + sizeof( *p ) + sizeof( unsigned_32 ) );
         if( p == NULL )
             return( DS_ERR|DS_FAIL );
@@ -994,7 +994,7 @@ dip_status TypeSymGetValue( imp_image_handle *iih, imp_sym_handle *is,
     return( DS_FAIL );
 }
 
-dip_status TypeSymGetInfo( imp_image_handle *iih, imp_sym_handle *is,
+dip_status TypeSymGetInfo( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, sym_info *si )
 {
     lf_all              *p;
@@ -1002,7 +1002,7 @@ dip_status TypeSymGetInfo( imp_image_handle *iih, imp_sym_handle *is,
 
     /* unused parameters */ (void)lc;
 
-    p = VMBlock( iih, is->handle, sizeof( *p ) );
+    p = VMBlock( iih, ish->handle, sizeof( *p ) );
     switch( p->common.code ) {
     case LF_STMEMBER:
     case LF_MEMBER:
@@ -1038,7 +1038,7 @@ dip_status TypeSymGetInfo( imp_image_handle *iih, imp_sym_handle *is,
     case LF_METHOD:
         si->kind = SK_CODE;
         si->is_member = 1;
-        minfo = GetMethodInfo( iih, p->method.f.mList, is->mfunc_idx );
+        minfo = GetMethodInfo( iih, p->method.f.mList, ish->mfunc_idx );
         if( minfo == NULL )
             return( DS_ERR|DS_FAIL );
         switch( minfo->attr.f.access ) {
@@ -1066,7 +1066,7 @@ dip_status TypeSymGetInfo( imp_image_handle *iih, imp_sym_handle *is,
 struct walk_glue {
     DIP_IMP_SYM_WALKER  *wk;
     void                *d;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
 };
 
 static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
@@ -1088,10 +1088,10 @@ static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
             if( p == NULL )
                 return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
-            gd->is->adjustor_offset += val.int_val;
+            gd->ish->adjustor_offset += val.int_val;
             break;
         default:
-            gd->is->adjustor_type = list->curr;
+            gd->ish->adjustor_type = list->curr;
             break;
         }
         return( WR_CONTINUE );
@@ -1105,10 +1105,10 @@ static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
             if( p == NULL )
                 return( WR_FAIL );
             GetNumLeaf( &p->bclass + 1, &val );
-            gd->is->adjustor_offset -= val.int_val;
+            gd->ish->adjustor_offset -= val.int_val;
             break;
         default:
-            gd->is->adjustor_type = 0;
+            gd->ish->adjustor_type = 0;
             break;
         }
         return( WR_CONTINUE );
@@ -1127,20 +1127,20 @@ static walk_result WalkGlue( imp_image_handle *iih, sym_walk_info swi,
     default:
         return( WR_CONTINUE );
     }
-    gd->is->mfunc_idx = 0;
-    gd->is->containing_type = list->containing_type;
-    gd->is->handle = list->curr;
+    gd->ish->mfunc_idx = 0;
+    gd->ish->containing_type = list->containing_type;
+    gd->ish->handle = list->curr;
     do {
-        wr = gd->wk( iih, SWI_SYMBOL, gd->is, gd->d );
+        wr = gd->wk( iih, SWI_SYMBOL, gd->ish, gd->d );
         if( wr != WR_CONTINUE )
             return( wr );
-        gd->is->mfunc_idx++;
+        gd->ish->mfunc_idx++;
     } while( --count != 0 );
     return( WR_CONTINUE );
 }
 
 walk_result TypeSymWalkList( imp_image_handle *iih, imp_type_handle *ith,
-                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
     struct walk_glue    glue;
     lf_all              *p;
@@ -1151,7 +1151,7 @@ walk_result TypeSymWalkList( imp_image_handle *iih, imp_type_handle *ith,
 
     glue.wk = wk;
     glue.d  = d;
-    glue.is = is;
+    glue.ish = ish;
 
     ds = TypeReal( iih, ith, &real_ith, &p );
     if( ds != DS_OK )
@@ -1175,8 +1175,8 @@ walk_result TypeSymWalkList( imp_image_handle *iih, imp_type_handle *ith,
     base = TypeIndexVM( iih, list_idx );
     if( base == 0 )
         return( WR_FAIL );
-    is->adjustor_type = 0;
-    is->adjustor_offset = 0;
+    ish->adjustor_type = 0;
+    ish->adjustor_offset = 0;
     return( TypeListWalk( iih, base, ith->handle, WalkGlue, &glue ) );
 }
 
@@ -1192,7 +1192,7 @@ search_result TypeSearchTagName( imp_image_handle *iih, lookup_item *li, void *d
     const char          *name;
     size_t              len;
     int                 (*cmp)( const void *, const void *, size_t );
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
 
     if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_GBL ) {
         return( SR_NONE );
@@ -1241,14 +1241,14 @@ search_result TypeSearchTagName( imp_image_handle *iih, lookup_item *li, void *d
           && p->common.code == code
           && len == li->name.len
           && cmp( name, li->name.start, len ) == 0 ) {
-            is = DCSymCreate( iih, d );
-            if( is == NULL )
+            ish = DCSymCreate( iih, d );
+            if( ish == NULL )
                 return( SR_FAIL );
-            is->mfunc_idx = 0;
-            is->handle = type;
-            is->containing_type = type;
-            is->adjustor_type = 0;
-            is->adjustor_offset = 0;
+            ish->mfunc_idx = 0;
+            ish->handle = type;
+            ish->containing_type = type;
+            ish->adjustor_type = 0;
+            ish->adjustor_offset = 0;
             return( SR_EXACT );
         }
         --count;
@@ -1270,7 +1270,7 @@ static walk_result SymSearch( imp_image_handle *iih, sym_walk_info swi,
     struct search_data  *sd = d;
     const char          *name;
     size_t              name_len;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     search_result       sr;
     numeric_leaf        val;
     unsigned            count;
@@ -1339,14 +1339,14 @@ static walk_result SymSearch( imp_image_handle *iih, sym_walk_info swi,
     if( sr != SR_NONE ) {
         sd->sr = SR_EXACT;
         for( idx = 0; idx < count; ++idx ) {
-            is = DCSymCreate( iih, sd->d );
-            if( is == NULL )
+            ish = DCSymCreate( iih, sd->d );
+            if( ish == NULL )
                 return( WR_FAIL );
-            is->mfunc_idx = idx;
-            is->handle = list->curr;
-            is->containing_type = list->containing_type;
-            is->adjustor_type = sd->adj_type;
-            is->adjustor_offset = sd->adj_offset;
+            ish->mfunc_idx = idx;
+            ish->handle = list->curr;
+            ish->containing_type = list->containing_type;
+            ish->adjustor_type = sd->adj_type;
+            ish->adjustor_offset = sd->adj_offset;
         }
     }
     return( WR_CONTINUE );
@@ -2007,7 +2007,7 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
     lf_all              *p;
     imp_type_handle     real_ith;
     dip_status          ds;
-    imp_sym_handle      is;
+    imp_sym_handle      ish;
     location_list       ll;
     dip_type_info       ti;
     unsigned            ptype;
@@ -2039,10 +2039,10 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
     case CV_BASESEGVAL:
     case CV_BASESYM:
     case CV_BASESEGSYM:
-        ds = SymFillIn( iih, &is, real_ith.handle + sizeof( p->pointer ) );
+        ds = SymFillIn( iih, &ish, real_ith.handle + sizeof( p->pointer ) );
         if( ds != DS_OK )
             return( ds );
-        ds = ImpSymLocation( iih, &is, lc, &ll );
+        ds = ImpSymLocation( iih, &ish, lc, &ll );
         if( ds != DS_OK )
             return( ds );
         *a = ll.e[0].u.addr;
@@ -2053,7 +2053,7 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
         case CV_BASESYM:
             return( DS_OK );
         }
-        ds = ImpSymType( iih, &is, &real_ith );
+        ds = ImpSymType( iih, &ish, &real_ith );
         if( ds != DS_OK )
             return( ds );
         ds = ImpTypeInfo( iih, &real_ith, lc, &ti );

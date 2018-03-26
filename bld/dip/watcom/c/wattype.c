@@ -623,7 +623,7 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
     word                entry;
     struct name_state   state;
     search_result       sr;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     const char          *p;
     typeinfo            typeld;
 
@@ -639,17 +639,17 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
             p = FindAName( &state, p, which, li );
             if( p == NULL )
                 break;
-            is = DCSymCreate( iih, d );
-            is->im = im;
-            is->name_off = (byte)( NamePtr( p ) - p );
-            is->u.typ.t.entry = entry;
-            is->u.typ.t.offset = p - Type->start;
+            ish = DCSymCreate( iih, d );
+            ish->im = im;
+            ish->name_off = (byte)( NamePtr( p ) - p );
+            ish->u.typ.t.entry = entry;
+            ish->u.typ.t.offset = p - Type->start;
             if( (GETU8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
-                is->type = SH_CST;
-                is->u.typ.h.offset = state.header - Type->start;
-                is->u.typ.h.entry = entry;
+                ish->type = SH_CST;
+                ish->u.typ.h.offset = state.header - Type->start;
+                ish->u.typ.h.entry = entry;
             } else {
-                is->type = SH_TYP;
+                ish->type = SH_TYP;
             }
             sr = SR_EXACT;
             /* we really should continue searching for more names that
@@ -1183,7 +1183,7 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
     return( DS_OK );
 }
 
-unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *is,
+unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *ish,
                         char *buff, unsigned buff_size )
 {
     const char  *p;
@@ -1191,36 +1191,36 @@ unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *is,
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    if( LoadType( iih, is->im, is->u.typ.t.entry ) != DS_OK ) {
+    if( LoadType( iih, ish->im, ish->u.typ.t.entry ) != DS_OK ) {
         PopLoad();
         return( 0 );
     }
-    p = Type->start + is->u.typ.t.offset;
-    len = GETU8( p ) - is->name_off;
+    p = Type->start + ish->u.typ.t.offset;
+    len = GETU8( p ) - ish->name_off;
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )
             buff_size = len;
-        memcpy( buff, p + is->name_off, buff_size );
+        memcpy( buff, p + ish->name_off, buff_size );
         buff[buff_size] = '\0';
     }
     PopLoad();
     return( len );
 }
 
-unsigned SymHdl2TypName( imp_image_handle *iih, imp_sym_handle *is,
+unsigned SymHdl2TypName( imp_image_handle *iih, imp_sym_handle *ish,
                         char *buff, unsigned buff_size )
 {
-    return( SymHdl2CstName( iih, is, buff, buff_size ) );
+    return( SymHdl2CstName( iih, ish, buff, buff_size ) );
 }
 
-unsigned SymHdl2MbrName( imp_image_handle *iih, imp_sym_handle *is,
+unsigned SymHdl2MbrName( imp_image_handle *iih, imp_sym_handle *ish,
                         char *buff, unsigned buff_size )
 {
-    return( SymHdl2CstName( iih, is, buff, buff_size ) );
+    return( SymHdl2CstName( iih, ish, buff, buff_size ) );
 }
 
-dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *is, void *d )
+dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *ish, void *d )
 {
     const char          *p;
     const char          *e;
@@ -1229,13 +1229,13 @@ dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *is, void *d )
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, is->im, is->u.typ.t.entry );
+    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
     }
     memset( &val, 0, sizeof( val ) );
-    p = Type->start + is->u.typ.t.offset;
+    p = Type->start + ish->u.typ.t.offset;
     switch( GETU8( p + 1 ) ) {
     case ENUM_TYPE+ENUM_CONST_BYTE:
         val.u._32[0] = GETS8( p + 2 );
@@ -1250,35 +1250,35 @@ dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *is, void *d )
         memcpy( &val, p + 2, sizeof( val ) );
         break;
     }
-    e = Type->start + is->u.typ.h.offset;
+    e = Type->start + ish->u.typ.h.offset;
     memcpy( d, &val, (GETU8( e + 4 ) & SCLR_LEN_MASK) + 1 );
     PopLoad();
     return( DS_OK );
 }
 
-dip_status SymHdl2CstType( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2CstType( imp_image_handle *iih, imp_sym_handle *ish,
                         imp_type_handle *ith )
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = is->im;
-    ith->t = is->u.typ.h;
+    ith->im = ish->im;
+    ith->t = ish->u.typ.h;
     ith->f.all = 0;
     return( DS_OK );
 }
 
-dip_status SymHdl2TypType( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2TypType( imp_image_handle *iih, imp_sym_handle *ish,
                         imp_type_handle *ith )
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = is->im;
-    ith->t = is->u.typ.t;
+    ith->im = ish->im;
+    ith->t = ish->u.typ.t;
     ith->f.all = 0;
     return( DS_OK );
 }
 
-dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *ish,
                         imp_type_handle *ith )
 {
     const char  *p;
@@ -1287,16 +1287,16 @@ dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *is,
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, is->im, is->u.typ.t.entry );
+    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
     }
-    p = Type->start + is->u.typ.t.offset;
+    p = Type->start + ish->u.typ.t.offset;
     p = BaseTypePtr( p );
     GetIndex( p, &index );
     PopLoad();
-    return( FindTypeHandle( iih, is->im, index, ith ) );
+    return( FindTypeHandle( iih, ish->im, index, ith ) );
 }
 
 
@@ -1317,7 +1317,7 @@ struct anc_graph {
     word                        entry;
 };
 
-dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
                          location_context *lc, location_list *ll )
 {
     const char          *p;
@@ -1334,12 +1334,12 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ok = LoadType( iih, is->im, is->u.typ.t.entry );
+    ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
     if( ok != DS_OK ) {
         PopLoad();
         return( ok );
     }
-    p = Type->start + is->u.typ.t.offset;
+    p = Type->start + ish->u.typ.t.offset;
     switch( GETU8( p + 1 ) ) {
     case STRUCT_TYPE+ST_FIELD_LOC:
     case STRUCT_TYPE+ST_BIT_LOC:
@@ -1350,19 +1350,19 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
         break;
     }
     if( info & (NEED_BASE|EMPTY_EXPR) ) {
-        ok = LoadType( iih, is->im, is->u.typ.h.entry );
+        ok = LoadType( iih, ish->im, ish->u.typ.h.entry );
         if( ok != DS_OK ) {
             PopLoad();
             return( ok );
         }
-        p = Type->start + is->u.typ.h.offset;
+        p = Type->start + ish->u.typ.h.offset;
         pending = NULL;
         count = GETU16( p + 2 );
         for( ;; ) {
             if( count == 0 ) {
                 if( pending == NULL )
                     return( DS_FAIL );
-                ok = LoadType( iih, is->im, pending->entry );
+                ok = LoadType( iih, ish->im, pending->entry );
                 if( ok != DS_OK ) {
                     PopLoad();
                     return( ok );
@@ -1382,7 +1382,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
                 pending = new;
                 p = SkipLocation( p + 2 );
                 GetIndex( p, &index );
-                ok = DoFindTypeHandle( iih, is->im, index, &new_ith );
+                ok = DoFindTypeHandle( iih, ish->im, index, &new_ith );
                 if( ok != DS_OK ) {
                     PopLoad();
                     return( ok );
@@ -1390,8 +1390,8 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
                 p = Type->start + new_ith.t.offset;
                 count = GETU16( p + 2 );
             } else {
-                if( is->u.typ.t.entry == Type->entry
-                  && is->u.typ.t.offset == (p - Type->start) ) {
+                if( ish->u.typ.t.entry == Type->entry
+                  && ish->u.typ.t.offset == (p - Type->start) ) {
                     break;
                 }
             }
@@ -1413,7 +1413,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
             return( ok );
         }
         while( new != NULL ) {
-            ok = LoadType( iih, is->im, new->entry );
+            ok = LoadType( iih, ish->im, new->entry );
             if( ok != DS_OK ) {
                 PopLoad();
                 return( ok );
@@ -1433,12 +1433,12 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
             LocationAdd( ll, adj.e[0].u.addr.mach.offset * 8 );
             new = new->prev;
         }
-        ok = LoadType( iih, is->im, is->u.typ.t.entry );
+        ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
         if( ok != DS_OK ) {
             PopLoad();
             return( ok );
         }
-        p = Type->start + is->u.typ.t.offset;
+        p = Type->start + ish->u.typ.t.offset;
     }
     /* do field offset and bit field selection */
     bit_start = 0;
@@ -1487,7 +1487,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *is,
     return( DS_OK );
 }
 
-dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
                         sym_info *si, location_context *lc )
 {
     const char          *p;
@@ -1495,18 +1495,18 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *is,
     dip_status          ret;
     unsigned            attrib;
     imp_type_handle     tmp_ith;
-    imp_sym_handle      func_is;
+    imp_sym_handle      func_ish;
     byte                kind;
     location_list       ll;
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, is->im, is->u.typ.t.entry );
+    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
     }
-    p = Type->start + is->u.typ.t.offset;
+    p = Type->start + ish->u.typ.t.offset;
     switch( GETU8( p + 1 ) ) {
     case STRUCT_TYPE+ST_FIELD_LOC:
     case STRUCT_TYPE+ST_BIT_LOC:
@@ -1518,7 +1518,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *is,
     }
     p = BaseTypePtr( p );
     GetIndex( p, &index );
-    ret = FindRawTypeHandle( iih, is->im, index, &tmp_ith );
+    ret = FindRawTypeHandle( iih, ish->im, index, &tmp_ith );
     if( ret != DS_OK )
         return( ret );
     kind = GetRealTypeHandle( iih, &tmp_ith ) & CLASS_MASK;
@@ -1526,11 +1526,11 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *is,
     switch( kind ) {
     case PROC_TYPE:
         si->kind = SK_PROCEDURE;
-        ret = SymHdl2MbrLoc( iih, is, lc, &ll );
+        ret = SymHdl2MbrLoc( iih, ish, lc, &ll );
         if( ret == DS_OK ) {
-            func_is.im = is->im;
-            if( LookupLclAddr( iih, ll.e[0].u.addr, &func_is ) == SR_EXACT ) {
-                ret = SymHdl2LclInfo( iih, &func_is, si );
+            func_ish.im = ish->im;
+            if( LookupLclAddr( iih, ll.e[0].u.addr, &func_ish ) == SR_EXACT ) {
+                ret = SymHdl2LclInfo( iih, &func_ish, si );
             }
         }
         break;
@@ -1653,7 +1653,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
     imp_type_handle     new_ith;
     unsigned            index;
     int                 (*comp)(void const*,void const*,size_t);
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     const char          *name;
     size_t              len;
     typeinfo            typeld;
@@ -1709,13 +1709,13 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
             name = NamePtr( p );
             len = GETU8( p ) - ( name - p );
             if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
-                is = DCSymCreate( iih, d );
-                is->u.typ.t.offset = p - Type->start;
-                is->u.typ.t.entry = Type->entry;
-                is->name_off = (byte)( name - p );
-                is->im = ith->im;
-                is->u.typ.h = ith->t;
-                is->type = SH_MBR;
+                ish = DCSymCreate( iih, d );
+                ish->u.typ.t.offset = p - Type->start;
+                ish->u.typ.t.entry = Type->entry;
+                ish->name_off = (byte)( name - p );
+                ish->im = ith->im;
+                ish->u.typ.h = ith->t;
+                ish->type = SH_MBR;
                 sr = SR_EXACT;
             }
         }
@@ -1725,7 +1725,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
 }
 
 walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
-                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
     const char                  *p;
     unsigned                    count;
@@ -1741,18 +1741,18 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
         PopLoad();
         return( WR_STOP );
     }
-    is->im = ith->im;
-    is->u.typ.h = ith->t;
+    ish->im = ith->im;
+    ish->u.typ.h = ith->t;
     list = NULL;
     used = NULL;
     pending = NULL;
     p = Type->start + ith->t.offset;
     switch( GETU8( p + 1 ) & CLASS_MASK ) {
     case STRUCT_TYPE:
-        is->type = SH_MBR;
+        ish->type = SH_MBR;
         goto do_walk;
     case ENUM_TYPE:
-        is->type = SH_CST;
+        ish->type = SH_CST;
 do_walk:
         count = GETU16( p + 2 );
         wr = WR_CONTINUE;
@@ -1805,10 +1805,10 @@ do_walk:
                     continue;
                 }
             } else {
-                is->u.typ.t.offset = p - Type->start;
-                is->u.typ.t.entry = Type->entry;
-                is->name_off = (byte)( NamePtr( p ) - p );
-                wr = wk( iih, SWI_SYMBOL, is, d );
+                ish->u.typ.t.offset = p - Type->start;
+                ish->u.typ.t.entry = Type->entry;
+                ish->name_off = (byte)( NamePtr( p ) - p );
+                wr = wk( iih, SWI_SYMBOL, ish, d );
                 if( wr != WR_CONTINUE ) {
                     break;
                 }

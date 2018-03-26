@@ -77,34 +77,34 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
     return( InfoRelease() );
 }
 
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     /* unused parameters */ (void)iih;
 
-    return( is->im );
+    return( ish->im );
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_handle im,
-                        address addr, imp_sym_handle *is )
+                        address addr, imp_sym_handle *ish )
 {
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.AddrMod( iih, addr, &is->im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( iih, addr, &ish->im ) == SR_NONE ) {
             return( SR_NONE );
         }
     } else {
-        is->im = im;
+        ish->im = im;
     }
-    sr = LookupLclAddr( iih, addr, is );
+    sr = LookupLclAddr( iih, addr, ish );
     if( sr != SR_NONE )
         return( sr );
-    return( LookupGblAddr( iih, addr, is ) );
+    return( LookupGblAddr( iih, addr, ish ) );
 }
 
 #define SH_ESCAPE       0xf0
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
                                 location_context *lc,
                                 symbol_name sn, char *buff, size_t buff_size )
 {
@@ -114,17 +114,17 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
     size_t              len;
     char                *mangled_name;
     location_list       ll;
-    imp_sym_handle      gbl_is;
+    imp_sym_handle      gbl_ish;
 
     switch( sn ) {
     case SN_EXPRESSION:
-        sp = (byte *)is;
-        ++is;
+        sp = (byte *)ish;
+        ++ish;
         len = 0;
         #define STUFF_IT( c )   if( (len+1) < buff_size ) *ep++ = (c); ++len
         ep = (byte *)buff;
         STUFF_IT( SH_ESCAPE );
-        while( sp < (byte *)is ) {
+        while( sp < (byte *)ish ) {
             curr = *sp++;
             switch( curr ) {
             case SH_ESCAPE:
@@ -146,47 +146,47 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
             *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
-        len = ImpInterface.SymName( iih, is, lc, SN_OBJECT, NULL, 0 );
+        len = ImpInterface.SymName( iih, ish, lc, SN_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
         mangled_name = walloca( len + 1 );
-        ImpInterface.SymName( iih, is, lc, SN_OBJECT, mangled_name, len + 1 );
+        ImpInterface.SymName( iih, ish, lc, SN_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
         return( __demangle_l( mangled_name, len, buff, buff_size ) );
     case SN_OBJECT:
-        switch( is->type ) {
+        switch( ish->type ) {
         case SH_LCL:
-            if( Lcl2GblHdl( iih, is, &gbl_is ) != DS_OK )
+            if( Lcl2GblHdl( iih, ish, &gbl_ish ) != DS_OK )
                 break;
-            return( SymHdl2ObjGblName( iih, &gbl_is, buff, buff_size ) );
+            return( SymHdl2ObjGblName( iih, &gbl_ish, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.SymLocation( iih, is, lc, &ll ) != DS_OK )
+            if( ImpInterface.SymLocation( iih, ish, lc, &ll ) != DS_OK )
                 break;
             if( ll.num != 1 || ll.e[0].type != LT_ADDR )
                 break;
-            if( ImpInterface.AddrMod( iih, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+            if( ImpInterface.AddrMod( iih, ll.e[0].u.addr, &gbl_ish.im ) == SR_NONE )
                 break;
-            if( LookupGblAddr(iih,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
+            if( LookupGblAddr( iih, ll.e[0].u.addr, &gbl_ish ) != SR_EXACT )
                 break;
-            is = &gbl_is;
+            ish = &gbl_ish;
             /* fall through */
         case SH_GBL:
-            return( SymHdl2ObjGblName( iih, is, buff, buff_size ) );
+            return( SymHdl2ObjGblName( iih, ish, buff, buff_size ) );
         }
         /* fall through */
     case SN_SOURCE:
-        switch( is->type ) {
+        switch( ish->type ) {
         case SH_GBL:
-            return( SymHdl2GblName( iih, is, buff, buff_size ) );
+            return( SymHdl2GblName( iih, ish, buff, buff_size ) );
         case SH_LCL:
-            return( SymHdl2LclName( iih, is, buff, buff_size ) );
+            return( SymHdl2LclName( iih, ish, buff, buff_size ) );
         case SH_MBR:
-            return( SymHdl2MbrName( iih, is, buff, buff_size ) );
+            return( SymHdl2MbrName( iih, ish, buff, buff_size ) );
         case SH_TYP:
-            return( SymHdl2TypName( iih, is, buff, buff_size ) );
+            return( SymHdl2TypName( iih, ish, buff, buff_size ) );
         case SH_CST:
-            return( SymHdl2CstName( iih, is, buff, buff_size ) );
+            return( SymHdl2CstName( iih, ish, buff, buff_size ) );
         }
         break;
     }
@@ -194,16 +194,16 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
 }
 
 
-static void CollectSymHdl( const char *ep, imp_sym_handle *is )
+static void CollectSymHdl( const char *ep, imp_sym_handle *ish )
 {
     byte        *sp;
     byte        curr;
     static byte escapes[] = { SH_ESCAPE, '\0', '`' };
 
     ++ep;
-    sp = (byte *)is;
-    ++is;
-    while( sp < (byte *)is ) {
+    sp = (byte *)ish;
+    ++ish;
+    while( sp < (byte *)ish ) {
         curr = GETU8( ep++ );
         if( curr == SH_ESCAPE )
             curr = escapes[GETU8( ep++ ) - 1];
@@ -243,7 +243,7 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
     char                *dst;
     size_t              len;
     unsigned            op_len;
-    imp_sym_handle      *scope_is;
+    imp_sym_handle      *scope_ish;
 
     /* unused parameters */ (void)lc;
 
@@ -256,14 +256,14 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
     sym_li = *li;
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
-        scope_is = source;
-        len = ImpInterface.SymName( iih, scope_is, NULL, SN_SOURCE, NULL, 0 );
+        scope_ish = source;
+        len = ImpInterface.SymName( iih, scope_ish, NULL, SN_SOURCE, NULL, 0 );
         scope_name = walloca( len + 1 );
-        ImpInterface.SymName( iih, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpInterface.SymName( iih, scope_ish, NULL, SN_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;
-        sym_li.mod = IMH2MH( scope_is->im );
+        sym_li.mod = IMH2MH( scope_ish->im );
         source = &sym_li.mod;
     }
     if( sym_li.type == ST_OPERATOR ) {
@@ -351,63 +351,63 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih, symbol_source s
     return( DoLookupSym( iih, ss, source, li, lc, d ) );
 }
 
-dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *ish,
                                 location_context *lc, location_list *ll )
 {
-    switch( is->type ) {
+    switch( ish->type ) {
     case SH_GBL:
-        return( SymHdl2GblLoc( iih, is, ll ) );
+        return( SymHdl2GblLoc( iih, ish, ll ) );
     case SH_LCL:
-        return( SymHdl2LclLoc( iih, is, lc, ll ) );
+        return( SymHdl2LclLoc( iih, ish, lc, ll ) );
     case SH_MBR:
-        return( SymHdl2MbrLoc( iih, is, lc, ll ) );
+        return( SymHdl2MbrLoc( iih, ish, lc, ll ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
 
-dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *ish,
                                 location_context *lc, void *value )
 {
     /* unused parameters */ (void)lc;
 
-    switch( is->type ) {
+    switch( ish->type ) {
     case SH_CST:
-        return( SymHdl2CstValue( iih, is, value ) );
+        return( SymHdl2CstValue( iih, ish, value ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
 
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *ish,
                                 imp_type_handle *ith )
 {
-    switch( is->type ) {
+    switch( ish->type ) {
     case SH_GBL:
-        return( SymHdl2GblType( iih, is, ith ) );
+        return( SymHdl2GblType( iih, ish, ith ) );
     case SH_LCL:
-        return( SymHdl2LclType( iih, is, ith ) );
+        return( SymHdl2LclType( iih, ish, ith ) );
     case SH_MBR:
-        return( SymHdl2MbrType( iih, is, ith ) );
+        return( SymHdl2MbrType( iih, ish, ith ) );
     case SH_TYP:
-        return( SymHdl2TypType( iih, is, ith ) );
+        return( SymHdl2TypType( iih, ish, ith ) );
     case SH_CST:
-        return( SymHdl2CstType( iih, is, ith ) );
+        return( SymHdl2CstType( iih, ish, ith ) );
     }
     return( DS_ERR|DS_BAD_PARM );
 }
 
-dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, sym_info *si )
 {
     memset( si, 0, sizeof( *si ) );
-    switch( is->type ) {
+    switch( ish->type ) {
     case SH_GBL:
-        return( SymHdl2GblInfo( iih, is, si ) );
+        return( SymHdl2GblInfo( iih, ish, si ) );
     case SH_LCL:
-        return( SymHdl2LclInfo( iih, is, si ) );
+        return( SymHdl2LclInfo( iih, ish, si ) );
     case SH_MBR:
-        return( SymHdl2MbrInfo( iih, is, si, lc ) );
+        return( SymHdl2MbrInfo( iih, ish, si, lc ) );
     case SH_TYP:
         si->kind = SK_TYPE;
         break;
@@ -422,16 +422,16 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *is,
 }
 
 dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
-    imp_sym_handle *is, location_context *lc, location_list *ll, unsigned parm )
+    imp_sym_handle *ish, location_context *lc, location_list *ll, unsigned parm )
 {
-    if( is->type != SH_LCL )
+    if( ish->type != SH_LCL )
         return( DS_FAIL );
-    return( SymHdl2LclParmLoc( iih, is, lc, ll, parm ) );
+    return( SymHdl2LclParmLoc( iih, ish, lc, ll, parm ) );
 }
 
 typedef struct {
     DIP_IMP_SYM_WALKER  *walk;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     void                *d;
 } sym_glue;
 
@@ -441,12 +441,12 @@ static walk_result WalkMySyms( imp_image_handle *iih,
     sym_glue    *wd = d;
     walk_result wr;
 
-    WalkLclModSymList( iih, im, wd->walk, wd->is, wd->d, &wr );
+    WalkLclModSymList( iih, im, wd->walk, wd->ish, wd->d, &wr );
     return( wr );
 }
 
 static walk_result DoWalkSymList( imp_image_handle *iih, symbol_source ss,
-                void *t, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+                void *t, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
     imp_mod_handle      im;
     sym_glue            glue;
@@ -455,24 +455,24 @@ static walk_result DoWalkSymList( imp_image_handle *iih, symbol_source ss,
     wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE:
-        return( WalkTypeSymList( iih, (imp_type_handle *)t, wk, is, d ) );
+        return( WalkTypeSymList( iih, (imp_type_handle *)t, wk, ish, d ) );
     case SS_SCOPED:
-        return( WalkScopedSymList( iih, (address *)t, wk, is, d ) );
+        return( WalkScopedSymList( iih, (address *)t, wk, ish, d ) );
     case SS_BLOCK:
-        return( WalkBlockSymList( iih, (scope_block *)t, wk, is, d ) );
+        return( WalkBlockSymList( iih, (scope_block *)t, wk, ish, d ) );
     case SS_MODULE:
         im = *(imp_mod_handle *)t;
         if( im == IMH_NOMOD ) {
             glue.walk = wk;
-            glue.is   = is;
+            glue.ish   = ish;
             glue.d    = d;
             wr = MyWalkModList( iih, WalkMySyms, &glue );
             if( wr == WR_CONTINUE ) {
-                wr = WalkGblModSymList( iih, im, wk, is, d );
+                wr = WalkGblModSymList( iih, im, wk, ish, d );
             }
         } else {
-            if( WalkLclModSymList( iih, im, wk, is, d, &wr ) != DS_OK ) {
-                wr = WalkGblModSymList( iih, im, wk, is, d );
+            if( WalkLclModSymList( iih, im, wk, ish, d, &wr ) != DS_OK ) {
+                wr = WalkGblModSymList( iih, im, wk, ish, d );
             }
         }
         break;
@@ -481,18 +481,18 @@ static walk_result DoWalkSymList( imp_image_handle *iih, symbol_source ss,
 }
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih, symbol_source ss,
-                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, void *d )
 {
-    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
-                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish,
                 location_context *lc, void *d )
 {
     /* unused parameters */ (void)lc;
 
-    return( DoWalkSymList( iih, ss, source, wk, is, d ) );
+    return( DoWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle im,
@@ -529,39 +529,38 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
 #endif
 }
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
-                        imp_sym_handle *is2 )
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
 {
     /* unused parameters */ (void)iih;
 
-    if( is1->im < is2->im )
+    if( ish1->im < ish2->im )
         return( -1 );
-    if( is1->im > is2->im )
+    if( ish1->im > ish2->im )
         return( 1 );
-    switch( is1->type ) {
+    switch( ish1->type ) {
     case SH_GBL:
-        switch( is2->type ) {
+        switch( ish2->type ) {
         case SH_GBL:
-            return( GblCmp( is1->u.gbl, is2->u.gbl ) );
+            return( GblCmp( ish1->u.gbl, ish2->u.gbl ) );
         case SH_LCL:
-            if( is2->u.lcl.gbl_link != NULL ) {
-                return( GblCmp( is1->u.gbl, is2->u.lcl.gbl_link ) );
+            if( ish2->u.lcl.gbl_link != NULL ) {
+                return( GblCmp( ish1->u.gbl, ish2->u.lcl.gbl_link ) );
             }
             /* fall through */
         default:
             return( -1 );
         }
     case SH_LCL:
-        switch( is2->type ) {
+        switch( ish2->type ) {
         case SH_GBL:
-            if( is1->u.lcl.gbl_link != NULL ) {
-                return( GblCmp( is1->u.lcl.gbl_link, is2->u.gbl ) );
+            if( ish1->u.lcl.gbl_link != NULL ) {
+                return( GblCmp( ish1->u.lcl.gbl_link, ish2->u.gbl ) );
             }
             return( 1 );
         case SH_LCL:
-            if( is1->u.lcl.offset < is2->u.lcl.offset )
+            if( ish1->u.lcl.offset < ish2->u.lcl.offset )
                 return( -1 );
-            if( is1->u.lcl.offset > is2->u.lcl.offset )
+            if( ish1->u.lcl.offset > ish2->u.lcl.offset )
                 return( 1 );
             return( 0 );
         default:
@@ -570,17 +569,17 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
     case SH_MBR:
     case SH_TYP:
     case SH_CST:
-        switch( is2->type ) {
+        switch( ish2->type ) {
         case SH_MBR:
         case SH_TYP:
         case SH_CST:
-            if( is1->u.typ.t.entry < is2->u.typ.t.entry )
+            if( ish1->u.typ.t.entry < ish2->u.typ.t.entry )
                 return( -1 );
-            if( is1->u.typ.t.entry > is2->u.typ.t.entry )
+            if( ish1->u.typ.t.entry > ish2->u.typ.t.entry )
                 return( 1 );
-            if( is1->u.typ.t.offset < is2->u.typ.t.offset )
+            if( ish1->u.typ.t.offset < ish2->u.typ.t.offset )
                 return( -1 );
-            if( is1->u.typ.t.offset > is2->u.typ.t.offset )
+            if( ish1->u.typ.t.offset > ish2->u.typ.t.offset )
                 return( 1 );
             return( 0 );
         default:
@@ -590,16 +589,16 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish )
 {
-    /* unused parameters */ (void)iih; (void)is;
+    /* unused parameters */ (void)iih; (void)ish;
 
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
 {
-    /* unused parameters */ (void)iih; (void)is;
+    /* unused parameters */ (void)iih; (void)ish;
 
     return(DS_OK);
 }

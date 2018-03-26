@@ -71,7 +71,7 @@ struct imp_type_handle {
     ji_ptr              sig;
     union {
         ji_ptr          object;
-        imp_sym_handle  is;
+        imp_sym_handle  ish;
     }   u;
     enum {
         JT_SIGNATURE,
@@ -127,5 +127,5 @@ search_result   FindMBIndex( imp_image_handle *, addr_off off, unsigned *idx );
 
 dip_status      FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle );
 
-dip_status      ImpSymLocation( imp_image_handle *, imp_sym_handle *is, location_context *lc, location_list *ll, ji_ptr *obj_handle );
+dip_status      ImpSymLocation( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll, ji_ptr *obj_handle );
 #endif

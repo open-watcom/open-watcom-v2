@@ -217,7 +217,7 @@ extern dip_status           hllTypeSymGetInfo( imp_image_handle *, imp_sym_handl
 #ifdef _CVREG  /* FIXME */
 extern dip_status           hllTypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
 #endif
-extern walk_result          hllTypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER* wk, imp_sym_handle *is, void *d );
+extern walk_result          hllTypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER* wk, imp_sym_handle *, void *d );
 extern dip_status           hllTypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result        hllTypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result        hllTypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

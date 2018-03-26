@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern walk_result WalkTypeSymList( imp_image_handle *, imp_type_handle *ith, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
+extern walk_result WalkTypeSymList( imp_image_handle *, imp_type_handle *ith, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
 extern search_result SearchMbr( imp_image_handle *, imp_type_handle *ith, lookup_item *li, void *d );
 extern drmem_hdl GetParmN(  imp_image_handle *, drmem_hdl proc, int count );
 extern int GetParmCount(  imp_image_handle *, drmem_hdl proc );

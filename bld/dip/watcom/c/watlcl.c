@@ -85,14 +85,14 @@ const char *GetAddress( imp_image_handle *iih, const char *ptr, address *addr, i
     return( ptr );
 }
 
-static void LclCreate( imp_sym_handle *is, const char *ptr, const char *name, lclinfo *local )
+static void LclCreate( imp_sym_handle *ish, const char *ptr, const char *name, lclinfo *local )
 {
-    is->type = SH_LCL;
-    is->im = local->im;
-    is->u.lcl.base = local->base_off;
-    is->u.lcl.offset = ptr - local->start;
-    is->u.lcl.gbl_link = NULL;
-    is->name_off = (byte)( name - ptr );
+    ish->type = SH_LCL;
+    ish->im = local->im;
+    ish->u.lcl.base = local->base_off;
+    ish->u.lcl.offset = ptr - local->start;
+    ish->u.lcl.gbl_link = NULL;
+    ish->name_off = (byte)( name - ptr );
 }
 
 /*
@@ -341,7 +341,7 @@ search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle im,
     const char          *next;
     const char          *name;
     size_t              len;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     search_result       sr;
     lclinfo             lclld;
     lclinfo             *local = &lclld;
@@ -366,8 +366,8 @@ search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle im,
             break;
         next = ProcDefn( iih, ptr, &defn, local );
         if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
-            is = DCSymCreate( iih, d );
-            LclCreate( is, ptr, defn.i.name, local );
+            ish = DCSymCreate( iih, d );
+            LclCreate( ish, ptr, defn.i.name, local );
             sr = SR_EXACT;
         }
         ptr = next;
@@ -392,7 +392,7 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle im,
     search_result       sr;
     lookup_item         type_li;
     imp_type_handle     ith;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
 
     if( li->case_sensitive ) {
         compare = memcmp;
@@ -438,8 +438,8 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle im,
                 next = ProcDefn( iih, ptr, &defn, local );
                 if( len == defn.i.namelen
                   && compare( name, defn.i.name, len ) == 0 ) {
-                    is = DCSymCreate( iih, d );
-                    LclCreate( is, ptr, defn.i.name, local );
+                    ish = DCSymCreate( iih, d );
+                    LclCreate( ish, ptr, defn.i.name, local );
                     sr = SR_EXACT;
                 }
                 ptr = next;
@@ -471,7 +471,7 @@ search_result SearchLclScope( imp_image_handle *iih, imp_mod_handle im,
 }
 
 
-search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle *is )
+search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle *ish )
 {
     lcl_defn            defn;
     address             mod_addr;
@@ -482,7 +482,7 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
     lclinfo             lclld;
     lclinfo             *local = &lclld;
 
-    if( LoadLocalSyms( iih, is->im, &lclld ) != DS_OK )
+    if( LoadLocalSyms( iih, ish->im, &lclld ) != DS_OK )
         return( SR_NONE );
     sr = SR_NONE;
     next = local->start;
@@ -498,7 +498,7 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
                 /* possible */
                 if( sr == SR_NONE
                   || close_addr.mach.offset <= mod_addr.mach.offset ) {
-                    LclCreate( is, ptr, defn.i.name, local );
+                    LclCreate( ish, ptr, defn.i.name, local );
                     close_addr = mod_addr;
                     if( addr.mach.offset == mod_addr.mach.offset ) {
                         sr = SR_EXACT;
@@ -514,7 +514,7 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
 }
 
 
-unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *is,
+unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *ish,
                                 char *buff, unsigned buff_size )
 {
     const char  *ptr;
@@ -522,15 +522,15 @@ unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *is,
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    if( LoadLocalSyms( iih, is->im, &lclld ) != DS_OK )
+    if( LoadLocalSyms( iih, ish->im, &lclld ) != DS_OK )
         return( 0 );
-    ptr = local->start + is->u.lcl.offset;
-    len = GETU8( ptr ) - is->name_off;
+    ptr = local->start + ish->u.lcl.offset;
+    len = GETU8( ptr ) - ish->name_off;
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > len )
             buff_size = len;
-        ptr += is->name_off;
+        ptr += ish->name_off;
         memcpy( buff, ptr, buff_size );
         buff[buff_size] = '\0';
     }
@@ -538,15 +538,15 @@ unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *is,
     return( len );
 }
 
-static void SetBase( imp_image_handle *iih, imp_sym_handle *is, lclinfo *local )
+static void SetBase( imp_image_handle *iih, imp_sym_handle *ish, lclinfo *local )
 {
-    local->base_off = is->u.lcl.base;
-    if( is->u.lcl.base != NO_BASE ) {
-        NewBase( iih, local->start + is->u.lcl.base, local );
+    local->base_off = ish->u.lcl.base;
+    if( ish->u.lcl.base != NO_BASE ) {
+        NewBase( iih, local->start + ish->u.lcl.base, local );
     }
 }
 
-dip_status SymHdl2LclLoc( imp_image_handle *iih, imp_sym_handle *is,
+dip_status SymHdl2LclLoc( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
@@ -554,11 +554,11 @@ dip_status SymHdl2LclLoc( imp_image_handle *iih, imp_sym_handle *is,
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, is->im, &lclld );
+    ret = LoadLocalSyms( iih, ish->im, &lclld );
     if( ret != DS_OK )
         return( ret );
-    SetBase( iih, is, local );
-    ProcDefn( iih, local->start + is->u.lcl.offset, &defn, local );
+    SetBase( iih, ish, local );
+    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
     ret = DefnLocation( iih, &defn, lc, ll, local );
     PopLoad( local );
     return( ret );
