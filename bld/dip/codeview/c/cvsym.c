@@ -1689,7 +1689,7 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     lookup_item         *li;
     const char          *name;
     size_t              len;
-    imp_sym_handle      *new;
+    imp_sym_handle      *new_ish;
     s_all               *p;
 
     if( swi != SWI_SYMBOL )
@@ -1720,10 +1720,10 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
         }
     }
     /* Got one! */
-    new = DCSymCreate( iih, sd->d );
-    if( new == NULL )
+    new_ish = DCSymCreate( iih, sd->d );
+    if( new_ish == NULL )
         return( WR_FAIL );
-    *new = *ish;
+    *new_ish = *ish;
     sd->found = 1;
     return( WR_CONTINUE );
 }
@@ -1750,14 +1750,14 @@ static search_result SearchFileScope( imp_image_handle *iih, imp_mod_handle im,
 static search_result SymCreate( imp_image_handle *iih, s_all *p,
                         imp_sym_handle *ish, void *d )
 {
-    imp_sym_handle      *new;
+    imp_sym_handle      *new_ish;
 
     /* unused parameters */ (void)p;
 
-    new = DCSymCreate( iih, d );
-    if( new == NULL )
+    new_ish = DCSymCreate( iih, d );
+    if( new_ish == NULL )
         return( SR_FAIL );
-    *new = *ish;
+    *new_ish = *ish;
     /* keep on looking for more */
     return( SR_CLOSEST );
 }
