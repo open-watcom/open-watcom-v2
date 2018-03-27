@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,7 @@
 #include "dbgsrc.h"
 #include "dbglog.h"
 #include "dbgset.h"
+#include "dbgsetfn.h"
 
 #include "clibext.h"
 
@@ -223,7 +225,8 @@ OVL_EXTERN bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_EOL:
-        if( !GetInvkCmd( inv ) ) return( false );
+        if( !GetInvkCmd( inv ) )
+            return( false );
         ReScan( inv->buff );
         return( true );
     case INP_RTN_FINI:

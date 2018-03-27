@@ -123,12 +123,11 @@ int WantUsage( const char *ptr )
     setegid( getgid() );
     seteuid( getuid() );
     if( *ptr == '?' )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name,
-                         char *result )
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -191,27 +190,27 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *exts, char *result, size_t max_result )
 {
     bool            has_ext;
     bool            has_path;
-    char            *ptr;
+    const char      *ptr;
     const char      *endptr;
-    char            trpfile[256];
-    int             fd;
+    char            trpfile[PATH_MAX + 1];
+    FILE            *fp;
 
     result = result; max_result = max_result;
-    has_ext = FALSE;
-    has_path = FALSE;
+    has_ext = false;
+    has_path = false;
     endptr = name + name_len;
     for( ptr = name; ptr != endptr; ++ptr ) {
         switch( *ptr ) {
         case '.':
-            has_ext = TRUE;
+            has_ext = true;
             break;
         case '/':
-            has_ext = FALSE;
-            has_path = TRUE;
+            has_ext = false;
+            has_path = true;
             /* fall through */
             break;
         }
@@ -222,30 +221,28 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         trpfile[name_len++] = '.';
         memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
     }
-    fd = -1;
+    fp = NULL;
     if( has_path ) {
-        fd = open( trpfile, O_RDONLY );
+        fp = fopen( trpfile, "rb" );
     } else if( FindFilePath( trpfile, RWBuff ) ) {
-        fd = open( RWBuff, O_RDONLY );
+        fp = fopen( RWBuff, "rb" );
     }
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 
 void *DIGCLIENTRY( Alloc )( size_t amount )

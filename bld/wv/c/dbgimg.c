@@ -55,14 +55,20 @@ char *ImgSymFileName( image_entry *image, bool always )
     }
 }
 
-static int ImageCompare( void *_pa, void *_pb )
+OVL_EXTERN int ImageCompare( void *_pa, void *_pb )
 {
     image_entry **pa = _pa;
     image_entry **pb = _pb;
 
-    if( *pa == ImagePrimary() ) return( -1 );
-    if( *pb == ImagePrimary() ) return( 1 );
-    return( DIPImagePriority( (*pa)->dip_handle ) - DIPImagePriority( (*pb)->dip_handle ) );
+    if( *pa == ImagePrimary() )
+        return( -1 );
+    if( *pb == ImagePrimary() )
+        return( 1 );
+    if( DIPImagePriority( (*pa)->dip_handle ) < DIPImagePriority( (*pb)->dip_handle ) )
+        return( -1 );
+    if( DIPImagePriority( (*pa)->dip_handle ) > DIPImagePriority( (*pb)->dip_handle ) )
+        return( 1 );
+    return( 0 );
 }
 
 void    ImgSort( void )
@@ -70,5 +76,3 @@ void    ImgSort( void )
     DbgImageList = SortLinkedList( DbgImageList, offsetof( image_entry, link ),
                                 ImageCompare, DbgAlloc, DbgFree );
 }
-
-

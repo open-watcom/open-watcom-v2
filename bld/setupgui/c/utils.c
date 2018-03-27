@@ -2178,7 +2178,7 @@ char *AddInstallName( char *text, bool dorealloc )
             }
             if( *p == '@' )
                 break;
-            p += GUICharLen( *p );
+            p += GUICharLen( UCHAR_VALUE( *p ) );
         }
         if( p == NULL )
             break;

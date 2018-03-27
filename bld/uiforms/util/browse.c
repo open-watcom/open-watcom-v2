@@ -77,8 +77,8 @@ struct name {
 
 static struct name *Names = NULL;
 
-static EVENT DirEvents[] = {
-    EV_NO_EVENT,            /* end of list of ranges */
+static ui_event DirEvents[] = {
+    __rend__,
     EV_MOUSE_PRESS,
     EV_MOUSE_DRAG,
     EV_MOUSE_DCLICK,
@@ -87,18 +87,18 @@ static EVENT DirEvents[] = {
     EV_CURSOR_DOWN,
     EV_RETURN,
     EV_ESCAPE,
-    EV_NO_EVENT
+    __end__
 };
 
-static EVENT GetDirEvents[] = {
-    EV_NO_EVENT,            /* end of list of ranges */
+static ui_event GetDirEvents[] = {
+    __rend__,
     EV_MOUSE_PRESS,
     EV_MOUSE_DCLICK,
     EV_CURSOR_UP,
     EV_CURSOR_DOWN,
     EV_RETURN,
     EV_ESCAPE,
-    EV_NO_EVENT
+    __end__
 };
 
 static VEDITLINE DirEdit = {
@@ -548,8 +548,8 @@ static bool checkMask( char *name, char *mask )
 {
     register char               *str;
     register int                len;
-    register EVENT              ev;
-    register EVENT              new;
+    register ui_event           ui_ev;
+    register ui_event           new_ui_ev;
     register ATTR               attr;
     auto     char               olddir[DIR_MAX + 1];
              int                ret;
@@ -563,14 +563,14 @@ static bool checkMask( char *name, char *mask )
     uipushlist( GetDirEvents );
     dirptr->pathbuff[DirEdit.length] = '\0';
     attr = UIData->attrs[ATTR_NORMAL];
-    new = EV_NO_EVENT;
+    new_ui_ev = EV_NO_EVENT;
     DirEdit.update = TRUE;
     *new_dir = FALSE;
     do {
-        ev = uiveditline( wptr, &DirEdit );
-        switch( ev ) {
+        ui_ev = uiveditline( wptr, &DirEdit );
+        switch( ui_ev ) {
         case EV_ESCAPE:
-            new = ev;
+            new_ui_ev = ui_ev;
             break;
         case EV_RETURN:
             finidir( wptr, dirptr );
@@ -583,7 +583,7 @@ static bool checkMask( char *name, char *mask )
             ret = displaydir( wptr, dirptr );
             switch( ret ) {
             case NO_MEM_4_DIR:
-                new = EV_ERROR;
+                new_ui_ev = EV_ERROR;
                 break;
             case OK_DIR:
                 strcpy( olddir, dirptr->pathbuff );
@@ -602,42 +602,41 @@ static bool checkMask( char *name, char *mask )
                 finidir( wptr, dirptr );
                 displaydir( wptr, dirptr );
             }
-            new = ev;
+            new_ui_ev = ui_ev;
             break;
         }
-    } while( new == EV_NO_EVENT );
+    } while( new_ui_ev == EV_NO_EVENT );
     uipoplist();
     wptr->cursor = C_OFF;
-    return( new );
+    return( new_ui_ev );
 }
 
 #define NO_ROW  ((ORD)-1)
 
- EVENT directory( wptr, dirptr )
-/*******************************/
+ ui_event directory( wptr, dirptr )
+/*********************************/
 
     register VSCREEN            *wptr;
     register DIRECTORY          *dirptr;
 {
-    register EVENT              ev;
-    register EVENT              new;
+    register ui_event           ui_ev;
+    register ui_event           new_ui_ev;
     SAREA                       area;
     register int                index;
     ORD                         row, col;
     bool                        got_new_dir;
 
     uipushlist( DirEvents );
-    ev = uivgetevent( wptr );
+    ui_ev = uivgetevent( wptr );
     uipoplist();
     area.row = 0;
     area.col = 0;
     area.height = 1;
     area.width = wptr->area.width;
-    new = EV_NO_EVENT;
+    new_ui_ev = EV_NO_EVENT;
     index = dirptr->index;
     got_new_dir = FALSE;
-    switch( ev ) {
-
+    switch( ui_ev ) {
     case EV_CURSOR_UP :
         if( index > 0 ) {
             dirptr->index -= 1;
@@ -651,13 +650,12 @@ static bool checkMask( char *name, char *mask )
             outnames( wptr, dirptr, index, index );
             dirptr->index --;
             dirptr->currrow --;
-            new = getdir( wptr, dirptr, &got_new_dir );
+            new_ui_ev = getdir( wptr, dirptr, &got_new_dir );
             if( !got_new_dir ) {
                 outnames( wptr, dirptr, index, index );
             }
         }
         break;
-
     case EV_CURSOR_DOWN :
         if( index < dirptr->dirsize - 1 ) {
             dirptr->index += 1;
@@ -666,7 +664,6 @@ static bool checkMask( char *name, char *mask )
             }
         }
         break;
-
     case EV_PAGE_UP:
         if( index - ( wptr->area.height - 1 ) >= 0 ) {
             dirptr->index -= wptr->area.height - 1;
@@ -676,7 +673,6 @@ static bool checkMask( char *name, char *mask )
         dirptr->currrow = 1;
         area.row = NO_ROW;
         break;
-
     case EV_PAGE_DOWN:
         if( index + wptr->area.height - 1 <= dirptr->dirsize - 1 ) {
             dirptr->index += wptr->area.height - 1;
@@ -689,10 +685,9 @@ static bool checkMask( char *name, char *mask )
         }
         area.row = NO_ROW;
         break;
-
     case EV_MOUSE_PRESS:
         if( wptr != uivmousepos( wptr, &row, &col ) ) {
-            new = EV_ESCAPE;
+            new_ui_ev = EV_ESCAPE;
             break;
         }
     case EV_MOUSE_DCLICK:
@@ -706,7 +701,6 @@ static bool checkMask( char *name, char *mask )
             dirptr->index = 0;
         }
         break;
-
     case EV_MOUSE_RELEASE:
         if( wptr != uivmousepos( wptr, &row, &col ) ){
             break;
@@ -717,15 +711,15 @@ static bool checkMask( char *name, char *mask )
             outnames( wptr, dirptr, index, index );
             dirptr->index --;
             dirptr->currrow --;
-            new = getdir( wptr, dirptr, &got_new_dir );
-            if( ! got_new_dir ) {
+            new_ui_ev = getdir( wptr, dirptr, &got_new_dir );
+            if( !got_new_dir ) {
                 dirptr->currrow = 1;
                 outnames( wptr, dirptr, index, index );
             }
             break;
         }
         /* fall through */
-        ev = EV_RETURN;
+        ui_ev = EV_RETURN;
     case EV_RETURN :
         if( Names[index].dir ) {
             if( Names[index].str[NAME_START] == '.' ) {
@@ -767,7 +761,7 @@ static bool checkMask( char *name, char *mask )
                         }
                         index = dirptr->index;
                     } else {
-                        new = ev;
+                        new_ui_ev = ui_ev;
                     }
 #endif
                  }
@@ -792,12 +786,11 @@ static bool checkMask( char *name, char *mask )
             concat( dirptr, Names[dirptr->index].str );
 #endif
             finidir( wptr, dirptr );
-            new = ev;
+            new_ui_ev = ui_ev;
         }
         break;
-
     default :
-        new = ev;
+        new_ui_ev = ui_ev;
         break;
     }
     if( !got_new_dir ) {
@@ -815,7 +808,7 @@ static bool checkMask( char *name, char *mask )
             outnames( wptr, dirptr, dirptr->index, dirptr->index );
         }
     }
-    return( new );
+    return( new_ui_ev );
 }
 
 

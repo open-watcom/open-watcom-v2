@@ -6,13 +6,6 @@ proj_name = rfx
 
 rfx_autodepends = .AUTODEPEND
 
-dig_os = $(host_os)
-!ifeq host_cpu 386
-!ifeq host_os os2
-dig_os = os2v2
-!endif
-!endif
-
 .EXTENSIONS : .str
 
 !include cproj.mif
@@ -40,11 +33,7 @@ objs = rfx.obj        &
        local$(host_os).obj &
        $(trap_objs)
 
-!ifeq dig_os os2v2
-objs += $(host_os)2flio.obj &
-!else
 objs += $(host_os)filio.obj &
-!endif
 
 !ifeq host_os dos
 objs += inthdlrs.obj

@@ -19,8 +19,8 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom Zoom for Windows" STR_BITNESS,
         "Open Watcom ズームのWindows版" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
-        banner1p2( _ZOOM_VERSION_ ),
-        banner1p2( _ZOOM_VERSION_ ) )
+        banner1v( _ZOOM_VERSION_ ),
+        banner1v( _ZOOM_VERSION_ ) )
 pick(   STR_INTERV_IS_ZERO,
         "The refresh interval must be greater than zero.",
         "更新間隔は 0 より大きい値です." )

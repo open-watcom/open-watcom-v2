@@ -43,7 +43,7 @@
 #include "dbgass.h"
 
 
-static walk_result MemRefDisp( address a, mad_type_handle th,
+OVL_EXTERN walk_result MemRefDisp( address a, mad_type_handle mth,
                         mad_memref_kind mk, void *d )
 {
     char                *p;
@@ -80,9 +80,9 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
     *p = '=';
 #endif
     ++p;
-    ItemGetMAD( &a, &item, IT_NIL, th );
+    ItemGetMAD( &a, &item, IT_NIL, mth );
     max = TXT_LEN - ( p - TxtBuff );
-    MADTypeHandleToString( CurrRadix, th, &item, p, &max );
+    MADTypeHandleToString( CurrRadix, mth, &item, p, &max );
     return( WR_CONTINUE );
 }
 

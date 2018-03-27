@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "dbgmad.h"
 #include "dbgwfpu.h"
 #include "dbgwmadr.h"
+#include "dbgchopt.h"
 
 
 void FPUChangeOptions( void )
@@ -44,7 +46,7 @@ void FPUChangeOptions( void )
     WndForAllClass( WND_FPU, MadRegChangeOptions );
 }
 
-a_window *WndFPUOpen( void )
+a_window WndFPUOpen( void )
 {
     const mad_reg_set_data      *rsd;
 

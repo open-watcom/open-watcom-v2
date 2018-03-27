@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,8 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgfile.h"
+#include "menudef.h"
 
-
-extern void             SetLastSym( char *to );
 
 #define TITLE_SIZE      2
 
@@ -55,15 +55,15 @@ enum {
     PIECE_LAST
 };
 
+extern void             SetLastSym( char *to );
+
 static gui_ord  Indents[PIECE_LAST];
 
-#include "menudef.h"
 static gui_menu_struct ImgMenu[] = {
     #include "menuimg.h"
 };
 
-
-static void CalcIndents( a_window *wnd )
+static void CalcIndents( a_window wnd )
 {
     image_entry *image;
     gui_ord     max_image;
@@ -100,14 +100,14 @@ static image_entry      *ImgGetImage( int row )
     return( image );
 }
 
-static void     ImgInit( a_window *wnd )
+static void     ImgInit( a_window wnd )
 {
     ImgSort();
     CalcIndents( wnd );
     WndZapped( wnd );
 }
 
-static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     image_entry *image;
     char        *new_name;
@@ -165,10 +165,10 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static int ImgNumRows( a_window *wnd )
+OVL_EXTERN wnd_row ImgNumRows( a_window wnd )
 {
     image_entry *image;
-    int         count;
+    wnd_row     count;
 
     /* unused parameters */ (void)wnd;
 
@@ -179,8 +179,7 @@ static int ImgNumRows( a_window *wnd )
     return( count );
 }
 
-static  bool    ImgGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     image_entry         *image;
 
@@ -189,8 +188,7 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     line->indent = Indents[piece];
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             line->tabstop = false;
             switch( piece ) {
             case PIECE_IMAGE:
@@ -205,12 +203,12 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
             default:
                 return( false );
             }
-        case 1:
-            if( piece != 0 )
+        } else if( row == 1 ) {
+            if( piece != PIECE_IMAGE )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {
@@ -241,13 +239,13 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     return( false );
 }
 
-static void     ImgRefresh( a_window *wnd )
+OVL_EXTERN void     ImgRefresh( a_window wnd )
 {
     ImgInit( wnd );
 }
 
 
-static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -259,13 +257,13 @@ static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         ImgInit( wnd );
         return( true );
     case GUI_DESTROY:
-        return( false );
+        return( true );
     }
     return( false );
 }
 
 wnd_info ImgInfo = {
-    ImgEventProc,
+    ImgWndEventProc,
     ImgRefresh,
     ImgGetLine,
     ImgMenuItem,
@@ -281,8 +279,7 @@ wnd_info ImgInfo = {
     DefPopUp( ImgMenu )
 };
 
-extern WNDOPEN WndImgOpen;
-extern a_window *WndImgOpen( void )
+a_window WndImgOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE,
             NULL, &ImgIcon, TITLE_SIZE, true ) );

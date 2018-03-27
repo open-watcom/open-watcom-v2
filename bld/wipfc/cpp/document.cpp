@@ -180,7 +180,10 @@
 #include "synonym.hpp"
 #include "title.hpp"
 #include "util.hpp"
+
+#ifndef HAVE_CONFIG_H
 #include "clibext.h"
+#endif
 
 extern Env Environment;
 
@@ -488,7 +491,7 @@ void Document::summary( std::FILE* out )
     std::fprintf( out, "Pages defined by name:    %u\n", static_cast< unsigned int >( nameMap.size() ) );
     std::fprintf( out, "Pages defined by number:  %u\n", static_cast< unsigned int >( resMap.size() ) );
     std::fprintf( out, "Words in dictionary:      %u\n", dict->size() );
-    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( index.size() ) ); 
+    std::fprintf( out, "Number of index entries:  %u\n", static_cast< unsigned int >( index.size() ) );
     std::fprintf( out, "Global index entries:     %u\n", eHdr->gIndexCount );
     std::fprintf( out, "Number of fonts used:     %u\n", static_cast< unsigned int >( fonts->size() ) );
     std::fprintf( out, "Number of External files: %u\n", extfiles->size() );
@@ -518,7 +521,9 @@ STD1::uint32_t Document::bitmapByName( std::wstring& bmn )
 /***************************************************************************/
 void Document::addRes( STD1::uint16_t key, TocRef& value )
 {
-    if( resMap.find( key ) == resMap.end() )    //add it to the list
+    if ( !key )
+        throw Class3Error( ERR3_MISSINGRES );
+    else if( resMap.find( key ) == resMap.end() )    //add it to the list
         resMap.insert( std::map< STD1::uint16_t, TocRef >::value_type( key, value ) );
     else {
         throw Class3Error( ERR3_DUPRES );

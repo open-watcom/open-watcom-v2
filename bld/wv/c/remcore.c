@@ -462,10 +462,10 @@ void RemoteMapAddr( addr_ptr *addr, addr_off *lo_bound,
 
     acc.req = REQ_MAP_ADDR;
     acc.in_addr = *addr;
-    acc.handle = handle;
+    acc.mod_handle = handle;
     CONV_LE_32( acc.in_addr.offset );
     CONV_LE_16( acc.in_addr.segment );
-    CONV_LE_32( acc.handle );
+    CONV_LE_32( acc.mod_handle );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.out_addr.offset );
     CONV_LE_16( ret.out_addr.segment );
@@ -512,18 +512,18 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, char *buff, trap_elen buf
     get_lib_name_ret    ret;
 
     acc.req = REQ_GET_LIB_NAME;
-    acc.handle = lib_hdl;
+    acc.mod_handle = lib_hdl;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = buff;
     out[1].len = buff_len;
-    ret.handle = 0;
-    CONV_LE_32( acc.handle );
+    ret.mod_handle = 0;
+    CONV_LE_32( acc.mod_handle );
     TrapAccess( 1, in, 2, out );
-    CONV_LE_32( ret.handle );
-    return( ret.handle );
+    CONV_LE_32( ret.mod_handle );
+    return( ret.mod_handle );
 }
 
 unsigned RemoteGetMsgText( char *buff, trap_elen buff_len )
@@ -717,9 +717,9 @@ void FiniCoreSupp( void )
     MData = NULL;
 }
 
-char    *TrapClientString( unsigned tc )
+char    *TrapClientString( tc_error err )
 {
-    switch( tc ) {
+    switch( err ) {
     case TC_BAD_TRAP_FILE:      return( LIT_ENG( BAD_TRAP_FILE ) );
     case TC_CANT_LOAD_TRAP:     return( LIT_ENG( CANT_LOAD_TRAP_FILE ) );
     case TC_WRONG_TRAP_VERSION: return( LIT_ENG( INCORRECT_TRAP_FILE_VERSION ) );

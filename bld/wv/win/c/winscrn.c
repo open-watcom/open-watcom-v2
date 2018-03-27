@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "stdui.h"
-#include "dosscrn.h"
 #include "winscrn.h"
 #include "swap.h"
 #include "dbgscrn.h"
@@ -52,28 +52,22 @@
 #include "wininit.h"
 
 
-extern unsigned char    NECBIOSGetMode(void);
-#pragma aux NECBIOSGetMode =                                    \
-0X55            /* push   bp                            */      \
-0XB4 0X0B       /* mov    ah,b                          */      \
-0XCD 0X18       /* int    18                            */      \
-0X5D            /* pop    bp                            */      \
-        parm caller [ax]                                      \
-        modify [bx];
+#define TstMono()       ChkCntrlr( VIDMONOINDXREG )
+#define TstColour()     ChkCntrlr( VIDCOLRINDXREG )
 
+extern volatile bool    BrkPending;
 
-#define         NEC_20_LINES        0x01
-#define         NEC_31_LINES        0x10
+static bool             WantFast;
+static int              ScrnLines = 25;
+static flip_types       FlipMech;
+static mode_types       ScrnMode;
+static display_config   HWDisplay;
 
-extern volatile bool   BrkPending;
-
-bool            WantFast;
-flip_types      FlipMech;
-mode_types      ScrnMode = MD_EGA;
-int             ScrnLines = 25;
-bool            WndUseGMouse = false;
-
-static display_configuration    HWDisplay;
+static const char ScreenOptNameTab[] = {
+    #define pick_opt(e,t) t "\0"
+        SCREEN_OPTS()
+    #undef pick_opt
+};
 
 void InitHookFunc( void )
 {
@@ -90,36 +84,6 @@ void Ring_Bell( void )
 }
 
 /*
- * ConfigScreen -- figure out screen configuration we're going to use.
- */
-unsigned ConfigScreen( void )
-{
-    GetDispConfig();
-    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME) ) {
-        FlipMech = FLIP_SWAP;
-        switch( HWDisplay.active ) {
-        case DISP_VGA_MONO:
-        case DISP_VGA_COLOUR:
-            if( ScrnLines > 25 )
-                ScrnLines = 50;
-            win_uisetcolor( M_VGA );
-            break;
-        case DISP_EGA_COLOUR:
-        case DISP_EGA_MONO:
-            if( ScrnLines > 25 )
-                ScrnLines = 43;
-            // fall thru
-        default:
-            win_uisetcolor( M_EGA );
-            break;
-        }
-    } else {
-        win_uisetmono();
-    }
-    return( 0 );
-}
-
-/*
  * UsrScrnMode -- setup the user screen mode
  */
 bool UsrScrnMode( void )
@@ -132,7 +96,7 @@ bool UsrScrnMode( void )
                 This is a sideways dive into the UI to get the boundries of
                 the mouse cursor properly defined.
             */
-            initmouse( 1 );
+            initmouse( INIT_MOUSE );
         }
     }
 #endif
@@ -183,7 +147,8 @@ void SaveMainWindowPos( void )
 
 void FiniScreen( void )
 {
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    if( _IsOn( SW_USE_MOUSE ) )
+        GUIFiniMouse();
     uistop();
     if( FlipMech == FLIP_SWAP ) {
         FiniSwapper();
@@ -202,48 +167,40 @@ void InitScreen( void )
     uistart();
     UIData->height = ScrnLines;
     if( _IsOn( SW_USE_MOUSE ) ) {
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     }
 }
 
-static bool ChkCntrlr( int port )
+static bool ChkCntrlr( unsigned port )
 {
-    char curr;
-    bool rtrn;
+    unsigned char   curr;
+    bool            rtrn;
 
     curr = VIDGetRow( port );
-    VIDSetRow( port, 0X5A );
+    VIDSetRow( port, 0x5a );
     VIDWait();
     VIDWait();
     VIDWait();
-    rtrn = ( VIDGetRow( port ) == 0X5A );
+    rtrn = ( VIDGetRow( port ) == 0x5a );
     VIDSetRow( port, curr );
     return( rtrn );
 }
 
-static bool TstMono( void )
-{
-    if( !ChkCntrlr( VIDMONOINDXREG ) ) return( false );
-    return( true );
-}
-
-static bool TstColour( void )
-{
-    if( !ChkCntrlr( VIDCOLRINDXREG ) ) return( false );
-    return( true );
-}
-
 static void GetDispConfig( void )
 {
-    signed long         info;
+    unsigned long       info;
     unsigned char       colour;
     unsigned char       memory;
     unsigned char       swtchs;
     unsigned char       curr_mode;
     hw_display_type     temp;
+    unsigned            dev_config;
 
-    HWDisplay = BIOSDevCombCode();
-    if( HWDisplay.active != DISP_NONE ) return;
+    dev_config = BIOSDevCombCode();
+    HWDisplay.active = dev_config & 0xff;
+    HWDisplay.alt = (dev_config >> 8) & 0xff;
+    if( HWDisplay.active != DISP_NONE )
+        return;
     /* have to figure it out ourselves */
     curr_mode = BIOSGetMode() & 0x7f;
     info = BIOSEGAInfo();
@@ -254,15 +211,17 @@ static void GetDispConfig( void )
         /* we have an EGA */
         if( colour == 0 ) {
             HWDisplay.active = DISP_EGA_COLOUR;
-            if( TstMono() ) HWDisplay.alt = DISP_MONOCHROME;
+            if( TstMono() ) {
+                HWDisplay.alt = DISP_MONOCHROME;
+            }
         } else {
             HWDisplay.active = DISP_EGA_MONO;
-            if( TstColour() ) HWDisplay.alt = DISP_CGA;
+            if( TstColour() ) {
+                HWDisplay.alt = DISP_CGA;
+            }
         }
-        if( HWDisplay.active == DISP_EGA_COLOUR
-                && (curr_mode==7 || curr_mode==15)
-         || HWDisplay.active == DISP_EGA_MONO
-                && (curr_mode!=7 && curr_mode!=15) ) {
+        if( HWDisplay.active == DISP_EGA_COLOUR && ISMONOMODE( curr_mode )
+         || HWDisplay.active == DISP_EGA_MONO && !ISMONOMODE( curr_mode ) ) {
             /* EGA is not the active display */
 
             temp = HWDisplay.active;
@@ -275,17 +234,47 @@ static void GetDispConfig( void )
         /* have a monochrome display */
         HWDisplay.active = DISP_MONOCHROME;
         if( TstColour() ) {
-            if( curr_mode != 7 ) {
+            if( curr_mode == 7 ) {
+                HWDisplay.alt    = DISP_CGA;
+            } else {
                 HWDisplay.active = DISP_CGA;
                 HWDisplay.alt    = DISP_MONOCHROME;
-            } else {
-                HWDisplay.alt    = DISP_CGA;
             }
         }
         return;
     }
     /* only thing left is a single CGA display */
     HWDisplay.active = DISP_CGA;
+}
+
+/*
+ * ConfigScreen -- figure out screen configuration we're going to use.
+ */
+unsigned ConfigScreen( void )
+{
+    GetDispConfig();
+    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME) ) {
+        FlipMech = FLIP_SWAP;
+        switch( HWDisplay.active ) {
+        case DISP_VGA_MONO:
+        case DISP_VGA_COLOUR:
+            if( ScrnLines > 25 )
+                ScrnLines = 50;
+            win_uisetcolor( M_VGA );
+            break;
+        case DISP_EGA_COLOUR:
+        case DISP_EGA_MONO:
+            if( ScrnLines > 25 )
+                ScrnLines = 43;
+            // fall through
+        default:
+            win_uisetcolor( M_EGA );
+            break;
+        }
+    } else {
+        win_uisetmono();
+    }
+    return( 0 );
 }
 
 /*****************************************************************************\
@@ -305,32 +294,6 @@ bool SysGUI( void )
 {
     return( false );
 }
-
-static const char ScreenOptNameTab[] = {
-    "Monochrome\0"
-    "Color\0"
-    "Colour\0"
-    "Ega43\0"
-    "FAstswap\0"
-    "Vga50\0"
-    "Overwrite\0"
-    "Page\0"
-    "Swap\0"
-    "Two\0"
-};
-
-enum {
-    OPT_MONO,
-    OPT_COLOR,
-    OPT_COLOUR,
-    OPT_EGA43,
-    OPT_FASTSWAP,
-    OPT_VGA50,
-    OPT_OVERWRITE,
-    OPT_PAGE,
-    OPT_SWAP,
-    OPT_TWO
-};
 
 int SwapScrnLines( void )
 {

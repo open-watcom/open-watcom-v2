@@ -80,19 +80,21 @@ void KillTrap( void )
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
-    const char          *ptr;
-    char                *dst;
-    bool                have_ext;
+    char                *p;
     char                chr;
+    bool                have_ext;
     UINT                prev;
     trap_init_func      *init_func;
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
+        parms = DEFAULT_TRP_NAME;
     have_ext = false;
-    dst = trpfile;
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        chr = *ptr;
+    p = trpfile;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
         switch( chr ) {
         case ':':
         case '/':
@@ -101,25 +103,25 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
             break;
         case '.':
 #ifdef USE_FILENAME_VERSION
-            *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-            *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+            *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+            *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
             have_ext = true;
             break;
         }
-        *dst++ = chr;
+        *p++ = chr;
     }
     if( !have_ext ) {
 #ifdef USE_FILENAME_VERSION
-        *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
-        *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
+        *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
+        *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
-        *dst++ = '.';
-        *dst++ = 'd';
-        *dst++ = 'l';
-        *dst++ = 'l';
+        *p++ = '.';
+        *p++ = 'd';
+        *p++ = 'l';
+        *p++ = 'l';
     }
-    *dst = '\0';
+    *p = '\0';
     /*
      * load toolhelp since windows can't seem to handle having a static
      * reference to a dll inside a dynamically loaded dll
@@ -132,8 +134,8 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     TrapFile = LoadLibrary( trpfile );
     SetErrorMode( prev );
     if( (UINT)TrapFile < 32 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         TrapFile = 0;
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)2 );
@@ -150,9 +152,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
       && TRAPENTRY_PTR_NAME( InputHook ) != NULL && TRAPENTRY_PTR_NAME( InfoFunction ) != NULL
       && TRAPENTRY_PTR_NAME( HardModeCheck ) != NULL && TRAPENTRY_PTR_NAME( GetHwndFunc ) != NULL
       && TRAPENTRY_PTR_NAME( SetHardMode ) != NULL && TRAPENTRY_PTR_NAME( UnLockInput ) != NULL ) {
-        parms = ptr;
-        if( *parms != '\0' )
-            ++parms;
         *trap_ver = init_func( parms, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
@@ -171,9 +170,13 @@ void TrapHardModeCheck( void )
     TrapHardModeRequired = TRAPENTRY_PTR_NAME( HardModeCheck )();
 }
 
-void TrapTellHWND( HWND hwnd )
+bool TrapTellHWND( HWND hwnd )
 {
-    TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+    if( TRAPENTRY_PTR_NAME( InfoFunction ) != NULL ) {
+        TRAPENTRY_PTR_NAME( InfoFunction )( hwnd );
+        return( true );
+    }
+    return( false );
 }
 
 void TrapInputHook( hook_fn *hookfn )

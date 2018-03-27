@@ -41,10 +41,7 @@
 #include "dwname.h"
 
 
-void DWENTRY DWPubname(
-    dw_client                   cli,
-    dw_handle                   hdl,
-    const char *                name )
+void DWENTRY DWPubname( dw_client cli, dw_handle hdl, const char *name )
 {
     HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
     CLIWriteString( cli, DW_DEBUG_PUBNAMES, name );
@@ -61,8 +58,7 @@ void InitDebugPubnames( dw_client cli )
 }
 
 
-void FiniDebugPubnames(
-    dw_client                   cli )
+void FiniDebugPubnames( dw_client cli )
 {
     /* write the terminator */
     CLISectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );

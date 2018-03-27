@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "rcrtns.h"
 #include "rccore.h"
@@ -42,8 +41,8 @@
  * CopyExeData
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
-/***************************************************************************/
+RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length )
+/***************************************************************/
 {
     size_t          numread;
     size_t          bufflen;
@@ -54,11 +53,11 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
     for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
         if( bufflen > length )
             bufflen = length;
-        numread = RESREAD( in_fid, Pass2Info.IoBuffer, bufflen );
+        numread = RESREAD( in_fp, Pass2Info.IoBuffer, bufflen );
         if( numread != bufflen ) {
-            return( RESIOERR( in_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( in_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        if( RESWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
+        if( RESWRITE( out_fp, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -69,16 +68,16 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
  * CopyExeDataTilEOF
  * NB when an error occurs this function MUST return without altering errno
  */
-RcStatus CopyExeDataTilEOF( WResFileID in_fid, WResFileID out_fid )
-/*****************************************************************/
+RcStatus CopyExeDataTilEOF( FILE *in_fp, FILE *out_fp )
+/*****************************************************/
 {
     size_t      numread;
 
-    while( (numread = RESREAD( in_fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
-        if( numread != IO_BUFFER_SIZE && RESIOERR( in_fid, numread ) ) {
+    while( (numread = RESREAD( in_fp, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
+        if( numread != IO_BUFFER_SIZE && RESIOERR( in_fp, numread ) ) {
             return( RS_READ_ERROR );
         }
-        if( RESWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
+        if( RESWRITE( out_fp, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -147,8 +146,8 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
  *PadExeData
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus PadExeData( WResFileID fid, long length )
-/************************************************/
+RcStatus PadExeData( FILE *fp, long length )
+/******************************************/
 {
     size_t  numwrite;
 
@@ -156,7 +155,7 @@ RcStatus PadExeData( WResFileID fid, long length )
     for( numwrite = IO_BUFFER_SIZE; length > 0; length -= numwrite ) {
         if( numwrite > length )
             numwrite = length;
-        if( RESWRITE( fid, Pass2Info.IoBuffer, numwrite ) != numwrite ) {
+        if( RESWRITE( fp, Pass2Info.IoBuffer, numwrite ) != numwrite ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -168,7 +167,7 @@ extern void CheckDebugOffset( ExeFileInfo * exe )
 {
     uint_32     curroffset;
 
-    curroffset = RESTELL( exe->fid );
+    curroffset = RESTELL( exe->fp );
     if( curroffset > exe->DebugOffset ) {
         exe->DebugOffset = curroffset;
     }
@@ -209,17 +208,17 @@ extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
  * SeekRead
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus SeekRead( WResFileID fid, long newpos, void *buff, size_t size )
-/***********************************************************************/
+RcStatus SeekRead( FILE *fp, long newpos, void *buff, size_t size )
+/*****************************************************************/
 /* seek to a specified spot in the file, and read some data */
 {
     size_t      numread;
 
-    if( RESSEEK( fid, newpos, SEEK_SET ) )
+    if( RESSEEK( fp, newpos, SEEK_SET ) )
         return( RS_READ_ERROR );
-    numread = RESREAD( fid, buff, size );
+    numread = RESREAD( fp, buff, size );
     if( numread != size ) {
-        return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 
@@ -235,21 +234,21 @@ RcStatus SeekRead( WResFileID fid, long newpos, void *buff, size_t size )
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
-ExeType FindNEPELXHeader( WResFileID fid, unsigned_32 *nh_offset )
-/****************************************************************/
+ExeType FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset )
+/**********************************************************/
 /* Determine type of executable */
 {
     os2_exe_header  ne_header;
     unsigned_16     data;
     RcStatus        rc;
 
-    rc = SeekRead( fid, 0, &data, sizeof( data ) );
+    rc = SeekRead( fp, 0, &data, sizeof( data ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
     if( data != DOS_EXE_SIGNATURE )
         return( EXE_TYPE_UNKNOWN );
 
-    rc = SeekRead( fid, DOS_RELOCATION_OFFSET, &data, sizeof( data ) );
+    rc = SeekRead( fp, DOS_RELOCATION_OFFSET, &data, sizeof( data ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
@@ -257,17 +256,17 @@ ExeType FindNEPELXHeader( WResFileID fid, unsigned_32 *nh_offset )
         return( EXE_TYPE_UNKNOWN );
     }
 
-    rc = SeekRead( fid, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
+    rc = SeekRead( fp, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
-    rc = SeekRead( fid, *nh_offset, &data, sizeof( unsigned_16 ) );
+    rc = SeekRead( fp, *nh_offset, &data, sizeof( unsigned_16 ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
     case OS2_SIGNATURE_WORD:
-        rc = SeekRead( fid, *nh_offset, &ne_header, sizeof( ne_header ) );
+        rc = SeekRead( fp, *nh_offset, &ne_header, sizeof( ne_header ) );
         if( rc != RS_OK )
             return( EXE_TYPE_UNKNOWN );
         if( ne_header.target == TARGET_OS2 )

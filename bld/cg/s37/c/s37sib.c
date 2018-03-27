@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "s37sib.def"
 #include "cgmem.h"
 #include "makeins.h"

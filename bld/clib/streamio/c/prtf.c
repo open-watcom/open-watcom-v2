@@ -63,7 +63,7 @@
 
 #if defined( __QNX_386__ )
     /* for use in QNX 32-bit shared library */
-    #pragma aux __prtf "_sl_*" far;
+    #pragma aux __prtf "_sl_*" __far;
 #endif
 
 

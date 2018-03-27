@@ -75,7 +75,7 @@
 
 extern char             *TrimQuote(char*);
 extern bool             SkipDialogs;
-extern int              VisibilityCondition;
+extern bool             VisibilityCondition;
 extern char             *VariablesFile;
 
 #define RoundUp( v, r ) (((v) + (r) - 1) & ~(unsigned long)((r)-1))
@@ -831,7 +831,7 @@ static bool valid_first_char( char *p )
     int                 i;
     unsigned short      kanji_char;
 
-    if( GUICharLen( *p ) == 2 ) {
+    if( GUICharLen( UCHAR_VALUE( *p ) ) == 2 ) {
         // Kanji
         kanji_char = (*p << 8) + *(p + 1);
         if( kanji_char < InvalidFirst[0] ||
@@ -859,7 +859,7 @@ static bool valid_last_char( char *p )
     int                 i;
     unsigned short      kanji_char;
 
-    if( GUICharLen( *p ) == 2 ) {
+    if( GUICharLen( UCHAR_VALUE( *p ) ) == 2 ) {
         // Kanji
         kanji_char = (*p << 8) + *(p + 1);
         if( kanji_char < InvalidLast[0] ||
@@ -916,7 +916,7 @@ static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
             return( text );
         if( *e == '\\' && *( e + 1 ) == 'n' )
             return( e );
-        n = e + GUICharLen( *e );
+        n = e + GUICharLen( UCHAR_VALUE( *e ) );
         width = GUIGetExtentX( MainWnd, text, n - text );
         if( width >= winwidth )
             break;
@@ -2394,13 +2394,13 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
 /*****************************************************/
 {
     int                 result;
-    void                *cursor;
+    gui_mcursor_handle  old_cursor;
     bool                done;
     size_t              len;
     char                *p;
 
     LineCountPointer = &NoLineCount;
-    cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     result = SIM_INIT_NOERROR;
     if( pass == PRESCAN_FILE ) {
         State = RS_UNDEFINED;
@@ -2456,7 +2456,7 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
         if( State == RS_TERMINATE )
             break;
     }
-    GUIResetMouseCursor( cursor );
+    GUIResetMouseCursor( old_cursor );
     return( result );
 }
 
@@ -3517,7 +3517,7 @@ bool SimCalcTargetSpaceNeeded( void )
 /***********************************/
 {
     int                 i;
-    void                *cursor;
+    gui_mcursor_handle  old_cursor;
     char                *temp;
 
     /* assume power of 2 */
@@ -3527,7 +3527,7 @@ bool SimCalcTargetSpaceNeeded( void )
             return( false );
         NeedGetDiskSizes = false;
     }
-    cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
         temp = SimGetTargetDriveLetter( i );
         if( temp == NULL )
@@ -3545,7 +3545,7 @@ bool SimCalcTargetSpaceNeeded( void )
         DirInfo[i].num_files = 0;
     }
     SimCalcAddRemove();
-    GUIResetMouseCursor( cursor );
+    GUIResetMouseCursor( old_cursor );
     return( true );
 }
 

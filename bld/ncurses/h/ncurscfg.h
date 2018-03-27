@@ -40,8 +40,8 @@
  * 971222) to autoconf 2.12 or 2.13 to do this.
  *
  * See:
- *	http://invisible-island.net/autoconf/
- *	ftp://invisible-island.net/autoconf/
+ *  http://invisible-island.net/autoconf/
+ *  ftp://invisible-island.net/autoconf/
  */
 #ifndef NC_CONFIG_H
 #define NC_CONFIG_H
@@ -54,7 +54,7 @@
 #define HAVE_LONG_FILE_NAMES 1
 #define MIXEDCASE_FILENAMES 1
 #define USE_DATABASE 1
-#define TERMINFO_DIRS "/usr/share/terminfo"
+#define TERMINFO_DIRS "/usr/local/ncurses/share/terminfo:/usr/share/terminfo:/lib/terminfo"
 #define TERMINFO "/usr/share/terminfo"
 #define HAVE_BIG_CORE 1
 #define PURE_TERMINFO 1
@@ -129,7 +129,7 @@
 
 #include <ncursdef.h>
 
-	/* The C compiler may not treat these properly but C++ has to */
+    /* The C compiler may not treat these properly but C++ has to */
 #ifdef __cplusplus
 #undef const
 #undef inline

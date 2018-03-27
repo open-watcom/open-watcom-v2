@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include "bool.h"
 #include "watcom.h"
-#include "wio.h"
 #include "wres.h"
 #include "pass2l1.h"
 #include "mergedir.h"

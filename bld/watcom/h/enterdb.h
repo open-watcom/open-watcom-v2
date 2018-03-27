@@ -185,12 +185,13 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 
 #define EnterDebuggerWithSignature EnterDebuggerWithMessage
 
+#define DEBUGGER_COMMAND(c)   DEBUGGER_ ## c ## _COMMAND
+
 #define DEBUGGER_THREADID_COMMAND "!THREADID "
 #define DEBUGGER_THREADID_FORMAT DEBUGGER_THREADID_COMMAND "0x%8.8x=%s"
 #define DebuggerSetThreadId( id, name ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_THREADID_COMMAND )+\
-                                      2+8+1+strlen( name )+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_THREADID_COMMAND )+2+8+1+strlen( name )+1 ); \
         sprintf( __buff, DEBUGGER_THREADID_FORMAT, id, name ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -199,8 +200,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_SETTRUE_FORMAT DEBUGGER_SETTRUE_COMMAND "0x%8.8x"
 #define DebuggerSetCharVariableTrue( var ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_SETTRUE_COMMAND )+\
-                                      2+8+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_SETTRUE_COMMAND )+2+8+1 ); \
         sprintf( __buff, DEBUGGER_SETTRUE_FORMAT, (void*)&var ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -209,8 +209,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_EXECUTE_FORMAT DEBUGGER_EXECUTE_COMMAND "%s"
 #define DebuggerExecuteCommand( cmd ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_EXECUTE_COMMAND )+\
-                                      strlen( cmd )+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_EXECUTE_COMMAND )+strlen( cmd )+1 ); \
         sprintf( __buff, DEBUGGER_EXECUTE_FORMAT, cmd ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -219,8 +218,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_MESSAGE_FORMAT DEBUGGER_MESSAGE_COMMAND "%s"
 #define DebuggerMessage( cmd ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_MESSAGE_COMMAND )+\
-                                      strlen( cmd )+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_MESSAGE_COMMAND )+strlen( cmd )+1 ); \
         sprintf( __buff, DEBUGGER_MESSAGE_FORMAT, cmd ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -229,8 +227,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_LOOKUP_FORMAT DEBUGGER_LOOKUP_COMMAND "0x%8.8x,0x%8.8x,0x%4.4x"
 #define DebuggerSymbolLookup( addr, buff, buff_len ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_LOOKUP_COMMAND )+\
-                                      2+8+1+2+8+1+2+4+1+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_LOOKUP_COMMAND )+2+8+1+2+8+1+2+4+1 ); \
         sprintf( __buff, DEBUGGER_LOOKUP_FORMAT, addr, buff, buff_len ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -240,8 +237,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_BREAKRETURN_FORMAT DEBUGGER_BREAKRETURN_COMMAND "%3d"
 #define DebuggerBreakAfterReturnWithMessage( after_num_returns, msg ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_BREAKRETURN_COMMAND )+\
-                                      3+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_BREAKRETURN_COMMAND )+3+1 ); \
         sprintf( __buff, DEBUGGER_BREAKRETURN_FORMAT, after_num_returns ); \
         PassDebuggerAMessage( __buff ); \
         CheckEnterDebuggerWithMessage( msg ); \
@@ -251,8 +247,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_BREAKUNWIND_FORMAT DEBUGGER_BREAKUNWIND_COMMAND "%3d"
 #define DebuggerBreakWithMessageAndUnwind( levels, msg ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_BREAKUNWIND_COMMAND )+\
-                                      3+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_BREAKUNWIND_COMMAND )+3+1 ); \
         sprintf( __buff, DEBUGGER_BREAKUNWIND_FORMAT, levels ); \
         PassDebuggerAMessage( __buff ); \
         CheckEnterDebuggerWithMessage( msg ); \
@@ -262,8 +257,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_LOADMODULE_FORMAT DEBUGGER_LOADMODULE_COMMAND "0x%4.4x:0x%8.8x,%s"
 #define DebuggerLoadUserModule( modname, segment, offset ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_LOADMODULE_COMMAND )+\
-                                      2+4+1+8+1+strlen( modname )+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_LOADMODULE_COMMAND )+2+4+1+2+8+1+strlen( modname )+1 ); \
         sprintf( __buff, DEBUGGER_LOADMODULE_FORMAT, segment, offset, modname ); \
         PassDebuggerAMessage( __buff ); \
     }
@@ -272,8 +266,7 @@ _WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
 #define DEBUGGER_UNLOADMODULE_FORMAT DEBUGGER_UNLOADMODULE_COMMAND "%s"
 #define DebuggerUnloadUserModule( modname ) \
     { \
-        char *__buff = (char*)alloca( sizeof( DEBUGGER_UNLOADMODULE_COMMAND )+\
-                                      strlen( modname )+1 ); \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_UNLOADMODULE_COMMAND )+strlen( modname )+1 ); \
         sprintf( __buff, DEBUGGER_UNLOADMODULE_FORMAT, modname ); \
         PassDebuggerAMessage( __buff ); \
     }

@@ -32,11 +32,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "procdef.h"
 #include "model.h"
 #include "addrname.h"
-#include "cgdefs.h"
 #include "hostsys.h"
 #include "cgaux.h"
 #include "rtclass.h"

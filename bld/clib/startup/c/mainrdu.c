@@ -133,23 +133,16 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
     thread_data         *tdata;
 
-    if( RdosIsForked() ) {
-        __CEndFork();
-        // never return
-    } else {
-        if( !__Is_DLL ) {
-            __DoneExceptionFilter();
-            __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-        }
+    if( !__Is_DLL ) {
+        __DoneExceptionFilter();
+        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
         // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
         // for multi-threaded apps
         __FirstThreadData = NULL;
-        if( !__Is_DLL ) {
-            RdosUnloadExe( ret_code );
-            // never return
-        }
-        // !TO DO
-        // here is missing call to system exit procedure
-        // should never return
+        RdosUnloadExe( ret_code );
+        // never return
     }
+    // !TO DO
+    // here is missing call to system exit procedure
+    // should never return
 }

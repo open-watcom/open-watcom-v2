@@ -289,8 +289,8 @@ exit:
 }
 
 
-extern void AddMapAddr( seg_list *list, void *dcmap, off_info *new )
-/******************************************************************/
+void AddMapAddr( seg_list *list, void *dcmap, off_info *new )
+/***********************************************************/
 // Add a new address to map
 {
     static seg_ctl  SegCtl = { GetSegOffBlk, InitSegOff };
@@ -360,8 +360,8 @@ static bool ChkOffsets( void *d, seg_info *ctl )
     return( true );
 }
 
-extern void DmpBlk( off_blk *blk, int count )
-/***** Print contents of blk ***************/
+void DmpBlk( off_blk *blk, int count )
+/***** Print contents of blk ********/
 {
     off_info    *info;
 
@@ -438,8 +438,8 @@ static bool WlkSegInfos( void *_d, void *_curr )
 }
 
 
-extern  off_info *FindMapAddr( seg_list *addr_map, address *a )
-/*************************************************************/
+off_info *FindMapAddr( seg_list *addr_map, address *a )
+/*****************************************************/
 {
     off_info   *info;
 //  seg_info   *ctl;
@@ -462,8 +462,8 @@ extern  off_info *FindMapAddr( seg_list *addr_map, address *a )
 }
 
 
-extern  void    SortMapAddr( seg_list *ctl )
-/******************************************/
+void    SortMapAddr( seg_list *ctl )
+/**********************************/
 {
 #ifdef DEBUG
     SegWalk( ctl, ChkOffsets, NULL );
@@ -492,8 +492,8 @@ bool Real2Map( seg_list *ctl, address *what )
 }
 
 
-extern void InitAddrInfo( seg_list *list )
-/****************************************/
+void InitAddrInfo( seg_list *list )
+/*********************************/
 //Init seg_ctl with addr info
 {
     InitSegList( list, sizeof( seg_off ) );
@@ -517,8 +517,8 @@ static bool FreeSegOffsets( void *d, void *_curr )
 }
 
 
-extern void FiniAddrInfo( seg_list *ctl )
-/***************************************/
+void FiniAddrInfo( seg_list *ctl )
+/********************************/
 //Free all offset blocks for a segment
 //Free all segment blocks
 {

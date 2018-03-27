@@ -268,8 +268,7 @@ static BOOL seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
     int         rc;
     DWORD       bytes;
 
-    rc = SetFilePointer( handle, newpos, 0, SEEK_SET );
-    if( rc == -1 ) {
+    if( SetFilePointer( handle, newpos, 0, SEEK_SET ) == INVALID_SET_FILE_POINTER ) {
         return( FALSE );
     }
     rc = ReadFile( handle, buff, size, &bytes, NULL );

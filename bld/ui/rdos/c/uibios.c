@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,39 +54,39 @@ bool UIAPI uiset80col( void )
 
 bool intern initbios( void )
 {
-    short int *bufptr;
-    int i;
+    LP_PIXEL    bufptr;
+    size_t      size;
+    size_t      i;
+    int         height;
+    int         width;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
 
     UIData->colour = M_VGA;
-    RdosGetTextSize(&UIData->height, &UIData->width);
-
-    UIData->screen.origin = malloc( UIData->width * UIData->height * sizeof( PIXEL ) );
-
-    bufptr = (short int *)UIData->screen.origin;
-    for( i = 0; i < UIData->width * UIData->height; i++ ) {
-        *bufptr = 0x720;
-        bufptr++;
+    RdosGetTextSize( &height, &width );
+    UIData->height = height;
+    UIData->width = width;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
+    bufptr = uimalloc( size );
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; i++ ) {
+        bufptr[i].ch = ' ';
+        bufptr[i].attr = 0x07;
     }
-            
+    UIData->screen.origin = bufptr;
     UIData->screen.increment = UIData->width;
+
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 250;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 250;
-    UIData->tick_delay = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 250 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 250 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->mouse_speed = 8;
 
     return( true );
-}
-
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    return( 1192 * milli);
 }
 
 void intern finibios( void )
@@ -104,15 +105,17 @@ void intern physupdate( SAREA *area )
         pos = UIData->width * (i + area->row) + area->col;
         bufptr = (short int *)UIData->screen.origin + pos;
         RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
-    }    
+    }
 }
 
-int UIAPI uiisdbcs( void )
+bool UIAPI uiisdbcs( void )
 {
     return( false );
 }
 
 int UIAPI uicharlen( int ch )
 {
+    /* unused parameters */ (void)ch;
+
     return( 1 );
 }

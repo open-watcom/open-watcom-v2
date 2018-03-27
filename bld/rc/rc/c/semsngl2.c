@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "semantic.h"
@@ -62,7 +61,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
         return;
     }
 
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }
@@ -103,13 +102,13 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
             firstIcon  = false;
             id->IsName = false;
             id->ID.Num = 22;
-            start = SemCopyRawFile( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
 
-            start = SemCopyRawFile( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
         } else {
-            start = SemCopyRawFile( filename );
+            start = SemCopyRawFileOnly( full_filename );
             SemAddResourceFree( name, WResIDFromNum( OS2_RT_POINTER ), flags, start );
         }
         break;
@@ -121,7 +120,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
         } else {
             flags = flagsMP;
         }
-        start = SemCopyRawFile( filename );
+        start = SemCopyRawFileOnly( full_filename );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
         break;
 
@@ -149,44 +148,44 @@ HANDLE_ERROR:
     RESFREE( filename );
 } /* SemOS2AddSingleLineResource */
 
-static RcStatus readFontInfo( WResFileID fid, FontInfo *info, int *err_code )
-/***************************************************************************/
+static RcStatus readFontInfo( FILE *fp, FontInfo *info, int *err_code )
+/*********************************************************************/
 {
     size_t      numread;
 
-    numread = RESREAD( fid, info, sizeof( *info ) );
+    numread = RESREAD( fp, info, sizeof( *info ) );
     if( numread != sizeof( *info ) ) {
         *err_code = errno;
-        return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
 #define FONT_BUFFER_SIZE  0x1000
 
-static RcStatus copyFont( FontInfo *info, WResFileID fid, WResID *name,
+static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
                                 ResMemFlags flags, int *err_code )
 /*********************************************************************/
 {
     RcStatus            ret;
     char *              buffer;
     ResLocation         loc;
-    WResFileOffset      pos;
+    long                pos;
 
     buffer = RESALLOC( FONT_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
-    if( ResWriteFontInfo( info, CurrResFile.fid ) ) {
+    if( ResWriteFontInfo( info, CurrResFile.fp ) ) {
         ret = RS_WRITE_ERROR;
         *err_code = LastWresErr();
     } else {
-        pos = RESTELL( fid );
-        if( pos == -1 ) {
+        pos = RESTELL( fp );
+        if( pos == -1L ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = SemCopyDataUntilEOF( pos, fid, buffer, FONT_BUFFER_SIZE, err_code );
+            ret = SemCopyDataUntilEOF( pos, fp, buffer, FONT_BUFFER_SIZE, err_code );
         }
     }
 
@@ -204,18 +203,18 @@ typedef struct {
     int         err_code;
 }ReadStrErrInfo;
 
-static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
-/**************************************************************************/
+static void * readString( FILE *fp, long offset, ReadStrErrInfo *err )
+/********************************************************************/
 {
     char    *retstr;
 
 
-    if( RESSEEK( fid, offset, SEEK_SET ) ) {
+    if( RESSEEK( fp, offset, SEEK_SET ) ) {
         err->status = RS_READ_ERROR;
         err->err_code = errno;
         return( NULL );
     } else {
-        retstr = ResReadString( fid, NULL );
+        retstr = ResReadString( fp, NULL );
         if( retstr == NULL ) {
             if( LastWresStatus() == WRS_READ_INCOMPLETE ) {
                 err->status = RS_READ_INCMPLT;
@@ -293,9 +292,9 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
 /***********************************************************************************/
 {
     FontInfo            info;
-    char *              devicename;
-    char *              facename;
-    WResFileID          fid;
+    char                *devicename;
+    char                *facename;
+    FILE                *fp;
     RcStatus            ret;
     int                 err_code;
     ReadStrErrInfo      readstr_err;
@@ -305,26 +304,26 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
         return;
     }
 
-    fid = RcIoOpenInput( filename, false );
-    if( fid == WRES_NIL_HANDLE)
+    fp = RcIoOpenInput( filename, false );
+    if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
-    ret = readFontInfo( fid, &info, &err_code );
+    ret = readFontInfo( fp, &info, &err_code );
     if( ret != RS_OK)
         goto READ_HEADER_ERROR;
 
-    ret = copyFont( &info, fid, name, flags, &err_code );
+    ret = copyFont( &info, fp, name, flags, &err_code );
     if( ret != RS_OK )
         goto COPY_FONT_ERROR;
 
-    devicename = readString( fid, info.dfDevice, &readstr_err );
+    devicename = readString( fp, info.dfDevice, &readstr_err );
     if( devicename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
         goto READ_HEADER_ERROR;
     }
 
-    facename = readString( fid, info.dfFace, &readstr_err );
+    facename = readString( fp, info.dfFace, &readstr_err );
     if( facename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
@@ -337,7 +336,7 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
     RESFREE( devicename );
     RESFREE( facename );
 
-    RESCLOSE( fid );
+    RESCLOSE( fp );
 
     return;
 
@@ -352,13 +351,13 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RESFREE( name );
-    RESCLOSE( fid );
+    RESCLOSE( fp );
     return;
 
 COPY_FONT_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RESCLOSE( fid );
+    RESCLOSE( fp );
     return;
 }
 
@@ -393,12 +392,12 @@ void SemOS2WriteFontDir( void )
 
     loc.start = SemStartResource();
 
-    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fid );
+    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fp );
     if( error)
         goto OUTPUT_WRITE_ERROR;
 
     for( currentry = CurrResFile.FontDir->Head; currentry != NULL; currentry = currentry->Next ) {
-        error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fid );
+        error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         if( error ) {
             goto OUTPUT_WRITE_ERROR;
         }

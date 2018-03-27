@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 
+
 static bool mouseOn = false;
 
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
@@ -41,9 +43,8 @@ void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
     RdosSetMousePosition( col, row );
 }
 
-
-void UIAPI uimouse( int func )
-/****************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
     if( func == MOUSE_ON ) {
         if( !mouseOn ) {

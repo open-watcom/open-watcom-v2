@@ -35,32 +35,30 @@
 #include "uifar.h"
 
 
-void intern battribute( BUFFER *bptr, int row, int col,
-                                      int height, int width, ATTR attr )
-/**********************************************************************/
+void intern battribute( BUFFER *bptr, int row, int col, uisize height, uisize width, ATTR attr )
+/**********************************************************************************************/
 {
     LP_PIXEL                dst;
     bool                    snow;
     int                     r;
 
     snow = issnow( bptr );
-    for( r = row ; r < row + height ; ++r ) {
+    for( r = row; r < row + height; ++r ) {
         dst = bptr->origin + r * bptr->increment + col;
         farattrib( dst, attr, width, snow );
     }
 }
 
 
-void intern battrflip( BUFFER *bptr, int row, int col,
-                                     int height, int width )
-/**********************************************************/
+void intern battrflip( BUFFER *bptr, int row, int col, uisize height, uisize width )
+/**********************************************************************************/
 {
     LP_PIXEL                dst;
     int                     r;
     bool                    snow;
 
     snow = issnow( bptr );
-    for( r = row ; r < row + height ; ++r ) {
+    for( r = row; r < row + height; ++r ) {
         dst = bptr->origin + r * bptr->increment + col;
         farattrflip( dst, width, snow );
     }

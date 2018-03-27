@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,139 +32,146 @@
 
 #ifndef _UIDEF_H_
 #define _UIDEF_H_
-#include <stddef.h>
 #include <stdlib.h>
-#include "bool.h"
+#include "stdui.h"
 
-#if defined( __WATCOMC__ )
-  #define cdecl __cdecl
-#else
-  #define cdecl
-#endif
 
-#define         P_UNBUFFERED            0
-#define         P_DIALOGUE              1
-#define         P_MENU                  2
-#define         P_VSCREEN               3
-#define         P_BACKGROUND            4
+#define P_UNBUFFERED        0
+#define P_DIALOGUE          1
+#define P_MENU              2
+#define P_VSCREEN           3
+#define P_BACKGROUND        4
 
-#ifdef _unused
-   #undef _unused
-#endif
-#define _unused(var)        var=var
+#define _ESC                "\033"
+#define _ESC_CHAR           '\033'
+
+#define CHAR_VALUE(c)       (char)(unsigned char)(c)
+#define UCHAR_VALUE(c)      (unsigned char)(c)
+
+typedef enum {
+    UI_MOUSE_PRESS          = 1,
+    UI_MOUSE_PRESS_RIGHT    = 2,
+    UI_MOUSE_PRESS_MIDDLE   = 4,
+    UI_MOUSE_PRESS_ANY      = (UI_MOUSE_PRESS | UI_MOUSE_PRESS_RIGHT | UI_MOUSE_PRESS_MIDDLE)
+} MOUSESTAT;
 
 #if defined( TSR )
 
-    #define _IND( X )           ind_xfer( X )
-    #define _IND_EVENT( X )     ind_xfer_event( X )
-    #define _IND_LONG( X )      ind_xfer_long( X )
-    #define _IND_INT( X )       ind_xfer_int( X )
-    #define _IND_SAREA( X )     ind_xfer_sarea( X )
+#define _IND( X )           ind_xfer( X )
+#define _IND_EVENT( X )     ind_xfer_event( X )
+#define _IND_LONG( X )      ind_xfer_long( X )
+#define _IND_INT( X )       ind_xfer_int( X )
+#define _IND_SAREA( X )     ind_xfer_sarea( X )
 
-    void __far *                (*ind_xfer( void (__far *rtn)() ) )();
-    EVENT                       (*ind_xfer_event( EVENT (__far *rtn)() ) )();
-    long                        (*ind_xfer_long( long (__far *rtn)() ) )();
-    int                         (*ind_xfer_int( int (__far *rtn)() ) )();
-    SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
+void __far *                (*ind_xfer( void (__far *rtn)() ) )();
+ui_event                    (*ind_xfer_event( ui_event (__far *rtn)() ) )();
+long                        (*ind_xfer_long( long (__far *rtn)() ) )();
+int                         (*ind_xfer_int( int (__far *rtn)() ) )();
+SAREA                       (*ind_xfer_sarea( SAREA (__far *rtn)() ) )();
 
 #else
 
-    #define _IND( X )       (X)
-    #define _IND_EVENT(X)   (X)
-    #define _IND_LONG( X )  (X)
-    #define _IND_INT(X)     (X)
-    #define _IND_SAREA(X)   (X)
+#define _IND( X )       (X)
+#define _IND_EVENT(X)   (X)
+#define _IND_LONG( X )  (X)
+#define _IND_INT(X)     (X)
+#define _IND_SAREA(X)   (X)
 
 #endif
 
+#define                 UIAPI
+#define                 intern          /* near */
 
-#include "stdui.h"
-
-#define         UIAPI
-#define         intern          /* near */
+extern ui_event         Event;
 
 #ifdef __cplusplus
     extern "C" {
 #endif
 
-bool            intern          balloc( BUFFER *, ORD, ORD );
-void            intern          battrflip( BUFFER *, int, int, int, int );
-void            intern          battribute( BUFFER *, int, int, int, int, ATTR );
-void            intern          uibcopy( BUFFER *, int, int, BUFFER *, int, int, int );
-void            intern          bframe( struct buffer * );
-void            intern          bfree( struct buffer * );
-void            intern          bfake( BUFFER *, ORD, ORD );
-void            intern          bfill( BUFFER *, int, int, ATTR, unsigned char, int );
-void            intern          blowup( BUFFER *, SAREA, unsigned char *, ATTR );
-void            intern          bpixel( BUFFER *, ORD, ORD, ATTR, unsigned char );
-void            intern          braw( BUFFER *, int, int, PIXEL *, int );
-void            intern          bstring( BUFFER *, int, int, ATTR, LPC_STRING, int );
-void            intern          bunframe( struct buffer * );
-int             intern          checkkey( void );
-void            intern          checkmouse( unsigned short *, MOUSEORD *, MOUSEORD *, unsigned long * );
-unsigned char   intern          checkshift( void );
-void            intern          closebackground( void );
-void            intern          closewindow( UI_WINDOW * );
-void            intern          dirtyarea( UI_WINDOW *, SAREA );
-void            intern          dirtynext( SAREA, UI_WINDOW * );
-void            intern          dividearea( SAREA, SAREA, SAREA * );
-void            intern          drawbox( BUFFER *, SAREA, unsigned char *, ATTR, int );
-VSCREEN*        intern          findvscreen( ORD, ORD );
-void            intern          finibios( void );
-void            intern          finikeyboard( void );
-void            intern          flushkey( void );
-void            intern          frontwindow( UI_WINDOW * );
-unsigned int    intern          getkey( void );
-bool            intern          initbios( void );
-bool            intern          initkeyboard( void );
-bool            intern          initmonitor( void );
-bool            intern          installed( int );
-bool            intern          isdialogue( VSCREEN * );
-bool            intern          isscreen( BUFFER * );
-bool            intern          issnow( BUFFER * );
-void            intern          kbdspawnstart( void );
-void            intern          kbdspawnend( void );
-EVENT           intern          keyboardevent( void );
-EVENT           intern          menuevent( VSCREEN * );
-EVENT           intern          mouseevent( void );
-void            intern          mouseon( void );
-void            intern          mouseoff( void );
-void            intern          mousespawnstart( void );
-void            intern          mousespawnend( void );
-void            intern          okarea( SAREA );
-void            intern          okline( ORD, ORD, int, SAREA );
-void            intern          okopen( VSCREEN * );
-void            intern          oksubarea( SAREA, SAREA );
-void            intern          openbackground( void );
-bool            intern          openwindow( UI_WINDOW * );
-void            intern          movewindow( UI_WINDOW *, ORD, ORD );
-void            intern          physupdate( SAREA * );
+extern bool             intern  balloc( BUFFER *, uisize, uisize );
+extern void             intern  battrflip( BUFFER *, int, int, uisize, uisize );
+extern void             intern  battribute( BUFFER *, int, int, uisize, uisize, ATTR );
+extern void             intern  uibcopy( BUFFER *, int, int, BUFFER *, int, int, uisize );
+extern void             intern  bframe( struct buffer * );
+extern void             intern  bfree( struct buffer * );
+extern void             intern  bfake( BUFFER *, ORD, ORD );
+extern void             intern  bfill( BUFFER *, int, int, ATTR, char, uisize );
+extern void             intern  bpixel( BUFFER *, ORD, ORD, ATTR, char );
+extern void             intern  braw( BUFFER *, int, int, PIXEL *, uisize );
+extern void             intern  bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
+extern void             intern  bunframe( struct buffer * );
+extern int              intern  checkkey( void );
+extern void             intern  checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
+extern unsigned char    intern  checkshift( void );
+extern void             intern  closebackground( void );
+extern void             intern  closewindow( UI_WINDOW * );
+extern void             intern  dirtyarea( UI_WINDOW *, SAREA );
+extern void             intern  dirtynext( SAREA, UI_WINDOW * );
+extern void             intern  dividearea( SAREA, SAREA, SAREA * );
+extern void             intern  drawbox( BUFFER *, SAREA, const char *, ATTR, bool );
+extern VSCREEN*         intern  findvscreen( ORD, ORD );
+extern void             intern  finibios( void );
+extern void             intern  finikeyboard( void );
+extern void             intern  flushkey( void );
+extern void             intern  frontwindow( UI_WINDOW * );
+extern unsigned         intern  getkey( void );
+extern bool             intern  initbios( void );
+extern bool             intern  initkeyboard( void );
+extern bool             intern  isdialogue( VSCREEN * );
+extern bool             intern  isscreen( BUFFER * );
+extern bool             intern  issnow( BUFFER * );
+extern void             intern  kbdspawnstart( void );
+extern void             intern  kbdspawnend( void );
+extern ui_event         intern  keyboardevent( void );
+extern ui_event         intern  menuevent( VSCREEN * );
+extern ui_event         intern  mouseevent( void );
+extern void             intern  mouseon( void );
+extern void             intern  mouseoff( void );
+extern void             intern  mousespawnstart( void );
+extern void             intern  mousespawnend( void );
+extern void             intern  okarea( SAREA );
+extern void             intern  okline( ORD, ORD, uisize, SAREA );
+extern void             intern  okopen( VSCREEN * );
+extern void             intern  oksubarea( SAREA, SAREA );
+extern void             intern  openbackground( void );
+extern bool             intern  openwindow( UI_WINDOW * );
+extern void             intern  movewindow( UI_WINDOW *, ORD, ORD );
+extern void             intern  physupdate( SAREA * );
 #if defined( __UNIX__ )
-void            intern          forbid_refresh( void );
-void            intern          permit_refresh( void );
+extern void             intern  forbid_refresh( void );
+extern void             intern  permit_refresh( void );
 #else
-    #define                     forbid_refresh()
-    #define                     permit_refresh()
+#define forbid_refresh()
+#define permit_refresh()
 #endif
-EVENT           intern          saveevent( void );
-EVENT           intern          getprime( VSCREEN * );
-void            intern          setupmouse( void );
-void            intern          setvideomode( unsigned );
-int             intern          videopage( void );
-void            intern          vertretrace( void );
-EVENT           intern          getanyevent( void );
-void            intern          waitforevent( void );
-void            intern          initeventlists( void );
+extern ui_event         intern  saveevent( void );
+extern ui_event         intern  getprime( VSCREEN * );
+extern void             intern  setupmouse( void );
+extern void             intern  setvideomode( unsigned char );
+extern int              intern  videopage( void );
+extern void             intern  vertretrace( void );
+extern ui_event         intern  getanyevent( void );
+extern void             intern  waitforevent( void );
+extern void             intern  initeventlists( void );
+
+extern void             intern  SetCharacterTables( void );
+extern int              intern  GetNewPos( int pos, int num );
+
+extern VSCREEN          intern  _FARD *uiopen( SAREA *, const char *, screen_flags );
+extern void             intern  uiclose( VSCREEN _FARD * );
 
 /*
  * below are OS specific internal shared functions
  */
 
 #if defined( __UNIX__ )
-void            intern          newcursor( void );
+extern void             intern  newcursor( void );
 #endif
 #if defined( __NETWARE__ )
-bool            intern          kbdisblocked( void );
+extern bool             intern  kbdisblocked( void );
+#endif
+#if defined( __DOS__ )
+extern bool             intern  mouse_installed( void );
 #endif
 
 #ifdef __cplusplus

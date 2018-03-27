@@ -397,7 +397,7 @@ trap_retval ReqMap_addr( void )
             Buff.value = 1;
             break;
         }
-        Buff.mte = ModHandles[acc->handle];
+        Buff.mte = ModHandles[acc->mod_handle];
         DosPTrace( &Buff );
         Buff.mte = ModHandles[0];
         ret->out_addr.segment = Buff.value;
@@ -952,43 +952,43 @@ static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
-static unsigned MapReturn( unsigned changes )
+static trap_conditions MapReturn( trap_conditions conditions )
 {
 
     if( BrkPending ) {
         ReadRegs( &Buff );
-        return( changes | COND_USER );
+        return( conditions | COND_USER );
     }
 
     switch( Buff.cmd ) {
     case PT_RET_SUCCESS:
-        return( changes );
+        return( conditions );
     case PT_RET_SIGNAL:
-        return( changes | COND_USER );
+        return( conditions | COND_USER );
     case PT_RET_STEP:
-        return( changes | COND_TRACE );
+        return( conditions | COND_TRACE );
     case PT_RET_BREAK:
-        return( changes | COND_BREAK );
+        return( conditions | COND_BREAK );
     case PT_RET_PARITY:
         ExceptNum = 2;
-        return( changes | COND_EXCEPTION );
+        return( conditions | COND_EXCEPTION );
     case PT_RET_FAULT:
         ExceptNum = 13;
-        return( changes | COND_EXCEPTION );
+        return( conditions | COND_EXCEPTION );
     case PT_RET_WATCH:
-        return( changes | COND_WATCH );
+        return( conditions | COND_WATCH );
     case PT_RET_LIB_LOADED:
         RecordModHandle( Buff.value );
-        return( changes | COND_LIBRARIES );
+        return( conditions | COND_LIBRARIES );
     case PT_RET_TRD_TERMINATE:
-        return( changes );
+        return( conditions );
     // Combined PT_RET_FUNERAL & PT_RET_ERROR with default
     // case PT_RET_FUNERAL:
     // case PT_RET_ERROR:
     default:
         CanExecTask = FALSE;
         AtEnd = TRUE;
-        return( changes | COND_TERMINATE );
+        return( conditions | COND_TERMINATE );
     }
 }
 
@@ -1214,11 +1214,11 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    if( acc->handle != 0 ) {
-        CurrModHandle = acc->handle + 1;
+    if( acc->mod_handle != 0 ) {
+        CurrModHandle = acc->mod_handle + 1;
     }
     if( CurrModHandle >= NumModHandles ) {
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof(*ret) );
@@ -1227,7 +1227,7 @@ trap_retval ReqGet_lib_name( void )
     Buff.offv = FP_OFF( name );
     Buff.cmd = PT_CMD_GET_LIB_NAME;
     DosPTrace( &Buff );
-    ret->handle = CurrModHandle;
+    ret->mod_handle = CurrModHandle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

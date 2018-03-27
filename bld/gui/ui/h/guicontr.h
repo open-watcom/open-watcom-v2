@@ -41,7 +41,7 @@ struct gui_control {
     int                 index;
 };
 
-extern EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row, gui_ord col );
+extern ui_event GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, gui_ord col );
 extern gui_control *GUIGetControl( gui_window *wnd, gui_ctl_id id );
 extern gui_control *GUIGetControlByIndex( gui_window *wnd, int index );
 extern void GUIFreeAllControls( gui_window *wnd );

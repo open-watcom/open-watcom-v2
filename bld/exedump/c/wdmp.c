@@ -197,7 +197,7 @@ static void wbanner( void )
 {
     Wdputs( banner1w( "Executable Image Dump Utility", BAN_VER_STR ) "\n" );
     Wdputs( banner2 "\n" );
-    Wdputs( banner2a( "1984" ) "\n" );
+    Wdputs( banner2a( 1984 ) "\n" );
     Wdputs( banner3 "\n" );
     Wdputs( banner3a "\n\n" );
 }
@@ -382,7 +382,7 @@ static bool parse_options( int argc, char * const *argv )
 
 /*
  * The Increasingly More Misnamed Segmented .EXE File Header Dump Utility
- * for WLINK and WD (nee WVIDEO)
+ * for WLINK and WD (see WVIDEO)
  */
 
 int main( int argc, char * const *argv )

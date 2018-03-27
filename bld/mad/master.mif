@@ -16,13 +16,14 @@ sys_dll = 1
 
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
+fpu_flags_linux_386 = -fpc
+fpu_flags_nt_386    = -fpc
 fpu_flags_os2_i86   = -fpc
 fpu_flags_os2_386   = -fpc
-fpu_flags_win_i86   = -fpc
-fpu_flags_nt_386    = -fpc
+fpu_flags_qnx_i86   = -fpc
 fpu_flags_qnx_386   = -fpc
-fpu_flags_linux_386 = -fpc
 fpu_flags_rdos_386  = -fpc
+fpu_flags_win_i86   = -fpc
 
 ext_os2_i86   = .dll
 ext_os2_386   = .d32
@@ -61,8 +62,8 @@ extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
 ###############
 lflags_dll_dos_386   = sys pharlap rex disable 1023,1014
 lflags_dll_linux_386 = sys pharlap_linux rex disable 1023,1014
-lflags_dll_qnx_386   = sys pharlap rex disable 1023,1014
-lflags_dll_win_i86   = sys windows op rwr
+lflags_dll_qnx_386   = sys pharlap_qnx disable 1023,1014
+lflags_dll_win_i86   = sys windows
 
 extra_l_flags_dll         = $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt_axp  = op dosseg

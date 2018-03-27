@@ -47,8 +47,8 @@
 /* forward declaration */
 static bool scanEnvVar( const char *varname, int *nofilenames );
 
-extern void RcAddCPPArg( char * newarg )
-/***************************************/
+void RcAddCPPArg( char * newarg )
+/*******************************/
 {
     size_t  numargs;    /* number of args in list at end of this function */
     char    **arg;
@@ -876,8 +876,8 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
     return( contok );
 }
 
-extern int ParseEnvVar( const char *env, char **argv, char *buf )
-/***************************************************************/
+int ParseEnvVar( const char *env, char **argv, char *buf )
+/********************************************************/
 {
     /*
      * Returns a count of the "command line" parameters in *env.
@@ -1007,7 +1007,7 @@ bool ScanParams( int argc, char * argv[] )
     bool    contok;         /* continue with main execution */
 
     nofilenames = 0;
-    defaultParms();
+    ScanParamInit();
     contok = doScanParams( argc, argv, &nofilenames );
     if( argc < 2 ) {                                    /* 26-mar-94 */
         CmdLineParms.PrintHelp = true;
@@ -1025,8 +1025,16 @@ bool ScanParams( int argc, char * argv[] )
     return( contok );
 } /* ScanParams */
 
-extern void ScanParamShutdown( void )
-/***********************************/
+void ScanParamInit( void )
+/************************/
+{
+    memset( &CmdLineParms, 0, sizeof( RCParams ) );
+    defaultParms();
+
+} /* ScanParamInit */
+
+void ScanParamShutdown( void )
+/****************************/
 {
     ExtraRes            *tmpres;
     FRStrings           *strings;
@@ -1060,8 +1068,8 @@ extern void ScanParamShutdown( void )
     CmdLineParms.PrependString = NULL;
 } /* ScanParamShutdown */
 
-extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
-/***********************************************************************/
+char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
+/****************************************************************/
 {
     char                *replacedString = NULL;
     char                *foundString;

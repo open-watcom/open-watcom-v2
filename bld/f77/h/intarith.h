@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern bool    AddIOFlo( intstar4 *arg1, intstar4 *arg2 );
-extern bool    SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
-extern bool    MulIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     AddIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     MulIOFlo( intstar4 *arg1, intstar4 *arg2 );

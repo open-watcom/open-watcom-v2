@@ -72,123 +72,121 @@ AccelKey::AccelKey( WKeyCode key, WObject* client, bcbk callback )
 
 /***************************************************************************/
 
-bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
+bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
 {
     gui_point           point;
-    gui_coord           size;
     WControlId          id;
-    int                 scroll_position;
 
-    switch( msg ) {
-    case GUI_CLICKED: {
-        GUI_GETID( parm, id );
-        WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
-        if( menu != NULL ) {
-            menu->picked();
-            return( true );
+    switch( gui_ev ) {
+    /* following GUI events are unhandled now, return false
+    case GUI_INIT_DIALOG:
+    case GUI_NO_EVENT:
+    case GUI_FONT_CHANGED:
+    case GUI_CONTROL_NOT_ACTIVE:
+    case GUI_DIALOG_ESCAPE:
+    case GUI_KEYTOITEM:
+    case GUI_TIMER_EVENT:
+        break;
+    */
+    case GUI_INIT_WINDOW:
+        return( true );
+    case GUI_CLICKED:
+        {
+            GUI_GETID( parm, id );
+            WMenuItem* menu = (WMenuItem*)WWindow::_idMap.findThis( (WHANDLE)(pointer_int)id );
+            if( menu != NULL ) {
+                menu->picked();
+                return( true );
+            }
+            // a popup menu with no menu items will generate GUI_CLICKED
+            // - simulate a GUI_INITMENUPOPUP
+            WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            if( pop != NULL ) {
+                pop->popup();
+                return( true );
+            }
+            WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
+            if( tool != NULL ) {
+                tool->picked();
+                return( true );
+            }
         }
-        // a popup menu with no menu items will generate GUI_CLICKED
-        // - simulate a GUI_INITMENUPOPUP
-        WPopupMenu* pop = (WPopupMenu*)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
-        if( pop != NULL ) {
-            pop->popup();
-            return( true );
-        }
-        WToolBarItem* tool =(WToolBarItem*)WWindow::_toolBarIdMap.findThis( (WHANDLE)(pointer_int)id );
-        if( tool != NULL ) {
-            tool->picked();
-            return( true );
-        }
-    }
+        break;
     case GUI_CONTROL_CLICKED:
-    case GUI_CONTROL_DCLICKED: {
-        GUI_GETID( parm, id );
-        WControl* control = getControl( id );
-        if( control != NULL ) {
-            return( control->processMsg( msg ) );
-        } else {
-            return( false );
+    case GUI_CONTROL_DCLICKED:
+        {
+            GUI_GETID( parm, id );
+            WControl* control = getControl( id );
+            if( control != NULL ) {
+                return( control->processMsg( gui_ev ) );
+            }
         }
-    }
-    case GUI_LBUTTONUP: {
+        break;
+    case GUI_LBUTTONUP:
         GUI_GET_POINT( parm, point );
         return( leftBttnUp( point.x, point.y, 0 ) );
-    }
-    case GUI_LBUTTONDOWN: {
+    case GUI_LBUTTONDOWN:
         GUI_GET_POINT( parm, point );
         return( leftBttnDn( point.x, point.y, 0 ) );
-    }
-    case GUI_LBUTTONDBLCLK: {
+    case GUI_LBUTTONDBLCLK:
         GUI_GET_POINT( parm, point );
         return( leftBttnDbl( point.x, point.y, 0 ) );
-    }
-    case GUI_RBUTTONUP: {
+    case GUI_RBUTTONUP:
         GUI_GET_POINT( parm, point );
         return( rightBttnUp( point.x, point.y, 0 ) );
-    }
-    case GUI_CONTROL_RCLICKED: {
-        GUI_GETID( parm, id );
-        WControl* control = getControl( id );
-        if( control != NULL ) {
-            return( control->rightBttnUp( 0, 0, 0 ) );
-        } else {
-            return( false );
+    case GUI_CONTROL_RCLICKED:
+        {
+            GUI_GETID( parm, id );
+            WControl* control = getControl( id );
+            if( control != NULL ) {
+                return( control->rightBttnUp( 0, 0, 0 ) );
+            }
         }
-    }
-    case GUI_RBUTTONDOWN: {
+        break;
+    case GUI_RBUTTONDOWN:
         GUI_GET_POINT( parm, point );
         return( rightBttnDn( point.x, point.y, 0 ) );
-    }
-    case GUI_RBUTTONDBLCLK: {
+    case GUI_RBUTTONDBLCLK:
         GUI_GET_POINT( parm, point );
         return( rightBttnDbl( point.x, point.y, 0 ) );
-    }
-    case GUI_MOUSEMOVE: {
+    case GUI_MOUSEMOVE:
         GUI_GET_POINT( parm, point );
         return( mouseMove( point.x, point.y, 0 ) );
-    }
-    case GUI_VSCROLL_NOTIFY: {
+    case GUI_VSCROLL_NOTIFY:
         return( scrollPosChanged( WScrollBarVertical ) );
-    }
-    case GUI_HSCROLL_NOTIFY: {
+    case GUI_HSCROLL_NOTIFY:
         return( scrollPosChanged( WScrollBarHorizontal ) );
-    }
-    case GUI_NOW_ACTIVE: {
+    case GUI_NOW_ACTIVE:
         return( gettingFocus( NULL ) );
-    }
-    case GUI_NOT_ACTIVE: {
+    case GUI_NOT_ACTIVE:
         return( losingFocus( NULL ) );
-    }
-    case GUI_KEYDOWN: {
-        _keyHandled = false;
-        WWindow *p = this;
-        while( p != NULL ) {
-            _keyHandled = p->keyDown( ((gui_key_state *)parm)->key,
-                                      ((gui_key_state *)parm)->state );
-            if( _keyHandled ) break;
-            p = p->parent();
+    case GUI_KEYDOWN:
+        {
+            WWindow *p;
+
+            _keyHandled = false;
+            for( p = this; p != NULL; p = p->parent() ) {
+                _keyHandled = p->keyDown( ((gui_key_state *)parm)->key, ((gui_key_state *)parm)->state );
+                if( _keyHandled ) {
+                    break;
+                }
+            }
+            return( _keyHandled );
         }
-        return( _keyHandled );
-    }
-    case GUI_KEY_CONTROL: {
-        return( false );
-    }
-    case GUI_KEYUP: {
+    case GUI_KEY_CONTROL:
+        break;
+    case GUI_KEYUP:
         // we don't care about GUI_KEYUP messages; however we want to
         // return whether the GUI_KEYDOWN message was handled or not
         return( _keyHandled );
-    }
-    case GUI_CLOSE: {
+    case GUI_CLOSE:
         return( reallyClose() );
-    }
-    case GUI_DESTROY: {
+    case GUI_DESTROY:
         setHandle( NULL );
         return( true );
-    }
-    case GUI_ICONIFIED: {
+    case GUI_ICONIFIED:
         minimized();
         return( true );
-    }
     case GUI_MOVE:
         // BobP removed because it caused size problems
         // * could not move window to second monitor
@@ -197,27 +195,33 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         //moved( 0, 0 );
         enumChildren();
         return( true );
-    case GUI_RESIZE: {
-        GUI_GET_SIZE( parm, size );
-        resized( size.x, size.y );
-        enumChildren();
-        return( true );
-    }
-    case GUI_PAINT: {
-        _painting = true;
-        GUI_GET_ROWS( parm, _firstDirtyRow, _numDirtyRows );
-        bool ret = paint();
-        _firstDirtyRow = 0;
-        _numDirtyRows = 0;
-        _painting = false;
-        return( ret );
-    }
-    case GUI_INITMENUPOPUP: {
-        GUI_GETID( parm, id );
-        WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
-        pop->popup();
-        return( true );
-    }
+    case GUI_RESIZE:
+        {
+            gui_coord   size;
+            GUI_GET_SIZE( parm, size );
+            resized( size.x, size.y );
+            enumChildren();
+            return( true );
+        }
+    case GUI_PAINT:
+        {
+            bool    ret;
+
+            _painting = true;
+            GUI_GET_ROWS( parm, _firstDirtyRow, _numDirtyRows );
+            ret = paint();
+            _firstDirtyRow = 0;
+            _numDirtyRows = 0;
+            _painting = false;
+            return( ret );
+        }
+    case GUI_INITMENUPOPUP:
+        {
+            GUI_GETID( parm, id );
+            WPopupMenu *pop = (WPopupMenu *)WWindow::_popupIdMap.findThis( (WHANDLE)(pointer_int)id );
+            pop->popup();
+            return( true );
+        }
     case GUI_TOOLBAR_DESTROYED:
         if( !_toolBar->changed( WToolBarClosed ) ) {
             clearToolBar();
@@ -246,8 +250,12 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     case GUI_SCROLL_BOTTOM:
         return( scrollNotify( WScrollBottom, 0 ) );
     case GUI_SCROLL_VERTICAL:
-        GUI_GET_SCROLL( parm, scroll_position );
-        return( scrollNotify( WScrollVertical, scroll_position ) );
+        {
+            int scroll_position;
+
+            GUI_GET_SCROLL( parm, scroll_position );
+            return( scrollNotify( WScrollVertical, scroll_position ) );
+        }
     case GUI_SCROLL_LEFT:
         return( scrollNotify( WScrollLeft, 0 ) );
     case GUI_SCROLL_PAGE_LEFT:
@@ -261,42 +269,55 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
     case GUI_SCROLL_FULL_RIGHT:
         return( scrollNotify( WScrollFullRight, 0 ) );
     case GUI_SCROLL_HORIZONTAL:
-        GUI_GET_SCROLL( parm, scroll_position );
-        return( scrollNotify( WScrollHorizontal, scroll_position ) );
+        {
+            int scroll_position;
+
+            GUI_GET_SCROLL( parm, scroll_position );
+            return( scrollNotify( WScrollHorizontal, scroll_position ) );
+        }
     case GUI_STATUS_CLEARED:
         return( statusWindowCleared() );
     case GUI_QUERYENDSESSION:
         return( !queryEndSession() );
     case GUI_ENDSESSION:
-        bool ending;
-        bool dummy;
-        GUI_GET_ENDSESSION( parm, ending, dummy );
-        endSession( ending );
-        /* unused parameters */ (void)dummy;
+        {
+            bool ending;
+            bool dummy;
+            GUI_GET_ENDSESSION( parm, ending, dummy );
+            (void)dummy;    /* reference to unused variable */
+            endSession( ending );
+            return( true );
+        }
     case GUI_ACTIVATEAPP:
-        bool activated;
-        GUI_GET_BOOL( parm, activated );
-        return( appActivate( activated ) );
+        {
+            bool activated;
+            GUI_GET_BOOL( parm, activated );
+            return( appActivate( activated ) );
+        }
     case GUI_CONTEXTHELP:
-        bool isactwin;
-        GUI_GET_BOOL( parm, isactwin );
-        return( contextHelp( isactwin ) );
+        {
+            bool isactwin;
+            GUI_GET_BOOL( parm, isactwin );
+            return( contextHelp( isactwin ) );
+        }
+    default:
+        break;
     }
-    return( true );
+    return( false );
 }
 
 
-extern "C" void EnumChildProc( gui_window *hwin, void * ) {
-/*********************************************************/
-
+extern "C" void EnumChildProc( gui_window *hwin, void * )
+/*******************************************************/
+{
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     win->autosize();
 }
 
 
-extern "C" void EnumControlProc( gui_window *hwin, WControlId id, void * ) {
-/**************************************************************************/
-
+extern "C" void EnumControlProc( gui_window *hwin, WControlId id, void * )
+/************************************************************************/
+{
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     WControl* control = win->getControl( id );
     if( control != NULL ) {
@@ -305,38 +326,37 @@ extern "C" void EnumControlProc( gui_window *hwin, WControlId id, void * ) {
 }
 
 
-void WWindow::enumChildren() {
-/****************************/
-
+void WWindow::enumChildren()
+/**************************/
+{
     GUIEnumChildWindows( _handle, EnumChildProc, NULL );
     GUIEnumControls( _handle, EnumControlProc, NULL );
 }
 
 
-extern "C" bool WinProc( gui_window *hwin, gui_event msg, void *parm )
-/********************************************************************/
+extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************/
 {
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
-    if( msg == GUI_INIT_WINDOW ) {
+    if( gui_ev == GUI_INIT_WINDOW ) {
         win->setHandle( hwin );
     }
-    return( win->processMsg( msg, parm ) );
+    return( win->processMsg( gui_ev, parm ) );
 }
 
 
-bool WWindow::mouseMove( int, int, WMouseKeyFlags ) {
-/***************************************************/
-
+bool WWindow::mouseMove( int, int, WMouseKeyFlags )
+/*************************************************/
+{
     GUISetMouseCursor( _currCursor );
     return( false );
 }
 
 
-void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle ) {
-/****************************************************************************/
-
+void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
+/***************************************************************************/
+{
     gui_create_info     create_info;
-    unsigned long       gui_style;
 
     WRect r;
     autoPosition( r );
@@ -350,15 +370,13 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle ) {
     create_info.rect.width = r.w();
     create_info.rect.height = r.h();
     create_info.scroll = _WStyleToScrollStyle( style );
-    gui_style = GUI_INIT_INVISIBLE | GUI_VISIBLE | _WStyleToCreateStyle( style );
-    gui_style |= exstyle;
-    create_info.style = (gui_create_styles)gui_style;
+    create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
-    create_info.num_menus = 0;
+    create_info.num_items = 0;
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.gui_call_back = WinProc;
+    create_info.gui_call_back = WinGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
     _handle = GUICreateWindow( &create_info );
@@ -400,8 +418,7 @@ WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
 }
 
 
-WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
-                          WExStyle exstyle )
+WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style, WExStyle exstyle )
     : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
@@ -418,8 +435,7 @@ WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
 }
 
 
-WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
-                          WStyle style, WExStyle exstyle )
+WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text, WStyle style, WExStyle exstyle )
     : _handle( NULL )
     , _parent( parent )
     , _menu( NULL )
@@ -436,9 +452,9 @@ WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
 }
 
 
-void WWindow::destroyWindow() {
-/*****************************/
-
+void WWindow::destroyWindow()
+/***************************/
+{
     _accelKeys.deleteContents();
     delete clearMenu();
     delete clearToolBar();
@@ -452,9 +468,9 @@ void WWindow::destroyWindow() {
 }
 
 
-WEXPORT WWindow::~WWindow() {
-/***************************/
-
+WEXPORT WWindow::~WWindow()
+/*************************/
+{
     destroyWindow();
     if( _handle ) {
         GUIDestroyWnd( _handle );
@@ -463,9 +479,9 @@ WEXPORT WWindow::~WWindow() {
 }
 
 
-WWindow* WEXPORT WWindow::hasFocus() {
-/************************************/
-
+WWindow* WEXPORT WWindow::hasFocus()
+/**********************************/
+{
     gui_window *hwnd = GUIGetFront();
     if( hwnd ) {
         return( (WWindow *)GUIGetExtra( hwnd ) );
@@ -474,9 +490,9 @@ WWindow* WEXPORT WWindow::hasFocus() {
 }
 
 
-bool WEXPORT WWindow::setFocus() {
-/********************************/
-
+bool WEXPORT WWindow::setFocus()
+/******************************/
+{
     if( handle() ) {
         GUIBringToFront( handle() );
         return( true );
@@ -486,23 +502,23 @@ bool WEXPORT WWindow::setFocus() {
 }
 
 
-void WEXPORT WWindow::addChild( WObject* child ) {
-/************************************************/
-
+void WEXPORT WWindow::addChild( WObject* child )
+/**********************************************/
+{
     _children.add( child );
 }
 
 
-void WEXPORT WWindow::removeChild( WObject* child ) {
-/***************************************************/
-
+void WEXPORT WWindow::removeChild( WObject* child )
+/*************************************************/
+{
     _children.removeSame( child );
 }
 
 
-WWindow* WWindow::switchChild( WWindow* currChild, bool forward ) {
-/*****************************************************************/
-
+WWindow* WWindow::switchChild( WWindow* currChild, bool forward )
+/***************************************************************/
+{
     int icount = _children.count();
     int index = _children.indexOfSame( currChild );
     int startIndex = index;
@@ -529,9 +545,9 @@ WWindow* WWindow::switchChild( WWindow* currChild, bool forward ) {
 }
 
 
-WWindow* WWindow::nextChild( WWindow* w ) {
-/*****************************************/
-
+WWindow* WWindow::nextChild( WWindow* w )
+/***************************************/
+{
     int icount = _children.count();
     for( int i=0; i<icount; i++ ) {
         WWindow* nw = (WWindow*)_children[i];
@@ -591,9 +607,9 @@ static key_map KeyMapping[] = {
 };
 
 
-static WKeyCode MapAccelKey( int key ) {
-/**************************************/
-
+static WKeyCode MapAccelKey( int key )
+/************************************/
+{
     for( unsigned i = 0; i < sizeof( KeyMapping ); ++i ) {
         if( KeyMapping[i].ascii == key ) {
             return( KeyMapping[i].alt_key );
@@ -603,9 +619,9 @@ static WKeyCode MapAccelKey( int key ) {
 }
 
 
-AccelKey *WWindow::findAccelKey( WKeyCode key ) {
-/***********************************************/
-
+AccelKey *WWindow::findAccelKey( WKeyCode key )
+/*********************************************/
+{
     int icount = _accelKeys.count();
     for( int i = 0; i < icount; ++i ) {
         AccelKey *ak = (AccelKey *)_accelKeys[i];
@@ -617,16 +633,16 @@ AccelKey *WWindow::findAccelKey( WKeyCode key ) {
 }
 
 
-void WEXPORT WWindow::addAccelKey( WKeyCode key, WObject* client, bcbk cb ) {
-/***************************************************************************/
-
+void WEXPORT WWindow::addAccelKey( WKeyCode key, WObject* client, bcbk cb )
+/*************************************************************************/
+{
     _accelKeys.add( new AccelKey( key, client, cb ) );
 }
 
 
-void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbk cb ) {
-/**********************************************************************/
-
+void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbk cb )
+/********************************************************************/
+{
     WKeyCode    kc;
 
     if( isalpha( key ) ) {
@@ -639,9 +655,9 @@ void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbk cb ) {
 }
 
 
-void WEXPORT WWindow::removeAccelKey( WKeyCode key ) {
-/****************************************************/
-
+void WEXPORT WWindow::removeAccelKey( WKeyCode key )
+/**************************************************/
+{
     AccelKey *ak = findAccelKey( key );
     if( ak != NULL ) {
         _accelKeys.removeSame( ak );
@@ -649,9 +665,9 @@ void WEXPORT WWindow::removeAccelKey( WKeyCode key ) {
 }
 
 
-void WEXPORT WWindow::close() {
-/*****************************/
-
+void WEXPORT WWindow::close()
+/***************************/
+{
     if( reallyClose() ) {
         GUIDestroyWnd( handle() );
         setHandle( NULL );
@@ -659,16 +675,16 @@ void WEXPORT WWindow::close() {
 }
 
 
-void WEXPORT WWindow::getText( char* textBuf, size_t textLen ) {
-/**************************************************************/
-
+void WEXPORT WWindow::getText( char* textBuf, size_t textLen )
+/************************************************************/
+{
     GUIGetWindowText( _handle, textBuf, textLen );
 }
 
 
-void WEXPORT WWindow::getText( WString& str ) {
-/*********************************************/
-
+void WEXPORT WWindow::getText( WString& str )
+/*******************************************/
+{
     size_t len = getTextLength();
     char* t = new char[len + 1];
     getText( t, len + 1 );
@@ -677,16 +693,16 @@ void WEXPORT WWindow::getText( WString& str ) {
 }
 
 
-void WEXPORT WWindow::setText( const char *text ) {
-/*************************************************/
-
+void WEXPORT WWindow::setText( const char *text )
+/***********************************************/
+{
     GUISetWindowText( _handle, (char *)text );
 }
 
 
-WMenu* WEXPORT WWindow::setMenu( WMenu* menu ) {
-/**********************************************/
-
+WMenu* WEXPORT WWindow::setMenu( WMenu* menu )
+/********************************************/
+{
     WMenu* oldMenu = clearMenu();
     _menu = menu;
     _menu->attachMenu( this, 0 );
@@ -694,9 +710,9 @@ WMenu* WEXPORT WWindow::setMenu( WMenu* menu ) {
 }
 
 
-WMenu* WEXPORT WWindow::clearMenu() {
-/***********************************/
-
+WMenu* WEXPORT WWindow::clearMenu()
+/*********************************/
+{
     WMenu* oldMenu = _menu;
     if( _menu != NULL ) {
         _menu->detachMenu();
@@ -706,9 +722,9 @@ WMenu* WEXPORT WWindow::clearMenu() {
 }
 
 
-WToolBar* WEXPORT WWindow::setToolBar( WToolBar *toolbar ) {
-/**********************************************************/
-
+WToolBar* WEXPORT WWindow::setToolBar( WToolBar *toolbar )
+/********************************************************/
+{
     WToolBar* previous = clearToolBar();
     _toolBar = toolbar;
     _toolBar->attach( this );
@@ -716,9 +732,9 @@ WToolBar* WEXPORT WWindow::setToolBar( WToolBar *toolbar ) {
 }
 
 
-WToolBar* WEXPORT WWindow::clearToolBar() {
-/*****************************************/
-
+WToolBar* WEXPORT WWindow::clearToolBar()
+/***************************************/
+{
     WToolBar* curr = _toolBar;
     if( _toolBar != NULL ) {
         _toolBar->detach();
@@ -728,41 +744,43 @@ WToolBar* WEXPORT WWindow::clearToolBar() {
 }
 
 
-void WEXPORT WWindow::setPopup( WPopupMenu* popup ) {
-/***************************************************/
-
+void WEXPORT WWindow::setPopup( WPopupMenu* popup )
+/*************************************************/
+{
     _popup = popup;
 }
 
 
-void WEXPORT WWindow::clearPopup() {
-/**********************************/
-
+void WEXPORT WWindow::clearPopup()
+/********************************/
+{
     _popup = NULL;
 }
 
 
-void WEXPORT WWindow::insertPopup( WPopupMenu *pop, int index ) {
-/***************************************************************/
-
-    if( menu() == NULL ) return;
+void WEXPORT WWindow::insertPopup( WPopupMenu *pop, int index )
+/*************************************************************/
+{
+    if( menu() == NULL )
+        return;
     menu()->insertPopup( pop, index );
     pop->attachMenu( this, 0 );
 }
 
 
-void WEXPORT WWindow::removePopup( WPopupMenu *pop ) {
-/****************************************************/
-
-    if( menu() == NULL ) return;
+void WEXPORT WWindow::removePopup( WPopupMenu *pop )
+/**************************************************/
+{
+    if( menu() == NULL )
+        return;
     menu()->removePopup( pop );
     pop->detachMenu();
 }
 
 
-/********************************************************/
-void WEXPORT WWindow::shrink( int wBorder, int hBorder ) {
-
+void WEXPORT WWindow::shrink( int wBorder, int hBorder )
+/******************************************************/
+{
     if( _children.count() > 0 ) {
         WRect wr;
         getRectangle( wr, false );
@@ -788,9 +806,9 @@ void WEXPORT WWindow::shrink( int wBorder, int hBorder ) {
     }
 }
 
-/******************************/
-void WEXPORT WWindow::shrink() {
-
+void WEXPORT WWindow::shrink()
+/****************************/
+{
     WPoint      avg;
     WPoint      max;
 
@@ -807,7 +825,8 @@ void WEXPORT WWindow::shrink() {
 //                    redraws incorrectly.  I don't believe this
 //                    code is needed
 //
-bool WEXPORT WWindow::updateAutosize() {
+bool WEXPORT WWindow::updateAutosize()
+{
     WRect       rect;
     WRect       prect;
     bool        move;
@@ -857,8 +876,8 @@ bool WEXPORT WWindow::updateAutosize() {
 }
 
 //
-void WEXPORT WWindow::moved( int, int ) {
-
+void WEXPORT WWindow::moved( int, int )
+{
     //if( updateAutosize() ) {
         // Don't let the window be moved to a location that
         // causes the x and/or y co-ordinates to change from
@@ -866,36 +885,37 @@ void WEXPORT WWindow::moved( int, int ) {
     //    autosize();
     //}
 }
-void WEXPORT WWindow::resized( int, int ) {
 
+void WEXPORT WWindow::resized( int, int )
+{
     //updateAutosize();
 }
 
-void WEXPORT WWindow::size( WOrdinal w, WOrdinal h ) {
-
+void WEXPORT WWindow::size( WOrdinal w, WOrdinal h )
+{
     _autosize.w( w );
     _autosize.h( h );
     autosize();
 }
 
 
-void WEXPORT WWindow::move( WOrdinal x, WOrdinal y ) {
-
+void WEXPORT WWindow::move( WOrdinal x, WOrdinal y )
+{
     _autosize.x( x );
     _autosize.y( y );
     autosize();
 }
 
 
-void WEXPORT WWindow::move( const WRect& r ) {
-
+void WEXPORT WWindow::move( const WRect& r )
+{
     _autosize = r;
     autosize();
 }
 
-void WEXPORT WWindow::getRectangle( WRect& r, bool absolute ) {
-/*************************************************************/
-
+void WEXPORT WWindow::getRectangle( WRect& r, bool absolute )
+/***********************************************************/
+{
     gui_rect    rr;
 
     if( absolute ) {
@@ -910,9 +930,9 @@ void WEXPORT WWindow::getRectangle( WRect& r, bool absolute ) {
 }
 
 
-void WEXPORT WWindow::getNormalRectangle( WRect& r ) {
-/****************************************************/
-
+void WEXPORT WWindow::getNormalRectangle( WRect& r )
+/**************************************************/
+{
     gui_rect    rr;
 
     GUIGetRestoredSize( _handle, &rr );
@@ -923,9 +943,9 @@ void WEXPORT WWindow::getNormalRectangle( WRect& r ) {
 }
 
 
-void WEXPORT WWindow::getClientRect( WRect& r, bool absolute ) {
-/**************************************************************/
-
+void WEXPORT WWindow::getClientRect( WRect& r, bool absolute )
+/************************************************************/
+{
     gui_rect    rr;
 
     GUIGetClientRect( _handle, &rr );
@@ -941,9 +961,9 @@ void WEXPORT WWindow::getClientRect( WRect& r, bool absolute ) {
 }
 
 
-void WWindow::show( WWindowState state ) {
-/****************************************/
-
+void WWindow::show( WWindowState state )
+/**************************************/
+{
     if( _handle ) {
         if( state == WWinStateHide ) {
             GUIHideWindow( _handle );
@@ -960,8 +980,9 @@ void WWindow::show( WWindowState state ) {
 }
 
 
-/******************************************/
-void WWindow::autoPosition( WRect& cRect ) {
+void WWindow::autoPosition( WRect& cRect )
+/****************************************/
+{
 // Automatically reposition the given co-ordinates for a window relative
 // to its parent window.
 
@@ -1014,9 +1035,10 @@ void WWindow::autoPosition( WRect& cRect ) {
     if( cRect.y() < 0 ) cRect.y( 0 );
 }
 
-void WEXPORT WWindow::autosize() {
-
-    if( (_handle == NULL) || isIconic() ) return;
+void WEXPORT WWindow::autosize()
+{
+    if( (_handle == NULL) || isIconic() )
+        return;
     WRect cRect;
     autoPosition( cRect );
     gui_rect c;
@@ -1027,9 +1049,9 @@ void WEXPORT WWindow::autosize() {
     GUIResizeWindow( _handle, &c );
 }
 
-bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
-/********************************************************/
-
+bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState )
+/******************************************************/
+{
     AccelKey *ak = findAccelKey( key );
     if( ak != NULL ) {
         if( ak->callClient( ak->_key ) ) {
@@ -1048,16 +1070,16 @@ bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
     return( false );
 }
 
-WControl * WWindow::getControl( WControlId id ) {
-/***********************************************/
-
+WControl * WWindow::getControl( WControlId id )
+/*********************************************/
+{
     return( (WControl *)_idMap.findThis( (WHANDLE)(pointer_int)id ) );
 }
 
 
-void WWindow::displayFloatingPopup( WPopupMenu *popup ) {
-/*******************************************************/
-
+void WWindow::displayFloatingPopup( WPopupMenu *popup )
+/*****************************************************/
+{
 // Assumption: _menu will always be NULL for controls
 
     if( _menu ) {
@@ -1068,9 +1090,9 @@ void WWindow::displayFloatingPopup( WPopupMenu *popup ) {
 }
 
 
-bool WEXPORT WWindow::rightBttnUp( int x, int y, WMouseKeyFlags flags ) {
-/***********************************************************************/
-
+bool WEXPORT WWindow::rightBttnUp( int x, int y, WMouseKeyFlags flags )
+/*********************************************************************/
+{
     if( _popup == NULL ) {
         if( _parent != NULL ) {
             return( _parent->rightBttnUp( x, y, flags ) );
@@ -1087,9 +1109,9 @@ bool WEXPORT WWindow::rightBttnUp( int x, int y, WMouseKeyFlags flags ) {
 }
 
 
-void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxr ) {
-/***************************************************************/
-
+void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxr )
+/*************************************************************/
+{
     if( sb == WScrollBarVertical ) {
         GUISetVScrollRange( _handle, maxr );
     } else {
@@ -1098,9 +1120,9 @@ void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxr ) {
 }
 
 
-int WEXPORT WWindow::getScrollRange( WScrollBar sb ) {
-/****************************************************/
-
+int WEXPORT WWindow::getScrollRange( WScrollBar sb )
+/**************************************************/
+{
     if( sb == WScrollBarVertical ) {
         return( GUIGetVScrollRange( _handle ) );
     } else {
@@ -1109,9 +1131,9 @@ int WEXPORT WWindow::getScrollRange( WScrollBar sb ) {
 }
 
 
-void WEXPORT WWindow::setScrollPos( WScrollBar sb, int pos ) {
-/************************************************************/
-
+void WEXPORT WWindow::setScrollPos( WScrollBar sb, int pos )
+/**********************************************************/
+{
     if( sb == WScrollBarVertical ) {
         GUISetVScroll( _handle, pos );
     } else {
@@ -1120,9 +1142,9 @@ void WEXPORT WWindow::setScrollPos( WScrollBar sb, int pos ) {
 }
 
 
-int  WEXPORT WWindow::getScrollPos( WScrollBar sb ) {
-/***************************************************/
-
+int  WEXPORT WWindow::getScrollPos( WScrollBar sb )
+/*************************************************/
+{
     if( sb == WScrollBarVertical ) {
         return( GUIGetVScroll( _handle ) );
     } else {
@@ -1131,9 +1153,9 @@ int  WEXPORT WWindow::getScrollPos( WScrollBar sb ) {
 }
 
 
-void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxr ) {
-/*******************************************************************/
-
+void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxr )
+/*****************************************************************/
+{
     if( sb == WScrollBarVertical ) {
         GUISetVScrollRangeRows( _handle, maxr );
     } else {
@@ -1142,9 +1164,9 @@ void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxr ) {
 }
 
 
-int WEXPORT WWindow::getScrollTextRange( WScrollBar sb ) {
-/********************************************************/
-
+int WEXPORT WWindow::getScrollTextRange( WScrollBar sb )
+/******************************************************/
+{
     if( sb == WScrollBarVertical ) {
         return( GUIGetVScrollRangeRows( _handle ) );
     } else {
@@ -1153,9 +1175,9 @@ int WEXPORT WWindow::getScrollTextRange( WScrollBar sb ) {
 }
 
 
-void WEXPORT WWindow::setScrollTextPos( WScrollBar sb, int pos ) {
-/****************************************************************/
-
+void WEXPORT WWindow::setScrollTextPos( WScrollBar sb, int pos )
+/**************************************************************/
+{
     if( sb == WScrollBarVertical ) {
         GUISetVScrollRow( _handle, pos );
     } else {
@@ -1164,9 +1186,9 @@ void WEXPORT WWindow::setScrollTextPos( WScrollBar sb, int pos ) {
 }
 
 
-int  WEXPORT WWindow::getScrollTextPos( WScrollBar sb ) {
-/*******************************************************/
-
+int  WEXPORT WWindow::getScrollTextPos( WScrollBar sb )
+/*****************************************************/
+{
     if( sb == WScrollBarVertical ) {
         return( GUIGetVScrollRow( _handle ) );
     } else {
@@ -1175,16 +1197,16 @@ int  WEXPORT WWindow::getScrollTextPos( WScrollBar sb ) {
 }
 
 
-bool WEXPORT WWindow::scrollNotify( WScrollNotification, int ) {
-/**************************************************************/
-
+bool WEXPORT WWindow::scrollNotify( WScrollNotification, int )
+/************************************************************/
+{
     return( false );
 }
 
 
-void WEXPORT WWindow::scrollWindow( WScrollBar sb, int scroll_size ) {
-/********************************************************************/
-
+void WEXPORT WWindow::scrollWindow( WScrollBar sb, int scroll_size )
+/******************************************************************/
+{
     if( sb == WScrollBarVertical ) {
         GUIDoVScroll( handle(), scroll_size );
     } else {
@@ -1193,16 +1215,16 @@ void WEXPORT WWindow::scrollWindow( WScrollBar sb, int scroll_size ) {
 }
 
 
-bool WEXPORT WWindow::scrollPosChanged( WScrollBar ) {
-/****************************************************/
-
+bool WEXPORT WWindow::scrollPosChanged( WScrollBar )
+/**************************************************/
+{
     return( false );
 }
 
 
-void WEXPORT WWindow::startWait() {
-/*********************************/
-
+void WEXPORT WWindow::startWait()
+/*******************************/
+{
     if( _currCursor != GUI_HOURGLASS_CURSOR ) {
         _prevCursor = _currCursor;
         _currCursor = GUI_HOURGLASS_CURSOR;
@@ -1211,9 +1233,9 @@ void WEXPORT WWindow::startWait() {
 }
 
 
-void WEXPORT WWindow::stopWait() {
-/********************************/
-
+void WEXPORT WWindow::stopWait()
+/******************************/
+{
     if( _currCursor == GUI_HOURGLASS_CURSOR ) {
         _currCursor = _prevCursor;
         GUISetMouseCursor( _currCursor );
@@ -1221,18 +1243,18 @@ void WEXPORT WWindow::stopWait() {
 }
 
 
-void WEXPORT WWindow::update( bool ) {
-/************************************/
-
+void WEXPORT WWindow::update( bool )
+/**********************************/
+{
     if( _handle != NULL ) {
         GUIWndDirty( _handle );
     }
 }
 
 
-void WEXPORT WWindow::setUpdates( bool start_update ) {
-/*****************************************************/
-
+void WEXPORT WWindow::setUpdates( bool start_update )
+/***************************************************/
+{
     GUISetRedraw( _handle, start_update );
     if( start_update ) {
         update( true );
@@ -1240,9 +1262,9 @@ void WEXPORT WWindow::setUpdates( bool start_update ) {
 }
 
 
-void WEXPORT WWindow::setIcon( WResource bitmap, char *ch_mode ) {
-/****************************************************************/
-
+void WEXPORT WWindow::setIcon( WResource bitmap, char *ch_mode )
+/**************************************************************/
+{
     gui_resource        resource;
 
     resource.res = bitmap;
@@ -1251,9 +1273,9 @@ void WEXPORT WWindow::setIcon( WResource bitmap, char *ch_mode ) {
 }
 
 
-int WEXPORT WWindow::getRow( const WPoint &point ) {
-/**************************************************/
-
+int WEXPORT WWindow::getRow( const WPoint &point )
+/************************************************/
+{
     gui_point   p;
 
     p.x = point.x();
@@ -1262,9 +1284,9 @@ int WEXPORT WWindow::getRow( const WPoint &point ) {
 }
 
 
-void WEXPORT WWindow::getRowPoint( int row, WPoint &point ) {
-/***********************************************************/
-
+void WEXPORT WWindow::getRowPoint( int row, WPoint &point )
+/*********************************************************/
+{
     gui_point   p;
 
     GUIGetPoint( _handle, 0, row, &p );
@@ -1273,9 +1295,9 @@ void WEXPORT WWindow::getRowPoint( int row, WPoint &point ) {
 }
 
 
-void WEXPORT WWindow::textMetrics( WPoint &avg, WPoint &max ) {
-/*************************************************************/
-
+void WEXPORT WWindow::textMetrics( WPoint &avg, WPoint &max )
+/***********************************************************/
+{
     gui_text_metrics    tm;
 
     GUIGetTextMetrics( _handle, &tm );
@@ -1286,8 +1308,9 @@ void WEXPORT WWindow::textMetrics( WPoint &avg, WPoint &max ) {
 }
 
 
-void WWindow::centre( unsigned int xpct, unsigned int ypct ) {
-/************************************************************/
+void WWindow::centre( unsigned int xpct, unsigned int ypct )
+/**********************************************************/
+{
     WRect       backRect;
     WRect       foreRect;
 
@@ -1316,7 +1339,9 @@ void WWindow::centre( unsigned int xpct, unsigned int ypct ) {
     GUIResizeWindow( _handle, &c );
 }
 
-void WWindow::hookF1Key( bool set ) {
+void WWindow::hookF1Key( bool set )
+/*********************************/
+{
     if( set ) {
         GUIHookF1();
     } else {

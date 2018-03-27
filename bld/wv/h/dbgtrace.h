@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,5 +45,3 @@ extern bool             HasLineInfo( address addr );
 extern void             ExecTrace( trace_cmd_type type, debug_level level );
 extern void             ProcTrace( void );
 extern void             FiniTrace( void );
-extern void             LevelSet( void );
-extern void             LevelConf( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,10 @@
 
 #include <dos.h>
 #include "uidef.h"
-#include "charmap.h"
 #include "biosui.h"
+#include "charmap.h"
+#include "uimouse.h"
+#include "uibmous.h"
 
 
 #define CURSOR_HEIGHT   14                       /* Mouse cursor height      */
@@ -41,26 +44,15 @@
 #define DEFCHAR         0xD5
 #define DEFCHAR2        0xD7
 
-#define VidCol          (UIData->width)
-#define VidRow          (UIData->height)
-
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-
-extern void             (intern *DrawCursor)( void );
-extern void             (intern *EraseCursor)( void );
-extern bool             MouseInstalled;
-
-static char             SaveChars[2][2];        /* Overwritten characters  */
-extern unsigned short   Points;                 /* Number of lines / char  */
-static unsigned char    CharDefs[64];           /* Character definitons.    */
-static unsigned char    SaveDefs[64];           /* Saved character defs     */
-
-enum Function {
+typedef enum {
     ERASE,
     DRAW,
     SAVE
-};
+} plot_func;
+
+static unsigned char    SaveChars[2][2];        /* Overwritten characters  */
+static unsigned char    CharDefs[64];           /* Character definitons.    */
+static unsigned char    SaveDefs[64];           /* Saved character defs     */
 
 // Masks for the cursor
 
@@ -98,21 +90,20 @@ static unsigned short MouScreenMask[CURSOR_HEIGHT] =  {
     0xfcff   /*1111110011111111*/
 };
 
-static void     PlotEgaVgaCursor( unsigned );
-static char     MouInit( void );
-static void     MouDeinit( void );
-static char     CheckEgaVga( void );
-
-void intern     DrawEgaVgaCursor( void );
-void intern     EraseEgaVgaCursor( void );
-
 //  Plot the cursor on the screen, save background, draw grid, etc.
 
-static void PlotEgaVgaCursor( unsigned action )
+static void PlotEgaVgaCursor( plot_func action )
 {
-    unsigned    width, height, disp, i, j, x, y;
-    static int  lsavex = 0, lsavey = 0;
-    LP_PIXEL    screen;
+    static unsigned lsavex = 0;
+    static unsigned lsavey = 0;
+    unsigned        width;
+    unsigned        height;
+    unsigned        disp;
+    unsigned        i;
+    unsigned        j;
+    unsigned        x;
+    unsigned        y;
+    LP_PIXEL        screen;
 
     switch( action ) {
     case ERASE :                        /* Erase grid, put save info    */
@@ -120,28 +111,27 @@ static void PlotEgaVgaCursor( unsigned action )
         y = lsavey;
         break;
     case DRAW :                         /* Draw grid                    */
-        x = MouseCol/8;
-        y = MouseRow/Points;
+        x = MouseCol / 8;
+        y = MouseRow / Points;
         break;
     case SAVE :                         /* Save grid                    */
-        x = lsavex = MouseCol/8;
-        y = lsavey = MouseRow/Points;
+        x = lsavex = MouseCol / 8;
+        y = lsavey = MouseRow / Points;
         break;
     }
 
-    width = VidCol - x;
+    width = UIData->width - x;
     if( width > 2 ) {
         width = 2;
     }
 
-    height = VidRow - y;
+    height = UIData->height - y;
     if( height > 2 ) {
         height = 2;
     }
 
-    screen = UIData->screen.origin;
-    screen += ( y * VidCol + x );
-    disp = ( VidCol - width );
+    screen = UIData->screen.origin + y * UIData->width + x;
+    disp = UIData->width - width;
 
     switch( action ) {
     case ERASE:
@@ -173,36 +163,43 @@ static void PlotEgaVgaCursor( unsigned action )
     }
 }
 
-void intern DrawEgaVgaCursor(void)
+static void DrawEgaVgaCursor( void )
 {
-    unsigned short  off,  shift, addmask, i, j, s1, s2;
-    unsigned short  *defs, *masks;
+    unsigned short  off;
+    unsigned short  shift;
+    unsigned short  addmask;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  *defs;
+    unsigned short  *masks;
 
     PlotEgaVgaCursor( SAVE );                   /* Save the current grid    */
 
     SetSequencer();                             /* Program the sequencer    */
     off = 0;
-    for( i = 0; i < 4;  i += 2 ) {              /* The grid is 2 chars high */
-        s1 = ( (char *)SaveChars )[i    ] * 32;
-        s2 = ( (char *)SaveChars )[i + 1] * 32;
+    for( i = 0; i < 2;  i++ ) {                 /* The grid is 2 chars high */
+        s1 = SaveChars[i][0] * 32;
+        s2 = SaveChars[i][1] * 32;
         for( j = 0; j < Points; j++ ) {
-            CharDefs[off++] = _peekb( 0xa000, s2++ );
-            CharDefs[off++] = _peekb( 0xa000, s1++ );
+            CharDefs[off++] = VIDEOData( 0xa000, s2++ );
+            CharDefs[off++] = VIDEOData( 0xa000, s1++ );
         }
     }
 
     shift   = MouseCol % 8;
     addmask = 0xFF00 << (8 - shift);
 
-    masks   = MouScreenMask;
-    defs    = ( (unsigned short *)CharDefs ) + MouseRow % Points;
+    masks = MouScreenMask;
+    defs = (unsigned short *)CharDefs + ( MouseRow % Points );
 
     for( i = 0; i < CURSOR_HEIGHT; i++ ) {
         *defs++ &= (*masks++ >> shift) | addmask;
     }
 
-    masks   = MouCursorMask;
-    defs    = ( (unsigned short *)CharDefs ) + MouseRow % Points;
+    masks = MouCursorMask;
+    defs = (unsigned short *)CharDefs + ( MouseRow % Points );
 
     for( i = 0; i < CURSOR_HEIGHT; i++ ) {
         *defs++ |= *masks++ >> shift;
@@ -215,8 +212,8 @@ void intern DrawEgaVgaCursor(void)
         s1 = ( DEFCHAR  + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            _pokeb( 0xA000, s2++, CharDefs[off++] );
-            _pokeb( 0xA000, s1++, CharDefs[off++] );
+            VIDEOData( 0xA000, s2++ ) = CharDefs[off++];
+            VIDEOData( 0xA000, s1++ ) = CharDefs[off++];
         }
     }
 
@@ -225,34 +222,35 @@ void intern DrawEgaVgaCursor(void)
     PlotEgaVgaCursor( DRAW );                   /* Plot the new grid        */
 }
 
-static char MouInit( void )
+static bool MouInit( void )
 {
-    char            savedmode;
-    unsigned short  off, i, j, s1, s2;
-    int             ret;
-    static int      first_time = true;
+    static bool     first_time = true;
+    unsigned char   savedmode;
+    unsigned short  off;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  ret;
 
-    Points = _POINTS;
+    Points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
 
     /*
-        MASSIVE KLUDGE: It turns out that the DOS debugger ends up
-        calling MouInit & MouDeInit every time a screen swap occurs
-        (no matter what the flipping mechanism is). Doing the mouse
-        driver initialization every time is extremely slow. Things seem
-        to work if we only do the driver initialization the first time
-        through. Talk to Brian Stecher/John Dahms if you run into problems
-        with not doing the initialization all the time.
-    */
+     * MASSIVE KLUDGE: It turns out that the DOS debugger ends up
+     * calling MouInit & MouDeInit every time a screen swap occurs
+     * (no matter what the flipping mechanism is). Doing the mouse
+     * driver initialization every time is extremely slow. Things seem
+     * to work if we only do the driver initialization the first time
+     * through. Talk to Brian Stecher/John Dahms if you run into problems
+     * with not doing the initialization all the time.
+     */
     if( first_time ) {
         first_time = false;
-        savedmode = _peekb( BIOS_PAGE, 0x49 );  /* Save video mode          */
-        _pokeb( BIOS_PAGE, 0x49, 6 );           /* Set magic mode           */
-
-        ret = MouseInt( 0, 0, 0, 0 );           /* Reset driver for change  */
-
-        _pokeb( BIOS_PAGE, 0x49, savedmode );   /* Put the old mode back    */
-
-        if( ret != -1 ) {
+        savedmode = BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char );    /* Save video mode         */
+        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = 6;            /* Set magic mode          */
+        ret = MouseDrvReset();                                          /* Reset driver for change */
+        BIOSData( BIOS_CURR_VIDEO_MODE, unsigned char ) = savedmode;    /* Put the old mode back   */
+        if( ret != MOUSE_DRIVER_OK ) {
             return( false );
         }
     }
@@ -263,8 +261,8 @@ static char MouInit( void )
         s1 = ( DEFCHAR + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            SaveDefs[off++] = _peekb( 0xa000, s2++ );
-            SaveDefs[off++] = _peekb( 0xa000, s1++ );
+            SaveDefs[off++] = VIDEOData( 0xa000, s2++ );
+            SaveDefs[off++] = VIDEOData( 0xa000, s1++ );
         }
     }
     ResetSequencer();
@@ -275,7 +273,11 @@ static char MouInit( void )
 
 static void MouDeinit( void )
 {
-    unsigned short  i, j, s1, s2, off ;
+    unsigned short  i;
+    unsigned short  j;
+    unsigned short  s1;
+    unsigned short  s2;
+    unsigned short  off;
 
     SetSequencer();
     SetWriteMap();                          /* Put characters back      */
@@ -285,53 +287,22 @@ static void MouDeinit( void )
         s1 = ( DEFCHAR  + i ) * 32;
         s2 = ( DEFCHAR2 + i ) * 32;
         for( j = 0; j < Points; j++ ) {
-            _pokeb( 0xA000, s2++, SaveDefs[off++] );
-            _pokeb( 0xA000, s1++, SaveDefs[off++] );
+            VIDEOData( 0xA000, s2++ ) = SaveDefs[off++];
+            VIDEOData( 0xA000, s1++ ) = SaveDefs[off++];
         }
     }
     ResetSequencer();
     /* MASSIVE KLUDGE: See comment in MouInit routine
-//    MouseInt( 0, 0, 0, 0 );
+//    MouseDrvReset();
     */
 }
 
-void intern EraseEgaVgaCursor( void )
+static void EraseEgaVgaCursor( void )
 {
     PlotEgaVgaCursor( ERASE );
 }
 
-void UIAPI uifinigmouse( void )
-{
-    if( MouseInstalled && DrawCursor != NULL ) {
-        uioffmouse();
-        MouDeinit();
-    }
-}
-
-bool UIAPI uiinitgmouse( int install )
-{
-    MouseInstalled = false;
-    if( install > 0 && installed( BIOS_MOUSE ) ) {
-        if( install > 1 ) {
-            if( CheckEgaVga() ) {
-                if( MouInit() ) {
-                    UIData->mouse_yscale = _POINTS;
-                    UIData->mouse_xscale = 8;
-                } else {
-                    install = 0;
-                }
-            } else if( MouseInt( 0, 0, 0, 0 ) != -1 ) {
-                install = 0;
-            }
-        }
-        if( install > 0 ) {
-            setupmouse();
-        }
-    }
-    return( MouseInstalled );
-}
-
-static char CheckEgaVga( void )
+static bool CheckEgaVga( void )
 {
     if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
       && !UIData->desqview
@@ -343,4 +314,35 @@ static char CheckEgaVga( void )
         return( true );
     }
     return( false );
+}
+
+bool UIAPI uiinitgmouse( init_mode install )
+{
+    MouseInstalled = false;
+    if( install > INIT_MOUSELESS && mouse_installed() ) {
+        if( install > INIT_MOUSE ) {
+            if( CheckEgaVga() ) {
+                if( MouInit() ) {
+                    UIData->mouse_yscale = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
+                    UIData->mouse_xscale = 8;
+                } else {
+                    install = INIT_MOUSELESS;
+                }
+            } else if( MouseDrvReset() != MOUSE_DRIVER_OK ) {
+                install = INIT_MOUSELESS;
+            }
+        }
+        if( install > INIT_MOUSELESS ) {
+            setupmouse();
+        }
+    }
+    return( MouseInstalled );
+}
+
+void UIAPI uifinigmouse( void )
+{
+    if( MouseInstalled && DrawCursor != NULL ) {
+        uioffmouse();
+        MouDeinit();
+    }
 }

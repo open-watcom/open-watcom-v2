@@ -64,13 +64,9 @@
 #include "wndhelp.h"
 #include "wndmenu.h"
 #include "fingmsg.h"
+#include "dlgnewp.h"
 
 
-extern a_window         *WndMain;
-extern const char       WndNameTab[];
-
-extern GUICALLBACK      WndMainEventProc;
-extern void             DlgNewProg( void );
 extern void             InitPaint( void );
 extern void             InitFileMap( void );
 extern void             InitScreen( void );
@@ -109,7 +105,7 @@ static void StopTimer( void )
 
 #elif defined( __RDOS__ )
 
-extern void uitimer( void (*proc)( void ), int ms );
+#include "guitimer.h"
 
 void GUITimer( void )
 {
@@ -119,12 +115,12 @@ void GUITimer( void )
 
 static void StartTimer( void )
 {
-    uitimer( GUITimer, TIMER_MS );
+    GUIStartTimer( NULL, 0, TIMER_MS );
 }
 
 static void StopTimer( void )
 {
-    uitimer( NULL, 0 );
+    GUIStopTimer( NULL, 0 );
 }
 
 #else
@@ -196,7 +192,8 @@ void DUIInit( void )
 #if defined(__GUI__)
     TellWinHandle();
 #endif
-    if( WndMain != NULL ) WndSetIcon( WndMain, &MainIcon );
+    if( WndMain != NULL )
+        WndSetIcon( WndMain, &MainIcon );
     StartTimer();
     InitHelp();
     InitGadget();
@@ -239,7 +236,7 @@ void DUIShow( void )
     WndDebug();
     WndShowAll();
     WndShowWndMain();
-    WndMainEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
+    WndMainGUIEventProc( WndGui( WndMain ), GUI_NO_EVENT, NULL );
     if( _IsOff( SW_HAVE_TASK ) && _IsOff( SW_PROC_ALREADY_STARTED ) ) {
         DlgNewProg();
     }
@@ -340,11 +337,6 @@ bool DUIInfoRelease( void )
     return( false );
 }
 
-void *DUIHourGlass( void *x )
-{
-    return( WndHourGlass( x ) );
-}
-
 void WndDoInput( void )
 {
     InitSuppServices();
@@ -359,14 +351,17 @@ void DUIExitCriticalSection( void )
 {
 }
 
-bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
+bool DUIGetSourceLine( cue_handle *cueh, char *buff, size_t len )
 {
     void        *viewhndl;
 
-    viewhndl = OpenSrcFile( ch );
+    viewhndl = OpenSrcFile( cueh );
     if( viewhndl == NULL )
         return( false );
-    buff[FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len )] = NULLCHAR;
+    len = FReadLine( viewhndl, DIPCueLine( cueh ), 0, buff, len );
+    if( len == FREADLINE_ERROR )
+        len = 0;
+    buff[len] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }

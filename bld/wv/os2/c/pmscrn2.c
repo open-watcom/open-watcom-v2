@@ -54,7 +54,6 @@
 extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
 
 extern HMQ              GUIPMmq;
-extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;
@@ -150,7 +149,7 @@ static void APIENTRY PumpMessageQueue( ULONG parm )
         DosWaitEventSem( PumpMessageSem, SEM_INDEFINITE_WAIT );
         DosResetEventSem( PumpMessageSem, &ulCount );
         WinThreadAssocQueue( GUIGetHAB(), GUIPMmq );
-        while ( WinGetMsg( GUIGetHAB(), &qmsg, 0L, 0, 0 ) ) {
+        while( WinGetMsg( GUIGetHAB(), &qmsg, 0L, 0, 0 ) ) {
             WinQueryClassName( qmsg.hwnd, sizeof( class_name ), class_name );
             if (strcmp( class_name, "GUIClass" ) == 0 ||
                 strcmp( class_name, "WTool" ) == 0) {

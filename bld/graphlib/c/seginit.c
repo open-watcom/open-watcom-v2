@@ -35,6 +35,9 @@
 #include "extender.h"
 #include "rmalloc.h"
 #endif
+#if defined( __DOS__ )
+#include "getltdos.h"
+#endif
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,18 +186,6 @@ extern short  os_version( void );
         "pop cx"        \
         "pop bx"        \
         value           [ax];   /* al=major ah=minor */
-
-extern dbcs_pair __far *  dbcs_vector_table( void );
-#pragma aux             dbcs_vector_table = \
-        "push ds"       \
-        "push si"       \
-        "mov ax,6300h"  /* get DBCS vector table */ \
-        "int 21h"       \
-        "mov dx,ds"     \
-        "mov ax,si"     \
-        "pop si"        \
-        "pop ds"        \
-        value           [dx ax];
 #endif
 
 
@@ -240,21 +231,19 @@ void _InitSegments( void )
 
     if( os_major >= 5 ) {
         // The DBCS vector table call is not supported in earlier versions
-#if !defined( __386__ )
-        s = dbcs_vector_table();
-#else
-        s = MK_FP( _BiosSeg, _RMInterrupt2( 0x21, 0x6300 ) );
-#endif
         p = _DBCSPairs;
-        while( s->start_range != 0 ) {
-            p->start_range = s->start_range;
-            p->end_range = s->end_range;
-            ++p;
-            ++s;
+        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
+        if( s != NULL ) {
+            while( s->start_range != 0 ) {
+                p->start_range = s->start_range;
+                p->end_range = s->end_range;
+                ++p;
+                ++s;
+            }
         }
         p->start_range = 0;
         p->end_range = 0;
-        if( _DBCSPairs[ 0 ].start_range != 0 ) {
+        if( _DBCSPairs[0].start_range != 0 ) {
             _IsDBCS = TRUE;
         }
     }

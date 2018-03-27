@@ -41,7 +41,8 @@
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
 #define INCL_DOSMODULEMGR
-#include <wos2.h>
+#define INCL_DOSEXCEPTIONS
+#include <os2.h>
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"

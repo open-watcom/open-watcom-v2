@@ -32,6 +32,7 @@
 
 #ifndef _GUIXUTIL_H_
 #define _GUIXUTIL_H_
+
 extern bool GUIIsOpen( gui_window * );
 extern bool GUISetupStruct( gui_window *wnd, gui_create_info *, gui_coord *, gui_coord *, HWND parent, HMENU * );
 extern void GUICalcLocation( gui_rect *, gui_coord *, gui_coord *, HWND parent );
@@ -65,4 +66,5 @@ extern bool GUIIsParentADialog( gui_window *wnd );
 extern void GUIMaximizeZoomedChildren( gui_window *wnd );
 extern gui_window *GUIFindWindowFromHWND( HWND hwnd );
 extern bool GUIIsGUIChild( HWND hwnd );
+
 #endif // _GUIXUTIL_H_

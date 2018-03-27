@@ -36,7 +36,7 @@
 #ifndef BOOTSTRAP
 
 #include "autodep.h"
-#include "wresset2.h"
+#include "wressetr.h"
 
 typedef struct res_info {
     DepInfo *first;
@@ -50,7 +50,7 @@ STATIC handle RESInitFile( const char *name )
 {
     DepInfo         *depends;
     res_info        *ret_val;
-    WResFileOffset  old_shift;
+    long            old_shift;
 
     ret_val = NULL;
     old_shift = WResFileShift;

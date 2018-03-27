@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -60,9 +59,6 @@
 extern void     NewConsoleTitle( void );
 
 extern volatile bool    BrkPending;
-#ifdef __GUI__
-extern a_window         *WndMain;
-#endif
 
 static char             *CmdData;
 
@@ -111,7 +107,8 @@ void WndCleanUp( void )
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 

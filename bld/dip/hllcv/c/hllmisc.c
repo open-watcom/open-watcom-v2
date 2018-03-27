@@ -51,7 +51,7 @@ const char      DIPImp( Name )[] = "HLL/CV";
 unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    ih,
+        #define pick(e,hdl,imphdl,wvimphdl) imphdl,
         #include "diphndls.h"
         #undef pick
     };
@@ -108,7 +108,7 @@ size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 /*
  * Finds a subsection directory entry for a specific module.
  */
-hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst sst )
+hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_sst sst )
 {
     unsigned            i;
     unsigned            block;
@@ -116,18 +116,18 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
     unsigned            remainder;
     hll_dir_entry       *p;
 
-    full_blocks = BLOCK_FACTOR( ii->dir_count, DIRECTORY_BLOCK_ENTRIES ) - 1;
+    full_blocks = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES ) - 1;
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
-            p = &ii->directory[block][i];
+            p = &iih->directory[block][i];
             if( p->iMod == im && p->subsection == sst ) {
                 return( p );
             }
         }
     }
-    remainder = ii->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
+    remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
-        p = &ii->directory[block][i];
+        p = &iih->directory[block][i];
         if( p->iMod == im && p->subsection == sst ) {
             return( p );
         }
@@ -141,7 +141,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
  * Use 'sst' to limit the callbacks to one specific type. A 'sst' of 0
  * means everything.
  */
-walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
+walk_result hllWalkDirList( imp_image_handle *iih, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;
@@ -150,23 +150,23 @@ walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIP_DIR_WALKER *w
     walk_result         wr;
     hll_dir_entry       *p;
 
-    full_blocks = BLOCK_FACTOR( ii->dir_count, DIRECTORY_BLOCK_ENTRIES ) - 1;
+    full_blocks = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES ) - 1;
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
-            p = &ii->directory[block][i];
+            p = &iih->directory[block][i];
             if( p->subsection == sst || sst == 0) {
-                wr = wk( ii, p, d );
+                wr = wk( iih, p, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
             }
         }
     }
-    remainder = ii->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
+    remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
-        p = &ii->directory[block][i];
+        p = &iih->directory[block][i];
         if( p->subsection == sst || sst == 0) {
-            wr = wk( ii, p, d );
+            wr = wk( iih, p, d );
             if( wr != WR_CONTINUE ) {
                 return( wr );
             }
@@ -236,7 +236,7 @@ const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
 }
 
 
-dip_status hllDoIndirection( imp_image_handle *ii, dip_type_info *ti,
+dip_status hllDoIndirection( imp_image_handle *iih, dip_type_info *ti,
                              location_context *lc, location_list *ll )
 {
     union {
@@ -251,7 +251,7 @@ dip_status hllDoIndirection( imp_image_handle *ii, dip_type_info *ti,
     location_list       dst;
     dip_status          ds;
 
-    ii = ii;
+    iih = iih;
     hllLocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, ll, ti->size );
     if( ds != DS_OK ) return( ds );

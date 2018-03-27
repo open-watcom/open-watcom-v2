@@ -61,6 +61,18 @@ void CloseOneInputLib( void )
     }
 }
 
+void CloseInputLibs( void )
+{
+    input_lib   *curr;
+
+    for( curr = InputLibs; curr != NULL; curr = curr->next ) {
+        if( curr->io != NULL ) {
+            LibClose( curr->io );
+            curr->io = NULL;
+        }
+    }
+}
+
 void InitInputLibs( void )
 {
     InputLibs = NULL;

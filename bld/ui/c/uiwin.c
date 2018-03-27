@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,22 +39,22 @@ static bool covered( SAREA area, UI_WINDOW *wptr )
 {
     int             i;
     bool            flag;
-    SAREA           areas[ 5 ];
+    SAREA           areas[5];
 
     dividearea( area, wptr->area, areas );
-    flag = ( areas[ 0 ].height > 0 );
+    flag = ( areas[0].height > 0 );
     if( wptr->prev != NULL ) {
         for( i = 1; i < 5; ++i ) {
-            if( areas[ i ].height > 0 ) {
-                flag |= covered( areas[ i ], wptr->prev );
+            if( areas[i].height > 0 ) {
+                flag |= covered( areas[i], wptr->prev );
             }
         }
     }
     return( flag );
 }
 
-static UI_WINDOW ** intern findspot( int priority, UI_WINDOW **prev )
-/*******************************************************************/
+static UI_WINDOW **findspot( int priority, UI_WINDOW **prev )
+/***********************************************************/
 /* find the ptr to ptr of the right spot in the UI window list
    for this window */
 {

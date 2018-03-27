@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"
 
 static bool                     LButtonIsDown;
 static bool                     RButtonIsDown;
@@ -45,47 +45,51 @@ wnd_row WndGetMouseRow( void )
     return( MouseRow );
 }
 
-static void WndSetMouseRow( a_window *wnd, void *parm )
+static void WndSetMouseRow( a_window wnd, void *parm )
 {
     gui_point           point;
 
     GUI_GET_POINT( parm, point );
-    if( point.x < 0 ) point.x = 0;
-    if( point.y < 0 ) point.y = 0;
+    if( point.x < 0 )
+        point.x = 0;
+    if( point.y < 0 )
+        point.y = 0;
     MouseRow = GUIGetRow( wnd->gui, &point );
     if( MouseRow > wnd->rows ) {
         MouseRow = WND_NO_ROW;
     }
 }
 
-static bool FindPoint( a_window *wnd, void *parm, bool exact, wnd_coord *spot )
+static bool FindPoint( a_window wnd, void *parm, bool exact, wnd_coord *spot )
 {
     return( WndSetPoint( wnd, parm, exact, spot, WND_NO_ROW, false ) );
 }
 
-static void WndButtonChange( a_window *wnd, wnd_coord *point, bool down )
+static void WndButtonChange( a_window wnd, wnd_coord *point, bool down )
 {
     char                old_row;
 
-    old_row = wnd->u.button_down.row;
+    old_row = wnd->button_down.row;
     if( down ) {
-        wnd->u.button_down.row = point->row;
-        wnd->u.button_down.piece = point->piece;
+        wnd->button_down.row = point->row;
+        wnd->button_down.piece = point->piece;
     } else {
-        wnd->u.button_down.row = (char)-1;
+        wnd->button_down.row = (char)-1;
     }
-    if( old_row != wnd->u.button_down.row ) {
+    if( old_row != wnd->button_down.row ) {
         WndKillCacheLines( wnd );
         WndDirtyScreenPiece( wnd, point );
     }
 }
 
 
-void WndLButtonDown( a_window *wnd, void *parm )
+void WndLButtonDown( a_window wnd, void *parm )
 {
     MouseLine.hot = false;
-    if( !FindPoint( wnd, parm, true, &MouseDownLoc ) ) return;
-    if( !WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine ) ) return;
+    if( !FindPoint( wnd, parm, true, &MouseDownLoc ) )
+        return;
+    if( !WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine ) )
+        return;
     LButtonDownOnHot = MouseLine.hot;
     LButtonIsDown = true;
     if( MouseLine.hot ) {
@@ -99,13 +103,13 @@ void WndLButtonDown( a_window *wnd, void *parm )
         WndSetCurrCol( wnd );
         WndDirtyCurr( wnd );
     }
-    if( _Is( wnd, WSW_LBUTTON_SELECTS ) ) {
-        _Set( wnd, WSW_SELECTING );
+    if( WndSwitchOn( wnd, WSW_LBUTTON_SELECTS ) ) {
+        WndSetSwitches( wnd, WSW_SELECTING );
         WndSelSetStart( wnd, parm );
     }
 }
 
-void WndLButtonUp( a_window *wnd, void *parm )
+void WndLButtonUp( a_window wnd, void *parm )
 {
     WndResetStatusText();
     LButtonIsDown = false;
@@ -119,35 +123,38 @@ void WndLButtonUp( a_window *wnd, void *parm )
             }
         }
         WndButtonChange( wnd, &MouseDownLoc, false );
-    } else if( _Is( wnd, WSW_LBUTTON_SELECTS ) ) {
+    } else if( WndSwitchOn( wnd, WSW_LBUTTON_SELECTS ) ) {
         WndSelPopItem( wnd, parm, false );
     }
 }
 
-void WndLDblClk( a_window *wnd, void *parm )
+void WndLDblClk( a_window wnd, void *parm )
 {
     if( LButtonDownOnHot ) {
         WndLButtonUp( wnd, parm );
     } else {
         LButtonIsDown = false;
-        if( MouseLine.static_text ) return;
-//      if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ) return;
+        if( MouseLine.static_text )
+            return;
+//        if( !FindPoint( wnd, parm, true, &MouseUpLoc ) )
+//            return;
         FindPoint( wnd, parm, true, &MouseUpLoc );
         WndSetMouseRow( wnd, parm );
-        if( !MouseLine.tabstop && _Is( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) return;
+        if( !MouseLine.tabstop && WndSwitchOn( wnd, WSW_ONLY_MODIFY_TABSTOP ) )
+            return;
         WndModify( wnd, MouseUpLoc.row, MouseUpLoc.piece );
     }
 }
 
 
-void WndRButtonDown( a_window *wnd, void *parm )
+void WndRButtonDown( a_window wnd, void *parm )
 {
     MouseLine.hot = false;
     MouseLine.tabstop = false;
     MouseLine.static_text = true;
     RButtonIsDown = true;
-    if( _Is( wnd, WSW_RBUTTON_CHANGE_CURR ) ) {
-        if( FindPoint( wnd, parm, _Is( wnd, WSW_MUST_CLICK_ON_PIECE ), &MouseDownLoc ) ) {
+    if( WndSwitchOn( wnd, WSW_RBUTTON_CHANGE_CURR ) ) {
+        if( FindPoint( wnd, parm, WndSwitchOn( wnd, WSW_MUST_CLICK_ON_PIECE ), &MouseDownLoc ) ) {
             WndGetLine( wnd, MouseDownLoc.row, MouseDownLoc.piece, &MouseLine );
             WndDirtyCurr( wnd );
             if( MouseLine.tabstop ) {
@@ -163,24 +170,25 @@ void WndRButtonDown( a_window *wnd, void *parm )
             WndDirtyCurr( wnd );
         }
     }
-    if( _Is( wnd, WSW_RBUTTON_SELECTS ) ) {
-        _Set( wnd, WSW_SELECTING );
+    if( WndSwitchOn( wnd, WSW_RBUTTON_SELECTS ) ) {
+        WndSetSwitches( wnd, WSW_SELECTING );
         WndSelSetStart( wnd, parm );
     }
 }
 
-void WndRButtonUp( a_window *wnd, void *parm )
+void WndRButtonUp( a_window wnd, void *parm )
 {
     gui_point           point;
 
     RButtonIsDown = false;
-//    if( !FindPoint( wnd, parm, false, &MouseUpLoc ) ) return;
+//    if( !FindPoint( wnd, parm, false, &MouseUpLoc ) )
+//        return;
     FindPoint( wnd, parm, false, &MouseUpLoc );
     WndSetMouseRow( wnd, parm );
     WndSelPopItem( wnd, parm, true );
     GUI_GET_POINT( parm, point );
     SetWndMenuRow( wnd );
-    if( WndMenuRow == WND_NO_ROW && _Is( wnd, WSW_MENU_ACCURATE_ROW ) ) {
+    if( WndMenuRow == WND_NO_ROW && WndSwitchOn( wnd, WSW_MENU_ACCURATE_ROW ) ) {
         WndMenuRow = MouseUpLoc.row;
         WndMenuPiece = MouseUpLoc.piece;
     }
@@ -192,14 +200,14 @@ bool WndMouseButtonIsDown( void )
     return( LButtonIsDown || RButtonIsDown );
 }
 
-bool WndIgnoreMouseMove( a_window *wnd )
+bool WndIgnoreMouseMove( a_window wnd )
 {
-    return( _Isnt( wnd, WSW_SELECTING ) && !WndMouseButtonIsDown() );
+    return( WndSwitchOff( wnd, WSW_SELECTING ) && !WndMouseButtonIsDown() );
 }
 
-void WndMouseMove( a_window *wnd, void *parm )
+void WndMouseMove( a_window wnd, void *parm )
 {
-    if( _Is( wnd, WSW_SELECTING ) ) {
+    if( WndSwitchOn( wnd, WSW_SELECTING ) ) {
         WndSelChange( wnd, parm );
     } else if( LButtonIsDown && LButtonDownOnHot ) {
         if( !FindPoint( wnd, parm, true, &MouseUpLoc ) ||

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX mouse input handling.
 *
 ****************************************************************************/
 
@@ -43,7 +43,6 @@
 #include "uimouse.h"
 #include "uivirt.h"
 
-extern ORD MouseRow, MouseCol;
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
@@ -51,20 +50,14 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     MouseCol = col;
 }
 
-void intern checkmouse( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
-/*************************************************************************************************************/
+void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/****************************************************************************************/
 {
     _checkmouse( status, row, col, time );
 }
 
-void intern stopmouse( void )
-/***************************/
-{
-    _stopmouse();
-}
-
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
     return( _initmouse( install ) );
 }

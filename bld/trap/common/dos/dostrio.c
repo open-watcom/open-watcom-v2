@@ -29,15 +29,19 @@
 ****************************************************************************/
 
 
-#include <dos.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <dos.h>
 #include "tinyio.h"
 #include "trptypes.h"
 #include "digcli.h"
 #include "digld.h"
 #include "servio.h"
 
+
+#define HANDLE2FP(ph)    ((FILE *)((unsigned long)(ph) + 1))
+#define FP2HANDLE(fp)    ((int)((unsigned long)(fp) - 1))
 
 extern int KeyPress_pragma( void );
 extern int KeyGet_pragma( void );
@@ -94,7 +98,7 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
+FILE *DIGLoader( Open )( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
 {
     bool        has_ext;
     bool        has_path;
@@ -139,24 +143,24 @@ dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *
     }
     rc = TinyOpen( src, TIO_READ );
     if( TINY_ERROR( rc ) )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( TINY_INFO( rc ) ) );
+        return( NULL );
+    return( HANDLE2FP( TINY_INFO( rc ) ) );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
     tiny_ret_t  rc;
 
-    rc = TinyFarRead( DIG_FID2PH( fid ), buff, len );
+    rc = TinyFarRead( FP2HANDLE( fp ), buff, len );
     return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( TINY_ERROR( TinySeek( DIG_FID2PH( fid ), offs, where ) ) );
+    return( TINY_ERROR( TinySeek( FP2HANDLE( fp ), offs, where ) ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( TINY_ERROR( TinyClose( DIG_FID2PH( fid ) ) ) );
+    return( TINY_ERROR( TinyClose( FP2HANDLE( fp ) ) ) );
 }

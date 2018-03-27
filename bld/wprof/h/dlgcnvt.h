@@ -32,4 +32,4 @@
 extern FILE *ConvertFile;
 extern bool OptDIFFormat;
 
-extern void DlgGetConvert( a_window * wnd );
+extern void DlgGetConvert( a_window wnd );

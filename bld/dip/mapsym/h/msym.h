@@ -32,6 +32,7 @@
 #ifndef DIP_MSYM
 #define DIP_MSYM
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "bool.h"

@@ -56,7 +56,7 @@ typedef struct {
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-static char *ReadInTrap( dig_fhandle fid )
+static char *ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     unsigned            size;
@@ -71,7 +71,7 @@ static char *ReadInTrap( dig_fhandle fid )
     unsigned            relocs;
 
     hdr.signature = 0;
-    if( DIGLoader( Read )( fid, &hdr, sizeof( hdr ) ) ) {
+    if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_BAD_TRAP_FILE );
     }
     if( hdr.signature != DOS_SIGNATURE ) {
@@ -85,13 +85,13 @@ static char *ReadInTrap( dig_fhandle fid )
     }
     start_seg = TINY_INFO( ret );
     TrapCode = MK_FP( start_seg, 0 );
-    DIGLoader( Seek )( fid, hdr_size, DIG_ORG );
-    DIGLoader( Read )( fid, TrapCode, size );
-    DIGLoader( Seek )( fid, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr_size, DIG_ORG );
+    DIGLoader( Read )( fp, TrapCode, size );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
     p = &buff[NUM_BUFF_RELOCS];
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {
-            if( DIGLoader( Read )( fid, buff, sizeof( buff ) ) ) {
+            if( DIGLoader( Read )( fp, buff, sizeof( buff ) ) ) {
                 return( TC_ERR_BAD_TRAP_FILE );
             }
             p = buff;
@@ -118,45 +118,40 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_fhandle     fid;
-    const char      *ptr;
+    FILE            *fp;
     trap_init_func  *init_func;
-#ifdef USE_FILENAME_VERSION
     char            filename[256];
     char            *p;
-#endif
+    char            chr;
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-#ifdef USE_FILENAME_VERSION
-    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
+        parms = DEFAULT_TRP_NAME;
+    p = filename;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+        *p++ = chr;
     }
+#ifdef USE_FILENAME_VERSION
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-    *p = '\0';
-    fid = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        ;
-    }
-    fid = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
 #endif
-    if( fid == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+    *p = '\0';
+    fp = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    if( fp == NULL ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    parms = ptr;
-    ptr = ReadInTrap( fid );
-    DIGLoader( Close )( fid );
-    if( ptr != NULL ) {
-        strcpy( buff, ptr );
+    p = ReadInTrap( fp );
+    DIGLoader( Close )( fp );
+    if( p != NULL ) {
+        strcpy( buff, p );
     } else {
         strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         if( TrapCode->signature == TRAP_SIGNATURE ) {
             init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-            if( *parms != '\0' )
-                ++parms;
             *trap_ver = init_func( parms, buff, trap_ver->remote );
             if( buff[0] == '\0' ) {
                 if( TrapVersionOK( *trap_ver ) ) {

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -37,13 +38,14 @@
 .387
 .386p
 
+include langenv.inc
 include xinit.inc
 
 DGROUP group CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
-extrn __DOSseg__:byte
+        extrn   __DOSseg__      : byte
 
-        extrn   WINMAIN : near
+        extrn   WINMAIN         : near
 
 cFarProc MACRO name
 public "C",name
@@ -77,31 +79,19 @@ ENDM
 
 BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
-forever: jmp    short forever
+forever label   near
+        jmp short forever
+        nop
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 
 _TEXT   segment use32 word public 'CODE'
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _DATA   segment use32 word public 'DATA'
 
@@ -223,14 +213,16 @@ DATA    ends
         assume  ss:_DATA
 
 __saved_DS dw 0
-public _cstart_
-public _wstart_
-public _wstart2_
-public __DLLstart_
+
+        public _cstart_
+        public _wstart_
+        public _wstart2_
+        public __DLLstart_
+
 _cstart_ proc  far
-_wstart_:
-_wstart2_:
-__DLLstart_:
+_wstart_ proc  far
+_wstart2_ proc  far
+__DLLstart_ proc  far
         dd      offset  hInstance ; loader starts execution 8 bytes past here
         dd      _end
         mov     _LocalPtr,gs            ; save selector of extender's data
@@ -282,7 +274,8 @@ __DLLstart_:
         test    edx,edx                 ; is it zero?
         jne     short okcpy             ; no, do the copy
         mov     byte ptr ds:[ebx],0     ; put a trailing zero
-        jmp     short donecpy
+        jmp short donecpy
+
 okcpy:  mov     es,dx
         mov     ds:cmd_seg,es           ; save for later
         movzx   esi,si                  ;    use by getcmd
@@ -293,9 +286,10 @@ again:  mov     al,byte ptr es:[esi]
         je      short donecpy
         inc     esi
         inc     ebx
-        jmp     short again
-donecpy:pop     es
+        jmp short again
 
+donecpy:
+        pop     es
         movzx   eax,hInstance
         push    eax
         mov     edi, offset filename
@@ -311,14 +305,15 @@ donecpy:pop     es
 ;;      _ASTACKPTR = (char *)alloca( _ASTACKSIZ ) + _ASTACKSIZ;
         cmp     byte ptr __inDLL,0      ; if in DLL
         je      short not_dll           ; then
-          mov   eax,_STACKLOW           ; - put alternate stack on bottom
-          add   eax,__ASTACKSIZ         ; - ...
-          mov   __ASTACKPTR,eax         ; - ...
-          jmp   short not_dll2          ; else
-not_dll:mov     __ASTACKPTR,esp         ; - save address of alternate stack
+        mov     eax,_STACKLOW           ; - put alternate stack on bottom
+        add     eax,__ASTACKSIZ         ; - ...
+        mov     __ASTACKPTR,eax         ; - ...
+        jmp short not_dll2              ; else
+
+not_dll:
+        mov     __ASTACKPTR,esp         ; - save address of alternate stack
         sub     esp,__ASTACKSIZ         ; - allocate alternate stack for F77
 not_dll2:                               ; endif
-
         ; push parms for WINMAIN
         mov     ax,hInstance
         mov     _pid,ax                 ; save for use by getpid()
@@ -332,22 +327,11 @@ not_dll2:                               ; endif
         mov     ax,cmdShow
         movzx   eax,ax
         push    eax
-
         call    WINMAIN
         jmp     exit                    ; exit
-;
-; copyright message
-;
-include msgrt32.inc
-include msgcpyrt.inc
 
-        dd      ___begtext              ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT segment
-_cstart_ endp
-
-
-__exit  proc far
         public  "C",__exit
+__exit:
 ifndef __STACK__
         push    eax                     ; save return code on stack
 endif
@@ -360,10 +344,22 @@ endif
         pop     edx                     ; restore edx
 skip_fini:
         pop     eax                     ; restore return code from stack
-        mov     esp,_STACKTOP           ; reset stack pointer
-        mov     ds,_LocalPtr            ; restore ds
-        ret
-__exit endp
+
+__win386_exit:
+        mov     esp,_STACKTOP           ; reset stack pointer to the loader stack
+        mov     ds,_LocalPtr            ; restore the loader ds register
+        ret                             ; return to the loader
+__DLLstart_ endp
+_wstart2_ endp
+_wstart_ endp
+_cstart_ endp
+
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT segment
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return

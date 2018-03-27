@@ -46,7 +46,6 @@
 #include "miscx87.h"
 #include "ioports.h"
 #include "dosredir.h"
-#include "doscomm.h"
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
@@ -340,10 +339,10 @@ int CheckTerminate( void )
     return( 0 );
 }
 
-static int MapStateToCond( unsigned state )
-/*****************************************/
+static trap_conditions MapStateToCond( unsigned state )
+/*****************************************************/
 {
-    int     rc;
+    trap_conditions rc;
 
     if( state & ST_TERMINATE ) {
         _DBG( "Condition: TERMINATE\r\n" );
@@ -522,8 +521,8 @@ trap_retval ReqMap_addr( void )
     ret->out_addr.segment = 0;
     ret->lo_bound = 0;
     ret->hi_bound = 0;
-    if( acc->handle < NumModHandles && ModHandles[acc->handle].loaded ) {
-        mod = &ModHandles[acc->handle];
+    if( acc->mod_handle < NumModHandles && ModHandles[acc->mod_handle].loaded ) {
+        mod = &ModHandles[acc->mod_handle];
         seg = acc->in_addr.segment;
         off = acc->in_addr.offset;
         ret->hi_bound = ~0;
@@ -550,7 +549,7 @@ trap_retval ReqMap_addr( void )
         }
         // convert offset
         ret->out_addr.offset = off + mod->ObjInfo[seg].new_base + mod->epsp->MemBase;
-        _DBG( "Map_addr: module=%d %X:%X -> %X:%X\n", acc->handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
+        _DBG( "Map_addr: module=%d %X:%X -> %X:%X\n", acc->mod_handle, acc->in_addr.segment, acc->in_addr.offset, ret->out_addr.segment, ret->out_addr.offset );
     }
     return( sizeof( *ret ) );
 }
@@ -914,16 +913,16 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    handle = acc->handle + 1;
+    handle = acc->mod_handle + 1;
     if( handle >= NumModHandles ) {
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
     *name = '\0';
     if( ModHandles[handle].loaded )
         strcpy( name, ModHandles[handle].epsp->FileName );
-    ret->handle = handle;
+    ret->mod_handle = handle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

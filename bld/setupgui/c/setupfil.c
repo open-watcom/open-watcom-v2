@@ -852,8 +852,8 @@ static void BackupName( char *filename )
     }
 }
 
-extern bool ModifyAutoExec( bool uninstall )
-/******************************************/
+bool ModifyAutoExec( bool uninstall )
+/***********************************/
 {
     int                 num_auto;
     int                 num_cfg;
@@ -1242,8 +1242,8 @@ static void CheckVersion( char *path, char *drive, char *dir )
     close( fp );
 }
 
-extern gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
-/*************************************************************************/
+gui_message_return CheckInstallDLL( char *name, vhandle var_handle )
+/******************************************************************/
 {
     const char          *dst;
     size_t              dst_len;
@@ -1490,8 +1490,8 @@ static bool ModEnv( int num_env, bool uninstall )
     return( !err );
 }
 
-extern bool ModifyConfiguration( bool uninstall )
-/***********************************************/
+bool ModifyConfiguration( bool uninstall )
+/****************************************/
 {
     size_t              num_env;
     int                 mod_type;
@@ -1600,8 +1600,8 @@ extern bool ModifyConfiguration( bool uninstall )
     return( bRet );
 }
 
-extern bool ModifyRegAssoc( bool uninstall )
-/******************************************/
+bool ModifyRegAssoc( bool uninstall )
+/***********************************/
 {
     HKEY    hkey;
     char    buff1[256];
@@ -1648,8 +1648,8 @@ extern bool ModifyRegAssoc( bool uninstall )
     return( true );
 }
 
-extern bool AddToUninstallList( bool uninstall )
-/**********************************************/
+bool AddToUninstallList( bool uninstall )
+/***************************************/
 {
     HKEY        hkey;
     const char  *val;
@@ -1685,14 +1685,14 @@ extern bool AddToUninstallList( bool uninstall )
     } else {
         RegDeleteKey( HKEY_LOCAL_MACHINE, buf );
     }
-    
+
     return( true );
 }
 
 #endif
 
-extern bool GenerateBatchFile( bool uninstall )
-/*********************************************/
+bool GenerateBatchFile( bool uninstall )
+/**************************************/
 {
     size_t              num;
     char                batch_file[_MAX_PATH];

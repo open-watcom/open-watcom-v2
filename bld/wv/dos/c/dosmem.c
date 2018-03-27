@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,14 @@
 #include <malloc.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
+#include "dbgerr.h"
 #include "tinyio.h"
-#include "dosheap.h"
+#include "heap.h"
+#include "stdui.h"
 
 
-extern void __far _ovl_addarea( unsigned, unsigned );
+extern void         __far _ovl_addarea( unsigned, unsigned );
+extern void         MemTrackInit( void );
 
 extern unsigned     _STACKTOP;
 
@@ -92,8 +96,6 @@ void MemInit( void )
     }
     LastSeg = 0;
     {
-        extern void MemTrackInit(void);
-
         MemTrackInit();
     }
 }

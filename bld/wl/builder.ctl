@@ -90,6 +90,11 @@ set PROJDIR=<CWD>
 #    <CCCMD> exe2bin/linuxarm/exe2bin.exe    <OWRELROOT>/arml/exe2bin
     <CCCMD> lnk/linuxarm/wlink.lnk          <OWRELROOT>/arml/
 
+    <CCCMD> rdos386/wlink.exe               <OWRELROOT>/rdos/
+    <CCCMD> rdos386/wlink.sym               <OWRELROOT>/rdos/
+    <CCCMD> exe2bin/rdos386/exe2bin.exe     <OWRELROOT>/rdos/
+    <CCCMD> lnk/rdos386/wlink.lnk           <OWRELROOT>/rdos/
+
 [ BLOCK . . ]
 
 [ INCLUDE <OWROOT>/build/epilog.ctl ]

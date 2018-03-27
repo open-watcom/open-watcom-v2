@@ -29,8 +29,8 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
-include xinit.inc
 
         modstart    _8087
 
@@ -52,7 +52,10 @@ __dos87real     db  0   ; (DOS) 0 => no real 80x87 installed, otherwise real 80x
 endif
 enddata
 
+        endmod
+
+include xinit.inc
+
         xinit   __chk8087,INIT_PRIORITY_FPU + 3
 
-        endmod
         end

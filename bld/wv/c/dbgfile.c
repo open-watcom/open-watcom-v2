@@ -72,7 +72,7 @@ static char_ring *LclPath;
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
 
-#define SYSHANDLE(h)    SysHandles[h & ~REMOTE_IND]
+#define SYSHANDLE(sh)   SysHandles[sh & ~REMOTE_IND]
 #define SYSERROR(e)     SysErrors[(e & ~REMOTE_IND) - 1]
 #define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
 #define SETREMOTE(x)    x |= REMOTE_IND
@@ -148,7 +148,7 @@ static file_handle FindFreeHandle( void )
     file_handle     fh;
 
     for( fh = 0; fh < MAX_OPENS; ++fh ) {
-        if( SYSHANDLE( fh ) == NIL_SYS_HANDLE ) {
+        if( IS_SYSHANDLE_NULL( SYSHANDLE( fh ) ) ) {
             return( fh );
         }
     }
@@ -157,13 +157,13 @@ static file_handle FindFreeHandle( void )
 
 size_t ReadStream( file_handle fh, void *b, size_t l )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteRead( sys, b, l ) );
+        return( RemoteRead( sh, b, l ) );
     } else {
-        return( LocalRead( sys, b, l ) );
+        return( LocalRead( sh, b, l ) );
     }
 }
 
@@ -174,13 +174,13 @@ size_t ReadText( file_handle fh, void *b, size_t l )
 
 size_t WriteStream( file_handle fh, const void *b, size_t l )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteWrite( sys, b, l ) );
+        return( RemoteWrite( sh, b, l ) );
     } else {
-        return( LocalWrite( sys, b, l ) );
+        return( LocalWrite( sh, b, l ) );
     }
 }
 
@@ -189,9 +189,9 @@ size_t WriteNL( file_handle fh )
     const char      *nl;
 
     if( ISREMOTE( fh ) ) {
-        nl = RemFile.newline;
+        nl = RemFile.line_eol;
     } else {
-        nl = LclFile.newline;
+        nl = LclFile.line_eol;
     }
     return( WriteStream( fh, nl, (nl[1] != NULLCHAR) ? 2 : 1 ) );
 }
@@ -205,19 +205,19 @@ size_t WriteText( file_handle fh, const void *b, size_t len )
 
 unsigned long SeekStream( file_handle fh, long p, seek_method m )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
+    sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteSeek( sys, p, m ) );
+        return( RemoteSeek( sh, p, m ) );
     } else {
-        return( LocalSeek( sys, p, m ) );
+        return( LocalSeek( sh, p, m ) );
     }
 }
 
 file_handle FileOpen( const char *name, obj_attrs oattrs )
 {
-    sys_handle  sys;
+    sys_handle  sh;
     file_handle fh;
 
     if( oattrs & OP_SEARCH ) {
@@ -229,13 +229,13 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
         return( NIL_HANDLE );
     if( oattrs & OP_REMOTE ) {
         SETREMOTE( fh );
-        sys = RemoteOpen( name, oattrs );
+        sh = RemoteOpen( name, oattrs );
     } else {
-        sys = LocalOpen( name, oattrs );
+        sh = LocalOpen( name, oattrs );
     }
-    if( sys == NIL_SYS_HANDLE )
+    if( IS_SYSHANDLE_NULL( sh ) )
         return( NIL_HANDLE );
-    SYSHANDLE( fh ) = sys;
+    SYSHANDLE( fh ) = sh;
     if( oattrs & OP_APPEND )
         SeekStream( fh, 0, DIO_SEEK_END );
     return( fh );
@@ -243,14 +243,14 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
 
 error_handle FileClose( file_handle fh )
 {
-    sys_handle  sys;
+    sys_handle  sh;
 
-    sys = SYSHANDLE( fh );
-    SYSHANDLE( fh ) = NIL_SYS_HANDLE;
+    sh = SYSHANDLE( fh );
+    SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     if( ISREMOTE( fh ) ) {
-        return( RemoteClose( sys ) );
+        return( RemoteClose( sh ) );
     } else {
-        return( LocalClose( sys ) );
+        return( LocalClose( sh ) );
     }
 }
 
@@ -626,7 +626,7 @@ void SysFileInit( void )
     file_handle     fh;
 
     for( fh = 0; fh < MAX_OPENS; ++fh ) {
-        SYSHANDLE( fh ) = NIL_SYS_HANDLE;
+        SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     }
     SYSHANDLE( STD_IN ) = LocalHandleSys( STD_IN  );
     SYSHANDLE( STD_OUT ) = LocalHandleSys( STD_OUT );
@@ -732,7 +732,7 @@ void PathInit( void )
 }
 
 #if defined( __DOS__ ) || defined( __UNIX__ )
-static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
+static FILE *MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
 {
     char        *p;
     size_t      len;
@@ -740,7 +740,7 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
     if( rlen < 2 ) {
         if( rlen == 1 )
             *res = NULLCHAR;
-        return( -1 );
+        return( NULL );
     }
     p = res;
     --rlen;     // save space for terminator
@@ -765,10 +765,10 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
         p += nlen;
     }
     *p = NULLCHAR;
-    return( open( res, O_RDONLY ) );
+    return( fopen( res, "rb" ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char            buffer[TXT_LEN];
     char            *p;
@@ -776,7 +776,7 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     bool            have_path;
     char            c;
     char            dummy[TXT_LEN];
-    int             fd;
+    FILE            *fp;
     char_ring       *curr;
 
     if( buff == NULL ) {
@@ -803,39 +803,37 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     *p = NULLCHAR;
     if( have_path ) {
         StrCopy( buffer, buff );
-        fd = open( buffer, O_RDONLY );
+        fp = fopen( buffer, "rb" );
     } else {
         // check open file in current directory or in full path
-        fd = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
-        if( fd == -1 ) {
+        fp = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
+        if( fp == NULL ) {
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                fd = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
-                if( fd != -1 ) {
+                fp = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
+                if( fp != NULL ) {
                     break;
                 }
             }
         }
     }
-    if( fd == -1 ) {
+    if( fp == NULL )
         strcpy( buff, buffer );
-        return( DIG_NIL_HANDLE );
-    }
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 #endif

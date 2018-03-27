@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,13 +67,17 @@ extern "C" {
 #endif
 
 #include "initarg.h"
-#include "histsplt.h"
+
 #include "exitwmsg.h"
 
-#ifdef __cplusplus
-};
-#endif
+#include "histsplt.h"
 
+
+static _WCNORETURN void _Not_Enough_Memory( void )
+{
+    __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
+}
 
 static void *_allocate( unsigned amount )
 {
@@ -231,10 +236,6 @@ static int _make_argv( TCHAR *p, TCHAR ***argv )
     return( argc );
 }
 
-
-#ifdef __cplusplus
-extern "C"
-#endif
 void __INIT_ARGV( void )
 {
     TCHAR *cln;
@@ -251,9 +252,6 @@ void __INIT_ARGV( void )
     __targv = ___ARGV;      /* from stdlib.h */
 }
 
-#ifdef __cplusplus
-extern "C"
-#endif
 void __FINI_ARGV( void )
 {
     if( _ARGV != NULL ) {
@@ -263,3 +261,7 @@ void __FINI_ARGV( void )
         free( _ARGV );
     }
 }
+
+#ifdef __cplusplus
+};
+#endif

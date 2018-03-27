@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "mad.h"
 #include "madimp.h"
@@ -39,27 +41,32 @@
 #include "ldimp.h"
 #include "digld.h"
 
+
 #define MADSIG  0x0044414DUL    // "MAD"
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    DIGCli( Free )( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DIGCli( Free )( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    dig_fhandle         fid;
+    FILE                *fp;
     imp_header          *mad;
     mad_init_func       *init_func;
     mad_status          status;
 
-    fid = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
-    if( fid == DIG_NIL_HANDLE ) {
+    *sys_hdl = NULL_SYSHDL;
+    fp = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
+    if( fp == NULL ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
-    mad = ReadInImp( fid );
-    DIGLoader( Close )( fid );
+    mad = ReadInImp( fp );
+    DIGLoader( Close )( fp );
     status = MS_ERR | MS_INVALID_MAD;
     if( mad != NULL ) {
 #ifdef __WATCOMC__

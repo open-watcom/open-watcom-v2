@@ -48,23 +48,24 @@ typedef struct gui_hint_struct {
 } gui_hint_struct;
 
 typedef struct hintinfo {
-    gui_ctl_idx         num_menu;
+    int                 menu_num_items;
     gui_hint_struct     *menu;
-    gui_ctl_idx         num_float;
+    int                 floating_num_items;
     gui_hint_struct     *floating;
-    gui_ctl_idx         num_tool;
+    int                 tool_num_items;
     gui_hint_struct     *tool;
-    gui_ctl_idx         num_gui;
+    int                 gui_num_items;
     gui_hint_struct     *gui;
 } hintinfo;
 
-extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window * wnd,
+extern bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
                                 gui_ctl_id id, hint_type type, gui_menu_styles style );
 extern bool GUIHasHintText( gui_window *wnd, gui_ctl_id id, hint_type type );
 extern bool GUIHasHintType( gui_window *wnd, hint_type type );
-extern void GUIInitHint( gui_window *wnd, gui_ctl_idx num_menus, gui_menu_struct *menu, hint_type type );
-extern void GUIInitToolbarHint( gui_window *wnd, gui_ctl_idx num_items, gui_toolbar_struct *toolinfo );
+extern void GUIInitHint( gui_window *wnd, int num_items, gui_menu_struct *menu, hint_type type );
+extern void GUIInitToolbarHint( gui_window *wnd, int num_items, gui_toolbar_struct *toolinfo );
 extern bool GUIAppendHintText( gui_window *wnd, gui_menu_struct *menu, hint_type type );
 extern bool GUIDeleteHintText( gui_window *wnd, gui_ctl_id id );
 extern void GUIFreeHint( gui_window *wnd );
+
 #endif

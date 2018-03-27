@@ -34,7 +34,6 @@
 #include "omodes.h"
 #include "cpopt.h"
 #include "global.h"
-#include "fio.h"
 #include "posio.h"
 #include "blips.h"
 #include "posopen.h"
@@ -50,12 +49,12 @@
 #include <string.h>
 
 
-static  int             Modes[] = { RDONLY,
+static  f_attrs         Modes[] = { RDONLY,
                                     WRONLY,
                                     APPEND,
                                     RDWR };
 
-static  file_attr       CurrAttrs = { REC_TEXT };
+static  f_attrs         CurrAttrs = { REC_TEXT };
 
 
 void    SDInitIO(void) {
@@ -73,7 +72,7 @@ void    SDInitAttr(void) {
 }
 
 
-void    SDSetAttr( file_attr attr ) {
+void    SDSetAttr( f_attrs attr ) {
 //===================================
 
     CurrAttrs = attr;

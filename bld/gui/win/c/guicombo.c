@@ -40,15 +40,15 @@
 #include "guixwind.h"
 
 
-/* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam );
-
-extern  controls_struct GUIControls[];
-
 typedef struct {
     bool        success;
     WPI_WNDPROC old;
 } enum_info;
+
+extern  controls_struct GUIControls[];
+
+/* Local Window callback functions prototypes */
+WINEXPORT BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam );
 
 BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {

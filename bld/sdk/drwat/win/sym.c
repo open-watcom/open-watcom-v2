@@ -39,6 +39,7 @@
 #include <malloc.h>
 #include <io.h>
 #include "drwatcom.h"
+#include "walloca.h"
 #include "sopen.h"
 #include "dip.h"
 #include "dipimp.h"
@@ -48,12 +49,11 @@
 #define DEBUGOUT( x )
 static process_info     *curProcess;
 static mod_handle       curModHdl;
-static dig_fhandle      cur_fid;
 static BOOL             dipIsLoaded;
 
 
 #if 0
-dig_fhandle PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, char *ext )
 {
     char        path[ _MAX_PATH ];
     char        *realname;
@@ -72,7 +72,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' ) {
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     } else {
         return( DIGCli( Open )( path, DIG_READ ) );
     }
@@ -118,45 +118,33 @@ void FiniSymbols( void )
  */
 bool LoadDbgInfo( void )
 {
-    bool                err;
-    unsigned            priority;
+    dip_priority    priority;
+    FILE            *fp;
 
     DEBUGOUT( "Enter LoadDbgInfo" );
-    err = true;
+    curModHdl = NO_MOD;
     curProcess = DIPCreateProcess();
-    cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
-    if( cur_fid != DIG_NIL_HANDLE ) {
+    fp = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
+    if( fp != NULL ) {
         DEBUGOUT( "File open OK" );
-        priority = 0;
-        for( ;; ) {
-            priority = DIPPriority( priority );
-            if( priority == 0 )
-                break;
-            curModHdl = DIPLoadInfo( cur_fid, 0, priority );
+        for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
+            curModHdl = DIPLoadInfo( fp, 0, priority );
             if( curModHdl != NO_MOD ) {
                 break;
             }
         }
+        DIGCli( Close )( fp );
         if( curModHdl != NO_MOD ) {
             DEBUGOUT( "debug info load OK" );
             DIPMapInfo( curModHdl, NULL );
-            err = false;
-        } else {
-            DEBUGOUT( "curModHdl == NO_MOD" );
+            return( true );
         }
+        DEBUGOUT( "curModHdl == NO_MOD" );
     }
-    if( err ) {
-        DEBUGOUT( "LoadDbgInfo Failed" );
-        if( cur_fid != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( cur_fid );
-            cur_fid = DIG_NIL_HANDLE;
-        }
-        DIPDestroyProcess( curProcess );
-        curProcess = NULL;
-        curModHdl = NO_MOD;
-        return( false );
-    }
-    return( true );
+    DEBUGOUT( "LoadDbgInfo Failed" );
+    DIPDestroyProcess( curProcess );
+    curProcess = NULL;
+    return( false );
 }
 
 /*
@@ -165,7 +153,7 @@ bool LoadDbgInfo( void )
 static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
 {
     sym_handle          *symhdl;
-    cue_handle          *cue;
+    cue_handle          *cueh;
     search_result       sr;
     location_list       ll;
     address             dipaddr;
@@ -176,7 +164,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     if( !StatShowSymbols || curProcess == NULL ) {
         return( FALSE );
     }
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM, false ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
     dipaddr.sect_id = 0;
     dipaddr.indirect = FALSE;
     dipaddr.mach.offset = addr->offset;
@@ -198,14 +186,12 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
 //      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
-            if( DIPAddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
-                MemFree( cue );
+            cueh = walloca( DIPHandleSize( HK_CUE ) );
+            if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {
                 ret = FALSE;
             } else {
-                DIPCueFile( cue, si->filename, MAX_FILE_NAME );
-                si->linenum = DIPCueLine( cue );
-                MemFree( cue );
+                DIPCueFile( cueh, si->filename, MAX_FILE_NAME );
+                si->linenum = DIPCueLine( cueh );
                 ret = TRUE;
             }
         }
@@ -235,20 +221,16 @@ BOOL FindSymbol( ADDRESS *addr, syminfo *si )
 }
 
 /*
- * SymFileClose - close the current symfile
+ * UnloadDbgInfo - cleanup DIP
  */
-void SymFileClose( void )
+void UnloadDbgInfo( void )
 {
     if( curModHdl != NO_MOD ) {
         DIPUnloadInfo( curModHdl );
+        curModHdl = NO_MOD;
     }
     if( curProcess != NULL ) {
         DIPDestroyProcess( curProcess );
+        curProcess = NULL;
     }
-    if( cur_fid != DIG_NIL_HANDLE ) {
-        DIGCli( Close )( cur_fid );
-        cur_fid = DIG_NIL_HANDLE;
-    }
-    curProcess = NULL;
-    curModHdl = NO_MOD;
 }

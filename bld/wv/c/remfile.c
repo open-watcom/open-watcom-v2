@@ -31,9 +31,6 @@
 
 //#define LOGGING 1
 
-#ifdef LOGGING
-#include <stdio.h>
-#endif
 #ifdef __NT__
 #include <windows.h>
 #endif
@@ -60,9 +57,13 @@
     in.supp.id          = SuppFileId;       \
     in.req              = request;
 
+#define LOC_NIL_HANDLE  ((loc_handle)-1)
+
+typedef int             loc_handle;
+
 /* Remote file "cache" - correlates remote and local file handles */
 typedef struct _fcache_t {
-    int         locfile;
+    loc_handle  lochandle;
     sys_handle  remhandle;
 } fcache_t;
 
@@ -79,20 +80,20 @@ static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 static const unsigned_8 remote_seek_method[] = { TF_SEEK_ORG, TF_SEEK_CUR, TF_SEEK_END };
 
 /* Return local handle of remote file equivalent */
-int GetCachedHandle(sys_handle remote)
+static loc_handle GetCachedHandle( sys_handle remote )
 {
     int i;
 
     for( i = 0; i < CACHED_HANDLES; i++ ) {
-        if( fcache[i].remhandle == remote ) {
-            return( fcache[i].locfile );
+        if( fcache[i].remhandle.u._64[0] == remote.u._64[0] ) {
+            return( fcache[i].lochandle );
         }
     }
-    return( -1 );
+    return( LOC_NIL_HANDLE );
 }
 
 /* Initialize local/remote handle cache */
-void InitHandleCache( void )
+static void InitHandleCache( void )
 {
     int     i;
 
@@ -102,39 +103,37 @@ void InitHandleCache( void )
 #endif
 
     for( i = 0; i < CACHED_HANDLES; i++ ) {
-        fcache[i].remhandle = -1;
-        fcache[i].locfile   = -1;
+        SET_SYSHANDLE_NULL( fcache[i].remhandle );
+        fcache[i].lochandle = LOC_NIL_HANDLE;
     }
 }
 
 /* Add entry for local/remote "cached" file */
-int AddCachedHandle( int local, sys_handle remote )
+static int AddCachedHandle( loc_handle local, sys_handle remote )
 {
-    int     i = 0;
+    int     i;
 
-    while( i < CACHED_HANDLES ) {
-        if( fcache[i].locfile == -1 ) {
+    for( i = 0; i < CACHED_HANDLES; i++ ) {
+        if( fcache[i].lochandle == LOC_NIL_HANDLE ) {
             fcache[i].remhandle = remote;
-            fcache[i].locfile   = local;
+            fcache[i].lochandle = local;
             return( 0 );
         }
-        i++;
     }
     return( -1 );
 }
 
 /* Remove cached file entry from the list */
-int DelCachedHandle( int local )
+static int DelCachedHandle( loc_handle local )
 {
-    int     i = 0;
+    int     i;
 
-    while( i < CACHED_HANDLES ) {
-        if( fcache[i].locfile == local ) {
-            fcache[i].remhandle = -1;
-            fcache[i].locfile   = -1;
+    for( i = 0; i < CACHED_HANDLES; i++ ) {
+        if( fcache[i].lochandle == local ) {
+            SET_SYSHANDLE_NULL( fcache[i].remhandle );
+            fcache[i].lochandle = LOC_NIL_HANDLE;
             return( 0 );
         }
-        i++;
     }
     return( -1 );
 }
@@ -222,10 +221,13 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     mx_entry            out[1];
     file_open_req       acc;
     file_open_ret       ret;
-    int                 locfile;
+    loc_handle          lochandle;
+    sys_handle          sh;
 
-    if( SuppFileId == 0 )
-        return( NIL_SYS_HANDLE );
+    if( SuppFileId == 0 ) {
+        SET_SYSHANDLE_NULL( sh );
+        return( sh );
+    }
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_OPEN );
     acc.mode = 0;
@@ -247,10 +249,11 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
-    CONV_LE_32( ret.handle );
+    CONV_LE_64( ret.handle );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
-        return( NIL_SYS_HANDLE );
+        SET_SYSHANDLE_NULL( sh );
+        return( sh );
     } else {
         /* See if the file is available locally. If so, open it here as
          * well as on the remote machine.
@@ -262,18 +265,18 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
         fprintf( logf, "%s\n", name );
 #endif
 
-        if( (locfile = open(name, O_RDONLY | O_BINARY, 0 )) != -1 ) {
-            if(AddCachedHandle( locfile, ret.handle ) != 0 )
-                close( locfile );
+        if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
+            if( AddCachedHandle( lochandle, ret.handle ) != 0 )
+                close( lochandle );
 #ifdef LOGGING
-            fprintf(logf, "Success\n", name);
+            fprintf( logf, "Success\n", name );
 #endif
         }
         return( ret.handle );
     }
 }
 
-static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
+static size_t doWrite( sys_handle sh, const void *buff, size_t len )
 {
     in_mx_entry             in[2];
     mx_entry                out[1];
@@ -283,8 +286,8 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     trap_elen               piece_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_WRITE );
-    acc.handle = hdl;
-    CONV_LE_32( acc.handle );
+    acc.handle = sh;
+    CONV_LE_64( acc.handle );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
@@ -313,12 +316,12 @@ static size_t doWrite( sys_handle hdl, const void *buff, size_t len )
     return( total );
 }
 
-size_t RemoteWrite( sys_handle hdl, const void *buff, size_t len )
+size_t RemoteWrite( sys_handle sh, const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
 
-    return( doWrite( hdl, buff, len ) );
+    return( doWrite( sh, buff, len ) );
 }
 
 static size_t doWriteConsole( const void *buff, size_t len )
@@ -372,10 +375,10 @@ size_t RemoteWriteConsoleNL( void )
     if( SuppFileId == 0 )
         return( 0 );
 
-    return( doWriteConsole( RemFile.newline, ( RemFile.newline[1] != NULLCHAR ) ? 2 : 1 ) );
+    return( doWriteConsole( RemFile.line_eol, ( RemFile.line_eol[1] != NULLCHAR ) ? 2 : 1 ) );
 }
 
-static size_t doRead( sys_handle hdl, void *buff, size_t len )
+static size_t doRead( sys_handle sh, void *buff, size_t len )
 {
     in_mx_entry         in[1];
     mx_entry            out[2];
@@ -386,8 +389,8 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     trap_retval         read_len;
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_READ );
-    acc.handle = hdl;
-    CONV_LE_32( acc.handle );
+    acc.handle = sh;
+    CONV_LE_64( acc.handle );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
@@ -417,42 +420,42 @@ static size_t doRead( sys_handle hdl, void *buff, size_t len )
     return( total );
 }
 
-size_t RemoteRead( sys_handle hdl, void *buff, size_t len )
+size_t RemoteRead( sys_handle sh, void *buff, size_t len )
 {
-    int         locfile;
+    loc_handle  lochandle;
 
     if( SuppFileId == 0 )
         return( 0 );
 
     /* Try reading from local copy first */
-    locfile = GetCachedHandle( hdl );
-    if( locfile != -1 )
-        return( LocalRead( locfile, buff, len ) );
+    lochandle = GetCachedHandle( sh );
+    if( lochandle != LOC_NIL_HANDLE )
+        return( read( lochandle, buff, len ) );
 
-    return( doRead( hdl, buff, len ) );
+    return( doRead( sh, buff, len ) );
 }
 
-unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method )
+unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
 {
     file_seek_req       acc;
     file_seek_ret       ret;
-    int                 locfile;
+    loc_handle          lochandle;
 
     if( SuppFileId == 0 )
         return( 0 );
 
     /* Seek on local copy too (if available) */
-    locfile = GetCachedHandle( hdl );
-    if( locfile != -1 ) {
-        lseek( locfile, pos, local_seek_method[method] );
+    lochandle = GetCachedHandle( sh );
+    if( lochandle != LOC_NIL_HANDLE ) {
+        lseek( lochandle, pos, local_seek_method[method] );
     }
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_SEEK );
-    acc.handle = hdl;
+    acc.handle = sh;
     /* Magic again! The seek mode mapped exactly to our definition! */
     acc.mode = remote_seek_method[method];
     acc.pos = pos;
-    CONV_LE_32( acc.handle );
+    CONV_LE_64( acc.handle );
     CONV_LE_32( acc.pos );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.pos );
@@ -465,27 +468,27 @@ unsigned long RemoteSeek( sys_handle hdl, unsigned long pos, seek_method method 
     }
 }
 
-error_handle RemoteClose( sys_handle hdl )
+error_handle RemoteClose( sys_handle sh )
 {
     file_close_req      acc;
     file_close_ret      ret;
-    int                 locfile;
+    loc_handle          lochandle;
 
     if( SuppFileId == 0 )
         return( 0 );
 
-    locfile = GetCachedHandle( hdl );
-    if( locfile != -1 ) {
-        close( locfile );
-        DelCachedHandle( locfile );
+    lochandle = GetCachedHandle( sh );
+    if( lochandle != LOC_NIL_HANDLE ) {
+        close( lochandle );
+        DelCachedHandle( lochandle );
 #ifdef LOGGING
-        fprintf( logf, "Closing remote file handle %d\n", hdl );
+        fprintf( logf, "Closing remote file handle %d\n", sh );
 #endif
     }
 
     SUPP_FILE_SERVICE( acc, REQ_FILE_CLOSE );
-    acc.handle = hdl;
-    CONV_LE_32( acc.handle );
+    acc.handle = sh;
+    CONV_LE_64( acc.handle );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );

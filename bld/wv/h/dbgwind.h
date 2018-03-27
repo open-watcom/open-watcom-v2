@@ -36,7 +36,7 @@
 #include "dlgbutn.h"
 #include "dbgicon.h"
 
-#define WND_MENU_ALLOCATED      GUI_UTIL_2
+#define WND_MENU_ALLOCATED      GUI_STYLE_MENU_UTIL_2
 
 typedef enum {
     WND_ATTR_PLAIN = WND_FIRST_UNUSED,
@@ -68,6 +68,8 @@ typedef enum {
     WND_NUM_CLASSES,
     WND_NOCLASS = WND_NO_CLASS
 } wnd_class_wv;
+#define NUM_WNDCLS      WND_CURRENT
+#define NUM_WNDCLS_ALL  WND_NUM_CLASSES
 
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
@@ -86,7 +88,7 @@ typedef enum macro_type {
 typedef struct wnd_macro {
     struct wnd_macro        *link;
     void                    *cmd;
-    unsigned                key;
+    gui_key                 key;
     wnd_class_wv            wndclass;
     int                     menu_item;
     gui_menu_struct         *menu;
@@ -99,17 +101,19 @@ typedef struct wnd_macro {
 
 extern wnd_metrics *WndMetrics[];
 
-extern void         WndInitScrnState(void);
-extern void         WndNewProg(void);
-extern void         WndStrt(void);
-extern void         WndShow(void);
+extern void         WndInitScrnState( void );
+extern void         WndNewProg( void );
+extern void         WndStrt( void );
+extern void         WndShow( void );
 
-extern void         WndCodeBrk(address ,bool );
+extern void         WndCodeBrk( address, bool );
 
-extern void         WndDoInput(void);
+extern void         WndDoInput( void );
 
+extern WNDOPEN      *WndOpenTab[];
+extern const char   WndNameTab[];
 extern wnd_macro    *WndMacroList;
 
 extern char         *WndClipItem;
 
-extern void         WndUpdate(update_list );
+extern void         WndUpdate( update_list );

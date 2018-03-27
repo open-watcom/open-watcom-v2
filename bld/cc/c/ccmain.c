@@ -41,7 +41,6 @@
 #include "cgdefs.h"
 #include "feprotos.h"
 #include "swchar.h"
-#include "pragdefn.h"
 #include "cfeinfo.h"
 #include "pathlist.h"
 

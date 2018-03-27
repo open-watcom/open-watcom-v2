@@ -283,7 +283,7 @@ vi_key GetKey( bool usemouse )
             TurnOffCapsLock();
         }
         LastMouseEvent = GetMouseEvent();
-        if( LastMouseEvent != MOUSE_NONE ) {
+        if( LastMouseEvent != VI_MOUSE_NONE ) {
             RedrawMouse( MouseRow, MouseCol );
             DisplayMouse( true );
             if( TestMouseEvent( usemouse ) ) {

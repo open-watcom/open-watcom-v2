@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,8 @@
 #include "biosui.h"
 #include "dpmi.h"
 #include "uigchar.h"
+#include "getltdos.h"
+
 
 typedef struct {
     unsigned short  int_num;
@@ -48,6 +51,8 @@ typedef struct {
     long            real_eax;
     long            real_edx;
 } PHARLAP_block;
+
+unsigned    BIOSVidPage;
 
 static MONITOR ui_data = {
     25,
@@ -61,40 +66,21 @@ static MONITOR ui_data = {
     1
 };
 
-
-unsigned    BIOSVidPage;
-
-#ifdef __386__
-LP_VOID firstmeg( unsigned segment, unsigned offset )
-{
-    return( EXTENDER_RM2PM( segment, offset ) );
-}
-#endif
-
-#ifdef __386__
 void IdleInterrupt( void )
 {
-#ifdef __OSI__
-    return;     /* Can't do anything */
+#ifdef _M_I86
+    DOSIdleInterrupt();
+#elif defined( __OSI__ )
+    /* Can't do anything */
 #else
     if( _IsRational() ) {
         DPMIIdle(); /* Assume DPMI if Rational; else dunno */
     }
-    return;
 #endif
 }
-#else
-extern void DOSIdleInterrupt( void );
-#pragma aux DOSIdleInterrupt = "int 28h";
 
-void IdleInterrupt( void )
-{
-    DOSIdleInterrupt();
-}
-#endif
-
-void intern setvideomode( unsigned mode )
-/***************************************/
+void intern setvideomode( unsigned char mode )
+/********************************************/
 {
     BIOSSetMode( mode );
 }
@@ -104,7 +90,7 @@ bool UIAPI uiset80col( void )
 /****************************/
 
 {
-    register    bool            status;
+    bool        status;
 
     status = false;
     if( UIData->width != 80 ) {
@@ -120,26 +106,28 @@ bool UIAPI uiset80col( void )
     return( status );
 }
 
-extern unsigned char DOS_int( unsigned short, unsigned short, unsigned short );
-#pragma aux DOS_int =   \
-        _INT_21         \
-    parm [ax] [cx] [dx] value [al];
-
-#define desqview_present() (DOS_int(0x2b01,0x4445,0x5351)!=0xff)
-
 /*
     The code for video_buffer is identical for DOS/V and desqview
     (Get Video Buffer: int 10h, AH=FEh)
 */
 
-LP_VOID UIAPI dos_uivideobuffer( LP_VOID vbuff )
-/**********************************************/
-{
-#ifdef __386__
-    union REGPACK       regs;
-    rm_call_struct      dblock;
+#ifdef _M_I86
+extern LP_PIXEL desqview_shadow_buffer( LP_PIXEL );
+#pragma aux desqview_shadow_buffer = \
+        "mov ah,0feh"                   \
+        _INT_10                         \
+    parm [es di] value [es di] modify [ah];
+#endif
 
+LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
+/*************************************************/
+{
+#ifdef _M_I86
+    return( desqview_shadow_buffer( vbuff ) );
+#else
     if( _IsPharLap() ) {
+        union REGPACK   regs;
+
         memset( &regs, 0, sizeof( regs ) );
         regs.h.ah = 0xfe;
         regs.x.edi = FP_OFF( vbuff );
@@ -150,24 +138,16 @@ LP_VOID UIAPI dos_uivideobuffer( LP_VOID vbuff )
             vbuff = MK_FP( regs.w.es, regs.x.edi );
         }
     } else if( _IsRational() ) {
+        rm_call_struct  dblock;
+
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0xfe00;                /* get video buffer addr */
         dblock.es = FP_OFF( vbuff ) >> 4;
         dblock.edi = (FP_OFF( vbuff ) & 0x0f);
         DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
-        return( firstmeg( dblock.es, dblock.edi ) );
+        vbuff = RealModeDataPtr( dblock.es, dblock.edi );
     }
     return( vbuff );
-#else
-extern LP_VOID get_video_buffer( LP_VOID );
-#pragma aux             get_video_buffer = \
-        0xb4 0xfe       /* mov ah,0xfe */ \
-        0xcd 0x10       /* int 0x10 */ \
-        parm caller     [es di] \
-        value           [es di] \
-        modify          [ah];
-
-    return( get_video_buffer( vbuff ) );
 #endif
 }
 
@@ -177,98 +157,32 @@ typedef struct {
     unsigned char       end_range;
 } dbcs_pair;
 
-/* Some DOS environments ignore INT 21h, fn 63h altogether (NTVDM).
- * Others return success but do not modify DS:SI (US DOS 3.x). We need
- * to return a dummy DBCS pair table in that case.
- */
-#ifndef __386__
-
-extern dbcs_pair __far *dos_dbcs_vector_table( void );
-#pragma aux             dos_dbcs_vector_table = \
-        "push ds"       \
-        "xor ax,ax"     /* pre-set DS:SI to zero */ \
-        "mov ds,ax"     \
-        "mov si,ax"     \
-        "mov ax,6300h"  /* get DBCS vector table */ \
-        "int 21h"       \
-        "mov di,ds"     \
-        "pop ds"        \
-        value           [di si] \
-        modify          [ax];
-
-static dbcs_pair __far *intern dbcs_vector_table( void )
-/***************************************************/
-{
-    static dbcs_pair    dbcs_dummy = { 0, 0 };
-    dbcs_pair __far     *dbcs_table;
-
-    if( UIData->colour == M_MONO ) return( &dbcs_dummy );
-    dbcs_table = dos_dbcs_vector_table();
-    return( dbcs_table ? dbcs_table : &dbcs_dummy );
-}
-
-#else
-
-static dbcs_pair __far *intern dbcs_vector_table( void )
-/***************************************************/
-{
-    union       REGPACK                 regs;
-    static dbcs_pair dbcs_dummy = { 0, 0 };
-
-    if( UIData->colour == M_MONO ) return( &dbcs_dummy );
-    if( _IsPharLap() ) {
-        PHARLAP_block pblock;
-
-        memset( &pblock, 0, sizeof( pblock ) );
-        memset( &regs, 0, sizeof( regs ) );
-        pblock.real_eax = 0x6300;           /* get DBCS vector table */
-        pblock.int_num = 0x21;              /* DOS call */
-        regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-        regs.x.edx = FP_OFF( &pblock );     /* DS:EDX -> parameter block */
-        regs.w.ds = FP_SEG( &pblock );
-        intr( 0x21, &regs );
-        if( pblock.real_ds == 0xFFFF ) { // wierd OS/2 value
-            return( &dbcs_dummy );
-        } else {
-            return( firstmeg( (unsigned) pblock.real_ds, (unsigned) regs.w.si ) );
-        }
-    } else if( _IsRational() ) {
-        rm_call_struct dblock;
-
-        memset( &dblock, 0, sizeof( dblock ) );
-        dblock.eax = 0x6300;                    /* get DBCS vector table */
-        DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & 1) == 0 && dblock.ds ) {
-            return( firstmeg( dblock.ds, dblock.esi ) );
-        }
-    }
-    return( &dbcs_dummy );
-}
-
-#endif
-
 static dbcs_pair        Pairs[5];       // safe enough for now
-static int              Init;
+static bool             Init = false;
 
-static void intern initdbcs( void )
+static void initdbcs( void )
 {
     dbcs_pair           *p;
     dbcs_pair           __far *s;
 
-    s = dbcs_vector_table();
     p = Pairs;
-    while( s->start_range != 0 ) {
-        p->start_range = s->start_range;
-        p->end_range = s->end_range;
-        ++p;
-        ++s;
+    if( UIData->colour != M_MONO ) {
+        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
+        if( s != NULL ) {
+            while( s->start_range != 0 ) {
+                p->start_range = s->start_range;
+                p->end_range = s->end_range;
+                ++p;
+                ++s;
+            }
+        }
     }
     p->start_range = 0;
     p->end_range = 0;
     Init = true;
 }
 
-int UIAPI uiisdbcs( void )
+bool UIAPI uiisdbcs( void )
 {
     if( !Init )
         initdbcs();
@@ -320,14 +234,21 @@ int UIAPI uicharlen( int ch )
 #define DELL_43X132    84           // Text Mode
 #define DELL_25X132    85           // Text Mode
 
+typedef struct {
+    union {
+        PIXEL           pixel;
+        unsigned short  value;
+    } u;
+} pixel_value;
+
 static int IsTextMode( void )
 {
     unsigned char       mode;
     unsigned char       page;
     struct cursor_pos   cursor_position;
-    unsigned short __FAR *video_mem;
-    unsigned short      char_attr_bios;
-    unsigned short      char_attr_vmem;
+    LP_PIXEL            video_mem;
+    pixel_value         pixel_bios;
+    pixel_value         pixel_vmem;
     unsigned char       text_mode = 0;
 
     /* get current video mode */
@@ -337,23 +258,24 @@ static int IsTextMode( void )
     /* get cursor position for current page */
     cursor_position = BIOSGetCurPos( page );
     if( mode < GR_MED_4COL || mode == MONOCHROME || mode > VGA_256COL ) {
-        video_mem = (unsigned short __FAR *) UIData->screen.origin;
+        video_mem = UIData->screen.origin;
         /* set cursor position to top left corner of screen */
         BIOSSetCurPos( 0, 0, page );
         /* get character/attribute at that location */
-        char_attr_bios = BIOSGetCharAttr( page );
+        pixel_bios.u.pixel = BIOSGetCharPixel( page );
         /* get character/attribute from screen memory */
-        char_attr_vmem = *video_mem;
-        if( char_attr_bios == char_attr_vmem ) {
+        pixel_vmem.u.pixel = *video_mem;
+        if( pixel_bios.u.value == pixel_vmem.u.value ) {
             /* change the character we read through BIOS call */
-            char_attr_bios ^= 1;
+            pixel_bios.u.pixel.ch ^= 1;
             /* write out character using BIOS */
-            BIOSSetCharAttr( char_attr_bios, page );
+            BIOSSetCharPixel( pixel_bios.u.pixel, page );
             /* get character/attribute from screen memory */
-            char_attr_vmem = *video_mem;
-            if( char_attr_bios == char_attr_vmem ) {
+            pixel_vmem.u.pixel = *video_mem;
+            if( pixel_bios.u.value == pixel_vmem.u.value ) {
                 /* restore character that was there */
-                *video_mem = char_attr_bios ^ 1;
+                pixel_bios.u.pixel.ch ^= 1;
+                *video_mem = pixel_bios.u.pixel;
                 text_mode = 1;
             }
         }
@@ -363,12 +285,12 @@ static int IsTextMode( void )
     return( text_mode );
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
-    register    bool                    ega;
-    register    unsigned char           mode;
-    struct      ega_info                info;
+    bool                ega;
+    unsigned char       mode;
+    struct ega_info     info;
 
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -407,37 +329,39 @@ bool intern initmonitor( void )
     return( true );
 }
 
+extern bool desqview_present( void );
+#pragma aux desqview_present = \
+        "mov  ax,2b01h"         \
+        "mov  cx,4445h"         \
+        "mov  dx,5351h"         \
+        _INT_21                 \
+        "cmp  al,0ffh"          \
+        "jz L1"                 \
+        "xor  al,al"            \
+    "L1: inc  al"               \
+    value [al] modify [ah bx cx dx];
 
 bool intern initbios( void )
 /**************************/
 {
-    bool                    initialized;
-    unsigned short __far    *poffset;
-    LP_PIXEL                old_origin;
+    bool            initialized;
+    LP_PIXEL        old_origin;
 
     initialized = false;
     if( initmonitor() ) {
-        UIData->desqview = (desqview_present() != 0);
+        UIData->desqview = desqview_present();
         UIData->f10menus = true;
-
-        poffset = firstmeg( BIOS_PAGE, SCREEN_OFFSET );
-        if( UIData->colour == M_MONO ) {
-            UIData->screen.origin = firstmeg( 0xb000, *poffset );
-        } else {
-            UIData->screen.origin = firstmeg( 0xb800, *poffset );
-        }
+        UIData->screen.origin = RealModeDataPtr( ( UIData->colour == M_MONO ) ? 0xb000 : 0xb800,
+                                        BIOSData( BIOS_SCREEN_OFFSET, unsigned short ) );
         if( UIData->desqview ) {
-            UIData->screen.origin =
-             (LP_PIXEL)dos_uivideobuffer( UIData->screen.origin );
+            UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
         }
         if( uiisdbcs() ) {
             old_origin = UIData->screen.origin;
-            UIData->screen.origin =
-             (LP_PIXEL)dos_uivideobuffer( UIData->screen.origin );
+            UIData->screen.origin = dos_uishadowbuffer( UIData->screen.origin );
             if( old_origin != UIData->screen.origin ) {
                 UIData->desqview = true;
             }
-            DBCSCharacterMap(); /* in UIMAPCH.C */
         }
         UIData->screen.increment = UIData->width;
 
@@ -445,10 +369,10 @@ bool intern initbios( void )
         if( IsTextMode() ) {
             uiinitcursor();
             initkeyboard();
-            UIData->mouse_acc_delay = 5;   /* ticks */
-            UIData->mouse_rpt_delay = 1;   /* ticks */
-            UIData->mouse_clk_delay = 5;   /* ticks */
-            UIData->tick_delay = 9;        /* ticks */
+            UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+            UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );  /* 1 ticks */
+            UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+            UIData->tick_delay      = uiclockdelay( 500 /* ms */ );  /* 9 ticks */
             UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
             initialized = true;
         }
@@ -456,87 +380,72 @@ bool intern initbios( void )
     return( initialized );
 }
 
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    return( milli * 18 / 1000 );
-}
-
-
 void intern finibios( void )
 /**************************/
 {
     uifinicursor();
 }
 
-
-/* update the physical screen with contents of virtual copy */
-
-void intern physupdate( SAREA *area )
-/*************************************/
-{
-    int i;
-    unsigned short offset;
-    unsigned short count;
-
 /*
     The code for desqview_update is identical for DOS/V
     (Update Video Display: int 10h, AH=FFh, CX=count, ES:DI=buffer)
 */
 
-#ifdef __386__
-            union       REGPACK                 regs;
-#else
-            #pragma aux desqview_update = 0xcd 0x10 parm [ah] [es] [di] [cx];
-            extern void desqview_update( unsigned char, unsigned, unsigned, unsigned );
+#ifdef _M_I86
+extern void _desqview_update( LP_PIXEL, unsigned );
+#pragma aux _desqview_update = \
+        "mov  ah,0ffh"          \
+        _INT_10                 \
+    parm [es di] [cx] modify [ah];
 #endif
 
-        if( UIData->desqview ) {
-            count = area->width * sizeof( PIXEL );
-            for( i = area->row; i < (area->row + area->height); i++ ) {
-                offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
-
-#ifdef __386__
-            memset( &regs, 0, sizeof( regs ) );
-            if( _IsPharLap() ) {
-
-// This code does not work as advertised under DOS/V
-//              regs.h.ah = 0xff; /* update logical screen buffer request */
-//              regs.w.es = FP_SEG( UIData->screen.origin );
-//              regs.x.edi = FP_OFF( UIData->screen.origin );
-//              regs.x.edi += offset;
-//              regs.w.cx = count;
-//              intr( BIOS_VIDEO, &regs );
-
-                PHARLAP_block pblock;
-
-                memset( &pblock, 0, sizeof( pblock ) );
-                pblock.int_num = BIOS_VIDEO;        /* VIDEO call */
-                pblock.real_eax = 0xff00;           /* update from v-screen */
-                pblock.real_es = FP_OFF( UIData->screen.origin ) >> 4;
-                regs.x.edi = (FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
-                regs.w.cx = count;
-                regs.x.eax = 0x2511;                /* issue real-mode interrupt */
-                regs.x.edx = FP_OFF( &pblock );     /* DS:EDX -> parameter block */
-                regs.w.ds = FP_SEG( &pblock );
-                intr( 0x21, &regs );
-
-            } else if( _IsRational() ) {
-                rm_call_struct  dblock;
-
-                memset( &dblock, 0, sizeof( dblock ) );
-                dblock.eax = 0xff00;                /* update from v-screen */
-                dblock.es = FP_OFF( UIData->screen.origin ) >> 4;
-                dblock.edi = (FP_OFF( UIData->screen.origin ) & 0x0f)
-                               + offset;
-                dblock.ecx = count;
-                DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
-            }
+static void desqview_update( unsigned short offset, unsigned short count )
+{
+#ifdef _M_I86
+    _desqview_update( UIData->screen.origin + offset, count );
 #else
-            desqview_update( 0xff, FP_SEG( UIData->screen.origin ),
-                            FP_OFF( UIData->screen.origin ) + offset, count );
+    if( _IsPharLap() ) {
+        PHARLAP_block   pblock;
+        union REGPACK   regs;
+
+        memset( &pblock, 0, sizeof( pblock ) );
+        memset( &regs, 0, sizeof( regs ) );
+        pblock.int_num = BIOS_VIDEO;        /* VIDEO call */
+        pblock.real_eax = 0xff00;           /* update from v-screen */
+        pblock.real_es = FP_OFF( UIData->screen.origin ) >> 4;
+        regs.x.edi = (FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        regs.w.cx = count;
+        regs.x.eax = 0x2511;                /* issue real-mode interrupt */
+        regs.x.edx = FP_OFF( &pblock );     /* DS:EDX -> parameter block */
+        regs.w.ds = FP_SEG( &pblock );
+        intr( 0x21, &regs );
+    } else if( _IsRational() ) {
+        rm_call_struct  dblock;
+
+        memset( &dblock, 0, sizeof( dblock ) );
+        dblock.eax = 0xff00;                /* update from v-screen */
+        dblock.es = FP_OFF( UIData->screen.origin ) >> 4;
+        dblock.edi = (FP_OFF( UIData->screen.origin ) & 0x0f) + offset;
+        dblock.ecx = count;
+        DPMISimulateRealModeInterrupt( BIOS_VIDEO, 0, 0, &dblock );
+    }
 #endif
-            } /* for */
-        } /* if */
+}
+
+void intern physupdate( SAREA *area )
+/*************************************
+ * update the physical screen with contents of virtual copy
+ */
+{
+    unsigned short  i;
+    unsigned short  offset;
+    unsigned short  count;
+
+    if( UIData->desqview ) {
+        count = area->width * sizeof( PIXEL );
+        for( i = area->row; i < (area->row + area->height); i++ ) {
+            offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
+            desqview_update( offset, count );
+        }
+    }
 }

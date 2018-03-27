@@ -35,7 +35,9 @@
  *  or the memory management for the large model debugger under dos may fail
  */
 
+#include <i86.h>
 #include <dos.h>
+
 
 typedef unsigned int            tag;
 typedef struct freelistp        frl;
@@ -66,6 +68,7 @@ struct freelistp {
     frlptr              prev;
     frlptr              next;
 };
+
 struct heapblkp {
     tag                 heaplen;
     unsigned short      prevseg;
@@ -82,6 +85,7 @@ struct heapstart {
     struct heapblk      h;
     struct freelist     first;
 };
+
 struct heapend {
     tag                 last_tag;
     struct freelist     last;

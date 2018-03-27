@@ -58,12 +58,13 @@ WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
-        EditSubClass( hwnd, CMD_EDIT, &EditVars.CLHist );
+        h = &EditVars.Hist[HIST_CMD];
+        EditSubClass( hwnd, CMD_EDIT, h );
         SetDlgItemText( hwnd, CMD_EDIT, cmdStr );
-        curr = EditVars.CLHist.curr + EditVars.CLHist.max - 1;
-        for( i = 0; i < EditVars.CLHist.max; i++ ) {
-            if( EditVars.CLHist.data[curr % EditVars.CLHist.max] != NULL ) {
-                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_ADDSTRING, 0, (LPARAM)EditVars.CLHist.data[curr % EditVars.CLHist.max] );
+        curr = h->curr + h->max - 1;
+        for( i = 0; i < h->max; i++ ) {
+            if( h->data[curr % h->max] != NULL ) {
+                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_ADDSTRING, 0, (LPARAM)h->data[curr % h->max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -96,7 +97,7 @@ WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             break;
         case IDOK:
             GetDlgItemText( hwnd, CMD_EDIT, cmdStr, cmdLen );
-            h = &EditVars.CLHist;
+            h = &EditVars.Hist[HIST_CMD];
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {

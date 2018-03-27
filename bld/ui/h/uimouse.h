@@ -33,21 +33,11 @@
 #ifndef _UIMOUSE_H_
 #define _UIMOUSE_H_
 
-#define         MOUSE_ON                1
-#define         MOUSE_OFF               2
-
-#define         MOUSE_PRESS             0x0001
-#define         MOUSE_PRESS_RIGHT       0x0002
-#define         MOUSE_PRESS_MIDDLE      0x0004
-#define         MOUSE_PRESS_ANY         (MOUSE_PRESS | \
-                                        MOUSE_PRESS_RIGHT | \
-                                        MOUSE_PRESS_MIDDLE)
-
-#define         M_PRESS                 1
-#define         M_RELEASE               2
-#define         M_DCLICK                3
-#define         M_HOLD                  4
-#define         M_DRAG                  5
-#define         M_REPEAT                6
+extern MOUSEORD     MouseRow;
+extern MOUSEORD     MouseCol;
+extern bool         MouseOn;
+extern MOUSESTAT    MouseStatus;
+extern bool         MouseInstalled;
+extern MOUSETIME    MouseTime;
 
 #endif

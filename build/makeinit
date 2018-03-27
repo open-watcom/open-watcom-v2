@@ -3,6 +3,11 @@
 
 bld_ver       = $+$(%OWBLDVER)$-
 bld_ver_str   = $+$(%OWBLDVERSTR)$-
+bld_ver_tool  = $+$(%OWBLDVERTOOL)$-
+curr_year     =
+!if $(__VERSION__) > 1290
+curr_year     = $+$(%__CYEAR__)$-
+!endif
 patch_level   = 0
 contrib_dir   = $+$(%OWROOT)$-/contrib
 build_dir     = $+$(%OWROOT)$-/build

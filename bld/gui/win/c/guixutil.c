@@ -51,8 +51,6 @@
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
 
-extern  WPI_TEXTMETRIC  GUItm;
-
 static void MaxChild( gui_window *wnd, void *param )
 {
     param = param;
@@ -162,12 +160,11 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
         }
     }
 
-    if( ( ( parent == HWND_DESKTOP ) || ( dlg_info->style & GUI_POPUP ) ) &&
-        ( menu != NULL ) ) {
+    if( ( ( parent == HWND_DESKTOP ) || (dlg_info->style & GUI_POPUP) ) && ( menu != NULL ) ) {
         if( dlg_info->resource_menu != NULL ) {
             *menu =  _wpi_loadmenu( GUIResHInst, dlg_info->resource_menu );
         } else {
-            return( GUICreateMenus( wnd, dlg_info->num_menus, dlg_info->menu, menu ) );
+            return( GUICreateMenus( wnd, dlg_info->num_items, dlg_info->menu, menu ) );
         }
     }
 
@@ -238,8 +235,7 @@ bool GUIBringNewToFront( gui_window *prev )
     gui_window *curr;
 
     for( curr = GUIGetFront(); curr != NULL; curr = GUIGetNextWindow( curr ) ) {
-        if( ( curr != prev ) && !_wpi_ischild( prev->hwnd, curr->hwnd ) &&
-            !(curr->flags & DOING_DESTROY) ) {
+        if( ( curr != prev ) && !_wpi_ischild( prev->hwnd, curr->hwnd ) && (curr->flags & DOING_DESTROY) == 0 ) {
             GUIBringToFront( curr );
             return( true );
         }
@@ -265,7 +261,7 @@ gui_window *GUIFindFirstChild( gui_window *parent )
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent && !( wnd->flags & UTILITY_BIT ) ){
+        if( wnd->parent == parent && (wnd->flags & UTILITY_BIT) == 0 ) {
             return( wnd );
         }
     }
@@ -278,7 +274,7 @@ static gui_window *GUIFindFirstPopupWithNoParent( void )
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( ( wnd->style & GUI_POPUP ) && ( wnd->parent == NULL ) ) {
+        if( (wnd->style & GUI_POPUP) && ( wnd->parent == NULL ) ) {
             return( wnd );
         }
     }
@@ -291,7 +287,7 @@ static void GUIMarkChildrenWithFlag( gui_window *parent, gui_flags flag )
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent ){
+        if( wnd->parent == parent ) {
             wnd->flags |= flag;
         }
     }
@@ -336,9 +332,9 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     }
     if( wnd->font != NULL ) {
         _wpi_deletefont( wnd->font );
-        wnd->font = NULL;
+        wnd->font = NULLHANDLE;
     }
-    if( wnd->icon != (WPI_HICON)NULL ) {
+    if( wnd->icon != NULLHANDLE ) {
         _wpi_destroyicon( wnd->icon );
     }
     GUIFreeColours( wnd );
@@ -363,27 +359,26 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
      * destroyed is being destroyed because it's parent is being destroyed
      * (ie never got WM_CLOSE so DOING_CLOSE isn't set).
      */
-    if( !dialog && ( wnd->flags & DOING_CLOSE ) && ( GUICurrWnd == NULL ) &&
-        !GUIIsParentADialog( wnd ) ) {
+    if( !dialog && (wnd->flags & DOING_CLOSE) && ( GUICurrWnd == NULL ) && !GUIIsParentADialog( wnd ) ) {
         // if the root window has received a WM_DESTROY then just run away
         root = GUIGetRootWindow();
-        if( root && !( root->flags & DOING_DESTROY ) ) {
+        if( root && (root->flags & DOING_DESTROY) == 0 ) {
             GUIBringNewToFront( wnd );
         }
     }
-    if( wnd->hdc != (WPI_PRES)NULL ) {
+    if( wnd->hdc != NULLHANDLE ) {
         _wpi_releasepres( wnd->hwnd, wnd->hdc );
         wnd->hdc = NULLHANDLE;
     }
 #ifdef __OS2_PM__
     GUIFreeWndPaintHandles( wnd, true );
-    if( wnd->root_pinfo.normal_pres != (WPI_PRES)NULL ) {
+    if( wnd->root_pinfo.normal_pres != NULLHANDLE ) {
         _wpi_deleteos2normpres( wnd->root_pinfo.normal_pres );
-        wnd->root_pinfo.normal_pres = (WPI_PRES)NULL;
+        wnd->root_pinfo.normal_pres = NULLHANDLE;
     }
-    if( wnd->hwnd_pinfo.normal_pres != (WPI_PRES)NULL ) {
+    if( wnd->hwnd_pinfo.normal_pres != NULLHANDLE ) {
         _wpi_deleteos2normpres( wnd->hwnd_pinfo.normal_pres );
-        wnd->hwnd_pinfo.normal_pres = (WPI_PRES)NULL;
+        wnd->hwnd_pinfo.normal_pres = NULLHANDLE;
     }
 #endif
     GUIMemFree( wnd );
@@ -426,8 +421,7 @@ void GUIInvalidateResize( gui_window *wnd )
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;
 
-    if( ( wnd->flags & NEEDS_RESIZE_REDRAW ) &&
-        ( wnd->old_rows != wnd->num_rows ) ) {
+    if( (wnd->flags & NEEDS_RESIZE_REDRAW) && ( wnd->old_rows != wnd->num_rows ) ) {
         _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
         GUIGetMetrics( wnd );
         if( wnd->old_rows < wnd->num_rows ) {
@@ -585,7 +579,7 @@ void GUIRedrawScroll( gui_window *wnd, int bar, bool redraw_now )
     _wpi_setrectvalues( &rect, left, top, right, bottom );
     GUIInvalidatePaintHandles( wnd );
     _wpi_invalidaterect( hwnd, &rect, TRUE );
-    if( redraw_now && !( wnd->flags & NEEDS_RESIZE_REDRAW ) ) {
+    if( redraw_now && (wnd->flags & NEEDS_RESIZE_REDRAW) == 0 ) {
         _wpi_updatewindow( hwnd );
     }
 }
@@ -620,7 +614,8 @@ HWND GUIGetTopParentHWND( HWND hwnd )
     curr_hwnd = hwnd;
     for( ;; ) {
         parent = _wpi_getparent( curr_hwnd );
-        if( parent == HWND_DESKTOP ) break;
+        if( parent == HWND_DESKTOP )
+            break;
         curr_hwnd = parent;
     }
     return( curr_hwnd );

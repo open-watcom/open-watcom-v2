@@ -35,9 +35,9 @@
 
 #include "wboolsw.hpp"
 
-#define RB_GROUP_FIRST  _ControlStyleToWStyle( GUI_AUTOMATIC | GUI_GROUP )
-#define RB_NORMAL       _ControlStyleToWStyle( GUI_AUTOMATIC )
-#define RB_GROUP_LAST   _ControlStyleToWStyle( GUI_AUTOMATIC | GUI_GROUP )
+#define RB_GROUP_FIRST  _ControlStyleToWStyle( GUI_STYLE_CONTROL_AUTOMATIC | GUI_STYLE_CONTROL_GROUP )
+#define RB_NORMAL       _ControlStyleToWStyle( GUI_STYLE_CONTROL_AUTOMATIC )
+#define RB_GROUP_LAST   _ControlStyleToWStyle( GUI_STYLE_CONTROL_AUTOMATIC | GUI_STYLE_CONTROL_GROUP )
 
 #define RStyleGroupFirst        RB_GROUP_FIRST
 #define RStyleRadioButton       RB_NORMAL

@@ -167,6 +167,7 @@ _fork_          proc    near                    ; ...
                 mov     byte ptr ds:_BackFromFork,1 ; we're back
                 jc      normalret               ;
                 jmp     BackFromProtMode_       ; unwind the stack (eeek!)
+
 normalret:      mov     bp,cs:savebp            ; restore bp
                 mov     ss,cs:savess            ; and ss
                 mov     sp,bp                   ; restore work regs

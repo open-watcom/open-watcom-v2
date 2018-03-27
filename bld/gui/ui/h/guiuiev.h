@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern EVENT GUIUIProcessEvent( EVENT ev );
+extern ui_event GUIUIProcessEvent( ui_event ui_ev );

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -36,13 +37,14 @@
 
 .386p
 
+include langenv.inc
 include struct.inc
+include tinit.inc
 include xinit.inc
-
 
 DGROUP group CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
-extrn __DOSseg__:byte
+        extrn   __DOSseg__      : byte
 
 FarProc MACRO name
 public name
@@ -68,38 +70,19 @@ ENDM
 
 BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
-forever: jmp    short forever
+forever label   near
+        jmp short forever
+        nop
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 
 _TEXT   segment use32 word public 'CODE'
-
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _DATA   segment use32 word public 'DATA'
 
@@ -247,14 +230,10 @@ _cstart_ proc  far
 
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
         call    __CMain
-
         jmp     exit_                   ; exit
-        dd      ___begtext              ; make sure dead code elimination
-_cstart_ endp
 
-
-__exit  proc far
 public "C",__exit
+__exit:
         push    eax                     ; save return value
         push    edx                     ; save edx
         xor     eax,eax                 ; run finalizers
@@ -262,9 +241,18 @@ public "C",__exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
         pop     eax                     ; restore return value
-        mov     esp,_STACKTOP           ; reset stack pointer
-        ret
-__exit  endp
+
+__osi_exit:
+        mov     esp,_STACKTOP           ; reset stack pointer to the loader stack
+        ret                             ; return to the loader
+_cstart_ endp
+
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT segment
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return

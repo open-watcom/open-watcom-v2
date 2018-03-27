@@ -36,7 +36,7 @@
 #include "guirect.h"
 
 
-void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
+void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
 {
     WPI_RECT    parent_rect;
     HWND        parent;
@@ -57,10 +57,9 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
 #endif
 
     parent = _wpi_getparent( hwnd );
-    if( parent != HWND_DESKTOP && !is_popup ) {
+    if( parent != HWND_DESKTOP && !ispopup ) {
         _wpi_getclientrect( parent, &parent_rect );
-        _wpi_mapwindowpoints( parent, HWND_DESKTOP,
-                              (WPI_LPPOINT)&parent_rect, 2 );
+        _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&parent_rect, 2 );
         _wpi_getrectvalues( parent_rect, &left, &top, &right, &bottom );
         pos.x -= left;
         pos.y -= top;
@@ -77,13 +76,13 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
     rect->height = size.y;
 }
 
-void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool is_popup )
+void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup )
 {
     WPI_RECT    win;
 
     _wpi_getwindowrect( hwnd, &win );
 
-    DoGetRelRect( hwnd, &win, rect, is_popup );
+    DoGetRelRect( hwnd, &win, rect, ispopup );
 }
 
 /*
@@ -93,6 +92,6 @@ void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool is_popup )
 
 void GUIGetRect( gui_window *wnd, gui_rect *rect )
 {
-    GUIGetRelRect( GUIGetParentFrameHWND( wnd ), rect, ( wnd->style & GUI_POPUP ) != 0 );
+    GUIGetRelRect( GUIGetParentFrameHWND( wnd ), rect, (wnd->style & GUI_POPUP) != 0 );
 }
 

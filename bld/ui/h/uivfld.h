@@ -33,33 +33,33 @@
 #ifndef _UIVFLD_H_
 #define _UIVFLD_H_
 
-typedef struct vfield {
-        struct vfield _FARD *link;      /* next vfield on the vscreen      */
-        ORD             row;
-        ORD             col;            /* position of vfield on vscreen   */
-        int             length;         /* length of field on vscreen      */
-} VFIELD;
+typedef struct vfield_edit {
+    struct vfield_edit  _FARD *link;    /* next vfield on the vscreen      */
+    ORD                 row;
+    ORD                 col;            /* position of vfield on vscreen   */
+    unsigned            length;         /* length of field on vscreen      */
+} VFIELD_EDIT;
 
 typedef struct vfieldedit {
-        VFIELD    _FARD *fieldlist;     /* first vfield in linked list of vfields  */
-        VFIELD    _FARD *curfield;      /* current vfield (might be NULL)          */
-        VFIELD    _FARD *prevfield;     /* last vfield (might be NULL)             */
-        ATTR            enter;          /* attribute used to echo current field    */
-        ATTR            exit;           /* used when cursor leaves current field   */
-        char      _FARD *buffer;        /* buffer of characters being editted      */
-                                        /*                           SET  RESET    */
-        unsigned        oktomodify:1;   /* user can edit buffer      app   app     */
-        unsigned        hidden:1;       /* echo only cursor on XXX   app   app     */
-        unsigned        delpending:1;   /* rubout key entered field  ui    ui      */
-        unsigned        fieldpending:1; /* a field was just entered  ui    ui      */
-        unsigned        dirty:1;        /* altered buffer contents   ui    app     */
-        unsigned        update:1;       /* new buffer or contents    app   ui      */
-        unsigned        cursor:1;       /* cursor changed            app   ui      */
-        unsigned        cancel:1;       /* cancel field change       app   ui      */
-        unsigned        reset:1;        /* changed field list or     app   ui      */
-                                        /* first time through                      */
+    VFIELD_EDIT _FARD *fieldlist;   /* first vfield in linked list of vfields  */
+    VFIELD_EDIT _FARD *curfield;    /* current vfield (might be NULL)          */
+    VFIELD_EDIT _FARD *prevfield;   /* last vfield (might be NULL)             */
+    ATTR        enter;              /* attribute used to echo current field    */
+    ATTR        exit;               /* used when cursor leaves current field   */
+    char        _FARD *buffer;      /* buffer of characters being editted      */
+                                    /*                           SET  RESET    */
+    bool        oktomodify   :1;    /* user can edit buffer      app   app     */
+    bool        hidden       :1;    /* echo only cursor on XXX   app   app     */
+    bool        delpending   :1;    /* rubout key entered field  ui    ui      */
+    bool        fieldpending :1;    /* a field was just entered  ui    ui      */
+    bool        dirty        :1;    /* altered buffer contents   ui    app     */
+    bool        update       :1;    /* new buffer or contents    app   ui      */
+    bool        cursor       :1;    /* cursor changed            app   ui      */
+    bool        cancel       :1;    /* cancel field change       app   ui      */
+    bool        reset        :1;    /* changed field list or     app   ui      */
+                                    /* first time through                      */
 } VFIELDEDIT;
-/*                                                                         */
+
 /*                                                                         */
 /* when the application makes any unexpected change to the field editting  */
 /* information, it must indicate that it has done so by setting the        */
@@ -75,6 +75,6 @@ typedef struct vfieldedit {
 /*       setting the cursor flag                                           */
 /*                                                                         */
 
-extern           EVENT          uivfieldedit( VSCREEN *, VFIELDEDIT * );
+extern ui_event     uivfieldedit( VSCREEN *, VFIELDEDIT * );
 
 #endif

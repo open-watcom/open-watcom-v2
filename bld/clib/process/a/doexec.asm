@@ -29,24 +29,40 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include msdos.inc
 include mdef.inc
 include struct.inc
 
         name    doexec
 
-        extrn   execve_         :proc
-        extrn   __init_execve_  :proc
-        extrn   __close_ovl_file:dword
+psplen  =       100h                    ; length of psp
+max_para =      (comend-combeg+80h+15)/16; .COM loader is bigger, 80h stack
+
+DGROUP          group _DATA
+assume          ds:DGROUP,ss:DGROUP
+
+_DATA   segment word public 'DATA'
+
+        extrn   "C",_psp            : word
+        extrn   __close_ovl_file    : dword
+
+        public  ___p_overlay
+___p_overlay  dw        2
+
+        public  ___exec_para
+___exec_para dw max_para                ; paragraphs needed for loader
+
+loader  label   dword                   ; far pointer to loader
+loaderip dw     0                       ; ip always 0
+loadercs dw     ?                       ; cs will be filled in
+
+pathlen dw      ?                       ; length of path
+
+_DATA   ends
 
 _TEXT   segment byte public 'CODE'
-_TEXT   ends
-
-include xinit.inc
-
-        xinit   __init_execve_,DEF_PRIORITY
-
-        assume  cs: _TEXT, ds: DGROUP, ss: DGROUP, es: DGROUP
+        assume  cs:_TEXT
 
 CR      =       00dh                    ; ASCII carriage return
 NL      =       00ah                    ; ASCII line feed
@@ -82,7 +98,9 @@ nomem     db    'Not enough memory on exec',CR,NL,'$'
         _endif                          ; Endif.
         endm
 
-        _TEXT   segment
+        extrn   execve_         : proc
+        extrn   __init_execve_  : proc
+
 fake    proc    far                     ; Force returns to be far returns.
 exebeg:
         common_code                     ; Do load, check for errors.
@@ -133,29 +151,7 @@ combeg:
         ret                             ; Start execution of loaded program.
 comend:
 fake    endp
-_TEXT   ends
 
-psplen  =       100h                    ; length of psp
-max_para =      (comend-combeg+80h+15)/16; .COM loader is bigger, 80h stack
-
-        _DATA   segment
-
-        extrn   "C",_psp:word
-        public  ___p_overlay
-___p_overlay  dw        2
-
-        public  ___exec_para
-___exec_para dw max_para                ; paragraphs needed for loader
-
-loader  label   dword                   ; far pointer to loader
-loaderip dw     0                       ; ip always 0
-loadercs dw     ?                       ; cs will be filled in
-
-pathlen dw      ?                       ; length of path
-
-_DATA   ends
-
-        _TEXT   segment
 ;
 ;       void _doexec( path, cmdline, exe, exess, exesp, execs, exeip )
 ;
@@ -282,6 +278,11 @@ s_frame ends
         mov     ax,04b03h               ; Load overlay function.
         jmp     loader
 __doexec endp
+
 _TEXT   ends
+
+include xinit.inc
+
+        xinit   __init_execve_,DEF_PRIORITY
 
         end

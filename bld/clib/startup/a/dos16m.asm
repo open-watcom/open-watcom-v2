@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -35,7 +36,9 @@
 ;
         .286p
 
+include langenv.inc
 include xinit.inc
+
 include exitwmsg.inc
 
         name    dos16m
@@ -66,7 +69,7 @@ C_ETEXT ends
 
 nullseg segment para public 'CODE'
         assume  cs:nullseg
-fake_start:     jmp     short bad_start
+fake_start:     jmp short bad_start
                 nop
                 nop
         public  d16_seginfo_struct
@@ -197,20 +200,6 @@ CONST   ends
 STRINGS segment word public 'DATA'
 STRINGS ends
 
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 _DATA   segment word public 'DATA'
 
         extrn   ___d16_selectors:far
@@ -290,36 +279,21 @@ verylast ends
 
         assume  nothing
         public  _cstart_
-        public  _Not_Enough_Memory_
 
         assume  cs:_TEXT
 
 _startup_ proc near
         dd      stackavail_
-_cstart_:
-        jmp     around
-
-;
-; copyright message
-;
-include msgrt16.inc
-include msgcpyrt.inc
+_cstart_ proc near
+        jmp short around
 
 ;
 ; miscellaneous code-segment messages
 ;
 NullAssign      db      '*** NULL assignment detected',0
-NoMemory        db      'Not enough memory',0
 ConsoleName     db      'con',0
 NewLine         db      0Dh,0Ah
 msg_notPM       db      'requires DOS/16M', 0Dh, 0Ah, '$'
-
-_Not_Enough_Memory_:
-        mov     bx,1                    ; set exit code
-        mov     ax,offset NoMemory      ;
-        mov     dx,cs                   ;
-        jmp     __fatal_runtime_error   ; display msg and exit
-        ; never return
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there
@@ -462,6 +436,7 @@ _is_ovl:                                ; endif
         mov     ax,0ffh                 ; run all initializers
         call    __FInitRtns             ; call initializer routines
         call    __CMain
+_cstart_ endp
 _startup_ endp
 
 ;       don't touch AL in __exit, it has the return code
@@ -485,12 +460,13 @@ __exit  proc  far
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: DX:AX - far pointer to message to print
-;        BX    - exit code
+; input: ( char __far *msg, int rc ) always in registers
+;       DX:AX - far pointer to message to print
+;       BX    - exit code
 
-__do_exit_with_msg__:
+__do_exit_with_msg_:
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg
@@ -536,6 +512,10 @@ no_ovl:                                 ; endif
         int     021h                    ; back to DOS
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 ;
 ;       set up addressability without segment relocations for emulator

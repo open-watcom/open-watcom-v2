@@ -54,7 +54,7 @@ bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;
 
-    if( ( wnd->hdc == (WPI_PRES)NULL ) || ( wnd->ps == NULL ) ) {
+    if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ) {
         return( false );
     }
 

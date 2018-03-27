@@ -68,7 +68,8 @@ bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char 
     run_thread_info_req acc;
     run_thread_info_ret ret;
 
-    if( SuppRunThreadId == 0 ) return( false );
+    if( SuppRunThreadId == 0 )
+        return( false );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -98,7 +99,8 @@ dtid_t RemoteGetNextRunThread( dtid_t tid )
     run_thread_get_next_req acc;
     run_thread_get_next_ret ret;
 
-    if( SuppRunThreadId == 0 ) return( tid == 0 ? DEFAULT_TID : 0 );
+    if( SuppRunThreadId == 0 )
+        return( tid == 0 ? DEFAULT_TID : 0 );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -113,7 +115,8 @@ void RemotePollRunThread( void )
     run_thread_poll_req      acc;
     run_thread_poll_ret      ret;
 
-    if( SuppRunThreadId == 0 ) return;
+    if( SuppRunThreadId == 0 )
+        return;
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;
@@ -138,7 +141,8 @@ void RemoteUpdateRunThread( thread_state *thd )
     run_thread_get_runtime_req      acc;
     run_thread_get_runtime_ret      ret;
 
-    if( SuppRunThreadId == 0 ) return;
+    if( SuppRunThreadId == 0 )
+        return;
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppRunThreadId;

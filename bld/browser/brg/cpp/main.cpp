@@ -91,7 +91,7 @@ static void printHeader()
 {
     puts( banner1w( "Browsing Information Merger ", _WBRG_VERSION_ ) );
     puts( banner2 );
-    puts( banner2a( "1994" ) );
+    puts( banner2a( 1994 ) );
     puts( banner3 );
     puts( banner3a );
     puts( "" );

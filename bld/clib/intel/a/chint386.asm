@@ -43,9 +43,11 @@ _TEXT   segment
 
 _chain_intr proc far
         public  "C",_chain_intr
+        ; never return to the caller
+        ; doesn't have return address on the stack
 ifdef __STACK__
-        mov     ecx,4[esp]              ; get offset
-        mov     eax,8[esp]              ; get segment
+        mov     ecx,0[esp]              ; get offset
+        mov     eax,4[esp]              ; get segment
 else
         mov     ecx,eax                 ; get offset
         mov     eax,edx                 ; get segment

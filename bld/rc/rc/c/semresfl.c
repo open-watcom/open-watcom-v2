@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "semantic.h"
 #include "rcerrors.h"
@@ -44,7 +43,7 @@
 
 #define BUFFER_SIZE     1024
 
-static bool copyAResource( WResFileID fid, WResDirWindow *wind,
+static bool copyAResource( FILE *fp, WResDirWindow *wind,
                             char *buffer, const char *filename )
 /****************************************************************/
 {
@@ -59,7 +58,7 @@ static bool copyAResource( WResFileID fid, WResDirWindow *wind,
     resinfo = WResGetResInfo( *wind );
     typeinfo = WResGetTypeInfo( *wind );
     loc.start = SemStartResource();
-    /* rc = */ CopyData( langinfo->Offset, langinfo->Length, fid, buffer, BUFFER_SIZE, &err_code );
+    /* rc = */ CopyData( langinfo->Offset, langinfo->Length, fp, buffer, BUFFER_SIZE, &err_code );
     loc.len = SemEndResource( loc.start );
     SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->MemoryFlags, loc, filename );
     return( false );
@@ -68,7 +67,7 @@ static bool copyAResource( WResFileID fid, WResDirWindow *wind,
 static bool copyResourcesFromRes( const char *full_filename )
 /***********************************************************/
 {
-    WResFileID          fid;
+    FILE                *fp;
     WResDir             dir;
     bool                dup_discarded;
     WResDirWindow       wind;
@@ -77,13 +76,13 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    fid = RcIoOpenInput( full_filename, false );
-    if( fid == WRES_NIL_HANDLE ) {
+    fp = RcIoOpenInput( full_filename, false );
+    if( fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
 
-    error = WResReadDir( fid, dir, &dup_discarded );
+    error = WResReadDir( fp, dir, &dup_discarded );
     if( error ) {
         switch( LastWresStatus() ) {
         case WRS_BAD_SIG:
@@ -106,19 +105,19 @@ static bool copyResourcesFromRes( const char *full_filename )
     buffer = RESALLOC( BUFFER_SIZE );
     wind = WResFirstResource( dir );
     while( !WResIsEmptyWindow( wind ) ) {
-        copyAResource( fid, &wind, buffer, full_filename );
+        copyAResource( fp, &wind, buffer, full_filename );
         wind = WResNextResource( wind, dir );
     }
     RESFREE( buffer );
     WResFreeDir( dir );
-    RESCLOSE( fid );
+    RESCLOSE( fp );
     return( false );
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
     WResFreeDir( dir );
-    if( fid != WRES_NIL_HANDLE )
-        RESCLOSE( fid );
+    if( fp != NULL )
+        RESCLOSE( fp );
     return( true );
 }
 
@@ -127,7 +126,7 @@ void SemWINAddResFile( char *filename )
 {
     char                full_filename[_MAX_PATH];
 
-    if( RcFindResource( filename, full_filename ) == -1 ) {
+    if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }

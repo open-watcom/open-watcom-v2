@@ -62,7 +62,7 @@ void BannerMessage( void )
         banner1w( "C/C++ CL Clone for " CPU_NAME " ", _CL_CLONE_VERSION_ ) "\n"
 #endif
         banner2 "\n"
-        banner2a( "1995" ) "\n"
+        banner2a( 1995 ) "\n"
         banner3 "\n"
         banner3a "\n"
         "Compatible with CL Version " _MS_CL_VERSION_ "\n"
@@ -120,7 +120,7 @@ void PrintHelpMessage( void )
             fflush( stdout );
             ch = get_key();
             printf( "\n" );
-            if( ch == 'q' )  
+            if( ch == 'q' )
                 break;
             num = -1;
         }

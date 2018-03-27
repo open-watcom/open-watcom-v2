@@ -39,63 +39,62 @@
 #include "clibext.h"
 
 
-static EVENT livefieldevents[] = {
+static ui_event livefieldevents[] = {
     ' ',            '~',
     EV_HOME,        EV_DELETE,
     0x0001,         0x00ff,     /* Alt Keypad number */
-    EV_NO_EVENT,                /* end of list of ranges */
+    __rend__,
     EV_RUB_OUT,
     EV_CTRL_END,
     EV_CTRL_HOME,
     EV_TAB_FORWARD,
     EV_TAB_BACKWARD,
-    EV_NO_EVENT
+    __end__
 };
 
 
-static EVENT deadfieldevents[] = {
+static ui_event deadfieldevents[] = {
     EV_HOME,        EV_INSERT,
-    EV_NO_EVENT,                /* end of list of ranges */
+    __rend__,
     EV_TAB_FORWARD,
     EV_TAB_BACKWARD,
-    EV_NO_EVENT
+    __end__
 };
 
 
-static EVENT setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD col )
-/*********************************************/
+static ui_event setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD_EDIT *cur, ORD col )
+/**************************************************************************************/
 {
-    register    EVENT                   ev;
-    register    VFIELD*                 prev;
+    ui_event        ui_ev;
+    VFIELD_EDIT     *prev;
 
     if( cur != header->curfield ) {
         prev = header->curfield;
-        if( prev ) {
+        if( prev != NULL ) {
             /* change attribute on field being left */
-            uivtextput( vptr, prev->row, prev->col, header->exit,
-                header->buffer, prev->length );
+            uivtextput( vptr, prev->row, prev->col, header->exit, header->buffer, prev->length );
         }
         header->prevfield = prev;
         header->curfield = cur;
         header->fieldpending = true;
-        ev = EV_FIELD_CHANGE;
+        ui_ev = EV_FIELD_CHANGE;
     } else {
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
     if( cur != NULL ) {
         vptr->row = cur->row;
         vptr->col = cur->col + col;
     }
-    return( ev );
+    return( ui_ev );
 }
 
 
-static EVENT movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
-/***********************************************/
+static ui_event movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
+/******************************************************************************/
 {
-    register    int                      cursor;
-    register    int                      field = 0; // GCC wrongly thinks this might be uninited
-    register    VFIELD*                  cur;
+    unsigned            cursor;
+    unsigned            field = 0; // GCC wrongly thinks this might be uninited
+    VFIELD_EDIT         *cur;
 
     if( col < 0 ) {
         col += vptr->area.width;
@@ -121,24 +120,21 @@ static EVENT movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
 }
 
 
-static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
-/*************************************************/
+static VFIELD_EDIT *tabfield( VSCREEN *vptr, VFIELD_EDIT *fieldlist, bool forward )
+/*********************************************************************************/
 {
-    register    VFIELD*                 chase;
-    register    VFIELD*                 cur;
-    register    int                     diff;
-    register    int                     closest;
-
-    chase = fieldlist;
-    cur = chase;
+    VFIELD_EDIT         *chase;
+    VFIELD_EDIT         *cur;
+    int                 diff;
+    int                 closest;
+    
+    cur = fieldlist;
     closest = vptr->area.height * vptr->area.width;
-    while( chase != NULL ) {
+    for( chase = fieldlist; chase != NULL; chase = chase->link ) {
         if( forward ) {
-            diff = ( chase->row - vptr->row ) * vptr->area.width +
-                   ( chase->col - vptr->col );
+            diff = ( chase->row - vptr->row ) * vptr->area.width + ( chase->col - vptr->col );
         } else {
-            diff = ( vptr->row - chase->row ) * vptr->area.width +
-                   ( vptr->col - chase->col );
+            diff = ( vptr->row - chase->row ) * vptr->area.width + ( vptr->col - chase->col );
         }
         if( diff <= 0 ) {
             diff = diff + vptr->area.height * vptr->area.width;
@@ -147,19 +143,18 @@ static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
             cur = chase;
             closest = diff;
         }
-        chase = chase->link;
     }
     return( cur );
 }
 
 
-EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
-/************************************************************/
+ui_event UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
+/**************************************************************/
 {
-    register    EVENT                   ev;
-    register    VFIELD*                 cur;
-    auto        VBUFFER                 buffer;
-    auto        SAREA                   area;
+    ui_event           ui_ev;
+    VFIELD_EDIT        *cur;
+    VBUFFER            buffer;
+    SAREA              area;
 
     if( header->reset ) {
         header->reset = false;
@@ -167,7 +162,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
         header->curfield = NULL;
         header->cursor = true;
         area.height = 1;
-        for( cur = header->fieldlist ; cur != NULL ; cur = cur->link ) {
+        for( cur = header->fieldlist; cur != NULL; cur = cur->link ) {
             area.row = cur->row;
             area.col = cur->col;
             area.width = cur->length;
@@ -196,7 +191,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
     cur = header->curfield;
     if( header->update ) {
         header->update = false;
-        if( cur ) {     /* this should always be non-NULL */
+        if( cur != NULL ) {     /* this should always be non-NULL */
             uipadblanks( header->buffer, cur->length );
             if( header->delpending ) {
                 buffer.content = header->buffer;
@@ -206,8 +201,7 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 header->dirty = true;
                 header->delpending = false;
             }
-            uivtextput( vptr, cur->row, cur->col, header->enter,
-                    header->buffer, cur->length );
+            uivtextput( vptr, cur->row, cur->col, header->enter, header->buffer, cur->length );
         }
     }
     if( header->oktomodify ) {
@@ -215,28 +209,29 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
     } else {
         uipushlist( deadfieldevents );
     }
-    ev = uivgetevent( vptr );
-    if( ev > EV_NO_EVENT ) {
-        if( uiintoplist( ev ) ) {
-            if( cur ) {
+    ui_ev = uivgetevent( vptr );
+    if( ui_ev > EV_NO_EVENT ) {
+        if( uiintoplist( ui_ev ) ) {
+            if( cur != NULL ) {
                 buffer.content = header->buffer;
                 buffer.length = cur->length;
                 buffer.index = vptr->col - cur->col;
                 buffer.insert = ( vptr->cursor == C_INSERT );
                 buffer.dirty = false;
-                uieditevent( ev, &buffer );
+                uieditevent( ui_ev, &buffer );
                 header->dirty |= buffer.dirty;
             }
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_HOME:
-                if( cur != NULL ) break; /* home is within field */
-                /* WARNING: this case falls through to the next */
+                if( cur != NULL )   /* home is within field */
+                    break;
+                /* fall through */
             case EV_TAB_FORWARD:
             case EV_TAB_BACKWARD:
-                cur = tabfield( vptr, header->fieldlist, ev == EV_TAB_FORWARD );
+                cur = tabfield( vptr, header->fieldlist, ui_ev == EV_TAB_FORWARD );
                 /* WARNING: the EV_HOME case falls through */
                 if( cur != NULL ) {
-                    ev = setfield( vptr, header, cur, 0 );
+                    ui_ev = setfield( vptr, header, cur, 0 );
                     cur = NULL; /* kludge - avoid calling movecursor */
                 }
                 break;
@@ -248,21 +243,21 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                 }
                 break;
             case EV_CURSOR_UP:
-                ev = movecursor( vptr, header, vptr->row - 1, vptr->col );
+                ui_ev = movecursor( vptr, header, vptr->row - 1, vptr->col );
                 break;
             case EV_CURSOR_DOWN:
-                ev = movecursor( vptr, header, vptr->row + 1, vptr->col );
+                ui_ev = movecursor( vptr, header, vptr->row + 1, vptr->col );
                 break;
             case EV_RUB_OUT:
                 header->delpending = true;
-                /* WARNING: this case falls through to the next !!!! */
+                /* fall through */
             case EV_CURSOR_LEFT:
-                if( cur ) {
+                if( cur != NULL ) {
                     if( vptr->col > cur->col ) {
                         break; /* cursor movement within field */
                     }
                 }
-                ev = movecursor( vptr, header, vptr->row, vptr->col - 1 );
+                ui_ev = movecursor( vptr, header, vptr->row, vptr->col - 1 );
                 break;
             case EV_CURSOR_RIGHT:
             case ' ':
@@ -271,24 +266,22 @@ EVENT UIAPI uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
                         break; /* cursor movement within field */
                     }
                 }
-                ev = movecursor( vptr, header, vptr->row, vptr->col + 1 );
+                ui_ev = movecursor( vptr, header, vptr->row, vptr->col + 1 );
                 break;
             }
-            if( ev != EV_FIELD_CHANGE ) {
-                if( cur ) {
-                    ev = movecursor( vptr, header,
-                           vptr->row, cur->col + buffer.index );
-                    if( buffer.dirty && ( ev == EV_NO_EVENT ) ) {
-                        uivtextput( vptr, cur->row, cur->col, header->enter,
-                            header->buffer, cur->length );
+            if( ui_ev != EV_FIELD_CHANGE ) {
+                if( cur != NULL ) {
+                    ui_ev = movecursor( vptr, header, vptr->row, cur->col + buffer.index );
+                    if( buffer.dirty && ( ui_ev == EV_NO_EVENT ) ) {
+                        uivtextput( vptr, cur->row, cur->col, header->enter, header->buffer, cur->length );
                     }
                 } else {
-                    ev = EV_NO_EVENT;
+                    ui_ev = EV_NO_EVENT;
                 }
                 header->delpending = false;
             }
         }
     }
-    uipoplist();
-    return( ev );
+    uipoplist( /* livefieldevents or deadfieldevents */ );
+    return( ui_ev );
 }

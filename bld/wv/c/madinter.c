@@ -76,7 +76,7 @@ mad_status MADCLIENTRY( AddrOvlReturn )( address *addr )
     return( FixOvlRetAddr( addr ) ? MS_OK : MS_FAIL );
 }
 
-mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
+mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle mth,
                         mad_label_kind lk, char *buff, size_t buff_len )
 {
     char        *p;
@@ -92,7 +92,7 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
     }
     if( p != NULL )
         return( MS_OK );
-    AddrTypeToString( &a, th, buff, buff_len );
+    AddrTypeToString( &a, mth, buff, buff_len );
     return( MS_FAIL );
 }
 
@@ -340,24 +340,25 @@ size_t GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len )
     return( NormalizeString( buff ) );
 }
 
-size_t GetMADTypeNameForCmd( mad_type_handle th, char *buff, size_t buff_len )
+size_t GetMADTypeNameForCmd( mad_type_handle mth, char *buff, size_t buff_len )
 {
-    return( GetMADNormalizedString( MADTypeName( th ), buff, buff_len ) );
+    return( GetMADNormalizedString( MADTypeName( mth ), buff, buff_len ) );
 }
 
 struct find_handle {
     unsigned            bits;
-    mad_type_handle     th;
+    mad_type_handle     mth;
 };
 
-static walk_result CheckOneHandle( mad_type_handle th, void *d )
+OVL_EXTERN walk_result CheckOneHandle( mad_type_handle mth, void *d )
 {
     struct find_handle  *fd = d;
     mad_type_info       mti;
 
-    MADTypeInfo( th, &mti );
-    if( mti.b.bits != fd->bits ) return( WR_CONTINUE );
-    fd->th = th;
+    MADTypeInfo( mth, &mti );
+    if( mti.b.bits != fd->bits )
+        return( WR_CONTINUE );
+    fd->mth = mth;
     return( WR_STOP );
 }
 
@@ -366,9 +367,9 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
     struct find_handle  data;
 
     data.bits = BYTES2BITS( size );
-    data.th = MAD_NIL_TYPE_HANDLE;
+    data.mth = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, CheckOneHandle, &data );
-    return( data.th );
+    return( data.mth );
 }
 
 struct find_mad {
@@ -377,7 +378,7 @@ struct find_mad {
     dig_mad         mad;
 };
 
-static walk_result FindTheMad( dig_mad mad, void *d )
+OVL_EXTERN walk_result FindTheMad( dig_mad mad, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];

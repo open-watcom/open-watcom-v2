@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,5 +45,4 @@ extern void         Log( bool quiet, const char *, ... );
 extern void         LogFlush( void );
 extern void         OpenLog( const char * );
 extern void         CloseLog( void );
-extern void         *Alloc( size_t );
 extern char         *SkipBlanks( const char * );

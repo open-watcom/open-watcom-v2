@@ -42,17 +42,17 @@ struct glue_mod_walk {
 /*
  * Glue function for the module walk.
  */
-static walk_result GlueModWalk( imp_image_handle *ii, hll_dir_entry *hdd,
+static walk_result GlueModWalk( imp_image_handle *iih, hll_dir_entry *hdd,
                                 void *d )
 {
     struct glue_mod_walk *md = d;
-    return( md->wk( ii, hdd->iMod, md->d ) );
+    return( md->wk( iih, hdd->iMod, md->d ) );
 }
 
 /*
  * Walk modules.
  */
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk,
                                         void *d )
 {
     struct glue_mod_walk    md;
@@ -60,9 +60,9 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER
 
     md.wk = wk;
     md.d  = d;
-    wr = hllWalkDirList( ii, hll_sstModule, &GlueModWalk, &md );
+    wr = hllWalkDirList( iih, hll_sstModule, &GlueModWalk, &md );
     if( wr == WR_CONTINUE ) {
-        wr = wk( ii, IMH_GBL, d );
+        wr = wk( iih, IMH_GBL, d );
     }
     return( wr );
 }
@@ -103,7 +103,7 @@ static size_t StripAndCopyName( unsigned_8 *name, char *buff, size_t buff_size )
 /*
  * Gets the module name.
  */
-size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle im,
                                  char *buff, size_t buff_size )
 {
     hll_dir_entry *hdd;
@@ -113,11 +113,11 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
         return( hllNameCopy( buff, GBL_NAME, buff_size, sizeof( GBL_NAME ) - 1 ) );
     }
 
-    hdd = hllFindDirEntry( ii, im, hll_sstModule );
+    hdd = hllFindDirEntry( iih, im, hll_sstModule );
     if( hdd != NULL ) {
-        void *mp = VMBlock( ii, hdd->lfo, hdd->cb );
+        void *mp = VMBlock( iih, hdd->lfo, hdd->cb );
         if( mp != NULL ) {
-            switch ( ii->format_lvl ) {
+            switch ( iih->format_lvl ) {
             case HLL_LVL_NB00:
             case HLL_LVL_NB02://testme
                 return( StripAndCopyName( &((cv3_module_16 *)mp)->name_len, buff, buff_size ) );
@@ -136,14 +136,14 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
 /*
  * Gets the compiler unit infomation record (unit = module, so for a module).
  */
-hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *ii, imp_mod_handle im )
+hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle im )
 {
-    hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstSymbols );
+    hll_dir_entry *hdd = hllFindDirEntry( iih, im, hll_sstSymbols );
     if( hdd != NULL ) {
         virt_mem        pos = hdd->lfo;
         const virt_mem  end = pos + hdd->cb;
         while( pos < end ) {
-            hll_ssr_cuinfo *cuinfo = VMRecord( ii, pos, &pos, NULL );
+            hll_ssr_cuinfo *cuinfo = VMRecord( iih, pos, &pos, NULL );
             if( cuinfo != NULL
              || cuinfo->common.code == HLL_SSR_CU_INFO ) {
                 //FIXME: check CV3 format!
@@ -157,9 +157,9 @@ hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Gets the source language for a module.
  */
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 {
-    hll_ssr_cuinfo *cuinfo = hllGetCompInfo( ii, im );
+    hll_ssr_cuinfo *cuinfo = hllGetCompInfo( iih, im );
     if( cuinfo != NULL ) {
         switch( cuinfo->language ) {
         case HLL_LANG_C:        return( "c" );
@@ -180,26 +180,26 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Checks if the specified information is available for this module.
  */
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im,
                                    handle_kind hk )
 {
     hll_dir_entry   *hdd;
 
     switch( hk ) {
     case HK_TYPE:
-        hdd = hllFindDirEntry( ii, im, hll_sstTypes );
+        hdd = hllFindDirEntry( iih, im, hll_sstTypes );
         break;
     case HK_CUE:
-        hdd = hllFindDirEntry( ii, im, hll_sstHLLSrc );
+        hdd = hllFindDirEntry( iih, im, hll_sstHLLSrc );
         if( !hdd || !hdd->cb ) {
-            hdd = hllFindDirEntry( ii, im, hll_sstSrcLnSeg );
+            hdd = hllFindDirEntry( iih, im, hll_sstSrcLnSeg );
         }
         if( !hdd || !hdd->cb ) {
-            hdd = hllFindDirEntry( ii, im, hll_sstSrcLines );
+            hdd = hllFindDirEntry( iih, im, hll_sstSrcLines );
         }
         break;
     case HK_SYM:
-        hdd = hllFindDirEntry( ii, im, hll_sstSymbols );
+        hdd = hllFindDirEntry( iih, im, hll_sstSymbols );
         break;
 
     case HK_IMAGE:
@@ -219,7 +219,7 @@ struct find_mod {
 /*
  * ImpAddrMod worker called for each module subsection.
  */
-static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *d )
+static walk_result FindModNB04( imp_image_handle *iih, hll_dir_entry *hdd, void *d )
 {
     struct find_mod     *args = d;
     address             *a = args->a;
@@ -227,7 +227,7 @@ static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *
     hll_seginfo         *sp;
     unsigned             seg;
 
-    mp = VMBlock( ii, hdd->lfo, hdd->cb );
+    mp = VMBlock( iih, hdd->lfo, hdd->cb );
     if( mp == NULL )
         return( WR_CONTINUE );
 
@@ -239,7 +239,7 @@ static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *
         address code;
         code.mach.segment = sp->Seg;
         code.mach.offset  = sp->offset;
-        hllMapLogical( ii, &code );
+        hllMapLogical( iih, &code );
         if( code.mach.segment == a->mach.segment && a->mach.offset - code.mach.offset <= sp->cbSeg ) {
             args->im = hdd->iMod;
             return( WR_STOP );
@@ -257,17 +257,17 @@ static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *
 /*
  * Finds the module which contains the address 'a'.
  */
-search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
+search_result hllAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
 {
     unsigned    seg;
 
     /*
      * Check that the address is within the segment table.
      */
-    for( seg = 0; seg < ii->seg_count; ++seg ) {
-        if( ii->segments[seg].ovl == a.sect_id
-          && ii->segments[seg].map.segment == a.mach.segment
-          && a.mach.offset - ii->segments[seg].map.offset < ii->segments[seg].size ) {
+    for( seg = 0; seg < iih->seg_count; ++seg ) {
+        if( iih->segments[seg].ovl == a.sect_id
+          && iih->segments[seg].map.segment == a.mach.segment
+          && a.mach.offset - iih->segments[seg].map.offset < iih->segments[seg].size ) {
 
             /*
              * Find the address among the module sections.
@@ -275,10 +275,10 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
              * we know that the address is within the bounds of this image.
              */
             *im = IMH_GBL;
-            if( ii->segments[seg].is_executable ) {
+            if( iih->segments[seg].is_executable ) {
                 struct find_mod args;
                 args.a = &a;
-                if( hllWalkDirList( ii, hll_sstModule, FindModNB04, &args ) == WR_STOP ) {
+                if( hllWalkDirList( iih, hll_sstModule, FindModNB04, &args ) == WR_STOP ) {
                     *im = args.im;
                 }
             }
@@ -291,17 +291,17 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 /*
  * Finds the module which contains the address 'a'.
  */
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a, imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *im )
 {
-    return( hllAddrMod( ii, a, im ) );
+    return( hllAddrMod( iih, a, im ) );
 }
 
 /*
  * Gets the module address.
  */
-address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
 {
-    hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
+    hll_dir_entry *hdd = hllFindDirEntry( iih, im, hll_sstModule );
     if( hdd != NULL) {
         union {
             void            *pv;
@@ -309,17 +309,17 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
             cv3_module_16   *cv3_16;
             cv3_module_32   *cv3_32;
         } m;
-        m.pv = VMBlock( ii, hdd->lfo, hdd->cb );
+        m.pv = VMBlock( iih, hdd->lfo, hdd->cb );
         if( m.pv ) {
             address addr;
 
-            switch( ii->format_lvl ) {
+            switch( iih->format_lvl ) {
             case HLL_LVL_NB00:
             case HLL_LVL_NB02:
                 if( m.cv3_16->cSeg > 0 ) {
                     addr.mach.segment = m.cv3_16->SegInfo.Seg;
                     addr.mach.offset  = m.cv3_16->SegInfo.offset;
-                    hllMapLogical( ii, &addr );
+                    hllMapLogical( iih, &addr );
                     return( addr );
                 }
                 break;
@@ -328,7 +328,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
                 if( m.cv3_16->cSeg > 0 ) {
                     addr.mach.segment = m.cv3_16->SegInfo.Seg;
                     addr.mach.offset  = m.cv3_16->SegInfo.offset;
-                    hllMapLogical( ii, &addr );
+                    hllMapLogical( iih, &addr );
                     return( addr );
                 }
                 break;
@@ -337,7 +337,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
                 if( m.hll->cSeg > 0 ) {
                     addr.mach.segment = m.hll->SegInfo.Seg;
                     addr.mach.offset  = m.hll->SegInfo.offset;
-                    hllMapLogical( ii, &addr );
+                    hllMapLogical( iih, &addr );
                     return( addr );
                 }
                 break;
@@ -350,7 +350,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Construct default dip_type_info for a module.
  */
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle im,
                                       default_kind dk, dip_type_info *ti )
 {
     /*
@@ -359,7 +359,7 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
      * FIXME: We need to record the kind executable image, segment type and
      *        whatever else which could give of heuristics to decide here.
      */
-    hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
+    hll_dir_entry *hdd = hllFindDirEntry( iih, im, hll_sstModule );
     if( hdd == NULL && im != IMH_GBL ) {
         return( DS_FAIL );
     }
@@ -394,11 +394,11 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
 /*
  * Gets the debug style of a module.
  */
-hll_style hllGetModStyle( imp_image_handle *ii, imp_mod_handle im )
+hll_style hllGetModStyle( imp_image_handle *iih, imp_mod_handle im )
 {
-    hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
+    hll_dir_entry *hdd = hllFindDirEntry( iih, im, hll_sstModule );
     if( hdd ) {
-        hll_module *mp = VMBlock( ii, hdd->lfo, hdd->cb );
+        hll_module *mp = VMBlock( iih, hdd->lfo, hdd->cb );
         if( mp != NULL ) {
             switch( mp->Style ) {
             case HLL_DEBUG_STYLE_HL:
@@ -422,6 +422,6 @@ hll_style hllGetModStyle( imp_image_handle *ii, imp_mod_handle im )
             }
         }
     }
-    return( ii->is_32bit ? HLL_STYLE_HL04 : HLL_STYLE_CV00 );
+    return( iih->is_32bit ? HLL_STYLE_HL04 : HLL_STYLE_CV00 );
 }
 

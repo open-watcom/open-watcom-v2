@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#include "fio.h"
+
+
 extern void         InitStd( void );
 extern void         SetIOBufferSize( uint buff_size );
 extern file_handle  _AllocFile( int h, f_attrs attrs, long int fpos );

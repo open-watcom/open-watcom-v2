@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
 #include "freelist.h"
 #include "zoiks.h"
@@ -247,7 +246,7 @@ static  possible_for_alias *FindPossibleForAlias( conflict_node *conf, name *opn
 
 
 /*
- * Return "possible" list entry for alias temp variable. If none found 
+ * Return "possible" list entry for alias temp variable. If none found
  * (new variable), create new entry and assign RL_NUMBER_OF_SETS
  * (no restictions yet) to it.
  */

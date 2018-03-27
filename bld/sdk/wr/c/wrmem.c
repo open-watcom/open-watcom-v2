@@ -31,8 +31,8 @@
 
 #include <wwindows.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
 
@@ -41,15 +41,13 @@
 #include "trmem.h"
 
 static _trmem_hdl   TRMemHandle;
-static int          TRFileHandle;   /* stream to put output on */
 
-static void TRPrintLine( void *handle, const char *buff, size_t len );
-
-/* extern to avoid problems with taking address and overlays */
-extern void TRPrintLine( void *handle, const char *buff, size_t len )
-/******************************************************************/
+static void TRPrintLine( void *handle, const char *buff, size_t len )
+/*******************************************************************/
 {
-    write( *(int *)handle, buff, len );
+    /* unused parameters */ (void)handle; (void)len;
+
+    fputs( buff, stderr );
 }
 
 #endif
@@ -57,9 +55,8 @@ extern void TRPrintLine( void *handle, const char *buff, size_t len )
 void WRMemOpen( void )
 {
 #ifdef TRMEM
-    TRFileHandle = STDERR_FILENO;
     TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
-                               &TRFileHandle, TRPrintLine,
+                               NULL, TRPrintLine,
                                _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                                _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif

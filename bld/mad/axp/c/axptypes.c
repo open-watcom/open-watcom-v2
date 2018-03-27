@@ -86,33 +86,35 @@ const mad_type_data TypeArray[] = {
 
 walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     walk_result         wr;
 
     if( !(tk & MAS_MEMORY) ) return( WR_CONTINUE );
-    for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
-        if( (tk & TypeArray[th].u.info->b.kind)
-         && TypeArray[th].name != MAD_MSTR_NIL ) {
-            wr = wk( th, data );
-            if( wr != WR_CONTINUE ) return( wr );
+    for( mth = 0; mth < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++mth ) {
+        if( (tk & TypeArray[mth].u.mti->b.kind)
+         && TypeArray[mth].name != MAD_MSTR_NIL ) {
+            wr = wk( mth, data );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     }
     return( WR_CONTINUE );
 }
 
-mad_string MADIMPENTRY( TypeName )( mad_type_handle th )
+mad_string MADIMPENTRY( TypeName )( mad_type_handle mth )
 {
-    return( TypeArray[th].name );
+    return( TypeArray[mth].name );
 }
 
-mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 {
-    return( TypeArray[th].hex ? 16 : 10 );
+    return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
+    memcpy( mti, TypeArray[mth].u.mti, sizeof( *mti ) );
 }
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
@@ -135,7 +137,7 @@ mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d )
+static mad_status DoConvert( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d )
 {
     const unsigned_16   *p1;
     unsigned_16 *p2;
@@ -143,34 +145,34 @@ static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const 
     mad_status  ms;
 
     p1 = in_d;
-    switch( in_t->b.handler_code ) {
+    switch( in_mti->b.handler_code ) {
     case AXPT_F_FLOAT:
         temp[0] = p1[1];
         temp[1] = p1[0];
-        return( MCTypeConvert( TypeArray[AXPT_RF_FLOAT].u.info, temp, out_t, out_d, 0 ) );
+        return( MCTypeConvert( TypeArray[AXPT_RF_FLOAT].u.mti, temp, out_mti, out_d, 0 ) );
     case AXPT_G_FLOAT:
         temp[0] = p1[3];
         temp[1] = p1[2];
         temp[2] = p1[1];
         temp[3] = p1[0];
-        return( MCTypeConvert( TypeArray[AXPT_RG_FLOAT].u.info, temp, out_t, out_d, 0 ) );
+        return( MCTypeConvert( TypeArray[AXPT_RG_FLOAT].u.mti, temp, out_mti, out_d, 0 ) );
     case AXPT_D_FLOAT:
         temp[0] = p1[3];
         temp[1] = p1[2];
         temp[2] = p1[1];
         temp[3] = p1[0];
-        return( MCTypeConvert( TypeArray[AXPT_RD_FLOAT].u.info, temp, out_t, out_d, 0 ) );
+        return( MCTypeConvert( TypeArray[AXPT_RD_FLOAT].u.mti, temp, out_mti, out_d, 0 ) );
     }
     p2 = out_d;
-    switch( out_t->b.handler_code ) {
+    switch( out_mti->b.handler_code ) {
     case AXPT_F_FLOAT:
-        ms =  MCTypeConvert( in_t, in_d, TypeArray[AXPT_RF_FLOAT].u.info, temp, 0 );
+        ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RF_FLOAT].u.mti, temp, 0 );
         if( ms != MS_OK ) return( ms );
         p2[1] = temp[0];
         p2[0] = temp[1];
         break;
     case AXPT_G_FLOAT:
-        ms =  MCTypeConvert( in_t, in_d, TypeArray[AXPT_RG_FLOAT].u.info, temp, 0 );
+        ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RG_FLOAT].u.mti, temp, 0 );
         if( ms != MS_OK ) return( ms );
         p2[3] = temp[0];
         p2[2] = temp[1];
@@ -178,7 +180,7 @@ static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const 
         p2[0] = temp[3];
         break;
     case AXPT_D_FLOAT:
-        ms =  MCTypeConvert( in_t, in_d, TypeArray[AXPT_RD_FLOAT].u.info, temp, 0 );
+        ms =  MCTypeConvert( in_mti, in_d, TypeArray[AXPT_RD_FLOAT].u.mti, temp, 0 );
         if( ms != MS_OK ) return( ms );
         p2[3] = temp[0];
         p2[2] = temp[1];
@@ -194,24 +196,24 @@ static mad_status DoConvert( const mad_type_info *in_t, const void *in_d, const 
 mad_status MADIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     mad_status          ms;
-    const mad_type_info *new;
+    const mad_type_info *new_mti;
     unsigned_16         temp[4];
 
     switch( mti->b.handler_code ) {
     case AXPT_F_FLOAT:
-        new = TypeArray[AXPT_FLOAT].u.info;
+        new_mti = TypeArray[AXPT_FLOAT].u.mti;
         break;
     case AXPT_G_FLOAT:
     case AXPT_D_FLOAT:
-        new = TypeArray[AXPT_DOUBLE].u.info;
+        new_mti = TypeArray[AXPT_DOUBLE].u.mti;
         break;
     default:
         return( MS_UNSUPPORTED );
     }
-    ms = DoConvert( mti, data, new, &temp );
+    ms = DoConvert( mti, data, new_mti, &temp );
     if( ms != MS_OK )
         return( ms );
-    return( MCTypeToString( radix, new, temp, buff, buff_size_p ) );
+    return( MCTypeToString( radix, new_mti, temp, buff, buff_size_p ) );
 }
 
 mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
@@ -262,9 +264,9 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
     /* unused parameters */ (void)seg;
 
-    return( DoConvert( in_t, in_d, out_t, out_d ) );
+    return( DoConvert( in_mti, in_d, out_mti, out_d ) );
 }

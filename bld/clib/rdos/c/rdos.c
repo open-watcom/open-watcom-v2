@@ -108,6 +108,11 @@ void RdosSpawnBase();
 #pragma aux RdosSpawnBase = \
     CallGate_spawn_exe;
 
+void RdosAttachBase();
+
+#pragma aux RdosAttachBase = \
+    CallGate_attach_debugger;
+
 void RdosBlit( int SrcHandle, int DestHandle, int width, int height, int SrcX, int SrcY, int DestX, int DestY )
 {
     __asm {
@@ -471,6 +476,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     int ok = 0;
     int threadid = 0;
     int handle = 0;
+    int debug = RdosGetProcessHandle();
 
     __asm {
         mov eax,ds
@@ -506,7 +512,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     __asm {
         mov esi,prog
         mov edi,pp
-        mov edx,fs:[0x24]
+        mov edx,debug
     }
     RdosSpawnBase();
     __asm {
@@ -526,6 +532,32 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     }
     return( 0 );
 }
+
+int RdosAttachDebugger( int pid )
+{
+    int ok = 0;
+    int threadid = 0;
+
+    __asm {
+        mov ebx,pid
+        mov edx,fs:[0x24]
+    }
+    RdosAttachBase();
+    __asm {
+        movzx eax,ax
+        mov threadid,eax
+    }
+    RdosCarryToBool();
+    __asm {
+        mov ok,eax
+    }
+
+    if( ok ) {
+        return( threadid );
+    }
+    return( 0 );
+}
+
 
 static slib_callback_t mem_putc;
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )

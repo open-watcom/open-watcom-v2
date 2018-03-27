@@ -17,6 +17,10 @@ wprof_trmem = 1
 !include wres.mif
 !include trmem.mif
 
+!include $(dig_dir)/digcli.mif
+!include $(dig_dir)/dipcli.mif
+!include $(dig_dir)/madcli.mif
+
 !include ../wprofobj.mif
 
 .c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
@@ -97,14 +101,14 @@ version_res_exe_nt_x64 = exever.res
 
 # explicit rules
 #################
-$(proj_name).exe : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(proj_name).exe : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @rm -f finger.obj
     @%make finger.obj
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(libs) $(sys_libs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(sys_objs) finger.obj $(libs) $(sys_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(libs) $(sys_libs)}
+    $(linker) name $^@ $(lflags) file {$(objs) finger.obj} lib {$(libs) $(sys_libs)}
 !endif
 !ifeq sys_windowed 1
     @%make bind_res_add_version_exe

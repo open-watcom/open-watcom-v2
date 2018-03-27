@@ -60,20 +60,6 @@ int                 OptGatherCut       = 10;
 STATIC bool         getDlgValues( gui_window * );
 STATIC void         setDlgValues( gui_window * );
 STATIC void         setDlgDefaults( gui_window * );
-STATIC GUICALLBACK  progEvent;
-
-
-void DlgGetOptions( a_window * wnd )
-/**********************************/
-{
-    CurrSIOData = WndExtra( wnd );
-    DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,
-            optionControls, ArraySize( optionControls ), &progEvent, NULL );
-    if( CurrSIOData != NULL ) {
-        WndDirty( CurrSIOData->sample_window );
-    }
-}
-
 
 
 STATIC bool getDlgValues( gui_window * gui )
@@ -149,8 +135,8 @@ STATIC void setDlgDefaults( gui_window * gui )
 
 
 
-STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
-/*********************************************************************/
+STATIC bool optsGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/****************************************************************************/
 {
     gui_ctl_id      id;
 
@@ -164,18 +150,29 @@ STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case CTL_OK:
             getDlgValues( gui );
+            /* fall through */
+        case CTL_CANCEL:
             GUICloseDialog( gui );
             return( true );
         case CTL_DEFAULTS:
             setDlgDefaults( gui );
             return( true );
-        case CTL_CANCEL:
-            GUICloseDialog( gui );
-            return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
         return( true );
     }
     return( false );
+}
+
+
+void DlgGetOptions( a_window wnd )
+/********************************/
+{
+    CurrSIOData = WndExtra( wnd );
+    DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,
+            optionControls, ArraySize( optionControls ), &optsGUIEventProc, NULL );
+    if( CurrSIOData != NULL ) {
+        WndDirty( CurrSIOData->sample_window );
+    }
 }

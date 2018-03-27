@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <i86.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "envlkup.h"

@@ -56,7 +56,6 @@
 #include "errutil.h"
 #include "sdfile.h"
 #include "brseinfo.h"
-#include "fio.h"
 #include "posdat.h"
 
 #include "clibext.h"
@@ -74,10 +73,10 @@
     #error Unknown System
 #endif
 
-static file_attr        DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static file_attr        ErrAttr = { REC_TEXT };
+static f_attrs          DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
+static f_attrs          ErrAttr = { REC_TEXT };
 
 static char             ErrExtn[] = { "err" };
 static char             LstExtn[] = { "lst" };
@@ -679,7 +678,7 @@ void    TOutBanner( void ) {
     TOutNL( banner1w( _Banner, _WFC_VERSION_ ) );
 #endif
     TOutNL( banner2 );
-    TOutNL( banner2a( "1984" ) );
+    TOutNL( banner2a( 1984 ) );
     TOutNL( banner3 );
     TOutNL( banner3a );
 }
@@ -707,7 +706,7 @@ void    PrtBanner( void ) {
                t->tm_hour, t->tm_min, t->tm_sec );
     PrtLstNL( banner );
     PrtLstNL( banner2 );
-    PrtLstNL( banner2a( "1984" ) );
+    PrtLstNL( banner2a( 1984 ) );
     PrtLstNL( banner3 );
     PrtLstNL( banner3a );
 }

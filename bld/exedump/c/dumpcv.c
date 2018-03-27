@@ -163,7 +163,7 @@ static void dump_cv4_sstPublic( unsigned_32 base, unsigned_32 offset,
     while( read < size ) {
         Wread( &pub16, sizeof( pub16 ) );
         name_len = (unsigned_8)pub16.name[0];
-        Dump_header( &pub16, cv_sstPublic_msg );
+        Dump_header( &pub16, cv_sstPublic_msg, 4 );
         read += sizeof( pub16 );
         Wread( name, name_len );
         name[name_len] = '\0';
@@ -285,7 +285,7 @@ static void dump_cv4_sstModule( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wread( &mod, sizeof( mod ) );
-    Dump_header( &mod, cv4_sstModule_msg );
+    Dump_header( &mod, cv4_sstModule_msg, 4 );
     if( mod.cSeg-- ) {
         Wdputslc( "      Segment idx   Offset      Code size\n" );
         dump_cv4_seg( mod.SegInfo );
@@ -327,7 +327,7 @@ static void dump_cv4_src_file( unsigned_32 base, unsigned_32 offset )
     dump_name( 0 );
     Wdputslc( "\"\n" );
 
-    Dump_header( &file, cv4_src_file_msg );
+    Dump_header( &file, cv4_src_file_msg, 4 );
 
     /* loop over all segments in a file */
     for( seg_idx = 0; seg_idx < file.cSeg; ++seg_idx ) {
@@ -378,7 +378,7 @@ static void dump_cv4_sstSrcModule( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wread( &mod, sizeof( mod ) );
-    Dump_header( &mod, cv4_sstSrcModule_msg );
+    Dump_header( &mod, cv4_sstSrcModule_msg, 4 );
 
     /* first dump the file information */
     file_off = mod.baseSrcFile[0];
@@ -487,10 +487,10 @@ static void dump_cv4_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     dump_name( 2 );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
-    Dump_header( &src_ln, cv4_sstSrcLnSeg_msg );
+    Dump_header( &src_ln, cv4_sstSrcLnSeg_msg, 4 );
     while( src_ln.cPair-- ) {
         Wread( &lo_16, sizeof( lo_16 ) );
-        Dump_header( &lo_16, cv_lnoff16_msg );
+        Dump_header( &lo_16, cv_lnoff16_msg, 4 );
 //        first = false;
     }
     Wdputslc( "\n" );
@@ -568,12 +568,12 @@ static void dump_cv4( unsigned_32 base )
     }
     Wlseek( base + header.offset );
     Wread( &sst_dir_hdr, sizeof( sst_dir_hdr ) );
-    Dump_header( &sst_dir_hdr , cv4_dir_hdr_msg );
+    Dump_header( &sst_dir_hdr , cv4_dir_hdr_msg, 4 );
     Wdputslc( "\n" );
     for( i = 0; i < sst_dir_hdr.cDir; ++i ) {
         Wlseek( base + header.offset + sst_dir_hdr.cbDirHeader + i * sst_dir_hdr.cbDirEntry );
         Wread( &sst_dir_entry, sizeof( sst_dir_entry ) );
-        Dump_header( &sst_dir_entry, cv4_dir_entry_msg );
+        Dump_header( &sst_dir_entry, cv4_dir_entry_msg, 4 );
         Wdputslc( "\n" );
         dump_cv4_subsection( base, &sst_dir_entry );
     }

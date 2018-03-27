@@ -1,6 +1,6 @@
 eng_objs = &
     $(trmem_objs) &
-    $(dip_objs) $(mad_objs) $(trap_objs) &
+    $(dip_objs) $(mad_objs) $(trap_objs) $(dig_objs) &
     $(_subdir_)dumb.obj &
     $(_subdir_)spawn.obj &
     $(_subdir_)dbgchain.obj &
@@ -92,13 +92,14 @@ eng_objs_dosi86 = &
     $(_subdir_)fork.obj &
     $(_subdir_)dosinit.obj &
     $(_subdir_)doschk.obj &
+    $(_subdir_)doschkx.obj &
     $(_subdir_)doscmd.obj &
     $(_subdir_)dosfilio.obj &
     $(_subdir_)doslkup.obj &
     $(_subdir_)dosmem.obj &
     $(_subdir_)dosgrow.obj &
     $(_subdir_)dosalloc.obj &
-    $(_subdir_)dostrap.obj
+#    $(_subdir_)dostrap.obj
 
 eng_objs_dos386 = &
     $(_subdir_)dsxfork.obj &
@@ -115,13 +116,7 @@ eng_objs_linux = &
     $(_subdir_)lnxlkup.obj
 
 eng_objs_os2 = &
-    $(_subdir_)os2cmd.obj
-
-eng_objs_os2386 = &
-    $(_subdir_)os22init.obj &
-    $(_subdir_)os22flio.obj
-
-eng_objs_os2i86 = &
+    $(_subdir_)os2cmd.obj &
     $(_subdir_)os2init.obj &
     $(_subdir_)os2lkup.obj &
     $(_subdir_)os2filio.obj

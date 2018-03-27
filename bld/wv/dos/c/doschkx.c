@@ -31,24 +31,26 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <i86.h>
-#include "bool.h"
+#include "dbgdefn.h"
 #include "tinyio.h"
 #include "doschk.h"
 #include "doschkx.h"
 
 
-#define CHECK_FILE      "___CHK.MEM"
+#define CHECK_FILE          "___CHK.MEM"
+#define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
 
-#define FILE_BLOCK_SIZE 0x8000
+#define FILE_BLOCK_SIZE     0x8000
 
-static char             *fullName = NULL;
-static int              fileHandle = -1;
+static char                 *fullName = NULL;
+static tiny_handle_t        fileHandle = TINY_HANDLE_NULL;
 
 void XcleanUp( where_parm where )
 {
     TinyClose( fileHandle );
-    fileHandle = -1;
+    fileHandle = TINY_HANDLE_NULL;
     TinyDelete( fullName );
     fullName = NULL;
 }
@@ -57,7 +59,7 @@ bool XchkOpen( where_parm where, char *f_buff )
 {
     tiny_ret_t      rc;
 
-    fileHandle = -1;
+    fileHandle = TINY_HANDLE_NULL;
     if( f_buff != NULL ) {
         fullName = f_buff;
         *f_buff++ = TinyGetCurrDrive() + 'A';
@@ -67,9 +69,7 @@ bool XchkOpen( where_parm where, char *f_buff )
         if( TINY_OK( rc ) ) {
             while( *f_buff != NULLCHAR )
                 ++f_buff;
-            if( f_buff[-1] == '\\' ) {
-                --f_buff;
-            } else {
+            if( f_buff[-1] != '\\' ) {
                 *f_buff++ = '\\';
             }
             memcpy( f_buff, CHECK_FILE, sizeof( CHECK_FILE ) );
@@ -78,7 +78,7 @@ bool XchkOpen( where_parm where, char *f_buff )
                 fileHandle = TINY_INFO( rc );
             }
         }
-        if( fileHandle == -1 ) {
+        if( fileHandle == TINY_HANDLE_NULL ) {
             fullName = NULL;
         }
     } else {
@@ -89,13 +89,13 @@ bool XchkOpen( where_parm where, char *f_buff )
             }
         }
     }
-    return( fileHandle != -1 );
+    return( fileHandle != TINY_HANDLE_NULL );
 }
 
 void XchkClose( where_parm where )
 {
     TinyClose( fileHandle );
-    fileHandle = -1;
+    fileHandle = TINY_HANDLE_NULL;
 }
 
 bool XchkWrite( where_parm where, __segment buff, unsigned *size )

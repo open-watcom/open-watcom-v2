@@ -35,6 +35,6 @@
 
 #include "wresall.h"
 
-int CompareContents( WResFileID fid1, WResFileID fid2 );
+int CompareContents( FILE *fp1, FILE *fp2 );
 
 #endif

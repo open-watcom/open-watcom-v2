@@ -78,6 +78,8 @@ public:
 
     reference       operator[]( size_type n );
     const_reference operator[]( size_type n ) const;
+    pointer         data();
+    const_pointer   data() const;
     reference       at( size_type n );
     const_reference at( size_type n ) const;
     reference       front( );
@@ -523,6 +525,20 @@ inline typename vector< Type, Allocator >::const_reference
     vector< Type, Allocator >::operator[]( size_type n ) const
 {
     return( buffer[n] );
+}
+
+template<class Type, class Allocator>
+inline typename vector< Type, Allocator >::pointer
+vector< Type, Allocator >::data()
+{
+    return( buffer );
+}
+
+template<class Type, class Allocator>
+inline typename vector< Type, Allocator >::const_pointer
+vector< Type, Allocator >::data() const
+{
+    return( buffer );
 }
 
 // at( size_type )

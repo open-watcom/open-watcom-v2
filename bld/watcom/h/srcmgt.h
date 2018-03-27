@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#define FREADLINE_ERROR ((size_t)-1)
+
 struct browser;
 
 extern struct browser   *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id );
@@ -38,5 +40,5 @@ extern unsigned long    FLastOffset( struct browser * );
 extern int              FileIsRemote( struct browser * );
 extern char             *FGetName( struct browser * );
 extern int              FCurrLine( struct browser * );
-extern int              FReadLine( struct browser *, int, int, char *, int );
+extern size_t           FReadLine( struct browser *, int, int, char *, size_t );
 extern void             FClearOpenSourceCache( void );

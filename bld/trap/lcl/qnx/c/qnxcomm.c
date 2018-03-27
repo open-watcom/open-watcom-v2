@@ -54,6 +54,9 @@
 #include <sys/console.h>
 #include <sys/dev.h>
 #include "trpimp.h"
+#include "trpcomm.h"
+#include "qnxcomm.h"
+
 
 char *StrCopy( const char *src, char *dst )
 {
@@ -192,7 +195,7 @@ trap_retval ReqRead_user_keyboard( void )
     }
     con_mode = dev_mode( con_hdl, 0, _DEV_MODES );
     if( dev_read( con_hdl, &chr, 1, 1, 0, timeout, 0, 0 ) == 1 ) {
-        if( chr == 0xff ) {
+        if( chr == '\xff' ) {
             read( con_hdl, &chr, 1 );
             chr = '\0';
         }

@@ -33,12 +33,13 @@
 #ifndef DIP_WATCOM
 #define DIP_WATCOM
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "dbginfo.h"
+#include "wdbginfo.h"
 
 #define INFO_MAX_BLOCK      0xff80
 
@@ -115,24 +116,23 @@ typedef struct info_block {
 } info_block;
 
 typedef struct section_info {
-    struct imp_image_handle     *ctl;
-    info_block                  *mod_info;
-    info_block                  *addr_info;
-    info_block                  *gbl;
-    pointer_int                 **dmnd_link;
-    word                        mod_base_idx;
-    word                        sect_id;
+    info_block          *mod_info;
+    info_block          *addr_info;
+    info_block          *gbl;
+    pointer_int         **dmnd_link;
+    word                mod_base_idx;
+    word                sect_id;
 } section_info;
 
 typedef struct imp_image_handle {
-    struct section_info         *sect;
-    unsigned                    num_sects;
-    dig_fhandle                 sym_fid;
-    unsigned                    num_segs;
-    char                        *lang;
-    addr_seg                    *map_segs;
-    addr_ptr                    *real_segs;
-    bool                        v2;
+    struct section_info *sect;
+    unsigned            num_sects;
+    FILE                *sym_fp;
+    unsigned            num_segs;
+    char                *lang;
+    addr_seg            *map_segs;
+    addr_ptr            *real_segs;
+    bool                v2;
 } imp_image_handle;
 
 typedef enum {

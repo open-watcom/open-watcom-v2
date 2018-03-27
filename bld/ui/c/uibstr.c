@@ -35,27 +35,18 @@
 #include "uifar.h"
 
 
-void intern bstring( register BUFFER            *bptr,
-                     register int               row,
-                     register int               col,
-                     register ATTR              attr,
-                     register LPC_STRING        string,
-                     register int               len )
-/******************************************************/
+void intern bstring( BUFFER *bptr, int row, int col, ATTR attr, LPC_STRING string, uisize string_len )
+/****************************************************************************************************/
 {
     LP_PIXEL    dst;
 
     dst = bptr->origin + row * bptr->increment + col;
-    farstring( dst, attr, len, issnow( bptr ), string );
+    farstring( dst, attr, string, string_len, issnow( bptr ) );
 }
 
 
-void intern braw( register BUFFER       *bptr,
-                  register int          row,
-                  register int          col,
-                  register PIXEL        *pixels,
-                  register int          len )
-/**********************************************/
+void intern braw( BUFFER *bptr, int row, int col, PIXEL *pixels, uisize len )
+/***************************************************************************/
 {
     LP_PIXEL    dst;
 

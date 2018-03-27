@@ -552,11 +552,11 @@ Request message:
 :XMP.
 access_req      req;
 addr48_ptr      in_addr;
-trap_mhandle    handle;
+trap_mhandle    mod_handle;
 :eXMP.
 :PC.
 The :F.req:eF. field contains the request. The :F.in_addr:eF. tells the address
-to map. The :F.handle:eF. field identifies the module which the address is
+to map. The :F.mod_handle:eF. field identifies the module which the address is
 from. The value from this field is obtained by REQ_PROG_LOAD or
 REQ_GET_LIB_NAME. There are two magical values for the :F.in_addr.segment:eF.
 field.
@@ -989,21 +989,21 @@ Request to get the name of a newly loaded library (DLL).
 Request message:
 :XMP.
 access_req      req
-trap_mhandle    handle
+trap_mhandle    mod_handle
 :eXMP.
 :PC.
-The :F.handle:eF. field contains the library handle. It should be zero
-to get the name of the first DLL or the value from the :F.handle:eF.
+The :F.mod_handle:eF. field contains the library handle. It should be zero
+to get the name of the first DLL or the value from the :F.mod_handle:eF.
 of a previous request.
 :P.
 Return message:
 :XMP.
-trap_mhandle    handle
+trap_mhandle    mod_handle
 ---------------------------
 string          name
 :eXMP.
 :PC.
-The :F.handle:eF. field contains the library handle. It contains zero if
+The :F.mod_handle:eF. field contains the library handle. It contains zero if
 there are no more DLL names to be returned. The name of the library will be returned in
 :F.name:eF. field. If the :F.name:eF. field is an empty string (consists
 just of the '\0' character), then this is a indication that the DLL indicated
@@ -1201,7 +1201,7 @@ described:
 :DTHD.Type
 :DDHD.Definition
 :DT.trap_fhandle
-:DD.This is an :F.unsigned_32:eF. which holds a debuggee file handle.
+:DD.This is an :F.unsigned_64:eF. which holds a debuggee file handle.
 :eDL.
 .beglevel
 .section REQ_FILE_GET_CONFIG (0)

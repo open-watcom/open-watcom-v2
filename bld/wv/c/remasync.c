@@ -72,16 +72,17 @@ unsigned MakeAsyncRun( bool single )
     async_go_ret        ret;
     addr_ptr            tmp;
 
-    if( SuppAsyncId == 0 ) return( 0 );
+    if( SuppAsyncId == 0 )
+        return( 0 );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppAsyncId;
 
-    if( single )
+    if( single ) {
         acc.req = REQ_ASYNC_STEP;
-    else
+    } else {
         acc.req = REQ_ASYNC_GO;
-
+    }
     OnAnotherThreadSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     CONV_LE_16( ret.conditions );
 
@@ -118,7 +119,8 @@ unsigned PollAsync( void )
     async_poll_ret      ret;
     addr_ptr            tmp;
 
-    if( SuppAsyncId == 0 ) return( 0 );
+    if( SuppAsyncId == 0 )
+        return( 0 );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppAsyncId;
@@ -161,7 +163,8 @@ unsigned StopAsync( void )
     async_stop_ret      ret;
     addr_ptr            tmp;
 
-    if( SuppAsyncId == 0 ) return( 0 );
+    if( SuppAsyncId == 0 )
+        return( 0 );
 
     acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
     acc.supp.id = SuppAsyncId;
@@ -202,7 +205,8 @@ bool AsyncAddBreak( address addr, bool local )
 {
     async_add_break_req       acc;
 
-    if( SuppAsyncId == 0 ) return( false );
+    if( SuppAsyncId == 0 )
+        return( false );
 
     AddrFix( &addr );
     acc.break_addr = addr.mach;
@@ -223,7 +227,8 @@ void AsyncRemoveBreak( address addr, bool local )
 {
     async_remove_break_req     acc;
 
-    if( SuppAsyncId == 0 ) return;
+    if( SuppAsyncId == 0 )
+        return;
 
     AddrFix( &addr );
     acc.break_addr = addr.mach;

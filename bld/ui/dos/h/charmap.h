@@ -30,20 +30,6 @@
 ****************************************************************************/
 
 
-#include "biosui.h"
-
-#ifndef poke
-
-#define _poke(a,b,c)     (*((int __far *)firstmeg(a,b)) = (int)(c))
-#define _pokeb(a,b,c)    (*((char __far *)firstmeg(a,b)) = (char)(c))
-#define _peek(a,b)       (*((int __far *)firstmeg(a,b)))
-#define _peekb(a,b)      (*((char __far *)firstmeg(a,b)))
-
-#endif
-
-#define _POINTS _peekb( BIOS_PAGE, 0x85 )
-
 extern  void            SetSequencer( void );
 extern  void            ResetSequencer( void );
 extern  void            SetWriteMap( void );
-extern  short int       CallVid( short int, short int, short int, short int );

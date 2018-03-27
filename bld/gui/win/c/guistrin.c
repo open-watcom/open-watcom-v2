@@ -35,11 +35,9 @@
 #include "guiscale.h"
 #include "guigetx.h"
 
-extern WPI_TEXTMETRIC GUItm;
 
-static gui_ord DoReturn( gui_ord ret, gui_window * wnd, bool got_new )
+static gui_ord DoReturn( gui_ord ret, gui_window *wnd, bool got_new )
 {
-    wnd=wnd;
     if( got_new ) {
         GUIReleaseTheDC( wnd );
     }
@@ -86,7 +84,7 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, in
     } else {
         guess--;
     }
-    for( ; ; ) {
+    for( ;; ) {
         new_curr = GUIGetTextExtentX( wnd, string, guess );
 
         if( new_curr == diff.x ) {

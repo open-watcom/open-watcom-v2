@@ -68,12 +68,13 @@ trap_retval ReqProg_load( void )
 
     _splitpath( parm, drive, dir, fname, ext );
 
-    if( strlen( ext ) )
+    if( strlen( ext ) ) {
         _makepath( name, drive, dir, fname, ext );
-    else {
+    } else {
         _makepath( name, drive, dir, fname, "com" );
-        if( access( name, 0 ) != 0 )
+        if( access( name, 0 ) != 0 ) {
             _makepath( name, drive, dir, fname, "exe" );
+        }
     }
 
     ret->err = 0;
@@ -91,33 +92,32 @@ trap_retval ReqProg_load( void )
     // parm layout
     // <--parameters-->0<--program_name-->0<--arguments-->0
     //
-    for( len = GetTotalSize() - sizeof( *acc ) - (src - parm) - 1; len > 0; --len ) {
+    for( len = GetTotalSize() - sizeof( *acc ) - ( src - parm ) - 1; len > 0; --len ) {
         ch = *src;
         *dst = ch;
         ++dst;
         ++src;
     }
     *dst = 0;
-    
+
     if( access( name, 0 ) == 0 ) {
-            obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
-            InitDebug( obj, name, argstr, getcwd( curdir, 255 ) );
-            WaitForLoad( obj );
+        obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
+        InitDebug( obj, name, argstr, getcwd( curdir, 255 ) );
+        WaitForLoad( obj );
 
         if( obj->ThreadList && obj->ModuleList ) {
             ret->task_id = obj->ThreadList->ThreadID;
-                    ret->mod_handle = obj->ModuleList->Handle;
-            ret->flags = LD_FLAG_HAVE_RUNTIME_DLLS;            
+            ret->mod_handle = obj->ModuleList->Handle;
+            ret->flags = LD_FLAG_HAVE_RUNTIME_DLLS;
             SetCurrentDebug( obj );
         } else {
             FreeDebug( obj );
             free( obj );
             ret->err = MSG_LOAD_FAIL;
         }
-    }
-    else
+    } else {
         ret->err = MSG_LOAD_FAIL;
-
+    }
     return( sizeof( *ret ) );
 
 }

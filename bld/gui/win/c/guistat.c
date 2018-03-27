@@ -150,7 +150,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     StatusWndDrawLine( GUIStatusWnd, pres, wnd->font, out_text, DT_SINGLELINE | DT_VCENTER | DT_LEFT );
     _wpi_releasepres( wnd->status, pres );
     if( ( text == NULL ) || ( *text == '\0' ) ) {
-        GUIEVENTWND( wnd, GUI_STATUS_CLEARED, NULL );
+        GUIEVENT( wnd, GUI_STATUS_CLEARED, NULL );
     }
     return( true );
 }

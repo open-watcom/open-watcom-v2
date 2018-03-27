@@ -59,7 +59,7 @@ typedef struct RcResFileID {
     bool                    IsOpen          : 1;
     uint_16                 NextCurOrIcon;
     WResDir                 dir;                    /* don't write this if !IsWatcomRes */
-    WResFileID              fid;                    /* file I/O handle */
+    FILE                    *fp;                    /* file I/O handle */
     FullFontDir             *FontDir;
 } RcResFileID;
 
@@ -70,7 +70,6 @@ typedef struct LogicalFileInfo {
     bool                    IsCOrHFile;
 } LogicalFileInfo;
 
-extern char         *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext );
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
 extern bool         RcPass2IoInit( void );
@@ -85,8 +84,8 @@ extern void         RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
 extern bool         RcIoIsCOrHFile( void );
 extern void         RcIoSetLogicalFileInfo( int linenum, const char *filename );
-extern WResFileID   RcIoOpenInput( const char *filename, bool text_mode );
-extern int          RcFindResource( const char *name, char *fullpath );
+extern FILE         *RcIoOpenInput( const char *filename, bool text_mode );
+extern int          RcFindSourceFile( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );
 
 #endif

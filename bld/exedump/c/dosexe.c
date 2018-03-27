@@ -50,6 +50,7 @@ static  const_string_table dos_exe_msg[] = {
     "2offset of code segment within load module (segment)  = ",
     "2file offset of first relocation item                 = ",
     "2overlay number                                       = ",
+    "4load module length                                   = ",
     NULL
 };
 
@@ -66,16 +67,13 @@ static void dmp_dos_head_info( void )
              unsigned_16 segment; } reloc;
 
     Banner( "DOS EXE Header" );
-    Dump_header( (char *)&Dos_head.mod_size, dos_exe_msg );
-    Load_len = Dos_head.file_size * 0x200 - (-Dos_head.mod_size & 0x1ff);
-    Wdputslc( "load module length                                   = " );
-    Puthex( Load_len, 8 );
-    Wdputslc( "H\n\n" );
+    Dump_header( (char *)&Dos_head.hdr.mod_size, dos_exe_msg, 4 );
+    Wdputslc( "\n" );
     if( Options_dmp & FIX_DMP ) {
-        if( Dos_head.num_relocs != 0 ) {
-            Wlseek( Dos_head.reloc_offset );
+        if( Dos_head.hdr.num_relocs != 0 ) {
+            Wlseek( Dos_head.hdr.reloc_offset );
             Wdputslc( "segment:offset\n  " );
-            for( i = 0; i < Dos_head.num_relocs; i++ ) {
+            for( i = 0; i < Dos_head.hdr.num_relocs; i++ ) {
                 Wread( &reloc, sizeof( reloc ) );
                 Puthex( reloc.segment, 4 );
                 Wdputc( ':' );
@@ -91,8 +89,8 @@ static void dmp_dos_head_info( void )
         }
     }
     if( Options_dmp & DOS_SEG_DMP ) {
-        load_start = Dos_head.hdr_size << 4;
-        load_end = Load_len - load_start;
+        load_start = Dos_head.hdr.hdr_size << 4;
+        load_end = Dos_head.load_len - load_start;
         Wdputslc( "load module =\n" );
         Dmp_seg_data( load_start, load_end );
         Wdputslc( "\n" );
@@ -105,10 +103,11 @@ static void dmp_dos_head_info( void )
 int Dmp_dos_head( void )
 /**********************/
 {
-    Wread( &Dos_head, sizeof( Dos_head ) );
-    if( Dos_head.signature != DOS_SIGNATURE ) {
+    Wread( &Dos_head, sizeof( Dos_head.hdr ) );
+    if( Dos_head.hdr.signature != DOS_SIGNATURE ) {
         return( 0 );
     }
+    Dos_head.load_len = Dos_head.hdr.file_size * 0x200 - (-Dos_head.hdr.mod_size & 0x1ff);
     dmp_dos_head_info();
     /* OS/2 and Windows use a special method where the DOS EXE header is slghtly
      * tweaked to point to the new style (NE, LE, LX, PE) header. DOS/16M simply
@@ -116,10 +115,10 @@ int Dmp_dos_head( void )
      * the DOS exe in any way. If the file is larger than what the DOS EXE header
      * suggests, we may have a DOS/16M executable.
      */
-    if( Dos_head.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
-        if( Load_len !=  WFileSize() ) {
+    if( Dos_head.hdr.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
+        if( Dos_head.load_len !=  WFileSize() ) {
             Wdputslc( "Additional file data follows DOS executable.\n\n" );
-            New_exe_off = Load_len;
+            New_exe_off = Dos_head.load_len;
             return( 3 );
         } else {
             Wdputslc( "No New Executable header.\n" );

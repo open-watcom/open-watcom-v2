@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"
 #include <stdlib.h>
 
-static  void    DoWndDirtyScreenPiece( a_window *wnd, wnd_row row,
-                                       int piece, int col, int end_col )
+
+bool    WndDoingRefresh = false;
+
+static void DoWndDirtyScreenPiece( a_window wnd, wnd_row row, wnd_piece piece, wnd_colidx colidx, wnd_colidx end_colidx )
 {
     int         i;
     int         same_row;
@@ -42,56 +44,60 @@ static  void    DoWndDirtyScreenPiece( a_window *wnd, wnd_row row,
     /* check if any piece contains this one */
     same_row = -1;
     for( i = 0; i < wnd->dirtyrects; ++i ) {
-        if( wnd->dirty[i].row != row ) continue;
+        if( wnd->dirty[i].row != row )
+            continue;
         same_row = i;
         if( wnd->dirty[i].piece == WND_NO_PIECE || piece == WND_NO_PIECE ) {
             wnd->dirty[i].piece = WND_NO_PIECE;
             return;
         }
-        if( wnd->dirty[i].piece != piece ) continue;
-        if( wnd->dirty[i].col == WND_NO_COL || col == WND_NO_COL ) {
-            wnd->dirty[i].col = WND_NO_COL;
+        if( wnd->dirty[i].piece != piece )
+            continue;
+        if( wnd->dirty[i].colidx == WND_NO_COLIDX || colidx == WND_NO_COLIDX ) {
+            wnd->dirty[i].colidx = WND_NO_COLIDX;
             return;
         }
-        if( col < wnd->dirty[i].col ) wnd->dirty[i].col = col;
-        if( end_col > wnd->dirty[i].end_col ) wnd->dirty[i].end_col = end_col;
+        if( wnd->dirty[i].colidx > colidx )
+            wnd->dirty[i].colidx = colidx;
+        if( wnd->dirty[i].end_colidx < end_colidx )
+            wnd->dirty[i].end_colidx = end_colidx;
         return;
     }
     if( wnd->dirtyrects >= WndMaxDirtyRects ) {
         if( same_row != -1 ) {
             wnd->dirty[same_row].piece = WND_NO_PIECE;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
         return;
     }
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].row = row;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].piece = piece;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].col = col;
-    wnd->dirty[ (unsigned)wnd->dirtyrects ].end_col = end_col;
+    wnd->dirty[wnd->dirtyrects].row = row;
+    wnd->dirty[wnd->dirtyrects].piece = piece;
+    wnd->dirty[wnd->dirtyrects].colidx = colidx;
+    wnd->dirty[wnd->dirtyrects].end_colidx = end_colidx;
     wnd->dirtyrects++;
 }
 
 
-extern  void    WndDirtyScreenRange( a_window *wnd, wnd_coord *piece, int end_col )
+void    WndDirtyScreenRange( a_window wnd, wnd_coord *piece, wnd_colidx end_colidx )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, end_col );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->colidx, end_colidx );
 }
 
 
-extern  void    WndDirtyScreenChar( a_window *wnd, wnd_coord *piece )
+void    WndDirtyScreenChar( a_window wnd, wnd_coord *piece )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->col, piece->col );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, piece->colidx, piece->colidx );
 }
 
 
-extern  void    WndDirtyScreenPiece( a_window *wnd, wnd_coord *piece )
+void    WndDirtyScreenPiece( a_window wnd, wnd_coord *piece )
 {
-    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, WND_NO_COL, WND_NO_COL );
+    DoWndDirtyScreenPiece( wnd, piece->row, piece->piece, WND_NO_COLIDX, WND_NO_COLIDX );
 }
 
 
-extern  void    WndAdjustDirt( a_window *wnd, int by )
+void    WndAdjustDirty( a_window wnd, int by )
 {
     int         i;
 
@@ -101,7 +107,7 @@ extern  void    WndAdjustDirt( a_window *wnd, int by )
 }
 
 
-extern  void    WndDirtyScreenRow( a_window *wnd, wnd_row row )
+void    WndDirtyScreenRow( a_window wnd, wnd_row row )
 {
     wnd_coord   piece;
 
@@ -111,8 +117,7 @@ extern  void    WndDirtyScreenRow( a_window *wnd, wnd_row row )
 }
 
 
-extern  void    WndDirtyRect( a_window *wnd, gui_ord x, wnd_row y,
-                                             gui_ord width, wnd_row height )
+void    WndDirtyRect( a_window wnd, gui_ord x, wnd_row y, gui_ord width, wnd_row height )
 {
     gui_rect    rect;
 
@@ -124,14 +129,14 @@ extern  void    WndDirtyRect( a_window *wnd, gui_ord x, wnd_row y,
 }
 
 
-extern  void    WndRowDirty( a_window *wnd, wnd_row row )
+void    WndRowDirty( a_window wnd, wnd_row row )
 {
     WndKillCacheEntries( wnd, row, WND_NO_PIECE );
     WndDirtyScreenRow( wnd, WndScreenRow( wnd, row ) );
 }
 
 
-extern  void    WndRowDirtyImmed( a_window *wnd, wnd_row row )
+void    WndRowDirtyImmed( a_window wnd, wnd_row row )
 {
     int         screen_row;
 
@@ -143,7 +148,7 @@ extern  void    WndRowDirtyImmed( a_window *wnd, wnd_row row )
 }
 
 
-extern  void    WndPieceDirty( a_window *wnd, wnd_row row, int piece )
+void    WndPieceDirty( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_coord   coord;
 
@@ -154,9 +159,7 @@ extern  void    WndPieceDirty( a_window *wnd, wnd_row row, int piece )
 }
 
 
-bool            WndDoingRefresh = false;
-
-extern  bool    WndStopRefresh( bool stop )
+bool    WndStopRefresh( bool stop )
 {
     bool        old;
 
@@ -165,43 +168,42 @@ extern  bool    WndStopRefresh( bool stop )
     return( old );
 }
 
-void WndPaintDirt( a_window *wnd )
+void WndPaintDirty( a_window wnd )
 {
     int                 i;
     wnd_line_piece      line;
     wnd_line_piece      next_piece_line;
     gui_rect            rect;
-    wnd_dirt            *dirt;
+    wnd_rect            *dirty;
     gui_coord           size;
     gui_coord           half_char;
-    a_window            *next;
-//    a_window            *last;
+    a_window            next;
+//    a_window            last;
 
 //    last = NULL;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
         next = WndNext( wnd );
         if( wnd->vscroll_pending != 0 ) {
             if( wnd->hscroll_pending != -1 ) {
-                _Set( wnd, WSW_REPAINT );
+                WndSetRepaint( wnd );
             }
-            if( _Is( wnd, WSW_REPAINT ) ) {
+            if( WndSwitchOn( wnd, WSW_REPAINT ) ) {
                 if( wnd->hscroll_pending != -1 ) {
                     GUIInitHScroll( wnd->gui, wnd->hscroll_pending );
                 }
-                WndRepaint( wnd );
+                WndSetRepaint( wnd );
                 wnd->hscroll_pending = -1;
                 wnd->vscroll_pending = 0;
             } else {
                 for( i = 0; i < wnd->title_size; ++i ) {
                     GUIDrawTextExtent( wnd->gui, " ", 1, i, 0, GUI_BACKGROUND, GUI_NO_COLUMN );
                 }
-                GUIDoVScrollClip( wnd->gui, wnd->vscroll_pending,
-                                  wnd->title_size, wnd->rows - 1 );
+                GUIDoVScrollClip( wnd->gui, wnd->vscroll_pending, wnd->title_size, wnd->rows - 1 );
                 wnd->vscroll_pending = 0;
             }
         }
-        if( _Is( wnd, WSW_REPAINT ) ) {
-            _Clr( wnd, WSW_REPAINT );
+        if( WndSwitchOn( wnd, WSW_REPAINT ) ) {
+            WndClrSwitches( wnd, WSW_REPAINT );
             WndKillCacheLines( wnd );
             WndCheckCurrentValid( wnd );
             GUIWndDirty( wnd->gui );
@@ -213,34 +215,39 @@ void WndPaintDirt( a_window *wnd )
             next = wnd;
         } else {
             for( i = 0; i < wnd->dirtyrects; ++i ) {
-                dirt = &wnd->dirty[i];
-                if( dirt->row < 0 ) continue;
-                if( dirt->row >= wnd->rows ) continue;
-                if( dirt->piece == WND_NO_PIECE ) {
-                    if( !WndGetLine( wnd, dirt->row, 0, &line ) ) continue;
-                    GUIWndDirtyRow( wnd->gui, dirt->row );
+                dirty = &wnd->dirty[i];
+                if( dirty->row < 0 )
+                    continue;
+                if( dirty->row >= wnd->rows )
+                    continue;
+                if( dirty->piece == WND_NO_PIECE ) {
+                    if( !WndGetLine( wnd, dirty->row, 0, &line ) )
+                        continue;
+                    GUIWndDirtyRow( wnd->gui, dirty->row );
                 } else {
-                    if( !WndGetLine( wnd, dirt->row, dirt->piece, &line ) ) continue;
+                    if( !WndGetLine( wnd, dirty->row, dirty->piece, &line ) )
+                        continue;
                     if( line.bitmap ) {
                         GUIGetHotSpotSize( line.text[0], &size );
                         rect.x = line.indent;
-                        rect.y = dirt->row * wnd->max_char.y;
+                        rect.y = dirty->row * wnd->max_char.y;
                         rect.width = line.length;
                         rect.height = size.y;
-                    } else if( dirt->col != WND_NO_COL ) {
-                        if( line.length == 0 ) line.text = " ";
+                    } else if( dirty->colidx != WND_NO_COLIDX ) {
+                        if( line.length == 0 )
+                            line.text = " ";
                         rect.x = line.indent;
-                        rect.x += GUIGetExtentX(wnd->gui, line.text, dirt->col);
-                        rect.y = dirt->row * wnd->max_char.y;
-                        rect.width = GUIGetExtentX( wnd->gui, line.text+dirt->col, dirt->end_col-dirt->col+GUICharLen( line.text[dirt->col] ) );
+                        rect.x += GUIGetExtentX(wnd->gui, line.text, dirty->colidx);
+                        rect.y = dirty->row * wnd->max_char.y;
+                        rect.width = GUIGetExtentX( wnd->gui, line.text + dirty->colidx, dirty->end_colidx - dirty->colidx + GUICharLen( UCHAR_VALUE( line.text[dirty->colidx] ) ) );
                         rect.height = wnd->max_char.y;
                     } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop ) {
                         rect.width = 0;
                         rect.height = 0;
-                        GUIWndDirtyRow( wnd->gui, dirt->row );
+                        GUIWndDirtyRow( wnd->gui, dirty->row );
                     } else {
                         rect.x = line.indent;
-                        if( WndGetLine( wnd, dirt->row, dirt->piece+1, &next_piece_line ) ) {
+                        if( WndGetLine( wnd, dirty->row, dirty->piece + 1, &next_piece_line ) ) {
                             if( next_piece_line.indent < line.indent ) {
                                 rect.width = WND_APPROX_SIZE;
                             } else {
@@ -249,7 +256,7 @@ void WndPaintDirt( a_window *wnd )
                         } else {
                             rect.width = WND_APPROX_SIZE;
                         }
-                        rect.y = dirt->row * wnd->max_char.y;
+                        rect.y = dirty->row * wnd->max_char.y;
                         rect.height = wnd->max_char.y;
                     }
                     /* begin kludge for Kerning problem */
@@ -278,9 +285,9 @@ void WndPaintDirt( a_window *wnd )
     }
 }
 
-extern  void    WndFreshAll()
+void    WndFreshAll( void )
 {
-    a_window            *wnd;
+    a_window        wnd;
 
     if( WndDoingRefresh )
         return;
@@ -291,7 +298,7 @@ extern  void    WndFreshAll()
         }
     }
     WndStartFreshAll();
-    WndPaintDirt( NULL );
+    WndPaintDirty( NULL );
     WndEndFreshAll();
     WndDoingRefresh = false;
 }

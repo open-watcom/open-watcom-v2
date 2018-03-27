@@ -556,7 +556,7 @@ trap_retval ReqMap_addr( void )
         break;
     }
 
-    lli = &moduleInfo[acc->handle];
+    lli = &moduleInfo[acc->mod_handle];
 
 #if !defined( MD_x64 )
 #ifdef WOW
@@ -636,7 +636,7 @@ trap_retval ReqMap_addr( void )
         }
         ret->out_addr.offset = (ULONG_PTR)( lli->base + obj.rva );
     }
-    addSegmentToLibList( acc->handle, ret->out_addr.segment, ret->out_addr.offset );
+    addSegmentToLibList( acc->mod_handle, ret->out_addr.segment, ret->out_addr.offset );
     ret->out_addr.offset += acc->in_addr.offset;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
@@ -657,16 +657,16 @@ trap_retval ReqGet_lib_name( void )
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
 
-    ret->handle = 0;
+    ret->mod_handle = 0;
 
     for( i = 0; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
-            ret->handle = i;
+            ret->mod_handle = i;
             *name = '\0';
             moduleInfo[i].newly_unloaded = FALSE;
             return( sizeof( *ret ) + 1 );
         } else if( moduleInfo[i].newly_loaded ) {
-            ret->handle = i;
+            ret->mod_handle = i;
             strcpy( name, moduleInfo[i].filename );
             moduleInfo[i].newly_loaded = FALSE;
             /*

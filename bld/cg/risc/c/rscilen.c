@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "inslist.h"
 #include "encode.h"

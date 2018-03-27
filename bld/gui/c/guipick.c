@@ -48,7 +48,7 @@ static gui_control_info Controls[] = {
     DLG_BUTTON(     NULL, CTL_PICK_CANCEL,  18, 12, 28 ),
 };
 
-bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
+bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     dlg_pick            *dlg;
@@ -63,28 +63,32 @@ bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
-            dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
+            dlg->choice = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
             GUICloseDialog( gui );
+            return( true );
         }
-        return( true );
+        break;
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_PICK_OK:
-            dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
+            dlg->choice = -1;
+            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
             /* fall through */
         case CTL_PICK_CANCEL:
             GUICloseDialog( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 
-gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
+bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *openrtn, int *choice )
 {
     dlg_pick    dlg;
     size_t      len;
@@ -98,13 +102,16 @@ gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     Controls[1].text = LIT( OK );
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
-    dlg.chosen = -1;
-    OpenRtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickEvent, &dlg );
-    return( dlg.chosen );
+    dlg.choice = -1;
+    openrtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
+    if( dlg.choice == -1 )
+        return( false );
+    *choice = dlg.choice;
+    return( true );
 }
 
 
-gui_ctl_idx GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit )
+bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
-    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen ) );
+    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen, choice ) );
 }

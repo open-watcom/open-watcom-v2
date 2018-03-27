@@ -65,7 +65,7 @@ static void LocationLast( location_list *ll )
     }
 }
 
-extern void LocationCreate( location_list *ll, location_type lt, void *d )
+void LocationCreate( location_list *ll, location_type lt, void *d )
 {
     ll->num = 1;
     ll->flags = 0;
@@ -86,7 +86,7 @@ static void LocationJoin( location_list *to, location_list *from )
     to->num += from->num;
 }
 
-extern void LocationAdd( location_list *ll, long sbits )
+void LocationAdd( location_list *ll, long sbits )
 {
     location_entry      *le;
     unsigned long       add;
@@ -128,7 +128,7 @@ extern void LocationAdd( location_list *ll, long sbits )
     }
 }
 
-extern void LocationTrunc( location_list *ll, unsigned bits )
+void LocationTrunc( location_list *ll, unsigned bits )
 {
     byte    i;
 
@@ -450,7 +450,7 @@ static mipsreg_entry const CLRegMIPS[DW_MIPS_MAX] = {
 */
 
 typedef struct {
-    imp_image_handle *ii;
+    imp_image_handle *iih;
     location_context *lc;  /* addr context          */
     location_list    *ll;  /* where to store addr   */
     address          base; /* base segment & offset */
@@ -592,7 +592,7 @@ static bool DRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_1
     a = NilAddr;
     a.mach.segment = seg;
     a.mach.offset = offset;
-//  DCMapAddr( &a.mach, d->ii->dcmap );
+//  DCMapAddr( &a.mach, d->iih->dcmap );
     LocationCreate( &ll, LT_ADDR, &a );
     ll.e[0].bit_length = size * 8;
     LocationCreate( &tmp, LT_INTERNAL, where );
@@ -730,7 +730,7 @@ static bool ACon( void *_d, uint_32 *where, bool isfar )
     } else {
         d->base.mach.segment = d->seg;
     }
-    DCMapAddr( &d->base.mach, d->ii->dcmap );
+    DCMapAddr( &d->base.mach, d->iih->dcmap );
     where[0] = d->base.mach.offset;
     if( isfar ) { /* assume next in stack is a seg and an xdref is coming */
         where[1] = d->base.mach.segment;
@@ -753,7 +753,7 @@ static bool Live( void *_d, uint_32 *where )
         DCStatus( d->ret );
         return( false );
     }
-    if( !Real2Map( d->ii->addr_map, &ll.e[0].u.addr ) ) {
+    if( !Real2Map( d->iih->addr_map, &ll.e[0].u.addr ) ) {
         d->ret = DS_ERR|DS_BAD_LOCATION;
         DCStatus( DS_ERR|DS_BAD_LOCATION );
     }
@@ -772,7 +772,7 @@ static dr_loc_callbck_def const CallBck = {
     Live
 };
 
-static bool IsEntry( imp_image_handle *ii, location_context *lc ) {
+static bool IsEntry( imp_image_handle *iih, location_context *lc ) {
     /*
         Determine if we are at function entry
     */
@@ -787,13 +787,13 @@ static bool IsEntry( imp_image_handle *ii, location_context *lc ) {
     if( ret != DS_OK ) {
         return( false );
     }
-    if( DFAddrMod( ii, ll.e[0].u.addr, &im ) == SR_NONE ) {
+    if( DFAddrMod( iih, ll.e[0].u.addr, &im ) == SR_NONE ) {
         return( false );
     }
-    if( !Real2Map( ii->addr_map, &ll.e[0].u.addr ) ) {
+    if( !Real2Map( iih->addr_map, &ll.e[0].u.addr ) ) {
         return( false );
     }
-    addr_sym = DFLoadAddrSym( ii, im );
+    addr_sym = DFLoadAddrSym( iih, im );
     if( FindAddrSym( addr_sym, &ll.e[0].u.addr.mach, &info ) >= 0 ) {
         if( info.map_offset == ll.e[0].u.addr.mach.offset ) {
             return( true );
@@ -802,15 +802,12 @@ static bool IsEntry( imp_image_handle *ii, location_context *lc ) {
     return( false );
 }
 
-extern dip_status EvalLocation( imp_image_handle *ii,
-                                location_context *lc,
-                                drmem_hdl         sym,
-                                word              seg,
-                                location_list    *ll ) {
+dip_status EvalLocation( imp_image_handle *iih, location_context *lc, drmem_hdl sym, word seg, location_list *ll )
+{
     loc_handle d;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.ii = ii;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    d.iih = iih;
     d.lc = lc;
     d.ll = ll;
     d.ret = DS_OK;
@@ -828,7 +825,7 @@ extern dip_status EvalLocation( imp_image_handle *ii,
     }
     if( d.ret != DS_OK ) {
         if( DRIsParm( sym ) ) {
-            if( IsEntry( ii, lc ) ) {
+            if( IsEntry( iih, lc ) ) {
                 d.val_count = 0;
                 d.base.mach.segment = 0;
                 d.base.mach.offset = 0;
@@ -906,14 +903,12 @@ static dr_loc_callbck_def const ParmBck = {
     FakeLive
 };
 
-extern dip_status EvalParmLocation( imp_image_handle *ii,
-                                    location_context *lc,
-                                    drmem_hdl         sym,
-                                    location_list    *ll ) {
+dip_status EvalParmLocation( imp_image_handle *iih, location_context *lc, drmem_hdl sym, location_list *ll )
+{
     loc_handle d;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.ii = ii;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    d.iih = iih;
     d.lc = lc;
     d.ll = ll;
     d.ret = DS_OK;
@@ -932,14 +927,12 @@ extern dip_status EvalParmLocation( imp_image_handle *ii,
 
 }
 
-extern dip_status EvalRetLocation( imp_image_handle *ii,
-                                    location_context *lc,
-                                    drmem_hdl         sym,
-                                    location_list    *ll ) {
+dip_status EvalRetLocation( imp_image_handle *iih, location_context *lc, drmem_hdl sym, location_list *ll )
+{
     loc_handle d;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.ii = ii;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    d.iih = iih;
     d.lc = lc;
     d.ll = ll;
     d.ret = DS_OK;
@@ -985,16 +978,14 @@ static dr_loc_callbck_def const AdjBck = {
     Live
 };
 
-extern dip_status EvalLocAdj( imp_image_handle *ii,
-                               location_context *lc,
-                               drmem_hdl         sym,
-                               address          *addr ) {
+dip_status EvalLocAdj( imp_image_handle *iih, location_context *lc, drmem_hdl sym, address *addr )
 // locations are relative to the object
+{
     loc_handle d;
     location_list ll;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    d.ii = ii;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    d.iih = iih;
     d.lc = lc;
     d.ll = &ll;
     d.ret = DS_OK;
@@ -1031,8 +1022,8 @@ extern dip_status EvalLocAdj( imp_image_handle *ii,
 }
 
 static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
-{
 // Assume top of stack is value to get
+{
     loc_handle  *d = _d;
 
     /* unused parameters */ (void)size;
@@ -1062,20 +1053,18 @@ static dr_loc_callbck_def const ValBck = {
     Live
 };
 
-extern dip_status EvalBasedPtr( imp_image_handle *ii,
-                                location_context *lc,
-                                drmem_hdl         sym,
-                                address          *addr ) {
+dip_status EvalBasedPtr( imp_image_handle *iih, location_context *lc, drmem_hdl sym, address *addr )
+{
     loc_handle d;
     location_list ll;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( SafeDCItemLocation( lc, CI_OBJECT, &ll ) == DS_OK ) {
         d.base = ll.e[0].u.addr;
     } else {
         d.base = NilAddr;
     }
-    d.ii = ii;
+    d.iih = iih;
     d.lc = lc;
     d.ll = NULL;
     d.ret = DS_OK;
@@ -1108,10 +1097,10 @@ typedef struct {
 } nop_loc_handle;
 
 static dr_loc_kind NOPInit( void *d, uint_32 *where )
+// Set location expr initial value
 {
     /* unused parameters */ (void)d; (void)where;
 
-// Set location expr initial value
     return( DR_LOC_NONE );
 }
 
@@ -1127,8 +1116,8 @@ static bool NOPRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
 }
 
 static bool NOPDRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size )
-{
 // Dereference a value use default address space
+{
     nop_loc_handle  *d = _d;
 
     /* unused parameters */ (void)offset; (void)size;
@@ -1138,8 +1127,8 @@ static bool NOPDRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size )
 }
 
 static bool NOPDRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_16 size )
-{
 // Dereference an extended address
+{
     nop_loc_handle  *d = _d;
 
     /* unused parameters */ (void)where; (void)offset; (void)seg; (void)size;
@@ -1167,18 +1156,18 @@ static bool NOPReg( void *_d, uint_32 *where, uint_16 reg )
 }
 
 static bool NOPACon( void *_d, uint_32 *where, bool isfar )
+// relocate a map address constant
 {
     /* unused parameters */ (void)where; (void)isfar;
 
-// relocate a map address constant
     nop_loc_handle  *d = _d;
 
     return( d->acon );
 }
 
 static bool NOPLive( void *_d, uint_32 *where )
-{
 // find the appropriate live range
+{
     nop_loc_handle  *d = _d;
 
     *where = d->live_value;
@@ -1196,15 +1185,13 @@ static dr_loc_callbck_def const NOPCallBck = {
     NOPLive
 };
 
-extern bool EvalOffset( imp_image_handle *ii,
-                        drmem_hdl         sym,
-                        uint_32          *val )
+bool EvalOffset( imp_image_handle *iih, drmem_hdl sym, uint_32 *val )
 //Evaluate location expr to an offset off frame
 {
     nop_loc_handle  d;
     bool            ret;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     d.init  = true;
     d.ref   = true;
     d.dref  = true;
@@ -1221,13 +1208,13 @@ extern bool EvalOffset( imp_image_handle *ii,
 
 }
 
-bool EvalSeg( imp_image_handle *ii, drmem_hdl sym, addr_seg *val )
+bool EvalSeg( imp_image_handle *iih, drmem_hdl sym, addr_seg *val )
 //Evaluate location expr to an offset off frame
 {
     nop_loc_handle d;
     bool      ret;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     d.init  = true;
     d.ref   = true;
     d.dref  = true;
@@ -1244,14 +1231,13 @@ bool EvalSeg( imp_image_handle *ii, drmem_hdl sym, addr_seg *val )
 
 }
 
-extern bool EvalSymOffset( imp_image_handle *ii,
-                           drmem_hdl         sym,
-                           uint_32          *val ) {
+bool EvalSymOffset( imp_image_handle *iih, drmem_hdl sym, uint_32 *val )
 //Evaluate sym's map offset
+{
     nop_loc_handle d;
     bool      ret;
 
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     d.init  = true;
     d.ref   = true;
     d.dref  = false;

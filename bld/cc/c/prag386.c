@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#define global
+#define global extern
 #include "target.h"
 #include "pragdefn.h"
 #include "toggle.h"

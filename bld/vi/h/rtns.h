@@ -337,7 +337,7 @@ vi_rc   GotoFile( window_id );
 void    BringUpFile( info *, bool );
 
 /* filelast.c */
-void    UpdateLastFileList( char *fname );
+void    UpdateLastFilesList( char *fname );
 char    *GetFileInLastFileList( int num );
 
 /* filenew.c */
@@ -440,10 +440,7 @@ linenum GetHiddenLineBreaks( linenum s, linenum e );
 /* hist.c */
 void    LoadHistory( const char *cmd );
 void    SaveHistory( void );
-void    CLHistInit( int );
-void    FilterHistInit( int );
-void    FindHistInit( int );
-void    LastFilesHistInit( int );
+void    HistInit( history_data *, int );
 void    HistFini( void );
 
 #ifdef __IDE__
@@ -681,7 +678,7 @@ void    Lead( char c, int num, char *buff );
 
 /* readstr.c */
 bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
-vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *hist );
+vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *h );
 bool    GetTextForSpecialKey( int str_max, vi_key event, char *tmp );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
 

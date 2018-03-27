@@ -791,17 +791,20 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
     switch( fixup->fixup_type ) {
     case FIX_RELOFF8:
         fixnode->self_relative = 1;
+        /* fall through */
     case FIX_LOBYTE:
         fixnode->loc_method = FIX_LO_BYTE;
         break;
     case FIX_RELOFF16:
         fixnode->self_relative = 1;
+        /* fall through */
     case FIX_FPPATCH:
     case FIX_OFF16:
         fixnode->loc_method = FIX_OFFSET;
         break;
     case FIX_RELOFF32:
         fixnode->self_relative = 1;
+        /* fall through */
     case FIX_OFF32:
         fixnode->loc_method = FIX_OFFSET386;
         break;

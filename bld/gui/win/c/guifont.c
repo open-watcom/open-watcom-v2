@@ -49,7 +49,7 @@ static void SetFont( gui_window *wnd, HFONT font )
     wnd->font = font;
     GUISetRowCol( wnd, NULL );
     GUISetScroll( wnd );
-    GUIEVENTWND( wnd, GUI_FONT_CHANGED, NULL );
+    GUIEVENT( wnd, GUI_FONT_CHANGED, NULL );
 }
 
 static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
@@ -103,9 +103,9 @@ static bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
         return( false );
     }
     lfAlias = AllocAlias16( (void *)lf );
-    cf.lpLogFont = (LOGFONT *) lfAlias;
+    cf.lpLogFont = (LOGFONT *)lfAlias;
     ret = (short)InvokeIndirectFunction( hIndir, &cf ) != 0;
-    if( lfAlias != NULL ) {
+    if( lfAlias != 0 ) {
         FreeAlias16( lfAlias );
     }
   #else
@@ -177,13 +177,13 @@ char *GUIGetFontFromUser( char *fontinfo )
     LOGFONT     lf;
     HFONT       font;
 
-    font = NULL;
+    font = NULLHANDLE;
     if( fontinfo != NULL ) {
         GetLogFontFromString( &lf, fontinfo );
         font = CreateFontIndirect( &lf );
         fontinfo = NULL;
     }
-    if( GUIChooseFont( font, &lf, NULL ) ) {
+    if( GUIChooseFont( font, &lf, NULLHANDLE ) ) {
         fontinfo = GetFontInfo( &lf );
     }
     if( font != NULL ) {

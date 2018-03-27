@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -31,6 +32,9 @@
 .387
 .386p
 
+include langenv.inc
+include xinit.inc
+
 include exitwmsg.inc
 
         assume  nothing
@@ -46,15 +50,15 @@ BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
-        ; NOTE that __begtext needs to be at offset 3
+        jmp short forever
+        ; NOTE that ___begtext needs to be at offset 3
         ; don't move it.  i.e. don't change any code before here.
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 
@@ -72,28 +76,6 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 NullAssign      db      '*** NULL assignment detected',0
 CONST   ends
-
-XIB     segment word public 'DATA'
-_Start_XI label byte
-        public  "C",_Start_XI
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-_End_XI label byte
-        public  "C",_End_XI
-XIE     ends
-
-YIB     segment word public 'DATA'
-_Start_YI label byte
-        public  "C",_Start_YI
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-_End_YI label byte
-        public  "C",_End_YI
-YIE     ends
 
 _DATA   segment use32 public 'DATA'
 
@@ -117,22 +99,22 @@ _cexit_ proc near
     mov dx,ds:ExitSs
     or dx,dx
     jz _exit_done
-;    
+;
     mov ss,dx
     mov esp,ds:ExitEsp
     mov ds:ExitSs,0
     or eax,eax
     clc
     jz _exit_far
-;    
+;
     stc
 _exit_far:
     retf
 
 _exit_done:
-    ret    
+    ret
 _cexit_ endp
-         
+
 public _cstart_
 
 _cstart_ proc  near
@@ -144,17 +126,16 @@ _cstart_ proc  near
 
     sub ebp,ebp                 ; ebp=0 indicate end of ebp chain
     call __RdosMain
-    jmp _cexit_    
+    jmp _cexit_
+_cstart_ endp
 
-    dd ___begtext              ; make sure dead code elimination
+    dd ___begtext               ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT segment
 
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

@@ -33,4 +33,4 @@
 extern bool     DlgInfoRelease( void );
 extern bool     WndDlgTxt( const char *buff );
 extern void     WndDlgFini( void );
-extern a_window *WndDlgOpen( void );
+extern a_window WndDlgOpen( void );

@@ -45,18 +45,18 @@
 #include "clibext.h"
 
 
-imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
-/*******************************************************************************/
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
+/********************************************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     /* Return the module that the implementation symbol handle comes from. */
-    return( is->im );
+    return( ish->im );
 }
 
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
-                    imp_sym_handle *is, location_context *lc,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
+                    imp_sym_handle *ish, location_context *lc,
                     symbol_name sn, char *buff, size_t buff_size )
 /****************************************************************/
 {
@@ -87,11 +87,11 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
     /* unused parameters */ (void)lc;
 
 //TODO: what's lc for?
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     switch( sn ) {
     case SN_SOURCE:
     case SN_OBJECT:
-        len = DRGetNameBuff( is->sym, buff, buff_size );
+        len = DRGetNameBuff( ish->sym, buff, buff_size );
         if( len == 0 ) {
             DCStatus( DS_FAIL );
             return( 0 );
@@ -102,7 +102,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
         }
         break;
     case SN_SCOPED:
-        len =  DRGetScopedNameBuff( is->sym, buff, buff_size );
+        len =  DRGetScopedNameBuff( ish->sym, buff, buff_size );
         if( len == 0 ) {
             DCStatus( DS_FAIL );
             return( 0 );
@@ -113,8 +113,8 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
         }
         break;
     case SN_DEMANGLED:
-        if( IMH2MODI( ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
-            name = DRDecoratedName( is->sym, 0 );
+        if( IMH2MODI( iih, ish->im )->lang == DR_LANG_CPLUSPLUS ) {
+            name = DRDecoratedName( ish->sym, 0 );
             if( name == NULL ) {
                 DCStatus( DS_FAIL );
                 return( 0 );
@@ -124,7 +124,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
         } else if( buff == NULL ) {
             return( 0 );
         } else {
-            len = DRGetNameBuff( is->sym, buff, buff_size );
+            len = DRGetNameBuff( ish->sym, buff, buff_size );
             if( __is_mangled( buff, len ) ) {
                 demangled_len = __demangle_l( buff, len, NULL, 0 );
                 if( demangled_len > buff_size ) {
@@ -147,39 +147,39 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
 }
 
 
-dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it )
-/***********************************************************/
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
+                    imp_sym_handle *ish, imp_type_handle *ith )
+/*************************************************************/
 {
     /* Get the implementation type handle for the type of the given symbol. */
     dip_status  ret;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    if( is->state == DF_NOT ) {
-        is->stype = DRGetTagType( is->sym );
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    if( ish->state == DF_NOT ) {
+        ish->stype = DRGetTagType( ish->sym );
     }
-    switch( is->stype ) {
+    switch( ish->stype ) {
     case DR_TAG_FUNCTION:
     case DR_TAG_CLASS:
     case DR_TAG_ENUM:
-        it->type = is->sym;
+        ith->type = ish->sym;
         break;
     default:
-        it->type = DRGetTypeAT( is->sym );
+        ith->type = DRGetTypeAT( ish->sym );
         break;
     }
     ret = DS_OK;
-    it->im = is->im;
-    if( it->type != DRMEM_HDL_NULL ) {
-        it->state = DF_NOT;
+    ith->im = ish->im;
+    if( ith->type != DRMEM_HDL_NULL ) {
+        ith->state = DF_NOT;
     } else {
-        it->state = DF_SET;         // default the type
-        it->sub_array = false;
-        it->typeinfo.kind = DR_TYPEK_DATA;
-        it->typeinfo.size = 0;
-        it->typeinfo.mclass = DR_MOD_NONE;
-        if( is->stype == DR_TAG_LABEL ) {
-            it->typeinfo.kind = DR_TYPEK_CODE;
+        ith->state = DF_SET;         // default the type
+        ith->sub_array = false;
+        ith->typeinfo.kind = DR_TYPEK_DATA;
+        ith->typeinfo.size = 0;
+        ith->typeinfo.mclass = DR_MOD_NONE;
+        if( ish->stype == DR_TAG_LABEL ) {
+            ith->typeinfo.kind = DR_TYPEK_CODE;
         }
     }
     return( ret );
@@ -187,7 +187,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
 
 
 struct mod_wlk {
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     seg_list            *addr_sym;
     imp_mod_handle      im;
     address             a;
@@ -209,21 +209,21 @@ static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
     /* unused parameters */ (void)cont;
 
 //    ret = true;
-    is_segment = IMH2MODI( d->ii, d->im )->is_segment;
+    is_segment = IMH2MODI( d->iih, d->im )->is_segment;
     if( DRGetLowPc( sym, &offset) ) {
         if( !is_segment ) {
             seg = SEG_FLAT; // if flat hoke segment
         } else {
-            EvalSeg( d->ii, sym, &seg );
+            EvalSeg( d->iih, sym, &seg );
         }
     } else {
         if( !is_segment ) {
             seg = SEG_FLAT; // if flat hoke segment
         } else {
-            EvalSeg( d->ii, sym, &seg );
+            EvalSeg( d->iih, sym, &seg );
         }
-//        ret = EvalSymOffset( d->ii, sym, &offset );
-        EvalSymOffset( d->ii, sym, &offset );
+//        ret = EvalSymOffset( d->iih, sym, &offset );
+        EvalSymOffset( d->iih, sym, &offset );
     }
     info.map_offset = offset;
     info.sym = sym;
@@ -233,20 +233,20 @@ static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
 }
 
 
-seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
-/****************************************************************/
+seg_list *DFLoadAddrSym( imp_image_handle *iih, imp_mod_handle im )
+/*****************************************************************/
 {
     struct mod_wlk  d;
     seg_list        *addr_sym;
     mod_info        *modinfo;
 
-    modinfo = IMH2MODI( ii, im );
+    modinfo = IMH2MODI( iih, im );
     addr_sym = modinfo->addr_sym;
     if( addr_sym->head == NULL ) {  /* no cache */
         FiniAddrSym( addr_sym );    /* kill cache */
-        DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
+        DRSetDebug( iih->dwarf->handle ); /* must do at each interface */
         d.addr_sym = addr_sym;
-        d.ii = ii;
+        d.iih = iih;
         d.im = im;
         d.ret = SR_NONE;
         DRWalkModFunc( modinfo->cu_tag, false, AMod, &d );   /* load cache */
@@ -288,7 +288,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 }
 
 
-static drmem_hdl MemFuncLookUp( imp_image_handle *ii,
+static drmem_hdl MemFuncLookUp( imp_image_handle *iih,
                                 drmem_hdl sym,
                                 drmem_hdl inh,
                                 imp_mod_handle im )
@@ -298,8 +298,8 @@ static drmem_hdl MemFuncLookUp( imp_image_handle *ii,
     char            buff[256];
     seg_list        *addr_sym;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    addr_sym = DFLoadAddrSym( ii, im );
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    addr_sym = DFLoadAddrSym( iih, im );
     DRGetNameBuff( sym, buff, sizeof( buff ) );
     df.name = buff;
     df.inh  = inh;
@@ -309,20 +309,20 @@ static drmem_hdl MemFuncLookUp( imp_image_handle *ii,
 }
 
 
-static  addr_seg GetCodeSeg( imp_image_handle *ii )
-/*************************************************/
+static  addr_seg GetCodeSeg( imp_image_handle *iih )
+/**************************************************/
 {
     addr_ptr mach;
     mach.segment = SEG_CODE;
     mach.offset = 0;
-    DCMapAddr( &mach, ii->dcmap );
+    DCMapAddr( &mach, iih->dcmap );
     return( mach.segment );
 }
 
 
-dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
-                imp_sym_handle *is, location_context *lc, location_list *ll )
-/***************************************************************************/
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
+                imp_sym_handle *ish, location_context *lc, location_list *ll )
+/****************************************************************************/
 {
     /* Get the location of the given symbol. */
     dip_status       ret;
@@ -333,20 +333,20 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
 
     ret = DS_FAIL;
     base = NilAddr;
-    is_segment = IMH2MODI( ii, is->im )->is_segment;
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    if( DRGetLowPc( is->sym, &base.mach.offset) ) {
+    is_segment = IMH2MODI( iih, ish->im )->is_segment;
+    DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
+    if( DRGetLowPc( ish->sym, &base.mach.offset) ) {
         if( !is_segment ) {
             seg = SEG_CODE; // if flat hoke segment
         } else {
-            EvalSeg( ii, is->sym, &seg );
+            EvalSeg( iih, ish->sym, &seg );
         }
         base.mach.segment = seg;
-        DCMapAddr( &base.mach, ii->dcmap );
+        DCMapAddr( &base.mach, iih->dcmap );
         LocationCreate( ll, LT_ADDR, &base );
         ret = DS_OK;
     } else {
-        switch( is->sclass ) {
+        switch( ish->sclass ) {
         case SYM_MEM:
         case SYM_VIRTF:
         {
@@ -358,14 +358,14 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
                 DCStatus( ret );
                 return( ret );
             }
-            if( is->f.minfo.inh != DRMEM_HDL_NULL ) {
-                DFBaseAdjust( ii, is->f.minfo.root,
-                      DRGetTypeAT( is->f.minfo.inh ),lc, &ll->e[0].u.addr );
+            if( ish->f.minfo.inh != DRMEM_HDL_NULL ) {
+                DFBaseAdjust( iih, ish->f.minfo.root,
+                      DRGetTypeAT( ish->f.minfo.inh ),lc, &ll->e[0].u.addr );
             }
-            ret = EvalLocAdj( ii, lc, is->sym, &ll->e[0].u.addr  );
-            if( is->sclass == SYM_VIRTF ) {
-                ll->e[0].u.addr.mach.segment = GetCodeSeg( ii );
-            } else if( DRGetBitFieldInfo( is->sym, &info ) ) {
+            ret = EvalLocAdj( iih, lc, ish->sym, &ll->e[0].u.addr  );
+            if( ish->sclass == SYM_VIRTF ) {
+                ll->e[0].u.addr.mach.segment = GetCodeSeg( iih );
+            } else if( DRGetBitFieldInfo( ish->sym, &info ) ) {
                 b_strt = 8 * info.byte_size.val.s -
                     (info.bit_offset.val.s + info.bit_size.val.s);
                 LocationAdd( ll, b_strt );
@@ -374,30 +374,30 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
             break;
         }
         case SYM_MEMF:
-            if( is->f.minfo.inh == DRMEM_HDL_NULL ) {
-                sym = is->f.minfo.root;
+            if( ish->f.minfo.inh == DRMEM_HDL_NULL ) {
+                sym = ish->f.minfo.root;
             } else {
-                sym = DRGetTypeAT( is->f.minfo.inh );   /* get inherited type */
+                sym = DRGetTypeAT( ish->f.minfo.inh );   /* get inherited type */
             }
             sym = DRSkipTypeChain( sym );   /* PCH typedef link */
-            sym = MemFuncLookUp( ii, is->sym, sym, is->im );
+            sym = MemFuncLookUp( iih, ish->sym, sym, ish->im );
             if( sym == DRMEM_HDL_NULL ) {
                 base = NilAddr; /* for now say it's NULL */
                 LocationCreate( ll, LT_ADDR, &base );
                 ret = DS_OK;
                 break;
             } else {
-                is->sym = sym;
+                ish->sym = sym;
             }
-            DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-            if( DRGetLowPc( is->sym, &base.mach.offset) ) {
+            DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+            if( DRGetLowPc( ish->sym, &base.mach.offset) ) {
                 if( !is_segment ) {
                     seg = SEG_CODE; // if flat hoke segment
                 } else {
-                    EvalSeg( ii, is->sym, &seg );
+                    EvalSeg( iih, ish->sym, &seg );
                 }
                 base.mach.segment = seg;
-                DCMapAddr( &base.mach, ii->dcmap );
+                DCMapAddr( &base.mach, iih->dcmap );
                 LocationCreate( ll, LT_ADDR, &base );
                 ret = DS_OK;
             }
@@ -405,15 +405,15 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
         case SYM_MEMVAR:
         case SYM_VAR:
             if( !is_segment ) {
-                if( DRIsFunc( is->sym ) ) {
+                if( DRIsFunc( ish->sym ) ) {
                     seg = SEG_CODE; // if flat hoke segment
                 } else {
                     seg = SEG_DATA; // if flat hoke segment
                 }
             } else {
-                EvalSeg( ii, is->sym, &seg );
+                EvalSeg( iih, ish->sym, &seg );
             }
-            ret = EvalLocation( ii, lc, is->sym, seg, ll );
+            ret = EvalLocation( iih, lc, ish->sym, seg, ll );
             break;
         }
     }
@@ -421,25 +421,25 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
 }
 
 
-dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
-                imp_sym_handle *is, location_context *ic, void *buff )
-/********************************************************************/
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih,
+                imp_sym_handle *ish, location_context *ic, void *buff )
+/*********************************************************************/
 {
     uint_32     value;
 
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)ic;
 
     /* Copy the value of a constant symbol into 'buff'. You can get the
      * size required by doing a SymType followed by a TypeInfo.
      */
-    if( is->sclass != SYM_ENUM ) {
+    if( ish->sclass != SYM_ENUM ) {
         return( DS_FAIL );
     }
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    if( !DRConstValAT( is->sym, &value ) ) {
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    if( !DRConstValAT( ish->sym, &value ) ) {
         return( DS_FAIL );
     }
-    switch( is->f.einfo.size ) {
+    switch( ish->f.einfo.size ) {
     case 1:
         *(uint_8 *)buff = value;
         break;
@@ -456,9 +456,9 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
 }
 
 
-dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
-                imp_sym_handle *is, location_context *lc, sym_info *si )
-/**********************************************************************/
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
+                imp_sym_handle *ish, location_context *lc, sym_info *si )
+/***********************************************************************/
 {
     /* Get some generic information about a symbol. */
     uint_32         num1;
@@ -467,44 +467,44 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
 
     /* unused parameters */ (void)lc;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    if( is->state == DF_NOT ) {
-        DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
-        is->stype = DRGetTagType( is->sym );
-        is->acc   = DRGetAccess( is->sym );
-        is->isstatic = DRIsStatic( is->sym );
-        is->isartificial = DRIsArtificial( is->sym );
-        is->state = DF_SET;
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    if( ish->state == DF_NOT ) {
+        DRSetDebug( iih->dwarf->handle ); /* must do at each interface */
+        ish->stype = DRGetTagType( ish->sym );
+        ish->acc   = DRGetAccess( ish->sym );
+        ish->isstatic = DRIsStatic( ish->sym );
+        ish->isartificial = DRIsArtificial( ish->sym );
+        ish->state = DF_SET;
     }
-    switch( is->stype ) {
+    switch( ish->stype ) {
     case DR_TAG_FUNCTION:
-        if( is->sclass == SYM_MEMF || is->sclass == SYM_VIRTF ) {
+        if( ish->sclass == SYM_MEMF || ish->sclass == SYM_VIRTF ) {
             si->kind = SK_CODE;     /* member functions */
         } else {
             si->kind = SK_PROCEDURE;
-            if( DRStartScopeAT( is->sym, &num1 ) ) {
+            if( DRStartScopeAT( ish->sym, &num1 ) ) {
                 si->prolog_size  = num1;
             } else {
                 si->prolog_size  = 0;
             }
-            if( !DRGetLowPc( is->sym, &num1 ) ) {
+            if( !DRGetLowPc( ish->sym, &num1 ) ) {
                 num1 = 0;
             }
-            if( !DRGetHighPc( is->sym, &num2 ) ) {
+            if( !DRGetHighPc( ish->sym, &num2 ) ) {
                 num2 = num1;
             }
             si->rtn_size = num2 - num1;
-            si->num_parms = GetParmCount( ii, is->sym );
+            si->num_parms = GetParmCount( iih, ish->sym );
             si->ret_size = 0;
             si->ret_modifier = TM_NONE;
             si->epilog_size = 0;
             si->rtn_calloc  = 0;
-            if( EvalOffset( ii, is->sym, &num1 ) ) {
+            if( EvalOffset( iih, ish->sym, &num1 ) ) {
                 si->ret_addr_offset = num1;
             } else {
                 si->ret_addr_offset = (addr_off)-1L;
             }
-            addr_class =  DRGetAddrClass( is->sym );
+            addr_class =  DRGetAddrClass( ish->sym );
             switch( addr_class ) {
             case DR_PTR_far32:
             case DR_PTR_far16:
@@ -536,7 +536,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
     si->is_private = 0;
     si->is_protected = 0;
     si->is_public = 0;
-    switch( is->acc ) {
+    switch( ish->acc ) {
     case DR_ACCESS_PUBLIC:
         si->is_public = 1;
         break;
@@ -547,13 +547,13 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
         si->is_private = 1;
         break;
     }
-    si->compiler = is->isartificial;
-    if( is->isstatic ) {
+    si->compiler = ish->isartificial;
+    if( ish->isstatic ) {
         si->is_global = 0;
     } else {
         si->is_global = 1;
     }
-    switch( is->sclass ) {
+    switch( ish->sclass ) {
     case SYM_MEMVAR:
         si->is_member = 1;
         si->is_static = 1;
@@ -598,13 +598,13 @@ static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 }
 
 
-extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
-/**************************************************************/
+drmem_hdl GetRet( imp_image_handle *iih, drmem_hdl proc )
+/*******************************************************/
 {
     /* Find handle of Watcom return symbol. */
     drmem_hdl ret = DRMEM_HDL_NULL;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_var, ARet, (void *)&ret ) ) {
         ret = DRMEM_HDL_NULL;
     }
@@ -612,8 +612,8 @@ extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
 }
 
 
-dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
-                    imp_sym_handle *is, location_context *lc,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
+                    imp_sym_handle *ish, location_context *lc,
                     location_list *ll, unsigned n )
 /*******************************************************************/
 {
@@ -628,18 +628,18 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
     drmem_hdl       parm;
     dip_status      ret;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
     ret = DS_FAIL;
     if( n > 0 ) {
-        parm = GetParmN( ii, is->sym, n );
+        parm = GetParmN( iih, ish->sym, n );
         if( parm != DRMEM_HDL_NULL ) {
-            ret = EvalParmLocation( ii, lc, parm, ll );
+            ret = EvalParmLocation( iih, lc, parm, ll );
         }
     } else if( n == 0 ) {
         //TODO: get ret location
-        parm = GetRet( ii, is->sym );
+        parm = GetRet( iih, ish->sym );
         if( parm != DRMEM_HDL_NULL ) {
-            ret = EvalRetLocation( ii, lc, parm, ll );
+            ret = EvalRetLocation( iih, lc, parm, ll );
         }
     }
     return( ret );
@@ -670,13 +670,13 @@ static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 }
 
 
-static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
-/**************************************************************/
+static drmem_hdl GetThis( imp_image_handle *iih, drmem_hdl proc )
+/***************************************************************/
 {
     /* Return handle of the this parmeter. */
     drmem_hdl   ret = DRMEM_HDL_NULL;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_parm, AThis, (void *)&ret ) ) {
         ret = DRMEM_HDL_NULL;
     }
@@ -684,9 +684,9 @@ static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 }
 
 
-dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
-/******************************************************************************/
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
+                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+/********************************************************************************/
 {
     /* Fill in the imp_type_handle with the type of the 'this' object
      * for a C++ member function.
@@ -699,17 +699,17 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
     dr_typeinfo typeinfo;
     dip_status  ret;
 
-    dr_this = GetThis( ii, is->sym );
+    dr_this = GetThis( iih, ish->sym );
     if( dr_this != DRMEM_HDL_NULL ) {
-        DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
+        DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
         dr_type =  DRGetTypeAT( dr_this );
         if( dr_type != DRMEM_HDL_NULL ) {
             DRGetTypeInfo( dr_type, &typeinfo );
             MapImpTypeInfo( &typeinfo, ti );
             dr_type = DRSkipTypeChain( dr_type );
-            it->type = DRGetTypeAT( dr_type );
-            it->state = DF_NOT;
-            it->im = is->im;
+            ith->type = DRGetTypeAT( dr_type );
+            ith->state = DF_NOT;
+            ith->im = ish->im;
             ret = DS_OK;
         } else {
             ret = DS_FAIL;
@@ -722,8 +722,8 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
 }
 
 
-dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
-                                imp_sym_handle *is, location_context *lc,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
+                                imp_sym_handle *ish, location_context *lc,
                                 location_list *ll )
 /***********************************************************************/
 {
@@ -745,14 +745,14 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
         addr48_ptr  f32;
     } obj_ptr;
 
-    dr_this = GetThis( ii, is->sym );
+    dr_this = GetThis( iih, ish->sym );
     if( dr_this != DRMEM_HDL_NULL ) {
-        if( !IMH2MODI( ii, is->im )->is_segment ) {
+        if( !IMH2MODI( iih, ish->im )->is_segment ) {
             seg = SEG_DATA; // if flat hoke segment
         } else {
-            EvalSeg( ii, is->sym, &seg );
+            EvalSeg( iih, ish->sym, &seg );
         }
-        ret = EvalLocation( ii, lc, dr_this, seg, &tmp );
+        ret = EvalLocation( iih, lc, dr_this, seg, &tmp );
         if( ret == DS_OK ) {
             dr_type =  DRGetTypeAT( dr_this );
             if( dr_type != DRMEM_HDL_NULL ) {
@@ -807,14 +807,14 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
 }
 
 
-search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
-                        imp_mod_handle im, address a, imp_sym_handle *is )
-/************************************************************************/
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
+                        imp_mod_handle im, address a, imp_sym_handle *ish )
+/*************************************************************************/
 {
     /* Search the given module for a symbol who's address is greater than
      * or equal to 'addr'. If none is found return SR_NONE. If you find
-     * a symbol at that address exactly, fill in '*is' and return SR_EXACT.
-     * Otherwise, fill in '*is' and return SR_CLOSEST.
+     * a symbol at that address exactly, fill in '*ish' and return SR_EXACT.
+     * Otherwise, fill in '*ish' and return SR_CLOSEST.
      */
     addrsym_info    info;
     search_result   ret;
@@ -824,13 +824,13 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
-    addr_sym = DFLoadAddrSym( ii, im );
-    Real2Map( ii->addr_map, &a );
+    addr_sym = DFLoadAddrSym( iih, im );
+    Real2Map( iih->addr_map, &a );
     if( FindAddrSym( addr_sym, &a.mach, &info ) >= 0 ) {
-        is->sclass = SYM_VAR;
-        is->im = im;
-        is->sym = info.sym;
-        is->state = DF_NOT;
+        ish->sclass = SYM_VAR;
+        ish->im = im;
+        ish->sym = info.sym;
+        ish->state = DF_NOT;
         if( info.map_offset == a.mach.offset ) {
             ret = SR_EXACT;
         } else {
@@ -888,7 +888,7 @@ static bool IsInScope( scope_ctl  *ctl, address addr )
 }
 
 
-static search_result  DFAddrScope( imp_image_handle *ii,
+static search_result  DFAddrScope( imp_image_handle *iih,
         imp_mod_handle im, address addr, scope_block *scope )
 /************************************************************/
 {
@@ -897,15 +897,15 @@ static search_result  DFAddrScope( imp_image_handle *ii,
     search_result   ret;
 
     ret = SR_NONE;
-    Real2Map( ii->addr_map, &addr );
-    ctl =  &ii->scope;
+    Real2Map( iih->addr_map, &addr );
+    ctl =  &iih->scope;
     if( !IsInScope( ctl, addr ) ) {
         addrsym_info        info;
         seg_list            *addr_sym;
 
-        addr_sym = DFLoadAddrSym( ii, im );
+        addr_sym = DFLoadAddrSym( iih, im );
         if( FindAddrSym( addr_sym, &addr.mach, &info ) >= 0 ) {
-            DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
+            DRSetDebug( iih->dwarf->handle );    /* must do at each interface */
             if( DRIsFunc( info.sym ) ) {
                 FiniScope( ctl );
                 ctl->base = addr;
@@ -921,8 +921,8 @@ static search_result  DFAddrScope( imp_image_handle *ii,
             scope->start = addr;
             scope->start.mach.offset = node->start;
             scope->len = node->end - node->start;
-            DCMapAddr( &scope->start.mach, ii->dcmap );
-            scope->unique = node->what - IMH2MODI( ii, im )->cu_tag;   /* make relative */
+            DCMapAddr( &scope->start.mach, iih->dcmap );
+            scope->unique = node->what - IMH2MODI( iih, im )->cu_tag;   /* make relative */
             ret = SR_CLOSEST;
         }
     }
@@ -930,7 +930,7 @@ static search_result  DFAddrScope( imp_image_handle *ii,
 }
 
 
-search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
                 imp_mod_handle im, address addr, scope_block *scope )
 /*******************************************************************/
 {
@@ -948,11 +948,11 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
      *            by DIPImpAddrScope or DIPImpScopeOuter.
      * Then return SR_EXACT/SR_CLOSEST as appropriate.
      */
-    return( DFAddrScope( ii, im, addr, scope ) );
+    return( DFAddrScope( iih, im, addr, scope ) );
 }
 
 
-static search_result   DFScopeOuter( imp_image_handle *ii,
+static search_result   DFScopeOuter( imp_image_handle *iih,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 /*************************************************************/
 {
@@ -972,15 +972,15 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
 
     ret = SR_NONE;
     addr =  in->start;
-    Real2Map( ii->addr_map, &addr );
-    ctl = &ii->scope;
+    Real2Map( iih->addr_map, &addr );
+    ctl = &iih->scope;
     if( !IsInScope( ctl, addr ) ) {
         addrsym_info        info;
         seg_list            *addr_sym;
 
-        addr_sym = DFLoadAddrSym( ii, im );
+        addr_sym = DFLoadAddrSym( iih, im );
         if( FindAddrSym( addr_sym, &addr.mach, &info ) >= 0 ) {
-            DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
+            DRSetDebug( iih->dwarf->handle );    /* must do at each interface */
             if( DRIsFunc( info.sym ) ) {
                 FiniScope( ctl );
                 ctl->base = addr;
@@ -992,7 +992,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
     }
     if( ctl->root != NULL ) {
         ret = SR_NONE;
-        cu_tag = IMH2MODI(ii, im )->cu_tag;
+        cu_tag = IMH2MODI(iih, im )->cu_tag;
         node = FindScope( ctl->root, addr.mach.offset );
         what = cu_tag + in->unique;    /* make absolute */
         while( node != NULL ) {
@@ -1006,7 +1006,7 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
             out->start = addr;
             out->start.mach.offset = node->start;
             out->len = node->end - node->start;
-            DCMapAddr( &out->start.mach, ii->dcmap );
+            DCMapAddr( &out->start.mach, iih->dcmap );
             out->unique = node->what - cu_tag; /* make relative */
             ret = SR_EXACT;
         }
@@ -1032,7 +1032,7 @@ static drmem_hdl GetContainingClass( drmem_hdl curr )
 }
 
 
-search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 /********************************************************************/
 {
@@ -1041,8 +1041,8 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
     dr_tag_type     sc;
     drmem_hdl       cu_tag;
 
-    DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
-    cu_tag = IMH2MODI( ii, im )->cu_tag;
+    DRSetDebug( iih->dwarf->handle );    /* must do at each interface */
+    cu_tag = IMH2MODI( iih, im )->cu_tag;
     curr = cu_tag + in->unique;         /* make absolute */
     sc = DRGetTagType( curr );
     switch( sc ) {
@@ -1062,7 +1062,7 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
         }
         break;
     default:
-        ret = DFScopeOuter( ii, im, in, out );
+        ret = DFScopeOuter( iih, im, in, out );
     }
     return( ret );
 }
@@ -1073,7 +1073,7 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
 
 typedef struct {
     imp_mod_handle      im;
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     void                *d;
     drmem_hdl           containing;
     dr_srch             what;
@@ -1088,7 +1088,7 @@ typedef struct {
     blk_wlk_com         com;
     walk_result         wr;
     DIP_IMP_SYM_WALKER  *wk;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
 } blk_wlk_wlk;
 
 typedef struct {
@@ -1139,18 +1139,18 @@ static bool ASym( drmem_hdl var, int index, void *_df )
 {
     blk_wlk_wlk     *df = _df;
     bool            cont;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     dr_dbg_handle   saved;
 
     /* unused parameters */ (void)index;
 
-    is = df->is;
-    is->sclass = SYM_VAR;
-    is->im = df->com.im;
-    is->sym = var;
-    is->state = DF_NOT;
+    ish = df->ish;
+    ish->sclass = SYM_VAR;
+    ish->im = df->com.im;
+    ish->sym = var;
+    ish->state = DF_NOT;
     saved = DRGetDebug();
-    df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
+    df->wr = df->wk( df->com.iih, SWI_SYMBOL, ish, df->com.d );
     DRSetDebug( saved );
     cont = true;
     if( df->wr != WR_CONTINUE ) {
@@ -1185,7 +1185,7 @@ static bool AModSym( drmem_hdl var, int index, void *_df )
 {
     blk_wlk_wlk     *df = _df;
     bool            cont;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     dr_tag_type     sc;
     dr_dbg_handle   saved;
 
@@ -1196,13 +1196,13 @@ static bool AModSym( drmem_hdl var, int index, void *_df )
         DRWalkBlock( var, df->com.what, AModSym, (void *)df );
         cont = true;
     } else {
-        is = df->is;
-        is->sclass = SYM_VAR;
-        is->im = df->com.im;
-        is->sym = var;
-        is->state = DF_NOT;
+        ish = df->ish;
+        ish->sclass = SYM_VAR;
+        ish->im = df->com.im;
+        ish->sym = var;
+        ish->state = DF_NOT;
         saved = DRGetDebug();
-        df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
+        df->wr = df->wk( df->com.iih, SWI_SYMBOL, ish, df->com.d );
         DRSetDebug( saved );
         cont = true;
     }
@@ -1218,7 +1218,7 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
 /***********************************************************/
 {
     blk_wlk_lookup  *df = _df;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
     size_t          len;
 
     /* unused parameters */ (void)index;
@@ -1233,11 +1233,11 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
              * another module.
              */
         } else {
-            is = DCSymCreate( df->com.ii, df->com.d );
-            is->sclass = SYM_VAR;
-            is->im = df->com.im;
-            is->sym = var;
-            is->state = DF_NOT;
+            ish = DCSymCreate( df->com.iih, df->com.d );
+            ish->sclass = SYM_VAR;
+            ish->im = df->com.im;
+            ish->sym = var;
+            ish->state = DF_NOT;
             df->sr = SR_EXACT;
             df->com.cont = false;
         }
@@ -1268,7 +1268,7 @@ static bool ASymContLookup( drmem_hdl var, int index, void *_df )
 static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, drmem_hdl blk )
 /*****************************************************************/
 {
-    DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
+    DRSetDebug( df->com.iih->dwarf->handle );    /* must do at each call into DWARF */
     DRWalkBlock( blk, df->com.what, fn, (void *)df );
     return( df->com.cont );
 }
@@ -1281,7 +1281,7 @@ static bool WalkModSymList( blk_wlk *df, DRWLKBLK fn, imp_mod_handle im )
     mod_info        *modinfo;
 
     df->com.im = im;
-    modinfo = IMH2MODI( df->com.ii, im );
+    modinfo = IMH2MODI( df->com.iih, im );
     if( df->com.what == DR_SRCH_ctypes && modinfo->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
@@ -1296,7 +1296,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
     /* Walk inner to outer function scopes, then containing class
      * if present, then module scope.
      */
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     scope_block         scope;
     drmem_hdl           cu_tag;
     drmem_hdl           dbg_pch;
@@ -1306,11 +1306,11 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
     bool                cont;
     mod_info            *modinfo;
 
-    ii = df->com.ii;
+    iih = df->com.iih;
     cont = true;
-    if( DFAddrMod( ii, *addr, &im ) != SR_NONE ) {
-        modinfo = IMH2MODI( ii, im );
-        if( DFAddrScope( ii, im, *addr, &scope ) != SR_NONE ) {
+    if( DFAddrMod( iih, *addr, &im ) != SR_NONE ) {
+        modinfo = IMH2MODI( iih, im );
+        if( DFAddrScope( iih, im, *addr, &scope ) != SR_NONE ) {
             df->com.im = im;
             cu_tag = modinfo->cu_tag;
             for( ;; ) {
@@ -1318,7 +1318,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                 cont = WalkOneBlock( df, fn, curr );
                 if( !cont )
                     break;
-                if( DFScopeOuter( ii, im, &scope, &scope ) == SR_NONE ) {
+                if( DFScopeOuter( iih, im, &scope, &scope ) == SR_NONE ) {
                     cont = true;
                     break;
                 }
@@ -1326,21 +1326,21 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
             if( cont ) {
                 sc = DRGetTagType( curr );
                 if( sc == DR_TAG_FUNCTION ) {
-                    imp_type_handle     it;
+                    imp_type_handle     ith;
 
                     curr = GetContainingClass( curr );
                     if( curr != DRMEM_HDL_NULL ) {
-                        it.state = DF_NOT;
-                        it.type = curr;
-                        it.im = im;
+                        ith.state = DF_NOT;
+                        ith.type = curr;
+                        ith.im = im;
                         if( df->com.kind == WLK_WLK ) {
-                            df->wlk.wr = WalkTypeSymList( ii, &it,
-                                 df->wlk.wk, df->wlk.is, df->com.d );
+                            df->wlk.wr = WalkTypeSymList( iih, &ith,
+                                 df->wlk.wk, df->wlk.ish, df->com.d );
                             if( df->wlk.wr != WR_CONTINUE ) {
                                 cont = false;
                             }
                         } else {
-                            df->lookup.sr = SearchMbr( ii, &it,
+                            df->lookup.sr = SearchMbr( iih, &ith,
                                           df->lookup.li, df->com.d );
                             if( df->lookup.sr == SR_EXACT ) {
                                 cont = false;
@@ -1355,7 +1355,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
         }
         dbg_pch = modinfo->dbg_pch;
         if( cont && dbg_pch != 0 ) {
-            im = CuTag2Mod( ii, dbg_pch );
+            im = CuTag2Mod( iih, dbg_pch );
             cont = WalkModSymList( df, fn, im );
         }
     }
@@ -1366,7 +1366,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
 static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
 /***************************************************************************/
 {
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     drmem_hdl           cu_tag;
     imp_mod_handle      im;
     drmem_hdl           blk;
@@ -1374,23 +1374,23 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
     bool                cont;
 
     cont = true;
-    ii = df->com.ii;
-    if( DFAddrMod( ii, scope->start, &im ) != SR_NONE ) {
-        DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
+    iih = df->com.iih;
+    if( DFAddrMod( iih, scope->start, &im ) != SR_NONE ) {
+        DRSetDebug( df->com.iih->dwarf->handle );    /* must do at each call into DWARF */
         df->com.im = im;
-        cu_tag = IMH2MODI( ii, im )->cu_tag;
+        cu_tag = IMH2MODI( iih, im )->cu_tag;
         blk = cu_tag + scope->unique;               /* make absolute */
         sc = DRGetTagType( blk );
         if( sc == DR_TAG_CLASS ) {
-            imp_type_handle     it;
+            imp_type_handle     ith;
 
-            it.state = DF_NOT;
-            it.type = blk;
-            it.im = im;
+            ith.state = DF_NOT;
+            ith.type = blk;
+            ith.im = im;
             if( df->com.kind == WLK_WLK ) {
-                df->wlk.wr = WalkTypeSymList( ii, &it, df->wlk.wk, df->wlk.is, df->com.d );
+                df->wlk.wr = WalkTypeSymList( iih, &ith, df->wlk.wk, df->wlk.ish, df->com.d );
             } else {
-                df->lookup.sr = SearchMbr( ii, &it, df->lookup.li, df->com.d );
+                df->lookup.sr = SearchMbr( iih, &ith, df->lookup.li, df->com.d );
             }
         } else {
             cont = WalkOneBlock( df, fn, blk );
@@ -1400,26 +1400,26 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
 }
 
 
-static bool WalkSymSymList( blk_wlk *df, DRWLKBLK fn, imp_sym_handle *is )
-/************************************************************************/
+static bool WalkSymSymList( blk_wlk *df, DRWLKBLK fn, imp_sym_handle *ish )
+/*************************************************************************/
 {
     bool                cont;
 
-    df->com.im = is->im;
-    if( df->com.what == DR_SRCH_ctypes && IMH2MODI( df->com.ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
+    df->com.im = ish->im;
+    if( df->com.what == DR_SRCH_ctypes && IMH2MODI( df->com.iih, ish->im )->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
-    cont = WalkOneBlock( df, fn, is->sym );
+    cont = WalkOneBlock( df, fn, ish->sym );
     return( cont );
 }
 
 
-static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void *_df )
-/************************************************************************************/
+static walk_result  WalkMyLDSyms( imp_image_handle *iih, imp_mod_handle im, void *_df )
+/*************************************************************************************/
 {
     blk_wlk     *df = _df;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     df->wlk.com.im = im;
     WalkModSymList( df, &ASym, im );
@@ -1427,11 +1427,11 @@ static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void 
 }
 
 
-static walk_result DFWalkSymList( imp_image_handle *ii,
+static walk_result DFWalkSymList( imp_image_handle *iih,
                          symbol_source      ss,
                          void               *source,
                          DIP_IMP_SYM_WALKER *wk,
-                         imp_sym_handle     *is,
+                         imp_sym_handle     *ish,
                          void               *d )
 /******************************************************/
 {
@@ -1440,29 +1440,29 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     blk_wlk             df;
     int                 cont = 0;
 
-    df.com.ii = ii;
+    df.com.iih = iih;
     df.com.d = d;
     df.com.what = DR_SRCH_func_var;
     df.com.containing = DRMEM_HDL_NULL;
     df.com.cont = true;
     df.com.kind = WLK_WLK;
     df.wlk.wk = wk;
-    df.wlk.is = is;
+    df.wlk.ish = ish;
     df.wlk.wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE: /* special case */
-        wr = WalkTypeSymList( ii, (imp_type_handle *)source, wk, is, d );
+        wr = WalkTypeSymList( iih, (imp_type_handle *)source, wk, ish, d );
         break;
     case SS_SCOPED:
         cont = WalkScopedSymList( &df, &ASym, (address *)source );
         wr = df.wlk.wr;
         break;
     case SS_SCOPESYM:
-        is = (imp_sym_handle *)source;
-        WalkSymSymList( &df, &ASym, is );
+        ish = (imp_sym_handle *)source;
+        WalkSymSymList( &df, &ASym, ish );
         if( cont ) {
-            df.com.containing = is->sym;
-            WalkModSymList( &df, &ASymCont, is->im );
+            df.com.containing = ish->sym;
+            WalkModSymList( &df, &ASymCont, ish->im );
         }
         wr = df.wlk.wr;
         break;
@@ -1473,7 +1473,7 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
         if( im == IMH_NOMOD ) {
-            wr = DFWalkModList( ii, WalkMyLDSyms, &df );
+            wr = DFWalkModList( iih, WalkMyLDSyms, &df );
         } else {
             WalkModSymList( &df, &AModSym, im );
             wr = df.wlk.wr;
@@ -1484,46 +1484,46 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
 }
 
 
-walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle    *ii,
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle    *iih,
                                         symbol_source       ss,
                                         void                *source,
                                         DIP_IMP_SYM_WALKER  *wk,
-                                        imp_sym_handle      *is,
+                                        imp_sym_handle      *ish,
                                         void                *d )
 /***************************************************************/
 {
-    return( DFWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DFWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
 
-walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle      *ii,
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle      *iih,
                                           symbol_source         ss,
                                           void                  *source,
                                           DIP_IMP_SYM_WALKER    *wk,
-                                          imp_sym_handle        *is,
+                                          imp_sym_handle        *ish,
                                           location_context      *lc,
                                            void                 *d )
 /******************************************************************/
 {
     /* unused parameters */ (void)lc;
 
-    return( DFWalkSymList( ii, ss, source, wk, is, d ) );
+    return( DFWalkSymList( iih, ss, source, wk, ish, d ) );
 }
 
 
 #define SH_ESCAPE       0xf0
 
-static void CollectSymHdl( const char *ep, imp_sym_handle *is )
-/*******************************************************/
+static void CollectSymHdl( const char *ep, imp_sym_handle *ish )
+/**************************************************************/
 {
     byte        *sp;
     byte        curr;
     static byte escapes[] = { SH_ESCAPE, '\0', '`' };
 
     ++ep;
-    sp = (byte *)is;
-    ++is;
-    while( sp < (byte *)is ) {
+    sp = (byte *)ish;
+    ++ish;
+    while( sp < (byte *)ish ) {
         curr = *ep++;
         if( curr == SH_ESCAPE ) {
             curr = *ep++;
@@ -1535,7 +1535,7 @@ static void CollectSymHdl( const char *ep, imp_sym_handle *is )
 
 
 typedef struct {
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
     void                *d;
     int                 (*compare)(char const *, char const *);
     const char          *name;
@@ -1546,15 +1546,15 @@ static bool AHashItem( void *_find, drmem_hdl dr_sym, const char *name )
 /**********************************************************************/
 {
     hash_look_data  *find = _find;
-    imp_sym_handle  *is;
+    imp_sym_handle  *ish;
 
     if( find->compare( name, find->name ) == 0 ) {
         find->sym = dr_sym;
-        is = DCSymCreate( find->ii, find->d );
-        is->im = DwarfMod( find->ii, dr_sym );
-        is->sclass = SYM_VAR;
-        is->sym = dr_sym;
-        is->state = DF_NOT;
+        ish = DCSymCreate( find->iih, find->d );
+        ish->im = DwarfMod( find->iih, dr_sym );
+        ish->sclass = SYM_VAR;
+        ish->sym = dr_sym;
+        ish->state = DF_NOT;
     }
     return( true );
 }
@@ -1627,7 +1627,7 @@ static unsigned QualifiedName( lookup_item  *li, char *buff, unsigned buff_size 
 }
 
 
-static search_result HashSearchGbl( imp_image_handle *ii,
+static search_result HashSearchGbl( imp_image_handle *iih,
                                     lookup_item      *li, void *d )
 /*****************************************************************/
 {
@@ -1638,7 +1638,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     name_wlk            wlk;
 
     sr = SR_NONE;
-    data.ii  = ii;
+    data.iih  = iih;
     data.compare = li->case_sensitive ? &strcmp : &stricmp;
     data.sym = DRMEM_HDL_NULL;
     len = QualifiedName( li, buff, sizeof( buff ) );
@@ -1654,8 +1654,8 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     wlk.fn = AHashItem;
     wlk.name = data.name;
     wlk.d = &data;
-    DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    FindHashWalk( ii->name_map, &wlk );
+    DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
+    FindHashWalk( iih->name_map, &wlk );
     if( data.sym != DRMEM_HDL_NULL ) {
         sr = SR_EXACT;
     }
@@ -1666,13 +1666,12 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 }
 
 
-extern search_result   DoLookupSym( imp_image_handle *ii,
-                symbol_source ss, void *source, lookup_item *li,
-                location_context *lc, void *d )
-/**************************************************************/
+static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void *source,
+                                    lookup_item *li, location_context *lc, void *d )
+/*************************************************************************************/
 {
     imp_mod_handle      im;
-    imp_sym_handle      *is;
+    imp_sym_handle      *ish;
     search_result       sr;
 //    char                *src;
 //    unsigned            len;
@@ -1683,7 +1682,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     /* unused parameters */ (void)lc;
 
     if( *(unsigned_8 *)li->name.start == SH_ESCAPE ) {
-        CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
+        CollectSymHdl( li->name.start, DCSymCreate( iih, d ) );
         return( SR_EXACT );
     }
     if( li->type == ST_OPERATOR ) {
@@ -1696,11 +1695,11 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         if( MH2IMH( li->mod ) != IMH_NOMOD ) {
             sr =  SR_NONE;
         } else {
-            sr = SearchMbr( ii, (imp_type_handle *)source, li, d  );
+            sr = SearchMbr( iih, (imp_type_handle *)source, li, d  );
         }
         return( sr );
     }
-    df.com.ii = ii;
+    df.com.iih = iih;
     df.com.d = d;
     df.com.what = Dip2DwarfSrch( li->type );
     df.com.containing = DRMEM_HDL_NULL;
@@ -1726,7 +1725,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         sr = df.lookup.sr;
         if( cont ) {
             if( DR_SRCH_func_var == df.com.what ) {
-                sr = HashSearchGbl( ii, li, d );
+                sr = HashSearchGbl( iih, li, d );
            }
         }
         break;
@@ -1734,7 +1733,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         im = *(imp_mod_handle *)source;
         if( im == IMH_NOMOD ) {
             if( DR_SRCH_func_var == df.com.what ) {
-                sr = HashSearchGbl( ii, li, d );
+                sr = HashSearchGbl( iih, li, d );
             }
         } else {
            WalkModSymList( &df, ASymLookup, im );
@@ -1742,10 +1741,10 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         }
         break;
     case SS_SCOPESYM:
-        is = (imp_sym_handle *)source;
-        WalkSymSymList( &df, &ASymLookup, is );
-        df.com.containing = is->sym;    //check for out of line defn
-        WalkModSymList( &df, ASymContLookup, is->im );
+        ish = (imp_sym_handle *)source;
+        WalkSymSymList( &df, &ASymLookup, ish );
+        df.com.containing = ish->sym;    //check for out of line defn
+        WalkModSymList( &df, ASymContLookup, ish->im );
         sr = df.lookup.sr;
         break;
     }
@@ -1756,27 +1755,28 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
 }
 
 
-search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 /************************************************************************/
 {
-    return( DoLookupSym( ii, ss, source, li, NULL, d ) );
+    return( DoLookupSym( iih, ss, source, li, NULL, d ) );
 }
 
 
-search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 /**********************************************************************/
 {
-    return( DoLookupSym( ii, ss, source, li, lc, d ) );
+    return( DoLookupSym( iih, ss, source, li, lc, d ) );
 }
 
 
-int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
-                                imp_sym_handle *is2 )
-/*******************************************************************/
+int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_handle *ish2 )
+/********************************************************************************************/
 {
+    /* unused parameters */ (void)iih;
+
     /* Compare two sym handles and return 0 if they refer to the same
      * information. If they refer to differnt things return either a
      * positive or negative value to impose an 'order' on the information.
@@ -1787,37 +1787,36 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
      * The reason for the constraints is so that a client can sort a
      * list of handles and binary search them.
      */
-    long    diff;
-
-    /* unused parameters */ (void)ii;
-
-    diff = is1->sym - is2->sym;
-    return( diff );
+    if( ish1->sym < ish2->sym )
+        return( -1 );
+    if( ish1->sym > ish2->sym )
+        return( 1 );
+    return( 0 );
 }
 
 
-dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
-/*****************************************************************************/
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish )
+/*******************************************************************************/
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)ish;
 
     return( DS_OK );
 }
 
 
-dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
-/******************************************************************************/
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
+/********************************************************************************/
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)ish;
 
     return( DS_OK );
 }
 
 
-dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
-/**********************************************************/
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
+/***********************************************************/
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( DS_OK );
 }

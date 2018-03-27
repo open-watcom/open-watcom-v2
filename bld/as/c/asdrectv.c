@@ -422,10 +422,9 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm )
     dir_operand *dirop;
     int         opnum;
 
-    dirop = dir->operand_list;
-    assert( dirop != NULL );
+    assert( dir->operand_list != NULL );
     opnum = 0;
-    while( dirop ) {
+    for( dirop = dir->operand_list; dirop != NULL; dirop = dirop->next ) {
         assert( dirop->type == DIROP_STRING );
         str = byte = MemAlloc( strlen( STRING_CONTENT( dirop ) ) + 1 );
         for( ptr = STRING_CONTENT( dirop ); *ptr != '\0'; ptr++ ) {
@@ -446,7 +445,6 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm )
 #endif
         MemFree( str );
         opnum++;
-        dirop = dirop->next;
     }
     return( true );
 }
@@ -689,9 +687,9 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         prev_alignment = CurrAlignment;
         CurrAlignment = data_table[TABLE_IDX( parm )].alignment;
     }
-    dirop = dir->operand_list;
+
     opnum = 0;
-    while( dirop ) {
+    for( dirop = dir->operand_list; dirop != NULL; dirop = dirop->next ) {
         rep = 1;
         switch( parm ) {
         case DT_VAL_INT8:
@@ -829,7 +827,6 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
 #endif
         }
         opnum++;
-        dirop = dirop->next;
     }
     if( autoAlignment ) {
         CurrAlignment = prev_alignment;
@@ -938,24 +935,23 @@ static bool dirValidate( directive_t *dir, dir_table *table_entry )
         DOF_REP_FLT,
         DOF_ERROR,
     };
-    int                 opnum = 0;
+    int                 opnum;
     dir_operand         *dirop;
 
-    dirop = dir->operand_list;
-    if( dirop == NULL && ( table_entry->flags & DOF_NONE ) != DOF_NONE ) {
-        Error( DIROP_ERR_MISSING, opnum );
+    if( dir->operand_list == NULL && (table_entry->flags & DOF_NONE) != DOF_NONE ) {
+        Error( DIROP_ERR_MISSING, 0 );
         return( false );
     }
-    while( dirop ) {
+    opnum = 0;
+    for( dirop = dir->operand_list; dirop != NULL; dirop = dirop->next ) {
         dirop_flags     flag;
 
-        flag = flags[ dirop->type ];
-        if( ( table_entry->flags & flag ) != flag ) {
+        flag = flags[dirop->type];
+        if( (table_entry->flags & flag) != flag ) {
             Error( IMPROPER_DIROP, opnum );
             return( false );
         }
         opnum++;
-        dirop = dirop->next;
     }
     return( true );
 }
@@ -1039,7 +1035,8 @@ extern directive_t *DirCreate( sym_handle sym )
 extern void DirAddOperand( directive_t *dir, dir_operand *dirop )
 //***************************************************************
 {
-    if( dirop == NULL ) return;
+    if( dirop == NULL )
+        return;
     dir->num_operands++;
     if( dir->operand_tail ) {
         dir->operand_tail->next = dirop;
@@ -1055,12 +1052,12 @@ extern void DirDestroy( directive_t *directive )
 {
     dir_operand *dirop, *dirop_next;
 
-    if( !directive ) return;
-    dirop = directive->operand_list;
-    while( dirop ) {
+    if( !directive )
+        return;
+
+    for( dirop = directive->operand_list; dirop != NULL; dirop = dirop_next ) {
         dirop_next = dirop->next;
         DirOpDestroy( dirop );
-        dirop = dirop_next;
     }
     dirFree( directive );
     lastDirective = NULL;

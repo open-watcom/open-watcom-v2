@@ -196,40 +196,8 @@
 #include "packet.h"
 #include "nothing.h"
 #include "parlink.h"
+#include "portio.h"
 
-
-#if defined(__NT__)
-        // We have direct port I/O for NT and Win9x
-        extern unsigned outp( unsigned, unsigned );
-        extern unsigned inp( unsigned );
-#elif defined(__OS2__)
-    #if defined(__386__)
-        #define inp input_port
-        #define outp output_port
-        extern unsigned short __far16 __pascal outp(unsigned short, unsigned short);
-        extern unsigned short __far16 __pascal inp(unsigned short);
-    #else
-        #define inp input_port
-        #define outp output_port
-        extern unsigned __far outp( unsigned, unsigned );
-        extern unsigned __far inp( unsigned );
-    #endif
-#elif defined(__NETWARE__)
-    #pragma aux inp =                                   \
-    0xec                /* in   al,dx                           */      \
-        parm    routine [ dx ];
-
-
-    #pragma aux outp =                                  \
-    0xee                /* out  dx,al                           */      \
-        parm    routine [ dx ] [ ax ];
-
-
-    extern char inp( int );
-    extern void outp( int, int );
-#else
-    #include <conio.h>
-#endif
 
 extern void             Wait(void);
 #pragma aux Wait = ;

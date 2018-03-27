@@ -335,13 +335,13 @@ bool Dmp_nlm_head( void )
     nlm_name[ (int)Nlm_head.moduleName[0] ] = '\0';
     Wdputs( nlm_name );
     Wdputslc( "\n" );
-    Dump_header( (char *)&Nlm_head.codeImageOffset, nlm_exe_msg );
+    Dump_header( (char *)&Nlm_head.codeImageOffset, nlm_exe_msg, 4 );
     offset = dmp_nlm_head2();
     offset += sizeof( nlm_header );
     Wlseek( offset );
     Wread( &nlm_head3, sizeof( nlm_header_3 ) );
     if( !memcmp( nlm_head3.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH ) ) {
-        Dump_header( (char *)&nlm_head3.majorVersion, nlm_date_msg );
+        Dump_header( (char *)&nlm_head3.majorVersion, nlm_date_msg, 4 );
         offset += sizeof( nlm_header_3 );
     }
     Wlseek( offset );
@@ -357,7 +357,7 @@ bool Dmp_nlm_head( void )
     extend = false;
     Wread( &Nlm_ext_head, sizeof( extended_nlm_header ) );
     if( !memcmp( Nlm_ext_head.stamp, EXTENDED_NLM_SIGNATURE, EXTENDED_NLM_SIGNATURE_LENGTH ) ) {
-        Dump_header( (char *)&Nlm_ext_head.languageID, nlm_ext_msg );
+        Dump_header( (char *)&Nlm_ext_head.languageID, nlm_ext_msg, 4 );
         extend = true;
     }
     if( Nlm_head.customDataSize != 0 ) {

@@ -62,7 +62,8 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     env_set_var_req     acc;
     env_set_var_ret     ret;
 
-    if( SuppEnvId == 0 ) return( false );
+    if( SuppEnvId == 0 )
+        return( false );
     SUPP_ENV_SERVICE( acc, REQ_ENV_SET_VAR );
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
@@ -88,7 +89,8 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, trap_elen res_len )
     env_get_var_req     acc;
     env_get_var_ret     ret;
 
-    if( SuppEnvId == 0 ) return( false );
+    if( SuppEnvId == 0 )
+        return( false );
     SUPP_ENV_SERVICE( acc, REQ_ENV_GET_VAR );
     acc.res_len = res_len;
     in[0].ptr = &acc;

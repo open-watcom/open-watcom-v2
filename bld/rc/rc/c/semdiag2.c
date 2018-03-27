@@ -73,10 +73,10 @@ struct DLGTITEM {
 #include "rccore.h"
 
 
-static bool ResOS2WriteDlgTemplate( char *tmpldata, size_t size, WResFileID fid )
-/*******************************************************************************/
+static bool ResOS2WriteDlgTemplate( char *tmpldata, size_t size, FILE *fp )
+/*************************************************************************/
 {
-    if( RESWRITE( fid, tmpldata, size ) != size ) {
+    if( RESWRITE( fp, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -687,7 +687,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     // Write the resource to file
     loc.start = SemStartResource();
 
-    error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fid );
+    error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fp );
     if( error ) {
         err_code = LastWresErr();
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
@@ -719,6 +719,30 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 0;
+    control->presParams      = presparams;
+    RESFREE( ctlclassname );
+
+    return( control );
+}
+
+FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
+                    uint_32 id, DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclassname,
+                    IntMask style, IntMask framectl, PresParamListOS2 *presparams,
+                    FullDiagCtrlListOS2 *childctls )
+/**********************************************************************************/
+{
+    FullDialogBoxControlOS2     *control;
+
+    control = SemOS2InitDiagCtrl();
+
+    control->ctrl.ID         = id;
+    control->ctrl.SizeInfo   = sizeinfo;
+    control->ctrl.Text       = name;
+    control->ctrl.ClassID    = ResNameOrOrdToControlClass( ctlclassname );
+    control->ctrl.Style      = style.Value;
+    control->children        = childctls;
+    control->ctrl.ExtraBytes = 4;
+    control->framectl        = framectl.Value;
     control->presParams      = presparams;
     RESFREE( ctlclassname );
 
@@ -773,7 +797,7 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     int         err_code;
 
     loc.start = SemStartResource();
-    error = ResWriteString( filename, false, CurrResFile.fid );
+    error = ResWriteString( filename, false, CurrResFile.fp );
     if( error ) {
         err_code = LastWresErr();
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );

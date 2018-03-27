@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -34,6 +35,13 @@ include langenv.inc
         name    segdefns
 .386p
 
+if COMP_CFG_COFF eq 0
+
+include tinit.inc
+include xinit.inc
+
+endif
+
         assume  nothing
 
         extrn   __DOSseg__      : byte
@@ -62,15 +70,15 @@ BEGTEXT segment use32 word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
-        ; NOTE that __begtext needs to be at offset 3
+        jmp short forever
+        ; NOTE that ___begtext needs to be at offset 3
         ; don't move it.  i.e. don't change any code before here.
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT ends
 
@@ -89,19 +97,12 @@ CONST   segment word public 'DATA'
 CONST   ends
 
 if COMP_CFG_COFF eq 0
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
 
 XIB     segment word public 'DATA'
 _Start_XI label byte
         public  "C",_Start_XI
 XIB     ends
-XI      segment word public 'DATA'
-XI      ends
+
 XIE     segment word public 'DATA'
 _End_XI label byte
         public  "C",_End_XI
@@ -111,16 +112,16 @@ YIB     segment word public 'DATA'
 _Start_YI label byte
         public  "C",_Start_YI
 YIB     ends
-YI      segment word public 'DATA'
-YI      ends
+
 YIE     segment word public 'DATA'
 _End_YI label byte
         public  "C",_End_YI
 YIE     ends
+
 endif
 
-_DATA    segment word public 'DATA'
-_DATA    ends
+_DATA   segment word public 'DATA'
+_DATA   ends
 
 DATA    segment word public 'DATA'
 DATA    ends

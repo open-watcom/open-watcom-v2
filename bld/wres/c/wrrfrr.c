@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +40,13 @@
  * WResReadFixedResRecord - reads the fixed part of a Res info record for
  *                          the current version
  */
-bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
-/****************************************************************/
+bool WResReadFixedResRecord( WResResInfo *newres, FILE *fp )
+/**********************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo ) )) != sizeof( WResResInfo ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, newres, sizeof( WResResInfo ) )) != sizeof( WResResInfo ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 } /* WResReadFixedResRecord */
 
@@ -53,27 +54,27 @@ bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
  * WResReadFixedResRecord1 - reads the fixed part of a Res info record for
  *                           versions 1 and below
  */
-bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID fid )
-/******************************************************************/
+bool WResReadFixedResRecord1( WResResInfo1 *newres, FILE *fp )
+/************************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) )) != sizeof( WResResInfo1 ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, newres, sizeof( WResResInfo1 ) )) != sizeof( WResResInfo1 ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
 /*
  * WResReadFixedResRecord2 - reads the fixed part of a Res info record for version 2
  */
-bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID fid )
-/*****************************************************************/
+bool WResReadFixedResRecord2( WResResInfo *newres, FILE *fp )
+/***********************************************************/
 {
     size_t          numread;
     WResResInfo2    info;
 
-    if( (numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) )) != sizeof( WResResInfo2 ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, &info, sizeof( WResResInfo2 ) )) != sizeof( WResResInfo2 ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     newres->NumResources = info.NumResources;
     newres->ResName.IsName = info.ResName.IsName;
     if( newres->ResName.IsName ) {

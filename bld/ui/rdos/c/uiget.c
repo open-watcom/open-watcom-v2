@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,16 +37,38 @@
 #include "uiforce.h"
 
 
-extern int      WaitHandle;
+typedef ui_event (*event_proc)(void);
 
-static uitimer_callback *Callback = NULL;
+extern int              WaitHandle;
+
+static rdos_uitimer_callback *Callback = NULL;
 static int              TimerPeriodMs = 0;
 static bool             HasEscape = false;
 
-void UIAPI uitimer( uitimer_callback *proc, int ms )
+void UIAPI rdos_uitimer( rdos_uitimer_callback *proc, int ms )
 {
     Callback = proc;
     TimerPeriodMs = ms;
+}
+
+MOUSETIME UIAPI uiclock( void )
+/*****************************
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
+ */
+{
+    /* use 1 ms precission (timers) */
+    return( RdosGetLongSysTime() / 1192L );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    /* use 1 ms precission (timers) */
+    return( milli);
 }
 
 void UIAPI uiflush( void )
@@ -54,53 +77,43 @@ void UIAPI uiflush( void )
     flushkey();
 }
 
-unsigned long UIAPI uiclock( void )
+ui_event UIAPI uieventsource( bool update )
 {
-    unsigned long msb;
-    unsigned long lsb;
-
-    RdosGetSysTime( &msb, &lsb );
-    return( lsb );
-}
-
-EVENT UIAPI uieventsource( bool update )
-{
-    EVENT                   ev;
-    static      int         ReturnIdle = 1;
-    unsigned long           start;
-    EVENT                   ( *proc )();
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
+    event_proc          proc;
 
     start = uiclock();
-    for( ; ; ) {
+    for( ;; ) {
         if( HasEscape ) {
             HasEscape = false;
-            ev = EV_ESCAPE;
+            ui_ev = EV_ESCAPE;
+            break;
         }
-        else
-            ev = forcedevent();
-
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
 
-        if( Callback && TimerPeriodMs ) {
-            proc = (void *)RdosWaitTimeout( WaitHandle, TimerPeriodMs );
-            if( proc == 0) {
+        if( Callback != NULL && TimerPeriodMs ) {
+            proc = (event_proc)RdosWaitTimeout( WaitHandle, TimerPeriodMs );
+            if( proc == NULL ) {
                 (*Callback)();
             } else {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
         } else {
-            proc = (void *)RdosWaitTimeout( WaitHandle, 25 );
-            if( proc != 0) {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+            proc = (event_proc)RdosWaitTimeout( WaitHandle, 25 );
+            if( proc != NULL ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
-        
+
             if( ReturnIdle ) {
                 ReturnIdle--;
                 return( EV_IDLE );
@@ -114,26 +127,26 @@ EVENT UIAPI uieventsource( bool update )
                 }
             }
 
-            proc = (void *)RdosWaitTimeout( WaitHandle, 250 );
-            if( proc != 0) {
-                ev = (*proc)();
-                if( ev > EV_NO_EVENT ) {
+            proc = (event_proc)RdosWaitTimeout( WaitHandle, 250 );
+            if( proc != NULL ) {
+                ui_ev = (*proc)();
+                if( ui_ev > EV_NO_EVENT ) {
                     break;
                 }
             }
         }
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiget( void )
+ui_event UIAPI uiget( void )
 {
     return( uieventsource( true ) );
 }
 
-void UIAPI uisendescape( void )
+void UIAPI rdos_uisendescape( void )
 {
     HasEscape = true;
 }

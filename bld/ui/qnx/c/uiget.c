@@ -35,30 +35,51 @@
 #include <sys/kernel.h>
 #include <sys/dev.h>
 #include <sys/types.h>
-#include "uivirt.h"
-#include "qnxuiext.h"
+#include <sys/osinfo.h>
+#include "uivirts.h"
+#include "uiextrn.h"
 
+
+struct _timesel     __far *_SysTime;
+
+MOUSETIME UIAPI uiclock( void )
+/*****************************
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
+ */
+{
+    return( _SysTime->nsec / 1000000 + _SysTime->seconds * 1000 );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( milli );
+}
 
 void UIAPI uiflush( void )
-/*************************/
+/************************/
 {
     uiflushevent();
     flushkey();
 }
 
-static EVENT doget( bool update )
-/*******************************/
+static ui_event doget( bool update )
+/**********************************/
 {
-    register    EVENT                   ev;
-    static      short                   ReturnIdle = 1;
-    SAREA       screen;
+    static   short      ReturnIdle = 1;
+    ui_event            ui_ev;
+    SAREA               screen;
 
     for( ;; ) {
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = _uievent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = _uievent();
+        if( ui_ev > EV_NO_EVENT )
             break;
         if( ReturnIdle ) {
             --ReturnIdle;
@@ -74,13 +95,12 @@ static EVENT doget( bool update )
         Receive( UILocalProxy, 0, 0 ); /* wait for some input */
     }
     ReturnIdle = 1;
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_REDRAW_SCREEN:
         screen.row = 0;
         screen.col = 0;
-        screen.height= UIData->height;
-        screen.width=  UIData->width;
-
+        screen.height = UIData->height;
+        screen.width = UIData->width;
         uidirty( screen );
         UserForcedTermRefresh = true;
         physupdate( &screen );
@@ -95,23 +115,23 @@ static EVENT doget( bool update )
             uirefresh();
         break;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT UIAPI uieventsource( bool update )
-/**************************************/
+ui_event UIAPI uieventsource( bool update )
+/*****************************************/
 {
-    EVENT   ev;
+    ui_event    ui_ev;
 
-    ev = doget( update );
-    stopmouse();
-    stopkeyboard();
-    return( uieventsourcehook( ev ) );
+    ui_ev = doget( update );
+    _stopmouse();
+    _stopkeyb();
+    return( uieventsourcehook( ui_ev ) );
 }
 
 
-EVENT UIAPI uiget( void )
-/************************/
+ui_event UIAPI uiget( void )
+/**************************/
 {
     return( uieventsource( true ) );
 }

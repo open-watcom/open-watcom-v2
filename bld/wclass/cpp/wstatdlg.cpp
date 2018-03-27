@@ -71,7 +71,7 @@ WControl * WEXPORT WStatDialog::getControl( WControlId id ) {
     return( NULL );
 }
 
-extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm );
+extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm );
 
 void WStatDialog::doDialog( WWindow *parent ) {
 /*********************************************/
@@ -94,11 +94,11 @@ void WStatDialog::doDialog( WWindow *parent ) {
     create_info.scroll = GUI_NOSCROLL;
     create_info.style = GUI_NONE;
     create_info.parent = hparent;
-    create_info.num_menus = 0;
+    create_info.num_items = 0;
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.gui_call_back = DlgProc;
+    create_info.gui_call_back = DlgGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
 

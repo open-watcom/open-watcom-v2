@@ -36,10 +36,10 @@
 #include "resraw.h"
 #include "wresrtns.h"
 
-bool ResWrite( const void *buffer, size_t len, WResFileID fid )
-/*************************************************************/
+bool ResWrite( const void *buffer, size_t len, FILE *fp )
+/*******************************************************/
 {
-    if( WRESWRITE( fid, buffer, len ) != len )
+    if( WRESWRITE( fp, buffer, len ) != len )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

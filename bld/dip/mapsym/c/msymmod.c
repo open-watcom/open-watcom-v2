@@ -31,55 +31,55 @@
 
 #include "msym.h"
 
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
                         DIP_IMP_MOD_WALKER *wk, void *d )
 {
-    return( wk( ii, IMH_MAP, d ) );
+    return( wk( iih, IMH_MAP, d ) );
 }
 
-size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
                     imp_mod_handle im, char *buff, size_t buff_size )
 {
     /* unused parameters */ (void)im;
 
     if( buff_size > 0 ) {
         --buff_size;
-        if( buff_size > ii->len )
-            buff_size = ii->len;
-        memcpy( buff, ii->name, buff_size );
+        if( buff_size > iih->len )
+            buff_size = iih->len;
+        memcpy( buff, iih->name, buff_size );
         buff[buff_size] = '\0';
     }
-    return( ii->len );
+    return( iih->len );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 {
-    /* unused parameters */ (void)ii; (void)im;
+    /* unused parameters */ (void)iih; (void)im;
 
     return( "c" );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
                                 imp_mod_handle im, handle_kind hk )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)hk;
+    /* unused parameters */ (void)iih; (void)im; (void)hk;
 
     return( DS_FAIL );
 }
 
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a,
                 imp_mod_handle *im )
 {
-    /* unused parameters */ (void)ii; (void)a;
+    /* unused parameters */ (void)iih; (void)a;
 
-    if( FindAddrBlock( ii, a.mach ) != NULL ) {
+    if( FindAddrBlock( iih, a.mach ) != NULL ) {
         *im = IMH_MAP;
         return( SR_CLOSEST );
     }
     return( SR_NONE );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih,
                                 imp_mod_handle im )
 {
     address     addr;
@@ -87,7 +87,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
 
     /* unused parameters */ (void)im;
 
-    for( exp = ii->addr; exp != NULL; exp = exp->next ) {
+    for( exp = iih->addr; exp != NULL; exp = exp->next ) {
         if( exp->code ) {
             addr.mach = exp->start;
             DCAddrSection( &addr );
@@ -97,10 +97,10 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
     return( NilAddr );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)dk; (void)ti;
+    /* unused parameters */ (void)iih; (void)im; (void)dk; (void)ti;
 
     return( DS_FAIL );
 }

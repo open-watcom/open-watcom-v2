@@ -257,7 +257,7 @@ void *ImportLibRead( coff_file_handle coff_file_hnd, size_t len )
     return( IMPLIB_DATA + IMPLIB_POS - len );
 }
 
-long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
+int ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
 {
     if( where == SEEK_SET ) {
         IMPLIB_POS = pos;
@@ -266,7 +266,7 @@ long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
     } else {
         IMPLIB_POS = (long)IMPLIB_LEN - IMPLIB_HDR_SIZE - pos;
     }
-    return( IMPLIB_POS );
+    return( 0 );
 }
 
 
@@ -567,7 +567,7 @@ int convert_import_library_init( coff_file_handle coff_file_hnd )
 
     i_hdr = (coff_import_object_header *)coff_file_hnd->f_hdr_buffer;
     sym.processor = i_hdr->machine;
-    sym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->file, i_hdr->size_of_data );
+    sym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->fp, i_hdr->size_of_data );
     sym.DLLName = sym.exportedName + strlen( sym.exportedName ) + 1;
     sym.time_date_stamp = i_hdr->time_date_stamp;
     sym.type = i_hdr->name_type;

@@ -43,32 +43,35 @@
 #include "guistr.h"
 #include "guikey.h"
 #include "guievent.h"
+#include "watcom.h"
+#include "resdiag.h"
+#include "guirdlg.h"
 #include <stdio.h>
 #include <string.h>
 
 
-EVENT GUIControlEvents[] = {
-    EV_NO_EVENT,
+ui_event GUIControlEvents[] = {
+    __rend__,
     EV_LIST_BOX_CHANGED,
     EV_LIST_BOX_DCLICK,
     EV_LIST_BOX_CLOSED,
     EV_CHECK_BOX_CLICK,
     EV_CURSOR_UP,
     EV_CURSOR_DOWN,
-    EV_NO_EVENT
+    __end__
 };
 
 static a_radio_group * RadioGroup = NULL;
 static bool Group = false;
 
-static EVENT GUIDlgEvents[] = {
-    EV_NO_EVENT,
+static ui_event GUIDlgEvents[] = {
+    __rend__,
     EV_ESCAPE,
-    EV_NO_EVENT,
+    __end__,
 };
 
 static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
-    #define pick(uitype,classn,classn_os2,style,xstyle_nt) uitype,
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) uitype,
     #include "_guicont.h"
     #undef pick
 };
@@ -145,16 +148,18 @@ static dialog_node *GetDialog( a_dialog *ui_dlg_info )
     return( NULL );
 }
 
-static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int num_controls,
-                             int *index )
+static bool GetIndexOfField( a_dialog *ui_dlg_info, VFIELD *field, int *index )
 {
-    int i;
+    int     item;
+    VFIELD  *fields;
 
-    for( i = 0; i < num_controls; i++ ) {
-        if( &ui_dlg_info->fields[i] == field ) {
-            *index = i;
+    item = 0;
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
+        if( fields == field ) {
+            *index = item;
             return( true );
         }
+        item++;
     }
     return( false );
 }
@@ -166,15 +171,11 @@ gui_ctl_id GUIGetControlId( gui_window *wnd, VFIELD *field )
     dialog_node *dlg_node;
 
     dlg_node = GUIGetDlgByWnd( wnd );
-    if( dlg_node == NULL ) {
-        return( 0 );
-    }
-    if( !GetIndexOfField( dlg_node->ui_dlg_info, field, dlg_node->num_controls, &index ) ) {
-        return( 0 );
-    }
-    for( control = wnd->controls; control != NULL; control = control->sibling ) {
-        if( control->index == index ) {
-            return( control->id );
+    if( dlg_node != NULL && GetIndexOfField( dlg_node->ui_dlg_info, field, &index ) ) {
+        for( control = wnd->controls; control != NULL; control = control->sibling ) {
+            if( control->index == index ) {
+                return( control->id );
+            }
         }
     }
     return( 0 );
@@ -215,11 +216,10 @@ static bool ResetFieldSize( dialog_node *dlg_node, int new_num )
 {
     VFIELD      *fields;
 
-    fields = (VFIELD *)GUIMemRealloc( dlg_node->ui_dlg_info->fields,
-                                   ( new_num + 1 ) * sizeof( VFIELD ) );
+    fields = (VFIELD *)GUIMemRealloc( dlg_node->ui_dlg_info->fields, ( new_num + 1 ) * sizeof( VFIELD ) );
     if( fields != NULL ) {
+        fields[new_num].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
         dlg_node->ui_dlg_info->fields = fields;
-        memset( &fields[new_num], 0, sizeof( VFIELD ) );
         return( true );
     }
     return( false );
@@ -402,7 +402,7 @@ static void FreeFields( VFIELD *fields )
         return;
     }
     group = NULL;
-    for( i = 0; fields[i].typ != FLD_VOID; i++ ) {
+    for( i = 0; fields[i].typ != FLD_NONE; i++ ) {
         if( fields[i].u.ptr != NULL ) {
             GUIDoFreeField( &fields[i], &group );
         }
@@ -428,8 +428,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     bool                ok;
 
     group_allocated = false;
-    if( (ctl_info->style & GUI_GROUP) &&
-        (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
+    if( (ctl_info->style & GUI_STYLE_CONTROL_GROUP) && (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( !Group ) {
             RadioGroup = (a_radio_group *)GUIMemAlloc( sizeof( a_radio_group ) );
             if( RadioGroup == NULL ) {
@@ -452,7 +451,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     }
 
     field->typ = ui_types[ctl_info->control_class];
-    if( field->typ == FLD_EDIT && ( ctl_info->style & GUI_EDIT_INVISIBLE ) ) {
+    if( field->typ == FLD_EDIT && (ctl_info->style & GUI_STYLE_CONTROL_EDIT_INVISIBLE) ) {
         field->typ = FLD_INVISIBLE_EDIT;
     }
 
@@ -477,8 +476,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         radio->value = ID2EV( ctl_info->id );
         radio->group = RadioGroup;
-        if( ( ctl_info->style & GUI_CHECKED ) &&
-            ( ctl_info->style & GUI_AUTOMATIC ) ) {
+        if( (ctl_info->style & GUI_STYLE_CONTROL_CHECKED) && (ctl_info->style & GUI_STYLE_CONTROL_AUTOMATIC) ) {
             RadioGroup->def = radio->value;
             RadioGroup->value = radio->value;
         }
@@ -493,8 +491,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             return( false );
         }
         check->val = 0;
-        if( ( ctl_info->style & GUI_CHECKED ) &&
-            ( ctl_info->style & GUI_AUTOMATIC ) ) {
+        if( (ctl_info->style & GUI_STYLE_CONTROL_CHECKED) && (ctl_info->style & GUI_STYLE_CONTROL_AUTOMATIC) ) {
             check->def = true;
         } else {
             check->def = false;
@@ -552,8 +549,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         return( false );
         break;
     }
-    if( (ctl_info->style & GUI_GROUP)  &&
-        (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
+    if( (ctl_info->style & GUI_STYLE_CONTROL_GROUP) && (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( Group && !group_allocated ) {
             RadioGroup = NULL;
             Group = false;
@@ -579,10 +575,10 @@ bool GUIDeleteField( gui_window *wnd, gui_ctl_id id )
     }
     ui_dlg_info = dlg_node->ui_dlg_info;
     field = GUIGetField( wnd, id );
-    if( GetIndexOfField( ui_dlg_info, field, dlg_node->num_controls, &index ) ) {
+    if( GetIndexOfField( ui_dlg_info, field, &index ) ) {
         GUIDoFreeField( field, NULL );
         new_fields = (VFIELD *)GUIMemAlloc( sizeof( VFIELD ) * dlg_node->num_controls );
-        for( i=0; i <= dlg_node->num_controls; i++ ) {
+        for( i = 0; i <= dlg_node->num_controls; i++ ) {
             new_index = i;
             if( i != index ) {
                 if( i > index ) {
@@ -663,7 +659,7 @@ static void EditNotify( gui_key key, a_dialog *ui_dlg_info, gui_window *wnd )
             GUIGetKeyState( &key_control.key_state.state );
             key_control.id = GUIGetControlId( wnd, ui_dlg_info->curr );
             if( key_control.id != 0 ) {
-                GUIEVENTWND( wnd, GUI_KEY_CONTROL, &key_control );
+                GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control );
             }
         }
     }
@@ -688,12 +684,12 @@ static void CheckNotify( a_dialog *ui_dlg_info, gui_window *wnd )
     if( ui_dlg_info->curr != NULL ) {
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
-            GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+            GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
         }
     }
 }
 
-static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
+static void ListNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_event   gui_ev;
 //    a_list      *list;
@@ -704,7 +700,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
         GUIGetList( ui_dlg_info->curr );
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
-            switch( ev ) {
+            switch( ui_ev ) {
             case EV_LIST_BOX_CHANGED :
                 gui_ev = GUI_CONTROL_CLICKED;
                 break;
@@ -717,7 +713,7 @@ static void ListNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
             default :
                 return;
             }
-            GUIEVENTWND( wnd, gui_ev, &id );
+            GUIEVENT( wnd, gui_ev, &id );
         }
     }
 }
@@ -740,24 +736,24 @@ void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
             case FLD_COMBOBOX :
             case FLD_EDIT_MLE :
                 id = GUIGetControlId( wnd, ui_dlg_info->other );
-                GUIEVENTWND( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
+                GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
             }
         }
     }
 }
 
-EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd )
+ui_event GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd )
 {
     gui_ctl_id  id;
 
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_CHECK_BOX_CLICK :
         CheckNotify( ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     case EV_LIST_BOX_DCLICK :
     case EV_LIST_BOX_CHANGED :
     case EV_LIST_BOX_CLOSED :
-        ListNotify( ev, ui_dlg_info, wnd );
+        ListNotify( ui_ev, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     case EV_CURSOR_UP :
         EditNotify( GUI_KEY_UP, ui_dlg_info, wnd );
@@ -766,12 +762,12 @@ EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd 
         EditNotify( GUI_KEY_DOWN, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
     default :
-        if( IS_CTLEVENT( ev ) ) {
-            id = EV2ID( ev );
-            GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
+        if( IS_CTLEVENT( ui_ev ) ) {
+            id = EV2ID( ui_ev );
+            GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
             return( EV_NO_EVENT );
         }
-        return( ev );
+        return( ui_ev );
     }
 }
 
@@ -783,7 +779,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
                        bool sys, res_name_or_id dlg_id )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
     int         i;
     a_dialog    *ui_dlg_info;
     VFIELD      *fields;
@@ -793,16 +789,15 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     bool        colours_set;
     bool        ok;
 
+    /* unused parameters */ (void)sys;
+
     if( dlg_id != NULL ) {
-        if( !GUICreateDialogFromRes( dlg_id, dlg_info->parent,
-                                     dlg_info->gui_call_back, dlg_info->extra ) ) {
+        if( !GUICreateDialogFromRes( dlg_id, dlg_info->parent, dlg_info->gui_call_back, dlg_info->extra ) ) {
             return( false );
         }
         GUIMemFree( wnd );
         return( true );
     }
-
-    /* unused parameters */ (void)sys;
 
     RadioGroup = NULL;
     Group = false;
@@ -826,19 +821,19 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     for( i = 0; i < num_controls; i++ ) {
         uiyield();
         if( !GUIDoAddControl( &controls_info[i], wnd, &fields[i] ) ) {
-            GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
+            GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
             return( false );
         } else {
-            if( ( focus == NULL ) && ( controls_info[i].style & GUI_FOCUS ) ) {
+            if( ( focus == NULL ) && (controls_info[i].style & GUI_STYLE_CONTROL_FOCUS) ) {
                 focus = &fields[i];
             }
         }
     }
     CleanUpRadioGroups();
-    fields[num_controls].typ = FLD_VOID; /* mark end of list */
+    fields[num_controls].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
     title = GUIStrDup( dlg_info->title, &ok );
     if( !ok ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
         return( false );
     }
     colours_set = GUISetDialColours();
@@ -846,43 +841,43 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                              wnd->screen.area.width, wnd->screen.area.row,
                              wnd->screen.area.col );
     if( ui_dlg_info == NULL ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
         return( false );
     }
     if( focus != NULL ) {
         uidialogsetcurr( ui_dlg_info, focus );
     }
     if( !InsertDialog( wnd, ui_dlg_info, num_controls, title, colours_set ) ) {
-        GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
+        GUIFreeDialog( ui_dlg_info, fields, title, colours_set );
         return( false );
     }
     for( i = 0; i < num_controls; i++ ) {
         uiyield();
         GUIInsertControl( wnd, &controls_info[i], i );
     }
-    GUIEVENTWND( wnd, GUI_INIT_DIALOG, NULL );
+    GUIEVENT( wnd, GUI_INIT_DIALOG, NULL );
     uipushlist( NULL );
     uipushlist( GUIUserEvents );
     uipushlist( GUIControlEvents );
     uipushlist( GUIDlgEvents );
     while( ( GetDialog( ui_dlg_info ) != NULL ) ) {
-        ev = uidialog( ui_dlg_info );
-        switch( ev ) {
+        ui_ev = uidialog( ui_dlg_info );
+        switch( ui_ev ) {
         case EV_KILL_UI:
             uiforceevadd( EV_KILL_UI );
+            /* fall through */
         case EV_ESCAPE:
-            GUIEVENTWND( wnd, GUI_DIALOG_ESCAPE, NULL );
+            GUIEVENT( wnd, GUI_DIALOG_ESCAPE, NULL );
             GUICloseDialog( wnd );
             break;
         default :
-            GUIProcessControlNotify( ev, ui_dlg_info, wnd );
+            GUIProcessControlNotify( ui_ev, ui_dlg_info, wnd );
         }
     }
     return( true );
 }
 
-void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
-                    bool colours_set, bool is_dialog )
+void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool colours_set )
 {
     if( ui_dlg_info != NULL ) {
         GUIDeleteDialog( ui_dlg_info );

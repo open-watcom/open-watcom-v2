@@ -200,8 +200,8 @@ static void WriteStringCmd( FILE *fo )
     WriteByte( 0 );
 }
 
-static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
-/************************************************************************/
+static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
+/********************************************************************************/
 {
     unsigned_32 len;
     unsigned_32 trail_len;
@@ -213,7 +213,8 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
     unsigned_8  *p2;
     unsigned_8  c;
     unsigned_32 SigInCount;
-    unsigned_32 OutStart;
+    long        pos1;
+    long        pos2;
     unsigned_32 RepLength;
     unsigned_32 FoundLen;
     unsigned_8  *FoundPos = NULL;
@@ -268,8 +269,8 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
             new->next = 0;
         }
     }
-    OutStart = ftell( fo );
-    fwrite( &cwc_dec, sizeof( cwc_dec ), 1, fo );
+    pos1 = ftell( fo );
+    fwrite( &cwc_dec, 1, sizeof( cwc_dec ), fo );
 
     trail_len = 0;         // length of trailing data.
     for( xlen1 = data_size; xlen1; xlen1 -= item_len ) {
@@ -425,7 +426,7 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
                 code = CodeHeads + *(unsigned_16 *)( data - trail_len );
                 if( code->head == NULL )
                     // Error
-                    return( -1 );
+                    return( 0 );
                 s = code->head;
                 if( code->head == code->tail )
                     code->tail = s->next;
@@ -482,10 +483,10 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
 
     FiniOutFileBuffer( fo );
     cwc_dec.Size = OutTotal;
-    pos = ftell( fo );
-    fseek( fo, OutStart, SEEK_SET );
-    fwrite( &cwc_dec, sizeof( cwc_dec ), 1, fo );
-    fseek( fo, pos, SEEK_SET );
+    pos2 = ftell( fo );
+    fseek( fo, pos1, SEEK_SET );
+    fwrite( &cwc_dec, 1, sizeof( cwc_dec ), fo );
+    fseek( fo, pos2, SEEK_SET );
     OutTotal += sizeof( cwc_dec );
     if( CodeHeads != NULL ) {
         free( CodeHeads );
@@ -499,8 +500,8 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
     return( OutTotal );
 }
 
-static int ProcessEXE( char *fname, char *oname )
-/***********************************************/
+static int ProcessEXE( const char *fname, const char *oname )
+/***********************************************************/
 {
     FILE            *f;
     FILE            *fo;
@@ -513,6 +514,7 @@ static int ProcessEXE( char *fname, char *oname )
     unsigned_32     CompressLen;
     signed_32       mem_req;
     cwc_info        cwc_data;
+    bool            err;
 
     f = fopen( fname, "rb" );
     if( f == NULL ) {
@@ -520,21 +522,35 @@ static int ProcessEXE( char *fname, char *oname )
         return( -1 );
     }
     // read header
-    fread( &exe_header, sizeof( exe_header ), 1, f );
+    fread( &exe_header, 1, sizeof( exe_header ), f );
     HeaderLen = exe_header.hdr_size * 16;
     // calculate image size
     ExeLen = exe_header.file_size * 512L - (-exe_header.mod_size & 0x1ff);
     ImageLen = ExeLen - HeaderLen;
+    err = false;
     fimg = malloc( ExeLen );
-    // read image
-    fseek( f, HeaderLen, SEEK_SET );
-    fread( fimg, ImageLen, 1, f );
-    // copy header
-    memcpy( fimg + ImageLen, &exe_header, sizeof( exe_header ) );
-    // read reloc info
-    fseek( f, exe_header.reloc_offset, SEEK_SET );
-    fread( fimg + ImageLen + sizeof( exe_header ) - 1, exe_header.num_relocs, 4, f );
+    if( fimg == NULL ) {
+        printf( "Not enough memory." );
+        err = true;
+    } else if( fseek( f, HeaderLen, SEEK_SET ) ) {
+        err = true;
+    } else if( fread( fimg, 1, ImageLen, f ) != ImageLen ) {
+        err = true;
+    } else {
+        // copy header
+        memcpy( fimg + ImageLen, &exe_header, sizeof( exe_header ) );
+        // read reloc info
+        if( fseek( f, exe_header.reloc_offset, SEEK_SET ) ) {
+            err = true;
+        } else {
+            err = ( fread( fimg + ImageLen + sizeof( exe_header ) - 1, 4, exe_header.num_relocs, f ) != exe_header.num_relocs );
+        }
+    }
     fclose( f );
+    if( err ) {
+        free( fimg );
+        return( -1 );
+    }
     TotalLen = ImageLen + sizeof( exe_header ) - 1 + exe_header.num_relocs * 4;
     //
     fo = fopen( oname, "wb" );
@@ -543,11 +559,11 @@ static int ProcessEXE( char *fname, char *oname )
         return( -1 );
     }
     // write header
-    fwrite( &exe_header, sizeof( exe_header ), 1, fo );
+    fwrite( &exe_header, 1, sizeof( exe_header ), fo );
     // allign to para
     fwrite( padding, 1, PADDING_LEN_PARA( sizeof( exe_header ) ), fo );
     // write copy stub code
-    fwrite( copy_stub, sizeof( copy_stub ), 1, fo );
+    fwrite( copy_stub, 1, sizeof( copy_stub ), fo );
     // allign to para
     fwrite( padding, 1, PADDING_LEN_PARA( sizeof( copy_stub ) ), fo );
     // encode image data
@@ -555,7 +571,7 @@ static int ProcessEXE( char *fname, char *oname )
     // allign to para
     fwrite( padding, 1, PADDING_LEN_PARA( CompressLen ), fo );
     // write decompress stub code
-    fwrite( decomp_stub, sizeof( decomp_stub ), 1, fo );
+    fwrite( decomp_stub, 1, sizeof( decomp_stub ), fo );
     // allign to para
     fwrite( padding, 1, PADDING_LEN_PARA( sizeof( decomp_stub ) ), fo );
     // update exe header
@@ -575,7 +591,7 @@ static int ProcessEXE( char *fname, char *oname )
     exe_header.CS_offset = 0;
     exe_header.reloc_offset = 0x20;
     fseek( fo, 0, SEEK_SET );
-    fwrite( &exe_header, sizeof( exe_header ), 1, fo );
+    fwrite( &exe_header, 1, sizeof( exe_header ), fo );
     // update copy stub data
     fseek( fo, ALLIGN_LEN_PARA( sizeof( copy_stub ) + 0x20 ) - 16, SEEK_SET );
     cwc_data.SourceSeg = ( ALLIGN_LEN_PARA( sizeof( copy_stub ) ) + ALLIGN_LEN_PARA( CompressLen ) + ALLIGN_LEN_PARA( sizeof( decomp_stub ) ) ) >> 4;
@@ -584,8 +600,9 @@ static int ProcessEXE( char *fname, char *oname )
     cwc_data.EntryCS = ALLIGN_LEN_PARA( CompressLen ) >> 4;
     cwc_data.ImageLen = ImageLen;
     cwc_data.EntryES = 0;
-    fwrite( &cwc_data, sizeof( cwc_data ), 1, fo );
+    fwrite( &cwc_data, 1, sizeof( cwc_data ), fo );
     fclose( fo );
+    free( fimg );
     return( 0 );
 }
 

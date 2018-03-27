@@ -63,7 +63,7 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
     return( ORL_OKAY );
 }
 
-orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_file_id file, elf_file_handle *pefh )
+orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, FILE *fp, elf_file_handle *pefh )
 {
     elf_file_handle     elf_file_hnd;
     orl_return          return_val;
@@ -73,7 +73,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_file_id file, elf_file_
         return( ORL_OUT_OF_MEMORY );
     }
     elf_file_hnd->sec_handles = NULL;
-    elf_file_hnd->file = file;
+    elf_file_hnd->fp = fp;
     elf_file_hnd->sec_name_hash_table = NULL;
     ElfAddFileLinks( elf_hnd, elf_file_hnd );
     return_val = ElfLoadFileStructure( elf_file_hnd );

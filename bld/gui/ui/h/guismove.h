@@ -32,6 +32,7 @@
 
 #ifndef _GUISMOVE_H_
 #define _GUISMOVE_H_
+
 typedef enum {
     RESIZE_NONE         = 0x00,
     RESIZE_UP           = 0x01,
@@ -40,10 +41,10 @@ typedef enum {
     RESIZE_LEFT         = 0x08
 } resize_dir;
 
-extern bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev, gui_point *adjust );
+extern bool GUIDoMoveResize( gui_window *wnd, int row, int col, ui_event ui_ev, gui_point *adjust );
 extern bool GUIStartMoveResize( gui_window *wnd, ORD row, ORD col, resize_dir dir );
 extern void GUIStartKeyboardMoveResize( gui_window *wnd, bool move );
-extern bool GUIDoKeyboardMoveResize( EVENT ev );
-extern bool GUIDoMoveResizeCheck( gui_window * wnd, EVENT ev, ORD row, ORD col );
+extern bool GUIDoKeyboardMoveResize( ui_event ui_ev );
+extern bool GUIDoMoveResizeCheck( gui_window * wnd, ui_event ui_ev, ORD row, ORD col );
 
 #endif /* _GUISMOVE_H_ */

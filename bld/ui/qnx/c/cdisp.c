@@ -49,8 +49,9 @@
 #include <i86.h>
 #include "uidef.h"
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
+
 
 static MONITOR ui_data = {
     25,
@@ -85,38 +86,40 @@ bool QnxWCheck( void )
 static bool setupscrnbuff( void )
 /*******************************/
 {
-    int                 rows, cols;
+    int                 rows;
+    int                 cols;
     LP_PIXEL            scrn;
-    size_t              num;
-    int                 i;
+    size_t              size;
+    size_t              i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( false );
     }
     UIData->width = cols;
     UIData->height = rows;
-    num = UIData->width * UIData->height * 2;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
     scrn = UIData->screen.origin;
-#if defined( __386__ )
-    scrn = realloc( scrn, num );
-    if( scrn == NULL )
-        return( false );
-#else
     {
-        unsigned                seg;
+#ifdef _M_I86
+        unsigned    seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), num );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
-    }
+#else
+        scrn = uirealloc( scrn, size );
+        if( scrn == NULL ) {
+            return( false );
+        }
 #endif
-    num /= 2;
-    for( i = 0; i < num; ++i ) {
+    }
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
     }
@@ -130,13 +133,14 @@ static volatile int     StatePending;
 static void state_handler( int signo )
 /************************************/
 {
-    signo = signo;
+    /* unused parameters */ (void)signo;
+
     StatePending = 1;
 }
 
 
-static EVENT cd_sizeevent( void )
-/*******************************/
+static ui_event cd_sizeevent( void )
+/**********************************/
 {
     SAREA       area;
     unsigned    state;
@@ -146,7 +150,7 @@ static EVENT cd_sizeevent( void )
         return( EV_NO_EVENT );
     StatePending = 0;
     state = console_state( UIConCtrl, UIConsole, 0,
-                (_CON_EVENT_ACTIVE|_CON_EVENT_INACTIVE|_CON_EVENT_SIZE) );
+                (_CON_EVENT_ACTIVE | _CON_EVENT_INACTIVE | _CON_EVENT_SIZE) );
     arm = 0;
     if( state & _CON_EVENT_INACTIVE ) {
         clear_shift();
@@ -155,7 +159,7 @@ static EVENT cd_sizeevent( void )
         arm = _CON_EVENT_INACTIVE;
     }
     console_arm( UIConCtrl, UIConsole, 0, arm | _CON_EVENT_SIZE );
-    if( !(state & _CON_EVENT_SIZE) )
+    if( (state & _CON_EVENT_SIZE) == 0 )
         return( EV_NO_EVENT );
     if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
@@ -171,7 +175,7 @@ static EVENT cd_sizeevent( void )
     return( EV_BACKGROUND_RESIZE );
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     struct _osinfo      info;
@@ -205,7 +209,7 @@ bool intern initmonitor( void )
     /* notify if screen size changes */
     signal( SIGDEV, &state_handler );
     console_arm( UIConCtrl, UIConsole, 0,
-            _CON_EVENT_SIZE|_CON_EVENT_ACTIVE|_CON_EVENT_SIZE );
+            _CON_EVENT_SIZE | _CON_EVENT_ACTIVE | _CON_EVENT_SIZE );
 
     return( true );
 }
@@ -213,8 +217,15 @@ bool intern initmonitor( void )
 
 /* update the physical screen with contents of virtual copy */
 
-static void my_console_write( struct _console_ctrl *cc, int console, unsigned offset,
-         LP_STRING buf, int nbytes, int row, int col, int type)
+static void my_console_write(
+    struct _console_ctrl    *cc,
+    int                     console,
+    unsigned                offset,
+    LP_STRING               buf,
+    int                     nbytes,
+    int                     row,
+    int                     col,
+    int                     type )
 {
         struct _mxfer_entry sx[2];
         struct _mxfer_entry rx;
@@ -233,7 +244,7 @@ static void my_console_write( struct _console_ctrl *cc, int console, unsigned of
         msg.write.nbytes = nbytes;
 
         _setmx( &sx[1], buf, nbytes );
-        _setmx( &sx[0], &msg.write, sizeof(msg.write)-sizeof(msg.write.data) );
+        _setmx( &sx[0], &msg.write, sizeof( msg.write ) - sizeof( msg.write.data ) );
 
         _setmx( &rx, &msg.write_reply, sizeof( msg.write_reply ) );
 
@@ -241,10 +252,10 @@ static void my_console_write( struct _console_ctrl *cc, int console, unsigned of
 }
 
 
-static int cd_init( void )
-/************************/
+static bool cd_init( void )
+/*************************/
 {
-    int                 initialized;
+    int         initialized;
 
     initialized = false;
     if( UIData == NULL ) {
@@ -257,17 +268,17 @@ static int cd_init( void )
 
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
     return( true );
 }
 
 
-static int cd_fini( void )
-/************************/
+static bool cd_fini( void )
+/*************************/
 {
     finikeyboard();
     uifinicursor();
@@ -295,24 +306,25 @@ static int cd_update( SAREA *area )
                         row, col, type );
     } else {
         count = area->width * sizeof( PIXEL );
-        for( i = area->row; i < (area->row + area->height); i++ ) {
+        for( i = area->row; i < ( area->row + area->height ); i++ ) {
             offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
             my_console_write( UIConCtrl, UIConsole, offset,
-                            offset + (LP_STRING)UIData->screen.origin, count,
+                            (LP_STRING)UIData->screen.origin + offset, count,
                             row, col, type );
         }
     }
     return( 0 );
 }
 
-static int cd_refresh(int must)
+static int cd_refresh( bool must )
 {
-    must = must;
+    /* unused parameters */ (void)must;
+
     return( 0 );
 }
 
-static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/**********************************************************************/
+static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/************************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -322,10 +334,11 @@ static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 }
 
 
-static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/*****************************************************************/
+static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/*******************************************************************/
 {
-    attr = attr;
+    /* unused parameters */ (void)attr;
+
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
         ( col != UIData->cursor_col ) ) {
@@ -338,21 +351,21 @@ static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
     return( 0 );
 }
 
-static EVENT cd_event( void )
+static ui_event cd_event( void )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
 
-    ev = cd_sizeevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
-    ev = mouseevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
-    ev = ck_keyboardevent();
-    if( ev == EV_NO_EVENT )
-        return( ev );
+    ui_ev = cd_sizeevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
+    ui_ev = mouseevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
+    ui_ev = ck_keyboardevent();
+    if( ui_ev == EV_NO_EVENT )
+        return( ui_ev );
     uihidemouse();
-    return( ev );
+    return( ui_ev );
 }
 
 Display ConsDisplay = {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 static void blankarea( SAREA area, ATTR attr )
 /********************************************/
 {
-    ORD         row;
+    uisize      row;
     SAREA       up_area;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
@@ -61,7 +62,7 @@ void UIAPI uiblankattr( ATTR attr )
 void UIAPI uiblankarea( SAREA area )
 /***********************************/
 {
-    blankarea( area, UIData->attrs[ ATTR_NORMAL ] );
+    blankarea( area, UIData->attrs[ATTR_NORMAL] );
 }
 
 

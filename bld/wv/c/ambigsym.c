@@ -50,7 +50,8 @@ sym_list *Disambiguate( sym_list *sym, location_context *lc )
     int         new;
     ambig_info  ambig;
 
-    if( _IsOn( SW_AMBIGUITY_FATAL ) ) Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+    if( _IsOn( SW_AMBIGUITY_FATAL ) )
+        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
     ambig.sym = sym;
     ambig.lc = lc;
     count = 0;
@@ -78,16 +79,18 @@ sym_list *Disambiguate( sym_list *sym, location_context *lc )
         }
     }
 
-    if( count == 0 ) Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) ); // phooey!
-    if( count == 1 ) return( sym );
+    if( count == 0 )
+        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) ); // phooey!
+    if( count == 1 )
+        return( sym );
 
     if( _IsOn( SW_NO_DISAMBIGUATOR ) ) {
         new = 0;
     } else {
-        new = DUIDisambiguate( &ambig, count );
+        if( !DUIDisambiguate( &ambig, count, &new ) ) {
+            Error( ERR_SILENT, LIT_ENG( Empty ) ); // goodbye cruel world!
+        }
     }
-    if( new == -1 )
-        Error( ERR_SILENT, LIT_ENG( Empty ) ); // goodbye cruel world!
     chosen = NULL;
     while( sym != NULL ) {
         next = sym->next;

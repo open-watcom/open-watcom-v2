@@ -335,7 +335,7 @@ setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
     if( status != 1 ) {
         const TERMTYPE *fallback = _nc_fallback( tname );
 
-        if( fallback ) {
+        if( fallback != NULL ) {
             term_ptr->type = *fallback;
             status = 1;
         }

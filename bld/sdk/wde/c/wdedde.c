@@ -60,7 +60,7 @@
 #define WRE_NAME_ITEM           "WATCOMResName"
 #define WRE_DATA_ITEM           "WATCOMResData"
 
-#ifndef __ALPHA__
+#ifdef _M_IX86
 void WdeInt3( void );
 #pragma aux WdeInt3 = \
         "int 3h"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,20 +49,20 @@
 #include <i86.h>
 #include <assert.h>
 #include <ctype.h>
-
 #include <sys/qnx_glob.h>
 #include <process.h>
-#include <term.h>
-
+#include "walloca.h"
+#include "wterm.h"
 #include "uidef.h"
 #include "uiattrs.h"
 #include "qdebug.h"
-
 #include "uivirt.h"
-#include "qnxuiext.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
-#include "tdisp.h"
 #include "tixparse.h"
+#include "tixsupp.h"
+#include "doparse.h"
+#include "tdisp.h"
 
 
 #ifdef __386__
@@ -69,7 +70,28 @@
 #endif
 #define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
 
-extern  LP_PIXEL    asmNonBlankEnd( LP_PIXEL, int, PIXEL );
+extern LP_PIXEL asmNonBlankEnd( LP_PIXEL, int, PIXEL );
+#ifdef _M_I86
+    #pragma aux asmNonBlankEnd =    \
+        "std"                       \
+        "repe scasw"                \
+        "je L1"                     \
+        "inc di"                    \
+    "L1:"                           \
+        "cld"                       \
+    parm  [es di] [cx] [ax]         \
+    value [es di];
+#else
+    #pragma aux asmNonBlankEnd =    \
+        "std"                       \
+        "repe scasw"                \
+        "je L1"                     \
+        "inc edi"                   \
+    "L1:"                           \
+        "cld"                       \
+    parm  [es edi] [ecx] [ax]       \
+    value [edi];
+#endif
 
 bool    UserForcedTermRefresh = false;
 
@@ -79,7 +101,7 @@ static bool         TermIsQNXTerm;
 
 static void         TI_SETATTR( void );
 static int          new_attr( int nattr, int oattr );
-static int          ti_refresh( int must );
+static int          ti_refresh( bool must );
 
 bool TermCheck( void )
 /********************/
@@ -117,7 +139,7 @@ static struct ostream _con_out;
 
 static bool ostream_init( int f )
 {
-    if( (_con_out.sbuf = malloc( 2048 )) == NULL ) {
+    if( (_con_out.sbuf = uimalloc( 2048 )) == NULL ) {
         return( false );
     }
     _con_out.ebuf = _con_out.sbuf + 2048;
@@ -130,16 +152,17 @@ static bool ostream_init( int f )
 
 static void __flush_con( void )
 {
-    int     len = _con_out.curp - _con_out.sbuf;
-    int     offs = 0;
+    int     len;
+    int     offs;
+    int     n;
 
-    while( len > 0 ) {
-        int n = write( _con_out.fd, _con_out.sbuf + offs, len );
+    offs = 0;
+    for( len = _con_out.curp - _con_out.sbuf; len > 0; len -= n ) {
+        n = write( _con_out.fd, _con_out.sbuf + offs, len );
         if( n < 0 ) {
             break;
         }
         offs += n;
-        len -= n;
     }
     _con_out.curp = _con_out.sbuf;
 }
@@ -168,7 +191,6 @@ static void __puts( char *s )
  * Qnx terminal codes
  */
 
-#define _ESC    "\033"
 #define QNX_CURSOR_OFF()        __puts(_ESC "y0")
 #define QNX_CURSOR_NORMAL()     __puts(_ESC "y1")
 #define QNX_CURSOR_BOLD()       __puts(_ESC "y2")
@@ -194,14 +216,14 @@ static void __puts( char *s )
 
 static void QNX_CURSOR_MOVE( int c, int r )
 {
-    __putchar( 033 ); __putchar( '=' );
+    __putchar( _ESC_CHAR ); __putchar( '=' );
     __putchar( r + ' ' );
     __putchar( c + ' ' );
 }
 
 static void QNX_SETCOLOUR( int f, int b )
 {
-    __putchar( 033 ); __putchar( '@' );
+    __putchar( _ESC_CHAR ); __putchar( '@' );
     __putchar( '0' + f );
     __putchar( '0' + b );
 }
@@ -577,9 +599,9 @@ static void TI_SETCOLOUR( int f, int b )
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
-            QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-            QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
-            QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
+QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
             TI_FillColourSet = false;
         } else {
@@ -644,7 +666,8 @@ QNXDebugPrintf0("[~~~~~~]\n");
 
 static int TI_PUT_FILE( char *fnam )
 {
-    fnam = fnam;
+    /* unused parameters */ (void)fnam;
+
 #if 0 //NYI: have to re-implement
     char        c;
     FILE        *fil;
@@ -676,7 +699,7 @@ static int TI_EXEC_PROG( char *pnam )
 
     if( pnam != NULL && pnam[0] != '\0' ) {
         // get full path name of program
-        ppath = alloca( TI_PATH_LEN + strlen( pnam ) );
+        ppath = walloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
             return( false );
         }
@@ -733,12 +756,12 @@ static MONITOR ui_data = {
 static  LP_PIXEL    shadow;
 static  int         save_cursor_type;
 
-static bool setupscrnbuff( int srows, int scols )
-/***********************************************/
+static bool setupscrnbuff( uisize srows, uisize scols )
+/*****************************************************/
 {
     LP_PIXEL    scrn;
-    int         num;
-    int         i;
+    size_t      size;
+    size_t      i;
     int         rows;
     int         cols;
 
@@ -767,43 +790,43 @@ static bool setupscrnbuff( int srows, int scols )
     UIData->height = rows;
     UIData->cursor_type = C_NORMAL;
 
-    num = UIData->width * UIData->height * 2;
+    size = UIData->width * UIData->height * sizeof( PIXEL );
     scrn = UIData->screen.origin;
-#if defined( __386__ )
-    scrn = realloc( scrn, num );
-    if( scrn == NULL )
-        return( false );
-    if( (shadow = realloc( shadow, num )) == NULL ) {
-        free( scrn );
-        return( false );
-    }
-#else
     {
+#ifdef _M_I86
         unsigned        seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( scrn ), num );
+            seg = qnx_segment_realloc( FP_SEG( scrn ), size );
         }
         if( seg == -1 )
             return( false );
         scrn = MK_FP( seg, 0 );
         if( shadow == NULL ) {
-            seg = qnx_segment_alloc( num );
+            seg = qnx_segment_alloc( size );
         } else {
-            seg = qnx_segment_realloc( FP_SEG( shadow ), num );
+            seg = qnx_segment_realloc( FP_SEG( shadow ), size );
         }
         if( seg == -1 ) {
             qnx_segment_free( FP_SEG( scrn ) );
             return( false );
         }
         shadow = MK_FP( seg, 0 );
-    }
+#else
+        scrn = uirealloc( scrn, size );
+        if( scrn == NULL )
+            return( false );
+        if( (shadow = uirealloc( shadow, size )) == NULL ) {
+            uifree( scrn );
+            return( false );
+        }
 #endif
+    }
     save_cursor_type = -1; /* C_NORMAL; */
-    num /= 2;
-    for( i = 0; i < num; ++i ) {
+    size /= sizeof( PIXEL );
+    for( i = 0; i < size; ++i ) {
         scrn[i].ch = ' ';       /* a space with normal attributes */
         scrn[i].attr = 7;       /* a space with normal attributes */
     }
@@ -812,18 +835,19 @@ static bool setupscrnbuff( int srows, int scols )
     return( true );
 }
 
-static volatile int SizePending;
+static volatile bool SizePending = false;
 
 static void size_handler( int signo )
 /***********************************/
 {
-    signo = signo;
-    SizePending = 1;
+    /* unused parameters */ (void)signo;
+
+    SizePending = true;
 }
 
 
-static EVENT td_sizeevent( void )
-/*******************************/
+static ui_event td_sizeevent( void )
+/**********************************/
 {
     SAREA           area;
 
@@ -833,7 +857,7 @@ static EVENT td_sizeevent( void )
         return( EV_NO_EVENT );
     if( !setupscrnbuff( UIData->height, UIData->width ) )
         return( EV_NO_EVENT );
-    SizePending = 0;
+    SizePending = false;
     area.row = 0;
     area.col = 0;
     area.height = UIData->height;
@@ -881,7 +905,7 @@ static bool td_initconsole( void )
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right = !TCAP_NOSCROLL;
-    QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -891,8 +915,8 @@ static bool td_initconsole( void )
     return( true );
 }
 
-bool initmonitor( void )
-/**********************/
+static bool initmonitor( void )
+/*****************************/
 {
     UIData->colour = M_VGA;
     /* notify if screen size changes */
@@ -902,8 +926,8 @@ bool initmonitor( void )
 
 
 #if 0
-static int td_init( void )
-/************************/
+static bool td_init( void )
+/*************************/
 {
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -918,20 +942,21 @@ static int td_init( void )
 
     uiinitcursor();
     initkeyboard();
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 55;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
-    td_refresh( 1 );
+    td_refresh( true );
     return( true );
 }
 #endif
 
-static int td_init( void )
-/************************/
+static bool td_init( void )
+/*************************/
 {
-    int         rows, cols;
+    uisize      rows;
+    uisize      cols;
     const char  *tmp;
 
     if( UIData == NULL ) {
@@ -947,8 +972,6 @@ static int td_init( void )
     if( TCAP_MONOCHROME ) {
         UIData->colour = M_TERMINFO_MONO;
     }
-
-    UIData->no_blowup = true;
 
     tmp = getenv( "TIOPTIMIZE" );
     if( tmp != NULL )
@@ -974,23 +997,23 @@ static int td_init( void )
     if( !initkeyboard() )
         return( false );
 
-    UIData->mouse_acc_delay = 277;
-    UIData->mouse_rpt_delay = 100;
-    UIData->mouse_clk_delay = 277;
-    UIData->tick_delay      = 500;
+    UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );
+    UIData->mouse_rpt_delay = uiclockdelay( 100 /* ms */ );
+    UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 500 /* ms */ );
     UIData->f10menus        = true;
 
     //find point at which repeat chars code becomes efficient
     ti_find_cutoff();
 
-    ti_refresh( 1 );
+    ti_refresh( true );
     return( true );
 }
 
 
 #if 0
-static int td_fini( void )
-/************************/
+static bool td_fini( void )
+/*************************/
 {
     QNX_RESTORE_ATTR();
     QNX_HOME();
@@ -999,12 +1022,12 @@ static int td_fini( void )
     __flush_con();
     finikeyboard();
     uifinicursor();
-    return( 0 );
+    return( false );
 }
 #endif
 
-static int td_fini( void )
-/************************/
+static bool td_fini( void )
+/*************************/
 {
     TI_RESTORE_ATTR();
     TI_HOME();
@@ -1020,7 +1043,7 @@ static int td_fini( void )
 
     finikeyboard();
     uifinicursor();
-    return( 0 );
+    return( false );
 }
 
 /* update the physical screen with contents of virtual copy */
@@ -1042,8 +1065,7 @@ QNXDebugPrintf0("td_update: no arg");
         dirty_area.col1 = UIData->width;
         return( 0 );
     }
-QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
-                                        area->width);
+QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
     if( area->row < dirty_area.row0 ) {
         dirty_area.row0 = area->row;
     }
@@ -1106,11 +1128,11 @@ static void ti_hwcursor( void )
 }
 
 
-static int td_refresh( int must )
-/*******************************/
+static int td_refresh( bool must )
+/********************************/
 {
     int             i;
-    int             incr;
+    unsigned        incr;
     LP_PIXEL        bufp, sbufp;
 
     must |= UserForcedTermRefresh;
@@ -1157,7 +1179,7 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
                 lastattr = new_attr( bufp[j].attr, lastattr );
             }
             if( bufp[j].ch < 0x20 )
-                __putchar( 033 );
+                __putchar( _ESC_CHAR );
             __putchar( bufp[j].ch );
             sbufp[j] = bufp[j];
         }
@@ -1178,52 +1200,30 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
 
 // Dumps all characters we've slurped. Will use repeat_char capability if
 // there are multiple chars
-#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol );\
-                        rcount = 0;}
+#define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol ); rcount = 0;}
 
 // Slurps a char to be output. Will dump existing chars if new char is
 // different.
-#define TI_SLURPCHAR( c )       \
-    {                           \
-        if( rcount != 0 && ( rchar != ti_char_map[c] || ralt != ti_alt_map( c ) ) ) \
-            TI_DUMPCHARS();     \
-        rcol = (rcount == 0) ? j : rcol; \
-        rcount++;               \
-        rchar = ti_char_map[c]; \
-        ralt = ti_alt_map(c);   \
-    }
+#define TI_SLURPCHAR( __ch )  \
+{                             \
+    unsigned char __c = __ch; \
+    if( rcount != 0 && ( rchar != ti_char_map[__c] || ralt != ti_alt_map( __c ) ) ) \
+        TI_DUMPCHARS();       \
+    rcol = (rcount == 0) ? j : rcol; \
+    rcount++;                 \
+    rchar = ti_char_map[__c]; \
+    ralt = ti_alt_map( __c ); \
+}
 
 
 #define NonBlankEnd(b,n,c) (((c).ch == ' ')?(asmNonBlankEnd((b),(n),(c))):(b))
-
-#ifdef __386__
-    #pragma aux asmNonBlankEnd =    \
-        "std"                       \
-        "repe scasw"                \
-        "je L1"                     \
-        "inc edi"                   \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es edi] [ecx] [ax]       \
-    value [edi];
-#else
-    #pragma aux asmNonBlankEnd =    \
-        "std"                       \
-        "repe scasw"                \
-        "je L1"                     \
-        "inc di"                    \
-    "L1:"                           \
-        "cld"                       \
-    parm  [es di] [cx] [ax]         \
-    value [es di];
-#endif
 
 
 static void update_shadow( void )
 /*******************************/
 {
     LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    int         incr = UIData->screen.increment;
+    unsigned    incr = UIData->screen.increment;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
@@ -1243,11 +1243,11 @@ static void update_shadow( void )
 }
 
 
-static int ti_refresh( int must )
-/*******************************/
+static int ti_refresh( bool must )
+/********************************/
 {
     int         i;
-    int         incr;               // chars per line
+    unsigned    incr;               // chars per line
     LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete
@@ -1276,8 +1276,7 @@ static int ti_refresh( int must )
         return( 0 );
     }
 
-    QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0,
-                                    dirty_area.col0, dirty_area.row1, dirty_area.col1 );
+QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1 );
 
     // Disable cursor during draw if we can
     if( UIData->cursor_type != C_OFF ) {
@@ -1311,9 +1310,10 @@ static int ti_refresh( int must )
         if( !must ) {
             int         r,c;
             int         pos;
-            bool        diff = false;
+            bool        diff;
 
-            while( dirty_area.col0 < dirty_area.col1 ) {
+            diff = false;
+            for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col0++ ) {
                 for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
                     pos = r * incr + dirty_area.col0;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1321,13 +1321,13 @@ static int ti_refresh( int must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.col0++;
+                }
             }
 
             diff = false;
-            while( dirty_area.col0 < dirty_area.col1 ) {
+            for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col1-- ) {
                 for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
                     pos = r * incr + dirty_area.col1 - 1;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1335,13 +1335,13 @@ static int ti_refresh( int must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.col1--;
+                }
             }
 
             diff = false;
-            while( dirty_area.row0 < dirty_area.row1 ) {
+            for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
                 for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
                     pos = dirty_area.row0 * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1349,13 +1349,13 @@ static int ti_refresh( int must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.row0++;
+                }
             }
 
             diff = false;
-            while( dirty_area.row0 < dirty_area.row1 ) {
+            for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row1-- ) {
                 for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
                     pos = ( dirty_area.row1 - 1 ) * incr + c;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
@@ -1363,9 +1363,9 @@ static int ti_refresh( int must )
                         break;
                     }
                 }
-                if( diff )
+                if( diff ) {
                     break;
-                dirty_area.row1--;
+                }
             }
         }
 
@@ -1457,7 +1457,7 @@ static int ti_refresh( int must )
                 }
 
                 if( !ca_valid ) {
-                    QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
+QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
@@ -1535,7 +1535,7 @@ static int new_attr( int nattr, int oattr )
             }
         }
         if( _attr_fore( nval ) != _attr_fore( oval ) || _attr_back( nval ) != _attr_back( oval ) ) {
-            QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
+QNXDebugPrintf2( "colour[%d, %d]\n", _attr_fore( nval ), _attr_back( nval ) );
             QNX_SETCOLOUR( _attr_fore( nval ), _attr_back( nval ) );
         }
     } else {
@@ -1559,8 +1559,8 @@ static int new_attr( int nattr, int oattr )
     return( nattr );
 }
 
-static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/**********************************************************************/
+static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/************************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -1569,10 +1569,10 @@ static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/*****************************************************************/
+static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/*******************************************************************/
 {
-    attr = attr;
+    /* unused parameters */ (void)attr;
 
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -1591,19 +1591,19 @@ static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 }
 
 
-EVENT td_event( void )
+ui_event td_event( void )
 {
-    EVENT       ev;
+    ui_event    ui_ev;
 
-    ev = td_sizeevent();
-    if( ev > EV_NO_EVENT )
-        return( ev );
+    ui_ev = td_sizeevent();
+    if( ui_ev > EV_NO_EVENT )
+        return( ui_ev );
     /* In a terminal environment we have to go for the keyboard first,
        since that's how the mouse events are coming in */
-    ev = tk_keyboardevent();
-    if( ev > EV_NO_EVENT ) {
+    ui_ev = tk_keyboardevent();
+    if( ui_ev > EV_NO_EVENT ) {
         uihidemouse();
-        return( ev );
+        return( ui_ev );
     }
     return( mouseevent() );
 }

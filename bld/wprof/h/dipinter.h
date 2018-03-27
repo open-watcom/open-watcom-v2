@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,5 +34,5 @@ extern void         WPDipInit( void );
 extern process_info *WPDipProc( void );
 extern void         WPDipDestroyProc( process_info *dip_proc );
 extern void         WPDipSetProc( process_info *dip_proc );
-extern mod_handle   WPDipLoadInfo( dig_fhandle fid, const char *f_name, void *image, unsigned image_size, unsigned dip_start, unsigned dip_end );
+extern mod_handle   WPDipLoadInfo( FILE *fp, const char *f_name, void *image, unsigned image_size, dip_priority start, dip_priority end );
 extern void         WPDipFini( void );

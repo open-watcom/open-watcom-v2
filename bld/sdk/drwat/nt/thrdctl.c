@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <ctype.h>
 #include "drwatcom.h"
 #include "mem.h"

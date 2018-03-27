@@ -32,7 +32,6 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "rcldstr.h"

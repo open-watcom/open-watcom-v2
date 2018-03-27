@@ -82,7 +82,7 @@ static buff_list    buffList = NULL;
 static int          sectionFound = 0;
 
 static orl_return DoSection( orl_sec_handle o_shnd )
-/*******************************************/
+/**************************************************/
 {
     return( ORL_OKAY );
 }
@@ -95,29 +95,29 @@ orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
 }
 #endif
 
-static void *objRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *objRead( FILE *fp, size_t len )
+/******************************************/
 {
     buff_list   ptr;
 
     ptr = TRMemAlloc( sizeof( *buffList ) + len - 1 );
     ptr->next = buffList;
     buffList = ptr;
-    if( posix_read( ORL_FID2PH( fid ), ptr->buff, len ) != len ) {
+    if( fread( ptr->buff, 1, len, fp ) != len ) {
         TRMemFree( ptr );
         return( NULL );
     }
     return( ptr->buff );
 }
 
-static long objSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int objSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
-    return( lseek( ORL_FID2PH( fid ), pos, where ) );
+    return( fseek( fp, pos, where ) );
 }
 
 static void freeBuffList( void )
-/***********************/
+/******************************/
 {
     buff_list   next;
 
@@ -240,7 +240,7 @@ int main( int argc, char *argv[] )
     orl_file_handle             o_fhnd;
     orl_file_format             type;
     orl_file_flags              o_flags;
-    int                         file;
+    FILE                        *fp;
     int                         c;
     char                        *secs[MAX_SECS];
     int                         num_secs = 0;
@@ -255,8 +255,8 @@ int main( int argc, char *argv[] )
 
     dump.sections++;
 
-    file = open( argv[1], O_BINARY | O_RDONLY );
-    if( file == -1 ) {
+    fp = fopen( argv[1], "rb" );
+    if( fp == NULL ) {
         printf( "Error opening file.\n" );
         return( EXIT_FAILURE );
     }
@@ -266,7 +266,7 @@ int main( int argc, char *argv[] )
         printf( "Got NULL orl_handle.\n" );
         return( EXIT_FAILURE );
     }
-    type = ORLFileIdentify( o_hnd, ORL_PH2FID( file ) );
+    type = ORLFileIdentify( o_hnd, fp );
     if( type == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( EXIT_FAILURE );
@@ -286,7 +286,7 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( file ), type );
+    o_fhnd = ORLFileInit( o_hnd, fp, type );
     if( o_fhnd == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( EXIT_FAILURE );
@@ -327,7 +327,7 @@ int main( int argc, char *argv[] )
         printf( "Error calling ORLFileFini.\n" );
         return( EXIT_FAILURE );
     }
-    if( close( file ) == -1 ) {
+    if( fclose( fp ) ) {
         printf( "Error closing file.\n" );
         return( EXIT_FAILURE );
     }

@@ -71,13 +71,6 @@ _WCRTLINK void _nfree( void_nptr cstg )
     if( cstg == NULL )
         return;
 
-#if defined( __RDOS__ )
-    if( RdosIsForked() ) {
-        RdosFreeMem( cstg );
-        return;
-    }
-#endif
-
     _AccessNHeap();
     do {
         // first try some likely locations

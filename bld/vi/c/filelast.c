@@ -39,9 +39,9 @@ extern char *helpFiles[1];
 extern int  nHelpFiles;
 
 /*
- * UpdateLastFileList - update the list of the last files edited
+ * UpdateLastFilesList - update the list of the last files edited
  */
-void UpdateLastFileList( char *fname )
+void UpdateLastFilesList( char *fname )
 {
     history_data        *h;
     int                 i;
@@ -70,9 +70,9 @@ void UpdateLastFileList( char *fname )
     _fullpath( buff, fname, FILENAME_MAX );
 
     // if name already in list, dont add it.
-    h = &EditVars.LastFilesHist;
+    h = &EditVars.Hist[HIST_LASTFILES];
     for( i = 0; i < h->max; i++ ) {
-        if( h->data[i] ) {
+        if( h->data[i] != NULL ) {
             if( stricmp( buff, h->data[i] ) == 0 ) {
                 return;
             }
@@ -83,4 +83,4 @@ void UpdateLastFileList( char *fname )
     ReplaceString( &(h->data[h->curr % h->max]), buff );
     h->curr += 1;
 
-} /* UpdateLastFileList */
+} /* UpdateLastFilesList */

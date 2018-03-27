@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 /* aligned */
 #include "objrep.h"
 #include "pcobj.h"
-#include "targsys.h"
 #include "escape.h"
 
 #define BUFFSIZE        256U    /*  size of object code buffer */
@@ -78,10 +78,10 @@
 #define SOURCE_COMMENT      CMT_NP( COMPILER_OPTIONS )
 #define LINKER_COMMENT      CMT_NP( LINKER_DIRECTIVE )
 #define DISASM_COMMENT      CMT_NP( DISASM_DIRECTIVE )
-#define PHAR_LAP_COMMENT    CMT_NP( EASY_OMF )
+#define PHARLAP_OMF_COMMENT CMT_NP( EASY_OMF )
 #define LIBNAME_COMMENT     CMT_NP( DEFAULT_LIBRARY )
 #define MODEL_COMMENT       CMT_NP( WAT_PROC_MODEL )
-#define DEBUG_COMMENT       CMT_NP( MS_OMF )
+#define MS_OMF_COMMENT      CMT_NP( MS_OMF )
 #define EXPORT_COMMENT      CMT_NP( DLL_ENTRY )
 #define DEPENDENCY_COMMENT  CMT_NP( DEPENDENCY )
 #define WEAK_EXTRN_COMMENT  CMT_NP( WKEXT )

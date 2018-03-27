@@ -85,38 +85,48 @@ static void SysSetTitle( char *title )
 //    != 0 means success
 // save pinfo for closing child
 
-static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo, LPHANDLE readpipe )
+static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo, LPHANDLE pipe_input )
 {
     HANDLE              cp;
     HANDLE              parent_std_output;
     HANDLE              parent_std_error;
+    HANDLE              std_output;
+    HANDLE              std_error;
     HANDLE              pipe_output;
     SECURITY_ATTRIBUTES sa;
     DWORD               rc;
     STARTUPINFO         sinfo;
 
+    parent_std_output = GetStdHandle( STD_OUTPUT_HANDLE );
+    parent_std_error = GetStdHandle( STD_ERROR_HANDLE );
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
-    if( !CreatePipe( readpipe, &pipe_output, &sa, 0 ) ) {
+    if( !CreatePipe( pipe_input, &pipe_output, &sa, 0 ) ) {
         return( GetLastError() );
     }
     cp = GetCurrentProcess();
-    DuplicateHandle( cp, GetStdHandle( STD_OUTPUT_HANDLE ), cp, &parent_std_output, 0, TRUE, DUPLICATE_SAME_ACCESS );
-    DuplicateHandle( cp, GetStdHandle( STD_ERROR_HANDLE ), cp, &parent_std_error, 0, TRUE, DUPLICATE_SAME_ACCESS );
-    SetStdHandle( STD_OUTPUT_HANDLE, pipe_output );
-    SetStdHandle( STD_ERROR_HANDLE, pipe_output );
-    memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.cb = sizeof( sinfo );
-    rc = 0;
-    if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
+    if( DuplicateHandle( cp, pipe_output, cp, &std_output, 0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
         rc = GetLastError();
+    } else {
+        if( DuplicateHandle( cp, pipe_output, cp, &std_error, 0, TRUE, DUPLICATE_SAME_ACCESS ) == 0 ) {
+            rc = GetLastError();
+        } else {
+            SetStdHandle( STD_OUTPUT_HANDLE, std_output );
+            SetStdHandle( STD_ERROR_HANDLE, std_error );
+            memset( &sinfo, 0, sizeof( sinfo ) );
+            sinfo.cb = sizeof( sinfo );
+            rc = 0;
+            if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
+                rc = GetLastError();
+            }
+            SetStdHandle( STD_OUTPUT_HANDLE, parent_std_output );
+            SetStdHandle( STD_ERROR_HANDLE, parent_std_error );
+            CloseHandle( std_error );
+        }
+        CloseHandle( std_output );
     }
     CloseHandle( pipe_output );
-    SetStdHandle( STD_OUTPUT_HANDLE, parent_std_output );
-    SetStdHandle( STD_ERROR_HANDLE, parent_std_error );
-    CloseHandle( parent_std_output );
-    CloseHandle( parent_std_error );
     return( rc );
 }
 
@@ -140,24 +150,24 @@ int SysRunCommand( const char *cmd )
     DWORD               rc;
     DWORD               bytes_read;
     char                buff[256 + 1];
-    HANDLE              readpipe;
+    HANDLE              pipe_input;
     PROCESS_INFORMATION pinfo;
 
-    readpipe = INVALID_HANDLE_VALUE;
+    pipe_input = INVALID_HANDLE_VALUE;
     memset( &pinfo, 0, sizeof( pinfo ) );
-    rc = RunChildProcessCmdl( cmd, &pinfo, &readpipe );
+    rc = RunChildProcessCmdl( cmd, &pinfo, &pipe_input );
     if( rc != 0 ) {
-        if( readpipe != INVALID_HANDLE_VALUE ) {
-            CloseHandle( readpipe );
+        if( pipe_input != INVALID_HANDLE_VALUE ) {
+            CloseHandle( pipe_input );
         }
         return( -1 );
     }
-    if( readpipe != INVALID_HANDLE_VALUE ) {
+    if( pipe_input != INVALID_HANDLE_VALUE ) {
         for( ;; ) {
             char    *dst;
             DWORD   i;
 
-            ReadFile( readpipe, buff, sizeof( buff ) - 1, &bytes_read, NULL );
+            ReadFile( pipe_input, buff, sizeof( buff ) - 1, &bytes_read, NULL );
             if( bytes_read == 0 )
                 break;
             dst = buff;
@@ -169,7 +179,7 @@ int SysRunCommand( const char *cmd )
             *dst = '\0';
             Log( Quiet, "%s", buff );
         }
-        CloseHandle( readpipe );
+        CloseHandle( pipe_input );
     }
     WaitForSingleObject( pinfo.hProcess, INFINITE );
     GetExitCodeProcess( pinfo.hProcess, &rc );

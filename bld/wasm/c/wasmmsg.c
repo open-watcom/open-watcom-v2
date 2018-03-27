@@ -74,7 +74,7 @@ extern char             *_Copyright;
 static const char *FingerMsg[] = {
     banner1w( "Assembler", _WASM_VERSION_ ),
     banner2,
-    banner2a( "1992" ),
+    banner2a( 1992 ),
     banner3,
     banner3a,
 #ifdef D32_NAME

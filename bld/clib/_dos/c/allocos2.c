@@ -38,15 +38,15 @@
 #include "seterrno.h"
 
 
-#if defined(__386__) || defined(__PPC__)
-  typedef void                  *mem_id;
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
   typedef unsigned              mem_id;
   #if defined(__BIG_DATA__)
     #define MODIFIES ds es
   #else
     #define MODIFIES es
   #endif
+#elif defined( _M_IX86 ) || defined( __PPC__ )
+  typedef void                  *mem_id;
 #else
   #error platform not supported
 #endif
@@ -56,7 +56,14 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
 {
     APIRET      rc;
 
-#if defined(__386__) || defined(__PPC__)
+#if defined( _M_I86 )
+    SEL         mem;
+    USHORT      number_segments, remaining_bytes;
+
+    number_segments = size >> 12;       // Number of 64k segments
+    remaining_bytes = (size << 4) & 0xFFFF;     // remainder, < 64k
+    rc = DosAllocHuge( number_segments, remaining_bytes, &mem, 0, 0 );
+#elif defined( _M_IX86 ) || defined( __PPC__ )
     /*
         Note:   _dos_allocmem() needs better documentation for 32-bit
                 since mem is an offset instead a selector value.
@@ -64,13 +71,6 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
     void        *mem;
 
     rc = DosAllocMem( &mem, size << 4, PAG_COMMIT | PAG_READ | PAG_WRITE );
-#elif defined( _M_I86 )
-    SEL         mem;
-    USHORT      number_segments, remaining_bytes;
-
-    number_segments = size >> 12;       // Number of 64k segments
-    remaining_bytes = (size << 4) & 0xFFFF;     // remainder, < 64k
-    rc = DosAllocHuge( number_segments, remaining_bytes, &mem, 0, 0 );
 #else
     #error platform not supported
 #endif
@@ -87,16 +87,16 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
 #endif
 _WCRTLINK unsigned _dos_freemem( mem_id mem )
 {
-#if defined(__386__) || defined(__PPC__)
+#if defined( _M_I86 )
+    // defined inside heap
+    return( __FreeSeg( mem ) );
+#elif defined( _M_IX86 ) || defined( __PPC__ )
     APIRET      rc;
     rc = DosFreeMem( mem );
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }
     return( 0 );
-#elif defined( _M_I86 )
-    // defined inside heap
-    return( __FreeSeg( mem ) );
 #else
     #error platform not supported
 #endif

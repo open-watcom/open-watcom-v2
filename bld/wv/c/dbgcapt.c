@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,17 +40,18 @@
 #include "dbgutil.h"
 #include "dbgio.h"
 #include "filermt.h"
+#include "dbgstdio.h"
+#include "dbgcapt.h"
+#include "dbginsp.h"
 
-extern void             WndTmpFileInspect( const char *file );
-extern void             StdOutNew( void );
 
 #define PREFIX_LEN      2
+
 static char             FileName[PREFIX_LEN+8+1+3+1] = { '@', 'r' };
 static unsigned         FileNum = 0;
 static bool             CaptureOk;
 
-
-extern void CaptureError( void )
+void CaptureError( void )
 {
     CaptureOk = false;
 }
@@ -79,7 +81,7 @@ OVL_EXTERN bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
 }
 
 
-extern void ProcCapture( void )
+void ProcCapture( void )
 {
     cmd_list    *cmds;
     const char  *start;

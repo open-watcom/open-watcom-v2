@@ -73,14 +73,19 @@ char *GUIGetFontFromUser( char *fontinfo )
     return( NULL );
 }
 
-void *GUISetMouseCursor( gui_mouse_cursor type )
+gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
 {
-    /* unused parameters */ (void)type;
-
-    return( NULL );
+    switch( type ) {
+    case GUI_ARROW_CURSOR :
+    case GUI_HOURGLASS_CURSOR :
+    case GUI_CROSS_CURSOR :
+        return( (void *)"" );
+    default:
+        return( NULL );
+    }
 }
 
-void GUIResetMouseCursor( void *old )
+void GUIResetMouseCursor( gui_mcursor_handle old )
 {
     /* unused parameters */ (void)old;
 }

@@ -32,10 +32,11 @@
 
 #include "app.h"
 
+
 static gui_menu_struct W4PopUp[] = {
-    { "&Say",       MENU_W2_SAY, GUI_ENABLED },
-    { "&Top",       MENU_W2_TOP, GUI_ENABLED },
-    { "&Open 1",    MENU_W2_OPEN1, GUI_ENABLED },
+    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED },
+    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
+    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED },
 };
 
 static char * Stuff[] = {
@@ -80,19 +81,19 @@ static char * Stuff[] = {
 
 #define SIZE ArraySize( Stuff )
 
-static int W4NumRows( a_window *wnd )
+static wnd_row W4NumRows( a_window wnd )
 {
     wnd=wnd;
     return( SIZE );
 }
 
-static void    W4Modify( a_window *wnd, int row, int piece )
+static void    W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd=wnd;piece=piece;
     if( row < 0 ) {
         Say( "Shouldn't get this event" );
     } else {
-        Say2( "Modify", Stuff[ row ] );
+        Say2( "Modify", Stuff[row] );
     }
 }
 
@@ -105,18 +106,20 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
 
-static bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
     wnd=wnd;
     if( row == -2 ) {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         line->text = "Title line 1";
         line->tabstop = false;
         line->static_text = true;
     } else if( row == -1 ) {
-        if( piece != 0 ) return( false );
+        if( piece != 0 )
+            return( false );
         line->tabstop = false;
         line->static_text = true;
         #if 0
@@ -147,7 +150,7 @@ static bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *li
         case 2:
             line->tabstop = false;
             line->use_prev_attr = true;
-            line->text = Stuff[ row ];
+            line->text = Stuff[row];
             line->extent = WND_MAX_EXTEND;
             line->indent = 2000;
             return( true );
@@ -166,19 +169,20 @@ static bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *li
 }
 
 
-static void W4Refresh( a_window *wnd )
+static void W4Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
-static void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+static void W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     row=row;piece=piece;
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
-        if( row < 0 ) break;
+        if( row < 0 )
+            break;
         WndMenuEnableAll( wnd );
         break;
     case MENU_W2_SAY:
@@ -194,7 +198,7 @@ static void W4MenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 static wnd_info W4Info = {
-    NoEventProc,
+    NoWndEventProc,
     W4Refresh,
     W4GetLine,
     W4MenuItem,
@@ -210,12 +214,12 @@ static wnd_info W4Info = {
     DefPopUp( W4PopUp )
 };
 
-a_window *W4Open( void )
+a_window W4Open( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndCreate( "", &W4Info, 0, NULL );
     if( wnd != NULL )
-        WndSetKey( wnd, 1 );
+        WndSetKeyPiece( wnd, 1 );
     return( wnd );
 }

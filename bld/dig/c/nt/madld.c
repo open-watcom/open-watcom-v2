@@ -31,6 +31,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #include "mad.h"
@@ -38,9 +40,12 @@
 #include "madcli.h"
 #include "madsys.h"
 
-void MADSysUnload( mad_sys_handle sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    FreeLibrary( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        FreeLibrary( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
@@ -50,6 +55,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     char                newpath[256];
     mad_status          status;
 
+    *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
     dip_dll = LoadLibrary( newpath );

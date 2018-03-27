@@ -56,73 +56,73 @@ typedef struct virt_page {
 
 static unsigned         TimeStamp;
 
-dip_status VMInit( imp_image_handle *ii, unsigned long size )
+dip_status VMInit( imp_image_handle *iih, unsigned long size )
 {
-    ii->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE * VM_PAGE_SIZE );
-    ii->virt = DCAlloc( ii->vm_dir_num * sizeof( ii->virt ) );
-    if( ii->virt == NULL ) {
+    iih->vm_dir_num = BLOCK_FACTOR( size, DIR_SIZE * VM_PAGE_SIZE );
+    iih->virt = DCAlloc( iih->vm_dir_num * sizeof( iih->virt ) );
+    if( iih->virt == NULL ) {
         DCStatus( DS_ERR|DS_NO_MEM );
         return( DS_ERR|DS_NO_MEM );
     }
-    memset( ii->virt, 0, ii->vm_dir_num * sizeof( ii->virt ) );
+    memset( iih->virt, 0, iih->vm_dir_num * sizeof( iih->virt ) );
     return( DS_OK );
 }
 
-void VMFini( imp_image_handle *ii )
+void VMFini( imp_image_handle *iih )
 {
     int         i;
     int         j;
     virt_page   *pg;
 
-    if( ii->virt != NULL ) {
-        for( i = ii->vm_dir_num-1; i >= 0; --i ) {
-            if( ii->virt[i] != NULL ) {
+    if( iih->virt != NULL ) {
+        for( i = iih->vm_dir_num-1; i >= 0; --i ) {
+            if( iih->virt[i] != NULL ) {
                 for( j = DIR_SIZE-1; j >= 0; --j ) {
-                    pg = ii->virt[i][j];
+                    pg = iih->virt[i][j];
                     if( pg != NULL && pg->offset == 0 ) {
                         DCFree( pg );
                     }
                 }
-                DCFree( ii->virt[i] );
+                DCFree( iih->virt[i] );
             }
         }
-        DCFree( ii->virt );
-        ii->virt = NULL;
+        DCFree( iih->virt );
+        iih->virt = NULL;
     }
 }
 
-static unsigned KillPages( imp_image_handle *ii, unsigned i, unsigned j )
+static unsigned KillPages( imp_image_handle *iih, unsigned i, unsigned j )
 {
     unsigned            idx;
     unsigned            num_pages;
     virt_page           *pg;
 
-    pg = ii->virt[i][j];
+    pg = iih->virt[i][j];
     num_pages = pg->block->len / VM_PAGE_SIZE;
     for( idx = 0; idx < num_pages; ++idx ) {
         if( j >= DIR_SIZE ) {
             ++i;
             j = 0;
         }
-        ii->virt[i][j] = NULL;
+        iih->virt[i][j] = NULL;
         ++j;
     }
     DCFree( pg );
     return( num_pages * VM_PAGE_SIZE );
 }
 
-static int InitPageDir( imp_image_handle *ii, unsigned dir_idx )
+static int InitPageDir( imp_image_handle *iih, unsigned dir_idx )
 {
-    ii->virt[dir_idx] = DCAlloc( sizeof( virt_page * ) * DIR_SIZE );
-    if( ii->virt[dir_idx] == NULL ) {
+    iih->virt[dir_idx] = DCAlloc( sizeof( virt_page * ) * DIR_SIZE );
+    if( iih->virt[dir_idx] == NULL ) {
         DCStatus( DS_ERR|DS_NO_MEM );
         return( 0 );
     }
-    memset( ii->virt[dir_idx], 0, sizeof( virt_page * ) * DIR_SIZE );
+    memset( iih->virt[dir_idx], 0, sizeof( virt_page * ) * DIR_SIZE );
     return( 1 );
 }
 
-void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
+void *VMBlock( imp_image_handle *iih, virt_mem start, size_t len )
 {
     unsigned            dir_idx;
     unsigned            pg_idx;
@@ -136,15 +136,15 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
     loaded_block        *block;
 
     dir_idx = GET_DIR( start );
-    if( ii->virt[dir_idx] == NULL ) {
-        if( !InitPageDir( ii, dir_idx ) ) {
+    if( iih->virt[dir_idx] == NULL ) {
+        if( !InitPageDir( iih, dir_idx ) ) {
             return( NULL );
         }
     }
     pg_idx = GET_PAGE( start );
     len += start % VM_PAGE_SIZE;
     pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
-    pg = ii->virt[dir_idx][pg_idx];
+    pg = iih->virt[dir_idx][pg_idx];
     if( pg == NULL || ( pg->block->len - pg->offset ) < len ) {
         /* unloaded previously loaded block */
         if( pg != NULL ) {
@@ -152,7 +152,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
             /* find first page of the block */
             i = pg_idx;
             for( ;; ) {
-                ii->virt[tmp_idx][i] = NULL;
+                iih->virt[tmp_idx][i] = NULL;
                 if( pg->offset == 0 ) break;
                 if( i == 0 ) {
                     --tmp_idx;
@@ -179,8 +179,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
                 ++tmp_idx;
                 j = 0;
             }
-            if( ii->virt[tmp_idx] == NULL ) {
-                if( !InitPageDir( ii, tmp_idx ) ) {
+            if( iih->virt[tmp_idx] == NULL ) {
+                if( !InitPageDir( iih, tmp_idx ) ) {
                     /* unwind the setup already done */
                     num_pages = i;
                     for( i = 0; i < num_pages; ++i, ++pg_idx ) {
@@ -188,47 +188,47 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
                             ++dir_idx;
                             pg_idx = 0;
                         }
-                        ii->virt[dir_idx][pg_idx] = NULL;
+                        iih->virt[dir_idx][pg_idx] = NULL;
                     }
                     DCFree( pg );
                     return( NULL );
                 }
             }
-            if( ii->virt[tmp_idx][j] != NULL ) {
+            if( iih->virt[tmp_idx][j] != NULL ) {
                 /*
                     We just ran into another allocated block, so we have
                     to kill all the pages mapped in by it. We know that
                     if the page pointer is non-NULL, it will be offset==0
                     since KillPages will clean out the others.
                 */
-                KillPages( ii, tmp_idx, j );
+                KillPages( iih, tmp_idx, j );
             }
-            ii->virt[tmp_idx][j] = &pg[i];
+            iih->virt[tmp_idx][j] = &pg[i];
         }
         /* read in new block */
         len = num_pages * VM_PAGE_SIZE;
         block->len = len;
-        pg_start += ii->bias;
-        if( DCSeek( ii->sym_fid, pg_start, DIG_ORG ) != pg_start ) {
+        pg_start += iih->bias;
+        if( DCSeek( iih->sym_fp, pg_start, DIG_ORG ) ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( NULL );
         }
         /* last block might be a short read */
-        if( DCRead( ii->sym_fid, pg->block->data, len ) == DIG_RW_ERROR ) {
+        if( DCRead( iih->sym_fp, pg->block->data, len ) == DIG_RW_ERROR ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }
-        pg = ii->virt[dir_idx][pg_idx];
+        pg = iih->virt[dir_idx][pg_idx];
     }
     ++TimeStamp;
     if( TimeStamp == 0 ) {
         /* deal with wrap-around */
-        for( ii = ImageList; ii != NULL; ii = ii->next_image ) {
-            if( ii->virt != NULL ) {
-                for( i = ii->vm_dir_num; i-- > 0; ) {
-                    if( ii->virt[i] != NULL ) {
+        for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
+            if( iih->virt != NULL ) {
+                for( i = iih->vm_dir_num; i-- > 0; ) {
+                    if( iih->virt[i] != NULL ) {
                         for( j = DIR_SIZE; j-- > 0; ) {
-                            zero = ii->virt[i][j];
+                            zero = iih->virt[i][j];
                             if( zero != NULL ) {
                                 zero->block->time_stamp = 0;
                             }
@@ -243,13 +243,13 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
     return( &pg->block->data[ (start & (VM_PAGE_SIZE - 1)) + pg->offset ] );
 }
 
-void *VMRecord( imp_image_handle *ii, virt_mem rec )
+void *VMRecord( imp_image_handle *iih, virt_mem rec )
 {
     s_common    *p;
 
-    p = VMBlock( ii, rec, sizeof( *p ) );
+    p = VMBlock( iih, rec, sizeof( *p ) );
     if( p != NULL ) {
-        p = VMBlock( ii, rec, p->length + sizeof( p->length ) );
+        p = VMBlock( iih, rec, p->length + sizeof( p->length ) );
     }
     return( p );
 }
@@ -262,17 +262,17 @@ unsigned VMShrink( void )
     unsigned            kill_i;
     unsigned            kill_j;
     virt_page           *pg;
-    imp_image_handle    *ii;
+    imp_image_handle    *iih;
 
     kill_time = UINT_MAX;
     kill_i = 0;
     kill_j = 0;
-    for( ii = ImageList; ii != NULL; ii = ii->next_image ) {
-        if( ii->virt != NULL ) {
-            for( i = ii->vm_dir_num-1; i >= 0; --i ) {
-                if( ii->virt[i] != NULL ) {
+    for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
+        if( iih->virt != NULL ) {
+            for( i = iih->vm_dir_num-1; i >= 0; --i ) {
+                if( iih->virt[i] != NULL ) {
                     for( j = DIR_SIZE-1; j >= 0; --j ) {
-                        pg = ii->virt[i][j];
+                        pg = iih->virt[i][j];
                         if( pg != NULL && pg->offset == 0 ) {
                             if( kill_time > pg->block->time_stamp ) {
                                 kill_time = pg->block->time_stamp;
@@ -286,5 +286,5 @@ unsigned VMShrink( void )
         }
     }
     if( kill_time == UINT_MAX ) return( 0 );
-    return( KillPages( ii, kill_i, kill_j ) );
+    return( KillPages( iih, kill_i, kill_j ) );
 }

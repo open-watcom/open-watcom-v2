@@ -169,8 +169,8 @@ STATIC void dumpCommaData( char *image, char *module, char *file, char *routine,
 
 
 
-STATIC void doConvert( a_window *wnd, DUMPRTNS *dump_rtn, gui_ctl_id id )
-/***********************************************************************/
+STATIC void doConvert( a_window wnd, DUMPRTNS *dump_rtn, gui_ctl_id id )
+/**********************************************************************/
 {
     sio_data        *curr_sio;
 
@@ -192,8 +192,8 @@ STATIC void doConvert( a_window *wnd, DUMPRTNS *dump_rtn, gui_ctl_id id )
 
 
 
-void WPConvert( a_window *wnd, gui_ctl_id id )
-/********************************************/
+void WPConvert( a_window wnd, gui_ctl_id id )
+/*******************************************/
 {
     DlgGetConvert( wnd );
     if( ConvertFile == NULL )

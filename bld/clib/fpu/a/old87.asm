@@ -29,6 +29,7 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 
 ifdef __DOS__
@@ -66,6 +67,7 @@ l2:
 endif
         ret
         endproc __old_8087
+
         endmod
 
 include xinit.inc

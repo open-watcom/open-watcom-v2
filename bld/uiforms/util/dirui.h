@@ -39,6 +39,6 @@ typedef struct directory {
         int     dirsize;                /* number of filenames of interest */
 } DIRECTORY;
 
- int initdir( VSCREEN *, DIRECTORY * );
- EVENT directory( VSCREEN *, DIRECTORY * );
- void finidir( VSCREEN *, DIRECTORY * );
+extern int      initdir( VSCREEN *, DIRECTORY * );
+extern ui_event directory( VSCREEN *, DIRECTORY * );
+extern void     finidir( VSCREEN *, DIRECTORY * );

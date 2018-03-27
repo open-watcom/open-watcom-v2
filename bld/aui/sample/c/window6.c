@@ -32,6 +32,7 @@
 
 #include "app.h"
 
+
 static char * Stuff[] = {
         "Line 1",
         "Line 2",
@@ -40,32 +41,33 @@ static char * Stuff[] = {
         "Line 5",
 };
 
-static int W6NumRows( a_window *wnd )
+static wnd_row W6NumRows( a_window wnd )
 {
     wnd=wnd;
     return( ArraySize( Stuff ) );
 }
 
-static bool    W6GetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+static bool    W6GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
-    if( row >= ArraySize( Stuff ) ) return( false );
-    if( piece != 0 ) return( false );
-    line->text = Stuff[ row ];
+    if( row >= ArraySize( Stuff ) )
+        return( false );
+    if( piece != 0 )
+        return( false );
+    line->text = Stuff[row];
     return( true );
 }
 
 
-static void    W6Refresh( a_window *wnd )
+static void    W6Refresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 static wnd_metrics W6Metrics = { 3, 12, 0, 0 };
 
 static wnd_info W6Info = {
-    NoEventProc,
+    NoWndEventProc,
     W6Refresh,
     W6GetLine,
     NoMenuItem,
@@ -81,10 +83,10 @@ static wnd_info W6Info = {
     NoPopUp
 };
 
-a_window *W6Open( void )
+a_window W6Open( void )
 {
     wnd_create_struct   info;
-    a_window            *wnd;
+    a_window            wnd;
 
     WndInitCreateStruct( &info );
     info.info = &W6Info;

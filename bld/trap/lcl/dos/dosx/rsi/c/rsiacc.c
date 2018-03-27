@@ -223,8 +223,7 @@ trap_retval ReqMap_addr( void )
         fp.sel = 1;
         fp.off += ObjInfo[0].start;
         for( i = 0; i < NumObjects; ++i ) {
-            if( ObjInfo[i].start <= fp.off
-             && (ObjInfo[i].start + ObjInfo[i].size) > fp.off ) {
+            if( ObjInfo[i].start <= fp.off && ( ObjInfo[i].start + ObjInfo[i].size ) > fp.off ) {
                 fp.sel = i + 1;
                 fp.off -= ObjInfo[i].start;
                 ret->lo_bound = ObjInfo[i].start - ObjInfo[0].start;
@@ -745,7 +744,7 @@ static bool SetDebugRegs( void )
     }
 }
 
-static unsigned DoRun( void )
+static trap_conditions DoRun( void )
 {
     D32DebugRun( &Proc );
     switch( Proc.int_id ) {
@@ -835,7 +834,7 @@ static unsigned ProgRun( bool step )
                     ret->conditions = DoRun();
                     Proc.eflags &= ~TRACE_BIT;
                 }
-                if( ( ret->conditions & (COND_TRACE|COND_BREAK) ) == 0 )
+                if( (ret->conditions & (COND_TRACE | COND_BREAK)) == 0 )
                     break;
                 if( CheckWatchPoints() ) {
                     ret->conditions |= COND_WATCH;
@@ -907,7 +906,7 @@ trap_retval ReqGet_lib_name( void )
     get_lib_name_ret    *ret;
 
     ret = GetOutPtr( 0 );
-    ret->handle = 0;
+    ret->mod_handle = 0;
     return( sizeof( *ret ) );
 }
 

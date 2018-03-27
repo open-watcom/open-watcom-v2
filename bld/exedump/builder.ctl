@@ -21,6 +21,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntaxp/wdump.exe     <OWRELROOT>/axpnt/
     <CCCMD> qnx386/wdump.exe    <OWRELROOT>/qnx/wdump
     <CCCMD> linux386/wdump.exe  <OWRELROOT>/binl/wdump
+    <CCCMD> rdos386/wdump.exe   <OWRELROOT>/rdos/
 
     <CCCMD> ntx64/wdump.exe     <OWRELROOT>/binnt64/
     <CCCMD> linuxx64/wdump.exe  <OWRELROOT>/binl64/wdump

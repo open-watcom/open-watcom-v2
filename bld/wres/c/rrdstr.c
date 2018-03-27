@@ -35,8 +35,8 @@
 #include "read.h"
 #include "wresrtns.h"
 
-char *ResReadString( WResFileID fid, size_t *strlen )
-/***************************************************/
+char *ResReadString( FILE *fp, size_t *strlen )
+/*********************************************/
 {
     VarString *         newstring;
     bool                error;
@@ -44,10 +44,10 @@ char *ResReadString( WResFileID fid, size_t *strlen )
     char *              retstring;
 
     newstring = VarStringStart();
-    error = ResReadUint8( &nextchar, fid );
+    error = ResReadUint8( &nextchar, fp );
     while( !error && nextchar != '\0' ) {
         VarStringAddChar( newstring, nextchar );
-        error = ResReadUint8( &nextchar, fid );
+        error = ResReadUint8( &nextchar, fp );
     }
 
     retstring = VarStringEnd( newstring, strlen );
@@ -60,8 +60,8 @@ char *ResReadString( WResFileID fid, size_t *strlen )
     return( retstring );
 } /* ResReadString */
 
-char *ResRead32String( WResFileID fid, size_t *strlen )
-/*****************************************************/
+char *ResRead32String( FILE *fp, size_t *strlen )
+/***********************************************/
 {
     VarString           *newstring;
     bool                error;
@@ -69,10 +69,10 @@ char *ResRead32String( WResFileID fid, size_t *strlen )
     char                *retstring;
 
     newstring = VarStringStart();
-    error = ResReadUint16( &nextchar, fid );
+    error = ResReadUint16( &nextchar, fp );
     while( !error && nextchar != 0x0000 ) {
         VarStringAddChar( newstring, UNI2ASCII( nextchar ) );
-        error = ResReadUint16( &nextchar, fid );
+        error = ResReadUint16( &nextchar, fp );
     }
 
     retstring = VarStringEnd( newstring, strlen );

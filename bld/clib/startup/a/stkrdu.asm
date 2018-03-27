@@ -29,9 +29,10 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 include struct.inc
-include xinit.inc
+
 include exitwmsg.inc
 
         modstart        stk
@@ -39,8 +40,6 @@ include exitwmsg.inc
         datasegment
 msg     db      "Stack Overflow!", 0
         enddata
-
-        xinit   _init_stk,DEF_PRIORITY
 
         assume  ds:DGROUP
 
@@ -114,5 +113,11 @@ lup:                                    ; do {
         mov     eax,4[eax]              ; snag return address
         jmp     eax                     ; return to caller
         endproc __alloca_probe
+
         endmod
+
+include xinit.inc
+
+        xinit   _init_stk,DEF_PRIORITY
+
         end

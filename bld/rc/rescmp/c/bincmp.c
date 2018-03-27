@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "watcom.h"
 #include "types.h"
 #include "wressetr.h"
@@ -45,17 +44,17 @@
 static char     Buffer1[BUFFER_SIZE];
 static char     Buffer2[BUFFER_SIZE];
 
-int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 offset2, uint_32 length )
+int BinaryCompare( FILE *fp1, uint_32 offset1, FILE *fp2, uint_32 offset2, uint_32 length )
 /*****************************************************************************************************/
 {
     size_t          numread;
     int             rc;
 
     /* seek to the start of the places to compare */
-    if( RESSEEK( fid1, offset1, SEEK_SET ) ) {
+    if( RESSEEK( fp1, offset1, SEEK_SET ) ) {
         return( -1 );
     }
-    if( RESSEEK( fid2, offset2, SEEK_SET ) ) {
+    if( RESSEEK( fp2, offset2, SEEK_SET ) ) {
         return( -1 );
     }
 
@@ -64,11 +63,11 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
     for( numread = BUFFER_SIZE; length > 0; length -= numread ) {
         if( numread > length )
             numread = length;
-        if( RESREAD( fid1, Buffer1, numread ) != numread ) {
+        if( RESREAD( fp1, Buffer1, numread ) != numread ) {
             rc = -1;
             break;
         }
-        if( RESREAD( fid2, Buffer2, numread ) != numread ) {
+        if( RESREAD( fp2, Buffer2, numread ) != numread ) {
             rc = -1;
             break;
         }
@@ -78,7 +77,7 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
         }
     }
 
-    RESSEEK( fid2, offset2, SEEK_SET );
-    RESSEEK( fid1, offset1, SEEK_SET );
+    RESSEEK( fp2, offset2, SEEK_SET );
+    RESSEEK( fp1, offset1, SEEK_SET );
     return( rc );
 }

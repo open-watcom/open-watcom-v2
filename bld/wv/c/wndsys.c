@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <ctype.h>
 #if defined( __NT__ ) && defined( __GUI__ )
     #define WIN32_LEAN_AND_MEAN
@@ -65,22 +65,11 @@
 #include "wndmenu.h"
 #include "dbgwpain.h"
 #include "dbginit.h"
-
-
-extern wnd_posn         WndPosition[WND_NUM_CLASSES];
-extern a_window         *WndMain;
-extern gui_rect         WndMainRect;
-
-extern bool             UsrScrnMode( void );
-extern bool             UserScreen( void );
-extern bool             DebugScreen( void );
-extern bool             DebugScreenRecover( void );
-extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
-extern void             SetUpdateFlags( update_list );
-
-static void             WndBadCmd( a_window * );
-
 #include "menudef.h"
+
+
+static void             WndBadCmd( a_window );
+
 char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,
@@ -138,14 +127,14 @@ static const char WindowNameTab[] =
     "PRevious\0"
 };
 
-static void ToWndChooseNew( a_window *p )
+OVL_EXTERN void ToWndChooseNew( a_window wnd )
 {
-    /* unused parameters */ (void)p;
+    /* unused parameters */ (void)wnd;
 
     WndChooseNew();
 }
 
-static void (* const WndJmpTab[])( a_window * ) =
+static void (* const WndJmpTab[])( a_window ) =
 {
     &WndClose,
     &WndCursorStart,
@@ -194,7 +183,7 @@ wnd_metrics *WndMetrics[] = {
 
 wnd_metrics NoMetrics = { 0, 0, 0, 0 };
 
-bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
+bool DbgWndSearch( a_window wnd, bool from_top, int direction )
 {
     bool        rc;
 
@@ -202,24 +191,24 @@ bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
     return( rc );
 }
 
-void ProcPUINYI( a_window *wnd )
+void ProcPUINYI( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     Say( "NYI" );
 }
 
-void ProcWndSearch( a_window *wnd )
+void ProcWndSearch( a_window wnd )
 {
     DbgWndSearch( wnd, false, DlgSearch( wnd, SrchHistory ) );
 }
 
-void ProcWndTabLeft( a_window *wnd )
+void ProcWndTabLeft( a_window wnd )
 {
     WndTabLeft( wnd, true );
 }
 
-void ProcWndTabRight( a_window *wnd )
+void ProcWndTabRight( a_window wnd )
 {
     WndTabRight( wnd, true );
 }
@@ -233,22 +222,22 @@ void ProcSearchAll( void )
     }
 }
 
-void ProcWndPopUp( a_window *wnd )
+void ProcWndPopUp( a_window wnd )
 {
     WndKeyPopUp( wnd, NULL );
 }
 
-void ProcWndFindNext( a_window *wnd )
+void ProcWndFindNext( a_window wnd )
 {
     DbgWndSearch( wnd, false, 1 );
 }
 
-void ProcWndFindPrev( a_window *wnd )
+void ProcWndFindPrev( a_window wnd )
 {
     DbgWndSearch( wnd, false, -1 );
 }
 
-static void WndBadCmd( a_window *wnd )
+static void WndBadCmd( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -258,7 +247,7 @@ static void WndBadCmd( a_window *wnd )
 void WndProcWindow( void )
 {
     int         cmd;
-    a_window    *wnd = WndFindActive();
+    a_window    wnd = WndFindActive();
 
     cmd = ScanCmd( WindowNameTab );
     ReqEOC();
@@ -353,7 +342,7 @@ void WndDebug( void )
 
 void WndRedraw( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( WndClass( wnd ) == wndclass ) {
@@ -408,8 +397,8 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     gui_menu_struct     *sub;
     curr = child;
     for( i = 0; i < size; ++i ) {
-        if( curr->num_child_menus != NULL ) {
-            sub = FindLocalMenu( ch, curr->child, curr->num_child_menus );
+        if( curr->child_num_items > 0 ) {
+            sub = FindLocalMenu( ch, curr->child, curr->child_num_items );
             if( sub != NULL ) {
                 return( sub );
             }
@@ -420,7 +409,7 @@ static gui_menu_struct *FindLocalMenu( char ch, gui_menu_struct *child, int size
     return( NULL );
 }
 
-extern  bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, gui_key key )
 {
     wnd_macro           *mac;
     wnd_macro           *all;
@@ -450,7 +439,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     ch = LookUpCtrlKey( key );
     if( ch == 0 )
         return( false );
-    menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );//
+    menu = FindLocalMenu( ch, WndPopupMenu( wnd ), WndNumPopups( wnd ) );
     if( menu == NULL )
         return( false );
     AccelMenuItem( menu, false );
@@ -471,7 +460,7 @@ void WndSysInit( void )
     }
 }
 
-void SetUnderLine( a_window *wnd, wnd_line_piece *line )
+void SetUnderLine( a_window wnd, wnd_line_piece *line )
 {
     line->attr = WND_STANDOUT;
     line->tabstop = false;
@@ -482,7 +471,7 @@ void SetUnderLine( a_window *wnd, wnd_line_piece *line )
     line->extent = WndWidth( wnd );
 }
 
-void SetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type )
+void SetGadgetLine( a_window wnd, wnd_line_piece *line, wnd_gadget_type type )
 {
     WndSetGadgetLine( wnd, line, type, MaxGadgetLength );
 }
@@ -514,7 +503,7 @@ void InitGadget( void )
     }
 }
 
-bool OpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod, bool src )
+bool OpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod, bool src )
 {
     if( src ) {
         return( FileOpenGadget( wnd, line, mod ) );
@@ -523,8 +512,7 @@ bool OpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod, bool src )
     }
 }
 
-bool CheckOpenGadget( a_window *wnd, wnd_row row,
-                      bool open, mod_handle mod, bool src, int piece )
+bool CheckOpenGadget( a_window wnd, wnd_row row, bool open, mod_handle mod, bool src, wnd_piece piece )
 {
     bool        is_open;
 
@@ -535,12 +523,12 @@ bool CheckOpenGadget( a_window *wnd, wnd_row row,
     return( is_open );
 }
 
-extern void WndStartFreshAll( void )
+void WndStartFreshAll( void )
 {
     WndDebug();
 }
 
-extern void WndEndFreshAll( void )
+void WndEndFreshAll( void )
 {
     UpdateFlags = 0;
     CheckBPErrors();
@@ -570,12 +558,12 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
+a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_size, bool vdrag )
 {
-    a_window            *wnd;
+    a_window            wnd;
     wnd_create_struct   info;
     char                *p;
 
@@ -622,8 +610,8 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     if( wnd == NULL )
         return( wnd );
     WndSetFontInfo( wnd, GetWndFont( wnd ) );
-    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE+WSW_MENU_ACCURATE_ROW );
-    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR+WSW_CACHE_LINES );
+    WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE | WSW_MENU_ACCURATE_ROW );
+    WndSetSwitches( wnd, WSW_RBUTTON_CHANGE_CURR | WSW_CACHE_LINES );
     if( !WndHasCurrent( wnd ) )
         WndFirstCurrent( wnd );
     if( _IsOff( SW_OPEN_NO_SHOW ) ) {
@@ -640,7 +628,7 @@ extern a_window *DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     return( wnd );
 }
 
-extern a_window *DbgWndCreate( const char *title, wnd_info *info,
+a_window DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
     return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
@@ -662,7 +650,7 @@ static char **RXErrTxt[] = {
     LITREF_DUI( ERR_RX_13 )
 };
 
-extern void WndRXError( int num )
+void WndRXError( int num )
 {
     Error( ERR_NONE, *RXErrTxt[num - 1] );
 }

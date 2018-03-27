@@ -32,8 +32,9 @@
 
 #ifndef _GUIGADGT_H_
 #define _GUIGADGT_H_
+
 extern void GUISetShowGadget( p_gadget gadget, bool show, bool set, int pos );
-extern EVENT GUIGadgetFilter( gui_window *wnd, EVENT ev, int *prev, int *diff );
+extern ui_event GUIGadgetFilter( gui_window *wnd, ui_event ui_ev, int *prev, int *diff );
 extern bool GUIUseGadget( gui_window *wnd, p_gadget gadget );
 extern bool GUIDrawGadgetLine( p_gadget gadget );
 extern void GUIInitGadget( p_gadget gadget, ORD start, ORD length, ORD anchor );
@@ -41,4 +42,5 @@ extern bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
                       ORD anchor, ORD start, ORD length,
                       p_gadget *gadget_ptr, gui_scroll_styles style );
 extern int GUIGetScrollOffset( void );
+
 #endif

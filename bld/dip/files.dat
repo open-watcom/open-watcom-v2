@@ -121,8 +121,11 @@ usr="watcom??.so"     keys="no_lx64 newdbg"
 # RDOS
 #
 [ DEFAULT type="d" dir="rdos" cond="rdoshost" where="c f77 jc jf77" ]
+usr="codeview.dll"     keys="!newdbg"
 usr="dwarf.dll"        keys="!newdbg"
 usr="dwarf??.dll"      keys="newdbg"
+usr="export.dll"       keys="!newdbg"
+usr="export??.dll"     keys="newdbg"
 usr="mapsym.dll"       keys="!newdbg"
 usr="mapsym??.dll"     keys="newdbg"
 usr="watcom.dll"       keys="!newdbg"

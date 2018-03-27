@@ -64,7 +64,7 @@ trap_elen           MaxPacketLen;
 
 #if !defined( BUILD_RFX )
 
-static void TrapFailed( void )
+OVL_EXTERN void TrapFailed( void )
 {
     KillTrap();
     StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );
@@ -177,7 +177,8 @@ trap_shandle GetSuppId( char *name )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, in, 1, out );
-    if( ret.err != 0 ) return( 0 );
+    if( ret.err != 0 )
+        return( 0 );
     return( ret.id );
 }
 

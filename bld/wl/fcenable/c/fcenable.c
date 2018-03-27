@@ -50,9 +50,6 @@
 #include "clibext.h"
 
 
-#define NOFILE -1
-#define STDOUT_HANDLE 1
-
 typedef enum {
     EX_NONE,
     EX_GOT_SEG,
@@ -61,8 +58,8 @@ typedef enum {
     EX_GOT_COLON
 } EX_STATE;
 
-int                 InFile;
-int                 OutFile;
+FILE                *InFile;
+FILE                *OutFile;
 name_list           *ClassList = NULL;
 name_list           *SegList = NULL;
 exclude_list        *ExcludeList = NULL;
@@ -130,16 +127,16 @@ static void Suicide( void )
 }
 
 
-static int QOpen( const char *filename, int access, int permission )
-/******************************************************************/
+static FILE *QOpen( const char *filename, const char *access )
+/************************************************************/
 {
-    int result;
+    FILE    *fp;
 
-    result = open( filename, access, permission );
-    if( result == -1 ) {
+    fp = fopen( filename, access );
+    if( fp == NULL ) {
         IOError( "problem opening file" );
     }
-    return( result );
+    return( fp );
 }
 
 
@@ -159,24 +156,24 @@ int main(int argc, char **argv )
 
     MemInit();
 #if defined( _BETAVER )
-    put( banner1w1( "Far Call Optimization Enabling Utility" ) );
-    put( banner1w2( _FCENABLE_VERSION_ ) );
+    printf( banner1w1( "Far Call Optimization Enabling Utility" ) );
+    printf( banner1w2( _FCENABLE_VERSION_ ) );
 #else
-    put( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
+    printf( banner1w( "Far Call Optimization Enabling Utility", _FCENABLE_VERSION_ ) );
 #endif
-    put( banner2 );
-    put( banner2a( "1990" ) );
-    put( banner3 );
-    put( banner3a );
+    printf( banner2 );
+    printf( banner2a( 1990 ) );
+    printf( banner3 );
+    printf( banner3a );
     InputBuffer = InitRecStuff();
-    InFile = NOFILE;
-    OutFile = NOFILE;
+    InFile = NULL;
+    OutFile = NULL;
     ClassList = MemAlloc( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
     ClassList->next = NULL;
     ClassList->lnameidx = 0;
     memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
     if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
-        put( HelpMsg );
+        printf( HelpMsg );
     } else {
         argv++;     // skip the program name
         retval = Spawn1( ProcessFiles, argv );
@@ -335,9 +332,7 @@ static void ProcessOption( const char ***argv )
         (*argv)++;
         break;
     default:
-        put( "option not recognized: " );
-        putlen( item, 1 );
-        put( "\n" );
+        printf( "option not recognized: %c\n", item[0] );
         (*argv)++;
     }
 }
@@ -352,9 +347,7 @@ static void ProcessFiles( const char **argv )
         if( *item == '-' || *item == '/' ) {
             ProcessOption( &argv );
         } else {
-            put( "Processing file '" );
-            put( item );
-            put( "'\n" );
+            printf( "Processing file '%s'\n", item );
             ProcFile( item );
             argv++;
         }
@@ -364,13 +357,13 @@ static void ProcessFiles( const char **argv )
 static void CloseFiles( void )
 /****************************/
 {
-    if( InFile != NOFILE ) {
-        close( InFile );
-        InFile = NOFILE;
+    if( InFile != NULL ) {
+        fclose( InFile );
+        InFile = NULL;
     }
-    if( OutFile != NOFILE ) {
-        close( OutFile );
-        OutFile = NOFILE;
+    if( OutFile != NULL ) {
+        fclose( OutFile );
+        OutFile = NULL;
     }
 }
 
@@ -403,8 +396,8 @@ static void DoReplace( void )
 {
     FlushBuffer();
     if( PageLen != 0 ) {        // NYI - spawning WLIB every time is
-        close( OutFile );       // rather slow. Replace this somehow??
-        OutFile = NOFILE;
+        fclose( OutFile );      // rather slow. Replace this somehow??
+        OutFile = NULL;
         if( spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, TEMP_LIB_NAME, "-b", "+" TEMP_OBJ_NAME, NULL ) != 0 ) {
             Error( "problem with temporary library" );
         }
@@ -427,7 +420,7 @@ static void ProcFile( const char *fname )
         Suicide();
     strcpy( name, fname );
     ReplaceExt( name, ".obj", false );
-    InFile = QOpen( name, O_RDONLY | O_BINARY, 0 );
+    InFile = QOpen( name, "rb" );
     for( ;; ) {
         CleanRecStuff();
         ftype = ReadRec();
@@ -440,7 +433,7 @@ static void ProcFile( const char *fname )
         } else if( ftype != OBJECT ) {
             Error( "file is not a standard OBJECT or LIBRARY file" );
         }
-        OutFile = QOpen( TEMP_OBJ_NAME, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0 );
+        OutFile = QOpen( TEMP_OBJ_NAME, "wb" );
         do {
             ProcessRec();
             status = ReadRec();
@@ -484,11 +477,11 @@ int CopyFile( const char * file1, const char * file2 )
     auto struct utimbuf     utimebuf;
 
     remove( file2 );
-    OutFile = NOFILE;
-    InFile = QOpen( file1, O_RDONLY | O_BINARY, 0 );
-    OutFile = QOpen( file2, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY, 0 );
-    while( (len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE )) != 0 ) {
-        QWrite( OutFile, InputBuffer, len );
+    OutFile = NULL;
+    InFile = QOpen( file1, "rb" );
+    OutFile = QOpen( file2, "wb" );
+    while( (len = fread( InputBuffer, 1, MAX_OBJECT_REC_SIZE, InFile )) != 0 ) {
+        fwrite( InputBuffer, 1, len, OutFile );
     }
     CloseFiles();
     if( stat( file1, &statblk ) == 0 ) {
@@ -497,18 +490,6 @@ int CopyFile( const char * file1, const char * file2 )
         utime( file2, &utimebuf );
     }
     return( OK );
-}
-
-void put( const char * str )
-/**************************/
-{
-    posix_write( STDOUT_HANDLE, str, strlen( str ) );
-}
-
-void putlen( const char *str, size_t len )
-/****************************************/
-{
-    posix_write( STDOUT_HANDLE, str, len );
 }
 
 // these are utility routines used frequently in TDCVT.
@@ -545,50 +526,43 @@ void FreeList( void *list )
 void Warning( const char *msg )
 /*****************************/
 {
-    put( "warning: " );
-    put( msg );
-    put( "\n" );
+    printf( "warning: %s\n", msg );
 }
 
 void Error( const char *msg )
 /***************************/
 {
-    put( "Error: " );
-    put( msg );
-    put( "\n" );
+    printf( "Error: %s\n", msg );
     Suicide();
 }
 
 void IOError( const char *msg )
 /*****************************/
 {
-    put( msg );
-    put( ": " );
-    put( strerror( errno ) );
-    put( "\n" );
+    printf( "%s: %s\n", msg, strerror( errno ) );
     Suicide();
 }
 
 // these are the file i/o routines for tdcvt.
 
-size_t QRead( int handle, void *buffer, size_t len )
+size_t QRead( FILE *fp, void *buffer, size_t len )
 /**************************************************/
 {
     size_t result;
 
-    result = posix_read( handle, buffer, len );
+    result = fread( buffer, 1, len, fp );
     if( result == -1 ) {
         IOError( "problem reading file" );
     }
     return( result );
 }
 
-size_t QWrite( int handle, const void *buffer, size_t len )
-/*********************************************************/
+size_t QWrite( FILE *fp, const void *buffer, size_t len )
+/*******************************************************/
 {
     size_t result;
 
-    result = posix_write( handle, buffer, len );
+    result = fwrite( buffer, 1, len, fp );
     if( result == -1 ) {
         IOError( "problem writing file" );
     } else if( result != len ) {
@@ -597,13 +571,13 @@ size_t QWrite( int handle, const void *buffer, size_t len )
     return( result );
 }
 
-long int QSeek( int handle, long offset, int origin )
-/***************************************************/
+int QSeek( FILE *fp, long offset, int origin )
+/********************************************/
 {
-    long int result;
+    int     result;
 
-    result = lseek( handle, offset, origin );
-    if( result == -1L ) {
+    result = fseek( fp, offset, origin );
+    if( result ) {
         IOError( "problem during seek" );
     }
     return( result );

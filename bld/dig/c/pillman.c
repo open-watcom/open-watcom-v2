@@ -65,7 +65,6 @@ static const pill_client_routines PILLClientInterface = {
     DIGCli( Free ),
 
     DIGCli( Open ),
-    DIGCli( Seek ),
     DIGCli( Read ),
     DIGCli( Write ),
     DIGCli( Close ),

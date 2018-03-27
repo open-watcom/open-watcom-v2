@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +34,16 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <curses.h>
-#include <term.h>
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
+#include "wterm.h"
 #include "uidef.h"
-#include "uivirt.h"
-#include "unxuiext.h"
+#include "uivirts.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
+
 
 extern PossibleDisplay  DisplayList[];
 
@@ -50,13 +52,6 @@ static const char       *UITermType = NULL; /* global so that the debugger can g
 bool UIAPI uiset80col( void )
 {
     return( true );
-}
-
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    return( milli );
 }
 
 const char *GetTermType( void )
@@ -81,7 +76,7 @@ const char *SetTermType( const char *new_term )
 
 bool intern initbios( void )
 {
-    PossibleDisplay             *curr;
+    PossibleDisplay     *curr;
 
     if( UIConFile == NULL ) {
         const char  *tty;
@@ -102,10 +97,10 @@ bool intern initbios( void )
         char        *p2;
 
         p1 = GetTermType();
-        p2 = malloc( strlen( p1 ) + 1 );
+        p2 = uimalloc( strlen( p1 ) + 1 );
         strcpy( p2, p1 );
         setupterm( p2, UIConHandle, NULL );
-        free( p2 );
+        uifree( p2 );
     }
     /* will report an error message and exit if any
        problem with a terminfo */
@@ -116,17 +111,13 @@ bool intern initbios( void )
         return( false );
     }
 
-    curr = DisplayList;
-
-    for( ;; ) {
-        if( curr->check == NULL )
-            return( false );
-        if( curr->check() )
-            break;
-        ++curr;
+    for( curr = DisplayList; curr->check != NULL; curr++ ) {
+        if( curr->check() ) {
+            UIVirt = curr->virt;
+            return( _uibiosinit() );
+        }
     }
-    UIVirt = curr->virt;
-    return( _uibiosinit() );
+    return( false );
 }
 
 void intern finibios( void )
@@ -144,32 +135,34 @@ void forbid_refresh( void )
 
 void permit_refresh( void )
 {
-    if( RefreshForbid ){
+    if( RefreshForbid ) {
         RefreshForbid--;
     }
-    if( !RefreshForbid ){
-        _ui_refresh(0);
+    if( !RefreshForbid ) {
+        _ui_refresh( false );
     }
 }
 
 void intern physupdate( SAREA *area )
 {
-    _physupdate(area);
-    if( !RefreshForbid ){
-        _ui_refresh(0);
+    _physupdate( area );
+    if( !RefreshForbid ) {
+        _ui_refresh( false );
     }
 }
 
 #if defined( UI_DEBUG )
+
 #include <stdio.h>
 #include <stdarg.h>
+
 void UIDebugPrintf( const char *f, ... )
 {
-    static FILE     *file = 0;
+    static FILE     *file = NULL;
     va_list         vargs;
 
-    if (!file) {
-        if( (file = fopen( "UI.Debug", "w" )) == 0 ) {
+    if( file == NULL ) {
+        if( (file = fopen( "UI.Debug", "w" )) == NULL ) {
             return;
         }
     }

@@ -454,6 +454,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
         switch( elf_sec_hnd->type ) {
         case ORL_SEC_TYPE_SYM_TABLE:
             elf_file_hnd->symbol_table = elf_sec_hnd;
+            /* fall through */
         case ORL_SEC_TYPE_DYN_SYM_TABLE:
         case ORL_SEC_TYPE_IMPORT:
         case ORL_SEC_TYPE_EXPORT:

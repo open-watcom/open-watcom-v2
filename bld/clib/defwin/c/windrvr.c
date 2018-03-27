@@ -40,11 +40,12 @@
 
 
 static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
-static char  DefaultAboutMsg[] =
-banner1w1("Default Windowing System") "\n\n"
-"            Version 1.0\n\n"
-banner21 "\n"
-banner21a("1991");
+static char  DefaultAboutMsg[] = {
+    banner1w1("Default Windowing System") "\n\n"
+    "            Version 1.0\n\n"
+    banner21 "\n"
+    banner21a( 1991 )
+};
 
 static char  _WCI86FAR *AboutMsg = DefaultAboutMsg;
 static char  _WCI86FAR *AboutTitle = DefaultAboutTitle;

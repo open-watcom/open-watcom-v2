@@ -1,7 +1,5 @@
-#pmake/150: nobuild cpu_386 os_dos
+#pmake/150: nobuild cpu_386 os_dos sample
 host_cpu = 386
 host_os  = dos
-
-sys  = dos4g
 
 !include ../master.mif

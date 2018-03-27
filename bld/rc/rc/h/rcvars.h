@@ -47,7 +47,7 @@ RCEXTERN bool               ErrorHasOccured = false;
 #endif
 
 /****** uninitialized global data ******/
-RCEXTERN struct RCParams    CmdLineParms;
+RCEXTERN RCParams           CmdLineParms;
 RCEXTERN RcResFileID        CurrResFile;
 RCEXTERN RcPass2Info        Pass2Info;
 RCEXTERN char               CharSetLen[256];

@@ -459,9 +459,9 @@ vi_rc IMBackSpaceML( void )
  */
 vi_rc IMMouseEvent( void )
 {
-    if( LastMouseEvent == MOUSE_MOVE
-        || LastMouseEvent == MOUSE_RELEASE
-        || LastMouseEvent == MOUSE_RELEASE_R ) {
+    if( LastMouseEvent == VI_MOUSE_MOVE
+        || LastMouseEvent == VI_MOUSE_RELEASE
+        || LastMouseEvent == VI_MOUSE_RELEASE_R ) {
         return( ERR_NO_ERR );
     }
     EditFlags.ReturnToInsertMode = true;

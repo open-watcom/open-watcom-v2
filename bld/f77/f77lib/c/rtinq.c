@@ -219,16 +219,31 @@ void    InqExList( void ) {
         RTCopy( fcb->filename, IOCB->nameptr );
     }
     if( IOCB->set_flags & SET_SEQPTR ) {
-        RTCopy( ModeSeq[ InqSeq( fcb ) ], IOCB->seqptr );
+        RTCopy( ModeSeq[InqSeq( fcb )], IOCB->seqptr );
     }
     if( IOCB->set_flags & SET_DIRPTR ) {
-        RTCopy( ModeDir[ InqDir( fcb ) ], IOCB->dirptr );
+        RTCopy( ModeDir[InqDir( fcb )], IOCB->dirptr );
     }
     if( IOCB->set_flags & SET_FMTDPTR ) {
-        RTCopy( Fmtd[ InqFmtd( fcb ) ], IOCB->fmtdptr );
+        RTCopy( Fmtd[InqFmtd( fcb )], IOCB->fmtdptr );
     }
     if( IOCB->set_flags & SET_UFMTDPTR ) {
-        RTCopy( UnFmtd[ InqUnFmtd( fcb ) ], IOCB->ufmtdptr );
+        RTCopy( UnFmtd[InqUnFmtd( fcb )], IOCB->ufmtdptr );
+    }
+}
+
+
+static byte DfltRecFmt( ftnfile *fcb )
+//===================================
+{
+    if( fcb->formatted == FORMATTED_IO ) {
+        return( RECFM_TEXT );
+    } else {
+        if( fcb->accmode == ACCM_DIRECT ) {
+            return( RECFM_FIXED );
+        } else {
+            return( RECFM_VARIABLE );
+        }
     }
 }
 
@@ -246,37 +261,37 @@ void    InqOdList( void ) {
     if( IOCB->set_flags & SET_RECFMPTR ) {
         spec = fcb->recfm;
         if( spec == RECFM_DEFAULT ) {
-            spec = DfltRecType( fcb );
+            spec = DfltRecFmt( fcb );
         }
-        RTCopy( RecType[ spec ], IOCB->recfmptr );
+        RTCopy( RecType[spec], IOCB->recfmptr );
     }
     if( IOCB->set_flags & SET_CCTRLPTR ) {
         spec = fcb->cctrl;
         if( spec == CC_DEFAULT ) {
             spec = CC_NO;
         }
-        RTCopy( CCtrl[ spec ], IOCB->cctrlptr );
+        RTCopy( CCtrl[spec], IOCB->cctrlptr );
     }
     if( IOCB->set_flags & SET_ACTPTR ) {
         spec = fcb->action;
         if( spec == ACT_DEFAULT ) {
             spec = ACTION_RW;
         }
-        RTCopy( Action[ spec ], IOCB->actptr );
+        RTCopy( Action[spec], IOCB->actptr );
     }
     if( IOCB->set_flags & SET_SHARE ) {
         spec = fcb->share;
         if( spec == SHARE_DEFAULT ) {
             spec = SHARE_COMPAT;
         }
-        RTCopy( Share[ spec ], IOCB->shareptr );
+        RTCopy( Share[spec], IOCB->shareptr );
     }
     if( IOCB->set_flags & SET_ACCPTR ) {
         spec = fcb->accmode;
         if( spec == ACCM_DEFAULT ) {
             spec = ACCM_SEQUENTIAL;
         }
-        RTCopy( ModeAcc[ spec ], IOCB->accptr );
+        RTCopy( ModeAcc[spec], IOCB->accptr );
     }
     spec = fcb->formatted;
     if( spec == FORMATTED_DFLT ) {
@@ -286,7 +301,7 @@ void    InqOdList( void ) {
         }
     }
     if( IOCB->set_flags & SET_FORMPTR ) {
-        RTCopy( Form[ spec ], IOCB->formptr );
+        RTCopy( Form[spec], IOCB->formptr );
     }
     if( IOCB->set_flags & SET_BSIZEPTR ) {
         *IOCB->bsizeptr = fcb->blocksize;
@@ -305,7 +320,7 @@ void    InqOdList( void ) {
         if( spec == BLANK_DEFAULT ) {
             spec = BLANK_NULL;
         }
-        RTCopy( Blank[ spec ], IOCB->blnkptr );
+        RTCopy( Blank[spec], IOCB->blnkptr );
     }
 }
 

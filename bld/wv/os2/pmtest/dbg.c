@@ -503,7 +503,8 @@ HMQ     the_q;
 #if 0
     for( ;; ) {
         hmq = WinQuerySendMsg( Hab, 0, Q, &qmsg );
-        if( hmq == 0 ) break;
+        if( hmq == 0 )
+            break;
         WinReplyMsg( Hab, hmq, Q, 1 );
     }
 #endif

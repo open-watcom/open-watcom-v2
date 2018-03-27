@@ -41,6 +41,6 @@ extern void            GetMADTypeDefault( mad_type_kind mtk, mad_type_info *mti 
 extern void            ReportMADFailure( mad_status ms );
 extern void            CheckMADChange( void );
 extern size_t          GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len );
-extern size_t          GetMADTypeNameForCmd( mad_type_handle th, char *buff, size_t buff_len );
+extern size_t          GetMADTypeNameForCmd( mad_type_handle mth, char *buff, size_t buff_len );
 extern mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size );
 extern dig_mad         FindMAD( const char *name, unsigned len );

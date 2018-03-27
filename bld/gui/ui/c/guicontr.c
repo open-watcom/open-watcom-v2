@@ -47,8 +47,7 @@
  * GUIAddControl -- add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
-                    gui_colour_set *standout )
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
     gui_control *control;
     bool        first_control;
@@ -193,8 +192,7 @@ void GUIFreeAllControls( gui_window *wnd )
     wnd->controls = NULL;
     dlg_node = GUIGetDlgByWnd( wnd );
     if( dlg_node != NULL ) {
-        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields,
-                dlg_node->name, dlg_node->colours_set, GUI_IS_DIALOG( wnd ) );
+        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name, dlg_node->colours_set );
     }
 }
 
@@ -222,8 +220,7 @@ void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff )
  * GUIProcessControlEvent -- send the given event to the given control
  */
 
-EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
-                              gui_ord col )
+ui_event GUIProcessControlEvent( gui_window *wnd, ui_event ui_ev, gui_ord row, gui_ord col )
 {
     a_dialog    *ui_dlg_info;
     bool        colours_set;
@@ -236,16 +233,16 @@ EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
         uipushlist( NULL );
         uipushlist( GUIUserEvents );
         uipushlist( GUIControlEvents );
-        ev = uiprocessdialogevent( ev, ui_dlg_info );
+        ui_ev = uiprocessdialogevent( ui_ev, ui_dlg_info );
         uipoplist( /* GUIControlEvents */ );
         uipoplist( /* GUIUserEvents */ );
         uipoplist( /* NULL */ );
         if( colours_set ) {
             GUIResetDialColours();
         }
-        return( GUIProcessControlNotify( ev, ui_dlg_info, wnd ) );
+        return( GUIProcessControlNotify( ui_ev, ui_dlg_info, wnd ) );
    } else {
-        return( ev );
+        return( ui_ev );
     }
 }
 

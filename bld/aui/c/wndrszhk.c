@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-void WndResizeHook( a_window *wnd )
+void WndResizeHook( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 

@@ -24,10 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  AUI dialog window.
+* Description:  AUI dialog parent window get internal procedure.
 *
 ****************************************************************************/
 
 
-extern gui_window *DlgGetParent( void );
-extern void DlgOpen( const char *title, int rows, int cols, gui_control_info *ctl, int num_controls, GUICALLBACK *rtn, void *extra );
+extern gui_window *DlgOpenGetGUIParent( void );

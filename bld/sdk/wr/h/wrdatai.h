@@ -44,8 +44,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WRReadResData( WResFileID fid, BYTE *data, size_t length );
-extern bool WRWriteResData( WResFileID fid, BYTE *data, size_t length );
+extern bool WRReadResData( FILE *fp, BYTE *data, size_t length );
+extern bool WRWriteResData( FILE *fp, BYTE *data, size_t length );
 extern void *WRCopyExistingData( WResLangNode *lnode );
 
 #endif

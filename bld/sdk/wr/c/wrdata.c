@@ -44,8 +44,6 @@
 #include "wrdatai.h"
 #include "rcrtns.h"
 
-#include "clibext.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -68,7 +66,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
+bool WRReadResData( FILE *fp, BYTE *data, size_t length )
 {
     bool        ok;
     size_t      numread;
@@ -77,13 +75,13 @@ bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
     for( numread = CHUNK_SIZE; ok && length > 0; length -= numread ) {
         if( numread > length )
             numread = length;
-        ok = ( RESREAD( fid, data, numread ) == numread );
+        ok = ( RESREAD( fp, data, numread ) == numread );
         data += numread;
     }
     return( ok );
 }
 
-bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
+bool WRWriteResData( FILE *fp, BYTE *data, size_t length )
 {
     bool        ok;
     size_t      numwrite;
@@ -92,7 +90,7 @@ bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
     for( numwrite = CHUNK_SIZE; ok && length > 0; length -= numwrite ) {
         if( numwrite > length )
             numwrite = length;
-        ok = ( RESWRITE( fid, data, numwrite ) == numwrite );
+        ok = ( RESWRITE( fp, data, numwrite ) == numwrite );
         data += numwrite;
     }
     return( ok );

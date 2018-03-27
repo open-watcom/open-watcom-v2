@@ -40,6 +40,7 @@
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"
@@ -53,7 +54,7 @@
 //#include "msg.def"
 
 STATIC char *       errMsgText( dip_status );
-STATIC bool         loadDIP( char *, bool, bool );
+STATIC bool         loadDIP( const char *, bool, bool );
 
 STATIC dip_status   DIPStatus;
 
@@ -75,10 +76,10 @@ void DIPCLIENTRY( MapAddr )( addr_ptr * addr, void * d )
 
 
 
-imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
-/***********************************************************************/
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
+/************************************************************************/
 {
-    /* unused parameters */ (void)ih; (void)d;
+    /* unused parameters */ (void)iih; (void)d;
 
     return( NULL );
 }
@@ -209,24 +210,21 @@ void WPDipSetProc( process_info *dip_proc )
 
 
 
-mod_handle WPDipLoadInfo( dig_fhandle fid, const char *f_name, void *image,
-                   unsigned image_size, unsigned dip_start, unsigned dip_end )
+mod_handle WPDipLoadInfo( FILE *fp, const char *f_name, void *image,
+                   unsigned image_size, dip_priority start, dip_priority end )
 /****************************************************************************/
 {
-    unsigned    prio;
-    mod_handle  dip_module;
+    dip_priority    priority;
+    mod_handle      dip_module;
 
     dip_module = NO_MOD;
-    prio = dip_start;
-    for( ;; ) {
-        prio = DIPPriority( prio );
-        if( prio == 0 || prio > dip_end )
+    for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
+        if( priority > end )
             break;
         DIPStatus = DS_OK;
-        dip_module = DIPLoadInfo( fid, image_size, prio );
+        dip_module = DIPLoadInfo( fp, image_size, priority );
         if( dip_module != NO_MOD ) {
             *(void **)DIPImageExtra( dip_module ) = image;
-            DIPMapInfo( dip_module, image );
             break;
         }
         if( DIPStatus & DS_ERR ) {
@@ -246,8 +244,8 @@ void WPDipFini( void )
 
 
 
-STATIC bool loadDIP( char *dip, bool defaults, bool fail_big )
-/************************************************************/
+STATIC bool loadDIP( const char *dip, bool defaults, bool fail_big )
+/******************************************************************/
 {
     dip_status  ret;
 

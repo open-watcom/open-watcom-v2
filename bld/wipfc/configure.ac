@@ -6,7 +6,7 @@ AM_INIT_AUTOMAKE
 #CPPFLAGS="-std=c++0x -D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
 #CXXFLAGS="-pipe -g -Wall -march=native"
 
-CPPFLAGS="-D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h"
+CPPFLAGS="-D __STDC_LIMIT_MACROS -I$srcdir/cpp -I$srcdir/../watcom/h -D _BLDVER=$OWBLDVERTOOL -D _CYEAR=`date +'%Y'`"
 CXXFLAGS="-pipe -g -Wall"
 
 AC_CONFIG_SRCDIR([cpp/main.cpp])

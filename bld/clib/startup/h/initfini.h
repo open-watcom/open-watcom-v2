@@ -34,19 +34,19 @@
 
 #include "rtinit.h"
 
-#if defined(__386__)
-    #define __PARMREG1      eax
-    #define __PARMREG2      edx
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
     #define __PARMREG1      ax
     #define __PARMREG2      dx
+#elif defined( _M_IX86 )
+    #define __PARMREG1      eax
+    #define __PARMREG2      edx
 #else
     #define __PARMREG1
     #define __PARMREG2
 #endif
 
 extern void __InitRtns( unsigned );
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
   #pragma aux __InitRtns "*" parm [__PARMREG1]
 #endif
 // - takes priority limit parm in __PARMREG1
@@ -54,13 +54,13 @@ extern void __InitRtns( unsigned );
 //      priority is <= __PARMREG1 (really [0-255])
 //      __PARMREG1==255 -> run all init routines
 //      __PARMREG1==15  -> run init routines whose priority is <= 15
-#if defined(_M_I86)
-  extern void _WCI86FAR __FInitRtns(unsigned);
+#if defined( _M_I86 )
+  extern void __far __FInitRtns(unsigned);
   #pragma aux __FInitRtns "*" parm [__PARMREG1]
 #endif
 
 extern void __FiniRtns(unsigned,unsigned);
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
   #pragma aux __FiniRtns "*" parm [__PARMREG1] [__PARMREG2]
 #endif
 // - takes priority limit range in __PARMREG1, __PARMREG2
@@ -70,8 +70,8 @@ extern void __FiniRtns(unsigned,unsigned);
 //      __PARMREG1==0 ,__PARMREG2==255 -> run all fini routines
 //      __PARMREG1==16,__PARMREG2==255 -> run fini routines in range 16...255
 //      __PARMREG1==16,__PARMREG2==40  -> run fini routines in range 16...40
-#if defined(_M_I86)
-  extern void _WCI86FAR __FFiniRtns( unsigned, unsigned );
+#if defined( _M_I86 )
+  extern void __far __FFiniRtns( unsigned, unsigned );
   #pragma aux __FFiniRtns "*" parm [__PARMREG1] [__PARMREG2]
 #endif
 

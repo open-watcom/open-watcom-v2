@@ -31,6 +31,7 @@
 
 
 /* definitions used throughout fcenable */
+#include <stdio.h>
 #include "bool.h"
 #include "watcom.h"
 
@@ -72,24 +73,22 @@ typedef struct exclude_list {
 } exclude_list;
 
 extern long         PageLen;
-extern int          InFile;
-extern int          OutFile;
+extern FILE         *InFile;
+extern FILE         *OutFile;
 extern name_list    *ClassList;
 extern name_list    *SegList;
 extern exclude_list *ExcludeList;
 
 // fcenable.c
 extern int          CopyFile( const char *, const char * );
-extern void         put( const char * );
-extern void         putlen( const char *, size_t );
 extern void         LinkList( void **, void * );
 extern void         FreeList( void * );
 extern void         Warning( const char * );
 extern void         Error( const char * );
 extern void         IOError( const char * );
-extern size_t       QRead( int, void *, size_t );
-extern size_t       QWrite( int, const void *, size_t );
-extern long         QSeek( int, long, int );
+extern size_t       QRead( FILE *, void *, size_t );
+extern size_t       QWrite( FILE *, const void *, size_t );
+extern int          QSeek( FILE *, long, int );
 
 // mem.c
 extern void         MemInit( void );

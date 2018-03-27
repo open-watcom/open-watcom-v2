@@ -33,8 +33,8 @@
 #ifndef UIFORCE_H_INCLUDED
 #define UIFORCE_H_INCLUDED
 
-extern void forceevinit( void );
-extern void forceevfini( void );
-extern EVENT forcedevent( void );
+extern void     forceevinit( void );
+extern void     forceevfini( void );
+extern ui_event forcedevent( void );
 
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include "guidlg.h"
 #include "wndregx.h"
 #include "dlgrx.h"
@@ -38,16 +38,91 @@
 #include <string.h>
 
 
+#define METACHARACTERS  "^$\\.[(|?+*~@"
+
+#define MetaChar( i )   (METACHARACTERS[i - CTL_FIRST_RX])
+
 extern char NullStr[];
 
 bool                    SrchIgnoreCase = true;
-char                    SrchMagicChars[MAX_MAGIC_STR + 1] = { "^$\\.[(|?+*~@" };
+char                    SrchMagicChars[MAX_MAGIC_STR + 1] = { METACHARACTERS };
 bool                    SrchRX = false;
 
 // This next one is just for the RX processor. It want's it backwards!
 char                    SrchIgnoreMagic[MAX_MAGIC_STR + 1] = { "\0" };
 
-#define MetaChar( i ) ("^$\\.[(|?+*~@"[i-CTL_FIRST_RX])
+static void MoveCursor( gui_window *gui, int edit, int list, int direction )
+{
+    int         i,size;
+    char        *cmd;
+
+    i = -1;
+    GUIGetCurrSelect( gui, list, &i );
+    size = GUIGetListSize( gui, list );
+    if( size == 0 )
+        return;
+    --size;
+    i += direction;
+    if( i < 0 )
+        i = 0;
+    if( i > size )
+        i = size;
+    GUISetCurrSelect( gui, list, i );
+    cmd = GUIGetText( gui, list );
+    GUISetText( gui, edit, cmd );
+    GUIMemFree( cmd );
+    GUISelectAll( gui, edit, true );
+}
+
+static void DlgClickHistory( gui_window *gui, int edit, int list )
+{
+    char        *cmd;
+
+    cmd = GUIGetText( gui, list );
+    GUISetText( gui, edit, cmd );
+    GUIMemFree( cmd );
+}
+
+static void DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list )
+{
+    int         i;
+
+    GUISetFocus( gui, edit );
+    if( !WndPrevFromHistory( history, cmd ) )
+        return;
+    GUISetText( gui, edit, cmd );
+    GUISelectAll( gui, edit, true );
+    GUIClearList( gui, list );
+    while( WndPrevFromHistory( history, cmd ) ) {
+        /* nothing */
+    }
+    i = -1;
+    for( ; WndNextFromHistory( history, cmd ); ) {
+        GUIAddText( gui, list, cmd );
+        ++i;
+    }
+    if( i >= 0 ) {
+        GUISetCurrSelect( gui, list, i );
+    }
+}
+
+static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
+{
+    gui_ctl_id  id;
+    gui_key     key;
+
+    GUI_GET_KEY_CONTROL( param, id, key );
+    switch( key ) {
+    case GUI_KEY_UP:
+        MoveCursor( gui, edit, list, -1 );
+        return( true );
+    case GUI_KEY_DOWN:
+        MoveCursor( gui, edit, list, 1 );
+        return( true );
+    default:
+        return( false );
+    }
+}
 
 static  void    GetRXStatus( gui_window *gui )
 {
@@ -74,25 +149,26 @@ static  void    SetRXStatus( gui_window *gui )
 }
 
 
-extern bool RXEvent( gui_window * gui, gui_event event, void * param )
+static bool RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetRXStatus( gui );
         GUISetFocus( gui, CTL_RX_OK );
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_RX_OK:
             GetRXStatus( gui );
+            /* fall through */
         case CTL_RX_CANCEL:
             GUICloseDialog( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default :
         break;
     }
@@ -101,84 +177,12 @@ extern bool RXEvent( gui_window * gui, gui_event event, void * param )
 
 
 typedef struct {
-    a_window            *wnd;
+    a_window            wnd;
     int                 direction;
     void                *history;
     bool                case_ignore;
     bool                use_rx;
 } dlg_search;
-
-extern void DlgClickHistory( gui_window *gui, int edit, int list )
-{
-    char        *cmd;
-
-    cmd = GUIGetText( gui, list );
-    GUISetText( gui, edit, cmd );
-    GUIMemFree( cmd );
-}
-
-extern void DlgSetHistory( gui_window *gui, void *history, char *cmd,
-                           int edit, int list )
-{
-    int         i;
-
-    GUISetFocus( gui, edit );
-    if( !WndPrevFromHistory( history, cmd ) )
-        return;
-    GUISetText( gui, edit, cmd );
-    GUISelectAll( gui, edit, true );
-    GUIClearList( gui, list );
-    while( WndPrevFromHistory( history, cmd ) ) {
-        /* nothing */
-    }
-    i = -1;
-    for( ; WndNextFromHistory( history, cmd ); ) {
-        GUIAddText( gui, list, cmd );
-        ++i;
-    }
-    if( i >= 0 ) {
-        GUISetCurrSelect( gui, list, i );
-    }
-}
-
-
-static void MoveCursor( gui_window *gui, int edit, int list, int direction )
-{
-    int         i,size;
-    char        *cmd;
-
-    i = GUIGetCurrSelect( gui, list );
-    size = GUIGetListSize( gui, list );
-    if( size == 0 ) return;
-    --size;
-    i += direction;
-    if( i < 0 ) i = 0;
-    if( i > size ) i = size;
-    GUISetCurrSelect( gui, list, i );
-    cmd = GUIGetText( gui, list );
-    GUISetText( gui, edit, cmd );
-    GUIMemFree( cmd );
-    GUISelectAll( gui, edit, true );
-}
-
-
-extern bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
-{
-    gui_ctl_id  id;
-    gui_key     key;
-
-    GUI_GET_KEY_CONTROL( param, id, key );
-    switch( key ) {
-    case GUI_KEY_UP:
-        MoveCursor( gui, edit, list, -1 );
-        return( true );
-    case GUI_KEY_DOWN:
-        MoveCursor( gui, edit, list, 1 );
-        return( true );
-    default:
-        return( false );
-    }
-}
 
 static void     GetDlgStatus( gui_window *gui, dlg_search *dlg )
 {
@@ -205,17 +209,17 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 }
 
 
-extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
+static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlg_search  *dlg;
 
     dlg = GUIGetExtra( gui );
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         SetDlgStatus( gui, dlg );
         GUISetFocus( gui, CTL_SRCH_EDIT );
-        break;
+        return( true );
     case GUI_KEY_CONTROL:
         return( DlgHistoryKey( gui, param, CTL_SRCH_EDIT, CTL_SRCH_LIST ) );
     case GUI_CONTROL_DCLICKED:
@@ -224,29 +228,30 @@ extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
         switch( id ) {
         case CTL_SRCH_LIST:
             DlgClickHistory( gui, CTL_SRCH_EDIT, CTL_SRCH_LIST );
-            if( event == GUI_CONTROL_CLICKED ) return( true );
+            if( gui_ev == GUI_CONTROL_CLICKED )
+                return( true );
             /* fall through */
         case CTL_SRCH_NEXT:
             dlg->direction = 1;
             GetDlgStatus( gui, dlg );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_SRCH_EDIT_RX:
-            ResDlgOpen( &RXEvent, NULL, DIALOG_RX );
-            break;
+            ResDlgOpen( &RXGUIEventProc, NULL, DIALOG_RX );
+            return( true );
         case CTL_SRCH_PREV:
             dlg->direction = -1;
             GetDlgStatus( gui, dlg );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_SRCH_CANCEL:
             dlg->direction = 0;
             GUICloseDialog( gui );
-            break;
+            return( true );
         default :
             break;
         }
-        return( true );
+        break;
     default :
         break;
     }
@@ -254,7 +259,7 @@ extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
+static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
 {
     dlg_search  *dlg;
     int direction;
@@ -265,7 +270,7 @@ static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
     dlg->case_ignore = SrchIgnoreCase;
     dlg->use_rx = SrchRX;
     dlg->history = history;
-    ResDlgOpen( &SrchEvent, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
+    ResDlgOpen( &SrchGUIEventProc, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
     direction = dlg->direction;
     SrchRX = dlg->use_rx;
     SrchIgnoreCase = dlg->case_ignore;
@@ -278,7 +283,7 @@ static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
     return( direction );
 }
 
-int DlgSearch( a_window *wnd, void *history )
+int DlgSearch( a_window wnd, void *history )
 {
     return( DoDlgSearch( wnd, history, true ) );
 }

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 #include "wndregx.h"
 
@@ -57,5 +57,5 @@ static char *rxErrorStrings[] = {
 
 void WndRXError( int num )
 {
-    Say2( "Error in Regular Expression", rxErrorStrings[ num ] );
+    Say2( "Error in Regular Expression", rxErrorStrings[num] );
 }

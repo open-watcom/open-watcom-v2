@@ -45,8 +45,6 @@
 #include "clibext.h"
 
 
-extern UIPICKGETTEXT    GetListBoxItem;
-
 typedef struct {
     char                str[1];         /* dynamic array */
 } ListBoxEntry;
@@ -57,6 +55,7 @@ static a_hot_spot       searchButtons[] = {
 };
 
 static unsigned long    listData;
+static UIPICKGETTEXT    GetListBoxItem;
 
 static a_list listBox = {
     0, &listData, GetListBoxItem, NULL
@@ -106,7 +105,7 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
     return( true );
 }
 
-bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned buflen )
+static bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned buflen )
 {
     const char          *name;
     unsigned long       *itemcnt;
@@ -214,17 +213,17 @@ void SearchDlgFini( void )
 
 char *HelpSearch( HelpHdl hdl )
 {
-    EVENT               event;
+    ui_event            ui_ev;
     char                done;
     char                *ret;
 
-    static EVENT        events[] = {
-        EV_NO_EVENT,
+    static ui_event     events[] = {
+        __rend__,
         EV_ENTER,
         EV_ESCAPE,
         EV_MOUSE_PRESS,
         EV_LIST_BOX_DCLICK,
-        EV_NO_EVENT
+        __end__
     };
 
     searchHdl = hdl;
@@ -240,8 +239,8 @@ char *HelpSearch( HelpHdl hdl )
     ret = NULL;
     done = 0;
     while( !done ) {
-        event = uidialog( curHelpDialog );
-        switch( event ) {
+        ui_ev = uidialog( curHelpDialog );
+        switch( ui_ev ) {
         case EV_MOUSE_PRESS:
             if( curHelpDialog->curr != NULL ) {
                 if( curHelpDialog->curr->u.ptr == &listBox ) {

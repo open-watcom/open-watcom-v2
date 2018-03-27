@@ -177,7 +177,8 @@ static bool convert_numeric( WORD ch, gui_key *key )
 
     if( isdigit( ch ) ) {
         if( CHK_KS_SHIFT ) {
-            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) ) return( true );
+            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) )
+                return( true );
             *key = ch;
             return( true );
         } else if( CHK_KS_ALT ) {
@@ -206,7 +207,7 @@ static bool convert_numeric( WORD ch, gui_key *key )
 
 static bool convert_alpha( WORD ch, gui_key *key )
 {
-    WORD        t;
+    gui_key     t;
 
     if( isalpha( ch ) ) {
         t = toupper( ch ) - 'A';
@@ -488,14 +489,10 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         if( GUICurrWnd != NULL ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, 0, &key_state.key ) ) {
-                if( msg == WM_SYSKEYDOWN  ) {
-                    gui_ev = GUI_KEYDOWN;
-                } else {
-                    gui_ev = GUI_KEYUP;
-                }
-                RetTrue = GUIEVENTWND( GUICurrWnd, gui_ev, &key_state );
+                gui_ev = ( msg == WM_SYSKEYDOWN ) ? GUI_KEYDOWN : GUI_KEYUP;
+                RetTrue = GUIEVENT( GUICurrWnd, gui_ev, &key_state );
                 if( RetTrue ) {
-                    return( 0l ); // app used key, don't send to windows
+                    return( 0L ); // app used key, don't send to windows
                 }
             }
         }
@@ -504,7 +501,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-                GUIEVENTWND( GUICurrWnd, GUI_KEYUP, &key_state );
+                GUIEVENT( GUICurrWnd, GUI_KEYUP, &key_state );
             }
         }
         break;
@@ -512,7 +509,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-                GUIEVENTWND( GUICurrWnd, GUI_KEYDOWN, &key_state );
+                GUIEVENT( GUICurrWnd, GUI_KEYDOWN, &key_state );
             }
         }
         break;
@@ -585,13 +582,13 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
     scan        = CHAR2FROMMP( p2 );
     pm_scan     = CHAR4FROMMP( p1 );
 
-    if( flags & ( KC_DEADKEY | KC_COMPOSITE ) ) {
+    if( flags & (KC_DEADKEY | KC_COMPOSITE) ) {
         return( false );
     } else if( flags & KC_VIRTUALKEY ) {
         return( GUIConvertVirtKeyToGUIKey( vk, key ) );
-    } else if( ( flags & KC_CHAR ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
+    } else if( (flags & KC_CHAR) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
         return( convert_ascii( ch, key ) );
-    } else if( ( flags & KC_LONEKEY ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
+    } else if( (flags & KC_LONEKEY) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
         return( convert_ascii( ch, key ) );
     } else if( flags & KC_SCANCODE ) {
         if( CHK_KS_CTRL ) {
@@ -614,39 +611,27 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
 
 WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    WORD                key_flags;
     gui_key_state       key_state;
     gui_event           gui_ev;
 
-    hwnd = hwnd;
-    key_flags = SHORT1FROMMP( wparam );
-
-    if( msg == WM_TRANSLATEACCEL ) {
+    switch( msg ) {
+    case WM_TRANSLATEACCEL:
         // Don't let OS/2 process F10 as an accelerator
         // Note: similar code exists in guixwind.c but we need to
         // take different default action
-        PQMSG   pqmsg = wparam;
-        USHORT  flags = SHORT1FROMMP(pqmsg->mp1);
-        USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
-
-        if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
-            return( (WPI_MRESULT)false );
-
-        return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-    }
-    if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
-        if( msg == WM_CHAR ) {
-            if( key_flags & KC_KEYUP ) {
-                gui_ev = GUI_KEYUP;
-            } else {
-                gui_ev = GUI_KEYDOWN;
-            }
+        if( !IS_VKEY_F10( wparam ) )
+            return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+        break;
+    case WM_CHAR:
+        if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
-                return( (WPI_MRESULT)(GUIEVENTWND( GUICurrWnd, gui_ev, &key_state ) ) );
+                gui_ev = IS_KEY_UP( wparam ) ? GUI_KEYUP : GUI_KEYDOWN;
+                return( (WPI_MRESULT)GUIEVENT( GUICurrWnd, gui_ev, &key_state ) );
             }
         }
+        break;
     }
-    return( (WPI_MRESULT)false );
+    return( 0L );
 }
 #endif

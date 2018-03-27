@@ -355,8 +355,8 @@ pick(   WRE_ABOUT_NAME,
         "Open Watcom Resource Editor for Windows" STR_BITNESS,
         "Open Watcom Resource Editor for Windows" STR_BITNESS )
 pick(   WRE_ABOUT_VERSION,
-        banner1p2( _RESEDIT_VERSION_ ),
-        banner1p2( _RESEDIT_VERSION_ ) )
+        banner1v( _RESEDIT_VERSION_ ),
+        banner1v( _RESEDIT_VERSION_ ) )
 pick(   WRE_ABOUT_TITLE,
         "About Open Watcom Resource Editor",
         "About Open Watcom Resource Editor" )

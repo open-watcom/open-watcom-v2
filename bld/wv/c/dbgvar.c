@@ -64,10 +64,8 @@
 extern void             WndVarNewWindow( char *);
 extern void             WndVarInspect( const char *);
 
-extern stack_entry      *ExprSP;
-
-extern void             VarSaveWndToScope( void *wnd );
-extern void             VarRestoreWndFromScope( void *wnd );
+bool                    VarError;
+type_display            *TypeDisplay;
 
 static int              TargRow;
 static long             ExprStackTimeStamp;
@@ -78,14 +76,11 @@ static long             ScopeTimeStamp = 0;
 
 static bool             FindField( sym_handle *field, var_node *vfield );
 
-bool                    VarError;
 static var_type_bits    Hide;
 
 /*
  *      This is all junk to remember how we display fields/structs
  */
-
-type_display    *TypeDisplay;
 
 static void VarNodeDisplayUpdate( var_node *v )
 /*********************************************/
@@ -300,7 +295,8 @@ static type_display *VarDisplayAddType( type_display **owner, const char *name )
     new = DbgAlloc( sizeof( *new ) + strlen( name ) );
     memset( new, 0, sizeof( *new ) );
     strcpy( new->name, name );
-    while( *owner != NULL ) owner = &((*owner)->next);
+    while( *owner != NULL )
+        owner = &((*owner)->next);
     *owner = new;
     new->alias = new;
     new->hide = Hide;
@@ -605,7 +601,7 @@ typedef struct {
 
 extern int              TargRow;
 
-static walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
+OVL_EXTERN walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     find_field_info *d = _d;
     switch( swi ) {
@@ -640,7 +636,7 @@ OVL_EXTERN walk_result DoPushFirstField( sym_walk_info swi, sym_handle *sh, void
     return( WR_CONTINUE );
 }
 
-static void     PushFirstField( void *th )
+OVL_EXTERN void     PushFirstField( void *th )
 {
     bool        done;
 
@@ -671,8 +667,8 @@ OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void 
     return( WR_STOP );
 }
 
-static void     DotNamedField( void *th, void *name )
-/***********************************************************/
+OVL_EXTERN void     DotNamedField( void *th, void *name )
+/*******************************************************/
 {
     dot_named_field_info        info;
 
@@ -703,7 +699,7 @@ static void     PointStack( void )
 }
 
 
-static void     PushPointStackFirstField( void )
+OVL_EXTERN void     PushPointStackFirstField( void )
 {
     DupStack();
     DoPoints( TK_NONE );
@@ -716,7 +712,7 @@ static void     PushPointStackFirstField( void )
 }
 
 
-static void     PushPoints( void )
+OVL_EXTERN void     PushPoints( void )
 {
     DupStack();
     PointStack();
@@ -855,7 +851,7 @@ typedef struct {
     var_node    *inherit;
 } alloc_field_info;
 
-static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
+OVL_EXTERN walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     var_node            *new;
     int                 len;
@@ -911,13 +907,13 @@ static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 static bool PointerToChar( void )
 /*******************************/
 {
-    DIPHDL( type, type );
+    DIPHDL( type, th );
 
     switch( ExprSP->info.kind ) {
     case TK_POINTER:
     case TK_ARRAY:
-        DIPTypeBase( ExprSP->th, type, NULL, NULL );
-        if( TypeKind( type ) == TK_CHAR )
+        DIPTypeBase( ExprSP->th, th, NULL, NULL );
+        if( TypeKind( th ) == TK_CHAR )
             return( true );
         break;
     }
@@ -1193,7 +1189,7 @@ var_node *VarNextVisibleSibling( var_info *i, var_node *v )
     return( v );
 }
 
-static void     VarScanForward( void *_v )
+OVL_EXTERN void     VarScanForward( void *_v )
 /*
     Scan forward through our data structure, evaluating the expressions
     as we go until we reach the desired row. This will often be the
@@ -2237,7 +2233,7 @@ void VarSetValue( var_node *v, const char *value )
 }
 
 
-static bool SameScope( scope_block *scope, scope_state *s )
+bool SameScope( scope_block *scope, scope_state *s )
 {
     if( s->unmapped )
         return( false );
@@ -2284,7 +2280,7 @@ typedef struct add_new_var_info {
     var_info    *i;
 } add_new_var_info;
 
-static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
+OVL_EXTERN walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
 {
     add_new_var_info    *d = _d;
     var_node            *new;
@@ -2314,7 +2310,7 @@ static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
     return( WR_CONTINUE );
 }
 
-static scope_state *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new )
+scope_state *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new )
 /*
     Our scope just changed so change the variable information in
     the window. Save the old scope's structures so that we can
@@ -2368,6 +2364,7 @@ static void VarFreeScopeList( var_info *i, scope_state *junk )
     *owner = junk->next;
     VarNodeFini( junk->v );
     FiniMappableAddr( &junk->scope );
+    DbgFree( junk->wnd_data );
     DbgFree( junk );
     for( s = i->s; s != NULL; s = s->next ) {
         if( s->outer == junk ) {
@@ -2499,12 +2496,7 @@ void VarOkToCache( var_info *i, bool ok )
     VarKillExprSPCache( i );
 }
 
-typedef struct scope_list {
-    struct scope_list *next;
-    scope_block scope;
-} scope_list;
-
-bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handle )
+bool VarInfoRefresh( var_type vtype, var_info *i, address *addr )
 {
     scope_list  *nested, *new;
     scope_state *s, *outer;
@@ -2518,12 +2510,10 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
     case VAR_FILESCOPE:
         if( i->s->mod != ContextMod ) {
             repaint = true;
-            VarSaveWndToScope( wnd_handle );
             noscope.start = NilAddr;
             noscope.len = 0;
             noscope.unique = 0;
             NewScope( i, &noscope, ContextMod, &repaint );
-            VarRestoreWndFromScope( wnd_handle );
         }
         break;
     case VAR_LOCALS:
@@ -2541,7 +2531,6 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
         }
         if( !SameScope( &nested->scope, i->s ) ) {
             repaint = true;
-            VarSaveWndToScope( wnd_handle );
             if( havescope ) {
                 for( ;; ) {
                     _AllocA( new, sizeof( *new ) );
@@ -2557,7 +2546,6 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
                 outer = s;
                 nested = nested->next;
             }
-            VarRestoreWndFromScope( wnd_handle );
         }
         if( outer != NULL )
             *addr = outer->scope.addr;
@@ -2616,55 +2604,6 @@ void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
     }
 }
 
-void VarRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *dirty, void *wnd )
-/************************************************************************************/
-{
-    int         row;
-    var_node    *v;
-    char        *value;
-    var_gadget_type     gadget;
-    bool        standout;
-    bool        on_top;
-
-    VarAllNodesInvalid( i );
-    VarErrState();
-    VarOkToCache( i, true );
-    for( row = top; row < top + rows; ++row ) {
-        v = VarFindRow( i, row );
-        if( v == NULL ) {
-            v = VarFindRowNode( i, row );
-            if( v == NULL ) {
-                break;
-            }
-        } else {
-            ExprValue( ExprSP );
-        }
-
-        gadget = VarGetGadget( v );
-        if( gadget != v->gadget )
-            dirty( wnd, row );
-        VarSetGadget( v, gadget );
-
-        on_top = VarGetOnTop( v );
-        if( on_top != v->on_top )
-            dirty( wnd, row );
-        VarSetOnTop( v, on_top );
-
-        value = VarGetValue( i, v );
-        standout = false;
-        if( v->value != NULL ) {
-            standout = ( strcmp( value, v->value ) != 0 );
-        }
-        if( v->value == NULL || v->standout || standout )
-            dirty( wnd, row );
-        v->standout = standout;
-        VarSetValue( v, value );
-        VarDoneRow( i );
-    }
-    VarOkToCache( i, false );
-    VarOldErrState();
-}
-
 void VarDoAssign( var_info *i, var_node *v, const char *value )
 /*************************************************************/
 {
@@ -2685,64 +2624,6 @@ void VarDoAssign( var_info *i, var_node *v, const char *value )
         _SwitchOff( SW_RECORD_LOCATION_ASSIGN );
     }
     CollapseMachState();
-}
-
-var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
-{
-    var_node    *row_v;
-    var_node    *v;
-
-    if( piece >= VAR_PIECE_LAST )
-        return( NULL );
-    if( VarFirstNode( i ) == NULL )
-        return( NULL );
-    if( row >= VarRowTotal( i ) )
-        return( NULL );
-    row_v = VarFindRowNode( i, row );
-    if( !row_v->value_valid ) {
-        VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
-        row_v->value_valid = false;
-    }
-    if( !row_v->gadget_valid ) {
-        VarSetGadget( row_v, VARGADGET_NONE );
-        row_v->gadget_valid = false;
-    }
-    v = row_v;
-    if( piece == VAR_PIECE_NAME ||
-        ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
-        ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
-        VarError = false;
-    } else if( _IsOff( SW_TASK_RUNNING ) ) {
-        if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
-            VarError = false;
-            v = i->exprsp_cache;
-        } else if( row == i->exprsp_cacherow && i->exprsp_cache_is_error ) {
-            VarError = true;
-            v = NULL;
-        } else {
-            VarErrState();
-            v = VarFindRow( i, row );
-            VarOldErrState();
-            i->exprsp_cacherow = row;
-            i->exprsp_cache = v;
-            i->exprsp_cache_is_error = VarError;
-        }
-        if( v == NULL ) {
-            if( !VarError )
-                return( NULL );
-            v = row_v;
-        }
-        VarNodeInvalid( v );
-        VarErrState();
-        ExprValue( ExprSP );
-        VarSetGadget( v, VarGetGadget( v ) );
-        VarSetOnTop( v, VarGetOnTop( v ) );
-        VarSetValue( v, VarGetValue( i, v ) );
-        VarOldErrState();
-        VarDoneRow( i );
-    }
-    VarGetDepths( i, v, pdepth, pinherit );
-    return( v );
 }
 
 bool VarParentIsArray( var_node * v )

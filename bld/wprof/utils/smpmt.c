@@ -82,20 +82,18 @@ static void makeName( char *original, char *extension, char *target )
 
 void check( int b )
 {
-    if( ! b ) {
+    if( !b ) {
         quit( "I/O error" );
     }
 }
 
 void main( int argc, char **argv )
 {
-    samp_header header;
-    samp_block_prefix prefix;
-    fpos_t header_position;
-    fpos_t curr_position;
-    fpos_t start_position;
-    int in;
-    uint_16 new_thread;
+    samp_header         header;
+    samp_block_prefix   prefix;
+    fpos_t              curr_position;
+    FILE                *in;
+    uint_16             new_thread;
 
     if( argc != 2 ) {
         puts( "usage: SMPMT <sample_file>" );
@@ -105,30 +103,32 @@ void main( int argc, char **argv )
 puts( "WATCOM Sample File Thread Creation Utility  Version 1.0" );
 puts( "Copyright by WATCOM Systems Inc. 1990, 1991.  All rights reserved." );
 puts( "WATCOM is a trademark of WATCOM Systems Inc." );
+
     makeName( argv[1], ".SMP", sample_file );
-    in = open( sample_file, O_RDWR | O_BINARY );
-    if( in == -1 ) {
+    in = fopen( sample_file, "r+b" );
+    if( in == NULL ) {
         quit( "cannot open sample file" );
     }
-    start_position = tell( in );
-    lseek( in, - (int) sizeof( header ), SEEK_END );
-    header_position = tell( in );
-    read( in, &header, sizeof( header ) );
+    fseek( in, -(long)sizeof( header ), SEEK_END );
+    fread( &header, 1, sizeof( header ), in );
     if( header.signature != SAMP_SIGNATURE ) {
+        fclose( in );
         quit( "invalid sample file" );
     }
-    lseek( in, header.sample_start, SEEK_SET );
+    fseek( in, header.sample_start, SEEK_SET );
     new_thread = 0;
-    for(;;) {
+    for( ;; ) {
         curr_position = tell( in );
-        read( in, &prefix, sizeof( prefix ) );
-        if( prefix.kind == SAMP_LAST ) break;
+        fread( &prefix, 1, sizeof( prefix ), in );
+        if( prefix.kind == SAMP_LAST )
+            break;
         if( prefix.kind == SAMP_SAMPLES ) {
-            write( in, &new_thread, sizeof( new_thread ) );
+            fwrite( &new_thread, 1, sizeof( new_thread ), in );
             ++new_thread;
             new_thread &= 0x0f;
         }
-        lseek( in, curr_position + prefix.length, SEEK_SET );
+        fseek( in, curr_position + prefix.length, SEEK_SET );
     }
+    fclose( in );
     exit( 0 );
 }

@@ -37,8 +37,8 @@
 #include "wstring.hpp"
 
 #define LStyleDefault           0
-#define LStyleNoIntegral        _ControlStyleToWStyle( GUI_CONTROL_NOINTEGRALHEIGHT )
-#define LStyleSorted            _ControlStyleToWStyle( GUI_CONTROL_SORTED )
+#define LStyleNoIntegral        _ControlStyleToWStyle( GUI_STYLE_CONTROL_NOINTEGRALHEIGHT )
+#define LStyleSorted            _ControlStyleToWStyle( GUI_STYLE_CONTROL_SORTED )
 
 WCLASS WListBox : public WControl {
     public:
@@ -62,8 +62,8 @@ WCLASS WListBox : public WControl {
         int WEXPORT topIndex();
         void WEXPORT setExtent( WOrdinal extent );
         bool processMsg( gui_event );
-        virtual bool WEXPORT processMsg( gui_event msg, void *parm ) {
-            return( WWindow::processMsg( msg, parm ) );
+        virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm ) {
+            return( WWindow::processMsg( gui_ev, parm ) );
         };
         bool keyDown( WKeyCode, WKeyState );
         void WEXPORT setTagPtr( int index, void* tagPtr );

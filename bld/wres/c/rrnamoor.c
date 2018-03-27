@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID fid )
-/******************************************************/
+ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
+/************************************************/
 {
     uint_8              flags;
     uint_16             ord;
@@ -46,7 +46,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID fid )
     size_t              stringlen;
     char                *restofstr;
 
-    if( ResReadUint8( &flags, fid ) )
+    if( ResReadUint8( &flags, fp ) )
         return( NULL );
 
     /* read the rest of the Name or Ordinal */
@@ -54,11 +54,11 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID fid )
     restofstr = NULL;
     stringlen = 0;
     if( flags == 0xff ) {
-        error = ResReadUint16( &ord, fid );
+        error = ResReadUint16( &ord, fp );
     } else if( flags == 0 ) {
         error = false;
     } else {
-        restofstr = ResReadString( fid, &stringlen );
+        restofstr = ResReadString( fp, &stringlen );
         stringlen += 1; /* for the '\0' */
         error = ( restofstr == NULL );
     }
@@ -91,8 +91,8 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID fid )
     return( newptr );
 }
 
-ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID fid )
-/********************************************************/
+ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
+/**************************************************/
 {
     uint_16             flags;
     uint_16             ord;
@@ -101,7 +101,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID fid )
     size_t              stringlen;
     char                *restofstr;
 
-    if( ResReadUint16( &flags, fid ) )
+    if( ResReadUint16( &flags, fp ) )
         return( NULL );
 
     /* read the rest of the Name or Ordinal */
@@ -109,11 +109,11 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID fid )
     restofstr = NULL;
     stringlen = 0;
     if( flags == 0xffff ) {
-        error = ResReadUint16( &ord, fid );
+        error = ResReadUint16( &ord, fp );
     } else if( flags == 0 ) {
         error = false;
     } else {
-        restofstr = ResRead32String( fid, &stringlen );
+        restofstr = ResRead32String( fp, &stringlen );
         stringlen += 1; /* for the '\0' */
         error = ( restofstr == NULL );
     }

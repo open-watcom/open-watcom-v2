@@ -53,6 +53,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/<OWOBJDIR>/wcc386.exe      <OWRELROOT>/binl/wcc386
     <CCCMD> linux386/<OWOBJDIR>/wcc386.sym      <OWRELROOT>/binl/
     <CCCMD> linux386/wcc38601.int               <OWRELROOT>/binl/
+    <CCCMD> rdos386/<OWOBJDIR>/wcc386.exe       <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<OWOBJDIR>/wcc386.sym       <OWRELROOT>/rdos/
 
     <CCCMD> ntx64.dll/<OWOBJDIR>/wcc386.exe     <OWRELROOT>/binnt64/
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccd386.dll    <OWRELROOT>/binnt64/

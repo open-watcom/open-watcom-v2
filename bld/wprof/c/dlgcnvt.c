@@ -61,25 +61,6 @@ bool            OptDIFFormat = true;
 bool            OptCommaFormat = false;
 FILE            *ConvertFile;
 
-STATIC GUICALLBACK progEvent;
-
-
-void DlgGetConvert( a_window * wnd )
-/**********************************/
-{
-    ConvertFile = NULL;
-    CurrSIOData = WndExtra( wnd );
-    if( CurrSIOData == NULL )
-        return;
-    strcpy( convertPath, CurrSIOData->samp_file_name );
-    DlgOpen( LIT( Convert_Data ), DLG_CNVT_ROWS, DLG_CNVT_COLS,
-             convertControls, ArraySize( convertControls ), &progEvent, NULL );
-    if( CurrSIOData != NULL ) {
-        WndDirty( CurrSIOData->sample_window );
-    }
-}
-
-
 
 STATIC void getDlgValues( gui_window *gui )
 /*****************************************/
@@ -88,7 +69,6 @@ STATIC void getDlgValues( gui_window *gui )
     OptCommaFormat = ( GUIIsChecked( gui, CTL_COMMA_FMT ) == GUI_CHECKED );
     GUIDlgBuffGetText( gui, CTL_NAME, convertPath, sizeof( convertPath ) );
 }
-
 
 
 STATIC void setDlgValues( gui_window *gui )
@@ -152,8 +132,8 @@ STATIC void dlgBrowseFmtFile( gui_window *gui )
 
 
 
-STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
-/*********************************************************************/
+STATIC bool progGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/****************************************************************************/
 {
     gui_ctl_id      id;
 
@@ -181,9 +161,25 @@ STATIC bool progEvent( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     case GUI_DESTROY:
         return( true );
     }
     return( false );
+}
+
+
+void DlgGetConvert( a_window wnd )
+/********************************/
+{
+    ConvertFile = NULL;
+    CurrSIOData = WndExtra( wnd );
+    if( CurrSIOData == NULL )
+        return;
+    strcpy( convertPath, CurrSIOData->samp_file_name );
+    DlgOpen( LIT( Convert_Data ), DLG_CNVT_ROWS, DLG_CNVT_COLS,
+             convertControls, ArraySize( convertControls ), &progGUIEventProc, NULL );
+    if( CurrSIOData != NULL ) {
+        WndDirty( CurrSIOData->sample_window );
+    }
 }

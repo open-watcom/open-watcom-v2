@@ -41,14 +41,13 @@
 #include "guistr.h"
 #include "guicolor.h"
 
+
 typedef struct draw_cache {
     WPI_COLOUR  back;
     WPI_COLOUR  colour;
     HBRUSH      brush;
     HPEN        pen;
 } draw_cache;
-
-extern  WPI_TEXTMETRIC  GUItm;
 
 /*
  * SetText -- set the current text colour and background colour properly
@@ -91,21 +90,20 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         return;
     }
     old_rop = 0;
-    old_brush = (HBRUSH)NULL;
-    brush = (HBRUSH)NULL;
-    old_pen = (HPEN)NULL;
-    pen = (HPEN)NULL;
+    old_brush = NULLHANDLE;
+    brush = NULLHANDLE;
+    old_pen = NULLHANDLE;
+    pen = NULLHANDLE;
     GUIGetMetrics( wnd );
     if( !bitmap ) {
-        height = AVGYCHAR(GUItm);
+        height = AVGYCHAR( GUItm );
     }
     rect = wnd->hwnd_client_rect;
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom);
+    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
     _wpi_getpaintrect( wnd->ps, &paint_rect );
-    _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right,
-                         &paint_bottom );
+    _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right, &paint_bottom );
     top = paint_top / height * height;
-    bottom = ( paint_bottom + height - 1) / height * height;
+    bottom = ( paint_bottom + height - 1 ) / height * height;
 
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll_pos = GUIGetScrollPos( wnd, SB_HORZ );
@@ -181,16 +179,16 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         if( old_rop != 0 ) {
             _wpi_setrop2( wnd->hdc, old_rop );
         }
-        if( old_brush != (HBRUSH)NULL ) {
+        if( old_brush != NULLHANDLE ) {
             _wpi_getoldbrush( wnd->hdc, old_brush );
         }
-        if( brush != (HBRUSH)NULL ) {
+        if( brush != NULLHANDLE ) {
             _wpi_deletebrush( brush );
         }
-        if( old_pen != (HPEN)NULL ) {
+        if( old_pen != NULLHANDLE ) {
             _wpi_getoldpen( wnd->hdc, old_pen );
         }
-        if( pen != (HPEN)NULL ) {
+        if( pen != NULLHANDLE ) {
             _wpi_deletepen( pen );
         }
     }

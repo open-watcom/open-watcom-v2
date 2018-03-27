@@ -57,7 +57,7 @@ void BannerMessage( void )
     static char *       helpMsg = {
         banner1w( "C/C++ CVTRES Clone for " CPU_NAME " ", _CVTRES_CLONE_VERSION_ ) "\n"
         banner2 "\n"
-        banner2a( "1995" ) "\n"
+        banner2a( 1995 ) "\n"
         banner3 "\n"
         banner3a "\n"
     };
@@ -113,7 +113,7 @@ void PrintHelpMessage( void )
             fflush( stdout );
             ch = get_key();
             printf( "\n" );
-            if( ch == 'q' )  
+            if( ch == 'q' )
                 break;
             num = -1;
         }

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #if defined( __WINDOWS__ )
 #include <stdlib.h>
@@ -43,12 +44,7 @@
 #endif
 
 #if defined( __WATCOMC__ )
-  #if defined( __WINDOWS__ )
-  #elif defined( _M_I86 )
-    #pragma aux DIPLOAD "*" __loadds
-  #else
     #pragma aux DIPLOAD "*"
-  #endif
 #endif
 
 address                 NilAddr;
@@ -130,6 +126,8 @@ dip_imp_routines        ImpInterface = {
     DIPImp( LookupSymEx ),
 };
 
+#define FIRST_IMP_FUNC      HandleSize
+
 #if defined( __WINDOWS__ )
 static HINSTANCE    ThisInst;
 static HANDLE       TaskId;
@@ -177,9 +175,9 @@ void DCMapAddr( addr_ptr *a, void *d )
     DIPClient->MapAddr( a, d );
 }
 
-imp_sym_handle *DCSymCreate( imp_image_handle *ii, void *d )
+imp_sym_handle *DCSymCreate( imp_image_handle *iih, void *d )
 {
-    return( DIPClient->SymCreate( ii, d ) );
+    return( DIPClient->SymCreate( iih, d ) );
 }
 
 dip_status DCItemLocation( location_context *lc, context_item ci, location_list *ll )
@@ -202,40 +200,45 @@ void DCAddrSection( address *a )
     DIPClient->AddrSection( a );
 }
 
-dig_fhandle DCOpen( const char *path, dig_open flags )
+FILE *DCOpen( const char *path, dig_open flags )
 {
     return( DIPClient->Open( path, flags ) );
 }
 
-unsigned long DCSeek( dig_fhandle fid, unsigned long p, dig_seek w )
+int DCSeek( FILE *fp, unsigned long p, dig_seek w )
 {
-    return( DIPClient->Seek( fid, p, w ) );
+    return( DIPClient->Seek( fp, p, w ) );
 }
 
-size_t DCRead( dig_fhandle fid, void *b, size_t s )
+unsigned long DCTell( FILE *fp )
 {
-    return( DIPClient->Read( fid, b, s ) );
+    return( DIPClient->Tell( fp ) );
 }
 
-dip_status DCReadAt( dig_fhandle fid, void *b, size_t s, unsigned long p )
+size_t DCRead( FILE *fp, void *b, size_t s )
 {
-    if( DIPClient->Seek( fid, p, DIG_ORG ) != p ) {
+    return( DIPClient->Read( fp, b, s ) );
+}
+
+dip_status DCReadAt( FILE *fp, void *b, size_t s, unsigned long p )
+{
+    if( DIPClient->Seek( fp, p, DIG_ORG ) ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DIPClient->Read( fid, b, s ) != s ) {
+    if( DIPClient->Read( fp, b, s ) != s ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     return( DS_OK );
 }
 
-size_t DCWrite( dig_fhandle fid, const void *b, size_t s )
+size_t DCWrite( FILE *fp, const void *b, size_t s )
 {
-    return( DIPClient->Write( fid, b, s ) );
+    return( DIPClient->Write( fp, b, s ) );
 }
 
-void DCClose( dig_fhandle fid )
+void DCClose( FILE *fp )
 {
-    DIPClient->Close( fid );
+    DIPClient->Close( fp );
 }
 
 void DCRemove( const char *path, dig_open flags )
@@ -265,14 +268,12 @@ unsigned DCMachineData( address a, dig_info_type info_type,
     return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *iih, imp_type_handle *ith, imp_type_handle *base_ith )
 {
-    return( ImpInterface.TypeBase( ii, it, base, NULL, NULL ) );
+    return( ImpInterface.TypeBase( iih, ith, base_ith, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )
-
-typedef void (DIGENTRY *INTERPROC)();
 
 #ifdef DEBUGGING
 void Say( const char *buff )
@@ -281,7 +282,7 @@ void Say( const char *buff )
 }
 #endif
 
-DIG_DLLEXPORT void DIGENTRY DIPUNLOAD( void )
+void DIGENTRY DIPUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
@@ -293,12 +294,9 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTERPROC           *func;
+    FARPROC             *func;
     unsigned            count;
-    struct {
-        dip_init_func   *load;
-        dip_fini_func   *unload;
-    }                   *link;
+    dip_link_block      __far *link;
     unsigned            seg;
     unsigned            off;
 
@@ -311,10 +309,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTERPROC *)&ImpInterface.HandleSize;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTERPROC );
+    func = (FARPROC *)&ImpInterface.FIRST_IMP_FUNC;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, FIRST_IMP_FUNC ) ) / sizeof( FARPROC );
     while( count != 0 ) {
-        *func = (INTERPROC)MakeProcInstance( (FARPROC)*func, this_inst );
+        if( *func != NULL ) {
+            *func = MakeProcInstance( *func, this_inst );
+        }
         ++func;
         --count;
     }

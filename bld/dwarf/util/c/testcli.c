@@ -35,7 +35,6 @@
 #include <string.h>
 #include <setjmp.h>
 #include <stdarg.h>
-
 #include "watcom.h"
 #include "bool.h"
 #include "dw.h"
@@ -105,8 +104,8 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
 }
 
 
-static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type ) {
-
+static void CLISeek( dw_sectnum sect, dw_out_offset offs, int type )
+{
     switch( type ) {
     case DW_SEEK_CUR:
         Sections[sect].cur_offset += offs;

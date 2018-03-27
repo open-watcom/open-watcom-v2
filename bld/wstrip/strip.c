@@ -44,7 +44,7 @@
 #include "wio.h"
 #include "sopen.h"
 #include "machtype.h"
-#include "dbginfo.h"
+#include "wdbginfo.h"
 #include "cv4.h"
 #include "tistrail.h"
 #include "wstrip.h"
@@ -62,6 +62,8 @@
 #define WRESMAGIC1      0xC3D2CDCF
 
 #define SEEK_POSBACK(p) (-(long)(p))
+
+#define CopyData(i,o)   CopyDataLen( i, o, ~0UL )
 
 #include "pushpck1.h"
 typedef struct WResHeader {
@@ -87,7 +89,7 @@ typedef struct {
 } info_info;
 
 typedef struct {
-    int         h;
+    FILE        *fp;
     char        name[_MAX_PATH];
 } fdata;
 
@@ -109,7 +111,7 @@ static const char *ExtLst[] = {
 static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
 
-static fdata   finfo, fin, fout;
+static fdata   finfo, fin, fout, ftmp;
 
 static char    fbuff[_MAX_PATH2];
 
@@ -123,45 +125,46 @@ static void FatalDelTmp( int reason, const char *insert )
     Fatal( reason, insert );
 }
 
-static void CopyData( fdata *in, fdata *out, unsigned long max )
+static void CopyDataLen( fdata *in, fdata *out, unsigned long max )
 {
     size_t              size;
 
-    for( ;; ) {
-        if( max == 0 )
-            break;
-        size = ( max > (unsigned long)bufsize ) ? bufsize : max;
-        size = posix_read( in->h, Buffer, size );
+    size = bufsize;
+    for( ; max != 0; max -= (unsigned long)size ) {
+        if( size > max )
+            size = (size_t)max;
+        size = fread( Buffer, 1, size, in->fp );
+        if( ferror( in->fp ) )
+            FatalDelTmp( MSG_READ_ERROR, in->name );
         if( size == 0 )
             break;
-        if( size == -1 ) {
-            FatalDelTmp( MSG_READ_ERROR, in->name );
-        }
-        if( size != (size_t)posix_write( out->h, Buffer, size ) ) {
+        if( size != fwrite( Buffer, 1, size, out->fp ) ) {
             FatalDelTmp( MSG_WRITE_ERROR, out->name );
         }
-        max -= (unsigned long)size;
     }
 }
 
-static bool TryWATCOM( int h, info_info *info, bool resfile )
+static bool TryWATCOM( FILE *fp, info_info *info, bool resfile )
 {
     master_dbg_header   header;
     unsigned long       end;
 
-    end = lseek( h, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
+    if( fseek( fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
+        return( false );
+    end = ftell( fp );
     for( ;; ) {
-        if( posix_read( h, (void *)&header, sizeof( header ) ) != sizeof( header ) )
+        if( fread( (void *)&header, 1, sizeof( header ), fp ) != sizeof( header ) )
             return( false );
         if( header.signature != FOX_SIGNATURE1
           && header.signature != FOX_SIGNATURE2
-          && header.signature != (resfile ? VALID_SIGNATURE : WAT_RES_SIG) )
+          && header.signature != (resfile ? WAT_DBG_SIGNATURE : WAT_RES_SIG) )
             break;
         if( header.debug_size > end )
             return( false );
-        end = lseek( h, end - header.debug_size, SEEK_SET );
+        end -= header.debug_size;
+        fseek( fp, end, SEEK_SET );
     }
-    if( header.signature != (resfile ? WAT_RES_SIG : VALID_SIGNATURE) )
+    if( header.signature != (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) )
         return( false );
     end += sizeof( header );
     if( end <= header.debug_size )
@@ -173,14 +176,16 @@ static bool TryWATCOM( int h, info_info *info, bool resfile )
     return( true );
 }
 
-static bool TryTIS( int h, info_info *info )
+static bool TryTIS( FILE *fp, info_info *info )
 {
     TISTrailer      head;
     long            end;
 
-    end = lseek( h, SEEK_POSBACK( sizeof( head ) ), SEEK_END );
+    if( fseek( fp, SEEK_POSBACK( sizeof( head ) ), SEEK_END ) )
+        return( false );
+    end = ftell( fp );
     for( ;; ) {
-        if( posix_read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
+        if( fread( &head, 1, sizeof( head ), fp ) != sizeof( head ) ) {
             return( false );
         }
         if( head.signature != TIS_TRAILER_SIGNATURE ) {
@@ -189,7 +194,7 @@ static bool TryTIS( int h, info_info *info )
         end -= head.size - sizeof( head );
         if( head.vendor == TIS_TRAILER_VENDOR_TIS && head.type == TIS_TRAILER_TYPE_TIS_DWARF )
             break;
-        lseek( h, end, SEEK_SET );
+        fseek( fp, end, SEEK_SET );
     }
     info->start = end;
     info->len = head.size;
@@ -197,13 +202,15 @@ static bool TryTIS( int h, info_info *info )
     return( true );
 }
 
-static bool TryCV4( int h, info_info *info )
+static bool TryCV4( FILE *fp, info_info *info )
 {
     cv_trailer          head;
     unsigned long       pos;
 
-    pos = lseek( h, SEEK_POSBACK( sizeof( head ) ), SEEK_END );
-    if( posix_read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
+    if( fseek( fp, SEEK_POSBACK( sizeof( head ) ), SEEK_END ) )
+        return( false );
+    pos = ftell( fp );
+    if( fread( &head, 1, sizeof( head ), fp ) != sizeof( head ) ) {
         return( false );
     }
     if( memcmp( head.sig, CV4_NB09, sizeof( head.sig ) ) != 0
@@ -218,45 +225,48 @@ static bool TryCV4( int h, info_info *info )
     return( true );
 }
 
-static void FindInfoInfo( int h, info_info *info, bool resfile )
+static void FindInfoInfo( FILE *fp, info_info *info, bool resfile )
 {
 
     info->type = WRAP_NONE;
     info->start = 0;
     info->len = 0;
-    if( TryWATCOM( h, info, resfile ) )
+    if( TryWATCOM( fp, info, resfile ) )
         return;
     if( resfile )
         return;
-    if( TryTIS( h, info ) )
+    if( TryTIS( fp, info ) )
         return;
-    TryCV4( h, info );
+    TryCV4( fp, info );
 }
 
-static bool IsSymResFile( int handle, bool resfile )
+static bool IsSymResFile( FILE *fp, bool resfile )
 {
     master_dbg_header   header;
     info_info           info;
+    unsigned long       end;
 
-    lseek( handle, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
-    if( posix_read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) )
+    if( fseek( fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
         return( false );
-    if( header.signature == (resfile ? WAT_RES_SIG : VALID_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == (long)header.debug_size )
+    end = ftell( fp ) + sizeof( header );
+    if( fread( (void *)&header, 1, sizeof( header ), fp ) != sizeof( header ) )
+        return( false );
+    if( header.signature == (resfile ? WAT_RES_SIG : WAT_DBG_SIGNATURE) && end == header.debug_size )
         return( true );
     if( resfile )
         return( false );
-    FindInfoInfo( handle, &info, resfile );
+    FindInfoInfo( fp, &info, resfile );
     return( info.type != WRAP_NONE );
 }
 
 
-static bool IsResMagic( int handle, bool resfile )
+static bool IsResMagic( FILE *fp, bool resfile )
 {
     WResHeader          wheader;
 
     if( resfile ) {
-        lseek( handle, 0L, SEEK_SET );
-        if( posix_read( handle, &wheader, sizeof( wheader ) ) != sizeof( wheader ) )
+        fseek( fp, 0, SEEK_SET );
+        if( fread( &wheader, 1, sizeof( wheader ), fp ) != sizeof( wheader ) )
             return( false );
         if( (wheader.Magic[0] == WRESMAGIC0) || (wheader.Magic[0] == WRESMICRO0) ) {
             if( (wheader.Magic[1] == WRESMAGIC1) || (wheader.Magic[1] >> 16 == WRESMICRO1) ) {
@@ -271,111 +281,85 @@ static void AddInfo( void )
 {
     info_info           info;
     master_dbg_header   header;
-    int                 msgid;
 
     if( finfo.name[0] == '\0' ) {
-        msgid = MSG_NO_SPECIFIED_0;
-        if( res )
-            msgid = MSG_NO_SPECIFIED_1;
-        Fatal( msgid, NULL );
+        Fatal( ( res ) ? MSG_NO_SPECIFIED_1 : MSG_NO_SPECIFIED_0, NULL );
     }
 
-    FindInfoInfo( fin.h, &info, res );
+    FindInfoInfo( fin.fp, &info, res );
     if( info.type != WRAP_NONE ) {
-        msgid = MSG_HAS_INFO_0;
-        if( res )
-            msgid = MSG_HAS_INFO_1;
-        Fatal( msgid, fin.name );
+        Fatal( ( res ) ? MSG_HAS_INFO_1 : MSG_HAS_INFO_0, fin.name );
     }
 
     /* initialize symbol or resource file */
-    finfo.h = sopen3( finfo.name, O_RDONLY | O_BINARY, SH_DENYWR );
-    if( finfo.h == -1 ) {
+    finfo.fp = fopen( finfo.name, "rb" );
+    if( finfo.fp == NULL )
         FatalDelTmp( MSG_CANT_OPEN, finfo.name );
-    }
-    if( !IsResMagic( finfo.h, res ) && !IsSymResFile( finfo.h, res ) ) {
-        msgid = MSG_INV_FILE_0;
-        if( res )
-            msgid = MSG_INV_FILE_1;
-        FatalDelTmp( msgid, finfo.name );
-    }
-    if( strcmp( fin.name, fout.name ) != 0 ) {
-        if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
-            Fatal( MSG_SEEK_ERROR, fin.name );
-        }
-        CopyData( &fin, &fout, ~0UL );
-    }
+    if( !IsResMagic( finfo.fp, res ) && !IsSymResFile( finfo.fp, res ) )
+        FatalDelTmp( ( res ) ? MSG_INV_FILE_1 : MSG_INV_FILE_0, finfo.name );
 
+    /* transfer input file to output file */
+    fseek( fin.fp, 0, SEEK_SET );
+    CopyData( &fin, &ftmp );
     /* transfer info file to output file */
-    lseek( finfo.h, 0L, SEEK_SET );
-    lseek( fout.h, 0L, SEEK_END );
-    CopyData( &finfo, &fout, ~0UL );
+    fseek( finfo.fp, 0, SEEK_SET );
+    CopyData( &finfo, &ftmp );
 
     /* add header (trailer), if required */
     if( res ) {
-        info.len = lseek( finfo.h, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) + sizeof( header );
-        posix_read( finfo.h, (void *)&header, sizeof( header ) );
+        if( fseek( finfo.fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
+        	Fatal( MSG_SEEK_ERROR, finfo.name );
+        info.len = ftell( finfo.fp ) + sizeof( header );
+        fread( (void *)&header, 1, sizeof( header ), finfo.fp );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {
             header.signature = WAT_RES_SIG;
             header.debug_size = info.len + sizeof( header );
-            if( posix_write( fout.h, (void *)&header, sizeof( header ) ) != sizeof( header ) ) {
+            if( fwrite( (void *)&header, 1, sizeof( header ), ftmp.fp ) != sizeof( header ) ) {
                 FatalDelTmp( MSG_ADD_HEADER_ERROR, NULL );
             }
         }
     }
+    fclose( finfo.fp );
 }
 
 static void StripInfo( void )
 {
     info_info           info;
-    int                 msgid;
 
-    FindInfoInfo( fin.h, &info, res );
+    FindInfoInfo( fin.fp, &info, res );
     if( info.type == WRAP_NONE ) {
         if( !nodebug_ok ) {
-            msgid = MSG_NO_INFO_0;
-            if( res )
-                msgid = MSG_NO_INFO_1;
-            Fatal( msgid, fin.name );
+            Fatal( ( res ) ? MSG_NO_INFO_1 : MSG_NO_INFO_0, fin.name );
         }
     }
-
+    finfo.fp = NULL;
     if( finfo.name[0] != '\0' && info.type != WRAP_NONE ) {
 #ifdef __UNIX__
         if( strcmp( finfo.name, fout.name ) == 0 ) {
             strcat( finfo.name, (res ? ResExt : SymExt) );
         }
 #endif
-        finfo.h = sopen4( finfo.name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
-        if( finfo.h == -1 ) {
-            msgid = MSG_CANT_CREATE_0;
-            if( res )
-                msgid = MSG_CANT_CREATE_1;
-            FatalDelTmp( msgid, finfo.name );
+        finfo.fp = fopen( finfo.name, "wb" );
+        if( finfo.fp == NULL ) {
+            FatalDelTmp( ( res ) ? MSG_CANT_CREATE_1 : MSG_CANT_CREATE_0, finfo.name );
         }
     }
 
     /* transfer executable file upto start of debugging info */
-    if( strcmp( fin.name, fout.name ) != 0 ) {
-        if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
-            Fatal( MSG_SEEK_ERROR, fin.name );
-        }
-        CopyData( &fin, &fout, info.start );
-    } else {
-        lseek( fin.h, info.start, SEEK_SET );
-        lseek( fout.h, info.start, SEEK_SET );
-    }
+    fseek( fin.fp, 0, SEEK_SET );
+    CopyDataLen( &fin, &ftmp, info.start );
 
-    if( finfo.h != -1 ) {
+    if( finfo.fp != NULL ) {
         /* transfer data to info file */
-        CopyData( &fin, &finfo, info.len );
+        CopyDataLen( &fin, &finfo, info.len );
+        fclose( finfo.fp );
     } else {
         /* else skip it */
-        lseek( fin.h, info.len, SEEK_CUR );
+        fseek( fin.fp, info.len, SEEK_CUR );
     }
 
     /* transfer remaining data */
-    CopyData( &fin, &fout, ~0UL );
+    CopyData( &fin, &ftmp );
 }
 
 static bool Suffix( char *fname, const char *suff )
@@ -511,37 +495,35 @@ int main( int argc, char *argv[] )
         }
         Suffix( finfo.name, (res ? ResExt : SymExt) );
     }
-    finfo.h = -1;
+
+    /* initialize temporary file */
+    strcpy( ftmp.name, "temporary file" );
+    ftmp.fp = tmpfile();
+    if( ftmp.fp == NULL ) {
+        Fatal( MSG_CANT_OPEN, ftmp.name );
+    }
 
     /* initialize input file */
-    fin.h = sopen3( fin.name, O_RDONLY | O_BINARY, SH_DENYNO );
-    if( fin.h == -1 ) {
+    fin.fp = fopen( fin.name, "rb" );
+    if( fin.fp == NULL ) {
         Fatal( MSG_CANT_OPEN, fin.name );
     }
-
-    /* initialize output file -- note: don't truncate */
-    fout.h = sopen4( fout.name, O_WRONLY | O_CREAT | O_BINARY, SH_DENYNO, PMODE_RWX );
-    if( fout.h == -1 ) {
-        Fatal( MSG_CANT_CREATE_OUTPUT, fout.name );
-    }
-
     if( add_file ) {
         AddInfo();
     } else {
         StripInfo();
     }
-    /* make sure that size of output file is correct */
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    chsize( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
-#else
-    ftruncate( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
-#endif
-
-    close( fin.h );
-    close( fout.h );
-    if( finfo.h != -1 ) {
-        close( finfo.h );
+    fclose( fin.fp );
+    /* initialize output file, overwrite if exists */
+    fout.fp = fopen( fout.name, "wb" );
+    if( fout.fp == NULL ) {
+        Fatal( MSG_CANT_CREATE_OUTPUT, fout.name );
     }
+    /* copy temporary file to output executable file */
+    fseek( ftmp.fp, 0, SEEK_SET );
+    CopyData( &ftmp, &fout );
+    fclose( fout.fp );
+    fclose( ftmp.fp );
 
     uptime.actime = time( NULL );
     uptime.modtime = mtime;

@@ -45,7 +45,8 @@ HANDLE                  EventDoneSem;
 int                     LastClassGiven; // 1 based index of last class returned
 int                     AppsLoaded;
 
-int                     Event;
+trap_conditions         Conditions;
+
 typedef struct brk {
     struct brk  *next;
     char        saved;
@@ -71,9 +72,9 @@ int NumThreads;
 #define OP_BREAK        "\xCA"
 
 #define EventDone()     ReleaseSemaphore( EventDoneSem, 1, NULL )
-#define Event( i )      Event = i; ReleaseSemaphore( EventSem, 1, NULL )
+#define Event( i )      Conditions = i; ReleaseSemaphore( EventSem, 1, NULL )
 #define WaitForEvent()  WaitForSingleObject( EventSem, INFINITE )
-#define WaitEventDone()  WaitForSingleObject( EventDoneSem, INFINITE )
+#define WaitEventDone() WaitForSingleObject( EventDoneSem, INFINITE )
 
 #define JS( x )         makeJavaString( x, strlen( x ) )
 ClassClass                              *CbMain;
@@ -84,11 +85,12 @@ static void ThreadName( Classjava_lang_Thread* trd, char *buff, int len )
     char        *p;
     unicode     *src;
 
-    src = unhand(trd->name)->body;
-    len = obj_length(trd->name);
+    src = unhand( trd->name )->body;
+    len = obj_length( trd->name );
     p = buff;
     while( *src ) {
-        if( --len < 0 ) break;
+        if( --len < 0 )
+            break;
         *p++ = *src++;
     }
     *p = '\0';
@@ -97,7 +99,9 @@ static void ThreadName( Classjava_lang_Thread* trd, char *buff, int len )
 static void TheBigSleep()
 /***********************/
 {
-    for( ;; ) Sleep( 1000 );
+    for( ;; ) {
+        Sleep( 1000 );
+    }
 }
 
 unsigned DoRead( int addr, char *buff, unsigned length )
@@ -179,13 +183,13 @@ void SuspendThreads()
     }
 }
 
-int HandleBreak()
-/****************/
+trap_conditions HandleBreak( void )
+/*********************************/
 {
-    int cond;
-    brk **owner, *bp;
+    trap_conditions conditions;
+    brk             **owner, *bp;
 
-    cond = COND_TRACE;
+    conditions = COND_TRACE;
     for( owner = &StartBPList; *owner != NULL; owner = &(bp->next) ) {
         bp = *owner;
         if( bp->pc == unhand(TheBkptQ)->pc ) {
@@ -201,10 +205,10 @@ int HandleBreak()
         if( bp->pc == unhand(TheBkptQ)->pc ) {
             DoWrite( bp->pc, &bp->saved, 1 );
             unhand(TheBkptQ)->opcode = bp->saved;
-            cond = COND_BREAK;
+            conditions = COND_BREAK;
         }
     }
-    return( cond );
+    return( conditions );
 }
 
 #pragma aux (cdecl) BreakpointLoop "Java_sun_tools_debug_jvmhandler_BreakpointLoop_stub" export
@@ -218,7 +222,7 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
     ArrayOfObject               *threads;
     char                        buff[256];
     int                         i;
-    int                         cond;
+    trap_conditions             conditions;
     int                         num_threads;
     int                         foundBPThread;
 
@@ -236,9 +240,9 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
     for( ;; ) {
         monitorWait(obj_monitor(TheBkptQ),INFINITE);
         if( unhand(TheBkptQ)->exception == NULL ) {
-            cond = HandleBreak();
+            conditions = HandleBreak();
         } else {
-            cond = 0;
+            conditions = 0;
             // nyi - catching exceptions???
         }
         unhand(TheBkptQ)->updated = TRUE;
@@ -251,9 +255,11 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
         foundBPThread = FALSE;
         for( i = 0; i < num_threads; ++i ) {
             Threads[NumThreads] = (Hjava_lang_Thread*)threads->body[i];
-            if( Threads[NumThreads] == NULL ) continue;
+            if( Threads[NumThreads] == NULL )
+                continue;
             ThreadName( unhand( Threads[NumThreads] ), buff, sizeof( buff ) );
-            if( memcmp( buff, "jvmhelp", sizeof( "jvmhelp" )-1 ) == 0 ) continue;
+            if( memcmp( buff, "jvmhelp", sizeof( "jvmhelp" )-1 ) == 0 )
+                continue;
             if( Threads[NumThreads] == unhand(TheBkptQ)->thread ) {
                 foundBPThread = TRUE;
             }
@@ -267,7 +273,7 @@ void BreakpointLoop( stack_item *p, ExecEnv *ee )
         }
 
         SuspendThreads();
-        Event( cond );
+        Event( conditions );
         WaitEventDone();
         ResumeThreads();
     }
@@ -949,8 +955,9 @@ static unsigned runProg( bool single_step )
             GetRegs( &new_pc, NULL, NULL, NULL );
         } while( new_pc == old_pc );
     }
-    ret->conditions = Event | COND_THREAD;
-    if( get_nbinclasses() > LastClassGiven ) ret->conditions |= COND_LIBRARIES;
+    ret->conditions = Conditions | COND_THREAD;
+    if( get_nbinclasses() > LastClassGiven )
+        ret->conditions |= COND_LIBRARIES;
 
     GetRegs( &ret->program_counter.offset, &ret->stack_pointer.offset, NULL, NULL );
     ret->program_counter.segment = 0;
@@ -959,26 +966,26 @@ static unsigned runProg( bool single_step )
 } /* runProg */
 
 trap_retval ReqProg_go( void )
-/*******************/
+/****************************/
 {
     return( runProg( FALSE ) );
 }
 
 trap_retval ReqProg_step( void )
-/*********************/
+/******************************/
 {
     return( runProg( TRUE ) );
 }
 
 trap_retval ReqRedirect_stdin( void )
-/**************************/
+/***********************************/
 {
     // never called
     return( 0 );
 }
 
 trap_retval ReqRedirect_stdout( void )
-/***************************/
+/************************************/
 {
     // never called
     return( 0 );
@@ -1017,15 +1024,15 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    ret->handle = 0;
+    ret->mod_handle = 0;
     // first is 0 based, LastClassGiven is 1 based, so no increment is required
-    if( acc->handle == 0 ) {
+    if( acc->mod_handle == 0 ) {
         if( nbinclasses <= LastClassGiven ) {
             return( sizeof( *ret ) );
         }
         first = LastClassGiven;
     } else {
-        first = acc->handle;
+        first = acc->mod_handle;
     }
 
     if( first >= nbinclasses ) return( sizeof( *ret ) );
@@ -1041,7 +1048,7 @@ trap_retval ReqGet_lib_name( void )
     strcpy( name, JAVAPREFIX );
     strcat( name, cb->name );
 
-    ret->handle = LastClassGiven = first + 1;
+    ret->mod_handle = LastClassGiven = first + 1;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 

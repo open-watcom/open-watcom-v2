@@ -3,7 +3,7 @@
 # tabs, too!
 
 INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=
 CFLAGS = -g -O2 $(INCS)
 
 all: $(OWBINDIR)/wmake

@@ -40,9 +40,9 @@
 
 
 dw_handle DWENTRY DWBeginLexicalBlock(
-    dw_client                   cli,
-    dw_loc_handle               segment,
-    const char *                name )
+    dw_client       cli,
+    dw_loc_handle   segment,
+    const char      *name )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -68,8 +68,7 @@ dw_handle DWENTRY DWBeginLexicalBlock(
     return( new );
 }
 
-void DWENTRY DWEndLexicalBlock(
-    dw_client                   cli )
+void DWENTRY DWEndLexicalBlock( dw_client cli )
 {
     EndChildren( cli );
     EndRef( cli );
@@ -77,11 +76,11 @@ void DWENTRY DWEndLexicalBlock(
 
 
 dw_handle DWENTRY DWBeginCommonBlock(
-    dw_client                   cli,
-    dw_loc_handle               loc,
-    dw_loc_handle               segment,
-    const char *                name,
-    unsigned                    flags )
+    dw_client       cli,
+    dw_loc_handle   loc,
+    dw_loc_handle   segment,
+    const char      *name,
+    unsigned        flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -111,16 +110,13 @@ dw_handle DWENTRY DWBeginCommonBlock(
 }
 
 
-void DWENTRY DWEndCommonBlock(
-    dw_client                   cli )
+void DWENTRY DWEndCommonBlock( dw_client cli )
 {
     EndChildren( cli );
     EndRef( cli );
 }
 
-dw_handle DWENTRY DWNameListBegin(
-    dw_client                   cli,
-    const char *                name )
+dw_handle DWENTRY DWNameListBegin( dw_client cli, const char *name )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
@@ -135,9 +131,7 @@ dw_handle DWENTRY DWNameListBegin(
     return( new_hdl );
 }
 
-void DWENTRY DWNameListItem(
-    dw_client                   cli,
-    dw_handle                    ref )
+void DWENTRY DWNameListItem( dw_client cli, dw_handle ref )
 {
     abbrev_code abbrev;
 
@@ -148,18 +142,17 @@ void DWENTRY DWNameListItem(
     EndDIE( cli );
 }
 
-void DWENTRY DWEndNameList(
-    dw_client                   cli )
+void DWENTRY DWEndNameList( dw_client cli )
 {
     EndChildren( cli );
     EndRef( cli );
 }
 
 dw_handle DWENTRY DWBeginInlineSubroutine(
-    dw_client                   cli,
-    dw_handle                   subr,
-    dw_loc_handle               ret_addr_loc,
-    dw_loc_handle               segment )
+    dw_client       cli,
+    dw_handle       subr,
+    dw_loc_handle   ret_addr_loc,
+    dw_loc_handle   segment )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -187,17 +180,17 @@ dw_handle DWENTRY DWBeginInlineSubroutine(
 
 //TODO bust up into a more saner bunch of routines
 dw_handle DWENTRY DWBeginSubroutine(
-    dw_client                   cli,
-    uint                        call_type,
-    dw_handle                   return_type,
-    dw_loc_handle               return_addr_loc,
-    dw_loc_handle               frame_base_loc,
-    dw_loc_handle               vtable_loc,
-    dw_handle                   member_hdl,
-    dw_loc_handle               segment,
-    const char *                name,
-    dw_addr_offset              start_scope,
-    uint                        flags )
+    dw_client       cli,
+    uint            call_type,
+    dw_handle       return_type,
+    dw_loc_handle   return_addr_loc,
+    dw_loc_handle   frame_base_loc,
+    dw_loc_handle   vtable_loc,
+    dw_handle       member_hdl,
+    dw_loc_handle   segment,
+    const char      *name,
+    dw_addr_offset  start_scope,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -206,15 +199,22 @@ dw_handle DWENTRY DWBeginSubroutine(
 
     _Validate( name != NULL );
     new = GetHandle( cli );
-    if( flags & DW_FLAG_DECLARATION ){
+    if( flags & DW_FLAG_DECLARATION ) {
         abbrev = AB_SUBROUTINE_DECL;
-        if( vtable_loc ) abbrev |= AB_VTABLE_LOC;
-        if( member_hdl ) abbrev |= AB_MEMBER;
+        if( vtable_loc )
+            abbrev |= AB_VTABLE_LOC;
+        if( member_hdl ) {
+            abbrev |= AB_MEMBER;
+        }
     } else {
         abbrev = AB_SUBROUTINE;
-        if( vtable_loc ) abbrev |= AB_VTABLE_LOC;
-        if( member_hdl ) abbrev |= AB_MEMBER;
-        if( segment ) abbrev |= AB_SEGMENT;
+        if( vtable_loc )
+            abbrev |= AB_VTABLE_LOC;
+        if( member_hdl )
+            abbrev |= AB_MEMBER;
+        if( segment ) {
+            abbrev |= AB_SEGMENT;
+        }
     }
     if( return_type != 0 ){
         abbrev |= AB_TYPE;
@@ -289,13 +289,13 @@ dw_handle DWENTRY DWBeginSubroutine(
 }
 
 dw_handle DWENTRY DWBeginEntryPoint(
-    dw_client                   cli,
-    dw_handle                   return_type,
-    dw_loc_handle               return_addr_loc,
-    dw_loc_handle               segment,
-    const char *                name,
-    dw_addr_offset              start_scope,
-    uint                        flags )
+    dw_client       cli,
+    dw_handle       return_type,
+    dw_loc_handle   return_addr_loc,
+    dw_loc_handle   segment,
+    const char      *name,
+    dw_addr_offset  start_scope,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -339,11 +339,11 @@ dw_handle DWENTRY DWBeginEntryPoint(
 }
 
 static void MemFuncCommon(
-    dw_client                   cli,
-    abbrev_code                 abbrev,
-    dw_handle                   return_type,
-    const char *                name,
-    uint                        flags )
+    dw_client       cli,
+    abbrev_code     abbrev,
+    dw_handle       return_type,
+    const char      *name,
+    uint            flags )
 {
     StartDIE( cli, abbrev );
     if( flags & DW_FLAG_ARTIFICIAL ){
@@ -363,12 +363,12 @@ static void MemFuncCommon(
 }
 
 dw_handle DWENTRY DWBeginMemFuncDecl(
-    dw_client                   cli,
-    dw_handle                   return_type,
-    dw_loc_handle               segment,
-    dw_loc_handle               loc,
-    const char *                name,
-    uint                        flags )
+    dw_client       cli,
+    dw_handle       return_type,
+    dw_loc_handle   segment,
+    dw_loc_handle   loc,
+    const char      *name,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -400,11 +400,11 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
 }
 
 dw_handle DWENTRY DWBeginVirtMemFuncDecl(
-    dw_client                   cli,
-    dw_handle                   return_type,
-    dw_loc_handle               vtable_loc,
-    const char *                name,
-    uint                        flags )
+    dw_client       cli,
+    dw_handle       return_type,
+    dw_loc_handle   vtable_loc,
+    const char      *name,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -425,8 +425,7 @@ dw_handle DWENTRY DWBeginVirtMemFuncDecl(
     return( new );
 }
 
-void DWENTRY DWEndSubroutine(
-    dw_client                   cli )
+void DWENTRY DWEndSubroutine( dw_client cli )
 {
     EndChildren( cli );
     EndRef( cli );
@@ -434,12 +433,12 @@ void DWENTRY DWEndSubroutine(
 
 
 dw_handle DWENTRY DWFormalParameter(
-    dw_client                   cli,
-    dw_handle                   parm_type,
-    dw_loc_handle               parm_loc,
-    dw_loc_handle               entry_loc,
-    const char *                name,
-    uint                        default_value_type,
+    dw_client       cli,
+    dw_handle       parm_type,
+    dw_loc_handle   parm_loc,
+    dw_loc_handle   entry_loc,
+    const char      *name,
+    uint            default_value_type,
     ... )
 {
     dw_handle                   new;
@@ -501,8 +500,7 @@ dw_handle DWENTRY DWFormalParameter(
 }
 
 
-dw_handle DWENTRY DWEllipsis(
-    dw_client                   cli )
+dw_handle DWENTRY DWEllipsis( dw_client cli )
 {
     dw_handle                   new;
 
@@ -514,10 +512,10 @@ dw_handle DWENTRY DWEllipsis(
 
 
 dw_handle DWENTRY DWLabel(
-    dw_client                   cli,
-    dw_loc_handle               segment,
-    const char *                name,
-    dw_addr_offset              start_scope )
+    dw_client       cli,
+    dw_loc_handle   segment,
+    const char      *name,
+    dw_addr_offset  start_scope )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -545,14 +543,14 @@ dw_handle DWENTRY DWLabel(
 
 
 dw_handle DWENTRY DWVariable(
-    dw_client                   cli,
-    dw_handle                   type,
-    dw_loc_handle               loc,
-    dw_handle                   member_of,
-    dw_loc_handle               segment,
-    const char *                name,
-    dw_addr_offset              start_scope,
-    uint                        flags )
+    dw_client       cli,
+    dw_handle       type,
+    dw_loc_handle   loc,
+    dw_handle       member_of,
+    dw_loc_handle   segment,
+    const char      *name,
+    dw_addr_offset  start_scope,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -601,14 +599,14 @@ dw_handle DWENTRY DWVariable(
 
 
 dw_handle DWENTRY DWConstant(
-    dw_client                   cli,
-    dw_handle                   type,
-    const void *                value,
-    size_t                      len,
-    dw_handle                   member_of,
-    const char *                name,
-    dw_addr_offset              start_scope,
-    uint                        flags )
+    dw_client       cli,
+    dw_handle       type,
+    const void      *value,
+    size_t          len,
+    dw_handle       member_of,
+    const char      *name,
+    dw_addr_offset  start_scope,
+    uint            flags )
 {
     dw_handle                   new;
     abbrev_code                 abbrev;
@@ -648,9 +646,7 @@ dw_handle DWENTRY DWConstant(
 }
 
 
-dw_handle DWENTRY DWIncludeCommonBlock(
-    dw_client                   cli,
-    dw_handle                   common_block )
+dw_handle DWENTRY DWIncludeCommonBlock( dw_client cli, dw_handle common_block )
 {
     dw_handle                   new;
 

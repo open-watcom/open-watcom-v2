@@ -5,7 +5,7 @@
 #include "about.h"
 #include "banner.h"
 
-#define FIRST_COPYRIGHT_YEAR "2002"
+#define FIRST_COPYRIGHT_YEAR 2002
 
 #include "w.rc"
 

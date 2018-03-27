@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +53,7 @@
 #include "builder.h"
 #include "pmake.h"
 #include "wio.h"
+#include "memutils.h"
 
 #include "clibext.h"
 #include "bldstruc.h"
@@ -131,9 +133,15 @@ void ResetArchives( copy_entry *list )
             _dos_setfileattr( list->src, attr & ~_A_ARCH );
         }
 #endif
-        free( list );
+        MFree( list );
         list = next;
     }
+}
+
+static int IsDotOrDotDot( const char *fname )
+{
+    /* return 1 if fname is "." or "..", 0 otherwise */
+    return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
 static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
@@ -188,7 +196,7 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
                 return( 0 );
             }
         }
-        head = Alloc( sizeof( *head ) );
+        head = MAlloc( sizeof( *head ) );
         head->next = NULL;
         strcpy( head->src, entry_src );
         strcpy( head->dst, entry_dst );
@@ -220,17 +228,26 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
 #ifdef __UNIX__
             struct stat buf;
 
-            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+            if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH ) {
+                if( !IsDotOrDotDot( dent->d_name ) )
+                    rc = 0;
                 continue;
+            }
 
             strcpy( srcdir_end, dent->d_name );
             stat( srcdir, &buf );
             *srcdir_end = '\0';
             if( S_ISDIR( buf.st_mode ) ) {
+                if( !IsDotOrDotDot( dent->d_name ) )
+                    rc = 0;
                 continue;
             }
 #else
-            if( dent->d_attr & (_A_SUBDIR | _A_VOLID) ) {
+            if( dent->d_attr & _A_VOLID ) {
+                continue;
+            } else if( dent->d_attr & _A_SUBDIR ) {
+                if( !IsDotOrDotDot( dent->d_name ) )
+                    rc = 0;
                 continue;
             }
 #endif
@@ -251,7 +268,7 @@ static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy
                     continue;
                 }
             }
-            curr = Alloc( sizeof( *curr ) );
+            curr = MAlloc( sizeof( *curr ) );
             curr->next = NULL;
             strcpy( curr->src, entry_src );
             strcpy( curr->dst, entry_dst );
@@ -429,7 +446,7 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_erro
     }
     res = BuildList( cmd, dst, test_abit, cond_copy, &list );
     if( res == 0 && list != NULL ) {
-        char    *copy_buff = Alloc( COPY_BUFF_SIZE );
+        char    *copy_buff = MAlloc( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
             next = list->next;
             if( res == 0 || ignore_errors ) {
@@ -446,9 +463,9 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_erro
 #endif
                 }
             }
-            free( list );
+            MFree( list );
         }
-        free( copy_buff );
+        MFree( copy_buff );
     }
     return( res );
 }
@@ -516,12 +533,6 @@ static int ProcPMake( char *cmd, bool ignore_errors )
     SysChdir( save );
     getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
     return( res );
-}
-
-static int IsDotOrDotDot( const char *fname )
-{
-    /* return 1 if fname is "." or "..", 0 otherwise */
-    return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
 static int remove_item( const char *name, bool dir )
@@ -641,7 +652,7 @@ static int DoRM( const char *f )
 
             if( rflag ) {
                 /* build directory list */
-                tmp = Alloc( offsetof( iolist, name ) + len );
+                tmp = MAlloc( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
                     dhead = tmp;
@@ -676,7 +687,7 @@ static int DoRM( const char *f )
         if( rc != 0 ) {
             retval = rc;
         }
-        free( tmp );
+        MFree( tmp );
     }
     return( retval );
 }

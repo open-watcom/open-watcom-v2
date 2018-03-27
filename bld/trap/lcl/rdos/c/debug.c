@@ -97,7 +97,7 @@ struct TKernelExceptionEvent
     unsigned short Vector;
 };
 
-#define MAX_DEBUG_THREADS       16
+#define MAX_DEBUG_THREADS       64
 
 static void DebugThread( void *Param );
 
@@ -1543,6 +1543,12 @@ static void FixupAfterTimeout( struct TDebug *obj, struct TDebugBreak *bp )
 {
     opcode_type          brk_opcode = BRKPOINT;
     struct TDebugThread *thread;
+    int                  wait;
+
+    wait = RdosWaitTimeout( obj->UserWait, 5 );
+    while( wait ) {
+        wait = RdosWaitTimeout( obj->UserWait, 5 );
+    }
 
     thread = obj->CurrentThread;
     if( thread == 0 ) {
@@ -1738,8 +1744,6 @@ static void SignalDebugData( struct TDebug *obj )
     int ExitCode;
     int handle;
 
-    RdosWaitMilli( 5 );
-
     debtype = RdosGetDebugEvent( obj->FHandle, &ThreadId );
 
     switch (debtype) {
@@ -1798,10 +1802,6 @@ static void SignalDebugData( struct TDebug *obj )
         case EVENT_KERNEL:
             UpdateModules( obj );
             RdosSetSignal( obj->UserSignal );
-            break;
-
-        default:
-            RdosContinueDebugEvent( obj->FHandle, ThreadId );
             break;
     }
 }

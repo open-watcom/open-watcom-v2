@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "model.h"
 #include "optmain.h"

@@ -73,7 +73,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
 //                                  _CurrState->page_size * pagenum;
 //      _CurrState->screen_off = _CurrState->screen_off_base;
 //    #endif
-    pos = *(short __far *)_BIOS_data( CURSOR_POSN + 2 * pagenum );
+    pos = _BIOS_data( CURSOR_POSN + 2 * pagenum, short );
     _TextPos.row = pos >> 8;                        /* cursor position  */
     _TextPos.col = pos & 0xFF;                      /* on new page      */
     prev = _CurrActivePage;

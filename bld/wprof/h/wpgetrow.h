@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-extern image_info   *SImageGetImage( a_window * wnd, int row );
-extern mod_info     *SModGetModule( a_window * wnd, int row );
-extern file_info    *SFileGetFile( a_window * wnd, int row );
-extern rtn_info     *SRtnGetRoutine( a_window * wnd, int row );
+extern image_info   *SImageGetImage( a_window wnd, int row );
+extern mod_info     *SModGetModule( a_window wnd, int row );
+extern file_info    *SFileGetFile( a_window wnd, int row );
+extern rtn_info     *SRtnGetRoutine( a_window wnd, int row );
 extern int          WPGetRow( sio_data * curr_sio );

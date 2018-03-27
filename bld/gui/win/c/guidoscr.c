@@ -38,8 +38,7 @@
 #include "guidoscr.h"
 
 
-static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end,
-                      bool chars )
+static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, bool chars )
 {
     int         dx, dy;
     WPI_RECT    client;

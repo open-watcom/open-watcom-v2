@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <process.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -60,9 +59,9 @@ void GUImain( void )
 
     cmdline = RdosGetCmdLine();
     if( cmdline ) {
-        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 ) 
+        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 )
             cmdline++;
-    
+
         strcpy( CmdData, cmdline );
     } else
         CmdData[0] = 0;
@@ -88,7 +87,8 @@ void WndCleanUp( void )
 
 char *GetCmdArg( int num )
 {
-    if( num != 0 ) return( NULL );
+    if( num != 0 )
+        return( NULL );
     return( CmdData );
 }
 
@@ -96,10 +96,11 @@ void SetCmdArgStart( int num, char *ptr )
 {
     num = num;
 
-    if( ptr )
+    if( ptr ) {
         strcpy( CmdData, ptr );
-    else
+    } else {
         CmdData[0] = 0;
+    }
 }
 
 void KillDebugger( int ret_code )

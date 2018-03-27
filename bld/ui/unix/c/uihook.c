@@ -32,9 +32,9 @@
 
 #include "uidef.h"
 
-EVENT UIAPI uieventsourcehook( EVENT ev )
-/****************************************/
+ui_event UIAPI uieventsourcehook( ui_event ui_ev )
+/************************************************/
 {
-    return( ev );
+    return( ui_ev );
 }
 

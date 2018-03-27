@@ -49,14 +49,6 @@ static MONITOR ui_data = {
     1
 };
 
-#ifdef __386__
-    unsigned char __near _osmode = OS2_MODE;
-#endif
-
-extern          ATTR                    BWAttrs[];
-extern          ATTR                    CGAAttrs[];
-extern          ATTR                    EGAAttrs[];
-extern          ATTR                    MonoAttrs[];
 
 bool UIAPI uiset80col( void )
 /****************************/
@@ -65,7 +57,7 @@ bool UIAPI uiset80col( void )
 }
 
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     struct      _VIOMODEINFO            vioMode;
@@ -74,15 +66,15 @@ bool intern initmonitor( void )
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-    vioMode.cb = sizeof(vioMode);
-    if( VioGetMode(&vioMode, HANDLE) != 0 )
+    vioMode.cb = sizeof( vioMode );
+    if( VioGetMode( &vioMode, HANDLE ) != 0 )
         return( false );
 
     UIData->width  = vioMode.col;
     UIData->height = vioMode.row;
 
     config.cb = sizeof( config );
-    if( VioGetConfig(0,&config,0) != 0 )
+    if( VioGetConfig( 0, &config, 0 ) != 0 )
         return( false );
     if( config.display == 3 ) {
         UIData->colour = M_BW;
@@ -102,55 +94,38 @@ bool intern initmonitor( void )
 bool intern initbios( void )
 /**************************/
 {
-    bool                initialized;
-    // unsigned            offset;
-#ifdef __386__
-    void        __far16 *ptrLVB;
-    void                *ptr;
+    bool            initialized;
+    // unsigned        offset;
+#ifdef _M_I86
+    unsigned long   ptrLVB;
 #else
-    unsigned    long    ptrLVB;
+    void            __far16 *ptrLVB;
+    void            *ptr;
 #endif
-    unsigned    short   SizeOfLVB;
+    unsigned short  SizeOfLVB;
 
     initialized = false;
     if( initmonitor() ) {
-        VioGetBuf( (PULONG) &ptrLVB, (PUSHORT) &SizeOfLVB, 0);
-        // offset = SCREEN_OFFSET; AFS 08-feb-91
-#ifdef __386__
+        VioGetBuf( (PULONG)&ptrLVB, (PUSHORT)&SizeOfLVB, 0 );
+        // offset = BIOS_SCREEN_OFFSET;
+#ifdef _M_I86
+        UIData->screen.origin = (LP_PIXEL)ptrLVB;
+#else
         ptr = ptrLVB;
         UIData->screen.origin = ptr;
-#else
-        UIData->screen.origin = (LP_PIXEL)ptrLVB;
 #endif
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
-        if( _osmode == DOS_MODE ) {
-            UIData->mouse_acc_delay = 5;   /* ticks */
-            UIData->mouse_rpt_delay = 1;   /* ticks */
-            UIData->mouse_clk_delay = 5;   /* ticks */
-            UIData->tick_delay = 9;        /* ticks */
-            UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
-        } else {
-            UIData->mouse_acc_delay = 250;
-            UIData->mouse_rpt_delay = 100;
-            UIData->mouse_clk_delay = 250;
-            UIData->tick_delay = 500;
-            UIData->mouse_speed = 8;       /* mickeys to ticks ratio */
-        }
+        UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );  /* 1 ticks */
+        UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->tick_delay      = uiclockdelay( 500 /* ms */ );  /* 9 ticks */
+        UIData->mouse_speed = 8;        /* mickeys to ticks ratio */
         initialized = true;
     }
     return( initialized );
 }
-
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    if( _osmode == DOS_MODE )  return( milli * 18 / 1000 );
-    return( milli );
-}
-
 
 
 void intern finibios( void )
@@ -169,8 +144,7 @@ void intern physupdate( SAREA *area )
     int i;
 
     for( i = area->row; i < (area->row + area->height); i++ ) {
-        VioShowBuf( (i * UIData->width + area->col) * sizeof( PIXEL ),
-                    area->width * sizeof(PIXEL), 0 );
+        VioShowBuf( ( i * UIData->width + area->col ) * sizeof( PIXEL ), area->width * sizeof( PIXEL ), 0 );
     }
 }
 

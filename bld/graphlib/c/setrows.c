@@ -237,7 +237,7 @@ short _SetRows( short rows )
     if( _ErrorStatus != _GROK ) {
         return( 0 );
     } else {
-        rows = *(char __far *)_BIOS_data( ROWS ) + 1;   // 0 for Hercules
+        rows = _BIOS_data( ROWS, char ) + 1;   // 0 for Hercules
         if( rows == 1 ) rows = 25;
         _CurrState->vc.numtextrows = rows;
         if( !_GrMode ) {
@@ -265,7 +265,7 @@ static void Load_25( void )
 
 {
     VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    *(char __far *)_BIOS_data( INFO ) &= 0xFE;      // cursor emulation off
+    _BIOS_data( INFO, char ) &= ~0x01;              // 43 line mode cursor emulation off
     VideoInt( _BIOS_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
     _GrCursor = 1;                                  // cursor is on
 }
@@ -296,9 +296,9 @@ static void Load_EGA( short rows, short font, short cursor )
     VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
     VideoInt( font, 0, 0, 0 );                      // load pointer to character set in block 0
     if( rows == 43 ) {                              // cursor emulation
-        *(char __far *)_BIOS_data( INFO ) |= 1;     // 43 rows only
+        _BIOS_data( INFO, char ) |= 1;              // 43 line mode cursor emulation on
     } else {
-        outpw( 0x03D4, 0x1414 );        // reset underline location to none
+        outpw( 0x03D4, 0x1414 );                    // reset underline location to none
     }
     VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
     _GrCursor = 1;                                  // cursor is on
@@ -318,9 +318,9 @@ static void Load_MCGA( short rows, short font, short cursor )
     VideoInt( 0x1103, 0, 0, 0 );
     VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
     outpw( 0x03D4, ( cursor & 0xFF00 ) + 0x09 );    // # double scan lines
-    *(char __far *)_BIOS_data( ROWS ) = rows - 1;   // # of rows
+    _BIOS_data( ROWS, char ) = rows - 1;            // # of rows
     // # of vertical points per character
-    *(short __far *)_BIOS_data( POINTS ) = 2 * ( cursor & 0xFF + 1 );
+    _BIOS_data( POINTS, short ) = 2 * ( cursor & 0xFF + 1 );
     _GrCursor = 1;                                  // cursor is on
 }
 #endif

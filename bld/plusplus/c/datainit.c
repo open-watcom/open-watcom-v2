@@ -1007,6 +1007,7 @@ void DataInitFinish( INITIALIZE_DATA *init )
                 dataInitCodeFileClose();
             }
         }
+        /* fall through */
     case DS_COMPLETED:
     case DS_IGNORE:
         currInit = currInit->prev;
@@ -1182,7 +1183,7 @@ static void dataInitEmitExpr( PTREE node )
             currInit->once_only = 1;
             currInit->once_only_label = StaticInitFuncBeg();
         }
-        // deliberate fall through
+        /* fall through */
     case DL_INTERNAL_AUTO:
     case DL_EXTERNAL_STATIC:
     case DL_EXTERNAL_PUBLIC:
@@ -1210,7 +1211,7 @@ static SYMBOL dataInitFindDefaultCtor( TYPE type )
     case CNV_IMPOSSIBLE:
     case CNV_AMBIGUOUS:
         CErr2p( ERR_NO_DEFAULT_INIT_CTOR, type );
-        // fall through
+        /* fall through */
     case CNV_ERR:
         ctor = NULL;
         break;
@@ -1959,7 +1960,7 @@ void DataInitPush( void )
     case DS_OPEN_BRACE:
         mayNeedAutoStaticInitCopy();
         currInit->state = DS_EXPRESSION;
-        // deliberate falling through
+        /* fall through */
     case DS_EXPRESSION:
         if( IsCgTypeAggregate( currInit->nest->type, false ) ) {
             dataInitPushNest( true );

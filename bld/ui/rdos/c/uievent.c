@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,78 +48,62 @@
 #define KEY_ALT_PRESSED         0x2
 #define KEY_SHIFT_PRESSED       0x1
 
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-extern bool             MouseOn;
-extern bool             MouseInstalled;
-extern unsigned short   MouseStatus;
-
 int                     WaitHandle;
 
-static int              KeyInstalled;
-
+static bool             KeyInstalled;
 static ORD              currMouseRow;
 static ORD              currMouseCol;
-static ORD              currMouseStatus;
+static MOUSESTAT        currMouseStatus;
 
-static EVENT    EventsPress[] = {
-    EV_SHIFT_PRESS,
-    EV_ALT_PRESS,
-    EV_CTRL_PRESS,
-    EV_NO_EVENT,
-    EV_SCROLL_PRESS,
-    EV_NO_EVENT,
-    EV_CAPS_PRESS,
-    EV_NUM_PRESS
+static shiftkey_event   ShiftkeyEvents[] = {
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,   // 0x0001
+    EV_ALT_PRESS,       EV_ALT_RELEASE,     // 0x0002
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,    // 0x0004
+    ___,                ___,                // 0x0008
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,  // 0x0010
+    ___,                ___,                // 0x0020
+    ___,                ___,                // 0x0040
+    ___,                ___,                // 0x0080
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE,    // 0x0100
+    EV_NUM_PRESS,       EV_NUM_RELEASE      // 0x0200
 };
 
-static EVENT    EventsRelease[] = {
-    EV_SHIFT_RELEASE,
-    EV_ALT_RELEASE,
-    EV_CTRL_RELEASE,
-    EV_NO_EVENT,
-    EV_SCROLL_RELEASE,
-    EV_NO_EVENT,
-    EV_CAPS_RELEASE,
-    EV_NUM_RELEASE
-};
-
-static EVENT KeyEventProc( void )
+static ui_event KeyEventProc( void )
 {
     int                 ext;
     int                 keystate;
     int                 vk;
     int                 scan;
-    unsigned char       key;
+    int                 key;
     unsigned char       ascii;
-    EVENT               ev;
-    unsigned char       changed;
+    ui_event            ui_ev;
+    int                 changed;
 
     if( RdosReadKeyEvent( &ext, &keystate, &vk, &scan ) ) {
         ascii = ext;
         if( scan != 0 && ascii == 0xe0 ) {  /* extended keyboard */
             ascii = 0;
         }
-        ev = scan + 0x100;
+        ui_ev = scan + 0x100;
         /* ignore shift key for numeric keypad if numlock is not on */
-        if( ev >= EV_HOME && ev <= EV_DELETE ) {
-            if( ( keystate & KEY_NUM_ACTIVE ) == 0 ) {
-                if( ( keystate & KEY_SHIFT_PRESSED ) != 0 ) {
+        if( ui_ev >= EV_HOME && ui_ev <= EV_DELETE ) {
+            if( (keystate & KEY_NUM_ACTIVE) == 0 ) {
+                if( keystate & KEY_SHIFT_PRESSED ) {
                     ascii = 0;      /* wipe out digit */
                 }
             }
         }
         if( ascii != 0 ) {
-            ev = ascii;
-            if( ( keystate & KEY_ALT_PRESSED ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+            ui_ev = ascii;
+            if( (keystate & KEY_ALT_PRESSED) && ( ascii == ' ' ) ) {
+                ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_ENTER:
                 case EV_ESCAPE:
-                    ev = ascii + 0x100;
+                    ui_ev = ascii + 0x100;
                     break;
                 }
             }
@@ -126,53 +111,52 @@ static EVENT KeyEventProc( void )
     } else {
         changed = ( keystate ^ UIData->old_shift );
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 8) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( keystate & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( keystate & scan ) {
                         UIData->old_shift |= scan;
-                        return( EventsPress[ key ] );
+                        return( ShiftkeyEvents[key].press );
                     } else {
                         UIData->old_shift &= ~scan;
-                        return( EventsRelease[ key ] );
+                        return( ShiftkeyEvents[key].release );
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
-static EVENT MouseEventProc( void )
+static ui_event MouseEventProc( void )
 {
-    ORD stat = 0;
-    int row;
-    int col;
+    MOUSESTAT   stat;
+    int         row;
+    int         col;
 
+    stat = 0;
     if( RdosGetLeftButton() )
-        stat |= MOUSE_PRESS;
-
+        stat |= UI_MOUSE_PRESS;
     if( RdosGetRightButton() )
-        stat |= MOUSE_PRESS_RIGHT;
+        stat |= UI_MOUSE_PRESS_RIGHT;
 
     RdosGetMousePosition(  &col, &row );
 
     if( stat != currMouseStatus ) {
-        if( !(stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) )
+        if( (stat & UI_MOUSE_PRESS) == 0 && (currMouseStatus & UI_MOUSE_PRESS) )
             RdosGetLeftButtonReleasePosition( &col, &row );
 
-        if( !(stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) )
+        if( (stat & UI_MOUSE_PRESS_RIGHT) == 0 && (currMouseStatus & UI_MOUSE_PRESS_RIGHT) )
             RdosGetRightButtonReleasePosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS) && !(currMouseStatus & MOUSE_PRESS) )
+        if( (stat & UI_MOUSE_PRESS) && (currMouseStatus & UI_MOUSE_PRESS) == 0 )
             RdosGetLeftButtonPressPosition( &col, &row );
 
-        if( (stat & MOUSE_PRESS_RIGHT) && !(currMouseStatus & MOUSE_PRESS_RIGHT) )
+        if( (stat & UI_MOUSE_PRESS_RIGHT) && (currMouseStatus & UI_MOUSE_PRESS_RIGHT) == 0 ) {
             RdosGetRightButtonPressPosition( &col, &row );
+        }
     }
     currMouseRow = row;
     currMouseCol = col;
@@ -187,7 +171,7 @@ bool intern initkeyboard( void )
         if( WaitHandle == 0 )
             WaitHandle = RdosCreateWait();
 
-        RdosAddWaitForKeyboard( WaitHandle, (int)(&KeyEventProc) );
+        RdosAddWaitForKeyboard( WaitHandle, (int)KeyEventProc );
     }
     KeyInstalled = true;
 
@@ -234,11 +218,11 @@ void uimousespeed( unsigned speed )
     /* unused parameters */ (void)speed;
 }
 
-int UIAPI initmouse( int install )
+bool UIAPI initmouse( init_mode install )
 {
-    unsigned long   tmp;
+    MOUSETIME   tmp;
 
-    if( install == 0 ) {
+    if( install == INIT_MOUSELESS ) {
         return( false );
     }
     UIData->mouse_xscale = 8;
@@ -248,7 +232,7 @@ int UIAPI initmouse( int install )
         if( WaitHandle == 0 )
             WaitHandle = RdosCreateWait();
 
-        RdosAddWaitForMouse( WaitHandle, (int)(&MouseEventProc) );
+        RdosAddWaitForMouse( WaitHandle, (int)MouseEventProc );
         RdosSetMouseWindow( 0, 0, 8 * UIData->width - 1, 8 * UIData->height - 1 );
         RdosSetMouseMickey( 8, 8 );
         RdosShowMouse();
@@ -280,7 +264,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;

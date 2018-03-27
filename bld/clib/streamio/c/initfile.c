@@ -48,12 +48,17 @@ void __InitFiles( void )
     FILE                        *fp;
 
     fp = _RWD_iob;
-#if defined( __NETWARE__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+#if defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    stdout->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
+    stderr->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
+#else
+#if defined( __NETWARE__ )
     stdout->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
     stdout->_flag |= _IONBF;
 #endif
     stderr->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
     stderr->_flag |= _IONBF;
+#endif
     for( fp = _RWD_iob; fp->_flag != 0; ++fp ) {
 #ifdef _M_I86
         ptr = lib_nmalloc( sizeof( __stream_link ) );

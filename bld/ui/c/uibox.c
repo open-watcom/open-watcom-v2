@@ -38,81 +38,43 @@
 #include "clibext.h"
 
 
-void intern drawbox( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr, int fill )
-/**************************************************************************************/
+void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool fill )
+/************************************************************************************/
 {
-    register    ORD                     row;
+    uisize      row;
 
     bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
-    bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
+    if( area.width > 2 )
+        bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
     bpixel( bptr, area.row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
-    for( row = area.row + 1 ; row < area.row + area.height - 1 ; ++row ) {
+    for( row = area.row + 1; row < area.row + area.height - 1; ++row ) {
         bpixel( bptr, row, area.col, attr, BOX_CHAR( box, LEFT_LINE ) );
-        if( fill ) {
+        if( fill && area.width > 2 ) {
             bfill( bptr, row, area.col + 1, attr, ' ', area.width - 2 );
         }
         bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, RIGHT_LINE ) );
     }
     bpixel( bptr, row, area.col, attr, BOX_CHAR( box, BOTTOM_LEFT ) );
-    bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
+    if( area.width > 2 )
+        bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
     bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, BOTTOM_RIGHT ) );
     physupdate( &area );
-}
-
-
-
-void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
-/***************************************************************************/
-{
-//    register    ORD                     rows;
-//    register    ORD                     cols;
-    register    int                     inccol;
-    register    int                     incrow;
-    auto        SAREA                   grow;
-
-//    rows = area.height - 2;
-//    cols = area.width - 2;
-    incrow = 1;
-    inccol = 3;
-    grow.row = area.row + area.height/2 - 1;
-    grow.col = area.col + area.width/2 - 1;
-    grow.height = 2;
-    grow.width = 2;
-    while( ( grow.height < area.height ) || ( grow.width < area.width ) ) {
-        grow.row = (ORD)max( area.row, grow.row - incrow );
-        grow.col = (ORD)max( area.col, grow.col - inccol );
-        grow.height = (ORD)min( area.height, grow.height + 2*incrow );
-        grow.width = (ORD)min( area.width, grow.width + 2*inccol );
-        drawbox( bptr, grow, box, attr, true );
-        if( ( grow.height == area.height ) &&
-            ( grow.width == area.width ) ) {
-            break;
-        }
-    }
 }
 
 void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
 /**********************************************************************/
 {
-    int         length;
-    int         col;
+    uisize      field_len;
 
-    if( area->width < 2 ) {
-        return;
+    if( area->width > 1 ) {
+        drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
+        if( title != NULL ) {
+            field_len = strlen( title );
+            if( field_len > area->width - 2 ) {
+                field_len = area->width - 2;
+            }
+            uivtextput( vs, area->row, area->col + 1, attr, title, field_len );
+        }
     }
-
-    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
-
-    if( title == NULL ) {
-        return;
-    }
-
-    length = strlen( title );
-    col = area->col + 1;
-
-    if( length >= area->width - 2 ) {
-        length = area->width;
-    }
-
-    uivtextput( vs, area->row, col, attr, title, length );
 }
+

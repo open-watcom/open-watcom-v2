@@ -46,12 +46,11 @@
 #include "dbgwdlg.h"
 #include "namelist.h"
 #include "symcomp.h"
+#include "wndmenu.h"
 #include "dbgwintr.h"
 
 
-extern void             WndUserAdd(char *,unsigned int );
-
-extern const char       WndNameTab[];
+extern void         WndUserAdd(char *,unsigned int );
 
 static void BadCmd( void )
 {
@@ -96,17 +95,17 @@ static void MenuCopy( char *dst, const char *from, char *to )
 }
 
 
-static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
+static void MenuDump( int indent, int popup_num_items, gui_menu_struct *child )
 {
     char        *p;
     int         i;
 
-    while( --num_popups >= 0 ) {
+    while( --popup_num_items >= 0 ) {
         p = TxtBuff;
         i = indent;
         while( i-- > 0 )
             *p++ = ' ';
-        if( child->style & GUI_SEPARATOR ) {
+        if( child->style & GUI_STYLE_MENU_SEPARATOR ) {
             StrCopy( "---------", p );
         } else {
             MenuCopy( TxtBuff, child->label, p );
@@ -120,35 +119,31 @@ static void MenuDump( int indent, int num_popups, gui_menu_struct *child )
             p = StrCopy( child->hinttext, p );
             WndDlgTxt( TxtBuff );
         }
-        if( child->num_child_menus != 0 ) {
-            MenuDump( indent + 4, child->num_child_menus, child->child );
+        if( child->child_num_items > 0 ) {
+            MenuDump( indent + 4, child->child_num_items, child->child );
         }
         ++child;
     }
 }
 
-extern gui_menu_struct WndMainMenu[];
-extern int WndNumMenus;
-extern wnd_info *WndInfoTab[];
-
-static void XDumpMenus( void )
+OVL_EXTERN void XDumpMenus( void )
 {
     wnd_class_wv    wndclass;
     char            *p;
 
     ReqEOC();
-    for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS; wndclass++ ) {
         p = StrCopy( "The ", TxtBuff );
         p = GetCmdEntry( WndNameTab, wndclass, p );
         p = StrCopy( " Window", p );
         WndDlgTxt( TxtBuff );
-        MenuDump( 4, WndInfoTab[wndclass]->num_popups, WndInfoTab[wndclass]->popupmenu );
+        MenuDump( 4, WndInfoTab[wndclass]->popup_num_items, WndInfoTab[wndclass]->popupmenu );
     }
     WndDlgTxt( "The main menu" );
     MenuDump( 4, WndNumMenus, WndMainMenu );
 }
 
-static void XTimeSymComp( void )
+OVL_EXTERN void XTimeSymComp( void )
 {
     int         i, num;
 

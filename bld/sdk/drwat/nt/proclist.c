@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "priority.h"
@@ -188,9 +187,8 @@ static void freeModuleNode( ModuleNode *node )
         if( node->objects != NULL ) {
             MemFree( node->objects );
         }
-        if( node->fid != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( node->fid );
-            node->fid = DIG_NIL_HANDLE;
+        if( node->fp != NULL ) {
+            DIGCli( Close )( node->fp );
         }
         MemFree( node );
     }
@@ -219,7 +217,7 @@ ModuleNode *GetNextModule( ModuleNode *modinfo )
 /*
  * AddModule
  */
-void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name )
+void AddModule( DWORD procid, FILE *fp, DWORD base, char *name )
 {
     ProcNode    *process;
     ModuleNode  *new;
@@ -227,26 +225,23 @@ void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name )
 
     process = FindProcess( procid );
     if( process != NULL ) {
-        cur = &process->module;
-        for( ;; ) {
-            if( (*cur) == NULL )
+        for( cur = &process->module; (*cur) != NULL; cur = &(*cur)->next ) {
+            if( (*cur)->base > base ) {
                 break;
-            if( (*cur)->base > base )
-                break;
-            cur = &(*cur)->next;
+            }
         }
         new = MemAlloc( sizeof( ModuleNode ) );
         new->next = (*cur);
         (*cur) = new;
         new->syminfo = NULL;
         new->base = base;
-        new->fid = fid;
+        new->fp = fp;
         new->name = name;
         new->procnode = process;
-        if( !GetModuleSize( fid, &new->size ) ) {
+        if( !GetModuleSize( fp, &new->size ) ) {
             new->size = -1;
         }
-        new->objects = GetModuleObjects( fid, &new->num_objects );
+        new->objects = GetModuleObjects( fp, &new->num_objects );
     }
 }
 

@@ -44,18 +44,18 @@
 #define SAVE_STATE      0
 #define RESTORE_STATE   1
 #define NULLFAR         0L
-#define _debug( s )     { cputs( s );                           \
-                          cputs( "\n\rPress a key\n\r" );       \
-                          getch();                              \
+#define _debug( s )     { cputs( s );                       \
+                          cputs( "\n\rPress a key\n\r" );   \
+                          getch();                          \
                         }
-#define _debug16( s, n ){ char buff[5];               \
-                          cputs( s );                   \
-                          _debug( itoa( n, buff, 16 ) );\
-                        }
-#define _debug32( s, n ){ char buff[9];               \
-                          cputs( s );                   \
-                          _debug( ltoa( n, buff, 16 ) );\
-                        }
+#define _debug16( s, n ) { char buff[5];                    \
+                           cputs( s );                      \
+                           _debug( itoa( n, buff, 16 ) );   \
+                         }
+#define _debug32( s, n ) { char buff[9];                    \
+                           cputs( s );                      \
+                           _debug( ltoa( n, buff, 16 ) );   \
+                         }
 
 #define GET_ENV_FROM_PSP()  (*(addr_seg __far *)MK_FP(_psp, 0x2c))
 

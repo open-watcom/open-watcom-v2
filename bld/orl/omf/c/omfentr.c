@@ -74,7 +74,7 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 }
 
 
-orl_return OMFENTRY OmfFileInit( omf_handle oh, orl_file_id file, omf_file_handle *pofh )
+orl_return OMFENTRY OmfFileInit( omf_handle oh, FILE *fp, omf_file_handle *pofh )
 {
     omf_file_handle     ofh;
     orl_return          return_val;
@@ -86,7 +86,7 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, orl_file_id file, omf_file_handl
         return( ORL_OUT_OF_MEMORY );
 
     memset( ofh, 0, sizeof( ORL_STRUCT( omf_file_handle ) ) );
-    ofh->file = file;
+    ofh->fp = fp;
 
     OmfAddFileLinks( oh, ofh );
     return_val = OmfLoadFileStructure( ofh );

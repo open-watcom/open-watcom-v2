@@ -52,37 +52,37 @@ void ut_out_of_memory( char *s )
     s = s;
 }
 
-extern void *GUIAlloc( unsigned size )
+void *GUIAlloc( unsigned size )
 {
     return( ut_alloc( size ) );
 }
 
-extern void GUIFree( void *chunk )
+void GUIFree( void *chunk )
 {
     ut_free( chunk );
 }
 
-extern void *GUIRealloc( void * chunk, unsigned size )
+void *GUIRealloc( void * chunk, unsigned size )
 {
     return( ut_realloc( chunk, size ) );
 }
 
-extern void *bdiff_malloc( size_t size )
+void *bdiff_malloc( size_t size )
 {
     return( ut_alloc( size ) );
 }
 
-extern void bdiff_free( void *chunk )
+void bdiff_free( void *chunk )
 {
     ut_free( chunk );
 }
 
-extern void *bdiff_realloc( void * chunk, size_t size )
+void *bdiff_realloc( void * chunk, size_t size )
 {
     return( ut_realloc( chunk, size ) );
 }
 
-extern void GUIMemOpen()
+void GUIMemOpen( void )
 {
 #if DMEM_OVERRUNS
 #ifdef _M_I86
@@ -93,11 +93,11 @@ extern void GUIMemOpen()
 #endif
 }
 
-extern void GUIMemClose( void )
+void GUIMemClose( void )
 {
 }
 
-extern void GUIMemPrtUsage( void )
+void GUIMemPrtUsage( void )
 {
 }
 

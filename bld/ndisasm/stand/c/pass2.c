@@ -122,6 +122,7 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                     routineBase = offset;
                 }
             }
+            /* fall through */
         case LTYP_SECTION:
             if( (DFormat & DFF_ASM) == 0 ) {
                 PrintLinePrefixAddress( offset, is32bit );
@@ -249,7 +250,6 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
                 return( 0 );
             }
             continue; // Don't print addend
-            break;
         case ORL_RELOC_TYPE_SEC_REL:
             referenceString( r_entry, sec_size, "s^", "s^", "@s", buff, flags );
             break;
@@ -267,6 +267,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_14:
         case ORL_RELOC_TYPE_WORD_24:
             nvalue &= ~0x3;
+            /* fall through */
         case ORL_RELOC_TYPE_WORD_16:
         case ORL_RELOC_TYPE_WORD_32:
         case ORL_RELOC_TYPE_WORD_64:
@@ -308,7 +309,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             // this is a little kluge because Brian's ELF files seem to have
             // -4 in the implicit addend for calls and such BBB May 09, 1997
             nvalue += 4;
-            // fall through
+            /* fall through */
         case ORL_RELOC_TYPE_REL_8:
         case ORL_RELOC_TYPE_REL_16_SEG:
         case ORL_RELOC_TYPE_REL_HI_8:
@@ -335,11 +336,13 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             break;
         case ORL_RELOC_TYPE_TOCREL_14:
             nvalue &= ~0x3;
+            /* fall through */
         case ORL_RELOC_TYPE_TOCREL_16:
             referenceString( r_entry, sec_size, "[toc]", "[toc]", "@toc", buff, flags );
             break;
         case ORL_RELOC_TYPE_TOCVREL_14:
             nvalue &= ~0x3;
+            /* fall through */
         case ORL_RELOC_TYPE_TOCVREL_16:
             referenceString( r_entry, sec_size, "[tocv]", "[tocv]", "@tocv", buff, flags );
             break;
@@ -716,11 +719,14 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
             tmp_16 = (unsigned_16 *)(contents + data.loop);
             if( DHnd.need_bswap ) {
                 switch( DisInsSizeInc( &DHnd ) ) {
-                //case 8: SWAP_64( *tmp_64 );
+                //case 8:
+                //    SWAP_64( *tmp_64 );
                 //    break;
-                case 4: SWAP_32( *tmp_32 );
+                case 4:
+                    SWAP_32( *tmp_32 );
                     break;
-                case 2: SWAP_16( *tmp_16 );
+                case 2:
+                    SWAP_16( *tmp_16 );
                     break;
                 default:
                     break;

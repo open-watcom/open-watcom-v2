@@ -418,8 +418,8 @@ static void OS2WriteProfile( char *app_name, char *key_name,
 #endif
 
 
-extern void WriteProfileStrings( bool uninstall )
-/***********************************************/
+void WriteProfileStrings( bool uninstall )
+/****************************************/
 {
     int                 num, i, sign, end;
     char                app_name[MAXBUF];

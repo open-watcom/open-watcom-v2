@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <limits.h>
-#include "printf.h"
 
 
 //#ifdef __WIDECHAR__

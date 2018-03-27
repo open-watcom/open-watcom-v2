@@ -32,6 +32,7 @@
 #ifndef DIP_DFDIP
 #define DIP_DFDIP
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "bool.h"
@@ -149,7 +150,7 @@ typedef struct { // value of an AddrMod
 
 struct imp_image_handle {
     imp_image_handle    *next;
-    dig_fhandle         sym_fid;
+    FILE                *sym_fp;
     dwarf_info          *dwarf;
     im_idx              mod_count;
     mod_info            *mod_map;

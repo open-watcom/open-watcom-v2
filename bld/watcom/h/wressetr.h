@@ -32,60 +32,36 @@
 #ifndef WRESSETR_INCLUDED
 #define WRESSETR_INCLUDED
 
-#if !defined( _WIN64 ) && !defined( __WATCOMC__ ) && defined( __UNIX__ )
-#include <sys/types.h>
-#endif
-
 /* The low level I/O routines named below will be passed a file handle by the */
 /* higher level I/O routines and which must be the file handle returned by one */
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-#if defined( _WIN64 )
-#define WRES_FID2PH(fid)    (((int)(unsigned __int64)(fid)) - 1)
-#define WRES_PH2FID(ph)     ((WResFileID)(unsigned __int64)((ph) + 1))
-#else
-#define WRES_FID2PH(fid)    (((int)(unsigned long)(fid)) - 1)
-#define WRES_PH2FID(ph)     ((WResFileID)(unsigned long)((ph) + 1))
-#endif
-#define WRES_FID2FH(fid)    ((FILE *)(fid))
-#define WRES_FH2FID(fh)     ((WResFileID)(fh))
-
-#define WRES_NIL_HANDLE     NULL
-
-typedef void                *WResFileID;
-#if defined( _WIN64 )
-typedef long                WResFileOffset;
-#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
-typedef off_t               WResFileOffset;
-#else
-typedef long                WResFileOffset;
-#endif
-
 typedef enum {
     WRES_OPEN_RO,
     WRES_OPEN_RW,
     WRES_OPEN_NEW,
+    WRES_OPEN_TMP
 } wres_open_mode;
 
-typedef struct WResRoutines {                                           /* defaults */
+typedef struct WResRoutines {                                       /* defaults */
     /* I/O routines */
-    WResFileID      (*cli_open)(const char *, wres_open_mode);          /* open */
-    bool            (*cli_close)(WResFileID);                           /* close */
-    size_t          (*cli_read)(WResFileID, void *, size_t);            /* read */
-    size_t          (*cli_write)(WResFileID, const void *, size_t);     /* write */
-    bool            (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
-    WResFileOffset  (*cli_tell)(WResFileID);                            /* tell */
-    bool            (*cli_ioerr)(WResFileID,size_t);                    /* ioerr */
+    FILE            *(*cli_open)(const char *, wres_open_mode);     /* fopen */
+    bool            (*cli_close)(FILE *);                           /* fclose */
+    size_t          (*cli_read)(FILE *, void *, size_t);            /* fread */
+    size_t          (*cli_write)(FILE *, const void *, size_t);     /* fwrite */
+    bool            (*cli_seek)(FILE *, long, int );                /* fseek */
+    long            (*cli_tell)(FILE *);                            /* ftell */
+    bool            (*cli_ioerr)(FILE *,size_t);                    /* ioerr */
     /* memory routines */
-    void            *(*cli_alloc)(size_t);                              /* malloc */
-    void            (*cli_free)(void *);                                /* free */
+    void            *(*cli_alloc)(size_t);                          /* malloc */
+    void            (*cli_free)(void *);                            /* free */
 } WResRoutines;
 
 #define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __ioerr, __alloc, __free ) \
     WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __ioerr, __alloc, __free }
 
 /* This is a global variable exported by function FindResources */
-extern WResFileOffset   WResFileShift;
+extern long     WResFileShift;
 
 #endif

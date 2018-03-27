@@ -38,7 +38,6 @@
 #include "guixmdi.h"
 #include "guimdi.h"
 
-extern  bool            GUIMDI;
 
 void GUIMDIInit( void )
 {

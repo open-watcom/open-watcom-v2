@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern bool GUIProcessEvent( EVENT );
-extern EVENT GUICreatePopup( gui_window * wnd, gui_coord * point );
+extern bool GUIProcessEvent( ui_event );
+extern ui_event GUICreatePopup( gui_window * wnd, gui_coord * point );
 extern gui_window *GUIGetMenuWindow( void );

@@ -34,11 +34,10 @@
 //#include "stdui.h"
 
 wnd_update_list WndFlags = 0;
-extern gui_colour_set WndColours[];
 
 #if 0
 these are optional
-extern void WndCleanUp()
+void WndCleanUp()
 {
     // hook called when the application closes down
 }
@@ -70,7 +69,7 @@ void WndEndFreshAll( void )
 }
 
 typedef struct {
-    unsigned    key;
+    gui_key     key;
     char        *name;
 } keymap;
 
@@ -79,20 +78,20 @@ keymap Key[] = {
 };
 
 static gui_menu_struct PopTart[] = {
-    { "Open &1", MENU_OPEN1, GUI_ENABLED },
-    { "Open &2", MENU_OPEN2, GUI_ENABLED },
-    { "Open &3", MENU_OPEN3, GUI_ENABLED },
+    { "Open &1", MENU_OPEN1, GUI_STYLE_MENU_ENABLED },
+    { "Open &2", MENU_OPEN2, GUI_STYLE_MENU_ENABLED },
+    { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
 };
 
-extern  bool    WndProcMacro( a_window *wnd, unsigned key )
+bool    WndProcMacro( a_window wnd, gui_key key )
 {
     gui_ctl_id  menu;
     int         i;
 
     WndStatusText( "" );
     for( i = 0; i < ArraySize( Key ); ++i ) {
-        if( Key[ i ].key == key ) {
-            WndStatusText( Key[ i ].name );
+        if( Key[i].key == key ) {
+            WndStatusText( Key[i].name );
             break;
         }
     }
@@ -138,11 +137,11 @@ extern void BIOSSetPage( char pagenb );
         " mov    ah, 5          ",                      \
         " int    10h            ",                      \
         " pop    bp             "                       \
-        parm [ al ]                                     \
-        modify exact [ ah ];
+        parm [al]                                       \
+        modify exact [ah];
 #endif
 
-gui_window_styles WndStyle = GUI_PLAIN+GUI_GMOUSE;
+gui_window_styles WndStyle = GUI_PLAIN | GUI_GMOUSE;
 char *WndGadgetHint[] =
 {
     "this is help for the folder",
@@ -174,7 +173,6 @@ static gui_colour_set   WndDlgColours[] = {
 
 gui_resource MainIcon = { ICON_MAIN, "main_icon" };
 
-extern a_window *WndMain;
 void GUImain( void )
 {
     char        buff[256];
@@ -197,7 +195,7 @@ void GUImain( void )
     }
     WndGadgetInit();
     WndInit( "Sample Application" );
-    WndCreateStatusWindow( &WndColours[ GUI_MENU_STANDOUT ] );
+    WndCreateStatusWindow( &WndColours[GUI_MENU_STANDOUT] );
     GUIGetDialogColours( WndDlgColours );
     WndStatusText( "Hello World!" );
     WndSetIcon( WndMain, &MainIcon );

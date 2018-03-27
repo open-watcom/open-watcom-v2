@@ -34,12 +34,9 @@
 //
 // Target dependent data structures.
 //
-struct b_file;
-
 typedef char            *targ_addr;
 
 typedef unsigned_32     obj_ptr;
 typedef unsigned_32     seg_offset;
 
-typedef int             file_attr;      // file attributes
 typedef struct b_file   *file_handle;   // file handle

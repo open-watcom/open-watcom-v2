@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,101 +40,30 @@
 
 */
 
-#ifndef qnx_uivirt_h
-#define qnx_uivirt_h
+#ifndef _UIVIRT_H_INCLUDED
+#define _UIVIRT_H_INCLUDED
 
-
-typedef struct Display {
-    int     (*init)( void );            /* setup */
-    int     (*fini)( void );            /* tear down */
-    int     (*update)(SAREA *area);     /* change screen */
-    int     (*refresh)(int noopt);      /* force redraw of screen */
-    /*- cursor */
-    int     (*getcur)(ORD *row, ORD *col, CURSOR_TYPE *type, int *attr);
-    int     (*setcur)(ORD row, ORD col, CURSOR_TYPE type, int attr);
-    EVENT   (*event)( void );
-} Display;
-
-
-typedef struct Keyboard {
-    int     (*init)( void );            /* set initial modes, etc... */
-    int     (*fini)( void );            /* restore saved modes, etc... */
-    void    (*arm)( void );             /* arm for next character */
-    int     (*save)( void );            /* save current mode, restore original mode */
-    int     (*restore)( void );         /* set into raw mode */
-    int     (*flush)( void );           /* clear look-ahead */
-    int     (*stop)( void );            /* clear look-ahead, disable keyboard events */
-    int     (*shift_state)( void );     /* shift status */
-    int     (*un_event)(EVENT event);   /* allow modify of next event */
-    int     (*wait_keyb)( int, int );   /* wait for keyboard event */
-} Keyboard;
-
-typedef struct Mouse {
-    int     (*init)( int install );
-    int     (*fini)( void );
-    int     (*set_speed)( unsigned speed );
-    int     (*stop)( void );            /* clear input, disable events */
-    int     (*check)( unsigned short *status, MOUSEORD *row,
-                     MOUSEORD *col, unsigned long *time );
-    int     (*wait_mouse)( void );      /* wait for mouse event */
-} Mouse;
-
-typedef struct {
-    Display     *disp;
-    Keyboard    *keyb;
-    Mouse       *mouse;
-} VirtDisplay;
-
-typedef struct {
-    bool        (*check)(void);
-    VirtDisplay virt;
-} PossibleDisplay;
-
-extern VirtDisplay      UIVirt;
-
-/*-
- * convenient naming, and easier changes later...
- */
-
-#define _uibiosinit     (*UIVirt.disp->init)
-#define _uibiosfini     (*UIVirt.disp->fini)
-#define _physupdate     (*UIVirt.disp->update)
-#define _ui_refresh     (*UIVirt.disp->refresh)
-#define _uigetcursor    (*UIVirt.disp->getcur)
-#define _uisetcursor    (*UIVirt.disp->setcur)
-#define _uievent        (*UIVirt.disp->event)
-
-#define _initkeyboard   (*UIVirt.keyb->init)
-#define _finikeyboard   (*UIVirt.keyb->fini)
-#define _armkeyboard    (*UIVirt.keyb->arm)
-#define _savekeyb       (*UIVirt.keyb->save)
-#define _restorekeyb    (*UIVirt.keyb->restore)
-#define _flushkey       (*UIVirt.keyb->flush)
-#define _stopkeyb       (*UIVirt.keyb->stop)
-#define _uicheckshift   (*UIVirt.keyb->shift_state)
-#define _checkshift     _uicheckshift
-#define _uishiftrelease (*UIVirt.keyb->un_event)
-#define _uiwaitkeyb     (*UIVirt.keyb->wait_keyb)
-
-#define _initmouse      (*UIVirt.mouse->init)
-#define _finimouse      (*UIVirt.mouse->fini)
-#define _checkmouse     (*UIVirt.mouse->check)
-#define _stopmouse      (*UIVirt.mouse->stop)
-#define _uimousespeed   (*UIVirt.mouse->set_speed)
-#define _uiwaitmouse    (*UIVirt.mouse->wait_mouse)
+#include "uivirts.h"
 
 /*-
  The modules for each type....
 */
 
-extern bool             TInfCheck( void );
-extern Display          TInfDisplay;
-extern Keyboard         ConsKeyboard;
-extern Mouse            TermMouse;
+extern Display      TInfDisplay;
+extern Keyboard     ConsKeyboard;
+extern Mouse        TermMouse;
+#ifdef __QNX__
+extern Display      ConsDisplay;
+extern Display      TermDisplay;
+extern Display      QnxWDisplay;
+extern Mouse        ConsMouse;
+#endif
 
-extern void             stopmouse(void);
-extern void             stopkeyboard( void );
-extern void             savekeyb(void);
-extern void             restorekeyb(void);
+extern bool         TInfCheck( void );
+#ifdef __QNX__
+extern bool         QnxWCheck(void);
+extern bool         ConsCheck(void);
+extern bool         TermCheck(void);
+#endif
 
 #endif

@@ -34,15 +34,15 @@
 #define _UIEDIT_H_
 
 typedef struct vbuffer {
-        char            *content;
-        int             length;
-        int             index;
-        unsigned        insert:1;
-        unsigned        dirty:1;
-        unsigned        auto_clear:1;
+    char            *content;
+    unsigned        length;
+    unsigned        index;
+    bool            insert      :1;
+    bool            dirty       :1;
+    bool            auto_clear  :1;
 } VBUFFER;
 
-extern void         uipadblanks( char *, int );
-extern EVENT        uieditevent( EVENT, VBUFFER * );
+extern void         uipadblanks( char *, unsigned );
+extern ui_event     uieditevent( ui_event, VBUFFER * );
 
 #endif

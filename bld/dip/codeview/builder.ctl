@@ -48,6 +48,9 @@ set PROJDIR=<CWD>
     <CCCMD> qnx386/<PROJNAME>.dip       <OWRELROOT>/qnx/watcom/wd/
     <CCCMD> qnx386/<PROJNAME>.sym       <OWRELROOT>/qnx/sym/
 
+    <CCCMD> rdos386/<PROJNAME>.dll     <OWRELROOT>/rdos/
+    <CCCMD> rdos386/<PROJNAME>.sym     <OWRELROOT>/rdos/
+
     <CCCMD> linuxx64/<PROJNAME>.so      <OWRELROOT>/binl64/
     <CCCMD> ntx64/<PROJNAME>.dll        <OWRELROOT>/binnt64/
 

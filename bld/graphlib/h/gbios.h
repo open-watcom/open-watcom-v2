@@ -32,7 +32,7 @@
 /* BIOS Variable Locations */
 #pragma pack(push, 1);
 
-#define _BIOS_data( p ) MK_FP( _BiosSeg, _BiosOff + p )
+#define _BIOS_data( p, t ) *(t __far *)MK_FP( _BiosSeg, _BiosOff + p )
 
 #define EQUIP_FLAGS     0x0010      /* equipment flags */
 #define CRT_MODE        0x0049      /* current CRT mode */

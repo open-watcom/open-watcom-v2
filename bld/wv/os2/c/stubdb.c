@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,11 +65,21 @@
 #include "dbgdot.h"
 #include "dlgcmd.h"
 #include "dbgwintr.h"
+#include "dbgchopt.h"
+#include "dbgsetfn.h"
+#include "dbginsp.h"
+#include "dbgwvar1.h"
+#include "dlgfile.h"
+#include "wndmenu1.h"
+#include "dbgwset1.h"
+
+
+extern char             *CmdData;
 
 /*************************************************/
 /* TODO! review all these prototypes declaration if they are local(static) or external */
 
-bool DlgNewWithSym( const char *title, char *buff, int buff_len );
+bool DlgNewWithSym( const char *title, char *buff, size_t buff_len );
 bool DlgUpTheStack( void );
 bool DlgAreYouNuts( unsigned long mult );
 bool DlgBackInTime( bool warn );
@@ -89,19 +100,13 @@ void ConfigFont( void );
 void ConfigPaint( void );
 int TabIntervalGet( void );
 void TabIntervalSet( int new );
-void VarSaveWndToScope( void *wnd );
-void VarRestoreWndFromScope( void *wnd );
 void PopErrBox( const char *buff );
 /*************************************************/
 
-extern void             *WndAsmInspect( address addr );
-
-static bool             Done;
-extern char             *CmdData;
-extern stack_entry      *ExprSP;
-
 unsigned                NumLines;
 unsigned                NumColumns;
+
+static bool             Done;
 
 unsigned DUIConfigScreen( void )
 {
@@ -117,14 +122,17 @@ bool DUIClose( void )
 #if 0
 // The following routine is cut & pasted verbatim from dbgwvar.c
 // (which we really don't want to drag in here)
-var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
+var_node *VarGetDisplayPiece( var_info *i, int row, wnd_piece piece, int *pdepth, int *pinherit )
 {
     var_node    *row_v;
     var_node    *v;
 
-    if( piece >= VAR_PIECE_LAST ) return( NULL );
-    if( VarFirstNode( i ) == NULL ) return( NULL );
-    if( row >= VarRowTotal( i ) ) return( NULL );
+    if( piece >= VAR_PIECE_LAST )
+        return( NULL );
+    if( VarFirstNode( i ) == NULL )
+        return( NULL );
+    if( row >= VarRowTotal( i ) )
+        return( NULL );
     row_v = VarFindRowNode( i, row );
     if( !row_v->value_valid ) {
         VarSetValue( row_v, LIT_ENG( Quest_Marks ) );
@@ -155,7 +163,8 @@ var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int 
             i->exprsp_cache_is_error = VarError;
         }
         if( v == NULL ) {
-            if( !VarError ) return( NULL );
+            if( !VarError )
+                return( NULL );
             v = row_v;
         }
         VarNodeInvalid( v );
@@ -179,39 +188,44 @@ HEV             Requestdonesem;
 static void DumpLocals( void )
 {
     address     addr;
-    int         row;
-    int         depth;
-    int         inherit;
-    var_node    *v;
 
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarErrState();
-        VarInfoRefresh( VAR_LOCALS, &Locals, &addr, NULL );
+        VarInfoRefresh( VAR_LOCALS, &Locals, &addr );
         VarOkToCache( &Locals, true );
     }
-    for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth, &inherit );
-        v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth, &inherit );
-        switch( v->gadget ) {
-        case VARGADGET_NONE:
-            printf( "  " );
-            break;
-        case VARGADGET_OPEN:
-            printf( "+ " );
-            break;
-        case VARGADGET_CLOSED:
-            printf( "- " );
-            break;
-        case VARGADGET_POINTS:
-            printf( "->" );
-            break;
-        case VARGADGET_UNPOINTS:
-            printf( "<-" );
-            break;
+#if 0
+    {
+        int         row;
+        var_node    *v;
+        int         depth;
+        int         inherit;
+
+        for( row = 0; (v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_GADGET, &depth, &inherit )) != NULL; ++row ) {
+            v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_NAME, &depth, &inherit );
+            v = VarGetDisplayPiece( &Locals, row, VAR_PIECE_VALUE, &depth, &inherit );
+            switch( v->gadget ) {
+            case VARGADGET_NONE:
+                printf( "  " );
+                break;
+            case VARGADGET_OPEN:
+                printf( "+ " );
+                break;
+            case VARGADGET_CLOSED:
+                printf( "- " );
+                break;
+            case VARGADGET_POINTS:
+                printf( "->" );
+                break;
+            case VARGADGET_UNPOINTS:
+                printf( "<-" );
+                break;
+            }
+            VarBuildName( &Locals, v, true );
+            printf( " %-20s %s\n", TxtBuff, v->value );
         }
-        VarBuildName( &Locals, v, true );
-        printf( " %-20s %s\n", TxtBuff, v->value );
     }
+#endif
     if( _IsOff( SW_TASK_RUNNING ) ) {
         VarOkToCache( &Locals, false );
         VarOldErrState();
@@ -221,13 +235,13 @@ static void DumpLocals( void )
 static void DumpSource( void )
 {
     char        buff[256];
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     if( _IsOn( SW_TASK_RUNNING ) ) {
         printf( "I don't know where the task is. It's running\n" );
     }
-    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), ch ) == SR_NONE ||
-        !DUIGetSourceLine( ch, buff, sizeof( buff ) ) ) {
+    if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh ) == SR_NONE ||
+        !DUIGetSourceLine( cueh, buff, sizeof( buff ) ) ) {
         UnAsm( GetCodeDot(), buff, sizeof( buff ) );
     }
     printf( "%s\n", buff );
@@ -273,7 +287,8 @@ static void RunRequest( int req )
 {
     ULONG   ulCount;
 
-    if( _IsOn( SW_TASK_RUNNING ) ) return;
+    if( _IsOn( SW_TASK_RUNNING ) )
+        return;
     DosWaitEventSem( Requestdonesem, SEM_INDEFINITE_WAIT ); // wait for last request to finish
     DosResetEventSem( Requestdonesem, &ulCount );
     Req = req;
@@ -364,7 +379,7 @@ int main( int argc, char **argv )
 
 // Minimalist DUI callback routines
 
-extern char *DUILoadString( dui_res_id id )
+char *DUILoadString( dui_res_id id )
 {
     char        buff[256];
     char        *ret;
@@ -410,7 +425,7 @@ bool DUIDlgGivenAddr( const char *title, address *value )
     return( false );
 }
 
-bool DlgNewWithSym( const char *title, char *buff, int buff_len )
+bool DlgNewWithSym( const char *title, char *buff, size_t buff_len )
 {
     // used by print command with no arguments
     return( true );
@@ -473,58 +488,58 @@ void DUIInit( void )
     // Init the UI
 }
 
-extern void DUIFreshAll( void )
+void DUIFreshAll( void )
 {
     // refresh all screens - initialization has been done
     UpdateFlags = 0;
 }
 
-extern bool DUIStopRefresh( bool stop )
+bool DUIStopRefresh( bool stop )
 {
     // temporarily turn off/on screen refreshing, cause we're going to run a
     // big command file and we don't want flashing.
     return( false );
 }
 
-extern void DUIShow( void )
+void DUIShow( void )
 {
     // show the main screen - the splash page has been closed
 }
 
-extern void DUIWndUser( void )
+void DUIWndUser( void )
 {
     // switch to the program screen
 }
 
-extern void DUIWndDebug( void )
+void DUIWndDebug( void )
 {
     // switch to the debugger screen
 }
 
-extern void DUIShowLogWindow( void )
+void DUIShowLogWindow( void )
 {
     // bring up the log window, cause some printout is coming
 }
 
-extern int DUIGetMonitorType( void )
+int DUIGetMonitorType( void )
 {
     // stub for old UI
     return( 1 );
 }
 
-extern int DUIScreenSizeY( void )
+int DUIScreenSizeY( void )
 {
     // stub for old UI
     return( 0 );
 }
 
-extern int DUIScreenSizeX( void )
+int DUIScreenSizeX( void )
 {
     // stub for old UI
     return( 0 );
 }
 
-extern void DUIArrowCursor( void )
+void DUIArrowCursor( void )
 {
     // we're about to suicide, so restore the cursor to normal
 }
@@ -535,40 +550,36 @@ bool DUIAskIfAsynchOk( void )
     return( false );
 }
 
-extern void DUIFlushKeys( void )
+void DUIFlushKeys( void )
 {
     // we're about to suicide - clear the keyboard typeahead
 }
 
-extern void DUIPlayDead( bool dead )
+void DUIPlayDead( bool dead )
 {
     // the app is about to run - make the debugger play dead
 }
 
-extern void DUISysEnd( bool pause )
+void DUISysEnd( bool pause )
 {
     // done calling system();
 }
 
-extern void DUISysStart( void )
+void DUISysStart( void )
 {
     // about to call system();
 }
 
-extern void DUIRingBell( void )
+void DUIRingBell( void )
 {
     // ring ring (error)
 }
 
-extern int DUIDisambiguate( const ambig_info *ambig, int count )
+bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
     // the expression processor detected an ambiguous symbol.  Ask user which one
-    return( 0 );
-}
-
-extern void *DUIHourGlass( void *x )
-{
-    return( x );
+    *choice = 0;
+    return( true );
 }
 
 void ProcAccel( void )
@@ -642,40 +653,40 @@ void ConfigPaint( void )
     // stub for old UI
 }
 
-extern void DClickSet( void )
+void DClickSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
 
-extern void DClickConf( void )
+void DClickConf( void )
 {
     // stub for old UI
 }
 
-extern void InputSet( void )
-{
-    // stub for old UI
-    FlushEOC();
-}
-
-extern void InputConf( void )
-{
-    // stub for old UI
-}
-
-extern void MacroSet( void )
+void InputSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
 
-extern void MacroConf( void )
+void InputConf( void )
 {
     // stub for old UI
 }
 
-extern  void    FiniMacros( void )
+void MacroSet( void )
+{
+    // stub for old UI
+    FlushEOC();
+}
+
+void MacroConf( void )
+{
+    // stub for old UI
+}
+
+void    FiniMacros( void )
 {
     // stub for old UI
 }
@@ -689,73 +700,74 @@ void TabIntervalSet( int new )
     // stub for old UI
 }
 
-extern void TabSet( void )
+void TabSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
 
-extern void TabConf( void )
+void TabConf( void )
 {
     // stub for old UI
 }
 
-extern void SearchSet( void )
+void SearchSet( void )
 {
     // stub for old UI
     FlushEOC();
 }
 
-extern void SearchConf( void )
+void SearchConf( void )
 {
     // stub for old UI
 }
 
-extern void DUIFingClose( void )
+void DUIFingClose( void )
 {
     // close the splash page
 }
 
-extern void DUIFingOpen( void )
+void DUIFingOpen( void )
 {
     // open a splash page
 }
 
-extern void AsmChangeOptions( void )
+void AsmChangeOptions( void )
 {
     // assembly window options changed
 }
 
-extern void RegChangeOptions( void )
+void RegChangeOptions( void )
 {
     // reg window options changed
 }
 
-extern void VarChangeOptions( void )
+void VarChangeOptions( void )
 {
     // var window options changed
 }
 
-extern void FuncChangeOptions( void )
+void FuncChangeOptions( void )
 {
     // func window options changed
 }
 
-extern void GlobChangeOptions( void )
+void GlobChangeOptions( void )
 {
     // glob window options changed
 }
 
-extern void ModChangeOptions( void )
+void ModChangeOptions( void )
 {
     // mod window options changed
 }
 
-extern void WndVarInspect( const char *buff )
+void WndVarInspect( const char *buff )
 {
 }
 
-extern void *WndAsmInspect( address addr )
+//void *WndAsmInspect( address addr )
+void WndAsmInspect( address addr )
 {
     // used by examine/assembly command
     int         i;
@@ -769,71 +781,63 @@ extern void *WndAsmInspect( address addr )
         InsMemRef( dd );
         printf( "%-40s%s\n", buff, TxtBuff );
     }
-    return( NULL );
+//    return( NULL );
 }
 
-extern void *WndSrcInspect( address addr )
+//void *WndSrcInspect( address addr )
+void WndSrcInspect( address addr )
 {
     // used by examine/source command
-    return( NULL );
+//    return( NULL );
 }
 
-extern void WndMemInspect( address addr, char *next, unsigned len,
-                           mad_type_handle type )
+void WndMemInspect( address addr, char *next, unsigned len, mad_type_handle mth )
 {
     // used by examine/byte/word/etc command
 }
 
-extern void WndIOInspect(address*addr,mad_type_handle type)
+void WndIOInspect( address *addr, mad_type_handle mth )
 {
     // used by examine/iobyte/ioword/etc command
 }
 
-extern void WndTmpFileInspect( const char *file )
+void WndTmpFileInspect( const char *file )
 {
     // used by capture command
     file = file;
 }
 
-extern void GraphicDisplay( void )
+void GraphicDisplay( void )
 {
     // used by print/window command
 }
 
-extern void VarUnMapScopes( image_entry *img )
+void VarUnMapScopes( image_entry *img )
 {
     // unmap variable scopes - prog about to restart
     img = img;
 }
 
-extern void VarReMapScopes( image_entry *img )
+void VarReMapScopes( image_entry *img )
 {
     // remap variable scopes - prog about to restart
     img = img;
 }
 
-extern void VarFreeScopes( void )
+void VarFreeScopes( void )
 {
     // free variable scope info
 }
 
-extern void SetLastExe( const char *name )
+void SetLastExe( const char *name )
 {
     // remember last exe debugged name
     name = name;
 }
 
-extern void DUIProcPendingPaint( void )
+void DUIProcPendingPaint( void )
 {
     // a paint command was issued - update the screen (stub)
-}
-
-void VarSaveWndToScope( void *wnd )
-{
-}
-
-void VarRestoreWndFromScope( void *wnd )
-{
 }
 
 void PopErrBox( const char *buff )
@@ -859,13 +863,17 @@ void DUIFiniLiterals( void )
 {
 }
 
-bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
+bool DUIGetSourceLine( cue_handle *cueh, char *buff, size_t len )
 {
     void        *viewhndl;
 
-    viewhndl = OpenSrcFile( ch );
-    if( viewhndl == NULL ) return( false );
-    buff[FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len )] = NULLCHAR;
+    viewhndl = OpenSrcFile( cueh );
+    if( viewhndl == NULL )
+        return( false );
+    len = FReadLine( viewhndl, DIPCueLine( cueh ), 0, buff, len );
+    if( len == FREADLINE_ERROR )
+        len = 0;
+    buff[len] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }
@@ -893,29 +901,29 @@ void DUIAddrInspect( address addr )
 {
 }
 
-extern void DUIRemoveBreak( brkp *bp )
-/************************************/
+void DUIRemoveBreak( brkp *bp )
+/*****************************/
 {
     RemovePoint( bp );
 }
 
-extern void SetMADMenuItems( void )
-/**********************************/
+void SetMADMenuItems( void )
+/**************************/
 {
 }
 
-extern void FPUChangeOptions( void )
-/**********************************/
+void FPUChangeOptions( void )
+/***************************/
 {
 }
 
-extern void MMXChangeOptions( void )
-/**********************************/
+void MMXChangeOptions( void )
+/***************************/
 {
 }
 
-extern void XMMChangeOptions( void )
-/**********************************/
+void XMMChangeOptions( void )
+/***************************/
 {
 }
 

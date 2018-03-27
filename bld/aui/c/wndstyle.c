@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 // replacable component
 gui_window_styles WndStyle = GUI_PLAIN;

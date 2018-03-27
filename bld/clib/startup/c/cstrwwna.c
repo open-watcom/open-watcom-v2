@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,6 @@ void wmainCRTStartup( void )
     __wNTMain();
 }
 
-const char _cstartw_CopyRight[] =
-        "Open Watcom C/C++ Alpha Run-Time system. "
-        "Portions Copyright (c) Sybase, Inc. 1995-2002.";
+const char _cstartw_CopyRight[] = {
+    #include "msgcpyrt.h"
+};

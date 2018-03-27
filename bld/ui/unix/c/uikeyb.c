@@ -41,6 +41,7 @@
 #include "uishift.h"
 #include "uivirt.h"
 
+
 /*- these are lame */
 
 void intern flushkey( void )
@@ -56,26 +57,20 @@ unsigned char intern checkshift( void )
 }
 
 unsigned char UIAPI uicheckshift( void )
-/***************************************/
+/**************************************/
 {
-    return _uicheckshift();
+    return( _uicheckshift() );
 }
 
-extern void uishiftrelease( EVENT ev )
-/************************************/
-// Somebody wants us to pretend that the specified event has occurred
-// (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press
-// event will be generated for the next keystroke (if that shift key
-// is pressed).
+void uishiftrelease( ui_event ui_ev )
+/***********************************
+ * Somebody wants us to pretend that the specified event has occurred
+ * (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press event
+ * will be generated for the next keystroke (if that shift key is pressed).
+ */
 {
-    _uishiftrelease(ev);
+    _uishiftrelease( ui_ev );
 }
-
-void intern restorekeyb( void )
-{
-    _restorekeyb();
-}
-
 
 bool intern initkeyboard( void )
 /******************************/
@@ -87,14 +82,4 @@ void intern finikeyboard( void )
 /******************************/
 {
     _finikeyboard();
-}
-
-void intern savekeyb( void )
-{
-    _savekeyb();
-}
-
-void stopkeyboard( void )
-{
-    _stopkeyb();
 }

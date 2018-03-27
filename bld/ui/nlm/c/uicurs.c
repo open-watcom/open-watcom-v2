@@ -33,13 +33,10 @@
 #include <conio.h>
 #include "uidef.h"
 #include "uiattrs.h"
+#include "uinlm.h"
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-static BYTE             OldCursorAttr;
-static WORD             OldCursorRow;
-static WORD             OldCursorCol;
-static CURSOR_TYPE      OldCursorType;
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
 /* NOTE:  Not sure about these constants.  Try and see! */
 
@@ -47,6 +44,11 @@ static CURSOR_TYPE      OldCursorType;
 #define END_INSERT_CURSOR   14
 #define START_NORMAL_CURSOR 12
 #define END_NORMAL_CURSOR   14
+
+static CATTR            OldCursorAttr;
+static WORD             OldCursorRow;
+static WORD             OldCursorCol;
+static CURSOR_TYPE      OldCursorType;
 
 void UIAPI uioffcursor( void )
 /****************************/
@@ -72,15 +74,15 @@ void UIAPI uioncursor( void )
         endline   = END_NORMAL_CURSOR;
     }
 
-/* A PROBLEM:  This sets the cursor shape of the NLM's screen, not the  */
-/* screen created in UIBios.C! Figure this out some time... until then, */
-/* the insert cursor will be small like the regular cursor. */
+    /* A PROBLEM:  This sets the cursor shape of the NLM's screen, not the  */
+    /* screen created in UIBios.C! Figure this out some time... until then, */
+    /* the insert cursor will be small like the regular cursor. */
 
     SetCursorShape( startline, endline );
 
     SetPositionOfInputCursor( UIData->cursor_row, UIData->cursor_col );
 
-//NYI ???    if( UIData->cursor_attr != -2 ) { }
+//NYI ???    if( UIData->cursor_attr != CATTR_VOFF ) { }
 
     DisplayInputCursor();
 
@@ -97,15 +99,15 @@ static void newcursor( void )
     }
 }
 
-void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
-/****************************************************************/
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/**************************************************************************/
 {
     BYTE startline;
     BYTE endline;
 
     WORD roww, colw;
 
-    attr = attr;
+    /* unused parameters */ (void)attr;
 
     colw = wherex();
     roww = wherey();
@@ -115,7 +117,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 
     GetCursorShape( &startline, &endline );
 
-    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ){
+    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ) {
         *type = C_INSERT;
     } else {
         *type = C_NORMAL;
@@ -128,17 +130,16 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
     //NYI:  Read the attribute
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/*******************************************************************/
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/*********************************************************************/
 {
-    if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row )  ||
-        ( col != UIData->cursor_col )  || ( attr != UIData->cursor_attr ) ) {
+    if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row ) ||
+        ( col != UIData->cursor_col ) || ( attr != UIData->cursor_attr ) ) {
 
         UIData->cursor_type = typ;
         UIData->cursor_row = row;
         UIData->cursor_col = col;
-
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();
@@ -156,7 +157,7 @@ static void savecursor( void )
 
     GetCursorShape( &startline, &endline );
 
-    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ){
+    if( endline == END_INSERT_CURSOR && startline == START_INSERT_CURSOR ) {
         OldCursorType = C_INSERT;
     } else {
         OldCursorType = C_NORMAL;

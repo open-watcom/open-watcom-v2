@@ -90,8 +90,7 @@ void GUIStartKeyboardMoveResize( gui_window *wnd, bool move )
  * DoMoveResize -- do move or resize, with mouse or keyboard
  */
 
-static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
-                          bool finish, gui_point *adjust )
+static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y, bool finish, gui_point *adjust )
 {
     SAREA       area;
     SAREA       new;
@@ -104,48 +103,60 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
     area = wnd->screen.area;
     new = area;
     if( Direction == RESIZE_NONE ) {
-        if( ( area.row + delta_y ) < 0 ) {
-            delta_y = -area.row;
+        if( delta_y < 0 && -delta_y > area.row ) {
+            new.row = 0;
+        } else {
+            new.row = area.row + delta_y;
         }
-        if( ( area.col + delta_x ) < 0 ) {
-            delta_x = -area.col;
+        if( delta_x < 0 && -delta_x > area.col ) {
+            new.col = 0;
+        } else {
+            new.col = area.col + delta_x;
         }
-        new.col = area.col + delta_x;
-        new.row = area.row + delta_y;
+        new.width = area.width;
+        new.height = area.height;
     } else { /* resize */
         if( Direction & RESIZE_RIGHT ) {
-            if( ( area.width + delta_x ) < 0 ) {
-                delta_x = -area.width;
+            new.col = area.col;
+            if( delta_x < 0 && -delta_x > area.width ) {
+                new.width = 0;
+            } else {
+                new.width = area.width + delta_x;
             }
-            new.width += delta_x;
-        } else {
-            if( Direction & RESIZE_LEFT ) {
-                if( ( area.col + delta_x ) < 0 ) {
+        } else if( Direction & RESIZE_LEFT ) {
+            if( delta_x < 0 ) {
+                if( -delta_x > area.col ) {
                     delta_x = -area.col;
                 }
-                if( ( area.width - delta_x ) < 0 ) {
-                    delta_x = area.width;
-                }
-                new.col += delta_x;
-                new.width -= delta_x;
+            } else if( delta_x > area.width ) {
+                delta_x = area.width;
             }
+            new.col = area.col + delta_x;
+            new.width = area.width - delta_x;
+        } else {
+            new.col = area.col;
+            new.width = area.width;
         }
         if( Direction & RESIZE_DOWN ) {
-            if( ( area.height + delta_y ) < 0 ) {
-                delta_y = -area.height;
+            new.row = area.row;
+            if( delta_y < 0 && -delta_y > area.height ) {
+                new.height = 0;
+            } else {
+                new.height = area.height + delta_y;
             }
-            new.height += delta_y;
-        } else {
-            if( Direction & RESIZE_UP ) {
-                if( ( area.row + delta_y ) < 0 ) {
+        } else if( Direction & RESIZE_UP ) {
+            if( delta_y < 0 ) {
+                if( -delta_y > area.row ) {
                     delta_y = -area.row;
                 }
-                if( ( area.height - delta_y ) < 0 ) {
-                    delta_y = area.height;
-                }
-                new.row += delta_y;
-                new.height -= delta_y;
+            } else if( delta_y > area.height ) {
+                delta_y = area.height;
             }
+            new.row = area.row + delta_y;
+            new.height = area.height - delta_y;
+        } else {
+            new.row = area.row;
+            new.height = area.height;
         }
     }
     GUICheckArea( &new, Direction );
@@ -196,7 +207,7 @@ static void MoveResizeCancel( void )
  * GUIDoKeyboardMoveResize
  */
 
-bool GUIDoKeyboardMoveResize( EVENT ev )
+bool GUIDoKeyboardMoveResize( ui_event ui_ev )
 {
     bool        finish;
     bool        cancel;
@@ -207,7 +218,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     }
     finish = false;
     cancel = false;
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_CURSOR_UP :
         MoveSizeChange.y--;
         break;
@@ -223,6 +234,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     case EV_ESCAPE :
         MoveResizeCancel();
         cancel = true;
+        /* fall through */
     case EV_ENTER :
         finish = true;
         break;
@@ -230,8 +242,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
         return( true );
     }
     if( !cancel ) {
-        DoMoveResize( MoveSizeWnd, MoveSizeChange.x, MoveSizeChange.y, finish,
-                      &adjust );
+        DoMoveResize( MoveSizeWnd, MoveSizeChange.x, MoveSizeChange.y, finish, &adjust );
         MoveSizeChange.x += adjust.x;
         MoveSizeChange.y += adjust.y;
     }
@@ -245,8 +256,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
  * GUIDoMoveResize -- do a mouse move or resize
  */
 
-bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
-                      gui_point *adjust )
+bool GUIDoMoveResize( gui_window *wnd, int row, int col, ui_event ui_ev, gui_point *adjust )
 {
     bool        finish;
     int         delta_x;
@@ -254,8 +264,7 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
 
     delta_x = col - MoveResizeAnchor.x;
     delta_y = row - MoveResizeAnchor.y;
-    finish = ( ev == EV_MOUSE_RELEASE ) || ( ev == EV_MOUSE_RELEASE_R ) ||
-             ( ev == EV_ENTER );
+    finish = ( ui_ev == EV_MOUSE_RELEASE ) || ( ui_ev == EV_MOUSE_RELEASE_R ) || ( ui_ev == EV_ENTER );
     DoMoveResize( wnd, delta_x, delta_y, finish, adjust );
     return( true );
 }
@@ -264,11 +273,11 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
  * GUIDoMoveResizeCheck -- check if event affects mouse move or resize
  */
 
-bool GUIDoMoveResizeCheck( gui_window * wnd, EVENT ev, ORD row, ORD col )
+bool GUIDoMoveResizeCheck( gui_window * wnd, ui_event ui_ev, ORD row, ORD col )
 {
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_ENTER :
-        GUIDoMoveResize( wnd, row, col, ev, NULL );
+        GUIDoMoveResize( wnd, row, col, ui_ev, NULL );
         break;
     case EV_ESCAPE :
         MoveResizeCancel();

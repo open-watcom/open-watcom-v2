@@ -31,8 +31,8 @@
 
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "caux.h"
+
 
 #define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_int)NextSymHandle)
 

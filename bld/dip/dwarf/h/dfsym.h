@@ -30,4 +30,5 @@
 ****************************************************************************/
 
 
-extern seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im );
+extern seg_list     *DFLoadAddrSym( imp_image_handle *, imp_mod_handle im );
+extern drmem_hdl    GetRet( imp_image_handle *, drmem_hdl proc );

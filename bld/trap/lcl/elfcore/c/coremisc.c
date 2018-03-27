@@ -53,14 +53,14 @@ trap_retval ReqFile_get_config( void )
     ret->file.drv_separator = '\0';
     ret->file.path_separator[0] = '/';
     ret->file.path_separator[1] = '\0';
-    ret->file.newline[0] = '\n';
-    ret->file.newline[1] = '\0';
+    ret->file.line_eol[0] = '\n';
+    ret->file.line_eol[1] = '\0';
 #else
     ret->file.drv_separator = ':';
     ret->file.path_separator[0] = '\\';
     ret->file.path_separator[1] = '/';
-    ret->file.newline[0] = '\r';
-    ret->file.newline[1] = '\n';
+    ret->file.line_eol[0] = '\r';
+    ret->file.line_eol[1] = '\n';
 #endif
     return( sizeof( *ret ) );
 }
@@ -128,7 +128,7 @@ trap_retval ReqFile_read( void )
     file_read_ret       *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     CONV_LE_16( acc->len );
     ret = GetOutPtr( 0 );
     ptr = GetOutPtr( sizeof( *ret ) );
@@ -192,10 +192,9 @@ trap_retval ReqFile_write( void )
     file_write_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
-    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
-                        GetTotalSize() - sizeof( *acc ) );
+    ret->len = DoWrite( acc->handle, GetInPtr( sizeof( *acc ) ), GetTotalSize() - sizeof( *acc ) );
     ret->err = errno;
     CONV_LE_32( ret->err );
     CONV_LE_16( ret->len );
@@ -221,7 +220,7 @@ trap_retval ReqFile_close( void )
     file_close_ret      *ret;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_64( acc->handle );
     ret = GetOutPtr( 0 );
     if( close( acc->handle ) != -1 ) {
         errno = 0;

@@ -214,17 +214,18 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int         i, arg, cnt, ocnt, startcnt = 0;
-    srcline     sline;
-    int         k, j;
-    char        tmp[FILENAME_MAX], c[1];
-    char        buff[MAX_STR], file[MAX_STR], **list;
-    char        cmd[MAX_STR * 2];
-    char        *parm;
-    char        *startup[MAX_STARTUP];
-    char        *startup_parms[MAX_STARTUP];
-    vi_rc       rc;
-    vi_rc       rc1;
+    int             i, arg, cnt, ocnt, startcnt = 0;
+    srcline         sline;
+    int             k, j;
+    char            tmp[FILENAME_MAX], c[1];
+    char            buff[MAX_STR], file[MAX_STR], **list;
+    char            cmd[MAX_STR * 2];
+    char            *parm;
+    char            *startup[MAX_STARTUP];
+    char            *startup_parms[MAX_STARTUP];
+    vi_rc           rc;
+    vi_rc           rc1;
+    history_data    *h;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -344,10 +345,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     SwapBlockInit( EditVars.MaxSwapBlocks );
     ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
     WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
-    FindHistInit( EditVars.FindHist.max );
-    FilterHistInit( EditVars.FilterHist.max );
-    CLHistInit( EditVars.CLHist.max );
-    LastFilesHistInit( EditVars.LastFilesHist.max );
+    for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
+        HistInit( h, h->max );
+    }
     GetClockStart();
     GetSpinStart();
     SelRgnInit();

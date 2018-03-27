@@ -188,18 +188,18 @@ error1:
         pop     cx
         pop     ds
         pop     di
-        jmp     short exit
+exit:
+        lea    sp,-2H[bp]
+        pop    ds
+        pop    bp
+        dec    bp
+        retf
+
+        public  __exit_with_msg_
 __exit_with_msg_:
         mov     ah,04cH                 ; DOS call to exit with return code
         int     021h                    ; back to DOS
 
-        public  __exit_with_msg_
-exit:
-         lea    sp,-2H[bp]
-         pop    ds
-         pop    bp
-         dec    bp
-         retf
 LibEntry ENDP
 
         assume ds:nothing

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <process.h>
 #include <ctype.h>
 #include "drwatcom.h"
@@ -129,8 +128,7 @@ static DWORD genIndex( void ) {
     char        *begin;
     HKEY        keyhdl;
 
-    rc = RegOpenKeyEx( HKEY_LOCAL_MACHINE, PERFLIB_MAX , 0, KEY_READ,
-                       &keyhdl );
+    rc = RegOpenKeyEx( HKEY_LOCAL_MACHINE, PERFLIB_MAX , 0, KEY_READ, &keyhdl );
     if( rc == ERROR_SUCCESS ) {
         datasize = sizeof( DWORD );
         rc = RegQueryValueEx( keyhdl, "Last Counter", NULL,
@@ -139,7 +137,9 @@ static DWORD genIndex( void ) {
     indexSize++;
     if( rc == ERROR_SUCCESS ) {
         titleIndex = MemAlloc( indexSize * sizeof( char * ) );
-        if( titleIndex == NULL ) rc = ERROR_OUTOFMEMORY;
+        if( titleIndex == NULL ) {
+            rc = ERROR_OUTOFMEMORY;
+        }
     }
     if( rc == ERROR_SUCCESS ) {
         memset( titleIndex, 0, indexSize * sizeof( char * ) );
@@ -152,10 +152,12 @@ static DWORD genIndex( void ) {
                             "reg.c", MB_OK );
             }
 #endif
-            while( *begin != '\0' ) begin++;
+            while( *begin != '\0' )
+                begin++;
             begin ++;
             titleIndex[item] = begin;
-            while( *begin != '\0' ) begin++;
+            while( *begin != '\0' )
+                begin++;
             begin++;
         }
     }
@@ -172,8 +174,7 @@ static DWORD getTitles( void ) {
     DWORD       datasize;
     HKEY        keyhdl;
 
-    rc = RegOpenKeyEx( HKEY_LOCAL_MACHINE, PERFLIB_STRING, 0, KEY_READ,
-                       &keyhdl );
+    rc = RegOpenKeyEx( HKEY_LOCAL_MACHINE, PERFLIB_STRING, 0, KEY_READ, &keyhdl );
     if( rc == ERROR_SUCCESS ) {
         rc = RegQueryValueEx( keyhdl, "Counters", NULL, &type, NULL, &datasize );
     }
@@ -182,8 +183,7 @@ static DWORD getTitles( void ) {
         if( titleBuf == NULL ) {
             return( ERROR_OUTOFMEMORY );
         }
-        rc = RegQueryValueEx( keyhdl, "Counters", NULL, &type, (LPBYTE)titleBuf,
-                              &datasize );
+        rc = RegQueryValueEx( keyhdl, "Counters", NULL, &type, (LPBYTE)titleBuf, &datasize );
     }
     if( rc == ERROR_SUCCESS ) {
         rc = genIndex();
@@ -198,7 +198,7 @@ static DWORD findIndex( char *str ) {
 
     DWORD       i;
 
-    for( i=0; i < indexSize; i++ ) {
+    for( i = 0; i < indexSize; i++ ) {
         if( titleIndex[i] != NULL ) {
             if( stricmp( titleIndex[i], str ) == 0 ) {
                 return( i );
@@ -222,7 +222,7 @@ static DWORD getData( char *name, PERF_DATA_BLOCK **data ) {
      * such that it finds the buffer size after minimal number of iterations -
      * even if we waste a few kilobytes of memory.
      */
-    for( i=0; ; i++ ) {
+    for( i = 0; ; i++ ) {
         datasize = INIT_BUF_SIZE + (BUF_SIZE_INCR << i);
         *data = MemAlloc( datasize );
         if( *data == NULL ) {
@@ -230,24 +230,23 @@ static DWORD getData( char *name, PERF_DATA_BLOCK **data ) {
             break;
         }
         EnterCriticalSection( &dataRefreshSection );
-        #if 0
+#if 0
         {
             FILE *fp;
             fp = fopen( "c:\\t.lst", "at" );
             fprintf( fp, "OPEN - %s\n", name );
             fclose( fp );
         }
-        #endif
-        rc = RegQueryValueEx( HKEY_PERFORMANCE_DATA, name, NULL, &type,
-                              (void *)*data, &datasize );
-        #if 0
+#endif
+        rc = RegQueryValueEx( HKEY_PERFORMANCE_DATA, name, NULL, &type, (void *)*data, &datasize );
+#if 0
         {
             FILE *fp;
             fp = fopen( "c:\\t.lst", "at" );
             fprintf( fp, "CLOSE - %s\n", name );
             fclose( fp );
         }
-        #endif
+#endif
         LeaveCriticalSection( &dataRefreshSection );
         if( rc != ERROR_MORE_DATA ) {
             break;
@@ -271,18 +270,20 @@ static PERF_OBJECT_TYPE *findObject( char *data, char *str ) {
     PERF_DATA_BLOCK     *dblock;
     DWORD               i;
 
-    if( data == NULL ) return( NULL );
+    if( data == NULL )
+        return( NULL );
     index = findIndex( str );
-    if( index == -1 ) return( NULL );
+    if( index == -1 )
+        return( NULL );
 
     dblock = (PERF_DATA_BLOCK *)data;
-    obj = (PERF_OBJECT_TYPE *) ( data + dblock->HeaderLength );
-    for( i=0; i < dblock->NumObjectTypes; i++ ) {
+    obj = (PERF_OBJECT_TYPE *)( data + dblock->HeaderLength );
+    for( i = 0; i < dblock->NumObjectTypes; i++ ) {
         if( obj->ObjectNameTitleIndex == index ) {
             return( obj );
         }
         data = (char *)obj;
-        obj = (PERF_OBJECT_TYPE *) ( data + obj->TotalByteLength );
+        obj = (PERF_OBJECT_TYPE *)( data + obj->TotalByteLength );
     }
     return( NULL );
 }
@@ -297,18 +298,18 @@ static PERF_COUNTER_DEFINITION *findCounter( PERF_OBJECT_TYPE *obj, char *str )
     DWORD                       i;
     DWORD                       index;
 
-    if( obj == NULL ) return( NULL );
+    if( obj == NULL )
+        return( NULL );
     index = findIndex( str );
-    if( index == -1 ) return( NULL );
+    if( index == -1 )
+        return( NULL );
 
-    counter = (PERF_COUNTER_DEFINITION *)
-              ( (char *)obj + obj->HeaderLength );
-    for( i=0; i < obj->NumCounters; i++ ) {
+    counter = (PERF_COUNTER_DEFINITION *)( (char *)obj + obj->HeaderLength );
+    for( i = 0; i < obj->NumCounters; i++ ) {
         if( counter->CounterNameTitleIndex == index ) {
             return( counter );
         }
-        counter = (PERF_COUNTER_DEFINITION *)
-                  ( (char *)counter + counter->ByteLength );
+        counter = (PERF_COUNTER_DEFINITION *)( (char *)counter + counter->ByteLength );
     }
     return( NULL );
 }
@@ -316,13 +317,11 @@ static PERF_COUNTER_DEFINITION *findCounter( PERF_OBJECT_TYPE *obj, char *str )
 /*
  * getCounterDWORD
  */
-static DWORD getCounterDWORD( PERF_INSTANCE_DEFINITION *inst,
-                              PERF_COUNTER_DEFINITION *counterinfo )
+static DWORD getCounterDWORD( PERF_INSTANCE_DEFINITION *inst, PERF_COUNTER_DEFINITION *counterinfo )
 {
     DWORD       *ret;
 
-    ret = (DWORD *)
-          ( (char *)inst + inst->ByteLength + counterinfo->CounterOffset );
+    ret = (DWORD *)( (char *)inst + inst->ByteLength + counterinfo->CounterOffset );
     return( *ret );
 }
 
@@ -335,40 +334,41 @@ static PERF_INSTANCE_DEFINITION *getNextInstance( PERF_INSTANCE_DEFINITION *inst
     PERF_INSTANCE_DEFINITION    *ret;
     PERF_COUNTER_BLOCK          *cntblock;
 
-    cntblock = (PERF_COUNTER_BLOCK *) ( (char *)inst + inst->ByteLength );
-    ret = (PERF_INSTANCE_DEFINITION *)
-               ( (char *)cntblock + cntblock->ByteLength );
+    cntblock = (PERF_COUNTER_BLOCK *)( (char *)inst + inst->ByteLength );
+    ret = (PERF_INSTANCE_DEFINITION *)( (char *)cntblock + cntblock->ByteLength );
     return( ret );
 }
 
 /*
  * getFirstInstance
  */
-static PERF_INSTANCE_DEFINITION *getFirstInstance( PERF_OBJECT_TYPE *obj ) {
-
+static PERF_INSTANCE_DEFINITION *getFirstInstance( PERF_OBJECT_TYPE *obj )
+{
     PERF_INSTANCE_DEFINITION    *inst;
 
-    if( obj == NULL ) return( NULL );
-    if( obj->NumInstances == 0 ) return( NULL );
-    inst = (PERF_INSTANCE_DEFINITION *)
-           ( (char *)obj + obj->DefinitionLength );
+    if( obj == NULL )
+        return( NULL );
+    if( obj->NumInstances == 0 )
+        return( NULL );
+    inst = (PERF_INSTANCE_DEFINITION *)( (char *)obj + obj->DefinitionLength );
     return( inst );
 }
 
 /*
  * initObj
  */
-static void initObj( PERF_DATA_BLOCK **data, PERF_OBJECT_TYPE **obj,
-                     char *objname )
+static void initObj( PERF_DATA_BLOCK **data, PERF_OBJECT_TYPE **obj, char *objname )
 {
-    if( *obj != NULL ) return;
+    if( *obj != NULL )
+        return;
     *obj = findObject( (char *)*data, objname );
 }
 
 /*
  * beginRead
  */
-static void beginRead( BOOL costly ) {
+static void beginRead( BOOL costly )
+{
     HANDLE              mut;
     CRITICAL_SECTION    *cntsect;
     DWORD               *counter;
@@ -393,7 +393,8 @@ static void beginRead( BOOL costly ) {
 /*
  * endRead
  */
-static void endRead( BOOL costly ) {
+static void endRead( BOOL costly )
+{
     HANDLE              mut;
     CRITICAL_SECTION    *cntsect;
     DWORD               *counter;
@@ -420,8 +421,7 @@ static void endRead( BOOL costly ) {
  * GetNextThread -
  * NB - callers must continue to call this function until it returns FALSE
  */
-BOOL GetNextThread( ThreadList *info, ThreadPlace *place,
-                    DWORD pid, BOOL first )
+BOOL GetNextThread( ThreadList *info, ThreadPlace *place, DWORD pid, BOOL first )
 {
 
     DWORD                       curpid;
@@ -432,7 +432,8 @@ BOOL GetNextThread( ThreadList *info, ThreadPlace *place,
     if( first ) {
         beginRead( FALSE );
         initObj( &regData, &threadObject, N_THREAD );
-        if( threadObject == NULL ) error = TRUE;
+        if( threadObject == NULL )
+            error = TRUE;
         if( !error ) {
             place->index = 0;
             place->obj = threadObject;
@@ -447,28 +448,36 @@ BOOL GetNextThread( ThreadList *info, ThreadPlace *place,
     }
     if( !error ) {
         counter = findCounter( place->obj, N_PROCID );
-        if( counter == NULL ) error = TRUE;
+        if( counter == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
-        for( ; place->index < place->obj->NumInstances; place->index ++ ) {
+        for( ; place->index < place->obj->NumInstances; place->index++ ) {
             if( place->inst == NULL ) {
                 error = TRUE;
                 break;
             }
             curpid = getCounterDWORD( place->inst, counter );
-            if( curpid == place->pid ) break;
+            if( curpid == place->pid )
+                break;
             place->inst = getNextInstance( place->inst );
         }
     }
-    if( !error && place->index >= place->obj->NumInstances ) error = TRUE;
+    if( !error && place->index >= place->obj->NumInstances )
+        error = TRUE;
     if( !error ) {
         counter = findCounter( place->obj, N_THREADID );
-        if( counter == NULL ) error = TRUE;
+        if( counter == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         info->tid = getCounterDWORD( place->inst, counter );
         counter = findCounter( place->obj, N_BASE_PRIORITY );
-        if( counter == NULL ) error = TRUE;
+        if( counter == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         info->priority = getCounterDWORD( place->inst, counter );
@@ -547,11 +556,13 @@ BOOL GetThreadInfo( DWORD pid, DWORD tid, ThreadStats *info ) {
     if( !error ) {
         pid_counter = findCounter( threadObject, N_PROCID );
         tid_counter = findCounter( threadObject, N_THREADID );
-        if( pid_counter == NULL || tid_counter == NULL ) error = TRUE;
+        if( pid_counter == NULL || tid_counter == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         inst = getFirstInstance( threadObject );
-        for( i=0; i < threadObject->NumInstances; i++ ) {
+        for( i = 0; i < threadObject->NumInstances; i++ ) {
             if( inst == NULL ) {
                 error = TRUE;
                 break;
@@ -559,7 +570,9 @@ BOOL GetThreadInfo( DWORD pid, DWORD tid, ThreadStats *info ) {
             curid = getCounterDWORD( inst, tid_counter );
             if( curid == tid ) {
                 curid = getCounterDWORD( inst, pid_counter );
-                if( curid == pid ) break;
+                if( curid == pid ) {
+                    break;
+                }
             }
             inst = getNextInstance( inst );
         }
@@ -585,8 +598,8 @@ BOOL GetThreadInfo( DWORD pid, DWORD tid, ThreadStats *info ) {
 /*
  * GetProcessInfo
  */
-BOOL GetProcessInfo( DWORD pid, ProcStats *info ) {
-
+BOOL GetProcessInfo( DWORD pid, ProcStats *info )
+{
     DWORD                       i;
     PERF_COUNTER_DEFINITION     *counter;
     PERF_INSTANCE_DEFINITION    *inst;
@@ -596,20 +609,24 @@ BOOL GetProcessInfo( DWORD pid, ProcStats *info ) {
     beginRead( FALSE );
     error = FALSE;
     initObj( &regData, &processObject, N_PROCESS );
-    if( processObject == NULL ) error = TRUE;
+    if( processObject == NULL )
+        error = TRUE;
     if( !error ) {
         counter = findCounter( processObject, N_PROCID );
-        if( counter == NULL ) error = TRUE;
+        if( counter == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         inst = getFirstInstance( processObject );
-        for( i=0; i < processObject->NumInstances; i++ ) {
+        for( i = 0; i < processObject->NumInstances; i++ ) {
             if( inst == NULL ) {
                 error = TRUE;
                 break;
             }
             curpid = getCounterDWORD( inst, counter );
-            if( curpid == pid ) break;
+            if( curpid == pid )
+                break;
             inst = getNextInstance( inst );
         }
     }
@@ -620,8 +637,7 @@ BOOL GetProcessInfo( DWORD pid, ProcStats *info ) {
             error = TRUE;
         } else {
             info->priority = getCounterDWORD( inst, counter );
-            wsprintf( info->name, "%ls",
-                      (char *)inst + inst->NameOffset );
+            wsprintf( info->name, "%ls", (char *)inst + inst->NameOffset );
         }
     }
     endRead( FALSE );
@@ -631,12 +647,13 @@ BOOL GetProcessInfo( DWORD pid, ProcStats *info ) {
 /*
  * FreeModuleList
  */
-void FreeModuleList( char **ptr, DWORD cnt ) {
-
+void FreeModuleList( char **ptr, DWORD cnt )
+{
     DWORD       i;
 
-    if( ptr == NULL ) return;
-    for( i=0; i < cnt; i++ ) {
+    if( ptr == NULL )
+        return;
+    for( i = 0; i < cnt; i++ ) {
         MemFree( ptr[i] );
     }
     MemFree( ptr );
@@ -645,19 +662,22 @@ void FreeModuleList( char **ptr, DWORD cnt ) {
 /*
  * getProcessIndex
  */
-static BOOL getProcessIndex( DWORD pid, DWORD *indexout ) {
-
+static BOOL getProcessIndex( DWORD pid, DWORD *indexout )
+{
     DWORD                       curpid;
     PERF_COUNTER_DEFINITION     *counter;
     PERF_INSTANCE_DEFINITION    *inst;
     DWORD                       index;
 
     counter = findCounter( processObject, N_PROCID );
-    if( counter == NULL ) return( FALSE );
+    if( counter == NULL )
+        return( FALSE );
     inst = getFirstInstance( processObject );
-    if( inst == NULL ) return( FALSE );
+    if( inst == NULL )
+        return( FALSE );
     for( index=0; index < processObject->NumInstances; index++ ) {
-        if( inst == NULL ) break;
+        if( inst == NULL )
+            break;
         curpid = getCounterDWORD( inst, counter );
         if( curpid == pid ) {
             *indexout = index;
@@ -671,8 +691,8 @@ static BOOL getProcessIndex( DWORD pid, DWORD *indexout ) {
 /*
  * GetModuleList
  */
-char **GetModuleList( DWORD pid, DWORD *cnt ) {
-
+char **GetModuleList( DWORD pid, DWORD *cnt )
+{
     DWORD                       allocsize;
     DWORD                       index;
     DWORD                       i;
@@ -688,18 +708,21 @@ char **GetModuleList( DWORD pid, DWORD *cnt ) {
 
     initObj( &costlyData, &imageObject, N_IMAGE );
     initObj( &regData, &processObject, N_PROCESS );
-    if( imageObject == NULL || processObject == NULL ) error = TRUE;
+    if( imageObject == NULL || processObject == NULL )
+        error = TRUE;
     if( !error ) {
         error = !getProcessIndex( pid, &index );
     }
     if( !error ) {
         ret = MemAlloc( allocsize * sizeof( char * ) );
-        if( ret == NULL ) error = TRUE;
+        if( ret == NULL ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         inst = getFirstInstance( imageObject );
         *cnt = 0;
-        for( i=0; i < imageObject->NumInstances; i += 1 ) {
+        for( i = 0; i < imageObject->NumInstances; i++ ) {
             if( inst == NULL ) {
                 error = TRUE;
                 break;
@@ -733,15 +756,16 @@ char **GetModuleList( DWORD pid, DWORD *cnt ) {
             ret = NULL;
         }
     }
-    if( ret == NULL ) *cnt = 0;
+    if( ret == NULL )
+        *cnt = 0;
     return( ret );
 }
 
 /*
  * GetImageMemInfo
  */
-BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo ) {
-
+BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo )
+{
     DWORD                       index;
     DWORD                       i;
     BOOL                        ret;
@@ -755,47 +779,58 @@ BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo ) {
 
     initObj( &costlyData, &imageObject, N_IMAGE );
     initObj( &regData, &processObject, N_PROCESS );
-    if( imageObject == NULL || processObject == NULL ) goto GETIMAGEMEM_ERROR;
+    if( imageObject == NULL || processObject == NULL )
+        goto GETIMAGEMEM_ERROR;
 
     inst = getFirstInstance( imageObject );
-    if( !getProcessIndex( procid, &index ) ) goto GETIMAGEMEM_ERROR;
+    if( !getProcessIndex( procid, &index ) )
+        goto GETIMAGEMEM_ERROR;
 
-    for( i=0; i < imageObject->NumInstances; i += 1 ) {
-        if( inst == NULL ) goto GETIMAGEMEM_ERROR;
+    for( i = 0; i < imageObject->NumInstances; i++ ) {
+        if( inst == NULL )
+            goto GETIMAGEMEM_ERROR;
 
         if( inst->ParentObjectInstance == index ) {
             wsprintf( buf, "%ls", (char *)inst + inst->NameOffset );
             if( strcmp( buf, imagename ) == 0 ) {
                 counter = findCounter( imageObject, N_NO_ACCESS );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->noaccess = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_READ_ONLY );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->read = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_READ_WRITE );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->write = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_WRITE_COPY );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->copy = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_EXEC );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->exec = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_EXEC_READ );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->execread = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_EXEC_WRITE );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->execwrite = getCounterDWORD( inst, counter );
 
                 counter = findCounter( imageObject, N_EXEC_COPY );
-                if( counter == NULL ) goto GETIMAGEMEM_ERROR;
+                if( counter == NULL )
+                    goto GETIMAGEMEM_ERROR;
                 imageinfo->execcopy = getCounterDWORD( inst, counter );
 
                 imageinfo->tot = imageinfo->noaccess + imageinfo->read
@@ -821,8 +856,8 @@ GETIMAGEMEM_ERROR:
 /*
  * GetMemInfo
  */
-BOOL GetMemInfo( DWORD procid, MemInfo *info ) {
-
+BOOL GetMemInfo( DWORD procid, MemInfo *info )
+{
     PERF_COUNTER_DEFINITION     *counter;
     PERF_INSTANCE_DEFINITION    *inst;
     DWORD                       curpid;
@@ -837,10 +872,12 @@ BOOL GetMemInfo( DWORD procid, MemInfo *info ) {
     }
 
     info->modlist = GetModuleList( procid, &info->modcnt );
-    if( info->modlist == NULL ) goto GETMEMINFO_ERROR;
+    if( info->modlist == NULL )
+        goto GETMEMINFO_ERROR;
 
     counter = findCounter( procAddrObject, N_PROCID );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
 
     inst = getFirstInstance( procAddrObject );
     for( i=0; ; i++ ) {
@@ -848,40 +885,49 @@ BOOL GetMemInfo( DWORD procid, MemInfo *info ) {
             goto GETMEMINFO_ERROR;
         }
         curpid = getCounterDWORD( inst, counter );
-        if( curpid == procid ) break;
+        if( curpid == procid )
+            break;
         inst = getNextInstance( inst );
     }
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_NO_ACC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.noaccess = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_READ );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.read = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_WRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.write = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_COPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.copy = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_EXEC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.exec = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_EXECREAD );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.execread = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_EXECWRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.execwrite = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_MAP_SPACE_EXECCOPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->mapped.execcopy = getCounterDWORD( inst, counter );
 
     info->mapped.tot = info->mapped.noaccess + info->mapped.read
@@ -891,35 +937,43 @@ BOOL GetMemInfo( DWORD procid, MemInfo *info ) {
 
 
     counter = findCounter( procAddrObject, N_RES_SPACE_NO_ACC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.noaccess = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_READ );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.read = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_WRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.write = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_COPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.copy = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_EXEC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.exec = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_EXECREAD );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.execread = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_EXECWRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.execwrite = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_RES_SPACE_EXECCOPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->res.execcopy = getCounterDWORD( inst, counter );
 
     info->res.tot = info->res.noaccess + info->res.read
@@ -929,35 +983,43 @@ BOOL GetMemInfo( DWORD procid, MemInfo *info ) {
 
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_NO_ACC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.noaccess = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_READ );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.read = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_WRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.write = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_COPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.copy = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_EXEC );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.exec = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_EXECREAD );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.execread = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_EXECWRITE );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.execwrite = getCounterDWORD( inst, counter );
 
     counter = findCounter( procAddrObject, N_IMAGE_SPACE_EXECCOPY );
-    if( counter == NULL ) goto GETMEMINFO_ERROR;
+    if( counter == NULL )
+        goto GETMEMINFO_ERROR;
     info->image.execcopy = getCounterDWORD( inst, counter );
 
     info->image.tot = info->image.noaccess + info->image.read
@@ -1036,8 +1098,8 @@ static void freeInfo( void )
 /*
  * RefreshInfo - refresh all but costly info
  */
-BOOL RefreshInfo( void ) {
-
+BOOL RefreshInfo( void )
+{
     BOOL        error;
     DWORD       rc;
 
@@ -1046,17 +1108,21 @@ BOOL RefreshInfo( void ) {
     error = FALSE;
 
     rc = getTitles();
-    if( rc != ERROR_SUCCESS ) error = TRUE;
+    if( rc != ERROR_SUCCESS )
+        error = TRUE;
 
     rc = getData( "Global", &regData );
-    if( !error && rc != ERROR_SUCCESS ) error = TRUE;
+    if( !error && rc != ERROR_SUCCESS )
+        error = TRUE;
 
     ReleaseMutex( writeMutex );
-    if( error ) freeInfo();
+    if( error )
+        freeInfo();
     return( !error );
 }
 
-void InitReg( void ) {
+void InitReg( void )
+{
     InitializeCriticalSection( &readCntSection );
     InitializeCriticalSection( &costlyReadCntSection );
     InitializeCriticalSection( &dataRefreshSection );

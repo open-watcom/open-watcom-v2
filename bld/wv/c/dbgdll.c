@@ -50,8 +50,11 @@ bool DLLMatch( void )
     strcpy( TxtBuff, GetLastImageName() );
     strupr( TxtBuff );
     for( curr = DLLList; curr != NULL; curr = curr->next ) {
-        if( curr->name[0] == '*' ) return( true );
-        if( strstr( TxtBuff, curr->name ) != NULL ) return( true );
+        if( curr->name[0] == '*' )
+            return( true );
+        if( strstr( TxtBuff, curr->name ) != NULL ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -63,7 +66,8 @@ char *DLLListName( char_ring *src )
 
 char_ring *NextDLLList( char_ring *curr )
 {
-    if( curr == NULL ) return( DLLList );
+    if( curr == NULL )
+        return( DLLList );
     return( curr->next );
 }
 

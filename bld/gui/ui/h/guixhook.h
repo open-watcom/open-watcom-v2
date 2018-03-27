@@ -32,6 +32,6 @@
 
 #ifndef _GUIXHOOK_H_
 #define _GUIXHOOK_H_
-extern void GUISetMDIProcessEvent( bool (*func)( EVENT ) );
-extern bool GUIMDIProcessEvent( EVENT ev );
+extern void GUISetMDIProcessEvent( bool (*func)( ui_event ) );
+extern bool GUIMDIProcessEvent( ui_event ui_ev );
 #endif // _GUIXHOOK_H_

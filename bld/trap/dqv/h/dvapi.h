@@ -39,7 +39,7 @@ typedef unsigned char           byte;
 
 #ifdef __WATCOMC__
  #include <stddef.h>
- #define _CDECL cdecl
+ #define _CDECL __cdecl
 #else
  #define _CDECL
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,13 @@
 ****************************************************************************/
 
 
-#include    <dos.h>
-#include    <string.h>
-#include    "uidef.h"
-#include    "charmap.h"
-#include    "uigchar.h"
+#include <dos.h>
+#include <string.h>
+#include "uidef.h"
+#include "biosui.h"
+#include "charmap.h"
+#include "uigchar.h"
+
 
 static unsigned char UiMapChar[] = {
     #define MAPCHARS
@@ -46,7 +49,8 @@ static unsigned char UiMapChar[] = {
 
 static unsigned char MappingData[][16] = {
     #define MAPCHARS
-    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) {d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df},
+    #define pick(enum,linux,others,dbcs,charmap,d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df) \
+                    {d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df},
     #include "_mapchar.h"
     #undef pick
     #undef MAPCHARS
@@ -54,17 +58,18 @@ static unsigned char MappingData[][16] = {
 
 static void MapCharacter( unsigned char ch, unsigned char data[16] )
 {
-    unsigned short              s,  points;
-    int                         j;
+    unsigned short              s;
+    unsigned short              points;
+    unsigned short              j;
     unsigned char               temp;
 
-    points = _POINTS;
+    points = BIOSData( BIOS_POINT_HEIGHT, unsigned char );
 
     s = ch * 32;
 
     for( j = 0; j < points; j++ ) {
-        temp = _peekb( 0xA000, s );
-        _pokeb( 0xA000, s++, data[j] );
+        temp = VIDEOData( 0xA000, s );
+        VIDEOData( 0xA000, s++ ) = data[j];
         data[j] = temp;
     }
 }
@@ -92,16 +97,12 @@ bool UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] )
 bool FlipCharacterMap( void )
 {
     ATTR        old;
-    ATTR        new;
 
     if( UIMapCharacters( UiMapChar, MappingData ) ) {
         memcpy( UiGChar, UiMapChar, sizeof( UiMapChar ) );
         /* swap fore and back color for Dialog attr so you get nice title */
         old = UIData->attrs[ATTR_DIAL_FRAME];
-        new = 0;
-        new |= ( old >> 4 ) & 0x0f;
-        new |= ( old << 4 ) & 0xf0;
-        UIData->attrs[ATTR_DIAL_FRAME] = new;
+        UIData->attrs[ATTR_DIAL_FRAME] = (( old >> 4 ) & 0x0f) | ( old << 4 ) & 0xf0;
         return( true );
     }
     return( false );

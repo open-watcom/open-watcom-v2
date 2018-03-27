@@ -62,7 +62,7 @@ unsigned ConfigScreen( void )
 void InitScreen( void )
 {
     if( uistart() ) {
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     }
 }
 

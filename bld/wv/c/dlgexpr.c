@@ -48,12 +48,10 @@
 
 
 typedef bool rtn_func(const char *,void *);
-typedef bool dlg_func(const char *,char *,unsigned);
+typedef bool dlg_func(const char *,char *,size_t);
 
 /* to be moved to header files ! */
 extern char             *StrDouble(xreal*,char*);
-
-extern stack_entry      *ExprSP;
 
 #define EXPR_LEN        128
 
@@ -96,7 +94,7 @@ void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
     GUISetText( gui, id, TxtBuff );
 }
 
-static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *title,
+static bool     DlgGetItemWithRtn( char *buff, size_t buff_len, const char *title,
                                    void *value, rtn_func *rtn, dlg_func *dlg )
 {
     bool        rc;
@@ -112,7 +110,7 @@ static bool     DlgGetItemWithRtn( char *buff, unsigned buff_len, const char *ti
     }
 }
 
-static bool     DlgGetItem( char *buff, unsigned buff_len, const char *title, void *value, rtn_func *rtn )
+static bool     DlgGetItem( char *buff, size_t buff_len, const char *title, void *value, rtn_func *rtn )
 {
     return( DlgGetItemWithRtn( buff, buff_len, title, value, rtn, DlgNewWithSym ) );
 }
@@ -125,7 +123,7 @@ bool    DlgLongExpr( const char *title, long *value )
     return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanLong ) );
 }
 
-bool    DlgAnyExpr( const char *title, char *buff, unsigned buff_len )
+bool    DlgAnyExpr( const char *title, char *buff, size_t buff_len )
 {
     return( DlgGetItem( buff, buff_len, title, NULL, (rtn_func *)DlgScanAny ) );
 }
@@ -184,14 +182,14 @@ bool DlgString( const char *title, char *buff )
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, buff, DlgScanString, DlgNew ) );
 }
 
-bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle th )
+bool DlgMadTypeExpr( const char *title, item_mach *value, mad_type_handle mth )
 {
     bool                ok;
     mad_type_info       mti;
     char                buff[EXPR_LEN];
     size_t              buff_len = sizeof( buff );
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     MADTypeToString( CurrRadix, &mti, value, buff, &buff_len );
     ok = DlgAnyExpr( title, buff, sizeof( buff ) );
     if( !ok )

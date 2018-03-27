@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "cgauxinf.h"
 #include "system.h"
 #include "cgmem.h"
@@ -59,7 +58,8 @@
 #include "dostimet.h"
 #include "feprotos.h"
 
-#ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
+
+#if _TARGET & _TARG_80386
     #define _OMF_32
 #endif
 
@@ -227,17 +227,12 @@ static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
 
     name_len = Length( name );
     suff_len = Length( suff );
-    owner = &NameCache;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL )
-            break;
+    for( owner = &NameCache; (curr = *owner) != NULL; owner = &curr->next ) {
         if( (name_len + suff_len) == curr->name[0]
           && memcmp( name, &curr->name[1], name_len ) == 0
           && memcmp( suff, &curr->name[name_len + 1], suff_len ) == 0 ) {
             return( curr->idx );
         }
-        owner = &curr->next;
     }
     if( !alloc )
         return( 0 );
@@ -260,23 +255,23 @@ static void FlushNames( void )
         situation
     */
     unsigned_8          buff[512];
-    unsigned            i;
+    unsigned            used;
     lname_cache         *dmp;
 
-    i = 0;
-    dmp = NameCacheDumped != NULL ? NameCacheDumped->next : NameCache;
+    used = 0;
+    dmp = ( NameCacheDumped != NULL ) ? NameCacheDumped->next : NameCache;
     for( ; dmp != NULL; dmp = dmp->next ) {
-        if( (i + dmp->name[0]) > (sizeof( buff ) - 1) ) {
-            PutObjOMFRec( CMD_LNAMES, buff, i );
-            i = 0;
+        if( (used + dmp->name[0]) > (sizeof( buff ) - 1) ) {
+            PutObjOMFRec( CMD_LNAMES, buff, used );
+            used = 0;
         }
-        buff[i++] = dmp->name[0];
-        _CopyTrans( &dmp->name[1], &buff[i], dmp->name[0] );
-        i += dmp->name[0];
+        buff[used++] = dmp->name[0];
+        _CopyTrans( &dmp->name[1], &buff[used], dmp->name[0] );
+        used += dmp->name[0];
         NameCacheDumped = dmp;
     }
-    if( i > 0 ) {
-        PutObjOMFRec( CMD_LNAMES, buff, i );
+    if( used > 0 ) {
+        PutObjOMFRec( CMD_LNAMES, buff, used );
     }
 }
 
@@ -1020,11 +1015,10 @@ void    ObjInit( void )
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
     OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
     PutObjOMFRec( CMD_THEADR, names->array, names->used );
-    names->used = 0;
 #ifdef _OMF_32
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
         names->used = 0;
-        OutShort( PHAR_LAP_COMMENT, names );
+        OutShort( PHARLAP_OMF_COMMENT, names );
         if( _IsntTargetModel( EZ_OMF ) ) {
             OutString( "OS220", names );
         } else {
@@ -1033,10 +1027,10 @@ void    ObjInit( void )
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
     }
 #else
-    OutShort( DEBUG_COMMENT, names );
+    names->used = 0;
+    OutShort( MS_OMF_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
 #endif
-
     names->used = 0;
     OutShort( MODEL_COMMENT, names );
     OutModel( names );
@@ -1060,50 +1054,44 @@ void    ObjInit( void )
         OutString( FEAuxInfo( NULL, SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
     }
-    names->used = 0;
-    depend = NULL;
-    for( ;; ) {
-        depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
-        if( depend == NULL )
-            break;
+    for( depend = NULL; (depend = FEAuxInfo( depend, NEXT_DEPENDENCY )) != NULL; ) {
+        names->used = 0;
         OutShort( DEPENDENCY_COMMENT, names );
         // OMF use dos time/date format
         OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
-        names->used = 0;
     }
     /* mark end of dependancy list */
+    names->used = 0;
     OutShort( DEPENDENCY_COMMENT, names );
     PutObjOMFRec( CMD_COMENT, names->array, names->used );
-    names->used = 0;
+    KillArray( names );
 
     dgroup_def = InitArray( sizeof( byte ), MODEST_INFO, INCREMENT_INFO );
     tgroup_def = InitArray( sizeof( byte ), MODEST_INFO, INCREMENT_INFO );
     CurrSeg = NULL;
     DoSegGrpNames( dgroup_def, tgroup_def );
-    if( dgroup_def->used >= 1 ) {
+    if( dgroup_def->used > 0 ) {
         FlushNames();
         PutObjOMFRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
     }
-    if( tgroup_def->used >= 1 ) {
+    if( tgroup_def->used > 0 ) {
         FlushNames();
         PutObjOMFRec( CMD_GRPDEF, tgroup_def->array, tgroup_def->used );
     }
     KillArray( tgroup_def );
 #ifdef _OMF_32
-    dgroup_def->used = 0;
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
         FlatGIndex = ++GroupIndex;
+        dgroup_def->used = 0;
         OutIdx( FlatNIndex, dgroup_def );
         FlushNames();
         PutObjOMFRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
-        dgroup_def->used = 0;
     }
 #endif
     KillArray( dgroup_def );
     CurrSeg = AskSegIndex( CodeSeg );
-    KillArray( names );
     ImportHdl = IMPORT_BASE;
     Imports = NULL;
     GenStaticImports = false;
@@ -1279,7 +1267,7 @@ static  void    EjectImports( void )
 {
     cmd_omf     cmd;
 
-    if( Imports != NULL && Imports->used != 0 ) {
+    if( Imports != NULL && Imports->used > 0 ) {
         if( GenStaticImports ) {
             cmd = CMD_LEXTDEF;
         } else {
@@ -1357,7 +1345,7 @@ static void     EjectLEData( void )
 #endif
         }
         PutObjOMFRec( cmd, obj->data.array, obj->data.used );
-        if( obj->fixes.used != 0 ) {
+        if( obj->fixes.used > 0 ) {
             if( CurrSeg->data_ptr_in_code ) {
                 obj->data.used = 0;
                 OutShort( LINKER_COMMENT, &obj->data );
@@ -1614,7 +1602,7 @@ static  void    EjectExports( void )
     cmd_omf     cmd;
 
     obj = CurrSeg->obj;
-    if( obj->exports != NULL && obj->exports->used != 0 ) {
+    if( obj->exports != NULL && obj->exports->used > 0 ) {
         if( obj->gen_static_exports ) {
             cmd = CMD_LPUBDEF;
         } else {
@@ -1639,7 +1627,7 @@ static  void    FlushLineNum( object *obj )
         }
         PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
-        obj->lines_generated = 1;
+        obj->lines_generated = true;
         obj->line_info = false;
     }
 }
@@ -1952,11 +1940,7 @@ void    ObjFini( void )
     if( Used87 ) {
         (void)FEAuxInfo( NULL, USED_8087 );
     }
-    auto_import = NULL;
-    for(;;) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT );
-        if( auto_import == NULL )
-            break;
+    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, NEXT_IMPORT )) != NULL; ) {
         OutName( FEAuxInfo( auto_import, IMPORT_NAME ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
@@ -1964,11 +1948,7 @@ void    ObjFini( void )
             Imports->used = 0;
         }
     }
-    auto_import = NULL;
-    for(;;) {
-        auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S );
-        if( auto_import == NULL )
-            break;
+    for( auto_import = NULL; (auto_import = FEAuxInfo( auto_import, NEXT_IMPORT_S )) != NULL; ) {
         OutObjectName( FEAuxInfo( auto_import, IMPORT_NAME_S ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
@@ -1976,30 +1956,22 @@ void    ObjFini( void )
             Imports->used = 0;
         }
     }
-    if( Imports->used != 0 ) {
+    if( Imports->used > 0 ) {
         PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
         Imports->used = 0;
     }
     /* Emit default library search records. */
-    lib = NULL;
-    for( ;; ) {
-        lib = FEAuxInfo( lib, NEXT_LIBRARY );
-        if( lib == NULL )
-            break;
+    for( lib = NULL; (lib = FEAuxInfo( lib, NEXT_LIBRARY )) != NULL; ) {
         OutShort( LIBNAME_COMMENT, Imports );
         OutString( ( (char *)FEAuxInfo( lib, LIBRARY_NAME ) ) + 1, Imports );
         PutObjOMFRec( CMD_COMENT, Imports->array, Imports->used );
         Imports->used = 0;
     }
     /* Emit alias definition records. */
-    alias = NULL;
-    for( ;; ) {
+    for( alias = NULL; (alias = FEAuxInfo( alias, NEXT_ALIAS )) != NULL; ) {
         char    *alias_name;
         char    *subst_name;
 
-        alias = FEAuxInfo( alias, NEXT_ALIAS );
-        if( alias == NULL )
-            break;
         alias_name = FEAuxInfo( alias, ALIAS_NAME );
         if( alias_name == NULL ) {
             OutObjectName( FEAuxInfo( alias, ALIAS_SYMBOL ), Imports );
@@ -2174,7 +2146,7 @@ static  void    ComdatData( label_handle lbl, cg_sym_handle sym )
 /************************************************************/
 {
     FlushData();
-    CurrSeg->obj->lines_generated = 0;
+    CurrSeg->obj->lines_generated = false;
     CurrSeg->location = CurrSeg->max_written = 0;
     CurrSeg->comdat_size = 0;
     CurrSeg->comdat_nidx = 0;
@@ -2306,7 +2278,7 @@ void    OutLabel( label_handle lbl )
         obj = _ARRAYOF( SegInfo, index_rec )[i].obj;
         if( obj != NULL ) { /* twas flushed and not redefined*/
             owner = &obj->patches;
-            for(;;) {
+            for( ;; ) {
                 curr_pat = *owner;
                 if( curr_pat == NULL )
                     break;

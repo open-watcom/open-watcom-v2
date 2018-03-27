@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +37,11 @@
 VSCREEN* intern findvscreen( ORD row, ORD col )
 /*********************************************/
 {
-    register    UI_WINDOW*              wptr;
+    UI_WINDOW   *wptr;
 
-    for( wptr = UIData->area_head ; wptr != &UIData->blank; wptr = wptr->next ){
-        if( ( row >= wptr->area.row ) &&
-            ( row < wptr->area.row + wptr->area.height ) ) {
-            if( ( col >= wptr->area.col ) &&
-                ( col < wptr->area.col + wptr->area.width ) ) {
+    for( wptr = UIData->area_head; wptr != &UIData->blank; wptr = wptr->next ) {
+        if( ( row >= wptr->area.row ) && ( row < wptr->area.row + wptr->area.height ) ) {
+            if( ( col >= wptr->area.col ) && ( col < wptr->area.col + wptr->area.width ) ) {
                 return( wptr->parm );
             }
         }
@@ -73,13 +72,13 @@ void UIAPI uivsetactive( VSCREEN *vptr )
 void UIAPI uivsetcursor( VSCREEN *vptr )
 /**************************************/
 {
-    register    ORD                     row;
-    register    ORD                     col;
+    ORD             row;
+    ORD             col;
 
     if( vptr != NULL ) {
         row = vptr->area.row + vptr->row;
         col = vptr->area.col + vptr->col;
-        uisetcursor( row, col, vptr->cursor, -2 );
+        uisetcursor( row, col, vptr->cursor, CATTR_VOFF );
     } else {
         uioffcursor();
     }

@@ -229,6 +229,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         SetTargetLiteral( &target_name, "DOS" );
 #elif defined( __BSD__ )
         SetTargetLiteral( &target_name, "BSD" );
+#elif defined( __RDOS__ )
+        SetTargetLiteral( &target_name, "RDOS" );
 #else
         #error "Target System not defined"
 #endif
@@ -251,19 +253,20 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         /* can get away with this because "netware5" is longer */
         strcpy( target_name, "NETWARE" );
     } else if( 0 == strcmp( target_name, "NT" ) ) {
-        PreDefineStringMacro( "_WIN32" );
         TargetSystem = TS_NT;
+        PreDefineStringMacro( "_WIN32" );
+    } else if( 0 == strcmp( target_name, "LINUX" ) ) {
+        TargetSystem = TS_LINUX;
+        PreDefineStringMacro( "__UNIX__" );
+    } else if( 0 == strcmp( target_name, "RDOS" ) ) {
+        TargetSystem = TS_RDOS;
+        PreDefineStringMacro( "_RDOS" );
+#endif
     } else if( 0 == strcmp( target_name, "OS2" ) ) {
         TargetSystem = TS_OS2;
     } else if( 0 == strcmp( target_name, "QNX" ) ) {
         TargetSystem = TS_QNX;
-        PreDefineStringMacro( "__QNX__" );
         PreDefineStringMacro( "__UNIX__" );
-    } else if( 0 == strcmp( target_name, "LINUX" ) ) {
-        TargetSystem = TS_LINUX;
-        PreDefineStringMacro( "__LINUX__" );
-        PreDefineStringMacro( "__UNIX__" );
-#endif
     } else if( 0 == strcmp( target_name, "WINDOWS" ) ) {
         TargetSystem = TS_WINDOWS;
         setWindowsSystem();

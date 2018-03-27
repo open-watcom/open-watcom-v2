@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +48,7 @@
 #include "watcom.h"
 #include "pmake.h"
 #include "iopath.h"
+#include "memutils.h"
 
 #include "clibext.h"
 
@@ -114,17 +116,6 @@ static void error( const char *fmt, ... )
     vsprintf( &Buff[sizeof( PREFIX )], fmt, arg );
     va_end( arg );
     longjmp( exit_buff, 1 );
-}
-
-static void *safe_malloc( size_t n )
-{
-    void        *p;
-
-    p = malloc( n );
-    if( p == NULL ) {
-        error( "out of memory when allocating %d bytes", n );
-    }
-    return( p );
 }
 
 static int _comparison( const void *pp1, const void *pp2 )
@@ -236,7 +227,7 @@ static void InitQueue( const char *cwd )
     size_t      len;
 
     len = strlen( cwd );
-    qp = safe_malloc( sizeof( *qp ) + len );
+    qp = MAlloc( sizeof( *qp ) + len );
     qp->next = NULL;
     qp->depth = 0;
     memcpy( qp->name, cwd, len + 1 );
@@ -250,7 +241,7 @@ static void EnQueue( const char *path )
     char        *p;
 
     if( QueueHead->depth < Options.levels ) {
-        qp = safe_malloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
+        qp = MAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
         p = StringCopy( qp->name, QueueHead->name );
@@ -272,7 +263,7 @@ static void DeQueue( void )
     qp = QueueHead;
     if( qp != NULL ) {
         QueueHead = qp->next;
-        free( qp );
+        MFree( qp );
     }
 }
 
@@ -396,7 +387,7 @@ static void TestDirectory( const char *makefile )
     prio = CheckTargets( makefile );
     if( prio != 0 && TrueTarget() ) {
         len = strlen( QueueHead->name );
-        new = safe_malloc( sizeof( *new ) + len );
+        new = MAlloc( sizeof( *new ) + len );
         new->next = Options.dir_list;
         Options.dir_list = new;
         new->depth = QueueHead->depth;
@@ -426,7 +417,7 @@ static void NextSubdir( void )
             last_ok = QueueHead;
             QueueHead = QueueHead->next;
         } else if( chdir( RelativePath( last_ok->name, QueueHead->next->name ) ) == 0 ) {
-            free( last_ok );
+            MFree( last_ok );
             break;
         } else {
             DeQueue();
@@ -517,7 +508,7 @@ static void SortDirectories( void )
     char        buff[_MAX_PATH];
     int         i;
 
-    dir_array = safe_malloc( sizeof( *dir_array ) * NumDirectories );
+    dir_array = MAlloc( sizeof( *dir_array ) * NumDirectories );
     i = 0;
     for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
@@ -530,7 +521,7 @@ static void SortDirectories( void )
         curr->next = Options.dir_list;
         Options.dir_list = curr;
     }
-    free( dir_array );
+    MFree( dir_array );
     if( Options.optimize ) {
         prev_name = NULL;
         for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
@@ -548,7 +539,7 @@ static void DoIt( void )
     target_list *curr;
 
     memset( &Options, 0, sizeof( Options ) );
-    Options.command = safe_malloc( sizeof( DEFAULT_MAKE_CMD ) );
+    Options.command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
     StringCopy( Options.command, DEFAULT_MAKE_CMD );
     Options.levels = INT_MAX;
     SKIP_SPACES( CmdLine );
@@ -575,7 +566,7 @@ static void DoIt( void )
             Options.display = 1;
             break;
         case 'f':
-            free( Options.makefile );
+            MFree( Options.makefile );
             Options.makefile = GetString();
             if( Options.makefile == NULL ) {
                 Options.want_help = 1;
@@ -589,7 +580,7 @@ static void DoIt( void )
             Options.levels = GetNumber( 1 );
             break;
         case 'm':
-            free( Options.command );
+            MFree( Options.command );
             Options.command = GetString();
             if( Options.command == NULL ) {
                 Options.want_help = 1;
@@ -625,7 +616,7 @@ static void DoIt( void )
                 }
                 break;
             }
-            curr = safe_malloc( sizeof( *Options.targ_list ) );
+            curr = MAlloc( sizeof( *Options.targ_list ) );
             curr->next = NULL;
             curr->string = GetString();
             *owner = curr;
@@ -633,9 +624,9 @@ static void DoIt( void )
         }
     }
     if( Options.targ_list == NULL ) {
-        Options.targ_list = safe_malloc( sizeof( *Options.targ_list ) );
+        Options.targ_list = MAlloc( sizeof( *Options.targ_list ) );
         Options.targ_list->next = NULL;
-        Options.targ_list->string = safe_malloc( sizeof( ALL_TARGET ) );
+        Options.targ_list->string = MAlloc( sizeof( ALL_TARGET ) );
         StringCopy( Options.targ_list->string, ALL_TARGET );
     }
     SKIP_SPACES( CmdLine );
@@ -692,12 +683,20 @@ void PMakeCleanup( pmake_data *data )
 
     while( data->dir_list != NULL ) {
         tmp = data->dir_list->next;
-        free( data->dir_list );
+        MFree( data->dir_list );
         data->dir_list = tmp;
     }
     while( data->targ_list != NULL ) {
         tmp = data->targ_list->next;
-        free( data->targ_list );
+        MFree( data->targ_list );
         data->targ_list = tmp;
+    }
+    if( data->command != NULL ) {
+        MFree( data->command );
+        data->command = NULL;
+    }
+    if( data->makefile != NULL ) {
+        MFree( data->makefile );
+        data->makefile = NULL;
     }
 }

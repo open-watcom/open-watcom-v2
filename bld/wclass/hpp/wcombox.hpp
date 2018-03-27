@@ -40,7 +40,7 @@
 // Combo box styles
 
 #define CStyleDefault           0
-#define CStyleSorted            _ControlStyleToWStyle( GUI_CONTROL_SORTED )
+#define CStyleSorted            _ControlStyleToWStyle( GUI_STYLE_CONTROL_SORTED )
 
 WCLASS WCombo : public WControl {
     public:
@@ -61,8 +61,8 @@ WCLASS WCombo : public WControl {
         int WEXPORT selected();
         void WEXPORT select( int index );
         virtual bool processMsg( gui_event );
-        virtual bool WEXPORT processMsg( gui_event msg, void *parm ) {
-            return( WWindow::processMsg( msg, parm ) );
+        virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm ) {
+            return( WWindow::processMsg( gui_ev, parm ) );
         };
         void WEXPORT setTagPtr( int index, void *tagPtr );
         void * WEXPORT tagPtr( int index );

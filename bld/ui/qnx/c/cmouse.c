@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,47 +44,21 @@
 #include <i86.h>
 #include "uidef.h"
 #include "uimouse.h"
-#include "uivirt.h"
-#include "qnxuiext.h"
+#include "uivirts.h"
+#include "uiextrn.h"
 
 
 #define MOUSE_SCALE         8
 
-extern ORD                  MouseRow;
-extern ORD                  MouseCol;
-
 extern struct _mouse_ctrl   *MouseCtrl;
 
-extern unsigned short       MouseStatus;
-extern bool                 MouseInstalled;
-
-static __segment            SysTimeSel;
 static int                  ScaledRow;
 static int                  ScaledCol;
-static int                  MyStatus;
+static MOUSESTAT            MyStatus;
 static timer_t              MouseTimer;
 
-#if defined( _M_I86 )
-    #define _SysTime    ((struct _timesel __far *)MK_FP( SysTimeSel, 0 ))
-    #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
-#else
-    extern unsigned long GetLong( unsigned short time_sel,
-                                  unsigned long  time_off );
-
-    #pragma aux GetLong = "mov ES,AX"           \
-                          "mov EAX,ES:[EDX]"    \
-                                                \
-                          parm   [EAX] [EDX]    \
-                          value  [EAX]          \
-                          modify [ES];
-
-    #define GET_MSECS   (GetLong( SysTimeSel, offsetof( struct _timesel, nsec ) ) / 1000000 \
-                       + GetLong( SysTimeSel, offsetof( struct _timesel, seconds ) ) * 1000)
-#endif
-
-
-static int cm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
-/**********************************************************************************************************/
+static bool cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/**************************************************************************************/
 {
     struct  mouse_event    event;
     struct  itimerspec     timer;
@@ -104,14 +79,14 @@ static int cm_check( unsigned short *status, unsigned short *row, unsigned short
             }
             MyStatus = 0;
             if( event.buttons & _MOUSE_LEFT )
-                MyStatus |= MOUSE_PRESS;
+                MyStatus |= UI_MOUSE_PRESS;
             if( event.buttons & _MOUSE_MIDDLE )
-                MyStatus |= MOUSE_PRESS_MIDDLE;
+                MyStatus |= UI_MOUSE_PRESS_MIDDLE;
             if( event.buttons & _MOUSE_RIGHT )
-                MyStatus |= MOUSE_PRESS_RIGHT;
+                MyStatus |= UI_MOUSE_PRESS_RIGHT;
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
-        } else if( (MyStatus & MOUSE_PRESS_ANY) == 0 ) {
+        } else if( (MyStatus & UI_MOUSE_PRESS_ANY) == 0 ) {
             timer.it_value.tv_sec = 0;
             timer.it_value.tv_nsec = 0;
         } else {
@@ -125,19 +100,18 @@ static int cm_check( unsigned short *status, unsigned short *row, unsigned short
         timer.it_interval.tv_nsec = 0;
         reltimer( MouseTimer, &timer, NULL );
         *status = MyStatus;
-        *time = GET_MSECS;
+        *time = uiclock();
         *row = ScaledRow / MOUSE_SCALE;
         *col = ScaledCol / MOUSE_SCALE;
     }
     uisetmouse( *row, *col );
-    return( 0 );
+    return( false );
 }
 
-static int cm_stop()
-/*********************/
+static int cm_stop( void )
+/************************/
 {
-   struct itimerspec    timer;
-
+    struct itimerspec    timer;
 
     if( MouseInstalled ) {
 
@@ -149,11 +123,11 @@ static int cm_stop()
         while( Creceive( UILocalProxy, 0, 0 ) > 0 )
             {}
     }
-    return 0;
+    return( 0 );
 }
 
-static int cm_init( int install )
-/*******************************/
+static bool cm_init( init_mode install )
+/**************************************/
 {
     struct itimercb     timercb;
     struct _osinfo      osinfo;
@@ -161,43 +135,42 @@ static int cm_init( int install )
     MOUSEORD            col;
 
     MouseInstalled = false;
-    if( install == 0 )
-        return( false );
+    if( install != INIT_MOUSELESS ) {
+        MouseCtrl = mouse_open( 0, 0, UIConHandle );
+        if( MouseCtrl != 0 ) {
+            timercb.itcb_event.evt_value = UIProxy;
+            MouseTimer = mktimer( TIMEOFDAY, _TNOTIFY_PROXY, &timercb );
+            if( MouseTimer == -1 ) {
+                mouse_close( MouseCtrl );
+            } else {
+                MouseInstalled = true;
 
-    MouseCtrl = mouse_open( 0, 0, UIConHandle );
-    if( MouseCtrl == 0 )
-        return( false );
-    timercb.itcb_event.evt_value = UIProxy;
-    MouseTimer = mktimer( TIMEOFDAY, _TNOTIFY_PROXY, &timercb );
-    if( MouseTimer == -1 ) {
-        mouse_close( MouseCtrl );
-        return( false );
+                qnx_osinfo( 0, &osinfo );
+                _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
+
+                UIData->mouse_xscale = 1;
+                UIData->mouse_yscale = 1;
+
+                checkmouse( &MouseStatus, &row, &col, &MouseTime );
+                MouseRow = row;
+                MouseCol = col;
+                _stopmouse();
+            }
+        }
     }
-    MouseInstalled = true;
-
-    UIData->mouse_xscale = 1;
-    UIData->mouse_yscale = 1;
-
-    qnx_osinfo( 0, &osinfo );
-    SysTimeSel = osinfo.timesel;
-
-    checkmouse( &MouseStatus, &row, &col, &MouseTime );
-    MouseRow = row;
-    MouseCol = col;
-    stopmouse();
-    return( true );
+    return( MouseInstalled );
 }
 
 
-static int cm_fini( void )
-/************************/
+static bool cm_fini( void )
+/*************************/
 {
     if( MouseInstalled ) {
         uioffmouse();
         mouse_close( MouseCtrl );
         rmtimer( MouseTimer );
     }
-    return 0;
+    return( false );
 }
 
 static int cm_set_speed( unsigned speed )

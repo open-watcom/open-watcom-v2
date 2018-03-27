@@ -113,7 +113,7 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
 {
     bool        ok;
-    int         index;
+    int         item;
 
     ok = ( hdr != NULL && cntls != NULL );
 
@@ -133,8 +133,11 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
     }
 
     if( ok ) {
-        for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-            ok = !GUIResReadDialogBoxControl( *cntls + index );
+        for( item = 0; item < (*hdr)->NumOfItems; item++ ) {
+            ok = !GUIResReadDialogBoxControl( *cntls + item );
+            if( !ok ) {
+                break;
+            }
         }
     }
 
@@ -144,8 +147,8 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
             *hdr = NULL;
         }
         if( *cntls != NULL ) {
-            for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-                GUIFreeDialogBoxControlPtrs( *cntls + index );
+            for( item = 0; item < (*hdr)->NumOfItems; item++ ) {
+                GUIFreeDialogBoxControlPtrs( *cntls + item );
             }
             GUIMemFree( *cntls );
             *cntls = NULL;
@@ -159,62 +162,62 @@ static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_c
 {
     gui_control_styles  styles;
 
-    styles = GUI_NOSTYLE;
+    styles = GUI_STYLE_CONTROL_NOSTYLE;
 
     if( ctl->Style & WS_TABSTOP ) {
-        styles |= GUI_TAB_GROUP;
+        styles |= GUI_STYLE_CONTROL_TAB_GROUP;
     }
 
     switch( control_class ) {
     case GUI_CHECK_BOX:
-        styles |= GUI_GROUP;
+        styles |= GUI_STYLE_CONTROL_GROUP;
         if( ( ctl->Style & 0xf ) == BS_3STATE ) {
-            styles |= GUI_CONTROL_3STATE;
+            styles |= GUI_STYLE_CONTROL_3STATE;
         }
         if( ( ctl->Style & 0xf ) == BS_AUTO3STATE ) {
-            styles |= GUI_CONTROL_3STATE | GUI_AUTOMATIC;
+            styles |= GUI_STYLE_CONTROL_3STATE | GUI_STYLE_CONTROL_AUTOMATIC;
         }
         break;
     case GUI_RADIO_BUTTON:
         if( ( ctl->Style & 0xf ) == BS_AUTORADIOBUTTON ) {
-            styles |= GUI_AUTOMATIC;
+            styles |= GUI_STYLE_CONTROL_AUTOMATIC;
         }
         break;
     case GUI_LISTBOX:
         if( ctl->Style & LBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( ctl->Style & LBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_STATIC:
         if( ctl->Style & SS_NOPREFIX ) {
-            styles |= GUI_CONTROL_NOPREFIX;
+            styles |= GUI_STYLE_CONTROL_NOPREFIX;
         }
         if( ( ctl->Style & 0xf ) == SS_CENTER ) {
-            styles |= GUI_CONTROL_CENTRE;
+            styles |= GUI_STYLE_CONTROL_CENTRE;
         }
         if( ( ctl->Style & 0xf ) == SS_LEFTNOWORDWRAP ) {
-            styles |= GUI_CONTROL_LEFTNOWORDWRAP;
+            styles |= GUI_STYLE_CONTROL_LEFTNOWORDWRAP;
         }
         break;
     case GUI_EDIT_COMBOBOX:
     case GUI_COMBOBOX:
         if( ctl->Style & CBS_NOINTEGRALHEIGHT ) {
-            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+            styles |= GUI_STYLE_CONTROL_NOINTEGRALHEIGHT;
         }
         if( ctl->Style & CBS_SORT ) {
-            styles |= GUI_CONTROL_SORTED;
+            styles |= GUI_STYLE_CONTROL_SORTED;
         }
         break;
     case GUI_EDIT:
     case GUI_EDIT_MLE:
         if( ctl->Style & ES_MULTILINE ) {
-            styles |= GUI_CONTROL_MULTILINE;
+            styles |= GUI_STYLE_CONTROL_MULTILINE;
         }
         if( ctl->Style & ES_WANTRETURN ) {
-            styles |= GUI_CONTROL_WANTRETURN;
+            styles |= GUI_STYLE_CONTROL_WANTRETURN;
         }
         break;
     default :
@@ -232,7 +235,7 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
 
     control_class = GUI_BAD_CLASS;
 
-    if( ctl != NULL && ctl->ClassID && ( ctl->ClassID->Class & 0x80 ) ) {
+    if( ctl != NULL && ctl->ClassID && (ctl->ClassID->Class & 0x80) ) {
         switch( ctl->ClassID->Class ) {
         case CLASS_BUTTON:
             control_class = GUI_PUSH_BUTTON;
@@ -415,7 +418,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     DialogBoxControl    *cntls;
     gui_create_info     *dlg_info;
     gui_control_info    *controls_info;
-    int                 index;
+    int                 item;
     int                 last_was_radio;
     bool                ok;
 
@@ -447,20 +450,20 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     last_was_radio = -1;
     if( ok ) {
         memset( controls_info, 0, sizeof( gui_control_info ) * hdr->NumOfItems );
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            ok = DialogBoxControl2GUI( &cntls[index], &controls_info[index] );
-            if( ok ) {
-                if( controls_info[index].control_class == GUI_RADIO_BUTTON ) {
-                    if( last_was_radio != 1 ) {
-                        controls_info[index].style |= GUI_GROUP;
-                    }
-                    last_was_radio = 1;
-                } else {
-                    if( last_was_radio == 1 ) {
-                        controls_info[index - 1].style |= GUI_GROUP;
-                    }
-                    last_was_radio = 0;
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            ok = DialogBoxControl2GUI( &cntls[item], &controls_info[item] );
+            if( !ok )
+                break;
+            if( controls_info[item].control_class == GUI_RADIO_BUTTON ) {
+                if( last_was_radio != 1 ) {
+                    controls_info[item].style |= GUI_STYLE_CONTROL_GROUP;
                 }
+                last_was_radio = 1;
+            } else {
+                if( last_was_radio == 1 ) {
+                    controls_info[item - 1].style |= GUI_STYLE_CONTROL_GROUP;
+                }
+                last_was_radio = 0;
             }
         }
     }
@@ -473,8 +476,8 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
 
     if( controls_info != NULL ) {
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIMemFree( (void *)controls_info[index].text );
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            GUIMemFree( (void *)controls_info[item].text );
         }
         GUIMemFree( controls_info );
     }
@@ -484,8 +487,8 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
 
     if( cntls != NULL ) {
-        for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIFreeDialogBoxControlPtrs( &cntls[index] );
+        for( item = 0; item < hdr->NumOfItems; item++ ) {
+            GUIFreeDialogBoxControlPtrs( &cntls[item] );
         }
         GUIMemFree( cntls );
     }

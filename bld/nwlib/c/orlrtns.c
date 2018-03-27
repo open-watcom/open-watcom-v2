@@ -34,38 +34,38 @@
 #include "clibext.h"
 
 
-#define ORL_FID2OF( fid )   ((obj_file *)(fid))
-#define ORL_OF2FID( of )    ((orl_file_id)(of))
+#define FP2OF( fid )   ((obj_file *)(fid))
+#define OF2FP( of )    ((FILE *)(of))
 
 static orl_handle       ORLHnd;
 
-static void *ObjRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *ObjRead( FILE *fp, size_t len )
+/******************************************/
 {
     buf_list    *buf;
 
     buf = MemAlloc( len + sizeof( buf_list ) - 1 );
-    if( LibRead( ORL_FID2OF( fid )->hdl, buf->buf, len ) != len ) {
+    if( LibRead( FP2OF( fp )->hdl, buf->buf, len ) != len ) {
         MemFree( buf );
         return( NULL );
     }
-    buf->next = ORL_FID2OF( fid )->buflist;
-    ORL_FID2OF( fid )->buflist = buf;
+    buf->next = FP2OF( fp )->buflist;
+    FP2OF( fp )->buflist = buf;
     return( buf->buf );
 }
 
-static long ObjSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int ObjSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
     switch( where ) {
     case SEEK_SET:
-        pos += ORL_FID2OF( fid )->offset;
+        pos += FP2OF( fp )->offset;
         break;
     case SEEK_CUR:
         break;
     }
-    LibSeek( ORL_FID2OF( fid )->hdl, pos, where );
-    return( pos - ORL_FID2OF( fid )->offset );
+    LibSeek( FP2OF( fp )->hdl, pos, where );
+    return( 0 );
 }
 
 static void *ObjAlloc( size_t size )
@@ -109,11 +109,11 @@ static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
     ofile->hdl = hdl;
     ofile->buflist = NULL;
     ofile->offset = offset;
-    format = ORLFileIdentify( ORLHnd, ORL_OF2FID( ofile ) );
+    format = ORLFileIdentify( ORLHnd, OF2FP( ofile ) );
     switch( format ) {
     case ORL_COFF:
     case ORL_ELF:
-        ofile->orl = ORLFileInit( ORLHnd, ORL_OF2FID( ofile ), format );
+        ofile->orl = ORLFileInit( ORLHnd, OF2FP( ofile ), format );
         if( Options.libtype == WL_LTYPE_MLIB ) {
             if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
                 FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );

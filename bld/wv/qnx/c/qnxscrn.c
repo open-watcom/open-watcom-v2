@@ -54,6 +54,7 @@
 #include "../qnx/h/qnxuiext.h"
 #include "dbgscrn.h"
 #include "strutil.h"
+#include "gui.h"
 #include "guigmous.h"
 #include "dbgcmdln.h"
 #include "dbgprog.h"
@@ -293,7 +294,7 @@ void InitScreen( void )
         StartupErr( "unable to initialize user interface" );
     }
     if( _IsOn( SW_USE_MOUSE ) )
-        GUIInitMouse( 1 );
+        GUIInitMouse( INIT_MOUSE );
     DebugScreen();
 }
 

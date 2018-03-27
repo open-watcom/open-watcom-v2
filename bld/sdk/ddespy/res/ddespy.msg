@@ -213,8 +213,8 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom DDE Spy for Windows" STR_BITNESS,
         "Open Watcom DDE Spy Windows版" STR_BITNESS )
 pick(   STR_ABOUT_VERSION,
-        banner1p2( _DDESPY_VERSION_ ),
-        banner1p2( _DDESPY_VERSION_ ) )
+        banner1v( _DDESPY_VERSION_ ),
+        banner1v( _DDESPY_VERSION_ ) )
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
         "イベントリストの情報のファイルへの保存." )

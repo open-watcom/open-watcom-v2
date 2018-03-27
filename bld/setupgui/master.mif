@@ -105,12 +105,12 @@ dosstub = 1
 !endif
 !endif
 
-gendeps = $(objs) $(libs) setup.lnk
+extra_deps = $(objs) $(libs) setup.lnk
 !ifdef dosstub
-gendeps += dosstub.exe
+extra_deps += dosstub.exe
 !endif
 !ifneq sys_windowed 1
-gendeps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
+extra_deps += $(manifest_$(host_os)_$(host_cpu)) wresui.res
 !endif
 
 # cflags
@@ -186,7 +186,7 @@ version_res_exe_nt_x64 = exever.res
 all : csetup.exe f77setup.exe .SYMBOLIC
 !endif
 
-setup.exe : $(gendeps) $(__MAKEFILES__)
+setup.exe : $(extra_deps) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)

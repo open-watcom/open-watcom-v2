@@ -57,25 +57,7 @@
 #include "clibext.h"
 
 
-char *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext )
-/***********************************************************************/
-{
-    char    drive[_MAX_DRIVE];
-    char    dir[_MAX_DIR];
-    char    *out;
-    char    fname[32];
-#if defined( __DOS__ ) || defined( __OSI__ )
-    sprintf( fname, "__TMP%c__", id );
-#else
-    // Must be able to run several "rc" executables simultaneously
-    // in the same directory
-    sprintf( fname, "__RCTMP%c%lu__", id, (unsigned long)getpid() );
-#endif
-    out = RESALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
-    _splitpath( dirfile, drive, dir, NULL, NULL );
-    _makepath( out, drive, dir, fname, ext );
-    return( out );
-} /* RcMakeTmpInSameDir */
+#define BUFFER_SIZE     1024
 
 static bool Pass1InitRes( void )
 /******************************/
@@ -84,14 +66,22 @@ static bool Pass1InitRes( void )
     ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
-    /* put the temporary file in the same location as the output file */
-    CurrResFile.filename = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '0', "res" );
+    memset( &CurrResFile, 0, sizeof( CurrResFile ) );
+
+    /* open the temporary file */
+    CurrResFile.filename = "Temporary file 0 (res)";
+    CurrResFile.fp = ResOpenFileTmp( NULL );
+    if( CurrResFile.fp == NULL ) {
+        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
+        return( true );
+    }
 
     /* initialize the directory */
     CurrResFile.dir = WResInitDir();
     if( CurrResFile.dir == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        CurrResFile.IsOpen = false;
+        ResCloseFile( CurrResFile.fp );
+        CurrResFile.fp = NULL;
         return( true );
     }
 
@@ -103,13 +93,6 @@ static bool Pass1InitRes( void )
         WResSetTargetOS( CurrResFile.dir, WRES_OS_OS2 );
     }
 
-    /* open the temporary file */
-    CurrResFile.fid = ResOpenNewFile( CurrResFile.filename );
-    if( CurrResFile.fid == WRES_NIL_HANDLE ) {
-        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
-        CurrResFile.IsOpen = false;
-        return( true );
-    }
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
         /* write null header here if it is win32 */
@@ -123,20 +106,14 @@ static bool Pass1InitRes( void )
         }
     } else {
         CurrResFile.IsWatcomRes = true;
-        WResFileInit( CurrResFile.fid );
+        WResFileInit( CurrResFile.fp );
     }
-    RegisterTmpFile( CurrResFile.filename );
-
-    CurrResFile.IsOpen = true;
-    CurrResFile.StringTable = NULL;
-    CurrResFile.ErrorTable = NULL;
-    CurrResFile.FontDir = NULL;
     CurrResFile.NextCurOrIcon = 1;
     return( false );
 } /* Pass1InitRes */
 
-int RcFindResource( const char *name, char *fullpath )
-/****************************************************/
+int RcFindSourceFile( const char *name, char *fullpath )
+/******************************************************/
 {
     return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
@@ -237,50 +214,35 @@ extern bool RcPass1IoInit( void )
     return( true );
 }
 
-static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
-/************************************************************************/
+static bool ChangeTmpToOutFile( FILE *tmpfile, const char *out_name )
+/*******************************************************************/
 {
-    int     fileerror;      /* error while deleting or renaming */
-    bool    rc;
+    RcStatus    status;      /* error while deleting or renaming */
+    FILE        *outfile;
+    size_t      numread;
+    char        *buffer;
 
-    /* remove the old copy of the output file */
-    fileerror = remove( outfile );
-    if( fileerror ) {
-        if( errno == ENOENT ) {
-            /* ignore the error if it says that the file doesn't exist */
-            errno = 0;
-        } else {
-            RcError( ERR_DELETING_FILE, outfile, strerror( errno ) );
-            remove( tmpfile );
-            UnregisterTmpFile( tmpfile );
-            return( true );
+    buffer = RESALLOC( BUFFER_SIZE );
+
+    status = RS_OK;
+    RESSEEK( tmpfile, 0, SEEK_SET );
+    outfile = ResOpenFileRW( out_name );
+    while( (numread = RESREAD( tmpfile, buffer, BUFFER_SIZE )) != 0 ) {
+        if( numread != BUFFER_SIZE && RESIOERR( tmpfile, numread ) ) {
+            status = RS_READ_ERROR;
+            break;
+        }
+        if( RESWRITE( outfile, buffer, numread ) != numread ) {
+            status = RS_WRITE_ERROR;
+            break;
         }
     }
-    rc = false;
-    /* rename the temp file to the output file */
-    fileerror = rename( tmpfile, outfile );
-    if( fileerror ) {
-        RcError( ERR_RENAMING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
-        remove( tmpfile );
-        rc = true;
-    }
-    UnregisterTmpFile( tmpfile );
-    return( rc );
+    ResCloseFile( outfile );
+
+    RESFREE( buffer );
+    return( status == RS_OK );
+
 } /* ChangeTmpToOutFile */
-
-static bool RemoveCurrResFile( void )
-/**********************************/
-{
-    int     fileerror;
-
-    fileerror = remove( CurrResFile.filename );
-    UnregisterTmpFile( CurrResFile.filename );
-    if( fileerror ) {
-        return( true );
-    } else {
-        return( false );
-    }
-}
 
 static void WriteWINTables( void )
 /********************************/
@@ -320,36 +282,31 @@ static void Pass1ResFileShutdown( void )
     bool        error;
 
     error = false;
-    if( CurrResFile.IsOpen ) {
+    if( CurrResFile.fp != NULL ) {
         if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
             WriteOS2Tables();
         } else {
             WriteWINTables();
         }
-        if( ErrorHasOccured ) {
-            ResCloseFile( CurrResFile.fid );
-            CurrResFile.IsOpen = false;
-            RemoveCurrResFile();
-        } else {
+        if( !ErrorHasOccured ) {
             if( CurrResFile.IsWatcomRes ) {
-                error = WResWriteDir( CurrResFile.fid, CurrResFile.dir );
+                error = WResWriteDir( CurrResFile.fp, CurrResFile.dir );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 }
             }
-            if( ResCloseFile( CurrResFile.fid ) ) {
-                RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
-                remove( CurrResFile.filename );
-                UnregisterTmpFile( CurrResFile.filename );
-            } else if( !error ) {
-                ChangeTmpToOutFile( CurrResFile.filename, CmdLineParms.OutResFileName );
+            if( !error ) {
+                ChangeTmpToOutFile( CurrResFile.fp, CmdLineParms.OutResFileName );
             }
-            CurrResFile.IsOpen = false;
         }
-        WResFreeDir( CurrResFile.dir );
-        CurrResFile.dir = NULL;
-        RESFREE( CurrResFile.filename );
-        CurrResFile.filename = NULL;
+        if( CurrResFile.dir != NULL ) {
+            WResFreeDir( CurrResFile.dir );
+            CurrResFile.dir = NULL;
+        }
+        if( ResCloseFile( CurrResFile.fp ) ) {
+            RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
+        }
+        CurrResFile.fp = NULL;
     }
 } /* Pass1ResFileShutdown */
 
@@ -381,7 +338,7 @@ static bool OpenResFileInfo( ExeType type )
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->IsOpen = false;
-        Pass2Info.ResFile->fid = WRES_NIL_HANDLE;
+        Pass2Info.ResFile->fp = NULL;
         Pass2Info.ResFile->Dir = NULL;
         return( true );
     }
@@ -411,18 +368,18 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->fid = ResOpenFileRO( filename );
-    if( info->fid == WRES_NIL_HANDLE ) {
+    info->fp = ResOpenFileRO( filename );
+    if( info->fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
     info->IsOpen = true;
-    info->Type = FindNEPELXHeader( info->fid, &info->WinHeadOffset );
+    info->Type = FindNEPELXHeader( info->fp, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -433,13 +390,13 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
     case EXE_TYPE_PE:
         pehdr = &info->u.PEInfo.WinHeadData;
         info->u.PEInfo.WinHead = pehdr;
-        status = SeekRead( info->fid, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
         if( IS_PE64( *pehdr ) ) {
-            status = SeekRead( info->fid, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
+            status = SeekRead( info->fp, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
             if( status != RS_OK ) {
                 RcError( ERR_NOT_VALID_EXE, filename );
                 return( false );
@@ -450,7 +407,7 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         }
         break;
     case EXE_TYPE_LX:
-        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
+        status = SeekRead( info->fp, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -464,24 +421,8 @@ static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
         break;
     }
 
-    return( !RESSEEK( info->fid, 0, SEEK_SET ) );
+    return( !RESSEEK( info->fp, 0, SEEK_SET ) );
 } /* openExeFileInfoRO */
-
-static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
-/******************************************************************/
-{
-    info->fid = ResOpenNewFile( filename );
-    if( info->fid == WRES_NIL_HANDLE ) {
-        RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
-        return( false );
-    }
-    RegisterTmpFile( filename );
-    info->IsOpen = true;
-    info->DebugOffset = 0;
-    info->name = filename;
-
-    return( true );
-} /* openNewExeFileInfo */
 
 static void FreeNEFileInfoPtrs( NEExeInfo * info )
 /*************************************************/
@@ -527,14 +468,12 @@ extern void ClosePass2FilesAndFreeMem( void )
 {
     ExeFileInfo         *tmp;
     ExeFileInfo         *old;
-//    char                *tmpfilename;
 
     tmp = &(Pass2Info.TmpFile);
     old = &(Pass2Info.OldFile);
-//    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
-        RESCLOSE( old->fid );
+        RESCLOSE( old->fp );
         old->IsOpen = false;
     }
     switch( old->Type ) {
@@ -552,10 +491,6 @@ extern void ClosePass2FilesAndFreeMem( void )
         break;
     }
 
-    if( tmp->IsOpen ) {
-        RESCLOSE( tmp->fid );
-        tmp->IsOpen = false;
-    }
     switch( tmp->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
@@ -571,6 +506,7 @@ extern void ClosePass2FilesAndFreeMem( void )
         break;
     }
     CloseResFiles( Pass2Info.ResFile );
+
 } /* ClosePass2FilesAndFreeMem */
 
 extern bool RcPass2IoInit( void )
@@ -579,13 +515,17 @@ extern bool RcPass2IoInit( void )
     bool    noerror;
     bool    tmpexe_exists;
 
-    memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
+    memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
-    /* put the temporary file in the same location as the output file */
-    Pass2Info.TmpFileName = RcMakeTmpInSameDir( CmdLineParms.OutExeFileName, '2', "tmp" );
+
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
-        noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );
+        Pass2Info.TmpFile.name = "Temporary file 2 (exe)";
+        Pass2Info.TmpFile.fp = ResOpenFileTmp( NULL );
+        if( Pass2Info.TmpFile.fp == NULL ) {
+            RcError( ERR_OPENING_TMP, Pass2Info.TmpFile.name, strerror( errno ) );
+            noerror = false;
+        }
     }
     tmpexe_exists = noerror;
 
@@ -597,7 +537,7 @@ extern bool RcPass2IoInit( void )
             *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
         }
         if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
-            && CmdLineParms.ExtraResFiles != NULL ) {
+          && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = false;
         } else {
@@ -610,10 +550,8 @@ extern bool RcPass2IoInit( void )
         Pass2Info.IoBuffer = NULL;
         ClosePass2FilesAndFreeMem();
         if( tmpexe_exists ) {
-            remove( Pass2Info.TmpFileName );
-            UnregisterTmpFile( Pass2Info.TmpFileName );
-            RESFREE( Pass2Info.TmpFileName );
-            Pass2Info.TmpFileName = NULL;
+            ResCloseFile( Pass2Info.TmpFile.fp );
+            Pass2Info.TmpFile.fp = NULL;
         }
     }
 
@@ -629,13 +567,11 @@ extern void RcPass2IoShutdown( bool noerror )
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
-        ChangeTmpToOutFile( Pass2Info.TmpFileName, CmdLineParms.OutExeFileName);
-    } else {
-        UnregisterTmpFile( Pass2Info.TmpFileName );
-        remove( Pass2Info.TmpFileName );
+        ChangeTmpToOutFile( Pass2Info.TmpFile.fp, CmdLineParms.OutExeFileName );
     }
-    RESFREE( Pass2Info.TmpFileName );
-    Pass2Info.TmpFileName = NULL;
+    ResCloseFile( Pass2Info.TmpFile.fp );
+    Pass2Info.TmpFile.fp = NULL;
+
 } /* RcPass2IoShutdown */
 
 /****** Text file input routines ******/
@@ -649,7 +585,7 @@ extern void RcPass2IoShutdown( bool noerror )
 typedef struct PhysFileInfo {
     char            *Filename;
     bool            IsOpen;
-    WResFileID      fid;
+    FILE            *fp;
     unsigned long   Offset;     /* offset in file to read from next time if this */
                                 /* is not the current file */
 } PhysFileInfo;
@@ -711,13 +647,13 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 /************************************************/
 {
     if( !phys->IsOpen ) {
-        phys->fid = RcIoOpenInput( phys->Filename, true );
-        if( phys->fid == WRES_NIL_HANDLE ) {
+        phys->fp = RcIoOpenInput( phys->Filename, true );
+        if( phys->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
         phys->IsOpen = true;
-        if( fseek( WRES_FID2FH( phys->fid ), phys->Offset, SEEK_SET ) == -1 ) {
+        if( fseek( phys->fp, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -746,7 +682,7 @@ static void SetPhysFileOffset( FileStack * stack )
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( WRES_FID2FH( phys->fid ) ) - charsinbuff;
+        phys->Offset = ftell( phys->fp ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
@@ -766,7 +702,7 @@ static bool ReadBuffer( FileStack * stack )
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, WRES_FID2FH( phys->fid ) );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->fp );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -834,7 +770,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        fclose( WRES_FID2FH( phys->fid ) );
+        fclose( phys->fp );
         phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
@@ -992,19 +928,19 @@ extern bool RcIoIsCOrHFile( void )
  * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-WResFileID RcIoOpenInput( const char *filename, bool text_mode )
-/**************************************************************/
+FILE *RcIoOpenInput( const char *filename, bool text_mode )
+/*********************************************************/
 {
-    WResFileID          fid;
+    FILE                *fp;
     FileStackEntry      *currfile;
     bool                no_handles_available;
 
     if( text_mode ) {
-        fid = WRES_FH2FID( fopen( filename, "rt" ) );
+        fp = fopen( filename, "rt" );
     } else {
-        fid = ResOpenFileRO( filename );
+        fp = ResOpenFileRO( filename );
     }
-    no_handles_available = ( fid == WRES_NIL_HANDLE && errno == EMFILE );
+    no_handles_available = ( fp == NULL && errno == EMFILE );
     if( no_handles_available ) {
         /* set currfile to be the first (not before first) entry */
         /* close open files except the current input file until able to open */
@@ -1013,15 +949,15 @@ WResFileID RcIoOpenInput( const char *filename, bool text_mode )
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
                 if( text_mode ) {
-                    fid = WRES_FH2FID( fopen( filename, "rt" ) );
+                    fp = fopen( filename, "rt" );
                 } else {
-                    fid = ResOpenFileRO( filename );
+                    fp = ResOpenFileRO( filename );
                 }
-                no_handles_available = ( fid == WRES_NIL_HANDLE && errno == EMFILE );
+                no_handles_available = ( fp == NULL && errno == EMFILE );
             }
        }
     }
-    return( fid );
+    return( fp );
 
 } /* RcIoOpenInput */
 

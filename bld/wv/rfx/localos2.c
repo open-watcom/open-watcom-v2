@@ -47,6 +47,9 @@
 #include "rfx.h"
 
 
+#define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )
 {
     struct _DATETIME datetime;
@@ -69,7 +72,7 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = datetime.weekday;
 }
 
-bool LocalInteractive( sys_handle fh )
+bool LocalInteractive( sys_handle sh )
 /************************************/
 {
     APIRET type;
@@ -78,9 +81,9 @@ bool LocalInteractive( sys_handle fh )
     //NYI: really should convert fh to sys_handle, but I know that it's
     // a one-to-one mapping
 #ifdef _M_I86
-    if( DosQHandType( fh, &type, &flags ) ) {
+    if( DosQHandType( SYSH2LH( sh ), &type, &flags ) ) {
 #else
-    if( DosQueryHType( fh, &type, &flags ) ) {
+    if( DosQueryHType( SYSH2LH( sh ), &type, &flags ) ) {
 #endif
         return( false );
     }
@@ -112,7 +115,7 @@ error_handle LocalRename( const char *from, const char *to )
 /**********************************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosMove( from, to, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosMove( (char *)from, (char *)to, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosMove( from, to ), OP_LOCAL ) );
 #endif
@@ -122,7 +125,7 @@ error_handle LocalMkDir( const char *name )
 /*****************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosMkDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosMkDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosCreateDir( name, NULL ), OP_LOCAL ) );
 #endif
@@ -132,7 +135,7 @@ error_handle LocalRmDir( const char *name )
 /*****************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosRmDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosRmDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosDeleteDir( name ), OP_LOCAL ) );
 #endif
@@ -168,7 +171,7 @@ error_handle LocalSetCWD( const char *name )
 /******************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosChDir( name, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosChDir( (char *)name, 0 ), OP_LOCAL ) );
 #else
     return( StashErrCode( DosSetCurrentDir( name ), OP_LOCAL ) );
 #endif
@@ -180,7 +183,7 @@ long LocalGetFileAttr( const char *name )
 #ifdef _M_I86
     USHORT attr;
 
-    if( DosQFileMode( name, &attr, 0 ) ) {
+    if( DosQFileMode( (char *)name, &attr, 0 ) ) {
         return( -1L );
     }
     return( attr );
@@ -209,7 +212,7 @@ long LocalGetFreeSpace( int drv )
     return( usage.cbSector * usage.cSectorUnit * usage.cUnitAvail );
 }
 
-error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
 /************************************************************************/
 {
     struct _FILESTATUS fstatus;
@@ -221,23 +224,23 @@ error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
     ptime = (struct _FTIME *)time;
     if( set ) {
 #ifdef _M_I86
-        rc = DosQFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
 #else
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
-        rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosSetFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
         if( rc != 0 ) {
             return( StashErrCode( rc, OP_LOCAL ) );
         }
     } else {
 #ifdef _M_I86
-        rc = DosQFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
 #else
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
 #endif
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );
@@ -289,7 +292,7 @@ error_handle LocalFindFirst( const char *pattern, void *info, unsigned info_len,
 
     info_len = info_len;
 #ifdef _M_I86
-    err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count,0);
+    err = DosFindFirst( (char *)pattern, &handle, attrib, &dta, sizeof( dta ), &count, 0 );
 #else
     err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ), &count, FIL_STANDARD );
 #endif
@@ -388,7 +391,7 @@ error_handle LocalSetFileAttr( const char *name, long attr )
 /**********************************************************/
 {
 #ifdef _M_I86
-    return( StashErrCode( DosSetFileMode( name, attr, 0 ), OP_LOCAL ) );
+    return( StashErrCode( DosSetFileMode( (char *)name, attr, 0 ), OP_LOCAL ) );
 #else
     FILESTATUS3 fileinfo;
     APIRET      rc;

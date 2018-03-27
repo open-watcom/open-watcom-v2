@@ -30,55 +30,58 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
-int WndCharCol( const char *buff, int col )
-{
-    const char  *end, *curr;
 
-    end = buff + col;
-    for( curr = buff; curr < end; curr += GUICharLen( *curr ) )
+wnd_colidx WndCharColIdx( const char *buff, wnd_colidx colidx )
+{
+    const char  *end;
+    const char  *curr;
+
+    end = buff + colidx;
+    for( curr = buff; curr < end; curr += GUICharLen( UCHAR_VALUE( *curr ) ) )
         ;
     if( curr > end )
-        col--;
-    return( col );
+        colidx--;
+    return( colidx );
 }
 
-int WndLastCharCol( wnd_line_piece *line )
+wnd_colidx WndLastCharColIdx( wnd_line_piece *line )
 {
-    return( line->length == 0 ? 0 : WndCharCol( line->text, line->length - 1 ) );
+    return( ( line->length > 0 ) ? WndCharColIdx( line->text, (wnd_colidx)( line->length - 1 ) ) : 0 );
 }
 
-int WndPrevCharCol( const char *buff, int idx )
+wnd_colidx WndPrevCharColIdx( const char *buff, wnd_colidx colidx )
 {
-    return( idx == 0 ? 0 : WndCharCol( buff, idx - 1 ) );
+    return( colidx > 0 ? WndCharColIdx( buff, colidx - 1 ) : 0 );
 }
 
 const char *WndPrevChar( const char *buff, const char *curr )
 {
-    return( buff + WndPrevCharCol( buff, curr - buff ) );
+    return( buff + WndPrevCharColIdx( buff, (wnd_colidx)( curr - buff ) ) );
 }
 
-void WndCurrToGUIPoint( a_window *wnd, gui_point *point )
+void WndCurrToGUIPoint( a_window wnd, gui_point *point )
 {
     WndCoordToGUIPoint( wnd, &wnd->current, point );
 }
 
-extern  void    WndCoordToGUIPoint( a_window *wnd,
-                                    wnd_coord *where, gui_point *point )
+void    WndCoordToGUIPoint( a_window wnd, wnd_coord *where, gui_point *point )
 {
     wnd_line_piece      line;
 
     point->x = 0;
     point->y = 0;
-    if( where->row == WND_NO_ROW ) return;
-    if( !WndGetLine( wnd, where->row, where->piece, &line ) ) return;
-    point->x = line.indent + GUIGetExtentX( wnd->gui, line.text, where->col );
+    if( where->row == WND_NO_ROW )
+        return;
+    if( !WndGetLine( wnd, where->row, where->piece, &line ) )
+        return;
+    point->x = line.indent + GUIGetExtentX( wnd->gui, line.text, where->colidx );
     point->y = where->row * wnd->max_char.y;
 }
 
-extern  bool    WndPieceIsTab( a_window *wnd, int row, int piece )
+bool    WndPieceIsTab( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_line_piece      line;
 
@@ -86,7 +89,7 @@ extern  bool    WndPieceIsTab( a_window *wnd, int row, int piece )
 }
 
 
-extern  bool    WndPieceIsHot( a_window *wnd, int row, int piece )
+bool    WndPieceIsHot( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_line_piece      line;
 
@@ -94,29 +97,33 @@ extern  bool    WndPieceIsHot( a_window *wnd, int row, int piece )
 }
 
 
-extern  a_window        *WndFindActive()
+a_window        WndFindActive( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( _Is( wnd, WSW_ACTIVE ) ) return( wnd );
+        if( WndSwitchOn( wnd, WSW_ACTIVE ) ) {
+            return( wnd );
+        }
     }
     return( WndMain );
 }
 
 
-extern  bool    WndValid( a_window *check )
+bool    WndValid( a_window check )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( check == wnd ) return( true );
+        if( check == wnd ) {
+            return( true );
+        }
     }
     return( false );
 }
 
 
-void WndDirty( a_window *wnd )
+void WndDirty( a_window wnd )
 {
     if( wnd == NULL ) {
         GUIWndDirty( NULL );
@@ -126,22 +133,22 @@ void WndDirty( a_window *wnd )
 }
 
 
-void WndZapped( a_window *wnd )
+void WndZapped( a_window wnd )
 {
     WndNoCurrent( wnd );
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
-extern gui_ord  WndExtentX( a_window *wnd, const char *string )
+gui_ord  WndExtentX( a_window wnd, const char *string )
 {
     return( GUIGetExtentX( wnd->gui, string, strlen( string ) ) );
 }
 
 
-extern  a_window        *WndFindClass( a_window *first, wnd_class wndclass )
+a_window        WndFindClass( a_window first, wnd_class wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( first ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( wnd->wndclass == wndclass ) {
@@ -155,7 +162,8 @@ void WndSetWndMax()
 {
     gui_rect    rect;
 
-    if( WndIsMinimized( WndMain ) ) return;
+    if( WndIsMinimized( WndMain ) )
+        return;
     GUIGetClientRect( WndMain->gui, &rect );
     WndMax.x = rect.width;
     WndMax.y = rect.height;
@@ -163,7 +171,7 @@ void WndSetWndMax()
 }
 
 
-a_window        *WndNext( a_window *wnd )
+a_window        WndNext( a_window wnd )
 {
     gui_window  *gui;
 
@@ -172,13 +180,14 @@ a_window        *WndNext( a_window *wnd )
     } else {
         gui = GUIGetNextWindow( wnd->gui );
     }
-    if( gui == NULL ) return( NULL );
+    if( gui == NULL )
+        return( NULL );
     return( GUIGetExtra( gui ) );
 }
 
-extern void WndForAllClass( wnd_class wndclass, void (*rtn)( a_window * ) )
+void WndForAllClass( wnd_class wndclass, void (*rtn)( a_window ) )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( wndclass == WND_NO_CLASS || WndClass( wnd ) == wndclass ) {

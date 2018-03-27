@@ -60,26 +60,26 @@
 
 extern bool GUIMainTouched;
 
-EVENT GUIAllEvents[] = {
+ui_event GUIAllEvents[] = {
     EV_FIRST_EVENT,     LAST_EVENT,
     FIRST_GUI_EVENT,    LAST_GUI_EVENT,
-    EV_NO_EVENT,
-    EV_NO_EVENT
+    __rend__,
+    __end__
 };
 
 /*
  * GUIWndGetEvent -- get ad event (other than EV_NO_EVENT) from UI
  */
 
-EVENT GUIWndGetEvent( VSCREEN * screen )
+ui_event GUIWndGetEvent( VSCREEN * screen )
 {
-    EVENT ev;
+    ui_event    ui_ev;
 
     do {
-        ev = uivgetevent( screen );
-        ev = GUIUIProcessEvent( ev );
-    } while( ev == EV_NO_EVENT );
-    return( ev );
+        ui_ev = uivgetevent( screen );
+        ui_ev = GUIUIProcessEvent( ui_ev );
+    } while( ui_ev == EV_NO_EVENT );
+    return( ui_ev );
 }
 
 void uistartevent( void )
@@ -98,16 +98,16 @@ void uidoneevent( void )
 
 static void MessageLoop( void )
 {
-    EVENT ev;
+    ui_event    ui_ev;
 
     uipushlist( GUIAllEvents );
     while( GUIGetFront() != NULL ) {
         if( GUICurrWnd != NULL ) {
-            ev = GUIWndGetEvent( &GUICurrWnd->screen );
+            ui_ev = GUIWndGetEvent( &GUICurrWnd->screen );
         } else {
-            ev = GUIWndGetEvent( NULL );
+            ui_ev = GUIWndGetEvent( NULL );
         }
-        if( !GUIProcessEvent( ev ) ) {
+        if( !GUIProcessEvent( ui_ev ) ) {
             break;
         }
     }
@@ -207,7 +207,7 @@ int GUIXMain( int argc, char * argv[] )
 void GUIXSetupWnd( gui_window *wnd )
 {
     wnd->screen.event = EV_NO_EVENT;
-    wnd->screen.flags = V_UNFRAMED | V_NO_ZOOM | V_GUI_WINDOW;
+    wnd->screen.flags = V_UNFRAMED | V_GUI_WINDOW;
     wnd->screen.cursor = C_OFF;
     wnd->flags = CHECK_CHILDREN_ON_RESIZE;
     wnd->background = ' ';
@@ -286,7 +286,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
         parent->child = wnd;
         wnd->parent = parent;
     } else {
-        if( !( dlg_info->style & GUI_POPUP ) ) {
+        if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
         }
     }
@@ -317,7 +317,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
         if( wnd->hgadget != NULL ) {
             uiinitgadget( wnd->hgadget );
         }
-        if( !GUIEVENTWND( wnd, GUI_INIT_WINDOW, NULL ) ) {
+        if( !GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {
             return( false );
         }
         GUIBringToFront( wnd );

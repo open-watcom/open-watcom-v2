@@ -38,7 +38,7 @@
 #include "guixutil.h"
 #include "guiutil.h"
 
-static char *GetText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, bool get_curr )
+static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr )
 {
     VFIELD              *field;
     an_edit_control     *edit_control;
@@ -51,7 +51,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, bool g
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
-            text = GUIStrDup( field->u.check->str, &ok ); 
+            text = GUIStrDup( field->u.check->str, &ok );
             if( ok ) {
                 return( text );
             }
@@ -92,7 +92,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, bool g
         case FLD_LISTBOX :
         case FLD_EDIT_MLE :
             list = GUIGetList( field );
-            if( list != NULL  ){
+            if( list != NULL ) {
                 return( GUIGetListBoxText( list, choice, get_curr ) );
             }
             break;
@@ -106,7 +106,7 @@ char *GUIGetText( gui_window *wnd, gui_ctl_id id )
     return( GetText( wnd, id, 0, true ) );
 }
 
-char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     return( GetText( wnd, id, choice, false ) );
 }

@@ -138,7 +138,7 @@ void _PutChar( short row, short col, short ch )
     char _WCI86FAR      *mask;
     gr_device _FARD     *dev_ptr;
     fill_fn             *fill;
-    setup_fn		    *setup;
+    setup_fn            *setup;
 
     if( IsTextMode ) {
         if( _CurrState->vc.mode == _TEXTMONO ) {
@@ -146,8 +146,8 @@ void _PutChar( short row, short col, short ch )
         } else {
             p = MK_FP( _CgaSeg, _CgaOff );
         }
-        p += _CurrActivePage * *(short __far *)_BIOS_data( CRT_LEN );
-        screen = (short __far *) p;
+        p += _CurrActivePage * _BIOS_data( CRT_LEN, short );
+        screen = (short __far *)p;
         screen += row * _CurrState->vc.numtextcols + col;
         *screen = ( _CharAttr << 8 ) + ch;
     } else if( _IsDBCS ) {      // use BIOS for DBCS

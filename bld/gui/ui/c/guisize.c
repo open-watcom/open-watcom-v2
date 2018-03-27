@@ -136,7 +136,7 @@ void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area,
     SAREA       use;
     SAREA       old_use;
 
-    if( ( wnd->flags & CHECK_CHILDREN_ON_RESIZE ) == 0 ) {
+    if( (wnd->flags & CHECK_CHILDREN_ON_RESIZE) == 0 ) {
         return;
     }
 
@@ -275,7 +275,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
         newsize.x = wnd->use.width;
         newsize.y = wnd->use.height;
         GUIScreenToScaleR( &newsize );
-        GUIEVENTWND( wnd, GUI_RESIZE, &newsize );
+        GUIEVENT( wnd, GUI_RESIZE, &newsize );
     }
     if( was_minimized ) {
         UnMinimize( wnd );
@@ -329,7 +329,7 @@ static void MoveWnd( gui_window *wnd, int row_diff, int col_diff )
     uivmove( &wnd->screen, (ORD)( row_diff + (int)wnd->screen.area.row),
              (ORD)(col_diff + (int)wnd->screen.area.col ) );
     GUISetUseWnd( wnd );
-    GUIEVENTWND( wnd, GUI_MOVE, NULL );
+    GUIEVENT( wnd, GUI_MOVE, NULL );
     if( !GUI_WND_MINIMIZED( wnd ) ) {
         /* don't move children if parent is minimized */
         for( curr = wnd->child; curr != NULL; curr = curr->sibling ) {
@@ -387,7 +387,7 @@ void GUICheckArea( SAREA *area, resize_dir dir )
 
     diff = area->row + area->height - screen.row - screen.height;
     if( diff > 0 ) {
-        if( ( dir & RESIZE_DOWN ) || ( dir & RESIZE_UP ) ) {
+        if( (dir & RESIZE_DOWN) || (dir & RESIZE_UP) ) {
             area->height -= diff;
         }
         if( dir & RESIZE_UP ) {
@@ -399,7 +399,7 @@ void GUICheckArea( SAREA *area, resize_dir dir )
     }
     diff = area->col + area->width - screen.col - screen.width;
     if( diff > 0 ) {
-        if( ( dir & RESIZE_RIGHT ) || ( dir & RESIZE_LEFT ) ) {
+        if( (dir & RESIZE_RIGHT) || (dir & RESIZE_LEFT) ) {
             area->width -= diff;
         }
         if( dir & RESIZE_LEFT ) {
@@ -582,7 +582,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
             wnd->flags = old;
         }
     } else {
-        if( !( wnd->style & action ) ) {
+        if( (wnd->style & action) == 0 ) {
              return;
         }
         /* make fullsized or minimized */
@@ -605,7 +605,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
     }
     GUISetSystemMenuFlags( wnd );
     if( action == GUI_MINIMIZE ) {
-        GUIEVENTWND( wnd, GUI_ICONIFIED, NULL );
+        GUIEVENT( wnd, GUI_ICONIFIED, NULL );
     }
 }
 
@@ -624,7 +624,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         newsize.x = wnd->use.width;
         newsize.y = wnd->use.height;
         GUIScreenToScaleR( &newsize );
-        GUIEVENTWND( wnd, GUI_RESIZE, &newsize );
+        GUIEVENT( wnd, GUI_RESIZE, &newsize );
     } else {
         hidden = uivshow( &wnd->screen );
 #ifdef HELL_FREEZES_OVER
@@ -689,11 +689,11 @@ void GUIRestoreWindow( gui_window * wnd )
 
 bool GUIIsMaximized( gui_window *wnd )
 {
-    return( ( wnd->flags & MAXIMIZED ) != 0 );
+    return( (wnd->flags & MAXIMIZED) != 0 );
 }
 
 bool GUIIsMinimized( gui_window *wnd )
 {
-    return( ( wnd->flags & MINIMIZED ) != 0 );
+    return( (wnd->flags & MINIMIZED) != 0 );
 }
 

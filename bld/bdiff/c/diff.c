@@ -33,9 +33,7 @@
 #include "msg.h"
 #include "symtab.h"
 #include "diff.h"
-#ifdef USE_DBGINFO
-#include "dbginfo.h"
-#endif
+#include "wdbginfo.h"
 
 
 #define BUFF_SIZE       16384
@@ -591,14 +589,14 @@ static int cmp_mod_name( void *m1, void *m2 )
 
 static int TestBlock( foff old_off, foff new_off, foff len )
 {
-    byte *pold;
-    byte *pnew;
-    byte *o;
-    byte *n;
-    byte *old_stop;
-    byte *new_stop;
-    foff matches;
-    foff holes;
+    byte    *pold;
+    byte    *pnew;
+    byte    *o;
+    byte    *n;
+    byte    *old_stop;
+    byte    *new_stop;
+    foff    matches;
+    foff    holes;
 
     pold = &OldFile[old_off];
     pnew = &NewFile[new_off];
@@ -653,12 +651,12 @@ static int TestBlock( foff old_off, foff new_off, foff len )
 
 static int FindBlockInOld( foff new_off, foff len )
 {
-    byte *pold;
-    byte *pnew;
-    byte *o;
-    byte *n;
-    byte *old_stop;
-    byte *new_stop;
+    byte    *pold;
+    byte    *pnew;
+    byte    *o;
+    byte    *n;
+    byte    *old_stop;
+    byte    *new_stop;
 
     pnew = &NewFile[new_off];
     new_stop = &pnew[len];
@@ -703,13 +701,13 @@ static int FindBlockInOld( foff new_off, foff len )
 
 static int both_walker( void *_new_blk, void *parm )
 {
-    fpos_t len;
-    walker_data *last;
-    exe_blk *old_blk;
-    exe_mod *old_mod;
-    exe_mod *new_mod;
-    auto exe_mod tmp_mod;
-    exe_blk *new_blk = _new_blk;
+    fpos_t          len;
+    walker_data     *last;
+    exe_blk         *old_blk;
+    exe_mod         *old_mod;
+    exe_mod         *new_mod;
+    auto exe_mod    tmp_mod;
+    exe_blk         *new_blk = _new_blk;
 
     last = parm;
     tmp_mod.mod_offset = new_blk->mod_offset;
@@ -781,11 +779,11 @@ static int both_walker( void *_new_blk, void *parm )
 
 static int only_new_walker( void *_new_blk, void *parm )
 {
-    fpos_t len;
-    walker_data *last;
-    exe_mod *new_mod;
-    auto exe_mod tmp_mod;
-    exe_blk *new_blk = _new_blk;
+    fpos_t          len;
+    walker_data     *last;
+    exe_mod         *new_mod;
+    auto exe_mod    tmp_mod;
+    exe_blk         *new_blk = _new_blk;
 
     last = parm;
     tmp_mod.mod_offset = new_blk->mod_offset;
@@ -825,23 +823,23 @@ fpos_t ExeOverlayAccess( exe_form_t exe, uint_16 section, uint_16 *seg )
 
 static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
 {
-    unsigned num_blks;
-    exe_mod *new_mod;
-    exe_mod *found_mod;
-    exe_blk *new_blk;
-    fpos_t first_section;
-    fpos_t mod_list;
-    fpos_t addr_list;
-    fpos_t curr_offset;
-    fpos_t debug_header;
-    addr48_ptr seg_addr;
-    auto master_dbg_header dbg_head;
+    unsigned                num_blks;
+    exe_mod                 *new_mod;
+    exe_mod                 *found_mod;
+    exe_blk                 *new_blk;
+    fpos_t                  first_section;
+    fpos_t                  mod_list;
+    fpos_t                  addr_list;
+    fpos_t                  curr_offset;
+    fpos_t                  debug_header;
+    addr48_ptr              seg_addr;
+    auto master_dbg_header  dbg_head;
     auto section_dbg_header section_head;
-    auto seg_info seg_desc;
-    auto mod_info mod_name;
-    auto addr_info seg_chunk;
-    auto exe_mod tmp_mod;
-    char file_name[_MAX_PATH];
+    auto seg_dbg_info       seg_desc;
+    auto mod_dbg_info       mod_name;
+    auto addr_dbg_info      seg_chunk;
+    auto exe_mod            tmp_mod;
+    char                    file_name[_MAX_PATH];
 
     _splitpath( name, drive, dir, fname, ext );
     if( ext[0] == '\0' ) {
@@ -860,7 +858,7 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     SeekCheck( fseek( exe->sym.fd, -(long)sizeof( dbg_head ), SEEK_END ), file_name );
     debug_header = ftell( exe->sym.fd );
     ReadCheck( fread( &dbg_head, 1, sizeof( dbg_head ), exe->sym.fd ), sizeof( dbg_head ), file_name );
-    if( dbg_head.signature != VALID_SIGNATURE           ||
+    if( dbg_head.signature != WAT_DBG_SIGNATURE         ||
         dbg_head.exe_major_ver != EXE_MAJOR_VERSION     ||
         dbg_head.exe_minor_ver > EXE_MINOR_VERSION      ||
         dbg_head.obj_major_ver != OBJ_MAJOR_VERSION     ||
@@ -884,9 +882,9 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     SeekCheck( fseek( exe->sym.fd, mod_list, SEEK_SET ), file_name );
     for( curr_offset = section_head.mod_offset;
          curr_offset != section_head.gbl_offset;
-         curr_offset += sizeof( mod_name ) + (byte)mod_name.name[0]
+         curr_offset += sizeof( mod_dbg_info ) + (byte)mod_name.name[0]
         ) {
-        ReadCheck( fread( &mod_name, 1, sizeof( mod_name ), exe->sym.fd ), sizeof( mod_name ), file_name );
+        ReadCheck( fread( &mod_name, 1, sizeof( mod_dbg_info ), exe->sym.fd ), sizeof( mod_dbg_info ), file_name );
         new_mod = bdiff_malloc( sizeof( exe_mod ) + (byte)mod_name.name[0] );
         NotNull( new_mod, "new module" );
         new_mod->blocks = NULL;
@@ -907,13 +905,13 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     SeekCheck( fseek( exe->sym.fd, addr_list, SEEK_SET ), file_name );
     for( curr_offset = section_head.addr_offset;
          curr_offset != section_head.section_size;
-         curr_offset += sizeof( seg_info ) - sizeof( addr_info )
+         curr_offset += sizeof( seg_dbg_info ) - sizeof( addr_dbg_info )
         ) {
-        ReadCheck( fread( &seg_desc, 1, sizeof( seg_info ) - sizeof( addr_info ), exe->sym.fd ), sizeof( seg_info ) - sizeof( addr_info ), file_name );
+        ReadCheck( fread( &seg_desc, 1, sizeof( seg_dbg_info ) - sizeof( addr_dbg_info ), exe->sym.fd ), sizeof( seg_dbg_info ) - sizeof( addr_dbg_info ), file_name );
         seg_addr = seg_desc.base;
         for( num_blks = seg_desc.num; num_blks != 0; --num_blks ) {
-            ReadCheck( fread( &seg_chunk, 1, sizeof( seg_chunk ), exe->sym.fd ), sizeof( seg_chunk ), file_name );
-            curr_offset += sizeof( seg_chunk );
+            ReadCheck( fread( &seg_chunk, 1, sizeof( addr_dbg_info ), exe->sym.fd ), sizeof( addr_dbg_info ), file_name );
+            curr_offset += sizeof( addr_dbg_info );
             tmp_mod.mod_offset = seg_chunk.mod;
             found_mod = SymFind( exe->mods_by_offset, &tmp_mod );
             if( found_mod == NULL ) {

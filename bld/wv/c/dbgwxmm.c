@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "dbgmad.h"
 #include "dbgwmadr.h"
 #include "dbgwxmm.h"
+#include "dbgchopt.h"
 
 
 void XMMChangeOptions( void )
@@ -44,11 +46,12 @@ void XMMChangeOptions( void )
     WndForAllClass( WND_XMM, MadRegChangeOptions );
 }
 
-extern a_window *WndXMMOpen( void )
+a_window WndXMMOpen( void )
 {
     const mad_reg_set_data      *rsd;
 
     RegFindData( MTK_XMM, &rsd );
-    if( rsd == NULL ) return( NULL );
+    if( rsd == NULL )
+        return( NULL );
     return( WndMadRegOpen( MTK_XMM, WND_XMM, &XMMIcon ) );
 }

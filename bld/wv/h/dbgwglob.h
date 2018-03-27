@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,11 @@
 ****************************************************************************/
 
 
-extern void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece );
-extern int      GlobNumRows( a_window *wnd );
-extern bool     GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line );
-extern void     GlobNewMod( a_window *wnd, mod_handle mod );
-extern void     GlobRefresh( a_window *wnd );
-extern bool     GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm );
-extern void     GlobChangeOptions( void );
-extern a_window *DoWndGlobOpen( mod_handle mod );
-extern a_window *WndGlobOpen( void );
+extern void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece );
+extern wnd_row  GlobNumRows( a_window wnd );
+extern bool     GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line );
+extern void     GlobNewMod( a_window wnd, mod_handle mod );
+extern void     GlobRefresh( a_window wnd );
+extern a_window DoWndGlobOpen( mod_handle mod );
+extern a_window WndGlobOpen( void );
 extern bool     ChkFlags( wnd_update_list flags );

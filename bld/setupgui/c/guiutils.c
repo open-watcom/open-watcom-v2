@@ -84,14 +84,13 @@ gui_resource WndGadgetArray[] = {
 gui_ord     BitMapBottom;
 gui_coord   BitMapSize;
 
-extern GUICALLBACK WndMainEventProc;
-bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
+static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     int                 i;
 
     /* unused parameters */ (void)parm;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_PAINT:
         if( GUIIsGUI() ) {
             gui_rect            rect;
@@ -136,19 +135,18 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 
             /* Start at bottom left of hotspot and use neagtive offset */
             GUIDrawTextRGB( gui, banner2, sizeof( banner2 ) - 1, row_count - 2, indent, foreg, rgb );
-            GUIDrawTextRGB( gui, banner2a( "1984" ), sizeof( banner2a( "1984" ) ) - 1, row_count - 1, indent, foreg, rgb );
+            GUIDrawTextRGB( gui, banner2a( 1984 ), sizeof( banner2a( 1984 ) ) - 1, row_count - 1, indent, foreg, rgb );
 
         } else {
             for( i = 0; i < sizeof( Bolt ) / sizeof( Bolt[0] ); ++i ) {
-                GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND,
-                                   WND_APPROX_SIZE );
+                GUIDrawTextExtent( gui, Bolt[i], strlen( Bolt[i] ), i, 0, GUI_BACKGROUND, WND_APPROX_SIZE );
             }
         }
-        break;
+        return( true );
     default:
         break;
     }
-    return( true );
+    return( false );
 }
 
 gui_coord               GUIScale;
@@ -198,11 +196,11 @@ bool SetupInit( void )
     init.style |= GUI_NOFRAME;
 #endif
     init.parent = NULL;
-    init.num_menus = 0;
+    init.num_items = 0;
     init.menu = NULL;
     init.num_attrs = WND_NUMBER_OF_COLORS;
     init.colours = MainColours;
-    init.gui_call_back = WndMainEventProc;
+    init.gui_call_back = MainSetupWndGUIEventProc;
     init.extra = NULL;
 
     GUIInitHotSpots( 1, WndGadgetArray );

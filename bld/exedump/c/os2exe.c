@@ -140,7 +140,15 @@ static  const_string_table os2_obj_msg[] = {
 };
 
 static  const_string_table map_flgs[] = {
-    "Valid", "Iterated", "Invalid", "Zeroed", "Range", "Compressed"
+    "Valid",
+    "Iterated",
+    "Invalid",
+    "Zeroed",
+    "Range",
+    "Compressed",
+    "Unknown",
+    "Unknown",
+    "M3-packed"
 };
 
 
@@ -299,9 +307,9 @@ bool Dmp_os2_head( void )
     Puthex( New_exe_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
-    Dump_header( (char *)&Os2_head.version, os2_exe_msg );
+    Dump_header( (char *)&Os2_head.version, os2_exe_msg, 4 );
     if( !IS_OLD_NE( Os2_head ) ) {
-        Dump_header( (char *)&Os2_head.align, os2_exe_msg_new );
+        Dump_header( (char *)&Os2_head.align, os2_exe_msg_new, 4 );
     }
     dmp_mod_flag_ne( Os2_head.info, Os2_head.target );
     Dmp_seg_tab();
@@ -361,9 +369,14 @@ static void dmp_obj_page( object_record obj )
             Wdputs( "H size = " );
             Puthex( map.lx.data_size, 4 );
             Wdputs( "H flgs = " );
-            Puthex( map.le.flags, 2 );
+            Puthex( map.lx.flags, 2 );
             Wdputs( "H " );
             Wdputs( map_flgs[ map.lx.flags ] );
+            if( map.lx.flags < sizeof( map_flgs ) / sizeof( map_flgs[0] ) ) {
+                Wdputs( map_flgs[map.lx.flags] );
+            } else {
+                Wdputs( "Unknown" );
+            }
             if( Options_dmp & OS2_SEG_DMP ) {
                 Dmp_lx_page_seg( map );
             }
@@ -451,7 +464,7 @@ static void dmp_obj_table( void )
         Wdputs( "object " );
         Putdec( i + 1 );
         Wdputs( ": " );
-        Dump_header( &os_obj.size, os2_obj_msg );
+        Dump_header( &os_obj.size, os2_obj_msg, 4 );
         Wdputs( "          flags = " );
         dmp_obj_flags( os_obj.flags );
         if( Options_dmp & PAGE_DMP ) {
@@ -486,7 +499,7 @@ bool Dmp_386_head( void )
     Puthex( New_exe_off, 8 );
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
-    Dump_header( (char *)&Os2_386_head.byte_order, os2_386_msg );
+    Dump_header( (char *)&Os2_386_head.byte_order, os2_386_msg, 4 );
     dmp_mod_flag_lx( Os2_386_head.flags, Os2_386_head.os_type );
     dmp_obj_table();
     Dmp_resrc2_tab();

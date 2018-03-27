@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include "wresall.h"
 #include "wressetr.h"
 #include "rcrtns.h"
@@ -40,18 +40,18 @@
 
 static char     Buffer[ BUFFER_SIZE ];
 
-bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
-/****************************************************************************/
+bool BinaryCopy( FILE *in_fp, FILE *out_fp, unsigned long length )
+/****************************************************************/
 {
     size_t      bufflen;
 
     for( bufflen = sizeof( Buffer ); length > 0; length -= bufflen ) {
         if( bufflen > length )
             bufflen = length;
-        if( RESREAD( in_fid, Buffer, bufflen ) != bufflen ) {
+        if( RESREAD( in_fp, Buffer, bufflen ) != bufflen ) {
             return( true );
         }
-        if( RESWRITE( out_fid, Buffer, bufflen ) != bufflen ) {
+        if( RESWRITE( out_fp, Buffer, bufflen ) != bufflen ) {
             return( true );
         }
     }

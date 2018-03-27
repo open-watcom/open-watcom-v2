@@ -93,19 +93,19 @@ bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int items,
+bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
                     const void *data_handle, GUIPICKGETTEXT *getstring )
 {
     VFIELD      *field;
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        return( GUIListBoxAddTextList( list, items, data_handle, getstring ) );
+        return( GUIListBoxAddTextList( list, num_items, data_handle, getstring ) );
     }
     return( false );
 }
 
-bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
@@ -133,28 +133,24 @@ bool GUIClearList( gui_window *wnd, gui_ctl_id id )
     return( false );
 }
 
-gui_ctl_idx GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id )
+bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice )
 {
     VFIELD      *field;
     a_list      *list;
-    gui_ctl_idx ret;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, 0, false, &ret ) ) {
-            return( 0 );
-        }
-        return( ret );
+        return( GUIListGetCurr( list, choice ) );
     }
-    return( -1 );
+    return( false );
 }
 
-bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, choice, true, NULL ) ) {
+        if( !GUIListSetCurr( list, choice ) ) {
             return( false );
         }
         return( RefreshListCombobox( field, wnd, id ) );
@@ -162,7 +158,7 @@ bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
     return( false );
 }
 
-gui_ctl_idx GUIGetListSize( gui_window *wnd, gui_ctl_id id )
+int GUIGetListSize( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
@@ -173,7 +169,7 @@ gui_ctl_idx GUIGetListSize( gui_window *wnd, gui_ctl_id id )
     return( 0 );
 }
 
-bool GUIInsertText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, const char *text )
+bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text )
 {
     VFIELD      *field;
     a_list      *list;
@@ -184,27 +180,27 @@ bool GUIInsertText( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, const ch
     return( false );
 }
 
-bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
+bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice )
 {
     VFIELD      *field;
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        GUIListBoxTopIndex( list, choice, true, NULL );
+        GUIListBoxSetTopIndex( list, choice );
         return( RefreshListCombobox( field, wnd, id ) );
     }
     return( false );
 }
 
-gui_ctl_idx GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
+int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_list      *list;
-    gui_ctl_idx ret;
+    int         choice;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( GUIListBoxTopIndex( list, 0, false, &ret ) ) {
-            return( ret );
+        if( GUIListBoxGetTopIndex( list, &choice ) ) {
+            return( choice );
         }
     }
     return( -1 );

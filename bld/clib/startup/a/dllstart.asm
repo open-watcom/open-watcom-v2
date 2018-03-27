@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -32,6 +33,8 @@
 
 .386
 
+include langenv.inc
+include tinit.inc
 include xinit.inc
 
 FLG_NO87    equ 1
@@ -78,23 +81,23 @@ XS_RATIONAL_NONZEROBASE     equ     1
 BEGTEXT  segment use32 para public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
-        int     3h
-        jmp     short forever
-___begtext label byte
-        nop     ;3
-        nop     ;4
-        nop     ;5
-        nop     ;6
-        nop     ;7
-        nop     ;8
-        nop     ;9
-        nop     ;A
-        nop     ;B
-        nop     ;C
-        nop     ;D
-        nop     ;E
-        nop     ;F
+        int     3h              ;0
+        jmp short forever       ;1
         public ___begtext
+___begtext label byte
+        nop                     ;3
+        nop                     ;4
+        nop                     ;5
+        nop                     ;6
+        nop                     ;7
+        nop                     ;8
+        nop                     ;9
+        nop                     ;A
+        nop                     ;B
+        nop                     ;C
+        nop                     ;D
+        nop                     ;E
+        nop                     ;F
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -113,28 +116,6 @@ _AFTERNULL ends
 
 CONST   segment word public 'DATA'
 CONST   ends
-
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 
 _DATA    segment dword public 'DATA'
 
@@ -183,17 +164,16 @@ STACK   ends
         assume  cs:_TEXT
 
 __DLLstart_ proc far
-        jmp     short around
-
-        align   4
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
+        jmp short around
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",00h
 NewLine         db      0Dh,0Ah
 
+        align   4
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT
         assume  ds:DGROUP
 
 around: mov     si,DGROUP               ; set DS to DGROUP
@@ -365,13 +345,15 @@ error_exit:
         or      eax,-1                  ; exit code -1
         jmp     do_exit
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: ( char *msg, int rc )  always in registers
+; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 ; may be only called from startup code, after that there is
 ; nowhere to exit to!
 
-__do_exit_with_msg__:
+__do_exit_with_msg_:
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName

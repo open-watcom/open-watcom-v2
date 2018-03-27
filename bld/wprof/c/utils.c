@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -101,10 +102,10 @@ void ReplaceExt( char * path, char * addext )
 #endif
 }
 
-char *FindFile( char *fullname, char *name, char *path_list )
-/***********************************************************/
+static char *findFile( char *fullname, const char *name, char *path_list )
+/************************************************************************/
 {
-    file_handle     fh;
+    int             fh;
     char            *p;
     char            c;
 
@@ -135,16 +136,27 @@ char *FindFile( char *fullname, char *name, char *path_list )
             }
         }
     }
+    *fullname = '\0';
     return( NULL );
 }
 
+
+char *FindHelpFile( char *fullname, const char *help_name )
+{
+    if( findFile( fullname, help_name, HelpPathList ) == NULL ) {
+        ErrorMsg( LIT( Unable_To_Open_Help ), help_name );
+        return( NULL );
+    }
+    return( fullname );
+}
+
 #if defined( __UNIX__ ) || defined( __DOS__ )
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/******************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char        *filename;
-    int         fd;
+    FILE        *fp;
 
     /* unused parameters */ (void)max_result;
 
@@ -154,31 +166,29 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         _splitpath2( realname, result, NULL, NULL, &filename, NULL );
         _makepath( realname, NULL, NULL, filename, ext );
     }
-    filename = FindFile( result, realname, FilePathList );
+    filename = findFile( result, realname, FilePathList );
     if( filename == NULL ) {
-        filename = FindFile( result, realname, DipExePathList );
+        filename = findFile( result, realname, DipExePathList );
     }
-    fd = -1;
+    fp = NULL;
     if( filename != NULL )
-        fd = open( filename, O_RDONLY );
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+        fp = fopen( filename, "rb" );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 #endif
 
@@ -249,72 +259,6 @@ void InitPaths( void )
     DipExePathList = AddPath( DipExePathList, "/usr/watcom" );
 #endif
 }
-
-#if defined( __QNX__ )
-
-#define MAX_QNX_TRANSFER (0x8000 - 512)
-
-size_t BigRead( int fh, void *buffer, size_t size )
-/*************************************************/
-{
-
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-*/
-    size_t      total;
-    unsigned    read_len;
-    unsigned    amount;
-
-    amount = MAX_QNX_TRANSFER;
-    total = 0;
-    while( size > 0 ) {
-        if( amount > size )
-            amount = (unsigned)size;
-        read_len = read( fh, buffer, amount );
-        if( read_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
-        }
-        total += read_len;
-        if( read_len != amount ) {
-            return( total );
-        }
-        buffer = (char *)buffer + amount;
-        size -= amount;
-    }
-    return( total );
-}
-
-size_t BigWrite( int fh, const void *buffer, size_t size )
-/********************************************************/
-{
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-*/
-    size_t      total;
-    unsigned    write_len;
-    unsigned    amount;
-
-    amount = MAX_QNX_TRANSFER;
-    total = 0;
-    while( size > 0 ) {
-        if( amount > size )
-            amount = (unsigned)size;
-        write_len = write( fh, buffer, amount );
-        if( write_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
-        }
-        total += write_len;
-        if( write_len != amount ) {
-            return( total );
-        }
-        buffer = (char *)buffer + amount;
-        size -= amount;
-    }
-    return( total );
-}
-#endif
 
 #if defined( __DOS__ )
 extern void DoRingBell( void );

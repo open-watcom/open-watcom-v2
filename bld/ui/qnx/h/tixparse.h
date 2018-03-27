@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +31,9 @@
 ****************************************************************************/
 
 
-// array of bits set for chars in alternate char-set
-extern unsigned char    _ti_alt_map[32];
+#include "tixstatu.h"
+
 // array of char mappings
-extern char             ti_char_map[256];
-
-// macros for getting/setting bits in alt-char map
-#define ti_alt_map( x )     ( _ti_alt_map[( x ) / 8] != 0 && (( _ti_alt_map[( x ) / 8] >> ( ( x ) % 8 ) ) & 1) )
-#define ti_alt_map_set( x ) ( _ti_alt_map[( x ) / 8] |= ( 1 << ( ( x ) % 8 ) ) )
-
-
-typedef enum {
-    TIX_FAIL,
-    TIX_NOFILE,
-    TIX_DEFAULT,
-    TIX_OK
-} tix_status;
+extern char         ti_char_map[256];
 
 extern tix_status   ti_read_tix( bool );
-extern int          ui_tix_missing( const char *name );

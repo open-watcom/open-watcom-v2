@@ -32,6 +32,7 @@
 
 #ifndef _GUIHOOK_H_
 #define _GUIHOOK_H_
+
 extern void GUISetHotSpotCleanup( void (*func)(void) );
 extern void GUICleanupHotSpots( void );
 extern void GUIXChangeTitle( gui_window *wnd );
@@ -46,12 +47,13 @@ extern void GUISetMDIBroughtToFront( void (*func)(gui_window *) );
 extern void GUIMDIBroughtToFront( gui_window *wnd );
 extern void GUISetMDIDelete( void (*func)(gui_window *) );
 extern void GUIMDIDelete( gui_window *wnd );
-extern void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, gui_ctl_idx, gui_menu_struct * ) );
-extern void GUIMDIResetMenus( gui_window *wnd, gui_window *, gui_ctl_idx num_menus, gui_menu_struct *menu );
+extern void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, int, gui_menu_struct * ) );
+extern void GUIMDIResetMenus( gui_window *wnd, gui_window *, int num_items, gui_menu_struct *menu );
 extern void GUISetMDIDeleteMenuItem( void (*func)(gui_ctl_id id) );
 extern void GUIMDIDeleteMenuItem( gui_ctl_id id );
 extern void GUISetEnableMDIActions( void (*func)(bool enable) );
 extern void GUIEnableMDIActions( bool enable );
 extern void GUISetAddMDIActions( void (*func)(bool has_items, gui_window *wnd) );
 extern void GUIAddMDIActions( bool has_items, gui_window *wnd );
+
 #endif // _GUIHOOK_H_

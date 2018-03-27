@@ -369,7 +369,10 @@ bool ProcDescription( void )
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
-    FmtData.u.os2.description = tostring();
+    if( FmtData.description != NULL ) {
+        _LnkFree( FmtData.description );
+    }
+    FmtData.description = tostring();
     return( true );
 }
 
@@ -545,7 +548,7 @@ void SetOS2Fmt( void )
     FmtData.u.os2.module_name = NULL;
     FmtData.u.os2.stub_file_name = NULL;
     FmtData.u.os2.os2_seg_flags = NULL;
-    FmtData.u.os2.description = NULL;
+    FmtData.description = NULL;
     FmtData.u.os2.exports = NULL;
     FmtData.u.os2.old_lib_name = NULL;
     if( FmtData.type & MK_WINDOWS ) {
@@ -561,7 +564,7 @@ void FreeOS2Fmt( void )
     _LnkFree( FmtData.u.os2.stub_file_name );
     _LnkFree( FmtData.u.os2.module_name );
     _LnkFree( FmtData.u.os2.old_lib_name );
-    _LnkFree( FmtData.u.os2.description );
+    _LnkFree( FmtData.description );
     FreeImpNameTab();
     FreeExportList();
     FreeSegFlags( (seg_flags *) FmtData.u.os2.os2_seg_flags );

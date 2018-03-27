@@ -1,6 +1,14 @@
 pfx__ =../../../
 __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
+!ifdef %OW_QNX_QLIB
+ow_qlib  = $(pfx__)qnx$(__sfx)
+qnx_qlib =
+!else
+ow_qlib  =
+qnx_qlib = ../../../qnx/qlib/$(qlib)
+!endif
+
 libs = $+ &
     $(pfx__)alias$(__sfx) &
     $(pfx__)char$(__sfx) &
@@ -21,6 +29,7 @@ libs = $+ &
     $(pfx__)mthread$(__sfx) &
     $(pfx__)posix$(__sfx) &
     $(pfx__)process$(__sfx) &
+    $(ow_qlib) &
     $(pfx__)search$(__sfx) &
     $(pfx__)startup$(__sfx) &
     $(pfx__)streamio$(__sfx) &
@@ -33,5 +42,5 @@ __sfx =
 
 libs += $+ &
     ../../../cgsupp/library/generic.$(processor)/$(libsubdir)/$(libname).lib &
-    ../../../qnx/qlib/$(qlib) &
+    $(qnx_qlib) &
     $-

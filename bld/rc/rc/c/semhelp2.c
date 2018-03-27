@@ -38,10 +38,10 @@
 #include "rccore.h"
 
 
-static bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, WResFileID fid )
-/******************************************************************************/
+static bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, FILE *fp )
+/************************************************************************/
 {
-    if( RESWRITE( fid, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {
+    if( RESWRITE( fp, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }
@@ -123,8 +123,8 @@ static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
     }
 }
 
-static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, WResFileID fid )
-/************************************************************************************/
+static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, FILE *fp )
+/******************************************************************************/
 {
     FullHelpEntryOS2    *currentry;
     bool                error;
@@ -132,11 +132,11 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, WResFileID
     error = false;
     if( helptable != NULL ) {
         for( currentry = helptable->head; currentry != NULL && !error; currentry = currentry->next ) {
-            error = ResOS2WriteHelpEntry( &currentry->entry, fid );
+            error = ResOS2WriteHelpEntry( &currentry->entry, fp );
         }
     }
     if( !error )
-        error = ResWriteUint16( 0, fid ); // Closing zero
+        error = ResWriteUint16( 0, fp ); // Closing zero
 
     return( error );
 }
@@ -151,7 +151,7 @@ void SemOS2WriteHelpTable( WResID *name, ResMemFlags flags,
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
-        error = SemOS2WriteHelpTableEntries( helptable, CurrResFile.fid );
+        error = SemOS2WriteHelpTableEntries( helptable, CurrResFile.fp );
         if( error ) {
             err_code = LastWresErr();
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
@@ -228,8 +228,8 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
     }
 }
 
-static bool SemOS2WriteHelpData( DataElemList *list, WResFileID fid, unsigned count )
-/***********************************************************************************/
+static bool SemOS2WriteHelpData( DataElemList *list, FILE *fp, unsigned count )
+/*****************************************************************************/
 {
     bool              error;
     unsigned          i;
@@ -242,13 +242,13 @@ static bool SemOS2WriteHelpData( DataElemList *list, WResFileID fid, unsigned co
         return( true );
     }
     for( i = 0; i < count; i++ ) {
-        error = ResWriteUint16( list->data[i].Item.Num, fid );
+        error = ResWriteUint16( list->data[i].Item.Num, fp );
     }
     return( error );
 }
 
-static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, WResFileID fid )
-/******************************************************************************************/
+static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, FILE *fp )
+/************************************************************************************/
 {
     FullHelpSubEntryOS2     *currentry = NULL;
     bool                    error;
@@ -258,12 +258,12 @@ static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, WRes
         currentry = helptable->head;
         tmp = helptable->numWords;
     }
-    error = ResWriteUint16( tmp, fid );
+    error = ResWriteUint16( tmp, fp );
     for( ; currentry != NULL && !error; currentry = currentry->next ) {
-        error = SemOS2WriteHelpData( currentry->dataListHead, fid, helptable->numWords );
+        error = SemOS2WriteHelpData( currentry->dataListHead, fp, helptable->numWords );
     }
     if( !error ) {
-        error = ResWriteUint16( 0, fid ); // Closing zero
+        error = ResWriteUint16( 0, fp ); // Closing zero
     }
 
     return( error );
@@ -283,7 +283,7 @@ void SemOS2WriteHelpSubTable( WResID *name, unsigned numWords,
         if( helptable != NULL ) {
             helptable->numWords = numWords;
         }
-        error = SemOS2WriteHelpSubTableEntries( helptable, CurrResFile.fid );
+        error = SemOS2WriteHelpSubTableEntries( helptable, CurrResFile.fp );
         if( error ) {
             err_code = LastWresErr();
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );

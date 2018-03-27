@@ -82,10 +82,10 @@ typedef struct OS2ResTable {
 extern void     InitWINResTable( void );
 extern uint_32  ComputeWINResourceSize( WResDir dir );
 extern RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
-extern RcStatus WriteWINResTable( WResFileID fid, ResTable *restab, int *err_code );
+extern RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code );
 extern RcStatus InitOS2ResTable( int *err_code );
 extern uint_32  ComputeOS2ResSegCount( WResDir dir );
 extern RcStatus CopyOS2Resources( void );
-extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_code );
+extern RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code );
 
 #endif

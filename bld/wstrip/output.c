@@ -31,10 +31,10 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-#include "wio.h"
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
@@ -74,8 +74,7 @@ bool Msg_Fini( void )
 #include "wresset2.h"
 #include "wreslang.h"
 
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
+#define NO_RES_MESSAGE "Error: could not open message resource file.\n"
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
@@ -101,7 +100,7 @@ bool Msg_Init( void )
         }
     }
     CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    printf( NO_RES_MESSAGE );
     return( false );
 }
 
@@ -113,26 +112,13 @@ bool Msg_Fini( void )
 
 #endif
 
-static void Outs( bool nl, const char *s )
-{
-    posix_write( STDOUT_FILENO, s, strlen( s ) );
-    if( nl ) {
-        posix_write( STDOUT_FILENO, "\r\n", 2 );
-    }
-}
-
-static void Outc( char c )
-{
-    posix_write( STDOUT_FILENO, &c, 1 );
-}
-
 void Banner( void )
 {
-    Outs( true, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
-    Outs( true, banner2 );
-    Outs( true, banner2a( "1988" ) );
-    Outs( true, banner3 );
-    Outs( true, banner3a );
+    printf( banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) "\n" );
+    printf( banner2 "\n" );
+    printf( banner2a( 1988 ) "\n" );
+    printf( banner3 "\n" );
+    printf( banner3a "\n" );
 }
 
 void Usage( void )
@@ -142,7 +128,8 @@ void Usage( void )
 
     for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
         Msg_Get( i, msg_buffer );
-        Outs( true, msg_buffer );
+        printf( msg_buffer );
+        printf( "\n" );
     }
     Msg_Fini();
     exit( -1 );
@@ -152,23 +139,11 @@ void Fatal( int reason, const char *insert )
 /* the reason doesn't have to be good */
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    size_t      i;
 
     Msg_Get( reason, msg_buffer );
-    for( i = 0; msg_buffer[i] != '\0'; ++i ) {
-        if( msg_buffer[i] == '%' ) {
-            i++;
-            if( msg_buffer[i] == 's' ) {
-                Outs( false, insert );
-            } else {
-                Outc( msg_buffer[i] );
-            }
-        } else {
-            Outc( msg_buffer[i] );
-        }
-    }
+    printf( msg_buffer, insert );
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
-    Outs( true, msg_buffer );
+    printf( msg_buffer );
     Msg_Fini();
     exit( -1 );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,12 +49,12 @@
 #include "dbglkup.h"
 #include "dbginit.h"
 #include "dlgcmd.h"
+#include "dbgcapt.h"
 
 
 extern int              ScanSavePtr;
 
 extern void             CmdError( void );
-extern void             CaptureError( void );
 extern void             Suicide( void );
 
 /*
@@ -87,7 +88,8 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             ptr = StrCopy( LIT_ENG( ERR_NEAR_END_OF_LINE ), ptr );
             break;
         default:
-            if( ScanLen() == 0 ) Scan();
+            if( ScanLen() == 0 )
+                Scan();
             ptr = Format( ptr, LIT_ENG( ERR_NEAR_TOKEN ), ScanPos(), ScanLen() );
             break;
         }
@@ -124,9 +126,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
             }
         }
         DUIFlushKeys();
-        DUIWndDebug();
-        RingBell();
-        DUIErrorBox( buff );
+        PrevError( buff );
     }
     cmderror = false;
     for( inp = InpStack; inp != NULL; inp = inp->link ) {
@@ -145,12 +145,14 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         DlgCmd();
         ProcInput();
     }
-    if( _IsOn( SW_ERROR_RETURNS ) ) return;
+    if( _IsOn( SW_ERROR_RETURNS ) )
+        return;
     DUIArrowCursor();
     Suicide();
 }
 
 void PrevError( const char *msg )
+/*******************************/
 {
     DUIWndDebug();
     RingBell();

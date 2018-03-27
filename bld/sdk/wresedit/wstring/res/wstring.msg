@@ -191,8 +191,8 @@ pick(   W_ABOUT_NAME,
         "Open Watcom String Editor for Windows" STR_BITNESS,
         "Open Watcom String Editor for Windows" STR_BITNESS )
 pick(   W_ABOUT_VERSION,
-        banner1p2( _RESEDIT_VERSION_ ),
-        banner1p2( _RESEDIT_VERSION_ ) )
+        banner1v( _RESEDIT_VERSION_ ),
+        banner1v( _RESEDIT_VERSION_ ) )
 pick(   W_ABOUT_TITLE,
         "About Open Watcom String Editor",
         "About Open Watcom String Editor" )

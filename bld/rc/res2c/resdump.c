@@ -77,7 +77,7 @@ static void endComment( void ) {
 
 int main( int argc, char **argv ) {
 
-    int         fh;
+    FILE        *fp;
     int         ch;
     read_file   c_info;
     char        *trash;
@@ -95,8 +95,8 @@ int main( int argc, char **argv ) {
         exit( 1 );
     }
 
-    fh = open( argv[1], O_RDONLY | O_BINARY );
-    if ( fh == -1 ) {
+    fp = fopen( argv[1], "rb" );
+    if ( fp == NULL ) {
         puts("Error opening file");
         exit( 1 );
     }
@@ -104,15 +104,15 @@ int main( int argc, char **argv ) {
     trash = malloc( 10240 );
     if ( !trash ) {
         puts("Out of memory ");
-        close( fh );
+        fclose( fp );
         exit( 1 );
     }
 
 
-    ch = PeekFirstChar( trash, 10240, fh, &c_info );
+    ch = PeekFirstChar( trash, 10240, fp, &c_info );
     if ( ch == -1 ) {
         puts("Error reading file");
-        close( fh );
+        fclose( fp );
         exit( 1 );
     }
 
@@ -136,7 +136,7 @@ int main( int argc, char **argv ) {
         ch = PeekNextChar( &c_info );
         if ( ch == -1 ) {
             puts("File read error occured");
-            close( fh );
+            fclose( fp );
             exit( 1 );
         }
 
@@ -162,7 +162,7 @@ int main( int argc, char **argv ) {
             ch = GetNextChar( &c_info );
             if ( ch == -1 ) {
                 puts("File read error occured");
-                close( fh );
+                fclose( fp );
                 exit( 1 );
             }
             if ( !( ( x + 1 ) % 13 ) ) {
@@ -173,6 +173,6 @@ int main( int argc, char **argv ) {
         puts(" }; \n\n");
         ch = PeekNextChar( &c_info );
     }
-    close( fh );
+    fclose( fp );
     return(0);
-};
+}

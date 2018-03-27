@@ -36,7 +36,7 @@
 #include "guisysin.h"
 
 
-bool GUISysInit( int param )
+bool GUISysInit( init_mode install )
 {
     bool    init;
 
@@ -46,9 +46,8 @@ bool GUISysInit( int param )
 #endif
 
     init = uistart();
-
     if( init ) {
-        GUIInitMouse( param );
+        GUIInitMouse( install );
     }
     return( init );
 }

@@ -191,7 +191,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             prompt = "?";
         }
         st[0] = prompt[0];
-        rc = PromptForString( prompt, st + 1, sizeof( st ) - 1, &EditVars.FindHist );
+        rc = PromptForString( prompt, st + 1, sizeof( st ) - 1, &EditVars.Hist[HIST_FIND] );
         if( rc != ERR_NO_ERR ) {
             if( rc == NO_VALUE_ENTERED ) {
                 return( ERR_NO_ERR );

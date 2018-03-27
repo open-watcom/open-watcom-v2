@@ -37,7 +37,7 @@
 
 #define FILE_SUPP_NAME          "Files"
 
-typedef unsigned_32     trap_fhandle; /* file handle */
+typedef unsigned_64     trap_fhandle; /* file handle */
 
 enum {
     REQ_FILE_GET_CONFIG,        /* 00 */

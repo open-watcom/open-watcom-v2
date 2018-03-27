@@ -34,9 +34,13 @@
 #include <limits.h>
 #define INCL_ERRORS
 #define INCL_BASE
-#include <os2.h>
+#include <wos2.h>
 #include "dbgdefn.h"
+#if !defined( BUILD_RFX )
 #include "dbgdata.h"
+#else
+#include "rfxdata.h"
+#endif
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "doserr.h"
@@ -47,20 +51,22 @@
 #define READWRITE   2
 #define FROMEND     2
 
+#define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 const char              LclPathSep = { ';' };
 
-static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
+static const OS_UINT    local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
 void LocalErrMsg( sys_error code, char *buff )
 {
     char        *s;
     char        *d;
-    USHORT      msg_len;
+    OS_UINT     msg_len;
     char        ch;
 
-    if( DosGetMessage( NULL, 0, buff, 50, code, "OSO001.MSG",
-                        &msg_len ) != 0 ) {
+    if( DosGetMessage( NULL, 0, buff, 50, code, "OSO001.MSG", &msg_len ) != 0 ) {
         GetDOSErrMsg( code, buff );
         return;
     }
@@ -93,10 +99,11 @@ void LocalErrMsg( sys_error code, char *buff )
 sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     HFILE       hdl;
-    USHORT      action;
-    USHORT      openflags;
-    USHORT      openmode;
-    USHORT      rc;
+    OS_UINT     action;
+    OS_UINT     openflags;
+    OS_UINT     openmode;
+    APIRET      rc;
+    sys_handle  sh;
 
     if( (oattrs & OP_WRITE) == 0 ) {
         openmode = READONLY;
@@ -121,15 +128,17 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
                 0 );            /* reserved */
     if( rc != 0 ) {
         StashErrCode( rc, OP_LOCAL );
-        return( NIL_SYS_HANDLE );
+        SET_SYSHANDLE_NULL( sh );
+        return( sh );
     }
-    return( hdl );
+    LH2SYSH( sh, hdl );
+    return( sh );
 }
 
-size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
+size_t LocalRead( sys_handle sh, void *ptr, size_t len )
 {
-    USHORT      read_len;
-    USHORT      ret;
+    OS_UINT     read_len;
+    APIRET      ret;
     size_t      total;
     unsigned    piece_len;
 
@@ -138,7 +147,7 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     while( len > 0 ) {
         if( piece_len > len )
             piece_len = (unsigned)len;
-        ret = DosRead( filehndl, ptr, piece_len, &read_len );
+        ret = DosRead( SYSH2LH( sh ), ptr, piece_len, &read_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
@@ -152,10 +161,10 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
     return( total );
 }
 
-size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
+size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
 {
-    USHORT      write_len;
-    USHORT      ret;
+    OS_UINT     write_len;
+    APIRET      ret;
     size_t      total;
     unsigned    piece_len;
 
@@ -164,7 +173,7 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     while( len > 0 ) {
         if( piece_len > len )
             piece_len = (unsigned)len;
-        ret = DosWrite( filehndl, (PVOID)ptr, piece_len, &write_len );
+        ret = DosWrite( SYSH2LH( sh ), (PVOID)ptr, piece_len, &write_len );
         if( ret != 0 ) {
             StashErrCode( ret, OP_LOCAL );
             return( ERR_RETURN );
@@ -178,12 +187,16 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
     return( total );
 }
 
-unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
+unsigned long LocalSeek( sys_handle sh, unsigned long len, seek_method method )
 {
-    unsigned long   new;
-    USHORT          ret;
+    ULONG           new;
+    APIRET          ret;
 
-    ret = DosChgFilePtr( hdl, len, local_seek_method[method], &new );
+#ifdef _M_I86
+    ret = DosChgFilePtr( SYSH2LH( sh ), len, local_seek_method[method], &new );
+#else
+    ret = DosSetFilePtr( SYSH2LH( sh ), len, local_seek_method[method], &new );
+#endif
     if( ret != 0 ) {
         StashErrCode( ret, OP_LOCAL );
         return( ERR_SEEK );
@@ -191,23 +204,30 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
     return( new );
 }
 
-error_handle LocalClose( sys_handle filehndl )
+error_handle LocalClose( sys_handle sh )
 {
-    USHORT      ret;
+    APIRET      ret;
 
-    ret = DosClose( filehndl );
+    ret = DosClose( SYSH2LH( sh ) );
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 
 error_handle LocalErase( const char *name )
 {
-    USHORT      ret;
+    APIRET      ret;
 
+#ifdef _M_I86
     ret = DosDelete( (char *)name, 0 );
+#else
+    ret = DosDelete( name );
+#endif
     return( StashErrCode( ret, OP_LOCAL ) );
 }
 
 sys_handle LocalHandleSys( file_handle fh )
 {
-    return( (sys_handle)fh );
+    sys_handle  sh;
+
+    FH2SYSH( sh, fh );
+    return( sh );
 }

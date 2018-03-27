@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,20 +42,9 @@
 #include "dbgmisc.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
-
-
-extern int              HasLinInfo( address );
-
+#include "dbgchopt.h"
 #include "menudef.h"
-gui_menu_struct GlobMenu[] = {
-    #include "menuglob.h"
-};
 
-typedef struct {
-    name_list           ___n;           // don't reference directly!
-    mod_handle          mod;
-    bool                d2_only : 1;
-} glob_window;
 
 #define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )
 #define NameList( f ) ( &(f)->___n )
@@ -63,7 +53,19 @@ enum {
     PIECE_NAME,
 };
 
-static  void    GlobInit( a_window *wnd )
+typedef struct {
+    name_list           ___n;           // don't reference directly!
+    mod_handle          mod;
+    bool                d2_only : 1;
+} glob_window;
+
+extern int              HasLinInfo( address );
+
+gui_menu_struct GlobMenu[] = {
+    #include "menuglob.h"
+};
+
+static  void    GlobInit( a_window wnd )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -71,10 +73,10 @@ static  void    GlobInit( a_window *wnd )
     NameListFree( NameList( glob ) );
     WndZapped( wnd );
     NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, true );
-    WndSetKey( wnd, PIECE_NAME );
+    WndSetKeyPiece( wnd, PIECE_NAME );
 }
 
-void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -110,12 +112,12 @@ void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-int GlobNumRows( a_window *wnd )
+wnd_row GlobNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+bool    GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -131,7 +133,7 @@ bool    GlobGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
     }
 }
 
-void GlobNewMod( a_window *wnd, mod_handle mod )
+void GlobNewMod( a_window wnd, mod_handle mod )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -142,7 +144,7 @@ void GlobNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-void    GlobRefresh( a_window *wnd )
+void    GlobRefresh( a_window wnd )
 {
     if( UpdateFlags & UP_SYM_CHANGE ) {
         GlobInit( wnd );
@@ -151,13 +153,13 @@ void    GlobRefresh( a_window *wnd )
 }
 
 
-static void GlobSetOptions( a_window *wnd )
+OVL_EXTERN void GlobSetOptions( a_window wnd )
 {
     WndGlob( wnd )->d2_only = _IsOn( SW_GLOB_D2_ONLY );
     GlobInit( wnd );
 }
 
-bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -182,7 +184,7 @@ void GlobChangeOptions( void )
 }
 
 wnd_info GlobInfo = {
-    GlobEventProc,
+    GlobWndEventProc,
     GlobRefresh,
     GlobGetLine,
     GlobMenuItem,
@@ -198,7 +200,7 @@ wnd_info GlobInfo = {
     DefPopUp( GlobMenu )
 };
 
-a_window *DoWndGlobOpen( mod_handle mod )
+a_window DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
@@ -207,7 +209,7 @@ a_window *DoWndGlobOpen( mod_handle mod )
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }
 
-a_window *WndGlobOpen( void )
+a_window WndGlobOpen( void )
 {
     return( DoWndGlobOpen( NO_MOD ) );
 }

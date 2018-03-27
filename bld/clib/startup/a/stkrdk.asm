@@ -29,14 +29,13 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 include struct.inc
-include xinit.inc
+
 include exitwmsg.inc
 
         modstart        stk
-
-        xinit   _init_stk,DEF_PRIORITY
 
         assume  ds:DGROUP
 
@@ -62,4 +61,9 @@ chk_passed:
         endproc __CHK
 
         endmod
+
+include xinit.inc
+
+        xinit   _init_stk,DEF_PRIORITY
+
         end

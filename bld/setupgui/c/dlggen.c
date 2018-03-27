@@ -51,9 +51,8 @@
 #include "gendlg.h"
 #include "utils.h"
 #include "ctype.h"
-#if !defined( __WATCOMC__ )
-#include <clibext.h>
-#endif
+
+#include "clibext.h"
 
 
 /* A few new defines, rather than hard numbers in source */
@@ -76,19 +75,15 @@
         (1 + (num - 1) * (bwidth + BUTTON_GAP( cols, of, bwidth, 1 ))))
 
 
-extern vhandle          FullInstall;
-extern vhandle          SelectiveInstall;
-
 typedef struct dlg_window_set {
     dlg_state           state;
     a_dialog_header     *current_dialog;     /* stuff needed in future */
 } DLG_WINDOW_SET;
 
-dlg_state       GenericDialog( gui_window *parent, a_dialog_header * );
-extern void     SetDefaultAutoSetValue( vhandle var_handle );
-extern void     ResetDriveInfo();
+extern vhandle  FullInstall;
+extern vhandle  SelectiveInstall;
 
-int VisibilityCondition = 0;
+bool    VisibilityCondition = false;
 
 static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *curr_dialog )
 /**********************************************************************************/
@@ -451,7 +446,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     // Kind of like an on and off (below) switch
     // for special behaviour of GetOptionVarValue()
     // SetVariableByName( "_Visibility_Condition_", "1" );
-    VisibilityCondition = 1;
+    VisibilityCondition = true;
 
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         // Figure out which controls to hide and which to show.
@@ -502,7 +497,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     GUIMemFree( control_on_new_line );
 
     // SetVariableByName( "_Visibility_Condition_", "0" );
-    VisibilityCondition = 0;
+    VisibilityCondition = false;
 
     visible_checked_radiobutton = false;
     new_check_candidate = CTL_NULL;
@@ -547,9 +542,8 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     }
 }
 
-static GUICALLBACK GenericEventProc;
-static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
-/****************************************************************************/
+static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/*******************************************************************************/
 {
 #if !defined( _UI )
     static bool         first_time = true;
@@ -615,7 +609,7 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
         break;
 #endif
     case GUI_DESTROY:
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -626,20 +620,20 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
             GetVariableVals( gui, curr_dialog, true );
             GUICloseDialog( gui );
             result->state = IdToDlgState( id );
-            break;
+            return( true );
         case CTL_CANCEL:
             GUICloseDialog( gui );
             result->state = DLG_CAN;
-            break;
+            return( true );
         case CTL_DONE:
             GUICloseDialog( gui );
             result->state = DLG_DONE;
-            break;
+            return( true );
         case CTL_OPTIONS:  // Options button on Welcome dialog
             // call Options dialog
             DoDialogWithParent( gui, "Options" );
             GetVariableVals( gui, curr_dialog, false );
-            break;
+            return( true );
         default:
             {
                 const char      *dlg_name;
@@ -670,20 +664,19 @@ static bool GenericEventProc( gui_window *gui, gui_event gui_ev, void *param )
                         }
                     }
                 }
+                if( !initializing )
+                    GetVariableVals( gui, curr_dialog, false );
+
+                UpdateControlVisibility( gui, curr_dialog, false );
+                return( true );
             }
-            if( !initializing )
-                GetVariableVals( gui, curr_dialog, false );
-
-            UpdateControlVisibility( gui, curr_dialog, false );
-
-            break;
         case CTL_HELP:
             strcpy( buff, "Help_" );
             strcat( buff, curr_dialog->name );
             DoDialogWithParent( gui, buff );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     default:
         break;
     }
@@ -868,8 +861,8 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 }
 
 
-extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
-/********************************************************************************/
+dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog )
+/*************************************************************************/
 {
     char                *title;
     DLG_WINDOW_SET      result;
@@ -901,7 +894,7 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
     GUIRefresh();
     GUIModalDlgOpen( parent == NULL ? MainWnd : parent, title, height, width,
                      curr_dialog->controls, curr_dialog->num_controls,
-                     &GenericEventProc, &result );
+                     &GenericGUIEventProc, &result );
     ResetDriveInfo();
     return( result.state );
 }

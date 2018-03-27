@@ -68,7 +68,7 @@ INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             SetWindowText( hwnd, pai->title );
         }
         if( pai->name != NULL ) {
-            sprintf( buff, banner1p1( "%s" ), pai->name );
+            sprintf( buff, "%s", pai->name );
             SetDlgItemText( hwnd, ABOUT_NAME, buff );
         }
         if( pai->version != NULL ) {

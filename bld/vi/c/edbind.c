@@ -66,7 +66,7 @@ static void Banner( void )
     }
     printf( banner1w( "Editor Bind Utility", _EDBIND_VERSION_ ) "\n" );
     printf( banner2 "\n" );
-    printf( banner2a( "1984" ) "\n" );
+    printf( banner2a( 1984 ) "\n" );
     printf( banner3 "\n" );
     printf( banner3a "\n" );
 }
@@ -227,7 +227,7 @@ static FILE *GetFromEnvAndOpen( char *inpath )
 /*
  * Usage - dump the usage message
  */
-#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
     #pragma aux Usage aborts;
 #endif
 

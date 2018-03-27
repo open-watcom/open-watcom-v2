@@ -58,7 +58,7 @@ bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, 
 
         if( !WResIsEmptyWindow( wind ) ) {
             res = WResGetLangInfo( wind );
-            if( !WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) ) {
+            if( !WRESSEEK( hinfo->fp, res->Offset, SEEK_SET ) ) {
                 return( true );
             }
         }
@@ -83,7 +83,7 @@ bool WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource )
 {
     WResID              *resource_type;
     WResID              *resource_id;
-    int                 rc;
+    bool                rc;
 
     if( IS_INTRESOURCE( idResource ) ) {
         resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );

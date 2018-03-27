@@ -47,8 +47,6 @@
 #include "dbgprog.h"
 
 
-extern stack_entry      *ExprSP;
-
 typedef enum {
     I1,
     U1,
@@ -79,8 +77,10 @@ static conv_class ConvIdx( dip_type_info *info )
 {
     unsigned    size;
 
-    if( info->kind == TK_STRING ) return( STR );
-    if( info->size > sizeof( item_mach ) ) return( ERR );
+    if( info->kind == TK_STRING )
+        return( STR );
+    if( info->size > sizeof( item_mach ) )
+        return( ERR );
     size = info->size;
     switch( info->kind ) {
     case TK_BOOL:
@@ -164,8 +164,8 @@ static conv_class ConvIdx( dip_type_info *info )
 void FromItem( item_mach *tmp, stack_entry *entry )
 {
     unsigned            size;
-    mad_type_info       src_type;
-    mad_type_info       dst_type;
+    mad_type_info       src_mti;
+    mad_type_info       dst_mti;
     dip_type_info       ti;
 
     if( entry->info.size > sizeof( *tmp ) ) {
@@ -177,27 +177,27 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_type );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_mti );
         } else {
-            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_type );
+            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_mti );
         }
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.uint, 0 );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.uint, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &dst_type );
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.real, 0 );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &src_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &dst_mti );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.real, 0 );
         return;
     case TK_COMPLEX:
         ti.kind = TK_REAL;
         ti.size = entry->info.size / 2;
         ti.modifier = entry->info.modifier;
-        MADTypeInfo( MADTypeForDIPType( &ti ), &src_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.cmplx.re ), &dst_type );
-        MADTypeConvert( &src_type, tmp, &dst_type, &entry->v.cmplx.re, 0 );
-        MADTypeConvert( &src_type, (unsigned_8 *)tmp + ti.size, &dst_type, &entry->v.cmplx.im, 0 );
+        MADTypeInfo( MADTypeForDIPType( &ti ), &src_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.cmplx.re ), &dst_mti );
+        MADTypeConvert( &src_mti, tmp, &dst_mti, &entry->v.cmplx.re, 0 );
+        MADTypeConvert( &src_mti, (unsigned_8 *)tmp + ti.size, &dst_mti, &entry->v.cmplx.im, 0 );
         return;
     case TK_POINTER:
     case TK_ADDRESS:
@@ -211,6 +211,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
             case 8:
                 //NYI: 64 bit offsets
                 entry->info.size = 4;
+                /* fall through */
             case 4:
                 entry->v.addr.mach.offset = tmp->lo;
                 return;
@@ -246,8 +247,8 @@ void FromItem( item_mach *tmp, stack_entry *entry )
 void ToItem( stack_entry *entry, item_mach *tmp )
 {
     unsigned            size;
-    mad_type_info       src_type;
-    mad_type_info       dst_type;
+    mad_type_info       src_mti;
+    mad_type_info       dst_mti;
 
     if( entry->info.size > sizeof( *tmp ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
@@ -259,18 +260,18 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_type );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
         if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED ) {
-            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_type );
+            MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_mti );
         } else {
-            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_type );
+            MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_mti );
         }
-        MADTypeConvert( &src_type, &entry->v.uint, &dst_type, tmp, 0 );
+        MADTypeConvert( &src_mti, &entry->v.uint, &dst_mti, tmp, 0 );
         return;
     case TK_REAL:
-        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_type );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_type );
-        MADTypeConvert( &src_type, &entry->v.real, &dst_type, tmp, 0 );
+        MADTypeInfo( MADTypeForDIPType( &entry->info ), &dst_mti );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
+        MADTypeConvert( &src_mti, &entry->v.real, &dst_mti, tmp, 0 );
         return;
     case TK_COMPLEX:
         switch( size ) {
@@ -371,42 +372,48 @@ OVL_EXTERN bool ConvU8( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvU1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_8)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvU2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_16)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvU4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     U32ToU64( (unsigned_32)U32FetchTrunc( entry->v.uint ), &entry->v.uint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI1( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_8)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI2( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_16)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
 
 OVL_EXTERN bool ConvI4( stack_entry *entry, conv_class from )
 {
-    if( !ConvU8( entry, from ) ) return( false );
+    if( !ConvU8( entry, from ) )
+        return( false );
     I32ToI64( (signed_32)U32FetchTrunc( entry->v.uint ), &entry->v.sint );
     return( true );
 }
@@ -454,14 +461,16 @@ OVL_EXTERN bool ConvR10( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvR4( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( false );
+    if( !ConvR10( entry, from ) )
+        return( false );
     DToLD( (float)LDToD( &entry->v.real ), &entry->v.real );
     return( true );
 }
 
 OVL_EXTERN bool ConvR8( stack_entry *entry, conv_class from )
 {
-    if( !ConvR10( entry, from ) ) return( false );
+    if( !ConvR10( entry, from ) )
+        return( false );
     DToLD( (double)LDToD( &entry->v.real ), &entry->v.real );
     return( true );
 }
@@ -505,7 +514,8 @@ OVL_EXTERN bool ConvC20( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( false );
+    if( !ConvC20( entry, from ) )
+        return( false );
     DToLD( (float)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (float)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
     return( true );
@@ -513,7 +523,8 @@ OVL_EXTERN bool ConvC8( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvC16( stack_entry *entry, conv_class from )
 {
-    if( !ConvC20( entry, from ) ) return( false );
+    if( !ConvC20( entry, from ) )
+        return( false );
     DToLD( (double)LDToD( &entry->v.cmplx.re ), &entry->v.cmplx.re );
     DToLD( (double)LDToD( &entry->v.cmplx.im ), &entry->v.cmplx.im );
     return( true );
@@ -558,7 +569,8 @@ OVL_EXTERN bool ConvNP4( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvNP2( stack_entry *entry, conv_class from )
 {
-    if( !ConvNP4( entry, from ) ) return( false );
+    if( !ConvNP4( entry, from ) )
+        return( false );
     entry->v.addr.mach.offset = (addr32_off)entry->v.addr.mach.offset;
     return( true );
 }
@@ -573,7 +585,8 @@ OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
     case U2:
     case U4:
     case U8:
-        if( (entry->flags & SF_CONST) && U64Test( &entry->v.uint ) == 0 ) tmp = NilAddr;
+        if( (entry->flags & SF_CONST) && U64Test( &entry->v.uint ) == 0 )
+            tmp = NilAddr;
         //NYI: 64 bit offsets
         tmp.mach.offset = U32FetchTrunc( entry->v.uint );
         break;
@@ -581,7 +594,8 @@ OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
     case I2:
     case I4:
     case I8:
-        if( (entry->flags & SF_CONST) && I64Test( &entry->v.sint ) == 0 ) tmp = NilAddr;
+        if( (entry->flags & SF_CONST) && I64Test( &entry->v.sint ) == 0 )
+            tmp = NilAddr;
         //NYI: 64 bit offsets
         tmp.mach.offset = U32FetchTrunc( entry->v.sint );
         break;
@@ -604,7 +618,8 @@ OVL_EXTERN bool ConvFP6( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvFP4( stack_entry *entry, conv_class from )
 {
-    if( !ConvFP6( entry, from ) ) return( false );
+    if( !ConvFP6( entry, from ) )
+        return( false );
     entry->v.addr.mach.offset = (addr32_off)entry->v.addr.mach.offset;
     return( true );
 }
@@ -661,9 +676,8 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s )
     if( s == 0 && k == TK_INTEGER ) {
         s = DefaultSize( DK_INT );
     }
-    if( entry->info.kind == k
-     && entry->info.modifier == m
-     && entry->info.size == s ) return;
+    if( entry->info.kind == k && entry->info.modifier == m && entry->info.size == s )
+        return;
     from = ConvIdx( &entry->info );
     switch( from ) {
     case U1:
@@ -805,12 +819,10 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     promote_left = false;
     if( lclass != result_class ) {
         promote_left = true;
-        ConvertTo( left, result_info->kind,
-                result_info->modifier, result_info->size );
+        ConvertTo( left, result_info->kind, result_info->modifier, result_info->size );
     }
     if( rclass != result_class ) {
-        ConvertTo( right, result_info->kind,
-                result_info->modifier, result_info->size );
+        ConvertTo( right, result_info->kind, result_info->modifier, result_info->size );
     }
     /* set up result type in left operand */
     if( left->th != NULL && right->th != NULL ) {
@@ -845,37 +857,35 @@ void AddOp( stack_entry *left, stack_entry *right )
 void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
 {
     unsigned            bytes;
-    mad_type_info       src;
+    mad_type_info       src_mti;
 
     bytes = BITS2BYTES( mti->b.bits );
     switch( mti->b.kind ) {
     case MTK_INTEGER:
         ConvertTo( entry, TK_INTEGER, TM_UNSIGNED, bytes );
-        MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.uint ), &src );
+        MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.uint ), &src_mti );
         break;
     case MTK_ADDRESS:
         if( mti->a.seg.bits == 0 ) {
             ConvertTo( entry, TK_ADDRESS, TM_NEAR, bytes );
-            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach.offset ), &src );
+            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach.offset ), &src_mti );
         } else {
             ConvertTo( entry, TK_ADDRESS, TM_FAR, bytes );
-            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach ), &src );
+            MADTypeInfoForHost( MTK_ADDRESS, sizeof( entry->v.addr.mach ), &src_mti );
         }
         break;
     case MTK_FLOAT:
         ConvertTo( entry, TK_REAL, TM_NONE, bytes );
-        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src );
+        MADTypeInfoForHost( MTK_FLOAT, sizeof( entry->v.real ), &src_mti );
         break;
+    case MTK_MMX:
     case MTK_XMM:
-        //MAD: nyi
-        ToItem( entry, tmp );
-        return;
     case MTK_CUSTOM:
         //MAD: nyi
         ToItem( entry, tmp );
         return;
     }
-    if( MADTypeConvert( &src, &entry->v, mti, tmp, 0 ) != MS_OK ) {
+    if( MADTypeConvert( &src_mti, &entry->v, mti, tmp, 0 ) != MS_OK ) {
         ToItem( entry, tmp );
     }
 }

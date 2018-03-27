@@ -71,7 +71,7 @@ struct imp_type_handle {
     ji_ptr              sig;
     union {
         ji_ptr          object;
-        imp_sym_handle  is;
+        imp_sym_handle  ish;
     }   u;
     enum {
         JT_SIGNATURE,
@@ -97,8 +97,8 @@ struct imp_image_handle {
     struct methodblock  *methods;
 };
 
-#define IDX_TO_METHOD_BLOCK( ii, i )    (ii->mb + (i) * sizeof( struct methodblock ) )
-#define METHOD_BLOCK_TO_IDX( ii, mb )   (((mb)-ii->mb) / sizeof( struct methodblock ) )
+#define IDX_TO_METHOD_BLOCK( iih, i )    (iih->mb + (i) * sizeof( struct methodblock ) )
+#define METHOD_BLOCK_TO_IDX( iih, mb )   (((mb) - iih->mb) / sizeof( struct methodblock ) )
 
 extern address  NilAddr;
 extern address  DefCodeAddr;
@@ -123,9 +123,9 @@ size_t          NameCopy( char *buff, const char *src, size_t buff_size, size_t 
 void            NormalizeClassName( char *p, unsigned len );
 
 
-search_result   FindMBIndex( imp_image_handle *ii, addr_off off, unsigned *idx );
+search_result   FindMBIndex( imp_image_handle *, addr_off off, unsigned *idx );
 
 dip_status      FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle );
 
-dip_status      ImpSymLocation( imp_image_handle *ii, imp_sym_handle *is, location_context *lc, location_list *ll, ji_ptr *obj_handle );
+dip_status      ImpSymLocation( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll, ji_ptr *obj_handle );
 #endif

@@ -186,11 +186,11 @@ void DoStatDialog( HWND );
 
 /* sym.c */
 BOOL FindSymbol( ADDRESS *addr, syminfo *si );
-void SymFileClose( void );
 RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo );
 bool InitSymbols( void );
 void FiniSymbols( void );
 bool LoadDbgInfo( void );
+void UnloadDbgInfo( void );
 
 /* win32app.c */
 bool CheckIsWin32App( HANDLE );

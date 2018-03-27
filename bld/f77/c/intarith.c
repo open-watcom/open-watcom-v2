@@ -35,8 +35,8 @@
 
 
 #if defined( _M_I86 )  // 16-bit
- extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
- extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
+ extern bool __Add( intstar4 *arg1, intstar4 *arg2 );
+ extern bool __Sub( intstar4 *arg1, intstar4 *arg2 );
  #if defined(__SMALL__) || defined(__MEDIUM__)
   #pragma aux   __Add = \
                 "mov    ax,[bx]"   \
@@ -90,10 +90,11 @@
                 "L1:pop ds"        \
                 parm [dx ax] [cx bx] value [al];
  #endif
- extern  bool   ChkI4Mul(intstar4 __far *arg1,intstar4 arg2);
+ extern  bool   ChkI4Mul(intstar4 __far *arg1, intstar4 arg2);
 #elif defined( __WATCOMC__ ) && defined( _M_IX86 )
- extern  bool    __Add( intstar4 *arg1, intstar4 *arg2 );
- extern  bool    __Sub( intstar4 *arg1, intstar4 *arg2 );
+ extern bool __Add( intstar4 *arg1, intstar4 *arg2 );
+ extern bool __Sub( intstar4 *arg1, intstar4 *arg2 );
+ extern bool __Mul( intstar4 *arg1, intstar4 *arg2 );
  #pragma aux    __Add = \
                 "mov    edx,[edx]" \
                 "add    [eax],edx" \
@@ -104,7 +105,6 @@
                 "sub    [eax],edx" \
                 "seto   al"        \
                 parm [eax] [edx] value [al];
- extern bool    __Mul( intstar4 *arg1, intstar4 *arg2 );
  #pragma aux    __Mul = \
                 "push   ebx"       \
                 "mov    edx,[edx]" \
@@ -115,7 +115,7 @@
                 "seto   al"        \
                 parm [eax] [edx] value [al];
 #else
-bool    __Add( intstar4 *arg1, intstar4 *arg2 )
+static bool __Add( intstar4 *arg1, intstar4 *arg2 )
 {
     intstar4  arg1v = *arg1;
     intstar4  arg2v = *arg2;
@@ -125,7 +125,7 @@ bool    __Add( intstar4 *arg1, intstar4 *arg2 )
     return( ( result < arg2v ) && ( arg1v >= 0 ) || ( result > arg2v ) && ( arg1v < 0 ) );
 }
 
-bool    __Sub( intstar4 *arg1, intstar4 *arg2 )
+static bool __Sub( intstar4 *arg1, intstar4 *arg2 )
 {
     intstar4  arg1v = *arg1;
     intstar4  arg2v = *arg2;
@@ -135,7 +135,7 @@ bool    __Sub( intstar4 *arg1, intstar4 *arg2 )
     return( ( result < arg1v ) && ( arg2v < 0 ) || ( result > arg1v ) && ( arg2v >= 0 ) );
 }
 
-bool    __Mul( intstar4 *arg1, intstar4 *arg2 )
+static bool __Mul( intstar4 *arg1, intstar4 *arg2 )
 {
 #if _INTEGRAL_MAX_BITS >= 64
     long long arg1v = *arg1;

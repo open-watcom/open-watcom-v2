@@ -78,42 +78,44 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_fhandle         fid;
-    const char          *ptr;
+    FILE                *fp;
     trap_load_func      *ld_func;
-    char                trap_name[_MAX_PATH];
     const trap_requests *trap_funcs;
-#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
+    char                chr;
+#if !defined( BUILTIN_TRAP_FILE )
+    char                trap_name[_MAX_PATH];
     char                *p;
 #endif
 
     if( parms == NULL || *parms == '\0' )
-        parms = "std";
-#if !defined( BUILTIN_TRAP_FILE ) && defined( USE_FILENAME_VERSION )
-    for( ptr = parms, p = trap_name; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
-    }
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr )
-        ;
+        parms = DEFAULT_TRP_NAME;
+#if !defined( BUILTIN_TRAP_FILE )
+    p = trap_name;
 #endif
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+#if !defined( BUILTIN_TRAP_FILE )
+        *p++ = chr;
+#endif
+    }
 #if !defined( BUILTIN_TRAP_FILE )
   #ifdef USE_FILENAME_VERSION
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-    *p = '\0';
-    fid = DIGLoader( Open )( trap_name, p - trap_name, "trp", trap_name, sizeof( trap_name ) );
-  #else
-    fid = DIGLoader( Open )( parms, ptr - parms, "trp", trap_name, sizeof( trap_name ) );
   #endif
-    if( fid == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+    *p = '\0';
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trap_name );
+    fp = DIGLoader( Open )( trap_name, p - trap_name, "trp", trap_name, sizeof( trap_name ) );
+    if( fp == NULL ) {
         return( buff );
     }
-    TrapFile = PE_loadLibraryHandle( -1, trap_name );
-    DIGLoader( Close )( fid );
+    TrapFile = PE_loadLibraryFile( fp, trap_name );
+    DIGLoader( Close )( fp );
     if( TrapFile == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_name );
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, trap_name );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
@@ -125,9 +127,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
         trap_funcs = ld_func( &TrapCallbacks );
         if( trap_funcs != NULL ) {
-            parms = ptr;
-            if( *parms != '\0' )
-                ++parms;
             *trap_ver = trap_funcs->init_func( parms, buff, trap_ver->remote );
             FiniFunc = trap_funcs->fini_func;
             if( buff[0] == '\0' ) {

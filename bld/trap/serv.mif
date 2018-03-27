@@ -44,12 +44,14 @@ sys_x86_nlm     = form novell nlm $(description) &
                         op exit = _LibCPostlude &
                         op screenname 'none' &
                         @nversion.tmp &
+                        import _cstart_, _argc &
                         file $(%NOVELLNDK)/../libc/imports/libcpre.obj
 !else
-sys_x86_nlm     = form novell nlm $(description) &
+sys_x86_nlm     = sys novell $(description) &
                         op st=8k &
                         @nversion.tmp &
-                        import @$(trap_dir)/common/nlm/trap.imp &
+                        import @$(nwoss_dir)/common/imp/ownwos.imp &
+                        import _cstart_, _argc &
                         op nodef
 !endif
 
@@ -89,7 +91,6 @@ target          = $(serv_basename)$(server_ext_$(host_os))
 target          = $(serv_basename).exe
 !endif
 
-dig_os = $(target_os)
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 
@@ -108,7 +109,7 @@ resource_file = $(serv_basename).res
 !else
 SERVER_remote_objs = serv.obj $(os_prefix)trio.obj
 !endif
-SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
+SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs) $(dig_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
 SERVER_remote_objs += $(os_prefix)noth.obj

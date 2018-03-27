@@ -30,25 +30,31 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <ctype.h>
 
-extern GUICALLBACK      WndMainEventProc;
+
+typedef struct {
+    gui_window  *gui;
+    gui_event   gui_ev;
+    void        *parm;
+    bool        ret;
+} spawn_parms;
 
 gui_coord               WndMax;
 gui_coord               WndScreen;
 gui_coord               WndScale;
-a_window                *WndMain;
+a_window                WndMain;
 wnd_switches            WndSwitches;
 int                     WndMaxDirtyRects = 6;
 int                     WndDClick = 300;
 bool                    WndIgnoreAllEvents = false;
+WNDCLICKHOOK            *WndClickHook;
 
 static int              wndProcNesting = 0;
-static gui_colour_set Colours = { GUI_BLACK, GUI_BLACK };
-static gui_mouse_cursor wndCursorType;
-static char *           BusyString;
-
+static gui_colour_set   Colours = { GUI_BLACK, GUI_BLACK };
+static gui_mcursor_type wndCursorType = GUI_ARROW_CURSOR;
+static char             *BusyString = NULL;
 
 int WndGetDClick( void )
 {
@@ -83,7 +89,8 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
 {
     wnd_create_struct   info;
 
-    if( !GUIWndInit( WndDClick, WndStyle ) ) return( false );
+    if( !GUIWndInit( WndDClick, WndStyle ) )
+        return( false );
     GUIMDIInitMenuOnly();
     GUI3DDialogInit();
     GUISetBackgroundColour( &Colours );
@@ -123,7 +130,8 @@ void WndShowWndMain( void )
 
 bool WndFini( void )
 {
-    if( !WndShutDownHook() ) return( false );
+    if( !WndShutDownHook() )
+        return( false );
     GUIDestroyWnd( NULL );
     if( BusyString != NULL ) {
         WndFree( BusyString );
@@ -132,20 +140,19 @@ bool WndFini( void )
     return( true );
 }
 
-
-void WndInitNumRows( a_window *wnd )
+void WndInitNumRows( a_window wnd )
 {
-    wnd->rows = GUIGetNumRows( wnd->gui );
+    wnd->rows = (wnd_row)GUIGetNumRows( wnd->gui );
 }
 
-
-static void WndMoveResize( a_window *wnd )
+static void WndMoveResize( a_window wnd )
 {
     gui_text_metrics    text;
     gui_rect            rect;
     wnd_coord           save_curr;
 
-    if( WndMain != NULL && WndIsMinimized( WndMain ) ) return;
+    if( WndMain != NULL && WndIsMinimized( WndMain ) )
+        return;
     GUIGetTextMetrics( wnd->gui, &text );
     GUIGetClientRect( wnd->gui, &rect );
     wnd->width = rect.width;
@@ -177,74 +184,67 @@ static void WndMoveResize( a_window *wnd )
     WndResizeHook( wnd );
 }
 
-static void WndKeyEnter( a_window *wnd )
+static void WndKeyEnter( a_window wnd )
 {
     if( WndHasCurrent( wnd ) ) {
         if( !WndPieceIsTab( wnd, wnd->current.row, wnd->current.piece ) &&
-            _Is( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) {
+            WndSwitchOn( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) {
             return;
         }
         WndModify( wnd, wnd->current.row, wnd->current.piece );
     } else {
-        if( _Is( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) {
+        if( WndSwitchOn( wnd, WSW_ONLY_MODIFY_TABSTOP ) ) {
             return;
         }
         WndModify( wnd, WND_NO_ROW, WND_NO_PIECE );
     }
 }
 
-
-typedef struct {
-    gui_window  *gui;
-    gui_event   event;
-    void        *parm;
-    bool        ret;
-} spawn_parms;
-
-WNDCLICKHOOK *WndClickHook;
-
 void WndInstallClickHook( WNDCLICKHOOK *rtn )
 {
     WndClickHook = rtn;
 }
 
-
-static void DoMainEventProc( spawn_parms *spawnp )
+static void DoMainGUIEventProc( spawn_parms *spawnp )
 {
-    a_window            *wnd;
+    a_window            wnd;
     bool                ret;
     gui_key             key;
     gui_keystate        state;
     gui_ctl_id          id;
     int                 scroll;
-    void                *cursor;
+    gui_mcursor_handle  old_cursor;
 
     gui_window          *gui = spawnp->gui;
-    gui_event           event = spawnp->event;
+    gui_event           gui_ev = spawnp->gui_ev;
     void                *parm = spawnp->parm;
 
     wnd = GUIGetExtra( gui );
     spawnp->ret = false;
-    if( wnd == NULL ) return;
+    if( wnd == NULL )
+        return;
     if( WndIgnoreAllEvents ) {
-        if( event == GUI_PAINT ) {
-            WndRepaint( wnd );
+        if( gui_ev == GUI_PAINT ) {
+            WndSetRepaint( wnd );
         }
-        if( event == GUI_MOUSEMOVE && GUIIsGUI() ) {
+        if( gui_ev == GUI_MOUSEMOVE ) {
             GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
         }
         return;
     }
-    if( event == GUI_MOUSEMOVE ) {
+    if( gui_ev == GUI_MOUSEMOVE ) {
         GUISetMouseCursor( wndCursorType );
-        if( WndIgnoreMouseMove( wnd ) ) return;
+        if( WndIgnoreMouseMove( wnd ) ) {
+            return;
+        }
     }
-    if( !WndDoingRefresh && wndProcNesting == 1 ) WndDoInput();
-    ret = true;
+    if( !WndDoingRefresh && wndProcNesting == 1 )
+        WndDoInput();
 
-    WndChooseEvent( wnd, event, parm );
-    WndSelectEvent( wnd, event, parm );
-    switch( event ) {
+    WndChooseEvent( wnd, gui_ev, parm );
+    WndSelectEvent( wnd, gui_ev, parm );
+    ret = true;
+    switch( gui_ev ) {
     case GUI_STATUS_CLEARED:
         return;
     case GUI_ACTIVATEAPP:
@@ -254,13 +254,13 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndSetPopup( id );
         break;
     case GUI_INIT_WINDOW:
-        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->num_popups );
         wnd->gui = gui;
-        cursor = WndHourGlass( NULL );
+        WndSetPopUpMenu( wnd, wnd->info->popupmenu, wnd->info->popup_num_items );
+        old_cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WndEvent( wnd, event, parm );
+        ret = WNDEVENT( wnd, gui_ev, parm );
         WndSetThumb( wnd );
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_SCROLL_VERTICAL:
         GUI_GET_SCROLL( parm, scroll );
@@ -273,32 +273,35 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndScrollDown( wnd );
         break;
     case GUI_SCROLL_PAGE_UP:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) ) break;
+        if( WNDEVENT( wnd, gui_ev, parm ) )
+            break;
         WndPageUp( wnd );
         break;
     case GUI_SCROLL_PAGE_DOWN:
-        if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) ) break;
+        if( WNDEVENT( wnd, gui_ev, parm ) )
+            break;
         WndPageDown( wnd );
         break;
     case GUI_NOW_ACTIVE:
         if( wnd == WndMain ) {
             WndNextNonIconToFront( WndNext( NULL ) );
         } else {
-            _Set( wnd, WSW_ACTIVE );
+            WndSetSwitches( wnd, WSW_ACTIVE );
             WndAddPopupMenu( wnd );
-            WndEvent( wnd, event, parm );
+            WNDEVENT( wnd, gui_ev, parm );
         }
         ret = false;
         break;
     case GUI_NOT_ACTIVE:
-        _Clr( wnd, WSW_ACTIVE );
+        WndClrSwitches( wnd, WSW_ACTIVE );
         if( wnd != WndMain ) {
-            WndEvent( wnd, event, parm );
+            WNDEVENT( wnd, gui_ev, parm );
         }
         ret = false;
         break;
     case GUI_MOVE:
-        if( WndMain != NULL && WndIsMinimized( WndMain ) ) return;
+        if( WndMain != NULL && WndIsMinimized( WndMain ) )
+            return;
         WndResizeHook( wnd );
         break;
     case GUI_FONT_CHANGED :
@@ -309,41 +312,40 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndResetScroll( wnd );
         /* fall through */
     case GUI_RESIZE:
-        _Clr( wnd, WSW_ICONIFIED );
-        cursor = WndHourGlass( NULL );
+        WndClrSwitches( wnd, WSW_ICONIFIED );
+        old_cursor = WndHourGlass( NULL );
         WndMoveResize( wnd );
-        ret = WndEvent( wnd, GUI_RESIZE, parm );
+        ret = WNDEVENT( wnd, gui_ev, parm );
         WndSetThumb( wnd );
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_LBUTTONDBLCLK:
-        _Clr( wnd, WSW_CLICKED );
-        _Set( wnd, WSW_DCLICKED );
+        WndClrSwitches( wnd, WSW_CLICKED );
+        WndSetSwitches( wnd, WSW_DCLICKED );
         WndLButtonDown( wnd, parm );
         break;
     case GUI_LBUTTONDOWN:
-        _Clr( wnd, WSW_DCLICKED );
-        _Set( wnd, WSW_CLICKED );
+        WndClrSwitches( wnd, WSW_DCLICKED );
+        WndSetSwitches( wnd, WSW_CLICKED );
         WndLButtonDown( wnd, parm );
         break;
     case GUI_LBUTTONUP:
-        cursor = WndHourGlass( NULL );
-        if( _Is( wnd, WSW_DCLICKED ) ) {
+        old_cursor = WndHourGlass( NULL );
+        if( WndSwitchOn( wnd, WSW_DCLICKED ) ) {
             WndLDblClk( wnd, parm );
-        } else if( _Is( wnd, WSW_CLICKED ) ) {
+        } else if( WndSwitchOn( wnd, WSW_CLICKED ) ) {
             WndLButtonUp( wnd, parm );
         }
-        _Clr( wnd, WSW_CLICKED );
-        _Clr( wnd, WSW_DCLICKED );
-        WndHourGlass( cursor );
+        WndClrSwitches( wnd, WSW_CLICKED | WSW_DCLICKED );
+        WndHourGlass( old_cursor );
         break;
     case GUI_RBUTTONDOWN:
         WndRButtonDown( wnd, parm );
         break;
     case GUI_RBUTTONUP:
-        cursor = WndHourGlass( NULL );
+        old_cursor = WndHourGlass( NULL );
         WndRButtonUp( wnd, parm );
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_MOUSEMOVE:
         WndMouseMove( wnd, parm );
@@ -352,12 +354,12 @@ static void DoMainEventProc( spawn_parms *spawnp )
         GUI_GETID( parm, id );
         if( WndClickHook != NULL && WndClickHook( wnd, id ) )
             break;
-        cursor = WndHourGlass( NULL );
+        old_cursor = WndHourGlass( NULL );
         WndClick( wnd, id );
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_PAINT:
-        if( _Isnt( wnd, WSW_REPAINT ) ) { // going to repaint anyway
+        if( WndSwitchOff( wnd, WSW_REPAINT ) ) { // going to repaint anyway
             WndProcPaint( wnd, parm );
         }
         break;
@@ -390,14 +392,13 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 break;
             }
         }
-        if( GUI_IS_ASCII( key ) && _Is( wnd, WSW_CHOOSING ) &&
-            wnd->keypiece != WND_NO_PIECE && WndKeyChar( key ) ) {
-            if( !WndKeyChoose( wnd, key ) ) {
+        if( WndKeyIsPrintChar( key ) && WndSwitchOn( wnd, WSW_CHOOSING ) && WndKeyPiece( wnd ) != WND_NO_PIECE ) {
+            if( !WndKeyChoose( wnd, UCHAR_VALUE( key ) ) ) {
                 Ring();
             }
             break;
         }
-        cursor = WndHourGlass( NULL );
+        old_cursor = WndHourGlass( NULL );
         if( !WndProcMacro( wnd, key ) ) {
             switch( key ) {
             case GUI_KEY_HOME:
@@ -436,28 +437,30 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndCursorRight( wnd );
                 break;
             case GUI_KEY_PAGEDOWN:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_DOWN, parm ) ) break;
+                if( WNDEVENT( wnd, GUI_SCROLL_PAGE_DOWN, parm ) )
+                    break;
                 WndPageDown( wnd );
                 break;
             case GUI_KEY_PAGEUP:
-                if( WndEvent( wnd, GUI_SCROLL_PAGE_UP, parm ) ) break;
+                if( WNDEVENT( wnd, GUI_SCROLL_PAGE_UP, parm ) )
+                    break;
                 WndPageUp( wnd );
                 break;
             case GUI_KEY_UP:
-                if( _Is( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
+                if( WndSwitchOn( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
                     WndScrollUp( wnd );
                 } else {
-                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
+                    if( WndSwitchOn( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
                         WndToSelectMode( wnd );
                     }
                     WndCursorUp( wnd );
                 }
                 break;
             case GUI_KEY_DOWN:
-                if( _Is( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
+                if( WndSwitchOn( wnd, WSW_MAP_CURSOR_TO_SCROLL ) ) {
                     WndScrollDown( wnd );
                 } else {
-                    if( _Is( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
+                    if( WndSwitchOn( wnd, WSW_MULTILINE_SELECT ) && GUI_SHIFT_STATE( state ) ) {
                         WndToSelectMode( wnd );
                     }
                     WndCursorDown( wnd );
@@ -477,14 +480,14 @@ static void DoMainEventProc( spawn_parms *spawnp )
         if( ret ) {
             GUIFlushKeys();
         }
-        WndHourGlass( cursor );
+        WndHourGlass( old_cursor );
         break;
     case GUI_DESTROY:
         WndDestroy( wnd );
         wnd = NULL;
         break;
     case GUI_ICONIFIED:
-        _Set( wnd, WSW_ICONIFIED );
+        WndSetSwitches( wnd, WSW_ICONIFIED );
         if( wnd == WndNext( NULL ) ) {
             WndNextNonIconToFront( WndNext( wnd ) );
         }
@@ -498,6 +501,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
             bool    dummy;
 
             GUI_GET_ENDSESSION( parm, endsession, dummy );
+            (void)dummy;    /* reference to unused variable */
             if( endsession ) {
                 WndEndSessionHook();
             }
@@ -514,7 +518,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
     case GUI_TOOLBAR_FLOATING:
     case GUI_TOOLBAR_FIXED:
     case GUI_TOOLBAR_DESTROYED:
-        WndSetToolBar( event );
+        WndSetToolBar( gui_ev );
         ret = true;
         break;
     case GUI_HSCROLL_NOTIFY:
@@ -535,44 +539,38 @@ static void DoMainEventProc( spawn_parms *spawnp )
     return;
 }
 
-
-void *WndHourCursor( void )
+gui_mcursor_handle WndHourCursor( void )
 {
-    if( GUIIsGUI() ) {
-        wndCursorType = GUI_HOURGLASS_CURSOR;
-        return( GUISetMouseCursor( GUI_HOURGLASS_CURSOR ) );
-    } else {
+    if( !GUIIsGUI() ) {
         if( BusyString == NULL ) {
             BusyString = WndLoadString( LITERAL_Busy );
         }
         WndInternalStatusText( BusyString );
-        return( "" );
     }
+    wndCursorType = GUI_HOURGLASS_CURSOR;
+    return( GUISetMouseCursor( GUI_HOURGLASS_CURSOR ) );
 }
 
-void *WndArrowCursor( void )
+gui_mcursor_handle WndArrowCursor( void )
 {
-    if( GUIIsGUI() ) {
-        wndCursorType = GUI_ARROW_CURSOR;
-        return( GUISetMouseCursor( GUI_ARROW_CURSOR ) );
-    } else {
+    if( !GUIIsGUI() ) {
         WndResetStatusText();
-        return( "" );
     }
+    wndCursorType = GUI_ARROW_CURSOR;
+    return( GUISetMouseCursor( GUI_ARROW_CURSOR ) );
 }
 
-static void *WndSetCursor( void *to )
+static gui_mcursor_handle WndSetCursor( gui_mcursor_handle to )
 {
-    if( GUIIsGUI() ) {
-        wndCursorType = GUI_ARROW_CURSOR;
-        GUIResetMouseCursor( to );
-    } else {
+    if( !GUIIsGUI() ) {
         WndResetStatusText();
     }
+    wndCursorType = GUI_ARROW_CURSOR;
+    GUIResetMouseCursor( to );
     return( NULL );
 }
 
-void *WndHourGlass( void *to )
+gui_mcursor_handle WndHourGlass( gui_mcursor_handle to )
 {
     if( to != NULL ) {
         return( WndSetCursor( to ) );
@@ -581,16 +579,15 @@ void *WndHourGlass( void *to )
     }
 }
 
-
-bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
+bool WndMainGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     spawn_parms         spawnp;
 
     spawnp.gui = gui;
-    spawnp.event = event;
+    spawnp.gui_ev = gui_ev;
     spawnp.parm = parm;
     wndProcNesting++;
-    SpawnP( (aui_spawn_funcP *)DoMainEventProc, &spawnp );
+    SpawnP( (aui_spawn_funcP *)DoMainGUIEventProc, &spawnp );
     wndProcNesting--;
     return( spawnp.ret );
 }

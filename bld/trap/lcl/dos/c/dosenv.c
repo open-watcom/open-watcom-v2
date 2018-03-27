@@ -32,9 +32,9 @@
 
 #include <string.h>
 #include <i86.h>
+#include "dbgpsp.h"
 #include "dosenv.h"
 
-extern unsigned       DbgPSP(void);
 
 const char __far *DOSEnvFind( char *src )
 {

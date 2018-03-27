@@ -935,7 +935,8 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
 #endif
     using_entry = NULL;
     RingIterBeg( gets_using->using_list, curr ) {
-        if( curr->using_scope != using_scope ) continue;
+        if( curr->using_scope != using_scope )
+            continue;
         // relation between scopes should not change so trigger
         // should be equal
         DbgAssert( curr->trigger == NULL || curr->trigger == trigger );
@@ -956,7 +957,8 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
     } else {
         USING_NS *curr;
         RingIterBeg( trigger->using_list, curr ) {
-            if( curr->using_scope != using_scope ) continue;
+            if( curr->using_scope != using_scope )
+                continue;
             if( curr->trigger == NULL ) {
                 break;
             }
@@ -3494,7 +3496,8 @@ static bool anyVirtualFns( SYMBOL_NAME sym_name )
 
     RingIterBeg( sym_name->name_syms, sym ) {
         fn_type = FunctionDeclarationType( sym->sym_type );
-        if( fn_type == NULL ) break;
+        if( fn_type == NULL )
+            break;
         if( fn_type->flag & TF1_VIRTUAL ) {
             return( true );
         }
@@ -5432,7 +5435,8 @@ static void scanForVFNs( SYMBOL_NAME sym_name, void *_data )
 
     RingIterBeg( sym_name->name_syms, sym ) {
         fn_type = FunctionDeclarationType( sym->sym_type );
-        if( fn_type == NULL ) break;
+        if( fn_type == NULL )
+            break;
         if( (fn_type->flag & TF1_VIRTUAL) == 0 ) {
             /* skip non-virtual functions */
             continue;

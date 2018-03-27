@@ -46,12 +46,11 @@
 #define INCL_DOSINFOSEG
 #define INCL_DOSMISC
 #define INCL_DOSMEMMGR
-#include <wos2.h>
+#include <os2.h>
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtstack.h"
 #include "stacklow.h"
-#include "exitwmsg.h"
 #include "initfini.h"
 #include "crwd.h"
 #include "thread.h"
@@ -60,6 +59,7 @@
 #include "cmain.h"
 #include "maxthrds.h"
 
+#include "exitwmsg.h"
 
 #ifdef __SW_BM
 
@@ -77,9 +77,9 @@ unsigned        _STACKLOW;
 
 /* global data */
 
-_WCRTDATA int   _WCI86FAR *_threadid;
-char            _WCI86FAR *_LpCmdLine;  /* pointer to command line */
-char            _WCI86FAR *_LpPgmName;  /* pointer to program name */
+_WCRTDATA int   __far *_threadid;
+char            __far *_LpCmdLine;  /* pointer to command line */
+char            __far *_LpPgmName;  /* pointer to program name */
 unsigned        _dynend;
 unsigned        _curbrk;
 unsigned        _STACKTOP;
@@ -101,14 +101,14 @@ int             _nothread;
 /* End of static data - used in OS/2 DLL to find beginning of near heap */
 extern char     end;
 
-static void _WCI86FAR  __null_FPE_handler( int fpe_type )
+static void __far __null_FPE_handler( int fpe_type )
 {
     fpe_type = fpe_type;
 }
 
 FPEhandler  *__FPE_handler = __null_FPE_handler;
 
-int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
+int _OS2Main( char __far *stklow, char __far *stktop,
                         unsigned envseg, unsigned cmdoff )
 /***********************************************************/
 {
@@ -144,8 +144,8 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 #else
     /* copy progname and arguments to bottom of stack */
     {
-        char    _WCI86FAR *src;
-        char    _WCI86FAR *pgmp;
+        char    __far *src;
+        char    __far *pgmp;
 
         src = MK_FP( envseg, cmdoff );
         _LpPgmName = stklow;

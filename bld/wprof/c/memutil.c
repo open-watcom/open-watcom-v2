@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "wio.h"
 #include "common.h"
 #include "dip.h"
@@ -67,7 +67,7 @@ void *ProfAlloc( size_t size )
 #else
         mem = _MALLOC( size );
 #endif
-        if( mem != NULL ) 
+        if( mem != NULL )
             break;
         if( DIPMoreMem( size ) == DS_FAIL ) {
             break;

@@ -21,6 +21,10 @@ sys_dll = 1
 
 !include ../os2io.mif
 
+.c : ../c
+
+inc_dirs = -I"../h"
+
 wdio.dll: wdio.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ sys os2 dll op map,protmode file {$[@} $(extra_linker)

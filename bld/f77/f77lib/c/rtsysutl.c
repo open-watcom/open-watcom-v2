@@ -34,7 +34,6 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "units.h"
-#include "fio.h"
 #include "posio.h"
 #include "fapptype.h"
 #include "rmemmgr.h"
@@ -248,9 +247,9 @@ void    OpenAction( ftnfile *fcb ) {
 }
 
 
-int     DfltRecType( ftnfile *fcb ) {
-//===================================
-
+static f_attrs  DfltRecType( ftnfile *fcb )
+//=========================================
+{
     if( fcb->formatted == FORMATTED_IO ) {
         return( REC_TEXT );
     } else {
@@ -263,10 +262,10 @@ int     DfltRecType( ftnfile *fcb ) {
 }
 
 
-int     _FileAttrs( ftnfile *fcb ) {
-//==================================
-
-    int     attrs;
+f_attrs     _FileAttrs( ftnfile *fcb )
+//====================================
+{
+    f_attrs attrs;
 
     attrs = 0;
     if( fcb->recfm == RECFM_DEFAULT ) {

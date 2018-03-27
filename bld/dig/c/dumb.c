@@ -33,6 +33,8 @@
 #include <string.h>
 #include "trpimp.h"
 #include "trpld.h"
+#include "ovldefn.h"
+
 
 mx_entry_p  Out_Mx_Ptr;
 
@@ -46,7 +48,7 @@ trap_retval ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSimpleStub( void )
+OVL_EXTERN trap_retval ReqSimpleStub( void )
 {
     return( 0 );
 }
@@ -133,7 +135,7 @@ trap_retval ReqGet_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
-    ret->handle = 0;
+    ret->mod_handle = 0;
     return( sizeof( *ret ) );
 }
 
@@ -201,7 +203,7 @@ static trap_retval (* const DumbRequests[])(void) = {
 };
 
 
-static trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
+OVL_EXTERN trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out_mx, mx_entry_p mx_out )
 {
     trap_retval     result;
 

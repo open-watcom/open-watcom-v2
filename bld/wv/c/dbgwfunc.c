@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,10 +50,17 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
-
+#include "dbgchopt.h"
 #include "menudef.h"
-static gui_menu_struct FuncMenu[] = {
-    #include "menufunc.h"
+
+
+#define WndFunc( wnd )  ( (func_window*)WndExtra( wnd ) )
+#define NameList( f )   ( &(f)->___n )
+
+enum {
+    PIECE_BREAK,
+    PIECE_NAME,
+    PIECE_DEMANGLED,
 };
 
 typedef struct {
@@ -64,17 +72,11 @@ typedef struct {
     bool                d2_only       : 1;
 } func_window;
 
-#define WndFunc( wnd ) ( (func_window*)WndExtra( wnd ) )
-#define NameList( f ) ( &(f)->___n )
-
-enum {
-    PIECE_BREAK,
-    PIECE_NAME,
-    PIECE_DEMANGLED,
+static gui_menu_struct FuncMenu[] = {
+    #include "menufunc.h"
 };
 
-
-static  void    FuncModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -93,7 +95,7 @@ static  void    FuncModify( a_window *wnd, int row, int piece )
     }
 }
 
-static void FuncNoMod( a_window *wnd )
+static void FuncNoMod( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
 
@@ -102,19 +104,19 @@ static void FuncNoMod( a_window *wnd )
     WndZapped( wnd );
 }
 
-static void FuncGetSourceName( a_window *wnd, int row )
+static void FuncGetSourceName( a_window wnd, int row )
 {
     func_window *func = WndFunc( wnd );
 
     NameListName( NameList( func ), row, TxtBuff, SN_QUALIFIED );
 }
 
-static int FuncNumRows( a_window *wnd )
+OVL_EXTERN wnd_row FuncNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndFunc( wnd ) ) ) );
 }
 
-static void CalcIndent( a_window *wnd )
+static void CalcIndent( a_window wnd )
 {
     gui_ord     len, max;
     int         row, rows;
@@ -131,7 +133,7 @@ static void CalcIndent( a_window *wnd )
     WndFunc( wnd )->max_name = max;
 }
 
-static void FuncSetMod( a_window *wnd, mod_handle mod )
+static void FuncSetMod( a_window wnd, mod_handle mod )
 {
     func_window *func = WndFunc( wnd );
 
@@ -140,14 +142,14 @@ static void FuncSetMod( a_window *wnd, mod_handle mod )
     CalcIndent( wnd );
 }
 
-static void FuncNewOptions( a_window *wnd )
+static void FuncNewOptions( a_window wnd )
 {
     FuncNoMod( wnd );
     FuncSetMod( wnd, WndFunc( wnd )->mod );
     WndZapped( wnd );
 }
 
-static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -185,8 +187,7 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    FuncGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -217,7 +218,7 @@ static  bool    FuncGetLine( a_window *wnd, int row, int piece,
     }
 }
 
-extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
+void    FuncNewMod( a_window wnd, mod_handle mod )
 {
     if( WndFunc( wnd )->mod == mod )
         return;
@@ -227,7 +228,7 @@ extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-static void FuncRefresh( a_window *wnd )
+OVL_EXTERN void FuncRefresh( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
     mod_handle  mod;
@@ -250,12 +251,12 @@ static void FuncRefresh( a_window *wnd )
         if( func->toggled_break ) {
             func->toggled_break = false;
         } else {
-            WndRepaint( wnd );
+            WndSetRepaint( wnd );
         }
     }
 }
 
-static void FuncSetOptions( a_window *wnd )
+OVL_EXTERN void FuncSetOptions( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
 
@@ -263,7 +264,7 @@ static void FuncSetOptions( a_window *wnd )
     FuncNewOptions( wnd );
 }
 
-static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 
@@ -274,12 +275,12 @@ static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         NameListInit( NameList( func ), WF_CODE );
         func->toggled_break = false;
         FuncSetOptions( wnd );
-        WndSetKey( wnd, PIECE_NAME );
+        WndSetKeyPiece( wnd, PIECE_NAME );
         return( true );
     case GUI_RESIZE :
         CalcIndent( wnd );
         WndZapped( wnd );
-        break;
+        return( true );
     case GUI_DESTROY :
         NameListFree( NameList( func ) );
         WndFree( func );
@@ -294,7 +295,7 @@ void FuncChangeOptions( void )
 }
 
 wnd_info FuncInfo = {
-    FuncEventProc,
+    FuncWndEventProc,
     FuncRefresh,
     FuncGetLine,
     FuncMenuItem,
@@ -306,11 +307,11 @@ wnd_info FuncInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_CODE_ADDR_CHANGE,
+    UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE,
     DefPopUp( FuncMenu )
 };
 
-extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
+a_window DoWndFuncOpen( bool is_global, mod_handle mod )
 {
     func_window     *func;
     wnd_class_wv    wndclass;
@@ -333,12 +334,12 @@ extern a_window *DoWndFuncOpen( bool is_global, mod_handle mod )
     return( DbgWndCreate( title, &FuncInfo, wndclass, func, &FuncIcon ) );
 }
 
-extern a_window *WndFuncOpen( void )
+a_window WndFuncOpen( void )
 {
     return( DoWndFuncOpen( false, NO_MOD ) );
 }
 
-extern a_window *WndGblFuncOpen( void )
+a_window WndGblFuncOpen( void )
 {
     return( DoWndFuncOpen( true, NO_MOD ) );
 }

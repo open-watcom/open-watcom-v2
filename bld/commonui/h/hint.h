@@ -44,7 +44,7 @@ typedef struct {
 void                HintToolBar( statwnd *wnd, ctl_id menuid, bool select );
 WORD                SizeHintBar( statwnd *wnd );
 void                HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
-const MenuItemHint  *SetHintsText( statwnd *wnd, const MenuItemHint *hints, WORD cnt );
+const MenuItemHint  *SetHintsText( statwnd *wnd, const MenuItemHint *hints, int num_items );
 statwnd             *HintWndCreate( HWND parent, RECT *size, HINSTANCE hinstance, LPVOID lpvParam );
 void                HintWndDestroy( statwnd *wnd );
 bool                HintWndInit( HINSTANCE hinstance, statushook hook, int extra );

@@ -49,7 +49,7 @@
 #define DEBUGOUT( x )
 
 #if 0
-dig_fhandle PathOpen( char *name, unsigned len, char *ext )
+FILE *PathOpen( char *name, unsigned len, char *ext )
 {
     char        path[ _MAX_PATH ];
     char        *realname;
@@ -68,7 +68,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' )
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     return( DIGCli( Open )( path, DIG_READ ) );
 }
 #endif
@@ -118,36 +118,27 @@ void DIGCLIENTRY( Free )( void *ptr )
 /*
  * DIGCliOpen
  */
-dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
+FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
-    int         fd;
-    int         flags;
+    const char  *access;
 
-    flags = O_BINARY;
-    if( mode & DIG_READ )
-        flags |= O_RDONLY;
-    if( mode & DIG_WRITE )
-        flags |= O_WRONLY;
-    if( mode & DIG_TRUNC )
-        flags |= O_TRUNC;
-    if( mode & DIG_CREATE ) {
-        flags |= O_CREAT;
-        fd = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
+    if( mode & DIG_APPEND ) {
+        access = "ab";
+    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+        access = "wb";
     } else {
-        fd = sopen3( path, flags, SH_DENYWR );
+        access = "rb";
     }
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( fopen( path, access ) );
 }
 
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
 {
-    int                 mode;
-    unsigned long       ret;
+    int         mode;
+    int         ret;
 
     DEBUGOUT( "seek BEGIN" );
     switch( dipmode ) {
@@ -161,34 +152,47 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_se
         mode = SEEK_END;
         break;
     }
-    ret = lseek( DIG_FID2PH( fid ), offset, mode );
+    ret = fseek( fp, offset, mode );
     DEBUGOUT( "seek END" );
+    return( ret );
+}
+
+/*
+ * DIGCliTell
+ */
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+{
+    unsigned long   ret;
+
+    DEBUGOUT( "tell BEGIN" );
+    ret = ftell( fp );
+    DEBUGOUT( "tell END" );
     return( ret );
 }
 
 /*
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *buf, size_t size )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
-    return( read( DIG_FID2PH( fid ), buf, size ) );
+    return( fread( buf, 1, size, fp ) );
 }
 
 /*
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *buf, size_t size )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
-    return( write( DIG_FID2PH( fid ), buf, size ) );
+    return( fwrite( buf, 1, size, fp ) );
 }
 
 /*
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( dig_fhandle fid )
+void DIGCLIENTRY( Close )( FILE *fp )
 {
-    close( DIG_FID2PH( fid ) );
+    fclose( fp );
 }
 
 /*

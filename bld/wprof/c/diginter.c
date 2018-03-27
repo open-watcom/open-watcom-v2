@@ -41,6 +41,7 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "diptypes.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "myassert.h"
@@ -63,85 +64,65 @@ void *DIGCLIENTRY( Alloc )( size_t amount )
     return( _MALLOC( amount ) );
 }
 
-void *DIGCLIENTRY( Realloc )( void * p, size_t amount )
-/*****************************************************/
+void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
+/****************************************************/
 {
     return( _REALLOC( p, amount ) );
 }
 
-void DIGCLIENTRY( Free )( void * p )
-/**********************************/
+void DIGCLIENTRY( Free )( void *p )
+/*********************************/
 {
     _FREE( p );
 }
 
-dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
-/*****************************************************************/
+FILE * DIGCLIENTRY( Open )( const char *name, dig_open mode )
+/***********************************************************/
 {
-    int             fd;
-    int             access;
+    const char  *access;
 
-    access = O_BINARY;
-    if( mode & DIG_TRUNC ) {
-        access |= O_TRUNC | O_CREAT;
-    }
-    if( mode & DIG_READ ) {
-        access |= O_RDONLY;
-    }
-    if( mode & DIG_WRITE ) {
-        if( access & DIG_READ ) {
-            access &= ~O_RDONLY;
-            access |= O_RDWR;
-        } else {
-            access |= O_WRONLY | O_CREAT;
-        }
-    }
-    if( mode & DIG_CREATE ) {
-        access |= O_CREAT;
-    }
     if( mode & DIG_APPEND ) {
-        access |= O_APPEND;
+        access = "ab";
+    } else if( mode & (DIG_WRITE | DIG_CREATE) ) {
+        access = "wb";
+    } else {
+        access = "rb";
     }
-    fd = open( name, access );
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( fopen( name, access ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
-/*******************************************************************************/
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
+/**************************************************************/
 {
-    return( lseek( DIG_FID2PH( fid ), p, k ) );
+    return( fseek( fp, p, k ) );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void * b , size_t s )
-/****************************************************************/
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+/*******************************************/
 {
-#if defined( __QNX__ )
-    return( BigRead( DIG_FID2PH( fid ), b, s ) );
-#else
-    return( posix_read( DIG_FID2PH( fid ), b, s ) );
-#endif
+    return( ftell( fp ) );
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void * b, size_t s )
-/**********************************************************************/
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
+/********************************************************/
 {
-#if defined( __QNX__ )
-    return( BigWrite( DIG_FID2PH( fid ), b, s ) );
-#else
-    return( posix_write( DIG_FID2PH( fid ), b, s ) );
-#endif
+    return( fread( b, 1, s, fp ) );
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle fid )
-/******************************************/
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
+/**************************************************************/
 {
-    close( DIG_FID2PH( fid ) );
+    return( fwrite( b, 1, s, fp ) );
 }
 
-void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
-/************************************************************/
+void DIGCLIENTRY( Close )( FILE *fp )
+/***********************************/
+{
+    fclose( fp );
+}
+
+void DIGCLIENTRY( Remove )( const char *name, dig_open mode )
+/***********************************************************/
 {
     /* unused parameters */ (void)mode;
 
@@ -163,7 +144,7 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
         *d = 0;
         if( IsX86BigAddr( addr ) ) {
             *d |= X86AC_BIG;
-        };
+        }
         if( IsX86RealAddr( addr ) ) {
             *d |= X86AC_REAL;
         }

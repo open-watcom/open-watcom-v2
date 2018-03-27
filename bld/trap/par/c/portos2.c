@@ -34,6 +34,9 @@
 #define __INLINE_FUNCTIONS__
 #endif
 #include <conio.h>
+#define NOREMAPIO
+#include "portio.h"
+
 
 unsigned __far output_port( unsigned port, unsigned value )
 {

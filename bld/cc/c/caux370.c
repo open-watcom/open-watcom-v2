@@ -32,7 +32,6 @@
 
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 
 extern void CreateAux( char *id );

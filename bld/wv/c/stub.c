@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,17 +32,17 @@
 
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 )
+
+#include <math.h>
+
+
 extern void raise( void );
 #pragma aux raise "__RAISE";
 void raise( void )    {}
-#endif
 
-double _matherr( why, who, arg1, arg2, result )
-    int why;
-    char *who;
-    double *arg1, *arg2, result;
+double _matherr( struct _exception *excp )
 {
-    /* unused parameters */ (void)why; (void)who; (void)arg1; (void)arg2;
-
-    return( result );
+    return( excp->retval );
 }
+
+#endif

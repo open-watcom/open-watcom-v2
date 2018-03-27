@@ -54,14 +54,12 @@ void intern uicheckuidata( void )
         return;
     }
 
-    curr = UIData->area_head;
     prev = NULL;
-    while( curr != NULL ) {
+    for( curr = UIData->area_head; curr != NULL; curr = curr->next ) {
         if( curr->prev != prev ) {
             bad_window( curr );
         }
         prev = curr;
-        curr = curr->next;
     }
     if( prev != UIData->area_tail ) {
         bad_window( prev );

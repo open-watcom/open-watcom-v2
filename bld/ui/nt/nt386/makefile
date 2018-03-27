@@ -2,4 +2,4 @@
 host_cpu = 386
 host_os  = nt
 
-!include ../nt.mif
+!include ../../ui.mif

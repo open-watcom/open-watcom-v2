@@ -28,13 +28,17 @@
 *
 ****************************************************************************/
 
+
 #include "guiwind.h"
 #include "helpmem.h"
 #include <stdlib.h>
 #ifdef TRMEM
-    #include "trmem.h"
+#include "trmem.h"
+#endif
 
-    extern _trmem_hdl   GUIMemHandle;
+
+#ifdef TRMEM
+extern _trmem_hdl   GUIMemHandle;
 #endif
 
 void HelpMemFree( void *ptr )

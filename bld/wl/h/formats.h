@@ -111,7 +111,6 @@ struct fmt_os2_data {
     char                *module_name;
     char                *old_lib_name;
     struct os2_seg_flags *os2_seg_flags;
-    char                *description;
     unsigned_32         heapsize;
     unsigned            segment_shift;
     unsigned            flags;            // in LOADOS2.H
@@ -174,7 +173,6 @@ struct exp_common {
 struct fmt_nov_data {
     struct exp_common   exp;            // must be at the start
     char                *screenname;     // actually a length byte then a string
-    char                *description;    // ditto.
     char                *checkfn;        // check function name;
     char                *exitfn;         // exit function name;
     char                *customdata;     // custom data file name;
@@ -249,6 +247,7 @@ struct fmt_data {
     char            *implibname;
     char            *osname;
     char            *resource;
+    char            *description;
     int             cpu_type;       /* '0' => 86, '1' => 186, etc */
     exe_format      type;
     unsigned        major;

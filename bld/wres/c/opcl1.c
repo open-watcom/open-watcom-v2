@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <stdio.h>
 #include "watcom.h"
 #include "wres.h"
 #include "wresset2.h"
@@ -42,8 +42,8 @@ bool OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file )
 /* return false otherwise */
 {
     hinfo->status = 0;
-    hinfo->fid = ResOpenFileRO( filename );
-    if( hinfo->fid == WRES_NIL_HANDLE )
+    hinfo->fp = ResOpenFileRO( filename );
+    if( hinfo->fp == NULL )
         return( false );
     hinfo->status++;
     if( FindResourcesX( hinfo, res_file ) )
@@ -77,8 +77,8 @@ bool CloseResFile( PHANDLE_INFO hinfo )
         FiniResources( hinfo );
         /* fall throught */
     case 1:
-        ok = !ResCloseFile( hinfo->fid );
-        hinfo->fid = WRES_NIL_HANDLE;
+        ok = !ResCloseFile( hinfo->fp );
+        hinfo->fp = NULL;
         hinfo->status = 0;
         /* fall throught */
     case 0:

@@ -37,12 +37,13 @@
 _WCRTLINK pid_t waitpid( pid_t __pid, int *__stat_loc, int __options )
 {
     int wait;
-    pid_t res;
 
     wait = RdosCreateWait();
     RdosAddWaitForProcessEnd( wait, __pid, (void *)__pid );
-    res = RdosWaitForever( wait );
+    while (RdosIsProcessRunning( __pid )) {
+        RdosWaitForever( wait );
+    }
     RdosCloseWait( wait );
 
-    return( res );
+    return( __pid );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "dbglit.h"
 #include <stdlib.h>
-#include <stdio.h>
 #ifdef __WATCOMC__
  /* it's important that <malloc> is included up here */
  #define __fmemneed foo
@@ -133,8 +133,8 @@ static void * TRMemRealloc( void * ptr, size_t size )
 }
 
 
-extern void TRMemPrtUsage( void )
-/*******************************/
+void TRMemPrtUsage( void )
+/************************/
 {
     _trmem_prt_usage( TRMemHandle );
 }
@@ -145,20 +145,20 @@ static unsigned TRMemPrtList( void )
     return( _trmem_prt_list( TRMemHandle ) );
 }
 
-extern int TRMemValidate( void * ptr )
-/************************************/
+int TRMemValidate( void * ptr )
+/*****************************/
 {
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
 }
 
-extern void TRMemCheck( void )
-/****************************/
+void TRMemCheck( void )
+/*********************/
 {
     _trmem_validate_all( TRMemHandle );
 }
 
-extern int TRMemChkRange( void * start, size_t len )
-/**************************************************/
+int TRMemChkRange( void * start, size_t len )
+/*******************************************/
 {
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
 }
@@ -360,9 +360,6 @@ void MemInit( void )
 #if defined( __DOS__ )
 
 #if defined( _M_I86 )
-
-extern LP_VOID  ExtraAlloc( size_t size );
-extern void     ExtraFree( LP_VOID ptr );
 
 LP_VOID uifaralloc( size_t size )
 {

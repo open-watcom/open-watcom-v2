@@ -245,7 +245,7 @@ trap_retval ReqMap_addr( void )
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->in_addr.offset );
     CONV_LE_16( acc->in_addr.segment );
-    CONV_LE_32( acc->handle );
+    CONV_LE_32( acc->mod_handle );
     ret = GetOutPtr( 0 );
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr_off)0;
@@ -263,11 +263,11 @@ trap_retval ReqMap_addr( void )
 #endif
     ret->out_addr.offset = acc->in_addr.offset + val;
 
-    if( acc->handle > ModuleTop ) {
+    if( acc->mod_handle > ModuleTop ) {
         Out( "ReqMap_addr: Invalid handle passed!\n" );
         return( sizeof( *ret ) );
     } else {
-        lli = &moduleInfo[acc->handle];
+        lli = &moduleInfo[acc->mod_handle];
     }
 
     Out( "ReqMap_addr: addr " );
@@ -275,7 +275,7 @@ trap_retval ReqMap_addr( void )
     Out( ":" );
     OutNum( acc->in_addr.offset );
     Out( " in module " );
-    OutNum( acc->handle );
+    OutNum( acc->mod_handle );
     if( acc->in_addr.segment == MAP_FLAT_DATA_SELECTOR ||
         acc->in_addr.segment == flatDS ) {
         if( (val = ptrace( PTRACE_PEEKUSER, pid, (void *)offsetof( user_struct, u_tsize ), 0 )) == -1 ) {
@@ -312,24 +312,24 @@ trap_retval ReqGet_lib_name( void )
     trap_elen           ret_len;
 
     acc = GetInPtr( 0 );
-    CONV_LE_32( acc->handle );
+    CONV_LE_32( acc->mod_handle );
     ret = GetOutPtr( 0 );
     name = GetOutPtr( sizeof( *ret ) );
 
-    ret->handle = 0;
+    ret->mod_handle = 0;
     ret_len = sizeof( *ret );
 
     for( i = 0; i < ModuleTop; ++i ) {
         if( moduleInfo[i].newly_unloaded ) {
             Out( "(newly unloaded) " );
-            ret->handle = i;
+            ret->mod_handle = i;
             *name = '\0';
             moduleInfo[i].newly_unloaded = false;
             ++ret_len;
             break;
         } else if( moduleInfo[i].newly_loaded ) {
             Out( "(newly loaded) " );
-            ret->handle = i;
+            ret->mod_handle = i;
             strcpy( name, moduleInfo[i].filename );
             moduleInfo[i].newly_loaded = false;
             ret_len += strlen( name ) + 1;
@@ -337,10 +337,10 @@ trap_retval ReqGet_lib_name( void )
         }
     }
     Out( "ReqGet_lib_name: in handle " );
-    OutNum( acc->handle );
+    OutNum( acc->mod_handle );
     Out( " out handle " );
-    OutNum( ret->handle );
+    OutNum( ret->mod_handle );
     Out( "\n" );
-    CONV_LE_32( ret->handle );
+    CONV_LE_32( ret->mod_handle );
     return( ret_len );
 }

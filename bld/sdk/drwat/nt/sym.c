@@ -33,6 +33,7 @@
 #include <io.h>
 #include <malloc.h>
 #include "drwatcom.h"
+#include "walloca.h"
 #include "mem.h"
 #include "mad.h"
 
@@ -54,16 +55,14 @@ bool InitDip( void )
  */
 bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
-    cue_handle  *cue;
+    cue_handle  *cueh;
 
-    cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
-    if( DIPAddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
-        MemFree( cue );
+    cueh = walloca( DIPHandleSize( HK_CUE ) );
+    if( DIPAddrCue( NO_MOD, *addr, cueh ) == SR_NONE ) {
         return( false );
     }
-    DIPCueFile( cue, fname, bufsize );
-    *line = DIPCueLine( cue );
-    MemFree( cue );
+    DIPCueFile( cueh, fname, bufsize );
+    *line = DIPCueLine( cueh );
     return( true );
 }
 
@@ -78,7 +77,7 @@ bool GetSymbolName( address *addr, char *name, DWORD *symoff )
     search_result       sr;
     location_list       ll;
 
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM, false ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
     sr = DIPAddrSym( NO_MOD, *addr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:
@@ -102,24 +101,19 @@ bool GetSymbolName( address *addr, char *name, DWORD *symoff )
  */
 bool LoadDbgInfo( ModuleNode *mod )
 {
-    unsigned            priority;
+    dip_priority    priority;
 
     if( !GetSegmentList( mod ) )
         return( false );
     mod->syminfo->procinfo = DIPCreateProcess();
-    priority = 0;
-    for( ;; ) {
-        priority = DIPPriority( priority );
-        if( priority == 0 )
-            break;
-        mod->syminfo->hdl = DIPLoadInfo( mod->fid, 0, priority );
+    for( priority = 0; (priority = DIPPriority( priority )) != 0; ) {
+        mod->syminfo->hdl = DIPLoadInfo( mod->fp, 0, priority );
         if( mod->syminfo->hdl != NO_MOD ) {
             break;
         }
     }
     if( mod->syminfo->hdl == NO_MOD )
         return( false );
-    DIPMapInfo( mod->syminfo->hdl, mod );
     return( true );
 }
 

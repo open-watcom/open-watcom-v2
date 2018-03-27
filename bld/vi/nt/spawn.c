@@ -41,8 +41,7 @@ void ResetSpawnScreen( void )
 {
 #ifndef __WIN__
     SetConsoleActiveScreenBuffer( OutputHandle );
-    SetConsoleMode( InputHandle, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT |
-        ENABLE_PROCESSED_INPUT | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT );
+    SetConsoleMode( InputHandle, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS );
 #endif
 }
 

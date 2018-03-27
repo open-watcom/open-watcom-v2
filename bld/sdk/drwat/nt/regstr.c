@@ -195,7 +195,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     unsigned        len;
     mad_radix       radix;
     mad_type_info   mti;
-    mad_type_info   cmp;
+    mad_type_info   cmp_mti;
     char            s[255];
     RECT            p_rect;
     RECT            c_rect;
@@ -226,8 +226,8 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     GetChildPos( hwnd, field, &c_rect);
     dc = GetDC( field );
     GetTextMetrics( dc, &tm );
-    MADTypeInfo( data->th, &mti );
-    radix = MADTypePreferredRadix( data->th );
+    MADTypeInfo( data->mth, &mti );
+    radix = MADTypePreferredRadix( data->mth );
 
     if( data->num_possible == 1 ) {
         if( data->maxv == 0 ) {
@@ -243,7 +243,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         }
         SetDlgItemText(hwnd,REG_EDIT_FIELD,s);
     } else {
-        MADTypeInfo( data->curr_info->type, &cmp );
+        MADTypeInfo( data->curr_info->mth, &cmp_mti );
         max_len = 0;
         for( i = 0; i < data->num_possible; i++ ) {
             if( data->m_list[i].name == MAD_MSTR_NIL ) {
@@ -255,7 +255,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
             if( max_len < strlen( s ) )
                 max_len = strlen( s );
             SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)s );
-            if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( cmp.b.bits ) ) == 0 ) {
+            if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( cmp_mti.b.bits ) ) == 0 ) {
                 SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_SETCURSEL, (WPARAM)i, 0 );
             }
         }
@@ -283,8 +283,8 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
 static void CheckForRegisterChange( HWND hwnd )
 {
     RegModifyData   *data;
-    mad_type_info   mti_target;
-    mad_type_info   mti_host;
+    mad_type_info   target_mti;
+    mad_type_info   host_mti;
     int             size;
     char            *s;
     char            *endptr;
@@ -293,18 +293,18 @@ static void CheckForRegisterChange( HWND hwnd )
     InputUnion      in;
 
     data = (RegModifyData *)GET_DLGDATA( hwnd );
-    MADTypeInfo( data->curr_info->type, &mti_target );
+    MADTypeInfo( data->curr_info->mth, &target_mti );
     if( data->num_possible == 1 ) {
         size = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;
         s = alloca( size );
         GetDlgItemText( hwnd, REG_EDIT_FIELD, s, 255 );
-        test = alloca( BITS2BYTES( mti_target.b.bits ) );
+        test = alloca( BITS2BYTES( target_mti.b.bits ) );
         memset( &seg, 0, sizeof( seg ) );
         errno = 0;
         size = 0;
-        switch ( mti_target.b.kind ) {
+        switch ( target_mti.b.kind ) {
         case MTK_INTEGER:
-            if( !StrToU64( s, &( in.i ), ( mti_target.i.nr != MNR_UNSIGNED ) ) ) {
+            if( !StrToU64( s, &( in.i ), ( target_mti.i.nr != MNR_UNSIGNED ) ) ) {
                 MessageBox( hwnd, "Unrecognized input.", "Error",MB_OK | MB_ICONEXCLAMATION ) ;
                 return;
             }
@@ -326,20 +326,20 @@ static void CheckForRegisterChange( HWND hwnd )
             EndDialog( hwnd, 0 );
             break;
         }
-        MADTypeInfoForHost( mti_target.b.kind, size, &mti_host );
-        MADTypeConvert( &mti_host, &in, &mti_target, test, seg );
-        if( memcmp( data->curr_value, test, BITS2BYTES( mti_target.b.bits ) ) == 0 ) {
+        MADTypeInfoForHost( target_mti.b.kind, size, &host_mti );
+        MADTypeConvert( &host_mti, &in, &target_mti, test, seg );
+        if( memcmp( data->curr_value, test, BITS2BYTES( target_mti.b.bits ) ) == 0 ) {
             EndDialog( hwnd, 0 );
         } else {
-            memcpy( data->curr_value, test, BITS2BYTES( mti_target.b.bits ) );
+            memcpy( data->curr_value, test, BITS2BYTES( target_mti.b.bits ) );
             EndDialog( hwnd, 1 );
         }
     } else {
         int i = (int)SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_GETCURSEL, 0, 0L );
-        if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( mti_target.b.bits ) ) == 0 ) {
+        if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( target_mti.b.bits ) ) == 0 ) {
             EndDialog( hwnd, 0 );
         } else {
-            memcpy( data->curr_value, data->m_list[i].data, BITS2BYTES( mti_target.b.bits ) );
+            memcpy( data->curr_value, data->m_list[i].data, BITS2BYTES( target_mti.b.bits ) );
             EndDialog( hwnd, 1 );
         }
     }
@@ -387,7 +387,7 @@ static void GetNewRegValue( HWND hwnd )
     RegModifyData   modify_data;
     const char      *descript;
     unsigned        max_descript;
-    mad_type_info   tinfo;
+    mad_type_info   mti;
     mad_registers   *regs;
 
     owner = GetParent( hwnd );
@@ -397,9 +397,9 @@ static void GetNewRegValue( HWND hwnd )
 
     MADRegSetDisplayGetPiece( modify_data.reg_set, regs, GetDlgCtrlID( hwnd ),
         &descript, &max_descript, (const mad_reg_info **) (&( modify_data.curr_info )),
-        &( modify_data.th ), &( modify_data.maxv ) );
-    MADTypeInfo( modify_data.curr_info->type, &tinfo );
-    modify_data.curr_value = alloca( BITS2BYTES( tinfo.b.bits ) );
+        &( modify_data.mth ), &( modify_data.maxv ) );
+    MADTypeInfo( modify_data.curr_info->mth, &mti );
+    modify_data.curr_value = alloca( BITS2BYTES( mti.b.bits ) );
     BitGet( modify_data.curr_value, (unsigned char *)regs, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size);
     MADRegSetDisplayModify( modify_data.reg_set, modify_data.curr_info,
         (const mad_modify_list **)( &( modify_data.m_list ) ),
@@ -407,10 +407,10 @@ static void GetNewRegValue( HWND hwnd )
 
     switch( modify_data.num_possible ) {
     case 2:
-        if( memcmp( modify_data.curr_value, modify_data.m_list[0].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ){
-            memcpy( modify_data.curr_value, modify_data.m_list[1].data, BITS2BYTES( tinfo.b.bits ) );
+        if( memcmp( modify_data.curr_value, modify_data.m_list[0].data, BITS2BYTES( mti.b.bits ) ) == 0 ){
+            memcpy( modify_data.curr_value, modify_data.m_list[1].data, BITS2BYTES( mti.b.bits ) );
         }else {
-            memcpy( modify_data.curr_value, modify_data.m_list[0].data, BITS2BYTES( tinfo.b.bits ) );
+            memcpy( modify_data.curr_value, modify_data.m_list[0].data, BITS2BYTES( mti.b.bits ) );
         }
         reg_modified = 1;
         break;

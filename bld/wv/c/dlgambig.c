@@ -44,19 +44,22 @@
 #include "dbglkup.h"
 
 
-static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
+OVL_EXTERN bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
 {
     dlg_pick    dlg;
 
     /* unused parameters */ (void)text;
 
-    dlg.func = PickInit;
-    dlg.chosen = -1;
-    ResDlgOpen( &GUIPickEvent, &dlg, DIALOG_AMBIG );
-    return( dlg.chosen );
+    dlg.func = pick_call_back;
+    dlg.choice = -1;
+    ResDlgOpen( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
+    if( dlg.choice == -1 )
+        return( false );
+    *choice = dlg.choice;
+    return( true );
 }
 
-static const char *SymPickText( const void *data_handle, int item )
+OVL_EXTERN const char *SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;
@@ -64,7 +67,7 @@ static const char *SymPickText( const void *data_handle, int item )
     const ambig_info    *ambig = data_handle;
 
     sym = ambig->sym;
-    while( --item >= 0 ) {
+    while( item-- > 0 ) {
         sym = sym->next;
     }
     len = DIPSymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
@@ -78,7 +81,7 @@ static const char *SymPickText( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-int DUIDisambiguate( const ambig_info *ambig, int count )
+bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, count, SymPick ) );
+    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, num_items, SymPick, choice ) );
 }

@@ -40,7 +40,7 @@ void __set_ERANGE() {};
 #endif
 
 #if defined( _M_I86 )
-void __far __null_FPE_handler( void ) {};
+static void __far __null_FPE_handler( void ) {};
 void (*__FPE_handler)( void ) = &__null_FPE_handler;
 #else
 void __FPE_exception( void );

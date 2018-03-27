@@ -38,7 +38,7 @@
 
 
 extern void *ImportLibRead( coff_file_handle coff_file_hnd, size_t len );
-extern long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where );
+extern int  ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where );
 
 extern int  convert_import_library_init( coff_file_handle coff_file_hnd );
 extern int  convert_import_library_fini( coff_file_handle coff_file_hnd );

@@ -35,23 +35,21 @@
 #include <stddef.h>
 #include "machtype.h"
 
-#if defined( __WATCOMC__ ) && defined( _M_I86 )
-    #define DIGFAR      __far
-#else
-    #define DIGFAR
-#endif
-
 #if defined( __WINDOWS__ )
-    #define DIGREGISTER     DIGFAR __pascal
-    #define DIGENTRY        DIGFAR __pascal
+    #define DIGREGISTER     __far __pascal
+    #define DIGENTRY        DIGREGISTER __export
+    #define DIGCLIENT       __loadds
+#elif defined( _M_I86 )
+    #define DIGREGISTER     __far
+    #define DIGENTRY        DIGREGISTER __loadds
     #define DIGCLIENT       __loadds
 #else
-    #define DIGREGISTER     DIGFAR
-    #define DIGENTRY        DIGFAR
+    #define DIGREGISTER
+    #define DIGENTRY
     #define DIGCLIENT
 #endif
 
-#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ ) || defined( __WINDOWS__ )
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
     #define DIG_DLLEXPORT   __declspec(dllexport)
 #else
     #define DIG_DLLEXPORT
@@ -60,8 +58,6 @@
 #define DIG_SEEK_POSBACK(x) ((unsigned long)-(long)(x))
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
-
-#define DIG_NIL_HANDLE      NULL
 
 typedef unsigned_8 search_result; enum {
     SR_NONE,
@@ -412,8 +408,6 @@ enum {
 
 typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;
-
-typedef void            *dig_fhandle;
 
 typedef unsigned_16     dig_size_bits;
 

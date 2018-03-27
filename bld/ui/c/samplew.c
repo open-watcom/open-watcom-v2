@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +44,14 @@
 
 #include <wwindows.h>
 
-extern void ToCharacter( void );
-extern void ToGraphical( void );
-extern EVENT keyboardevent( void );
+#include "sampdial.h"
 
-#define Normal          UIData->attrs[ ATTR_NORMAL ]
+
+extern void     ToCharacter( void );
+extern void     ToGraphical( void );
+extern ui_event keyboardevent( void );
+
+#define Normal          UIData->attrs[ATTR_NORMAL]
 
 extern void sample_dialog( void );
 
@@ -59,7 +63,7 @@ char    check_empty[4];
 enum    Symbols { RADIO_BUTTON, CHECK_BOX };
 enum    Conditons { ON, OFF };
 
-extern EVENT    LineEvents[];
+extern ui_event     LineEvents[];
 
 #define EV_QUIT         EV_F2
 enum {
@@ -72,30 +76,30 @@ enum {
     EV_NOTHING
 };
 
-static MENUITEM filemenu[] = {
-    { "Open",     EV_OPEN,          0 },
-    { "Close",    EV_CLOSE,         0 },
-    { "Nothing",  EV_NOTHING,       2 },
-    { NULL,       EV_NO_EVENT,      ITEM_SEPARATOR },
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         EV_NO_EVENT,      0 },
-    { "Exit",     EV_QUIT,          1 },
+static UIMENUITEM filemenu[] = {
+    { "Open",     EV_OPEN,          0,              NULL },
+    { "Close",    EV_CLOSE,         0,              NULL },
+    { "Nothing",  EV_NOTHING,       2,              NULL },
+    { NULL,       ___,              ITEM_SEPARATOR, NULL },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
-static MENUITEM editmenu[] = {
-    { NULL,       EV_NO_EVENT,      0 },
+static UIMENUITEM editmenu[] = {
+    { NULL,       ___,              0,              NULL },
 };
 
-static MENUITEM barmenu[] = {
-    { "File",     EV_NO_EVENT,      0 },
-    { "Edit",     EV_NO_EVENT,      1 },
-    { "Go!",      EV_GO,            0 },
-    { "File",     EV_NO_EVENT,      2 },
+static UIMENUITEM barmenu[] = {
+    { "File",     ___,              0,              NULL },
+    { "Edit",     ___,              1,              NULL },
+    { "Go!",      EV_GO,            0,              NULL },
+    { "File",     ___,              2,              NULL },
     NULL
 };
 
-static MENUITEM *pulldownuimenus[] = {
+static UIMENUITEM *pulldownuimenus[] = {
     filemenu,
     editmenu,
     NULL,
@@ -137,19 +141,19 @@ static VEDITLINE inputline = {
     true,        /* bool: application altered buffer */
 };
 
-static EVENT oplist[] = {
-    EV_NO_EVENT,
+static ui_event     oplist[] = {
+    __rend__,
     EV_ENTER,
     EV_ESCAPE,
-    EV_NO_EVENT
+    __end__
 };
 
-static EVENT             evlist[] = {
+static ui_event     evlist[] = {
     EV_FIRST_EVENT,     EV_LAST_KEYBOARD,
     EV_MOUSE_PRESS,     EV_MOUSE_RELEASE,
     EV_MOUSE_HOLD_R,    EV_MOUSE_REPEAT_M,
     EV_OPEN,            EV_NOTHING,
-    EV_NO_EVENT,
+    __rend__,
     EV_MOUSE_DCLICK,
     EV_MOUSE_REPEAT,
     EV_IDLE,
@@ -160,13 +164,13 @@ static EVENT             evlist[] = {
     EV_CURSOR_DOWN,
     EV_CURSOR_LEFT,
     EV_CURSOR_RIGHT,
-    EV_NO_EVENT
+    __end__
 };
 
-typedef struct an_event_string{
-    EVENT       ev;
+typedef struct an_event_string {
+    ui_event    ui_ev;
     char        *str;
-}an_event_string;
+} an_event_string;
 
 static SAREA    BandArea;
 int             BandOn = 0;
@@ -192,46 +196,48 @@ static          an_event_string         evstrs[] = {
     { EV_IDLE,              "EV_IDLE" },
     { EV_MENU_INITPOPUP,    "EV_MENU_INITPOPUP" },
     { EV_BACKGROUND_RESIZE, "EV_BACKGROUND_RESIZE" },
-    { EV_NO_EVENT,          NULL }
+    { ___,                  NULL }
 };
 
 static void open( void )
 /**********************/
 {
-    EVENT ev;
+    ui_event    ui_ev;
 
     if( uivopen( &opwin ) ) {
 
         uipushlist( oplist );
         uivtextput( &opwin, 1, 2, UIData->attrs[ATTR_NORMAL], "Enter file name.", 16 );
-        inputline.attr = UIData->attrs[ ATTR_EDIT ];
+        inputline.attr = UIData->attrs[ATTR_EDIT];
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
         inputline.update = true;
-        for( ; ; ) {
-            ev = uiveditline( &opwin, &inputline );
-            if( ev != EV_NO_EVENT ) break;
+        for( ;; ) {
+            ui_ev = uiveditline( &opwin, &inputline );
+            if( ui_ev != EV_NO_EVENT ) {
+                break;
+            }
         }
-        if( ev == EV_ENTER ) {
+        if( ui_ev == EV_ENTER ) {
             /* open file */
-        } else if( ev == EV_ESCAPE ) {
+        } else if( ui_ev == EV_ESCAPE ) {
             /* do nothing */
         } else {
             /* must be an event handled in the mainline */
             uiungetevent();
         }
-        uipoplist();
+        uipoplist( /* oplist */ );
         uivclose( &opwin );
     }
 }
 
-#define TOP_ROW 8
+#define TOP_ROW         1
 
 int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd ) {
 
-    EVENT               ev;
+    ui_event            ui_ev;
     SAREA               area;
     char                buff[80];
     an_event_string     *ptr;
@@ -251,10 +257,10 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
         return( 0 );
     ToCharacter();
 
-    initmouse( 2 );
+    initmouse( INIT_MOUSE_INITIALIZED );
     uimenus( barmenu, pulldownuimenus, EV_F1 );
-    UIData->mouse_clk_delay = uiclockdelay( 250 );
-    UIData->tick_delay = uiclockdelay( 3000 );
+    UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
+    UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
     mainwin.area.height = UIData->height - 7;
 
     area.row = 0;
@@ -268,77 +274,81 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
         uirefresh();
         sprintf( buff, "screen height : %d\0", UIData->height );
         uivtextput( &mainwin, TOP_ROW - 1, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-        for( ; ; ) {
+        for( ;; ) {
             uipushlist( evlist );
-            ev = uivgetevent( NULL );
-            uipoplist();
-            if( ev == EV_QUIT ) break;
-            if( ev == EV_ALT_R ) break;
-            if( ev == EV_MOUSE_PRESS_R ) {
+            ui_ev = uivgetevent( NULL );
+            uipoplist( /* evlist */ );
+            if( ui_ev == EV_QUIT )
+                break;
+            if( ui_ev == EV_ALT_R )
+                break;
+            if( ui_ev == EV_MOUSE_PRESS_R ) {
                 uimousepos( NULL, &mrow, &mcol );
                 mrow++;
                 mcol++;
                 uipushlist( evlist );
-                ev = uicreatepopup( mrow, mcol, &filemenu, false, true, NULL );
-                uipoplist();
+                ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
+                uipoplist( /* evlist */ );
             }
-            switch ( ev ) {
-                case EV_SAMPLE_DIALOG:
-                    sample_dialog();
-                    break;
-                case EV_OPEN:
-                    open();
-                    break;
-                case EV_F1:
-                    area.width = 10;
-                    area.height = 10;
-                    area.row = 1;
-                    area.col = 1;
-                    uivattribute( &mainwin, area, (ATTR) 1 );
-                    break;
-                case EV_CURSOR_RIGHT:
-                    mainwin.col++;
-                    if( mainwin.col >= mainwin.area.width ) mainwin.col--;
+            switch( ui_ev ) {
+            case EV_SAMPLE_DIALOG:
+                sample_dialog();
+                break;
+            case EV_OPEN:
+                open();
+                break;
+            case EV_F1:
+                area.width = 10;
+                area.height = 10;
+                area.row = 1;
+                area.col = 1;
+                uivattribute( &mainwin, area, (ATTR) 1 );
+                break;
+            case EV_CURSOR_RIGHT:
+                mainwin.col++;
+                if( mainwin.col >= mainwin.area.width )
+                    mainwin.col--;
+                fixup = true;
+                break;
+            case EV_CURSOR_DOWN:
+                mainwin.row++;
+                if( mainwin.row >= mainwin.area.height )
+                    mainwin.row--;
+                fixup = true;
+                break;
+            case EV_CURSOR_LEFT:
+                if( mainwin.col > 0 ) {
+                    mainwin.col--;
                     fixup = true;
-                    break;
-                case EV_CURSOR_DOWN:
-                    mainwin.row++;
-                    if( mainwin.row >= mainwin.area.height ) mainwin.row--;
+                }
+                break;
+            case EV_CURSOR_UP:
+                if( mainwin.row > 0 ) {
+                    mainwin.row--;
                     fixup = true;
-                    break;
-                case EV_CURSOR_LEFT:
-                    if( mainwin.col > 0 ) {
-                        mainwin.col--;
-                        fixup = true;
-                    }
-                    break;
-                case EV_CURSOR_UP:
-                    if( mainwin.row > 0 ) {
-                        mainwin.row--;
-                        fixup = true;
-                    }
-                    break;
+                }
+                break;
             }
             if( fixup ) {
                 fixup = false;
                 uivsetcursor( &mainwin );
             }
-            if( ev != EV_NO_EVENT ) {
-                for( ptr=evstrs; ; ++ptr ){
-                    if( ptr->ev == EV_NO_EVENT ) {
-                        sprintf( buff, "event 0x%4.4x", ev );
+            if( ui_ev != EV_NO_EVENT ) {
+                for( ptr = evstrs; ; ++ptr ) {
+                    if( ptr->ui_ev == EV_NO_EVENT ) {
+                        sprintf( buff, "event 0x%4.4x", ui_ev );
                         break;
-                    } else if( ptr->ev == ev ) {
+                    } else if( ptr->ui_ev == ui_ev ) {
                         strcpy( buff, ptr->str );
                         break;
                     }
                 }
                 uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], buff, 40 );
-                if( ++evrow >= mainwin.area.height ){
+                if( ++evrow >= mainwin.area.height ) {
                     evrow = TOP_ROW;
                 }
                 uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
-                switch( ev ) {
+                switch( ui_ev ) {
                 case EV_MOUSE_PRESS:
                     BandOn = 1;
                     uimousepos( NULL, &mrow, &mcol );
@@ -346,22 +356,25 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     BandArea.col = mcol;
                     BandArea.width = 0;
                     BandArea.height = 0;
-                    uibandinit( BandArea, UIData->attrs[ ATTR_ACTIVE ] );
+                    uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
                     break;
                 case EV_MOUSE_DRAG:
                     if( BandOn ) {
                         uimousepos( NULL, &mrow, &mcol );
                         diff = mcol - BandArea.col;
-                        if( diff < 0 ) diff = 0;
+                        if( diff < 0 )
+                            diff = 0;
                         BandArea.width = diff;
                         diff = mrow - BandArea.row;
-                        if( diff < 0 ) diff = 0;
+                        if( diff < 0 )
+                            diff = 0;
                         BandArea.height = diff;
                         uibandmove( BandArea );
                     }
                     break;
                 case EV_MOUSE_RELEASE:
-                    if( BandOn ) uibandfini();
+                    if( BandOn )
+                        uibandfini();
                     BandOn = 0;
                     break;
                 }

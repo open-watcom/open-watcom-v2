@@ -296,6 +296,7 @@ static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
         break;
     case T_LSTRING:
         Buffer[i++] = 'L';
+        /* fall through */
     case T_STRING:
         Buffer[i++] = '"';
         i = copySafe( i, m->data );
@@ -1077,6 +1078,7 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             break;
         case T_LSTRING:
             Buffer[i++] = 'L';
+            /* fall through */
         case T_STRING:
             Buffer[i++] = '\\';
             Buffer[i++] = '"';

@@ -56,7 +56,7 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lp
     int                 ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) )
+    if( WRESSEEK( hinfo->fp, res->Offset, SEEK_SET ) )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;
@@ -74,8 +74,8 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lp
                 numread = length;
                 length = 0;
             }
-            numread = WRESREAD( hinfo->fid, stringbuff, numread );
-            if( WRESIOERR( hinfo->fid, numread ) )
+            numread = WRESREAD( hinfo->fp, stringbuff, numread );
+            if( WRESIOERR( hinfo->fp, numread ) )
                 return( -1 );
             if( numread == 0 )
                 return( -1 );
@@ -150,7 +150,7 @@ bool InitResources2( WResDir *dir, PHANDLE_INFO hinfo )
     *dir = WResInitDir();
     if( *dir == NULL )
         return( true );
-    return( WResReadDir( hinfo->fid, *dir, NULL ) );
+    return( WResReadDir( hinfo->fp, *dir, NULL ) );
 }
 
 bool InitResources( PHANDLE_INFO hinfo )

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"//
+#include "_aui.h"
 #include <string.h>
 
 wnd_info NoInfo = {
-    NoEventProc,
+    NoWndEventProc,
     NoRefresh,
     NoGetLine,
     NoMenuItem,
@@ -51,75 +51,75 @@ wnd_info NoInfo = {
     NULL
 };
 
-a_window *WndNoOpen( void )
+a_window WndNoOpen( void )
 {
     return( NULL );
 }
 
-bool NoGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+bool NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece; (void)line;
 
     return( false );
 }
 
-void NoModify( a_window *wnd, int row, int piece )
+void NoModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void NoNotify( a_window *wnd, wnd_row row, int piece )
+void NoNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void    NoBegPaint( a_window *wnd, wnd_row row, int num )
+void    NoBegPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void    NoEndPaint( a_window *wnd, wnd_row row, int num )
+void    NoEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void NoRefresh( a_window * wnd )
+void NoRefresh( a_window wnd )
 {
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
-void NoMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+void NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)row; (void)piece;
 }
 
 
-int NoScroll( a_window * wnd, int lines )
+int NoScroll( a_window wnd, int lines )
 {
     /* unused parameters */ (void)wnd; (void)lines;
 
     return( 0 );
 }
 
-int NoNumRows( a_window * wnd )
+wnd_row NoNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( -1 );
 }
 
-int NoNextRow( a_window * wnd, int row, int inc )
+wnd_row NoNextRow( a_window wnd, wnd_row row, int inc )
 {
     /* unused parameters */ (void)wnd;
 
     return( row + inc );
 }
 
-bool NoEventProc( a_window * wnd, gui_event event, void *parm )
+bool NoWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 
-    switch( event ) {
+    switch( gui_ev ) {
     case GUI_INIT_WINDOW:
     case GUI_RESIZE:
     case GUI_MOVE:
@@ -131,7 +131,7 @@ bool NoEventProc( a_window * wnd, gui_event event, void *parm )
 }
 
 
-void WndMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+void WndMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd->info->menuitem( wnd, id, WndVirtualRow( wnd, row ), piece );
 }
@@ -141,9 +141,9 @@ void WndMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 
 typedef struct {
     wnd_line_piece      line;
-    a_window            *wnd;
-    int                 row;
-    int                 piece;
+    a_window            wnd;
+    wnd_row             row;
+    wnd_piece           piece;
     char                *text;
 } cache_line;
 
@@ -161,25 +161,27 @@ void WndFiniCacheLines()
 }
 
 
-void WndKillCacheEntries( a_window *wnd, int row, int piece )
+void WndKillCacheEntries( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int         i;
 
     for( i = 0; i < NUM_CACHE_ENTRIES; ++i ) {
-        if( CacheLine[i].wnd != wnd ) continue;
-        if( CacheLine[i].row != row && row != WND_NO_ROW ) continue;
-        if( CacheLine[i].piece != piece && piece != WND_NO_PIECE ) continue;
+        if( CacheLine[i].wnd != wnd )
+            continue;
+        if( CacheLine[i].row != row && row != WND_NO_ROW )
+            continue;
+        if( CacheLine[i].piece != piece && piece != WND_NO_PIECE )
+            continue;
         CacheLine[i].wnd = NULL;
     }
 }
 
-void WndKillCacheLines( a_window *wnd )
+void WndKillCacheLines( a_window wnd )
 {
     WndKillCacheEntries( wnd, WND_NO_ROW, WND_NO_PIECE );
 }
 
-static void DoSet( int i, a_window *wnd,
-                   int row, int piece, wnd_line_piece *line )
+static void DoSet( int i, a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     CacheLine[i].line = *line;
     CacheLine[i].wnd = wnd;
@@ -190,8 +192,7 @@ static void DoSet( int i, a_window *wnd,
     strcpy( CacheLine[i].text, line->text );
 }
 
-static void SetCacheLine( a_window *wnd, int row,
-                          int piece, wnd_line_piece *line )
+static void SetCacheLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
 
@@ -210,13 +211,13 @@ static void SetCacheLine( a_window *wnd, int row,
         }
     }
     ++CacheCurr;
-    if( CacheCurr == NUM_CACHE_ENTRIES ) CacheCurr = 0;
+    if( CacheCurr == NUM_CACHE_ENTRIES )
+        CacheCurr = 0;
     DoSet( CacheCurr, wnd, row, piece, line );
 }
 
 
-static bool FindCacheLine( a_window *wnd, int row,
-                           int piece, wnd_line_piece *line )
+static bool FindCacheLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
 
@@ -233,27 +234,29 @@ static bool FindCacheLine( a_window *wnd, int row,
 }
 
 
-bool WndSetCache( a_window *wnd, bool on )
+bool WndSetCache( a_window wnd, bool on )
 {
     bool        old;
 
-    old = _Is( wnd, WSW_CACHE_LINES );
+    old = WndSwitchOn( wnd, WSW_CACHE_LINES );
     if( on ) {
-        _Set( wnd, WSW_CACHE_LINES );
+        WndSetSwitches( wnd, WSW_CACHE_LINES );
     } else {
-        _Clr( wnd, WSW_CACHE_LINES );
+        WndClrSwitches( wnd, WSW_CACHE_LINES );
     }
     return( old );
 }
 
-bool WndGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
+bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
-    int         virtual_row;
+    wnd_row     virtual_row;
     bool        success;
 
     virtual_row = WndVirtualRow( wnd, row );
-    if( _Is( wnd, WSW_CACHE_LINES ) ) {
-        if( FindCacheLine( wnd, virtual_row, piece, line ) ) return( true );
+    if( WndSwitchOn( wnd, WSW_CACHE_LINES ) ) {
+        if( FindCacheLine( wnd, virtual_row, piece, line ) ) {
+            return( true );
+        }
     }
     line->attr = WndPlainAttr;
     line->indent = 0;
@@ -273,20 +276,23 @@ bool WndGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
     line->use_key = true;
     line->text = "";
     line->hint = "";
-    if( virtual_row < -wnd->title_size ) return( false );
-    if( row == wnd->u.button_down.row && piece == wnd->u.button_down.piece ) {
-        _Set( wnd, WSW_ALTERNATE_BIT );
+    if( virtual_row < -wnd->title_size )
+        return( false );
+    if( row == wnd->button_down.row && piece == wnd->button_down.piece ) {
+        WndSetSwitches( wnd, WSW_ALTERNATE_BIT );
     }
     success = wnd->info->getline( wnd, virtual_row, piece, line );
-    _Clr( wnd, WSW_ALTERNATE_BIT );
+    WndClrSwitches( wnd, WSW_ALTERNATE_BIT );
     if( success ) {
         if( !(line->bitmap|line->vertical_line|line->draw_hook|line->draw_line_hook|line->draw_bar) ) {
             line->length = strlen( line->text );
         }
-        if( virtual_row > wnd->max_row ) wnd->max_row = virtual_row;
+        if( wnd->max_row < virtual_row ) {
+            wnd->max_row = virtual_row;
+        }
     }
     if( success ) {
-        if( _Is( wnd, WSW_CACHE_LINES ) ) {
+        if( WndSwitchOn( wnd, WSW_CACHE_LINES ) ) {
             SetCacheLine( wnd, virtual_row, piece, line );
         }
     }
@@ -294,66 +300,60 @@ bool WndGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 }
 
 
-bool WndGetLineAbs( a_window *wnd, int row, int piece, wnd_line_piece *line )
+bool WndGetLineAbs( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     return( WndGetLine( wnd, WndScreenRow( wnd, row ), piece, line ) );
 }
 
 
-void WndFirstMenuItem( a_window *wnd, int row, int piece )
+void WndFirstMenuItem( a_window wnd, wnd_row row, wnd_piece piece )
 {
-    WndRowPopUp( wnd, &wnd->popupmenu[ 0 ], row, piece );
+    WndRowPopUp( wnd, &wnd->popupmenu[0], row, piece );
 }
 
 #if 0
-wnd_row WndNoRow( a_window *wnd )
+wnd_row WndNoRow( a_window wnd )
 {
     return( WndVirtualRow( wnd, WND_NO_ROW ) );
 }
 #endif
 
-void    WndModify( a_window *wnd, int row, int piece )
+void    WndModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd->info->modify( wnd, WndVirtualRow( wnd, row ), piece );
 }
 
-void    WndNotify( a_window *wnd, int row, int piece )
+void    WndNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd->info->notify( wnd, WndVirtualRow( wnd, row ), piece );
 }
 
-void    WndBegPaint( a_window *wnd, int row, int num )
+void    WndBegPaint( a_window wnd, wnd_row row, int num )
 {
     wnd->info->begpaint( wnd, WndVirtualRow( wnd, row ), num );
 }
 
 
-void    WndEndPaint( a_window *wnd, int row, int num )
+void    WndEndPaint( a_window wnd, wnd_row row, int num )
 {
     wnd->info->endpaint( wnd, WndVirtualRow( wnd, row ), num );
 }
 
 
-void WndRefresh( a_window * wnd )
+void WndRefresh( a_window wnd )
 {
     wnd->info->refresh( wnd );
     WndKillCacheLines( wnd );
 }
 
 
-bool WndEvent( a_window * wnd, gui_event event, void *parm )
-{
-    return( wnd->info->event( wnd, event, parm ) );
-}
-
-
-int WndNumRows( a_window * wnd )
+wnd_row WndNumRows( a_window wnd )
 {
     return( wnd->info->numrows( wnd ) + wnd->title_size );
 }
 
 
-int WndNextRow( a_window * wnd, int row, int inc )
+wnd_row WndNextRow( a_window wnd, wnd_row row, int inc )
 {
     return( wnd->info->nextrow( wnd, row, inc ) );
 }

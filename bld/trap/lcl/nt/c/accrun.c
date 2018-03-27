@@ -108,28 +108,20 @@ static void setTBitInAllThreads( set_t set )
 {
     thread_info *ti;
 
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
+    for( ti = ProcessInfo.thread_list; ti != NULL; ti = ti->next ) {
         if( ti->alive ) {
             SuspendThread( ti->thread_handle );
         }
-        ti = ti->next;
     }
-
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
+    for( ti = ProcessInfo.thread_list; ti != NULL; ti = ti->next ) {
         if( ti->alive ) {
             setATBit( ti, set );
         }
-        ti = ti->next;
     }
-
-    ti = ProcessInfo.thread_list;
-    while( ti != NULL ) {
+    for( ti = ProcessInfo.thread_list; ti != NULL; ti = ti->next ) {
         if( ti->alive ) {
             ResumeThread( ti->thread_handle );
         }
-        ti = ti->next;
     }
 }
 
@@ -197,7 +189,7 @@ static void setTBit( set_t set )
 static DWORD    BreakFixed;
 #endif
 
-static int handleInt3( DWORD state )
+static trap_conditions handleInt3( DWORD state )
 {
 #if defined( MD_x86 ) || defined( MD_x64 )
     thread_info *ti;
@@ -259,7 +251,7 @@ static int handleInt3( DWORD state )
 /*
  * handleInt1 - process a trace or watch point
  */
-static int handleInt1( DWORD state )
+static trap_conditions handleInt1( DWORD state )
 {
     if( PendingProgramInterrupt ) {
         /*
@@ -316,8 +308,7 @@ static int handleInt1( DWORD state )
  */
 static void getImageNote( IMAGE_NOTE *pin )
 {
-    ReadMem( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ),
-                         pin, sizeof( IMAGE_NOTE ) );
+    ReadMem( FlatDS, (DWORD)DW3( DebugEvent.u.Exception.ExceptionRecord ), pin, sizeof( IMAGE_NOTE ) );
 }
 #endif
 #endif
@@ -325,25 +316,25 @@ static void getImageNote( IMAGE_NOTE *pin )
 /*
  * DebugExecute - execute program under debug control
  */
-int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
+myconditions DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
 {
-    DWORD       continue_how;
-    DWORD       code;
-    DWORD       len;
-    msg_list    **owner;
-    msg_list    *new;
-    int         cond;
-    char        *p;
-    char        *q;
-    BOOL        rc;
+    DWORD           continue_how;
+    DWORD           code;
+    DWORD           len;
+    msg_list        **owner;
+    msg_list        *new;
+    trap_conditions cond;
+    char            *p;
+    char            *q;
+    BOOL            rc;
 #ifdef WOW
 #if !defined( MD_x64 )
-    thread_info *ti;
-    DWORD       subcode;
-    IMAGE_NOTE  imgnote;
+    thread_info     *ti;
+    DWORD           subcode;
+    IMAGE_NOTE      imgnote;
 #endif
 #endif
-    int         returnCode;
+    myconditions    returnCode;
 
     if( tsc != NULL ) {
         *tsc = FALSE;
@@ -364,7 +355,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
 
     for( ;; ) {
         PendingProgramInterrupt = FALSE;
-        if( ( state & STATE_WATCH ) && !( state & STATE_WATCH_386 ) ) {
+        if( (state & STATE_WATCH) && (state & STATE_WATCH_386) == 0 ) {
             setTBit( T_OFF ); /* turn off previous T-bit */
 #if defined( MD_axp )
             /*
@@ -444,8 +435,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                      * check and see if we have the 16-bit app that we
                      * started is the one that has finally started
                      */
-                    if( !stricmp( imgnote.FileName, CurrEXEName ) &&
-                        ( state & STATE_WAIT_FOR_VDM_START ) ) {
+                    if( stricmp( imgnote.FileName, CurrEXEName ) == 0 && (state & STATE_WAIT_FOR_VDM_START) ) {
                         WOWAppInfo.tid = DebugeeTid;
                         WOWAppInfo.htask = imgnote.hTask;
                         WOWAppInfo.hmodule = imgnote.hModule;
@@ -523,8 +513,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                  * give the user's exception handlers a chance to run
                  */
                 DebugeeTid = DebugEvent.dwThreadId;
-                if( DebugEvent.u.Exception.dwFirstChance &&
-                  !( state & STATE_EXPECTING_FAULT ) ) {
+                if( DebugEvent.u.Exception.dwFirstChance && (state & STATE_EXPECTING_FAULT) == 0 ) {
                     char    buff[20];
                     void    *a;
 
@@ -544,12 +533,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
 #endif
                     ultoa( (unsigned long)(pointer_int)a, buff, 16 );
                     strcat( new->msg, buff );
-                    owner = &DebugString;
-                    for( ;; ) {
-                        if( *owner == NULL )
-                            break;
-                        owner = &( *owner )->next;
-                    }
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
                     *owner = new;
                     continue_how = DBG_EXCEPTION_NOT_HANDLED;
                     /*
@@ -607,8 +591,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             }
             break;
         case OUTPUT_DEBUG_STRING_EVENT:
-            if( state & ( STATE_IGNORE_DEBUG_OUT | STATE_WAIT_FOR_VDM_START ) )
-            {
+            if( state & (STATE_IGNORE_DEBUG_OUT | STATE_WAIT_FOR_VDM_START) ) {
                 break;
             }
             len = DebugEvent.u.DebugString.nDebugStringLength;
@@ -616,8 +599,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
             ReadMem( FlatDS, (ULONG_PTR)DebugEvent.u.DebugString.lpDebugStringData, p, len );
             p[len] = '\0';
             #define GOOFY_NT_MESSAGE "LDR: LdrpMapDll Relocating:"
-            if( !strncmp( p, GOOFY_NT_MESSAGE, sizeof( GOOFY_NT_MESSAGE ) - 1 )
-                    ) {
+            if( strncmp( p, GOOFY_NT_MESSAGE, sizeof( GOOFY_NT_MESSAGE ) - 1 ) == 0 ) {
                 LocalFree( p );
                 break;
             }
@@ -628,13 +610,7 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
                     new->next = NULL;
                     memcpy( new->msg, p, q - p );
                     new->msg[q - p] = '\0';
-                    owner = &DebugString;
-                    for( ;; ) {
-                        if( *owner == NULL ) {
-                            break;
-                        }
-                        owner = &( *owner )->next;
-                    }
+                    for( owner = &DebugString; *owner != NULL; owner = &(*owner)->next ) {}
                     *owner = new;
                     if( q[0] == '\0' ) {
                         break;
@@ -656,7 +632,6 @@ int DebugExecute( DWORD state, int *tsc, bool stop_on_module_load )
         }
     }
 done:
-    ;
     if( DebugString != NULL ) {
         returnCode += COND_MESSAGE + ( BreakOnKernelMessage ? COND_STOP : 0 );
     }

@@ -158,7 +158,7 @@ void main( int argc, char **argv )
 
     st = fgetpos( sfp, &start_position );
     check( st == 0 );
-    st = fseek( sfp, - (int) sizeof( header ), SEEK_END );
+    st = fseek( sfp, -(long)sizeof( header ), SEEK_END );
     check( st == 0 );
     st = fgetpos( sfp, &header_position );
     check( st == 0 );
@@ -232,8 +232,7 @@ void main( int argc, char **argv )
             st = fwrite( &sample, sizeof( samp_address ), 1, tfp );
             check( st == 1 );
             /* copy over remaining information & update curr_position */
-            st = fseek( sfp, prefix.length-sizeof(samp_block_prefix)
-                                      - sizeof(samp_address), SEEK_CUR);
+            st = fseek( sfp, prefix.length - sizeof( samp_block_prefix ) - sizeof( samp_address ), SEEK_CUR );
             check( st == 0 );
             st = fgetpos( sfp, &curr_position );
             check( st == 0 );
@@ -261,7 +260,7 @@ void main( int argc, char **argv )
             st = fgetpos( sfp, &curr_position );
             check( st == 0 );
         } else {
-            st = fseek( sfp, prefix.length-sizeof(samp_block_prefix), SEEK_CUR);
+            st = fseek( sfp, prefix.length - sizeof( samp_block_prefix ), SEEK_CUR );
             check( st == 0 );
             st = fgetpos( sfp, &curr_position );
             check( st == 0 );

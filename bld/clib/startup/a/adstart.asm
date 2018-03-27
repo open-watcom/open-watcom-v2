@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -47,6 +48,7 @@
 .387
 .386p
 
+include langenv.inc
 include xinit.inc
 include extender.inc
 
@@ -149,11 +151,11 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 BEGTEXT  segment use32 word public 'CODE'
         assume  cs:BEGTEXT
-___begtext label byte
 forever label   near
         int     3h
-        jmp    short forever
+        jmp short forever
         public ___begtext
+___begtext label byte
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -172,21 +174,6 @@ _AFTERNULL ends
 
 CONST   segment word public 'DATA'
 CONST   ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 
 _DATA   segment dword public 'DATA'
 
@@ -245,22 +232,16 @@ STACK   ends
         assume  cs:_TEXT
 
 _cstart_ proc near
-        jmp     short around
+        jmp short around
 
-;
-; copyright message
-;
-include msgrt32.inc
-include msgcpyrt.inc
+        dd      ___begtext      ; make sure dead code elimination
+                                ; doesn't kill BEGTEXT
 
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",00h
 NewLine         db      0Dh,0Ah
-
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
 
 around: sti                             ; enable interrupts
 
@@ -327,7 +308,8 @@ endif   ; ACAD
         mov     al,bl                   ; - (was in ascii)
         xor     ah,ah                   ; - subtype
         mov     bx,14h                  ; - get value of Phar Lap data segment
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 not_pharlap:                            ; - see if Rational DOS/4G
         mov     dx,78h                  ; - ...
         mov     ax,0FF00h               ; - ...
@@ -376,14 +358,15 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         mov     ds,edx                  ; restore ds
         push    ds                      ; save ds
-
         cmp     byte ptr  _Extender,X_RATIONAL ; if OS/386 or Rational
         jg      short pharlap           ; then
-          mov   dx,PSP_SEG              ; - get PSP segment descriptor
-          mov   ds,edx                  ; - ... into ds
-          mov   dx,ds:[02ch]            ; - get environment segment into dx
-          jmp   short haveenv           ; else
-pharlap:mov   dx,ENV_SEG                ; - PharLap environment segment
+        mov     dx,PSP_SEG              ; - get PSP segment descriptor
+        mov     ds,edx                  ; - ... into ds
+        mov     dx,ds:[02ch]            ; - get environment segment into dx
+        jmp short haveenv               ; else
+
+pharlap:
+        mov   dx,ENV_SEG                ; - PharLap environment segment
 haveenv:                                ; endif
         mov     es:word ptr _Envptr+4,dx ; save segment of environment area
         mov     ds,edx                  ; get segment addr of environment area
@@ -562,11 +545,13 @@ __exit   proc near                      ; never return
         ; return code is already on the stack
         jmp short L5
 
-        public   __do_exit_with_msg__
+        public   __do_exit_with_msg_
 
 ; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 
-__do_exit_with_msg__:                   ; never return
+__do_exit_with_msg_:                    ; never return
         push    edx                     ; save return code on stack
         push    eax                     ; save msg
         mov     edx,offset ConsoleName
@@ -603,6 +588,10 @@ endif   ; ACAD
 
 __exit   endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __null_FPE_rtn proc near
         ret                             ; return

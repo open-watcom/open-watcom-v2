@@ -40,18 +40,18 @@
 
 gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    int pos;
-    gui_coord start;
-    gui_coord mouse;
+    size_t      pos;
+    gui_coord   start;
+    gui_coord   mouse;
 
-    /* unused parameters */ (void)wnd; (void)mouse_x;
+    /* unused parameters */ (void)wnd;
 
     start.x = indent ;
     GUIScaleToScreenR( &start );
     mouse.x = mouse_x;
     GUIScaleToScreenR( &mouse );
 
-    if( start.x > mouse.x ) {
+    if( mouse.x < start.x ) {
         return( GUI_NO_COLUMN );
     }
     pos = mouse.x - start.x;

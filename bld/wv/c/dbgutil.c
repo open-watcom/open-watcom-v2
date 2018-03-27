@@ -139,13 +139,13 @@ void CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti )
 }
 #endif
 
-char *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len )
+char *AddrTypeToString( address *a, mad_type_handle mth, char *buff, size_t buff_len )
 {
     mad_type_info       mti;
     item_mach           item;
     mad_type_info       host;
 
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     AddrFix( a );
     MADTypeConvert( &host, a, &mti, &item, 0 );
@@ -317,17 +317,17 @@ char *LineAddr( address  *addr, char *buff, size_t buff_len )
 {
     mod_handle          mod;
     char                *end;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     AddrFloat( addr );
     if( DeAliasAddrMod( *addr, &mod ) == SR_NONE )
         return( NULL );
-    if( DeAliasAddrCue( mod, *addr, line ) == SR_NONE )
+    if( DeAliasAddrCue( mod, *addr, cueh_line ) == SR_NONE )
         return( NULL );
     end = buff + buff_len;
     buff += DIPModName( mod, buff, buff_len - 1 );
     *buff++ = '@';
-    buff = CnvULongDec( DIPCueLine( line ), buff, end - buff );
+    buff = CnvULongDec( DIPCueLine( cueh_line ), buff, end - buff );
     *buff = NULLCHAR;
     return( buff );
 }
@@ -634,9 +634,8 @@ const char *ModImageName( mod_handle handle )
     }
 }
 
-static walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
+OVL_EXTERN walk_result RegWalkList( const mad_reg_set_data *data, void *pdata )
 {
-
     *((const mad_reg_set_data **)pdata) = data;
     return( WR_STOP );
 }

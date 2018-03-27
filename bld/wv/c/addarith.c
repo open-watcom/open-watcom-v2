@@ -102,8 +102,10 @@ void DeAlias( addr_ptr *a )
 
 int AddrComp( address a, address b )
 {
-    if( a.sect_id == 0 ) a.sect_id = b.sect_id;
-    if( b.sect_id == 0 ) b.sect_id = a.sect_id;
+    if( a.sect_id == 0 )
+        a.sect_id = b.sect_id;
+    if( b.sect_id == 0 )
+        b.sect_id = a.sect_id;
     if( a.sect_id > b.sect_id ) {
         return( 3 );
     } else if( a.sect_id < b.sect_id ) {
@@ -160,10 +162,14 @@ long AddrDiff( address a, address b )
 
 bool SameAddrSpace( address a, address b )
 {
-    if( _IsOn( SW_IGNORE_SEGMENTS ) ) return( true );
-    if( a.sect_id == 0 ) a.sect_id = b.sect_id;
-    if( b.sect_id == 0 ) b.sect_id = a.sect_id;
-    if( a.sect_id != b.sect_id ) return( false );
+    if( _IsOn( SW_IGNORE_SEGMENTS ) )
+        return( true );
+    if( a.sect_id == 0 )
+        a.sect_id = b.sect_id;
+    if( b.sect_id == 0 )
+        b.sect_id = a.sect_id;
+    if( a.sect_id != b.sect_id )
+        return( false );
     AddrFix( &a );
     AddrFix( &b );
     DeAlias( &a.mach );

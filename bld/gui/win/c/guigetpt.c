@@ -33,14 +33,12 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-extern  WPI_TEXTMETRIC  GUItm;
 
 /*
  * GUIGetPoint -- Get the point in win at extent in row
  */
 
-void GUIGetPoint( gui_window * wnd, gui_ord extent, gui_ord row,
-                  gui_point * point )
+void GUIGetPoint( gui_window * wnd, gui_ord extent, gui_ord row, gui_point *point )
 {
     if( point == NULL ) {
         return;

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -38,8 +39,10 @@
 ;               wasm cstrt086 -bt=DOS -mh -0r
 ;
 
+include langenv.inc
 include mdef.inc
 include xinit.inc
+
 include exitwmsg.inc
 
 ; PSP offsets
@@ -77,13 +80,13 @@ BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
+        jmp short forever
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -123,20 +126,6 @@ CONST   ends
 
 STRINGS segment word public 'DATA'
 STRINGS ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _DATA   segment word public 'DATA'
 
@@ -197,7 +186,6 @@ endif
 
         assume  nothing
         public  _cstart_
-        public  _Not_Enough_Memory_
 
         assume  cs:_TEXT
 
@@ -208,11 +196,10 @@ endif
 _cstart_ proc near
         jmp     around
 
-;
-; copyright message
-;
-include msgrt16.inc
-include msgcpyrt.inc
+if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
+        dw      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT segment
+endif
 
 ;
 ; miscellaneous code-segment messages
@@ -226,11 +213,6 @@ endif
 NoMemory        db      'Not enough memory',0
 ConsoleName     db      'con',00h
 NewLine         db      0Dh,0Ah
-
-if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
-                dw      ___begtext      ; make sure dead code elimination
-                                        ; doesn't kill BEGTEXT segment
-endif
 
 around: sti                             ; enable interrupts
 if _MODEL and _TINY
@@ -281,7 +263,6 @@ endif
         sub     cx,ax                   ; calc # of paragraphs available
         cmp     dx,cx                   ; compare with what we need
         jb      enuf_mem                ; if not enough memory
-_Not_Enough_Memory_:
         mov     bx,1                    ; - set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
@@ -468,12 +449,13 @@ else
         mov     dx,cs                   ; . . .
 endif
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: DX:AX - far pointer to message to print
-;        BX    - exit code
+; input: ( char __far *msg, int rc ) always in registers
+;       DX:AX - far pointer to message to print
+;       BX    - exit code
 
-__do_exit_with_msg__:
+__do_exit_with_msg_:
         mov     sp,offset DGROUP:_end+80h; set a good stack pointer
         push    bx                      ; save return code
         push    ax                      ; save address of msg
@@ -521,6 +503,10 @@ endif
         int     021h                    ; back to DOS
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 ;
 ;       set up addressability without segment relocations for emulator

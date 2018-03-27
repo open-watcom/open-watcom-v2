@@ -501,12 +501,12 @@ void EmitLocExprNull( dw_client cli, dw_sectnum sect, size_t size )
 
 uint_32 EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle loc )
 {
-    char *                      p;
-    unsigned                    bytes_left;
-    unsigned                    size_of_block;
-    uint                        syms_left;
-    dw_sym_reloc                *reloc_info;
-    uint_32                     expr_size;
+    char            *p;
+    size_t          bytes_left;
+    size_t          size_of_block;
+    size_t          syms_left;
+    dw_sym_reloc    *reloc_info;
+    uint_32         expr_size;
 
     /* ensure that this is really an expression */
     _Assert( loc->is_expr == LOC_EXPR );
@@ -643,25 +643,19 @@ uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
 {
     switch( loc->is_expr ) {
     case LOC_LIST:
-        {
-            CLIWriteU8( cli, sect, DW_FORM_data4 );
-            CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-            EmitLocList( cli, DW_DEBUG_LOC, loc );
-            return( 1 + sizeof( dw_sect_offs ) );
-        }
+        CLIWriteU8( cli, sect, DW_FORM_data4 );
+        CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
+        EmitLocList( cli, DW_DEBUG_LOC, loc );
+        return( 1 + sizeof( dw_sect_offs ) );
     case LOC_LIST_REF:
-        {
-            CLIWriteU8( cli, sect, DW_FORM_data4 );
-            CLISectionSeekAbs( cli, DW_DEBUG_LOC, loc->u.ref );
-            CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-            CLISectionSeekEnd( cli, DW_DEBUG_LOC );
-            return( 1 + sizeof( dw_sect_offs ) );
-        }
+        CLIWriteU8( cli, sect, DW_FORM_data4 );
+        CLISectionSeekAbs( cli, DW_DEBUG_LOC, loc->u.ref );
+        CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
+        CLISectionSeekEnd( cli, DW_DEBUG_LOC );
+        return( 1 + sizeof( dw_sect_offs ) );
     case LOC_EXPR:
-        {
-            CLIWriteU8( cli, sect, DW_FORM_block2 );
-            return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
-        }
+        CLIWriteU8( cli, sect, DW_FORM_block2 );
+        return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
     }
     return( 0 );
 }

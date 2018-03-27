@@ -31,7 +31,6 @@
 
 
 #include <string.h>
-#include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -57,22 +56,22 @@
 
 #include "clibint.h"
 
+
 extern void     HookInQueue( void );
 extern void     HookOutQueue( void );
-static BOOL     PASCAL GetCommandData( HWND );
 extern HWND     MainHwnd = NULL;
-extern a_window *WndMain;
 
 volatile bool   BrkPending;
 bool            ToldWinHandle = false;
+
+static BOOL     PASCAL GetCommandData( HWND );
 
 static char     *CmdData;
 
 #if defined( __GUI__ )
 void TellWinHandle( void )
 {
-    if( !ToldWinHandle ) {
-        TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) );
+    if( !ToldWinHandle && TrapTellHWND( GUIGetSysHandle( WndGui( WndMain ) ) ) ) {
         ToldWinHandle = true;
     }
 }

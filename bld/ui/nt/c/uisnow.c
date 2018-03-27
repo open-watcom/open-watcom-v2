@@ -35,7 +35,10 @@
 #include "uidef.h"
 
 
-void intern vertretrace( void ) {}
+void intern vertretrace( void )
+/*****************************/
+{
+}
 
 bool intern issnow( BUFFER *bptr )
 {

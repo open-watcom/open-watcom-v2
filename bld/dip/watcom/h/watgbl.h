@@ -39,25 +39,16 @@
 #define GETS32(x)       *(signed_32 *)(x)
 
 extern void             GblSymFini( section_info *inf );
-extern void             AdjustSyms( section_info *inf );
-extern dip_status       MakeGblLst( section_info *inf );
-extern unsigned         GblSymSplit( info_block *gbl, section_info *inf );
-extern dip_status       SymHdl2GblLoc( imp_image_handle *ii, imp_sym_handle *is,
-                                location_list *ll );
-extern dip_status       SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
-                                sym_info *si );
-extern unsigned         SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
-                                char *buff, unsigned buff_size );
-extern unsigned         SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
-                                char *buff, unsigned buff_size );
-extern dip_status       SymHdl2GblType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
+extern void             AdjustSyms( imp_image_handle *, unsigned sectno );
+extern dip_status       MakeGblLst( imp_image_handle *, section_info *inf );
+extern unsigned         GblSymSplit( imp_image_handle *, info_block *gbl, section_info *inf );
+extern dip_status       SymHdl2GblLoc( imp_image_handle *, imp_sym_handle *, location_list *ll );
+extern dip_status       SymHdl2GblInfo( imp_image_handle *, imp_sym_handle *, sym_info *si );
+extern unsigned         SymHdl2GblName( imp_image_handle *, imp_sym_handle *, char *buff, unsigned buff_size );
+extern unsigned         SymHdl2ObjGblName( imp_image_handle *, imp_sym_handle *, char *buff, unsigned buff_size );
+extern dip_status       SymHdl2GblType( imp_image_handle *, imp_sym_handle *, imp_type_handle *ith );
 extern type_kind        GblTypeClassify( unsigned kind );
-extern walk_result      WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
-                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
-extern dip_status       Link2GblHdl( imp_image_handle *ii, gbl_info *gbl,
-                                imp_sym_handle *is );
-extern search_result    SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
-                                imp_mod_handle im, lookup_item *li, void *d );
-extern search_result    LookupGblAddr( imp_image_handle *, address,
-                                imp_sym_handle * );
+extern walk_result      WalkGblModSymList( imp_image_handle *, imp_mod_handle im, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
+extern dip_status       Link2GblHdl( imp_image_handle *, gbl_info *gbl, imp_sym_handle * );
+extern search_result    SearchGbl( imp_image_handle *, imp_mod_handle cim, imp_mod_handle im, lookup_item *li, void *d );
+extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );

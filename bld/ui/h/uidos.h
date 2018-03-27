@@ -30,6 +30,4 @@
 ****************************************************************************/
 
 
-#ifdef __386__
-    #define int86 int386
-#endif
+extern void IdleInterrupt( void );

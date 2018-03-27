@@ -24,10 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Defines debugger global variables. The variables are 
+* Description:  Defines debugger global variables. The variables are
 *               instantiated in dbgdata.c
 *
 ****************************************************************************/
+
 
 #include <string.h>
 #include "dbgtoken.h"
@@ -39,6 +40,7 @@
 #include "trpcore.h"
 #include "ambigsym.h"
 #include "diptypes.h"
+
 
 #if !defined( global )
 #define global  extern

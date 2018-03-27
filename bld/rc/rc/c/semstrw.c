@@ -266,9 +266,9 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
         for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
             loc.start = SemStartResource();
 
-            error = ResWriteStringTableBlock( &(currblock->Block), currblock->UseUnicode, CurrResFile.fid );
+            error = ResWriteStringTableBlock( &(currblock->Block), currblock->UseUnicode, CurrResFile.fp );
             if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-                error = ResWritePadDWord( CurrResFile.fid );
+                error = ResWritePadDWord( CurrResFile.fp );
             }
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

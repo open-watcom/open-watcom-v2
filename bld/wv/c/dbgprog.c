@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,16 +67,15 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "ntdbgpb.h"
+#include "dbgstdio.h"
+#include "dlgfile.h"
 
 #include "clibext.h"
 
 
-extern void             StdInNew( void );
-extern void             StdOutNew( void );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             SetNoSectSeg( void );
-extern void             SetLastExe( const char *name );
 extern void             VarFreeScopes( void );
 extern void             VarUnMapScopes( image_entry * );
 extern void             VarReMapScopes( image_entry * );
@@ -193,8 +193,8 @@ void FindLocalDebugInfo( const char *name )
     InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
 
-static void DoDownLoadCode( void )
-/********************************/
+OVL_EXTERN void DoDownLoadCode( void )
+/************************************/
 {
     file_handle     fh;
 
@@ -484,20 +484,19 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, dig_fhandle fid, unsigned start, unsigned end )
+static bool CheckLoadDebugInfo( image_entry *image, file_handle fh, dip_priority start, dip_priority end )
 {
-    char        buff[TXT_LEN];
-    char        *symfile;
-    unsigned    prio;
-    char        *endstr;
+    char            buff[TXT_LEN];
+    char            *symfile;
+    dip_priority    priority;
+    char            *endstr;
 
-    prio = start;
-    for( ;; ) {
-        prio = DIPPriority( prio );
-        if( prio == 0 || prio > end )
+    image->dip_handle = NO_MOD;
+    for( priority = start - 1; (priority = DIPPriority( priority )) != 0; ) {
+        if( priority > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( fid, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( FH2FP( fh ), sizeof( image_entry * ), priority );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -528,18 +527,20 @@ static bool CheckLoadDebugInfo( image_entry *image, dig_fhandle fid, unsigned st
  */
 static bool ProcImgSymInfo( image_entry *image )
 {
-    file_handle fh;
-    unsigned    last;
-    char        buff[TXT_LEN];
-    char        *symfile_name;
-    const char  *nopath;
-    size_t      len;
+    file_handle     fh;
+    dip_priority    last_priority;
+    char            buff[TXT_LEN];
+    char            *symfile_name;
+    const char      *nopath;
+    size_t          len;
+    bool            ret;
 
+    ret = false;
     image->deferred_symbols = false;
     if( _IsOff( SW_LOAD_SYMS ) )
-        return( NO_MOD );
+        return( ret );
     if( image->symfile_name != NULL ) {
-        last = DIP_PRIOR_MAX;
+        last_priority = DIP_PRIOR_MAX;
         fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "sym" );
         if( fh == NIL_HANDLE ) {
             nopath = SkipPathInfo( image->symfile_name, OP_REMOTE );
@@ -550,57 +551,60 @@ static bool ProcImgSymInfo( image_entry *image )
             }
         }
     } else {
-        last = DIP_PRIOR_EXPORTS - 1;
+        last_priority = DIP_PRIOR_EXPORTS - 1;
         fh = FileOpen( image->image_name, OP_READ );
         if( fh == NIL_HANDLE ) {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_MIN, last ) ) {
-            return( true );
-        }
+        ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last_priority );
         FileClose( fh );
+        if( ret ) {
+            return( ret );
+        }
     }
-    if( image->symfile_name != NULL )
-        return( false );
-    _AllocA( symfile_name, strlen( image->image_name ) + 1 );
-    strcpy( symfile_name, image->image_name );
-    symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
-    len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
-    _Alloc( image->symfile_name, len + 1 );
-    if( image->symfile_name != NULL ) {
-        memcpy( image->symfile_name, buff, len + 1 );
-        fh = FileOpen( image->symfile_name, OP_READ );
-        if( fh == NIL_HANDLE ) {
-            fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
-        }
-        if( fh == NIL_HANDLE ) {
-            fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
-        }
-        if( fh != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
-                return( true );
+    if( image->symfile_name == NULL ) {
+        _AllocA( symfile_name, strlen( image->image_name ) + 1 );
+        strcpy( symfile_name, image->image_name );
+        symfile_name[ExtPointer( symfile_name, OP_REMOTE ) - symfile_name] = NULLCHAR;
+        len = MakeFileName( buff, symfile_name, "sym", OP_REMOTE );
+        _Alloc( image->symfile_name, len + 1 );
+        if( image->symfile_name != NULL ) {
+            memcpy( image->symfile_name, buff, len + 1 );
+            fh = FileOpen( image->symfile_name, OP_READ );
+            if( fh == NIL_HANDLE ) {
+                fh = FileOpen( image->symfile_name, OP_READ | OP_REMOTE );
             }
-            FileClose( fh );
-        }
-        _Free( image->symfile_name );
-    }
-    image->symfile_name = NULL;
-    if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
-        if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
-            image->deferred_symbols = true;
-        } else {
-            fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+            if( fh == NIL_HANDLE ) {
+                fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
+            }
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, DIG_PH2FID( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
-                    return( true );
-                }
+                ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX );
                 FileClose( fh );
+                if( ret ) {
+                    return( ret );
+                }
+            }
+            _Free( image->symfile_name );
+            image->symfile_name = NULL;
+        }
+        if( _IsOff( SW_NO_EXPORT_SYMS ) ) {
+            if( _IsOn( SW_DEFER_SYM_LOAD ) ) {
+                image->deferred_symbols = true;
+            } else {
+                fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
+                if( fh != NIL_HANDLE ) {
+                    ret = CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS, DIP_PRIOR_MAX );
+                    FileClose( fh );
+                    if( ret ) {
+                        return( ret );
+                    }
+                }
             }
         }
     }
-    return( false );
+    return( ret );
 }
 
 
@@ -668,8 +672,8 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
     mod_handle  himage, mod;
     bool        ok;
     address     addr;
-    DIPHDL( cue, ch );
-    DIPHDL( cue, ch2 );
+    DIPHDL( cue, cueh );
+    DIPHDL( cue, cueh2 );
     remap_return        rc = REMAP_REMAPPED;
 
     if( !bp->status.b.unmapped )
@@ -695,11 +699,11 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
         if( !ok )
             return( REMAP_ERROR );
         if( bp->cue_diff != 0 ) {
-            if( DeAliasAddrCue( mod, addr, ch ) != SR_EXACT )
+            if( DeAliasAddrCue( mod, addr, cueh ) != SR_EXACT )
                 return( REMAP_ERROR );
-            if( DIPLineCue( mod, DIPCueFileId( ch ), DIPCueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
+            if( DIPLineCue( mod, DIPCueFileId( cueh ), DIPCueLine( cueh ) + bp->cue_diff, 0, cueh2 ) != SR_EXACT )
                 return( REMAP_ERROR );
-            addr = DIPCueAddr( ch2 );
+            addr = DIPCueAddr( cueh2 );
         }
         if( bp->addr_diff != 0 ) {
             addr.mach.offset += bp->addr_diff;
@@ -891,8 +895,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
     CheckSegAlias();
     image->system_handle = system_handle;
     SetLastExe( fullname );
-    ProcImgSymInfo( image );
-    if( image->dip_handle != NO_MOD ) {
+    if( ProcImgSymInfo( image ) ) {
         DIPMapInfo( image->dip_handle, image );
     }
     InitImageInfo( image );
@@ -1083,7 +1086,7 @@ static void DoResNew( bool have_parms, const char *cmd,
 }
 
 
-extern void LoadNewProg( const char *cmd, const char *parms )
+void LoadNewProg( const char *cmd, const char *parms )
 {
     size_t      clen, plen;
     char        prog[FILENAME_MAX];
@@ -1207,7 +1210,7 @@ static void DoReStart( bool have_parms, size_t clen, const char *start, size_t l
 }
 
 
-static void ResNew( void )
+OVL_EXTERN void ResNew( void )
 {
     const char          *start;
     size_t              len;
@@ -1258,7 +1261,7 @@ static const char NogoTab[] = {
 
 
 
-static void ProgNew( void )
+OVL_EXTERN void ProgNew( void )
 {
     const char  *start;
     char        *cmd;

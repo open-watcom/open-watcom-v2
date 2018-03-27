@@ -355,9 +355,9 @@ mad_disasm_control MADIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_
     return( DisasmControl( dd, mr ) );
 }
 
-static walk_result FindCallTarget( address a, mad_type_handle th, mad_memref_kind mk, void *d )
+static walk_result FindCallTarget( address a, mad_type_handle mth, mad_memref_kind mk, void *d )
 {
-    /* unused parameters */ (void)th; (void)mk;
+    /* unused parameters */ (void)mth; (void)mk;
 
     *(address *)d = a;
     return( WR_STOP );
@@ -491,7 +491,7 @@ static int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )
 
 static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     address             addr;
     dis_operand         *op;
     mad_memref_kind     mmk;
@@ -499,34 +499,34 @@ static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *w
     op = &dd->ins.op[opnd];
     switch( op->ref_type ) {
     case DRT_X86_DWORDF:
-        th = X86T_FLOAT;
+        mth = X86T_FLOAT;
         break;
     case DRT_X86_DWORD:
-        th = X86T_DWORD;
+        mth = X86T_DWORD;
         break;
     case DRT_X86_QWORDF:
-        th = X86T_DOUBLE;
+        mth = X86T_DOUBLE;
         break;
     case DRT_X86_QWORD:
-        th = X86T_QWORD;
+        mth = X86T_QWORD;
         break;
     case DRT_X86_WORD:
-        th = X86T_WORD;
+        mth = X86T_WORD;
         break;
     case DRT_X86_BYTE:
-        th = X86T_BYTE;
+        mth = X86T_BYTE;
         break;
     case DRT_X86_TBYTE:
-        th = X86T_EXTENDED;
+        mth = X86T_EXTENDED;
         break;
     case DRT_X86_FARPTR48:
-        th = X86T_F32_PTR;
+        mth = X86T_F32_PTR;
         break;
     case DRT_X86_FARPTR32:
-        th = X86T_F16_PTR;
+        mth = X86T_F16_PTR;
         break;
     default:
-        th = X86T_BYTE;
+        mth = X86T_BYTE;
         break;
     }
     addr.sect_id = 0;
@@ -594,28 +594,28 @@ static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *w
         }
         break;
     }
-    return( wk( addr, th, mmk, d ) );
+    return( wk( addr, mth, mmk, d ) );
 }
 
 walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     walk_result         wr;
-    mad_type_handle     th;
+    mad_type_handle     mth;
     int                 i;
 
-    th = MAD_NIL_TYPE_HANDLE;
+    mth = MAD_NIL_TYPE_HANDLE;
     switch( dd->ins.type ) {
     case DI_X86_ret:
     case DI_X86_ret2:
-        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR;
+        mth = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR;
         break;
     case DI_X86_retf:
     case DI_X86_retf2:
-        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR;
+        mth = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR;
         break;
     case DI_X86_iret:
     case DI_X86_iretd:
-        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_IRET32 : X86T_IRET16;
+        mth = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_IRET32 : X86T_IRET16;
         break;
     case DI_X86_pop:
     case DI_X86_pop2:
@@ -627,17 +627,17 @@ walk_result DoDisasmMemRefWalk( mad_disasm_data *dd, MEMREF_WALKER *wk, const ma
     case DI_X86_popf:
     case DI_X86_popfd:
     case DI_X86_leave:
-        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_DWORD : X86T_WORD;
+        mth = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_DWORD : X86T_WORD;
         break;
     case DI_X86_popa:
     case DI_X86_popad:
-        th = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_POPAD : X86T_POPA;
+        mth = ( dd->ins.flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_POPAD : X86T_POPA;
         break;
     default:
         break;
     }
-    if( th != MAD_NIL_TYPE_HANDLE ) {
-        wr = wk( GetRegSP( mr ), th, MMK_VOLATILE | MMK_IMPLICIT | MMK_READ, d );
+    if( mth != MAD_NIL_TYPE_HANDLE ) {
+        wr = wk( GetRegSP( mr ), mth, MMK_VOLATILE | MMK_IMPLICIT | MMK_READ, d );
         if( wr != WR_CONTINUE ) {
             return( wr );
         }
@@ -658,11 +658,11 @@ struct memref_glue {
     void                *d;
 };
 
-static walk_result MemRefGlue( address a, mad_type_handle th, mad_memref_kind mk, void *d )
+static walk_result MemRefGlue( address a, mad_type_handle mth, mad_memref_kind mk, void *d )
 {
     struct memref_glue  *gd = d;
 
-    return( gd->wk( a, th, mk, gd->d ) );
+    return( gd->wk( a, mth, mk, gd->d ) );
 }
 
 walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
@@ -796,18 +796,18 @@ char *CnvRadix( unsigned long value, mad_radix radix, char base, char *buff, siz
 char *JmpLabel( unsigned long addr, addr_off off )
 {
     address             memaddr;
-    mad_type_handle     th;
+    mad_type_handle     mth;
     char                *p;
 
     /* unused parameters */ (void)off;
 
     memaddr = DbgAddr;
     memaddr.mach.offset = addr;
-    th = ( BIG_SEG( memaddr ) ) ? X86T_N32_PTR : X86T_N16_PTR;
+    mth = ( BIG_SEG( memaddr ) ) ? X86T_N32_PTR : X86T_N16_PTR;
 #define PREFIX_STR "CS:"
 #define PREFIX_LEN (sizeof( PREFIX_STR ) - 1)
     p = &ScratchBuff[PREFIX_LEN];
-    if( MCAddrToString( memaddr, th, MLK_CODE, p, sizeof( ScratchBuff ) - 1 - PREFIX_LEN ) != MS_OK ) {
+    if( MCAddrToString( memaddr, mth, MLK_CODE, p, sizeof( ScratchBuff ) - 1 - PREFIX_LEN ) != MS_OK ) {
         p -= PREFIX_LEN;
         memcpy( p, PREFIX_STR, PREFIX_LEN );
     }
@@ -821,15 +821,15 @@ char *JmpLabel( unsigned long addr, addr_off off )
 char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
 {
     address             memaddr;
-    mad_type_handle     th;
+    mad_type_handle     mth;
 
     /* unused parameters */ (void)addr;
 
     memaddr.mach.segment = seg;
     memaddr.mach.offset = value;
     MCAddrSection( &memaddr );
-    th = BIG_SEG( memaddr ) ? X86T_F32_PTR : X86T_F16_PTR;
-    MCAddrToString( memaddr, th, MLK_MEMORY, ScratchBuff, sizeof( ScratchBuff ) - 1 );
+    mth = BIG_SEG( memaddr ) ? X86T_F32_PTR : X86T_F16_PTR;
+    MCAddrToString( memaddr, mth, MLK_MEMORY, ScratchBuff, sizeof( ScratchBuff ) - 1 );
     return( ScratchBuff );
 }
 

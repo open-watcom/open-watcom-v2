@@ -47,7 +47,6 @@
 #include "dbgmem.h"
 #include "trapaccs.h"
 #include "dbgscrn.h"
-#include "guigmous.h"
 #include "wndsys.h"
 #include "trpld.h"
 #include "trpsys.h"
@@ -58,7 +57,6 @@
 extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
 extern HMQ              GUIPMmq;
-extern a_window         *WndMain;
 
 unsigned                NumLines;
 unsigned                NumColumns;

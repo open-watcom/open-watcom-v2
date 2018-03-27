@@ -47,11 +47,12 @@ typedef enum {
 } a_hot_spot_flags;
 
 typedef enum {
+    FLD_NONE,
     FLD_VOID,
     FLD_FRAME,
     FLD_LABEL,
-    FLD_TEXT,          /* background text      * must be */
-    FLD_HOT,           /* hot spot             * first   */
+    FLD_TEXT,          /* background text must be first */
+    FLD_HOT,           /* hot spot must be first        */
     FLD_EDIT,
     FLD_INVISIBLE_EDIT,
     FLD_LISTBOX,
@@ -91,10 +92,10 @@ typedef struct a_num_field {          /* display is choice+diff */
 
 typedef struct a_hot_spot {
     char                *str;
-    EVENT               event;
+    ui_event            event;
     int                 row;
     int                 startcol;
-    int                 length;
+    unsigned            length;
     a_hot_spot_flags    flags;
 } a_hot_spot;
 
@@ -161,73 +162,71 @@ typedef struct a_dialog {
     VFIELD          *curr;          // current VFIELD
     VFIELD          *first;         // first VFIELD
     a_ui_edit       *edit_data;
-    unsigned        dirty:1;
-    unsigned        moving:1;
+    bool            dirty       :1;
+    bool            moving      :1;
 } a_dialog;
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
-extern void uiposnhotspots(VSCREEN *,VFIELD *);
-extern void uiprinthotspots(VSCREEN *,VFIELD *);
-extern void uioffhotspots(VSCREEN *,VFIELD *);
-extern EVENT uihotkeyfilter( a_dialog *, EVENT );
-extern EVENT uihotspotfilter( VSCREEN *, VFIELD *, EVENT );
-extern char uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
-extern void uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
-extern char uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
-extern unsigned int ui_split_line(char **,char *,unsigned int );
-extern void *uiinitdialog(const char *title, ATTR, char **, unsigned int, int, int, int );
-extern void uifinidialog(void *);
+extern void             uiposnhotspots( VSCREEN *, VFIELD * );
+extern void             uiprinthotspots( VSCREEN *, VFIELD * );
+extern void             uioffhotspots( VSCREEN *, VFIELD * );
+extern ui_event         uihotkeyfilter( a_dialog *, ui_event );
+extern ui_event         uihotspotfilter( VSCREEN *, VFIELD *, ui_event );
+extern char             uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
+extern void             uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
+extern char             uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
-extern a_dialog *uibegdialog( const char *title, VFIELD *, ORD, ORD, int, int );
-extern bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area );
-extern EVENT uiprocessdialogevent( EVENT, a_dialog * );
-extern void uireinitdialog( a_dialog *, VFIELD *);
-extern EVENT uidialog(a_dialog *);
-extern void uienddialog(a_dialog *);
-extern void uifreedialog( a_dialog *ui_dlg_info );
-extern void uiprintfield(a_dialog *, VFIELD *);
-extern void uimovefield( a_dialog *, VFIELD *, int row_diff, int col_diff );
-extern bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area );
-extern void uiredrawdialog( a_dialog *ui_dlg_info );
-extern bool uidialogisdirty( a_dialog *);
-extern void uidialogsetdirty( a_dialog *, bool );
-extern void uidialogsetcurr( a_dialog *, VFIELD *);
-extern void uidialogexitcurr( a_dialog * );
-extern void uidialogchangefield( a_dialog * );
-extern bool uiisdefaulthotspot( VFIELD *, EVENT );
-extern EVENT uilistbox( EVENT , struct a_list *, bool );
-extern void uiupdateedit( a_dialog *, VFIELD * );
-extern void uiboxpushlist( void );
-extern void uiboxpoplist( void );
-extern void uimovelistbox( struct a_list *, int row_diff, int col_diff );
-extern unsigned uiendlistbox( struct a_list * );
-extern void uipaintlistbox( struct a_list * );
-extern struct a_list_info *uibeglistbox( VSCREEN *, struct sarea *,
-                                         struct a_list * );
-extern int  uilistsize( struct a_list * );
-extern UIPICKGETTEXT uigetlistelement;
-extern void uiupdatelistbox( struct a_list * );
-extern void uiupdatecombobox( struct a_combo_box * );
-extern void *openstream(char *,char *,char **);
-extern void closestream(void *);
+extern unsigned         ui_split_line( char **, char *, unsigned );
+extern VSCREEN          *uiinitdialog( const char *title, ATTR, char **, uisize, uisize, int, int );
+extern void             uifinidialog( VSCREEN * );
+
+extern a_dialog         *uibegdialog( const char *title, VFIELD *, unsigned, unsigned, int, int );
+extern bool             uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area );
+extern ui_event         uiprocessdialogevent( ui_event, a_dialog * );
+extern void             uireinitdialog( a_dialog *, VFIELD *);
+extern ui_event         uidialog( a_dialog * );
+extern void             uienddialog( a_dialog * );
+extern void             uifreedialog( a_dialog *ui_dlg_info );
+extern void             uiprintfield( a_dialog *, VFIELD * );
+extern void             uimovefield( a_dialog *, VFIELD *, int row_diff, int col_diff );
+extern bool             uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area );
+extern void             uiredrawdialog( a_dialog *ui_dlg_info );
+extern bool             uidialogisdirty( a_dialog *);
+extern void             uidialogsetdirty( a_dialog *, bool );
+extern void             uidialogsetcurr( a_dialog *, VFIELD *);
+extern void             uidialogexitcurr( a_dialog * );
+extern void             uidialogchangefield( a_dialog * );
+extern bool             uiisdefaulthotspot( VFIELD *, ui_event );
+extern ui_event         uilistbox( ui_event , a_list *, bool );
+extern void             uiupdateedit( a_dialog *, VFIELD * );
+extern void             uiboxpushlist( void );
+extern void             uiboxpoplist( void );
+extern void             uimovelistbox( a_list *, int row_diff, int col_diff );
+extern unsigned         uiendlistbox( a_list * );
+extern void             uipaintlistbox( a_list * );
+extern a_list_info      *uibeglistbox( VSCREEN *, SAREA *, a_list * );
+extern unsigned         uilistsize( a_list * );
+extern UIPICKGETTEXT    uigetlistelement;
+extern void             uiupdatelistbox( a_list * );
+extern void             uiupdatecombobox( a_combo_box * );
 
 /*
  * functions in uidlgfcn.c
  */
-extern void uioncheckbox( a_dialog *, VFIELD * );
-extern void uioffcheckbox( a_dialog *, VFIELD * );
-extern void uiselectradio( a_dialog *, VFIELD * );
-extern void uiselectlist( a_dialog *, VFIELD *, unsigned choice );
-extern void uiselectcombo( a_dialog *, VFIELD *, unsigned choice );
+extern void             uioncheckbox( a_dialog *, VFIELD * );
+extern void             uioffcheckbox( a_dialog *, VFIELD * );
+extern void             uiselectradio( a_dialog *, VFIELD * );
+extern void             uiselectlist( a_dialog *, VFIELD *, unsigned choice );
+extern void             uiselectcombo( a_dialog *, VFIELD *, unsigned choice );
 
 /*
  * functions in uidialcb.c
  */
 
-extern EVENT uidialogcallback( a_dialog *, EVENT );
+extern ui_event         uidialogcallback( a_dialog *, ui_event );
 
 #ifdef __cplusplus
 }

@@ -429,6 +429,7 @@ static void AddrFold( TREEPTR tree, addrfold_info *info )
         break;
     case OPR_PUSHADDR:
         info->state = IS_ADDR;
+        /* fall through */
     case OPR_PUSHSYM:
         if( info->addr_set ) {
             info->is_error = true;
@@ -1356,6 +1357,7 @@ static bool SimpleStruct( TYPEPTR typ )
             if( SimpleUnion( typ ) ) {
                 break;              // go 1 deep to get by MFC examples
             }
+            /* fall through */
         case TYPE_ARRAY:
         case TYPE_STRUCT:
         case TYPE_FIELD:

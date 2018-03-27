@@ -164,9 +164,12 @@ end
 
 system begin pharlap
     option osname='PharLap'
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/fpuemu/386/dos386
     libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
     libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_r
     format phar ^
 end
 
@@ -175,6 +178,14 @@ system begin pharlap_linux
     libpath %OWSRCDIR%/clib/library/linux.386/mf_r
     libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
     format phar ^
+end
+
+system begin pharlap_qnx
+    option osname='QNX 32-bit PharLap'
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/clib/library/qnx.386/ms_r
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
+    format pharlap rex ^
 end
 
 system begin os2
@@ -211,6 +222,10 @@ system begin os2_dll
     libpath %OWSRCDIR%/clib/library/os2.286/ml
     libpath %OWSRCDIR%/clib/library/os2.286/ml_mt
     libpath %OWSRCDIR%/clib/library/os2.286/ml_dll
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mc
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mm
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
@@ -449,10 +464,10 @@ system begin win386
     libpath %OWSRCDIR%/win386/conv/win386
     format phar rex ^
 end
- 
+
 system begin win_vxd
     option osname='Windows VxD'
-    format windows vxd ^ 
+    format windows vxd ^
 end
 
 system begin osi
@@ -593,4 +608,19 @@ system begin qnx386
     libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_r
     libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_s
     format qnx ^
+end
+
+system begin novell
+    option osname='Novell NLM'
+    format novell ^
+    libpath %OWSRCDIR%/fpuemu/386/stub386
+    libpath %OWSRCDIR%/clib/library/nw_clib.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_s
+    libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
+    libpath %OWSRCDIR%/cpplib/library/generic.386/ms_s
+    libpath %OWSRCDIR%/cpplib/library/netware.386/ms_smt
+    libpath %OWSRCDIR%/cpplib/complex/generic.386/ms_s
+    libpath %OWSRCDIR%/cpplib/complex/generic.387/ms_s
+    module clib
+    import @%OWSRCDIR%/os_supp/novell/common/imp/owclib.imp
 end

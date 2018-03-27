@@ -1929,18 +1929,22 @@ pointer FEAuxInfo( pointer req_handle, int request )
             if( CGOpts & CGOPT_BD )
                 return( (pointer)(pointer_int)1 );
 #endif
+            /* fall through */
         case 1:
 #if _CPU == 386 || _CPU == 8086
             if(( CGFlags & CG_FP_MODEL_80x87 )
               && ( CGFlags & CG_USED_80x87 ))
                 return( (pointer)(pointer_int)2 );
+            /* fall through */
         case 2:
 #if _CPU == 386
             if( CPUOpts & CPUOPT_FPI )
                 return( (pointer)(pointer_int)3 );
+            /* fall through */
         case 3:
             if( CGOpts & CGOPT_BW )
                 return( (pointer)(pointer_int)4 );
+            /* fall through */
         case 4:
 #endif
 #endif
@@ -1950,17 +1954,21 @@ pointer FEAuxInfo( pointer req_handle, int request )
         case 6:
             if( Options & OPT_UNIT_6_CC )
                 return( (pointer)(pointer_int)7 );
+            /* fall through */
         case 7:
             if( Options & OPT_LF_WITH_FF )
                 return( (pointer)(pointer_int)8 );
+            /* fall through */
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
             if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
                 return( (pointer)(pointer_int)9 );
+            /* fall through */
         case 9:
 #endif
             if( Options & OPT_COMMA_SEP )
                 return( (pointer)(pointer_int)10 );
+            /* fall through */
         default:
             break;
         }

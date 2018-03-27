@@ -36,7 +36,7 @@
 #include "reserr.h"
 
 
-static WResFileID res_open( const char *name, wres_open_mode omode )
+static FILE *res_open( const char *name, wres_open_mode omode )
 {
     FILE    *fp;
 
@@ -45,43 +45,43 @@ static WResFileID res_open( const char *name, wres_open_mode omode )
     fp = fopen( name, "rb" );
     if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    return( WRES_FH2FID( fp ) );
+    return( fp );
 }
 
-static bool res_close( WResFileID fid )
+static bool res_close( FILE *fp )
 {
-    return( fclose( WRES_FID2FH( fid ) ) != 0 );
+    return( fclose( fp ) != 0 );
 }
 
-static size_t res_read( WResFileID fid, void *buf, size_t size )
+static size_t res_read( FILE *fp, void *buf, size_t size )
 {
-    return( fread( buf, 1, size, WRES_FID2FH( fid ) ) );
+    return( fread( buf, 1, size, fp ) );
 }
 
-static size_t res_write( WResFileID fid, const void *buf, size_t size )
+static size_t res_write( FILE *fp, const void *buf, size_t size )
 {
-    return( fwrite( buf, 1, size, WRES_FID2FH( fid ) ) );
+    return( fwrite( buf, 1, size, fp ) );
 }
 
-static bool res_seek( WResFileID fid, WResFileOffset pos, int where )
+static bool res_seek( FILE *fp, long pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
-        return( fseek( WRES_FID2FH( fid ), pos + WResFileShift, where ) != 0 );
+        return( fseek( fp, pos + WResFileShift, where ) != 0 );
     }
-    return( fseek( WRES_FID2FH( fid ), pos, where ) != 0 );
+    return( fseek( fp, pos, where ) != 0 );
 }
 
-static WResFileOffset res_tell( WResFileID fid )
+static long res_tell( FILE *fp )
 {
-    return( ftell( WRES_FID2FH( fid ) ) );
+    return( ftell( fp ) );
 }
 
-static bool res_ioerr( WResFileID fid, size_t rc )
+static bool res_ioerr( FILE *fp, size_t rc )
 {
     /* unused parameters */ (void)rc;
 
-    return( ferror( WRES_FID2FH( fid ) ) != 0 );
+    return( ferror( fp ) != 0 );
 }
 
 WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, malloc, free );

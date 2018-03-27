@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,24 +31,23 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #ifndef __UNIX__
 #include <process.h>
 #endif
-#include "uidef.h"
+#include "stdui.h"
 #include "uimenu.h"
 #include "uivedit.h"
-#include "uigchar.h"
-#ifdef __UNIX__
-#include "uivirt.h"
-#endif
 
 #define TEST_COLOURS
 #ifdef TEST_COLOURS
 #include "uiattrs.h"
 #endif
 
-#define Normal          UIData->attrs[ ATTR_NORMAL ]
+#include "sampdial.h"
+
+#define Normal          UIData->attrs[ATTR_NORMAL]
 
 extern void sample_dialog( void );
 
@@ -59,7 +59,7 @@ char    check_empty[4];
 enum    Symbols { RADIO_BUTTON, CHECK_BOX };
 enum    Conditons { ON, OFF };
 
-extern EVENT    LineEvents[];
+extern ui_event     LineEvents[];
 
 #define EV_QUIT         EV_F2
 enum {
@@ -73,48 +73,48 @@ enum {
     EV_NOTHING
 };
 
-static MENUITEM secondpopup[] = {
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         EV_NO_EVENT,      0 },
-    { "Exit",     EV_QUIT,          1 },
+static UIMENUITEM secondpopup[] = {
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
-static MENUITEM filemenu[] = {
-    { "Open",     EV_OPEN,          0 },
-    { "Close",    EV_CLOSE,         0 },
-    { "Nothing",  EV_NOTHING,       2 },
-    { "Extra",    EV_EXTRA,         0, secondpopup },
-    { NULL,       EV_NO_EVENT,      ITEM_SEPARATOR },
-    { "Dialog",   EV_SAMPLE_DIALOG, 1 },
-    { "",         EV_NO_EVENT,      0 },
-    { "Exit",     EV_QUIT,          1 },
+static UIMENUITEM filemenu[] = {
+    { "Open",     EV_OPEN,          0,              NULL },
+    { "Close",    EV_CLOSE,         0,              NULL },
+    { "Nothing",  EV_NOTHING,       2,              NULL },
+    { "Extra",    EV_EXTRA,         0,              secondpopup },
+    { NULL,       ___,              ITEM_SEPARATOR, NULL },
+    { "Dialog",   EV_SAMPLE_DIALOG, 1,              NULL },
+    { "",         ___,              0,              NULL },
+    { "Exit",     EV_QUIT,          1,              NULL },
     NULL
 };
 
-static MENUITEM editmenu[] = {
-    { NULL,       EV_NO_EVENT,      0 },
+static UIMENUITEM editmenu[] = {
+    { NULL,       ___,              0,              NULL },
 };
 
-static MENUITEM barmenu[] = {
-    { "File",               EV_NO_EVENT,      0 },
-    { "Edit",               EV_NO_EVENT,      1 },
-    { "LongMenuItem_1",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_2",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_3",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_4",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_5",     EV_NO_EVENT,      1 },
-    { "MidFile",            EV_NO_EVENT,      2 },
-    { "LongMenuItem_6",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_7",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_8",     EV_NO_EVENT,      1 },
-    { "LongMenuItem_9",     EV_NO_EVENT,      1 },
-    { "Go!",                EV_GO,            0 },
-    { "File",               EV_NO_EVENT,      2 },
+static UIMENUITEM barmenu[] = {
+    { "File",               ___,    0,              NULL },
+    { "Edit",               ___,    1,              NULL },
+    { "LongMenuItem_1",     ___,    1,              NULL },
+    { "LongMenuItem_2",     ___,    1,              NULL },
+    { "LongMenuItem_3",     ___,    1,              NULL },
+    { "LongMenuItem_4",     ___,    1,              NULL },
+    { "LongMenuItem_5",     ___,    1,              NULL },
+    { "MidFile",            ___,    2,              NULL },
+    { "LongMenuItem_6",     ___,    1,              NULL },
+    { "LongMenuItem_7",     ___,    1,              NULL },
+    { "LongMenuItem_8",     ___,    1,              NULL },
+    { "LongMenuItem_9",     ___,    1,              NULL },
+    { "Go!",                EV_GO,  0,              NULL },
+    { "File",               ___,    2,              NULL },
     NULL
 };
 
-static MENUITEM *pulldownuimenus[] = {
+static UIMENUITEM *pulldownuimenus[] = {
     filemenu,
     editmenu,
     editmenu,
@@ -166,33 +166,33 @@ static VEDITLINE inputline = {
     true,        /* bool: application altered buffer */
 };
 
-static EVENT             evlist[] = {
+static ui_event     evlist[] = {
     EV_FIRST_EVENT,     EV_LAST_KEYBOARD,
     EV_MOUSE_PRESS,     EV_MOUSE_RELEASE,
     EV_MOUSE_HOLD_R,    EV_MOUSE_REPEAT_M,
     EV_OPEN,            EV_NOTHING,
-    EV_NO_EVENT,
+    __rend__,
     EV_MOUSE_DCLICK,
     EV_MOUSE_REPEAT,
     EV_IDLE,
     EV_MENU_INITPOPUP,
     EV_CLOCK_TICK,
     EV_BACKGROUND_RESIZE,
-    EV_NO_EVENT
+    __end__
 };
 
 
-static EVENT oplist[] = {
-    EV_NO_EVENT,
+static ui_event oplist[] = {
+    __rend__,
     EV_ENTER,
     EV_ESCAPE,
-    EV_NO_EVENT
+    __end__
 };
 
 typedef struct an_event_string{
-    EVENT       ev;
+    ui_event    ui_ev;
     char        *str;
-}an_event_string;
+} an_event_string;
 
 static an_event_string      evstrs[] = {
     { EV_MOUSE_PRESS,       "EV_MOUSE_PRESS" },
@@ -215,7 +215,7 @@ static an_event_string      evstrs[] = {
     { EV_IDLE,              "EV_IDLE" },
     { EV_MENU_INITPOPUP,    "EV_MENU_INITPOPUP" },
     { EV_BACKGROUND_RESIZE, "EV_BACKGROUND_RESIZE" },
-    { EV_NO_EVENT,          NULL }
+    { ___,                  NULL }
 };
 
 static SAREA    BandArea;
@@ -225,41 +225,41 @@ int             BandOn = 0;
 static void open( void )
 /**********************/
 {
-    EVENT ev;
+    ui_event    ui_ev;
 
     if( uivopen( &opwin ) ) {
         uipushlist( oplist );
         uivtextput( &opwin, 1, 2, UIData->attrs[ATTR_NORMAL], "Enter file name.", 16 );
-        inputline.attr = UIData->attrs[ ATTR_EDIT ];
+        inputline.attr = UIData->attrs[ATTR_EDIT];
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
         inputline.update = true;
-        for( ; ; ) {
-            ev = uiveditline( &opwin, &inputline );
-            if( ev != EV_NO_EVENT ) {
+        for( ;; ) {
+            ui_ev = uiveditline( &opwin, &inputline );
+            if( ui_ev != EV_NO_EVENT ) {
                 break;
             }
         }
-        if( ev == EV_ENTER ) {
+        if( ui_ev == EV_ENTER ) {
             /* open file */
-        } else if( ev == EV_ESCAPE ) {
+        } else if( ui_ev == EV_ESCAPE ) {
             /* do nothing */
         } else {
             /* must be an event handled in the mainline */
             uiungetevent();
         }
-        uipoplist();
+        uipoplist( /* oplist */ );
         uivclose( &opwin );
     }
 }
 
-#define TOP_ROW 8
+#define TOP_ROW         1
 
 void main( void )
 /***************/
 {
-    EVENT               ev;
+    ui_event            ui_ev;
     SAREA               area;
     char                buff[80];
     an_event_string     *ptr;
@@ -267,44 +267,39 @@ void main( void )
     int                 mrow, mcol;
     int                 diff;
 
-#ifdef CHARMAP
     if( uistart() ) {
-        uiinitgmouse( 2 );  /* the 0=mouseless,1=mouse,2=initialized mouse */
+#ifdef CHARMAP
+        uiinitgmouse( INIT_MOUSE_INITIALIZED ); /* the 0=mouseless,1=mouse,2=initialized mouse */
 //      uivgaattrs();
         FlipCharacterMap();
 #else
-    if( uistart() ) {
-#ifdef __UNIX__
-        _initmouse( 2 );
-#else
-        initmouse( 2 );
-#endif
+        initmouse( INIT_MOUSE_INITIALIZED );
 #endif
         uimenus( barmenu, pulldownuimenus, EV_F1 );
-        UIData->mouse_clk_delay = uiclockdelay( 250 );
-        UIData->tick_delay = uiclockdelay( 3000 );
+        UIData->mouse_clk_delay = uiclockdelay( 250  /* ms */ );
+        UIData->tick_delay      = uiclockdelay( 3000 /* ms */ );
         mainwin.area.height = UIData->height - 7;
         if( uivopen( &mainwin ) ) {
-            for( ; ; ) {
+            for( ;; ) {
                 uipushlist( evlist );
-                ev = uivgetevent( &mainwin );
-                uipoplist();
-                if( ev == EV_MOUSE_PRESS_R ) {
+                ui_ev = uivgetevent( &mainwin );
+                uipoplist( /* evlist */ );
+                if( ui_ev == EV_MOUSE_PRESS_R ) {
                     uimousepos( NULL, &mrow, &mcol );
                     mrow++;
                     mcol++;
                     uipushlist( evlist );
-                    ev = uicreatepopup( mrow, mcol, filemenu, false, true, (int)NULL );
-                    uipoplist();
+                    ui_ev = uicreatepopup( mrow, mcol, filemenu, false, true, EV_NO_EVENT );
+                    uipoplist( /* evlist */ );
                 }
-                switch ( ev ) {
+                switch( ui_ev ) {
                 case EV_QUIT:
                     break;
                 case EV_BACKGROUND_RESIZE:
                     uivclose( &mainwin );
                     mainwin.area.height = UIData->height - 7;
                     uivopen( &mainwin );
-                    if( evrow > area.height ) {
+                    if( evrow > mainwin.area.height ) {
                         evrow = TOP_ROW;
                     }
                     break;
@@ -327,7 +322,7 @@ void main( void )
                         const char  *command;
 
                         command = getenv( "COMSPEC" );
-                        if( command == NULL ){
+                        if( command == NULL ) {
                             command = "c:\\command.com";
                         }
                         system( command );
@@ -337,8 +332,8 @@ void main( void )
 //                      uibackground( "wf.img" );
                     area.row = 0;
                     area.col = 0;
-                    area.height = 25;
-                    area.width = 80;
+                    area.height = UIData->height;
+                    area.width = UIData->width;
                     uidirty( area );
                     break;
                 case EV_F1:
@@ -349,15 +344,15 @@ void main( void )
                     uivattribute( &mainwin, area, (ATTR) 1 );
                     break;
                 }
-                if( ev == EV_QUIT ) {
+                if( ui_ev == EV_QUIT ) {
                     break;
-                } else if( ev != EV_NO_EVENT ) {
-                    for( ptr=evstrs; ; ++ptr ){
-                        if( ptr->ev == EV_NO_EVENT ) {
-                            sprintf( buff, "event 0x%4.4x", ev );
+                } else if( ui_ev != EV_NO_EVENT ) {
+                    for( ptr = evstrs; ; ++ptr ) {
+                        if( ptr->ui_ev == EV_NO_EVENT ) {
+                            sprintf( buff, "event 0x%4.4x", ui_ev );
                             break;
-                        } else if( ptr->ev == ev ) {
-                            sprintf( buff, "event 0x%4.4x (%s)", ev, ptr->str );
+                        } else if( ptr->ui_ev == ui_ev ) {
+                            sprintf( buff, "event 0x%4.4x (%s)", ui_ev, ptr->str );
                             break;
                         }
                     }
@@ -366,7 +361,7 @@ void main( void )
                         evrow = TOP_ROW;
                     }
                     uivtextput( &mainwin, evrow, 2, UIData->attrs[ATTR_NORMAL], "", 40 );
-                    switch( ev ) {
+                    switch( ui_ev ) {
                     case EV_MOUSE_PRESS:
                         BandOn = 1;
                         uimousepos( NULL, &mrow, &mcol );
@@ -374,25 +369,25 @@ void main( void )
                         BandArea.col = mcol;
                         BandArea.width = 0;
                         BandArea.height = 0;
-                        uibandinit( BandArea, UIData->attrs[ ATTR_ACTIVE ] );
+                        uibandinit( BandArea, UIData->attrs[ATTR_ACTIVE] );
                         break;
                     case EV_MOUSE_DRAG:
                         if( BandOn ) {
                             uimousepos( NULL, &mrow, &mcol );
                             diff = mcol - BandArea.col;
                             if( diff < 0 )
-                            	diff = 0;
+                                diff = 0;
                             BandArea.width = diff;
                             diff = mrow - BandArea.row;
                             if( diff < 0 )
-                            	diff = 0;
+                                diff = 0;
                             BandArea.height = diff;
                             uibandmove( BandArea );
                         }
                         break;
                     case EV_MOUSE_RELEASE:
                         if( BandOn )
-                        	uibandfini();
+                            uibandfini();
                         BandOn = 0;
                         break;
                     }
@@ -407,11 +402,7 @@ void main( void )
         FlipCharacterMap();
         uifinigmouse();
 #else
-#ifdef __UNIX__
-        _finimouse();
-#else
         finimouse();
-#endif
 #endif
         uistop();
     }

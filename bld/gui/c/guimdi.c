@@ -44,6 +44,9 @@
 #include "clibext.h"
 
 
+#define MDIWIN2ID(x)    (x + GUI_MDI_FIRST_WINDOW)
+#define ID2MDIWIN(x)    (x - GUI_MDI_FIRST_WINDOW)
+
 #define MAX_LENGTH      80
 
 typedef struct {
@@ -51,36 +54,36 @@ typedef struct {
     gui_ctl_id  list_id;
 } dlg_init;
 
-extern  bool            GUIMDI;
+bool GUIMDI = false;
 
 static gui_menu_struct MDISecondSepMenu[] = {
-    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_SEPARATOR, NULL }
+    { NULL, GUI_MDI_SECOND_SEPARATOR, GUI_STYLE_MENU_SEPARATOR, NULL }
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];
 
 static gui_menu_struct MDIMoreMenu[] = {
-    { NULL, GUI_MDI_MORE_WINDOWS, GUI_ENABLED, NULL }
+    { NULL, GUI_MDI_MORE_WINDOWS, GUI_STYLE_MENU_ENABLED, NULL }
 };
 
-static  gui_ctl_id      GUIMDIMenuID    = NO_SELECT;
+static  gui_ctl_id      GUIMDIMenuID    = 0;
 static  gui_window      *Root           = NULL;
 static  int             NumMDIWindows   = 0;
 static  int             CurrMDIWindow   = -1;
 static  gui_window      *MDIWindows[MAX_NUM_MDI_WINDOWS];
 
-static  gui_ctl_idx     TotalWindows    = 0;
+static  int             TotalWindows    = 0;
 static  gui_window      **ChildWindows  = NULL;
 
 static gui_menu_struct MDIMenu[] = {
-    {  NULL,    GUI_MDI_CASCADE,        GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_TILE_VERT,      GUI_GRAYED,     NULL    },
-    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL    },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL    },
 };
 
 static gui_menu_struct MDIFirstSepMenu[] = {
-    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_SEPARATOR,    NULL }
+    {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_STYLE_MENU_SEPARATOR,    NULL }
 };
 
 static bool MDIMenuStructInitialized = false;
@@ -90,13 +93,13 @@ gui_window *GUIGetRoot( void )
     return( Root );
 }
 
-static int GetIndex( gui_window *wnd )
+static int MDIGetWndIndex( gui_window *wnd )
 {
-    int i;
+    int     item;
 
-    for( i = 0; i < MAX_NUM_MDI_WINDOWS; i++ ) {
-        if( MDIWindows[i] == wnd ) {
-            return( i );
+    for( item = 0; item < MAX_NUM_MDI_WINDOWS; item++ ) {
+        if( MDIWindows[item] == wnd ) {
+            return( item );
         }
     }
     return( -1 );
@@ -106,18 +109,19 @@ static void EnableMDIMenus( gui_window *root, bool enable )
 {
     GUIEnableMDIActions( enable );
     if( enable ) {
-        if( GUIMDIMenuID != NO_SELECT && GUIGetMenuPopupCount( root, GUIMDIMenuID ) != 0 ){
-            GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
+        if( GUIMDIMenuID != 0 ) {
+            if( GUIGetMenuPopupCount( root, GUIMDIMenuID ) > 0 ) {
+                GUIAppendMenuToPopup( root, GUIMDIMenuID, MDISecondSepMenu, false );
+            }
         }
     } else {
         GUIDeleteMenuItem( root, GUI_MDI_SECOND_SEPARATOR, false );
     }
 }
 
-static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus,
-                     gui_menu_struct *menu )
+static bool AddMenu( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
 {
-    gui_ctl_idx i;
+    int         item;
     bool        has_items;
     bool        found_flag;
     gui_window  *root;
@@ -125,11 +129,11 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus,
     if( GUIMDI && ( parent == NULL ) ) {
         found_flag = false;
         has_items = false;
-        for( i = 0; i < num_menus; i++ ) {
-            if( menu[i].style & GUI_MDIWINDOW ) {
-                GUIMDIMenuID = menu[i].id;
+        for( item = 0; item < num_items; item++ ) {
+            if( menu[item].style & GUI_STYLE_MENU_MDIWINDOW ) {
+                GUIMDIMenuID = menu[item].id;
                 found_flag = true;
-                has_items = ( menu[i].num_child_menus > 0 );
+                has_items = ( menu[item].child_num_items > 0 );
                 break;
             }
         }
@@ -164,7 +168,7 @@ static void MakeHintText( int index, char *name )
     strcpy( MenuHint[index]+length, name );
 }
 
-static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx position )
+static void InsertMenuForWindow( gui_window *root, int index, int position )
 {
     char                name[MAX_LENGTH];
     char                label[MAX_LENGTH];
@@ -173,15 +177,15 @@ static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx positi
     MakeLabel( index, name, label );
     menu.label = label;
     menu.id = MDIWIN2ID( index );
-    menu.style = GUI_ENABLED;
+    menu.style = GUI_STYLE_MENU_ENABLED;
     if( index == CurrMDIWindow ) {
-        menu.style |= GUI_CHECKED;
+        menu.style |= GUI_STYLE_MENU_CHECKED;
     }
-    menu.num_child_menus = 0;
+    menu.child_num_items = 0;
     menu.child = NULL;
     MakeHintText( index, name );
     menu.hinttext = MenuHint[index];
-    if( GUIMDIMenuID != NO_SELECT ) {
+    if( GUIMDIMenuID != 0 ) {
         GUIInsertMenuToPopup( root, GUIMDIMenuID, position, &menu, false );
     }
 }
@@ -189,26 +193,25 @@ static void InsertMenuForWindow( gui_window *root, int index, gui_ctl_idx positi
 void MDIDeleteMenu( gui_ctl_id id )
 {
     if( id == GUIMDIMenuID ) {
-        GUIMDIMenuID = NO_SELECT;
+        GUIMDIMenuID = 0;
     }
 }
 
-void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, gui_menu_struct *menu )
+void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_items, gui_menu_struct *menu )
 {
     gui_window  *root;
-    gui_ctl_idx i;
-    gui_ctl_idx max_num;
+    int         item;
+    int         num_mdi_items;
 
-    if( !AddMenu( wnd, parent, num_menus, menu ) ) {
+    if( !AddMenu( wnd, parent, num_items, menu ) ) {
         return;
     }
     root = GUIGetRootWindow();
-    max_num = NumMDIWindows;
-    if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-        max_num = MAX_NUM_MDI_WINDOWS;
-    }
-    for( i = 0; i < max_num; i++ ) {
-        InsertMenuForWindow( root, i, -1 );
+    num_mdi_items = NumMDIWindows;
+    if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
+        num_mdi_items = MAX_NUM_MDI_WINDOWS;
+    for( item = 0; item < num_mdi_items; item++ ) {
+        InsertMenuForWindow( root, item, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
         MDIMoreMenu[0].label = LIT( XMore_Windows );
@@ -219,20 +222,21 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent, gui_ctl_idx num_menus, 
 
 bool GUIEnableMDIMenus( bool enable )
 {
-    gui_ctl_idx i;
-    gui_ctl_idx num_menus;
+    int         item;
     gui_window  *root;
+    int         num_mdi_items;
 
     root = GUIGetRootWindow();
     if( root != NULL ) {
         GUIEnableMDIActions( enable );
-        num_menus = NumMDIWindows;
+        num_mdi_items = NumMDIWindows;
+        if( num_mdi_items > MAX_NUM_MDI_WINDOWS )
+            num_mdi_items = MAX_NUM_MDI_WINDOWS;
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-            num_menus = MAX_NUM_MDI_WINDOWS;
             GUIEnableMenuItem( root, GUI_MDI_MORE_WINDOWS, enable, false );
         }
-        for( i = 0; i < num_menus; i++ ) {
-            GUIEnableMenuItem( root, MDIWIN2ID( i ), enable, false );
+        for( item = 0; item < num_mdi_items; item++ ) {
+            GUIEnableMenuItem( root, MDIWIN2ID( item ), enable, false );
         }
         return( true );
     }
@@ -244,7 +248,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, dlg_info->parent, dlg_info->num_menus, dlg_info->menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->num_items, dlg_info->menu );
     if( GUIXInitMDI( wnd ) ) {
         if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;
@@ -259,7 +263,7 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
         CurrMDIWindow = NumMDIWindows - 1;
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             if( NumMDIWindows == MAX_NUM_MDI_WINDOWS + 1 ) {
-                if( GUIMDIMenuID != NO_SELECT ) {
+                if( GUIMDIMenuID != 0 ) {
                     MDIMoreMenu[0].label = LIT( XMore_Windows );
                     MDIMoreMenu[0].hinttext = LIT( More_Windows_Hint );
                     GUIAppendMenuToPopup( root, GUIMDIMenuID, MDIMoreMenu, false );
@@ -288,7 +292,7 @@ void ChangeTitle( gui_window *wnd )
 {
     int         index;
 
-    index = GetIndex( wnd );
+    index = MDIGetWndIndex( wnd );
     if( index != -1 ) {
         ChangeMenuTitle( GUIGetRootWindow(), index );
     }
@@ -303,7 +307,7 @@ void BroughtToFront( gui_window *wnd )
     int         index;
 
     root = GUIGetRootWindow();
-    index = GetIndex( wnd );
+    index = MDIGetWndIndex( wnd );
     if( ( CurrMDIWindow != -1 ) && ( root != NULL ) ) {
         GUICheckMenuItem( root, MDIWIN2ID( CurrMDIWindow ), false, false );
     }
@@ -332,7 +336,7 @@ gui_window *FindNextMDIMenuWindowNotInArray( gui_window *wnd, gui_window *avoid 
         if( next == start ) {
             break;
         }
-        if( ( next != avoid ) && GetIndex( next ) == -1 ) {
+        if( ( next != avoid ) && MDIGetWndIndex( next ) == -1 ) {
             done = true;
         }
     }
@@ -351,9 +355,10 @@ gui_window *FindNextMDIMenuWindowNotInArray( gui_window *wnd, gui_window *avoid 
 void MDIDelete( gui_window *wnd )
 {
     gui_window  *root;
-    gui_ctl_idx index;
-    gui_ctl_idx position;
-    gui_ctl_idx i, num_menu_windows;
+    int         deleted_item;
+    int         position;
+    int         item;
+    int         num_mdi_items;
 
     if( wnd == Root ) {
         Root = NULL;
@@ -370,35 +375,35 @@ void MDIDelete( gui_window *wnd )
         return;
     }
 
-    index = GetIndex( wnd );
+    deleted_item = MDIGetWndIndex( wnd );
     if( NumMDIWindows == ( MAX_NUM_MDI_WINDOWS + 1 ) ) {
         GUIDeleteMenuItem( root, GUI_MDI_MORE_WINDOWS, false );
     }
     NumMDIWindows--;
-    if( index != -1 ) {
-        if( index == NumMDIWindows ) {
-            GUIDeleteMenuItem( root, MDIWIN2ID( index ), false );
-            MDIWindows[index] = NULL;
+    if( deleted_item != -1 ) {
+        if( deleted_item == NumMDIWindows ) {
+            GUIDeleteMenuItem( root, MDIWIN2ID( deleted_item ), false );
+            MDIWindows[deleted_item] = NULL;
         } else {
             // delete all MDI menu items from this index on
-            num_menu_windows = NumMDIWindows;
-            if( num_menu_windows > MAX_NUM_MDI_WINDOWS - 1 )
-                num_menu_windows = MAX_NUM_MDI_WINDOWS - 1;
-            for( i = index; i < num_menu_windows; i++ ) {
-                GUIDeleteMenuItem( root, MDIWIN2ID( i ), false );
-                MDIWindows[i] = MDIWindows[i + 1];
+            num_mdi_items = NumMDIWindows;
+            if( num_mdi_items > MAX_NUM_MDI_WINDOWS - 1 )
+                num_mdi_items = MAX_NUM_MDI_WINDOWS - 1;
+            for( item = deleted_item; item < num_mdi_items; item++ ) {
+                GUIDeleteMenuItem( root, MDIWIN2ID( item ), false );
+                MDIWindows[item] = MDIWindows[item + 1];
             }
-            GUIDeleteMenuItem( root, MDIWIN2ID( num_menu_windows ), false );
-            MDIWindows[num_menu_windows] = NULL;
+            GUIDeleteMenuItem( root, MDIWIN2ID( num_mdi_items ), false );
+            MDIWindows[num_mdi_items] = NULL;
 
             // re-add all menu items from index on
             position = GUIGetMenuPopupCount( root, GUIMDIMenuID );
             if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
                 position--;
             }
-            for( i = index; i < num_menu_windows; i++ ) {
-                InsertMenuForWindow( root, i, position + ( i - index ) );
-                if( CurrMDIWindow == i ) {
+            for( item = deleted_item; item < num_mdi_items; item++ ) {
+                InsertMenuForWindow( root, item, position + ( item - deleted_item ) );
+                if( CurrMDIWindow == item ) {
                     CurrMDIWindow--;
                     if( CurrMDIWindow < 0 ) {
                         CurrMDIWindow = -1;
@@ -442,7 +447,7 @@ static void DlgInit( gui_window *wnd, void *param )
 
     info = (dlg_init *)param;
     TotalWindows++;
-    ChildWindows[TotalWindows-1] = wnd;
+    ChildWindows[TotalWindows - 1] = wnd;
     if( GUIGetWindowText( wnd, buffer, sizeof( buffer ) ) != 0 ) {
         GUIAddText( info->dlg_wnd, info->list_id, buffer );
     } else {
@@ -513,16 +518,17 @@ static void PickInit( gui_window *wnd, gui_ctl_id list_id )
 
 void GUIMDIMoreWindows( void )
 {
-    gui_ctl_idx chosen;
+    int         choice;
     gui_window  *wnd;
 
-    chosen = GUIDlgPick( LIT( Select_Window ), &PickInit );
-    if( ( chosen >= 0 ) && ( chosen < TotalWindows ) ) {
-        wnd = ChildWindows[chosen];
-        if( GUIIsMinimized( wnd ) ) {
-            GUIRestoreWindow( wnd );
+    if( GUIDlgPick( LIT( Select_Window ), &PickInit, &choice ) ) {
+        if( ( choice >= 0 ) && ( choice < TotalWindows ) ) {
+            wnd = ChildWindows[choice];
+            if( GUIIsMinimized( wnd ) ) {
+                GUIRestoreWindow( wnd );
+            }
+            GUIBringToFront( wnd );
         }
-        GUIBringToFront( wnd );
     }
     GUIMemFree( ChildWindows );
     ChildWindows = NULL;

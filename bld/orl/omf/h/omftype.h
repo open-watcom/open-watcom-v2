@@ -167,7 +167,7 @@ ORL_STRUCT( omf_thred_fixup ) {
 ORL_STRUCT( omf_file_handle ) {
     omf_handle          omf_hnd;
     omf_file_handle     next;
-    orl_file_id         file;
+    FILE                *fp;
     unsigned char       *parsebuf;
     unsigned short      parselen;
     long                status;

@@ -39,12 +39,7 @@
 #include "madimp.h"
 
 #if defined( __WATCOMC__ )
-  #if defined( __WINDOWS__ )
-  #elif defined( _M_I86 )
-    #pragma aux MADLOAD "*" __loadds
-  #else
     #pragma aux MADLOAD "*"
-  #endif
 #endif
 
 mad_client_routines     *MADClient;
@@ -103,7 +98,6 @@ mad_imp_routines        MadImpInterface = {
     MADImp( CallBuildFrame ),
     MADImp( CallReturnReg ),
     MADImp( CallParmRegList ),
-    NULL,
 
     MADImp( DisasmDataSize ),
     MADImp( DisasmNameMax ),
@@ -130,6 +124,8 @@ mad_imp_routines        MadImpInterface = {
     MADImp( CallUpStackInit ),
     MADImp( CallUpStackLevel ),
 };
+
+#define FIRST_IMP_FUNC      Init
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
 /* WD looks for this symbol to determine module bitness */
@@ -168,24 +164,19 @@ void    MCFree( void *p )
     MADClient->Free( p );
 }
 
-dig_fhandle MCOpen( const char *name, dig_open mode )
+FILE *MCOpen( const char *name, dig_open mode )
 {
     return( MADClient->Open( name, mode ) );
 }
 
-unsigned long   MCSeek( dig_fhandle fid, unsigned long p, dig_seek m )
+size_t  MCRead( FILE *fp, void *d, size_t l )
 {
-    return( MADClient->Seek( fid, p, m ) );
+    return( MADClient->Read( fp, d, l ) );
 }
 
-size_t  MCRead( dig_fhandle fid, void *d, size_t l )
+void    MCClose( FILE *fp )
 {
-    return( MADClient->Read( fid, d, l ) );
-}
-
-void    MCClose( dig_fhandle fid )
-{
-    MADClient->Close( fid );
+    MADClient->Close( fp );
 }
 
 size_t  MCReadMem( address a, size_t size, void *buff )
@@ -223,9 +214,9 @@ unsigned    MCMachineData( address a, dig_info_type info_type, dig_elen in_size,
     return( MADClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status  MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, size_t buff_size )
+mad_status  MCAddrToString( address a, mad_type_handle mth, mad_label_kind lk, char *buff, size_t buff_size )
 {
-    return( MADClient->AddrToString( a, th, lk, buff, buff_size ) );
+    return( MADClient->AddrToString( a, mth, lk, buff, buff_size ) );
 }
 
 mad_status  MCMemExpr( const char *expr, mad_radix radix, address *a )
@@ -253,9 +244,9 @@ mad_status  MCTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
     return( MADClient->TypeInfoForHost( tk, size, mti ) );
 }
 
-mad_status  MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status  MCTypeConvert( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
-    return( MADClient->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
+    return( MADClient->TypeConvert( in_mti, in_d, out_mti, out_d, seg ) );
 }
 
 mad_status  MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
@@ -270,8 +261,6 @@ void    MCStatus( mad_status ms )
 
 #if defined( __WINDOWS__)
 
-typedef void (DIGENTRY INTER_FUNC)();
-
 #ifdef DEBUGGING
 void Say( char *buff )
 {
@@ -279,7 +268,7 @@ void Say( char *buff )
 }
 #endif
 
-DIG_DLLEXPORT void DIGENTRY MADUNLOAD( void )
+void DIGENTRY MADUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
@@ -291,12 +280,9 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTER_FUNC          **func;
+    FARPROC             *func;
     unsigned            count;
-    struct {
-        mad_init_func   *load;
-        mad_fini_func   *unload;
-    }                   *link;
+    mad_link_block      __far *link;
     unsigned            seg;
     unsigned            off;
 
@@ -309,10 +295,12 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&MadImpInterface.Init;
-    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, Init ) ) / sizeof( INTER_FUNC * );
+    func = (FARPROC *)&MadImpInterface.FIRST_IMP_FUNC;
+    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, FIRST_IMP_FUNC ) ) / sizeof( FARPROC );
     while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        if( *func != NULL ) {
+            *func = MakeProcInstance( *func, this_inst );
+        }
         ++func;
         --count;
     }

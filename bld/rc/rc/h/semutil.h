@@ -35,6 +35,6 @@
 #include "rctypes.h"
 
 extern void     ReportCopyError( RcStatus status, int read_msg, const char *filename, int err_code );
-extern RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid, void *buff, unsigned buffsize, int *err_code );
+extern RcStatus CopyData( long offset, uint_32 length, FILE *fp, void *buff, unsigned buffsize, int *err_code );
 
 #endif

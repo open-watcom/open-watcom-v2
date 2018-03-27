@@ -44,9 +44,9 @@ static _trmem_hdl TrHdl;
 static void PrintLine( void *handle, const char *buff, size_t len )
 /*****************************************************************/
 {
-    handle = handle;
-    QWrite( STDERR_HANDLE, buff, len, NULL );
-    QWriteNL( STDERR_HANDLE, NULL );
+    /* unused parameters */ (void)handle;
+    QWrite( stderr, buff, len, NULL );
+    QWriteNL( stderr, NULL );
 }
 
 #endif

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 #include "vi.h"
-#include "stdui.h"
 #include "uidef.h"
-#include "uivirt.h"
 #include "getspcmd.h"
 
+
+extern bool UserForcedTermRefresh;
 
 const char *InternalCommands[] = { "" };
 
@@ -46,8 +46,7 @@ int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char * );
 
 void ResetSpawnScreen( void )
 {
-    extern bool UserForcedTermRefresh;
-    _physupdate( NULL );
+    physupdate( NULL );
     UserForcedTermRefresh = true;
     return;
 }

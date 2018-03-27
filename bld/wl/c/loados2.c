@@ -66,6 +66,7 @@
 #include "rcstr.h"
 #include "dosstub.h"
 #include "loados2.h"
+#include "posixfp.h"
 
 #include "clibext.h"
 
@@ -314,21 +315,21 @@ static void WriteResTable( ResTable *restab )
     WriteLoad( restab->Str.StringBlock, restab->Str.StringBlockSize );
 }
 
-static void CopyResData( WResFileID res_fid, size_t len )
-/*******************************************************/
+static void CopyResData( FILE *res_fp, size_t len )
+/*************************************************/
 {
     char buff[512];
 
     for( ; len > sizeof( buff ); len -= sizeof( buff ) ) {
-        QRead( WRES_FID2PH( res_fid ), buff, sizeof( buff ), FmtData.resource );
+        QRead( FP2POSIX( res_fp ), buff, sizeof( buff ), FmtData.resource );
         WriteLoad( buff, sizeof( buff ) );
     }
-    QRead( WRES_FID2PH( res_fid ), buff, len, FmtData.resource );
+    QRead( FP2POSIX( res_fp ), buff, len, FmtData.resource );
     WriteLoad( buff, len );
 }
 
-static void WriteOS2Resources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
-/**********************************************************************************/
+static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
+/****************************************************************************/
 {
     int                 shift_count = FmtData.u.os2.segment_shift;
     int                 align = 1 << shift_count;
@@ -354,8 +355,8 @@ static void WriteOS2Resources( WResFileID res_fid, WResDir inRes, ResTable *outR
         addExeResRecord( outRes, exe_type, &(res->ResName),
                         lang->MemoryFlags, outRes_off,
                         (lang->Length + align - 1) >> shift_count );
-        QSeek( WRES_FID2PH( res_fid ), lang->Offset, FmtData.resource );
-        CopyResData( res_fid, lang->Length );
+        QSeek( FP2POSIX( res_fp ), lang->Offset, FmtData.resource );
+        CopyResData( res_fp, lang->Length );
         NullAlign( align );
         outRes_off += (lang->Length + align - 1) >> shift_count;
 
@@ -470,8 +471,8 @@ unsigned long ResNonResNameTable( bool dores )
             name = GetBaseName( Root->outfile->fname, 0, &len );
         }
     } else {     /* in non-resident names table */
-        if( FmtData.u.os2.description != NULL ) {
-            name = FmtData.u.os2.description;
+        if( FmtData.description != NULL ) {
+            name = FmtData.description;
         } else if( FmtData.type & MK_OS2_16BIT ) {
             name = Root->outfile->fname;
         } else {
@@ -490,9 +491,9 @@ unsigned long ResNonResNameTable( bool dores )
             FmtData.u.os2.module_name = NULL;
         }
     } else {     /* in non-resident names table */
-        if( FmtData.u.os2.description != NULL ) {
-            _LnkFree( FmtData.u.os2.description );
-            FmtData.u.os2.description = NULL;
+        if( FmtData.description != NULL ) {
+            _LnkFree( FmtData.description );
+            FmtData.description = NULL;
         }
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
@@ -742,22 +743,22 @@ void PhoneyStack( void )
     FmtData.u.os2.flags |= PHONEY_STACK_FLAG;
 }
 
-static WResFileID InitNEResources( WResDir *inRes, ResTable *outRes )
-/*******************************************************************/
+static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
+/**************************************************************/
 {
     WResDir     dir;
-    WResFileID  res_fid;
+    FILE        *res_fp;
     bool        dup_discarded;
     bool        error;
 
     dir = NULL;
-    res_fid = WRES_NIL_HANDLE;
+    res_fp = NULL;
     if( FmtData.resource != NULL ) {
-        res_fid = WRES_PH2FID( QOpenR( FmtData.resource ) );
-        if( res_fid != WRES_NIL_HANDLE ) {
+        res_fp = POSIX2FP( QOpenR( FmtData.resource ) );
+        if( res_fp != NULL ) {
             dir = WResInitDir();
             if( dir != NULL ) {
-                error = WResReadDir( res_fid, dir, &dup_discarded );
+                error = WResReadDir( res_fp, dir, &dup_discarded );
                 if( error ) {
                     LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
                     WResFreeDir( dir );
@@ -777,11 +778,11 @@ static WResFileID InitNEResources( WResDir *inRes, ResTable *outRes )
         }
     }
     *inRes = dir;
-    return( res_fid );
+    return( res_fp );
 }
 
-static void FiniNEResources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
-/********************************************************************************/
+static void FiniNEResources( FILE *res_fp, WResDir inRes, ResTable *outRes )
+/**************************************************************************/
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {
@@ -794,8 +795,8 @@ static void FiniNEResources( WResFileID res_fid, WResDir inRes, ResTable *outRes
         }
         WResFreeDir( inRes );
     }
-    if( res_fid != WRES_NIL_HANDLE ) {
-        QClose( WRES_FID2PH( res_fid ), FmtData.resource );
+    if( res_fp != NULL ) {
+        QClose( FP2POSIX( res_fp ), FmtData.resource );
     }
 }
 
@@ -838,7 +839,7 @@ void FiniOS2LoadFile( void )
     unsigned long       imageguess;     // estimated length of the image
     unsigned            pad_len;
     WResDir             inRes;          // Directory of resources to read
-    WResFileID          res_fid;        // Handle for resources file
+    FILE                *res_fp;        // Handle for resources file
     ResTable            outRes;         // Resources to go out
 
     stub_len = WriteStubFile( STUB_ALIGN );
@@ -871,7 +872,7 @@ void FiniOS2LoadFile( void )
         exe_head.segments++;
     }
     temp += exe_head.segments * sizeof( segment_record );
-    res_fid = InitNEResources( &inRes, &outRes );
+    res_fp = InitNEResources( &inRes, &outRes );
     exe_head.resource_off = temp;
     if( inRes != NULL ) {
         exe_head.resource = outRes.Dir.NumResources;
@@ -913,7 +914,7 @@ void FiniOS2LoadFile( void )
     }
     exe_head.gangstart = NullAlign( 1 << FmtData.u.os2.segment_shift ) >> FmtData.u.os2.segment_shift;
     WriteOS2Data( stub_len, &exe_head );
-    WriteOS2Resources( res_fid, inRes, &outRes );
+    WriteOS2Resources( res_fp, inRes, &outRes );
     exe_head.gangstart = 0;
     exe_head.ganglength = 0;
     if( inRes != NULL ) {
@@ -922,7 +923,7 @@ void FiniOS2LoadFile( void )
         FreeResTable( &outRes );
     }
     SeekEndLoad( 0 );
-    FiniNEResources( res_fid, inRes, &outRes );
+    FiniNEResources( res_fp, inRes, &outRes );
     DBIWrite();
     exe_head.signature = OS2_SIGNATURE_WORD;
     exe_head.version = 0x0105;          /* version 5.1 */

@@ -32,10 +32,10 @@
 
 #ifndef _GUISCALE_H_
 #define _GUISCALE_H_
+
 #include "guixscal.h"
 
-extern void GUISetScreen( gui_ord xmin, gui_ord ymin,
-                          gui_ord width, gui_ord height );
+extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
 extern bool GUIScaleToScreen( gui_coord *coord );
 extern bool GUIScaleToScreenR( gui_coord *coord );
@@ -45,4 +45,5 @@ extern bool GUIScreenToScaleR( gui_coord *coord );
 
 extern void GUIScaleToScreenRPt( gui_point *point );
 extern void GUIScreenToScaleRPt( gui_point *point );
+
 #endif // _GUISCALE_H_

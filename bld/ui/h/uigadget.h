@@ -35,16 +35,17 @@
 
 #include "uichars.h"
 
-#define UP_ARROW                {(char)PC_arrowup,0}
-#define DOWN_ARROW              {(char)PC_arrowdown,0}
-#define RIGHT_ARROW             {(char)PC_arrowright,0}
-#define LEFT_ARROW              {(char)PC_arrowleft,0}
-#define UP_POINT                {(char)PC_triangup,0}
-#define DOWN_POINT              {(char)PC_triangdown,0}
-#define RIGHT_POINT             {(char)PC_triangright,0}
-#define LEFT_POINT              {(char)PC_triangleft,0}
-#define SCROLL_FRAME            {(char)PC_sparseblock,0}
-#define SLIDER_CHAR             {(char)PC_solid,0}
+
+#define UP_ARROW                {CHAR_VALUE( PC_arrowup ),0}
+#define DOWN_ARROW              {CHAR_VALUE( PC_arrowdown ),0}
+#define RIGHT_ARROW             {CHAR_VALUE( PC_arrowright ),0}
+#define LEFT_ARROW              {CHAR_VALUE( PC_arrowleft ),0}
+#define UP_POINT                {CHAR_VALUE( PC_triangup ),0}
+#define DOWN_POINT              {CHAR_VALUE( PC_triangdown ),0}
+#define RIGHT_POINT             {CHAR_VALUE( PC_triangright ),0}
+#define LEFT_POINT              {CHAR_VALUE( PC_triangleft ),0}
+#define SCROLL_FRAME            {CHAR_VALUE( PC_sparseblock ),0}
+#define SLIDER_CHAR             {CHAR_VALUE( PC_solid ),0}
 
 extern char VertScrollFrame[2];
 extern char HorzScrollFrame[2];
@@ -68,13 +69,13 @@ typedef struct a_gadget{
     ORD                 anchor;
     ORD                 start;
     ORD                 end;
-    EVENT               forward;
-    EVENT               backward;
-    EVENT               pageforward;
-    EVENT               pagebackward;
-    EVENT               slider;
-    int                 total_size;
-    int                 page_size;
+    ui_event            forward;
+    ui_event            backward;
+    ui_event            pageforward;
+    ui_event            pagebackward;
+    ui_event            slider;
+    unsigned            total_size;
+    unsigned            page_size;
     int                 pos;            /* in users units */
     unsigned char       flags;
     ORD                 linear;         /* offset of displayed scroll thumb */
@@ -83,13 +84,13 @@ typedef struct a_gadget{
 #ifdef __cplusplus
     extern "C" {
 #endif
-extern void uiinitgadget(struct a_gadget *);
-extern void uidrawgadget(struct a_gadget *);
-extern void uishowgadget(struct a_gadget *);
-extern void uisetgadget(struct a_gadget *,int);
-extern void uisetgadgetnodraw(struct a_gadget *, int);
-extern void uifinigadget(struct a_gadget *);
-extern EVENT uigadgetfilter(EVENT ,struct a_gadget *);
+extern void     uiinitgadget( a_gadget * );
+extern void     uidrawgadget( a_gadget * );
+extern void     uishowgadget( a_gadget * );
+extern void     uisetgadget( a_gadget *, int );
+extern void     uisetgadgetnodraw( a_gadget *, int );
+extern void     uifinigadget( a_gadget * );
+extern ui_event uigadgetfilter( ui_event, a_gadget * );
 #ifdef __cplusplus
 }
 #endif

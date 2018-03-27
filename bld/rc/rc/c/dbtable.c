@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "dbtable.h"
 #include "write.h"

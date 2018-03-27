@@ -15,18 +15,12 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binw/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binw/wstubq.exe
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binnt/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binnt/wstubq.exe
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binp/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binp/wstubq.exe
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binl/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binl/wstubq.exe
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binnt64/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binnt64/wstubq.exe
-    <CCCMD> dos386/wstub.exe    <OWRELROOT>/binl64/wstub.exe
-    <CCCMD> dos386/wstubq.exe   <OWRELROOT>/binl64/wstubq.exe
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binw/
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binnt/
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binp/
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binl/
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binnt64/
+    <CCCMD> dos386/*.exe        <OWRELROOT>/binl64/
 
     <CCCMD> wstub.asm           <OWRELROOT>/src/wstub.asm
 

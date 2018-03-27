@@ -37,6 +37,7 @@
 #endif
 
 #include "commonui.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include "bool.h"
 #include "listbox.h"
@@ -76,13 +77,14 @@
 #define STAT_MAD_NOTIFY         ( WM_USER + 29 )
 
 /*
- * dig_fhandle can be pointer to file structure or handle number
- * therefore 0/NULL is reserved for errors
- * if handle number is used then handle must be 1 based
+ * Windows NT must use OS loader handle for I/O file function for DLL/multi-thread support
+ * For DIG client functions appropriate Windows HANDLE oriented I/O functions must be used
+ * !!! ISO or POSIX functions must not be used !!!
+ *
+ * below is appropriate macros for mapping between ISO stream file handle and Windows file handle
  */
-#define DIG_H2FID(h)    ((void *)(h))
-#define DIG_FID2H(fid)  ((HANDLE)(fid))
-
+#define WH2FP(wh)       ((FILE *)(wh))
+#define FP2WH(fp)       ((HANDLE)(fp))
 
 #define MAX_SYM_NAME    128
 #define MAX_FILE_NAME   144
@@ -175,125 +177,123 @@ extern system_config    SysConfig;
 extern HANDLE           ProcessHdl;
 
 /* drproc.c */
-LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-void ClearAlert( void );
-void Alert( void );
+extern LONG         CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern void         ClearAlert( void );
+extern void         Alert( void );
 
 /* handler.c */
-DWORD DebugEventHandler( DEBUG_EVENT *dbinfo );
+extern DWORD        DebugEventHandler( DEBUG_EVENT *dbinfo );
 
 /* param.c */
-void ProcessCommandLine( char *cmdline );
+extern void         ProcessCommandLine( char *cmdline );
 
 /* taskctl.c */
-BOOL InitProcessCtl( void );
-void CallProcCtl( DWORD event, void *info, void (*hdler)(void *) );
+extern BOOL         InitProcessCtl( void );
+extern void         CallProcCtl( DWORD event, void *info, void (*hdler)(void *) );
 
 /* proclist.c */
-ProcNode *FindProcess( DWORD process );
-void GetProcName( DWORD process, char *name );
-void AddThread( DWORD procid, DWORD threadid, HANDLE threadhdl );
-void AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid,
-                 HANDLE threadhdl );
-ProcNode *FindProcess( DWORD process );
-ThreadNode *FindThread( ProcNode *procnode, DWORD threadid );
-void RemoveThread( DWORD process, DWORD threadid );
-void RemoveProcess( DWORD process );
-void DisplayProcList( void );
-void AddProcessName( DWORD procid, char *name );
-ProcNode *GetNextOwnedProc( ProcNode *cur );
-void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name );
-void RemoveModule( DWORD procid, DWORD base );
+extern ProcNode     *FindProcess( DWORD process );
+extern void         GetProcName( DWORD process, char *name );
+extern void         AddThread( DWORD procid, DWORD threadid, HANDLE threadhdl );
+extern void         AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid, HANDLE threadhdl );
+extern ProcNode     *FindProcess( DWORD process );
+extern ThreadNode   *FindThread( ProcNode *procnode, DWORD threadid );
+extern void         RemoveThread( DWORD process, DWORD threadid );
+extern void         RemoveProcess( DWORD process );
+extern void         DisplayProcList( void );
+extern void         AddProcessName( DWORD procid, char *name );
+extern ProcNode     *GetNextOwnedProc( ProcNode *cur );
+extern void         AddModule( DWORD procid, FILE *fp, DWORD base, char *name );
+extern void         RemoveModule( DWORD procid, DWORD base );
 //void MapAddress( addr_ptr *addr, ModuleNode *mod );
-ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr );
-ModuleNode *GetFirstModule( ProcNode *procinfo );
-ModuleNode *GetNextModule( ModuleNode *modinfo );
+extern ModuleNode   *ModuleFromAddr( ProcNode *proc, void *addr );
+extern ModuleNode   *GetFirstModule( ProcNode *procinfo );
+extern ModuleNode   *GetNextModule( ModuleNode *modinfo );
 
 /* autoget.c */
-void InitAutoAttatch( void );
+extern void         InitAutoAttatch( void );
 
 /* profile.c */
-void GetProfileInfo( void );
-void PutProfileInfo( void );
+extern void         GetProfileInfo( void );
+extern void         PutProfileInfo( void );
 
 /* fault.c */
-ExceptDlgInfo * FaultGetExceptDlgInfo( HWND fault );
-int HandleException( DEBUG_EVENT *dbinfo );
-void FormatException( char *buf, DWORD code );
+extern ExceptDlgInfo *FaultGetExceptDlgInfo( HWND fault );
+extern int          HandleException( DEBUG_EVENT *dbinfo );
+extern void         FormatException( char *buf, DWORD code );
 
 /* stat.c */
-mad_registers * StatGetMadRegisters( HWND stat );
-void SetProcessInfo( HANDLE hdl, DWORD procid );
-int DoStatDialog( HWND hwnd );
+extern mad_registers *StatGetMadRegisters( HWND stat );
+extern void         SetProcessInfo( HANDLE hdl, DWORD procid );
+extern int          DoStatDialog( HWND hwnd );
 
 /* disasm.c */
-void SetDisasmInfo( HANDLE hdl, ModuleNode *mod );
-int InstructionFoward(int cnt, address *addr);
-int InstructionBackward( int cnt, address *addr);
-void Disassemble( address *addr, char *buff, int addbytes,unsigned max );
-bool AllocMadDisasmData(void);
-void DeAllocMadDisasmData(void);
+extern void         SetDisasmInfo( HANDLE hdl, ModuleNode *mod );
+extern int          InstructionFoward(int cnt, address *addr);
+extern int          InstructionBackward( int cnt, address *addr);
+extern void         Disassemble( address *addr, char *buff, int addbytes,unsigned max );
+extern bool         AllocMadDisasmData(void);
+extern void         DeAllocMadDisasmData(void);
 
 /* drwatlog.c */
-void EraseLog( void );
-void ViewLog( void );
-void MakeLog( ExceptDlgInfo *faultinfo );
-void SetLogOptions( HWND hwnd );
-void CheckLogSize( void );
+extern void         EraseLog( void );
+extern void         ViewLog( void );
+extern void         MakeLog( ExceptDlgInfo *faultinfo );
+extern void         SetLogOptions( HWND hwnd );
+extern void         CheckLogSize( void );
 
 /* lognote.c */
-void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );
+extern void         AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );
 
 /* thrdctl.c */
-BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL GetRetCode( HWND parent, RetCodeTypes type, DWORD id, DWORD *rc );
-BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val );
+extern BOOL         CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+extern BOOL         GetRetCode( HWND parent, RetCodeTypes type, DWORD id, DWORD *rc );
+extern BOOL         ParseNumeric( char *buf, BOOL signed_val, DWORD *val );
 
 /* reg.c */
-BOOL RefreshInfo( void );
-void RefreshCostlyInfo( void );
-BOOL GetProcessInfo( DWORD pid, ProcStats *info );
-BOOL GetNextProcess( ProcList *info, ProcPlace *place, BOOL first );
-BOOL GetNextThread( ThreadList *info, ThreadPlace *place,
-                    DWORD pid, BOOL first );
-BOOL GetThreadInfo( DWORD pid, DWORD tid, ThreadStats *info );
-void FreeModuleList( char **ptr, DWORD cnt );
-char **GetModuleList( DWORD pid, DWORD *cnt );
-void InitReg( void );
+extern BOOL         RefreshInfo( void );
+extern void         RefreshCostlyInfo( void );
+extern BOOL         GetProcessInfo( DWORD pid, ProcStats *info );
+extern BOOL         GetNextProcess( ProcList *info, ProcPlace *place, BOOL first );
+extern BOOL         GetNextThread( ThreadList *info, ThreadPlace *place, DWORD pid, BOOL first );
+extern BOOL         GetThreadInfo( DWORD pid, DWORD tid, ThreadStats *info );
+extern void         FreeModuleList( char **ptr, DWORD cnt );
+extern char         **GetModuleList( DWORD pid, DWORD *cnt );
+extern void         InitReg( void );
 #ifndef CHICAGO
-BOOL GetMemInfo( DWORD procid, MemInfo *info );
-BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo );
+extern BOOL         GetMemInfo( DWORD procid, MemInfo *info );
+extern BOOL         GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo );
 #endif
 
 /* sym.c */
-bool InitDip( void );
-bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line );
-bool GetSymbolName( address *addr, char *name, DWORD *symoff );
-bool LoadDbgInfo( ModuleNode *mod );
-void UnloadDbgInfo( ModuleNode *mod );
+extern bool         InitDip( void );
+extern bool         GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line );
+extern bool         GetSymbolName( address *addr, char *name, DWORD *symoff );
+extern bool         LoadDbgInfo( ModuleNode *mod );
+extern void         UnloadDbgInfo( ModuleNode *mod );
 
 /* memory.c */
 #ifndef CHICAGO
-void DoMemDlg( HWND hwnd, DWORD procid );
+extern void         DoMemDlg( HWND hwnd, DWORD procid );
 #endif
 
 /* memview.c */
-bool RegisterMemWalker( void );
-void WalkMemory( HWND parent, HANDLE hdl, DWORD procid );
-void FormatMemListEntry( char *buf, MemListItem *item );
-void RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist );
-void FreeMemList( MemListData *info );
+extern bool         RegisterMemWalker( void );
+extern void         WalkMemory( HWND parent, HANDLE hdl, DWORD procid );
+extern void         FormatMemListEntry( char *buf, MemListItem *item );
+extern void         RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist );
+extern void         FreeMemList( MemListData *info );
 
 /* pefile.c */
-BOOL GetSegmentList( ModuleNode *node );
-char *GetModuleName( dig_fhandle fid );
-BOOL GetModuleSize( dig_fhandle fid, DWORD *size );
-ObjectInfo *GetModuleObjects( dig_fhandle fid, DWORD *num_objects );
+extern BOOL         GetSegmentList( ModuleNode *node );
+extern char         *GetModuleName( FILE *fp );
+extern BOOL         GetModuleSize( FILE *fp, DWORD *size );
+extern ObjectInfo   *GetModuleObjects( FILE *fp, DWORD *num_objects );
 
 /* disasm.c */
-RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );
+extern RVALUE       FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );
 
 /* lddips.c */
-void ShowDIPStatus( HWND hwnd );
-bool LoadTheDips( void );
-void FiniDipMsgs( void );
+extern void         ShowDIPStatus( HWND hwnd );
+extern bool         LoadTheDips( void );
+extern void         FiniDipMsgs( void );

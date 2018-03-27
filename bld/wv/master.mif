@@ -12,14 +12,6 @@ additional_cleanup = *.u *.gdl
 
 #wv_trmem = 1
 
-dig_os_os2_386 = os2v2
-dig_os_dos_386 = dsx
-!ifndef dig_os_$(host_os)_$(host_cpu)
-dig_os = $(host_os)
-!else
-dig_os = $(dig_os_$(host_os)_$(host_cpu))
-!endif
-
 !ifeq sys_windowed 1
 !ifeq host_os os2
 os2pm = 1
@@ -88,6 +80,7 @@ extra_cpp_flags_nt = -DENABLE_TRAP_LOGGING
 extra_c_flags = -s
 
 extra_c_flags_win = -zW -zc
+extra_c_flags_qnx = -I"$(clib_dir)/h"
 !ifeq sys_windowed 1
 extra_c_flags_os2_i86 = -zc -zu
 !else
@@ -113,9 +106,10 @@ inc_dirs += -I"$(hlpview_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
 inc_dirs += -I"$(ncurses_dir)/h"
-dig_srcs +=;$(dig_dir)/c/dsx
 !else ifeq host_os dos
-dig_srcs +=;$(dig_dir)/c/dsx
+!ifeq host_cpu i86
+inc_dirs += -I"$(clib_dir)/heap/h"
+!endif
 !endif
 
 # libs
@@ -132,7 +126,7 @@ lnk2 = wv2.lnk
 # lflags
 #########
 
-extra_link_res_qnx = $(rdir)/qnx/wvqnx.u
+extra_link_res_qnx = usage.u
 
 lflags_win_i86 += memory font
 

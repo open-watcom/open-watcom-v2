@@ -31,7 +31,7 @@
 
 #include "guiwind.h"
 
-void *GUISetMouseCursor( gui_mouse_cursor type )
+gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type )
 {
     HCURSOR     cursor;
 
@@ -45,15 +45,15 @@ void *GUISetMouseCursor( gui_mouse_cursor type )
     case GUI_CROSS_CURSOR :
         cursor = _wpi_getsyscursor( IDC_CROSS );
         break;
-    }
-    if( cursor != NULLHANDLE ) {
-        return( (void*)_wpi_setcursor( cursor ) );
-    } else {
+    default:
         return( NULL );
     }
+    if( cursor != NULLHANDLE )
+        return( (void *)_wpi_setcursor( cursor ) );
+    return( NULL );
 }
 
-void GUIResetMouseCursor( void *old )
+void GUIResetMouseCursor( gui_mcursor_handle old )
 {
     if( old != NULL ) {
         _wpi_setcursor( (HCURSOR)old );

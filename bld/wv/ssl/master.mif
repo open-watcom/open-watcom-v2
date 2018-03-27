@@ -10,11 +10,23 @@ skip_build: .symbolic
 
 !include cproj.mif
 
+!ifdef %OWUSE_FILENAME_VERSION
+fortran_prs = fortra$(bld_ver).prs
+cpp_prs     = cpp$(bld_ver).prs
+c_prs       = c$(bld_ver).prs
+java_prs    = java$(bld_ver).prs
+!else
+fortran_prs = fortran.prs
+cpp_prs     = cpp.prs
+c_prs       = c.prs
+java_prs    = java.prs
+!endif
+
 prs_list = &
-    fortran.prs &
-    cpp.prs &
-    c.prs &
-    java.prs
+    $(fortran_prs) &
+    $(cpp_prs) &
+    $(c_prs) &
+    $(java_prs)
 
 !ifeq release 0
 ssl_options = -v
@@ -24,16 +36,16 @@ all : $(prs_list) .SYMBOLIC
 
 common_ssl = ../dbgintr.ssl ../dbgrules.ssl
 
-fortran.prs : ../fortran.ssl $(common_ssl)
+$(fortran_prs) : ../fortran.ssl $(common_ssl)
     ssl $(ssl_options) $[@ $^@
 
-cpp.prs : ../cpp.ssl ../pp_c.ssl $(common_ssl)
+$(cpp_prs) : ../cpp.ssl ../pp_c.ssl $(common_ssl)
     ssl $(ssl_options) $[@ $^@
 
-c.prs : ../c.ssl ../pp_c.ssl $(common_ssl)
+$(c_prs) : ../c.ssl ../pp_c.ssl $(common_ssl)
     ssl $(ssl_options) $[@ $^@
 
-java.prs : ../java.ssl ../pp_c.ssl $(common_ssl)
+$(java_prs) : ../java.ssl ../pp_c.ssl $(common_ssl)
     ssl $(ssl_options) $[@ $^@
 
 clean: .SYMBOLIC

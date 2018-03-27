@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,23 +33,23 @@
 
 #include "uidef.h"
 #include "uimouse.h"
-#include "uivirt.h"
+#include "uivirts.h"
+
 
 #define OFF_SCREEN      200
 
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD OldMouseRow, OldMouseCol = OFF_SCREEN;
+static MOUSEORD OldMouseRow;
+static MOUSEORD OldMouseCol = OFF_SCREEN;
 static bool     mouseOn = false;
 static ATTR     OldAttr;
 
 static LP_STRING RegenPos( unsigned row, unsigned col )
-/*******************************************************/
+/*****************************************************/
 {
     LP_STRING   pos;
 
     pos = (LP_STRING)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
+          + ( row * UIData->screen.increment + col ) * sizeof( PIXEL ) + 1;
     return( pos );
 }
 
@@ -78,7 +79,7 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
     if( mouseOn ) {
         new = RegenPos( row, col );
         OldAttr = *new;
-        if( UIData->colour == M_MONO ){
+        if( UIData->colour == M_MONO ) {
             *new = (OldAttr & 0x79) ^ 0x71;
         } else {
             *new = (OldAttr & 0x7f) ^ 0x77;
@@ -98,14 +99,15 @@ static void uisetmouseon( MOUSEORD row, MOUSEORD col )
 void UIAPI uisetmouse( MOUSEORD row, MOUSEORD col )
 /*************************************************/
 {
-    if( OldMouseRow == row && OldMouseCol == col ) return;
+    if( OldMouseRow == row && OldMouseCol == col )
+        return;
     uisetmouseoff();
     uisetmouseon( row, col );
 }
 
 
-void UIAPI uimouse( func )
-/*************************/
+void UIAPI uimouse( mouse_func func )
+/***********************************/
 {
     if( func == MOUSE_ON ) {
         mouseOn = true;

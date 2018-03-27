@@ -62,7 +62,7 @@ typedef struct cmdfilelist {
     how_type        how;        // as above
     how_type        oldhow;     // also as above.
     where_type      where;
-    f_handle        file;
+    FILE            *fp;
     char            *name;
 } cmdfilelist;
 

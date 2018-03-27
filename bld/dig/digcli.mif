@@ -1,1 +1,16 @@
-dig_srcs = $(dig_dir)/c/$(dig_os);$(dig_dir)/c;$(watcom_dir)/c
+dig_os_dos386   = dsx
+!ifdef dig_os_$(host_os)$(host_cpu)
+dig_srcs = $(dig_dir)/c/$(dig_os_$(host_os)$(host_cpu));$(dig_dir)/c;$(watcom_dir)/c
+!else
+dig_srcs = $(dig_dir)/c/$(host_os);$(dig_dir)/c;$(watcom_dir)/c
+!endif
+
+!ifeq which SERVER
+dig_objs_qnx386   = $(_subdir_)ldimp.obj
+!else
+dig_objs_dos386   = $(_subdir_)ldimp.obj
+dig_objs_linux386 = $(_subdir_)ldimp.obj
+dig_objs_osx386   = $(_subdir_)ldimp.obj
+dig_objs_qnx386   = $(_subdir_)ldimp.obj
+!endif
+dig_objs = $(dig_objs_$(host_os)$(host_cpu))

@@ -38,5 +38,5 @@
     #define NORMAL_BACK GUI_WHITE
 #endif
 
-extern void GUIFreeColours( gui_window * wnd );
-extern bool GUISetColours( gui_window * wnd, int num_attrs, gui_colour_set * colours );
+extern void GUIFreeColours( gui_window *wnd );
+extern bool GUISetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours );

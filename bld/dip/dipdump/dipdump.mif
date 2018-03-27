@@ -11,14 +11,6 @@ dipdump_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-dig_os_os2_386 = os2v2
-dig_os_dos_386 = dsx
-!ifndef dig_os_$(host_os)_$(host_cpu)
-dig_os = $(host_os)
-!else
-dig_os = $(dig_os_$(host_os)_$(host_cpu))
-!endif
-
 !include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 
@@ -31,6 +23,6 @@ objs = &
     digcli.obj  &
     dipcli.obj  &
     pathlist.obj &
-    $(dip_objs)
+    $(dip_objs) $(dig_objs)
 
 !include exetarg.mif

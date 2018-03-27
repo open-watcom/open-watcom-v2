@@ -34,12 +34,14 @@
 #include "dlgstat.h"
 #include "samprc.h"
 
+
+extern out_info Child1_Out;
+
 bool            DialogScaled    = false;
 bool            ButtonsScaled   = false;
 bool            ControlsScaled  = false;
 char * ListBoxData[] = { "one", "two", "three" };
 int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
-extern out_info Child1_Out;
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
 
@@ -51,11 +53,9 @@ gui_create_info DlgWin = {
     GUI_SCROLL_BOTH,
     GUI_SCROLL_EVENTS | GUI_ALL,
     NULL,
-    0,
-    NULL,
-    0,
-    NULL,
-    &Child1EventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Colour attribute array
+    &Child1WndGUIEventProc,             // GUI Event Callback function
     &Child1_Out,
     &DlgWinIcon,
     NULL                                // Menu Resource
@@ -67,91 +67,91 @@ gui_control_info Controls[] = {
     { 25, 180, 125, 45 },
     NULL,
     GUI_NOSCROLL,
-    AUTOMATIC,
+    GUI_STYLE_CONTROL_AUTOMATIC,
     STATIC_CONTROL },
   { GUI_EDIT,
     "hello",
     { 175, 180, 100, 120 },
     NULL,
     GUI_NOSCROLL,
-    GUI_TAB_GROUP | AUTOMATIC | GUI_FOCUS | GUI_CONTROL_MULTILINE | GUI_CONTROL_WANTRETURN,
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC | GUI_STYLE_CONTROL_FOCUS | GUI_STYLE_CONTROL_MULTILINE | GUI_STYLE_CONTROL_WANTRETURN,
     EDIT_CONTROL },
   { GUI_GROUPBOX,
     "Group 1",
     { 50, 270, 300, 135 },
     NULL,
     GUI_NOSCROLL,
-    AUTOMATIC,
+    GUI_STYLE_CONTROL_AUTOMATIC,
     -1},
   { GUI_RADIO_BUTTON,
     "RA&DIO 1",
     { 25, 45, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_GROUP | GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_GROUP | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     RADIOBUTTON_CONTROL1 },
   { GUI_RADIO_BUTTON,
     "&RADIO 2",
     { 150, 45, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_GROUP | AUTOMATIC | GUI_CHECKED,
+    GUI_STYLE_CONTROL_GROUP | GUI_STYLE_CONTROL_AUTOMATIC | GUI_STYLE_CONTROL_CHECKED,
     RADIOBUTTON_CONTROL2 },
   { GUI_GROUPBOX,
     "Group 2",
     { 10, 270, 340, 135 },
     NULL,
     GUI_NOSCROLL,
-    AUTOMATIC,
+    GUI_STYLE_CONTROL_AUTOMATIC,
     -1},
   { GUI_CHECK_BOX,
     "&CHECK 1",
     { 25, 315, BUTTON_WIDTH + 20, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_GROUP | GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_GROUP | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     CHECKBOX_CONTROL1 },
   { GUI_CHECK_BOX,
     "CHECK &2",
     { 170, 315, BUTTON_WIDTH + 20, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_GROUP | GUI_CHECKED | AUTOMATIC,
+    GUI_STYLE_CONTROL_GROUP | GUI_STYLE_CONTROL_CHECKED | GUI_STYLE_CONTROL_AUTOMATIC,
     CHECKBOX_CONTROL2 },
   { GUI_DEFPUSH_BUTTON,
     "OK",
     { 175, 450, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     OKBUTTON_CONTROL },
   { GUI_PUSH_BUTTON,
     "Cancel",
     { 25, 450, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     CANCELBUTTON_CONTROL } ,
   { GUI_EDIT_COMBOBOX,
     "Title",
     { 350, 45, 150, 250 },
     NULL,
     GUI_VSCROLL | GUI_HSCROLL,
-    GUI_TAB_GROUP,
+    GUI_STYLE_CONTROL_TAB_GROUP,
     LISTBOX_CONTROL },
   { GUI_PUSH_BUTTON,
     "&Add Data",
     { 325, 450, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     ADDBUTTON_CONTROL } ,
   { GUI_PUSH_BUTTON,
     "C&lear",
     { 475, 450, BUTTON_WIDTH, BUTTON_HEIGHT },
     NULL,
     GUI_NOSCROLL,
-    GUI_TAB_GROUP | AUTOMATIC,
+    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC,
     CLEARBUTTON_CONTROL }
 };
 
@@ -161,11 +161,9 @@ static gui_create_info DialogControl = {
     GUI_NOSCROLL,                       // Scroll Styles
     GUI_VISIBLE | GUI_CLOSEABLE,        // Window Styles
     NULL,                               // Parent
-    0,                                  // Number of menus
-    NULL,                               // Menu's
-    0,                                  // Number of color attributes
-    NULL,                               // Array of color attributes
-    &StaticDialogEventWnd,              // Callback function
+    0, NULL,                            // Menu array
+    0, NULL,                            // Colour attribute array
+    &StaticDialogWndGUIEventProc,       // GUI Event Callback function
     NULL,                               // Extra
     NULL,                               // Icon
     NULL                                // Menu Resource
@@ -184,11 +182,11 @@ static void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
 
     gui = gui;
     num = (int *)param;
-    for( i = 0; i < NUM_CONTROLS; i ++ ) {
+    for( i = 0; i < NUM_CONTROLS; i++ ) {
         if( Controls[i].id == id ) {
             (*num)++;
-            if( !GUIGetControlClass( gui, id, &control_class ) ||
-                ( control_class != Controls[i].control_class ) ) {
+            if( !GUIGetControlClass( gui, id, &control_class )
+              || ( control_class != Controls[i].control_class ) ) {
                 GUIDisplayMessage( gui, "Got Invalid Control Class",
                                    "Doing Enum Controls", GUI_INFORMATION );
             }
@@ -222,24 +220,22 @@ static void InitDialog( gui_window *parent )
 }
 
 /*
- * StaticDialogEventWnd
+ * StaticDialogWndGUIEventProc
  */
 
-bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool StaticDialogWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    bool        ret;
     gui_ctl_id  id;
     char        *new;
     unsigned    i;
     char        *text;
-    gui_ctl_idx sel;
+    int         sel;
     int         size;
-    gui_ctl_idx num;
+    int         num;
     gui_rect    rect;
     int         extent, top, start, end;
     gui_rgb     rgb, green;
 
-    ret = true;
     switch( gui_ev ) {
     case GUI_PAINT :
         GUIGetRGB( GUI_BRIGHT_YELLOW, &rgb );
@@ -248,25 +244,24 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIDrawTextRGB( gui, "Line Draw!", 10, 1, 1, rgb, green );
         GUIDrawBar( gui,  7, 1, 30, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, true );
         GUIDrawBar( gui,  8, 1, 70, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, false );
-        break;
+        return( true );
     case GUI_RESIZE :
-        break;
+        return( true );
     case GUI_INIT_DIALOG :
         GUIGetRect( gui, &rect );
         GUIGetClientRect( gui, &rect );
         InitDialog( gui );
         CheckNumControls( gui, NUM_CONTROLS );
-        for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
-            if( ( Controls[id].style & GUI_CHECKED ) &&
-                !( Controls[id].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, id, GUI_CHECKED );
+        for( id = RADIOBUTTON_CONTROL1_IDX; id <= RADIOBUTTON_CONTROL2_IDX; id++ ) {
+            if( (Controls[id].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[id].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[id].id, GUI_CHECKED );
             }
         }
-        num = CHECKBOX_CONTROL2;
-        for( id = CHECKBOX_CONTROL1; id <= num; id++ ) {
-            if( ( Controls[id].style & GUI_CHECKED ) &&
-                !( Controls[id].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, id, GUI_CHECKED );
+        for( id = CHECKBOX_CONTROL1_IDX; id <= CHECKBOX_CONTROL2_IDX; id++ ) {
+            if( (Controls[id].style & GUI_STYLE_CONTROL_CHECKED)
+              && (Controls[id].style & GUI_STYLE_CONTROL_AUTOMATIC) == 0 ) {
+                GUISetChecked( gui, Controls[id].id, GUI_CHECKED );
             }
         }
 
@@ -299,23 +294,24 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         DlgWin.parent = gui;
         SetWidthHeight( &DlgWin.rect, DlgWin.parent != NULL );
         GUICreateWindow( &DlgWin );
-        break;
+        return( true );
     case GUI_CONTROL_NOT_ACTIVE :
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            num = -1;
+            GUIGetCurrSelect( gui, id, &num );
+            text = GUIGetListItem( gui, id, num );
             GUIMemFree( text );
-            GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            GUISetListItemData( gui, id, num, (void *)num );
+            num = (int)GUIGetListItemData( gui, id, num );
             break;
         case EDIT_CONTROL :
-            new = GUIGetText( gui, EDIT_CONTROL );
+            new = GUIGetText( gui, id );
             GUIMemFree( new );
             break;
         }
-        break;
+        return( true );
     case GUI_CONTROL_RCLICKED :
         GUI_GETID( param, id );
         text = GUIGetText( gui, id );
@@ -324,15 +320,16 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIGetRect( gui, &rect );
         rect.width += 25;
         GUIResizeWindow( gui, &rect );
-        break;
+        return( true );
     case GUI_CONTROL_DCLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            num = -1;
+            GUIGetCurrSelect( gui, id, &num );
+            text = GUIGetListItem( gui, id, num );
             GUIMemFree( text );
-            break;
+            return( true );
         }
         break;
     case GUI_CONTROL_CLICKED :
@@ -340,32 +337,33 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         switch( id ) {
         case LISTBOX_CONTROL :
-            text = GUIGetText( gui, LISTBOX_CONTROL );
+            text = GUIGetText( gui, id );
             GUIMemFree( text );
-            num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
-            text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
+            num = -1;
+            GUIGetCurrSelect( gui, id, &num );
+            text = GUIGetListItem( gui, id, num );
             GUIMemFree( text );
-           // GUIDeleteItem( gui, LISTBOX_CONTROL, num );
-            break;
+            // GUIDeleteItem( gui, id, num );
+            return( true );
         case OKBUTTON_CONTROL :
-            for( id = RADIOBUTTON_CONTROL1; id <= RADIOBUTTON_CONTROL2; id++ ) {
-                if( GUIIsChecked( gui, id ) ) {
-                    Controls[id].style |= GUI_CHECKED;
+            for( id = RADIOBUTTON_CONTROL1_IDX; id <= RADIOBUTTON_CONTROL2_IDX; id++ ) {
+                if( GUIIsChecked( gui, Controls[id].id ) ) {
+                    Controls[id].style |= GUI_STYLE_CONTROL_CHECKED;
                 } else {
-                    Controls[id].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_STYLE_CONTROL_CHECKED;
                 }
             }
-            num = CHECKBOX_CONTROL2;
-            for( id = CHECKBOX_CONTROL1; id <= num; id++ ) {
-                if( GUIIsChecked( gui, id ) ) {
-                    Controls[id].style |= GUI_CHECKED;
+            for( id = CHECKBOX_CONTROL1_IDX; id <= CHECKBOX_CONTROL2_IDX; id++ ) {
+                if( GUIIsChecked( gui, Controls[id].id ) ) {
+                    Controls[id].style |= GUI_STYLE_CONTROL_CHECKED;
                 } else {
-                    Controls[id].style &= ~GUI_CHECKED;
+                    Controls[id].style &= ~GUI_STYLE_CONTROL_CHECKED;
                 }
             }
             text = GUIGetText( gui, LISTBOX_CONTROL );
             GUIMemFree( text );
-            sel = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
+            sel = -1;
+            GUIGetCurrSelect( gui, LISTBOX_CONTROL, &sel );
             if( gui == DialogWindow ) {
                 GUIDestroyWnd( gui );
             } else {
@@ -385,25 +383,25 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUICloseDialog( gui );
 #endif
             }
-            break;
+            return( true );
         case CANCELBUTTON_CONTROL :
 #if 0
-            GUIDisplayMessage( gui, "Cancel\nButton CancelButton CancelButtonCancelButton Cancel Button Cancel Button Cancel Button Cancel Button Cancel\tButton Cancel Button\t\t\tCancel Button", "Got dialog item : ",
-                               GUI_STOP );
+            GUIDisplayMessage( gui, "Cancel\nButton CancelButton CancelButtonCancelButton Cancel Button Cancel Button "
+            "Cancel Button Cancel Button Cancel\tButton Cancel Button\t\t\tCancel Button", "Got dialog item : ", GUI_STOP );
 #endif
             GUICloseDialog( gui );
-            break;
+            return( true );
         case EDIT_CONTROL :
             GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ", GUI_QUESTION );
-            break;
+            return( true );
         case STATIC_CONTROL :
             GUIDisplayMessage( gui, "Static Control", "Got dialog item : ", GUI_STOP );
-            break;
+            return( true );
         case ADDBUTTON_CONTROL :
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
             GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA, ListBoxData, ListBoxFunc );
             GUISelectAll( gui, EDIT_CONTROL, true );
-            break;
+            return( true );
         case CLEARBUTTON_CONTROL :
             if( !GUIIsControlVisible( gui, RADIOBUTTON_CONTROL1 ) ) {
                 GUIShowControl( gui, RADIOBUTTON_CONTROL1 );
@@ -442,14 +440,13 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUIResizeWindow( gui, &rect );
             }
 #endif
-            break;
+            return( true );
         }
         break;
     default :
-        ret = false;
         break;
     }
-    return( ret );
+    return( false );
 }
 
 void StaticDialogInit( void )
@@ -464,8 +461,8 @@ void StaticDialogCreate( gui_window *parent )
 {
     int i;
 
-    Controls[STATIC_CONTROL].text = OldValue;
-    Controls[EDIT_CONTROL].text = OldValue;
+    Controls[STATIC_CONTROL_IDX].text = OldValue;
+    Controls[EDIT_CONTROL_IDX].text = OldValue;
     DialogControl.parent = parent;
 
     if( !DialogScaled ) {
@@ -474,9 +471,9 @@ void StaticDialogCreate( gui_window *parent )
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
-            if( ( Controls[i].control_class == GUI_PUSH_BUTTON ) ||
-                ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
+            if( ( Controls[i].control_class == GUI_PUSH_BUTTON )
+              || ( Controls[i].control_class == GUI_DEFPUSH_BUTTON ) ) {
                 Controls[i].rect.height *= 2;
             }
         }
@@ -484,7 +481,7 @@ void StaticDialogCreate( gui_window *parent )
     }
 
     if( !ControlsScaled ) {
-        for( i = 0; i < NUM_CONTROLS; i ++ ) {
+        for( i = 0; i < NUM_CONTROLS; i++ ) {
             Controls[i].parent = NULL;
             SetWidthHeight( &Controls[i].rect, true );
         }

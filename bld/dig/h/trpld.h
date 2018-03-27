@@ -31,6 +31,8 @@
 
 #define TRAP_PARM_SEPARATOR ';'
 
+#define DEFAULT_TRP_NAME    "std"
+
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
 

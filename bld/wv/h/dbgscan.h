@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,5 @@ extern mad_radix    NewCurrRadix( mad_radix radix );
 extern mad_radix    SetCurrRadix( mad_radix radix );
 extern void         RestoreRadix( void );
 extern void         DefaultRadixSet( mad_radix radix );
-extern void         RadixSet( void );
-extern void         RadixConf( void );
 extern void         FindRadixSpec( mad_radix value, const char **start, size_t *len );
 extern char         *AddHexSpec( char *p );

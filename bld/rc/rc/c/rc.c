@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "yydriver.h"
 #include "rcerrors.h"
@@ -56,7 +55,7 @@ WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,Rc
 void InitGlobs( void )
 /********************/
 {
-    memset( &CmdLineParms, 0, sizeof( struct RCParams ) );
+    memset( &CmdLineParms, 0, sizeof( RCParams ) );
     memset( &CurrResFile, 0, sizeof( RcResFileID ) );
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     ErrorHasOccured = false;

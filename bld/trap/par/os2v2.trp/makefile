@@ -9,7 +9,7 @@ srv   = par
 which = TRAP
 remote_link = 1
 
-extra_objs = paros22.obj
+extra_objs = paros2.obj
 
 !include ../os2v2.mif
 !include $(trap_dir)/master.mif

@@ -32,19 +32,20 @@
 
 #ifndef _TCERR_H_INCLUDED
 #define _TCERR_H_INCLUDED
-#include "digpck.h"
-enum {
+
+typedef enum {
+    TC_NO_ERROR,
     TC_BAD_TRAP_FILE,
     TC_CANT_LOAD_TRAP,
     TC_WRONG_TRAP_VERSION,
     TC_OUT_OF_DOS_MEMORY,
-};
+} tc_error;
 
-extern char     *TrapClientString( unsigned );
+extern char     *TrapClientString( tc_error );
 
 #define TC_ERR_BAD_TRAP_FILE            TrapClientString( TC_BAD_TRAP_FILE )
 #define TC_ERR_CANT_LOAD_TRAP           TrapClientString( TC_CANT_LOAD_TRAP )
 #define TC_ERR_WRONG_TRAP_VERSION       TrapClientString( TC_WRONG_TRAP_VERSION )
 #define TC_ERR_OUT_OF_DOS_MEMORY        TrapClientString( TC_OUT_OF_DOS_MEMORY )
-#include "digunpck.h"
+
 #endif

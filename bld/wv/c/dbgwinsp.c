@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,15 +65,11 @@
 #include "clibext.h"
 
 
-extern void             MemNewAddr( a_window *wnd, address addr );
+extern void             MemNewAddr( a_window wnd, address addr );
 
-extern stack_entry      *ExprSP;
-extern WNDOPEN          *WndOpenTab[];
-
-
-static a_window *WndFindExisting( wnd_class_wv wndclass )
+static a_window WndFindExisting( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindClass( NULL, wndclass );
     if( wnd != NULL ) {
@@ -82,7 +79,7 @@ static a_window *WndFindExisting( wnd_class_wv wndclass )
 }
 
 
-extern void WndTmpFileInspect( const char *file )
+void WndTmpFileInspect( const char *file )
 {
     void                *viewhndl;
 
@@ -96,22 +93,22 @@ typedef struct cue_mod {
     bool        found;
 } cue_mod;
 
-static walk_result CheckFirstFile( cue_handle *ch, void *_d )
+OVL_EXTERN walk_result CheckFirstFile( cue_handle *cueh, void *_d )
 {
     cue_mod     *d = _d;
     char        *buff;
     unsigned    len;
 
-    len = DIPCueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( cueh, NULL, 0 ) + 1;
     _AllocA( buff, len );
-    DIPCueFile( ch, buff, len );
+    DIPCueFile( cueh, buff, len );
     if( stricmp( buff, d->file ) == 0 ) {
         d->found = true;
     }
     return( WR_STOP );
 }
 
-static walk_result CheckOneMod( mod_handle mh, void *_d )
+OVL_EXTERN walk_result CheckOneMod( mod_handle mh, void *_d )
 {
     cue_mod     *d = _d;
     d->mod = mh;
@@ -132,12 +129,12 @@ static mod_handle       FindFileMod( const char *file )
     return( d.found ? d.mod : NO_MOD );
 }
 
-extern void WndFileInspect( const char *file, bool binary )
+void WndFileInspect( const char *file, bool binary )
 {
     file_handle         fh;
     void                *viewhndl;
     mod_handle          mod;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
 
     viewhndl = NULL;
     if( binary ) {
@@ -150,22 +147,22 @@ extern void WndFileInspect( const char *file, bool binary )
         if( mod == NO_MOD ) {
             mod = FindFileMod( file );
         }
-        if( FindFirstCue( mod, ch ) ) {
-            viewhndl = OpenSrcFile( ch );
+        if( FindFirstCue( mod, cueh ) ) {
+            viewhndl = OpenSrcFile( cueh );
         } else {
             viewhndl = FOpenSource( file, NO_MOD, 0 );
-            ch = NULL;
+            cueh = NULL;
         }
         if( viewhndl == NULL )
             Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), file );
-        DoWndFileOpen( file, viewhndl, ch, false, false, WND_FILE );
+        DoWndFileOpen( file, viewhndl, cueh, false, false, WND_FILE );
     }
 }
 
 
-extern  void    WndFuncInspect( mod_handle mod )
+void    WndFuncInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_FUNCTIONS );
     if( wnd != NULL ) {
@@ -175,9 +172,9 @@ extern  void    WndFuncInspect( mod_handle mod )
     }
 }
 
-extern  void    WndGblFuncInspect( mod_handle mod )
+void    WndGblFuncInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_GBLFUNCTIONS );
     if( wnd != NULL ) {
@@ -187,9 +184,9 @@ extern  void    WndGblFuncInspect( mod_handle mod )
     }
 }
 
-extern  void    WndGblVarInspect( mod_handle mod )
+void    WndGblVarInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_GLOBALS );
     if( wnd != NULL ) {
@@ -199,36 +196,39 @@ extern  void    WndGblVarInspect( mod_handle mod )
     }
 }
 
-extern  void    WndMemInspect( address addr, char *next,
-                               unsigned len, mad_type_handle type )
+void    WndMemInspect( address addr, char *next,
+                               unsigned len, mad_type_handle mth )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
-    wnd = DoWndMemOpen( addr, type );
-    if( next != NULL ) MemSetFollow( wnd, next );
-    if( len != 0 ) MemSetLength( wnd, len );
-}
-
-extern  void    WndIOInspect( address *addr, mad_type_handle type )
-{
-    a_window    *wnd;
-
-    wnd = WndFindExisting( WND_IO );
-    if( wnd == NULL ) {
-        wnd = DoWndIOOpen( addr, type );
-    } else {
-        IONewAddr( wnd, addr, type );
+    wnd = DoWndMemOpen( addr, mth );
+    if( next != NULL )
+        MemSetFollow( wnd, next );
+    if( len != 0 ) {
+        MemSetLength( wnd, len );
     }
 }
 
-extern  void    WndAddrInspect( address addr )
+void    WndIOInspect( address *addr, mad_type_handle mth )
+{
+    a_window    wnd;
+
+    wnd = WndFindExisting( WND_IO );
+    if( wnd == NULL ) {
+        wnd = DoWndIOOpen( addr, mth );
+    } else {
+        IONewAddr( wnd, addr, mth );
+    }
+}
+
+void    WndAddrInspect( address addr )
 {
     WndMemInspect( addr, NULL, 0, MAD_NIL_TYPE_HANDLE );
 }
 
-extern  a_window        *WndAsmInspect( address addr )
+void WndAsmInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
     bool        nil;
 
     nil = false;
@@ -237,21 +237,23 @@ extern  a_window        *WndAsmInspect( address addr )
         addr = Context.execution;
     }
     wnd = WndFindExisting( WND_ASSEMBLY );
-    if( nil && wnd != NULL ) return( wnd );
+    if( nil && wnd != NULL )
+//        return( wnd );
+        return;
     if( wnd == NULL ) {
         wnd = DoWndAsmOpen( addr, true );
     }
     AsmMoveDot( wnd, addr );
-    return( wnd );
+//    return( wnd );
 }
 
-static  a_window        *DoWndSrcInspect( address addr, bool existing )
+static  a_window        DoWndSrcInspect( address addr, bool existing )
 {
-    a_window    *wnd;
+    a_window    wnd;
 //    bool        nil;
     mod_handle  mod;
-    DIPHDL( cue, ch );
-    a_window    *active;
+    DIPHDL( cue, cueh );
+    a_window    active;
 
     active = WndFindActive();
 //    nil = false;
@@ -265,50 +267,55 @@ static  a_window        *DoWndSrcInspect( address addr, bool existing )
     }
     if( wnd == NULL ) {
         if( DeAliasAddrMod( addr, &mod ) == SR_NONE
-         || DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-            ch = NULL;
+         || DeAliasAddrCue( mod, addr, cueh ) == SR_NONE ) {
+            cueh = NULL;
         }
-        wnd = DoWndSrcOpen( ch, existing );
+        wnd = DoWndSrcOpen( cueh, existing );
     }
     if( !SrcMoveDot( wnd, addr ) || !SrcHasFileOpen( wnd ) ) {
-        if( active != NULL ) WndRestoreToFront( active );
+        if( active != NULL )
+            WndRestoreToFront( active );
         return( NULL );
     }
     return( wnd );
 }
 
-extern  a_window        *WndSrcInspect( address addr )
+void WndSrcInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
     wnd = DoWndSrcInspect( addr, true );
     if( wnd == NULL )
         Warn( LIT_DUI( WARN_Source_Not_Available ) );
-    return( wnd );
+//    return( wnd );
 }
 
-extern  a_window        *WndSrcOrAsmInspect( address addr )
+void WndSrcOrAsmInspect( address addr )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = DoWndSrcInspect( addr, true );
-    if( wnd != NULL ) return( wnd );
-    wnd = WndAsmInspect( addr );
-    return( wnd );
+    if( wnd != NULL )
+//        return( wnd );
+        return;
+//    wnd = WndAsmInspect( addr );
+//    return( wnd );
+    WndAsmInspect( addr );
 }
 
-extern  a_window        *WndNewSrcInspect( address addr )
+void WndNewSrcInspect( address addr )
 {
-    return( DoWndSrcInspect( addr, false ) );
+//    return( DoWndSrcInspect( addr, false ) );
+    DoWndSrcInspect( addr, false );
 }
 
-extern  a_window        *WndModInspect( mod_handle mod )
+a_window WndModInspect( mod_handle mod )
 {
-    a_window    *wnd;
-    DIPHDL( cue, ch );
+    a_window    wnd;
+    DIPHDL( cue, cueh );
 
     wnd = WndFindExisting( WND_SOURCE );
-    if( wnd == NULL && DIPLineCue( mod, 0, 0, 0, ch ) != SR_NONE ) {
-        wnd = DoWndSrcOpen( ch, true );
+    if( wnd == NULL && DIPLineCue( mod, 0, 0, 0, cueh ) != SR_NONE ) {
+        wnd = DoWndSrcOpen( cueh, true );
     }
     if( wnd != NULL ) {
         SrcMoveDot( wnd, ModFirstAddr( mod ) );
@@ -316,9 +323,9 @@ extern  a_window        *WndModInspect( mod_handle mod )
     return( wnd );
 }
 
-extern  void    WndModListInspect( mod_handle mod )
+void    WndModListInspect( mod_handle mod )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( WND_MODULES );
     if( wnd == NULL ) {
@@ -328,9 +335,9 @@ extern  void    WndModListInspect( mod_handle mod )
     }
 }
 
-static a_window *WndVarNewWindow( const char *item )
+static a_window WndVarNewWindow( const char *item )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     WndSetOpenNoShow();
     wnd = WndVarOpen();
@@ -360,14 +367,14 @@ static bool WndDoInspect( const char *item, address *paddr, inspect_type t )
     return( false );
 }
 
-extern  void    WndInspectExprSP( const char *item )
+void    WndInspectExprSP( const char *item )
 {
     address     addr;
 
     WndDoInspect( item, &addr, WndGetExprSPInspectType( &addr ) );
 }
 
-extern  void    WndInspect( const char *item )
+void    WndInspect( const char *item )
 {
 /* #####  E1052: Expression has void type */
 /* #####  E1081: Expression must be scalar type */
@@ -376,9 +383,9 @@ extern  void    WndInspect( const char *item )
     }
 }
 
-a_window *WndClassInspect( wnd_class_wv wndclass )
+a_window WndClassInspect( wnd_class_wv wndclass )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindExisting( wndclass );
     if( wnd == NULL ) {
@@ -388,9 +395,9 @@ a_window *WndClassInspect( wnd_class_wv wndclass )
 }
 
 
-extern void WndVarInspect( const char *buff )
+void WndVarInspect( const char *buff )
 {
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndClassInspect( WND_WATCH );
     if( wnd != NULL ) {

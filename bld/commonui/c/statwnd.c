@@ -775,13 +775,13 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
  */
 void StatusWndSetSeparators( statwnd *sw, int num_items, status_block_desc *list )
 {
-    int     i;
+    int     item;
 
     if( num_items > MAX_SECTIONS ) {
         num_items = MAX_SECTIONS;
     }
-    for( i = 0; i < num_items; i++ ) {
-        sw->sectionDesc[i] = list[i];
+    for( item = 0; item < num_items; item++ ) {
+        sw->sectionDesc[item] = list[item];
     }
     sw->numSections = num_items;
 

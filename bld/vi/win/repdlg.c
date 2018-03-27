@@ -67,7 +67,8 @@ WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             SetWindowPos( hwnd, (HWND)NULLHANDLE, findData.posx, findData.posy,
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
-        EditSubClass( hwnd, REP_FIND, &EditVars.FindHist );
+        h = &EditVars.Hist[HIST_FIND];
+        EditSubClass( hwnd, REP_FIND, h );
         CheckDlgButton( hwnd, REP_IGNORE_CASE, ( findData.case_ignore ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( hwnd, REP_REGULAR_EXPRESSIONS, ( findData.use_regexp ) ? BST_CHECKED : BST_UNCHECKED );
         // CheckDlgButton( hwnd, REP_SEARCH_BACKWARDS, ( !findData.search_forward ) ? BST_CHECKED : BST_UNCHECKED );
@@ -76,10 +77,10 @@ WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         // CheckDlgButton( hwnd, REP_SELECTION_ONLY, ( findData.selection ) ? BST_CHECKED : BST_UNCHECKED );
         SetDlgItemText( hwnd, REP_FIND, findData.find );
         SetDlgItemText( hwnd, REP_REPLACE, findData.replace );
-        curr = EditVars.FindHist.curr + EditVars.FindHist.max - 1;
-        for( i = 0; i < EditVars.FindHist.max; i++ ) {
-            if( EditVars.FindHist.data[curr % EditVars.FindHist.max] != NULL ) {
-                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_ADDSTRING, 0, (LPARAM)EditVars.FindHist.data[curr % EditVars.FindHist.max] );
+        curr = h->curr + h->max - 1;
+        for( i = 0; i < h->max; i++ ) {
+            if( h->data[curr % h->max] != NULL ) {
+                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_ADDSTRING, 0, (LPARAM)h->data[curr % h->max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -125,7 +126,7 @@ WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             findData.search_wrap = IsDlgButtonChecked( hwnd, REP_SEARCH_WRAP );
             findData.prompt = IsDlgButtonChecked( hwnd, REP_PROMPT_ON_REPLACE );
             // findData.selection = IsDlgButtonChecked( hwnd, REP_SELECTION_ONLY );
-            h = &EditVars.FindHist;
+            h = &EditVars.Hist[HIST_FIND];
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {

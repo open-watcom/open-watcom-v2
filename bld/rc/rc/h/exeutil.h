@@ -43,15 +43,15 @@
 /* otherwise returns 0 (false) */
 /* note: if mask is 0 it always returns 1 (true) */
 
-extern RcStatus     CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length );
+extern RcStatus     CopyExeData( FILE *in_fp, FILE *out_fp, uint_32 length );
 extern long         AlignAmount( long offset, uint_16 shift_count );
 extern uint_16      FindShiftCount( uint_32 filelen, uint_16 numobjs );
-extern RcStatus     CopyExeDataTilEOF( WResFileID in_fid, WResFileID out_fid );
-extern RcStatus     PadExeData( WResFileID fid, long length );
+extern RcStatus     CopyExeDataTilEOF( FILE *in_fp, FILE *out_fp );
+extern RcStatus     PadExeData( FILE *fp, long length );
 extern void         CheckDebugOffset( ExeFileInfo * info );
-extern RcStatus     SeekRead( WResFileID fid, long newpos, void *buff, size_t size );
-extern ExeType      FindNEPELXHeader( WResFileID fid, unsigned_32 *nh_offset );
+extern RcStatus     SeekRead( FILE *fp, long newpos, void *buff, size_t size );
+extern ExeType      FindNEPELXHeader( FILE *fp, unsigned_32 *nh_offset );
 extern unsigned_32  OffsetFromRVA( ExeFileInfo *info, pe_va rva );
-extern bool         RcPadFile( WResFileID fid, size_t pad );
+extern bool         RcPadFile( FILE *fp, size_t pad );
 
 #endif

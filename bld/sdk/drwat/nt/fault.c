@@ -31,7 +31,6 @@
 
 
 #include <windows.h>
-#include <stdio.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "mem.h"
@@ -102,17 +101,17 @@ ExceptDlgInfo * FaultGetExceptDlgInfo( HWND fault )
 
 static void SetIp( HWND hwnd, address *addr )
 {
-    mad_type_info   host;
+    mad_type_info   host_mti;
     mad_type_info   mti;
     void            *item;
     char            buf[BUF_SIZE];
     unsigned        max;
 
     max = BUF_SIZE - 1;
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, addr ), &mti );
     item = alloca( BITS2BYTES( mti.b.bits ) + 1 );
-    MADTypeConvert( &host, addr, &mti, item, 0 );
+    MADTypeConvert( &host_mti, addr, &mti, item, 0 );
     MADTypeToString( 16, &mti, item, buf, &max );
     SetDlgItemText( hwnd, INT_CS_IP, buf );
 }
@@ -215,10 +214,8 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         /* make sure this dialog always comes up on top of everything else */
-        SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-                        SWP_NOSIZE | SWP_NOMOVE );
-        SetWindowPos( hwnd, HWND_NOTOPMOST, 0, 0, 0, 0,
-                        SWP_NOSIZE | SWP_NOMOVE );
+        SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+        SetWindowPos( hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
         centerDialog( hwnd );
         info = MemAlloc( sizeof( ExceptDlgInfo ) );
         info->dbinfo = (DEBUG_EVENT *)lparam;
@@ -226,22 +223,20 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         info->action = 0;
         SET_DLGDATA( hwnd, info );
         info->procinfo = FindProcess( info->dbinfo->dwProcessId );
-        info->threadinfo = FindThread( info->procinfo,
-                                       info->dbinfo->dwThreadId );
-        info->module = ModuleFromAddr( info->procinfo,
-               info->dbinfo->u.Exception.ExceptionRecord.ExceptionAddress );
+        info->threadinfo = FindThread( info->procinfo, info->dbinfo->dwThreadId );
+        info->module = ModuleFromAddr( info->procinfo, info->dbinfo->u.Exception.ExceptionRecord.ExceptionAddress );
         if( info->threadinfo != NULL ) {
             AllocMadRegisters( &(info->regs) );
             LoadMADRegisters( info->regs, info->threadinfo->threadhdl );
-            GetCurrAddr( &( info->init_ip ), info->regs );
+            GetCurrAddr( &(info->init_ip), info->regs );
         }
-        if( info->module == NULL ) {
-            info->got_dbginfo = FALSE;
-        } else {
-            if( !LoadDbgInfo( info->module ) ) {
-                info->got_dbginfo = FALSE;
-            } else {
+        info->got_dbginfo = FALSE;
+        if( info->module != NULL ) {
+            if( LoadDbgInfo( info->module ) ) {
                 info->got_dbginfo = TRUE;
+                if( info->module->syminfo->hdl != NO_MOD ) {
+                    DIPMapInfo( info->module->syminfo->hdl, info->module );
+                }
             }
         }
         if( LogData.autolog ) {         //Just create the log and exit

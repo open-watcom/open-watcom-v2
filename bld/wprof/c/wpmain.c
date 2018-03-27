@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include "wio.h"
 #include "common.h"
@@ -53,8 +54,6 @@
 #include "wpdata.h"
 #include "wpavals.h"
 
-
-extern a_window *       WndMain;
 
 #if defined( __OS2_PM__ )
 STATIC gui_resource     MainIcon = { WPROF_ICON, NULL };
@@ -81,8 +80,8 @@ void GUImain( void )
 }
 
 
-bool WndProcMacro( a_window * wnd, unsigned key )
-/***********************************************/
+bool WndProcMacro( a_window wnd, gui_key key )
+/********************************************/
 {
 #if 0
     int     menu;

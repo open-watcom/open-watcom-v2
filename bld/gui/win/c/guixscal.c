@@ -112,12 +112,12 @@ gui_ord GUIFromTextY( gui_ord ord, gui_window *wnd )
 
 bool GUIGetTheDC( gui_window *wnd )
 {
-    if( wnd->hdc == (WPI_PRES)NULL ) {
+    if( wnd->hdc == NULLHANDLE ) {
         wnd->hdc = _wpi_getpres( wnd->hwnd );
         if ( wnd->font != NULL ) {
             wnd->prev_font = _wpi_selectfont( wnd->hdc, wnd->font );
         } else {
-            wnd->prev_font = NULL;
+            wnd->prev_font = NULLHANDLE;
         }
         return( true );
     }
@@ -129,12 +129,12 @@ void GUIReleaseTheDC( gui_window * wnd )
 #ifdef __OS2_PM__
     wnd=wnd;
 #else
-    if( wnd->hdc != (WPI_PRES)NULL ) {
+    if( wnd->hdc != NULLHANDLE ) {
         if( wnd->prev_font != NULL ) {
             _wpi_getoldfont( wnd->hdc, wnd->prev_font );
         }
         _wpi_releasepres( wnd->hwnd, wnd->hdc );
-        wnd->hdc = NULL;
+        wnd->hdc = NULLHANDLE;
     }
 #endif
 }
@@ -177,7 +177,7 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_ord *start, int *num )
     hwnd = hwnd;
 
     _wpi_gettextmetrics( wnd->hdc, &GUItm );
-    avgy = AVGYCHAR(GUItm);
+    avgy = AVGYCHAR( GUItm );
     _wpi_getpaintrect( wnd->ps, &rect );
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
 

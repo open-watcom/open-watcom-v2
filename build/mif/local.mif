@@ -8,12 +8,6 @@ librarian  += -q
 rc         += -q
 rcaui      += -q
 
-bcc        += -zq
-bcl        += -zq
-bas        += -q
-blink      += op q
-blib       += -q
-
 # enable to switch to causeway extender
 !ifdef $(proj_name)_causeway
 clflags_dos_386 = -l=causeway
@@ -147,7 +141,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
@@ -349,7 +343,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(build_cppflags) $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
@@ -365,11 +359,11 @@ bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else ifdef __GCC_TOOLS__
 !if $(__GCC_TOOLS__) < 7
-bld_ldflags_cxx = -lstdc++
-bld_ldflags_dll_cxx = -lstdc++
-!else
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!else
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
 !endif
 !else
 bld_ldflags_cxx = -lsupc++ -lstdc++

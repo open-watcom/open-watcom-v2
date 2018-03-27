@@ -36,13 +36,17 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <climits>
 #if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <unistd.h>
 #else
     #include <direct.h>
 #endif
 #include "errors.hpp"
+
+#ifndef HAVE_CONFIG_H
 #include "clibext.h"
+#endif
 
 void killQuotes( char * text )
 {

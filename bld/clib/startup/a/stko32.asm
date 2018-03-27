@@ -29,6 +29,7 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 include struct.inc
 include exitwmsg.inc
@@ -43,11 +44,6 @@ else
 endif
 msg     db      "Stack Overflow!", 0
 enddata
-
-include xinit.inc
-
-        xinit   _init_stk,DEF_PRIORITY
-
 
         assume  ds:DGROUP
 
@@ -123,4 +119,9 @@ lup:                                    ; do {
         endproc __GRO                   ;
 
         endmod
+
+include xinit.inc
+
+        xinit   _init_stk,DEF_PRIORITY
+
         end

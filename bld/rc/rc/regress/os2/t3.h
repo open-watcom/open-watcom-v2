@@ -35,4 +35,4 @@
 MRESULT EXPENTRY  AccelWndProc(HWND, USHORT, MPARAM, MPARAM);
 MRESULT EXPENTRY  AboutDlgProc(HWND, USHORT, MPARAM, MPARAM);
 MRESULT EXPENTRY CreateDlgProc(HWND, USHORT, MPARAM, MPARAM);
-void cdecl main(void);
+void __cdecl main(void);

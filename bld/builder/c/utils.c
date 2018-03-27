@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,12 +32,48 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <time.h>
 #ifndef __UNIX__
 #include <share.h>
 #endif
 #include "watcom.h"
 #include "builder.h"
+#include "memutils.h"
+#ifdef TRMEM
+#include "trmem.h"
+#endif
+
+#include "clibext.h"
+
+
+#ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+
+static void     TRPrintLine( void *h, const char *buff, size_t len )
+{
+    /* unused parameters */ (void)h; (void)len;
+    printf( "%s\n", buff );
+}
+#endif
+
+void MOpen( void )
+/****************/
+{
+#ifdef TRMEM
+    TRMemHandle = _trmem_open( malloc, free, NULL, NULL, NULL, TRPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
+}
+
+void MClose( void )
+/*****************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( TRMemHandle );
+    _trmem_close( TRMemHandle );
+#endif
+}
 
 void Fatal( const char *str, ... )
 {
@@ -100,15 +137,43 @@ void CloseLog( void )
     }
 }
 
-void *Alloc( size_t size )
+void *MAlloc( size_t size )
 {
     void        *p;
 
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
     p = malloc( size );
+#endif
     if( p == NULL ) {
         Fatal( "Out of memory!\n" );
     }
     return( p );
+}
+
+char *MStrdup( const char *s )
+{
+    void        *p;
+
+#ifdef TRMEM
+    p = _trmem_strdup( s, _trmem_guess_who(), TRMemHandle );
+#else
+    p = strdup( s );
+#endif
+    if( p == NULL ) {
+        Fatal( "Out of memory!\n" );
+    }
+    return( p );
+}
+
+void MFree( void *p )
+{
+#ifdef TRMEM
+    _trmem_free( p, _trmem_guess_who(), TRMemHandle );
+#else
+    free( p );
+#endif
 }
 
 char *SkipBlanks( const char *p )

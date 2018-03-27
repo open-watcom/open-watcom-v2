@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "bancfg.h"
+#define _BETAVER    1
 
-#define DOBANSTR( p )       #p
-#define BANSTR( p )         DOBANSTR( p )
+#define _DOSTR( p )         #p
+#define _MACROSTR( p )      _DOSTR( p )
 
 #ifndef _BETASTR_
 #define _BETASTR_           "beta"
@@ -51,16 +51,15 @@
 #define _BANEXTRA           __DATE__
 #endif
 
-#define banner1p1(p)        p
-#define banner1p2(v)        "Version " v " " _BANEXTRA
-#define banner1(p,v)        banner1p1(p) " " banner1p2(v)
-#define banner1w(p,v)       "Open Watcom " banner1p1(p) " " banner1p2(v)
+#define banner1v(v)         "Version " v " " _BANEXTRA
+#define banner1(p,v)        p " " banner1v(v)
+#define banner1w(p,v)       "Open Watcom " p " " banner1v(v)
 
 #define banner1w1(p)        "Open Watcom " p
-#define banner1w2(v)        banner1p2(v)
+#define banner1w2(v)        banner1v(v)
 
-#define banner21            "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors."
-#define banner21a(year)     "Portions Copyright (c) " year "-2002 Sybase, Inc."
+#define banner21            "Copyright (c) 2002-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
+#define banner21a(year)     "Portions Copyright (c) " _DOSTR( year ) "-2002 Sybase, Inc."
 
 #define banner2             banner21 " All Rights Reserved."
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
@@ -68,8 +67,8 @@
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
 #define banner3a            "See http://www.openwatcom.org/ for details."
 
-#define banner1ps(p,v)      "Powersoft " banner1p1(p) " " banner1p2(v)
-#define banner2ps           banner2( "1984" )
+#define banner1ps(p,v)      "Powersoft " p " " banner1v(v)
+#define banner2ps           banner21a( 1984 )
 #define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
 #if defined( _M_I86 )
@@ -78,7 +77,7 @@
   #define STR_BITNESS " (32-bit)"
 #elif defined( _M_X64 )
   #define STR_BITNESS " (64-bit)"
-#elif defined(__i386__) || defined(__i386)
+#elif defined( __i386__ ) || defined( __i386 )
   #define STR_BITNESS " (32-bit)"
 #elif defined( __AMD64__ ) || defined( __amd64 )
   #define STR_BITNESS " (64-bit)"
@@ -91,36 +90,36 @@
 #define _RC_DELIM_LEFT_         [
 #define _RC_DELIM_RIGHT_        ]
 
-#if _BANVER == 1200
+#if _BLDVER == 1200
     #define BAN_VER_STR "1.0" _BETA_
-#elif _BANVER == 1210
+#elif _BLDVER == 1210
     #define BAN_VER_STR "1.1" _BETA_
-#elif _BANVER == 1220
+#elif _BLDVER == 1220
     #define BAN_VER_STR "1.2" _BETA_
-#elif _BANVER == 1230
+#elif _BLDVER == 1230
     #define BAN_VER_STR "1.3" _BETA_
-#elif _BANVER == 1240
+#elif _BLDVER == 1240
     #define BAN_VER_STR "1.4" _BETA_
-#elif _BANVER == 1250
+#elif _BLDVER == 1250
     #define BAN_VER_STR "1.5" _BETA_
-#elif _BANVER == 1260
+#elif _BLDVER == 1260
     #define BAN_VER_STR "1.6" _BETA_
-#elif _BANVER == 1270
+#elif _BLDVER == 1270
     #define BAN_VER_STR "1.7" _BETA_
-#elif _BANVER == 1280
+#elif _BLDVER == 1280
     #define BAN_VER_STR "1.8" _BETA_
-#elif _BANVER == 1290
+#elif _BLDVER == 1290
     #define BAN_VER_STR "1.9" _BETA_
-#elif _BANVER == 1300
+#elif _BLDVER == 1300
     #define BAN_VER_STR "2.0" _BETA_
-#elif _BANVER == 1310
+#elif _BLDVER == 1310
     #define BAN_VER_STR "2.1" _BETA_
 #else
     #error **** Specified Banner version not supported ****
     #define BAN_VER_STR "12.0" _BETA_
 #endif
 
-/* these should all be _BANVER/100.0 */
+/* these should all be _BLDVER/100.0 */
 #define _WCC_VERSION_           BAN_VER_STR
 #define _WPP_VERSION_           BAN_VER_STR
 #define _WCL_VERSION_           BAN_VER_STR
@@ -129,6 +128,9 @@
 #define _WLINK_VERSION_         BAN_VER_STR
 #define _WMAKE_VERSION_         BAN_VER_STR
 #define _WASM_VERSION_          BAN_VER_STR
+#define _WASAXP_VERSION_        BAN_VER_STR
+#define _WASPPC_VERSION_        BAN_VER_STR
+#define _WASMIPS_VERSION_       BAN_VER_STR
 /* these can be what ever they want to be */
 #define _BPATCH_VERSION_        BAN_VER_STR
 #define _MOUSEFIX_VERSION_      BAN_VER_STR

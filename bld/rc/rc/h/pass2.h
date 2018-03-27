@@ -35,7 +35,6 @@
 #include "pass2l1.h"
 
 typedef struct RcPass2Info {
-    char            *TmpFileName;
     ExeFileInfo     TmpFile;
     ExeFileInfo     OldFile;
     ResFileInfo     *ResFile;

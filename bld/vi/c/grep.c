@@ -125,9 +125,11 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
 
 static vi_rc getFile( const char *fname )
 {
-    char        dir[MAX_STR];
-    char        *dirptr, ch;
-    vi_rc       rc;
+    char            dir[MAX_STR];
+    char            *dirptr;
+    char            ch;
+    vi_rc           rc;
+    history_data    *h;
 
     GetNextWord1( fname, dir );
     rc = EditFile( dir, false );
@@ -153,8 +155,9 @@ static vi_rc getFile( const char *fname )
     } else {
         strcpy( dir, origString );
     }
-    ReplaceString( EditVars.FindHist.data + ( EditVars.FindHist.curr % EditVars.FindHist.max ), origString );
-    EditVars.FindHist.curr += 1;
+    h = &EditVars.Hist[HIST_FIND];
+    ReplaceString( h->data + ( h->curr % h->max ), origString );
+    h->curr += 1;
     ColorFind( dirptr, FINDFL_NOERROR );
     SetLastFind( origString );
     return( rc );

@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+extern char_ring    *DLLList;
+
 extern bool         DLLMatch( void );
 extern char         *DLLListName( char_ring *src );
 extern char_ring    *NextDLLList( char_ring *curr );

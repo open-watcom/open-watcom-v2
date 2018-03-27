@@ -35,15 +35,14 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-#define NO_SELECT       -1
 
-static  int     ScrollPos       = NO_SELECT;
-static  int     PrevScrollPos   = NO_SELECT;
+static int      ScrollPos       = NO_SELECT;
+static int      PrevScrollPos   = NO_SELECT;
 
-static EVENT PopupEvents[] = {
+static ui_event PopupEvents[] = {
     EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
-    EV_ALT_Q,           EV_ALT_M, // JD - handle alt keys
-    EV_NO_EVENT,
+    EV_ALT_Q,           EV_ALT_M,           // JD - handle alt keys
+    __rend__,
     EV_ALT_PRESS,
     EV_ALT_RELEASE,
     EV_CURSOR_UP,
@@ -55,29 +54,29 @@ static EVENT PopupEvents[] = {
     EV_MOUSE_DCLICK,
     EV_MOUSE_DCLICK_R,
     EV_MENU_ACTIVE,
-    EV_NO_EVENT
+    __end__
 };
 
-static EVENT ListToClose[] = {
-    EV_NO_EVENT,
+static ui_event ListToClose[] = {
+    __rend__,
     EV_CURSOR_LEFT,
-    EV_NO_EVENT,
+    __end__,
 };
 
-static EVENT LeftMouseEvents[] = {
-    EV_NO_EVENT,
+static ui_event LeftMouseEvents[] = {
+    __rend__,
     EV_MOUSE_PRESS,
     EV_MOUSE_DRAG,
     EV_MOUSE_RELEASE,
-    EV_NO_EVENT
+    __end__
 };
 
-static EVENT RightMouseEvents[] = {
-    EV_NO_EVENT,
+static ui_event RightMouseEvents[] = {
+    __rend__,
     EV_MOUSE_PRESS_R,
     EV_MOUSE_DRAG_R,
     EV_MOUSE_RELEASE_R,
-    EV_NO_EVENT
+    __end__
 };
 
 static bool InArea( ORD row, ORD col, SAREA *area )
@@ -90,22 +89,20 @@ static bool InArea( ORD row, ORD col, SAREA *area )
  * DrawMenuText -- display the line of menu text
  */
 
-static void DrawMenuText( int index, MENUITEM *menu, bool curr, DESCMENU *desc )
+static void DrawMenuText( int item, UIMENUITEM *menuitems, DESCMENU *desc, bool iscurritem )
 {
-    uidisplayitem( &menu[index], desc, index + 1, curr );
-    uimenucurr( &menu[index] );
+    uidisplaymenuitem( &menuitems[item], desc, item, iscurritem );
+    uimenucurr( &menuitems[item] );
 }
 
 static bool okvert( SAREA *area, SAREA *keep_inside )
 {
-    return( ( area->row + area->height ) <=
-            ( keep_inside->row + keep_inside->height ) );
+    return( ( area->row + area->height ) <= ( keep_inside->row + keep_inside->height ) );
 }
 
 static bool okhorz( SAREA *area, SAREA *keep_inside )
 {
-    return( ( area->col + area->width ) <=
-            ( keep_inside->col + keep_inside->width ) );
+    return( ( area->col + area->width ) <= ( keep_inside->col + keep_inside->width ) );
 }
 
 /*
@@ -169,43 +166,28 @@ static bool RepositionBox( SAREA *area, SAREA *keep_inside, SAREA *keep_visible 
 }
 
 /*
- * GetNewPos -- calculate new position based on circular menu
- */
-
-static int GetNewPos( int pos, int num )
-{
-    if( pos >= num ) {
-        return( 0 );
-    } else if( pos < 0 ) {
-        return( num - 1 );
-    } else {
-        return( pos );
-    }
-}
-
-/*
  * SkipSeparators -- calculate new position, skipping separators
  */
 
-static int SkipSeparators( int diff, int num, MENUITEM *menu )
+static int SkipSeparators( int diff, int num_items, UIMENUITEM *menuitems )
 {
     int pos;
 
-    pos = GetNewPos( ScrollPos + diff, num );
-    while( MENUSEPARATOR( menu[pos] ) ) {
-        pos = GetNewPos( pos + diff, num );
+    pos = GetNewPos( ScrollPos + diff, num_items );
+    while( MENUSEPARATOR( menuitems[pos] ) ) {
+        pos = GetNewPos( pos + diff, num_items );
     }
     return( pos );
 }
 
-static void ChangePos( int new_pos, MENUITEM *menu, DESCMENU *desc )
+static void ChangePos( int new_pos, UIMENUITEM *menuitems, DESCMENU *desc )
 {
     ScrollPos = new_pos;
     if( PrevScrollPos != NO_SELECT ) {
-        DrawMenuText( PrevScrollPos, menu, false, desc );
+        DrawMenuText( PrevScrollPos, menuitems, desc, false );
     }
     PrevScrollPos = ScrollPos;
-    DrawMenuText( ScrollPos, menu, true, desc );
+    DrawMenuText( ScrollPos, menuitems, desc, true );
 }
 
 /*
@@ -213,9 +195,9 @@ static void ChangePos( int new_pos, MENUITEM *menu, DESCMENU *desc )
  *           Draw old selection normally, hightlight new selection
  */
 
-static void Scroll( int pos, int num, MENUITEM *menu, DESCMENU *desc )
+static void Scroll( int pos, int num_items, UIMENUITEM *menuitems, DESCMENU *desc )
 {
-    ChangePos( GetNewPos( pos, num ), menu, desc );
+    ChangePos( GetNewPos( pos, num_items ), menuitems, desc );
 }
 
 static void DoEnd( UI_WINDOW *window )
@@ -224,19 +206,17 @@ static void DoEnd( UI_WINDOW *window )
 }
 
 /*
- * SendEvent -- calculate event to return, return whether or not to end
- *              popup menu
+ * SendMenuEvent -- calculate event to return, return whether or not to end
+ *                  popup menu
  */
 
-static bool SendEvent( int num, MENUITEM *menu, int index,
-                       UI_WINDOW *window, EVENT *ev )
+static bool SendMenuEvent( int num_items, UIMENUITEM *menuitems, int item, UI_WINDOW *window, ui_event *ui_ev )
 {
-
-    *ev = EV_NO_EVENT;
-    if( ( index < num ) && ( index >= 0 ) ) {
+    *ui_ev = EV_NO_EVENT;
+    if( ( item < num_items ) && ( item >= 0 ) ) {
         DoEnd( window );
-        if( !( MENUGRAYED( menu[index] ) ) ) {
-            *ev = menu[index].event;
+        if( !MENUGRAYED( menuitems[item] ) ) {
+            *ui_ev = menuitems[item].event;
             return( true );
         }
         return( true );
@@ -249,27 +229,28 @@ static bool SendEvent( int num, MENUITEM *menu, int index,
  * KeyboardSelect -- See if the pressed key selects one of the menu items
  */
 
-static bool KeyboardSelect( EVENT ev, int num, MENUITEM *menu, DESCMENU *desc )
+static bool KeyboardSelect( ui_event ui_ev, int num_items, UIMENUITEM *menuitems, DESCMENU *desc )
 
 {
-    int         i;
-    char        up, alt_char;
+    int         item;
+    char        up;
+    char        alt_char;
     int         offset;
 
     // JD - don't check uimenugetaltpressed.  The menu code may not have seen
     //      the alt key go down.
-    alt_char = uialtchar( ev );
-    if ( alt_char ) {
+    alt_char = uialtchar( ui_ev );
+    if( alt_char ) {
         up = toupper ( alt_char );
     } else {
-        up = toupper( ev );
+        up = toupper( ui_ev );
     }
-    for( i = 0; i < num; i++ ) {
-       if( !MENUSEPARATOR( menu[i] ) && !MENUGRAYED( menu[i] ) ) {
-           offset = CHAROFFSET( menu[i] );
-           if( ( offset < strlen( menu[i].name ) ) &&
-               ( toupper( menu[i].name[offset] ) == up ) ) {
-               ChangePos( i, menu, desc );
+    for( item = 0; item < num_items; item++ ) {
+       if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) ) {
+           offset = CHAROFFSET( menuitems[item] );
+           if( ( offset < strlen( menuitems[item].name ) ) &&
+               ( toupper( menuitems[item].name[offset] ) == up ) ) {
+               ChangePos( item, menuitems, desc );
                return( true );
            }
        }
@@ -277,8 +258,8 @@ static bool KeyboardSelect( EVENT ev, int num, MENUITEM *menu, DESCMENU *desc )
     return( false );
 }
 
-EVENT UIAPI uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
-                                bool right, EVENT curr_item, bool sub )
+ui_event UIAPI uicreatepopupdesc( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
+                                bool right, ui_event curritem_event, bool issubmenu )
 {
     SAREA       keep_inside;
 
@@ -287,52 +268,50 @@ EVENT UIAPI uicreatepopupdesc( MENUITEM *menu, DESCMENU *desc, bool left,
     keep_inside.width = UIData->width;
     keep_inside.height = UIData->height;
 
-    return( uicreatepopupinarea( menu, desc, left, right, curr_item,
-                                 &keep_inside, sub ) );
+    return( uicreatepopupinarea( menuitems, desc, left, right, curritem_event, &keep_inside, issubmenu ) );
 
 }
 
-static bool createsubpopup( MENUITEM *menu, bool left, bool right,
-                            SAREA *keep_inside, EVENT *new_ev, UI_WINDOW *window,
-                            DESCMENU *desc, bool set_default )
+static bool createsubpopup( UIMENUITEM *parentitems, bool left, bool right,
+                            SAREA *keep_inside, ui_event *new_ui_ev, UI_WINDOW *window,
+                            DESCMENU *parentdesc, bool set_default )
 {
     SAREA       keep_visible;
     int         this_scroll_pos;
     int         this_prev_scroll_pos;
-    EVENT       ev;
+    ui_event    ui_ev;
     ORD         row;
     ORD         col;
     int         curr_row;
-    DESCMENU    sub_desc;
-    int         num;
-    EVENT       default_event;
-    MENUITEM    *curr_popup;
+    DESCMENU    desc;
+    int         num_items;
+    ui_event    default_event;
+    UIMENUITEM  *menuitems;
 
-    if ( MENUGRAYED(menu[ScrollPos]) ) {
-        curr_popup = NULL;
+    if( MENUGRAYED( parentitems[ScrollPos] ) ) {
+        menuitems = NULL;
     } else {
-        curr_popup = menu[ScrollPos].popup;
+        menuitems = parentitems[ScrollPos].popup;
     }
-    if( curr_popup != NULL ) {
-        row = desc->area.row + ScrollPos;
-        col = desc->area.col + desc->area.width - 2;
+    if( menuitems != NULL ) {
+        row = parentdesc->area.row + ScrollPos;
+        col = parentdesc->area.col + parentdesc->area.width - 2;
         keep_visible.row = row + 1;
-        keep_visible.col = desc->area.col;
-        keep_visible.width = desc->area.width - 2;
+        keep_visible.col = parentdesc->area.col;
+        keep_visible.width = parentdesc->area.width - 2;
         keep_visible.height = 1;
-        uiposfloatingpopup( curr_popup, &sub_desc, row, col,
-                            keep_inside, &keep_visible );
+        uiposfloatingpopup( menuitems, &desc, row, col, keep_inside, &keep_visible );
         this_scroll_pos = ScrollPos;
         this_prev_scroll_pos = PrevScrollPos;
-        if( set_default && ( curr_popup != NULL ) ) {
-            default_event = curr_popup[0].event;
+        if( set_default && ( menuitems != NULL ) ) {
+            default_event = menuitems[0].event;
         } else {
             default_event = EV_NO_EVENT;
         }
-        ev = uicreatesubpopup( curr_popup, &sub_desc, left, right, default_event, keep_inside, desc, ScrollPos );
+        ui_ev = uicreatesubpopup( menuitems, &desc, left, right, default_event, keep_inside, parentdesc, ScrollPos );
         ScrollPos = this_scroll_pos;
         PrevScrollPos = this_prev_scroll_pos;
-        switch( ev ) {
+        switch( ui_ev ) {
         case EV_MOUSE_DRAG :
         case EV_MOUSE_DRAG_R :
         case EV_MOUSE_PRESS:
@@ -340,14 +319,13 @@ static bool createsubpopup( MENUITEM *menu, bool left, bool right,
         case EV_MOUSE_RELEASE:
         case EV_MOUSE_RELEASE_R:
             uivmousepos( NULL, &row, &col );
-            if( ( col > desc->area.col ) &&
-                ( col < ( desc->area.col + desc->area.width - 1 ) ) ) {
-                curr_row = row - desc->area.row - 1;
-                num = desc->area.height - 2;
-                if( ( curr_row >= 0 ) && ( curr_row < num ) ) {
+            if( ( col > parentdesc->area.col ) && ( col < ( parentdesc->area.col + parentdesc->area.width - 1 ) ) ) {
+                curr_row = row - parentdesc->area.row - 1;
+                num_items = parentdesc->area.height - 2;
+                if( ( curr_row >= 0 ) && ( curr_row < num_items ) ) {
                     if( curr_row != ScrollPos ) {
-                        Scroll( curr_row, num, menu, desc );
-                        *new_ev = ev; // JD - send event back up to parent
+                        Scroll( curr_row, num_items, parentitems, parentdesc );
+                        *new_ui_ev = ui_ev; // JD - send event back up to parent
                     }
                 }
             }
@@ -356,13 +334,13 @@ static bool createsubpopup( MENUITEM *menu, bool left, bool right,
         case EV_CURSOR_RIGHT :
             break;
         default :
-            if( ev != EV_NO_EVENT ) {
+            if( ui_ev != EV_NO_EVENT ) {
                 DoEnd( window );
-                *new_ev = ev;
+                *new_ui_ev = ui_ev;
                 return( true );
             }
         }
-        uidrawmenu( menu, desc, ScrollPos + 1 );
+        uidrawmenu( parentitems, parentdesc, ScrollPos );
     }
     return( false );
 }
@@ -372,7 +350,7 @@ static bool createsubpopup( MENUITEM *menu, bool left, bool right,
  *
  */
 
-bool uiposfloatingpopup( MENUITEM *menu, DESCMENU *desc, ORD row, ORD col,
+bool uiposfloatingpopup( UIMENUITEM *menuitems, DESCMENU *desc, ORD row, ORD col,
                          SAREA *keep_inside, SAREA *keep_visible )
 {
     desc->area.row = row;
@@ -380,21 +358,21 @@ bool uiposfloatingpopup( MENUITEM *menu, DESCMENU *desc, ORD row, ORD col,
     desc->titlecol = 0;
     desc->titlewidth = 0;
     desc->flags = 0;
-    uidescmenu( menu, desc );
+    uidescmenu( menuitems, desc );
     if( !RepositionBox( &desc->area, keep_inside, keep_visible ) ) {
         return( false );
     }
     return( true );
 }
 
-static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
+static ui_event createpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc,
                                 bool left, bool right,
-                                EVENT curr_item, SAREA *keep_inside,
+                                ui_event curritem_event, SAREA *keep_inside,
                                 SAREA *return_inside, SAREA *return_exclude,
-                                bool sub )
+                                bool issubmenu )
 {
-    EVENT       ev;
-    EVENT       new_ev;
+    ui_event    ui_ev;
+    ui_event    new_ui_ev;
     int         curr_row;
     bool        done;
     bool        no_select;
@@ -402,30 +380,29 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     bool        no_move;
     int         new;
     UI_WINDOW   window;
-    int         num;
-    int         i;
+    int         num_items;
+    int         item;
     ORD         row;
     ORD         col;
     bool        disabled;
 
-    num = desc->area.height - 2;
-    if( num <= 0 ) {
+    num_items = desc->area.height - 2;
+    if( num_items <= 0 ) {
         return( EV_NO_EVENT );
     }
     uiopenpopup( desc, &window );
     ScrollPos = NO_SELECT;
-    if( curr_item != EV_NO_EVENT ) {
-        for( i = 0; i < num; i++ ) {
-            if( ( !MENUSEPARATOR( menu[i] ) ) && ( !MENUGRAYED( menu[i] ) ) &&
-                ( menu[i].event == curr_item ) ) {
-                ScrollPos = i;
+    if( curritem_event != EV_NO_EVENT ) {
+        for( item = 0; item < num_items; item++ ) {
+            if( !MENUSEPARATOR( menuitems[item] ) && !MENUGRAYED( menuitems[item] ) && ( menuitems[item].event == curritem_event ) ) {
+                ScrollPos = item;
                 break;
             }
         }
     }
-    uidrawmenu( menu, desc, ScrollPos + 1 );
+    uidrawmenu( menuitems, desc, ScrollPos );
     if( ScrollPos != NO_SELECT ) {
-        uimenucurr( &menu[ScrollPos] );
+        uimenucurr( &menuitems[ScrollPos] );
     }
 
     uipushlist( ListToClose );
@@ -442,19 +419,19 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     PrevScrollPos = ScrollPos;
     no_move = true;
     done = false;
-    new_ev = EV_NO_EVENT;
+    new_ui_ev = EV_NO_EVENT;
     while( !done ) {
 //        select_default = false;
-        ev = uivgetevent( NULL );
+        ui_ev = uivgetevent( NULL );
 
-        switch( ev ) {
+        switch( ui_ev ) {
         case EV_CURSOR_LEFT :
-            if( !sub ) {
+            if( !issubmenu ) {
                 break;
             }
             /* fall through */
         case EV_ALT_PRESS :
-            new_ev = ev;
+            new_ui_ev = ui_ev;
             done = true;
             DoEnd( &window );
             break;
@@ -462,15 +439,15 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
             uimenusetaltpressed( false );
             break;
         case EV_CURSOR_UP :
-            new = SkipSeparators( -1, num, menu );
-            Scroll( new, num, menu, desc );
+            new = SkipSeparators( -1, num_items, menuitems );
+            Scroll( new, num_items, menuitems, desc );
             break;
         case EV_CURSOR_DOWN :
-            new = SkipSeparators( 1, num, menu );
-            Scroll( new, num, menu, desc );
+            new = SkipSeparators( 1, num_items, menuitems );
+            Scroll( new, num_items, menuitems, desc );
             break;
         case EV_MENU_ACTIVE :
-            new_ev = ev;
+            new_ui_ev = ui_ev;
             /* fall through */
         case EV_ESCAPE :
             DoEnd( &window );
@@ -482,7 +459,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
         case EV_MOUSE_DCLICK :
         case EV_MOUSE_DCLICK_R :
             if( no_move ) {
-                new_ev = ev;
+                new_ui_ev = ui_ev;
                 DoEnd( &window );
                 done = true;
             }
@@ -490,6 +467,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
         case EV_MOUSE_DRAG :
         case EV_MOUSE_DRAG_R :
             no_move = false;   /* break intentionally left out */
+            /* fall through */
         case EV_MOUSE_PRESS:
         case EV_MOUSE_PRESS_R:
         case EV_MOUSE_RELEASE:
@@ -503,35 +481,34 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
                         InArea( row, col, return_inside ) &&
                         !InArea( row, col, return_exclude ) ) {
                         done = true;
-                        new_ev = ev;
+                        new_ui_ev = ui_ev;
                         DoEnd( &window );
                     }
                 }
                 if( !done ) {
-                    if( ( col > desc->area.col ) &&
-                        ( col < ( desc->area.col + desc->area.width - 1 ) ) ) {
+                    if( ( col > desc->area.col ) && ( col < ( desc->area.col + desc->area.width - 1 ) ) ) {
                         curr_row = row - desc->area.row - 1;
-                        if( ( curr_row >= 0 ) && ( curr_row < num ) ) {
+                        if( ( curr_row >= 0 ) && ( curr_row < num_items ) ) {
                             no_select = false;
                             if( curr_row != ScrollPos ) {
-                                Scroll( curr_row, num, menu, desc );
+                                Scroll( curr_row, num_items, menuitems, desc );
                             }
-                            if( ( ev == EV_MOUSE_RELEASE ) || ( ev == EV_MOUSE_RELEASE_R ) ) {
-                                done = SendEvent( num, menu, row - desc->area.row - 1, &window, &new_ev );
+                            if( ( ui_ev == EV_MOUSE_RELEASE ) || ( ui_ev == EV_MOUSE_RELEASE_R ) ) {
+                                done = SendMenuEvent( num_items, menuitems, row - desc->area.row - 1, &window, &new_ui_ev );
                             } else {
-                                new_ev = EV_NO_EVENT; // JD - break loop if no popup created
-                                done = createsubpopup( menu, left, right, keep_inside, &new_ev, &window, desc, false );
-                                if( !done && new_ev != EV_NO_EVENT ) {
+                                new_ui_ev = EV_NO_EVENT; // JD - break loop if no popup created
+                                done = createsubpopup( menuitems, left, right, keep_inside, &new_ui_ev, &window, desc, false );
+                                if( !done && new_ui_ev != EV_NO_EVENT ) {
                                     continue; // JD - see if we need to create another popup
                                 }
                             }
                         }
                     }
                 }
-                if( ( ev == EV_MOUSE_RELEASE ) || ( ev == EV_MOUSE_RELEASE_R ) ) {
+                if( ( ui_ev == EV_MOUSE_RELEASE ) || ( ui_ev == EV_MOUSE_RELEASE_R ) ) {
                     if( no_move ) {     /* mouse up and down on same spot */
                         no_select = false;
-                        Scroll( 0, num, menu, desc );
+                        Scroll( 0, num_items, menuitems, desc );
                     } else {
                         if( !done ) {
                             done = true;
@@ -541,7 +518,7 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
                 }
                 if( no_select && !done ) {  /* no item is selected */
                     if( ScrollPos != NO_SELECT ) {
-                        DrawMenuText( ScrollPos, menu, false, desc );
+                        DrawMenuText( ScrollPos, menuitems, desc, false );
                         uimenucurr( NULL );
                     }
                     ScrollPos = NO_SELECT;
@@ -550,35 +527,35 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
             }
             break;
         case EV_ENTER :
-            if( ScrollPos != NO_SELECT && menu[ScrollPos].popup != NULL ) { // JD
-                done = createsubpopup( menu, left, right, keep_inside, &new_ev, &window, desc, true );
+            if( ScrollPos != NO_SELECT && menuitems[ScrollPos].popup != NULL ) { // JD
+                done = createsubpopup( menuitems, left, right, keep_inside, &new_ui_ev, &window, desc, true );
             } else {
-                done = SendEvent( num, menu, ScrollPos, &window, &new_ev );
+                done = SendMenuEvent( num_items, menuitems, ScrollPos, &window, &new_ui_ev );
             }
             break;
         case EV_CURSOR_RIGHT :
-            if( ScrollPos != NO_SELECT && menu[ScrollPos].popup != NULL ) { // JD
-                done = createsubpopup( menu, left, right, keep_inside, &new_ev, &window, desc, true );
+            if( ScrollPos != NO_SELECT && menuitems[ScrollPos].popup != NULL ) { // JD
+                done = createsubpopup( menuitems, left, right, keep_inside, &new_ui_ev, &window, desc, true );
             } else {
-                if( sub ) {
-                    new_ev = ev;
+                if( issubmenu ) {
+                    new_ui_ev = ui_ev;
                     done = true;
                     DoEnd( &window );
                 }
             }
             break;
         case EV_KILL_UI:
-            new_ev = ev;
+            new_ui_ev = ui_ev;
             DoEnd( &window );
             done = true;
             break;
         default :
-            if( iskeyboardchar( ev ) ) {
-                if( KeyboardSelect( ev, num, menu, desc ) ) {
-                    if( ScrollPos != NO_SELECT && menu[ScrollPos].popup != NULL ) { // JD
-                        done = createsubpopup( menu, left, right, keep_inside, &new_ev, &window, desc, true );
+            if( iskeyboardchar( ui_ev ) ) {
+                if( KeyboardSelect( ui_ev, num_items, menuitems, desc ) ) {
+                    if( ScrollPos != NO_SELECT && menuitems[ScrollPos].popup != NULL ) { // JD
+                        done = createsubpopup( menuitems, left, right, keep_inside, &new_ui_ev, &window, desc, true );
                     } else {
-                        done = SendEvent( num, menu, ScrollPos, &window, &new_ev );
+                        done = SendMenuEvent( num_items, menuitems, ScrollPos, &window, &new_ui_ev );
                     }
                 }
             }
@@ -594,43 +571,40 @@ static EVENT createpopupinarea( MENUITEM *menu, DESCMENU *desc,
     uimenudisable( disabled ); // JD
     uipoplist( /* PopupEvents */ );
     uipoplist( /* ListToClose */ );
-    return( new_ev );
+    return( new_ui_ev );
 }
 
-EVENT UIAPI uicreatepopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
-                                  bool right, EVENT curr_item,
-                                  SAREA *keep_inside, bool sub )
+ui_event UIAPI uicreatepopupinarea( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
+                                  bool right, ui_event curritem_event,
+                                  SAREA *keep_inside, bool issubmenu )
 {
-    return( createpopupinarea( menu, desc, left, right, curr_item,
-                               keep_inside, NULL, NULL, sub ) );
+    return( createpopupinarea( menuitems, desc, left, right, curritem_event, keep_inside, NULL, NULL, issubmenu ) );
 }
 
-EVENT UIAPI uicreatesubpopup( MENUITEM *menu, DESCMENU *desc, bool left,
-                               bool right, EVENT curr_item, SAREA *keep_inside,
-                               DESCMENU *parent_menu, int index )
+ui_event UIAPI uicreatesubpopup( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
+                               bool right, ui_event curritem_event, SAREA *keep_inside,
+                               DESCMENU *parentdesc, int item )
 {
     SAREA       return_exclude;
 
-    return_exclude.row = parent_menu->area.row + index + 1;
-    return_exclude.col = parent_menu->area.col;
-    return_exclude.width = parent_menu->area.width;
+    return_exclude.row = parentdesc->area.row + 1 + item;
+    return_exclude.col = parentdesc->area.col;
+    return_exclude.width = parentdesc->area.width;
     return_exclude.height = 1;
 
-    return( uicreatesubpopupinarea( menu, desc, left, right, curr_item,
-                                    keep_inside, &parent_menu->area,
-                                    &return_exclude ) );
+    return( uicreatesubpopupinarea( menuitems, desc, left, right, curritem_event,
+                                    keep_inside, &parentdesc->area, &return_exclude ) );
 }
 
-EVENT UIAPI uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
-                                     bool right, EVENT curr_item, SAREA *keep_inside,
+ui_event UIAPI uicreatesubpopupinarea( UIMENUITEM *menuitems, DESCMENU *desc, bool left,
+                                     bool right, ui_event curritem_event, SAREA *keep_inside,
                                      SAREA *return_inside, SAREA *return_exclude )
 {
-    return( createpopupinarea( menu, desc, left, right, curr_item, keep_inside,
+    return( createpopupinarea( menuitems, desc, left, right, curritem_event, keep_inside,
                                return_inside, return_exclude, true ) );
 }
 
-EVENT UIAPI uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right,
-                            EVENT curr_item )
+ui_event UIAPI uicreatepopup( ORD row, ORD col, UIMENUITEM *menuitems, bool left, bool right, ui_event curritem_event )
 {
     DESCMENU    desc;
     SAREA       keep_inside;
@@ -639,8 +613,8 @@ EVENT UIAPI uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool rig
     keep_inside.col = 0;
     keep_inside.width = UIData->width;
     keep_inside.height = UIData->height;
-    if( uiposfloatingpopup( menu, &desc, row, col, &keep_inside, NULL ) ) {
-        return( uicreatepopupdesc( menu, &desc, left, right, curr_item, false ) );
+    if( uiposfloatingpopup( menuitems, &desc, row, col, &keep_inside, NULL ) ) {
+        return( uicreatepopupdesc( menuitems, &desc, left, right, curritem_event, false ) );
     }
     return( EV_NO_EVENT );
 }

@@ -1,4 +1,4 @@
-#pmake: build debug flat cpu_386 os_nt dynamic
+#pmake: nobuild debug flat cpu_386 os_nt dynamic
 #
 # iostmt3r.lib -- register based multi-thread 32-bit IOSTREAM library
 #

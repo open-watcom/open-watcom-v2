@@ -1,4 +1,5 @@
 # AUI sample project makefile
+proj_name = auisample
 
 !include cproj.mif
 !include defrule.mif
@@ -47,7 +48,7 @@ resfile = wresui.res
 
 libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
-app.exe : $(objs) $(libs) $(resfile)
+app.$(exe_ext) : $(objs) $(libs) $(resfile)
     @%make echo_link
     $(linker) name $^@ $(lflags) op un file { $(objs) } lib { $(libs) }
 !ifeq sys_windowed 1

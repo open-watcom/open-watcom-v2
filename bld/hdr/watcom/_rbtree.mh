@@ -305,6 +305,7 @@
             // void erase( iterator first, iterator last );
             void            clear( );
             iterator        find( const key_type & );
+            const_iterator  find( const key_type & ) const;
             bool            empty( ) const { return( mSize == 0 ); }
             size_type       size( ) const  { return( mSize ); }
             size_type       max_size( ) const;
@@ -537,6 +538,34 @@
             // was found.
             if( notLT && !(cmp( key_getter( notLT->value ), find_me ) ) ) { // !(a<b) & !(b<a) then a==b
                 return iterator( this, notLT );
+            } else {
+                return end( );
+            }
+        }
+
+        /* ------------------------------------------------------------------
+         * find( ) const
+         * Climb the tree until we get to the key :)
+         */
+        template< class Key, class Compare, class Allocator, class ValueWrapper >
+        RedBlackTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+        RedBlackTree< Key, Compare, Allocator, ValueWrapper >::find(const Key &find_me) const
+        {
+            Node *n = mRoot;
+            Node *notLT = 0;
+
+            while( n ) {
+                if( cmp( find_me, key_getter( n->value ) ) ) {
+                    n = n->left;
+                } else {
+                    notLT = n;
+                    n = n->right;
+                }
+            }
+            // The last node the key is not less than (if any) may be equal, in which case it
+            // was found.
+            if( notLT && !(cmp( key_getter( notLT->value ), find_me ) ) ) { // !(a<b) & !(b<a) then a==b
+                return const_iterator( this, notLT );
             } else {
                 return end( );
             }
@@ -1770,7 +1799,8 @@
 
             // Operations.
             iterator        find( const key_type & );
-            size_type       count( const key_type & );
+            const_iterator  find( const key_type & ) const;
+            size_type       count( const key_type & ) const;
             iterator        upper_bound( const key_type & );
             const_iterator  upper_bound( const key_type &x) const;
             iterator        lower_bound( const key_type & );
@@ -2079,11 +2109,22 @@
         }
 
         /* ------------------------------------------------------------------
+         * find( ) const
+         */
+        template< class Key, class Compare, class Allocator, class ValueWrapper >
+        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::find( const key_type &k ) const
+        {
+            return const_iterator( this, mTree.find( k ) );
+        }
+
+
+        /* ------------------------------------------------------------------
          * count( key_type )
          */
         template< class Key, class Compare, class Allocator, class ValueWrapper >
         MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::size_type
-        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::count( const key_type &k )
+        MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::count( const key_type &k ) const
         {
             tree_type::iterator tit = mTree.find( k );
             if( tit == mTree.end( ) )

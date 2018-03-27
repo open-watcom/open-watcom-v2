@@ -29,14 +29,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "bool.h"
-
-typedef int         f_handle;
-
-#define NIL_FHANDLE     ((f_handle)-1)
-#define STDIN_HANDLE    STDIN_FILENO
-#define STDOUT_HANDLE   STDOUT_FILENO
-#define STDERR_HANDLE   STDERR_FILENO
 
 #define MAX_LINE (256)
 #define FNMAX  80                   /* maximum file name length. */
@@ -104,18 +98,18 @@ extern void     MemFree( void * );
 extern void     *MemAlloc( size_t );
 
 // fileio.h
-extern f_handle QOpenR( const char *name );
-extern size_t   QRead( f_handle file, void *buffer, size_t len, const char *name );
-extern size_t   QWrite( f_handle file, const void *buffer, size_t len, const char *name );
-extern void     QWriteNL( f_handle file, const char *name );
-extern void     QClose( f_handle file, const char *name );
-extern unsigned long QFileSize( f_handle file );
-extern bool     QReadStr( f_handle file, char *dest, size_t size, const char *name );
-extern bool     QIsConIn( f_handle file );
+extern FILE     *QOpenR( const char *name );
+extern size_t   QRead( FILE *fp, void *buffer, size_t len, const char *name );
+extern size_t   QWrite( FILE *fp, const void *buffer, size_t len, const char *name );
+extern void     QWriteNL( FILE *fp, const char *name );
+extern void     QClose( FILE *fp, const char *name );
+extern unsigned long QFileSize( FILE *fp );
+extern bool     QReadStr( FILE *fp, char *dest, size_t size, const char *name );
+extern bool     QIsConIn( FILE *fp );
 extern void     ErrorOut( const char *msg );
 extern void     ErrorExit( const char *msg );
 extern void     CommandOut( const char *command );
-extern void     QSetBinary( f_handle file );
+extern void     QSetBinary( FILE *fp );
 
 // keyword.c
 extern bool     GetNumber( unsigned long *val );

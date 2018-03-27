@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,10 @@
 // 93/12/20 (jww) force re-compile
 
 #include "cgstd.h"
+#include "typedef.h"
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
-#include "typedef.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"

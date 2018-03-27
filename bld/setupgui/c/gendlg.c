@@ -56,12 +56,13 @@
 #include "clibext.h"
 
 
-static a_dialog_header *FirstDialog = NULL;
-static a_dialog_header *LastDialog = NULL;
 extern bool            SkipDialogs;
 
-extern a_dialog_header *FindDialogByName( const char *dlg_name )
-/**************************************************************/
+static a_dialog_header *FirstDialog = NULL;
+static a_dialog_header *LastDialog = NULL;
+
+a_dialog_header *FindDialogByName( const char *dlg_name )
+/*******************************************************/
 {
     a_dialog_header *d;
 
@@ -99,8 +100,8 @@ static void FreeDialog( a_dialog_header *tmp_dialog)
     GUIMemFree( tmp_dialog );
 }
 
-extern a_dialog_header *AddNewDialog( const char *dlg_name )
-/**********************************************************/
+a_dialog_header *AddNewDialog( const char *dlg_name )
+/***************************************************/
 // Add new dialogs to front of linked list.
 // Delete default dialogs if specified.
 {
@@ -224,8 +225,8 @@ dlg_state DoDialog( const char *name )
     return result;
 }
 
-extern void FreeDefaultDialogs( void )
-/************************************/
+void FreeDefaultDialogs( void )
+/*****************************/
 {
     a_dialog_header *d;
     a_dialog_header *next;

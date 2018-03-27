@@ -577,6 +577,14 @@ static void SameDate( file_handle fh_src, object_loc src_loc, file_handle fh_dst
     }
 }
 
+static bool isInteractive( file_handle fh, object_loc loc )
+{
+    if( loc == LOC_REMOTE ) {
+        return( false );
+    } else {
+        return( LocalInteractive( GetSystemHandle( fh ) ) );
+    }
+}
 
 /**************************************************************************/
 /* MAIN LINEISH                                                           */
@@ -677,11 +685,11 @@ static void Interactive( void )
     char    *p;
     bool    interactive;
 
-    interactive = LocalInteractive( STD_IN );
+    interactive = isInteractive( STD_IN, LOC_LOCAL );
     if( interactive ) {
         Error( banner1w( "Remote File eXchange program", _RFX_VERSION_ ) );
         Error( banner2 );
-        Error( banner2a( "1990" ) );
+        Error( banner2a( 1990 ) );
         Error( banner3 );
         Error( banner3a );
         Error( "" );
@@ -1989,9 +1997,9 @@ char    *Squish( file_parse *parse, char *into )
     return( endpath );
 }
 
-char    *TrapClientString( unsigned tc )
+char    *TrapClientString( tc_error err )
 {
-    switch( tc ) {
+    switch( err ) {
         case TC_BAD_TRAP_FILE:      return( "Bad trap file" );
         case TC_CANT_LOAD_TRAP:     return( "Cannot load trap file %s" );
         case TC_WRONG_TRAP_VERSION: return( "Incorrect trap file version" );

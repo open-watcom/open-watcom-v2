@@ -77,15 +77,20 @@ static const mad_type_info_float F10EMPTY =
 static const mad_type_info_float F10SPECIAL =
     { MTK_FLOAT, X86T_F10SPECIAL, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, 15, 0, 14, MNR_UNSIGNED, ME_LITTLE };
 
+static const mad_type_info_basic MMX_TITLE =
+    { MTK_MMX,  X86T_MMX_TITLE0, 8 };
+static const mad_type_info_basic XMM_TITLE =
+    { MTK_XMM,  X86T_XMM_TITLE0, 8 };
+
 static const mad_type_info_basic IRET16 =
-    { MTK_CUSTOM, X86T_IRET16, 3*16 };
+    { MTK_CUSTOM, X86T_IRET16, 3 * 16 };
 static const mad_type_info_basic IRET32 =
-    { MTK_CUSTOM, X86T_IRET32, 3*32 };
+    { MTK_CUSTOM, X86T_IRET32, 3 * 32 };
 
 static const mad_type_info_basic POPA =
-    { MTK_CUSTOM, X86T_POPA, 8*16 };
+    { MTK_CUSTOM, X86T_POPA, 8 * 16 };
 static const mad_type_info_basic POPAD =
-    { MTK_CUSTOM, X86T_POPAD, 8*32 };
+    { MTK_CUSTOM, X86T_POPAD, 8 * 32 };
 static const mad_type_info_basic TAG =
     { MTK_CUSTOM, X86T_TAG, 16 };
 static const mad_type_info_basic FPPTR_REAL =
@@ -94,11 +99,6 @@ static const mad_type_info_basic FPPTR_16 =
     { MTK_CUSTOM, X86T_FPPTR_16, 64 };
 static const mad_type_info_basic FPPTR_32 =
     { MTK_CUSTOM, X86T_FPPTR_32, 64 };
-static const mad_type_info_basic MMX_TITLE =
-    { MTK_CUSTOM, X86T_MMX_TITLE0, 8 };
-
-static const mad_type_info_basic XMM_TITLE =
-    { MTK_XMM, X86T_XMM_TITLE0, 8 };
 
 #undef D
 
@@ -109,20 +109,20 @@ typedef struct mad_type_data {
     unsigned            mem     : 3;
     union {
         const mad_type_info_basic       *b;
-        const mad_type_info             *info;
+        const mad_type_info             *mti;
     }                   u;
 } mad_type_data;
 
-#define pick( e, n, h, iol, meml, info )        \
-        { MAD_MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
 
 static const mad_type_data TypeArray[] = {
-#include "x86types.h"
+    #define pick( e, n, h, iol, meml, info ) { MAD_MSTR_##n, h, iol, meml, (mad_type_info_basic *)&info },
+    #include "_x86type.h"
+    #undef pick
 };
 
 walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
 {
-    mad_type_handle     th;
+    mad_type_handle     mth;
     processor_level     iol;
     processor_level     meml;
     walk_result         wr;
@@ -137,10 +137,10 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
         if( tk & MAS_MEMORY ) meml = L3;
     }
 
-    for( th = 0; th < sizeof( TypeArray ) / sizeof( TypeArray[0] ); ++th ) {
-        if( (int)TypeArray[th].io <= iol || (int)TypeArray[th].mem <= meml ) {
-            if( tk & TypeArray[th].u.info->b.kind ) {
-                wr = wk( th, data );
+    for( mth = 0; mth < X86T_LAST_ONE; ++mth ) {
+        if( (int)TypeArray[mth].io <= iol || (int)TypeArray[mth].mem <= meml ) {
+            if( tk & TypeArray[mth].u.mti->b.kind ) {
+                wr = wk( mth, data );
                 if( wr != WR_CONTINUE ) return( wr );
             }
         }
@@ -148,21 +148,21 @@ walk_result MADIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     return( WR_CONTINUE );
 }
 
-mad_string MADIMPENTRY( TypeName )( mad_type_handle th )
+mad_string MADIMPENTRY( TypeName )( mad_type_handle mth )
 {
-    return( TypeArray[th].name );
+    return( TypeArray[mth].name );
 }
 
-mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle th )
+mad_radix MADIMPENTRY( TypePreferredRadix )( mad_type_handle mth )
 {
-    return( TypeArray[th].hex ? 16 : 10 );
+    return( TypeArray[mth].hex ? 16 : 10 );
 }
 
-void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
+void MADIMPENTRY( TypeInfo )( mad_type_handle mth, mad_type_info *mti )
 {
-    memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
-    if( TypeArray[th].u.b == &BIT.b || TypeArray[th].u.b == &MMX_TITLE || TypeArray[th].u.b == &XMM_TITLE ) {
-        ti->b.handler_code = (unsigned_8)th;
+    memcpy( mti, TypeArray[mth].u.mti, sizeof( *mti ) );
+    if( TypeArray[mth].u.b == &BIT.b || TypeArray[mth].u.b == &MMX_TITLE || TypeArray[mth].u.b == &XMM_TITLE ) {
+        mti->b.handler_code = (unsigned_8)mth;
     }
 }
 
@@ -304,9 +304,9 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_mti, const void *in_d, const mad_type_info *out_mti, void *out_d, addr_seg seg )
 {
-    /* unused parameters */ (void)in_t; (void)in_d; (void)out_t; (void)out_d; (void)seg;
+    /* unused parameters */ (void)in_mti; (void)in_d; (void)out_mti; (void)out_d; (void)seg;
 
     return( MS_UNSUPPORTED );
 }

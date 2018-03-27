@@ -59,8 +59,8 @@
 #include "clibext.h"
 
 
-#define ORL_FID2FL( fid )   ((file_list *)(fid))
-#define ORL_FL2FID( fl )    ((orl_file_id)(fl))
+#define FP2FL( fid )   ((file_list *)(fid))
+#define FL2FP( fl )    ((FILE *)(fl))
 
 typedef struct readcache READCACHE;
 
@@ -84,13 +84,13 @@ static ordinal_t                ImpOrdinal;
 
 static readcache                *ReadCacheList;
 
-static void *ORLRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *ORLRead( FILE *fp, size_t len )
+/******************************************/
 {
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( ORL_FID2FL( fid ), ORLFilePos + ORLPos, len );
+    result = CachePermRead( FP2FL( fp ), ORLFilePos + ORLPos, len );
     ORLPos += len;
     _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
@@ -99,17 +99,17 @@ static void *ORLRead( orl_file_id fid, size_t len )
     return( result );
 }
 
-static long ORLSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int ORLSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
     if( where == SEEK_SET ) {
         ORLPos = pos;
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = ORL_FID2FL( fid )->file->len - ORLFilePos - pos;
+        ORLPos = FP2FL( fp )->file->len - ORLFilePos - pos;
     }
-    return( ORLPos );
+    return( 0 );
 }
 
 void InitObjORL( void )
@@ -150,7 +150,7 @@ bool IsORL( file_list *list, unsigned long loc )
 
     isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, ORL_FL2FID( list ) );
+    type = ORLFileIdentify( ORLHandle, FL2FP( list ) );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
     } else if( type == ORL_COFF ) {
@@ -177,7 +177,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, ORL_FL2FID( CurrMod->f.source ), type ) );
+    return( ORLFileInit( ORLHandle, FL2FP( CurrMod->f.source ), type ) );
 }
 
 static void ClearCachedData( file_list *list )
@@ -635,6 +635,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             switch( binding ) {
             case ORL_SYM_BINDING_WEAK:
                 isweak = true;
+                /* fall through */
             case ORL_SYM_BINDING_ALIAS:
             case ORL_SYM_BINDING_LAZY:
                 assocsymhdl = ORLSymbolGetAssociated( symhdl );
@@ -702,7 +703,7 @@ static orl_return DoReloc( orl_reloc reloc )
         break;
     case ORL_RELOC_TYPE_TOCREL_14:  // relative ref to 14-bit offset from TOC base.
         type = FIX_SHIFT;
-        // NOTE fall through
+        /* fall through */
     case ORL_RELOC_TYPE_TOCREL_16:  // relative ref to 16-bit offset from TOC base.
     case ORL_RELOC_TYPE_GOT_16:     // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOC | FIX_OFFSET_16;
@@ -710,7 +711,7 @@ static orl_return DoReloc( orl_reloc reloc )
         break;
     case ORL_RELOC_TYPE_TOCVREL_14: // relative ref to 14-bit offset from TOC base.
         type = FIX_SHIFT;
-        // NOTE fall through
+        /* fall through */
     case ORL_RELOC_TYPE_TOCVREL_16: // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOCV | FIX_OFFSET_16;
         break;

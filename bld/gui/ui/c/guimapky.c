@@ -59,13 +59,13 @@ void GUISetKeyState( void )
     }
 }
 
-EVENT GUIMapKeys( EVENT ev )
+ui_event GUIMapKeys( ui_event ui_ev )
 {
     gui_key_state       key_state;
     gui_key             key;
 
     KeyState = GUI_KS_NONE;
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_TAB_FORWARD :
     case EV_CTRL_TAB :
     case EV_TAB_BACKWARD :
@@ -154,13 +154,13 @@ EVENT GUIMapKeys( EVENT ev )
         key = GUI_KEY_F12;
         break;
     default:
-        if( ev < EV_LAST_KEYBOARD ) {
-            key = (gui_key)ev;
+        if( ui_ev < EV_LAST_KEYBOARD ) {
+            key = (gui_key)ui_ev;
         } else {
-            return( ev );
+            return( ui_ev );
         }
     }
-    switch( ev ) {
+    switch( ui_ev ) {
     case EV_TAB_BACKWARD :
     case EV_SHIFT_HOME :
     case EV_SHIFT_CURSOR_UP :
@@ -206,10 +206,10 @@ EVENT GUIMapKeys( EVENT ev )
     key_state.key = GUIMapKey( key );
     GUIGetKeyState( &key_state.state );
     if( GUICurrWnd != NULL ) {
-        GUIEVENTWND( GUICurrWnd, GUI_KEYDOWN, &key_state );
+        GUIEVENT( GUICurrWnd, GUI_KEYDOWN, &key_state );
     }
     if( GUICurrWnd != NULL ) {
-        GUIEVENTWND( GUICurrWnd, GUI_KEYUP, &key_state );
+        GUIEVENT( GUICurrWnd, GUI_KEYUP, &key_state );
     }
     return( EV_NO_EVENT );
 }

@@ -41,16 +41,18 @@
 #include "packet.h"
 #include "trperr.h"
 #include "dosxlink.h"
-#include "dosenv.h"
 #ifdef SERVER
-  #include "dosxrmod.h"
+    #include "dosxrmod.h"
   #ifdef PHARLAP
     #include "pharlap.h"
     #include "dxproto.h"
   #endif
 #else
+    #include "dosenv.h"
+    #include "dosxfork.h"
     #include "tinyio.h"
     #include "trapdbg.h"
+    #include "dbgpsp.h"
   #if defined(PHARLAP)
     #include "exedos.h"
     #include "exeos2.h"
@@ -58,27 +60,8 @@
   #endif
 #endif
 
-#if defined(ACAD)
-    #define EXTENDER_NAMES  "ACAD.EXE\0"
-    #define HELPNAME        ""
-#elif defined(PHARLAP)
-    #define EXTENDER_NAMES  "TNT.EXE\0" "RUN386.EXE\0"
-    #define HELPNAME        "PLSHELP.EXP"
-    #define HELPNAME_DS     "PEDHELP.EXP"
-    #define HELPNAME_NS     "PENHELP.EXP"   /* not supported yet */
-#elif defined(DOS4G)
-    #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
-    #define HELPNAME        "RSIHELP.EXP"
-#elif defined(CAUSEWAY)
-    #define EXTENDER_NAMES  "CWSTUB.EXE\0"
-    #define HELPNAME        "CWHELP.EXE"
-#else
-    #error Extender and helper names not defined
-#endif
 
-#define LOW( c )        ((c)|0x20)      /*Quick and dirty lower casing*/
-
-#define LINK_SIGNATURE 0xdeb0deb0L
+#define LINK_SIGNATURE      0xdeb0deb0L
 
 #if defined(DOS4G) || defined(CAUSEWAY)
     #define LINK_VECTOR     0x06
@@ -86,28 +69,14 @@
     #define LINK_VECTOR     0x01
 #endif
 
-typedef struct RMBuff {
-    unsigned long   ptr;
-    unsigned long   len;
-} RMBuff;
+#define LOW( c )        ((c) | 0x20)        /*Quick and dirty lower casing*/
 
 #ifdef SERVER
 
     #define _DBG( s )
     #define _DBG_ExitFunc( s )
 
-  #if !defined(DOS4G)
-    static unsigned short   Meg1;
-  #endif
-
-    static unsigned long    RMProcAddr;
-    static RMBuff           __far *RMBuffPtr;
-
-  #if defined(CAUSEWAY)
-    int                     XVersion;
-  #else
-    char                    XVersion;
-  #endif
+    #define LINK(i)             GetDosLong( link + sizeof( long ) * i )
 
   #if defined(CAUSEWAY)
     extern unsigned short   GetZeroSel( void );
@@ -119,26 +88,66 @@ typedef struct RMBuff {
 
 #else
 
-    #define MK_LINEAR( p )    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
+  #if defined(ACAD)
+    #define EXTENDER_NAMES  "ACAD.EXE\0"
+    #define HELPNAME        ""
+  #elif defined(PHARLAP)
+    #define EXTENDER_NAMES  "TNT.EXE\0" "RUN386.EXE\0"
+    #define HELPNAME        "PLSHELP.EXP"
+    #define HELPNAME_DS     "PEDHELP.EXP"
+    #define HELPNAME_NS     "PENHELP.EXP"   /* not supported yet */
+  #elif defined(DOS4G)
+    #define EXTENDER_NAMES  "DOS4GW.EXE\0" "4GWPRO.EXE\0" "DOS4G.EXE\0" "DOS4GX.EXE\0"
+    #define HELPNAME        "RSIHELP.EXP"
+  #elif defined(CAUSEWAY)
+    #define EXTENDER_NAMES  "CWSTUB.EXE\0"
+    #define HELPNAME        "CWHELP.EXE"
+  #else
+    #error Extender and helper names not defined
+  #endif
 
-    static jmp_buf      RealModeState;
-    static jmp_buf      ProtModeState;
-    static RMBuff       Buff;
-    char                BackFromFork;
-    static short        OldPSP;
-    static char         BeenToProtMode;
+    #define MK_LINEAR(p)    ( ( (long)FP_SEG( (void __far *)(p) ) << 4 ) + FP_OFF( (void __far *)(p) ) )
 
-    extern short        DbgPSP( void );
-    extern short        GetPSP( void );
-    extern void         SetPSP( short );
-    extern int          _fork( char __far *pgm, char __far *cmdl );
+    #define LINK(i)             link[i]
 
     extern void doskludge( void );
     #pragma aux doskludge = \
         "mov  ax,2a00h" \
         "sub  sp,50h" \
         "int  21h" \
-        parm caller [ ax ] modify [ sp cx dx ];
+        parm caller [ax] modify [sp cx dx];
+
+#endif
+
+typedef struct RMBuff {
+    unsigned long   ptr;
+    unsigned long   len;
+} RMBuff;
+
+#ifdef SERVER
+
+  #if defined(CAUSEWAY)
+    int                     XVersion;
+  #else
+    char                    XVersion;
+  #endif
+
+  #if !defined(DOS4G)
+    static unsigned short   Meg1;
+  #endif
+
+    static unsigned long    RMProcAddr;
+    static RMBuff           __far *RMBuffPtr;
+
+#else
+
+    char                BackFromFork;
+
+    static jmp_buf      RealModeState;
+    static jmp_buf      ProtModeState;
+    static RMBuff       Buff;
+    static short        OldPSP;
+    static char         BeenToProtMode;
 
 #endif
 
@@ -418,12 +427,12 @@ const char *RemoteLink( const char *parms, bool server )
   #endif
     parms = parms;
     link = GetDosLong( LINK_VECTOR * 4 );
-    if( link >= (1024UL * 1024UL) || GetDosLong( link ) != LINK_SIGNATURE ) {
+    if( link >= (1024UL * 1024UL) || LINK( 0 ) != LINK_SIGNATURE ) {
         return( TRP_ERR_not_from_command );
     }
-    RMBuffPtr = RMLinToPM( GetDosLong( link + 4 ), 0 );
-    RMProcAddr = GetDosLong( link + 8 );
-    PutDosLong( LINK_VECTOR * 4, GetDosLong( link + 12 ) );
+    RMBuffPtr = RMLinToPM( LINK( 1 ), 0 );
+    RMProcAddr = LINK( 2 );
+    PutDosLong( LINK_VECTOR * 4, LINK( 3 ) );
 #else
     static char     fullpath[256];              /* static because ss != ds */
     static char     buff[256];
@@ -432,7 +441,7 @@ const char *RemoteLink( const char *parms, bool server )
     char            *buffp;
     char            *endparm;
     void            __far *link[4];
-    void            __far * __far * link_ptr;
+    void            __far * __far *link_ptr;
     unsigned        len;
   #if defined(PHARLAP)
     const char      *exe_name;
@@ -441,10 +450,10 @@ const char *RemoteLink( const char *parms, bool server )
     _DBG_EnterFunc( "RemoteLink()" );
     BackFromFork = 0;
     link_ptr = (void __far *)(LINK_VECTOR * 4);
-    link[ 3 ] = *link_ptr;
-    link[ 2 ] = MK_FP( GetCS(), (unsigned )BackFromProtMode );
-    link[ 1 ] = (void __far *)MK_LINEAR( &Buff );
-    link[ 0 ] = (void __far *)LINK_SIGNATURE;
+    LINK( 3 ) = *link_ptr;
+    LINK( 2 ) = MK_FP( GetCS(), (unsigned )BackFromProtMode );
+    LINK( 1 ) = (void __far *)MK_LINEAR( &Buff );
+    LINK( 0 ) = (void __far *)LINK_SIGNATURE;
     *link_ptr = (void __far *)MK_LINEAR( &link );
     // parms has following format
     // "trap parameters string"+"\0"+"command line string"+"\0"

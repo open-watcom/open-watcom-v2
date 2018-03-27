@@ -34,16 +34,13 @@
 #include "miniproc.h"
 #include "nwtypes.h"
 #include "parlink.h"
+#include "portio.h"
+
 
 extern struct ResourceTagStructure      *TimerTag;
 
 static struct TimerDataStructure        TimerData;
 static unsigned long                    NumTicks;
-
-#pragma aux inp = 0xec parm routine [ dx ];
-#pragma aux outp = 0xee parm routine [ dx ] [ ax ];
-extern char inp( int );
-extern void outp( int, int );
 
 short PortTest[] =
 {

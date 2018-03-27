@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "wio.h"
@@ -59,16 +60,16 @@ STATIC bool initCurrSIO( void )
 /*****************************/
 {
     image_info      *new_image;
-    file_handle     fh;
+    FILE            *fp;
     size_t          name_len;
 
-    fh = open( SamplePath, O_RDONLY | O_BINARY, S_IREAD );
-    if( fh == (file_handle)-1 ) {
+    fp = fopen( SamplePath, "rb" );
+    if( fp == NULL ) {
         ErrorMsg( LIT( Cannot_Open_Smp_File ), SamplePath );
         return( false );
     }
     CurrSIOData = ProfCAlloc( sizeof( sio_data ) );
-    CurrSIOData->fh = fh;
+    CurrSIOData->fp = fp;
     name_len = strlen( SamplePath ) + 1;
     CurrSIOData->samp_file_name = ProfAlloc( name_len );
     memcpy( CurrSIOData->samp_file_name, SamplePath, name_len );
@@ -97,17 +98,14 @@ STATIC bool initCurrSIO( void )
 STATIC bool verifyHeader( void )
 /******************************/
 {
-    file_handle     fh;
-    off_t           header_position;
-    off_t           tmp_position;
+    FILE            *fp;
 
-    fh = CurrSIOData->fh;
-    header_position = lseek( fh, - ( (off_t)SIZE_HEADER ), SEEK_END );
-    if( header_position == (off_t)-1 ) {
+    fp = CurrSIOData->fp;
+    if( fseek( fp, -(long)(SIZE_HEADER), SEEK_END ) ) {
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
-    if( read( fh, &CurrSIOData->header, SIZE_HEADER ) != SIZE_HEADER ) {
+    if( fread( &CurrSIOData->header, 1, SIZE_HEADER, fp ) != SIZE_HEADER ) {
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
@@ -120,8 +118,7 @@ STATIC bool verifyHeader( void )
         ErrorMsg( LIT( Incompat_Smp_File ), CurrSIOData->samp_file_name );
         return( false );
     }
-    tmp_position = lseek( fh, CurrSIOData->header.sample_start, SEEK_SET );
-    if( tmp_position == (off_t) -1 ) {
+    if( fseek( fp, CurrSIOData->header.sample_start, SEEK_SET ) ) {
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
@@ -378,11 +375,10 @@ STATIC bool procSampleBlock( clicks_t tick, uint_16 total_len,
 STATIC bool readSampleFile( void )
 /********************************/
 {
-    file_handle             fh;
+    FILE                    *fp;
     uint_16                 size;
     void                    *buff;
     int                     buff_len;
-    off_t                   start_position;
     bool                    main_exe;
     samp_block_prefix       prefix;
     samp_block_prefix       *next_prefix;
@@ -392,13 +388,12 @@ STATIC bool readSampleFile( void )
 /*    - number of samples match the info # of samples */
 /*    - main exe load if there is an overlay table */
 /**/
-    fh = CurrSIOData->fh;
-    start_position = lseek( fh, CurrSIOData->header.sample_start, SEEK_SET );
-    if( start_position == (off_t) -1 ) {
+    fp = CurrSIOData->fp;
+    if( fseek( fp, CurrSIOData->header.sample_start, SEEK_SET ) ) {
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
-    if( read( fh, &prefix, SIZE_PREFIX ) != SIZE_PREFIX ) {
+    if( fread( &prefix, 1, SIZE_PREFIX, fp ) != SIZE_PREFIX ) {
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
@@ -412,11 +407,7 @@ STATIC bool readSampleFile( void )
             buff_len = size;
         }
         /* reads data & next prefix */
-#if defined( __QNX__ )
-        if( BigRead( fh, buff, size ) != size ) {
-#else
-        if( read( fh, buff, size ) != size ) {
-#endif
+        if( fread( buff, 1, size, fp ) != size ) {
             ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
             ProfFree( buff );
             return( false );
@@ -432,11 +423,7 @@ STATIC bool readSampleFile( void )
 //                         next_prefix->kind == SAMP_CALLGRAPH ) {
 //            size = next_prefix->length;
 //            /* reads callgraph data & next prefix   */
-//#if defined( __QNX__ )
-//            if( BigRead( fh, next_prefix, size ) != size ) {
-//#else
-//            if( read( fh, next_prefix, size ) != size ) {
-//#endif
+//            if( fread( next_prefix, 1, size, fp ) != size ) {
 //                errorIO();
 //                ProfFree( buff );
 //                ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
@@ -505,7 +492,7 @@ bool GetSampleInfo( void )
         ClearSample( CurrSIOData );
         return( false );
     }
-    close( CurrSIOData->fh );
+    fclose( CurrSIOData->fp );
     /* do the SIOData sets near the end to make it easier to de-link */
     /* the new data if we have an error */
     if( SIOData == NULL ) {

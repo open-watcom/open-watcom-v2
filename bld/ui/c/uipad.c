@@ -34,14 +34,14 @@
 #include "uidef.h"
 #include "uiedit.h"
 
-#define         PAD_CHAR                0x20
+#define PAD_CHAR    0x20
 
 
-void UIAPI uipadblanks( char *buff, int len )
-/********************************************/
+void UIAPI uipadblanks( char *buff, unsigned len )
+/************************************************/
 {
-    register    char*                   end_buff;
-    register    char                    curr_char;
+    char            *end_buff;
+    char            curr_char;
 
     end_buff = buff + len;
     while( buff < end_buff ) {

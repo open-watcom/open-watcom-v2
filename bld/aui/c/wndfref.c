@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
-void WndForceRefresh()
+#include "_aui.h"
+
+
+void WndForceRefresh( void )
 {
     GUIWndDirty( WndMain->gui );
 }

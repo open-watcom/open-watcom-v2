@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "procdef.h"
 #include "cfloat.h"
-#include "opcodes.h"
 #include "cgmem.h"
 #include "makeins.h"
 #include "s37temps.def"

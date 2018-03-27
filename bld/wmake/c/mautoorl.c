@@ -44,8 +44,8 @@
 
 
 typedef struct orl_info {
-    int                 handle;
-    orl_file_handle     file;
+    FILE                *fp;
+    orl_file_handle     orl_handle;
     UINT8               *buffer;
     DepInfo             *curr;
 }                       orl_info;
@@ -61,15 +61,15 @@ static size_t           orlFileSize;
 static const char       *dependSectionName = ".depend";
 
 
-static unsigned long fileSize( int ph )
+static unsigned long fileSize( FILE *fp )
 {
     unsigned long   old;
     unsigned long   size;
 
-    old = tell( ph );
-    lseek( ph, 0, SEEK_END );
-    size = tell( ph );
-    lseek( ph, old, SEEK_SET );
+    old = ftell( fp );
+    fseek( fp, 0, SEEK_END );
+    size = ftell( fp );
+    fseek( fp, old, SEEK_SET );
     if( size == 0 ) {
         // MallocSafe returns NULL for size == 0
         ++size;
@@ -86,17 +86,17 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-static void *orlRead( orl_file_id fid, size_t bytes )
-/***************************************************/
+static void *orlRead( FILE *fp, size_t bytes )
+/********************************************/
 {
     size_t  n;
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = (size_t)fileSize( ORL_FID2PH( fid ) );
+        orlFileSize = (size_t)fileSize( fp );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = posix_read( ORL_FID2PH( fid ), orlBuffer, orlFileSize );
+        n = fread( orlBuffer, 1, orlFileSize, fp );
         if( n != orlFileSize ) {
             return( NULL );
         }
@@ -109,10 +109,11 @@ static void *orlRead( orl_file_id fid, size_t bytes )
     return( NULL );
 }
 
-static long orlSeek( orl_file_id fid, long offset, int mode )
-/*************************************************************/
+static int orlSeek( FILE *fp, long offset, int mode )
+/***************************************************/
 {
-    (void)fid; // Unused
+    /* unused parameters */ (void)fp;
+
     switch( mode ) {
     case SEEK_SET:
         orlFilePosition = offset;
@@ -123,7 +124,7 @@ static long orlSeek( orl_file_id fid, long offset, int mode )
     case SEEK_END:
         abort();       // not used by ORL - cheesy, I know
     }
-    return( orlFilePosition );
+    return( 0 );
 }
 
 
@@ -150,14 +151,14 @@ static orl_return findDependInfo( orl_sec_handle section )
 }
 
 
-static UINT8 *orlGetDependsInfo( orl_file_handle file )
-/*****************************************************/
+static UINT8 *orlGetDependsInfo( orl_file_handle orl_handle )
+/***********************************************************/
 {
     UINT8   *buffer;
 
     orlDependsInfo = NULL;
     buffer = NULL;
-    ORLFileScan( file, NULL, findDependInfo );
+    ORLFileScan( orl_handle, NULL, findDependInfo );
     if( orlDependsInfo != NULL ) {
         ORLSecGetContents( orlDependsInfo, &buffer );
     }
@@ -169,22 +170,22 @@ static handle AutoORLFileInit( const char *name )
 /***********************************************/
 {
     orl_file_format type;
-    orl_file_handle file;
-    int             ph;
+    orl_file_handle orl_handle;
+    FILE            *fp;
     UINT8           *buffer;
 
     bufferInit();
-    ph = open( name, O_RDONLY | O_BINARY );
-    if( ph != -1 ) {
-        orlInfo.handle = ph;
-        type = ORLFileIdentify( orlHandle, ORL_PH2FID( ph ) );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        orlInfo.fp = fp;
+        type = ORLFileIdentify( orlHandle, fp );
         switch( type ) {
         case ORL_COFF:
         case ORL_ELF:
-            file = ORLFileInit( orlHandle, ORL_PH2FID( ph ), type );
-            if( file != NULL ) {
-                orlInfo.file = file;
-                buffer = orlGetDependsInfo( file );
+            orl_handle = ORLFileInit( orlHandle, fp, type );
+            if( orl_handle != NULL ) {
+                orlInfo.orl_handle = orl_handle;
+                buffer = orlGetDependsInfo( orl_handle );
                 if( buffer != NULL ) {
                     orlInfo.buffer = buffer;
                     return( &orlInfo );
@@ -199,7 +200,7 @@ static handle AutoORLFileInit( const char *name )
             FreeSafe( orlBuffer );
             orlBuffer = NULL;
         }
-        close( ph );
+        fclose( fp );
     }
     return( NULL );
 }
@@ -248,8 +249,8 @@ static dep_handle AutoORLNextDep( dep_handle hndl )
 static void AutoORLFileFini( handle hdl )
 /***************************************/
 {
-    ORLFileFini( ((orl_info*)hdl)->file );
-    close( ((orl_info*)hdl)->handle );
+    ORLFileFini( ((orl_info*)hdl)->orl_handle );
+    fclose( ((orl_info*)hdl)->fp );
     FreeSafe( orlBuffer );
     orlBuffer = NULL;
 }

@@ -127,4 +127,20 @@ system begin 386
     library clib3r.lib
     format zdos
 end
+:elsesegment rdos
+::
+:: RDOS default systems
+::
+# remember, don't put carets (^) in following two entries!
+system begin 286 
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    format dos
+end
+system begin 386
+    option osname='rdos'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\rdos
+    format windows pe rdos
+end
 :endsegment

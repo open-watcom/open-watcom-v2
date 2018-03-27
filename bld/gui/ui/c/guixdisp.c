@@ -155,10 +155,10 @@ static void InitMessageControls( void )
 }
 
 /*
- * DisplayMessage - callback function for dialog box
+ * DisplayMessageGUIEventProc - callback function for dialog box
  */
 
-static bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
+static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
     gui_ctl_id          id;
@@ -181,10 +181,11 @@ static bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
         default :
             break;
         }
+        break;
     default :
         break;
     }
-    return( true );
+    return( false );
 }
 
 /*
@@ -202,7 +203,7 @@ static char *tabFilter( const char *message )
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
     new_message = (char *)GUIStrDup( message, NULL );
-    for( ; ; ){
+    for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         if( tab_pos == strlen( new_message ) )
             break;      /* no more tabs */
@@ -482,7 +483,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     /* centre the buttons horizontally */
     CentreButtons( cols, num_buttons, controls_info, num_controls );
     ret = GUI_RET_CANCEL; /* default -- if escape hit */
-    GUIDlgOpen( title, rows, cols, controls_info, num_controls, &DisplayMessage, &ret );
+    GUIDlgOpen( title, rows, cols, controls_info, num_controls, &DisplayMessageGUIEventProc, &ret );
     // deallocate used memory
     freeStringControls( num_string_controls, strings );
     GUIMemFree( controls_info );

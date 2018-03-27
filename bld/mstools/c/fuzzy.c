@@ -177,15 +177,15 @@ static unsigned hash_symbol_name( const void *symbol )
 /*
  * Used by ORL.
  */
-static void *obj_read( orl_file_id fid, size_t len )
-/**************************************************/
+static void *obj_read( FILE *fp, size_t len )
+/*******************************************/
 {
     ListElem *          newelem;
 
     newelem = AllocMem( sizeof( ListElem ) + len - 1 );
     newelem->next = bufflist;
     bufflist = newelem;
-    if( posix_read( ORL_FID2PH( fid ), newelem->buff, len ) != len ) {
+    if( fread( newelem->buff, 1, len, fp ) != len ) {
         FreeMem( newelem );
         return( NULL );
     }
@@ -196,10 +196,10 @@ static void *obj_read( orl_file_id fid, size_t len )
 /*
  * Used by ORL.
  */
-static long obj_seek( orl_file_id fid, long pos, int where )
-/**********************************************************/
+static int obj_seek( FILE *fp, long pos, int where )
+/**************************************************/
 {
-    return( lseek( ORL_FID2PH( fid ), pos, where ) );
+    return( fseek( fp, pos, where ) );
 }
 
 
@@ -253,47 +253,47 @@ static int handle_obj_file( const char *filename, orl_handle o_hnd )
     orl_file_type       o_filetype;
     orl_sec_handle      o_symtab;
     orl_return          o_rc;
-    int                 fileh;
+    FILE                *fp;
 
     /*** Make ORL interested in the file ***/
-    fileh = open( filename, O_BINARY | O_RDONLY );
-    if( fileh == -1 ) {
+    fp = fopen( filename, "rb" );
+    if( fp == NULL ) {
         return( 0 );
     }
-    o_format = ORLFileIdentify( o_hnd, ORL_PH2FID( fileh ) );
+    o_format = ORLFileIdentify( o_hnd, fp );
     if( o_format == ORL_UNRECOGNIZED_FORMAT ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
-    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( fileh ), o_format );
+    o_fhnd = ORLFileInit( o_hnd, fp, o_format );
     if( o_fhnd == NULL ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
     o_filetype = ORLFileGetType( o_fhnd );
     if( o_filetype != ORL_FILE_TYPE_OBJECT ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
 
     /*** Scan the file's symbol table ***/
     o_symtab = ORLFileGetSymbolTable( o_fhnd );
     if( o_symtab == NULL ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
     o_rc = ORLSymbolSecScan( o_symtab, do_orl_symbol );
     if( o_rc != ORL_OKAY ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
     o_rc = ORLFileFini( o_fhnd );
     if( o_rc != ORL_OKAY ) {
-        close( fileh );
+        fclose( fp );
         return( 0 );
     }
 
-    close( fileh );
+    fclose( fp );
     return( 1 );
 }
 

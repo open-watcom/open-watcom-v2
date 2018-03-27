@@ -160,12 +160,12 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
 
-    if( acc->handle != 0 ) {
-        CurrentModule = acc->handle + 1;
+    if( acc->mod_handle != 0 ) {
+        CurrentModule = acc->mod_handle + 1;
     }
-    Out(( OUT_MAP,"acc->handle = %ld", acc->handle ));
+    Out(( OUT_MAP,"acc->handle = %ld", acc->mod_handle ));
     if( CurrentModule >= ModuleTop ) {
-        ret->handle = 0;
+        ret->mod_handle = 0;
         Out(( OUT_MAP,"Past end of list" ));
         return( sizeof( *ret ) );
     }
@@ -176,8 +176,8 @@ trap_retval ReqGet_lib_name( void )
     if( ModuleFindHandle( &me, moduleIDs[ CurrentModule ] ) ) {
         strcpy( name, me.szExePath );
     }
-    ret->handle = CurrentModule;
-    Out(( OUT_MAP,"handle=%ld, name=\"%s\"", ret->handle, name ));
+    ret->mod_handle = CurrentModule;
+    Out(( OUT_MAP,"handle=%ld, name=\"%s\"", ret->mod_handle, name ));
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
@@ -296,7 +296,7 @@ trap_retval ReqMap_addr( void )
     ret->out_addr = acc->in_addr;
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    module = acc->handle;
+    module = acc->mod_handle;
     in_seg = acc->in_addr.segment;
     if( CheckIsModuleWin32App( moduleIDs[ module ], &ds, &cs, &off ) ) {
         Out((OUT_MAP,"is 32 bit module"));

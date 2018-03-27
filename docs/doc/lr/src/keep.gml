@@ -22,7 +22,7 @@ is returned to the parent process.
 .return begin
 The
 .id &funcb.
-function does not return.
+function does not return to its caller.
 .return end
 .see begin
 .seelist _dos_keep _chain_intr _dos_getvect _dos_setvect

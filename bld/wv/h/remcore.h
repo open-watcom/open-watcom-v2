@@ -61,4 +61,3 @@ extern void             CheckSegAlias( void );
 extern void             GetSysConfig( void );
 extern bool             InitCoreSupp( void );
 extern void             FiniCoreSupp( void );
-extern char             *TrapClientString( unsigned tc );

@@ -267,6 +267,7 @@ optencod_targ_haiku = haiku
 optencod_targ_qnx   = qnx
 optencod_targ_linux = linux
 optencod_targ_osx   = linux
+optencod_targ_rdos  = rdos
 !ifeq release 0
 optencod_targ_dbg = dbg
 !endif

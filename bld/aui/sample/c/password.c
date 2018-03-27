@@ -32,28 +32,64 @@
 
 #include "app.h"
 
+
+#define CTL_NEW_OK      100
+#define CTL_NEW_CANCEL  101
+#define CTL_NEW_EDIT    102
+
 #define R0 0
 #define R1 2
 #define C0 1
-#define W 48
+#define W  48
 #define BW 12
 #define B1 BUTTON_POS( 1, 2, W, BW )
 #define B2 BUTTON_POS( 2, 2, W, BW )
 
-#define DLG_NEW_ROWS    4
-#define DLG_NEW_COLS    W
-#define DLG_MAX_COLS    70
-
+//                      ROWS    COLS    MAX_COLS
+#define DLG_SIZE_DATA   4,      W,      70
 
 static gui_control_info Controls[] = {
-    DLG_INVISIBLE_EDIT( "", CTL_NEW_EDIT,               C0, R0, W - 1 ),
-    DLG_DEFBUTTON( "OK",    CTL_NEW_OK,                 B1, R1, B1 + BW ),
-    DLG_BUTTON( "Cancel",   CTL_NEW_CANCEL,             B2, R1, B2 + BW ),
+    DLG_INVISIBLE_EDIT( "",         CTL_NEW_EDIT,   C0, R0, W - 1 ),
+    DLG_DEFBUTTON(      "OK",       CTL_NEW_OK,     B1, R1, B1 + BW ),
+    DLG_BUTTON(         "Cancel",   CTL_NEW_CANCEL, B2, R1, B2 + BW ),
 };
 
-void    Password( const char *title, char *buff, unsigned buff_len )
+static bool passwordGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    DlgNewWithCtl( title, buff, buff_len,
-                   Controls, ArraySize( Controls ), DlgNewEvent,
-                   DLG_NEW_ROWS, DLG_NEW_COLS, DLG_MAX_COLS );
+    gui_ctl_id  id;
+    dlgnew_ctl  *dlgnew;
+
+    dlgnew = GUIGetExtra( gui );
+    switch( gui_ev ) {
+    case GUI_INIT_DIALOG:
+        GUISetText( gui, CTL_NEW_EDIT, dlgnew->buff);
+        GUISetFocus( gui, CTL_NEW_EDIT );
+        dlgnew->buff[0] = '\0';
+        return( true );
+    case GUI_CONTROL_CLICKED:
+        GUI_GETID( param, id );
+        dlgnew->buff[0] = '\0';
+        switch( id ) {
+        case CTL_NEW_OK:
+            GUIDlgBuffGetText( gui, CTL_NEW_EDIT, dlgnew->buff, dlgnew->buff_len );
+            dlgnew->cancel = false;
+            /* fall through */
+        case CTL_NEW_CANCEL:
+            GUICloseDialog( gui );
+            return( true );
+        default:
+            break;
+        }
+        break;
+    case GUI_DESTROY:
+        return( true );
+    default:
+        break;
+    }
+    return( false );
+}
+
+void    Password( const char *title, char *buff, size_t buff_len )
+{
+    DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), passwordGUIEventProc, DLG_SIZE_DATA );
 }

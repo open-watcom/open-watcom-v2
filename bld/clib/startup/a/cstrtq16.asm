@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -36,7 +37,10 @@
 ;               wasm cstrtq16 -bt=QNX -ml -0r
 ;               wasm cstrtq16 -bt=QNX -mh -0r
 ;
+include langenv.inc
 include mdef.inc
+include xinit.inc
+
 include exitwmsg.inc
 
         name    cstart
@@ -64,12 +68,14 @@ if ( _MODEL and _BIG_CODE ) eq 0
 BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
         int     0       ; cause a fault
+        nop
+        nop
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -101,20 +107,6 @@ CONST   ends
 STRINGS segment word public 'DATA'
 STRINGS ends
 
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
 _DATA   segment word public 'DATA'
 _DATA   ends
 
@@ -137,26 +129,19 @@ STACK   ends
 
         assume  cs:_TEXT
 
- _cstart_ proc near
+_cstart_ proc near
         jmp     around
 
-;
-; copyright message
-;
-include msgrt16.inc
-include msgcpyrt.inc
+if ( _MODEL and _BIG_CODE ) eq 0
+        dw      ___begtext      ; make sure dead code elimination
+endif                           ; doesn't kill BEGTEXT segment
 
 ;
 ; miscellaneous code-segment messages
 ;
 NullAssign      db      '*** NULL assignment detected',0
 
-if ( _MODEL and _BIG_CODE ) eq 0
-        dw      ___begtext      ; make sure dead code elimination
-endif                           ; doesn't kill BEGTEXT segment
-
 around:
-
         assume  ds:DGROUP
 
         cld                             ; set direction forward
@@ -196,6 +181,10 @@ L1:
         jmp     __qnx_exit_
 __exit  endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 _TEXT   ends
 

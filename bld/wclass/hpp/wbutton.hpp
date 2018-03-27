@@ -46,8 +46,8 @@ WCLASS WButton : public WControl
         void WEXPORT onDblClick( WObject* obj, cbw dblClick );
         bool WEXPORT hotKey( WKeyCode );
         virtual bool processMsg( gui_event );
-        virtual bool WEXPORT processMsg( gui_event msg, void *parm ) {
-            return( WWindow::processMsg( msg, parm ) );
+        virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm ) {
+            return( WWindow::processMsg( gui_ev, parm ) );
         };
         void setTagPtr( void* tagPtr ) { _tagPtr = tagPtr; }
         void* tagPtr() { return( _tagPtr ); }

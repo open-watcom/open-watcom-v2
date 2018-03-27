@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "zoiks.h"
@@ -96,8 +95,6 @@ void AddCacheRegs( void )
 {
 }
 
-#define _unused( x )    ( (x) = (x) )
-
 static  void initParmCache( stack_record *pc, type_length *offset )
 /*****************************************************************/
 {
@@ -120,14 +117,14 @@ static  void initParmCache( stack_record *pc, type_length *offset )
 static  void emitParmCacheProlog( stack_record *pc )
 /**************************************************/
 {
-    _unused( pc );
+    /* unused parameters */ (void)pc;
 }
 
 
 static  void emitParmCacheEpilog( stack_record *pc )
 /**************************************************/
 {
-    _unused( pc );
+    /* unused parameters */ (void)pc;
 }
 
 
@@ -143,14 +140,14 @@ static  void initLocals( stack_record *locals, type_length *offset )
 static  void emitLocalProlog( stack_record *locals )
 /**************************************************/
 {
-    _unused( locals );
+    /* unused parameters */ (void)locals;
 }
 
 
 static  void emitLocalEpilog( stack_record *locals )
 /**************************************************/
 {
-    _unused( locals );
+    /* unused parameters */ (void)locals;
 }
 
 
@@ -368,7 +365,7 @@ static  void emitVarargsEpilog( stack_record *varargs )
 /*****************************************************/
 {
     // NB see FrameSaveEpilog below
-    _unused( varargs );
+    /* unused parameters */ (void)varargs;
 }
 
 
@@ -431,14 +428,14 @@ static  void initSlop( stack_record *slop, type_length *offset )
 static  void emitSlopProlog( stack_record *fs )
 /*********************************************/
 {
-    _unused( fs );
+    /* unused parameters */ (void)fs;
 }
 
 
 static  void emitSlopEpilog( stack_record *fs )
 /*********************************************/
 {
-    _unused( fs );
+    /* unused parameters */ (void)fs;
 }
 
 

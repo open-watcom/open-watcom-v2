@@ -78,7 +78,6 @@ typedef struct pill_client_routines {
     _DIGCli( Free );
 
     _DIGCli( Open );
-    _DIGCli( Seek );
     _DIGCli( Read );
     _DIGCli( Write );
     _DIGCli( Close );

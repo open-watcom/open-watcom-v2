@@ -41,7 +41,7 @@
 
 extern  HMENU           GUIHFloatingPopup;
 
-static  gui_ctl_id      CurrId       = NO_SELECT;
+static  gui_ctl_id      CurrId = 0;
 static  bool            InitComplete = false;
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
@@ -52,7 +52,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     GUI_RECTDIM left, top, right, bottom;
     HMENU       popup;
 
-    if( ( popup = GUIHFloatingPopup ) == (HMENU)NULL ) {
+    if( ( popup = GUIHFloatingPopup ) == NULLHANDLE ) {
         return( false );
     }
 
@@ -67,7 +67,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         location->y -= GUIGetScrollPos( wnd, SB_VERT );
     }
 
-    CurrId = NO_SELECT;
+    CurrId = 0;
     if( ( curr_id != NULL ) && ( *curr_id != 0 ) ) {
         CurrId = *curr_id;
     }
@@ -96,10 +96,10 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
 
     GUIHFloatingPopup = NULLHANDLE;
 
-    if( ( CurrId != NO_SELECT ) && ( curr_id != NULL ) ) {
+    if( ( CurrId != 0 ) && ( curr_id != NULL ) ) {
         *curr_id = CurrId;
     }
-    CurrId = NO_SELECT;
+    CurrId = 0;
     GUIDeleteFloatingPopups( wnd );
     return( true );
 }
@@ -109,7 +109,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
  */
 
 bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                             int num, gui_menu_struct *menu,
+                             int num_items, gui_menu_struct *menu,
                              gui_mouse_track track, gui_ctl_id *curr_id )
 {
     if( GUIHFloatingPopup != NULLHANDLE ) {
@@ -117,7 +117,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
         GUIHFloatingPopup = NULLHANDLE;
     }
 
-    GUIHFloatingPopup = GUICreateSubMenu( wnd, num, menu, FLOAT_HINT );
+    GUIHFloatingPopup = GUICreateSubMenu( wnd, num_items, menu, FLOAT_HINT );
     if( GUIHFloatingPopup == NULLHANDLE ) {
         GUIError( LIT( Open_Failed ) );
         return( false );
@@ -151,7 +151,7 @@ void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #endif
 
     if( menu_closed ) {
-        CurrId = NO_SELECT;
+        CurrId = 0;
     } else {
         if( !InitComplete ) {
             InitComplete = true;

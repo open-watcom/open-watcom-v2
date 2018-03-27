@@ -41,10 +41,3 @@ int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved )
     reserved = reserved;
     return( 1 );    // success
 }
-
-#pragma off (unreferenced)
-extern void __DLLstart_( void );
-static const void *__p = &__DLLstart_;
-#if defined(_M_IX86)
-    #pragma aux __DLLstart_  "*"
-#endif

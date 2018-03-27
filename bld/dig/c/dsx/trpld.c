@@ -53,12 +53,13 @@
 
 #define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
-#define DEFAULT_TRP_NAME        "STD"
 #define DEFAULT_TRP_EXT         "TRP"
 #define TRAP_VECTOR             0x1a
 #define PSP_ENVSEG_OFF          0x2c
 
 #define TRAP_SIGNATURE          0xdeaf
+
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
 
 #include "pushpck1.h"
 typedef struct {
@@ -116,8 +117,8 @@ static unsigned_8       PMExceptSaveList[EXCEPT_COUNT] = {
 };
 #define NUM_PM_SAVE_EXCEPTS (sizeof(PMExceptSaveList)/sizeof(PMExceptSaveList[0]))
 
-static void __far *OrigPMExcepts[NUM_PM_SAVE_VECTS];
-static void __far *SavePMExcepts[NUM_PM_SAVE_VECTS];
+static void __far *OrigPMExcepts[NUM_PM_SAVE_EXCEPTS];
+static void __far *SavePMExcepts[NUM_PM_SAVE_EXCEPTS];
 
 static intr_state   IntrState = IS_NONE;
 
@@ -390,17 +391,15 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     return( *errmsg == '\0' );
 }
 
-static char *ReadInTrap( dig_fhandle fid )
+static char *ReadInTrap( FILE *fp )
 {
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
     unsigned            relocnb;
     unsigned            imagesize;
     unsigned            hdrsize;
-    rm_call_struct      rm_dos_read;
-    unsigned            offset;
 
-    if( DIGLoader( Read )( fid, &hdr, sizeof( hdr ) ) ) {
+    if( DIGLoader( Read )( fp, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
     if( hdr.signature != DOS_SIGNATURE ) {
@@ -413,27 +412,14 @@ static char *ReadInTrap( dig_fhandle fid )
     if( TrapMem.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    DIGLoader( Seek )( fid, hdrsize, DIG_ORG );
-
-    // DPMI file read to real mode memory
-    memset( &rm_dos_read, 0, sizeof( rm_dos_read ) );
-    for( offset = 0; offset < imagesize; offset += (unsigned_16)rm_dos_read.eax ) {
-        rm_dos_read.ss = RMData.segm.rm;
-        rm_dos_read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
-        rm_dos_read.edx = offset;
-        rm_dos_read.ebx = DIG_FID2PH( fid );
-        rm_dos_read.ds = TrapMem.segm.rm;
-        rm_dos_read.ecx = imagesize - offset;
-        rm_dos_read.eax = 0x3f00;
-        relocnb = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &rm_dos_read );
-        if( (rm_dos_read.flags & 1) || (unsigned_16)rm_dos_read.eax == 0 ) {
-            return( TC_ERR_CANT_LOAD_TRAP );
-        }
+    DIGLoader( Seek )( fp, hdrsize, DIG_ORG );
+    if( DIGLoader( Read )( fp, (void *)DPMIGetSegmentBaseAddress( TrapMem.segm.pm ), imagesize ) != imagesize ) {
+        return( TC_ERR_CANT_LOAD_TRAP );
     }
-    DIGLoader( Seek )( fid, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( fp, hdr.reloc_offset, DIG_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
-            if( DIGLoader( Read )( fid, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
+            if( DIGLoader( Read )( fp, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
             relocnb = 0;
@@ -504,42 +490,38 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    char                *err;
-    const char          *ptr;
-    dig_fhandle         fid;
+    FILE                *fp;
     trap_file_header    __far *head;
-#ifdef USE_FILENAME_VERSION
     char                filename[256];
     char                *p;
-#endif
+    char                chr;
 
-    if( parms == NULL || *parms == '\0' ) {
+    if( parms == NULL || *parms == '\0' )
         parms = DEFAULT_TRP_NAME;
+    p = filename;
+    for( ; (chr = *parms) != '\0'; parms++ ) {
+        if( chr == TRAP_PARM_SEPARATOR ) {
+            parms++;
+            break;
+        }
+        *p++ = chr;
     }
 #ifdef USE_FILENAME_VERSION
-    for( ptr = parms, p = filename; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        *p++ = *ptr;
-    }
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
-    *p = '\0';
-    fid = DIGLoader( Open )( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
-#else
-    for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
-        ;
-    }
-    fid = DIGLoader( Open )( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
 #endif
-    if( fid == DIG_NIL_HANDLE ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
+    *p = '\0';
+    fp = DIGLoader( Open )( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
+    if( fp == NULL ) {
+        sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
         return( buff );
     }
-    err = ReadInTrap( fid );
-    DIGLoader( Close )( fid );
-    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
-    if( err == NULL ) {
-        if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {
-            strcpy( buff, err );
+    p = ReadInTrap( fp );
+    DIGLoader( Close )( fp );
+    sprintf( buff, "%s '%s'", TC_ERR_CANT_LOAD_TRAP, filename );
+    if( p == NULL ) {
+        if( (p = SetTrapHandler()) != NULL || (p = CopyEnv()) != NULL ) {
+            strcpy( buff, p );
         } else {
             strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             head = EXTENDER_RM2PM( TrapMem.segm.rm, 0 );
@@ -550,9 +532,6 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
                 PMData->initfunc.s.segment = TrapMem.segm.rm;
                 PMData->reqfunc.s.segment  = TrapMem.segm.rm;
                 PMData->finifunc.s.segment = TrapMem.segm.rm;
-                parms = ptr;
-                if( *parms != '\0' )
-                    ++parms;
                 if( CallTrapInit( parms, buff, trap_ver ) ) {
                     if( TrapVersionOK( *trap_ver ) ) {
                         TrapVer = *trap_ver;

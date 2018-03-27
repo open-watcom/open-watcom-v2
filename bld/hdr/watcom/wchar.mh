@@ -152,8 +152,6 @@ using std::wctype;
 :endsegment
 :include null.sp
 
-:include mbmax.sp
-
 :include wcharmax.sp
 
 :include weof.sp

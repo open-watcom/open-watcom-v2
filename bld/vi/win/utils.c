@@ -502,7 +502,7 @@ vi_rc DoAboutBox( void )
     ai.owner = root_window_id;
     ai.inst = InstanceHandle;
     ai.name = WATCOM_ABOUT_EDITOR STR_BITNESS;
-    ai.version = banner1p2( _VI_VERSION_ );
+    ai.version = banner1v( _VI_VERSION_ );
     ai.title = "About Open Watcom Text Editor";
     DoAbout( &ai );
     return( ERR_NO_ERR );

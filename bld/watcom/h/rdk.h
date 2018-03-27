@@ -114,8 +114,6 @@
 #define osgate_sim_cli 100
 #define osgate_sim_set_flags 101
 #define osgate_sim_get_flags 102
-#define osgate_save_context 103
-#define osgate_restore_context 104
 #define osgate_call_vm 105
 #define osgate_call_pm16 106
 #define osgate_call_pm32 107
@@ -190,10 +188,7 @@
 #define osgate_register_dos_device 173
 #define osgate_check_dos_device 174
 
-#define osgate_hook_load_exe 179
-#define osgate_hook_enable_focus 182
 #define osgate_get_focus_thread 185
-#define osgate_get_thread_focus_key 186
 
 #define osgate_bios_pci_int 189
 #define osgate_read_pci_byte 190
@@ -247,7 +242,6 @@
 #define osgate_cache_dir 240
 #define osgate_insert_dir_entry 241
 #define osgate_insert_file_entry 242
-#define osgate_hook_file_system_started 243
 #define osgate_set_disc_use32 244
 
 #define osgate_get_file_info 247
@@ -368,18 +362,12 @@
 #define osgate_post_audio_out_buf 334
 #define osgate_is_audio_out_completed 335
 
-#define osgate_set_module 336
-#define osgate_create_module 337
-#define osgate_free_module 338
-#define osgate_reset_module 339
-#define osgate_deref_module_handle 340
+#define osgate_module_id_to_sel 340
 #define osgate_alias_module_handle 341
 
 #define osgate_thread_to_sel 342
 
 #define osgate_stop_usb_req 344
-
-#define osgate_get_usb_info 345
 
 #define osgate_reserve_com_line 346
 
@@ -388,9 +376,6 @@
 
 #define osgate_wait_for_line_state 349
 #define osgate_get_line_state 350
-
-#define osgate_create_proc_handle 351
-#define osgate_deref_proc_handle 352
 
 #define osgate_notify_time_drift 353
 
@@ -612,7 +597,7 @@
 #define osgate_lock_usb 533
 #define osgate_unlock_usb 534
 
-#define osgate_start_can_com 535
+#define osgate_restart_can_modules 535
 
 #define osgate_send_can_bus_msg 536
 #define osgate_hook_can_gen_bus_msg 537
@@ -669,10 +654,6 @@
 
 #define osgate_get_thread_selector_page 569
 
-#define osgate_init_system_app 570
-#define osgate_init_process_app 571
-#define osgate_exit_process_app 572
-
 #define osgate_notify_delete_process 573
 
 #define osgate_add_video_mode 574
@@ -700,20 +681,93 @@
 #define osgate_open_kernel_file 596
 
 #define osgate_fork_process 597
-#define osgate_clone_app 599
 
 #define osgate_reset_process 601
 #define osgate_exec_app 602
 
-#define osgate_app_notify_create 603
-#define osgate_app_notify_start 604
-#define osgate_app_notify_forked 605
-#define osgate_app_notify_exec 606
-#define osgate_app_notify_spawn 607
-#define osgate_app_notify_terminate 608
-#define osgate_hook_app_activity 609
+#define osgate_create_fork 610
 
-#define osgate_notify_clone_process 610
+#define osgate_dupl_c_file_to_file 611
+#define osgate_c_handle_to_file_sel 612
+
+#define osgate_add_serio_device 613
+
+#define osgate_notify_can_offline 615
+
+#define osgate_req_usb_data_no_copy 616
+#define osgate_write_usb_data_no_copy 617
+
+#define osgate_notify_can_modules_up 619
+#define osgate_notify_can_online 620
+
+#define osgate_lock_log 621
+#define osgate_unlock_log 622
+#define osgate_log_thread 623
+#define osgate_log_memory 624
+#define osgate_log_text 625
+#define osgate_log_hex_byte 626
+#define osgate_log_hex_word 627
+#define osgate_log_hex_dword 628
+#define osgate_log_small_mem 629
+#define osgate_log_big_mem 630
+
+#define osgate_create_pid 631
+
+#define osgate_start_programs 632
+#define osgate_register_loader 633
+
+#define osgate_find_module_by_address 634
+#define osgate_find_module_by_name 635
+#define osgate_get_module_by_index 636
+
+#define osgate_create_app_thread 637
+#define osgate_terminate_app_thread 638
+
+#define osgate_program_created 639
+#define osgate_program_terminated 640
+#define osgate_get_program_sel 641
+#define osgate_get_program_id 642
+#define osgate_module_loaded 643
+#define osgate_module_unloaded 644
+#define osgate_get_module_id 645
+
+#define osgate_get_exe_start32 646
+
+#define osgate_process_created 647
+#define osgate_process_terminated 648
+#define osgate_process_id_to_sel 649
+#define osgate_get_process_id 650
+
+#define osgate_create_ldt 651
+#define osgate_destroy_ldt 652
+
+#define osgate_create_c_handle 653
+#define osgate_clone_c_handle 654
+#define osgate_delete_c_handle 655
+
+#define osgate_close_console 656
+#define osgate_set_focus_console 657
+#define osgate_get_focus_console 658
+#define osgate_create_console 659
+
+#define osgate_create_cur_dir 660
+#define osgate_clone_cur_dir 661
+#define osgate_delete_cur_dir 662
+
+#define osgate_create_handle_data 663
+#define osgate_destroy_handle_data 664
+
+#define osgate_init_process_mem 665
+
+#define osgate_start_fork 666
+#define osgate_detach_fork 667
+#define osgate_cleanup_fork 668
+#define osgate_removed_process 669
+#define osgate_delete_fork 670
+
+#define osgate_create_env_sel 671
+#define osgate_delete_env_sel 672
+#define osgate_clone_env_sel 673
 
 
 
@@ -821,8 +875,6 @@
 #define OsGate_sim_cli 0x3E 0x67 0x9a 100 0 0 0 2 0
 #define OsGate_sim_set_flags 0x3E 0x67 0x9a 101 0 0 0 2 0
 #define OsGate_sim_get_flags 0x3E 0x67 0x9a 102 0 0 0 2 0
-#define OsGate_save_context 0x3E 0x67 0x9a 103 0 0 0 2 0
-#define OsGate_restore_context 0x3E 0x67 0x9a 104 0 0 0 2 0
 #define OsGate_call_vm 0x3E 0x67 0x9a 105 0 0 0 2 0
 #define OsGate_call_pm16 0x3E 0x67 0x9a 106 0 0 0 2 0
 #define OsGate_call_pm32 0x3E 0x67 0x9a 107 0 0 0 2 0
@@ -897,10 +949,7 @@
 #define OsGate_register_dos_device 0x3E 0x67 0x9a 173 0 0 0 2 0
 #define OsGate_check_dos_device 0x3E 0x67 0x9a 174 0 0 0 2 0
 
-#define OsGate_hook_load_exe 0x3E 0x67 0x9a 179 0 0 0 2 0
-#define OsGate_hook_enable_focus 0x3E 0x67 0x9a 182 0 0 0 2 0
 #define OsGate_get_focus_thread 0x3E 0x67 0x9a 185 0 0 0 2 0
-#define OsGate_get_thread_focus_key 0x3E 0x67 0x9a 186 0 0 0 2 0
 
 #define OsGate_bios_pci_int 0x3E 0x67 0x9a 189 0 0 0 2 0
 #define OsGate_read_pci_byte 0x3E 0x67 0x9a 190 0 0 0 2 0
@@ -954,7 +1003,6 @@
 #define OsGate_cache_dir 0x3E 0x67 0x9a 240 0 0 0 2 0
 #define OsGate_insert_dir_entry 0x3E 0x67 0x9a 241 0 0 0 2 0
 #define OsGate_insert_file_entry 0x3E 0x67 0x9a 242 0 0 0 2 0
-#define OsGate_hook_file_system_started 0x3E 0x67 0x9a 243 0 0 0 2 0
 #define OsGate_set_disc_use32 0x3E 0x67 0x9a 244 0 0 0 2 0
 
 #define OsGate_get_file_info 0x3E 0x67 0x9a 247 0 0 0 2 0
@@ -1075,18 +1123,12 @@
 #define OsGate_post_audio_out_buf 0x3E 0x67 0x9a 78 1 0 0 2 0
 #define OsGate_is_audio_out_completed 0x3E 0x67 0x9a 79 1 0 0 2 0
 
-#define OsGate_set_module 0x3E 0x67 0x9a 80 1 0 0 2 0
-#define OsGate_create_module 0x3E 0x67 0x9a 81 1 0 0 2 0
-#define OsGate_free_module 0x3E 0x67 0x9a 82 1 0 0 2 0
-#define OsGate_reset_module 0x3E 0x67 0x9a 83 1 0 0 2 0
-#define OsGate_deref_module_handle 0x3E 0x67 0x9a 84 1 0 0 2 0
+#define OsGate_module_id_to_sel 0x3E 0x67 0x9a 84 1 0 0 2 0
 #define OsGate_alias_module_handle 0x3E 0x67 0x9a 85 1 0 0 2 0
 
 #define OsGate_thread_to_sel 0x3E 0x67 0x9a 86 1 0 0 2 0
 
 #define OsGate_stop_usb_req 0x3E 0x67 0x9a 88 1 0 0 2 0
-
-#define OsGate_get_usb_info 0x3E 0x67 0x9a 89 1 0 0 2 0
 
 #define OsGate_reserve_com_line 0x3E 0x67 0x9a 90 1 0 0 2 0
 
@@ -1095,9 +1137,6 @@
 
 #define OsGate_wait_for_line_state 0x3E 0x67 0x9a 93 1 0 0 2 0
 #define OsGate_get_line_state 0x3E 0x67 0x9a 94 1 0 0 2 0
-
-#define OsGate_create_proc_handle 0x3E 0x67 0x9a 95 1 0 0 2 0
-#define OsGate_deref_proc_handle 0x3E 0x67 0x9a 96 1 0 0 2 0
 
 #define OsGate_notify_time_drift 0x3E 0x67 0x9a 97 1 0 0 2 0
 
@@ -1319,7 +1358,7 @@
 #define OsGate_lock_usb 0x3E 0x67 0x9a 21 2 0 0 2 0
 #define OsGate_unlock_usb 0x3E 0x67 0x9a 22 2 0 0 2 0
 
-#define OsGate_start_can_com 0x3E 0x67 0x9a 23 2 0 0 2 0
+#define OsGate_restart_can_modules 0x3E 0x67 0x9a 23 2 0 0 2 0
 
 #define OsGate_send_can_bus_msg 0x3E 0x67 0x9a 24 2 0 0 2 0
 #define OsGate_hook_can_gen_bus_msg 0x3E 0x67 0x9a 25 2 0 0 2 0
@@ -1376,10 +1415,6 @@
 
 #define OsGate_get_thread_selector_page 0x3E 0x67 0x9a 57 2 0 0 2 0
 
-#define OsGate_init_system_app 0x3E 0x67 0x9a 58 2 0 0 2 0
-#define OsGate_init_process_app 0x3E 0x67 0x9a 59 2 0 0 2 0
-#define OsGate_exit_process_app 0x3E 0x67 0x9a 60 2 0 0 2 0
-
 #define OsGate_notify_delete_process 0x3E 0x67 0x9a 61 2 0 0 2 0
 
 #define OsGate_add_video_mode 0x3E 0x67 0x9a 62 2 0 0 2 0
@@ -1407,18 +1442,91 @@
 #define OsGate_open_kernel_file 0x3E 0x67 0x9a 84 2 0 0 2 0
 
 #define OsGate_fork_process 0x3E 0x67 0x9a 85 2 0 0 2 0
-#define OsGate_clone_app 0x3E 0x67 0x9a 87 2 0 0 2 0
 
 #define OsGate_reset_process 0x3E 0x67 0x9a 89 2 0 0 2 0
 #define OsGate_exec_app 0x3E 0x67 0x9a 90 2 0 0 2 0
 
-#define OsGate_app_notify_create 0x3E 0x67 0x9a 91 2 0 0 2 0
-#define OsGate_app_notify_start 0x3E 0x67 0x9a 92 2 0 0 2 0
-#define OsGate_app_notify_forked 0x3E 0x67 0x9a 93 2 0 0 2 0
-#define OsGate_app_notify_exec 0x3E 0x67 0x9a 94 2 0 0 2 0
-#define OsGate_app_notify_spawn 0x3E 0x67 0x9a 95 2 0 0 2 0
-#define OsGate_app_notify_terminate 0x3E 0x67 0x9a 96 2 0 0 2 0
-#define OsGate_hook_app_activity 0x3E 0x67 0x9a 97 2 0 0 2 0
+#define OsGate_create_fork 0x3E 0x67 0x9a 98 2 0 0 2 0
 
-#define OsGate_notify_clone_process 0x3E 0x67 0x9a 98 2 0 0 2 0
+#define OsGate_dupl_c_file_to_file 0x3E 0x67 0x9a 99 2 0 0 2 0
+#define OsGate_c_handle_to_file_sel 0x3E 0x67 0x9a 100 2 0 0 2 0
+
+#define OsGate_add_serio_device 0x3E 0x67 0x9a 101 2 0 0 2 0
+
+#define OsGate_notify_can_offline 0x3E 0x67 0x9a 103 2 0 0 2 0
+
+#define OsGate_req_usb_data_no_copy 0x3E 0x67 0x9a 104 2 0 0 2 0
+#define OsGate_write_usb_data_no_copy 0x3E 0x67 0x9a 105 2 0 0 2 0
+
+#define OsGate_notify_can_modules_up 0x3E 0x67 0x9a 107 2 0 0 2 0
+#define OsGate_notify_can_online 0x3E 0x67 0x9a 108 2 0 0 2 0
+
+#define OsGate_lock_log 0x3E 0x67 0x9a 109 2 0 0 2 0
+#define OsGate_unlock_log 0x3E 0x67 0x9a 110 2 0 0 2 0
+#define OsGate_log_thread 0x3E 0x67 0x9a 111 2 0 0 2 0
+#define OsGate_log_memory 0x3E 0x67 0x9a 112 2 0 0 2 0
+#define OsGate_log_text 0x3E 0x67 0x9a 113 2 0 0 2 0
+#define OsGate_log_hex_byte 0x3E 0x67 0x9a 114 2 0 0 2 0
+#define OsGate_log_hex_word 0x3E 0x67 0x9a 115 2 0 0 2 0
+#define OsGate_log_hex_dword 0x3E 0x67 0x9a 116 2 0 0 2 0
+#define OsGate_log_small_mem 0x3E 0x67 0x9a 117 2 0 0 2 0
+#define OsGate_log_big_mem 0x3E 0x67 0x9a 118 2 0 0 2 0
+
+#define OsGate_create_pid 0x3E 0x67 0x9a 119 2 0 0 2 0
+
+#define OsGate_start_programs 0x3E 0x67 0x9a 120 2 0 0 2 0
+#define OsGate_register_loader 0x3E 0x67 0x9a 121 2 0 0 2 0
+
+#define OsGate_find_module_by_address 0x3E 0x67 0x9a 122 2 0 0 2 0
+#define OsGate_find_module_by_name 0x3E 0x67 0x9a 123 2 0 0 2 0
+#define OsGate_get_module_by_index 0x3E 0x67 0x9a 124 2 0 0 2 0
+
+#define OsGate_create_app_thread 0x3E 0x67 0x9a 125 2 0 0 2 0
+#define OsGate_terminate_app_thread 0x3E 0x67 0x9a 126 2 0 0 2 0
+
+#define OsGate_program_created 0x3E 0x67 0x9a 127 2 0 0 2 0
+#define OsGate_program_terminated 0x3E 0x67 0x9a 128 2 0 0 2 0
+#define OsGate_get_program_sel 0x3E 0x67 0x9a 129 2 0 0 2 0
+#define OsGate_get_program_id 0x3E 0x67 0x9a 130 2 0 0 2 0
+#define OsGate_module_loaded 0x3E 0x67 0x9a 131 2 0 0 2 0
+#define OsGate_module_unloaded 0x3E 0x67 0x9a 132 2 0 0 2 0
+#define OsGate_get_module_id 0x3E 0x67 0x9a 133 2 0 0 2 0
+
+#define OsGate_get_exe_start32 0x3E 0x67 0x9a 134 2 0 0 2 0
+
+#define OsGate_process_created 0x3E 0x67 0x9a 135 2 0 0 2 0
+#define OsGate_process_terminated 0x3E 0x67 0x9a 136 2 0 0 2 0
+#define OsGate_process_id_to_sel 0x3E 0x67 0x9a 137 2 0 0 2 0
+#define OsGate_get_process_id 0x3E 0x67 0x9a 138 2 0 0 2 0
+
+#define OsGate_create_ldt 0x3E 0x67 0x9a 139 2 0 0 2 0
+#define OsGate_destroy_ldt 0x3E 0x67 0x9a 140 2 0 0 2 0
+
+#define OsGate_create_c_handle 0x3E 0x67 0x9a 141 2 0 0 2 0
+#define OsGate_clone_c_handle 0x3E 0x67 0x9a 142 2 0 0 2 0
+#define OsGate_delete_c_handle 0x3E 0x67 0x9a 143 2 0 0 2 0
+
+#define OsGate_close_console 0x3E 0x67 0x9a 144 2 0 0 2 0
+#define OsGate_set_focus_console 0x3E 0x67 0x9a 145 2 0 0 2 0
+#define OsGate_get_focus_console 0x3E 0x67 0x9a 146 2 0 0 2 0
+#define OsGate_create_console 0x3E 0x67 0x9a 147 2 0 0 2 0
+
+#define OsGate_create_cur_dir 0x3E 0x67 0x9a 148 2 0 0 2 0
+#define OsGate_clone_cur_dir 0x3E 0x67 0x9a 149 2 0 0 2 0
+#define OsGate_delete_cur_dir 0x3E 0x67 0x9a 150 2 0 0 2 0
+
+#define OsGate_create_handle_data 0x3E 0x67 0x9a 151 2 0 0 2 0
+#define OsGate_destroy_handle_data 0x3E 0x67 0x9a 152 2 0 0 2 0
+
+#define OsGate_init_process_mem 0x3E 0x67 0x9a 153 2 0 0 2 0
+
+#define OsGate_start_fork 0x3E 0x67 0x9a 154 2 0 0 2 0
+#define OsGate_detach_fork 0x3E 0x67 0x9a 155 2 0 0 2 0
+#define OsGate_cleanup_fork 0x3E 0x67 0x9a 156 2 0 0 2 0
+#define OsGate_removed_process 0x3E 0x67 0x9a 157 2 0 0 2 0
+#define OsGate_delete_fork 0x3E 0x67 0x9a 158 2 0 0 2 0
+
+#define OsGate_create_env_sel 0x3E 0x67 0x9a 159 2 0 0 2 0
+#define OsGate_delete_env_sel 0x3E 0x67 0x9a 160 2 0 0 2 0
+#define OsGate_clone_env_sel 0x3E 0x67 0x9a 161 2 0 0 2 0
 

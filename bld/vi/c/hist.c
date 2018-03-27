@@ -36,24 +36,15 @@
 
 static bool historyLoaded;
 
-typedef enum {
-    READ_NONE,
-    READ_CMD,
-    READ_FIND,
-    READ_FILTER,
-    READ_LASTFILES,
-    READ_LAST
-} read_state;
-
 
 /*
  * updateHist - add a string to a history list
  */
-static void updateHist( history_data *hist, const char *str )
+static void updateHist( history_data *h, const char *str )
 {
-    if( hist->curr < hist->max ) {
-        ReplaceString( &hist->data[hist->curr], str );
-        hist->curr++;
+    if( h->curr < h->max ) {
+        ReplaceString( &h->data[h->curr], str );
+        h->curr++;
     }
 
 } /* updateHist */
@@ -63,11 +54,11 @@ static void updateHist( history_data *hist, const char *str )
  */
 void LoadHistory( const char *cmd )
 {
-    FILE        *f;
-    char        str[MAX_INPUT_LINE];
-    int         cnt;
-    read_state  rs;
-    int         i;
+    FILE            *f;
+    char            str[MAX_INPUT_LINE];
+    int             cnt;
+    int             i;
+    history_data    *h;
 
     historyLoaded = true;
 
@@ -77,41 +68,33 @@ void LoadHistory( const char *cmd )
             break;
         }
         cnt = 0;
-        rs = READ_NONE;
+        h = EditVars.Hist - 1;
         while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
-            for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1]); --i ) {
+            for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1] ); --i ) {
                 str[i - 1] = '\0';
             }
             if( cnt == 0 ) {
-                cnt = atoi( str );
-                rs++;
-                if( rs >= READ_LAST ) {
+                h++;
+                if( h - EditVars.Hist >= MAX_HIST ) {
                     break;
                 }
+                for( i = 0; i < h->max; i++ ) {
+                    h->data[i] = NULL;
+                }
+                cnt = atoi( str );
+                h->curr = 0;
                 continue;
             }
-            switch( rs ) {
-            case READ_CMD:
-                updateHist( &EditVars.CLHist, str );
-                break;
-            case READ_FIND:
-                updateHist( &EditVars.FindHist, str );
-                break;
-            case READ_FILTER:
-                updateHist( &EditVars.FilterHist, str );
-                break;
-            case READ_LASTFILES:
-                updateHist( &EditVars.LastFilesHist, str );
-                break;
-            }
+            updateHist( h, str );
             cnt--;
         }
         fclose( f );
         break;
     }
     if( cmd != NULL ) {
-        ReplaceString( &EditVars.CLHist.data[EditVars.CLHist.curr % EditVars.CLHist.max], cmd );
-        EditVars.CLHist.curr++;
+        h = &EditVars.Hist[HIST_CMD];
+        ReplaceString( &h->data[h->curr % h->max], cmd );
+        h->curr++;
     }
 
 } /* LoadHistory */
@@ -119,7 +102,7 @@ void LoadHistory( const char *cmd )
 /*
  * getHistCount - get the number of items in a history
  */
-static int getHistCount( history_data *hist )
+static int getHistCount( history_data *h )
 {
     int i, j;
     int cnt;
@@ -127,10 +110,10 @@ static int getHistCount( history_data *hist )
     /*
      * get number of items in find history
      */
-    j = hist->curr;
+    j = h->curr;
     cnt = 0;
-    for( i = 0; i < hist->max; i++ ) {
-        if( hist->data[j % hist->max] != NULL ) {
+    for( i = 0; i < h->max; i++ ) {
+        if( h->data[j % h->max] != NULL ) {
             cnt++;
         }
         j++;
@@ -142,16 +125,16 @@ static int getHistCount( history_data *hist )
 /*
  * writeHistory - write out history to a file
  */
-static void writeHistory( FILE *f, history_data *hist )
+static void writeHistory( FILE *f, history_data *h )
 {
     int i, j;
 
-    MyFprintf( f, "%d\n", getHistCount( hist ) );
-    j = hist->curr;
-    for( i = 0; i < hist->max; i++ ) {
-        if( hist->data[j % hist->max] != NULL ) {
-            MyFprintf( f, "%s\n", hist->data[j % hist->max] );
-            DeleteString( &hist->data[j % hist->max] );
+    MyFprintf( f, "%d\n", getHistCount( h ) );
+    j = h->curr;
+    for( i = 0; i < h->max; i++ ) {
+        if( h->data[j % h->max] != NULL ) {
+            MyFprintf( f, "%s\n", h->data[j % h->max] );
+            DeleteString( &h->data[j % h->max] );
         }
         j++;
     }
@@ -163,75 +146,41 @@ static void writeHistory( FILE *f, history_data *hist )
  */
 void SaveHistory( void )
 {
-    FILE        *f;
+    FILE            *f;
+    history_data    *h;
 
-    if( EditVars.HistoryFile == NULL || !historyLoaded ) {
-        return;
+    if( historyLoaded ) {
+        if( EditVars.HistoryFile != NULL ) {
+            f = fopen( EditVars.HistoryFile, "wt" );
+            if( f != NULL ) {
+                for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
+                    writeHistory( f, h );
+                }
+                fclose( f );
+            }
+        }
     }
-
-    f = fopen( EditVars.HistoryFile, "wt" );
-    if( f == NULL ) {
-        return;
-    }
-    writeHistory( f, &EditVars.CLHist );
-    writeHistory( f, &EditVars.FindHist );
-    writeHistory( f, &EditVars.FilterHist );
-    writeHistory( f, &EditVars.LastFilesHist );
-    fclose( f );
 
 } /* SaveHistory */
 
 /*
- * FilterHistInit - initial bang history structure
+ * HistInit - initial bang history structure
  */
-void FilterHistInit( int max )
+void HistInit( history_data *h, int max )
 {
-    EditVars.FilterHist.max = max;
-    EditVars.FilterHist.curr = 0;
-    EditVars.FilterHist.data = MemReAlloc( EditVars.FilterHist.data,
-        (EditVars.FilterHist.max + 1) * sizeof( char * ) );
+    h->max = max;
+    h->curr = 0;
+    h->data = MemReAlloc( h->data, ( h->max + 1 ) * sizeof( char * ) );
 
-} /* FilterHistInit */
+} /* HistInit */
 
-/*
- * CLHistInit - initial command line history structure
- */
-void CLHistInit( int max )
-{
-    EditVars.CLHist.max = max;
-    EditVars.CLHist.curr = 0;
-    EditVars.CLHist.data = MemReAlloc( EditVars.CLHist.data, (EditVars.CLHist.max + 1) * sizeof( char * ) );
-
-} /* CLHistInit */
-
-/*
- * FindHistInit - initial find history structure
- */
-void FindHistInit( int max )
-{
-    EditVars.FindHist.max = max;
-    EditVars.FindHist.curr = 0;
-    EditVars.FindHist.data = MemReAlloc( EditVars.FindHist.data, (EditVars.FindHist.max + 1) * sizeof( char * ) );
-
-} /* FindHistInit */
-
-/*
- * LastFilesHistInit - initial find history structure
- */
-void LastFilesHistInit( int max )
-{
-    EditVars.LastFilesHist.max = max;
-    EditVars.LastFilesHist.curr = 0;
-    EditVars.LastFilesHist.data = MemReAlloc( EditVars.LastFilesHist.data,
-        (EditVars.LastFilesHist.max + 1) * sizeof( char * ) );
-
-} /* LastFilesHistInit */
 
 void HistFini( void )
 {
-    MemFree( EditVars.LastFilesHist.data );
-    MemFree( EditVars.FindHist.data );
-    MemFree( EditVars.CLHist.data );
-    MemFree( EditVars.FilterHist.data );
+    history_data    *h;
+
+    for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
+        MemFree( h->data );
+    }
     MemFree( EditVars.HistoryFile );
 }

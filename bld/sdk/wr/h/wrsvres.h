@@ -46,7 +46,7 @@
 /****************************************************************************/
 extern bool WRSaveResourceTo_RC( WRInfo *info, bool backup );
 extern bool WRSaveResourceToRES( WRInfo *, bool );
-extern bool WRCopyResFromFileToFile( WResFileID, uint_32, uint_32, WResFileID );
-extern bool WRCopyResFromDataToFile( void *, uint_32, WResFileID );
+extern bool WRCopyResFromFileToFile( FILE *, uint_32, uint_32, FILE * );
+extern bool WRCopyResFromDataToFile( void *, uint_32, FILE * );
 
 #endif

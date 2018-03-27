@@ -129,7 +129,7 @@ unsigned long CalcIndexSize( char **str, bool gen_str )
 }
 
 
-static a_helpnode *findFirstPage( page )
+static a_helpnode *findFirstPage( unsigned page )
 {
     a_helpnode          *curnode;
 

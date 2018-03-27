@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
-#define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE-1));
+#define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE - 1));
 
 /*
  * InitHistory -- initialize retrieving of commands
@@ -44,11 +44,12 @@ void *WndInitHistory()
     save_area   *new;
 
     new = WndAlloc( sizeof( *new ) );
-    if( new == NULL ) return( NULL );
+    if( new == NULL )
+        return( NULL );
     new->first_cmd = 0;
     new->curr_cmd = 0;
-    new->area[ 0 ] = 0;
-    new->area[ 1 ] = 0;
+    new->area[0] = 0;
+    new->area[1] = 0;
     new->last_was_next = false;
     new->first_free = 2;
     return( new );
@@ -68,9 +69,9 @@ static void SaveByte( save_area *save, char ch )
 {
 
     if( save->first_free == save->first_cmd ) {
-        _ModIndex( save->first_cmd, save->area[ save->first_cmd ] + 2 );
+        _ModIndex( save->first_cmd, save->area[save->first_cmd] + 2 );
     }
-    save->area[ save->first_free ] = ch;
+    save->area[save->first_free] = ch;
     _ModIndex( save->first_free, 1 );
 }
 
@@ -99,21 +100,23 @@ void WndSaveToHistory( save_area *save, char *cmd )
 {
     unsigned  chk, chk_len, len;
 
-    if( save == NULL ) return;
-    if( cmd == NULL ) return;
+    if( save == NULL )
+        return;
+    if( cmd == NULL )
+        return;
     len = strlen( cmd );
     save->last_was_next = false;
     save->curr_cmd = save->first_free;
     _ModIndex( save->curr_cmd, -1 );
-    _ModIndex( save->curr_cmd, -(save->area[ save->curr_cmd ] + 1) );
+    _ModIndex( save->curr_cmd, -(save->area[save->curr_cmd] + 1) );
     if( len != 0 ) {
         chk = save->curr_cmd;
-        if( save->area[ chk ] != len ) {
+        if( save->area[chk] != len ) {
             SaveIt( save, cmd, len );
         } else {
             for( chk_len = 0; chk_len < len; ++chk_len ) {
                 _ModIndex( chk, 1 );
-                if( save->area[ chk ] != cmd[ chk_len ] ) {
+                if( save->area[chk] != cmd[chk_len] ) {
                     SaveIt( save, cmd, len );
                     return;
                 }
@@ -133,26 +136,28 @@ bool WndPrevFromHistory( save_area *save, char *cmd )
     unsigned  cnt;
     unsigned  curr;
 
-    if( save == NULL ) return( 0 );
+    if( save == NULL )
+        return( 0 );
     if( save->curr_cmd == save->first_cmd ) {
         save->last_was_next = true;
         return( 0 );
     }
     curr = save->curr_cmd;
     _ModIndex( save->curr_cmd, -1 );
-    _ModIndex( save->curr_cmd, -(save->area[ save->curr_cmd ] + 1) );
+    _ModIndex( save->curr_cmd, -(save->area[save->curr_cmd] + 1) );
     if( save->last_was_next ) {
-        if( save->curr_cmd == save->first_cmd ) return( 0 );
+        if( save->curr_cmd == save->first_cmd )
+            return( 0 );
         curr = save->curr_cmd;
         _ModIndex( save->curr_cmd, -1 );
-        _ModIndex( save->curr_cmd, -(save->area[ save->curr_cmd ] + 1) );
+        _ModIndex( save->curr_cmd, -(save->area[save->curr_cmd] + 1) );
     }
     save->last_was_next = false;
-    len = save->area[ curr ];
+    len = save->area[curr];
     cnt = len;
     do {
         _ModIndex( curr, 1 );
-        *cmd = save->area[ curr ];
+        *cmd = save->area[curr];
         ++cmd;
     } while( !( --cnt == 0 ) );
     *cmd = '\0';
@@ -171,23 +176,26 @@ bool WndNextFromHistory( save_area *save, char *cmd )
     unsigned  cnt;
     unsigned  curr;
 
-    if( save == NULL ) return( 0 );
+    if( save == NULL )
+        return( false );
     curr = save->curr_cmd;
-    _ModIndex( curr, save->area[ curr ] + 2 );
+    _ModIndex( curr, save->area[curr] + 2 );
     if( !save->last_was_next ) {
-        if( curr == save->first_free ) return( 0 );
+        if( curr == save->first_free )
+            return( false );
         save->curr_cmd = curr;
-        _ModIndex( curr, save->area[ curr ] + 2 );
+        _ModIndex( curr, save->area[curr] + 2 );
     }
     save->last_was_next = false;
-    if( curr == save->first_free ) return( 0 );
+    if( curr == save->first_free )
+        return( false );
     save->last_was_next = true;
     save->curr_cmd = curr;
-    len = save->area[ curr ];
+    len = save->area[curr];
     cnt = len;
     do {
         _ModIndex( curr, 1 );
-        *cmd = save->area[ curr ];
+        *cmd = save->area[curr];
         ++cmd;
     } while( !( --cnt == 0 ) );
     *cmd = '\0';

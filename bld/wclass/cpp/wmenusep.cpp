@@ -42,16 +42,16 @@ WEXPORT WMenuSeparator::WMenuSeparator()
 }
 
 
-void WMenuSeparator::attachMenu( WWindow *win, gui_ctl_idx position )
-/*******************************************************************/
+void WMenuSeparator::attachMenu( WWindow *win, int position )
+/***********************************************************/
 {
     gui_menu_struct     menu_item;
 
     menu_item.label = NULL;
     menu_item.id = menuId();
-    menu_item.style = (gui_menu_styles)(GUI_ENABLED | GUI_SEPARATOR);
+    menu_item.style = (gui_menu_styles)(GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_SEPARATOR);
     menu_item.hinttext = NULL;
-    menu_item.num_child_menus = 0;
+    menu_item.child_num_items = 0;
     menu_item.child = NULL;
     if( parent()->isFloatingMain() ) {
         // appending separator to top level floating popup menu
@@ -81,7 +81,7 @@ void WMenuSeparator::detachMenu() {
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 656 9
 #endif
 

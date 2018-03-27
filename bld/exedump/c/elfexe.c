@@ -564,7 +564,7 @@ static void dmp_prog_sec( unsigned_32 start )
             offset += sizeof( Elf32_Phdr );
             Data_count++;
             dmp_prog_type( elf_prog.p_type );
-            Dump_header( &elf_prog, elf_prog_msg );
+            Dump_header( &elf_prog, elf_prog_msg, 4 );
             dmp_prog_flgs( elf_prog.p_flags );
             if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
                 if( Segspec == 0 || Segspec == Data_count ) {
@@ -598,7 +598,7 @@ static void dmp_prog_sec( unsigned_32 start )
                 Wdputslc( "\n" );
             }
             dmp_sec_type( elf_sec.sh_type );
-            Dump_header( &elf_sec.sh_name, elf_sec_msg );
+            Dump_header( &elf_sec.sh_name, elf_sec_msg, 4 );
             dmp_sec_flgs( elf_sec.sh_flags );
             if( Options_dmp & FIX_DMP ) {
                 if( elf_sec.sh_type==SHT_REL || elf_sec.sh_type==SHT_RELA ) {
@@ -770,7 +770,7 @@ bool Dmp_elf_header( unsigned long start )
         SWAP_16( Elf_head.e_shstrndx );
     }
     dmp_hdr_type( Elf_head.e_type );
-    Dump_header( &Elf_head.e_type, elf_exe_msg );
+    Dump_header( &Elf_head.e_type, elf_exe_msg, 4 );
     Wdputslc( "\n" );
     dmp_prog_sec( start );
     return( true );

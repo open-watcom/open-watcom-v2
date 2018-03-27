@@ -1,4 +1,4 @@
-#pmake: build debug small stack 32bit netware posix ix86 static os_nov cpu_386
+#pmake: nobuild debug small stack 32bit netware posix ix86 static os_nov cpu_386
 
 processor  = 386
 convention = stack

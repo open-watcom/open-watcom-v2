@@ -39,7 +39,7 @@
 #include "dbgreg.h"
 
 
-OVL_EXTERN bool StkOrHistoryEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool StkOrHistoryGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     gui_ctl_id  *resp;
@@ -59,7 +59,7 @@ OVL_EXTERN bool StkOrHistoryEvent( gui_window *gui, gui_event gui_ev, void *para
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     }
     return( false );
 }
@@ -69,7 +69,7 @@ static bool DoStackOrHistory( int dlg_id )
     gui_ctl_id  resp;
 
     resp = CTL_STK_CANCEL;
-    ResDlgOpen( &StkOrHistoryEvent, &resp, dlg_id );
+    ResDlgOpen( StkOrHistoryGUIEventProc, &resp, dlg_id );
     switch( resp ) {
     case CTL_STK_CANCEL:
         _SwitchOn( SW_EXECUTE_ABORTED );

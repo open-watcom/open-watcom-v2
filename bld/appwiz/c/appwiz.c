@@ -76,15 +76,15 @@ static bool createProjectDir( char *dir )
     return( TRUE );
 }
 
-bool NewProjCallback( gui_window *wnd, gui_event ev, void *extra )
-/****************************************************************/
+bool NewProjGUIEventProc( gui_window *wnd, gui_event gui_ev, void *extra )
+/************************************************************************/
 {
     project_type_iterator   iter;
     char                    friendlyname[128];
     unsigned                id;
     char                    *ctltext;
-    
-    switch( ev ) {
+
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         iter = GetFirstProjectType();
         while( iter != NULL ) {
@@ -92,34 +92,39 @@ bool NewProjCallback( gui_window *wnd, gui_event ev, void *extra )
             GUIAddText( wnd, CTL_NEWPROJ_PROJTYPE, friendlyname );
         }
         GUISetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE, 0 );
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( extra, id );
-        if( id == CTL_NEWPROJ_OK ) {
+        switch( id ) {
+        case CTL_NEWPROJ_OK:
             ctltext = GUIGetText( wnd, CTL_NEWPROJ_PROJDIR );
             if( ctltext == NULL ) {
                 ShowError( APPWIZ_NO_PROJDIR );
-                break;
+                return( true );
             }
             strcpy( projectDir, ctltext );
             ctltext = GUIGetText( wnd, CTL_NEWPROJ_PROJNAME );
             if( ctltext == NULL ) {
                 ShowError( APPWIZ_NO_PROJNAME );
-                break;
+                return( true );
             }
             strcpy( projectName, ctltext );
             projectTypeIndex = GUIGetCurrSelect( wnd, CTL_NEWPROJ_PROJTYPE );
             if( !createProjectDir( projectDir ) ) {
-                break;
+                return( true );
             }
             GUICloseDialog( wnd );
-        } else if( id == CTL_NEWPROJ_CANCEL ) {
+            return( true );
+        case CTL_NEWPROJ_CANCEL:
             projectTypeIndex = -1;
             GUICloseDialog( wnd );
+            return( true );
         }
         break;
+    default:
+        break;
     }
-    return( TRUE );
+    return( false );
 }
 
 extern void GUImain( void )
@@ -131,16 +136,14 @@ extern void GUImain( void )
         GUI_NOSCROLL,
         GUI_VISIBLE | GUI_CLOSEABLE,
         NULL,
-        0,
-        NULL,
-        0,
-        NULL,
-        &NewProjCallback,
+        0, NULL,                            // Menu array
+        0, NULL,                            // Colour attribute array
+        &NewProjGUIEventProc,               // GUI Event Callback Function
         NULL,
         NULL,
         NULL                                // Menu Resource
     };
-    
+
     gui_rect                rect;
     project_type_iterator   iter;
     char                    typename[256];

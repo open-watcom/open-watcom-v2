@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,54 +36,21 @@
 #include "uidos.h"
 #include "uimouse.h"
 #include "biosui.h"
+#include "uiwin.h"
 
-
-struct mouse_data {
-    unsigned    bx,cx,dx;
-};
-
-typedef struct mouse_data __based( __segname( "_STACK" ) ) *md_stk_ptr;
-
-/* Invoke the mouse interrupt (33h). */
-extern unsigned MouseInt( unsigned, unsigned, unsigned, unsigned );
-#pragma aux MouseInt =  \
-    "int 33h"           \
-    parm [ax] [bx] [cx] [dx];
-
-extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
-#pragma aux MouseInt2 = \
-    "int 33h"           \
-    parm [ax] [cx] [dx] [si] [di];
-
-//extern void MouseState( unsigned, struct mouse_data __near * );
-extern void MouseState( unsigned, md_stk_ptr );
-#pragma aux MouseState =    \
-    "int 33h"               \
-    "mov ss:[si+0],bx"      \
-    "mov ss:[si+2],cx"      \
-    "mov ss:[si+4],dx"      \
-    parm [ax] [si] modify [bx cx dx];
 
 #define MOUSE_SCALE     8
 
-extern MOUSEORD         MouseRow;
-extern MOUSEORD         MouseCol;
-extern bool             MouseOn;
+static MOUSESTAT    MouseStatusBits;
+static int          MouseX;
+static int          MouseY;
+static int          ScreenXFudge;
+static int          ScreenYFudge;
 
-extern unsigned         MouseStatus;
-extern bool             MouseInstalled;
-
-unsigned long           MouseTime = 0;
-
-static int MouseX,MouseY,MouseStatusBits;
-static int ScreenXFudge,ScreenYFudge;
-
-void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, unsigned long *time )
-/*************************************************************************************************/
+void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/****************************************************************************************/
 {
-    struct  mouse_data state;
-
-    MouseState( 3, (md_stk_ptr)&state );
+    MouseDrvCall4( 3 );
     *status = MouseStatusBits;
     *col = MouseX;
     *row = MouseY;
@@ -90,28 +58,26 @@ void intern checkmouse( unsigned short *status, MOUSEORD *row, MOUSEORD *col, un
     uisetmouse( *row, *col );
 }
 
-
-
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
-    int             cx,dx;
-    unsigned short  tmp;
+    int         cx;
+    int         dx;
 
     MouseInstalled = false;
-    ScreenXFudge = (WORD)((DWORD) GetSystemMetrics( SM_CXSCREEN )/(DWORD) UIData->width);
-    ScreenYFudge = (WORD)((DWORD) GetSystemMetrics( SM_CYSCREEN )/(DWORD) UIData->height);
-    if( install > 0 ) {
-        if( install > 0 ) {
+    ScreenXFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CXSCREEN ) / (DWORD)UIData->width );
+    ScreenYFudge = (WORD)( (DWORD)GetSystemMetrics( SM_CYSCREEN ) / (DWORD)UIData->height );
+    if( install > INIT_MOUSELESS ) {
+        if( install > INIT_MOUSELESS ) {
             dx = ( UIData->width - 1 ) * MOUSE_SCALE;
-            MouseInt( 7, 0, 0, dx );
+            MouseDrvCall2( 7, 0, 0, dx );
             dx = ( UIData->height - 1 ) * MOUSE_SCALE;
-            MouseInt( 8, 0, 0, dx );
+            MouseDrvCall2( 8, 0, 0, dx );
 
             cx = ( UIData->colour == M_MONO ? 0x79ff : 0x7fff );
             dx = ( UIData->colour == M_MONO ? 0x7100 : 0x7700 );
-            MouseInt( 10, 0, cx, dx );
-            MouseInt2( 16, 0, 0, 0, 0 );
+            MouseDrvCall2( 0x0A, 0, cx, dx );
+            MouseDrvCall3( 0x10, 0, 0, 0, 0 );
 
             UIData->mouse_swapped = false;
             UIData->mouse_xscale = 1;
@@ -119,13 +85,11 @@ int UIAPI initmouse( int install )
             uisetmouseposn( UIData->height / 2 - 1, UIData->width / 2 - 1 );
             MouseInstalled = true;
             MouseOn = false;
-            checkmouse( &tmp, &MouseRow, &MouseCol, &MouseTime );
-            MouseStatus = tmp;
+            checkmouse( &MouseStatus, &MouseRow, &MouseCol, &MouseTime );
         }
     }
     return( MouseInstalled );
 }
-
 
 void UIAPI finimouse( void )
 /**************************/
@@ -142,7 +106,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
 {
     MouseRow = row;
     MouseCol = col;
-//  MouseInt( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
+//  MouseDrvCall2( 4, 0, col * MOUSE_SCALE, row * MOUSE_SCALE );
     SetCursorPos( col * ScreenXFudge, row * ScreenYFudge );
 }
 
@@ -157,22 +121,24 @@ void WindowsMouseEvent( unsigned event, unsigned info )
     switch( event ) {
     case WM_MOUSEMOVE:
         GetCursorPos( &p );
-        MouseX = (WORD)((DWORD)p.x / (DWORD) ScreenXFudge);
-        if( MouseX > UIData->width-1 ) MouseX = UIData->width-1;
-        MouseY = (WORD)((DWORD)p.y / (DWORD) ScreenYFudge);
-        if( MouseY > UIData->height-1 ) MouseY = UIData->height-1;
+        MouseX = (WORD)((DWORD)p.x / (DWORD)ScreenXFudge);
+        if( MouseX > UIData->width - 1 )
+            MouseX = UIData->width - 1;
+        MouseY = (WORD)((DWORD)p.y / (DWORD)ScreenYFudge);
+        if( MouseY > UIData->height - 1 )
+            MouseY = UIData->height - 1;
         break;
     case WM_LBUTTONUP:
-        MouseStatusBits &= (0xFFFF) - MOUSE_PRESS;
+        MouseStatusBits &= ~UI_MOUSE_PRESS;
         break;
     case WM_RBUTTONUP:
-        MouseStatusBits &= (0xFFFF) - MOUSE_PRESS_RIGHT;
+        MouseStatusBits &= ~UI_MOUSE_PRESS_RIGHT;
         break;
     case WM_LBUTTONDOWN:
-        MouseStatusBits |= MOUSE_PRESS;
+        MouseStatusBits |= UI_MOUSE_PRESS;
         break;
     case WM_RBUTTONDOWN:
-        MouseStatusBits |= MOUSE_PRESS_RIGHT;
+        MouseStatusBits |= UI_MOUSE_PRESS_RIGHT;
         break;
     } /* switch */
 

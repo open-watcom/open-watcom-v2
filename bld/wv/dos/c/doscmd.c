@@ -32,12 +32,12 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <i86.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dosscrn.h"
 #include "dbgio.h"
 #include "dbgname.h"
-#include "dbgswtch.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
 
@@ -51,7 +51,7 @@ static const char SysOptNameTab[] = {
     "SIze\0"
 };
 
-enum { 
+enum {
     OPT_NOSNOW,
     OPT_CHECKSIZE,
     OPT_SIZE
@@ -120,7 +120,8 @@ void ProcSysOptInit( void )
 
 char __far *GetCmdArg( int num )
 {
-    if( num != 0 || cmdStart == 0 ) return( NULL );
+    if( num != 0 || cmdStart == 0 )
+        return( NULL );
     return( MK_FP( _psp, cmdStart ) );
 }
 

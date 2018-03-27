@@ -195,8 +195,8 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
         return( CHAIN );
     }
     FaultHandlerEntered = true;
-    ff.ESP = (WORD) ff.ESP;
-    ff.EBP = (WORD) ff.EBP;
+    ff.ESP = (WORD)ff.ESP;
+    ff.EBP = (WORD)ff.EBP;
 
     /*
      * save state
@@ -245,7 +245,7 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
             MakeLog( true );
         }
     }
-    SymFileClose();
+    UnloadDbgInfo();
     if( WasFault32 ) {
         WasFault32 = false;
         DoneWithInterrupt( NULL );

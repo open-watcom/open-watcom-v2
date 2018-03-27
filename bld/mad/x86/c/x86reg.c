@@ -385,7 +385,7 @@ NULL };
 
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
+    mad_status (*get_piece)( const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_mth, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
     const x86_reg_info          * const *reglist;
@@ -493,7 +493,7 @@ walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
             return( wr );
         }
     }
-    if( (tk & MTK_CUSTOM) && (MCSystemConfig()->cpu & X86_MMX) ) {
+    if( (tk & MTK_MMX) && (MCSystemConfig()->cpu & X86_MMX) ) {
         wr = wk( &RegSet[MMX_REG_SET], d );
         if( wr != WR_CONTINUE ) {
             return( wr );
@@ -1234,8 +1234,13 @@ static mad_status XMMGetPiece(
     row = piece / ( group + 2 );
     column = piece % ( group + 2 );
     if( row == 0 ) {
+        /* header line */
         if( column < group ) {
-            *max_value_p = 2;
+            if( group - piece > 10 ) {
+                *max_value_p = 3;
+            } else {
+                *max_value_p = 2;
+            }
             *reg_p = &XXX_dummy.info;
             *disp_type_p = (mad_type_handle)( X86T_XMM_TITLE0 - 1 + group - piece );
         } else {
@@ -1327,7 +1332,7 @@ mad_status MADIMPENTRY( RegSetDisplayModify )(
     } else if( ri == &FPU_st.info ) {
         *possible_p = ModFPUSt;
         *num_possible_p = NUM_ELTS( ModFPUSt );
-    } else if( ri->type == X86T_EXTENDED ) {
+    } else if( ri->mth == X86T_EXTENDED ) {
         *possible_p = ModFPUStack;
         *num_possible_p = NUM_ELTS( ModFPUStack );
     } else if( ri->bit_start >= REG_BIT_OFF( u.fpu.tag )
@@ -1377,13 +1382,13 @@ static size_t FmtPtr( addr_seg seg, addr_off off, unsigned off_digits, char *buf
     return( len );
 }
 
-size_t RegDispType( mad_type_handle th, const void *d, char *buff, size_t buff_size )
+size_t RegDispType( mad_type_handle mth, const void *d, char *buff, size_t buff_size )
 {
     const mad_modify_list   *p = NULL;
     const fpu_ptr           *fp;
     char                    title[3];
 
-    switch( th ) {
+    switch( mth ) {
     case X86T_PC:       p = ModFPUPc; break;
     case X86T_RC:       p = ModFPURc; break;
     case X86T_IC:       p = ModFPUIc; break;
@@ -1426,7 +1431,7 @@ size_t RegDispType( mad_type_handle th, const void *d, char *buff, size_t buff_s
         } else {
             title[0] = 'q';
         }
-        title[1] = (char)( th - X86T_MMX_TITLE0 ) + '0';
+        title[1] = (char)( mth - X86T_MMX_TITLE0 ) + '0';
         title[2] = '\0';
         if( buff_size > 0 ) {
             --buff_size;
@@ -1465,11 +1470,11 @@ size_t RegDispType( mad_type_handle th, const void *d, char *buff, size_t buff_s
         } else if( MADState->reg_state[XMM_REG_SET] & XT_DOUBLE ) {
             title[0] = 'q';
         }
-        if( th - X86T_XMM_TITLE0 > 9 ) {
-            title[1] = (char)( ( th - X86T_XMM_TITLE0 ) / 10 ) + '0';
-            title[2] = (char)( ( th - X86T_XMM_TITLE0 ) % 10 ) + '0';
+        if( mth - X86T_XMM_TITLE0 > 9 ) {
+            title[1] = (char)( ( mth - X86T_XMM_TITLE0 ) / 10 ) + '0';
+            title[2] = (char)( ( mth - X86T_XMM_TITLE0 ) % 10 ) + '0';
         } else {
-            title[1] = (char)( th - X86T_XMM_TITLE0 ) + '0';
+            title[1] = (char)( mth - X86T_XMM_TITLE0 ) + '0';
             title[2] = ' ';
         }
         if( buff_size > 0 ) {

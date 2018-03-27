@@ -40,7 +40,6 @@
 #include "dw.h"
 #include "dwarf.h"
 #include "errcod.h"
-#include "fio.h"
 #include "cioconst.h"
 #include "omodes.h"
 #include "exeelf.h"

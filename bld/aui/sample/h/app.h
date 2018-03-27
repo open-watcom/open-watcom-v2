@@ -39,7 +39,9 @@
 #include "guidlg.h"
 #include "rcdefs.h"
 #include "dlgbutn.h"
-#include "dlgnew.h"
+
+
+#define ArraySize( x )          (sizeof( x ) / sizeof( (x)[0] ))
 
 enum {
     MENU_FIRST          = 2400,
@@ -132,4 +134,5 @@ extern WNDOPEN W6Open;
 extern WNDOPEN W7Open;
 extern WNDOPEN W8Open;
 
-extern void    Password( const char *title, char *buff, unsigned buff_len );
+extern void     Password( const char *title, char *buff, size_t buff_len );
+extern void     DlgCmd( void );

@@ -163,8 +163,7 @@ void    Scan( void ) {
                 if( ch_class & C_LOW ) { // lower case character
                     ch += 'A' - 'a';
                 }
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 State = state2;
                 break;
             case SDB :
@@ -177,24 +176,20 @@ void    Scan( void ) {
                     Cursor--; // after select
                 } else {
                     State = StateTable[ State ][ C_AL ];
-                    *TkCrsr = ch;
-                    TkCrsr++;
+                    *TkCrsr++ = ch;
                     Cursor++;
                     Column++;
-                    *TkCrsr = *Cursor;
-                    TkCrsr++;
+                    *TkCrsr++ = *Cursor;
                 }
                 break;
             case SNM :
             case SFT :
             case SEN :
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 State = state2;
                 break;
             case SSG :
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 // 0..71 is the statement area
                 // 72..79 is the sequence area
                 ++Cursor;
@@ -225,15 +220,13 @@ void    Scan( void ) {
                     class = TokenREA;
                     break;
                 }
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 break;
             case SML :
             case SLL :
                 dpt = TkCrsr;
                 old_state = State;
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 State = state2;
                 break;
             case SFQ :
@@ -241,6 +234,7 @@ void    Scan( void ) {
                 break;
             case SIQ :
                 state2 = SIQ;
+                /* fall through */
             case SFM :
                 if( ch_class == C_TC ) {
                     tab = 8 - Column % 8;
@@ -249,24 +243,22 @@ void    Scan( void ) {
                     memset( TkCrsr, ' ', tab );
                     TkCrsr += tab;
                 } else {
-                    *TkCrsr = ch;
-                    TkCrsr++;
+                    *TkCrsr++ = ch;
                 }
                 State = state2;
                 break;
             case SOL :
             case SHX :
             case SCS :
-                *TkCrsr = NULLCHAR; // for conversion routines
-                TkCrsr++;
+                *TkCrsr++ = NULLCHAR; // for conversion routines
+                /* fall through */
             case SAP :
                 State = state2;
                 break;
             case SSO :
                 goto token;
             case SOP :
-                *TkCrsr = ch;
-                TkCrsr++;
+                *TkCrsr++ = ch;
                 // 0..71 is the statement area
                 // 72..79 is the sequence area
                 ++Cursor;
@@ -317,8 +309,7 @@ void    Scan( void ) {
                     memset( TkCrsr, ' ', tab );
                     TkCrsr += tab;
                 } else {
-                    *TkCrsr = ch;
-                    TkCrsr++;
+                    *TkCrsr++ = ch;
                 }
                 break;
             case SSP :
@@ -338,6 +329,7 @@ void    Scan( void ) {
                     Extension( CC_EOL_COMMENT );
                     ExtnSw |= XS_EOL_COMMENT;
                 }
+                /* fall through */
             case SNR :
                 if( LexToken.flags & TK_INCLUDE ) {
                     LexToken.flags |= TK_LAST;
@@ -445,6 +437,7 @@ token:  LexToken.stop  = TkCrsr;
             break;
         case SNS :
             LexToken.flags |= TK_EOL;
+            /* fall through */
         case SLL :
             class = TO_OPR;
             break;

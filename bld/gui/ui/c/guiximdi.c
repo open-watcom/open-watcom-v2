@@ -36,12 +36,12 @@
 #include "guiximdi.h"
 
 
-static bool ProcessEvent( EVENT ev )
+static bool ProcessEvent( ui_event ui_ev )
 {
     gui_window  *wnd;
     gui_ctl_id  id;
 
-    id = EV2ID( ev );
+    id = EV2ID( ui_ev );
     if( id == GUI_MDI_MORE_WINDOWS ) {
         GUIMDIMoreWindows();
         return( true );

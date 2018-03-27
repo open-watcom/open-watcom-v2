@@ -33,10 +33,10 @@
 
 extern mad_type_handle  ScanType( mad_type_kind tk, mad_type_kind *tkr );
 extern mad_string       ScanCall( void );
-extern unsigned         GetMADMaxFormatWidth( mad_type_handle th );
+extern unsigned         GetMADMaxFormatWidth( mad_type_handle mth );
 extern void             RegFindData( mad_type_kind kind, const mad_reg_set_data **pdata );
 #ifdef DEAD_CODE
 extern void             CnvAddrToItem( address *a, item_mach *item, mad_type_info *mti );
 #endif
-extern char             *AddrTypeToString( address *a, mad_type_handle th, char *buff, size_t buff_len );
+extern char             *AddrTypeToString( address *a, mad_type_handle mth, char *buff, size_t buff_len );
 extern char             *AddrToString( address *a, mad_address_format af, char *buff, size_t buff_len );

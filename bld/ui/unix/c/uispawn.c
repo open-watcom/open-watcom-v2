@@ -32,27 +32,26 @@
 
 #include <stdio.h>
 #include "uidef.h"
-#include "uivirt.h"
+#include "uivirts.h"
+#include "uimouse.h"
 
-
-extern bool     MouseInstalled;
 
 void UIAPI uispawnstart( void )
 /*****************************/
 {
     uiswap();
-    uisetcursor( 0, 0, C_NORMAL, -1 );
+    uisetcursor( 0, 0, C_NORMAL, CATTR_OFF );
     if( MouseInstalled )
         _finimouse();
-    savekeyb();
+    _savekeyb();
 }
 
 void UIAPI uispawnend( void )
 /***************************/
 {
-    restorekeyb();
+    _restorekeyb();
     if( MouseInstalled )
-        _initmouse( 1 );
+        _initmouse( INIT_MOUSE );
     uiswap();
-    _ui_refresh( 1 );
+    _ui_refresh( true );
 }

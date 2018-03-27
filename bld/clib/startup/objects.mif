@@ -20,7 +20,7 @@
 !inject crtinit.obj                      nt nta ntp
 !inject crwd086.obj  d16                                                    q16
 !inject crwd386.obj      d32             nt         nvc ncl nvl nll     o32     q32             l32         rdu rdk
-!inject crwdaxp.obj                         nta ntp                                                 lpc lmp
+!inject crwdata.obj                         nta ntp                                                 lpc lmp
 !inject cstrt086.obj d16
 !inject cstrt386.obj     d32
 !inject cstrtaxp.obj                        nta
@@ -107,7 +107,6 @@
 !inject mainwnt.obj                      nt nta ntp
 !inject mainrdu.obj                                                                                         rdu
 !inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                 rdu rdk
-!inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi             rdu rdk
 !inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
 !inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject os2fil64.obj                                                    o32
@@ -174,7 +173,7 @@
 !inject wstrwaxp.obj                        nta
 !inject wstrwwna.obj                        nta ntp
 !inject wstrwwnt.obj                     nt
-!inject xiyi.obj     d16 d32                        nvc ncl nvl nll o16     q16 q32 w16 w32 osi
+!inject xiyi.obj     d16 d32                        nvc ncl nvl nll o16     q16 q32 w16 w32 osi                 rdk
 !inject xmsg.obj     d16 d32
 !inject xmsglnx.obj                                                                             l32 lpc lmp
 !inject xmsgnov.obj                                 nvc ncl nvl nll
@@ -271,3 +270,6 @@ maino32_postopts  =-os
 seterrno_postopts =-os
 
 no_truncate_object_code=1
+
+extra_clib_c_flags = $(build_cppflags)
+extra_clib_a_flags = $(build_cppflags)

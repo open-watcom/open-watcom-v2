@@ -1,10 +1,11 @@
 #include <signal.h>
 #include <sys/magic.h>
+#include "fpexcept.h"
 
 
-extern void __FPEhandler( void );
-
-void __FPEhandler( void )
+void __FPE_exception( int fpe )
 {
+    /* unused parameters */ (void)fpe;
+
     kill( __MAGIC.my_pid, SIGFPE );
 }

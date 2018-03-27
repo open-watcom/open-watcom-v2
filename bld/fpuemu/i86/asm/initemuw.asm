@@ -30,9 +30,9 @@
 
 .8087
 
+include langenv.inc
 include struct.inc
 include mdef.inc
-include xinit.inc
 
 public  FJSRQQ
 FJSRQQ  equ             08000H
@@ -52,9 +52,6 @@ public  FICRQQ
 FICRQQ  equ             00E32H
 public  FIARQQ
 FIARQQ  equ             0FE32H
-
-        xinit   __init_87_emulator,INIT_PRIORITY_FPU
-        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
 
 DGROUP  group   _DATA
         assume  ds:DGROUP
@@ -149,5 +146,10 @@ _userfpe proc near
 _userfpe endp
 
 _TEXT   ends
+
+include xinit.inc
+
+        xinit   __init_87_emulator,INIT_PRIORITY_FPU
+        xfini   __fini_87_emulator,INIT_PRIORITY_FPU
 
         end

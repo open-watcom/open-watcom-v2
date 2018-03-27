@@ -66,7 +66,7 @@ struct Glob Glob;
 const char FAR BuiltIns[] = {
     "__MAKEOPTS__=%s\n"
     "__MAKEFILES__=\n"
-    "__VERSION__=" BANSTR( _BANVER ) "\n"
+    "__VERSION__=" _MACROSTR( _BLDVER ) "\n"
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
 #endif

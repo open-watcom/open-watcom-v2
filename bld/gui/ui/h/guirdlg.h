@@ -35,5 +35,6 @@
 
 extern void GUIFreeDialogBoxControlPtrs( DialogBoxControl *dbc );
 extern void GUIFreeDialogBoxHeader( DialogBoxHeader *hdr );
+extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra );
 
 #endif

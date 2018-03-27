@@ -175,7 +175,7 @@ Previously Implemented Changes:
 
    where:
     <system> is one of:
-        msdos|qnx|os2|windows|winnt|netware|kanji|linux
+        msdos|qnx|os2|windows|winnt|netware|kanji|linux|osi
     <processor> is one of
         086|286|386|axp|ppc|mps|...
     <model> is one of:
@@ -202,38 +202,40 @@ Previously Implemented Changes:
 
     This scheme, coupled with the intended targets, produces the following
     first tier target hierarchy:
-        msdos.086\
+        msdos.086
             mt ms mm mc ml mh mm_ov ml_ov
-        msdos.286\
+        msdos.286
             ms mm mc ml mh ml_mt ml_dll
-        msdos.386\
+        msdos.386
             ms_r ms_s
-        os2.286\
+        os2.286
             ms mm mc ml mh ml_mt ml_dll
-        os2.386\
+        os2.386
             ms_r ms_s ms_rd
-        qnx.286\
+        qnx.286
             ms mm mc ml mh ml_sh
-        qnx.386\
+        qnx.386
             ms_r
-        windows.086\
+        windows.086
             ms mm mc ml
-        windows.386\
+        windows.386
             mf_r mf_s
-        winnt.386\
+        winnt.386
             ms_r ms_s ms_rd
-        netware.386\
+        netware.386
             ms_s
-        kanji.086\
+        kanji.086
             ms mm mc ml mh
-        kanji.386\
+        kanji.386
             ms_r ms_s
-        linux.386\
+        linux.386
             ms_r ms_s
-        rdos.386\
+        rdos.386
             mf_r mf_s
-        rdosdev.386\
+        rdosdev.386
             mc_r
+        osi.386
+            ms_r
 
 8.  The makefile systems is organized around a tree structure.
 
@@ -495,7 +497,7 @@ special case flags:     -oasl -s (for certain files)
 NetWare Settings:
 =================
 wasm flags:             -bt=NETWARE -ms -3s
-C include:              \clib\h ..\h \hdr\dos
+C include:              ..\h \clib\h \hdr\dos
 common C flags:         -bt=NETWARE -ms -5s -ox -d__far= -d__MT__
 
 ==============================================================================

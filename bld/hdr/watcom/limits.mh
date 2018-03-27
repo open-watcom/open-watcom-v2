@@ -5,9 +5,9 @@
 ::   climits  : CNAME wsplice operation.
 ::   limits   : CPPONLY + CNAME wsplice operation.
 ::
-:: The limits.h header used in the C library. 
+:: The limits.h header used in the C library.
 :: The climits header the C++ partner to C's limits.h.
-:: Currently climits and limits.h are identical. 
+:: Currently climits and limits.h are identical.
 :: C++'s limits header is not directly related to either limits.h or climits;
 :: it contains the definition of the numeric_limits template.
 :: (Peter Chapin)
@@ -30,7 +30,7 @@
 :include cpponly.sp
 
 :endsegment
-:include mbmax.sp
+:include mblenmax.sp
 
 /*
  *  ANSI required limits

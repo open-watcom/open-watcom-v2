@@ -61,7 +61,7 @@ void UIMemRedirect( int handle )
 }
 #endif
 
-extern void UIMemOpen( void )
+void UIMemOpen( void )
 {
 #ifdef TRMEM
     const char      *tmpdir;
@@ -139,7 +139,6 @@ void *uirealloc( void *old, size_t size )
 }
 
 #ifdef TRMEM
-/* extern to avoid problems with taking address and overlays */
 void UIMemPrintLine( void *handle, const char *buff, size_t len )
 {
 #ifdef TRMEM

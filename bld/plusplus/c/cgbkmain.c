@@ -783,8 +783,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
                           case TITER_CLASS_VBASE :
                           case TITER_CLASS_DBASE :
                           case TITER_NAKED_DTOR :
-                            se = buildObjectSe( iter
-                                              , CDoptObjectKind( iter ) );
+                            se = buildObjectSe( iter, CDoptObjectKind( iter ) );
                             se->base.prev = se_stack;
                             se_stack = se;
                             switch( comp_type ) {
@@ -1515,22 +1514,19 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
           case IC_LEAF_CONST_INT :          // LEAF: INTEGER CONSTANT (01-32)
-            CgExprPush( CGInteger( ins_value.ivalue, exprn_type )
-                      , exprn_type );
+            CgExprPush( CGInteger( ins_value.ivalue, exprn_type ), exprn_type );
             break;
 
           case IC_LEAF_CONST_INT64 :        // LEAF: INTEGER CONSTANT (33-64)
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
-            CgExprPush( CGInt64( con->u.int64_constant, exprn_type )
-                      , exprn_type );
+            CgExprPush( CGInt64( con->u.int64_constant, exprn_type ), exprn_type );
           } break;
 
           case IC_LEAF_CONST_FLT :          // LEAF: FLOATING-POINT CONSTANT
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
-            CgExprPush( CGFloat( con->u.s.fp_constant, exprn_type )
-                      , exprn_type );
+            CgExprPush( CGFloat( con->u.s.fp_constant, exprn_type ), exprn_type );
           } break;
 
           case IC_LEAF_CONST_STR :          // LEAF: STRING CONSTANT
@@ -1568,8 +1564,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             break;
 
           case IC_LEAF_THIS :               // LEAF: THIS POINTER REFERENCE
-            CgExprPush( CGFEName( (cg_sym_handle)fctl->this_sym, exprn_type )
-                      , exprn_type );
+            CgExprPush( CGFEName( (cg_sym_handle)fctl->this_sym, exprn_type ), exprn_type );
             break;
 
           case IC_LEAF_CDTOR_EXTRA :        // LEAF: EXTRA CTOR/DTOR INT PARM
@@ -1708,12 +1703,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 CgExprPush( op1, exprn_type );
                 break;
               case CO_FAR16_TO_POINTER:
-                CgExprPush( CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER )
-                          , TY_POINTER );
+                CgExprPush( CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER ), TY_POINTER );
                 break;
               case CO_POINTER_TO_FAR16:
-                CgExprPush( CGUnary( O_PTR_TO_FOREIGN, op1, TY_POINTER )
-                          , TY_POINTER );
+                CgExprPush( CGUnary( O_PTR_TO_FOREIGN, op1, TY_POINTER ), TY_POINTER );
                 break;
               case CO_VOLATILE_TOP:
                 CgExprPushWithAttr( op1, exprn_type, CG_SYM_VOLATILE );
@@ -1743,8 +1736,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 }
                 // drops thru
               default :
-                CgExprPush( CGUnary( cg_opcode, op1, exprn_type )
-                          , exprn_type );
+                CgExprPush( CGUnary( cg_opcode, op1, exprn_type ), exprn_type );
                 break;
             }
           } break;
@@ -1946,8 +1938,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             cg_type retn_type;              // - return type
             retn_type = CallStackRetnType();
             handle1 = CallStackPop();
-            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type )
-                      , exprn_type );
+            CgExprPush( CgFetchType( CGCall( handle1 ), retn_type ), exprn_type );
             CallIndirectPop();
             CgCdArgRemove( handle1 );
           } break;
@@ -2387,8 +2378,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                         e2 = CgComma( e1, e2, TY_POINTER );
                         e1 = CGLVAssign
                                 ( CgSymbolPlusOffset( init->reg->sym, CgbkInfo.size_data_ptr )
-                                , CgSymbol( BeTypeSignature( array_element )
-                                             ->sym )
+                                , CgSymbol( BeTypeSignature( array_element )->sym )
                                 , TY_POINTER );
                         e2 = CgComma( e1, e2, TY_POINTER );
                         e1 = ObjInitAssignBase( fctl, init );
@@ -2607,9 +2597,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             BlkPosnTempEndSet( fctl->pre_init );
             top_expr = CgExprPopType( &top_type );
             top_expr = CgComma( set_expr, top_expr, top_type );
-            top_expr = CgCallBackCtorDone( top_expr
-                                         , top_type
-                                         , fctl->pre_init );
+            top_expr = CgCallBackCtorDone( top_expr, top_type, fctl->pre_init );
             if( ! fctl->temp_dtoring ) {
                 // when there are temps, state var will be set
                 // by the temp-destruction process
@@ -2809,8 +2797,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 expr = CGLVAssign( CgSymbol( FnCtlNewCtorPtr( fctl ) )
                                  , CgMakeDup( &new_expr, type_new_expr )
                                  , TY_POINTER );
-                CgExprPush( CgComma( expr, new_expr, type_new_expr )
-                          , type_new_expr );
+                CgExprPush( CgComma( expr, new_expr, type_new_expr ), type_new_expr );
             }
           } break;
 
@@ -2824,16 +2811,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                     se = SeAlloc( DTC_DLT_1 );
                     se->dlt_1.op_del = op_del;
                     if( se->base.gen ) {
-                        AutoRelRegister( FnCtlNewCtorPtr( fctl )
-                                       , &se->dlt_1.offset );
+                        AutoRelRegister( FnCtlNewCtorPtr( fctl ), &se->dlt_1.offset );
                     }
                 } else {
                     se = SeAlloc( DTC_DLT_2 );
                     se->dlt_2.size = CgMemorySize( cl_type );
                     se->dlt_2.op_del = op_del;
                     if( se->base.gen ) {
-                        AutoRelRegister( FnCtlNewCtorPtr( fctl )
-                                       , &se->dlt_2.offset );
+                        AutoRelRegister( FnCtlNewCtorPtr( fctl ), &se->dlt_2.offset );
                     }
                 }
                 CgCallBackNewCtored( se, fctl );
@@ -2973,8 +2958,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                     FstabAssignStateVar( fn_exc );
                     fctl->dtor_method = saved;
                 }
-                RingAppend( &fn_exc->fn_exc.sigs
-                          , BeTypeSigEnt( ins_value.pvalue ) );
+                RingAppend( &fn_exc->fn_exc.sigs, BeTypeSigEnt( ins_value.pvalue ) );
             }
             break;
 

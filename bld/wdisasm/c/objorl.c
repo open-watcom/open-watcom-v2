@@ -41,6 +41,9 @@
 #define SYMBOL_TO_EXPORT_TABLE_SIZE             53
 #define SECTION_TO_SEGMENT_TABLE_SIZE           29
 
+#define FP2BL(fp)       ((buffer_list *)(fp))
+#define BL2FP(bl)       ((FILE *)(bl))
+
 typedef FILE            *file_handle;
 
 typedef struct buf_list {
@@ -85,25 +88,25 @@ static buffer_info      fileBuff;
 static orl_sec_handle   symbolTable;
 static section_list     relocSections;
 
-static void *buffRead( void *file, size_t len )
-//*********************************************
+static void *buffRead( FILE *fp, size_t len )
+//*******************************************
 {
     buf_list    *buf;
 
     buf = AllocMem( len + sizeof( buf_list ) - 1 );
-    if( fread( buf->buf, 1, len, file->hdl ) != len ) {
+    if( fread( buf->buf, 1, len, FP2BL( fp )->hdl ) != len ) {
         FreeMem( buf );
         return NULL;
     }
-    buf->next = ((buffer_info *)file)->buflist;
-    ((buffer_info *)file)->buflist = buf;
+    buf->next = FP2BL( fp )->buflist;
+    FP2BL( fp )->buflist = buf;
     return( buf->buf );
 }
 
-static long buffSeek( void *file, long pos, int where )
-//************************************************************
+static int buffSeek( FILE *fp, long pos, int where )
+//**************************************************
 {
-    return( fseek( ((buffer_info *)file)->hdl, pos, where ) );
+    return( fseek( FP2BL( fp )->hdl, pos, where ) );
 }
 
 static void initBuffer( buffer_info *file, file_handle hdl )
@@ -130,7 +133,11 @@ static void finiBuffer( buffer_info *file )
 static int numberCmp( hash_value n1, hash_value n2 )
 //**************************************************
 {
-    return( n1 - n2 );
+    if( n1 < n2 )
+        return( -1 );
+    if( n1 > n2 )
+        return( 1 );
+    return( 0 );
 }
 
 static void createHashTables( void )
@@ -174,7 +181,7 @@ bool InitORL( void )
     }
 
     initBuffer( &fileBuff, ObjFile );
-    o_format = ORLFileIdentify( ORLHnd, &fileBuff );
+    o_format = ORLFileIdentify( ORLHnd, BL2FP( &fileBuff ) );
     if( o_format != ORL_ELF && o_format != ORL_COFF ) {
         ORLFini( ORLHnd );
         finiBuffer( &fileBuff );
@@ -182,7 +189,7 @@ bool InitORL( void )
         return( false );        // Will use ParseObjectOMF
     }
 
-    ORLFileHnd = ORLFileInit( ORLHnd, &fileBuff, o_format );
+    ORLFileHnd = ORLFileInit( ORLHnd, BL2FP( &fileBuff ), o_format );
     if( !ORLFileHnd ) {
         ORLFini( ORLHnd );
         finiBuffer( &fileBuff );

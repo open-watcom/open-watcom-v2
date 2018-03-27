@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,7 @@
 /*
         Client overridable aspects of the TIX support.
 
-        ui_tix_path     is the last chance directory for finding TIX files
-                        (the trailing slash is required).
+        ui_tix_path     is the last chance directory for finding TIX files.
 
         ui_tix_missing  is called when UI can not find the appropriate TIX
                         file. The parm is the name of the TIX file being
@@ -46,7 +46,11 @@
 */
 
 #include <stdio.h>
-#include "tixparse.h"
+#include <stdlib.h>
+#include <string.h>
+#include "walloca.h"
+#include "tixsupp.h"
+
 
 char ui_tix_path[] = "/usr/watcom/tix";
 
@@ -55,4 +59,49 @@ int ui_tix_missing( const char *name )
     /* unused parameters */ (void)name;
 
     return( 1 );
+}
+
+static FILE *ti_fopen_path( const char *fnam, const char *fpath )
+{
+    char    *ffull;
+
+    ffull = walloca( strlen( fnam ) + strlen( fpath ) + 2 );
+    if( ffull == NULL ) {
+        return( NULL );
+    }
+
+    strcpy( ffull, fpath );
+    strcat( ffull, "/" );
+    strcat( ffull, fnam );
+    return( fopen( ffull, "r" ) );
+}
+
+FILE *ti_fopen( const char *fnam )
+/********************************/
+{
+    FILE        *res;
+    const char  *homeDir;
+
+    if( fnam == NULL || fnam[0] == '\0' ) {
+        return( NULL );
+    }
+
+    // first look in current directory
+    res = fopen( fnam, "r" );
+    if( res != NULL ) {
+        return( res );
+    }
+
+    // if it's not there, look in the user's home directory
+    homeDir = getenv( "HOME" );
+    if( homeDir != NULL && homeDir[0] != '\0' ) {
+        res = ti_fopen_path( fnam, homeDir );
+        if( res != NULL ) {
+            return( res );
+        }
+    }
+
+    // finally, look in /usr/watcom/tix/<name>
+    res = ti_fopen_path( fnam, ui_tix_path );
+    return( res );
 }

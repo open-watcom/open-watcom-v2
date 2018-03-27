@@ -37,6 +37,7 @@
 .386p
 .8087
 
+include langenv.inc
 include ptypes.inc
 include struct.inc
 include mdef.inc

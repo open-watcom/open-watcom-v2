@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,24 +60,21 @@
 #include "dbgwvar.h"
 #include "dbgwdisp.h"
 #include "wndmenu.h"
+#include "dbgsetfn.h"
 
 #include "clibext.h"
 
 
 extern void             WndUserAdd( char *, unsigned int );
-extern void             WndMenuOn( void );
-extern void             WndMenuOff( void );
-extern void             WndRestoreToFront( a_window* );
+extern void             WndRestoreToFront( a_window );
 
-extern const char       WndNameTab[];
 extern margins          SrcMar;
 extern margins          AsmMar;
-extern wnd_macro        *WndMacroList;
 
 static unsigned         TabInterval = 8;
 
 
-extern void DClickSet( void )
+void DClickSet( void )
 {
     unsigned    value;
     mad_radix   old_radix;
@@ -91,17 +89,17 @@ extern void DClickSet( void )
 }
 
 
-extern void DClickConf( void )
+void DClickConf( void )
 {
     CnvULongDec( WndGetDClick(), TxtBuff, TXT_LEN );
     ConfigLine( TxtBuff );
 }
 
 
-extern void InputSet( void )
+void InputSet( void )
 {
     wnd_class_wv    wndclass;
-    a_window        *wnd;
+    a_window        wnd;
 
     wndclass = ReqWndName();
     ReqEOC();
@@ -114,9 +112,9 @@ extern void InputSet( void )
 }
 
 
-extern void InputConf( void )
+void InputConf( void )
 {
-    a_window  *wnd;
+    a_window  wnd;
 
     wnd = WndFindActive();
     if( wnd != NULL && WndHasClass( wnd ) ) {
@@ -144,7 +142,7 @@ typedef enum {
 
 typedef struct {
     key_desc    desc;
-    unsigned    key;
+    gui_key     key;
 } key_name;
 
 static key_name KeyNames[] = {
@@ -232,7 +230,7 @@ static key_name KeyNames[] = {
 
 typedef struct {
     char        name;
-    unsigned    key;
+    gui_key     key;
 } alt_key_name;
 
 static alt_key_name AltKeyNames[] = {
@@ -300,12 +298,14 @@ static alt_key_name CtrlKeyNames[] = {
 #define STR_SHIFT       "SHIFT-"
 #define STR_ALT         "ALT-"
 
-char LookUpCtrlKey( unsigned key )
+char LookUpCtrlKey( gui_key key )
 {
     alt_key_name        *alt;
 
     for( alt = CtrlKeyNames; alt->name != 0; ++alt ) {
-        if( alt->key == key ) break;
+        if( alt->key == key ) {
+            break;
+        }
     }
     return( alt->name );
 }
@@ -325,7 +325,7 @@ static char *AddOn( char *buff, key_desc desc )
 }
 
 
-char *KeyName( unsigned key )
+char *KeyName( gui_key key )
 {
     static char         buff[20];
     key_name            *k;
@@ -339,8 +339,8 @@ char *KeyName( unsigned key )
             return( buff );
         }
     }
-    if( key <= 255 && isprint( key ) ) {
-        buff[0] = key;
+    if( WndKeyIsPrintChar( key ) ) {
+        buff[0] = (char)key;
         buff[1] = NULLCHAR;
         return( buff );
     }
@@ -378,7 +378,7 @@ static key_desc StripOff( const char **start, size_t *len,
 }
 
 
-static unsigned MapKey( const char *start, size_t len )
+static gui_key MapKey( const char *start, size_t len )
 {
     key_name            *k;
     key_desc            desc;
@@ -415,7 +415,9 @@ static unsigned MapKey( const char *start, size_t len )
             if( strlen( KeyNamePieces[i] ) == len ) {
                 desc += i;
                 for( k = KeyNames; k->key != 0; ++k ) {
-                    if( k->desc == desc ) return( k->key );
+                    if( k->desc == desc ) {
+                        return( k->key );
+                    }
                 }
                 return( 0 );
             }
@@ -425,7 +427,7 @@ static unsigned MapKey( const char *start, size_t len )
 }
 
 
-wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
+wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
 {
     wnd_macro           **owner,*curr;
     bool                is_main;
@@ -474,11 +476,11 @@ wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
 }
 
 
-extern void MacroSet( void )
+void MacroSet( void )
 {
     wnd_class_wv    wndclass;
     cmd_list        *cmds;
-    unsigned        key;
+    gui_key         key;
     const char      *start;
     size_t          len;
     bool            scanned;
@@ -505,7 +507,8 @@ extern void MacroSet( void )
             --i;
         }
         while( --i >= 0 ) {
-            if( *q != '\r' ) *p++ = *q;
+            if( *q != '\r' )
+                *p++ = *q;
             ++q;
         }
         *p = NULLCHAR;
@@ -516,7 +519,7 @@ extern void MacroSet( void )
     MacAddDel( key, wndclass, cmds );
 }
 
-extern  void    MacroConf( void )
+void    MacroConf( void )
 {
     char        wnd_name[20];
     wnd_macro   *mac;
@@ -534,7 +537,7 @@ extern  void    MacroConf( void )
     }
 }
 
-extern  void    FiniMacros( void )
+void    FiniMacros( void )
 {
     wnd_macro   *mac;
     wnd_macro   *junk;
@@ -563,7 +566,7 @@ void TabIntervalSet( int new )
     WndRedraw( WND_SOURCE );
 }
 
-extern void TabSet( void )
+void TabSet( void )
 {
     int         value;
     mad_radix   old_radix;
@@ -578,7 +581,7 @@ extern void TabSet( void )
 }
 
 
-extern void TabConf( void )
+void TabConf( void )
 {
     CnvULongDec( TabInterval, TxtBuff, TXT_LEN );
     ConfigLine( TxtBuff );
@@ -599,7 +602,7 @@ enum {
 };
 
 
-extern void SearchSet( void )
+void SearchSet( void )
 {
     const char  *start;
     size_t      len;
@@ -631,7 +634,7 @@ extern void SearchSet( void )
 }
 
 
-extern void SearchConf( void )
+void SearchConf( void )
 {
     char        *ptr;
 

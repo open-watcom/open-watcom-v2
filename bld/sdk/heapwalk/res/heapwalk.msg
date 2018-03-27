@@ -216,8 +216,8 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom Heapwalker for Windows (16-bit)",
         "Open Watcom Heapwalker for Windows (16-bit)" )
 pick(   STR_ABOUT_VERSION,
-        banner1p2( _HEAPWALKER_VERSION_ ),
-        banner1p2( _HEAPWALKER_VERSION_ ) )
+        banner1v( _HEAPWALKER_VERSION_ ),
+        banner1v( _HEAPWALKER_VERSION_ ) )
 pick(   STR_ABOUT_TITLE,
         "About Open Watcom Heapwalker",
         "About Open Watcom Heapwalker" )

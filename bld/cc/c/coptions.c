@@ -40,7 +40,6 @@
 #include <ctype.h>
 #include "wio.h"
 #include "watcom.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
@@ -293,6 +292,8 @@ static void SetTargSystem( void )
         _SetConstTarg( "dos" );
     #elif defined( __BSD__ )
         _SetConstTarg( "bsd" );
+    #elif defined( __RDOS__ )
+        _SetConstTarg( "rdos" );
     #else
         #error "Target OS not defined"
     #endif

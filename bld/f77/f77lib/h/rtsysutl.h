@@ -29,12 +29,14 @@
 ****************************************************************************/
 
 
+#include "fio.h"
+
+
 extern void    GetSysIOInfo( ftnfile *fcb );
 extern void    GetSysFileInfo( ftnfile *fcb );
 extern bool    IsDevice( ftnfile *fcb );
 extern void    OpenAction( ftnfile *fcb );
-extern int     DfltRecType( ftnfile *fcb );
-extern int     _FileAttrs( ftnfile *fcb );
+extern f_attrs _FileAttrs( ftnfile *fcb );
 extern void    CloseFile( ftnfile *fcb );
 extern bool    Scrtched( ftnfile *fcb );
 extern void    CloseDeleteFile( ftnfile *fcb );

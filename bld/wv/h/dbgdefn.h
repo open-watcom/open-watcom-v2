@@ -30,20 +30,11 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "bool.h"
 #include "machtype.h"
+#include "ovldefn.h"
 
-/* Functions declared as OVL_EXTERN are used only within the module
- * they are declared in however pointers to them are used.  In order
- * for the overlay manager to be able to keep track of these pointers
- * the functions must be extern when an overlayed debugger is made
- */
-
-#if defined(_OVERLAYED_)
-#define OVL_EXTERN
-#else
-#define OVL_EXTERN      static
-#endif
 
 #define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'
@@ -51,6 +42,17 @@
 #define GETU8(x)        (*(unsigned char *)(x))
 #define GETI8(x)        (*(signed char *)(x))
 #define GETWORD(x)      (GETU8((x)) + ( GETU8((x + 1)) << 8 ))
+
+/* file handles conversion macros */
+#if defined( _WIN64 )
+#define FH2FP(fh)       ((FILE *)(unsigned __int64)((fh) + 1))
+#define FP2FH(fp)       ((file_handle)((unsigned __int64)(fp)) - 1)
+#else
+#define FH2FP(fh)       ((FILE *)(unsigned long)((fh) + 1))
+#define FP2FH(fp)       ((file_handle)((unsigned long)(fp)) - 1)
+#endif
+
+#define FH2SYSH(sh,fh)  (sh).u._32[0]=fh;(sh).u._32[1]=0
 
 /* Handles */
 
@@ -105,7 +107,7 @@ typedef unsigned_8 screen_state; enum {
 #define UP_VAR_DISPLAY          0x00400000UL
 #define UP_ALL_CHANGE           0xFFFFFFFFUL
 
-#define UP_SYM_CHANGE           (UP_SYMBOLS_LOST+UP_SYMBOLS_ADDED)
+#define UP_SYM_CHANGE           (UP_SYMBOLS_LOST | UP_SYMBOLS_ADDED)
 
 typedef unsigned long update_list;
 
@@ -191,10 +193,9 @@ enum {
 #define SYM_NAME_NAME(n)        ((n)+1)
 #define SET_SYM_NAME_LEN(n,l)   ((n)[0]=(char)l)
 
-#undef ArraySize
 #define ArraySize( x ) ( sizeof( x ) / sizeof( (x)[0] ) )
 
-#define AddrCue Dont_call_AddrCue_directly___call_DeAliasAddrCue_instead
-#define AddrScope Dont_call_AddrScope_directly___call_DeAliasAddrScope_instead
-#define AddrSym Dont_call_AddrSym_directly___call_DeAliasAddrSym_instead
-#define AddrMod Dont_call_AddrMod_directly___call_DeAliasAddrMod_instead
+#define DIPAddrCue      Dont_call_DIPAddrCue_directly___call_DeAliasAddrCue_instead
+#define DIPAddrScope    Dont_call_DIPAddrScope_directly___call_DeAliasAddrScope_instead
+#define DIPAddrSym      Dont_call_DIPAddrSym_directly___call_DeAliasAddrSym_instead
+#define DIPAddrMod      Dont_call_DIPAddrMod_directly___call_DeAliasAddrMod_instead

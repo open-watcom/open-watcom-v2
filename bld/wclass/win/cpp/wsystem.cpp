@@ -41,7 +41,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
 
     WORD        show;
 
-    _unused( typ );
+    /* unused parameters */ (void)typ;
+
     switch( state ) {
     case WWinStateHide:
         show = SW_HIDE;

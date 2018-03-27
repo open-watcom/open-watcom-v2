@@ -8,3 +8,4 @@ dir="binnt64"   usr="wdump.exe"     cond="wnt64host"                    keys="nt
 dir="axpnt"     usr="wdump.exe"     cond="alphahost"    where="ac"
 dir="binl"      usr="wdump"         cond="lnxhost"
 dir="binl64"    usr="wdump"         cond="lnx64host"                    keys="lx64"
+dir="rdos"      usr="wdump.exe"     cond="rdoshost"

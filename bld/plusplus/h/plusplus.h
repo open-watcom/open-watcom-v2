@@ -166,6 +166,7 @@ enum {
     TS_QNX,
     TS_NETWARE5,
     TS_LINUX,
+    TS_RDOS,
     TS_MAX
 };
 

@@ -35,9 +35,8 @@
 
 #include "madcli.h"
 
-#define MAD_MAJOR       1
-#define MAD_MINOR_OLD   1
-#define MAD_MINOR       2
+#define MAD_MAJOR       2
+#define MAD_MINOR       0
 
 #define MADImp(n)       MADImp ## n
 #define _MADImp(n)      _MADImp ## n n
@@ -115,7 +114,6 @@ typedef struct mad_imp_routines {
     _MADImp( CallBuildFrame );
     _MADImp( CallReturnReg );
     _MADImp( CallParmRegList );
-    _MADImp( OldCallUpStackLevel );
 
     _MADImp( DisasmDataSize );
     _MADImp( DisasmNameMax );
@@ -155,7 +153,6 @@ typedef struct mad_client_routines {
     _DIGCli( Free );
 
     _DIGCli( Open );
-    _DIGCli( Seek );
     _DIGCli( Read );
     _DIGCli( Close );
 
@@ -188,11 +185,16 @@ typedef struct mad_client_routines {
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY mad_fini_func( void );
+
+typedef struct mad_link_block {
+    mad_init_func   *load;
+    mad_fini_func   *unload;
+} mad_link_block;
 #endif
 
-DIG_DLLEXPORT mad_init_func MADLOAD;
+DIG_DLLEXPORT extern mad_init_func MADLOAD;
 #ifdef __WINDOWS__
-DIG_DLLEXPORT mad_fini_func MADUNLOAD;
+extern mad_fini_func MADUNLOAD;
 #endif
 
 #define MC(n)       MC ## n

@@ -251,7 +251,7 @@ static void Cascade( gui_window *root, int num_windows, gui_rect *rect,
     GUIEnumChildWindows( root, &CascadeWindows, &info );
 }
 
-static void Arrange( EVENT ev )
+static void Arrange( ui_event ui_ev )
 {
     gui_rect            rect;
     int                 num_windows;
@@ -270,7 +270,7 @@ static void Arrange( EVENT ev )
     if( total_icons > 0 ) {
         rect.height -= min_size.y;
     }
-    switch( ev ) {
+    switch( ui_ev ) {
     case GUI_MDI_CASCADE :
         Cascade( root, num_windows, &rect, &min_size );
         break;
@@ -307,12 +307,12 @@ static void Icons( void )
     GUIEnumChildWindows( root, &ArrangeIcons, &num );
 }
 
-static bool ProcessEvent( EVENT ev )
+static bool ProcessEvent( ui_event ui_ev )
 {
     gui_window  *wnd;
     gui_ctl_id  id;
 
-    id = EV2ID( ev );
+    id = EV2ID( ui_ev );
     switch( id ) {
     case GUI_MDI_CASCADE :
     case GUI_MDI_TILE_HORZ :

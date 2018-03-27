@@ -160,7 +160,7 @@ static void ControlReq( ctl_request req )
     if( DebuggerWindow == NULL ) {
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     } else {
-        while( !Shared.req_done ) { 
+        while( !Shared.req_done ) {
             if ( !GetMessage( &msg, NULL, 0, 0 ) )
                 break;    // break on WM_QUIT, when Windows requests this. (If ever)
             hwnd = msg.hwnd;
@@ -205,7 +205,7 @@ static void ControlReq( ctl_request req )
                     break;
                 case WM_PAINT:
                     // WM_PAINT must be sent to the target window in order
-                    // to remove it from the queue 
+                    // to remove it from the queue
                     DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
                     break;
                 default:
@@ -214,7 +214,7 @@ static void ControlReq( ctl_request req )
                 }
             }
         }
-        Shared.req_done = FALSE;    // Reset  
+        Shared.req_done = FALSE;    // Reset
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
     }
 }
@@ -231,9 +231,9 @@ static void RequestDone( void )
     if( DebuggerWindow == NULL ) {
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
     } else {
-        Shared.req_done = TRUE; 
+        Shared.req_done = TRUE;
         // Notify that something has happened, avoid delay
-        PostMessage( DebuggerWindow, WM_NULL, 0, 0 ); 
+        PostMessage( DebuggerWindow, WM_NULL, 0, 0 );
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     }
 }
@@ -271,27 +271,27 @@ static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
     if( OpenProcessToken( GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
 
         cbNeeded = 0;
-    
+
         //
         // Initialize the privilege adjustment structure
         //
-    
+
         LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
-    
+
         NewPrivileges.PrivilegeCount = 1;
         NewPrivileges.Privileges[0].Luid = LuidPrivilege;
         NewPrivileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-    
+
         //
         // Enable the privilege
         //
-    
+
         pbOldPriv = OldPriv;
         fRc = AdjustTokenPrivileges( Token, FALSE, &NewPrivileges, 1024, (PTOKEN_PRIVILEGES)pbOldPriv, &cbNeeded );
-    
+
         if( fRc == 0 && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
-    
-            // 
+
+            //
             // If the stack was too small to hold the privileges
             // then allocate off the heap
             //
@@ -737,7 +737,7 @@ static void StopDebuggee( void )
             if( hp != NULL ) {
                 TerminateProcess( hp, 0 );
                 CloseHandle( hp );
-                while( !( DebugExecute( 0, NULL, FALSE ) & COND_TERMINATE ) ) {
+                while( (DebugExecute( 0, NULL, FALSE ) & COND_TERMINATE) == 0 ) {
                 }
                 /*
                  * we must continue the final debug event for everything to

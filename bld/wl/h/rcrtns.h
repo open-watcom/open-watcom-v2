@@ -48,12 +48,12 @@
 
 #define RCREALLOC       LnkReAlloc
 
-extern WResFileID       res_open( const char *name, wres_open_mode omode );
-extern bool             res_close( WResFileID fid );
-extern size_t           res_read( WResFileID fid, void *buf, size_t len );
-extern size_t           res_write( WResFileID fid, const void *buf, size_t len );
-extern bool             res_seek( WResFileID fid, WResFileOffset off, int where );
-extern WResFileOffset   res_tell( WResFileID fid );
-extern bool             res_ioerr( WResFileID fid, size_t rc );
+extern FILE             *res_open( const char *name, wres_open_mode omode );
+extern bool             res_close( FILE *fp );
+extern size_t           res_read( FILE *fp, void *buf, size_t len );
+extern size_t           res_write( FILE *fp, const void *buf, size_t len );
+extern bool             res_seek( FILE *fp, long off, int where );
+extern long             res_tell( FILE *fp );
+extern bool             res_ioerr( FILE *fp, size_t rc );
 
 #endif

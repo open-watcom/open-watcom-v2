@@ -206,7 +206,7 @@ extern char   *get_dllname( char *buf, int len );
 }
 #endif
 
-#endif
+#endif  /* !__WATCOMC__ */
 
 #ifdef _WIN64
 

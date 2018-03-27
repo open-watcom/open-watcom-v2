@@ -29,33 +29,31 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-gui_ord ToolHeight;
-static gui_event ToolEvent = GUI_TOOLBAR_DESTROYED;
 
-extern  gui_colour_set  WndColours[];
+gui_ord             ToolHeight;
 
-void    WndCreateToolBar( gui_ord height, bool fixed,
-                          int items, gui_toolbar_struct *tools )
+static gui_event    ToolEvent = GUI_TOOLBAR_DESTROYED;
+
+void WndCreateToolBar( gui_ord height, bool fixed, int items, gui_toolbar_struct *tools )
 {
-    if( GUIHasToolBar( WndMain->gui ) ) GUICloseToolBar( WndMain->gui );
-    GUICreateToolBar( WndMain->gui, fixed, height,
-                      items, tools, true, &WndColours[ GUI_MENU_PLAIN ],
-                      &WndColours[ GUI_MENU_STANDOUT ] );
+    if( GUIHasToolBar( WndMain->gui ) ) {
+        GUICloseToolBar( WndMain->gui );
+    }
+    GUICreateToolBar( WndMain->gui, fixed, height, items, tools, true,
+                        &WndColours[GUI_MENU_PLAIN], &WndColours[GUI_MENU_STANDOUT] );
     ToolHeight = height;
     WndSetToolBar( fixed ? GUI_TOOLBAR_FIXED : GUI_TOOLBAR_FLOATING );
 }
 
-void WndCreateToolBarWithTips( gui_ord height, bool fixed, int items,
-                               gui_toolbar_struct *tools )
+void WndCreateToolBarWithTips( gui_ord height, bool fixed, int items, gui_toolbar_struct *tools )
 {
     if( GUIHasToolBar( WndMain->gui ) ) {
         GUICloseToolBar( WndMain->gui );
     }
     GUICreateToolBarWithTips( WndMain->gui, fixed, height, items, tools, true,
-                              &WndColours[GUI_MENU_PLAIN],
-                              &WndColours[GUI_MENU_STANDOUT] );
+                        &WndColours[GUI_MENU_PLAIN], &WndColours[GUI_MENU_STANDOUT] );
     ToolHeight = height;
     WndSetToolBar( fixed ? GUI_TOOLBAR_FIXED : GUI_TOOLBAR_FLOATING );
 }
@@ -65,9 +63,11 @@ bool WndHaveToolBar( void )
     return( GUIHasToolBar( WndMain->gui ) );
 }
 
-void    WndCloseToolBar( void )
+void WndCloseToolBar( void )
 {
-    if( WndHaveToolBar() ) GUICloseToolBar( WndMain->gui );
+    if( WndHaveToolBar() ) {
+        GUICloseToolBar( WndMain->gui );
+    }
 }
 
 gui_ord WndToolHeight( void )
@@ -80,13 +80,13 @@ bool WndToolFixed( void )
     return( ToolEvent == GUI_TOOLBAR_FIXED );
 }
 
-void WndSetToolBar( gui_event event )
+void WndSetToolBar( gui_event gui_ev )
 {
-    gui_event   old;
+    gui_event   old_gui_ev;
 
-    old = ToolEvent;
-    ToolEvent = event;
-    if( old != event ) {
+    old_gui_ev = ToolEvent;
+    ToolEvent = gui_ev;
+    if( old_gui_ev != gui_ev ) {
         WndSetWndMax();
     }
 }

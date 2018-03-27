@@ -35,6 +35,7 @@
 #include "uidos.h"
 #include "uishift.h"
 #include "biosui.h"
+#include "uiwin.h"
 #include <windows.h>
 
 
@@ -45,6 +46,9 @@ typedef struct {
     char            regular;
     char            shifted;
 } keytable;
+
+extern void set_carry( void );
+#pragma aux set_carry = 0xf9;
 
 static keytable kt[] = {
     { 0xbc, ',',  '<' },
@@ -63,9 +67,6 @@ static keytable kt[] = {
 static unsigned char    ShiftState;
 static unsigned         LastKey;
 static volatile bool    HaveKey;
-
-#pragma aux set_carry = 0xf9;
-extern void set_carry( void );
 
 static int CheckState( unsigned info, unsigned down )
 {
@@ -223,7 +224,9 @@ static void MyHookRtn( unsigned event, unsigned info )
                     } else if( ShiftState & S_CTRL ) {
                         key -= 'A'-1;
                     } else if( !(ShiftState & S_SHIFT) ) {
-                        if( !(ShiftState & S_CAPS) ) key += 'a' - 'A';
+                        if( !(ShiftState & S_CAPS) ) {
+                            key += 'a' - 'A';
+                        }
                     } else if( ShiftState & S_CAPS ) {
                         key += 'a' - 'A';
                     }
@@ -272,39 +275,28 @@ static void MyHookRtn( unsigned event, unsigned info )
  * to register multiple event hooks anyway). See Undocumented Windows.
  *
  * Note - this keyboard input method looks like a really ugly hack.
- */ 
+ */
 void __far __loadds win_uihookrtn( unsigned event, unsigned info )
 {
     MyHookRtn( event, info );
     set_carry();
 }
 
-static EVENT    EventsPress[] = {
-    EV_SHIFT_PRESS,
-    EV_SHIFT_PRESS,
-    EV_CTRL_PRESS,
-    EV_ALT_PRESS,
-    EV_SCROLL_PRESS,
-    EV_NUM_PRESS,
-    EV_CAPS_PRESS,
-    EV_INSERT_PRESS
+static shiftkey_event   ShiftkeyEvents[] = {
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_SHIFT_PRESS,     EV_SHIFT_RELEASE,
+    EV_CTRL_PRESS,      EV_CTRL_RELEASE,
+    EV_ALT_PRESS,       EV_ALT_RELEASE,
+    EV_SCROLL_PRESS,    EV_SCROLL_RELEASE,
+    EV_NUM_PRESS,       EV_NUM_RELEASE,
+    EV_CAPS_PRESS,      EV_CAPS_RELEASE,
+    EV_INSERT_PRESS,    EV_INSERT_RELEASE
 };
 
-static EVENT    EventsRelease[] = {
-    EV_SHIFT_RELEASE,
-    EV_SHIFT_RELEASE,
-    EV_CTRL_RELEASE,
-    EV_ALT_RELEASE,
-    EV_SCROLL_RELEASE,
-    EV_NUM_RELEASE,
-    EV_CAPS_RELEASE,
-    EV_INSERT_RELEASE
-};
-
-unsigned int intern getkey( void )
-/********************************/
+unsigned intern getkey( void )
+/****************************/
 {
-    int       ev;
+    unsigned    ev;
 
     while( !HaveKey )
         {}
@@ -369,15 +361,15 @@ void intern finikeyboard( void )
 }
 
 
-EVENT intern keyboardevent( void )
-/********************************/
+ui_event intern keyboardevent( void )
+/***********************************/
 {
-    register    unsigned int            key;
-    register    unsigned int            scan;
-    register    unsigned char           ascii;
-    register    EVENT                   ev;
-    register    unsigned char           newshift;
-    register    unsigned char           changed;
+    unsigned            key;
+    unsigned            scan;
+    unsigned char       ascii;
+    ui_event            ui_ev;
+    unsigned char       newshift;
+    unsigned char       changed;
 
     newshift = checkshift();
     /* checkkey must take precedence over shift change so that  *
@@ -385,49 +377,47 @@ EVENT intern keyboardevent( void )
      * ascii code on the numeric keypad works                   */
     if( checkkey() ) {
         key = getkey();
-        scan = (unsigned char) ( key >> 8 ) ;
-        ascii = (unsigned char) key;
-        ev = scan + 0x100;
+        scan = (unsigned char)( key >> 8 ) ;
+        ascii = (unsigned char)key;
+        ui_ev = scan + 0x100;
         if( ascii != 0 ) {
-            ev = ascii;
+            ui_ev = ascii;
             if( ( newshift & S_ALT ) && ( ascii == ' ' ) ) {
-                ev = EV_ALT_SPACE;
+                ui_ev = EV_ALT_SPACE;
             } else if( scan != 0 ) {
                 switch( ascii + 0x100 ) {
                 case EV_RUB_OUT:
                 case EV_TAB_FORWARD:
                 case EV_ENTER:
                 case EV_ESCAPE:
-                    ev = ascii + 0x100;
+                    ui_ev = ascii + 0x100;
                     break;
                 }
             }
         }
-        if( !iskeyboardchar( ev ) ) {
-            ev = EV_NO_EVENT;
+        if( !iskeyboardchar( ui_ev ) ) {
+            ui_ev = EV_NO_EVENT;
         }
     } else {
         changed = ( newshift ^ UIData->old_shift );
         if( changed != 0 ) {
-            key = 0;
             scan = 1;
-            while( scan < (1 << 8) ) {
-                if( ( changed & scan ) != 0 ) {
-                    if( ( newshift & scan ) != 0 ) {
+            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+                if( changed & scan ) {
+                    if( newshift & scan ) {
                         UIData->old_shift |= scan;
-                        return( EventsPress[ key ] );
+                        return( ShiftkeyEvents[key].press );
                     } else {
                         UIData->old_shift &= ~scan;
-                        return( EventsRelease[ key ] );
+                        return( ShiftkeyEvents[key].release );
                     }
                 }
                 scan <<= 1;
-                ++key;
             }
         }
-        ev = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
     }
-    return( ev );
+    return( ui_ev );
 }
 
 unsigned char UIAPI uicheckshift( void )
@@ -448,7 +438,9 @@ MSG msg;
             TranslateMessage( &msg );
             DispatchMessage( &msg );
         }
-        if( yield ) Yield();
+        if( yield ) {
+            Yield();
+        }
 
 } /* WindowsMessageLoop */
 #endif

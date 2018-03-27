@@ -46,7 +46,7 @@
 #error Unknown System
 #endif
 
-char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
+char CompilerID[] = { "__WATCOMC__=" _MACROSTR( _BLDVER ) };
 
 int CBanner( void )
 {
@@ -65,7 +65,7 @@ int CBanner( void )
 #endif
         BannerMsg( banner2 );
         ++count;
-        BannerMsg( banner2a( "1984" ) );
+        BannerMsg( banner2a( 1984 ) );
         ++count;
         BannerMsg( banner3 );
         ++count;

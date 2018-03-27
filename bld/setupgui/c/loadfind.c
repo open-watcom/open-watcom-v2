@@ -34,19 +34,11 @@
 #include "wresall.h"
 #include "wresset2.h"
 #include "wresrtns.h"
+#include "machtype.h"
+#include "wdbginfo.h"
+
 
 #include "pushpck1.h"
-typedef struct dbgheader {
-    uint_16     signature;
-    uint_8      exe_major_ver;
-    uint_8      exe_minor_ver;
-    uint_8      obj_major_ver;
-    uint_8      obj_minor_ver;
-    uint_16     lang_size;
-    uint_16     seg_size;
-    uint_32     debug_size;
-} dbgheader;
-
 typedef struct {
     char        signature[4];
     uint_16     disk_number;
@@ -79,34 +71,29 @@ typedef struct {
 } zip_cdfh;
 #include "poppck.h"
 
-#define VALID_SIGNATURE 0x8386
-#define FOX_SIGNATURE1  0x8300
-#define FOX_SIGNATURE2  0x8301
-#define WAT_RES_SIG     0x8302
-
-WResFileOffset          WResFileShift = 0;
+long            WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
 bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
-    WResFileOffset  currpos;
-    WResFileOffset  offset;
-    dbgheader       header;
-    zip_eocd        eocd;
-    zip_cdfh        cdfh;
-    bool            notfound;
+    long                currpos;
+    long                offset;
+    master_dbg_header   header;
+    zip_eocd            eocd;
+    zip_cdfh            cdfh;
+    bool                notfound;
 
     notfound = !res_file;
     WResFileShift = 0;
     if( notfound ) {
-        offset = sizeof( dbgheader );
+        offset = sizeof( master_dbg_header );
 
         /* Look for a PKZIP header and skip archive if present */
-        if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
-            if( WRESREAD( hinfo->fid, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
+        if( !WRESSEEK( hinfo->fp, -(long)sizeof( eocd ), SEEK_END ) ) {
+            if( WRESREAD( hinfo->fp, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
                 if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                    if( !WRESSEEK( hinfo->fid, eocd.cd_offset, SEEK_SET ) ) {
-                        if( WRESREAD( hinfo->fid, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
+                    if( !WRESSEEK( hinfo->fp, eocd.cd_offset, SEEK_SET ) ) {
+                        if( WRESREAD( hinfo->fp, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
                             if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
                                 offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
                             }
@@ -115,19 +102,19 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                 }
             }
         }
-        WRESSEEK( hinfo->fid, -offset, SEEK_END );
-        currpos = WRESTELL( hinfo->fid );
+        WRESSEEK( hinfo->fp, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
-            WRESREAD( hinfo->fid, &header, sizeof( dbgheader ) );
+            WRESREAD( hinfo->fp, &header, sizeof( master_dbg_header ) );
             if( header.signature == WAT_RES_SIG ) {
                 notfound = false;
-                WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
+                WResFileShift = currpos - header.debug_size + sizeof( master_dbg_header );
                 break;
-            } else if( header.signature == VALID_SIGNATURE ||
+            } else if( header.signature == WAT_DBG_SIGNATURE ||
                        header.signature == FOX_SIGNATURE1 ||
                        header.signature == FOX_SIGNATURE2 ) {
                 currpos -= header.debug_size;
-                WRESSEEK( hinfo->fid, currpos, SEEK_SET );
+                WRESSEEK( hinfo->fp, currpos, SEEK_SET );
             } else {        /* did not find the resource information */
                 break;
             }

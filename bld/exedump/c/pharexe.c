@@ -197,7 +197,7 @@ static void dmp_rtp_tbl( void )
     Wread( &rtp_blk, sizeof( rtpblock ) );
     if( rtp_blk.signature == RTP_SIGNATURE ) {
         Banner( "Run-time Parameter Block" );
-        Dump_header( (char *)&rtp_blk.minreal, rtp_blk_msg );
+        Dump_header( (char *)&rtp_blk.minreal, rtp_blk_msg, 4 );
         Wdputslc( "\n" );
     }
 }
@@ -278,7 +278,7 @@ static void dmp_tss( void )
         Wlseek( Phar_ext_head.tss_offset + Phar_ext_head.load_offset );
         Wread( &task_ss, sizeof( TSS ) );
         Banner( "Task State Segment" );
-        Dump_header( (char *)&task_ss.backlink, tss_msg );
+        Dump_header( (char *)&task_ss.backlink, tss_msg, 4 );
     }
     if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
         image = Phar_ext_head.gdt_size + Phar_ext_head.ldt_size +
@@ -367,11 +367,11 @@ bool Dmp_phar_head( void )
     Wread( &Phar_head, sizeof( simple_header ) );
     if( Phar_head.signature == SIMPLE_SIGNATURE ) {
         Banner( "Pharlap EXE Header" );
-        Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg );
+        Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg, 4 );
     }
     if( Phar_head.signature == REX_SIGNATURE ) {
         Banner( "Pharlap REX Header" );
-        Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg );
+        Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg, 4 );
         dmp_rex_reloc();
     }
     if( Phar_head.signature == SIMPLE_SIGNATURE || Phar_head.signature == REX_SIGNATURE ) {
@@ -389,7 +389,7 @@ bool Dmp_phar_head( void )
         Wread( (char *)&Phar_ext_head + sizeof( Phar_ext_head.signature ),
             sizeof( extended_header ) - sizeof( Phar_ext_head.signature ) );
         Banner( "Pharlap EXE Extended Header" );
-        Dump_header( (char *)&Phar_ext_head.format_level, phar_ext_msg );
+        Dump_header( (char *)&Phar_ext_head.format_level, phar_ext_msg, 4 );
         dmp_rtp_tbl();
         dmp_seg_info_tbl();
         dmp_reloc_tbl();

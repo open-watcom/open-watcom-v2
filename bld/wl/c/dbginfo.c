@@ -49,13 +49,13 @@
 #include "ring.h"
 #include "dbgcomm.h"
 #include "dbgwat.h"
+#include "machtype.h"
+#include "wdbginfo.h"
 
 #include "clibext.h"
 
-#define EXE_MAJOR_VERSION   3
-#define EXE_MINOR_VERSION   0
 
-#define ADDR_INFO_LIMIT ( 63 * 1024U / sizeof( addrinfo ) )
+#define ADDR_INFO_LIMIT ( 63 * 1024U / sizeof( addr_dbg_info ) )
 #define DEMAND_INFO_SPLIT ( 16 * 1024 )
 
 #define NON_SECT_INFO 0x8000
@@ -79,7 +79,7 @@ typedef struct odbimodinfo {
 typedef struct seginfo     {
     struct seginfo      *next;
     unsigned_32         dbioff;
-    segheader           head;
+    seg_dbg_info        head;
     unsigned_32         endoflast;
     seg_leader          *prevlead;
     seg_leader          *final;
@@ -95,10 +95,10 @@ typedef struct snamelist {              // source name list
     char                name[1];        // stored WITH a nullchar
 } snamelist;
 
-static unsigned_32  DBISize;
-static dbgheader    Master;             // rest depend on .obj files.
+static unsigned_32          DBISize;
+static master_dbg_header    Master;             // rest depend on .obj files.
 
-static snamelist    *DBISourceLang;     // list of source languages
+static snamelist            *DBISourceLang;     // list of source languages
 
 #ifdef _INT_DEBUG
 struct {
@@ -122,8 +122,8 @@ static snamelist *LangAlloc( size_t len, const char *buff )
 void ODBIInit( section *sect )
 /****************************/
 {
-    DBISize = sizeof( dbgheader );
-    Master.signature = DBG_SIGNATURE;
+    DBISize = sizeof( master_dbg_header );
+    Master.signature = WAT_DBG_SIGNATURE;
     Master.exe_major_ver = EXE_MAJOR_VERSION;
     Master.exe_minor_ver = EXE_MINOR_VERSION;
     Master.obj_major_ver = 0;
@@ -307,7 +307,7 @@ void ODBIP1ModuleFinished( mod_entry *obj )
         DBILineWalk( obj->lines, ODBIAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
-    dinfo->mod.curr.u.vm_offs += strlen( obj->name ) + sizeof( modinfo );
+    dinfo->mod.curr.u.vm_offs += strlen( obj->name ) + sizeof( mod_dbg_info );
     dinfo->linelinks.size = 0;
 }
 
@@ -349,7 +349,7 @@ void ODBIAddGlobal( symbol *sym )
             LnkMsg( WRN+MSG_SYMBOL_NAME_TOO_LONG, "s", sym->name );
             len = 255;
         }
-        dinfo->global.curr.u.vm_offs += sizeof( gblinfo ) + len;
+        dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + len;
     }
 }
 
@@ -386,7 +386,7 @@ void ODBIAddrSectStart( section *sect )
     if( ( dptr->local.curr.u.vm_offs > 0 ) || ( dptr->type.curr.u.vm_offs > 0 ) || ( dptr->line.curr.u.vm_offs > 0 ) ) {
         dptr->linelinks.curr.u.vm_offs += sizeof( unsigned_32 );
     }
-    dptr->locallinks.start = sizeof( sectheader );
+    dptr->locallinks.start = sizeof( section_dbg_header );
     dptr->locallinks.size = dptr->locallinks.curr.u.vm_offs;
     dptr->locallinks.curr.u.vm_ptr = DBIAlloc( dptr->locallinks.curr.u.vm_offs );
     dptr->locallinks.init.u.vm_ptr = dptr->locallinks.curr.u.vm_ptr;
@@ -445,7 +445,7 @@ void ODBIGenGlobal( symbol *sym, section *sect )
 /**********************************************/
 {
     size_t      len;
-    gblinfo     *data;
+    v3_gbl_info *data;
     debug_info  *dptr;
 
     dptr = sect->dbg_info;
@@ -456,23 +456,23 @@ void ODBIGenGlobal( symbol *sym, section *sect )
         if( len > 255 ) {
             len = 255;
         }
-        data = (gblinfo *)alloca( sizeof( gblinfo ) + len );
-        _HostU32toTarg( sym->addr.off, data->off );
-        _HostU16toTarg( sym->addr.seg, data->seg );
-        _HostU16toTarg( dptr->modnum, data->mod_idx );
-        data->flags = 0;
+        data = (v3_gbl_info *)alloca( sizeof( v3_gbl_info ) + len );
+        _HostU32toTarg( sym->addr.off, data->addr.offset );
+        _HostU16toTarg( sym->addr.seg, data->addr.segment );
+        _HostU16toTarg( dptr->modnum, data->mod );
+        data->kind = 0;
         if( sym->info & SYM_STATIC ) {
-            data->flags |= DBG_GBL_STATIC;
+            data->kind |= GBL_KIND_STATIC;
         }
         if( sym->p.seg != NULL ) {
             if( sym->p.seg->u.leader->info & SEG_CODE ) {
-                data->flags |= DBG_GBL_CODE;
+                data->kind |= GBL_KIND_CODE;
             } else {
-                data->flags |= DBG_GBL_DATA;
+                data->kind |= GBL_KIND_DATA;
             }
         }
         DoName( sym->name, data->name, len );
-        len += sizeof( gblinfo );
+        len += sizeof( v3_gbl_info );
         DumpInfo( dptr, data, len );
         dptr->global.size += len;
     }
@@ -493,39 +493,39 @@ void ODBIAddModule( mod_entry *obj, section *sect )
 static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
 /*********************************************************/
 {
-    segheader   seghdr;
-    seg_leader  *seg;
-    debug_info  *dptr = _dinfo;
+    seg_dbg_info    seghdr;
+    seg_leader      *seg;
+    debug_info      *dptr = _dinfo;
 
     seg = sdata->u.leader;
     if( seg->group == NULL ) {
-        seghdr.off = seg->seg_addr.off;
-        seghdr.seg = seg->seg_addr.seg;
+        seghdr.base.offset = seg->seg_addr.off;
+        seghdr.base.segment = seg->seg_addr.seg;
     } else {
-        seghdr.off = seg->group->grp_addr.off + SEG_GROUP_DELTA( seg );
-        seghdr.seg = seg->group->grp_addr.seg;
+        seghdr.base.offset = seg->group->grp_addr.off + SEG_GROUP_DELTA( seg );
+        seghdr.base.segment = seg->group->grp_addr.seg;
     }
-    seghdr.num = seg->num;
+    seghdr.count = seg->num;
     if( CurrSect == NonSect )
-        seghdr.num |= NON_SECT_INFO;
-    DumpInfo( dptr, &seghdr, sizeof( segheader ) );
-    dptr->addr.curr.u.vm_ptr += sizeof( segheader );
+        seghdr.count |= NON_SECT_INFO;
+    DumpInfo( dptr, &seghdr, sizeof( seg_dbg_info ) - sizeof( addr_dbg_info ) );
+    dptr->addr.curr.u.vm_ptr += sizeof( seg_dbg_info ) - sizeof( addr_dbg_info );
 }
 
 static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size, void *_dinfo, bool isnewmod )
 /**************************************************************************************************/
 {
-    addrinfo    addr;
-    debug_info  *dptr = _dinfo;
+    addr_dbg_info   addr;
+    debug_info      *dptr = _dinfo;
 
     /* unused parameters */ (void)delta;
 
     if( isnewmod ) {
         addr.size = size;
-        addr.mod_idx = sdata->o.mod->d.o->modnum;
-        DumpInfo( dptr, &addr, sizeof( addrinfo ) );
+        addr.mod = sdata->o.mod->d.o->modnum;
+        DumpInfo( dptr, &addr, sizeof( addr_dbg_info ) );
         sdata->addrinfo = dptr->addr.curr.u.vm_ptr - dptr->addr.init.u.vm_ptr;
-        dptr->addr.curr.u.vm_ptr += sizeof( addrinfo );
+        dptr->addr.curr.u.vm_ptr += sizeof( addr_dbg_info );
     } else {
         sdata->addrinfo = dptr->addr.curr.u.vm_ptr - dptr->addr.init.u.vm_ptr;
     }
@@ -549,22 +549,19 @@ static void ODBIGenAddrInfo( seg_leader *seg )
 static void WriteBogusAddrInfo( debug_info *dptr )
 /************************************************/
 {
-    addrinfo    info;
-    segheader   header;
+    seg_dbg_info    header;
 
-    dptr->addr.size = sizeof( segheader ) + sizeof( addrinfo );
+    dptr->addr.size = sizeof( seg_dbg_info );
     dptr->addr.curr.u.vm_ptr = DBIAlloc( dptr->addr.size );
     dptr->addr.init.u.vm_ptr = dptr->addr.curr.u.vm_ptr;
     dptr->dump_addr = dptr->addr.curr.u.vm_ptr;
-    header.off = 0;
-    header.seg = 0;
-    header.num = 1;
-    DumpInfo( dptr, &header, sizeof( segheader ) );
-    dptr->addr.curr.u.vm_ptr += sizeof( segheader );
-    info.size = 0;
-    info.mod_idx = 0;
-    DumpInfo( dptr, &info, sizeof( addrinfo ) );
-    dptr->addr.curr.u.vm_ptr += sizeof( addrinfo );
+    header.base.offset = 0;
+    header.base.segment = 0;
+    header.count = 1;
+    header.addr[0].size = 0;
+    header.addr[0].mod = 0;
+    DumpInfo( dptr, &header, sizeof( seg_dbg_info ) );
+    dptr->addr.curr.u.vm_ptr += sizeof( seg_dbg_info );
 }
 
 void ODBIP2Start( section *sect )
@@ -716,7 +713,7 @@ static void ODBIAddAddrAdd( segdata *sdata, offset delta, offset size,
 
     if( !isnewmod )
         return;
-    ((debug_info *)_dinfo)->addr.size += sizeof( addrinfo );
+    ((debug_info *)_dinfo)->addr.size += sizeof( addr_dbg_info );
     sdata->u.leader->num++;
 }
 
@@ -734,7 +731,7 @@ void ODBIAddAddrInfo( seg_leader *seg )
         return;
     DBIAddrInfoScan( seg, ODBIAddAddrInit, ODBIAddAddrAdd, dptr );
     if( seg->num > 0 ) {
-        dptr->addr.size += sizeof( segheader );
+        dptr->addr.size += sizeof( seg_dbg_info ) - sizeof( addr_dbg_info );
     }
 }
 
@@ -762,7 +759,7 @@ void ODBIGenModule( void )
 /************************/
 {
     odbimodinfo         *rec;
-    modinfo             *info;
+    mod_dbg_info        *info;
     size_t              len;
     debug_info          *dptr;
 
@@ -773,16 +770,16 @@ void ODBIGenModule( void )
     len = strlen( CurrMod->name );
     if( len > 255 )
         len = 255;
-    info = (modinfo *)alloca( sizeof( modinfo ) + len );
-    _HostU16toTarg( rec->types.num, info->types.len );
-    _HostU32toTarg( rec->types.offset, info->types.off );
-    _HostU16toTarg( rec->locals.num, info->locals.len );
-    _HostU32toTarg( rec->locals.offset, info->locals.off );
-    _HostU16toTarg( rec->lines.num, info->lines.len );
-    _HostU32toTarg( rec->lines.offset, info->lines.off );
+    info = (mod_dbg_info *)alloca( sizeof( mod_dbg_info ) + len );
+    _HostU16toTarg( rec->types.num, info->di[DMND_TYPES].u.entries );
+    _HostU32toTarg( rec->types.offset, info->di[DMND_TYPES].info_off );
+    _HostU16toTarg( rec->locals.num, info->di[DMND_LOCALS].u.entries );
+    _HostU32toTarg( rec->locals.offset, info->di[DMND_LOCALS].info_off );
+    _HostU16toTarg( rec->lines.num, info->di[DMND_LINES].u.entries );
+    _HostU32toTarg( rec->lines.offset, info->di[DMND_LINES].info_off );
     DoName( CurrMod->name, info->name, len );
     info->language = rec->dbisourceoffset;
-    len += sizeof( modinfo );
+    len += sizeof( mod_dbg_info );
     PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len );
     dptr->mod.curr.u.vm_ptr += len;
     dptr->modnum++;
@@ -847,9 +844,9 @@ static unsigned_16 WriteSegValues( void )
 static void WriteDBISecs( section *sec )
 /**************************************/
 {
-    debug_info      *dptr;
-    sectheader      header;
-    unsigned long   pos;
+    debug_info          *dptr;
+    section_dbg_header  header;
+    unsigned long       pos;
 
     dptr = sec->dbg_info;
     if( dptr != NULL ) {
@@ -858,7 +855,7 @@ static void WriteDBISecs( section *sec )
         header.gbl_offset = dptr->global.start;
         header.addr_offset = dptr->addr.start;
         header.section_id = sec->ovl_num;
-        DBIWriteLocal( &header, sizeof( sectheader ) );
+        DBIWriteLocal( &header, sizeof( section_dbg_header ) );
         DBIWriteInfo( dptr->locallinks.init.u.vm_ptr, dptr->locallinks.size );
         DBIWriteInfo( dptr->typelinks.init.u.vm_ptr, dptr->typelinks.size );
         DBIWriteInfo( dptr->linelinks.init.u.vm_ptr, dptr->linelinks.size );
@@ -893,12 +890,12 @@ void ODBIWrite( void )
         _PermFree( node );
     }
     DBISourceLang = NULL;
-    Master.seg_size = WriteSegValues();
+    Master.segment_size = WriteSegValues();
     WalkAllSects( WriteDBISecs );
     Master.debug_size = DBISize;
     if( Master.obj_major_ver == 0 )
         Master.obj_major_ver = 1;
-    WriteLoad( &Master, sizeof( dbgheader ) );
+    WriteLoad( &Master, sizeof( master_dbg_header ) );
 #ifdef _INT_DEBUG
     if( TraceInfo.sizeadded != TraceInfo.sizegenned ) {
         LnkMsg( WRN+MSG_INTERNAL, "s", "size mismatch in watcom dbi" );

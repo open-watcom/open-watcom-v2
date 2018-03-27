@@ -624,7 +624,7 @@ trap_retval ReqMap_addr( void )
         return( sizeof( *ret ) );
     }
 
-    GetObjectInfo( ModHandles[ acc->handle ] );
+    GetObjectInfo( ModHandles[ acc->mod_handle ] );
 
     seg = acc->in_addr.segment;
     off = acc->in_addr.offset;
@@ -646,7 +646,7 @@ trap_retval ReqMap_addr( void )
         break;
     }
 
-    Buff.MTE = ModHandles[ acc->handle ];
+    Buff.MTE = ModHandles[ acc->mod_handle ];
     Buff.Cmd = DBG_C_NumToAddr;
     Buff.Value = seg;
     CallDosDebug( &Buff );
@@ -840,17 +840,17 @@ trap_retval ReqGet_lib_name( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    if( acc->handle != 0 ) {
-        CurrModHandle = acc->handle + 1;
+    if( acc->mod_handle != 0 ) {
+        CurrModHandle = acc->mod_handle + 1;
     }
     if( CurrModHandle >= NumModHandles ) {
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
     Buff.Value = ModHandles[ CurrModHandle ];
     DosGetModName( ModHandles[ CurrModHandle ], 128, name );
-    ret->handle = CurrModHandle;
+    ret->mod_handle = CurrModHandle;
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
@@ -1212,7 +1212,7 @@ static void __pascal __far __loadds BrkHandler( USHORT sig_arg, USHORT sig_num )
     DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 
-static unsigned MapReturn( unsigned conditions )
+static trap_conditions MapReturn( trap_conditions conditions )
 {
     if( BrkPending ) {
         /* Get CS:EIP & SS:ESP correct */

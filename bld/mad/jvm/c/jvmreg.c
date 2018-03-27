@@ -68,7 +68,7 @@ static const mad_toggle_strings CPUToggleList[] =
 };
 
 struct mad_reg_set_data {
-    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value );
+    mad_status (*get_piece)( unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_mth, size_t *max_value );
     const mad_toggle_strings    *togglelist;
     mad_string                  name;
 };
@@ -77,7 +77,7 @@ static mad_status       CPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value );
 
 static const mad_reg_set_data RegSet[] = {
@@ -164,7 +164,7 @@ static mad_status   CPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
     if( piece >= sizeof( RegList ) / sizeof( RegList[0] ) )
@@ -172,7 +172,7 @@ static mad_status   CPUGetPiece( unsigned piece,
     *reg = &RegList[piece].info;
     *descript_p = (*reg)->name;
     *max_descript_p = strlen( *descript_p );
-    *disp_type = (*reg)->type;
+    *disp_mth = (*reg)->type;
     *max_value = 0;
     return( MS_OK );
 }
@@ -186,10 +186,10 @@ mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
-                                mad_type_handle *disp_type,
+                                mad_type_handle *disp_mth,
                                 size_t *max_value )
 {
-    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
+    return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_mth, max_value ) );
 }
 
 static const mad_modify_list    DWordReg = { NULL, JVMT_N32_PTR, MAD_MSTR_NIL };

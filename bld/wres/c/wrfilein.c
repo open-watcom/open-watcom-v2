@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResFileInit( WResFileID fid )
-/*********************************/
+bool WResFileInit( FILE *fp )
+/***************************/
 /* Writes the initial file header out to the file. Later, when WResWriteDir */
 /* is called the real header will be written out */
 {
@@ -51,12 +51,12 @@ bool WResFileInit( WResFileID fid )
     head.WResVer = WRESVERSION;
 
     /* write the empty record out at the begining of the file */
-    if( WRESSEEK( fid, 0, SEEK_SET ) )
+    if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    if( WResWriteHeaderRecord( &head, fid ) )
+    if( WResWriteHeaderRecord( &head, fp ) )
         return( true );
     /* leave room for the extended header */
-    if( WRESSEEK( fid, sizeof( WResExtHeader ), SEEK_CUR ) )
+    if( WRESSEEK( fp, sizeof( WResExtHeader ), SEEK_CUR ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 } /* WResFileInit */

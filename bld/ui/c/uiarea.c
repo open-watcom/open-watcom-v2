@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "clibext.h"
 
 
-void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
+void intern dividearea( SAREA area, SAREA centre, SAREA areas[5] )
 /******************************************************************/
 /*
         This diagram shows the general case for the overlap of two
@@ -59,19 +60,19 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
 */
 
 {
-    register    int                     i;
-    register    int                     row = 0;    // GCC thinks this might be uninited
-    register    int                     col = 0;
-    register    int                     arow;
-    register    int                     acol;
-    register    int                     crow;
-    register    int                     ccol;
-    register    int                     maxrow = 0;
-    register    int                     maxcol = 0;
-    register    int                     cmaxrow;
-    register    int                     cmaxcol;
-    register    int                     amaxrow;
-    register    int                     amaxcol;
+    int         i;
+    int         row = 0;    // GCC thinks this might be uninited
+    int         col = 0;
+    int         arow;
+    int         acol;
+    int         crow;
+    int         ccol;
+    int         maxrow = 0;
+    int         maxcol = 0;
+    int         cmaxrow;
+    int         cmaxcol;
+    int         amaxrow;
+    int         amaxcol;
 
     arow = area.row;
     acol = area.col;
@@ -81,7 +82,7 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
     amaxcol = acol + area.width - 1;
     cmaxrow = crow + centre.height - 1;
     cmaxcol = ccol + centre.width - 1;
-    for( i = 0 ; i < 5 ; ++i ) {
+    for( i = 0; i < 5; ++i ) {
         switch( i ) {
         case 0:
             row = arow;
@@ -139,12 +140,12 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
             break;
         }
         if( ( row > maxrow ) || ( col > maxcol ) ) {
-            areas[ i ].height = 0;
+            areas[i].height = 0;
         } else {
-            areas[ i ].row = row;
-            areas[ i ].col = col;
-            areas[ i ].height = maxrow - row + 1;
-            areas[ i ].width = maxcol - col + 1;
+            areas[i].row = row;
+            areas[i].col = col;
+            areas[i].height = maxrow - row + 1;
+            areas[i].width = maxcol - col + 1;
         }
     }
 }

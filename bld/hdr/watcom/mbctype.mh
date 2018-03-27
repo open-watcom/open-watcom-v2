@@ -16,7 +16,8 @@
 
 :include null.sp
 
-:include mbmax.sp
+:include mbcurmax.sp
+:include mblenmax.sp
 
 /* _setmbcp parameter defines */
 #define _MB_CP_SBCS     0

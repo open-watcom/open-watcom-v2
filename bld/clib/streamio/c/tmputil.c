@@ -75,14 +75,12 @@ static unsigned __GetTmpPath( char *buf )
 
     // if last char is not a path delimiter then append one
     i = strlen( buf );
-    if( i > 0 )
-        i--;
-    if( !IS_DIR_SEP( buf[i] ) ) {
-        // if buf[i] is a null char then the following has no effect as planned
-        i++;
-        buf[i] = DIR_SEP;
-        i++;
-        buf[i] = NULLCHAR;
+    if( i > 0 ) {
+        if( !IS_DIR_SEP( buf[i - 1] ) ) {
+            buf[i] = DIR_SEP;
+            i++;
+            buf[i] = NULLCHAR;
+        }
     }
     return( i );
 }
@@ -121,7 +119,7 @@ void __MkTmpFile( char *buf, int num )
 //  #endif
 
     i = __GetTmpPath( buf );
-    ptr = &buf[ i ];
+    ptr = buf + i;
     ptr[0] = 't';
     for( i = 7; i != 0; i-- ) {     // JBS use 7 hex digits instead of 4
         ptr[i] = __hex( pid & 0x000F );

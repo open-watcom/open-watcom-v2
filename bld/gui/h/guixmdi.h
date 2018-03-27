@@ -36,4 +36,5 @@
 extern void GUIXMDIInit( void );
 extern bool XInitMDI( gui_window *wnd );
 extern void XChangeTitle( gui_window *wnd );
+
 #endif // _GUIXMDI_H_

@@ -43,7 +43,7 @@
 
 static name_list *SortedNames;
 
-static const char *SymGetName( const void *data_handle, int item )
+OVL_EXTERN const char *SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) )
@@ -79,8 +79,11 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
     unsigned            num;
     size_t              matchoff;
     char                *savebuff;
+    gui_mcursor_handle  old_cursor;
 
+    old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     SortedNames = SymCompInit( true, true, false, false, NO_MOD );
+    GUIResetMouseCursor( old_cursor );
     match = DlgGetMatchString( gui, id, &matchoff );
     savebuff = DupStr( TxtBuff );
     if( match != NULL && match[0] != NULLCHAR ) {
@@ -99,7 +102,8 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT_DUI( Symbol_List ), &first, 0, SymGetName, num );
+        new = -1;
+        DlgPickWithRtn( LIT_DUI( Symbol_List ), &first, 0, SymGetName, num, &new );
         break;
     }
     strcpy( TxtBuff, savebuff );

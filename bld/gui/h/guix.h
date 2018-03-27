@@ -30,7 +30,12 @@
 ****************************************************************************/
 
 
+/* use 0-9 for os-specific menu constants */
+
+#define GUI_MENU_CHANGE_FONT            0
 #define GUI_MENU_FIX_TOOLBAR            1
+
+/* use all from 10 for MDI-specific menu constants */
 
 #define GUI_MENU_MDI_FIRST_SEPARATOR    10
 #define GUI_MENU_MDI_CASCADE            11
@@ -40,29 +45,30 @@
 #define GUI_MENU_MDI_SECOND_SEPARATOR   15
 #define GUI_MENU_MDI_MORE_WINDOWS       16
 #define GUI_MENU_MDI_FIRST_WINDOW       17
+
+#define GUI_MENU_ID(x)                  (GUI_LAST_MENU_ID + x)
+#define GUI_MENU_IDX(x)                 (x - GUI_LAST_MENU_ID)
+
+#define GUI_CHANGE_FONT                 GUI_MENU_ID( GUI_MENU_CHANGE_FONT )
+#define GUI_FIX_TOOLBAR                 GUI_MENU_ID( GUI_MENU_FIX_TOOLBAR )
+
+#define GUI_MDI_FIRST_SEPARATOR         GUI_MENU_ID( GUI_MENU_MDI_FIRST_SEPARATOR )
+#define GUI_MDI_CASCADE                 GUI_MENU_ID( GUI_MENU_MDI_CASCADE )
+#define GUI_MDI_TILE_HORZ               GUI_MENU_ID( GUI_MENU_MDI_TILE_HORZ )
+#define GUI_MDI_TILE_VERT               GUI_MENU_ID( GUI_MENU_MDI_TILE_VERT )
+#define GUI_MDI_ARRANGE_ICONS           GUI_MENU_ID( GUI_MENU_MDI_ARRANGE_ICONS )
+#define GUI_MDI_SECOND_SEPARATOR        GUI_MENU_ID( GUI_MENU_MDI_SECOND_SEPARATOR )
+#define GUI_MDI_MORE_WINDOWS            GUI_MENU_ID( GUI_MENU_MDI_MORE_WINDOWS )
+
 #define MAX_NUM_MDI_WINDOWS             9
+#define GUI_MDI_FIRST_WINDOW            GUI_MENU_ID( GUI_MENU_MDI_FIRST_WINDOW )
+#define GUI_MDI_LAST_WINDOW             GUI_MENU_ID( GUI_MENU_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1 )
 
-#define GUI_MENU_ID( c )                ( GUI_LAST_MENU_ID + c + 1 )
+#define GUI_MDI_MENU_FIRST              GUI_MDI_FIRST_SEPARATOR
+#define GUI_MDI_MENU_LAST               GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1
 
-#define GUI_FIX_TOOLBAR         GUI_MENU_ID( GUI_MENU_FIX_TOOLBAR )
-
-#define GUI_MDI_FIRST_SEPARATOR GUI_MENU_ID( GUI_MENU_MDI_FIRST_SEPARATOR )
-#define GUI_MDI_CASCADE         GUI_MENU_ID( GUI_MENU_MDI_CASCADE )
-#define GUI_MDI_TILE_HORZ       GUI_MENU_ID( GUI_MENU_MDI_TILE_HORZ )
-#define GUI_MDI_TILE_VERT       GUI_MENU_ID( GUI_MENU_MDI_TILE_VERT )
-#define GUI_MDI_ARRANGE_ICONS   GUI_MENU_ID( GUI_MENU_MDI_ARRANGE_ICONS )
-#define GUI_MDI_SECOND_SEPARATOR GUI_MENU_ID( GUI_MENU_MDI_SECOND_SEPARATOR )
-#define GUI_MDI_MORE_WINDOWS    GUI_MENU_ID( GUI_MENU_MDI_MORE_WINDOWS )
-#define GUI_MDI_FIRST_WINDOW    GUI_MENU_ID( GUI_MENU_MDI_FIRST_WINDOW )
-
-#define GUI_MDI_MENU_FIRST      GUI_MDI_FIRST_SEPARATOR
-#define GUI_MDI_MENU_LAST       GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1
-
-#define IS_MDIWIN(x)            (x >= GUI_MDI_FIRST_WINDOW && x <= GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1)
-#define IS_MDIMENU(x)           (x >= GUI_MDI_MENU_FIRST && x <= GUI_MDI_MENU_LAST)
-
-#define MDIWIN2ID(x)            (x + GUI_MDI_FIRST_WINDOW)
-#define ID2MDIWIN(x)            (x - GUI_MDI_FIRST_WINDOW)
+#define IS_MDIWIN(x)                    (x >= GUI_MDI_FIRST_WINDOW && x <= GUI_MDI_LAST_WINDOW)
+#define IS_MDIMENU(x)                   (x >= GUI_MDI_MENU_FIRST && x <= GUI_MDI_MENU_LAST)
 
 /* Initialization Functions */
 
@@ -85,7 +91,7 @@ extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
 extern void GUIFreeWindowMemory( gui_window *, bool from_parent, bool dialog );
 
 extern bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                     int num_menu_items, gui_menu_struct *menu,
+                                     int num_items, gui_menu_struct *menu,
                                      gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                        int num_toolbar_items, gui_toolbar_struct *toolinfo,

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "uimouse.h"
 #include <windows.h>
 
-static unsigned char shift_state;
 
 typedef struct {
     WORD vk;
@@ -46,6 +46,14 @@ typedef struct {
     WORD ctrl;
     WORD alt;
 } map;
+
+extern HANDLE       InputHandle;
+
+static ORD          currMouseRow;
+static ORD          currMouseCol;
+static MOUSESTAT    currMouseStatus;
+
+static unsigned char shift_state;
 
 static const map events[] = {
     { VK_BACK, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT, EV_RUB_OUT },
@@ -101,17 +109,6 @@ static const map events[] = {
     { VK_F11, EV_F11, EV_SHIFT_F11, EV_CTRL_F11, EV_ALT_F11 },
     { VK_F12, EV_F12, EV_SHIFT_F12, EV_CTRL_F12, EV_ALT_F12 }
 };
-
-extern MOUSEORD MouseRow;
-extern MOUSEORD MouseCol;
-extern bool     MouseOn;
-extern bool     MouseInstalled;
-extern WORD     MouseStatus;
-
-extern HANDLE   InputHandle;
-static ORD      currMouseRow;
-static ORD      currMouseCol;
-static ORD      currMouseStatus;
 
 static void setshiftstate( BOOL has_shift, BOOL has_ctrl, BOOL has_alt )
 {
@@ -183,19 +180,19 @@ void uimousespeed( unsigned speed )
     /* unused parameters */ (void)speed;
 }
 
-int UIAPI initmouse( int install )
+bool UIAPI initmouse( init_mode install )
 {
-    unsigned long   tmp;
+    MOUSETIME   tmp;
 
-    if( install == 0 ) {
-        return( false );
+    MouseInstalled = false;
+    if( install != INIT_MOUSELESS ) {
+        MouseInstalled = true;
+        UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
+        UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
+        MouseOn = false;
+        UIData->mouse_swapped = false;
+        checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     }
-    UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
-    UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
-    MouseOn = false;
-    MouseInstalled = true;
-    UIData->mouse_swapped = false;
-    checkmouse( &MouseStatus, &MouseRow, &MouseCol, &tmp );
     return( MouseInstalled );
 }
 
@@ -211,7 +208,7 @@ void UIAPI uisetmouseposn( ORD row, ORD col )
     uisetmouse( row, col );
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
 {
     *pstatus = currMouseStatus;
     *prow = currMouseRow;
@@ -247,10 +244,10 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         if( st & (FROM_LEFT_2ND_BUTTON_PRESSED|FROM_LEFT_3RD_BUTTON_PRESSED |
                     FROM_LEFT_4TH_BUTTON_PRESSED|FROM_LEFT_1ST_BUTTON_PRESSED|
                     RIGHTMOST_BUTTON_PRESSED) ) {
-            currMouseStatus = MOUSE_PRESS;
+            currMouseStatus = UI_MOUSE_PRESS;
         }
         if( st & RIGHTMOST_BUTTON_PRESSED ) {
-            currMouseStatus = MOUSE_PRESS_RIGHT;
+            currMouseStatus = UI_MOUSE_PRESS_RIGHT;
         }
         return( true );
     }
@@ -258,24 +255,28 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
 
 } /* eventWeWant */
 
-EVENT intern getanyevent( void )
+ui_event intern getanyevent( void )
 {
     INPUT_RECORD        ir;
     DWORD               rd,ss;
     WORD                vk;
-    EVENT               ascii;
+    ui_event            ui_ev;
+    unsigned char       ascii;
     BOOL                has_alt, has_shift, has_ctrl;
-    map                 *ev,what;
-    EVENT               evnt;
+    map                 *ev, what;
 
     for( ;; ) {
         PeekConsoleInput( InputHandle, &ir, 1, &rd );
-        if( rd == 0 ) return( EV_NO_EVENT );
+        if( rd == 0 )
+            return( EV_NO_EVENT );
         ReadConsoleInput( InputHandle, &ir, 1, &rd );
         if( eventWeWant( &ir ) ) {
-            if( ir.EventType != MOUSE_EVENT ) break;
-            evnt = mouseevent();
-            if( evnt > EV_NO_EVENT ) return( evnt );
+            if( ir.EventType != MOUSE_EVENT )
+                break;
+            ui_ev = mouseevent();
+            if( ui_ev > EV_NO_EVENT ) {
+                return( ui_ev );
+            }
         }
     }
 
@@ -288,25 +289,26 @@ EVENT intern getanyevent( void )
     setshiftstate( has_shift, has_ctrl, has_alt );
     what.vk = vk;
 
-    ev = bsearch( &what, events, sizeof( events )/sizeof( map ),
-                    sizeof( what ), CompareEvents );
+    ev = bsearch( &what, events, sizeof( events ) / sizeof( map ), sizeof( what ), CompareEvents );
     if( ev != NULL ) {
         if( has_shift ) {
-            ascii = ev->shift;
+            ui_ev = ev->shift;
         } else if( has_ctrl ) {
-            ascii = ev->ctrl;
+            ui_ev = ev->ctrl;
         } else if( has_alt ) {
-            ascii = ev->alt;
+            ui_ev = ev->alt;
         } else {
-            ascii = ev->reg;
+            ui_ev = ev->reg;
         }
     } else if( ascii == 0 ) {
-        ascii = EV_NO_EVENT;
+        ui_ev = EV_NO_EVENT;
+    } else {
+        ui_ev = ascii;
     }
-    if( ascii > EV_NO_EVENT ) {
+    if( ui_ev > EV_NO_EVENT ) {
         uihidemouse();
     }
-    return( ascii );
+    return( ui_ev );
 
 } /* getanyevent */
 

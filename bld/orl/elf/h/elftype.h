@@ -76,7 +76,7 @@ ORL_STRUCT( elf_file_handle ) {
     elf_file_handle     next;
     elf_sec_handle      *sec_handles;
     elf_sec_handle      *orig_sec_handles;
-    orl_file_id         file;
+    FILE                *fp;
     unsigned_8          *contents_buffer1;
     unsigned_8          *contents_buffer2;
     elf_half            shentsize;

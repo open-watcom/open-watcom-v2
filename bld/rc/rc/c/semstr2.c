@@ -38,15 +38,15 @@
 #include "rccore.h"
 
 
-static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, WResFileID fid, uint_32 codepage )
-/******************************************************************************************************/
+static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, uint_32 codepage )
+/************************************************************************************************/
 {
     int         stringid;
     bool        error;
     WResIDName  *name;
 
     // Write string table codepage
-    error = ResWriteUint16( codepage, fid );
+    error = ResWriteUint16( codepage, fp );
     if( error )
         return( error );
 
@@ -55,19 +55,19 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, WResFileID
         name = currblock->String[stringid];
         if( name == NULL ) {
             // Write an empty string
-            error = ResWriteUint16( 1, fid );
+            error = ResWriteUint16( 1, fp );
         } else {
             size_t  len;
             // The string can't be longer than 255 chars
             len = name->NumChars + 1;
             if( len > 255 )
                 len = 255;
-            error = ResWriteUint8( len, fid );
+            error = ResWriteUint8( len, fp );
             if( !error )
-                error = ResWriteStringLen( name->Name, false, fid, len - 1 );
+                error = ResWriteStringLen( name->Name, false, fp, len - 1 );
             // The terminating NULL is not stored in the table, need to add it now
             if( !error ) {
-                error = ResWriteUint8( 0, fid );
+                error = ResWriteUint8( 0, fp );
             }
         }
     }
@@ -293,7 +293,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             loc.start = SemStartResource();
 
             error = ResOS2WriteStringTableBlock( &(currblock->Block),
-                                                 CurrResFile.fid,
+                                                 CurrResFile.fp,
                                                  currblock->codePage );
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

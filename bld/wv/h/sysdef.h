@@ -30,9 +30,13 @@
 ****************************************************************************/
 
 
-typedef long            sys_handle;
-#define NIL_SYS_HANDLE  ((sys_handle)-1)
+#include "trpfile.h"
+
+
+typedef trap_fhandle    sys_handle;
+
+#define IS_SYSHANDLE_NULL(sh)   ((sh).u._64[0] == -1)
+#define SET_SYSHANDLE_NULL(sh)  (sh).u._64[0] = -1
 
 typedef unsigned long   sys_error;
 #define SYS_ERR_OK      ((sys_error)0)
-

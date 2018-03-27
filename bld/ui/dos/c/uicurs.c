@@ -37,17 +37,24 @@
 #include "uidbg.h"
 #include "biosui.h"
 
-#define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-#define         BIOS_CURSOR_OFF         0x20
+#define _swap(a,b)      {int i; i=a; a=b; b=i;}
 
-static int              OldCursorAttr;
+#define BIOS_CURSOR_OFF 0x20
+
+#ifdef _M_I86
+    #define intx86      int86
+#else
+    #define intx86      int386
+#endif
+
+static CATTR            OldCursorAttr;
 static ORD              OldCursorRow;
 static ORD              OldCursorCol;
 static CURSOR_TYPE      OldCursorType;
 
 void UIDBG _uioffcursor( void )
-/******************************/
+/*****************************/
 {
     union REGS      r;
 
@@ -56,7 +63,7 @@ void UIDBG _uioffcursor( void )
         r.h.ah = 1;
         r.h.ch = BIOS_CURSOR_OFF;
         r.h.cl = 0;
-        int86( BIOS_VIDEO, &r, &r );
+        intx86( BIOS_VIDEO, &r, &r );
         UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
@@ -64,7 +71,7 @@ void UIDBG _uioffcursor( void )
 
 
 void UIDBG _uioncursor( void )
-/*****************************/
+/****************************/
 {
     union REGS      r;
 
@@ -76,31 +83,31 @@ void UIDBG _uioncursor( void )
         r.h.cl = 0x0c;
     }
     if( UIData->cursor_type == C_INSERT ) {
-        r.h.ch = (char) ( r.h.cl / 2 );
+        r.h.ch = r.h.cl / 2;
     } else {
-        r.h.ch = (char) ( r.h.cl - 1 );
+        r.h.ch = r.h.cl - 1;
     }
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     /* get video state */
     r.h.ah = 15;
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     /* set OldCursor position */
     r.h.ah = 2;
-    r.h.dh = (signed char) UIData->cursor_row;
-    r.h.dl = (signed char) UIData->cursor_col;
-    int86( BIOS_VIDEO, &r, &r );
-    if( UIData->cursor_attr != -2 ) {
+    r.h.dh = (unsigned char)UIData->cursor_row;
+    r.h.dl = (unsigned char)UIData->cursor_col;
+    intx86( BIOS_VIDEO, &r, &r );
+    if( UIData->cursor_attr != CATTR_VOFF ) {
         /* get video state */
         r.h.ah = 15;
-        int86( BIOS_VIDEO, &r, &r );
+        intx86( BIOS_VIDEO, &r, &r );
         /* get current character and attribute */
         r.h.ah = 8;
-        int86( BIOS_VIDEO, &r, &r );
+        intx86( BIOS_VIDEO, &r, &r );
         /* write out the character and the new attribute */
         r.h.bl = UIData->cursor_attr;
         r.w.cx = 1;
         r.h.ah = 9;
-        int86( BIOS_VIDEO, &r, &r );
+        intx86( BIOS_VIDEO, &r, &r );
     }
     UIData->cursor_on = true;
 }
@@ -112,12 +119,12 @@ static void savecursor( void )
 
     /* get current video state */
     r.h.ah = 15;
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     /* read OldCursor position */
     r.h.ah = 3;
-    int86( BIOS_VIDEO, &r, &r );
-    OldCursorRow = (ORD) r.h.dh;
-    OldCursorCol = (ORD) r.h.dl;
+    intx86( BIOS_VIDEO, &r, &r );
+    OldCursorRow = r.h.dh;
+    OldCursorCol = r.h.dl;
     if( r.h.cl - r.h.ch > 1 ) {
         OldCursorType = C_INSERT;
     } else {
@@ -129,7 +136,7 @@ static void savecursor( void )
     }
     /* read character and attribute */
     r.h.ah = 8;
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     OldCursorAttr = r.h.ah;
 }
 
@@ -156,20 +163,20 @@ static void swapcursor( void )
 }
 
 
-void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/*************************************************************************/
+void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, CATTR *attr )
+/***************************************************************************/
 {
     union REGS      r;
 
     /* get current video state */
     r.h.ah = 15;
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     /* read OldCursor position */
     r.h.ah = 3;
-    int86( BIOS_VIDEO, &r, &r );
-    *row = (ORD) r.h.dh;
-    *col = (ORD) r.h.dl;
-    if( r.h.cl - r.h.ch > 1 ) {
+    intx86( BIOS_VIDEO, &r, &r );
+    *row = r.h.dh;
+    *col = r.h.dl;
+    if( r.h.cl > r.h.ch + 1 ) {
         *type = C_INSERT;
     } else {
         *type = C_NORMAL;
@@ -179,13 +186,13 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
     }
     /* read character and attribute */
     r.h.ah = 8;
-    int86( BIOS_VIDEO, &r, &r );
+    intx86( BIOS_VIDEO, &r, &r );
     *attr = r.h.ah;
 }
 
 
-void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/********************************************************************/
+void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, CATTR attr )
+/**********************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -194,7 +201,7 @@ void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
         UIData->cursor_type = typ;
         UIData->cursor_row = row;
         UIData->cursor_col = col;
-        if( attr != -1 ) {
+        if( attr != CATTR_OFF ) {
             UIData->cursor_attr = attr;
         }
         newcursor();

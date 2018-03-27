@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,65 +47,65 @@
 #define UIREFRESH UIAPI uirefresh
 #endif
 
-struct update_area {
+typedef struct update_area {
     unsigned        start;
     unsigned        end;
-};
+} update_area;
 
 
-static void _dorefresh( struct update_area *total, SAREA area,
-                           UI_WINDOW *wptr, UI_WINDOW *cover )
-/************************************************************/
+static void _dorefresh( update_area *total, SAREA area, UI_WINDOW *wptr, UI_WINDOW *cover )
+/*****************************************************************************************/
 {
-    register    int                     i;
-    auto        SAREA                   areas[ 5 ];
-    unsigned                            start;
-    unsigned                            end;
+    int             i;
+    SAREA           areas[5];
+    unsigned        start;
+    unsigned        end;
 
     if( cover == NULL ) {
         start = area.row * UIData->width + area.col;
-        end = start + (area.height-1) * UIData->width + (area.width-1);
-        if( total->start > start ) total->start = start;
-        if( total->end < end ) total->end = end;
-        if( wptr->update != NULL ) {
-            (*(wptr->update))( area, wptr->parm );
+        end = start + ( area.height - 1 ) * UIData->width + ( area.width - 1 );
+        if( total->start > start )
+            total->start = start;
+        if( total->end < end )
+            total->end = end;
+        if( wptr->update_proc != NULL ) {
+            (*wptr->update_proc)( area, wptr->parm );
         }
     } else {
         dividearea( area, cover->area, areas );
         for( i = 1; i < 5; ++i ) {
-            if( areas[ i ].height > 0 ) {
-                _dorefresh( total, areas[ i ], wptr, cover->prev );
+            if( areas[i].height > 0 ) {
+                _dorefresh( total, areas[i], wptr, cover->prev );
             }
         }
     }
-    return;
 }
 
 void UIREFRESH( void )
 /********************/
 {
-    register    UI_WINDOW*              wptr;
-    struct update_area                  total;
-    SAREA                               area;
-    int                                 start,end;
+    UI_WINDOW       *wptr;
+    update_area     total;
+    SAREA           area;
+    uisize          start;
+    uisize          end;
 
     _uicheckuidata();
-    wptr = UIData->area_tail;
+
     total.start = (unsigned)-1;
     total.end = 0;
-    while( wptr != NULL ) {
+    for( wptr = UIData->area_tail; wptr != NULL; wptr = wptr->prev ) {
         if( wptr->dirty_area.height > 0 ) {
             _dorefresh( &total, wptr->dirty_area, wptr, wptr->prev );
             wptr->dirty_area.height = 0;
         }
-        wptr = wptr->prev;
     }
     if( total.start <= total.end ) {
-        start = total.start/UIData->width;
-        end = total.end/UIData->width;
+        start = total.start / UIData->width;
+        end = total.end / UIData->width;
         area.row = start;
         area.col = 0;
-        area.height = end-start+1;
+        area.height = end - start + 1;
         area.width = UIData->width;
         physupdate( &area );
     }

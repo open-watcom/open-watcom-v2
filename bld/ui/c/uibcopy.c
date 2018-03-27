@@ -35,9 +35,8 @@
 #include "uifar.h"
 
 
-void intern uibcopy( BUFFER *sptr, int srow, int scol, BUFFER *dptr,
-                                       int drow, int dcol, int len )
-/******************************************************************/
+void intern uibcopy( BUFFER *sptr, int srow, int scol, BUFFER *dptr, int drow, int dcol, uisize len )
+/***************************************************************************************************/
 {
     LP_PIXEL    dst;
     LP_PIXEL    src;

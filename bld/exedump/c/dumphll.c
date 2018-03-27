@@ -229,7 +229,7 @@ static void dump_cv_sstPublics( unsigned_32 base, unsigned_32 offset,
     while( read < size ) {
         Wread( &pub16, sizeof( pub16 ) );
         name_len = pub16.name_len;
-        Dump_header( &pub16, cv_sstPublics_msg );
+        Dump_header( &pub16, cv_sstPublics_msg, 4 );
         read += sizeof( pub16 );
         Wread( name, name_len );
         name[name_len] = '\0';
@@ -262,7 +262,7 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
     while( read < size ) {
         Wread( &pub32, sizeof( pub32 ) );
         name_len = pub32.name_len;
-        Dump_header( &pub32, hll_sstPublics_msg );
+        Dump_header( &pub32, hll_sstPublics_msg, 4 );
         read += sizeof( pub32 );
         Wread( name, name_len );
         name[name_len] = '\0';
@@ -516,7 +516,7 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wread( &mod, offsetof( cv3_module_16, name_len ) );
-    Dump_header( &mod, cv_sstModules_msg );
+    Dump_header( &mod, cv_sstModules_msg, 4 );
     Wdputs( "  module name: \"" );
     dump_name( 0 );
     Wdputslc( "\"\n" );
@@ -526,7 +526,7 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
                 Wdputslc( "    ====\n" );
             }
             Wread( &seg, sizeof( seg ) );
-            Dump_header( &seg, cv_seg_msg );
+            Dump_header( &seg, cv_seg_msg, 4 );
             first = false;
         }
     }
@@ -549,7 +549,7 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wread( &mod, offsetof( hll_module, name_len ) );
-    Dump_header( &mod, hll_sstModules_msg );
+    Dump_header( &mod, hll_sstModules_msg, 4 );
     hll_level = mod.Version >> 8;
     Wdputs( "  module name: \"" );
     dump_name( 0 );
@@ -560,7 +560,7 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
                 Wdputslc( "    ====\n" );
             }
             Wread( &seg, sizeof( seg ) );
-            Dump_header( &seg, hll_seg_msg );
+            Dump_header( &seg, hll_seg_msg, 4 );
             first = false;
         }
     }
@@ -585,10 +585,10 @@ static void dump_cv_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
     dump_name( 2 );
     Wdputslc( "\"\n" );
     Wread( &src_ln, sizeof( src_ln ) );
-    Dump_header( &src_ln, cv_sstSrcLnSeg_msg );
+    Dump_header( &src_ln, cv_sstSrcLnSeg_msg, 4 );
     while( src_ln.cPair-- ) {
         Wread( &lo_16, sizeof( lo_16 ) );
-        Dump_header( &lo_16, cv_lnoff16_msg );
+        Dump_header( &lo_16, cv_lnoff16_msg, 4 );
     }
     Wdputslc( "\n" );
 }
@@ -614,14 +614,14 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
 
         while( count < size ) {
             Wread( &first_entry, sizeof( first_entry ) );
-            Dump_header( &first_entry, hl4_linnum_first_msg );
+            Dump_header( &first_entry, hl4_linnum_first_msg, 4 );
             count += sizeof( first_entry );
             if( first_entry.core.entry_type == 0x03 ) {
                 hl4_filetab_entry   ftab_entry;
                 unsigned_32         index;
 
                 Wread( &ftab_entry, sizeof( ftab_entry ) );
-                Dump_header( &ftab_entry, hl4_filetab_entry_msg );
+                Dump_header( &ftab_entry, hl4_filetab_entry_msg, 4 );
                 count += sizeof( ftab_entry );
 
                 for( index = 0; index < ftab_entry.numFiles; ++index ) {
@@ -639,7 +639,7 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
                 for( index = 0; index < first_entry.num_line_entries; ++index ) {
                     Wread( &lnum_entry, sizeof( lnum_entry ) );
                     count += sizeof( lnum_entry );
-                    Dump_header( &lnum_entry, hll_linnum_entry_msg );
+                    Dump_header( &lnum_entry, hll_linnum_entry_msg, 4 );
                 }
                 Wdputslc( "\n" );
             } else {
@@ -651,18 +651,18 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
         unsigned_32         index;
 
         Wread( &first_entry, sizeof( first_entry ) );
-        Dump_header( &first_entry, hl3_linnum_first_msg );
+        Dump_header( &first_entry, hl3_linnum_first_msg, 4 );
         if( first_entry.entry_type == 0x00 ) {
             hl3_filetab_entry   ftab_entry;
             hl3_linnum_entry    lnum_entry;
 
             for( index = 0; index < first_entry.num_entries; ++index ) {
                 Wread( &lnum_entry, sizeof( lnum_entry ) );
-                Dump_header( &lnum_entry, hll_linnum_entry_msg );
+                Dump_header( &lnum_entry, hll_linnum_entry_msg, 4 );
             }
 
             Wread( &ftab_entry, sizeof( ftab_entry ) );
-            Dump_header( &ftab_entry, hl3_filetab_entry_msg );
+            Dump_header( &ftab_entry, hl3_filetab_entry_msg, 4 );
 
             for( index = 0; index < ftab_entry.numFiles; ++index ) {
                 Wdputs( "  file index: " );
@@ -775,7 +775,7 @@ static void dump_cv( unsigned_32 base )
     for( i = 0; i < num_entries; ++i ) {
         Wlseek( base + header.offset + 2 + i * sizeof( sst_dir_entry ) );
         Wread( &sst_dir_entry, sizeof( sst_dir_entry ) );
-        Dump_header( &sst_dir_entry, cv_dir_entry_msg );
+        Dump_header( &sst_dir_entry, cv_dir_entry_msg, 4 );
         Wdputslc( "\n" );
         dump_cv_subsection( base, &sst_dir_entry );
     }
@@ -800,12 +800,12 @@ static void dump_hll( unsigned_32 base )
     }
     Wlseek( base + header.offset );
     Wread( &dir_info, sizeof( dir_info ) );
-    Dump_header( &dir_info , hll_dir_info_msg );
+    Dump_header( &dir_info , hll_dir_info_msg, 4 );
     Wdputslc( "\n" );
     for( i = 0; i < dir_info.cDir; ++i ) {
         Wlseek( base + header.offset + dir_info.cbDirHeader + i * dir_info.cbDirEntry );
         Wread( &dir_entry, sizeof( dir_entry ) );
-        Dump_header( &dir_entry, hll_dir_entry_msg );
+        Dump_header( &dir_entry, hll_dir_entry_msg, 4 );
         Wdputslc( "\n" );
         dump_hll_subsection( base, &dir_entry );
     }

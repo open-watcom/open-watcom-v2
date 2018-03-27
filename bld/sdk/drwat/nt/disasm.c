@@ -86,7 +86,7 @@ void DeAllocMadDisasmData( void )
 
 static unsigned FormatAddr( address *a, char *buffer, unsigned max )
 {
-    mad_type_info       host;
+    mad_type_info       host_mti;
     mad_type_info       mti;
     unsigned_8          item[16];
     int                 i;
@@ -104,9 +104,9 @@ static unsigned FormatAddr( address *a, char *buffer, unsigned max )
         return( i );
     }
 
-    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
+    MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, a ), &mti );
-    MADTypeConvert( &host, a, &mti, item, 0 );
+    MADTypeConvert( &host_mti, a, &mti, item, 0 );
     MADTypeToString( 16, &mti, item, buffer, &max );
     return( max );
 }

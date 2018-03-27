@@ -34,7 +34,6 @@
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "i64.h"
 #include "caux.h"
 #include "cfeinfo.h"

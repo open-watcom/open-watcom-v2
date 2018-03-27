@@ -31,7 +31,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dosscrn.h"
+#include "winscrn.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
 

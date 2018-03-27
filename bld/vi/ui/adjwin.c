@@ -243,9 +243,9 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
                     }
                 } else {
                     if( key == VI_KEY( MOUSEEVENT ) ) {
-                        if( LastMouseEvent == MOUSE_DRAG ) {
+                        if( LastMouseEvent == VI_MOUSE_DRAG ) {
                             break;
-                        } else if( LastMouseEvent == MOUSE_RELEASE ) {
+                        } else if( LastMouseEvent == VI_MOUSE_RELEASE ) {
                             done = true;
                         }
                     }

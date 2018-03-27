@@ -66,6 +66,8 @@
 
 #define FLG_T           0x0100UL
 
+#define MH2NLMENTRY(h)  ((nlm_entry *)(h))
+
 #if defined ( _USE_NEW_KERNEL )
 void *          kSemaphoreAlloc( const char *, long );
 unsigned long   kSemaphoreExamineCount( void *sp );
@@ -91,7 +93,7 @@ struct      {
     dword   address;
     byte    type;
     byte    size;
-} DR[ NUM_DREG ];
+} DR[NUM_DREG];
 
 typedef struct msb {
         struct msb                      *next;
@@ -203,7 +205,7 @@ typedef struct watch_point {
 } watch_point;
 
 #define MAX_WP  32
-watch_point WatchPoints[ MAX_WP ];
+watch_point WatchPoints[MAX_WP];
 int         WatchCount;
 
 /*
@@ -503,7 +505,7 @@ void DumpRegs( msb *m, char *str )
 #endif
 
 static void BigKludge( msb *m );
-#pragma aux BigKludge parm [ esi ];
+#pragma aux BigKludge parm [esi];
 
 static LONG DebugEntry( StackFrame *frame )
 {
@@ -831,7 +833,6 @@ trap_retval ReqGet_sys_config( void )
 
 trap_retval ReqMap_addr( void )
 {
-    nlm_entry   *curr;
     map_addr_req        *acc;
     map_addr_ret        *ret;
     struct LoadDefinitionStructure *ld;
@@ -844,8 +845,7 @@ trap_retval ReqMap_addr( void )
     ret->lo_bound = 0;
     ret->hi_bound = 0;
     _DBG_MISC(( "AccMapAddr\r\n" ));
-    curr = (nlm_entry *)acc->handle;
-    if( curr == NULL ) { // main NLM
+    if( acc->mod_handle == 0 ) { // main NLM
         _DBG_MISC(( "Main NLM\r\n" ));
         if( MSB == NULL )
             return( sizeof( *ret ) );
@@ -853,7 +853,7 @@ trap_retval ReqMap_addr( void )
             return( sizeof( *ret ) );
         ld = MSB->load;
     } else {
-        ld = &curr->ld;
+        ld = &(MH2NLMENTRY( acc->mod_handle )->ld);
     }
     ret->hi_bound = ~(addr48_off)0;
     _DBG_MISC(( "Mapping %4x:%8x\r\n", acc->in_addr.segment, acc->in_addr.offset ));
@@ -968,7 +968,7 @@ trap_retval ReqChecksum_mem( void )
             want = BUFF_SIZE;
         got = ReadWrite( ReadMemory, &addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
-            ret->result += UtilBuff[ i ];
+            ret->result += UtilBuff[i];
         }
         if( got != want )
             break;
@@ -1256,7 +1256,7 @@ trap_retval ReqProg_load( void )
     ret = GetOutPtr( 0 );
     LoadRet = ret;
     // scheduling priority, code address, stack top, stack len, process name, resource tag
-    CMakeProcess( 50, &LoadHelper, &helper_stack[ sizeof( helper_stack ) ],
+    CMakeProcess( 50, &LoadHelper, &helper_stack[sizeof( helper_stack )],
                     sizeof( helper_stack ), TRP_The_WATCOM_Debugger, ProcessTag );
     _DBG_EVENT(( "*ReqProg_load: Putting debugger to sleep for load of %s\r\n", LoadName ));
     SleepDebugger();
@@ -1326,7 +1326,7 @@ trap_retval ReqProg_kill( void )
 }
 
 
-static unsigned Execute( msb *which )
+static trap_conditions Execute( msb *which )
 {
     msb         *m;
 
@@ -1414,17 +1414,17 @@ trap_retval ReqSet_watch( void )
         ++WatchCount;
         needed = 0;
         for( i = 0; i < WatchCount; ++i ) {
-            needed += WatchPoints[ i ].dregs;
+            needed += WatchPoints[i].dregs;
         }
         for( i = 0; i < NUM_DREG; ++i ) {
-            dreg_avail[ i ] = DoReserveBreakpoint();
-            if( dreg_avail[ i ] < 0 )
+            dreg_avail[i] = DoReserveBreakpoint();
+            if( dreg_avail[i] < 0 )
                 break;
         }
         for( i = 0; i < NUM_DREG; ++i ) {
-            if( dreg_avail[ i ] < 0 )
+            if( dreg_avail[i] < 0 )
                 break;
-            UnReserveABreakpoint( dreg_avail[ i ] );
+            UnReserveABreakpoint( dreg_avail[i] );
         }
         if( needed <= i )
             ret->multiplier |= USING_DEBUG_REG;
@@ -1794,18 +1794,19 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    if( acc->handle == 0 ) {
+    if( acc->mod_handle == 0 ) {
         curr = NLMList;
     } else {
-        curr = ((nlm_entry *)acc->handle)->next;
+        curr = MH2NLMENTRY( acc->mod_handle );
+        curr = curr->next;
     }
     if( curr == LastNLMListEntry ) {
         LastNLMListEntry = NLMList;
-        ret->handle = 0;
+        ret->mod_handle = 0;
         return( sizeof( *ret ) );
     }
     name = GetOutPtr( sizeof( *ret ) );
-    ret->handle = (unsigned long)curr;
+    ret->mod_handle = (unsigned_32)curr;
     len = curr->ld.LDFileName[0];
     memcpy( name, &curr->ld.LDFileName[1], len );
     name[len] = '\0';

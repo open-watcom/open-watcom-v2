@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +51,7 @@
 #include "dbginsty.h"
 
 
-extern stack_entry      *ExprSP;
-
-extern void BreakOnSelected( const char *item )
+void BreakOnSelected( const char *item )
 {
     const char      *old;
 
@@ -125,15 +124,15 @@ inspect_type WndGetExprSPInspectType( address *paddr )
     return( INSP_RAW_DATA );
 }
 
-static void DoLValExpr( void )
-/****************************/
+OVL_EXTERN void DoLValExpr( void )
+/********************************/
 {
     EvalLValExpr( 1 );
     ReqEOC();
 }
 
-extern  bool    WndEvalInspectExpr( const char *item, bool pop )
-/**************************************************************/
+bool    WndEvalInspectExpr( const char *item, bool pop )
+/******************************************************/
 {
     const char  *old;
     char        buff[12],*p;
@@ -160,7 +159,8 @@ extern  bool    WndEvalInspectExpr( const char *item, bool pop )
     _SwitchOff( SW_NO_DISAMBIGUATOR );
     _SwitchOff( SW_ERR_IN_TXTBUFF );
     ReScan( old );
-    if( pop && rc ) PopEntry();
+    if( pop && rc )
+        PopEntry();
     return( rc );
 }
 

@@ -149,7 +149,7 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 static void SetBKBrush( gui_window *wnd )
 {
-    if (!init_rgb){
+    if( !init_rgb ) {
         InitSystemRGB();
         init_rgb = 1;
     }
@@ -257,7 +257,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     guiColoursAlias = AllocAlias16( (void *)GUIColours );
     choose.lpCustColors = (void *)guiColoursAlias;
     ret = (short)InvokeIndirectFunction( hIndir, &choose ) != 0;
-    if( guiColoursAlias != NULL ) {
+    if( guiColoursAlias != 0 ) {
         FreeAlias16( guiColoursAlias );
     }
   #else

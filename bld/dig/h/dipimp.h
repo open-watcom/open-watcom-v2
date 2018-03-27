@@ -33,9 +33,8 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#define DIP_MAJOR       1
-#define DIP_MINOR       3
-#define DIP_MINOR_OLD   0
+#define DIP_MAJOR       2
+#define DIP_MINOR       0
 
 #define MH2IMH( mh )    ((mh)&0x0000FFFF)
 #define IMH2MH( imh )   (imh)
@@ -90,7 +89,7 @@ extern const char   DIPImp( Name )[];
 struct dip_imp_routines {
     unsigned_8          major;
     unsigned_8          minor;
-    unsigned_16         dip_priority;
+    dip_priority        priority;
     const char          *dip_name;
 
     _DIPImp( HandleSize );
@@ -172,6 +171,7 @@ typedef struct dip_client_routines {
 
     _DIGCli( Open );
     _DIGCli( Seek );
+    _DIGCli( Tell );
     _DIGCli( Read );
     _DIGCli( Write );
     _DIGCli( Close );
@@ -189,11 +189,16 @@ typedef struct dip_client_routines {
 typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY dip_fini_func( void );
+
+typedef struct dip_link_block {
+    dip_init_func   *load;
+    dip_fini_func   *unload;
+} dip_link_block;
 #endif
 
-DIG_DLLEXPORT dip_init_func DIPLOAD;
+DIG_DLLEXPORT extern dip_init_func DIPLOAD;
 #ifdef __WINDOWS__
-DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
+extern dip_fini_func DIPUNLOAD;
 #endif
 
 #define DC(n)       DC ## n
@@ -204,6 +209,6 @@ DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #undef pick
 
 extern void         *DC( AllocZ )( size_t amount );
-extern dip_status   DC( ReadAt )( dig_fhandle fid, void *b, size_t s, unsigned long p );
+extern dip_status   DC( ReadAt )( FILE *fp, void *b, size_t s, unsigned long p );
 
 #endif

@@ -29,5 +29,5 @@
 ****************************************************************************/
 
 
-extern void DFAddImage( imp_image_handle *ii );
-extern void  DFFreeImage( imp_image_handle *ii );
+extern void DFAddImage( imp_image_handle * );
+extern void DFFreeImage( imp_image_handle * );

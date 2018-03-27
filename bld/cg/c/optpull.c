@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include "optwif.h"
 #include "escape.h"
 #include "inslist.h"

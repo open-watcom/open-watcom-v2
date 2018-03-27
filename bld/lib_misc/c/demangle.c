@@ -49,7 +49,7 @@
 #include "clibext.h"
 
 
-#if defined( __WATCOMC__ )
+#if defined( _M_I86 )
 #define STRNCMP _fstrncmp
 #else
 #define STRNCMP strncmp

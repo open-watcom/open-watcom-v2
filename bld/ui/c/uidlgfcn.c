@@ -34,54 +34,49 @@
 #include "uidialog.h"
 #include "uigchar.h"
 
-extern void uiupdatelistbox( a_list *list );
 
-extern void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
+void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = true;
     v->u.check->val = true;
     uiprintfield( ui_dlg_info, v );
 }
 
-extern void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
+void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
     ui_dlg_info->dirty = true;
     v->u.check->val = false;
     uiprintfield( ui_dlg_info, v );
 }
 
-extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
+void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 {
     int     newval = v->u.radio->value;
     int     *oldval = &v->u.radio->group->value;
-    VFIELD  *oldradio = NULL;
-    VFIELD  *tmp = ui_dlg_info->fields;
+    VFIELD  *fields;
 
     if( newval == *oldval )
         return; // nothing to do
 
     ui_dlg_info->dirty = true;
-    while( tmp->u.radio != NULL ) {
-        if( tmp->typ == FLD_RADIO ) {
-            if( tmp->u.radio->value == *oldval ) {
+    for( fields = ui_dlg_info->fields; fields->typ != FLD_NONE; fields++ ) {
+        if( fields->typ == FLD_RADIO ) {
+            if( fields->u.radio->value == *oldval ) {
                 // we have it!
-                oldradio = tmp;
+                *oldval = newval;
+                uiprintfield( ui_dlg_info, v );
+                uiprintfield( ui_dlg_info, fields );
                 break;
             }
         }
-        tmp++;
     }
-    if( oldradio == NULL ) return; // error!
-
-    *oldval = newval;
-    uiprintfield( ui_dlg_info, v );
-    uiprintfield( ui_dlg_info, oldradio );
 }
 
-extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
+void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
     unsigned *oldchoice = &v->u.list->choice;
-//    if( *oldchoice == n ) return;
+//    if( *oldchoice == n )
+//        return;
     // This line is commented out because sometimes the selection will not be
     // highlighted, and we change to the same selection.  Result - selection
     // does not get highlighted.
@@ -91,7 +86,7 @@ extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
     uiupdatelistbox( v->u.list );
 }
 
-extern void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
+void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
     ui_dlg_info->dirty = true;
     v->u.combo->list.choice = n;

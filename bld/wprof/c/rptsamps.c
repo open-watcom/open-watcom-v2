@@ -39,6 +39,7 @@
 #include "dip.h"
 #include "machtype.h"
 #include "msg.h"
+#include "aui.h"
 #include "sampinfo.h"
 #include "support.h"
 #include "wpdata.h"
@@ -293,7 +294,7 @@ void ReportSampleInfo( void )
         for( ;; ) {
             curr_sio = curr_sio->next;
             dumpSampleInfo();
-            fprintf( df, "\n" );
+            fprintf( df, "\f\n" );
             dumpSampleImages( true, curr_sio );
             if( curr_sio == SIOData ) {
                 break;

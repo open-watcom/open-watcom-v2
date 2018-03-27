@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
+#include <stddef.h>             /* offsetof */
 #include <string.h>
 #include "rcalloc0.h"
 #include "rcerrors.h"

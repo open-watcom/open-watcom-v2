@@ -36,11 +36,11 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResSeek( WResFileID fid, WResFileOffset offset, int origin )
-/***************************************************************/
+bool ResSeek( FILE *fp, long offset, int origin )
+/***********************************************/
 /* cover function for seek */
 {
-    if( WRESSEEK( fid, offset, origin ) )
+    if( WRESSEEK( fp, offset, origin ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 }

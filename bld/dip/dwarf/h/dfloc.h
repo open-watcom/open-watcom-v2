@@ -30,35 +30,15 @@
 ****************************************************************************/
 
 
-extern void LocationCreate( location_list *ll, location_type lt, void *d );
-extern void LocationTrunc( location_list *ll, unsigned bits );
-extern void LocationAdd( location_list *ll, long sbits );
-extern dip_status EvalLocation( imp_image_handle *ii,
-                                location_context *lc,
-                                drmem_hdl         sym,
-                                word              seg,
-                                location_list    *ll );
-extern dip_status EvalParmLocation( imp_image_handle *ii,
-                                    location_context *lc,
-                                    drmem_hdl         sym,
-                                    location_list    *ll );
-extern dip_status EvalRetLocation( imp_image_handle *ii,
-                                    location_context *lc,
-                                    drmem_hdl         sym,
-                                    location_list    *ll );
-extern dip_status EvalLocAdj( imp_image_handle *ii,
-                               location_context *lc,
-                               drmem_hdl         sym,
-                               address          *addr );
-extern bool EvalOffset( imp_image_handle *ii, drmem_hdl sym, uint_32 *ret );
-extern bool EvalSeg( imp_image_handle *ii, drmem_hdl sym, addr_seg *ret );
-extern dip_status EvalBasedPtr( imp_image_handle *ii,
-                                location_context *lc,
-                                drmem_hdl         sym,
-                                address          *addr );
-extern bool EvalSymOffset( imp_image_handle *ii,
-                           drmem_hdl         sym,
-                           uint_32          *val );
-dip_status SafeDCItemLocation( location_context *,
-                               context_item ci,
-                               location_list *ll );
+extern void         LocationCreate( location_list *ll, location_type lt, void *d );
+extern void         LocationTrunc( location_list *ll, unsigned bits );
+extern void         LocationAdd( location_list *ll, long sbits );
+extern dip_status   EvalLocation( imp_image_handle *, location_context *lc, drmem_hdl sym, word seg, location_list *ll );
+extern dip_status   EvalParmLocation( imp_image_handle *, location_context *lc, drmem_hdl sym, location_list *ll );
+extern dip_status   EvalRetLocation( imp_image_handle *, location_context *lc, drmem_hdl sym, location_list *ll );
+extern dip_status   EvalLocAdj( imp_image_handle *, location_context *lc, drmem_hdl sym, address *addr );
+extern bool         EvalOffset( imp_image_handle *, drmem_hdl sym, uint_32 *ret );
+extern bool         EvalSeg( imp_image_handle *, drmem_hdl sym, addr_seg *ret );
+extern dip_status   EvalBasedPtr( imp_image_handle *, location_context *lc, drmem_hdl sym, address *addr );
+extern bool         EvalSymOffset( imp_image_handle *, drmem_hdl sym, uint_32 *val );
+extern dip_status   SafeDCItemLocation( location_context *, context_item ci, location_list *ll );

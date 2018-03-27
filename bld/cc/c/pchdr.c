@@ -35,7 +35,6 @@
 #endif
 #include "wio.h"
 #include "watcom.h"
-#include "pragdefn.h"
 #include "sopen.h"
 
 #include "clibext.h"

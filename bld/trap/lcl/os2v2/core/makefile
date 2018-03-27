@@ -17,8 +17,6 @@ which   = TRAP
 extra_cpp_flags = -DELFCORE
 extra_cflags = -bd
 
-extra_srcs = $(trap_dir)/lcl/elfcore/c
-
 extra_objs = &
     elfcore.obj &
     coremisc.obj &
@@ -31,3 +29,5 @@ inc_dirs = -I"$(trap_dir)/lcl/elfcore/h"
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
+
+.c : $(trap_dir)/lcl/elfcore/c

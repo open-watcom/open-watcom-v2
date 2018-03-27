@@ -34,15 +34,15 @@
 #include "read.h"
 #include "reserr.h"
 
-WResIDName *WResReadWResIDName( WResFileID fid )
-/**********************************************/
+WResIDName *WResReadWResIDName( FILE *fp )
+/****************************************/
 {
     WResIDName      newname;
     WResIDName      *newptr;
     size_t          numread;
 
     /* read the size of the name in */
-    if( ResReadUint8( &(newname.NumChars), fid ) )
+    if( ResReadUint8( &(newname.NumChars), fp ) )
         return( NULL );
 
     /* alloc the space for the new record */
@@ -53,8 +53,8 @@ WResIDName *WResReadWResIDName( WResFileID fid )
     } else {
         /* read in the characters */
         newptr->NumChars = newname.NumChars;
-        if( (numread = WRESREAD( fid, newptr->Name, newptr->NumChars )) != newptr->NumChars ) {
-            WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        if( (numread = WRESREAD( fp, newptr->Name, newptr->NumChars )) != newptr->NumChars ) {
+            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( newptr );
             newptr = NULL;
         }

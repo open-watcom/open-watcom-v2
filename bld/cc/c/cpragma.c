@@ -32,10 +32,10 @@
 #include <ctype.h>
 #include "cvars.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "caux.h"
 #include "cfeinfo.h"
+#include "asmstmt.h"
 
 #include "clibext.h"
 
@@ -210,6 +210,71 @@ static void PragFlag( int value )
         }
         MustRecog( T_RIGHT_PAREN );
     }
+}
+
+static void advanceToken( void )
+/******************************/
+{
+    CMemFree( SavedId );
+    SavedId = NULL;
+    CurToken = LAToken;
+}
+
+bool GetPragAuxAliasInfo( void )
+/******************************/
+{
+    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    NextToken();
+    if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
+        return( false );
+    LookAhead();
+    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
+        CurrAlias = SearchPragAuxAlias( SavedId );
+        advanceToken();
+        NextToken();
+        return( IS_ID_OR_KEYWORD( CurToken ) );
+    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
+        HashValue = SavedHash;
+        SetCurrInfo( SavedId );
+        advanceToken();
+        NextToken();
+        if( !IS_ID_OR_KEYWORD( CurToken ) )
+            return( false );                // error
+        GetPragAuxAlias();
+        PragEnding();
+        return( false );    /* process no more! */
+    } else {                                // error
+        advanceToken();
+        return( false );    /* shut up the compiler */
+    }
+}
+
+void *AsmQuerySymbol( const char *name )
+/**************************************/
+{
+    return( SymLook( CalcHash( name, strlen( name ) ), name ) );
+}
+
+enum sym_state AsmQueryState( void *handle )
+/******************************************/
+{
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
+    SYM_ENTRY   sym;
+
+    if( sym_handle == SYM_NULL )
+        return( SYM_UNDEFINED );
+    SymGet( &sym, sym_handle );
+    if( (sym.flags & SYM_REFERENCED) == 0 ) {
+        sym.flags |= SYM_REFERENCED;
+        SymReplace( &sym, sym_handle );
+    }
+    switch( sym.attribs.stg_class ) {
+    case SC_AUTO:
+    case SC_REGISTER:
+        return( SYM_STACK );
+    }
+    return( SYM_EXTERNAL );
 }
 
 void AddLibraryName( const char *name, const char priority )
@@ -416,19 +481,20 @@ void SetCurrInfo( const char *name )
 }
 
 
-void PragCurrAlias( const char *name )
-/************************************/
+aux_info *SearchPragAuxAlias( const char *name )
+/**********************************************/
 {
-    aux_entry *search;
+    aux_entry   *search_entry;
+    aux_info    *search_info;
 
-    search = NULL;
-    CurrAlias = MagicKeyword( name );
-    if( CurrAlias == NULL ) {
-        search = AuxLookup( name );
-        if( search != NULL ) {
-            CurrAlias = search->info;
+    search_info = MagicKeyword( name );
+    if( search_info == NULL ) {
+        search_entry = AuxLookup( name );
+        if( search_entry != NULL ) {
+            search_info = search_entry->info;
         }
     }
+    return( search_info );
 }
 
 
@@ -549,7 +615,7 @@ void PragEnding( void )
         CurrEntry->info = CurrInfo;
     }
 
-    /* If this pragma defines code, check to see if we already have a function body */   
+    /* If this pragma defines code, check to see if we already have a function body */
     if( CurrEntry != NULL && CurrEntry->info != NULL && CurrEntry->info->code != NULL ) {
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
@@ -655,9 +721,10 @@ hw_reg_set PragRegList( void )
     if( close != T_NULL ) {
         PPCTL_ENABLE_MACROS();
         for( ; NextToken() != close; ) {
-            if( CurToken != T_BAD_CHAR ) {
-                reg = PragRegName( Buffer, TokenLen );
-                HW_TurnOn( res, reg );
+            reg = PragReg();
+            HW_TurnOn( res, reg );
+            if( CurToken == close ) {
+                break;
             }
         }
         PPCTL_DISABLE_MACROS();
@@ -1040,8 +1107,8 @@ static void PragReadOnlyDir( void )
 }
 
 // forms: (1) #pragma include_alias( "alias_name", "real_name" )
-//        (2) #pragma include_alias( <alias_name>, <real_name> ) 
-// 
+//        (2) #pragma include_alias( <alias_name>, <real_name> )
+//
 // causes include directives referencing alias_name to be refer
 // to real_name instead
 //

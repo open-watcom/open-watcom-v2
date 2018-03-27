@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
 #include "cgmem.h"
 #include "tree.h"
@@ -67,7 +66,7 @@
 /* for instance:
 0022    B9 08 00                  mov       cx,0x0008
 0025    BF 00 00                  mov       di,offset L$1
-0028    F2 AF                     repne scasw 
+0028    F2 AF                     repne scasw
 002A    26 FF 65 0C               jmp       word ptr es:0xc[di]
 */
 
@@ -207,7 +206,7 @@ cost_val IfCost( sel_handle s_node, int entries )
         log_entries++;
         entries = (unsigned_32)entries >> 2;
     }
-    /* add cost for extra jumps generated for grandparents and 
+    /* add cost for extra jumps generated for grandparents and
        every other child except the last one */
     cost += (entries / 4) * 2 * jumpsize;
     cost = Balance( cost, log_entries );
@@ -285,7 +284,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
 static  void    GenValuesForward( select_list *list, signed_32 hi,
                                   signed_32 lo, signed_32 to_sub,
-                                  cg_type tipe ) 
+                                  cg_type tipe )
 /****************************************************************/
 {
     signed_32           curr;

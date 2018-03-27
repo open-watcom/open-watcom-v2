@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern bool GUIProcessAltMenuEvent( EVENT ev );
+extern bool GUIProcessAltMenuEvent( ui_event ui_ev );

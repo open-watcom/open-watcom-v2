@@ -30,7 +30,6 @@
 
 
 #include <stdlib.h>
-#include <stdio.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
@@ -40,12 +39,8 @@
 #include "dbgupdt.h"
 #include "dbgwglob.h"
 #include "dbgwrtrd.h"
-
-
 #include "menudef.h"
-static gui_menu_struct RunTrdMenu[] = {
-    #include "menurtrd.h"
-};
+
 
 #define RUN_THREAD_INFO_TYPE_NONE       0
 #define RUN_THREAD_INFO_TYPE_NAME       1
@@ -58,35 +53,36 @@ static gui_menu_struct RunTrdMenu[] = {
 #define MAX_PIECE_COUNT     4
 #define MAX_HEADER_SIZE     80
 
-static a_window         *RunThreadWnd = 0;
+static a_window         RunThreadWnd = 0;
 static int              PieceCount = 0;
 static unsigned char    Indents[MAX_PIECE_COUNT + 1];
 static unsigned char    InfoType[MAX_PIECE_COUNT];
 static char             HeaderArr[MAX_PIECE_COUNT][MAX_HEADER_SIZE + 1];
 
+static gui_menu_struct  RunTrdMenu[] = {
+    #include "menurtrd.h"
+};
+
 void InitRunThreadInfo( void )
 {
     int     Width;
     int     i;
-    bool    ok;
 
     PieceCount = 0;
     Indents[0] = 0;
 
     for(i  = 0; i < MAX_PIECE_COUNT; i++ ) {
-        ok = RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE );
-        if( ok ) {
-            Indents[PieceCount + 1] = Indents[PieceCount] + (unsigned char)Width;
-            PieceCount++;
-        } else
+        if( !RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE ) )
             break;
+        Indents[PieceCount + 1] = Indents[PieceCount] + (unsigned char)Width;
+        PieceCount++;
     }
 }
 
-static thread_state     *GetThreadRow( int row )
+static thread_state     *GetThreadRow( wnd_row row )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -97,19 +93,20 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-static int RunTrdNumRows( a_window *wnd )
+OVL_EXTERN wnd_row RunTrdNumRows( a_window wnd )
 {
     thread_state    *thd;
-    unsigned        num;
+    wnd_row         num;
 
     /* unused parameters */ (void)wnd;
 
     num = 0;
-    for( thd = HeadThd; thd != NULL; thd = thd->link ) ++num;
+    for( thd = HeadThd; thd != NULL; thd = thd->link )
+        num++;
     return( num );
 }
 
-static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -124,7 +121,7 @@ static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -175,10 +172,10 @@ static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
     DbgUpdate( UP_THREAD_STATE );
 }
 
-static void RunTrdRefresh( a_window *wnd )
+OVL_EXTERN void RunTrdRefresh( a_window wnd )
 {
     thread_state    *thd;
-    int             row;
+    wnd_row         row;
 
     row = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
@@ -189,30 +186,28 @@ static void RunTrdRefresh( a_window *wnd )
         ++row;
     }
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
-static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
-                               wnd_line_piece *line )
+OVL_EXTERN bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
     line->indent = Indents[piece] * WndAvgCharX( wnd );
     if( row < 0 ) {
         row += TITLE_SIZE;
-        switch( row ) {
-        case 0:
+        if( row == 0 ) {
             if( piece < PieceCount ) {
                 line->text = HeaderArr[piece];
                 return( true );
             }
             return( false );
-        case 1:
+        } else if( row == 1 ) {
             if( piece != 0 )
                 return( false );
             SetUnderLine( wnd, line );
             return( true );
-        default:
+        } else {
             return( false );
         }
     } else {
@@ -283,7 +278,7 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
 }
 
 wnd_info RunTrdInfo = {
-    RunTrdEventProc,
+    RunTrdWndEventProc,
     RunTrdRefresh,
     RunTrdGetLine,
     RunTrdMenuItem,
@@ -300,7 +295,7 @@ wnd_info RunTrdInfo = {
 };
 
 
-a_window *WndRunTrdOpen( void )
+a_window WndRunTrdOpen( void )
 {
     return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL,
                                &TrdIcon, TITLE_SIZE, true ) );
@@ -310,14 +305,14 @@ void RunThreadNotify( void )
 {
     thread_state    *thd;
 
-    if( HeadThd && HaveRemoteRunThread() ) {
+    if( HeadThd != NULL && HaveRemoteRunThread() ) {
         RemotePollRunThread();
 
         if( RunThreadWnd ) {
             for( thd = HeadThd; thd != NULL; thd = thd->link ) {
                 RemoteUpdateRunThread( thd );
             }
-            WndRepaint( RunThreadWnd );
+            WndSetRepaint( RunThreadWnd );
         }
     }
 }

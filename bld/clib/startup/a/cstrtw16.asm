@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -36,6 +37,7 @@
 ;               wasm cstrtw16 -bt=WINDOWS -ml -0r
 ;
 
+include langenv.inc
 include mdef.inc
 include xinit.inc
 
@@ -56,24 +58,19 @@ pStackBot       equ     000EH
 
         assume  nothing
 
-        extrn   INITTASK        : far
-        extrn   GETMODULEFILENAME : far
-        extrn   INITAPP         : far
-        extrn   WAITEVENT       : far
-        extrn   __AHSHIFT       : word
+        extrn   INITTASK            : far
+        extrn   GETMODULEFILENAME   : far
+        extrn   INITAPP             : far
+        extrn   WAITEVENT           : far
 
-        extrn   "C",exit        : proc
-        extrn   __FInitRtns     : far
-        extrn   __FFiniRtns     : far
+        extrn   __AHSHIFT           : word
 
-        extrn   WINMAIN         : proc
+        extrn   _edata              : byte          ; end of DATA (start of BSS)
+        extrn   _end                : byte          ; end of BSS (start of STACK)
 
-        extrn   _edata          : byte          ; end of DATA (start of BSS)
-        extrn   _end            : byte          ; end of BSS (start of STACK)
+        extrn   __DOSseg__          : byte
 
-        extrn   __DOSseg__      : byte
-
- DGROUP group _NULL,AFX_NULL,_DATA,CONST,STRINGS,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
+DGROUP  group _NULL,AFX_NULL,_DATA,CONST,STRINGS,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 ife _MODEL and _BIG_CODE
 
@@ -90,13 +87,13 @@ BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
+        jmp short forever
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -105,12 +102,18 @@ endif
 
 _TEXT   segment word public 'CODE'
 
+        extrn   "C",exit            : proc
+        extrn   __InitRtns          : proc
+        extrn   __FiniRtns          : proc
+        extrn   WINMAIN             : proc
+
 FAR_DATA segment byte public 'FAR_DATA'
 FAR_DATA ends
 
         assume  ds:DGROUP
 
 _NULL   segment para public 'BEGDATA'
+        public  __nullarea
 __nullarea label word
            dw   0,0
            dw   5
@@ -119,7 +122,6 @@ __nullarea label word
 _STACKLOW  dw   0               ; pStackTop: lowest address in stack
 _STACKTOP  dw   0               ; pStackMin:
            dw   0               ; pStackBot: highest address in stack
-        public  __nullarea
 _NULL   ends
 
 AFX_NULL    segment word public 'BEGDATA'
@@ -175,22 +177,8 @@ DATA    ends
 BCSD    segment word public 'DATA'
 BCSD    ends
 
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 STACK   segment para stack 'STACK'
 STACK   ends
@@ -202,15 +190,9 @@ STACK   ends
         assume  cs:_TEXT
         assume  ds:DGROUP
 
- _wstart_ proc near
- _cstart_:
-        jmp     around
-
-;
-; copyright message
-;
-include msgrt16.inc
-include msgcpyrt.inc
+_wstart_ proc near
+_cstart_ proc near
+        jmp short around
 
 ife _MODEL and _BIG_CODE
 if _MODEL NE _TINY
@@ -220,8 +202,20 @@ endif
 
 around: call    INITTASK                ; initialize
         or      ax,ax                   ; if not OK
-        jne     l1
-        jmp     _error                  ; then error
+        jne     l1                      ; then exit error
+
+        public  "C",__exit
+__exit  proc
+        push    ax                      ; save return code
+        xor     ax,ax                   ; run finalizers
+        mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
+        call    __FiniRtns              ; call finalizer routines
+        pop     ax                      ; restore return code
+        mov     ah,04cH                 ; DOS call to exit with return code
+        int     021h                    ; back to DOS
+__exit endp
+
+
 l1:     mov     _psp,es                 ; save ES
         push    di                      ; push parms for WINMAIN (hInstance)
         push    si                      ; ... (hPrevInstance)
@@ -293,23 +287,17 @@ notprot:
         mov     _LpPgmName+2,ds         ; ...
 
         mov     ax,0ffh                 ; run all initializers
-        call    __FInitRtns             ; call initializer routines
+        call    __InitRtns              ; call initializer routines
 
         call    WINMAIN                 ; invoke user's program
         jmp     exit                    ; exit, never return
+_cstart_ endp
 _wstart_ endp
 
-__exit  proc
-        public  "C",__exit
-_error:
-        push    ax                      ; save return code
-        xor     ax,ax                   ; run finalizers
-        mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
-        call    __FFiniRtns             ; call finalizer routines
-        pop     ax                      ; restore return code
-        mov     ah,04cH                 ; DOS call to exit with return code
-        int     021h                    ; back to DOS
-__exit endp
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 public  __GETDS
 __GETDS proc    near

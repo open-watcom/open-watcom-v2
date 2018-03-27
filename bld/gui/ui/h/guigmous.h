@@ -33,7 +33,7 @@
 #ifndef _GUIGMOUS_H_
 #define _GUIGMOUS_H_
 
-extern int  GUIInitMouse( int param );
+extern bool GUIInitMouse( init_mode install );
 extern void GUIFiniMouse( void );
 extern void GUIInitGraphicsMouse( gui_window_styles );
 extern bool GUIHasCharRemap( void );

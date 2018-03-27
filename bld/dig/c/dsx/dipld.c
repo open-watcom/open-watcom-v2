@@ -44,26 +44,30 @@
 
 #define DIPSIG  0x00504944UL    // "DIP"
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
-    DIGCli( Free )( sys_hdl );
+    if( *sys_hdl != NULL_SYSHDL ) {
+        DIGCli( Free )( *sys_hdl );
+        *sys_hdl = NULL_SYSHDL;
+    }
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dig_fhandle         fid;
+    FILE                *fp;
     imp_header          *dip;
     dip_init_func       *init_func;
     dip_status          status;
     char                dip_name[_MAX_PATH];
 
-    fid = DIGLoader( Open )( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
-    if( fid == DIG_NIL_HANDLE ) {
+    *sys_hdl = NULL_SYSHDL;
+    fp = DIGLoader( Open )( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
+    if( fp == NULL ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    dip = ReadInImp( fid );
-    DIGLoader( Close )( fid );
+    dip = ReadInImp( fp );
+    DIGLoader( Close )( fp );
     status = DS_ERR | DS_INVALID_DIP;
     if( dip != NULL ) {
 #ifdef __WATCOMC__

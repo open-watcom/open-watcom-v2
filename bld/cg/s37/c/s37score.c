@@ -37,7 +37,6 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "vergen.h"
-#include "opcodes.h"
 
 #include "s37score.def"
 

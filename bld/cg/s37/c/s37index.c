@@ -34,8 +34,6 @@
 #include "coderep.h"
 #include "confldef.h"
 #include "pattern.h"
-#include "opcodes.h"
-#include "cgmem.h"
 #include "regset.h"
 #include "model.h"
 #include "cgaux.h"

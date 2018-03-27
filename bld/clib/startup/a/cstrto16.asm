@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -40,7 +41,9 @@
 ;       which are needed by the C Library. It should also be MINIMAL.
 ;       This is so we can make CLIB DLLs.
 ;
+include langenv.inc
 include mdef.inc
+include xinit.inc
 
         name    cstart
 
@@ -67,13 +70,13 @@ BEGTEXT  segment word public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
         int     3h
-        jmp     short forever
+        jmp short forever
+        public ___begtext
 ___begtext label byte
         nop
         nop
         nop
         nop
-        public ___begtext
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -85,20 +88,6 @@ _TEXT   segment para public 'CODE'
 
         INIT_VAL        equ 0101h
         NUM_VAL         equ 16
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _NULL   segment para public 'BEGDATA'
 public  __nullarea
@@ -119,8 +108,8 @@ STRINGS ends
 _DATA   segment word public 'DATA'
 _DATA   ends
 
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 STACK   segment para stack 'STACK'
         stklow  label   word
@@ -133,20 +122,15 @@ STACK   ends
 
         assume  cs:_TEXT
 
- _cstart_ proc near
+_cstart_ proc far
+__DLLstart_ proc far
         assume  ds:DGROUP
-__DLLstart_:
-        jmp     around
 
-;
-; copyright message
-;
-include msgrt16.inc
-include msgcpyrt.inc
+        jmp short around
 
 ife _MODEL and _BIG_CODE
-        dw      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
+        dw      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT
 endif
 
 around:
@@ -174,10 +158,15 @@ around:
         pop     dx                      ; ...
         pop     cx                      ; ...
         pop     bx                      ; ...
-        retf                            ; return
+        ret                             ; return
 
+__DLLstart_ endp
 _cstart_ endp
 
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 _TEXT   ends
 

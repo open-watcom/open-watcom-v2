@@ -31,8 +31,9 @@
 
 struct __dirstream
 {
-    int fd;
-    size_t bufofs, bufsize;
-    struct dirent dirent;
-    char dirent_buf[_DIRBUF * sizeof(struct dirent)];
+    int             fd;
+    size_t          bufofs;
+    size_t          bufsize;
+    struct dirent   dirent;
+    char            dirent_buf[_DIRBUF * sizeof( struct dirent )];
 };

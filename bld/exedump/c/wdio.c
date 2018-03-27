@@ -160,32 +160,39 @@ void Wdputslc( const char *buf )
     fputs( buf, stdout );
 }
 
-void Dump_header( void *data_ptr, const_string_table *msg )
-/**************************************************/
+void Dump_header( void *data_ptr, const_string_table *msg, int max_width )
+/************************************************************************/
 {
     unsigned_8  *data = (unsigned_8 *)data_ptr;
     int         skip;
     bool        print_h;
+    static const char *spaces = "                ";
 
     for( ; *msg != NULL; ++msg ) {
         print_h = true;
         switch( msg[0][0] ) {
         case '1':
             Wdputs( &msg[0][1] );
-            Wdputs( "      " );
+            Wdputs( spaces + 2 * ( 8 - max_width + 1 ) );
             Puthex( *(unsigned_8 *)data, 2 );
             data += sizeof( unsigned_8 );
             break;
         case '2':
             Wdputs( &msg[0][1] );
-            Wdputs( "    " );
+            Wdputs( spaces + 2 * ( 8 - max_width + 2 ) );
             Puthex( *(unsigned_16 *)data, 4 );
             data += sizeof( unsigned_16 );
             break;
         case '4':
             Wdputs( &msg[0][1] );
+            Wdputs( spaces + 2 * ( 8 - max_width + 4 ) );
             Puthex( *(unsigned_32 *)data, 8 );
             data += sizeof( unsigned_32 );
+            break;
+        case '8':
+            Wdputs( &msg[0][1] );
+            Puthex64( *(long long *)data, 16 );
+            data += sizeof( long long );
             break;
         case '0':       // fixed size ASCIIZ string
             skip = msg[0][1] - '0';

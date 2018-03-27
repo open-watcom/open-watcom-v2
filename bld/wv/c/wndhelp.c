@@ -40,8 +40,6 @@
 #include "wndhelp.h"
 
 
-extern a_window         *WndMain;
-
 #define HELPNAME "wd"
 
 static gui_help_instance Handle;

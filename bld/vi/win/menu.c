@@ -832,11 +832,14 @@ vi_rc MenuCommand( int menuid )
 
 static void tabs_to_slash_t( char *buffer, const char *text )
 {
-    for( ; *text != '\0'; text++ ) {
-        if( *text == '\t' ) {
+    char    c;
+
+    for( ; (c = *text) != '\0'; text++ ) {
+        if( c == '\t' ) {
             *buffer++ = '\\';
+            c = 't';
         }
-        *buffer++ = *text;
+        *buffer++ = c;
     }
     *buffer = '\0';
 }
@@ -1013,7 +1016,7 @@ static void addLastFiles( menu *cmenu )
     char                *menu_text;
     int                 i, j;
 
-    h = &EditVars.LastFilesHist;
+    h = &EditVars.Hist[HIST_LASTFILES];
     if( h->curr == 0 ) {
         cmenu->orig_num_items = cmenu->num_items;
         return;

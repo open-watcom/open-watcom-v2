@@ -33,6 +33,7 @@
 #ifndef DIP_CV
 #define DIP_CV
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "bool.h"
@@ -84,7 +85,7 @@ struct imp_image_handle {
     imp_image_handle            *next_image;
     struct virt_page            ***virt;
     unsigned                    vm_dir_num;
-    dig_fhandle                 sym_fid;
+    FILE                        *sym_fp;
     unsigned long               bias;
     cv_directory_entry          **directory;
     unsigned                    dir_count;
@@ -134,7 +135,7 @@ extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_hand
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               TypeSymGetInfo( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
 extern dip_status               TypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
-extern walk_result              TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
+extern walk_result              TypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern dip_status               TypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result            TypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result            TypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

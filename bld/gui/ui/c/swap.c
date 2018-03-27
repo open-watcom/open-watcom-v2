@@ -310,7 +310,7 @@ static POINT            oldCursorPos;
 static void doAnInt10( void )
 {
     rmRegs.ss = rmRegs.sp = 0;
-    DPMISimulateRealModeInterrupt( 0x10,0,0, &rmRegs );
+    DPMISimulateRealModeInterrupt( 0x10, 0, 0, &rmRegs );
 }
 
 

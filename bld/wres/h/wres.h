@@ -102,9 +102,9 @@ extern WResDir          MainDir;
 extern WResDir          WResInitDir( void );
 extern bool             WResIsEmpty( WResDir );
 extern void             WResFreeDir( WResDir );
-extern bool             WResWriteDir( WResFileID fid, WResDir );
-extern bool             WResReadDir( WResFileID fid, WResDir, bool * );
-extern bool             WResReadDir2( WResFileID fid, WResDir currdir, bool *dup_discarded, void *fileinfo );
+extern bool             WResWriteDir( FILE *fp, WResDir );
+extern bool             WResReadDir( FILE *fp, WResDir, bool * );
+extern bool             WResReadDir2( FILE *fp, WResDir currdir, bool *dup_discarded, void *fileinfo );
 extern bool             WResAddResource( const WResID *type, const WResID *name, uint_16 memflags, long offset,
                                 uint_32 length, WResDir, const WResLangType *lang, bool *duplicate );
 extern bool             WResAddResource2( const WResID *type, const WResID *name, uint_16 memflags, long offset,
@@ -135,6 +135,6 @@ extern WResLangNode     *__FindLang( const WResLangType *lang, WResResNode *curr
 
 /* function prototypes for WRes file initialization */
 
-extern bool             WResFileInit( WResFileID fid );
+extern bool             WResFileInit( FILE *fp );
 
 #endif

@@ -35,64 +35,64 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID fid )
-/***************************************************************************/
+bool ResWriteIconCurDirHeader( const IconCurDirHeader *head, FILE *fp )
+/*********************************************************************/
 {
-    if( WRESWRITE( fid, head, sizeof( IconCurDirHeader ) ) != sizeof( IconCurDirHeader ) )
+    if( WRESWRITE( fp, head, sizeof( IconCurDirHeader ) ) != sizeof( IconCurDirHeader ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID fid )
-/********************************************************************/
+bool ResReadIconCurDirHeader( IconCurDirHeader *head, FILE *fp )
+/**************************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, head, sizeof( IconCurDirHeader ) )) != sizeof( IconCurDirHeader ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, head, sizeof( IconCurDirHeader ) )) != sizeof( IconCurDirHeader ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
-bool ResWriteIconDirEntry( const IconDirEntry *entry, WResFileID fid )
-/********************************************************************/
+bool ResWriteIconDirEntry( const IconDirEntry *entry, FILE *fp )
+/**************************************************************/
 {
-    if( WRESWRITE( fid, entry, sizeof( IconDirEntry ) ) != sizeof( IconDirEntry ) )
+    if( WRESWRITE( fp, entry, sizeof( IconDirEntry ) ) != sizeof( IconDirEntry ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResReadIconDirEntry( IconDirEntry *entry, WResFileID fid )
-/*************************************************************/
+bool ResReadIconDirEntry( IconDirEntry *entry, FILE *fp )
+/*******************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, entry, sizeof( IconDirEntry ) )) != sizeof( IconDirEntry ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, entry, sizeof( IconDirEntry ) )) != sizeof( IconDirEntry ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
-bool ResWriteCurDirEntry( const CurDirEntry *entry, WResFileID fid )
-/******************************************************************/
+bool ResWriteCurDirEntry( const CurDirEntry *entry, FILE *fp )
+/************************************************************/
 {
-    if( WRESWRITE( fid, entry, sizeof( CurDirEntry ) ) != sizeof( CurDirEntry ) )
+    if( WRESWRITE( fp, entry, sizeof( CurDirEntry ) ) != sizeof( CurDirEntry ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResReadCurDirEntry( CurDirEntry *entry, WResFileID fid )
-/***********************************************************/
+bool ResReadCurDirEntry( CurDirEntry *entry, FILE *fp )
+/*****************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, entry, sizeof( CurDirEntry ) )) != sizeof( CurDirEntry ) )
-        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( (numread = WRESREAD( fp, entry, sizeof( CurDirEntry ) )) != sizeof( CurDirEntry ) )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
-bool ResWriteCurHotspot( const CurHotspot *hotspot, WResFileID fid )
-/******************************************************************/
+bool ResWriteCurHotspot( const CurHotspot *hotspot, FILE *fp )
+/************************************************************/
 {
-    if( WRESWRITE( fid, hotspot, sizeof( CurHotspot ) ) != sizeof( CurHotspot ) )
+    if( WRESWRITE( fp, hotspot, sizeof( CurHotspot ) ) != sizeof( CurHotspot ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

@@ -30,15 +30,14 @@
 ****************************************************************************/
 
 
+#include "cgstd.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <string.h>
-#include "cgstd.h"
-#include "cg.h"
+#include "targsys.h"
+#include "_cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
-#include "targsys.h"
 #include "system.h"
 #include "offset.h"
 #include "s37bead.h"

@@ -69,7 +69,7 @@ static void DoCmd( char *cmd )
 }
 
 
-extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
+static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     char        *text;
@@ -110,28 +110,29 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
             if( text != NULL )
                 DoCmd( text );
             GUIMemFree( text );
-            break;
-        case CTL_CMD_CHECK:
-            return( false );
+            /* fall through */
+        case CTL_CMD_CANCEL:
+            GUICloseDialog( gui );
+            return( true );
         }
-        GUICloseDialog( gui );
-        /* fall through */
+        break;
     case GUI_DESTROY:
         WndFree( cmd );
         return( true );
     default:
-        return( false );
+        break;
     }
+    return( false );
 }
 
 
-extern  void    DlgCmd( void )
+void    DlgCmd( void )
 {
     char        *cmd;
 
     cmd = WndMustAlloc( 100 );
     GUISetModalDlgs( true );
     DlgOpen( "Enter a command", DLG_CMD_ROWS, DLG_CMD_COLS,
-             Controls, NUM_CONTROLS, &CmdEvent, cmd );
+             Controls, NUM_CONTROLS, &CmdGUIEventProc, cmd );
     GUISetModalDlgs( false );
 }

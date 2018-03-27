@@ -51,7 +51,7 @@ NDPType_ proc    near
         sub     ax,ax                   ; set initial control word to 0
         push    ax                      ; push it on stack
         mov     bp,sp                   ; point to control word
-;
+        ; we can not use FWAIT until FPU will be detected
         fninit                          ; initialize math coprocessor
         fnstcw  0[bp]                   ; store control word in memory
         mov     ax,[bp]                 ; delay CPU to synchronize with FPU
@@ -59,6 +59,7 @@ NDPType_ proc    near
         mov     ah,3                    ; upper byte is 03h if
         cmp     ah,[bp+1]               ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present
+        ; now we can use FWAIT if necessary because FPU is present
         mov     al,1                    ; assume it is an 8087
         and     word ptr 0[bp],NOT 0080h; turn interrupts on (IEM=0)
         fldcw   0[bp]                   ; load control word

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,20 +44,27 @@
 #include "uimouse.h"
 #include "trie.h"
 #include "qdebug.h"
-#include "uivirt.h"
-#include "qnxuiext.h"
+#include "uivirts.h"
+#include "uiextrn.h"
 #include "ctkeyb.h"
 
 
-#define MOUSE_SCALE     8
+#define MOUSE_SCALE         8
 
-extern ORD              MouseRow;
-extern ORD              MouseCol;
+#define MAXBUF              30
 
-extern unsigned short   MouseStatus;
-extern bool             MouseInstalled;
+#define QW_BELL             "\x07"
 
-static __segment        SysTimeSel;
+#define QNX_HDR             _ESC "/"
+#define ANSI_HDR            _ESC "["
+
+#define QW_TEST             "10t"
+#define QW_TEST_RESPONSE    "10;"
+#define QW_INIT             ">1;6;7;8h" _ESC "/>9l"
+#define QW_FINI             ">1;6;7;8l"
+
+#define XT_INIT             _ESC "[?1000h"
+#define XT_FINI             _ESC "[?1000l"
 
 static enum {
     M_NONE,
@@ -65,42 +73,11 @@ static enum {
     M_XT        /* XTerm */
 } MouseType;
 
-
-#define MAXBUF    30
-
-static char buf[ MAXBUF + 1 ];
-static int new_sample;
-
-#if defined( __386__ )
-    extern unsigned long GetLong( unsigned short time_sel,
-                                  unsigned long  time_off );
-
-    #pragma aux GetLong = "mov ES,AX"           \
-                          "mov EAX,ES:[EDX]"    \
-                                                \
-                          parm   [EAX] [EDX]    \
-                          value  [EAX]          \
-                          modify [ES];
-
-    #define GET_MSECS   (GetLong( SysTimeSel, offsetof( struct _timesel, nsec ) ) / 1000000 \
-                       + GetLong( SysTimeSel, offsetof( struct _timesel, seconds ) ) * 1000)
-#else
-    #define _SysTime    ((struct _timesel __far *) MK_FP( SysTimeSel, 0 ))
-    #define GET_MSECS   (_SysTime->nsec / 1000000 + (_SysTime->seconds) * 1000)
-#endif
-
-#define QW_BELL "\007"
-
-#define QNX_HDR         "\x1b/"
-#define ANSI_HDR        "\x1b["
-
-#define QW_TEST                 "10t"
-#define QW_TEST_RESPONSE        "10;"
-#define QW_INIT                 ">1;6;7;8h\033/>9l"
-#define QW_FINI                 ">1;6;7;8l"
-
-#define XT_INIT "\033[?1000h"
-#define XT_FINI "\033[?1000l"
+static char         buf[MAXBUF + 1];
+static int          new_sample;
+static int          last_row;
+static int          last_col;
+static MOUSESTAT    last_status;
 
 static  void tm_error( void )
 /***************************/
@@ -115,8 +92,6 @@ static  void tm_error( void )
  *   3- set parameters to reflect it externals
  */
 
-static int last_row, last_col, last_status;
-
 /* Parse a QNX Windows/Photon mouse event. */
 static void QW_parse( void )
 {
@@ -124,14 +99,18 @@ static void QW_parse( void )
     char *p = buf;
 
     mclick = 1;
-    if((func = strtol(p, &p, 10)) > 3276 || *p != ';') return;
-    if((mrow = strtol(p+1, &p, 10)) > 3276 || *p != ';') return;
-    if((mcol = strtol(p+1, &p, 10)) > 3276 || *p != ';') return;
-    mbut = strtol(p+1, &p, 10);
-    if (*p == ';') {
-        mclick = strtol(p+1, &p, 10);
+    if( (func = strtol( p, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    if( (mrow = strtol( p + 1, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    if( (mcol = strtol( p + 1, &p, 10 )) > 3276 || *p != ';' )
+        return;
+    mbut = strtol( p + 1, &p, 10 );
+    if( *p == ';' ) {
+        mclick = strtol( p + 1, &p, 10 );
     }
-    if( *p != 't' ) return;
+    if( *p != 't' )
+        return;
     last_row = mrow;
     last_col = mcol;
     /*
@@ -141,9 +120,12 @@ static void QW_parse( void )
     switch( func ) {
     case 1:
         last_status = 0;
-        if (mbut & 004) last_status |= MOUSE_PRESS;
-        if (mbut & 002) last_status |= MOUSE_PRESS_MIDDLE;
-        if (mbut & 001) last_status |= MOUSE_PRESS_RIGHT;
+        if( mbut & 004 )
+            last_status |= UI_MOUSE_PRESS;
+        if( mbut & 002 )
+            last_status |= UI_MOUSE_PRESS_MIDDLE;
+        if( mbut & 001 )
+            last_status |= UI_MOUSE_PRESS_RIGHT;
         break;
     case 2:
         last_status = 0;
@@ -157,40 +139,38 @@ static void XT_parse( void )
     last_col = buf[1] - 0x21;
     last_row = buf[2] - 0x21;
     switch( buf[0] & 0x03 ) {
-    case 0: last_status |= MOUSE_PRESS; break;
-    case 1: last_status |= MOUSE_PRESS_MIDDLE; break;
-    case 2: last_status |= MOUSE_PRESS_RIGHT; break;
+    case 0: last_status |= UI_MOUSE_PRESS; break;
+    case 1: last_status |= UI_MOUSE_PRESS_MIDDLE; break;
+    case 2: last_status |= UI_MOUSE_PRESS_RIGHT; break;
     case 3: last_status = 0;
     }
 }
 
 
-static int tm_check( unsigned short *status, unsigned short *row, unsigned short *col, unsigned long *time )
-/**********************************************************************************************************/
+static bool tm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/**************************************************************************************/
 {
-    if( !MouseInstalled ) {
-         uisetmouse( *row, *col );
-         return( 0 );
-    }
-    QNXDebugPrintf1("mouse_string = '%s'", buf);
-    if( new_sample ) {
-        switch( MouseType ) {
-        case M_QW:
-        case M_AW:
-            QW_parse();
-            break;
-        case M_XT:
-            XT_parse();
-            break;
+    if( MouseInstalled ) {
+        QNXDebugPrintf1("mouse_string = '%s'", buf);
+        if( new_sample ) {
+            switch( MouseType ) {
+            case M_QW:
+            case M_AW:
+                QW_parse();
+                break;
+            case M_XT:
+                XT_parse();
+                break;
+            }
+            new_sample = 0;
         }
-        new_sample = 0;
+        *row = last_row;
+        *col = last_col;
+        *status = last_status;
+        *time = uiclock();
     }
-    *row = last_row;
-    *col = last_col;
-    *status = last_status;
-    *time = GET_MSECS;
     uisetmouse( *row, *col );
-    return( 0 );
+    return( false );
 }
 
 static int tm_stop( void )
@@ -199,59 +179,57 @@ static int tm_stop( void )
     return( 0 );
 }
 
-static void DoMouseInit( int type, char *init, const char *input )
+static void DoMouseInit( int type, const char *init, const char *input )
 {
     struct _osinfo      osinfo;
     MOUSEORD            row;
     MOUSEORD            col;
 
+    MouseInstalled = true;
     MouseType = type;
+
     uimouseforceoff();
     uiwrite( init );
     TrieAdd( EV_MOUSE_PRESS, input );
-
-    MouseInstalled = true;
 
     UIData->mouse_xscale = 1;
     UIData->mouse_yscale = 1;
 
     qnx_osinfo( 0, &osinfo );
-    SysTimeSel = osinfo.timesel;
+    _SysTime = (struct _timesel __far *)MK_FP( osinfo.timesel, 0 );
 
     checkmouse( &MouseStatus, &row, &col, &MouseTime );
     MouseRow = row;
     MouseCol = col;
-    stopmouse();
+    _stopmouse();
 }
 
-static int tm_init( int install )
-/*******************************/
+static bool tm_init( init_mode install )
+/**************************************/
 {
     const char      *term;
 
     MouseInstalled = false;
     MouseType = M_NONE;
 
-    if( install == 0 )
+    if( install == INIT_MOUSELESS )
         return( false );
 
     term = GetTermType();
     if( strcmp( term, "xterm" ) == 0 ) {
         DoMouseInit( M_XT, XT_INIT, ANSI_HDR "M" );
-        return( true );
-    }
-    if( strstr( term, "qnx" ) != 0 ) {
+    } else if( strstr( term, "qnx" ) != 0 ) {
         uiwritec( QNX_HDR QW_TEST );
         TrieAdd( EV_MOUSE_PRESS, QNX_HDR QW_TEST_RESPONSE );
-        return( true );
+    } else {
+        uiwritec( ANSI_HDR QW_TEST );
+        TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
     }
-    uiwritec( ANSI_HDR QW_TEST );
-    TrieAdd( EV_MOUSE_PRESS, ANSI_HDR QW_TEST_RESPONSE );
     return( true );
 }
 
-static int tm_fini( void )
-/************************/
+static bool tm_fini( void )
+/*************************/
 {
     switch( MouseType ) {
     case M_QW:
@@ -264,7 +242,7 @@ static int tm_fini( void )
         uiwritec( XT_FINI );
         break;
     }
-    return( 0 );
+    return( false );
 }
 
 static int tm_set_speed( unsigned speed )
@@ -303,8 +281,11 @@ void tm_saveevent( void )
         /* eat the remainder of the version ID response. */
         for( ;; ) {
             c = nextc( 20 );
-            if( c == -1 ) return;
-            if( c == 't' ) break;
+            if( c == -1 )
+                return;
+            if( c == 't' ) {
+                break;
+            }
         }
         if( strstr( GetTermType(), "qnx" ) != 0 ) {
             DoMouseInit( M_QW, QNX_HDR QW_INIT, QNX_HDR "3" );
@@ -321,8 +302,9 @@ void tm_saveevent( void )
                return;
             }
             buf[i] = c;
-            if( buf[i] == 't' ) break;
-            if( buf[i] == '\x1b' ) {
+            if( buf[i] == 't' )
+                break;
+            if( buf[i] == _ESC_CHAR ) {
                 tm_error();
                 c = nextc( 20 );
                 if( c == -1 ) {
@@ -344,8 +326,9 @@ void tm_saveevent( void )
         }
         break;
     }
-    if( i == MAXBUF ) tm_error();
-    buf[i+1] = '\0';
+    if( i == MAXBUF )
+        tm_error();
+    buf[i + 1] = '\0';
     new_sample = 1;
 }
 

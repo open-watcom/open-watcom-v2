@@ -29,14 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <limits.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dipwv.h"
 #include "dip.h"
 #include "i64.h"
 #include "dbgscan.h"
@@ -82,8 +80,6 @@ enum {
 };
 
 extern void             AddChar( void );
-
-extern stack_entry      *ExprSP;
 
 #define type_bitsII     int
 
@@ -916,7 +912,7 @@ static ssl_value MechBits( unsigned select, ssl_value parm )
 }
 
 typedef struct cue_find {
-    cue_handle          *best_ch;
+    cue_handle          *best_cueh;
     unsigned long       best_line;
     cue_fileid          id;
     const char          *name;
@@ -930,7 +926,7 @@ typedef struct cue_find {
     }                   match;
 } cue_find;
 
-static walk_result FindCue( cue_handle *ch, void *d )
+OVL_EXTERN walk_result sem_FindCue( cue_handle *cueh, void *d )
 {
     cue_find    *cd = d;
     char        file[FILENAME_MAX];
@@ -938,7 +934,7 @@ static walk_result FindCue( cue_handle *ch, void *d )
     unsigned    match;
 
 
-    len = DIPCueFile( ch, file, sizeof( file ) );
+    len = DIPCueFile( cueh, file, sizeof( file ) );
     if( len < cd->len )
         return( WR_CONTINUE );
     if( memcmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
@@ -950,7 +946,7 @@ static walk_result FindCue( cue_handle *ch, void *d )
     }
     if( match > cd->match ) {
         cd->match = match;
-        cd->id = DIPCueFileId( ch );
+        cd->id = DIPCueFileId( cueh );
         cd->ambig = false;
     } else if( match == cd->match ) {
         cd->ambig = true;
@@ -958,9 +954,9 @@ static walk_result FindCue( cue_handle *ch, void *d )
     return( WR_CONTINUE );
 }
 
-static walk_result FindModCue( mod_handle mod, void *d )
+OVL_EXTERN walk_result FindModCue( mod_handle mod, void *d )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     cue_find            *fd = d;
     unsigned long       curr_line;
 
@@ -968,7 +964,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
     fd->ambig = false;
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
-        DIPWalkFileList( mod, FindCue, fd );
+        DIPWalkFileList( mod, sem_FindCue, fd );
         if( fd->id == 0 )
             return( WR_CONTINUE );
         if( fd->ambig ) {
@@ -976,15 +972,15 @@ static walk_result FindModCue( mod_handle mod, void *d )
         }
     }
     fd->found_a_file = true;
-    switch( DIPLineCue( mod, fd->id, CurrGet.li.name.len, 0, ch ) ) {
+    switch( DIPLineCue( mod, fd->id, CurrGet.li.name.len, 0, cueh ) ) {
     case SR_EXACT:
-        HDLAssign( cue, fd->best_ch, ch );
+        HDLAssign( cue, fd->best_cueh, cueh );
         fd->best_line = CurrGet.li.name.len;
         return( WR_STOP );
     case SR_CLOSEST:
-        curr_line = DIPCueLine( ch );
+        curr_line = DIPCueLine( cueh );
         if( curr_line < CurrGet.li.name.len && curr_line > fd->best_line ) {
-            HDLAssign( cue, fd->best_ch, ch );
+            HDLAssign( cue, fd->best_cueh, cueh );
             fd->best_line = CurrGet.li.name.len;
         }
         break;
@@ -994,13 +990,13 @@ static walk_result FindModCue( mod_handle mod, void *d )
     return( WR_CONTINUE );
 }
 
-static search_result FindACue( cue_handle *ch )
+static search_result FindACue( cue_handle *cueh )
 {
     cue_find    data;
 
     data.found_a_file = false;
     data.best_line = 0;
-    data.best_ch = ch;
+    data.best_cueh = cueh;
     data.name = CurrGet.li.source.start;
     data.len = CurrGet.li.source.len;
 
@@ -1040,7 +1036,7 @@ bool SemAllowClosestLine( bool ok )
 static ssl_value MechGet( unsigned select, ssl_value parm )
 {
     ssl_value   result;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     sym_list    *sym;
     address     addr;
     mad_radix   old_radix;
@@ -1066,7 +1062,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
             PushName( &CurrGet.li );
             break;
         case GET_LNUM:
-            switch( FindACue( ch ) ) {
+            switch( FindACue( cueh ) ) {
             case SR_EXACT:
                 break;
             case SR_CLOSEST:
@@ -1076,7 +1072,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
             default:
                 Error( ERR_NONE, LIT_ENG( ERR_NO_CODE ), CurrGet.li.name.len );
             }
-            PushAddr( DIPCueAddr( ch ) );
+            PushAddr( DIPCueAddr( cueh ) );
             break;
         }
         break;

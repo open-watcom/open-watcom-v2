@@ -40,7 +40,7 @@ typedef struct {
     void                *curr_value;
     mad_reg_set_data    *reg_set;
     mad_modify_list     *m_list;
-    mad_type_handle     th;
+    mad_type_handle     mth;
     unsigned            maxv;
 } RegModifyData;
 

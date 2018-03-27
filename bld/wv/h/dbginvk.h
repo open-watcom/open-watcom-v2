@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,9 @@
 ****************************************************************************/
 
 
-typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
-
 #define IN_BUFF_SIZE    64
+
+typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
 
 typedef struct invokes {
     char_ring           *prmlst;
@@ -49,9 +50,6 @@ typedef struct invokes {
     char                name[1];
 } invokes;
 
-
-extern void ImplicitSet( void );
-extern void ImplicitConf( void );
 extern void Invoke( const char *invfile, size_t len, char_ring *parmlist );
 extern void ProfileInvoke( char *name );
 extern void ProcInvoke( void );

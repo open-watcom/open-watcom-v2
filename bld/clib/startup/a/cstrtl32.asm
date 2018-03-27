@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -59,18 +60,17 @@ _TEXT   segment use32 word public 'CODE'
 ;
 ;   ESP - The stack contains the arguments and environment:
 ;
-;           0(%esp)			argc
-;           4(%esp)			argv[0]
+;           0(%esp)             argc
+;           4(%esp)             argv[0]
 ;           ...
-;           (4*argc)(%esp)		NULL
-;           (4*(argc+1))(%esp)	envp[0]
+;           (4*argc)(%esp)      NULL
+;           (4*(argc+1))(%esp)  envp[0]
 ;           ...
 ;           NULL
 
-_cstart_:
+_cstart_ proc near
 _start proc near
-
-	    xor     ebp,ebp         ; Clear frame pointer
+        xor     ebp,ebp         ; Clear frame pointer
         mov     _STACKTOP,esp   ; set stack top
         pop     ecx             ; Pop the argument count.
         mov     esi,esp         ; argv starts just at the current stack top
@@ -79,14 +79,15 @@ _start proc near
         push    esi             ; Push argv
         push    ecx             ; Push argc
         call    __LinuxMain
+_start endp
+_cstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
-
-_start endp
 
 _TEXT   ends
 

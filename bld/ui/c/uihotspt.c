@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +52,9 @@
 
 static VFIELD   *ActiveField = NULL;
 
-static ORD hs_adjust( int pos, ORD width )
+static ORD hs_adjust( int pos, unsigned width )
 {
-    if( pos < 0 ){
+    if( pos < 0 ) {
         return( width + pos - 1 );
     } else {
         return( pos );
@@ -81,12 +82,12 @@ char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
     if( str != NULL ) {
         while( slen < area.width && *str != '\0' ) {
             if( *str == '&' ) {
-                if ( !no_hotkey && hotkey == '\0' ) {
+                if( !no_hotkey && hotkey == '\0' ) {
                     hotkey = tolower( (unsigned char)str[1] );
                     hotindex = slen;
                 }
             } else {
-                buf[ slen++ ] = *str;
+                buf[slen++] = *str;
             }
             ++str;
         }
@@ -115,8 +116,7 @@ char uidrawhottext( VSCREEN *vs, char *str, SAREA *parea,
 
     /* draw hotkey */
     if( hotkey != '\0' ) {
-        uivtextput( vs, area.row, area.col + offset + hotindex, hotattr,
-                    &buf[hotindex], 1 );
+        uivtextput( vs, area.row, area.col + offset + hotindex, hotattr, buf + hotindex, 1 );
     }
 
     return( hotkey );
@@ -129,17 +129,17 @@ char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
     char        hotkey;
 
     if( ( flags & HOT_HIDDEN ) != 0 ) {
-        attr = UIData->attrs[ ATTR_NORMAL ];
+        attr = UIData->attrs[ATTR_NORMAL];
         hotattr = attr;
     } else if( ( flags & HOT_CURRENT ) != 0 ) {
-        attr = UIData->attrs[ ATTR_CURR_HOTSPOT ];
-        hotattr = UIData->attrs[ ATTR_CURR_HOTSPOT_KEY ];
+        attr = UIData->attrs[ATTR_CURR_HOTSPOT];
+        hotattr = UIData->attrs[ATTR_CURR_HOTSPOT_KEY];
     } else if( ( flags & HOT_DEFAULT ) != 0 ) {
-        attr = UIData->attrs[ ATTR_DEFAULT_HOTSPOT ];
+        attr = UIData->attrs[ATTR_DEFAULT_HOTSPOT];
         hotattr = attr;
     } else {
-        attr = UIData->attrs[ ATTR_HOTSPOT ];
-        hotattr = UIData->attrs[ ATTR_DEFAULT_HOTSPOT ];
+        attr = UIData->attrs[ATTR_HOTSPOT];
+        hotattr = UIData->attrs[ATTR_DEFAULT_HOTSPOT];
     }
 
     hotkey = uidrawhottext( vs, str, parea, attr, hotattr,
@@ -149,26 +149,22 @@ char uihotspot( VSCREEN *vs, char *str, SAREA *parea, a_hot_spot_flags flags )
     if( parea->height < 1 )
         return( hotkey );   /* no room for shadow */
     memset( buf, '\0', HOT_BUFFER );
-    if( ( flags & ( HOT_HIDDEN | HOT_ACTIVE ) ) != 0 ) {
+    if( flags & (HOT_HIDDEN | HOT_ACTIVE) ) {
         /* wipe out the shadow */
-        uivtextput( vs, parea->row, parea->col + parea->width - 1,
-                UIData->attrs[ ATTR_NORMAL ], buf, 1 );
+        uivtextput( vs, parea->row, parea->col + parea->width - 1, UIData->attrs[ATTR_NORMAL], buf, 1 );
         if( parea->height >= 2 ) {
-            uivtextput( vs, parea->row + 1, parea->col,
-                        UIData->attrs[ ATTR_NORMAL ], buf, parea->width );
+            uivtextput( vs, parea->row + 1, parea->col, UIData->attrs[ATTR_NORMAL], buf, parea->width );
         }
     } else {
         /* draw the shadow */
-        buf[0] = UiGChar[ UI_SHADOW_RIGHT ];
-        uivtextput( vs, parea->row, parea->col + parea->width - 1,
-                UIData->attrs[ ATTR_SHADOW ], buf, 1 );
+        buf[0] = UiGChar[UI_SHADOW_RIGHT];
+        uivtextput( vs, parea->row, parea->col + parea->width - 1, UIData->attrs[ATTR_SHADOW], buf, 1 );
 
         if( parea->height >= 2 ) {
-            buf[0] = UiGChar[ UI_SHADOW_B_LEFT ];
-            memset( &buf[1], UiGChar[ UI_SHADOW_BOTTOM ], parea->width - 2 );
-            buf[ parea->width - 1 ] = UiGChar[ UI_SHADOW_B_RIGHT ];
-            uivtextput( vs, parea->row + 1, parea->col,
-                        UIData->attrs[ ATTR_SHADOW ], buf, parea->width );
+            buf[0] = UiGChar[UI_SHADOW_B_LEFT];
+            memset( &buf[1], UiGChar[UI_SHADOW_BOTTOM], parea->width - 2 );
+            buf[parea->width - 1] = UiGChar[UI_SHADOW_B_RIGHT];
+            uivtextput( vs, parea->row + 1, parea->col, UIData->attrs[ATTR_SHADOW], buf, parea->width );
         }
     }
 
@@ -182,9 +178,9 @@ void uidisplayhotspot( VSCREEN *w, VFIELD *field )
 
 void uiposnhotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ) {
-        if( field->typ == FLD_HOT ){
-            if( field->u.hs->length == 0 ){
+    for( ; field->typ != FLD_NONE; ++field ) {
+        if( field->typ == FLD_HOT ) {
+            if( field->u.hs->length == 0 ) {
                 if( field->u.hs->str != NULL ) {
                     field->area.width = strlen( field->u.hs->str ) + 1;
                 }
@@ -210,8 +206,8 @@ void uiposnhotspots( VSCREEN *w, VFIELD *field )
 
 void uiprinthotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ){
-        if( field->typ == FLD_HOT ){
+    for( ; field->typ != FLD_NONE; ++field ) {
+        if( field->typ == FLD_HOT ) {
             uidisplayhotspot( w, field );
         }
     }
@@ -219,85 +215,85 @@ void uiprinthotspots( VSCREEN *w, VFIELD *field )
 
 void uioffhotspots( VSCREEN *w, VFIELD *field )
 {
-    for( ; field->typ != FLD_VOID; ++field ){
-        if( field->typ == FLD_HOT ){
+    for( ; field->typ != FLD_NONE; ++field ) {
+        if( field->typ == FLD_HOT ) {
             uihotspot( w, field->u.hs->str, &field->area, field->u.hs->flags | HOT_ACTIVE );
         }
     }
     uirefresh();
 }
 
-EVENT uihotspotfilter( VSCREEN *w, VFIELD *fields, EVENT ev )
+ui_event uihotspotfilter( VSCREEN *w, VFIELD *fields, ui_event ui_ev )
 {
     int         row, col;
     VFIELD      *field;
 
-    for( field = fields; field->typ != FLD_VOID; ++field ){
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
         if( field->typ != FLD_HOT )
             continue;
-        switch( ev ) {
-            case ' ':
-            case EV_ENTER:
-                if( field->u.hs->flags & HOT_CURRENT ) {
-                    return( field->u.hs->event );
-                }
-                break;
+        switch( ui_ev ) {
+        case ' ':
+        case EV_ENTER:
+            if( field->u.hs->flags & HOT_CURRENT ) {
+                return( field->u.hs->event );
+            }
+            break;
         }
     }
-    for( field = fields; field->typ != FLD_VOID; ++field ){
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
         if( field->typ != FLD_HOT )
             continue;
         if( field->u.hs->flags & HOT_HIDDEN )
             continue;
-        switch( ev ) {
-            case EV_ENTER:
-                if( field->u.hs->flags & HOT_DEFAULT ) {
-                    return( field->u.hs->event );
-                }
-                break;
-            case EV_MOUSE_RELEASE:
-            case EV_MOUSE_PRESS:
-            case EV_MOUSE_DCLICK :
-            case EV_MOUSE_REPEAT:
-            case EV_MOUSE_DRAG:
-                uimousepos( w, &row, &col );
-                if( field->area.row == row  && field->u.hs->str != NULL  &&
-                    field->area.col <= col  &&
-                    field->area.col + field->area.width > col ) {
-                        if( ev == EV_MOUSE_PRESS || ev == EV_MOUSE_DCLICK ) {
-                            ActiveField = field;
-                            ActiveField->u.hs->flags |= HOT_ACTIVE;
-                            uidisplayhotspot( w, ActiveField );
-                            ev = EV_NO_EVENT;
-                        } else if( ev == EV_MOUSE_RELEASE && field == ActiveField ) {
-                            ActiveField->u.hs->flags &= (~HOT_ACTIVE);
-                            uidisplayhotspot( w, ActiveField );
-                            ActiveField = NULL;
-                            ev = field->u.hs->event;
-                        } else if( field == ActiveField  &&
-                                !( field->u.hs->flags & HOT_ACTIVE ) ) {
-                            field->u.hs->flags |= HOT_ACTIVE;
-                            uidisplayhotspot( w, field );
-                            ev = EV_NO_EVENT;
-                        }
-                } else if( field->u.hs->flags & HOT_ACTIVE ) {
-                    field->u.hs->flags &= (~HOT_ACTIVE);
+        switch( ui_ev ) {
+        case EV_ENTER:
+            if( field->u.hs->flags & HOT_DEFAULT ) {
+                return( field->u.hs->event );
+            }
+            break;
+        case EV_MOUSE_RELEASE:
+        case EV_MOUSE_PRESS:
+        case EV_MOUSE_DCLICK :
+        case EV_MOUSE_REPEAT:
+        case EV_MOUSE_DRAG:
+            uimousepos( w, &row, &col );
+            if( field->area.row == row && field->u.hs->str != NULL
+              && field->area.col <= col
+              && field->area.col + field->area.width > col ) {
+                if( ui_ev == EV_MOUSE_PRESS || ui_ev == EV_MOUSE_DCLICK ) {
+                    ActiveField = field;
+                    ActiveField->u.hs->flags |= HOT_ACTIVE;
+                    uidisplayhotspot( w, ActiveField );
+                    ui_ev = EV_NO_EVENT;
+                } else if( ui_ev == EV_MOUSE_RELEASE && field == ActiveField ) {
+                    ActiveField->u.hs->flags &= (~HOT_ACTIVE);
+                    uidisplayhotspot( w, ActiveField );
+                    ActiveField = NULL;
+                    ui_ev = field->u.hs->event;
+                } else if( field == ActiveField && (field->u.hs->flags & HOT_ACTIVE) == 0 ) {
+                    field->u.hs->flags |= HOT_ACTIVE;
                     uidisplayhotspot( w, field );
+                    ui_ev = EV_NO_EVENT;
                 }
-                break;
+            } else if( field->u.hs->flags & HOT_ACTIVE ) {
+                field->u.hs->flags &= (~HOT_ACTIVE);
+                uidisplayhotspot( w, field );
+            }
+            break;
         }
     }
-    return( ev );
+    return( ui_ev );
 }
 
-bool uiisdefaulthotspot( VFIELD *fields, EVENT ev )
+bool uiisdefaulthotspot( VFIELD *fields, ui_event ui_ev )
 {
     VFIELD  *field;
 
-    for( field = fields; field->typ != FLD_VOID; ++field ){
-        if( field->typ != FLD_HOT ) continue;
-        if( field->u.hs->flags & HOT_DEFAULT ) {
-            return( field->u.hs->event == ev );
+    for( field = fields; field->typ != FLD_NONE; ++field ) {
+        if( field->typ == FLD_HOT ) {
+            if( field->u.hs->flags & HOT_DEFAULT ) {
+                return( field->u.hs->event == ui_ev );
+            }
         }
     }
     return( false );

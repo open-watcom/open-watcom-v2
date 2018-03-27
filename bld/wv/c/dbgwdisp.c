@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,50 +45,50 @@
 #include "dbgwdlg.h"
 #include "dbgwdisp.h"
 #include "dbgwtool.h"
+#include "dbgwpain.h"
 
 
-extern a_window         *WndMain;
-extern gui_coord        WndScreen;
-extern gui_coord        WndMax;
-extern gui_coord        WndScale;
-extern const char       WndNameTab[];
-extern gui_colour_set   WndColours[];
-extern gui_colour_set   WndStatusColour;
+#define DISP_OPTS() \
+    pick( OPEN,         "Open" ) \
+    pick( CLOSE,        "Close" ) \
+    pick( NEW,          "New" ) \
+    pick( MINIMIZE,     "MInimize" ) \
+    pick( MAXIMIZE,     "MAximize" ) \
+    pick( RESTORE,      "Restore" ) \
+    pick( FLOATING,     "FLoating" ) \
+    pick( FIXED,        "Fixed" )
 
-extern WNDOPEN            *WndOpenTab[];
-
-wnd_posn        WndPosition[WND_NUM_CLASSES];
-static char     *WndFontInfo[WND_NUM_CLASSES];
-gui_rect        WndMainRect;
-
-static const char   DispOptions[] =
-{
-    "Open\0"
-    "Close\0"
-    "New\0"
-    "MInimize\0"
-    "MAximize\0"
-    "Restore\0"
-    "FLoating\0"
-    "Fixed\0"
-};
+#define MISC_OPTS() \
+    pick( MISC_TOOL,    "TOolbar" ) \
+    pick( MISC_STATUS,  "Status" )
 
 typedef enum {
-    OPEN,
-    CLOSE,
-    NEW,
-    MINIMIZE,
-    MAXIMIZE,
-    RESTORE,
-    FLOATING,
-    FIXED
+    #define pick(e,t)   e,
+        DISP_OPTS()
+    #undef pick
 } disp_optn;
 
-static const char   MiscTab[] = { "TOolbar\0Status\0" };
+typedef enum {
+    #define pick(e,t)   e,
+        MISC_OPTS()
+    #undef pick
+} misc_optn;
 
-enum {
-    MISC_TOOL,
-    MISC_STATUS
+wnd_posn            WndPosition[NUM_WNDCLS_ALL];
+gui_rect            WndMainRect;
+
+static char         *WndFontInfo[NUM_WNDCLS_ALL];
+
+static const char   DispOptions[] = {
+    #define pick(e,t)   t "\0"
+        DISP_OPTS()
+    #undef pick
+};
+
+static const char   MiscTab[] = {
+    #define pick(e,t)   t "\0"
+        MISC_OPTS()
+    #undef pick
 };
 
 bool ScanStatus( void )
@@ -124,7 +125,7 @@ static disp_optn GetOption( void )
 }
 
 
-extern  char    *GetWndFont( a_window *wnd )
+char    *GetWndFont( a_window wnd )
 {
     if( WndHasClass( wnd ) ) {
         if( WndFontInfo[WndClass( wnd )] != NULL ) {
@@ -142,7 +143,7 @@ static void SetFont( wnd_class_wv wndclass, char *font )
 }
 
 
-extern  void    WndFontHook( a_window *wnd )
+void    WndFontHook( a_window wnd )
 {
     char        *font;
 
@@ -162,7 +163,7 @@ gui_coord *WndMainClientSize( void )
 
 void WndMainResized( void )
 {
-    a_window    *wnd;
+    a_window    wnd;
     gui_rect    rect;
 
     if( _IsOff( SW_DETACHABLE_WINDOWS ) ) {
@@ -177,7 +178,7 @@ void WndMainResized( void )
 }
 
 
-extern  void    WndResizeHook( a_window *wnd )
+void    WndResizeHook( a_window wnd )
 {
     gui_rect    rect;
 
@@ -200,7 +201,7 @@ void FiniFont( void )
 {
     wnd_class_wv    wndclass;
 
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         SetFont( wndclass, NULL );
     }
 }
@@ -230,7 +231,7 @@ void ProcFont( void )
         return;
     ReqEOC();
     if( wndclass == WND_ALL ) {
-        for( wndclass1 = 0; wndclass1 < WND_NUM_CLASSES; ++wndclass1 ) {
+        for( wndclass1 = 0; wndclass1 < NUM_WNDCLS_ALL; ++wndclass1 ) {
             SetFont( wndclass1, NULL );
         }
     }
@@ -261,7 +262,7 @@ void ConfigFont( void )
     wnd_class_wv    wndclass;
 
     PrintFont( WND_ALL, NULL );
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         PrintFont( wndclass, WndFontInfo[WND_ALL] );
@@ -277,7 +278,7 @@ void FontChange( void )
     text = GUIGetFontFromUser( WndFontInfo[WND_ALL] );
     if( text == NULL )
         return;
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         SetFont( wndclass, NULL );
     }
     SetFont( WND_ALL, text );
@@ -289,8 +290,8 @@ static void ProcSize( wnd_class_wv wndclass )
 {
     gui_rect    size;
     disp_optn   optn;
-    a_window    *wnd;
-    a_window    *next;
+    a_window    wnd;
+    a_window    next;
     gui_coord   min;
     bool        coord_specified;
     gui_rect    def_rect;
@@ -326,8 +327,10 @@ static void ProcSize( wnd_class_wv wndclass )
     WndPosToRect( &WndPosition[wndclass], &def_rect, &WndScreen );
     size.x = range( size.x, 0, WndScreen.x, def_rect.x );
     size.y = range( size.y, 0, WndScreen.y, def_rect.y );
-    if( size.x + size.width > WndScreen.x ) size.width = WndScreen.x - size.x;
-    if( size.y + size.height > WndScreen.y ) size.height = WndScreen.y - size.y;
+    if( size.x + size.width > WndScreen.x )
+        size.width = WndScreen.x - size.x;
+    if( size.y + size.height > WndScreen.y )
+        size.height = WndScreen.y - size.y;
     size.width = range( size.width, min.x, WndScreen.x, def_rect.width );
     size.height = range( size.height, min.y, WndScreen.y, def_rect.height );
     if( coord_specified ) {
@@ -353,7 +356,9 @@ static void ProcSize( wnd_class_wv wndclass )
         if( wndclass == WND_ALL ) {
             for( wnd = WndNext( NULL ); wnd != NULL; wnd = next ) {
                 next = WndNext( wnd );
-                if( WndHasClass( wnd ) ) WndClose( wnd );
+                if( WndHasClass( wnd ) ) {
+                    WndClose( wnd );
+                }
             }
         } else {
             if( wnd != NULL ) {
@@ -488,10 +493,12 @@ static  void    PrintPosition( disp_optn optn, wnd_class_wv wndclass,
 void ConfigDisp( void )
 {
 
-    a_window        *wnd, *scan;
+    a_window        wnd;
+    a_window        scan;
     char            buff[20];
     char            buff2[20];
-    a_window        *head, *next;
+    a_window        head;
+    a_window        next;
     int             h;
     wnd_class_wv    wndclass;
     gui_rect        rect;
@@ -514,7 +521,7 @@ void ConfigDisp( void )
                 buff, buff2, h );
         WndDlgTxt( TxtBuff );
     }
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         if( WndFindClass( NULL, wndclass ) != NULL )

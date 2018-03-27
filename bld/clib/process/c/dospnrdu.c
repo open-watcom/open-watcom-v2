@@ -115,14 +115,15 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         if( mode == P_WAIT ) {
             wait = RdosCreateWait();
             RdosAddWaitForProcessEnd( wait, handle, 0 );
-            RdosWaitForever( wait );
+            while (RdosIsProcessRunning( handle )) {
+                RdosWaitForever( wait );
+            }
             rc = RdosGetProcessExitCode( handle );
             RdosCloseWait( wait );
         } 
         else
             rc = tid;
             
-        RdosFreeProcessHandle( handle );                        
     }
 
     lib_free( p );

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -39,6 +40,9 @@
 .386p
 .387
 
+include langenv.inc
+include xinit.inc
+
 include exitwmsg.inc
 
         assume  nothing
@@ -65,9 +69,10 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 BEGTEXT segment use32 dword public 'CODE'
         assume  cs:BEGTEXT
         int 0       ; cause a fault
+        nop
+        nop
+        public ___begtext
 ___begtext label byte
-        nop
-        nop
         nop
         nop
         assume  cs:nothing
@@ -95,20 +100,6 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 NullAssign      db      '*** NULL assignment detected',0
 CONST   ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
 
 _DATA   segment word public 'DATA'
 __slib_func   dd     2 dup(0)
@@ -173,17 +164,15 @@ endif
         mov     edx,esp             ; argv
         lea     ebx,4[edx+eax*4]    ; arge
         jmp     __CMain
-
-;
-; copyright message
-;
-include msgrt32.inc
-include msgcpyrt.inc
+_cstart_ endp
 
         dd      ___begtext      ; make sure dead code elimination
                                 ; doesn't kill BEGTEXT segment
 
-_cstart_ endp
+;
+; copyright message
+;
+include msgcpyrt.inc
 
 __exit proc near
         public  "C",__exit

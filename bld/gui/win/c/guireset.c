@@ -40,24 +40,24 @@
 
 static void FreeSystemMenu( gui_window *wnd )
 {
-    gui_ctl_idx     num;
-    gui_ctl_idx     pos;
+    int             num_items;
+    int             item;
     HMENU           system;
     HWND            frame;
 
     frame = GUIGetParentFrameHWND( wnd );
-    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && ( wnd->style & GUI_SYSTEM_MENU ) ) {
+    if( ( _wpi_getparent( frame ) != HWND_DESKTOP ) && (wnd->style & GUI_SYSTEM_MENU) ) {
         system = _wpi_getsystemmenu( frame );
         if( system != NULLHANDLE ) {
-            num = _wpi_getmenuitemcount( system );
-            for( pos = num; pos >= NUM_SYSTEM_MENUS; pos-- ) {
-                _wpi_deletemenu( system, pos, TRUE );
+            num_items = _wpi_getmenuitemcount( system );
+            for( item = num_items; item >= NUM_SYSTEM_MENUS; item-- ) {
+                _wpi_deletemenu( system, item, TRUE );
             }
         }
     }
 }
 
-bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
+bool GUIResetMenus( gui_window *wnd, int num_items, gui_menu_struct *menu )
 {
     HMENU       hmenu;
     bool        success;
@@ -68,12 +68,12 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
     success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
-    if( ( parent == HWND_DESKTOP ) || ( wnd->style & GUI_POPUP ) ) {
+    if( ( parent == HWND_DESKTOP ) || (wnd->style & GUI_POPUP) ) {
         if( menu == NULL ) {
             GUISetMenu( wnd, NULLHANDLE );
             GUIFreePopupList( wnd );
         } else {
-            if( GUICreateMenus( wnd, num_menus, menu, &hmenu ) ) {
+            if( GUICreateMenus( wnd, num_items, menu, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
                 success = true;
@@ -81,11 +81,11 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
         }
     } else {
         FreeSystemMenu( wnd );
-        success = GUIAddToSystemMenu( wnd, frame, num_menus, menu, wnd->style );
+        success = GUIAddToSystemMenu( wnd, frame, num_items, menu, wnd->style );
     }
     if( success ) {
-        GUIMDIResetMenus( wnd, wnd->parent, num_menus, menu );
-        GUIInitHint( wnd, num_menus, menu, MENU_HINT );
+        GUIMDIResetMenus( wnd, wnd->parent, num_items, menu );
+        GUIInitHint( wnd, num_items, menu, MENU_HINT );
     }
     return( success );
 }

@@ -117,15 +117,12 @@ short _SetMode( short mode )
     This function sets the video mode on IBM PC family. */
 
 {
-    char __far          *p;
-
     if( _ValidMode( mode ) ) {
-        p = _BIOS_data( EQUIP_FLAGS );        // equipment flags
-        *p &= 0xCF;                                 // remove previous settings
         if( mode == 7 || mode == 15 ) {
-            *p |= 0x30;                                 // monochrome
+            _BIOS_data( EQUIP_FLAGS, char ) |= 0x30;        // monochrome
         } else {
-            *p |= 0x20;                                 // colour
+            _BIOS_data( EQUIP_FLAGS, char ) &= ~0x30;       // remove previous settings
+            _BIOS_data( EQUIP_FLAGS, char ) |= 0x20;        // colour
         }
         if( _NoClear ) {
             mode |= 0x80;           // set high bit, screen won't be cleared

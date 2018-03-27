@@ -237,7 +237,7 @@ static void dmp_data( unsigned_16 size, unsigned_32 offset )
     Data_count++;
     dmp_banner();
     Wread( &data, sizeof( lmf_data ) );
-    Dump_header( (char *)&data.segment, qnx_data_msg );
+    Dump_header( (char *)&data.segment, qnx_data_msg, 4 );
     size -= sizeof( lmf_data );
     Wdputs( "size                   =     " );
     Puthex( size, 4 );
@@ -341,7 +341,7 @@ bool Dmp_qnx_head( void )
             return( false );
         }
         Banner( "QNX EXE Header" );
-        Dump_header( (char *)&Qnx_head.version, qnx_def_msg );
+        Dump_header( (char *)&Qnx_head.version, qnx_def_msg, 4 );
         dmp_flag( Qnx_head.cflags );
         size = ( qnx_rec.data_nbytes - sizeof( lmf_header ) ) / 4;
         dmp_seg( size );

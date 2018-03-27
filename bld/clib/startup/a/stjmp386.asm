@@ -133,7 +133,8 @@ ifdef __NT__
         mov     eax,SEGM_PRFX [eax+44]
         cmp     eax,fs:[0]
         jne     dounwind
-        jmp     short done_unwind
+        jmp short done_unwind
+
 dounwind:
         push    0
         push    offset done_unwind

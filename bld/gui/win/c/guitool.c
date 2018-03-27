@@ -42,8 +42,6 @@
 #include "guirdlg.h"
 
 
-extern  gui_menu_struct GUIHint[];
-
 /* total height/width taken up by outline around  bitmap, on button */
 #if defined (__NT__)
 #define OUTLINE_AMOUNT  4   // Should be changed later.
@@ -51,6 +49,8 @@ extern  gui_menu_struct GUIHint[];
 #define OUTLINE_AMOUNT  4
 #endif
 #define BORDER_AMOUNT   1 /* space outside row of buttons */
+
+extern  gui_menu_struct GUIHint[];
 
 /*
  * GUIXCloseToolBar -- close the tool bar and free memory.  Can be called by
@@ -77,7 +77,7 @@ bool GUIXCloseToolBar( gui_window *wnd )
         if( (wnd->flags & DOING_DESTROY) == 0 ) {
             GUIResizeBackground( wnd, true );
         }
-        GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
+        GUIEVENT( wnd, GUI_TOOLBAR_DESTROYED, NULL );
     }
     return( true );
 }
@@ -110,7 +110,7 @@ static void guiToolBarHelp( HWND hwnd, ctl_id id, bool down )
 
     wnd = GetToolWnd( hwnd );
     if( wnd != NULL ) {
-        style = ( down ) ? GUI_ENABLED : GUI_IGNORE;
+        style = ( down ) ? GUI_STYLE_MENU_ENABLED : GUI_STYLE_MENU_IGNORE;
         GUIDisplayHintText( wnd, wnd, id, TOOL_HINT, style );
     }
 }
@@ -141,8 +141,8 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
         if( hmenu != NULLHANDLE ) {
             if( _wpi_appendmenu( hmenu, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
                 _wpi_appendmenu( hmenu, MF_ENABLED|MF_SYSMENU, 0,
-                                 GUIHint[GUI_MENU_FIX_TOOLBAR].id, NULLHANDLE,
-                                 GUIHint[GUI_MENU_FIX_TOOLBAR].label );
+                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].id, NULLHANDLE,
+                                 GUIHint[GUI_MENU_IDX( GUI_FIX_TOOLBAR )].label );
             }
         }
         break;
@@ -211,7 +211,6 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
     case WM_CLOSE :
         GUICloseToolBar( wnd );
         return( true );
-        break;
     }
     return( false );
 }
@@ -353,14 +352,15 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     for( i = 0; i < num_toolbar_items; i++ ) {
         info.u.bmp = tbar->bitmaps[i];
-        info.id = toolinfo[i].id;
+        info.id = toolinfo->id;
         info.flags = 0;
-        if( use_tips && toolinfo[i].tip != NULL ) {
-            strncpy( info.tip, toolinfo[i].tip, MAX_TIP );
+        if( use_tips && toolinfo->tip != NULL ) {
+            strncpy( info.tip, toolinfo->tip, MAX_TIP );
         } else {
             info.tip[0] = '\0';
         }
         ToolBarAddItem( tbar->hdl, &info );
+        toolinfo++;
     }
     toolhwnd = ToolBarWindow( tbar->hdl );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
@@ -455,7 +455,7 @@ bool GUIChangeToolBar( gui_window *wnd )
     GUIResizeBackground( wnd, true );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
     _wpi_updatewindow( toolhwnd );
-    GUIEVENTWND( wnd, gui_ev, NULL );
+    GUIEVENT( wnd, gui_ev, NULL );
     return( true );
 }
 

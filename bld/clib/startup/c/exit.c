@@ -89,11 +89,6 @@ _WCRTLINK _WCNORETURN void exit( int status )
     }
 #elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS_286__)
     (*__int23_exit)();
-#elif defined(__RDOS__)
-    if( RdosIsForked() ) {
-        _exit( status );
-        // never return
-    }
 #endif
     __FiniRtns( FINI_PRIORITY_EXIT, 255 );
     _exit( status );

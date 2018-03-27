@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 
-void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
+void WndShrinkToMouse( a_window wnd, wnd_metrics *metrics )
 {
     gui_rect            rect,client;
     gui_point           mouse;
@@ -53,7 +53,8 @@ void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
     if( min_width != 0 && rect.width < min_width ) {
         rect.width = min_width;
     }
-    if( rect.width > WndMax.x ) rect.width = WndMax.x;
+    if( rect.width > WndMax.x )
+        rect.width = WndMax.x;
     rows = wnd->max_row + 1;
     if( metrics->max_rows != 0 && rows > metrics->max_rows ) {
         rows = metrics->max_rows;
@@ -61,14 +62,17 @@ void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
     if( metrics->min_rows != 0 && rows < metrics->min_rows ) {
         rows = metrics->min_rows;
     }
-    if( rows > rect.height/WndMaxCharY(wnd) ) {
-        rows = rect.height / WndMaxCharY(wnd);
+    if( rows > rect.height / WndMaxCharY( wnd ) ) {
+        rows = rect.height / WndMaxCharY( wnd );
     }
-    rect.height = rows * WndMaxCharY(wnd) + rect.height - client.height;
-    if( rect.height > WndMax.y ) rect.height = WndMax.y;
+    rect.height = rows * WndMaxCharY( wnd ) + rect.height - client.height;
+    if( rect.height > WndMax.y )
+        rect.height = WndMax.y;
     GUIGetMousePosn( WndMain->gui, &mouse );
-    if( mouse.x < 0 ) mouse.x = 0;
-    if( mouse.y < 0 ) mouse.y = 0;
+    if( mouse.x < 0 )
+        mouse.x = 0;
+    if( mouse.y < 0 )
+        mouse.y = 0;
     if( rect.width / 2 > mouse.x ) {
         rect.x = 0;
     } else if( ( rect.width / 2 ) + mouse.x > WndMax.x ) {
@@ -88,52 +92,54 @@ void WndShrinkToMouse( a_window *wnd, wnd_metrics *metrics )
     GUISetRestoredSize( wnd->gui, &rect );
 }
 
-void WndMinimizeWindow( a_window *wnd )
+void WndMinimizeWindow( a_window wnd )
 {
     GUIMinimizeWindow( wnd->gui );
 }
 
-void WndMaximizeWindow( a_window *wnd )
+void WndMaximizeWindow( a_window wnd )
 {
     GUIMaximizeWindow( wnd->gui );
 }
 
-bool WndIsMinimized( a_window *wnd )
+bool WndIsMinimized( a_window wnd )
 {
     gui_rect    rect;
 
-    if( GUIIsMinimized( wnd->gui ) ) return( true );
+    if( GUIIsMinimized( wnd->gui ) )
+        return( true );
     GUIGetClientRect( wnd->gui, &rect );
-    if( rect.width == 0 && rect.height == 0 ) return( true ); // work around GUI bug
+    if( rect.width == 0 && rect.height == 0 )
+        return( true ); // work around GUI bug
     return( false );
 }
 
-bool WndIsMaximized( a_window *wnd )
+bool WndIsMaximized( a_window wnd )
 {
     return( GUIIsMaximized( wnd->gui ) );
 }
 
-void WndRestoreWindow( a_window *wnd )
+void WndRestoreWindow( a_window wnd )
 {
     GUIRestoreWindow( wnd->gui );
 }
 
-void WndGetRect( a_window *wnd, gui_rect *rect )
+void WndGetRect( a_window wnd, gui_rect *rect )
 {
     GUIGetRect( wnd->gui, rect );
 }
 
-void WndShowWindow( a_window *wnd )
+void WndShowWindow( a_window wnd )
 {
     GUIShowWindow( wnd->gui );
 }
 
-void WndResizeWindow( a_window *wnd, gui_rect *rect )
+void WndResizeWindow( a_window wnd, gui_rect *rect )
 {
     GUISetRestoredSize( wnd->gui, rect );
 }
 
-void WndShowAll()
+void WndShowAll( void )
 {
     gui_window  *gui;
     gui_window  **list;
@@ -148,7 +154,8 @@ void WndShowAll()
     list = WndAlloc( count * sizeof( gui ) );
     pcurr = list;
     for( gui = GUIGetFront(); gui != NULL; gui = GUIGetNextWindow( gui ) ) {
-        if( WndMain != NULL && WndMain->gui == gui ) continue;
+        if( WndMain != NULL && WndMain->gui == gui )
+            continue;
         *pcurr++ = gui;
     }
     while( pcurr > list ) {

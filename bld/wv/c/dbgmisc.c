@@ -186,7 +186,8 @@ static void SetTempBreak( address addr )
 
 void GoToAddr( address addr )
 {
-    if( IS_NIL_ADDR( addr ) ) return;
+    if( IS_NIL_ADDR( addr ) )
+        return;
     SetTempBreak( addr );
     Go( true );
     NullStatus( &UserTmpBrk );
@@ -207,8 +208,10 @@ void StepIntoFunction( const char *func )
 
 void SkipToAddr( address addr )
 {
-    if( IS_NIL_ADDR( addr ) ) return;
-    if( !AdvMachState( ACTION_MODIFY_IP ) ) return;
+    if( IS_NIL_ADDR( addr ) )
+        return;
+    if( !AdvMachState( ACTION_MODIFY_IP ) )
+        return;
     RecordSetRegIP( addr );
     DbgUpdate( UP_CSIP_CHANGE | UP_REG_CHANGE );
 }
@@ -263,7 +266,8 @@ void ProcGo( void )
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_GO ) );
         }
     }
-    if( !have_keep ) TraceKill();
+    if( !have_keep )
+        TraceKill();
     NullStatus( &DbgTmpBrk );
     start = GetRegIP();
     have_stop = false;
@@ -312,7 +316,8 @@ void ProcGo( void )
             _SwitchOff( SW_FLIP );
         }
         conditions = Go( doflip );
-        if( flip_on ) _SwitchOn( SW_FLIP );
+        if( flip_on )
+            _SwitchOn( SW_FLIP );
         if( UserTmpBrk.status.b.has_address ) {
             NullStatus( &UserTmpBrk );
             UserTmpBrk.status.b.has_address = true;
@@ -523,10 +528,12 @@ static void ThdCmd( thread_state *thd, enum thread_cmds cmd )
         up = UP_NO_CHANGE;
         break;
     case T_FREEZE:
-        if( thd->state == THD_THAW ) thd->state = THD_FREEZE;
+        if( thd->state == THD_THAW )
+            thd->state = THD_FREEZE;
         break;
     case T_THAW:
-        if( thd->state == THD_FREEZE ) thd->state = THD_THAW;
+        if( thd->state == THD_FREEZE )
+            thd->state = THD_THAW;
         break;
     case T_CHANGE:
         MakeThdCurr( thd );
@@ -673,12 +680,14 @@ static void RefreshRunThreads( bool set_exec )
 
 void CheckForNewThreads( bool set_exec )
 {
-    if( set_exec ) ExecThd = NULL;
+    if( set_exec )
+        ExecThd = NULL;
     MarkThreadsDead();
-    if( HaveRemoteRunThread() )
+    if( HaveRemoteRunThread() ) {
         RefreshRunThreads( set_exec );
-    else
+    } else {
         RefreshThreads( set_exec );
+    }
     KillDeadThreads();
     _SwitchOff( SW_THREAD_EXTRA_CHANGED );
 }

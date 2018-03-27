@@ -998,7 +998,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_setmenuitemtext( mnu, item_id, text ) \
             ModifyMenu( mnu, item_id, MF_STRING | MF_BYCOMMAND, item_id, text )
 
-    #define _wpi_getsyscursor( id ) LoadCursor( NULL, id )
+    #define _wpi_getsyscursor( id ) LoadCursor( NULLHANDLE, id )
 
     #define _wpi_loadcursor( inst, id ) LoadCursor( inst, id )
 

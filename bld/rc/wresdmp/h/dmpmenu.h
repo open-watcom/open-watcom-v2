@@ -33,6 +33,6 @@
 #ifndef DMPMENU_INCLUDED
 #define DMPMENU_INCLUDED
 
-extern bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid );
+extern bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp );
 
 #endif

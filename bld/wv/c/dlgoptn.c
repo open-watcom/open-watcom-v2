@@ -95,7 +95,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-OVL_EXTERN bool OptSetEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;
@@ -113,16 +113,16 @@ OVL_EXTERN bool OptSetEvent( gui_window *gui, gui_event gui_ev, void *param )
             optset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_CANCEL:
             optset->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_OPT_DEFAULTS:
             SetDlgStatus( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     }
     return( false );
 }
@@ -133,6 +133,6 @@ bool    DlgOptSet( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( &OptSetEvent, &optset, DIALOG_OPTION );
+    ResDlgOpen( OptSetGUIEventProc, &optset, DIALOG_OPTION );
     return( !optset.cancel );
 }

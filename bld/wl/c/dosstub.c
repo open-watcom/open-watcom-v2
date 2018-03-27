@@ -53,8 +53,8 @@ static unsigned_8       DOSDefStub[] = {
     0x21, 0xB8, 0x01, 0x4C, 0xCD, 0x21
 };
 
-static size_t doExeName( void )
-/*****************************/
+static size_t doExeTypeString( void )
+/***********************************/
 /* make up the "program is %f" string, and put it in tokbuff.*/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
@@ -71,7 +71,7 @@ static size_t doExeName( void )
 size_t GetDOSDefStubSize( void )
 /******************************/
 {
-    return( sizeof( DOSDefStub ) + doExeName() );
+    return( sizeof( DOSDefStub ) + doExeTypeString() );
 }
 
 unsigned_32 WriteDOSDefStub( unsigned_32 stub_align )
@@ -82,7 +82,7 @@ unsigned_32 WriteDOSDefStub( unsigned_32 stub_align )
     unsigned_32         fullsize;
     unsigned_32         *stubend;
 
-    msgsize = doExeName();
+    msgsize = doExeTypeString();
     fullsize = ROUND_UP( msgsize + sizeof( DOSDefStub ), stub_align );
     stubend = (unsigned_32 *)( DOSDefStub + NH_OFFSET );
     *stubend = fullsize;

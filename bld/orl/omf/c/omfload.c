@@ -83,10 +83,13 @@ omf_sec_offset  OmfGetUWord( omf_bytes buffer, int wordsize )
     case( 4 ):
         result |= buffer[3] << 24;
         result |= buffer[2] << 16;
+        /* fall through */
     case( 2 ):
         result |= buffer[1] << 8;
+        /* fall through */
     default:
         result |= buffer[0];
+        break;
     }
     return( result );
 }
@@ -583,7 +586,9 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
             if( buffer[0] & COMDEF_LEAF_SIZE ) {
                 switch( buffer[0] ) {
                 case( COMDEF_LEAF_4 ):  dec++;
+                    /* fall through */
                 case( COMDEF_LEAF_3 ):  dec++;
+                    /* fall through */
                 case( COMDEF_LEAF_2 ):  dec += 2;
                     break;
                 default:

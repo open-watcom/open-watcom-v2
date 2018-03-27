@@ -31,10 +31,11 @@
 
 #include <stdlib.h>
 #include <malloc.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "trptypes.h"
 #include "trpld.h"
 #include "trpcomm.h"
-#include "qnxcomm.h"
 #include "qnxstrt.h"
 
 void                        *_slib_func[2];
@@ -46,7 +47,7 @@ static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
 #endif
 
-const trap_requests *TRAPLOAD( trap_callbacks *client )
+const trap_requests *TrapLoad( const trap_callbacks *client )
 {
     Client = client;
     if( Client->len <= offsetof(trap_callbacks,signal) )

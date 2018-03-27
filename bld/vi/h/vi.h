@@ -60,7 +60,7 @@
 
 typedef unsigned int U_INT;
 
-#if defined( __WATCOMC__ ) && !defined( __ALPHA__ )
+#if defined( __WATCOMC__ ) && !defined( __AXP__ )
 char            *_inline_strchr( const char *__s, int __c );
 unsigned int    _inline_strlen( const char *__s );
 int             _inline_strcmp( const char *__s1, const char *__s2 );

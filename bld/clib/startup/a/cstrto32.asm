@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -48,14 +49,14 @@ _TEXT   segment use32 word public 'CODE'
 
 _cstart_ proc near
         jmp     __OS2Main
+_cstart_ endp
+
         dd      ___begtext      ; reference module with segment definitions
+
 ;
 ; copyright message
 ;
-include msgrt32.inc
 include msgcpyrt.inc
-
-_cstart_ endp
 
 _TEXT   ends
 

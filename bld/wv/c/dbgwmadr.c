@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,15 +48,10 @@
 #include "dbgwinsp.h"
 #include "dbgwmadr.h"
 #include "dbgwtogl.h"
-
-
-extern address          AddrRegIP( machine_state *regs );
-extern unsigned         GetInsSize( address addr );
-
 #include "menudef.h"
-static gui_menu_struct RegMenu[] = {
-    #include "menureg.h"
-};
+
+
+#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
 
 typedef struct {
     unsigned char           standout;
@@ -81,25 +77,30 @@ typedef struct {
     unsigned                num_toggles;
     mad_type_kind           kind;
 } reg_window;
-#define WndReg( wnd ) ( (reg_window*)WndExtra( wnd ) )
-
 
 typedef struct {
     const char              *descript;
     size_t                  max_descript;
     const mad_reg_info      *reginfo;
-    mad_type_handle         disp_type;
+    mad_type_handle         disp_mth;
     size_t                  max_value;
 } reg_display_piece;
+
+extern address              AddrRegIP( machine_state *regs );
+extern unsigned             GetInsSize( address addr );
+
+static gui_menu_struct RegMenu[] = {
+    #include "menureg.h"
+};
 
 static bool GetDisplayPiece( reg_display_piece *disp, reg_window *reg, machine_state *mach, int i )
 {
     return( MADRegSetDisplayGetPiece( reg->data, &mach->mr, i, &disp->descript,
                                   &disp->max_descript, &disp->reginfo,
-                                  &disp->disp_type, &disp->max_value ) == MS_OK );
+                                  &disp->disp_mth, &disp->max_value ) == MS_OK );
 }
 
-static bool RegResize( a_window *wnd )
+static bool RegResize( a_window wnd )
 {
     reg_window          *reg = WndReg( wnd );
     gui_ord             space;
@@ -132,7 +133,7 @@ static bool RegResize( a_window *wnd )
     for( i = 0; i < reg->count; ++i ) {
         GetDisplayPiece( &disp, reg, DbgRegs, i );
         if( disp.max_value == 0 && disp.reginfo != NULL ) {
-            disp.max_value = GetMADMaxFormatWidth( disp.disp_type );
+            disp.max_value = GetMADMaxFormatWidth( disp.disp_mth );
         }
         info = &reg->info[i];
         info->max_value = disp.max_value;
@@ -225,13 +226,13 @@ static bool RegResize( a_window *wnd )
 }
 
 
-static int RegNumRows( a_window *wnd )
+OVL_EXTERN wnd_row RegNumRows( a_window wnd )
 {
     return( WndReg( wnd )->rows );
 }
 
 
-static int GetRegIdx( reg_window *reg, int row, int piece )
+static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 {
     int         i;
 
@@ -244,22 +245,22 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 }
 
 
-static const char *RegValueName( const void *data_handle, int item )
+OVL_EXTERN const char *RegValueName( const void *data_handle, int item )
 {
     mad_modify_list const *possible = (mad_modify_list const *)data_handle + item;
     size_t          buff_len;
 
     buff_len = TXT_LEN;
     if( possible->name == MAD_MSTR_NIL ) {
-        MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
-                possible->type, possible->data, TxtBuff, &buff_len );
+        MADTypeHandleToString( MADTypePreferredRadix( possible->mth ),
+                possible->mth, possible->data, TxtBuff, &buff_len );
     } else {
         MADCli( String )( possible->name, TxtBuff, buff_len );
     }
     return( TxtBuff );
 }
 
-static  void    RegModify( a_window *wnd, int row, int piece )
+OVL_EXTERN  void    RegModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     int                     i;
     item_mach               value;
@@ -267,7 +268,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     bool                    ok;
     mad_radix               old_radix;
     reg_display_piece       disp;
-    mad_type_info           tinfo;
+    mad_type_info           mti;
     mad_modify_list const   *possible;
     int                     num_possible;
 
@@ -283,18 +284,18 @@ static  void    RegModify( a_window *wnd, int row, int piece )
         return;
     if( MADRegSetDisplayModify( reg->data, disp.reginfo, &possible, &num_possible ) != MS_OK )
         return;
-    old_radix = NewCurrRadix( MADTypePreferredRadix( disp.disp_type ) );
+    old_radix = NewCurrRadix( MADTypePreferredRadix( disp.disp_mth ) );
     MADRegFullName( disp.reginfo, ".", TxtBuff, TXT_LEN );
     RegValue( &value, disp.reginfo, DbgRegs );
     if( num_possible == 1 ) {
-        ok = DlgMadTypeExpr( TxtBuff, &value, disp.disp_type );
+        ok = DlgMadTypeExpr( TxtBuff, &value, disp.disp_mth );
         if( ok ) {
-            RegNewValue( disp.reginfo, &value, possible->type );
+            RegNewValue( disp.reginfo, &value, possible->mth );
         }
     } else {
         for( i = 0; i < num_possible; ++i ) {
-            MADTypeInfo( possible[i].type, &tinfo );
-            if( memcmp( &value, possible[i].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ) {
+            MADTypeInfo( possible[i].mth, &mti );
+            if( memcmp( &value, possible[i].data, BITS2BYTES( mti.b.bits ) ) == 0 ) {
                 break;
             }
         }
@@ -304,17 +305,17 @@ static  void    RegModify( a_window *wnd, int row, int piece )
             } else {
                 i = 0;
             }
+            RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
         } else {  //MJC const cast
-            i = DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible );
-        }
-        if( i != -1 ) {
-            RegNewValue( disp.reginfo, possible[i].data, possible[i].type );
+            if( DlgPickWithRtn( TxtBuff, possible, i, RegValueName, num_possible, &i ) ) {
+                RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
+            }
         }
     }
     NewCurrRadix( old_radix );
 }
 
-static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     RegMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     reg_window              *reg = WndReg( wnd );
     int                     i;
@@ -356,8 +357,7 @@ static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    RegGetLine( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+OVL_EXTERN  bool    RegGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int                 column;
     int                 i;
@@ -383,11 +383,11 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
         if( reg->info[i].info == NULL ) {
             strcpy( TxtBuff, "   " );
         } else {
-            new_radix = MADTypePreferredRadix( disp.disp_type );
+            new_radix = MADTypePreferredRadix( disp.disp_mth );
             old_radix = NewCurrRadix( new_radix );
             RegValue( &value, reg->info[i].info, DbgRegs );
             max = reg->info[i].max_value + 1;
-            MADTypeHandleToString( new_radix, disp.disp_type, &value, TxtBuff, &max );
+            MADTypeHandleToString( new_radix, disp.disp_mth, &value, TxtBuff, &max );
             NewCurrRadix( old_radix );
             reg->info[i].standout = false;
             if( MADRegModified( reg->data, reg->info[i].info, &PrevRegs->mr, &DbgRegs->mr ) == MS_MODIFIED_SIGNIFICANTLY ) {
@@ -407,7 +407,7 @@ static  bool    RegGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void     RegRefresh( a_window *wnd )
+OVL_EXTERN void     RegRefresh( a_window wnd )
 {
     int                 row,rows;
     int                 reg_num;
@@ -441,7 +441,7 @@ static void     RegRefresh( a_window *wnd )
     }
 }
 
-static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RegWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 
@@ -471,7 +471,7 @@ static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info MadRegInfo = {
-    RegEventProc,
+    RegWndEventProc,
     RegRefresh,
     RegGetLine,
     RegMenuItem,
@@ -483,20 +483,20 @@ wnd_info MadRegInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_MAD_CHANGE+UP_REG_CHANGE+UP_REG_RESIZE,
+    UP_MAD_CHANGE | UP_REG_CHANGE | UP_REG_RESIZE,
     DefPopUp( RegMenu )
 };
 
-void MadRegChangeOptions( a_window *wnd )
+void MadRegChangeOptions( a_window wnd )
 {
     RegResize( wnd );
     WndZapped( wnd );
 }
 
-extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource *icon )
+a_window WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource *icon )
 {
     reg_window  *reg;
-    a_window    *wnd;
+    a_window    wnd;
 
     reg = WndMustAlloc( sizeof( reg_window ) );
     reg->kind = kind;

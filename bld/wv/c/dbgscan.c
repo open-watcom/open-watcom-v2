@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +53,7 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "dbgsem.h"
+#include "dbgsetfn.h"
 
 #include "clibext.h"
 
@@ -189,17 +191,17 @@ int ScanCmd( const char *cmd_table )
 struct type_name {
     const char          *start;
     unsigned            len;
-    mad_type_handle     th;
+    mad_type_handle     mth;
 };
 
-static walk_result      FindTypeName( mad_type_handle th, void *d )
+OVL_EXTERN walk_result      FindTypeName( mad_type_handle mth, void *d )
 {
     struct type_name    *nd = d;
     const char          *p;
     char                *q;
     unsigned            len;
 
-    GetMADTypeNameForCmd( th, TxtBuff, TXT_LEN );
+    GetMADTypeNameForCmd( mth, TxtBuff, TXT_LEN );
     for( p = nd->start, q = TxtBuff; tolower( *p ) == tolower( *q ); ++p, ++q ) {
         if( *q == NULLCHAR ) {
             break;
@@ -211,12 +213,12 @@ static walk_result      FindTypeName( mad_type_handle th, void *d )
     if( *q == NULLCHAR ) {
         /* an exact match */
         nd->len = len;
-        nd->th = th;
+        nd->mth = mth;
         return( WR_STOP );
     }
     if( len > nd->len ) {
         nd->len = len;
-        nd->th = th;
+        nd->mth = mth;
     }
     return( WR_CONTINUE );
 }
@@ -232,34 +234,35 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
     }
     data.start = TokenStart + len;
     data.len = 0;
-    data.th = MAD_NIL_TYPE_HANDLE;
+    data.mth = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, FindTypeName, &data );
-    if( data.th != MAD_NIL_TYPE_HANDLE )
+    if( data.mth != MAD_NIL_TYPE_HANDLE )
         ReScan( data.start + data.len );
-    return( data.th );
+    return( data.mth );
 }
 
 mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
 {
-    mad_type_handle     th = 0;
+    mad_type_handle     mth;
 
+    mth = MAD_NIL_TYPE_HANDLE;
     if( tk & MAS_MEMORY ) {
-        th = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
-        if( th != MAD_NIL_TYPE_HANDLE ) {
+        mth = DoScanType( tk & ~MAS_IO, LIT_ENG( Empty ) );
+        if( mth != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_MEMORY;
-            return( th );
+            return( mth );
         }
     }
     if( tk & MAS_IO ) {
-        th = DoScanType( tk & ~MAS_MEMORY, LIT_ENG( IO ) );
-        if( th != MAD_NIL_TYPE_HANDLE ) {
+        mth = DoScanType( tk & ~MAS_MEMORY, LIT_ENG( IO ) );
+        if( mth != MAD_NIL_TYPE_HANDLE ) {
             if( tkr != NULL )
                 *tkr = MAS_IO;
-            return( th );
+            return( mth );
         }
     }
-    return( th );
+    return( mth );
 }
 
 mad_string ScanCall( void )
@@ -401,13 +404,18 @@ bool ScanItem( bool blank_delim, const char **start, size_t *len )
         *len   = 0;
         return( false );
     }
-    if( ScanQuote( start, len ) ) return( true );
+    if( ScanQuote( start, len ) )
+        return( true );
     *start = TokenStart;
     for( ;; ) {
-        if( blank_delim && isspace( *ScanPtr ) ) break;
-        if( *ScanPtr == TRAP_PARM_SEPARATOR ) break;
-        if( *ScanPtr == ';' ) break;
-        if( *ScanPtr == NULLCHAR ) break;
+        if( blank_delim && isspace( *ScanPtr ) )
+            break;
+        if( *ScanPtr == TRAP_PARM_SEPARATOR )
+            break;
+        if( *ScanPtr == ';' )
+            break;
+        if( *ScanPtr == NULLCHAR )
+            break;
         ++ScanPtr;
     }
     *len = ScanPtr - TokenStart;
@@ -451,7 +459,9 @@ bool ScanItemDelim( const char *delim, bool blank_delim, const char **start, siz
 
 void ReqEOC( void )
 {
-    if( !ScanEOC() ) Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
+    if( !ScanEOC() ) {
+        Error( ERR_LOC, LIT_ENG( ERR_WANT_EOC ) );
+    }
 }
 
 
@@ -461,7 +471,9 @@ void ReqEOC( void )
 
 void FlushEOC( void )
 {
-    while( !ScanEOC() ) Scan();
+    while( !ScanEOC() ) {
+        Scan();
+    }
 }
 
 
@@ -515,8 +527,10 @@ static bool ScanRealNum( void )
     const char  *curr;
 
     curr = ScanPtr;
-    while( isdigit( *curr ) ) ++curr;
-    if( *curr != '.' ) return( false );
+    while( isdigit( *curr ) )
+        ++curr;
+    if( *curr != '.' )
+        return( false );
     SToLD( ScanPtr, &ScanPtr, &TokenVal.real_val );
     if( curr == ScanPtr ) {    /* it isn't a number, it's just a dot */
         ScanPtr++;
@@ -537,10 +551,12 @@ static int GetDig( unsigned base )
 
     chr = *ScanPtr;
     chr = toupper( chr );
-    if( ( (chr < '0') || (chr > '9') )
-     && ( (chr < 'A') || (chr > 'Z') ) ) return( -1 );
-    if( chr >= 'A' ) chr -= 'A' - '0' - 10;
-    if( chr - '0' >= base ) return( -1 );
+    if( ( (chr < '0') || (chr > '9') ) && ( (chr < 'A') || (chr > 'Z') ) )
+        return( -1 );
+    if( chr >= 'A' )
+        chr -= 'A' - '0' - 10;
+    if( chr - '0' >= base )
+        return( -1 );
     return( chr - '0' );
 }
 
@@ -638,10 +654,11 @@ size_t NameLen( void )
             --end;
         }
     }
-    if( start >= end)
+    if( start >= end ) {
         return( 0 );
-    else
+    } else {
         return( end - start );
+    }
 }
 
 /*
@@ -665,7 +682,8 @@ static bool ScanId( void )
              c = *++ScanPtr;
         }
     }
-    if( NameLen() == 0 ) return( false );
+    if( NameLen() == 0 )
+        return( false );
     CurrToken = T_NAME;
     return( true );
 }
@@ -786,9 +804,12 @@ void Scan( void )
                 return;
             }
         }
-        if( ScanCmdLnDelim() )      return;   /*sf do this if the others fail */
-        if( ScanRealNum() )         return;
-        if( ScanNumber() )          return;
+        if( ScanCmdLnDelim() )
+            return;   /*sf do this if the others fail */
+        if( ScanRealNum() )
+            return;
+        if( ScanNumber() )
+            return;
         if( ScanId() ) {
             if( ExprTokens != NULL && CurrToken == T_NAME ) {
                 ScanKeyword( ExprTokens->keywords );
@@ -816,7 +837,9 @@ char RawScanChar( void )
 
 void RawScanAdvance( void )
 {
-    if( *ScanPtr != NULLCHAR ) ++ScanPtr;
+    if( *ScanPtr != NULLCHAR ) {
+        ++ScanPtr;
+    }
 }
 
 void RawScanFini( void )

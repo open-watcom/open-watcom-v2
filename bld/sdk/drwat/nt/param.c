@@ -31,7 +31,6 @@
 
 
 #include <ctype.h>
-#include <stdio.h>
 #include "drwatcom.h"
 #include "mem.h"
 #include "menu.h"

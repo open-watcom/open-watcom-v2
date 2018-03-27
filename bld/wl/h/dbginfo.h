@@ -29,20 +29,7 @@
 ****************************************************************************/
 
 
-#define DBG_SIGNATURE   0x8386
-#define FOX1_SIGNATURE  0x8300
-#define FOX2_SIGNATURE  0x8301
-#define RES_SIGNATURE   0x8302
-
 #include "pushpck1.h"
-
-typedef struct sectheader {
-    unsigned_32         mod_offset;
-    unsigned_32         gbl_offset;
-    unsigned_32         addr_offset;
-    unsigned_32         section_size;
-    unsigned_16         section_id;
-} sectheader;
 
 typedef struct {
     struct {
@@ -72,58 +59,10 @@ typedef struct debug_info {
     class_entry     *TypeClass;
 } debug_info;
 
-
-typedef struct dbgheader {
-    unsigned_16         signature;
-    unsigned_8          exe_major_ver;
-    unsigned_8          exe_minor_ver;
-    unsigned_8          obj_major_ver;
-    unsigned_8          obj_minor_ver;
-    unsigned_16         lang_size;
-    unsigned_16         seg_size;
-    unsigned_32         debug_size;
-} dbgheader;
-
-typedef struct gblinfo {
-    unsigned_32         off;
-    unsigned_16         seg;
-    unsigned_16         mod_idx;
-    unsigned_8          flags;
-    char                name[ 1 ];
-} gblinfo;
-
-#define DBG_GBL_STATIC  0x1
-#define DBG_GBL_DATA    0x2
-#define DBG_GBL_CODE    0x4
-
-typedef struct demand_info {
-    unsigned_32         off;
-    unsigned_16         len;
-} demand_info;
-
-typedef struct modinfo {
-    unsigned_16         language;
-    demand_info         locals;
-    demand_info         types;
-    demand_info         lines;
-    char                name[ 1 ];
-} modinfo;
-
 typedef struct lineseg {
     unsigned_32         segment;
     unsigned_16         num;
 } lineseg;
-
-typedef struct segheader {
-    unsigned_32         off;
-    unsigned_16         seg;
-    unsigned_16         num;
-} segheader;
-
-typedef struct addrinfo {
-    unsigned_32         size;
-    unsigned_16         mod_idx;
-} addrinfo;
 
 typedef struct dbinode {
     struct dbinode      *next;

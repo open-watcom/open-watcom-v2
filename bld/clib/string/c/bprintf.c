@@ -35,6 +35,7 @@
 #include <stdarg.h>
 #include "printf.h"
 
+
 struct  buf_limit {
     CHAR_TYPE   *bufptr;
     size_t      bufsize;

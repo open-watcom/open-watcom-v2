@@ -30,9 +30,12 @@
 ****************************************************************************/
 
 
+#include "fio.h"
+
+
 extern void         SDInitIO( void );
 extern void         SDInitAttr( void );
-extern void         SDSetAttr( file_attr attr );
+extern void         SDSetAttr( f_attrs attr );
 extern void         SDScratch( const char *name );
 extern file_handle  SDOpen( const char *name, int mode );
 extern void         SDClose( file_handle fp );

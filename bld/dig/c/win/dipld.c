@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <i86.h>
@@ -54,10 +55,11 @@ void Say( const char *buff )
 }
 #endif
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    if( sys_hdl != NULL_SYSHDL ) {
-        sys_hdl();
+    if( *sys_hdl != NULL_SYSHDL ) {
+        (*sys_hdl)();
+        *sys_hdl = NULL_SYSHDL;
     }
 }
 
@@ -77,16 +79,13 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
         LPVOID          show;
         WORD            reserved;
     }                   parm_block;
-    struct {
-        dip_init_func   *load;
-        dip_fini_func   *unload;
-    }                   transfer_block;
+    dip_link_block      transfer_block;
     char                *p;
     UINT                prev;
 
+    *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = NULL_SYSHDL;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );
@@ -113,6 +112,6 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
         *sys_hdl = transfer_block.unload;
         return( DS_OK );
     }
-    DIPSysUnload( transfer_block.unload );
+    DIPSysUnload( &transfer_block.unload );
     return( status );
 }

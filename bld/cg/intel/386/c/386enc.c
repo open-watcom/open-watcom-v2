@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
 #include "coderep.h"
 #include "pccode.h"
 #include "system.h"
@@ -869,6 +868,7 @@ extern  void    Pow2Div( instruction *ins )
     case I2:
     case U2:
         if_32 = true;
+        /* fall through */
     case I4:
     case U4:
         LayOpword( 0xe2c1 );    /* shl  edx,n */
@@ -901,6 +901,7 @@ extern  void    By2Div( instruction *ins )
     case I2:
     case U2:
         if_32 = true;
+        /* fall through */
     case I4:
     case U4:
         LayOpword( 0xc22b );    /* sub  eax,edx */

@@ -36,19 +36,19 @@
 #include "cmpres.h"
 #include "cmpcont.h"
 
-static int CompareHeaders( WResFileID fid1, WResFileID fid2 )
-/***********************************************************/
+static int CompareHeaders( FILE *fp1, FILE *fp2 )
+/***********************************************/
 {
     int             error;
     int             retcode;
     WResHeader      header1;
     WResHeader      header2;
 
-    error = WResReadHeaderRecord( &header1, fid1 );
+    error = WResReadHeaderRecord( &header1, fp1 );
     if( error ) {
         return( -1 );
     }
-    error = WResReadHeaderRecord( &header2, fid2 );
+    error = WResReadHeaderRecord( &header2, fp2 );
     if( error ) {
         return( -1 );
     }
@@ -72,8 +72,8 @@ static int CompareHeaders( WResFileID fid1, WResFileID fid2 )
     return( retcode );
 }
 
-int CompareContents( WResFileID fid1, WResFileID fid2 )
-/*****************************************************/
+int CompareContents( FILE *fp1, FILE *fp2 )
+/*****************************************/
 {
     int             retcode;        /* -1: error  0: same  1: different */
     int             oldretcode;
@@ -82,7 +82,7 @@ int CompareContents( WResFileID fid1, WResFileID fid2 )
     WResDir         dir1;
     WResDir         dir2;
 
-    retcode = CompareHeaders( fid1, fid2 );
+    retcode = CompareHeaders( fp1, fp2 );
     if( (retcode == -1) || (retcode == 1 && !CmdLineParms.CheckAll) ) {
         return( retcode );
     }
@@ -99,20 +99,20 @@ int CompareContents( WResFileID fid1, WResFileID fid2 )
         return( -1 );
     }
 
-    error = WResReadDir( fid1, dir1, &dup_discarded );
+    error = WResReadDir( fp1, dir1, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
-    error = WResReadDir( fid2, dir2, &dup_discarded );
+    error = WResReadDir( fp2, dir2, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
 
-    retcode = CompareResources( fid1, dir1, fid2, dir2 );
+    retcode = CompareResources( fp1, dir1, fp2, dir2 );
 
     WResFreeDir( dir1 );
     WResFreeDir( dir2 );

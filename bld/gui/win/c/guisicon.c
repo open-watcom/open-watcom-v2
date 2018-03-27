@@ -50,7 +50,7 @@ bool GUISetIcon( gui_window *wnd, gui_resource *res )
     } else {
         icon = _wpi_loadicon( GUIResHInst, LIT( ApplIcon ) );
         if( icon == NULL ) {
-            icon = _wpi_getsysicon( NULL, IDI_APPLICATION );
+            icon = _wpi_getsysicon( NULLHANDLE, IDI_APPLICATION );
         }
     }
 

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
 void WndInitWndMain( wnd_create_struct *info )
 {

@@ -43,12 +43,6 @@
 #include "dipdump.h"
 
 
-#if 0
-# define dprintf(a)         do { printf a; } while( 0 )
-#else
-# define dprintf(a)         do {} while( 0 )
-#endif
-
 #if defined( __UNIX__ ) || defined( __DOS__ )
 typedef struct char_ring {
     struct char_ring    *next;
@@ -60,123 +54,85 @@ static char   *FilePathList = NULL;
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 {
-    void    *ptr = malloc( amount );
-
-    dprintf(( "DIGCliAlloc: amount=%#x -> %p\n", (unsigned)amount, ptr ));
-    return( ptr );
+    return( malloc( amount ) );
 }
 
 void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 {
-    void    *ptr = realloc( p, amount);
-
-    dprintf(( "DIGCliRealloc: p=%p amount=%3x -> %p\n", p, (unsigned)amount, ptr ));
-    return( ptr );
+    return( realloc( p, amount) );
 }
 
 void DIGCLIENTRY( Free )( void *p )
 {
-    dprintf(( "DIGCliFree: p=%p\n", p ));
     free( p );
 }
 
-dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
+FILE *DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
-    int     fd;
-    int     flgs;
-
-    dprintf(( "DIGCliOpen: name=%p:{%s} mode=%#x\n", name, name, mode ));
+    const char  *fmode;
 
     /* convert flags. */
     switch( mode & (DIG_READ | DIG_WRITE) ) {
     case DIG_READ:
-        flgs = O_RDONLY;
+        fmode = "rb";
         break;
     case DIG_WRITE:
-        flgs = O_WRONLY;
+        fmode = "wb";
         break;
     case DIG_WRITE | DIG_READ:
-        flgs = O_RDWR;
+        fmode = "r+b";
         break;
     default:
-        return( DIG_NIL_HANDLE );
+        return( NULL );
     }
-#ifdef O_BINARY
-    flgs |= O_BINARY;
-#endif
-    if( mode & DIG_CREATE )
-        flgs |= O_CREAT;
-    if( mode & DIG_TRUNC )
-        flgs |= O_TRUNC;
-    if( mode & DIG_APPEND )
-        flgs |= O_APPEND;
-    /* (ignore the remaining flags) */
-
-    fd = open( name, flgs, PMODE_RWX );
-
-    dprintf(( "DIGCliOpen: returns %d\n", fd ));
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( fopen( name, fmode ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
 {
     int     whence;
-    long    off;
 
     switch( k ) {
     case DIG_ORG:   whence = SEEK_SET; break;
     case DIG_CUR:   whence = SEEK_CUR; break;
     case DIG_END:   whence = SEEK_END; break;
     default:
-        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", DIG_FID2PH( fid ), p, k ));
-        return( DIG_SEEK_ERROR );
+        return( true );
     }
-
-    off = lseek( DIG_FID2PH( fid ), p, whence );
-    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", DIG_FID2PH( fid ), p, k, off ));
-    return( off );
+    return( fseek( fp, p, whence ) );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *b , size_t s )
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
-    size_t      rc;
-
-    rc = read( DIG_FID2PH( fid ), b, s );
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", DIG_FID2PH( fid ), b, (unsigned)s, (unsigned)rc ));
-    return( rc );
+    return( ftell( fp ) );
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *b, size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
 {
-    size_t      rc;
-
-    rc = write( DIG_FID2PH( fid ), b, s );
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", DIG_FID2PH( fid ), b, (unsigned)s, (unsigned)rc ));
-    return( rc );
+    return( fread( b, 1, s, fp ) );
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle fid )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
 {
-    dprintf(( "DIGCliClose: h=%d\n", DIG_FID2PH( fid ) ));
-    if( close( DIG_FID2PH( fid ) ) ) {
-        dprintf(( "DIGCliClose: h=%d failed!!\n", DIG_FID2PH( fid ) ));
-    }
+    return( fwrite( b, 1, s, fp ) );
+}
+
+void DIGCLIENTRY( Close )( FILE *fp )
+{
+    fclose( fp );
 }
 
 void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
 {
-    dprintf(( "DIGCliRemove: name=%p:{%s} mode=%#x\n", name, name, mode ));
+    /* unused parameters */ (void)mode;
+
     unlink( name );
-    mode = mode;
 }
 
 unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {
-    dprintf(( "DIGCliMachineData: \n" ));
     return( 0 ); /// @todo check this out out.
 }
 
@@ -212,18 +168,17 @@ static char *addPath( char *old_list, const char *path_list )
     return( new_list );
 }
 
-static char *findFile( char *fullname, char *name, char *path_list )
-/******************************************************************/
+static FILE *findFileOpenRead( char *fullname, char *name, char *path_list )
+/**************************************************************************/
 {
-    int         fh;
     char        *p;
     char        c;
+    FILE		*fp;
 
-    fh = open( name, O_RDONLY | O_BINARY, S_IREAD );
-    if( fh != -1 ) {
-        close( fh );
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
         strcpy( fullname, name );
-        return( fullname );
+        return( fp );
     }
     if( path_list != NULL ) {
         while( (c = *path_list) != '\0' ) {
@@ -239,10 +194,9 @@ static char *findFile( char *fullname, char *name, char *path_list )
                 *p++ = DIR_SEP;
             }
             strcat( p, name );
-            fh = open( fullname, O_RDONLY | O_BINARY, S_IREAD );
-            if( fh != -1 ) {
-                close( fh );
-                return( fullname );
+            fp = fopen( fullname, "rb" );
+            if( fp != NULL ) {
+                return( fp );
             }
         }
     }
@@ -279,12 +233,12 @@ void PathFini( void )
     free( FilePathList );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/******************************************************************************************************************/
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char        *filename;
-    int         fd;
+    FILE        *fp;
 
     /* unused parameters */ (void)max_result;
 
@@ -294,35 +248,22 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         _splitpath2( realname, result, NULL, NULL, &filename, NULL );
         _makepath( realname, NULL, NULL, filename, ext );
     }
-    filename = findFile( result, realname, FilePathList );
-    fd = -1;
-    if( filename != NULL )
-        fd = open( filename, O_RDONLY );
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( findFileOpenRead( result, realname, FilePathList ) );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    unsigned read_len;
-    read_len = read( DIG_FID2PH( fid ), buff, len );
-printf("read: in: %x  out: %x\n", len, read_len);
-    return( read_len != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    unsigned long pos;
-
-    pos = lseek( DIG_FID2PH( fid ), offs, where );
-printf("seek: in: %lx  out: %lx\n", offs, pos);
-    return( pos == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 
 #endif

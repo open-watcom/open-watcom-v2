@@ -1,4 +1,4 @@
-#pmake/120: build debug flat cpu_386 os_os2 dynamic
+#pmake/120: nobuild debug flat cpu_386 os_os2 dynamic
 processor  = 386
 system     = os2
 model      = mf

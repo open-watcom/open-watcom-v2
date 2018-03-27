@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -67,9 +66,15 @@ void DIGCLIENTRY( Free )( void *ptr )
 }
 
 /*
+ * Windows NT must use OS loader handle for I/O file function for DLL/multi-thread support
+ * For DIG client functions appropriate Windows HANDLE oriented I/O functions must be used
+ * !!! ISO or POSIX functions must not be used !!!
+ */
+
+/*
  * DIGCliOpen
  */
-dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
+FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
     HFILE               ret;
     int                 flags;
@@ -87,14 +92,14 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
     //NYI: should check for DIG_SEARCH
     ret = OpenFile( path, &tmp, flags );
     if( ret == HFILE_ERROR )
-        return( DIG_NIL_HANDLE );
-    return( DIG_H2FID( ret ) );
+        return( NULL );
+    return( WH2FP( (HANDLE)ret ) );
 }
 
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
@@ -109,39 +114,47 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_se
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( DIG_FID2H( fid ), offset, 0, mode ) );
+    return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
+}
+
+/*
+ * DIGCliTell
+ */
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
+{
+    return( SetFilePointer( FP2WH( fp ), 0, 0, FILE_CURRENT ) );
 }
 
 /*
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *buf, size_t size )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( DIG_FID2H( fid ), buf, size, &bytesread, NULL ) )
-        return( DIG_RW_ERROR );
+    if( !ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) )
+        return( (size_t)-1 );
     return( bytesread );
 }
 
 /*
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *buf, size_t size )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( DIG_FID2H( fid ), buf, size, &byteswritten, NULL ) )
-        return( DIG_RW_ERROR );
+    if( !WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) )
+        return( (size_t)-1 );
     return( byteswritten );
 }
 
 /*
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( dig_fhandle fid )
+void DIGCLIENTRY( Close )( FILE *fp )
 {
-    CloseHandle( DIG_FID2H( fid ) );
+    CloseHandle( FP2WH( fp ) );
 }
 
 /*

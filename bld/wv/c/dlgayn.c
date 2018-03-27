@@ -44,7 +44,7 @@ typedef struct {
     unsigned long   mult;
 } dlg_ayn;
 
-OVL_EXTERN bool AynEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool AynGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;
     gui_ctl_id  id;
@@ -66,7 +66,7 @@ OVL_EXTERN bool AynEvent( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             return( true );
         }
-        return( false );
+        break;
     }
     return( false );
 }
@@ -78,6 +78,6 @@ bool DlgAreYouNuts( unsigned long mult )
 
     ayn.as_a_fruitcake = false;
     ayn.mult = mult;
-    ResDlgOpen( &AynEvent, &ayn, DIALOG_AYN );
+    ResDlgOpen( AynGUIEventProc, &ayn, DIALOG_AYN );
     return( ayn.as_a_fruitcake );
 }

@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,17 +34,17 @@
 ;
 ;       386 DOS Extender Equates for __Extender variable
 ;
-X_ERGO                  equ     0
-X_RATIONAL              equ     1
-X_PHARLAP_V2            equ     2
+X_ERGO                  equ     0       ; Ergo OS/386 (unsupported)
+X_RATIONAL              equ     1       ; DOS/4G(W) or compatible
+X_PHARLAP_V2            equ     2       ; PharLap 386 | DOS
 X_PHARLAP_V3            equ     3
 X_PHARLAP_V4            equ     4
 X_PHARLAP_V5            equ     5
-X_PHARLAP_V6            equ     6
+X_PHARLAP_V6            equ     6       ; PharLap TNT
 X_PHARLAP_V7            equ     7
 X_PHARLAP_V8            equ     8
-X_INTEL                 equ     9
-X_WIN386                equ     10
+X_INTEL                 equ     9       ; Intel CodeBuilder (unsupported)
+X_WIN386                equ     10      ; Watcom Win386
 ;
 ;       386 DOS Extender Equates for __ExtenderSubtype variable
 ;

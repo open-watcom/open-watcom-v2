@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #if defined( __WINDOWS__ )
@@ -44,6 +45,8 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "dipsys.h"
+#include "ovldefn.h"
+
 
 #define IMAGE_MAP_INIT  16
 #define IMAGE_MAP_GROW  16
@@ -68,22 +71,8 @@
 
 #define NO_IMAGE_IDX    ((image_idx)-1)
 
-typedef unsigned_16     image_idx;
-
-struct process_info {
-    image_idx           last_addr_mod_found;
-    image_idx           map_entries;
-    image_handle        **ih_map;
-    image_handle        *ih_list;
-    image_handle        **ih_add;
-};
-
-struct image_handle {
-    dip_imp_routines    *dip;
-    image_handle        *next;
-    void                *extra;
-    image_idx           ii;
-};
+#define STRXX(x)        #x
+#define STRX(x)         STRXX(x)
 
 enum artificial_pointers {
     AP_NEAR2 = 1,
@@ -93,6 +82,16 @@ enum artificial_pointers {
     AP_MASK = 0x7,
     AP_SHIFT = 3,
     AP_FULL  = 0xe000
+};
+
+typedef unsigned_16     image_idx;
+
+struct image_handle {
+    dip_imp_routines    *dip;
+    image_handle        *next;
+    void                *extra;
+    image_idx           ii;
+    unsigned            : 0;    /* for alignment */
 };
 
 struct type_handle {
@@ -111,6 +110,14 @@ struct sym_handle {
     unsigned            : 0;    /* for alignment */
 };
 
+struct process_info {
+    image_idx           last_addr_mod_found;
+    image_idx           map_entries;
+    image_handle        **ih_map;
+    image_handle        *ih_list;
+    image_handle        **ih_add;
+};
+
 static image_idx        LoadingImageIdx = NO_IMAGE_IDX;
 
 static process_info     *ActProc;
@@ -119,20 +126,17 @@ static struct {
     dip_sys_handle      sys_hdl;
 }                       LoadedDIPs[MAX_DIPS];
 
-static unsigned         MaxImpHdlSize[] = {
-    #define pick(e,h,ih,wid)    0,
+static unsigned         MaxHdlSize[] = {
+    #define pick(e,hdl,imphdl,wvimphdl) 0,
     #include "diphndls.h"
     #undef pick
 };
 
 static const unsigned_8 MgrHdlSize[] = {
-    #define pick(e,h,ih,wid)    h,
+    #define pick(e,hdl,imphdl,wvimphdl) hdl,
     #include "diphndls.h"
     #undef pick
 };
-
-#define STRXX(x)    #x
-#define STRX(x)     STRXX(x)
 
 char DIPDefaults[] = {
 #ifdef USE_FILENAME_VERSION
@@ -159,7 +163,7 @@ static const address    NilAddr = { 0 };
 
 dip_client_routines DIPClientInterface = {
     DIP_MAJOR,
-    DIP_MINOR_OLD,
+    DIP_MINOR,
     sizeof( dip_client_routines ),
     DIGCli( Alloc ),
     DIGCli( Realloc ),
@@ -172,6 +176,7 @@ dip_client_routines DIPClientInterface = {
     DIPCli( AddrSection ),
     DIGCli( Open ),
     DIGCli( Seek ),
+    DIGCli( Tell ),
     DIGCli( Read ),
     DIGCli( Write ),
     DIGCli( Close ),
@@ -196,9 +201,9 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     unsigned    size;
 
     for( hk = 0; hk < MAX_HK; ++hk ) {
-        size = rtns->HandleSize( hk );
-        if( size > MaxImpHdlSize[hk] ) {
-            MaxImpHdlSize[hk] = size;
+        size = rtns->HandleSize( hk ) + MgrHdlSize[hk];
+        if( MaxHdlSize[hk] < size ) {
+            MaxHdlSize[hk] = size;
         }
     }
 }
@@ -218,11 +223,8 @@ dip_status DIPLoad( const char *path )
         return( status );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
       || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
-        if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-            DIPSysUnload( LoadedDIPs[i].sys_hdl );
-        }
+        DIPSysUnload( &LoadedDIPs[i].sys_hdl );
         LoadedDIPs[i].rtns = NULL;
-        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
         return( DS_ERR | DS_INVALID_DIP_VERSION );
     }
     SetHdlSizes( LoadedDIPs[i].rtns );
@@ -251,11 +253,8 @@ void DIPFiniLatest( void )
     for( i = MAX_DIPS - 1; i >= 0; --i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
-            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
-            }
             LoadedDIPs[i].rtns = NULL;
-            LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
+            DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             break;
         }
     }
@@ -268,22 +267,20 @@ void DIPFini( void )
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
-            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
-            }
+            LoadedDIPs[i].rtns = NULL;
         }
-        LoadedDIPs[i].rtns = NULL;
-        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
+        DIPSysUnload( &LoadedDIPs[i].sys_hdl );
     }
 }
 
-size_t DIPHandleSize( handle_kind hk, bool mgr_size )
+size_t DIPHandleSize( handle_kind hk )
 {
-    if( mgr_size ) {
-        return( MgrHdlSize[hk] );
-    } else {
-        return( MgrHdlSize[hk] + MaxImpHdlSize[hk] );
-    }
+    return( MaxHdlSize[hk] );
+}
+
+size_t DIPHandleSizeWV( handle_kind hk )
+{
+    return( MgrHdlSize[hk] );
 }
 
 dip_status DIPMoreMem( size_t amount )
@@ -459,27 +456,29 @@ void DIPDestroyProcess( process_info *p )
     }
 }
 
-unsigned DIPPriority( unsigned old )
+dip_priority DIPPriority( dip_priority prev_priority )
 {
-    unsigned    prio;
-    unsigned    curr;
-    int         j;
+    dip_priority    priority;
+    dip_priority    curr_priority;
+    int             j;
 
-    prio = UINT_MAX;
+    priority = DIP_PRIOR_MAX + 1;
     for( j = 0; j < MAX_DIPS; ++j ) {
         if( LoadedDIPs[j].rtns == NULL )
             continue;
-        curr = LoadedDIPs[j].rtns->dip_priority;
-        if( curr <= old )
+        curr_priority = LoadedDIPs[j].rtns->priority;
+        if( curr_priority > DIP_PRIOR_MAX )
+            curr_priority = DIP_PRIOR_MAX;
+        if( curr_priority <= prev_priority )
             continue;
-        if( curr >= prio )
+        if( curr_priority >= priority )
             continue;
-        prio = curr;
+        priority = curr_priority;
     }
-    return( prio == UINT_MAX ? 0 : prio );
+    return( priority > DIP_PRIOR_MAX ? 0 : priority );
 }
 
-mod_handle DIPLoadInfo( dig_fhandle fid, unsigned extra, unsigned prio )
+mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
 {
     image_idx           ii;
     int                 j;
@@ -493,7 +492,7 @@ mod_handle DIPLoadInfo( dig_fhandle fid, unsigned extra, unsigned prio )
     ii = FindImageMapSlot( ActProc );
     if( ii == NO_IMAGE_IDX )
         return( NO_MOD );
-    ih = DIGCli( Alloc )( DIPHandleSize( HK_IMAGE, false ) + extra );
+    ih = DIGCli( Alloc )( MaxHdlSize[HK_IMAGE] + extra );
     if( ih == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NO_MOD );
@@ -501,16 +500,16 @@ mod_handle DIPLoadInfo( dig_fhandle fid, unsigned extra, unsigned prio )
     for( j = 0; j < MAX_DIPS; ++j ) {
         if( LoadedDIPs[j].rtns == NULL )
             continue;
-        if( LoadedDIPs[j].rtns->dip_priority != prio )
+        if( LoadedDIPs[j].rtns->priority != priority )
             continue;
-        ret = LoadedDIPs[j].rtns->LoadInfo( fid, IH2IIH( ih ) );
+        ret = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
         if( ret == DS_OK ) {
             ActProc->ih_map[ii] = ih;
             ih->next = *ActProc->ih_add;
             *ActProc->ih_add = ih;
             ActProc->ih_add = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
-            ih->extra = (unsigned_8 *)ih + DIPHandleSize( HK_IMAGE, false );
+            ih->extra = (unsigned_8 *)ih + MaxHdlSize[HK_IMAGE];
             ih->ii = ii;
             LoadingImageIdx = ii;
             return( MK_MH( ii, 0 ) );
@@ -545,7 +544,7 @@ void DIPUnloadInfo( mod_handle mh )
 }
 
 
-unsigned DIPImagePriority( mod_handle mh )
+dip_priority DIPImagePriority( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -554,7 +553,7 @@ unsigned DIPImagePriority( mod_handle mh )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( DIP_PRIOR_MAX + 1 );
-    return( ih->dip->dip_priority );
+    return( ih->dip->priority );
 }
 
 /*
@@ -588,7 +587,7 @@ typedef struct {
     location_context    *lc;
 } walk_glue;
 
-static walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh,
+OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh,
                                         void *d )
 {
     walk_glue           *wd = d;
@@ -598,7 +597,7 @@ static walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh,
     return( wd->walk.m( MK_MH( ih->ii, imh ), wd->d ) );
 }
 
-static walk_result WalkOneModList( mod_handle mh, void *d )
+OVL_EXTERN walk_result WalkOneModList( mod_handle mh, void *d )
 {
     image_handle        *ih;
 
@@ -626,7 +625,7 @@ walk_result DIPWalkModList( mod_handle mh, DIP_MOD_WALKER *mw, void *d )
     }
 }
 
-static walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
+OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
                                 imp_type_handle *ith, void *d )
 {
     walk_glue   *wd = d;
@@ -640,7 +639,7 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    type_handle         *th = walloca( DIPHandleSize( HK_TYPE, false ) );
+    type_handle         *th = walloca( MaxHdlSize[HK_TYPE] );
     walk_result         wr;
 
     wr = WR_CONTINUE;
@@ -657,7 +656,7 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
     return( wr );
 }
 
-static walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
+OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
                             sym_walk_info swi, imp_sym_handle *ish, void *d )
 {
     walk_glue   *wd = d;
@@ -671,7 +670,7 @@ static walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
 
 static walk_result DoWalkSymList( symbol_source, void *, walk_glue * );
 
-static walk_result GblSymWalk( mod_handle mh, void *d )
+OVL_EXTERN walk_result GblSymWalk( mod_handle mh, void *d )
 {
     return( DoWalkSymList( SS_MODULE, (void *)&mh, d ) );
 }
@@ -679,11 +678,11 @@ static walk_result GblSymWalk( mod_handle mh, void *d )
 static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
 {
     image_handle        *ih;
-    sym_handle          *sh = walloca( DIPHandleSize( HK_SYM, false ) );
+    sym_handle          *sh = walloca( MaxHdlSize[HK_SYM] );
     image_idx           ii = 0;
     imp_mod_handle      imh;
     mod_handle          mh;
-    type_handle         *it;
+    type_handle         *th;
     sym_handle          *is;
     walk_result         wr;
 
@@ -704,11 +703,11 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
         ii = MH_IMAGE( mh );
         break;
     case SS_TYPE:
-        it = start;
-        if( it->ap != 0 )
+        th = start;
+        if( th->ap != 0 )
             return( WR_CONTINUE );
-        start = TH2ITH( it );
-        ii = it->ii;
+        start = TH2ITH( th );
+        ii = th->ii;
         break;
     case SS_BLOCK:
         if( DIPAddrMod( ((scope_block *)start)->start, &mh ) == SR_NONE ) {
@@ -753,21 +752,21 @@ walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, v
     return( DIPWalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
-static walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
-                                imp_cue_handle *ich, void *d )
+OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
+                                imp_cue_handle *imp_cueh, void *d )
 {
     walk_glue   *wd = d;
 
     /* unused parameters */ (void)iih;
 
-    return( wd->walk.c( ICH2CH( ich ), wd->d ) );
+    return( wd->walk.c( ICH2CH( imp_cueh ), wd->d ) );
 }
 
 walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    cue_handle          *ch = walloca( DIPHandleSize( HK_CUE, false ) );
+    cue_handle          *cueh = walloca( MaxHdlSize[HK_CUE] );
 
     ih = MH2IH( mh );
     if( ih == NULL )
@@ -775,9 +774,8 @@ walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
     glue.walk.c = cw;
     glue.d = d;
     glue.lc = NULL;
-    ch->ii = MH_IMAGE( mh );
-    return( ih->dip->WalkFileList( IH2IIH( ih ), MH2IMH( mh ),
-                CueGlue, CH2ICH( ch ), &glue ) );
+    cueh->ii = MH_IMAGE( mh );
+    return( ih->dip->WalkFileList( IH2IIH( ih ), MH2IMH( mh ), CueGlue, CH2ICH( cueh ), &glue ) );
 }
 
 /*
@@ -906,7 +904,7 @@ dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size
 {
     if( base_th->ap & AP_FULL )
         return( DS_ERR | DS_TOO_MANY_POINTERS );
-    memcpy( ptr_th, base_th, DIPHandleSize( HK_TYPE, false ) );
+    memcpy( ptr_th, base_th, MaxHdlSize[HK_TYPE] );
     ptr_th->ap <<= AP_SHIFT;
     if( tm == TM_NEAR ) {
         if( size == 2 ) {
@@ -929,7 +927,7 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
     image_handle        *ih;
 
     if( th->ap != 0 ) {
-        memcpy( base_th, th, DIPHandleSize( HK_TYPE, false ) );
+        memcpy( base_th, th, MaxHdlSize[HK_TYPE] );
         base_th->ap >>= AP_SHIFT;
         return( DS_OK );
     }
@@ -948,7 +946,7 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
 }
 
 dip_status DIPTypeAddRef( type_handle *th )
-/**************************************/
+/*****************************************/
 {
     image_handle        *ih;
 
@@ -963,7 +961,7 @@ dip_status DIPTypeAddRef( type_handle *th )
 }
 
 dip_status DIPTypeRelease( type_handle *th )
-/**************************************/
+/******************************************/
 {
     image_handle        *ih;
 
@@ -1040,20 +1038,20 @@ dip_status DIPTypePtrAddrSpace( type_handle *th, location_context *lc, address *
     return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
-dip_status DIPTypeThunkAdjust( type_handle *oth, type_handle *mth,
+dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
                         location_context *lc, address *a )
 {
     image_handle        *ih;
 
-    if( oth->ap != 0 || mth->ap != 0 )
+    if( th1->ap != 0 || th2->ap != 0 )
         return( DS_FAIL );
-    if( oth->ii != mth->ii )
+    if( th1->ii != th2->ii )
         return( DS_FAIL );
-    ih = II2IH( oth->ii );
+    ih = II2IH( th1->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
     return( ih->dip->TypeThunkAdjust( IH2IIH( ih ),
-        TH2ITH( oth ), TH2ITH( mth ), lc, a ) );
+        TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
 }
 
 int DIPTypeCmp( type_handle *th1, type_handle *th2 )
@@ -1063,8 +1061,10 @@ int DIPTypeCmp( type_handle *th1, type_handle *th2 )
     ih = II2IH( th1->ii );
     if( ih == NULL )
         return( 0 );
-    if( th1->ii != th2->ii )
-        return( th1->ii - th2->ii );
+    if( th1->ii < th2->ii )
+        return( -1 );
+    if( th1->ii > th2->ii )
+        return( 1 );
     return( ih->dip->TypeCmp( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ) ) );
 }
 
@@ -1192,8 +1192,10 @@ int DIPSymCmp( sym_handle *sh1, sym_handle *sh2 )
     ih = II2IH( sh1->ii );
     if( ih == NULL )
         return( 0 );
-    if( sh1->ii != sh2->ii )
-        return( sh1->ii - sh2->ii );
+    if( sh1->ii < sh2->ii )
+        return( -1 );
+    if( sh1->ii > sh2->ii )
+        return( 1 );
     return( ih->dip->SymCmp( IH2IIH( ih ), SH2ISH( sh1 ), SH2ISH( sh2 ) ) );
 }
 
@@ -1245,75 +1247,75 @@ dip_status DIPSymFreeAll( void )
 /*
  * Source Cue Information
  */
-mod_handle DIPCueMod( cue_handle *ch )
+mod_handle DIPCueMod( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
-    return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( ch ) ) ) );
+    ih = II2IH( cueh->ii );
+    return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( cueh ) ) ) );
 }
 
-size_t DIPCueFile( cue_handle *ch, char *buff, size_t buff_size )
+size_t DIPCueFile( cue_handle *cueh, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( ch ), buff, buff_size ) );
+    return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( cueh ), buff, buff_size ) );
 }
 
-cue_fileid DIPCueFileId( cue_handle *ch )
+cue_fileid DIPCueFileId( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
-    return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( ch ) ) );
+    ih = II2IH( cueh->ii );
+    return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-dip_status DIPCueAdjust( cue_handle *ch, int adj, cue_handle *ach )
+dip_status DIPCueAdjust( cue_handle *src_cueh, int adj, cue_handle *dst_cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( src_cueh->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    ach->ii = ch->ii;
-    return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( ch ), adj, CH2ICH( ach ) ) );
+    dst_cueh->ii = src_cueh->ii;
+    return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( src_cueh ), adj, CH2ICH( dst_cueh ) ) );
 }
 
-unsigned long DIPCueLine( cue_handle *ch )
+unsigned long DIPCueLine( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-unsigned DIPCueColumn( cue_handle *ch )
+unsigned DIPCueColumn( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-address DIPCueAddr( cue_handle *ch )
+address DIPCueAddr( cue_handle *cueh )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch->ii );
+    ih = II2IH( cueh->ii );
     if( ih == NULL )
         return( NilAddr );
-    return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
 search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
-                        unsigned column, cue_handle *ch )
+                        unsigned column, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1324,11 +1326,11 @@ search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
         DIPCli( Status )( DS_ERR | DS_BAD_PARM );
         return( SR_FAIL );
     }
-    ch->ii = ih->ii;
-    return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( ch ) ) );
+    cueh->ii = ih->ii;
+    return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( cueh ) ) );
 }
 
-search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *ch )
+search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1340,20 +1342,22 @@ search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *ch )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( SR_NONE );
-    ch->ii = ih->ii;
-    return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( ch ) ) );
+    cueh->ii = ih->ii;
+    return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( cueh ) ) );
 }
 
-int DIPCueCmp( cue_handle *ch1, cue_handle *ch2 )
+int DIPCueCmp( cue_handle *cueh1, cue_handle *cueh2 )
 {
     image_handle        *ih;
 
-    ih = II2IH( ch1->ii );
+    ih = II2IH( cueh1->ii );
     if( ih == NULL )
         return( 0 );
-    if( ch1->ii != ch2->ii )
-        return( ch1->ii - ch2->ii );
-    return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( ch1 ), CH2ICH( ch2 ) ) );
+    if( cueh1->ii < cueh2->ii )
+        return( -1 );
+    if( cueh1->ii > cueh2->ii )
+        return( 1 );
+    return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( cueh1 ), CH2ICH( cueh2 ) ) );
 }
 
 /*

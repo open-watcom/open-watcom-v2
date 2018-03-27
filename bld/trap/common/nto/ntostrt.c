@@ -41,7 +41,7 @@ char                        **dbg_environ;  /* pointer to parent's environment t
 static const trap_callbacks *Client;
 static const trap_requests  ImpInterface = { TrapInit, TrapRequest, TrapFini } ;
 
-const trap_requests *TrapLoad( trap_callbacks *client )
+const trap_requests *TrapLoad( const trap_callbacks *client )
 {
     Client = client;
     if( Client->len <= offsetof(trap_callbacks,signal) ) {

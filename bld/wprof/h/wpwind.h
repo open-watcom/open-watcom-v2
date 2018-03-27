@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern gui_ord  WPGetClientHeight( a_window * wnd );
-extern gui_ord  WPGetClientWidth( a_window * wnd );
-extern void     WPAdjustRowHeight( a_window * wnd, bool initial_set );
-extern void     WPSetRowHeight( a_window * wnd );
+extern gui_ord  WPGetClientHeight( a_window wnd );
+extern gui_ord  WPGetClientWidth( a_window wnd );
+extern void     WPAdjustRowHeight( a_window wnd, bool initial_set );
+extern void     WPSetRowHeight( a_window wnd );
 extern gui_ord  WPPixelTruncWidth( gui_ord width );
-extern gui_ord  WPPixelWidth( a_window * wnd );
+extern gui_ord  WPPixelWidth( a_window wnd );

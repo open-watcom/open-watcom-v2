@@ -33,7 +33,7 @@
 #ifndef RESTBAR_INCLUDED
 #define RESTBAR_INCLUDED
 
-extern bool ResWriteToolBarHeader( WResFileID fid, uint_16 item1, uint_16 item2, uint_16 cnt );
-extern bool ResWriteToolBarItems( WResFileID fid, uint_16 *items, unsigned cnt );
+extern bool ResWriteToolBarHeader( FILE *fp, uint_16 item1, uint_16 item2, uint_16 cnt );
+extern bool ResWriteToolBarItems( FILE *fp, uint_16 *items, unsigned cnt );
 
 #endif

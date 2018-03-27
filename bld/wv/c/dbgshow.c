@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,11 +51,6 @@
 #include "dbgset.h"
 
 
-extern void             ConfigDisp( void );
-extern void             ConfigFont( void );
-extern void             ConfigPaint( void );
-
-
 /*
  * GetCmdEntry -- get an entry from a command table
  */
@@ -87,7 +83,8 @@ void ConfigCmdList( char *cmds, int indent )
 
     indent += INDENT_AMOUNT;
 again:
-    while( *cmds == ' ' ) ++cmds;
+    while( *cmds == ' ' )
+        ++cmds;
     p = TxtBuff;
     for( i = 0; i < indent; ++i ) {
         *p++ = ' ';
@@ -111,7 +108,8 @@ again:
                 }
                 *p = NULLCHAR;
             }
-            if( p != TxtBuff ) DUIDlgTxt( TxtBuff );
+            if( p != TxtBuff )
+                DUIDlgTxt( TxtBuff );
             p = TxtBuff;
             for( i = 0; i < indent-INDENT_AMOUNT; ++i ) {
                 *p++ = ' ';
@@ -207,7 +205,7 @@ typedef struct {
     bool        config; /* should info be dumped for save config call */
 } show_rtn;
 
-static void ConfigTypes( void )
+OVL_EXTERN void ConfigTypes( void )
 {
 }
 
@@ -241,7 +239,7 @@ OVL_EXTERN void ShowAll( void )
     unsigned    i;
 
     DUIDlgTxt( GetCmdName( CMD_CONFIGFILE ) );
-    for( i = 0; i < sizeof( ShowJmpTab ) / sizeof( ShowJmpTab[0] ); ++i ) {
+    for( i = 0; i < ArraySize( ShowJmpTab ); ++i ) {
         if( ShowJmpTab[i].config ) {
             ShowJmpTab[i].rtn();
         }

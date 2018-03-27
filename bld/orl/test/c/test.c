@@ -396,14 +396,14 @@ static orl_return PrintSymTable( orl_sec_handle section )
     return( ORL_OKAY );
 }
 
-static void *objRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *objRead( FILE *fp, size_t len )
+/******************************************/
 {
     buff_list   ptr;
 
     ptr = TRMemAlloc( sizeof( *buffList ) + len - 1 );
     ptr->next = buffList;
-    if( read( ORL_FID2PH( fid ), ptr->buff, len ) != len ) {
+    if( fread( ptr->buff, 1, len, fp ) != len ) {
         TRMemFree( ptr );
         return( NULL );
     }
@@ -411,10 +411,10 @@ static void *objRead( orl_file_id fid, size_t len )
     return( ptr->buff );
 }
 
-static long objSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static int objSeek( FILE *fp, long pos, int where )
+/*************************************************/
 {
-    return( lseek( ORL_FID2PH( fid ), pos, where ) );
+    return( fseek( fp, pos, where ) );
 }
 
 static void freeBuffList( void )
@@ -438,7 +438,7 @@ int main( int argc, char *argv[] )
     orl_machine_type            o_machine_type;
     orl_file_type               o_file_type;
     orl_file_format             o_file_format;
-    int                         file;
+    FILE                        *fp;
     int                         c;
     int                         sep;
     char                        *secs[MAX_SECS];
@@ -494,8 +494,8 @@ int main( int argc, char *argv[] )
         exit(1);
     }
 
-    file = open( argv[optind], O_BINARY | O_RDONLY );
-    if( file == -1 ) {
+    fp = fopen( argv[optind], "rb" );
+    if( fp == NULL ) {
         printf( "Error opening file.\n" );
         return( 2 );
     }
@@ -505,7 +505,7 @@ int main( int argc, char *argv[] )
         printf( "Got NULL orl_handle.\n" );
         return( 2 );
     }
-    o_file_format = ORLFileIdentify( o_handle, ORL_PH2FID( file ) );
+    o_file_format = ORLFileIdentify( o_handle, fp );
     if( o_file_format == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( 1 );
@@ -525,7 +525,7 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_file_handle = ORLFileInit( o_handle, ORL_PH2FID( file ), o_file_format );
+    o_file_handle = ORLFileInit( o_handle, fp, o_file_format );
     if( o_file_handle == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( 2 );
@@ -643,7 +643,7 @@ int main( int argc, char *argv[] )
         printf( "Error calling ORLFileFini.\n" );
         return( 2 );
     }
-    if( close( file ) == -1 ) {
+    if( fclose( fp ) ) {
         printf( "Error closing file.\n" );
         return( 2 );
     }

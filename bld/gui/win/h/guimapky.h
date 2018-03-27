@@ -32,5 +32,10 @@
 
 #include "guikey.h"
 
+#ifdef __OS2_PM__
+#define IS_VKEY_F10( wp )   (((USHORT)((PQMSG)wp)->mp1 & KC_VIRTUALKEY) && (USHORT)((ULONG)((PQMSG)wp)->mp2 >> 16) == VK_F10)
+#define IS_KEY_UP( wp )     ((USHORT)((PQMSG)wp)->mp1 & KC_KEYUP)
+#endif
+
 extern bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan );
 extern WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );

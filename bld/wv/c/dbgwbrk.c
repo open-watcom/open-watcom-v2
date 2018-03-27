@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,10 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
+#include "menudef.h"
 
 
-extern char             *AddrLineNum( address *addr, char *buff );
+#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
 enum {
 #ifdef OPENER_GADGET
@@ -59,14 +61,12 @@ typedef struct break_window {
     gui_ord     source_indent;
     bool        toggled_break   : 1;
 } break_window;
-#define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 
+extern char             *AddrLineNum( address *addr, char *buff );
 
-#include "menudef.h"
 static gui_menu_struct BrkMenu[] = {
     #include "menubrk.h"
 };
-
 
 static brkp     *BrkGetBP( int row )
 {
@@ -84,7 +84,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -101,8 +101,8 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             WndMenuEnableAll( wnd );
             WndMenuEnable( wnd, MENU_BREAK_ENABLE, !bp->status.b.active );
             WndMenuEnable( wnd, MENU_BREAK_DISABLE, bp->status.b.active );
-            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->th ) );
-            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->th ) );
+            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
+            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
         } else {
             WndMenuGrayAll( wnd );
         }
@@ -133,7 +133,7 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static void     BrkModify( a_window *wnd, int row, int piece )
+OVL_EXTERN void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -163,10 +163,10 @@ static void     BrkModify( a_window *wnd, int row, int piece )
     }
 }
 
-static int BrkNumRows( a_window *wnd )
+OVL_EXTERN wnd_row BrkNumRows( a_window wnd )
 {
     brkp        *bp;
-    int         count;
+    wnd_row     count;
 
     /* unused parameters */ (void)wnd;
 
@@ -177,8 +177,7 @@ static int BrkNumRows( a_window *wnd )
     return( count );
 }
 
-static  bool    BrkGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     brkp                *bp;
     break_window        *wndbreak;
@@ -229,7 +228,7 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static void     BrkInit( a_window *wnd )
+static void     BrkInit( a_window wnd )
 {
     gui_ord             length, max;
     break_window        *wndbreak;
@@ -260,21 +259,21 @@ static void     BrkInit( a_window *wnd )
         return;
     }
     WndNoSelect( wnd );
-    WndRepaint( wnd );
+    WndSetRepaint( wnd );
 }
 
 
-static void     BrkRefresh( a_window *wnd )
+OVL_EXTERN void     BrkRefresh( a_window wnd )
 {
     brkp        *bp;
     int         row;
 
-    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) {
+    if( UpdateFlags & BrkInfo.flags & ~(UP_OPEN_CHANGE | UP_MEM_CHANGE) ) {
         BrkInit( wnd );
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
-            if( !IS_BP_EXECUTE( bp->th ) ) {
+            if( !IS_BP_EXECUTE( bp->mth ) ) {
                 WndPieceDirty( wnd, row, PIECE_SOURCE );
             }
             ++row;
@@ -299,7 +298,7 @@ static void     BrkRefresh( a_window *wnd )
 }
 
 
-static bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
@@ -315,12 +314,13 @@ static bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         return( true );
     case GUI_DESTROY:
         WndFree( wndbreak );
+        return( true );
     }
     return( false );
 }
 
 wnd_info BrkInfo = {
-    BrkEventProc,
+    BrkWndEventProc,
     BrkRefresh,
     BrkGetLine,
     BrkMenuItem,
@@ -332,14 +332,13 @@ wnd_info BrkInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_MEM_CHANGE+UP_RADIX_CHANGE+
-    UP_SYM_CHANGE+UP_BREAK_CHANGE+UP_OPEN_CHANGE,
+    UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE,
     DefPopUp( BrkMenu )
 };
 
-extern a_window *WndBrkOpen( void )
+a_window WndBrkOpen( void )
 {
-    a_window            *wnd;
+    a_window            wnd;
     break_window        *brkw;
 
     brkw = WndMustAlloc( sizeof( *brkw ) );

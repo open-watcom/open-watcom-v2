@@ -36,17 +36,21 @@
 #include "uivedit.h"
 #include "uiedit.h"
 
-static int isdelim( char ch )
+
+static bool isdelim( int ch )
 {
-    if( uicharlen( ch ) == 2 ) return( false );
-    if( isalnum( ch ) ) return( 0 );
-    if( ch == '_' ) return( 0 );
-    return( 1 );
+    if( uicharlen( ch ) == 2 )
+        return( false );
+    if( isalnum( ch ) )
+        return( false );
+    if( ch == '_' )
+        return( false );
+    return( true );
 }
 
 
- static void clear_buffer( VBUFFER *buffer )
-/******************************************/
+static void clear_buffer( VBUFFER *buffer )
+/*****************************************/
 {
     buffer->index = 0;
     memset( buffer->content, ' ', buffer->length );
@@ -54,45 +58,45 @@ static int isdelim( char ch )
 }
 
 
-static int intern secondbyte( char *buff, char *which )
+static bool secondbyte( char *buff, char *which )
 {
     while( buff < which ) {
-        buff += uicharlen( *buff );
+        buff += uicharlen( UCHAR_VALUE( *buff ) );
     }
     return( buff > which );
 }
 
-EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
-/***************************************************/
+ui_event UIAPI uieditevent( ui_event ui_ev, VBUFFER *buffer )
+/***********************************************************/
 {
-    register    char                    *bptr;
-    register    EVENT                   new;
-    register    bool                    allblank;
-    register    bool                    cleared;    /* buffer auto-cleared */
-    register    bool                    right;      /* cursor moved right */
-    register    bool                    ignore_uicharlen; /* ignore dbcs lead character when moving right */
+    char            *bptr;
+    ui_event        new;
+    bool            allblank;
+    bool            cleared;    /* buffer auto-cleared */
+    bool            right;      /* cursor moved right */
+    bool            ignore_uicharlen; /* ignore dbcs lead character when moving right */
 
     new = EV_NO_EVENT;
     cleared = false;
     right = false;
     ignore_uicharlen = false;
-    if( ev == EV_INSERT ) {
+    if( ui_ev == EV_INSERT ) {
         buffer->insert = buffer->insert ? false : true ;
-    } else if( ( ev == EV_CURSOR_LEFT ) || ( ev == EV_RUB_OUT ) ) {
+    } else if( ( ui_ev == EV_CURSOR_LEFT ) || ( ui_ev == EV_RUB_OUT ) ) {
         if( buffer->index > 0 ) {
             --(buffer->index);
             if( secondbyte( buffer->content, buffer->content + buffer->index ) ) {
                 --(buffer->index);
             }
         } else {
-            if( ev == EV_CURSOR_LEFT ) {
+            if( ui_ev == EV_CURSOR_LEFT ) {
                 new = EV_BUMP_LEFT;
             } else {
                 new = EV_JOIN_LEFT;
             }
-            ev = EV_NO_EVENT;           /* this cancels the rub out */
+            ui_ev = EV_NO_EVENT;           /* this cancels the rub out */
         }
-    } else if( iseditchar( ev ) ) {
+    } else if( iseditchar( ui_ev ) ) {
         if( buffer->index < buffer->length ) {
             if( buffer->index == 0 && buffer->auto_clear ) {
                 cleared = true;
@@ -101,76 +105,73 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             if( buffer->insert ) {
                 bptr = buffer->content + buffer->length - 1;
                 if( *bptr == ' ' ) {
-                    while( bptr >= buffer->content + buffer->index ) {
-                        *bptr = *(bptr-1);
-                        --bptr;
+                    for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
+                        *bptr = *(bptr - 1);
                     }
-                    *(buffer->content + buffer->index) = (char) ev;
+                    buffer->content[buffer->index] = CHAR_VALUE( ui_ev );
                     right = true;
                     buffer->dirty = true;
                 }
             } else {
                 bptr = (buffer->content + buffer->index);
-                if( uicharlen( *bptr ) == 2 ) {
-                    if( uicharlen( (char)ev ) == 1 ) {
-                        *bptr = (char) ev;
-                        ++bptr;
-                        while( bptr < buffer->content + buffer->length - 1 ) {
-                            *bptr = *(bptr+1);
-                            ++bptr;
+                if( uicharlen( UCHAR_VALUE( *bptr ) ) == 2 ) {
+                    if( uicharlen( UCHAR_VALUE( ui_ev ) ) == 1 ) {
+                        *bptr = CHAR_VALUE( ui_ev );
+                        for( bptr++; bptr < buffer->content + buffer->length - 1; bptr++ ) {
+                            *bptr = *(bptr + 1);
                         }
                         *bptr = ' ';
                     } else {
-                        *bptr = (char) ev;
+                        *bptr = CHAR_VALUE( ui_ev );
                     }
                 } else {
-                    if( uicharlen( (char)ev ) == 2 ) {
+                    if( uicharlen( UCHAR_VALUE( ui_ev ) ) == 2 ) {
                         bptr = buffer->content + buffer->length - 1;
                         if( *bptr == ' ' ) {
-                            while( bptr >= buffer->content + buffer->index ) {
-                                *bptr = *(bptr-1);
-                                --bptr;
+                            for( ; bptr >= buffer->content + buffer->index; bptr-- ) {
+                                *bptr = *(bptr - 1);
                             }
-                            *(buffer->content + buffer->index) = (char) ev;
-                            *(buffer->content + buffer->index + 1) = 'a';
+                            buffer->content[buffer->index] = CHAR_VALUE( ui_ev );
+                            buffer->content[buffer->index + 1] = 'a';
                         }
                         ignore_uicharlen = true;
                     } else {
-                        *bptr = (char) ev;
+                        *bptr = CHAR_VALUE( ui_ev );
                     }
                 }
                 right = true;
                 buffer->dirty = true;
             }
         }
-    } else if( ev == EV_HOME ) {
+    } else if( ui_ev == EV_HOME ) {
         buffer->index = 0;
-    } else if( ev == EV_END ) {
-        bptr = buffer->content + buffer->length;
-        while( bptr > buffer->content ) {
-            if( *(bptr-1) != ' ' ) {
+    } else if( ui_ev == EV_END ) {
+        for( bptr = buffer->content + buffer->length; bptr > buffer->content; bptr-- ) {
+            if( *(bptr - 1) != ' ' ) {
                 break;
             }
-            --bptr;
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_CURSOR_LEFT ) {
-        bptr = buffer->content + buffer->index;
-        while( bptr > buffer->content ) {
+    } else if( ui_ev == EV_CTRL_CURSOR_LEFT ) {
+        for( bptr = buffer->content + buffer->index; bptr > buffer->content; ) {
             --bptr;
-            if( secondbyte( buffer->content, bptr ) ) --bptr;
-            if( !isdelim( *bptr ) )break;
+            if( secondbyte( buffer->content, bptr ) )
+                --bptr;
+            if( !isdelim( UCHAR_VALUE( *bptr ) ) ) {
+                break;
+            }
         }
-        while( bptr > buffer->content ) {
+        for( ; bptr > buffer->content; ) {
             --bptr;
-            if( secondbyte( buffer->content, bptr ) ) --bptr;
-            if( isdelim( *bptr ) ) {
+            if( secondbyte( buffer->content, bptr ) )
+                --bptr;
+            if( isdelim( UCHAR_VALUE( *bptr ) ) ) {
                 ++bptr;
                 break;
             }
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_CURSOR_RIGHT ) {
+    } else if( ui_ev == EV_CTRL_CURSOR_RIGHT ) {
 
         char                    *eptr;   /* end pointer */
         char                    *tptr;   /* blank tail */
@@ -178,32 +179,32 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
         bptr = buffer->content + buffer->index;
         eptr = buffer->content + buffer->length;
         for( ;; ) {
-            if( bptr >= eptr ) break;
-            if( isdelim( *bptr ) ) break;
-            bptr += uicharlen( *bptr );
+            if( bptr >= eptr )
+                break;
+            if( isdelim( UCHAR_VALUE( *bptr ) ) )
+                break;
+            bptr += uicharlen( UCHAR_VALUE( *bptr ) );
         }
-        for( tptr = bptr; tptr < eptr ; ) {
+        for( tptr = bptr; tptr < eptr; ) {
             if( *tptr == ' ' ) {
                 /* do nothing */
-            } else if( isdelim( *tptr ) ) {
+            } else if( isdelim( UCHAR_VALUE( *tptr ) ) ) {
                 bptr = tptr + 1;       /* position after last non-blank */
             } else {
                 bptr = tptr;           /* position on next word */
                 break;
             }
-            tptr += uicharlen( *tptr );
+            tptr += uicharlen( UCHAR_VALUE( *tptr ) );
         }
         buffer->index = bptr - buffer->content;
-    } else if( ev == EV_CTRL_HOME ) {
+    } else if( ui_ev == EV_CTRL_HOME ) {
         clear_buffer( buffer );
-    } else if( ev == EV_CTRL_END ) {
-        memset( buffer->content + buffer->index,
-                        ' ', buffer->length - buffer->index );
+    } else if( ui_ev == EV_CTRL_END ) {
+        memset( buffer->content + buffer->index, ' ', buffer->length - buffer->index );
         buffer->dirty = true;
-    } else if( ev == EV_CURSOR_RIGHT ) {
+    } else if( ui_ev == EV_CURSOR_RIGHT ) {
         allblank = true;
-        bptr = buffer->content + buffer->index;
-        while( bptr < buffer->content + buffer->length ) {
+        for( bptr = buffer->content + buffer->index; bptr < buffer->content + buffer->length; ) {
             if( *bptr != ' ' ) {
                 allblank = false;
                 break;
@@ -211,7 +212,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             if( ignore_uicharlen ) {
                 ++bptr;
             } else {
-                bptr += uicharlen( *bptr );
+                bptr += uicharlen( UCHAR_VALUE( *bptr ) );
             }
         }
         if( allblank ) {
@@ -220,31 +221,29 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             right = true;
         }
     } else {
-        new = ev;
+        new = ui_ev;
     }
     /* cursor right is handled here so that when characters are typed the
        event can be changed to a cursor right to move the cursor over */
     if( right ) {
         if( buffer->index < buffer->length ) {
             bptr = buffer->content + buffer->index;
-            buffer->index += uicharlen( *bptr );
+            buffer->index += uicharlen( UCHAR_VALUE( *bptr ) );
         }
         if( buffer->index == buffer->length ) {
             new = EV_BUMP_RIGHT;      /* 891206 */
         }
-    } else if( ( ev == EV_DELETE ) || ( ev == EV_RUB_OUT ) ) {
+    } else if( ( ui_ev == EV_DELETE ) || ( ui_ev == EV_RUB_OUT ) ) {
         int     delsize;
 
         allblank = true;
         if( buffer->index < buffer->length ) {
-            bptr = buffer->content + buffer->index;
-            delsize = uicharlen( *bptr );
-            while( bptr < buffer->content + buffer->length - delsize ) {
+            delsize = uicharlen( UCHAR_VALUE( buffer->content[buffer->index] ) );
+            for( bptr = buffer->content + buffer->index; bptr < buffer->content + buffer->length - delsize; bptr++ ) {
                 if( *bptr != ' ' ) {
                     allblank = false;
                 }
-                *bptr = *(bptr+delsize);
-                ++bptr;
+                *bptr = *(bptr + delsize);
             }
             *bptr = ' ';
             if( delsize == 2 ) {
@@ -252,13 +251,13 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
             }
             buffer->dirty = true;
         }
-        if( allblank && ( ev == EV_DELETE ) ) {
+        if( allblank && ( ui_ev == EV_DELETE ) ) {
             new = EV_JOIN_RIGHT;
         } else {
             new = EV_NO_EVENT;
         }
     }
-    if( (new == EV_NO_EVENT  ||  new == EV_BUFFER_CLEAR) && ev != EV_INSERT ) {
+    if( (new == EV_NO_EVENT || new == EV_BUFFER_CLEAR) && ui_ev != EV_INSERT ) {
         buffer->auto_clear = false;
     }
     if( cleared ) {

@@ -33,8 +33,6 @@
 #ifndef RCMEMORY_INCLUDED
 #define RCMEMORY_INCLUDED
 
-#include <stddef.h>
-
 void RcMemInit( void );
 void RcMemShutdown( void );
 void * RcMemMalloc( size_t size );

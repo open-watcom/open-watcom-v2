@@ -32,6 +32,7 @@
 
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
+
 extern void GUIGetScreenArea( SAREA *area );
 
 extern bool GUIScreenToScaleRect( SAREA *area, gui_rect *rect );
@@ -41,4 +42,5 @@ extern bool GUIScaleToScreenRect( gui_rect *rect, SAREA *area );
 extern bool GUIScaleToScreenRectR( gui_rect *rect, SAREA *area );
 
 extern int GUIMulDiv( int a, int b, int c );
+
 #endif // _GUIXSCAL_H_

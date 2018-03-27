@@ -73,9 +73,9 @@ RcStatus InitOS2ResTable( int *err_code )
     return( RS_READ_ERROR );
 }
 
-RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_code )
+RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
 {
-    /* unused parameters */ (void)fid; (void)restab; (void)err_code;
+    /* unused parameters */ (void)fp; (void)restab; (void)err_code;
 
     return( RS_READ_ERROR );
 }

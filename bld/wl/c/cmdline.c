@@ -248,6 +248,8 @@ void DoCmdFile( char *fname )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
 #elif defined( __NT__ )
 #define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#elif defined( __RDOS__ )
+#define LAST_CHANCE ( MK_RDOS | MK_PE | MK_DOS_EXE)
 #else
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
 #endif
@@ -657,14 +659,12 @@ void SetFormat( void )
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
-        size_t  len = strlen( Name );
-
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
             Extension = E_HEX;       //   has been specified
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
-        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED );
+        fname = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );

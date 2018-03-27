@@ -32,11 +32,9 @@
 
 #include "stdio.h"
 
-#define ArraySize( x ) ( sizeof( x ) / sizeof( *x ) )
+
 #define DLG_ROW( n ) (n)
 #define DLG_COL( n ) (n)
-
-
 
 #define BUTTON_GAP( c, o, w, i ) ( ( (c)-(o)*(w) - 2*(i) ) / ( (o)-1 ) )
 #define BUTTON_POS( num, of, cols, bwidth ) \
@@ -156,7 +154,7 @@ void PrintDlg(char *sym, gui_ctl_id id, char*name,gui_control_info*ctl,int num_c
             ctl[i].symbol = "0";
         }
     }
-    fprintf( dlgfile, "\n%s DIALOG %d, %d, %d, %d\n", sym, COL_SCALE, ROW_SCALE, COL_SCALE*(cols+2), ROW_SCALE*(rows+1) );
+    fprintf( dlgfile, "\n%s DIALOG %d, %d, %d, %d\n", sym, COL_SCALE, ROW_SCALE, COL_SCALE * ( cols + 2 ), ROW_SCALE * ( rows + 1 ) );
     fprintf( dlgfile, "STYLE DS_MODALFRAME | WS_CAPTION | WS_POPUP | WS_VISIBLE | WS_SYSMENU\n" );
     fprintf( dlgfile, "CAPTION \"%s\"\n", name );
 //    fprintf( dlgfile, "FONT 8, \"Helv\"\n" );

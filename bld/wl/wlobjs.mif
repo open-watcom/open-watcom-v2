@@ -133,6 +133,7 @@ wlink_objs_bsd   = $(_subdir_)posixio.obj
 wlink_objs_nt    = $(_subdir_)ntio.obj
 wlink_objs_os2   = $(_subdir_)ntio.obj
 wlink_objs_zdos  = $(_subdir_)zdosio.obj
+wlink_objs_rdos  = $(_subdir_)rdosio.obj
 
 !ifdef no_orl
 # do not link against ORL

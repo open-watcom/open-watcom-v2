@@ -68,7 +68,7 @@
     #include <netinet/in.h>
     #include <netinet/tcp.h>
     #include <netdb.h>
-  #if defined( __OS2__ ) 
+  #if defined( __OS2__ )
     #if defined( _M_I86 )
         #include <netlib.h>
     #else
@@ -106,6 +106,11 @@
 #ifdef LIST_INTERFACES
 // TODO: need rework to POSIX if_nameindex in <net/if.h>
 #include "ifi.h"
+#endif
+#if defined( GUISERVER )
+    #include <wwindows.h>
+    #include "servio.h"
+    #include "options.h"
 #endif
 
 #if defined( __WATCOMC__ )
@@ -175,7 +180,7 @@ static int recv( int handle, void *buf, int size, int timeout )
     while( !RdosIsTcpConnectionClosed( handle ) && count == 0 ) {
         count = RdosReadTcpConnection( handle, buf, size );
     }
-    return( count );     
+    return( count );
 }
 
 static int send( int handle, const void *buf, int size, int timeout )
@@ -358,7 +363,7 @@ bool RemoteConnect( void )
     timeout.tv_sec = 0;
     timeout.tv_usec = 10000;
     rc = select( control_socket + 1, &ready, 0, 0, &timeout );
-    if( IS_RET_OK( rc ) ) {
+    if( IS_RET_OK( rc ) && rc > 0 ) {
         data_socket = accept( control_socket, &dummy, &dummy_len );
         if( IS_VALID_SOCKET( data_socket ) ) {
             nodelay();
@@ -400,9 +405,9 @@ void RemoteDisco( void )
 const char *RemoteLink( const char *parms, bool server )
 {
     unsigned short      port;
-#ifndef __RDOS__    
+#ifndef __RDOS__
     struct servent      *sp;
-#endif    
+#endif
 
 #ifdef SERVER
   #if !defined( __RDOS__ )
@@ -421,7 +426,7 @@ const char *RemoteLink( const char *parms, bool server )
         }
     }
   #endif
- 
+
     port = 0;
   #ifdef __RDOS__
     while( isdigit( *parms ) ) {
@@ -454,6 +459,12 @@ const char *RemoteLink( const char *parms, bool server )
     if( !IS_VALID_SOCKET( control_socket ) ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
+   #ifdef GUISERVER
+    if( *ServParms == '\0' ) {
+        sprintf( ServParms, "%u", ntohs( port ) );
+    }
+   #endif
+
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -472,8 +483,8 @@ const char *RemoteLink( const char *parms, bool server )
     _DBG_NET((buff));
     _DBG_NET(("\r\n"));
 
-#ifdef LIST_INTERFACES
-// TODO: need rework to POSIX if_nameindex in <net/if.h>
+   #ifdef LIST_INTERFACES
+    // TODO: need rework to POSIX if_nameindex in <net/if.h>
     /* Find and print TCP/IP interface addresses, ignore aliases */
     {
         struct ifi_info     *ifi, *ifihead;
@@ -492,12 +503,12 @@ const char *RemoteLink( const char *parms, bool server )
         }
         free_ifi_info( ifihead );
     }
-#endif
+   #endif
   #endif
 
     _DBG_NET(("Start accepting connections\r\n"));
     /* Start accepting connections */
-  #ifndef __RDOS__    
+  #ifndef __RDOS__
     listen( control_socket, 5 );
   #endif
 #else

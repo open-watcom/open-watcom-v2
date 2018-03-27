@@ -34,13 +34,13 @@
 #ifdef __WATCOMC__
     #include <conio.h>
 #endif
+#ifdef __CURSES__
+    #include <curses.h>
+#endif
 #include "win.h"
 #include "dosx.h"
 #include "vibios.h"
 #include "pragmas.h"
-#ifdef __CURSES__
-    #include "curses.h"
-#endif
 
 static int  saveRow, saveCol;
 int         PageCnt = 0;

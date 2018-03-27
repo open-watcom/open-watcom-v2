@@ -46,14 +46,17 @@
 
 gui_window      *GUICurrWnd = NULL;
 
-static void DeleteChild( gui_window * parent, gui_window * child )
+static void DeleteChild( gui_window *parent, gui_window *child )
 {
-    gui_window * curr;
-    gui_window * prev;
+    gui_window  *curr;
+    gui_window  *prev;
 
     prev = NULL;
-    for( curr = parent->child; curr != NULL; prev = curr, curr=curr->sibling ) {
-        if( curr == child ) break;
+    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
+        if( curr == child ) {
+            break;
+        }
+        prev = curr;
     }
     if( curr != NULL ) {
         if( prev != NULL ) {
@@ -96,7 +99,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     for( curr_child = wnd->child; curr_child != NULL; curr_child = next_child ) {
         next_child = curr_child->sibling;
         if( curr_child != NULL ) {
-            GUIEVENTWND( curr_child, GUI_DESTROY, NULL );
+            GUIEVENT( curr_child, GUI_DESTROY, NULL );
             GUIFreeWindowMemory( curr_child, true, dialog );
         }
     }
@@ -131,7 +134,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
 static void DoDestroy( gui_window * wnd, bool dialog )
 {
     if( wnd != NULL ) {
-        GUIEVENTWND( wnd, GUI_DESTROY, NULL );
+        GUIEVENT( wnd, GUI_DESTROY, NULL );
         GUIFreeWindowMemory( wnd, false, dialog );
     } else {
         while( (wnd = GUIGetFront()) != NULL ) {
@@ -148,7 +151,7 @@ void GUIDestroyDialog( gui_window * wnd )
 bool GUICloseWnd( gui_window *wnd )
 {
     if( wnd != NULL ) {
-        if( GUIEVENTWND( wnd, GUI_CLOSE, NULL ) ) {
+        if( GUIEVENT( wnd, GUI_CLOSE, NULL ) ) {
             GUIDestroyWnd( wnd );
             return( true );
         }

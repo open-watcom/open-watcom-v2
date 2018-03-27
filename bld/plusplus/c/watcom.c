@@ -68,7 +68,7 @@ int CBanner( void )
 #endif
         ConsoleMessage( banner2 );
         ++count;
-        ConsoleMessage( banner2a( "1989" ) );
+        ConsoleMessage( banner2a( 1989 ) );
         ++count;
         ConsoleMessage( banner3 );
         ++count;

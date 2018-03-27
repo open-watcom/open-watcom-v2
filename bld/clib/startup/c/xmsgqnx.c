@@ -32,8 +32,8 @@
 #include "variety.h"
 #include <unistd.h>
 #include "exitwmsg.h"
+#include "owqnx.h"
 
-_WCNORETURN extern void     __qnx_exit( int );
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 {

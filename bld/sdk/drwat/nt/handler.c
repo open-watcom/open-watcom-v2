@@ -31,7 +31,6 @@
 
 
 #include <windows.h>
-#include <stdio.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "mem.h"
@@ -154,7 +153,7 @@ static DWORD procException( DEBUG_EVENT *dbinfo ) {
             faultid = STR_INV_READ_FROM_X;
         }
         LBPrintf( MainLBox, faultid, EVENT_LEN, "",
-            dbinfo->u.Exception.ExceptionRecord.ExceptionInformation[1] );
+                    dbinfo->u.Exception.ExceptionRecord.ExceptionInformation[1] );
     }
     Alert();
     return( action );
@@ -171,7 +170,7 @@ static void procCreateProcess( DEBUG_EVENT *dbinfo ) {
     GetProcName( dbinfo->dwProcessId, tmpname );
     name = MemAlloc( strlen( tmpname ) + 5 );
     sprintf( name, "%s.exe", tmpname );
-    AddModule( dbinfo->dwProcessId, DIG_H2FID( dbinfo->u.CreateProcessInfo.hFile ),
+    AddModule( dbinfo->dwProcessId, WH2FP( dbinfo->u.CreateProcessInfo.hFile ),
                 (DWORD)dbinfo->u.CreateProcessInfo.lpBaseOfImage, name );
     LBStrPrintf( MainLBox, headerBuf );
     LBPrintf( MainLBox, STR_PROC_CREATE_FMT_STR,
@@ -195,11 +194,9 @@ DWORD DebugEventHandler( DEBUG_EVENT *dbinfo ) {
         ret = procException( dbinfo );
         break;
     case CREATE_THREAD_DEBUG_EVENT:
-        AddThread( dbinfo->dwProcessId, dbinfo->dwThreadId,
-                   dbinfo->u.CreateThread.hThread );
+        AddThread( dbinfo->dwProcessId, dbinfo->dwThreadId, dbinfo->u.CreateThread.hThread );
         makeHeader( STR_THREAD_CREATED, dbinfo );
-        LBPrintf( MainLBox, STR_THRD_CREATE_FMT_STR, headerBuf,
-                dbinfo->u.CreateThread.lpStartAddress );
+        LBPrintf( MainLBox, STR_THRD_CREATE_FMT_STR, headerBuf, dbinfo->u.CreateThread.lpStartAddress );
         break;
     case CREATE_PROCESS_DEBUG_EVENT:
         procCreateProcess( dbinfo );
@@ -207,38 +204,32 @@ DWORD DebugEventHandler( DEBUG_EVENT *dbinfo ) {
     case EXIT_THREAD_DEBUG_EVENT:
         RemoveThread( dbinfo->dwProcessId, dbinfo->dwThreadId );
         makeHeader( STR_THREAD_ENDED, dbinfo );
-        LBPrintf( MainLBox, STR_THRD_ENDED_FMT_STR, headerBuf,
-                   dbinfo->u.ExitThread.dwExitCode );
+        LBPrintf( MainLBox, STR_THRD_ENDED_FMT_STR, headerBuf, dbinfo->u.ExitThread.dwExitCode );
         break;
     case EXIT_PROCESS_DEBUG_EVENT:
         RemoveProcess( dbinfo->dwProcessId );
         makeHeader( STR_PROCESS_ENDED, dbinfo );
-        LBPrintf( MainLBox, STR_PROC_ENDED_FMT_STR, headerBuf,
-                    dbinfo->u.ExitProcess.dwExitCode );
+        LBPrintf( MainLBox, STR_PROC_ENDED_FMT_STR, headerBuf, dbinfo->u.ExitProcess.dwExitCode );
         break;
     case LOAD_DLL_DEBUG_EVENT:
         makeHeader( STR_DLL_LOADED, dbinfo);
-        name = GetModuleName( DIG_H2FID( dbinfo->u.LoadDll.hFile ) );
-        AddModule( dbinfo->dwProcessId, DIG_H2FID( dbinfo->u.LoadDll.hFile ),
-                   (DWORD)dbinfo->u.LoadDll.lpBaseOfDll, name );
-        if( name == NULL ) name = "???";
+        name = GetModuleName( WH2FP( dbinfo->u.LoadDll.hFile ) );
+        AddModule( dbinfo->dwProcessId, WH2FP( dbinfo->u.LoadDll.hFile ), (DWORD)dbinfo->u.LoadDll.lpBaseOfDll, name );
+        if( name == NULL )
+            name = "???";
         LBStrPrintf( MainLBox, "%s", headerBuf );
-        LBPrintf( MainLBox, STR_DLL_LOAD_FMT_STR,
-                    EVENT_LEN, "", name, dbinfo->u.LoadDll.lpBaseOfDll );
+        LBPrintf( MainLBox, STR_DLL_LOAD_FMT_STR, EVENT_LEN, "", name, dbinfo->u.LoadDll.lpBaseOfDll );
         break;
     case UNLOAD_DLL_DEBUG_EVENT:
         makeHeader( STR_DLL_UNLOADED, dbinfo );
         pnode = FindProcess( dbinfo->dwProcessId );
         mnode = ModuleFromAddr( pnode, dbinfo->u.UnloadDll.lpBaseOfDll );
         if( mnode == NULL || mnode->name == NULL ) {
-            LBPrintf( MainLBox, STR_DLL_UNLOAD_FMT_STR1, headerBuf,
-                    dbinfo->u.UnloadDll.lpBaseOfDll );
+            LBPrintf( MainLBox, STR_DLL_UNLOAD_FMT_STR1, headerBuf, dbinfo->u.UnloadDll.lpBaseOfDll );
         } else {
-            LBPrintf( MainLBox, STR_DLL_UNLOAD_FMT_STR2, headerBuf,
-                      mnode->name );
+            LBPrintf( MainLBox, STR_DLL_UNLOAD_FMT_STR2, headerBuf, mnode->name );
         }
-        RemoveModule( dbinfo->dwProcessId,
-                      (DWORD)dbinfo->u.UnloadDll.lpBaseOfDll );
+        RemoveModule( dbinfo->dwProcessId, (DWORD)dbinfo->u.UnloadDll.lpBaseOfDll );
         break;
     case OUTPUT_DEBUG_STRING_EVENT:
         procOutputDebugString( dbinfo );

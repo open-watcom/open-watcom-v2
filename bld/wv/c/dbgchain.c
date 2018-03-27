@@ -84,9 +84,11 @@ static bool ReAllocChain( traceback *curr, int new_size )
     call_chain  *chain;
 
     chain = curr->chain;
-    if( new_size >= (UINT_MAX / sizeof(call_chain)) ) return( false );
+    if( new_size >= (UINT_MAX / sizeof(call_chain)) )
+        return( false );
     new_chain = DbgAlloc( new_size * sizeof(call_chain) );
-    if( new_chain == NULL ) return( false );
+    if( new_chain == NULL )
+        return( false );
     memset( new_chain, 0, new_size*sizeof( call_chain ) );
     memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
     DbgFree( chain );
@@ -132,14 +134,14 @@ static bool EarlyOut( cached_traceback *tb, address execution, address frame )
 }
 
 
-static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
+OVL_EXTERN bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 {
     address     prev_ins;
     address     execution;
     call_chain  *chain;
     traceback   *curr;
     mad_disasm_data     *dd;
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     cached_traceback *tb = _tb;
 
     execution = entry->lc.execution;
@@ -156,15 +158,16 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
             execution.mach.offset -= MADDisasmInsSize( dd );
         }
     }
-    if( EarlyOut( tb, execution, entry->lc.frame ) ) return( false );
+    if( EarlyOut( tb, execution, entry->lc.frame ) )
+        return( false );
     chain = &curr->chain[curr->current_depth];
     chain->lc = entry->lc;
     chain->lc.execution = execution;
     chain->open = false;
     chain->source_line = NULL;
     chain->symbol = NULL;
-    if( DeAliasAddrCue( NO_MOD, execution, ch ) != SR_NONE ) {
-        chain->source_line = CopySourceLine( ch );
+    if( DeAliasAddrCue( NO_MOD, execution, cueh ) != SR_NONE ) {
+        chain->source_line = CopySourceLine( cueh );
     }
     CnvNearestAddr( chain->lc.execution, TxtBuff, TXT_LEN );
     DbgFree( chain->symbol );

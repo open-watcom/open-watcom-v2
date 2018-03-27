@@ -40,11 +40,11 @@ void vvscroll( VSCREEN *win, SAREA use, int scroll )
 
     area.width = use.width;
     area.col = use.col;
-    if( scroll > 0  &&  scroll < use.height ) {
+    if( scroll > 0 && scroll < use.height ) {
         area.height = use.height - scroll;
         area.row = use.row + scroll;
         newrow = use.row;
-    } else if( scroll < 0  &&  -scroll < use.height ) {
+    } else if( scroll < 0 && -scroll < use.height ) {
         area.height = use.height + scroll;
         area.row = use.row;
         newrow = use.row - scroll;

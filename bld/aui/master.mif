@@ -27,8 +27,6 @@ inc_dirs = -I. -I"../h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
 .c: .;../c;$(posix_dir)/misc
 .h: .;../h
 
-extra_cpp_flags_nov = -DNLM
-
 extra_c_flags = -s
 
 extra_c_flags_i86 = -zc

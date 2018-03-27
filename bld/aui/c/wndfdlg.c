@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <stdlib.h>
 #include <string.h>
 #include "wnddlg.h"
@@ -37,13 +37,13 @@
 #include "clibext.h"
 
 
-extern int DlgGetFileName( open_file_name *ofn )
+int DlgGetFileName( open_file_name *ofn )
 {
     int         rc;
-    a_window    *wnd;
+    a_window    wnd;
 
     wnd = WndFindActive();
-    rc = GUIGetFileName( DlgGetParent(), ofn );
+    rc = GUIGetFileName( DlgOpenGetGUIParent(), ofn );
     if( wnd != NULL )
         WndToFront( wnd );
     return( rc );

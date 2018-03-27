@@ -43,36 +43,37 @@ void GUIBringToFront( gui_window * wnd )
     bool        change;
     gui_window  *old_curr_wnd;
 
-    change = GUICurrWnd != wnd;
-    if( wnd != NULL ) {
-        if( ( GUICurrWnd != NULL ) && change ) {
-            GUIEVENTWND( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
-            old_curr_wnd = GUICurrWnd;
-            GUICurrWnd = wnd;
-            old_curr_wnd->flags |= NON_CLIENT_INVALID;
-            GUIWndUpdate( old_curr_wnd );
-        } else {
-            GUICurrWnd = wnd;
+    if( wnd == NULL )
+        return;
+
+    change = ( GUICurrWnd != wnd );
+    if( ( GUICurrWnd != NULL ) && change ) {
+        GUIEVENT( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
+        old_curr_wnd = GUICurrWnd;
+        GUICurrWnd = wnd;
+        old_curr_wnd->flags |= NON_CLIENT_INVALID;
+        GUIWndUpdate( old_curr_wnd );
+    } else {
+        GUICurrWnd = wnd;
+    }
+    if( change ) {
+        if( GUIEVENT( GUICurrWnd, GUI_NOW_ACTIVE, NULL ) ) {
+            return;
         }
-        if( change ) {
-            if( GUIEVENTWND( GUICurrWnd, GUI_NOW_ACTIVE, NULL ) ) {
-                return;
-            }
-            GUIFrontOfList( GUICurrWnd );
+        GUIFrontOfList( GUICurrWnd );
+    }
+    if( GUIIsOpen( GUICurrWnd ) ) {
+        uivsetactive( &GUICurrWnd->screen );
+    }
+    for( curr = GUICurrWnd->child; curr != NULL; curr = curr->sibling ) {
+        if( GUIIsOpen( curr ) ) {
+            uivsetactive( &curr->screen );
         }
-        if( GUIIsOpen( GUICurrWnd ) ) {
-            uivsetactive( &GUICurrWnd->screen );
-        }
-        for( curr = GUICurrWnd->child; curr != NULL; curr = curr->sibling ) {
-            if( GUIIsOpen( curr ) ) {
-                uivsetactive( &curr->screen );
-            }
-        }
-        if( change ) {
-            GUICurrWnd->flags |= NON_CLIENT_INVALID;
-            GUIMDIBroughtToFront( GUICurrWnd );
-            GUIWndUpdate( GUICurrWnd );
-        }
+    }
+    if( change ) {
+        GUICurrWnd->flags |= NON_CLIENT_INVALID;
+        GUIMDIBroughtToFront( GUICurrWnd );
+        GUIWndUpdate( GUICurrWnd );
     }
 }
 

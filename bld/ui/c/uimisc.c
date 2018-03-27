@@ -34,74 +34,8 @@
 #include "uidef.h"
 #include "uimenu.h"
 
-SAREA *uisetscreenarea( SAREA *area, bool all, bool framed )
-/**********************************************************/
-{
-    unsigned    height;
-
-    area->col = framed;
-    area->width = UIData->width - 2*framed;
-    area->row = framed;
-    area->height = UIData->height - 2*framed;
-    if( !all ) {
-        height = uimenuheight();
-        area->row += height;
-        area->height -= height;
-    }
-    return( area );
-}
-
-
-SAREA *uisetarea( SAREA *area, VSCREEN *s )
-/*****************************************/
-{
-    area->row = 0;
-    area->col = 0;
-    area->height = s->area.height;
-    area->width = s->area.width;
-    return( area );
-}
-
-static void window_pos( ORD *start, ORD *size, int slack, int pos )
-/*****************************************************************/
-{
-    ORD         bump;
-
-    if( slack > 0 ) {
-        if( pos == 0 ) {
-            bump = slack / 2;
-        } else if( pos > 0 ) {
-            if( --pos > slack ) {
-                pos = slack;
-            }
-            bump = pos;
-        } else {
-            pos = -pos;
-            if( --pos > slack ) {
-                pos = slack;
-            }
-            bump = slack - pos;
-        }
-        *start += bump;
-        *size -= slack;
-    }
-}
-
-void uiposition( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
-/***************************************************************************/
-{
-    uisetscreenarea( a, overmenus, true );
-    if( h > 0 ) {
-        window_pos( &a->row, &a->height, a->height - h, rpos );
-    }
-    if( w > 0 ) {
-        window_pos( &a->col, &a->width, a->width - w, cpos );
-    }
-}
-
-
-VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
-/***************************************************************/
+VSCREEN intern *uiopen( SAREA *area, const char *title, screen_flags flags )
+/**************************************************************************/
 {
     VSCREEN             *s;
 
@@ -120,6 +54,7 @@ VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
     if( title != NULL ) {
         unsigned    len;
         char        *str;
+
         len = strlen( title );
         str = uimalloc( len + 1 );
         memcpy( str, title, len );
@@ -131,9 +66,8 @@ VSCREEN *uiopen( SAREA *area, const char *title, unsigned flags )
     return( s );
 }
 
-
-void uiclose( VSCREEN *s )
-/************************/
+void intern uiclose( VSCREEN *s )
+/*******************************/
 {
     uivclose( s );
     if( s->dynamic_title )
@@ -141,23 +75,19 @@ void uiclose( VSCREEN *s )
     uifree( s );
 }
 
-void uicntrtext( VSCREEN        *vs,
-                 SAREA          *area,
-                 ATTR           attr,
-                 unsigned       length,
-                 const char     *text )
-/*************************************/
+void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const char *text )
+/******************************************************************************************/
 {
     ORD                 col;
 
-    if( length > 0 ) {
+    if( field_len > 0 ) {
         col = area->col;
-        if( length < area->width ) {
-            col += ( area->width - length ) / 2;
+        if( field_len < area->width ) {
+            col += ( area->width - field_len ) / 2;
         } else {
-            length = area->width;
+            field_len = area->width;
         }
-        uivtextput( vs, area->row, col, attr, text, length );
+        uivtextput( vs, area->row, col, attr, text, field_len );
     }
 }
 

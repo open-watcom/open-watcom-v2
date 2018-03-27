@@ -29,8 +29,12 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
+
+
+#define STAT_LEN        80
+char WndStatusString[STAT_LEN + 1] = { '\0' };
 
 void WndCreateStatusWindow( gui_colour_set *colour )
 {
@@ -47,22 +51,19 @@ bool WndHaveStatusWindow( void )
 
 void WndCloseStatusWindow( void )
 {
-    if( WndHaveStatusWindow() ) GUICloseStatusWindow( WndMain->gui );
+    if( WndHaveStatusWindow() )
+        GUICloseStatusWindow( WndMain->gui );
     WndSetWndMax();
 }
-
-#define STAT_LEN        80
-char WndStatusString[STAT_LEN+1];
 
 bool WndStatusText( const char *text )
 {
     bool        rc;
 
-    if( strcmp( text, WndStatusString ) == 0 ) return( true );
-    if( WndStatusString != NULL ) {
-        strncpy( WndStatusString, text, STAT_LEN );
-        WndStatusString[STAT_LEN] = '\0';
-    }
+    if( strcmp( text, WndStatusString ) == 0 )
+        return( true );
+    strncpy( WndStatusString, text, STAT_LEN );
+    WndStatusString[STAT_LEN] = '\0';
     rc = WndInternalStatusText( WndStatusString );
     return( rc );
 }
@@ -83,8 +84,10 @@ void WndResetStatusText( void )
 
 bool WndInternalStatusText( const char *text )
 {
-    if( text == NULL ) return( false );
-    if( !WndHaveStatusWindow() ) return( false );
+    if( text == NULL )
+        return( false );
+    if( !WndHaveStatusWindow() )
+        return( false );
     GUIDrawStatusText( WndMain->gui, text );
     if( !GUIIsGUI() && !WndDoingRefresh ) {
         WndForceRefresh();

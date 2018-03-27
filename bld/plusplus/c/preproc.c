@@ -346,6 +346,7 @@ const char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT T
     switch( CurToken ) {
     case T_BAD_CHAR:
         Buffer[1] = '\0';
+        /* fall through */
     case T_ID:
     case T_STRING:
     case T_CONSTANT:

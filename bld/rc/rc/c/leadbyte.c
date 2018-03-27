@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #ifdef __NT__
     #include <windows.h>
     #include "bool.h"

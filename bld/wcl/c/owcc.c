@@ -113,8 +113,8 @@
 
 #define MAX_CC_OPTS 256
 
-#define IS_ASM(x)   (fname_cmp( x, ASM_EXT ) == 0 || stricmp( x, ASMS_EXT ) == 0) 
-#define IS_FOR(x)   (fname_cmp( x, ".f" ) == 0 || stricmp( x, ".for" ) == 0 || fname_cmp( x, ".ftn" ) == 0) 
+#define IS_ASM(x)   (fname_cmp( x, ASM_EXT ) == 0 || stricmp( x, ASMS_EXT ) == 0)
+#define IS_FOR(x)   (fname_cmp( x, ".f" ) == 0 || stricmp( x, ".for" ) == 0 || fname_cmp( x, ".ftn" ) == 0)
 #define IS_LIB(x)   (HasFileExtension( x, LIB_EXT ) || HasFileExtension( x, LIB_EXT_SECONDARY ))
 
 typedef enum {
@@ -323,7 +323,7 @@ static void print_banner( void )
     puts( banner1w( "C/C++ " _TARGET_ " Compiler Driver Program", _WCL_VERSION_ ) );
 #endif
     puts( banner2 );
-    puts( banner2a( "1988" ) );
+    puts( banner2a( 1988 ) );
     puts( banner3 );
     puts( banner3a );
     done = 1;
@@ -1266,12 +1266,12 @@ static int tool_exec( tool_type utl, const char *fn, const char **options )
     tool = FindToolGetPath( utl );
 
     pass_argv[0] = tool->name;
-    pass_argc = 1; 
+    pass_argc = 1;
 
     while( options != NULL && options[pass_argc - 1] != NULL && pass_argc < MAX_CC_OPTS ) {
         pass_argv[pass_argc] = options[pass_argc - 1];
         pass_argc++;
-    } 
+    }
 
     if( utl == TYPE_DIS ) {
         pass_argv[pass_argc++] = "-s";

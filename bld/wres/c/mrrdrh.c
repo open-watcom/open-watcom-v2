@@ -35,8 +35,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
-/**************************************************************/
+M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
+/********************************************************/
 {
     M32ResResourceHeader    *newhead;
     bool                    error;
@@ -55,45 +55,45 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
         }
     }
     if( !error ) {
-        error = ResReadPadDWord( fid );
+        error = ResReadPadDWord( fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->head16->Size = tmp32;
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->Size = tmp32;
     }
     if( !error ) {
-        newhead->head16->Type = ResRead32NameOrOrdinal( fid );
+        newhead->head16->Type = ResRead32NameOrOrdinal( fp );
         error = (newhead->head16->Type == NULL );
     }
     if( !error ) {
-        newhead->head16->Name = ResRead32NameOrOrdinal( fid );
+        newhead->head16->Name = ResRead32NameOrOrdinal( fp );
         error = (newhead->head16->Name == NULL );
     }
     if( !error ) {
-        error = ResReadPadDWord( fid );
+        error = ResReadPadDWord( fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->head16->DataVersion = tmp32;
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fid );
+        error = ResReadUint16( &tmp16, fp );
         newhead->head16->MemoryFlags = tmp16;
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fid );
+        error = ResReadUint16( &tmp16, fp );
         newhead->head16->LanguageId = tmp16;
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->head16->Version = tmp32;
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->head16->Characteristics = tmp32;
     }
     if( error && newhead != NULL ) {
@@ -107,8 +107,8 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
     return( newhead );
 }
 
-MResResourceHeader *MResReadResourceHeader( WResFileID fid )
-/**********************************************************/
+MResResourceHeader *MResReadResourceHeader( FILE *fp )
+/****************************************************/
 {
     MResResourceHeader     *newhead;
     bool                    error;
@@ -123,19 +123,19 @@ MResResourceHeader *MResReadResourceHeader( WResFileID fid )
     }
 
     if( !error ) {
-        newhead->Type = ResReadNameOrOrdinal( fid );
+        newhead->Type = ResReadNameOrOrdinal( fp );
         error = (newhead->Type == NULL);
     }
     if( !error ) {
-        newhead->Name = ResReadNameOrOrdinal( fid );
+        newhead->Name = ResReadNameOrOrdinal( fp );
         error = (newhead->Name == NULL);
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fid );
+        error = ResReadUint16( &tmp16, fp );
         newhead->MemoryFlags = tmp16;
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fid );
+        error = ResReadUint32( &tmp32, fp );
         newhead->Size = tmp32;
     }
 

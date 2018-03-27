@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,16 +42,18 @@
 bool uiconfig( char *fn, char **envvars )
 /***************************************/
 {
-    char        buffer[ _MAX_PATH + ATTR_LAST * 4 ];
+    char        buffer[_MAX_PATH + ATTR_LAST * 4];
     void        *config;
     int         i;
     char        *colour;
-    int         slen;
-    int         blen;
+    unsigned    slen;
+    unsigned    blen;
     char        *s;
     ATTR        attr;
 
-    _unused( envvars );
+#if defined( __NETWARE__ )
+    /* unused parameters */ (void)envvars;
+#endif
 
     UIData->no_snow = true;
     uiattrs();
@@ -64,40 +67,41 @@ bool uiconfig( char *fn, char **envvars )
         colour = "ATTR_COL";
         slen = 8;
     }
-    #if !defined( __NETWARE__ )
-        for( ; envvars != NULL  &&  *envvars != NULL; ++envvars ) {
-            _searchenv( fn, *envvars, buffer );
-            if( buffer[0] != '\0' ) {
-                break;
-            }
+#if !defined( __NETWARE__ )
+    for( ; envvars != NULL && *envvars != NULL; ++envvars ) {
+        _searchenv( fn, *envvars, buffer );
+        if( buffer[0] != '\0' ) {
+            break;
         }
-        fn = buffer;
-    #endif
+    }
+    fn = buffer;
+#endif
     if( fn != NULL && fn[0] != '\0' ) {
         config = fopen( fn, "r" );
         if( config != NULL ) {
             while( fgets( buffer, _MAX_PATH+ATTR_LAST*4, config ) != NULL ) {
                 blen = strlen( buffer );
                 if( blen > slen && memicmp( colour, buffer, slen ) == 0 ) {
-                    s = &buffer[ slen ];
-                    for( i = 0 ; i < ATTR_LAST && *s == ' '; ++i ) {
+                    s = &buffer[slen];
+                    for( i = 0; i < ATTR_LAST && *s == ' '; ++i ) {
                         attr = 0;
-                        while( *s == ' ' ) ++s;
+                        while( *s == ' ' )
+                            ++s;
                         while( *s != '\0' && *s != '\n' && *s != ' ' ) {
-                            attr = 10*attr + (*s-'0');
+                            attr = 10 * attr + (*s - '0');
                             ++s;
                         }
-                        if( attr != 0 ){
+                        if( attr != 0 ) {
                             UIData->attrs[i] = attr;
                         }
                     }
                 } else if( blen > 9 && memicmp( "SNOWCHECK", buffer, 9 ) == 0 ) {
-                    UIData->no_snow = ( buffer[ 10 ] == '0' );
+                    UIData->no_snow = ( buffer[10] == '0' );
                 } else if( blen > 11 && memicmp( "MOUSE_SPEED", buffer, 11 ) == 0 ) {
-                    long speed = strtol( &buffer[ 12 ], NULL, 10 );
+                    long speed = strtol( &buffer[12], NULL, 10 );
                     uimousespeed( ( speed < 0 ) ? 0 : (unsigned)speed );
                 } else if( blen > 8 && memicmp( "GRAPHICS", buffer, 8 ) == 0 ) {
-                    UIData->no_graphics = ( buffer[ 9 ] == '0' );
+                    UIData->no_graphics = ( buffer[9] == '0' );
                 }
             }
             fclose( config );

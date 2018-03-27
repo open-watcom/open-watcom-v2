@@ -58,13 +58,13 @@ void ResFreeStringTableBlock( StringTableBlock * currblock )
     }
 } /* ResFreeStringTableBlock */
 
-bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, WResFileID fid )
-/********************************************************************************************/
+bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, FILE *fp )
+/**************************************************************************************/
 {
     int     stringid;
 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
-        if( WResWriteWResIDNameUni( currblock->String[stringid], use_unicode, fid ) ) {
+        if( WResWriteWResIDNameUni( currblock->String[stringid], use_unicode, fp ) ) {
             return( true );
         }
     }

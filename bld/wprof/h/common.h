@@ -30,6 +30,7 @@
 
 
 #ifndef COMMON_H
+#define COMMON_H    1
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -39,11 +40,9 @@
 #define STATIC          static
 #define MAX_LONG_DIGITS (16)
 
-typedef int             file_handle;
-
 #define NULLCHAR        0
 
-typedef void *          pointer;
+#define ArraySize( x )  (sizeof( x ) / sizeof( (x)[0] ))
 
 #if defined(__UNIX__)
 #define ALLFILES        "All Files\0*\0"
@@ -62,5 +61,6 @@ typedef void *          pointer;
 #define _FREE       free
 #endif
 
-#define COMMON_H    1
+typedef void *          pointer;
+
 #endif

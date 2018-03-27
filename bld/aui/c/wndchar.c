@@ -30,40 +30,41 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <string.h>
 #include <ctype.h>
 
-static  char            *IdChars = WND_ALNUM_STR "_$";
 
-extern  char            *WndSetIDChars( a_window *wnd, char *id_chars )
+static const char   *IdChars = "@_$";
+
+const char  *WndSetIDChars( a_window wnd, const char *id_chars )
 {
-    char        *old;
+    const char      *old;
 
     old = wnd->select_chars;
     wnd->select_chars = id_chars;
     return( old );
 }
 
-extern  bool            WndIDChar( a_window *wnd, char ch )
+bool    WndIDChar( a_window wnd, int ch )
 {
-    char        *p;
+    const char      *p;
 
     p = wnd->select_chars;
     if( p == NULL ) {
         p = IdChars;
     }
     for( ; *p != '\0'; p++ ) {
-        if( *p == WND_ALNUM_CHAR ) {
-            if( p[1] != WND_ALNUM_CHAR ) {
+        if( *p == '@' ) {
+            if( p[1] != '@' ) {
                 if( isalnum( ch ) ) {
                     return( true );
                 }
             } else {
-                ++p;
+                p++;
             }
         }
-        if( ch == *p ) {
+        if( ch == UCHAR_VALUE( *p ) ) {
             return( true );
         }
     }
@@ -71,7 +72,7 @@ extern  bool            WndIDChar( a_window *wnd, char ch )
 }
 
 
-extern  bool            WndKeyChar( char ch )
+bool    WndKeyIsPrintChar( gui_key key )
 {
-    return( isprint( ch ) != 0 );
+    return( GUI_KEY_IS_ASCII( key ) && ( isprint( UCHAR_VALUE( key ) ) != 0 ) );
 }

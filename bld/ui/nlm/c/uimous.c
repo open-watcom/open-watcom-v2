@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Netware mouse input handling.
 *
 ****************************************************************************/
 
@@ -35,7 +34,6 @@
 #include "uidef.h"
 #include "uimouse.h"
 
-extern bool     MouseInstalled;
 
 void intern mousespawnstart( void )
 /*********************************/
@@ -47,13 +45,10 @@ void intern mousespawnend( void )
 {
 }
 
-void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow, MOUSEORD *pcol, unsigned long *ptime )
-/*****************************************************************************************************/
+void intern checkmouse( MOUSESTAT *pstatus, MOUSEORD *prow, MOUSEORD *pcol, MOUSETIME *ptime )
+/********************************************************************************************/
 {
-    pstatus = pstatus;
-    prow = prow;
-    pcol = pcol;
-    ptime = ptime;
+    /* unused parameters */ (void)pstatus; (void)prow; (void)pcol; (void)ptime;
 }
 
 void uimousespeed( unsigned speed )
@@ -62,10 +57,11 @@ void uimousespeed( unsigned speed )
     /* unused parameters */ (void)speed;
 }
 
-int UIAPI initmouse( int install )
-/********************************/
+bool UIAPI initmouse( init_mode install )
+/***************************************/
 {
-    install = install;
+    /* unused parameters */ (void)install;
+
     MouseInstalled = false;
     return( false );
 }
@@ -77,7 +73,5 @@ void UIAPI finimouse( void )
 
 void UIAPI uisetmouseposn( ORD row, ORD col )
 {
-    row = row;
-    col = col;
+    /* unused parameters */ (void)row; (void)col;
 }
-

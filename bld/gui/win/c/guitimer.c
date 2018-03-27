@@ -53,7 +53,7 @@ VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime
         GUITimer();
     } else {
         timer.id = idEvent;
-        GUIEVENTWND( wnd, GUI_TIMER_EVENT, &timer );
+        GUIEVENT( wnd, GUI_TIMER_EVENT, &timer );
     }
 }
 

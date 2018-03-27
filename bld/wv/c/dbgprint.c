@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,14 +68,10 @@
 #define FMT2RADIX(x)   (((x)<0)?(mad_radix)-(x):(mad_radix)(x))
 
 extern void             GraphicDisplay( void );
-extern bool             DlgNewWithSym( const char *title, char *, unsigned);
+extern bool             DlgNewWithSym( const char *title, char *, size_t );
 
 // Brian!!!! NYI NYI NYI
 #define _SetMaxPrec( x )
-
-
-extern stack_entry      *ExprSP;
-
 
 static char             *OutPtr;
 static char             *OutBuff;
@@ -87,7 +84,7 @@ static const char PrintOps[] = { "Program\0Window\0" };
 typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
 
 
-extern void StartPrintBuff( char *buff, unsigned len )
+void StartPrintBuff( char *buff, unsigned len )
 {
     OutPtr = buff;
     OutBuff = buff;
@@ -125,7 +122,7 @@ static void PrtChar( unsigned ch )
 }
 
 
-extern void EndPrintBuff( void )
+void EndPrintBuff( void )
 {
     PrtChar( NULLCHAR );
 }
@@ -220,7 +217,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
     mad_type_info       mti;
     size_t              buff_len;
     item_mach           item;
-    mad_type_info       host;
+    mad_type_info       host_mti;
     mad_type_handle     mth;
 
     if( sign_type == NUM_CHECK ) {
@@ -278,8 +275,8 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
             mth = MADTypeDefault( MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, &ExprSP->v.addr );
         }
         MADTypeInfo( mth, &mti );
-        MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
-        MADTypeConvert( &host, &ExprSP->v.addr, &mti, &item, 0 );
+        MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host_mti );
+        MADTypeConvert( &host_mti, &ExprSP->v.addr, &mti, &item, 0 );
         buff_len = sizeof( buff );
         MADTypeToString( FMT2RADIX( radixfmt ), &mti, &item, ptr, &buff_len );
         ptr += buff_len;
@@ -515,8 +512,8 @@ static void PrintCharBlock( void )
      *  we adjust things so we can display them with a hint that the string is longer than can be displayed
      */
 
-    if(len + 2 > BUFLEN){   /* or UTIL_LEN/TXT_LEN? */
-        len = BUFLEN - 7;   /* 'string'....<NUL> */
+    if( len + 2 > BUFLEN ) {    /* or UTIL_LEN/TXT_LEN? */
+        len = BUFLEN - 7;       /* 'string'....<NUL> */
         overflow = 1;
     }
 
@@ -545,16 +542,18 @@ static void PrintCharBlock( void )
         break;
     }
     PrtChar( '\'' );
-    if( overflow && len == 0 ){
+    if( overflow && len == 0 ) {
         PrtStr( " ...",  4 );
     }
 }
 
 static void GetExpr( void )
 {
-    if( !First && CurrToken == T_COMMA ) Scan();
+    if( !First && CurrToken == T_COMMA )
+        Scan();
     NormalExpr();
-    if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE ) ReqEOC();
+    if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE )
+        ReqEOC();
     First = false;
 }
 
@@ -676,7 +675,7 @@ typedef struct {
 } print_fld;
 
 
-static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
+OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, void *_d )
 {
     print_fld   *d = _d;
     char        *name;
@@ -687,7 +686,9 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, voi
             /* not the first time through */
             PrtChar( ',' );
             /* print a space if not at start of a line */
-            if( OutPtr != OutBuff ) PrtChar( ' ' );
+            if( OutPtr != OutBuff ) {
+                PrtChar( ' ' );
+            }
         }
         d->first_time = false;
         DupStack();
@@ -732,7 +733,9 @@ static void PrintArray( void )
             /* not the first time through */
             PrtChar( ',' );
             /* print a space if not at start of a line */
-            if( OutPtr != OutBuff ) PrtChar( ' ' );
+            if( OutPtr != OutBuff ) {
+                PrtChar( ' ' );
+            }
         }
         DupStack();
         StartSubscript();

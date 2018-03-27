@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2015 Open Watcom contributors. 
+*    Portions Copyright (c) 2015 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined(__NT__)
+#if defined( __NT__ ) || defined( __RDOS__ )
 extern void GUIStartTimer( gui_window *wnd, gui_timer_id id, int msec );
 extern void GUIStopTimer( gui_window *wnd, gui_timer_id id );
 #endif

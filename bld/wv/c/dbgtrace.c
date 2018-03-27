@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +58,7 @@
 #include "addarith.h"
 #include "dbgevent.h"
 #include "dbgset.h"
+#include "dbgsetfn.h"
 
 
 enum {
@@ -219,7 +221,9 @@ mad_trace_how TraceHow( bool force_into )
     }
     if( DbgTmpBrk.status.b.active ) {
         /* for recursion detection */
-        if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+        if( !TraceState.unwinding ) {
+            TraceState.watch_stack = GetRegSP();
+        }
     }
     TraceState.how = how;
     return( how );
@@ -232,7 +236,8 @@ bool TraceSimulate( void )
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     ms = MADTraceSimulate( TraceState.td, TraceState.dd,
         &DbgRegs->mr, &DbgRegs->mr );
-    if( ms != MS_OK ) return( false );
+    if( ms != MS_OK )
+        return( false );
     WriteDbgRegs();
     return( true );
 }
@@ -243,7 +248,8 @@ bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
     case MTRH_SIMULATE:
     case MTRH_STEP:
     case MTRH_STEPBREAK:
-        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK ) return( false );
+        if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK )
+            return( false );
         if( MADDisasmMemRefWalk( TraceState.dd, wk, &DbgRegs->mr, d ) == WR_CONTINUE ) {
             return( true );
         }
@@ -287,8 +293,8 @@ bool SourceStep( void )
 
 static bool CheckTraceSourceStop( bool *have_source )
 {
-    DIPHDL( cue, line );
-    DIPHDL( cue, oldline );
+    DIPHDL( cue, cueh_line );
+    DIPHDL( cue, cueh_oldline );
     DIPHDL( sym, sym );
     address                     line_addr;
     search_result               sr;
@@ -307,17 +313,18 @@ static bool CheckTraceSourceStop( bool *have_source )
         return( false );
     }
     viewhndl = NULL;
-    *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, line ) != SR_NONE;
+    *have_source = DeAliasAddrCue( NO_MOD, TraceState.curraddr, cueh_line ) != SR_NONE;
     if( *have_source && _IsOn( SW_CHECK_SOURCE_EXISTS ) &&
-        ( viewhndl = OpenSrcFile( line ) ) != NULL ) {
-        if( viewhndl != NULL ) FDoneSource( viewhndl );
-        line_addr = DIPCueAddr( line );
+        ( viewhndl = OpenSrcFile( cueh_line ) ) != NULL ) {
+        if( viewhndl != NULL )
+            FDoneSource( viewhndl );
+        line_addr = DIPCueAddr( cueh_line );
         if( AddrComp( TraceState.oldaddr, line_addr ) != 0 ) {
-            if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, oldline ) != SR_NONE
-                && DIPCueLine( line ) == DIPCueLine( oldline )
-                && DIPCueColumn( line ) == DIPCueColumn( oldline )
-                && DIPCueFileId( line ) == DIPCueFileId( oldline )
-                && DIPCueMod( line ) == DIPCueMod( oldline ) ) {
+            if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, cueh_oldline ) != SR_NONE
+                && DIPCueLine( cueh_line ) == DIPCueLine( cueh_oldline )
+                && DIPCueColumn( cueh_line ) == DIPCueColumn( cueh_oldline )
+                && DIPCueFileId( cueh_line ) == DIPCueFileId( cueh_oldline )
+                && DIPCueMod( cueh_line ) == DIPCueMod( cueh_oldline ) ) {
                 /*
                     We've moved to a different starting address for the
                     cue, but all the source information is the same, so
@@ -346,8 +353,11 @@ static bool CheckTraceSourceStop( bool *have_source )
         return( false );
     }
     if( TraceState.req_level == MIX ) {
-        if( sr == SR_NONE ) return( true );
-        if( !IsSupportRoutine( sym ) ) return( true );
+        if( sr == SR_NONE )
+            return( true );
+        if( !IsSupportRoutine( sym ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -356,7 +366,7 @@ bool CheckForDLLThunk( void )
 /***************************/
 {
     address     next_ins;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     switch( TraceState.prev_control & MDC_TYPE_MASK ) {
     case MDC_CALL:
@@ -374,7 +384,7 @@ bool CheckForDLLThunk( void )
     ReadDbgRegs();      /* only SP & IP are valid on entry */
     switch( MADDisasmInsNext( TraceState.dd, &DbgRegs->mr, &next_ins ) ) {
     case MS_OK:
-        return( DeAliasAddrCue( NO_MOD, next_ins, line ) == SR_EXACT );
+        return( DeAliasAddrCue( NO_MOD, next_ins, cueh_line ) == SR_EXACT );
     //NYI: this next case can be removed once all the MAD's are up to snuff
     case MS_ERR|MS_UNSUPPORTED:
         return( true );
@@ -398,7 +408,8 @@ unsigned TraceCheck( unsigned conditions )
         conditions &= ~COND_STOPPERS;
         conditions |= COND_TRACE;
     }
-    if( !(conditions & COND_TRACE) ) return( conditions );
+    if( !(conditions & COND_TRACE) )
+        return( conditions );
     if( DbgTmpBrk.status.b.hit && TraceState.type == TRACE_OVER ) {
         recursed =  MADTraceHaveRecursed( TraceState.watch_stack, &DbgRegs->mr ) == MS_OK;
         if( _IsOn( SW_RECURSE_CHECK ) && recursed && ( TraceState.doing_call || TraceState.unwinding ) ) {
@@ -426,9 +437,11 @@ unsigned TraceCheck( unsigned conditions )
         DbgTmpBrk.status.b.active = true;
         return( conditions & ~COND_STOPPERS );
     }
-    if( TraceState.cur_level == ASM ) return( conditions | COND_TRACE );
+    if( TraceState.cur_level == ASM )
+        return( conditions | COND_TRACE );
     if( CheckTraceSourceStop( &have_source ) ) {
-        if( CheckForDLLThunk() ) return( conditions & ~COND_STOPPERS );
+        if( CheckForDLLThunk() )
+            return( conditions & ~COND_STOPPERS );
         return( conditions | COND_TRACE );
     }
     /*
@@ -437,7 +450,9 @@ unsigned TraceCheck( unsigned conditions )
     if( TraceState.in_dll_thunk ) {
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
             TraceState.trace_out = true;
-            if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+            if( !TraceState.unwinding ) {
+                TraceState.watch_stack = GetRegSP();
+            }
         }
         return( conditions & ~COND_STOPPERS );
     }
@@ -456,10 +471,13 @@ unsigned TraceCheck( unsigned conditions )
             TraceState.in_dll_thunk = true;
             return( conditions & ~COND_STOPPERS );
         }
-        if( TraceState.stop_on_call ) TraceState.stop_now = true;
+        if( TraceState.stop_on_call )
+            TraceState.stop_now = true;
         if( TraceState.type == TRACE_INTO && !TraceState.in_thunk ) {
             TraceState.trace_out = true;
-            if( !TraceState.unwinding ) TraceState.watch_stack = GetRegSP();
+            if( !TraceState.unwinding ) {
+                TraceState.watch_stack = GetRegSP();
+            }
         }
         return( conditions & ~COND_STOPPERS );
     }
@@ -469,21 +487,21 @@ unsigned TraceCheck( unsigned conditions )
 static char DoTrace( debug_level curr_level )
 {
     unsigned    conditions;
-    DIPHDL( cue, line );
+    DIPHDL( cue, cueh_line );
 
     if( curr_level == SOURCE ) {
         if( TraceState.type == TRACE_NEXT ) {
-            if( DeAliasAddrCue( NO_MOD, GetCodeDot(), line ) == SR_NONE
-              || DIPCueAdjust( line, 1, line ) != DS_OK ) {
+            if( DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line ) == SR_NONE
+              || DIPCueAdjust( cueh_line, 1, cueh_line ) != DS_OK ) {
                 Warn( LIT_ENG( WARN_No_Nxt_Src_Ln ) );
                 return( STOP );
             }
-            DbgTmpBrk.loc.addr = DIPCueAddr( line );
+            DbgTmpBrk.loc.addr = DIPCueAddr( cueh_line );
             DbgTmpBrk.status.b.active = true;
         }
         if( TraceState.state == TS_ACTIVE ) {
-            DeAliasAddrCue( NO_MOD, GetCodeDot(), line );
-            TraceState.oldaddr = DIPCueAddr( line );
+            DeAliasAddrCue( NO_MOD, GetCodeDot(), cueh_line );
+            TraceState.oldaddr = DIPCueAddr( cueh_line );
             TraceState.stop_on_call = false;
             TraceState.stop_now = false;
         }
@@ -499,7 +517,8 @@ static char DoTrace( debug_level curr_level )
         _SwitchOff( SW_TRAP_CMDS_PUSHED );
         return( PROCCMD );
     }
-    if( conditions & COND_TRACE ) return( STOP );
+    if( conditions & COND_TRACE )
+        return( STOP );
     return( KEEPGOING );
 }
 
@@ -563,7 +582,8 @@ OVL_EXTERN bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
         ReScan( cmds );
         return( true );
     case INP_RTN_EOL:
-        if( TraceState.state == TS_NONE ) return( false );
+        if( TraceState.state == TS_NONE )
+            return( false );
         PerformTrace();
         return( true );
     case INP_RTN_FINI:

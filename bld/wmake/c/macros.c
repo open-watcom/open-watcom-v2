@@ -99,6 +99,7 @@ bool            DoingBuiltIn;   /* Are we parsing builtin macros            */
 STATIC ELIST    *OldEnvValues;
 #endif
 
+STATIC time_t   start_time = 0;
 
 STATIC char *getDirBuf( void )
 /****************************/
@@ -328,6 +329,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
     bool    cdrive;
     bool    cwd;
     bool    ctime;
+    bool    cdate;
+    bool    cyear;
     char    *p;
     int     pos;
 
@@ -343,6 +346,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
         cwd    = strcmp( macro + 1, "CWD" ) == 0 ||
                  strcmp( macro + 1, "__CWD__" ) == 0;
         ctime  = strcmp( macro + 1, "__CTIME__" ) == 0;
+        cdate  = strcmp( macro + 1, "__CDATE__" ) == 0;
+        cyear  = strcmp( macro + 1, "__CYEAR__" ) == 0;
         if( cdrive || cwd ) {
             if( getcwd( getDirBuf(), _MAX_PATH ) == NULL ) {
                 return( NULL );
@@ -360,13 +365,17 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
             }
             return( dirBuf );
-        } else if( ctime ) {
-            time_t      timex;
+        } else if( ctime || cdate || cyear ) {
             struct tm   *tm;
 
-            time( &timex );
-            tm = localtime( &timex );
-            FmtStr( getDirBuf(), "%D:%D:%D", tm->tm_hour, tm->tm_min, tm->tm_sec );
+            tm = localtime( &start_time );
+            if( ctime ) {
+                FmtStr( getDirBuf(), "%D:%D:%D", tm->tm_hour, tm->tm_min, tm->tm_sec );
+            } else if( cdate ) {
+                FmtStr( getDirBuf(), "%d-%D-%D", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday );
+            } else if( cyear ) {
+                FmtStr( getDirBuf(), "%d", tm->tm_year + 1900 );
+            }
             return( dirBuf );
         }
         return( NULL );
@@ -1389,6 +1398,7 @@ void MacroInit( void )
 #endif
     ImplicitDeMacro = false;
     IsPartDeMacro   = false;
+    time( &start_time );
 }
 
 

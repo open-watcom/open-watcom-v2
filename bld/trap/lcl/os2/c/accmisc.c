@@ -99,8 +99,8 @@ trap_retval ReqFile_get_config( void )
     ret->file.drv_separator = ':';
     ret->file.path_separator[0] = '\\';
     ret->file.path_separator[1] = '/';
-    ret->file.newline[0] = '\r';
-    ret->file.newline[1] = '\n';
+    ret->file.line_eol[0] = '\r';
+    ret->file.line_eol[1] = '\n';
     return( sizeof( *ret ) );
 }
 
@@ -555,10 +555,10 @@ static long TryPath( const char *name, char *end, const char *ext_list )
     do {
         if( *ext_list == '\0' )
             done = 1;
-        for( p = end; *p = *ext_list; ++p, ++ext_list )
+        for( p = end; (*p = *ext_list) != '\0'; ++p, ++ext_list )
             {}
         count = 1;
-        rc = DosFindFirst(name, &hdl, 0, &info.d, sizeof( info ), &count, 0);
+        rc = DosFindFirst( (PSZ)name, &hdl, 0, &info.d, sizeof( info ), &count, 0 );
         if( rc == 0 ) {
             return( 0 );
         }
@@ -568,9 +568,9 @@ static long TryPath( const char *name, char *end, const char *ext_list )
 
 unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list )
 {
-    char            *p;
+    const char      *p;
     char            *p2;
-    char            *p3;
+    const char      *p3;
     unsigned long   rc;
     int             have_ext;
     int             have_path;
@@ -595,11 +595,11 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     rc = TryPath( buffer, p2, ext_list );
     if( rc == 0 || have_path )
         return( rc );
-    if( DosScanEnv( "PATH", &p ) != 0 )
+    if( DosScanEnv( "PATH", (PSZ FAR *)&p ) != 0 )
         return( rc );
     for( ; *p != '\0'; ) {
         p2 = buffer;
-        while( *p ) {
+        while( *p != '\0' ) {
             if( *p == ';' )
                 break;
             *p2++ = *p++;
@@ -607,7 +607,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
+        for( p3 = pgm; (*p2 = *p3) != '\0'; ++p2, ++p3 )
             {}
         rc = TryPath( buffer, p2, ext_list );
         if( rc == 0 )
@@ -720,15 +720,18 @@ void MergeArgvArray( char *argv, char *dst, unsigned len )
 
     have_extra = FALSE;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         ch = *argv;
-        if( ch == '\0' ) ch = ' ';
+        if( ch == '\0' )
+            ch = ' ';
         *dst = *argv;
         ++dst;
         ++argv;
         --len;
         have_extra = TRUE;
     }
-    if( have_extra ) --dst;
+    if( have_extra )
+        --dst;
     *dst = '\0';
 }

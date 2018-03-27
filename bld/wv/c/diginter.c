@@ -91,34 +91,48 @@ static obj_attrs DIG2WVOpenMode( dig_open mode )
     return( oattrs );
 }
 
-dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
+/*
+ * Debugger use internaly file I/O based on "int" handles
+ * like POSIX but it is index into array which hold real
+ * OS file handles.
+ * Therefore DIGCLIENTRY I/O function must be based on
+ * these functions and can not use ISO stream I/O functions
+ * and handles are managed as POSIX handle
+ * Appropriate macros for file handle mapping must be used
+ */
+FILE * DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     file_handle fh;
 
     fh = FileOpen( name, DIG2WVOpenMode( mode ) );
     if( fh == NIL_HANDLE )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fh ) );
+        return( NULL );
+    return( FH2FP( fh ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
+int DIGCLIENTRY( Seek )( FILE *fp, unsigned long p, dig_seek k )
 {
-    return( SeekStream( DIG_FID2PH( fid ), p, k ) );
+    return( SeekStream( FP2FH( fp ), p, k ) == ERR_SEEK );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *b , size_t s )
+unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 {
-    return( ReadStream( DIG_FID2PH( fid ), b, s ) );
+    return( SeekStream( FP2FH( fp ), 0, DIO_SEEK_CUR ) );
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *b, size_t s )
+size_t DIGCLIENTRY( Read )( FILE *fp, void *b , size_t s )
 {
-    return( WriteStream( DIG_FID2PH( fid ), b, s ) );
+    return( ReadStream( FP2FH( fp ), b, s ) );
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle fid )
+size_t DIGCLIENTRY( Write )( FILE *fp, const void *b, size_t s )
 {
-    FileClose( DIG_FID2PH( fid ) );
+    return( WriteStream( FP2FH( fp ), b, s ) );
+}
+
+void DIGCLIENTRY( Close )( FILE *fp )
+{
+    FileClose( FP2FH( fp ) );
 }
 
 void DIGCLIENTRY( Remove )( char const *name, dig_open mode )

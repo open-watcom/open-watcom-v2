@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 #include "dbgscan.h"
 #include "dbgmain.h"
 #include "dbgshow.h"
-#include "dbgvset.h"
+#include "dbgsetfn.h"
 
 
 extern type_display     *TypeDisplay;
@@ -221,14 +222,16 @@ static void oops( void )
 static void ScanLeftBrace( void )
 /*******************************/
 {
-    if( CurrToken != T_LEFT_BRACE ) oops();
+    if( CurrToken != T_LEFT_BRACE )
+        oops();
     Scan();
 }
 
 static bool ScanRightBrace( void )
 /********************************/
 {
-    if( CurrToken != T_RIGHT_BRACE ) return( false );
+    if( CurrToken != T_RIGHT_BRACE )
+        return( false );
     Scan();
     return( true );
 }
@@ -266,6 +269,7 @@ static int ScanAttribute( type_display *type, int token )
     case TY_ISSTRUCT:
         VarDisplayAlias( type, VarDisplayAddStruct( ScanName() ) );
         dirty = false;
+        /* fall through */
     case TY_HEX:
         type->display |= VARDISP_HEX;
         break;
@@ -325,7 +329,8 @@ static int ScanAttribute( type_display *type, int token )
     default:
         oops();
     }
-    if( dirty ) VarDisplayDirty( type );
+    if( dirty )
+        VarDisplayDirty( type );
     return( token );
 }
 
@@ -338,7 +343,8 @@ void TypeSet( void )
 
     ScanLeftBrace();
     while( !ScanRightBrace() ) {
-        if( ScanCmd( TypeSettings ) != TY_STRUCT ) oops();
+        if( ScanCmd( TypeSettings ) != TY_STRUCT )
+            oops();
         parent = VarDisplayAddStruct( ScanName() );
         ScanLeftBrace();
         while( !ScanRightBrace() ) {
@@ -365,7 +371,8 @@ void TypeConf( void )
     StrCopy( " {", StrCopy( NameBuff, TxtBuff ) );
     DUIDlgTxt( TxtBuff );
     for( curr = TypeDisplay; curr != NULL; curr = curr->next ) {
-        if( !curr->dirty ) continue;
+        if( !curr->dirty )
+            continue;
         Attributes( curr,
                     StrCopy( " { ",
                     StrCopy( curr->name,
@@ -374,7 +381,8 @@ void TypeConf( void )
                     StrCopy( "  ", TxtBuff ) ) ) ) ) );
         DUIDlgTxt( TxtBuff );
         for( fcurr = curr->fields; fcurr != NULL; fcurr = fcurr->next ) {
-            if( !fcurr->dirty ) continue;
+            if( !fcurr->dirty )
+                continue;
             StrCopy( "}",
             Attributes( fcurr,
             StrCopy( " { ",

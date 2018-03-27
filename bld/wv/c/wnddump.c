@@ -45,22 +45,22 @@
 
 typedef void WRITERTN( file_handle, const char * );
 
-static void WriteFile( file_handle fh, const char *buff )
+OVL_EXTERN void WriteFile( file_handle fh, const char *buff )
 {
     WriteText( fh, buff, strlen( buff ) );
 }
 
-static void WriteLog( file_handle fh, const char *buff )
+OVL_EXTERN void WriteLog( file_handle fh, const char *buff )
 {
     /* unused parameters */ (void)fh;
 
     WndDlgTxt( buff );
 }
 
-static void DoWndDump( a_window *wnd, WRITERTN *rtn, file_handle fh )
+static void DoWndDump( a_window wnd, WRITERTN *rtn, file_handle fh )
 {
-    int                 row;
-    int                 piece;
+    wnd_row             row;
+    wnd_piece           piece;
     wnd_line_piece      line;
     int                 indent_per_char;
     int                 chars_written;
@@ -122,7 +122,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, file_handle fh )
 }
 
 
-static void DoWndDumpFile( const char *name, a_window *wnd )
+static void DoWndDumpFile( const char *name, a_window wnd )
 {
     file_handle     fh;
 
@@ -136,7 +136,7 @@ static void DoWndDumpFile( const char *name, a_window *wnd )
     FileClose( fh );
 }
 
-void WndDumpPrompt( a_window *wnd )
+void WndDumpPrompt( a_window wnd )
 {
     char                *name;
 
@@ -146,7 +146,7 @@ void WndDumpPrompt( a_window *wnd )
     DoWndDumpFile( name, wnd );
 }
 
-void WndDumpFile( a_window *wnd )
+void WndDumpFile( a_window wnd )
 {
     const char          *start;
     size_t              len;
@@ -163,7 +163,7 @@ void WndDumpFile( a_window *wnd )
     }
 }
 
-void WndDumpLog( a_window *wnd )
+void WndDumpLog( a_window wnd )
 {
     DoWndDump( wnd, WriteLog, 0 );
 }

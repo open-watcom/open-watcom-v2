@@ -448,6 +448,7 @@ static int HeuristicTraceBack(
                 continue;
             case DI_X86_sub:
                 dd.ins.op[ OP_2 ].value.s._32[I64LO32] = -dd.ins.op[ OP_2 ].value.s._32[I64LO32];
+                /* fall through */
             case DI_X86_add:
                 if( !ConstOp( dd.ins.op[ OP_2 ] ) )
                     break;

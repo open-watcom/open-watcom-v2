@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,28 @@
 
 
 #include <dos.h>
-#include "biosui.h"
 #include "uidef.h"
+#include "biosui.h"
 #include "uiforce.h"
 
+
+MOUSETIME UIAPI uiclock( void )
+/*****************************
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
+ */
+{
+    return( BIOSData( BIOS_SYSTEM_CLOCK, unsigned long ) );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    return( ( milli * 18L ) / 1000L );
+}
 
 void UIAPI uiflush( void )
 /*************************/
@@ -43,35 +62,23 @@ void UIAPI uiflush( void )
     flushkey();
 }
 
-unsigned long uiclock( void )
+ui_event UIAPI uieventsource( bool update )
+/*****************************************/
 {
-    unsigned    long __far              *clock;
-
-#ifdef __386__
-    clock = MK_FP( 0x60, ( BIOS_PAGE << 4 ) + SYSTEM_CLOCK );
-#else
-    clock = MK_FP( BIOS_PAGE, SYSTEM_CLOCK );
-#endif
-    return( *clock );
-}
-
-EVENT UIAPI uieventsource( bool update )
-/**************************************/
-{
-    register    EVENT                   ev;
-    static      int                     ReturnIdle = 1;
-    unsigned long                       start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
-    for( ; ; ) {
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+    for( ;; ) {
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = mouseevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = mouseevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
-        ev = keyboardevent();
-        if( ev > EV_NO_EVENT ) {
+        ui_ev = keyboardevent();
+        if( ui_ev > EV_NO_EVENT ) {
             uihidemouse();
             break;
         }
@@ -89,11 +96,11 @@ EVENT UIAPI uieventsource( bool update )
         }
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
-EVENT UIAPI uiget( void )
-/***********************/
+ui_event UIAPI uiget( void )
+/**************************/
 {
     return( uieventsource( true ) );
 }

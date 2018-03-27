@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -45,7 +46,10 @@
 .387
 .386p
 
+include langenv.inc
+include tinit.inc
 include xinit.inc
+include extender.inc
 
 FLG_NO87    equ 1
 FLG_LFN     equ 1
@@ -87,23 +91,23 @@ DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,
 BEGTEXT  segment use32 para public 'CODE'
         assume  cs:BEGTEXT
 forever label   near
-        int     3h
-        jmp     short forever
-___begtext label byte
-        nop     ;3
-        nop     ;4
-        nop     ;5
-        nop     ;6
-        nop     ;7
-        nop     ;8
-        nop     ;9
-        nop     ;A
-        nop     ;B
-        nop     ;C
-        nop     ;D
-        nop     ;E
-        nop     ;F
+        int     3h              ;0
+        jmp short forever       ;1
         public ___begtext
+___begtext label byte
+        nop                     ;3
+        nop                     ;4
+        nop                     ;5
+        nop                     ;6
+        nop                     ;7
+        nop                     ;8
+        nop                     ;9
+        nop                     ;A
+        nop                     ;B
+        nop                     ;C
+        nop                     ;D
+        nop                     ;E
+        nop                     ;F
         assume  cs:nothing
 BEGTEXT  ends
 
@@ -113,7 +117,7 @@ _TEXT   segment use32 dword public 'CODE'
 
 _NULL   segment para public 'BEGDATA'
 __nullarea label word
-        db      01h,01h,01h,00h
+        db      1,1,1,0
         public  __nullarea
 _NULL   ends
 
@@ -123,41 +127,8 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-TIB     segment byte public 'DATA'
-TIB     ends
-TI      segment byte public 'DATA'
-TI      ends
-TIE     segment byte public 'DATA'
-TIE     ends
-
-XIB     segment word public 'DATA'
-XIB     ends
-XI      segment word public 'DATA'
-XI      ends
-XIE     segment word public 'DATA'
-XIE     ends
-
-YIB     segment word public 'DATA'
-YIB     ends
-YI      segment word public 'DATA'
-YI      ends
-YIE     segment word public 'DATA'
-YIE     ends
-
-
 _DATA    segment dword public 'DATA'
-X_ERGO                  equ     0       ; Ergo OS/386 (unsupported)
-X_RATIONAL              equ     1       ; DOS/4G(W) or compatible
-X_PHARLAP_V2            equ     2       ; PharLap 386|DOS
-X_PHARLAP_V3            equ     3
-X_PHARLAP_V4            equ     4
-X_PHARLAP_V5            equ     5
-X_PHARLAP_V6            equ     6       ; PharLap TNT
-X_INTEL                 equ     9       ; Intel CodeBuilder (unsupported)
-X_WIN386                equ     10      ; Watcom Win386
-XS_NONE                 equ     0
-XS_RATIONAL_ZEROBASE    equ     0
-XS_RATIONAL_NONZEROBASE equ     1
+
 __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
 __x386_zero_base_selector dw 0  ; base 0 selector for X-32VM
 
@@ -185,23 +156,22 @@ STACK   ends
         assume  cs:_TEXT
 
 _cstart_ proc near
-        jmp     short around
+        jmp short around
 
 ;
-; copyright message (special - see comment at top)
+; signature for DOS4GW to identify OW run-time
 ;
-        db      "Open WATCOM C/C++32 Run-Time system. "
-include msgcpyrt.inc
+        db      "WATCOM",0
 
-        align   4
-        dd      ___begtext      ; make sure dead code elimination
-                                ; doesn't kill BEGTEXT
 ;
 ; miscellaneous code-segment messages
 ;
-ConsoleName     db      "con",00h
-
+ConsoleName     db      "con",0
 NewLine         db      0Dh,0Ah
+
+        align   4
+        dd      ___begtext              ; make sure dead code elimination
+                                        ; doesn't kill BEGTEXT
 
 around: sti                             ; enable interrupts
 
@@ -249,7 +219,8 @@ ENV_SEG equ     2ch
         pop     eax                     ; - restore version number
         mov     ebx,ds                  ; - get value of Phar Lap data segment
         mov     cx,ENV_SEG              ; - PharLap environment segment
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 not_pharlap:                            ; - assume DOS/4G or compatible
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
@@ -271,7 +242,8 @@ rat9:                                   ; - endif
 rat10:                                  ; - endif
         mov     _psp,es                 ; - save segment address of PSP
         mov     cx,es:[02ch]            ; - get environment segment into cx
-        jmp     short know_extender     ; else
+        jmp short know_extender         ; else
+
 know_extender:                          ; endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype
@@ -386,11 +358,13 @@ ifndef __STACK__
 endif
         jmp short L7
 
-        public  __do_exit_with_msg__
+        public  __do_exit_with_msg_
 
-; input: ( char *msg, int rc )  always in registers
+; input: ( char *msg, int rc ) always in registers
+;       EAX - pointer to message to print
+;       EDX - exit code
 
-__do_exit_with_msg__:                   ; never return
+__do_exit_with_msg_:                    ; never return
         push    edx                     ; save return code
         push    eax                     ; save address of msg
         mov     edx,offset ConsoleName
@@ -421,8 +395,14 @@ L7:
         int     021h                    ; back to DOS
 __exit  endp
 
-        public  __GETDS
+;
+; copyright message (special - see comment at top)
+;
+include msgcpyrt.inc
+
         align   4
+
+        public  __GETDS
 __GETDS proc    near
 public "C",__GETDSStart_
 __GETDSStart_ label byte

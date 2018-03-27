@@ -31,7 +31,7 @@
 
 #include "cvars.h"
 #include "asmstmt.h"
-#include "pragdefn.h"
+
 
 #define MAX_ASM_LINE_LEN 511
 

@@ -42,6 +42,8 @@ _TEXT   segment
 
 _chain_intr     proc far
         public  "C",_chain_intr
+        ; never return to the caller
+        ; doesn't have return address on the stack
         mov     cx,ax                   ; get offset
         mov     ax,dx                   ; get segment
         mov     sp,bp                   ; reset SP to point to saved registers

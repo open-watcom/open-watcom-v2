@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,15 +43,17 @@
 #include "dbgwpain.h"
 
 
-extern const char       WndNameTab[];
-
-static gui_colour_set   *WndClassColour[WND_NUM_CLASSES];
-gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
+gui_colour_set          WndStatusColour = {
+    GUI_BRIGHT_WHITE,
+    GUI_BLUE
+};
 
 wnd_attr WndPlainAttr    = WND_PLAIN;
 wnd_attr WndSelectedAttr = WND_SELECTED;
 wnd_attr WndCursorAttr   = WND_SELECTED;
 wnd_attr WndTabStopAttr  = WND_TABSTOP;
+
+static gui_colour_set   *WndClassColour[NUM_WNDCLS_ALL];
 
 static gui_colour_set   WndDlgColours[] = {
     #define pick(e,f,b)     { f, b },
@@ -80,49 +83,38 @@ gui_colour_set WndColours[] = {
     { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_HOTSPOT */
     { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
 };
+
 int WndNumColours = { ArraySize( WndColours ) };
 
+#define ATTR_BITS() \
+    pick( DBG_ATTR_ACTIVE,      0x0001,    "Active" ) \
+    pick( DBG_ATTR_SELECTED,    0x0002,    "SElected" ) \
+    pick( DBG_ATTR_STANDOUT,    0x0004,    "STandout" ) \
+    pick( DBG_ATTR_DISABLED,    0x0008,    "Disabled" ) \
+    pick( DBG_ATTR_PLAIN,       0x0010,    "Plain" ) \
+    pick( DBG_ATTR_FRAME,       0x0020,    "Frame" ) \
+    pick( DBG_ATTR_ICON,        0x0040,    "ICon" ) \
+    pick( DBG_ATTR_MENU,        0x0080,    "MEnu" ) \
+    pick( DBG_ATTR_TITLE,       0x0100,    "TItle" ) \
+    pick( DBG_ATTR_BUTTON,      0x0200,    "BUtton" ) \
+    pick( DBG_ATTR_SHADOW,      0x0400,    "SHadow" )
 
 typedef enum {
-    ATTR_ACTIVE         = 0x0001,
-    ATTR_SELECTED       = 0x0002,
-    ATTR_STANDOUT       = 0x0004,
-    ATTR_DISABLED       = 0x0008,
-    ATTR_PLAIN          = 0x0010,
-    ATTR_FRAME          = 0x0020,
-    ATTR_ICON           = 0x0040,
-    ATTR_MENU           = 0x0080,
-    ATTR_TITLE          = 0x0100,
-    ATTR_BUTTON         = 0x0200,
-    ATTR_SHADOW         = 0x0400,
+    #define pick(e,v,t) e = v,
+        ATTR_BITS()
+    #undef pick
 } attr_bits;
 
 static const char AttrNameTab[] = {
-    "Active\0"
-    "SElected\0"
-    "STandout\0"
-    "Disabled\0"
-    "Plain\0"
-    "Frame\0"
-    "ICon\0"
-    "MEnu\0"
-    "TItle\0"
-    "BUtton\0"
-    "SHadow\0"
+    #define pick(e,v,t) t "\0"
+        ATTR_BITS()
+    #undef pick
 };
 
 static attr_bits AttrBits[] = {
-    ATTR_ACTIVE,
-    ATTR_SELECTED,
-    ATTR_STANDOUT,
-    ATTR_DISABLED,
-    ATTR_PLAIN,
-    ATTR_FRAME,
-    ATTR_ICON,
-    ATTR_MENU,
-    ATTR_TITLE,
-    ATTR_BUTTON,
-    ATTR_SHADOW,
+    #define pick(e,v,t) e,
+        ATTR_BITS()
+    #undef pick
 };
 
 typedef struct {
@@ -131,79 +123,66 @@ typedef struct {
 } attr_map;
 
 static attr_map AttrMap[] = {
-    { GUI_MENU_PLAIN,           ATTR_MENU+ATTR_PLAIN },
-    { GUI_MENU_STANDOUT,        ATTR_MENU+ATTR_STANDOUT },
-    { GUI_MENU_GRAYED,          ATTR_MENU+ATTR_DISABLED },
-    { GUI_MENU_ACTIVE,          ATTR_MENU+ATTR_ACTIVE },
-    { GUI_MENU_ACTIVE_STANDOUT, ATTR_MENU+ATTR_ACTIVE+ATTR_STANDOUT },
-    { GUI_MENU_FRAME,           ATTR_FRAME+ATTR_MENU },
-    { GUI_TITLE_INACTIVE,       ATTR_TITLE+ATTR_DISABLED },
-    { GUI_FRAME_ACTIVE,         ATTR_FRAME+ATTR_ACTIVE },
-    { GUI_FRAME_INACTIVE,       ATTR_FRAME+ATTR_DISABLED },
-    { GUI_ICON,                 ATTR_ICON },
-    { GUI_MENU_GRAYED_ACTIVE,   ATTR_MENU+ATTR_DISABLED+ATTR_ACTIVE },
-    { WND_PLAIN,                ATTR_PLAIN },
-    { WND_TABSTOP,              ATTR_ACTIVE },
-    { WND_SELECTED,             ATTR_SELECTED },
-    { WND_STANDOUT,             ATTR_STANDOUT },
-    { WND_HOTSPOT,              ATTR_BUTTON },
-    { WND_STANDOUT_TABSTOP,     ATTR_ACTIVE+ATTR_STANDOUT },
+    { GUI_MENU_PLAIN,           DBG_ATTR_MENU+DBG_ATTR_PLAIN },
+    { GUI_MENU_STANDOUT,        DBG_ATTR_MENU+DBG_ATTR_STANDOUT },
+    { GUI_MENU_GRAYED,          DBG_ATTR_MENU+DBG_ATTR_DISABLED },
+    { GUI_MENU_ACTIVE,          DBG_ATTR_MENU+DBG_ATTR_ACTIVE },
+    { GUI_MENU_ACTIVE_STANDOUT, DBG_ATTR_MENU+DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
+    { GUI_MENU_FRAME,           DBG_ATTR_FRAME+DBG_ATTR_MENU },
+    { GUI_TITLE_INACTIVE,       DBG_ATTR_TITLE+DBG_ATTR_DISABLED },
+    { GUI_FRAME_ACTIVE,         DBG_ATTR_FRAME+DBG_ATTR_ACTIVE },
+    { GUI_FRAME_INACTIVE,       DBG_ATTR_FRAME+DBG_ATTR_DISABLED },
+    { GUI_ICON,                 DBG_ATTR_ICON },
+    { GUI_MENU_GRAYED_ACTIVE,   DBG_ATTR_MENU+DBG_ATTR_DISABLED+DBG_ATTR_ACTIVE },
+    { WND_PLAIN,                DBG_ATTR_PLAIN },
+    { WND_TABSTOP,              DBG_ATTR_ACTIVE },
+    { WND_SELECTED,             DBG_ATTR_SELECTED },
+    { WND_STANDOUT,             DBG_ATTR_STANDOUT },
+    { WND_HOTSPOT,              DBG_ATTR_BUTTON },
+    { WND_STANDOUT_TABSTOP,     DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
 };
 
 static attr_map DlgAttrMap[] = {
-    { GUI_DLG_NORMAL,                   ATTR_PLAIN },
-    { GUI_DLG_FRAME,                    ATTR_FRAME },
-    { GUI_DLG_SHADOW,                   ATTR_SHADOW },
-    { GUI_DLG_BUTTON_PLAIN,             ATTR_BUTTON+ATTR_PLAIN },
-    { GUI_DLG_BUTTON_STANDOUT,          ATTR_BUTTON+ATTR_STANDOUT },
-    { GUI_DLG_BUTTON_ACTIVE,            ATTR_BUTTON+ATTR_ACTIVE },
-    { GUI_DLG_BUTTON_ACTIVE_STANDOUT,   ATTR_BUTTON+ATTR_ACTIVE+ATTR_STANDOUT },
+    { GUI_DLG_NORMAL,                   DBG_ATTR_PLAIN },
+    { GUI_DLG_FRAME,                    DBG_ATTR_FRAME },
+    { GUI_DLG_SHADOW,                   DBG_ATTR_SHADOW },
+    { GUI_DLG_BUTTON_PLAIN,             DBG_ATTR_BUTTON+DBG_ATTR_PLAIN },
+    { GUI_DLG_BUTTON_STANDOUT,          DBG_ATTR_BUTTON+DBG_ATTR_STANDOUT },
+    { GUI_DLG_BUTTON_ACTIVE,            DBG_ATTR_BUTTON+DBG_ATTR_ACTIVE },
+    { GUI_DLG_BUTTON_ACTIVE_STANDOUT,   DBG_ATTR_BUTTON+DBG_ATTR_ACTIVE+DBG_ATTR_STANDOUT },
 };
+
+#define COLOUR_BITS() \
+    pick( CLR_BLACK,    0x0001,    "BLAck" ) \
+    pick( CLR_BLUE,     0x0002,    "BLUe" ) \
+    pick( CLR_BRIGHT,   0x0004,    "BRIght" ) \
+    pick( CLR_BROWN,    0x0008,    "BROwn" ) \
+    pick( CLR_CYAN,     0x0010,    "Cyan" ) \
+    pick( CLR_GRAY,     0x0020,    "GRAy" ) \
+    pick( CLR_GREEN,    0x0040,    "GREEn" ) \
+    pick( CLR_GREY,     0x0080,    "GREY" ) \
+    pick( CLR_MAGENTA,  0x0100,    "MAgenta" ) \
+    pick( CLR_RED,      0x0200,    "Red" ) \
+    pick( CLR_WHITE,    0x0400,    "White" ) \
+    pick( CLR_YELLOW,   0x0800,    "Yellow" )
 
 typedef enum {
     CLR_NONE = 0,
-    CLR_BLACK           = 0x0001,
-    CLR_BLUE            = 0x0002,
-    CLR_BRIGHT          = 0x0004,
-    CLR_BROWN           = 0x0008,
-    CLR_CYAN            = 0x0010,
-    CLR_GRAY            = 0x0020,
-    CLR_GREEN           = 0x0040,
-    CLR_GREY            = 0x0080,
-    CLR_MAGENTA         = 0x0100,
-    CLR_RED             = 0x0200,
-    CLR_WHITE           = 0x0400,
-    CLR_YELLOW          = 0x0800,
+    #define pick(e,v,t) e = v,
+        COLOUR_BITS()
+    #undef pick
 } colour_bits;
 
 static const char ColourNameTab[] = {
-    "BLAck\0"
-    "BLUe\0"
-    "BRIght\0"
-    "BROwn\0"
-    "Cyan\0"
-    "GRAy\0"
-    "GREEn\0"
-    "GREY\0"
-    "MAgenta\0"
-    "Red\0"
-    "White\0"
-    "Yellow\0"
+    #define pick(e,v,t) t "\0"
+        COLOUR_BITS()
+    #undef pick
 };
 
 static colour_bits ColourBits[] = {
-    CLR_BLACK,
-    CLR_BLUE,
-    CLR_BRIGHT,
-    CLR_BROWN,
-    CLR_CYAN,
-    CLR_GRAY,
-    CLR_GREEN,
-    CLR_GREY,
-    CLR_MAGENTA,
-    CLR_RED,
-    CLR_WHITE,
-    CLR_YELLOW,
+    #define pick(e,v,t) e,
+        COLOUR_BITS()
+    #undef pick
 };
 
 typedef struct {
@@ -300,7 +279,7 @@ static void set_wndclass_attr( wnd_attr_wv wndattr, gui_colour_set *set, gui_col
         set[GUI_BACKGROUND].back = back;
     }
     if( wndall ) {
-        for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+        for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
             if( WndClassColour[wndclass] != NULL ) {
                 WndClassColour[wndclass][wndattr].fore = fore;
                 WndClassColour[wndclass][wndattr].back = back;
@@ -370,9 +349,10 @@ void ProcPaint( void )
 void ProcPendingPaint( void )
 {
     gui_colour_set      *set;
-    a_window            *wnd;
+    a_window            wnd;
 
-    if( _IsOff( SW_PENDING_REPAINT ) ) return;
+    if( _IsOff( SW_PENDING_REPAINT ) )
+        return;
     _SwitchOff( SW_PENDING_REPAINT );
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( WndHasClass( wnd ) ) {
@@ -396,7 +376,7 @@ void FiniPaint( void )
 {
     wnd_class_wv    wndclass;
 
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( WndClassColour[wndclass] != NULL ) {
             WndFree( WndClassColour[wndclass] );
             WndClassColour[wndclass] = NULL;
@@ -404,7 +384,7 @@ void FiniPaint( void )
     }
 }
 
-extern gui_colour_set *GetWndColours( wnd_class_wv wndclass )
+gui_colour_set *GetWndColours( wnd_class_wv wndclass )
 {
     if( WndClassColour[wndclass] != NULL )
         return( WndClassColour[wndclass] );
@@ -532,7 +512,7 @@ void ConfigPaint( void )
         def = WndColours;
     }
     PrintColours( WND_ALL, def, NULL );
-    for( wndclass = 0; wndclass < WND_NUM_CLASSES; ++wndclass ) {
+    for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( wndclass == WND_ALL )
             continue;
         if( WndClassColour[wndclass] != NULL ) {

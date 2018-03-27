@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 #include "uidef.h"
 #ifdef __UNIX__
-#include "uivirt.h"
+#include "uivirts.h"
 #endif
 #include "uiforce.h"
 #include "uigchar.h"
@@ -43,7 +44,7 @@ bool UIAPI uistart( void )
 {
     UIMemOpen();
     if( initbios() ) {
-        DBCSCharacterMap();
+        SetCharacterTables();
         /* need for LUI and DUI apps to avoid divide by zero    */
         /* when no mouse is found                               */
         UIData->mouse_yscale = 1;
@@ -57,19 +58,15 @@ bool UIAPI uistart( void )
     return( false );
 }
 
-bool UIAPI uiinit( int install )
-/******************************/
+bool UIAPI uiinit( init_mode install )
+/************************************/
 {
     bool    initialized;
 
     initialized = uistart();
 
     if( initialized ) {
-#ifdef __UNIX__
-        _initmouse( install );
-#else
         initmouse( install );
-#endif
     }
     return( initialized );
 }
@@ -85,11 +82,7 @@ void UIAPI uistop( void )
 void UIAPI uifini( void )
 /************************/
 {
-#ifdef __UNIX__
-    _finimouse();
-#else
     finimouse();
-#endif
     uistop();
 }
 

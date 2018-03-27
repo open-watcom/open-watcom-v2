@@ -33,7 +33,7 @@
 #include "dipwat.h"
 #include "watmod.h"
 
-#define MODINFO_SIZE(p) (sizeof( mod_info ) + (unsigned char)((mod_info *)(p))->name[0])
+#define MODINFO_SIZE(p) (sizeof( mod_dbg_info ) + (unsigned char)((mod_dbg_info *)(p))->name[0])
 
 
 typedef struct {
@@ -42,15 +42,15 @@ typedef struct {
 } mod_table;
 
 
-section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
+section_info *FindInfo( imp_image_handle *iih, imp_mod_handle im )
 {
     unsigned            num_sects;
     section_info        *inf;
 
     if( im == IMH_NOMOD )
         return( NULL );
-    inf = ii->sect;
-    num_sects = ii->num_sects;
+    inf = iih->sect;
+    num_sects = iih->num_sects;
     for( ;; ) {
         if( IDX2IMH( inf->mod_base_idx ) > im ) {
             --inf;
@@ -68,21 +68,21 @@ section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
  * ModPointer - given a mod_handle, return the module information pointer
  */
 
-mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle im )
+mod_dbg_info *ModPointer( imp_image_handle *iih, imp_mod_handle im )
 {
     info_block          *blk;
     mod_table           *tbl;
     unsigned            index;
     section_info        *inf;
 
-    inf = FindInfo( ii, im );
+    inf = FindInfo( iih, im );
     if( inf == NULL )
         return( NULL );
     index = im - IDX2IMH( inf->mod_base_idx );
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         tbl = blk->link;
         if( index < tbl->count ) {
-            return( (mod_info *)((byte *)blk->info + tbl->mod_off[index]) );
+            return( (mod_dbg_info *)((byte *)blk->info + tbl->mod_off[index]) );
         }
         index -= tbl->count;
     }
@@ -93,7 +93,7 @@ mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle im )
  * AllocLinkTable - allocate the demand load link table
  *
  */
-static dip_status AllocLinkTable( section_info *inf, dword num_links, dword first_link )
+static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dword num_links, dword first_link )
 {
     pointer_int         **lnk_tbl;
     pointer_int         *lnk;
@@ -102,7 +102,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
     dword               count;
     unsigned            i;
     demand_kind         dk;
-    mod_info            *mod;
+    mod_dbg_info        *mod;
     unsigned            tbl_entries;
     pointer_int         end = 0;
     info_block          *blk;
@@ -130,8 +130,8 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
             return( DS_ERR|DS_NO_MEM );
         }
         lnk_tbl[i++] = lnk;
-        if( !inf->ctl->v2 ) {
-            if( DCRead( inf->ctl->sym_fid, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
+        if( !iih->v2 ) {
+            if( DCRead( iih->sym_fp, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
                 DCStatus( DS_ERR|DS_FREAD_FAILED );
                 return( DS_ERR|DS_FREAD_FAILED );
             }
@@ -149,8 +149,8 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( i = 0; i < tbl->count; ++i ) {
-                mod = (mod_info *)((byte *)blk->info + tbl->mod_off[i]);
-                if( inf->ctl->v2 ) {
+                mod = (mod_dbg_info *)((byte *)blk->info + tbl->mod_off[i]);
+                if( iih->v2 ) {
                     if( mod->di[dk].u.size != 0 ) {
                         if( num >= MAX_LINK_ENTRIES ) {
                             lnk = *++lnk_tbl;
@@ -172,7 +172,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
             }
         }
     }
-    if( inf->ctl->v2 ) {
+    if( iih->v2 ) {
         if( num >= MAX_LINK_ENTRIES ) {
             lnk = *++lnk_tbl;
             num = 0;
@@ -188,13 +188,13 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
  *            - allocate module index table
  *            - allocate demand load link table
  */
-dip_status AdjustMods( section_info *inf, unsigned long adjust )
+dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long adjust )
 {
     info_block          *blk;
     unsigned            count;
     unsigned            mod_off;
     mod_table           *tbl;
-    mod_info            *mod;
+    mod_dbg_info        *mod;
     dword               num_links;
     dword               first_link;
     dword               last_link;
@@ -209,12 +209,12 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     first_link = (dword)-1L;
     num_links = 1;
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
-        mod = (mod_info *)blk->info;
+        mod = (mod_dbg_info *)blk->info;
         count = 0;
         for( mod_off = 0; mod_off < blk->size; mod_off += MODINFO_SIZE( (byte *)mod + mod_off ) ) {
             ++count;
         }
-        tbl = DCAlloc( sizeof( mod_table ) + ( count - 1 ) * sizeof( mod_info * ) );
+        tbl = DCAlloc( sizeof( mod_table ) + ( count - 1 ) * sizeof( mod_dbg_info * ) );
         if( tbl == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( DS_ERR|DS_NO_MEM );
@@ -224,9 +224,9 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
         count = 0;
         for( mod_off = 0; mod_off < blk->size; mod_off += MODINFO_SIZE( mod ) ) {
             tbl->mod_off[count++] = mod_off;
-            mod = (mod_info *)((byte *)blk->info + mod_off);
+            mod = (mod_dbg_info *)((byte *)blk->info + mod_off);
             for( dk = 0; dk < MAX_DMND; ++dk ) {
-                if( inf->ctl->v2 ) {
+                if( iih->v2 ) {
                     if( mod->di[dk].u.size != 0 ) {
                         ++num_links;
                     }
@@ -245,15 +245,15 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
             }
         }
     }
-    if( !inf->ctl->v2 ) {
+    if( !iih->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( inf->ctl->sym_fid, off, DIG_ORG) != off ) {
+        if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( DS_ERR|DS_FSEEK_FAILED );
         }
         num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
     }
-    ok = AllocLinkTable( inf, num_links, first_link );
+    ok = AllocLinkTable( iih, inf, num_links, first_link );
     if( ok != DS_OK )
         return( ok );
     num = 0;
@@ -275,7 +275,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
 }
 
 
-void SetModBase( imp_image_handle *ii )
+void SetModBase( imp_image_handle *iih )
 {
     unsigned        i;
     unsigned        base;
@@ -284,10 +284,10 @@ void SetModBase( imp_image_handle *ii )
     mod_table       *tbl;
 
     base = 0;
-    for( i = 0; i < ii->num_sects; ++i ) {
-        ii->sect[i].mod_base_idx = base;
+    for( i = 0; i < iih->num_sects; ++i ) {
+        iih->sect[i].mod_base_idx = base;
         count = 0;
-        for( blk = ii->sect[i].mod_info; blk != NULL; blk = blk->next ) {
+        for( blk = iih->sect[i].mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             count += tbl->count;
         }
@@ -324,13 +324,13 @@ void ModInfoFini( section_info *inf )
  * ModInfoSplit - find a good place to split module information
  */
 
-unsigned ModInfoSplit( info_block *blk, section_info *inf )
+unsigned ModInfoSplit( imp_image_handle *iih, info_block *blk, section_info *inf )
 {
     unsigned    off;
     unsigned    prev;
     byte        *start;
 
-    /* unused parameters */ (void)inf;
+    /* unused parameters */ (void)iih; (void)inf;
 
     start = blk->info;
     prev = 0;
@@ -359,7 +359,7 @@ word ModOff2Idx( section_info *inf, word off )
  * DIPImpWalkModList - walk the module list
  */
 
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -369,13 +369,13 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER
     imp_mod_handle      im;
     walk_result         wr;
 
-    inf = ii->sect;
-    for( num_sects = ii->num_sects; num_sects != 0; --num_sects ) {
+    inf = iih->sect;
+    for( num_sects = iih->num_sects; num_sects != 0; --num_sects ) {
         im = IDX2IMH( inf->mod_base_idx );
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
-                wr = wk( ii, im, d );
+                wr = wk( iih, im, d );
                 if( wr != WR_CONTINUE )
                     return( wr );
                 ++im;
@@ -386,7 +386,7 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER
     return( WR_CONTINUE );
 }
 
-walk_result MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d )
+walk_result MyWalkModList( imp_image_handle *iih, DIP_INT_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -396,13 +396,13 @@ walk_result MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d
     imp_mod_handle      im;
     walk_result         wr;
 
-    inf = ii->sect;
-    for( num_sects = ii->num_sects; num_sects != 0; --num_sects ) {
+    inf = iih->sect;
+    for( num_sects = iih->num_sects; num_sects != 0; --num_sects ) {
         im = IDX2IMH( inf->mod_base_idx );
         for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
-                wr = wk( ii, im, d );
+                wr = wk( iih, im, d );
                 if( wr != WR_CONTINUE )
                     return( wr );
                 ++im;
@@ -418,18 +418,18 @@ walk_result MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d
  * ModSrcLang -- return pointer to name of source language of the module
  */
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 {
-    return( ii->lang + ModPointer( ii, im )->language );
+    return( iih->lang + ModPointer( iih, im )->language );
 }
 
 /*
  * DIPImpModInfo - does a module have a particular brand of info
  */
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im, handle_kind hk )
 {
-    mod_info    *mod;
+    mod_dbg_info    *mod;
     static unsigned DmndType[MAX_HK] = {
         0,
         DMND_TYPES,
@@ -439,7 +439,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im, hand
 
     if( hk == HK_IMAGE )
         return( DS_FAIL );
-    mod = ModPointer( ii, im );
+    mod = ModPointer( iih, im );
     return( mod->di[DmndType[hk]].u.entries != 0 ? DS_OK : DS_FAIL );
 }
 
@@ -452,7 +452,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im, hand
  * DIPImpModName -- return the module name
  */
 
-size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle im,
                                 char *buff, size_t buff_size )
 {
     char        *name;
@@ -460,7 +460,7 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
     char        *end;
     size_t      len;
 
-    name = ModPointer( ii, im )->name;
+    name = ModPointer( iih, im )->name;
     len = (unsigned char)name[0];
     if( len == 0 ) {
         *buff = '\0';
@@ -507,13 +507,13 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
  * PrimaryCueFile -- return the module source file
  */
 
-size_t PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+size_t PrimaryCueFile( imp_image_handle *iih, imp_cue_handle *imp_cueh,
                         char *buff, size_t buff_size )
 {
     size_t      len;
     char        *name;
 
-    name = ModPointer( ii, ic->im )->name;
+    name = ModPointer( iih, imp_cueh->im )->name;
     len = (unsigned char)name[0];
     if( buff_size > 0 ) {
         --buff_size;

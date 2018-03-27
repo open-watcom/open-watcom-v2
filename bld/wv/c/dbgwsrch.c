@@ -45,14 +45,16 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "dbgwsrch.h"
+#include "menudef.h"
 
+
+#define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_OPENER,
     PIECE_MODULE,
     PIECE_SOURCE,
 };
-
 
 typedef struct {
     char        *source_line;
@@ -67,7 +69,7 @@ typedef void (SRCH_WALKER)( srch_window * );
 
 typedef struct a_cue {
     struct a_cue        *next;
-    cue_handle          *ch;
+    cue_handle          *cueh;
     char                name[1];
 } a_cue;
 
@@ -85,40 +87,37 @@ struct srch_window {
     bool        use_rx      : 1;
 };
 
-#define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
-
 extern wnd_info SrchInfo;
 
 extern unsigned int     InfoSize(mod_handle ,unsigned int, unsigned );
 
-#include "menudef.h"
 static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-static int SrchNumRows( a_window *wnd )
+OVL_EXTERN wnd_row SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
 
 
-OVL_EXTERN walk_result AddSrcFile( cue_handle *ch, void *d )
+OVL_EXTERN walk_result AddSrcFile( cue_handle *cueh, void *d )
 {
     a_cue       *file;
     srch_window *srch = d;
     int         len;
 
-    len = DIPCueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( cueh, NULL, 0 ) + 1;
     file = WndMustAlloc( sizeof( a_cue ) + cue_SIZE + len );
-    file->ch = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
-    DIPCueFile( ch, file->name, len );
-    HDLAssign( cue, file->ch, ch );
+    file->cueh = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
+    DIPCueFile( cueh, file->name, len );
+    HDLAssign( cue, file->cueh, cueh );
     file->next = srch->file_list;
     srch->file_list = file;
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
+OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
 {
     void        *viewhndl;
     const char  *pos,*endpos;
@@ -126,12 +125,12 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
     unsigned    i;
     int         len;
 
-    viewhndl = OpenSrcFile( ch );
+    viewhndl = OpenSrcFile( cueh );
     if( viewhndl == NULL )
         return( WR_CONTINUE );
-    DIPCueFile( ch, TxtBuff, TXT_LEN );
+    DIPCueFile( cueh, TxtBuff, TXT_LEN );
     WndStatusText( TxtBuff );
-    for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) >= 0; ++i ) {
+    for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) != FREADLINE_ERROR; ++i ) {
         TxtBuff[len] = NULLCHAR;
         pos = TxtBuff;
         endpos = NULL;
@@ -140,17 +139,19 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             if( found == NULL )
                 break;
             srch->found = found;
-            found[srch->num_rows].mod = DIPCueMod( ch );
-            found[srch->num_rows].file_id = DIPCueFileId( ch );
+            found[srch->num_rows].mod = DIPCueMod( cueh );
+            found[srch->num_rows].file_id = DIPCueFileId( cueh );
             found[srch->num_rows].open = false;
             found[srch->num_rows].source_line = DupStr( TxtBuff );
             srch->num_rows++;
-            len = DIPModName( DIPCueMod( ch ), NULL, 0 );
+            len = DIPModName( DIPCueMod( cueh ), NULL, 0 );
             if( srch->max_mod_name < len )
                 srch->max_mod_name = len;
             break;
         }
     }
+    if( len == FREADLINE_ERROR )
+        TxtBuff[0] = NULLCHAR;
     FDoneSource( viewhndl );
     return( WR_CONTINUE );
 }
@@ -164,7 +165,7 @@ OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
 }
 
 
-static int CueCompare( void *pa, void *pb )
+OVL_EXTERN int CueCompare( void *pa, void *pb )
 {
     return( strcmp( (*(a_cue **)pa)->name, (*(a_cue **)pb)->name ) );
 }
@@ -179,7 +180,7 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
     for( file = srch->file_list; file != NULL; file = file->next ) {
         if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 )
             continue;
-        SearchSrcFile( srch, file->ch );
+        SearchSrcFile( srch, file->cueh );
     }
     for( file = srch->file_list; file != NULL; file = next ) {
         next = file->next;
@@ -212,7 +213,7 @@ static  void    SrchFreeFound( srch_window *srch )
     srch->num_rows = 0;
 }
 
-static void     SrchInit( a_window *wnd )
+static void     SrchInit( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -229,10 +230,10 @@ static void     SrchInit( a_window *wnd )
 }
 
 
-static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     srch_window *srch = WndSrch( wnd );
-    a_window    *new;
+    a_window    new;
 
     /* unused parameters */ (void)piece;
 
@@ -253,8 +254,7 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    SrchGetLine( a_window *wnd, int row, int piece,
-                             wnd_line_piece *line )
+OVL_EXTERN  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -290,7 +290,7 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
 
 
 
-static void     SrchRefresh( a_window *wnd )
+OVL_EXTERN void     SrchRefresh( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -304,14 +304,13 @@ static void     SrchRefresh( a_window *wnd )
     } else {
         for( i = 0; i < srch->num_rows; ++i ) {
             found = &srch->found[i];
-            found->open = CheckOpenGadget( wnd, i, found->open,
-                           found->mod, true, PIECE_OPENER );
+            found->open = CheckOpenGadget( wnd, i, found->open, found->mod, true, PIECE_OPENER );
         }
     }
 }
 
 
-static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -320,7 +319,7 @@ static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         SrchInit( wnd );
-        WndSetKey( wnd, PIECE_MODULE );
+        WndSetKeyPiece( wnd, PIECE_MODULE );
         return( true );
     case GUI_DESTROY :
         WndFreeRX( srch->expr );
@@ -333,7 +332,7 @@ static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info SrchInfo = {
-    SrchEventProc,
+    SrchWndEventProc,
     SrchRefresh,
     SrchGetLine,
     SrchMenuItem,
@@ -345,11 +344,11 @@ wnd_info SrchInfo = {
     NoNextRow,
     NoNotify,
     ChkFlags,
-    UP_SYMBOLS_LOST + UP_OPEN_CHANGE,
+    UP_SYMBOLS_LOST | UP_OPEN_CHANGE,
     DefPopUp( SrchMenu ),
 };
 
-static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )
+static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )
 {
     srch_window *srch;
     void        *rx;
@@ -372,7 +371,7 @@ static a_window *DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cooki
     return( DbgWndCreate( LIT_DUI( WindowSearch ), &SrchInfo, WND_ALL, srch, &SrchIcon ) );
 }
 
-a_window *WndSrchOpen( const char *expr )
+a_window WndSrchOpen( const char *expr )
 {
     return( DoWndSrchOpen( expr, GlobalModWalker, NULL ) );
 }

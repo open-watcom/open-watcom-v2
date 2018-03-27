@@ -32,7 +32,6 @@
 
 #include <stddef.h>
 #include <limits.h>
-#include <stdio.h>
 #include <time.h>
 #include <direct.h>
 #include <dos.h>
@@ -47,6 +46,9 @@
 
 #include "clibext.h"
 
+
+#define SYSH2LH(sh)     (int)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
 /* Not thread safe; not expected to be an issue. */
 struct find_t   Findbuf;
@@ -79,10 +81,10 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = lctime->tm_wday;
 }
 
-bool LocalInteractive( sys_handle fh )
+bool LocalInteractive( sys_handle sh )
 /************************************/
 {
-    return( isatty( fh ) != 0 );
+    return( isatty( SYSH2LH( sh ) ) != 0 );
 }
 
 void LocalGetBuff( char *buff, unsigned size )
@@ -198,7 +200,7 @@ long LocalGetFreeSpace( int drv )
     return( dfre.avail_clusters * dfre.sectors_per_cluster * dfre.bytes_per_sector );
 }
 
-error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
 /************************************************************************/
 {
 #if 0
@@ -210,17 +212,17 @@ error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
     pdate = (struct _FDATE *)date;
     ptime = (struct _FTIME *)time;
     if( set ) {
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );
         fstatus.ftimeLastWrite = *ptime;
         fstatus.fdateLastWrite = *pdate;
-        rc = DosSetFileInfo( fh, 1, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosSetFileInfo( SYSH2LH( sh ), 1, (PBYTE)&fstatus, sizeof( fstatus ) );
         if( rc != 0 ) {
             return( StashErrCode( rc, OP_LOCAL ) );
         }
     } else {
-        rc = DosQueryFileInfo( fh, FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
+        rc = DosQueryFileInfo( SYSH2LH( sh ), FIL_STANDARD, (PBYTE)&fstatus, sizeof( fstatus ) );
         if( rc != 0 )
             return( StashErrCode( rc, OP_LOCAL ) );
         *ptime = fstatus.ftimeLastWrite;
@@ -228,7 +230,7 @@ error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
     }
     return( 0 );
 #else
-    fh=fh;time=time;date=date;set=set;
+    sh=sh;time=time;date=date;set=set;
     return 0;
 #endif
 }

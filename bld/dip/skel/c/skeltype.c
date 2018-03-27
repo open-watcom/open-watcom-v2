@@ -38,8 +38,8 @@
 */
 
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
-                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it,
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
+                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
     //TODO:
@@ -47,16 +47,15 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
         PSEUDO-CODE:
 
         for( each type in the module ) {
-            *it = fill in the implemenation type handle;
-            wr = wk( ii, it, d );
+            *ith = fill in the implemenation type handle;
+            wr = wk( iih, ith, d );
             if( wr != WR_CONTINUE ) return( wr );
         }
     */
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
-                                imp_type_handle *it )
+imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )
 {
     //TODO:
     /*
@@ -65,8 +64,8 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
     return( IMH_NOMOD );
 }
 
-dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, dip_type_info *ti )
+dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
+                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
 {
     //TODO:
     /*
@@ -80,8 +79,8 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
-                        imp_type_handle *it, imp_type_handle *base,
+dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
+                        imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
 {
     //TODO:
@@ -96,13 +95,13 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
         start of the data for the object described by the result of the
         TypeBase operation.
      */
-     *base = *it;
+     *base_ith = *ith;
      return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
-                        imp_type_handle *array, location_context *lc,
-                        array_info *ai, imp_type_handle *index )
+dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
+                        imp_type_handle *array_ith, location_context *lc,
+                        array_info *ai, imp_type_handle *index_ith )
 {
     //TODO:
     /*
@@ -117,12 +116,13 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *ii,
     ai->stride = 0;
     ai->num_dims = 0;
     ai->column_major = 0; /* 1 for fortran */
-    if( index != NULL ) *index = *array;
+    if( index_ith != NULL )
+        *index_ith = *array_ith;
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
-                imp_type_handle *proc, imp_type_handle *parm, unsigned n )
+dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
+                imp_type_handle *proc_ith, imp_type_handle *parm_ith, unsigned n )
 {
     //TODO:
     /*
@@ -132,12 +132,12 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *ii,
         variable. Otherwise store the handle for the n'th parameter in
         'parm'.
     */
-    *parm = *proc;
+    *parm_ith = *proc_ith;
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
-                    imp_type_handle *it, location_context *lc, address *a )
+dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
+                    imp_type_handle *ith, location_context *lc, address *a )
 {
     /*
         Given an implementation type handle that represents a pointer type,
@@ -149,8 +149,8 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
-                        imp_type_handle *base, imp_type_handle *derived,
+dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
+                        imp_type_handle *base_ith, imp_type_handle *derived_ith,
                         location_context *lc, address *addr )
 {
     //TODO:
@@ -166,8 +166,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                                imp_type_handle *it2 )
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_type_handle *ith2 )
 {
     //TODO:
     /*
@@ -184,7 +183,7 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
     return( 0 );
 }
 
-size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
+size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     //TODO:
@@ -241,23 +240,23 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
     are called at the same time
 
 */
-dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *ith )
 {
     /*
-    it->r->refCount++;
+    ith->r->refCount++;
     */
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
     /*
-    it->r->refCount--;
+    ith->r->refCount--;
     */
     return(DS_OK);
 }
 
-dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
+dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
     /*
     for( type = TypesList; type != NULL; type = type->link ) {

@@ -455,8 +455,8 @@ pick(   WDE_ABOUT_NAME,
         "Open Watcom Dialog Editor for Windows" STR_BITNESS,
         "Open Watcom Dialog Editor for Windows" STR_BITNESS )
 pick(   WDE_ABOUT_VERSION,
-        banner1p2( _RESEDIT_VERSION_ ),
-        banner1p2( _RESEDIT_VERSION_ ) )
+        banner1v( _RESEDIT_VERSION_ ),
+        banner1v( _RESEDIT_VERSION_ ) )
 pick(   WDE_ABOUT_TITLE,
         "About Open Watcom Dialog Editor",
         "About Open Watcom Dialog Editor" )

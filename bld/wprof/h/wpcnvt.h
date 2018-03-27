@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void WPConvert( a_window *wnd, gui_ctl_id id );
+extern void WPConvert( a_window wnd, gui_ctl_id id );

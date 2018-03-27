@@ -98,7 +98,7 @@ static void OpeningStatement( void )
     Output( banner1w( SERVNAME, _XXXSERV_VERSION_ ) "\r\n" );
 #endif
     Output( banner2 "\r\n" );
-    Output( banner2a( "1988" ) "\r\n" );
+    Output( banner2a( 1988 ) "\r\n" );
     Output( banner3 "\r\n" );
     Output( banner3a "\r\n" );
 }

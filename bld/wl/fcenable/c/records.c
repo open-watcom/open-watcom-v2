@@ -368,16 +368,30 @@ void ProcessRec( void )
 
     is386 = false;
     switch( Rec1->head.class ) {
-    case SEGD32: is386 = true;      // note the fall through
-    case SEGDEF: procsegdef( is386 ); break;
-    case COMENT: proccoment(); break;
-    case LNAMES: proclnames(); break;
-    case LEDA32: is386 = true;      //  even more fall through here.
-    case LIDA32: is386 = true;
+    case SEGD32:
+        is386 = true;      // note the fall through
+        /* fall through */
+    case SEGDEF:
+        procsegdef( is386 );
+        break;
+    case COMENT:
+        proccoment();
+        break;
+    case LNAMES:
+        proclnames();
+        break;
+    case LEDA32:
+    case LIDA32:
+        is386 = true;
+        /* fall through */
     case LEDATA:
-    case LIDATA: ProcDataRec( is386 ); break;
+    case LIDATA:
+        ProcDataRec( is386 );
+        break;
     case FIXU32:
-    case FIXUPP: procfixupp(); break;
+    case FIXUPP:
+        procfixupp();
+        break;
     default:
         WriteRecord();
         break;
@@ -437,7 +451,7 @@ rec_status ReadRec( void )
             return( OBJECT );
         } else if( Rec1->head.class == MODEND || Rec1->head.class == MODE32 ) {
             if( PageLen != 0 ) {            // skip padding in the library.
-                offset = tell( InFile );
+                offset = ftell( InFile );
                 offset = PageLen - offset % PageLen;
                 if( offset == PageLen )
                     offset = 0;

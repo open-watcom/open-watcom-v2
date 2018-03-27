@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "opcodes.h"
 #include "makeins.h"
 
 extern  void            PrefixIns(instruction*,instruction*);

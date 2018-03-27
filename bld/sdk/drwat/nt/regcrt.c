@@ -42,7 +42,7 @@
 #include "bitman.h"
 
 
-static unsigned getMADMaxFormatWidth( mad_type_handle th )
+static unsigned getMADMaxFormatWidth( mad_type_handle mth )
 {
     mad_radix           radix;
     void                *tmp;
@@ -53,7 +53,7 @@ static unsigned getMADMaxFormatWidth( mad_type_handle th )
     char                TxtBuff[100];
 
     sign = 0;
-    MADTypeInfo( th, &mti );
+    MADTypeInfo( mth, &mti );
     tmp=alloca( mti.b.bits );
     switch( mti.b.kind ) {
     case MTK_ADDRESS:
@@ -69,7 +69,7 @@ static unsigned getMADMaxFormatWidth( mad_type_handle th )
         memset( tmp, 0, mti.b.bits );
         break;
     }
-    radix = MADTypePreferredRadix( th );
+    radix = MADTypePreferredRadix( mth );
     max = 0;
     MADTypeToString( radix, &mti, tmp, TxtBuff, &max );
     return( max + sign );
@@ -78,24 +78,24 @@ static unsigned getMADMaxFormatWidth( mad_type_handle th )
 static void getRegSetInfo( mad_reg_set_data *data, mad_registers *regs, int *max_len,
         int *mv, int *num_reg)
 {
-    unsigned        i;
-    unsigned        maxd;
-    unsigned        maxv;
-    const char      *descript;
-    unsigned        max_descript;
-    const mad_reg_info    *rinfo;
-    unsigned        temp_maxv;
-    mad_type_handle mtype;
+    unsigned            i;
+    unsigned            maxd;
+    unsigned            maxv;
+    const char          *descript;
+    unsigned            max_descript;
+    const mad_reg_info  *rinfo;
+    unsigned            temp_maxv;
+    mad_type_handle     mth;
 
     maxd = 0;
     maxv = 0;
     for( i = 0;; i++ ) {
         if( MADRegSetDisplayGetPiece( data, regs, i, &descript,
-            &max_descript, &rinfo, &mtype, &temp_maxv ) != MS_OK ) {
+            &max_descript, &rinfo, &mth, &temp_maxv ) != MS_OK ) {
             break;
         }
         if( temp_maxv == 0 && rinfo != NULL ) {
-            temp_maxv = getMADMaxFormatWidth( mtype );
+            temp_maxv = getMADMaxFormatWidth( mth );
         }
         if( max_descript == 0 && descript != NULL ) {
             max_descript = strlen( descript );
@@ -114,15 +114,15 @@ static void getRegSetInfo( mad_reg_set_data *data, mad_registers *regs, int *max
 static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
     RegStringCreateData *create )
 {
-    mad_type_handle mtype;
-    mad_type_info   mti;
-    mad_radix       radix;
-    const mad_reg_info    *rinfo;
-    void            *value;
-    unsigned        max_len;
-    const char      *descript;
+    mad_type_handle     mth;
+    mad_type_info       mti;
+    mad_radix           radix;
+    const mad_reg_info  *rinfo;
+    void                *value;
+    unsigned            max_len;
+    const char          *descript;
 
-    MADRegSetDisplayGetPiece( data, regs, i, &descript, &( create[i].maxd ), &rinfo, &mtype, &( create[i].length ) );
+    MADRegSetDisplayGetPiece( data, regs, i, &descript, &( create[i].maxd ), &rinfo, &mth, &( create[i].length ) );
 
     if ( create[i].maxd == 0 && descript != NULL ){
         create[i].maxd = strlen( descript );
@@ -136,16 +136,16 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
     }
 
     if( create[i].length == 0 && rinfo != NULL ) {
-       create[i].length = getMADMaxFormatWidth(mtype);
+       create[i].length = getMADMaxFormatWidth( mth );
     }
 
     if( rinfo != NULL ) {
-        MADTypeInfo( rinfo->type, &mti );
+        MADTypeInfo( rinfo->mth, &mti );
         value = alloca( BITS2BYTES( mti.b.bits ) );
         BitGet( value, (unsigned char *)regs, rinfo->bit_start, rinfo->bit_size );
-        radix = MADTypePreferredRadix( mtype );
+        radix = MADTypePreferredRadix( mth );
         max_len = create[i].length + 1;
-        MADTypeHandleToString( radix, mtype, value, create[i].value, &max_len );
+        MADTypeHandleToString( radix, mth, value, create[i].value, &max_len );
     } else {
         create[i].value[0] = '\0';
     }

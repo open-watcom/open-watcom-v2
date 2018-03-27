@@ -24,52 +24,52 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 specific parallel port access routines.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
 #define INCL_DOSINFOSEG
-#include <os2.h>
+#define INCL_DOSDEVICES
+#define INCL_DOSPROCESS
+#define INCL_DOSMISC
+#include <wos2.h>
 #include "i86.h"
 #include "parlink.h"
+#include "portio.h"
 
-
-extern unsigned __far output_port( unsigned, unsigned );
-extern unsigned __far input_port( unsigned );
-
-extern unsigned __pascal __far DosDevConfig( char __far *, unsigned short,
-                                         unsigned short );
-
-extern unsigned short __pascal __far DosPortAccess( unsigned short reserverd,
-                                                unsigned short req_release,
-                                                unsigned short first_port,
-                                                unsigned short last_port );
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
-GINFOSEG                                __far *GInfoSeg;
+#ifdef _M_I86
+GINFOSEG    __far *GInfoSeg;
+#endif
 
-unsigned short PortTest[] = {
-        0x378, 0x3bc, 0x278
+USHORT      PortTest[] = {
+    0x378, 0x3bc, 0x278
 };
 
-unsigned short PortAddress[NUM_ELTS( PortTest )] = {
-        0,0,0
+USHORT      PortAddress[NUM_ELTS( PortTest )] = {
+    0, 0, 0
 };
 
-unsigned PortsFound;
+USHORT      PortsFound;
 
 int NumPrinters( void )
 {
     char                num_printers;
-    unsigned short      rc;
+    APIRET              rc;
 
+#ifdef _M_I86
     rc = DosDevConfig( &num_printers, 0, 0 );
-    if( rc != 0 ) return( 0 );
-    if( num_printers > PortsFound ) num_printers = PortsFound;
+#else
+    rc = DosDevConfig( &num_printers, DEVINFO_PRINTER );
+#endif
+    if( rc != 0 )
+        return( 0 );
+    if( num_printers > PortsFound )
+        num_printers = PortsFound;
     return( num_printers );
 }
 
@@ -86,29 +86,36 @@ void FreePorts( unsigned first, unsigned last )
 
 static int CheckForPort( int i, unsigned char value )
 {
+#ifdef _M_I86
     int         j;
+#endif
 
-    output_port( PortTest[ i ], value );
+    output_port( PortTest[i], value );
+#ifdef _M_I86
     for( j = 100; j != 0; j-- )
         ;
-    return( input_port( PortTest[ i ] ) == value );
+#else
+    DosSleep(1);
+#endif
+    return( input_port( PortTest[i] ) == value );
 }
 
 
 char *InitSys( void )
 {
+    int         i;
+#ifdef _M_I86
     SEL         sel_global;
     SEL         sel_local;
-    int         i;
 
     DosGetInfoSeg( &sel_global, &sel_local );
     GInfoSeg = MK_FP( sel_global, 0 );
-
+#endif
     PortsFound = 0;
     for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
         AccessPorts( PortTest[i], PortTest[i] );
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[ PortsFound++ ] = PortTest[ i ];
+            PortAddress[PortsFound++] = PortTest[i];
         }
         FreePorts( PortTest[i], PortTest[i] );
     }
@@ -121,13 +128,20 @@ void FiniSys( void )
 }
 
 
-unsigned long Ticks( void )
+ULONG Ticks( void )
 {
-    return( ( GInfoSeg->msecs ) / 100 );
+#ifdef _M_I86
+    return( GInfoSeg->msecs / 100 );
+#else
+    ULONG  ulMsecs;
+
+    DosQuerySysInfo( QSV_MS_COUNT, QSV_MS_COUNT, &ulMsecs, sizeof( ulMsecs ) );
+    return( ulMsecs / 100 );
+#endif
 }
 
 
 unsigned PrnAddress( int printer )
 {
-    return( PortAddress[ printer ] );
+    return( PortAddress[printer] );
 }

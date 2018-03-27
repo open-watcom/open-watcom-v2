@@ -29,9 +29,12 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+
+
 #define DIGLoader(n)    DIGLoader ## n
 
-extern dig_fhandle      DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
-extern int              DIGLoader( Close )( dig_fhandle fid );
-extern int              DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len );
-extern int              DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where );
+extern FILE     *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
+extern int      DIGLoader( Close )( FILE *fp );
+extern int      DIGLoader( Read )( FILE *fp, void *buff, size_t len );
+extern int      DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where );

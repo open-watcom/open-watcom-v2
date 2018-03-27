@@ -118,10 +118,10 @@ WEXPORT WDialog::~WDialog() {
     }
 }
 
-bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
-/*************************************************************/
-
-    switch( msg ) {
+bool WEXPORT WDialog::processMsg( gui_event gui_ev, void *parm )
+/**************************************************************/
+{
+    switch( gui_ev ) {
     case GUI_INIT_DIALOG:
         initialize();
         return( true );
@@ -136,18 +136,18 @@ bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
         setHandle( NULL );
         return( true );
     }
-    return( WWindow::processMsg( msg, parm ) );
+    return( WWindow::processMsg( gui_ev, parm ) );
 }
 
 
-extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm )
-/********************************************************************/
+extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************/
 {
     WDialog* win = (WDialog*)GUIGetExtra( hwin );
-    if( msg == GUI_INIT_DIALOG ) {
+    if( gui_ev == GUI_INIT_DIALOG ) {
         win->setHandle( hwin );
     }
-    return( win->processMsg( msg, parm ) );
+    return( win->processMsg( gui_ev, parm ) );
 }
 
 
@@ -179,11 +179,11 @@ void WDialog::doDialog( WWindow *parent ) {
     create_info.scroll = GUI_NOSCROLL;
     create_info.style = GUI_NONE;
     create_info.parent = hparent;
-    create_info.num_menus = 0;
+    create_info.num_items = 0;
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.gui_call_back = DlgProc;
+    create_info.gui_call_back = DlgGUIEventProc;
     create_info.extra = this;
     create_info.icon = NULL;
     GUICreateDialog( &create_info, 0, NULL );

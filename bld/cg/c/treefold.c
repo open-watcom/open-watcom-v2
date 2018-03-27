@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "cgdefs.h"
 #include "tree.h"
 #include "cfloat.h"
 #include "zoiks.h"
@@ -136,16 +136,19 @@ static cmp_result CheckCmpRange( cg_op op, int op_type, float_handle val )
     switch( op ) {
     case O_NE:
         rev_ret = true;
+        /* fall through */
     case O_EQ:
         rel = REL_EQ;
         break;
     case O_GE:
         rev_ret = true;
+        /* fall through */
     case O_LT:
         rel = REL_LT;
         break;
     case O_GT:
         rev_ret = true;
+        /* fall through */
     case O_LE:
         rel = REL_LE;
         break;

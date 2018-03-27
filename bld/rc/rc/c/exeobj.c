@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "wio.h"
 #include "global.h"
 #include "rcerrors.h"
 #include "rcrtns.h"
@@ -56,7 +55,7 @@ static RcStatus readObjectTable( ExeFileInfo *exe )
         file_offset = exe->WinHeadOffset + sizeof( pe_header );
     }
     exe->u.PEInfo.Objects = RESALLOC( objects_size );
-    ret = SeekRead( exe->fid, file_offset, exe->u.PEInfo.Objects, objects_size );
+    ret = SeekRead( exe->fp, file_offset, exe->u.PEInfo.Objects, objects_size );
     switch( ret ) {
     case RS_OK:
         break;
@@ -181,9 +180,9 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
  * copyOneObject
  * if an error occurs this function MUST return without altering errno
  */
-static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
-                        WResFileID new_fid, pe_object * new_obj )
-/*********************************************************************/
+static RcStatus copyOneObject( FILE *old_fp, pe_object * old_obj,
+                        FILE *new_fp, pe_object * new_obj )
+/***************************************************************/
 {
     /*
      * if this an uninitialized object (one for which there is not
@@ -192,12 +191,12 @@ static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
     if( (old_obj->flags & PE_OBJ_UNINIT_DATA) && ( old_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
-    if( RESSEEK( old_fid, old_obj->physical_offset, SEEK_SET ) )
+    if( RESSEEK( old_fp, old_obj->physical_offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( new_fid, new_obj->physical_offset, SEEK_SET ) )
+    if( RESSEEK( new_fp, new_obj->physical_offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
-    return( CopyExeData( old_fid, new_fid, old_obj->physical_size ) );
+    return( CopyExeData( old_fp, new_fp, old_obj->physical_size ) );
 }
 
 bool CopyExeObjects( void )
@@ -224,7 +223,7 @@ bool CopyExeObjects( void )
     old_obj = old->u.PEInfo.Objects;
     tmp_obj = tmp->u.PEInfo.Objects;
     for( ; num_objs > 0; num_objs--, old_obj++, tmp_obj++ ) {
-        ret = copyOneObject( old->fid, old_obj, tmp->fid, tmp_obj );
+        ret = copyOneObject( old->fp, old_obj, tmp->fp, tmp_obj );
         switch( ret ) {
         case RS_WRITE_ERROR:
             RcError( ERR_WRITTING_FILE, tmp->name, strerror( errno ) );

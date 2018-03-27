@@ -47,8 +47,8 @@ STATIC int          WPGetRtnRow( sio_data * );
 
 
 
-image_info * SImageGetImage( a_window * wnd, int row )
-/****************************************************/
+image_info * SImageGetImage( a_window wnd, int row )
+/**************************************************/
 {
     sio_data *      curr_sio;
     image_info *    image;
@@ -72,8 +72,8 @@ image_info * SImageGetImage( a_window * wnd, int row )
 
 
 
-mod_info * SModGetModule( a_window * wnd, int row )
-/*************************************************/
+mod_info * SModGetModule( a_window wnd, int row )
+/***********************************************/
 {
     sio_data *      curr_sio;
     image_info *    curr_image;
@@ -99,8 +99,8 @@ mod_info * SModGetModule( a_window * wnd, int row )
 
 
 
-file_info * SFileGetFile( a_window * wnd, int row )
-/*************************************************/
+file_info * SFileGetFile( a_window wnd, int row )
+/***********************************************/
 {
     sio_data *      curr_sio;
     mod_info *      curr_mod;
@@ -126,8 +126,8 @@ file_info * SFileGetFile( a_window * wnd, int row )
 
 
 
-rtn_info * SRtnGetRoutine( a_window * wnd, int row )
-/**************************************************/
+rtn_info * SRtnGetRoutine( a_window wnd, int row )
+/************************************************/
 {
     sio_data *      curr_sio;
     file_info *     curr_file;

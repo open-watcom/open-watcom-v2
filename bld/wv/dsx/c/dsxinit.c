@@ -47,6 +47,8 @@
 #include "dbgerr.h"
 
 
+#define _NBPARAS( bytes )       ((bytes + 15UL) / 16)
+
 static memptr                   OldInt1b;
 static memptr                   OldInt23;
 static memptr                   OldInt24;
@@ -142,7 +144,7 @@ void GUImain( void )
 #if defined(__OSI__)
     {
         long    result;
-    
+
         _Extender = DOSX_RATIONAL;
         result = DPMIAllocateLDTDescriptors( 1 );
         if( result < 0 ) {

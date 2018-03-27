@@ -34,21 +34,21 @@
 #define _UIVEDIT_H
 
 typedef struct veditline {
-        ORD             row;
-        ORD             col;         /* position of field on vscreen         */
-        int             fldlen;      /* length of field on vscreen           */
-        int             scroll;      /* index of first visible character     */
-        int             length;      /* length of buffer                     */
-        char      _FARD *buffer;     /* buffer of characters editted         */
-        int             index;       /* cursor position in buffer            */
-        ATTR            attr;        /* attribute for output to vscreen      */
-        unsigned        dirty:1;     /* boolean: user changed buffer         */
-        unsigned        update:1;    /* boolean: application has changed     */
-        unsigned        auto_clear:1;/* clear contents when user types       */
-        unsigned        invisible:1; /* characters are invisible             */
-        unsigned        marking:1;   /* boolean: are we marking?             */
-        unsigned        mark_anchor; /* marking anchor position              */
-        ATTR            mark_attr;   /* marking attribute                    */
+    ORD             row;
+    ORD             col;            /* position of field on vscreen     */
+    unsigned        fldlen;         /* length of field on vscreen       */
+    int             scroll;         /* index of first visible character */
+    unsigned        length;         /* length of buffer                 */
+    char      _FARD *buffer;        /* buffer of characters editted     */
+    unsigned        index;          /* cursor position in buffer        */
+    ATTR            attr;           /* attribute for output to vscreen  */
+    bool            dirty       :1; /* boolean: user changed buffer     */
+    bool            update      :1; /* boolean: application has changed */
+    bool            auto_clear  :1; /* clear contents when user types   */
+    bool            invisible   :1; /* characters are invisible         */
+    bool            marking     :1; /* boolean: are we marking?         */
+    unsigned        mark_anchor;    /* marking anchor position          */
+    ATTR            mark_attr;      /* marking attribute                */
 } VEDITLINE;
 /*                                                                         */
 /* the veditline update flag must be set to true to start editting or      */
@@ -60,10 +60,10 @@ typedef struct veditline {
     extern "C" {
 #endif
 
-extern EVENT    uiveditevent( VSCREEN *, VEDITLINE *, EVENT );
-extern EVENT    uiveditline( VSCREEN *, VEDITLINE * );
-extern bool     uiveditinit(VSCREEN *, VEDITLINE *, char *, int, ORD, ORD, int );
-extern bool     uiveditfini(VSCREEN *, VEDITLINE *);
+extern ui_event uiveditevent( VSCREEN *, VEDITLINE *, ui_event );
+extern ui_event uiveditline( VSCREEN *, VEDITLINE * );
+extern bool     uiveditinit( VSCREEN *, VEDITLINE *, char *, unsigned, ORD, ORD, unsigned );
+extern bool     uiveditfini( VSCREEN *, VEDITLINE * );
 
 #ifdef __cplusplus
 }

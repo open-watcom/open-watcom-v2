@@ -36,6 +36,11 @@
 #include "uidos.h"
 #include "biosui.h"
 
+
+extern char     _B000h[];
+extern char     _B800h[];
+extern unsigned VIDPort;
+
 static MONITOR ui_data = {
     25,
     80,
@@ -48,33 +53,26 @@ static MONITOR ui_data = {
     1
 };
 
-extern char  _B000h[],_B800h[];
-extern unsigned int  VIDPort;
-#define VIDMONOINDXREG  0X03B4
-#define VIDCOLRINDXREG  0X03D4
-
-
 void UIAPI win_uisetmono( void )
 {
-        ui_data.colour = M_MONO;
-        ui_data.screen.origin = MK_FP( _B000h, 0 );
-        VIDPort = VIDMONOINDXREG;
+    ui_data.colour = M_MONO;
+    ui_data.screen.origin = MK_FP( _B000h, 0 );
+    VIDPort = VIDMONOINDXREG;
 }
 
 void UIAPI win_uisetcolor( int clr )
 {
-        ui_data.colour = clr;
-        ui_data.screen.origin = MK_FP( _B800h, 0 );
-        VIDPort = VIDCOLRINDXREG;
+    ui_data.colour = clr;
+    ui_data.screen.origin = MK_FP( _B800h, 0 );
+    VIDPort = VIDCOLORINDXREG;
 }
 
-bool intern initmonitor( void )
+static bool initmonitor( void )
 /*****************************/
 {
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
-//    UIData->height = 25;
     return( true );
 }
 
@@ -89,31 +87,19 @@ bool intern initbios( void )
 
     initialized = false;
     if( initmonitor() ) {
-        UIData->desqview = 0;
+        UIData->desqview = false;
         UIData->f10menus = true;
-        if( UIData->colour == M_MONO ) {
-            UIData->screen.origin = MK_FP( _B000h, 0 );
-        } else {
-            UIData->screen.origin = MK_FP( _B800h, 0 );
-        }
-
+        UIData->screen.origin = MK_FP( ( UIData->colour == M_MONO ) ? _B000h : _B800h, 0 );
         UIData->screen.increment = UIData->width;
         uiinitcursor();
         initkeyboard();
-        UIData->mouse_acc_delay = 5;   /* ticks */
-        UIData->mouse_rpt_delay = 1;   /* ticks */
-        UIData->mouse_clk_delay = 5;   /* ticks */
-        UIData->tick_delay = 9;        /* ticks */
+        UIData->mouse_acc_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->mouse_rpt_delay = uiclockdelay( 55  /* ms */ );  /* 1 ticks */
+        UIData->mouse_clk_delay = uiclockdelay( 277 /* ms */ );  /* 5 ticks */
+        UIData->tick_delay      = uiclockdelay( 500 /* ms */ );  /* 9 ticks */
         initialized = true;
     }
     return( initialized );
-}
-
-unsigned UIAPI uiclockdelay( unsigned milli )
-{
-    /* this routine converts milli-seconds into platform  */
-    /* dependant units - used to set mouse & timer delays */
-    return( milli * 18 / 1000 );
 }
 
 
@@ -127,6 +113,6 @@ void intern finibios( void )
 
 void intern physupdate( SAREA *area )
 {
-    area = area;
+    /* unused parameters */ (void)area;
 }
 

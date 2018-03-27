@@ -51,4 +51,5 @@ extern bool GUISetCursor( gui_window *wnd );
 extern void GUIAdjustDialogArea( SAREA *area, int mult );
 extern void GUIGetSAREA( gui_window *wnd, SAREA *area );
 extern void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea );
+
 #endif // _GUIXUTIL_H_

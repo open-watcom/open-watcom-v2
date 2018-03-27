@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +49,7 @@
 #include "dbgreg.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
+#include "menudef.h"
 
 
 enum {
@@ -57,24 +59,22 @@ enum {
     PIECE__LAST
 };
 
-static gui_ord          Indents[PIECE__LAST];
+extern event_record *EventList;
 
+static gui_ord      Indents[PIECE__LAST];
 
-#include "menudef.h"
+static int          LastEventCount;
 
 static gui_menu_struct RepMenu[] = {
     #include "menurep.h"
 };
 
-extern event_record *EventList;
-static int      LastEventCount;
-
 static void RepInitEv( event_record *ev )
 {
-    DIPHDL( cue, ch );
+    DIPHDL( cue, cueh );
     if( ev->cue == NULL ) {
-        if( DeAliasAddrCue( NO_MOD, ev->ip, ch ) != SR_NONE ) {
-            ev->cue = CopySourceLine( ch );
+        if( DeAliasAddrCue( NO_MOD, ev->ip, cueh ) != SR_NONE ) {
+            ev->cue = CopySourceLine( cueh );
         }
         if( ev->cue == NULL ) {
             UnAsm( ev->ip, TxtBuff, TXT_LEN );
@@ -103,9 +103,9 @@ static event_record *RepGetEvent( int row )
 }
 
 
-static int RepNumRows( a_window *wnd )
+OVL_EXTERN wnd_row RepNumRows( a_window wnd )
 {
-    int                 count;
+    wnd_row             count;
     event_record        *ev;
 
     /* unused parameters */ (void)wnd;
@@ -118,7 +118,7 @@ static int RepNumRows( a_window *wnd )
 }
 
 
-static void RepRefresh( a_window *wnd )
+OVL_EXTERN void RepRefresh( a_window wnd )
 {
     event_record        *ev;
     gui_ord             extent, max_addr, max_cue;
@@ -143,7 +143,7 @@ static void RepRefresh( a_window *wnd )
     max_cue += WndMaxCharX( wnd );
     if( Indents[PIECE_SOURCE] != max_addr ||
         Indents[PIECE_COMMAND] != max_addr + max_cue ) {
-        WndRepaint( wnd );
+        WndSetRepaint( wnd );
     } else {
         row = count;
         while( --row >= LastEventCount ) {
@@ -157,7 +157,7 @@ static void RepRefresh( a_window *wnd )
 }
 
 
-static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
+OVL_EXTERN void RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     event_record        *ev;
 
@@ -188,8 +188,7 @@ static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  bool    RepGetLine( a_window *wnd, int row, int piece,
-                            wnd_line_piece *line )
+OVL_EXTERN  bool    RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     event_record        *ev;
 
@@ -220,7 +219,7 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
+OVL_EXTERN bool RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -233,7 +232,7 @@ static bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 }
 
 wnd_info RepInfo = {
-    RepEventProc,
+    RepWndEventProc,
     RepRefresh,
     RepGetLine,
     RepMenuItem,
@@ -250,7 +249,7 @@ wnd_info RepInfo = {
 };
 
 
-extern a_window *WndRepOpen( void )
+a_window WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );
 }

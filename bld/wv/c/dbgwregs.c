@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "dbgitem.h"
 #include "dbgwmadr.h"
 #include "dbgwregs.h"
+#include "dbgchopt.h"
 
 
 void RegChangeOptions( void )
@@ -43,7 +45,7 @@ void RegChangeOptions( void )
     WndForAllClass( WND_REGISTER, MadRegChangeOptions );
 }
 
-extern a_window *WndRegOpen( void )
+a_window WndRegOpen( void )
 {
     return( WndMadRegOpen( MTK_INTEGER, WND_REGISTER, &RegIcon ) );
 }

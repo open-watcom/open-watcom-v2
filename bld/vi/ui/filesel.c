@@ -292,17 +292,17 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
 {
     int x, y, i;
 
-    if( LastMouseEvent != MOUSE_DRAG && LastMouseEvent != MOUSE_PRESS &&
-        LastMouseEvent != MOUSE_DCLICK && LastMouseEvent != MOUSE_RELEASE &&
-        LastMouseEvent != MOUSE_REPEAT && LastMouseEvent != MOUSE_PRESS_R ) {
+    if( LastMouseEvent != VI_MOUSE_DRAG && LastMouseEvent != VI_MOUSE_PRESS &&
+        LastMouseEvent != VI_MOUSE_DCLICK && LastMouseEvent != VI_MOUSE_RELEASE &&
+        LastMouseEvent != VI_MOUSE_REPEAT && LastMouseEvent != VI_MOUSE_PRESS_R ) {
         return( false );
     }
     mouse_wid = wid;
     mouseScroll = MS_NONE;
 
-    if( !isMenu && ( wid == cwid ) && (LastMouseEvent == MOUSE_REPEAT ||
-                                    LastMouseEvent == MOUSE_PRESS ||
-                                    LastMouseEvent == MOUSE_DCLICK ) ) {
+    if( !isMenu && ( wid == cwid ) && (LastMouseEvent == VI_MOUSE_REPEAT ||
+                                    LastMouseEvent == VI_MOUSE_PRESS ||
+                                    LastMouseEvent == VI_MOUSE_DCLICK ) ) {
         x = WindowAuxInfo( cwid, WIND_INFO_WIDTH );
         y = WindowAuxInfo( cwid, WIND_INFO_HEIGHT );
         if( win_x == x - 1 ) {
@@ -321,7 +321,7 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
             }
         }
     }
-    if( LastMouseEvent == MOUSE_REPEAT ) {
+    if( LastMouseEvent == VI_MOUSE_REPEAT ) {
         if( wid != cwid && !isMenu ) {
             y = WindowAuxInfo( cwid, WIND_INFO_Y1 );
             if( MouseRow < y ) {
@@ -337,7 +337,7 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
         return( false );
     }
     if( isMenu && EditFlags.Menus && wid == menu_window_id &&
-        LastMouseEvent != MOUSE_PRESS_R ) {
+        LastMouseEvent != VI_MOUSE_PRESS_R ) {
         i = GetMenuIdFromCoord( win_x );
         if( i >= 0 ) {
             rlMenuNum = i - GetCurrentMenuId();
@@ -557,7 +557,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
         if( sfd->retevents != NULL ) {
             i = 0;
             if( key == VI_KEY( MOUSEEVENT ) ) {
-                if( mouse_wid == owid && LastMouseEvent == MOUSE_PRESS ) {
+                if( mouse_wid == owid && LastMouseEvent == VI_MOUSE_PRESS ) {
                     DisplayMouse( false );
                     sfd->event = sfd->retevents[mouseLine];
                     key = VI_KEY( ENTER );
@@ -613,13 +613,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                 break;
             }
             switch( LastMouseEvent ) {
-            case MOUSE_DRAG:
+            case VI_MOUSE_DRAG:
                 if( mouse_wid != cwid ) {
                     break;
                 }
                 cln = mouseLine + pagetop;
                 break;
-            case MOUSE_RELEASE:
+            case VI_MOUSE_RELEASE:
                 if( !sfd->is_menu ) {
                     break;
                 }
@@ -630,7 +630,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     }
                 }
                 break;
-            case MOUSE_DCLICK:
+            case VI_MOUSE_DCLICK:
                 if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;
@@ -641,13 +641,13 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     }
                 }
                 break;
-            case MOUSE_PRESS_R:
+            case VI_MOUSE_PRESS_R:
                 if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;
                 }
                 break;
-            case MOUSE_PRESS:
+            case VI_MOUSE_PRESS:
                 if( mouse_wid != cwid ) {
                     AddCurrentMouseEvent();
                     done = true;

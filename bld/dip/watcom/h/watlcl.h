@@ -105,45 +105,28 @@ typedef union {
 #define SET_BASE386     0x02
 
 
-extern unsigned         InfoSize( imp_image_handle *ii, imp_mod_handle im,
-                                demand_kind dk, word entry );
-extern void             *InfoLoad( imp_image_handle *ii, imp_mod_handle im,
-                                demand_kind dk, word entry,
-                                void (*clear)(void *, void *) );
-extern void             InfoClear( imp_image_handle *ii );
+extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle im, demand_kind dk, word entry );
+extern void             *InfoLoad( imp_image_handle *, imp_mod_handle im, demand_kind dk, word entry, void (*clear)(void *, void *) );
+extern void             InfoClear( imp_image_handle * );
 extern void             InfoUnlock( void );
 extern dip_status       InfoRelease( void );
 extern void             InfoSpecUnlock(const char *);
 extern void             InfoSpecLock(const char *);
-extern dip_status       InitDemand( imp_image_handle *ii );
+extern dip_status       InitDemand( imp_image_handle * );
 extern void             FiniDemand( void );
 extern const char       *GetIndex( const char *ptr, unsigned *value );
-extern const char       *GetAddress( imp_image_handle *ii, const char *ptr,
-                                address *addr, int is32 );
+extern const char       *GetAddress( imp_image_handle *, const char *ptr, address *addr, int is32 );
 extern void             KillLclLoadStack( void );
-extern search_result    SearchLclMod( imp_image_handle *ii, imp_mod_handle im,
-                                lookup_item *li, void *d );
-extern search_result    SearchLclScope( imp_image_handle *ii, imp_mod_handle im,
-                                address *addr, lookup_item *li, void *d );
-extern search_result    LookupLclAddr( imp_image_handle *ii, address addr,
-                                imp_sym_handle *is );
-extern unsigned         SymHdl2LclName( imp_image_handle *ii, imp_sym_handle *is,
-                                char *buff, unsigned buff_size );
-extern dip_status       SymHdl2LclLoc( imp_image_handle *ii, imp_sym_handle *is,
-                                location_context *lc, location_list *ll );
-extern dip_status       SymHdl2LclType( imp_image_handle *ii, imp_sym_handle *is,
-                                imp_type_handle *it );
-extern void             SetGblLink( imp_sym_handle *is, gbl_info *link );
-extern dip_status       Lcl2GblHdl( imp_image_handle *ii, imp_sym_handle *lcl_is,
-                                imp_sym_handle *gbl_is );
-extern dip_status       SymHdl2LclInfo( imp_image_handle *ii, imp_sym_handle *is,
-                                sym_info *si );
-extern dip_status       SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
-                                location_context *lc, location_list *ll, unsigned parm );
-extern walk_result      WalkScopedSymList( imp_image_handle *ii, address *addr,
-                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
-extern walk_result      WalkBlockSymList( imp_image_handle *ii, scope_block *scope,
-                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
-extern dip_status       WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
-                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d,
-                                walk_result *last );
+extern search_result    SearchLclMod( imp_image_handle *, imp_mod_handle im, lookup_item *li, void *d );
+extern search_result    SearchLclScope( imp_image_handle *, imp_mod_handle im, address *addr, lookup_item *li, void *d );
+extern search_result    LookupLclAddr( imp_image_handle *, address addr, imp_sym_handle * );
+extern unsigned         SymHdl2LclName( imp_image_handle *, imp_sym_handle *, char *buff, unsigned buff_size );
+extern dip_status       SymHdl2LclLoc( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll );
+extern dip_status       SymHdl2LclType( imp_image_handle *, imp_sym_handle *, imp_type_handle *ith );
+extern void             SetGblLink( imp_sym_handle *, gbl_info *link );
+extern dip_status       Lcl2GblHdl( imp_image_handle *, imp_sym_handle *lcl_ish, imp_sym_handle *gbl_ish );
+extern dip_status       SymHdl2LclInfo( imp_image_handle *, imp_sym_handle *, sym_info *si );
+extern dip_status       SymHdl2LclParmLoc( imp_image_handle *, imp_sym_handle *, location_context *lc, location_list *ll, unsigned parm );
+extern walk_result      WalkScopedSymList( imp_image_handle *, address *addr, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
+extern walk_result      WalkBlockSymList( imp_image_handle *, scope_block *scope, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
+extern dip_status       WalkLclModSymList( imp_image_handle *, imp_mod_handle im, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d, walk_result *last );

@@ -33,7 +33,7 @@
                 NAME    FORK
 
                 PUBLIC  Fork_
-                EXTRN   DOSEnvFind_             :near
+                EXTRN   DOSEnvFind_             :proc
                 EXTRN   DbgPSP_                 :near
 
 _text segment byte public 'CODE'
@@ -81,8 +81,9 @@ Fork_           proc    near
                 mov     CX,-2[BP]
                 test    CX,CX
                 jne     got_cmd
-                  mov   word ptr SS:[DI],0dh*256+0
-                  jmp   short cont
+                mov     word ptr SS:[DI],0dh*256+0
+                jmp short cont
+
 got_cmd:        add     CX,3
                 mov     byte ptr SS:0[DI],CL
                 push    DX

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dosscrn.h"
+#include "dsxscrn.h"
 #include "dbgio.h"
 #include "dbgname.h"
 #include "dbgwind.h"
@@ -46,6 +47,9 @@
 #define MAX_CMDLINE_LEN         128
 #define PSP_CMDTAIL_OFF         0x80
 
+#ifdef __OSI__
+extern char             *_LpCmdLine;
+#endif
 extern char             DPMICheck;
 
 static char             *cmdStart;
@@ -68,7 +72,7 @@ enum {
    OPT_XXDPMI,
 };
 
-gui_window_styles WndStyle = GUI_PLAIN+GUI_GMOUSE;
+gui_window_styles WndStyle = GUI_PLAIN + GUI_GMOUSE;
 
 
 bool OptDelim( char ch )
@@ -95,8 +99,10 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
         break;
     case OPT_CHECKSIZE:
         num = GetMemory();
-        if( num < 32*1024UL ) num = 32*1024UL;
-        if( num > 640*1024UL ) num = 640*1024UL;
+        if( num < 32*1024UL )
+            num = 32*1024UL;
+        if( num > 640*1024UL )
+            num = 640*1024UL;
         CheckSize = num / 16; /* Checksize is in paragraphs */
         break;
     case OPT_HEAPENABLE:
@@ -127,7 +133,6 @@ void ProcSysOptInit( void )
     MemSize = 2L*1024*1024;
 #ifdef __OSI__
     {
-        extern char *_LpCmdLine;
         cmdStart = _LpCmdLine;
         ptr = ptr;
     }

@@ -107,8 +107,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
                 return( 0 );
             }
         }
-    } else if( io->phys_offset <= new_offset &&
-                            new_offset < io->phys_offset + io->buff_size ) {
+    } else if( io->phys_offset <= new_offset && new_offset < ( io->phys_offset + io->buff_size ) ) {
         io->b_curs = new_offset - io->phys_offset;
         if( ( io->attrs & PAST_EOF ) || io->b_curs < io->high_water ) {
             // We already know that the EOF is on this page so don't bother

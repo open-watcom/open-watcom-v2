@@ -34,23 +34,37 @@
 #include <process.h>
 #include "uidef.h"
 #include "uiforce.h"
-#include "nw_clib.h"
+#include "nw_lib.h"
 
 
 // be very careful about setting this true
 static bool EnterForever = false;
+
+MOUSETIME UIAPI uiclock( void )
+/*****************************
+ * this routine get time in platform dependant units,
+ * used for mouse & timer delays
+ */
+{
+    /* NetWare uses a clock tick of .01 seconds. */
+    return( clock() );
+}
+
+unsigned UIAPI uiclockdelay( unsigned milli )
+/*******************************************
+ * this routine converts milli-seconds into platform
+ * dependant units - used to set mouse & timer delays
+ */
+{
+    /* NetWare uses a clock tick of .01 seconds. */
+    return( milli / 10 );
+}
 
 void UIAPI uiflush( void )
 /************************/
 {
     uiflushevent();
     flushkey();
-}
-
-unsigned long UIAPI uiclock( void )
-/**********************************/
-{
-    return( clock() );
 }
 
 void UIAPI uiforceinfloop( void )
@@ -70,35 +84,35 @@ static void foreverloop( void )
 /* is to allow the UI thread of a Netware application to unblock off the */
 /* keyboard to allow the NLM to call exit */
 {
-    for( ; ; ) {
+    for( ;; ) {
         ThreadSwitch();
     }
 }
 
-EVENT UIAPI uieventsource( bool update )
-/**************************************/
+ui_event UIAPI uieventsource( bool update )
+/*****************************************/
 {
-    register    EVENT                   ev;
-    static      int                     ReturnIdle = 1;
-    unsigned long                       start;
+    static int      ReturnIdle = 1;
+    ui_event        ui_ev;
+    MOUSETIME       start;
 
     start = uiclock();
-    for( ; ; ) {
+    for( ;; ) {
         ThreadSwitch();
         if( EnterForever )
             foreverloop();
 
-        ev = forcedevent();
-        if( ev > EV_NO_EVENT )
+        ui_ev = forcedevent();
+        if( ui_ev > EV_NO_EVENT )
             break;
 
         /* There is no mouse support in NetWare. */
         //ev = mouseevent();
-        //if( ev > EV_NO_EVENT )
+        //if( ui_ev > EV_NO_EVENT )
         //    break;
 
-        ev = keyboardevent();
-        if( ev > EV_NO_EVENT ) {
+        ui_ev = keyboardevent();
+        if( ui_ev > EV_NO_EVENT ) {
             //uihidemouse();
             break;
         }
@@ -117,12 +131,12 @@ EVENT UIAPI uieventsource( bool update )
         waitforevent();
     }
     ReturnIdle = 1;
-    return( ev );
+    return( ui_ev );
 }
 
 
-EVENT UIAPI uiget( void )
-/***********************/
+ui_event UIAPI uiget( void )
+/**************************/
 {
     return( uieventsource( true ) );
 }

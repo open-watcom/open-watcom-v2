@@ -72,7 +72,7 @@
     // pad to 2-byte boundary
     #define AlignPad1 char padding[1];
     #define AlignPad2 ;
-#elif defined( __ALPHA__ ) || defined( __386__ )
+#elif defined( _M_IX86 ) || defined( __AXP__ )
     // pad to 4-byte boundary
     #define AlignPad1 char padding[3];
     #define AlignPad2 char padding[2];
@@ -84,6 +84,8 @@
     ( (type*)( (char*)base + offset ) )
 #define PointOffset( base, offset ) \
     PointUsingOffset( void, base, offset )
+
+#define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
 
 struct  ACTIVE_EXC;
 struct  DISPATCH_EXC;
@@ -128,8 +130,6 @@ typedef void (*pFUNcopyV)                       // copy ctor
                 , void * );                     // - source
 
 extern "C" {
-
-#define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
 
 //************************************************************************
 // Type Signatures

@@ -30,7 +30,6 @@
 
 
 #include "global.h"
-#include "wio.h"
 #include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"
@@ -46,13 +45,13 @@ void SemWriteRawDataItem( RawDataItem item )
     bool        error;
 
     if( item.IsString ) {
-        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, item.StrLen );
+        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fp, item.StrLen );
         if( !error ) {
             if( item.WriteNull ) {
                 if( item.LongItem ) {
-                    error = ResWriteUint16( 0, CurrResFile.fid );
+                    error = ResWriteUint16( 0, CurrResFile.fp );
                 } else {
-                    error = ResWriteUint8( '\0', CurrResFile.fid );
+                    error = ResWriteUint8( '\0', CurrResFile.fp );
                 }
             }
         }
@@ -63,9 +62,9 @@ void SemWriteRawDataItem( RawDataItem item )
         error = false;
         if( !ErrorHasOccured ) {
             if( item.LongItem ) {
-                error = ResWriteUint32( item.Item.Num, CurrResFile.fid );
+                error = ResWriteUint32( item.Item.Num, CurrResFile.fp );
             } else {
-                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
+                error = ResWriteUint16( item.Item.Num, CurrResFile.fp );
             }
         }
     }
@@ -75,23 +74,23 @@ void SemWriteRawDataItem( RawDataItem item )
     }
 }
 
-RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
+RcStatus SemCopyDataUntilEOF( long offset, FILE *fp,
                          void *buff, unsigned buffsize, int *err_code )
 /*********************************************************************/
 {
     size_t      numread;
 
-    if( RESSEEK( fid, offset, SEEK_SET ) ) {
+    if( RESSEEK( fp, offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    while( (numread = RESREAD( fid, buff, buffsize )) != 0 ) {
-        if( numread != buffsize && RESIOERR( fid, numread ) ) {
+    while( (numread = RESREAD( fp, buff, buffsize )) != 0 ) {
+        if( numread != buffsize && RESIOERR( fp, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        if( RESWRITE( CurrResFile.fid, buff, numread ) != numread ) {
+        if( RESWRITE( CurrResFile.fp, buff, numread ) != numread ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -102,32 +101,37 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
 
 #define BUFFER_SIZE   0x200
 
-ResLocation SemCopyRawFile( const char *filename )
-/************************************************/
+static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
+/**********************************************************************/
 {
-    WResFileID      fid;
+    FILE            *fp;
     RcStatus        ret;
     char            *buffer;
     char            full_filename[_MAX_PATH];
     ResLocation     loc;
     int             err_code;
-    WResFileOffset  pos;
+    long            pos;
     bool            error;
 
     error = false;
-    fid = WRES_NIL_HANDLE;
+    fp = NULL;
     buffer = RESALLOC( BUFFER_SIZE );
-    if( RcFindResource( filename, full_filename ) == -1 ) {
-        RcError( ERR_CANT_FIND_FILE, filename );
-        error = true;
+    if( !onlyFile ) {
+        if( RcFindSourceFile( filename, full_filename ) == -1 ) {
+            RcError( ERR_CANT_FIND_FILE, filename );
+            error = true;
+        }
+        if( !error ) {
+            if( AddDependency( full_filename ) ) {
+                error = true;
+            } else {
+                filename = full_filename;
+            }
+        }
     }
-
-    if( !error && AddDependency( full_filename ) )
-        error = true;
-
     if( !error ) {
-        fid = RcIoOpenInput( full_filename, false );
-        if( fid == WRES_NIL_HANDLE ) {
+        fp = RcIoOpenInput( filename, false );
+        if( fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
         }
@@ -135,14 +139,14 @@ ResLocation SemCopyRawFile( const char *filename )
 
     if( !error ) {
         loc.start = SemStartResource();
-        pos = RESTELL( fid );
-        if( pos == -1 ) {
-            RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
+        pos = RESTELL( fp );
+        if( pos == -1L ) {
+            RcError( ERR_READING_DATA, filename, strerror( errno ) );
             error = true;
         } else {
-            ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
+            ret = SemCopyDataUntilEOF( pos, fp, buffer, BUFFER_SIZE, &err_code );
             if( ret != RS_OK ) {
-                ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
+                ReportCopyError( ret, ERR_READING_DATA, filename, err_code );
                 error = true;
             }
         }
@@ -154,11 +158,23 @@ ResLocation SemCopyRawFile( const char *filename )
     } else {
         loc.len = SemEndResource( loc.start );
     }
-    if( fid != WRES_NIL_HANDLE ) {
-        RESCLOSE( fid );
+    if( fp != NULL ) {
+        RESCLOSE( fp );
     }
     RESFREE( buffer );
     return( loc );
+}
+
+ResLocation SemCopyRawFile( const char *filename )
+/************************************************/
+{
+    return( semCopyRawFile( filename, false ) );
+}
+
+ResLocation SemCopyRawFileOnly( const char *filename )
+/****************************************************/
+{
+    return( semCopyRawFile( filename, true ) );
 }
 
 DataElemList *SemNewDataElemList( RawDataItem node )
@@ -218,7 +234,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     if( call_startend ) {
         resLoc.len = SemEndResource( resLoc.start );
         if( CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            ResWritePadDWord( CurrResFile.fid );
+            ResWritePadDWord( CurrResFile.fp );
         }
     }
 

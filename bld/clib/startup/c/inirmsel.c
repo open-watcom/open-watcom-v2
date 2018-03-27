@@ -38,7 +38,30 @@
 
 unsigned short  _ExtenderRealModeSelector;
 
-#ifndef __WINDOWS_386__
+#ifdef __WINDOWS_386__
+
+static void init( void )
+{
+    long    result;
+
+    result = DPMIAllocateLDTDescriptors( 1 );
+    if( result < 0 ) {
+        __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
+        // never return
+    }
+    _ExtenderRealModeSelector = result;
+    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
+        __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
+        // never return
+    }
+}
+
+static void fini( void )
+{
+    DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
+}
+
+#else
 
 extern short __get_ds( void );
 #pragma aux __get_ds = "mov ax,ds" value[ax];
@@ -75,29 +98,6 @@ static void fini( void )
     if( _IsRationalNonZeroBase() ) {
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
     }
-}
-
-#else
-
-static void init( void )
-{
-    long    result;
-
-    result = DPMIAllocateLDTDescriptors( 1 );
-    if( result < 0 ) {
-        __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
-        // never return
-    }
-    _ExtenderRealModeSelector = result & 0xffff;
-    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
-        // never return
-    }
-}
-
-static void fini( void )
-{
-    DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
 }
 
 #endif

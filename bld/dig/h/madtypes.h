@@ -85,9 +85,10 @@ typedef unsigned_8 mad_type_kind; enum {
     MTK_INTEGER = 0x01,
     MTK_ADDRESS = 0x02,
     MTK_FLOAT   = 0x04,
-    MTK_CUSTOM  = 0x08,
+    MTK_MMX     = 0x08,
     MTK_XMM     = 0x10,
-    MTK_ALL     = MTK_INTEGER|MTK_ADDRESS|MTK_FLOAT|MTK_CUSTOM|MTK_XMM,
+    MTK_CUSTOM  = 0x20,
+    MTK_ALL     = MTK_INTEGER|MTK_ADDRESS|MTK_FLOAT|MTK_MMX|MTK_XMM|MTK_CUSTOM,
 
     MAS_MEMORY  = 0x40,
     MAS_IO      = 0x80,
@@ -150,7 +151,7 @@ typedef union {
 
 typedef struct {
     const char                  *name;
-    mad_type_handle             type;
+    mad_type_handle             mth;
     dig_size_bits               bit_start;
     unsigned_8                  bit_size;
     unsigned_8                  flags;
@@ -164,7 +165,7 @@ typedef unsigned_8 mad_special_reg; enum {
 
 typedef struct {
     const void          *data;
-    mad_type_handle     type;
+    mad_type_handle     mth;
     mad_string          name;
 } mad_modify_list;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,19 +40,16 @@
 #include "uidef.h"
 #include "uifar.h"
 
-#if defined( _M_I86 )
+#ifdef _M_I86
 
-extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
-extern PIXEL _snowget( LP_PIXEL );
-extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
 extern void _forward( void );
+#pragma aux _forward = "cld" modify []
+
 extern void _backward( void );
+#pragma aux _backward = "std" modify []
 
-#pragma aux             _forward = "cld" modify []
-
-#pragma aux             _backward = "std" modify []
-
-#pragma aux             _snowget = \
+extern PIXEL _snowget( LP_PIXEL );
+#pragma aux _snowget = \
        0x1e                       /*     push    ds         */  \
        0x8e 0xda                  /*     mov     ds,dx      */  \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \
@@ -69,7 +67,8 @@ extern void _backward( void );
        value [ax]                                               \
        modify [ax dx];
 
-#pragma aux             _snowput = \
+extern LP_PIXEL _snowput( LP_PIXEL, PIXEL );
+#pragma aux _snowput = \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \
        0xec                       /* L3  in      al,dx      */  \
        0xd0 0xc8                  /*       ror     al,1     */  \
@@ -85,7 +84,8 @@ extern void _backward( void );
        value [es di]                                            \
        modify [ax dx];
 
-#pragma aux             _snowcopy = \
+extern void _snowcopy( LP_PIXEL, LP_PIXEL, int );
+#pragma aux _snowcopy = \
        0x1e                       /*     push    ds         */  \
        0x8e 0xda                  /*     mov     ds,dx      */  \
        0xba 0xda 0x03             /*     mov     dx,03daH   */  \
@@ -118,32 +118,31 @@ extern void _backward( void );
 
 #define ATTR_FLIP_MASK      0x77
 
-intern void cdecl farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
+intern void farfill( LP_PIXEL start, PIXEL fill, size_t len, bool snow )
 {
     size_t      i;
 
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             start = _snowput( start, fill );
         }
     } else {
-        for( i = 0 ; i < len ; ++i ) {
+#else
+    /* unused parameters */ (void)snow;
+#endif
+        for( i = 0; i < len; ++i ) {
             *start++ = fill;
         }
-    }
-#else
-    _unused( snow );
-    for( i = 0 ; i < len ; ++i ) {
-        *start++ = fill;
+#ifdef _M_I86
     }
 #endif
 }
 
 
-intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
+intern void farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
 {
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( snow ) {
         if( FP_SEG(src) == FP_SEG(dst) && FP_OFF(src) < FP_OFF(dst) ) {
             src += len - 1;
@@ -153,111 +152,110 @@ intern void cdecl farcopy( LP_PIXEL src, LP_PIXEL dst, size_t len, bool snow )
         _snowcopy( dst, src, len );
         _forward();
     } else {
-        _fmemmove( dst, src, len*sizeof(PIXEL) );
-    }
-#elif defined( __386__ ) && !defined( __UNIX__ )
-    _unused( snow );
-    #if defined( __NETWARE__ )
+#else
+    /* unused parameters */ (void)snow;
+#endif
+#if defined( __NETWARE__ )
         // Netware compiled with "far" defined, but pointers aren't really
         // far, and there is no _fmemmove function, and we were getting
         // "pointer truncated" warnings before, so just cast. (SteveM)
-        memmove( (PIXEL *) dst, (PIXEL *) src, len*sizeof(PIXEL) );
-    #else
-        _fmemmove( dst, src, len*sizeof(PIXEL) );
-    #endif
+        // ?? why it is compiled with "far" ??
+        // LP_PIXEL should be declared as near
+        // then these cast are useless
+        memmove( (PIXEL *)dst, (PIXEL *)src, len * sizeof( PIXEL ) );
+#elif !defined( _M_IX86 ) || defined( __UNIX__ )
+        memmove( dst, src, len * sizeof( PIXEL ) );
 #else
-    _unused( snow );
-    memmove( dst, src, len*sizeof(PIXEL) );
+        _fmemmove( dst, src, len * sizeof( PIXEL ) );
+#endif
+#ifdef _M_I86
+    }
 #endif
 }
 
 
-intern void cdecl farstring( LP_PIXEL start, int attr, size_t len,
-                                          bool snow, LPC_STRING str )
+intern void farstring( LP_PIXEL start, ATTR attr, LPC_STRING str, size_t str_len, bool snow )
 {
     size_t      i;
     PIXEL       p;
 
     p.attr = attr;
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
-            p.ch = *str;
+        for( i = 0; i < str_len; ++i ) {
+            p.ch = *str++;
             if( p.ch == '\0' )
                 break;
-            ++str;
             start = _snowput( start, p );
         }
-    } else
+    } else {
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
-    {
-        for( i = 0 ; i < len ; ++i ) {
-            if( str != NULL ) {
-                p.ch = *str;
-            } else {
-                p.ch = '\0';
-            }
+        for( i = 0; i < str_len; ++i ) {
+            p.ch = *str++;
             if( p.ch == '\0' )
                 break;
-            ++str;
             *start = p;
             ++start;
         }
+#ifdef _M_I86
     }
+#endif
     p.ch = ' ';
-    farfill( start, p, len - i, snow );
+    farfill( start, p, str_len - i, snow );
 }
 
-intern void cdecl farattrib( LP_PIXEL start, int attr, size_t len, bool snow )
+intern void farattrib( LP_PIXEL start, ATTR attr, size_t len, bool snow )
 {
     size_t      i;
     PIXEL       p;
 
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = _snowget( start );
             p.attr = attr;
             start = _snowput( start, p );
         }
-    } else
+    } else {
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
-    {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = *start;
             p.attr = attr;
             *start = p;
             ++start;
         }
+#ifdef _M_I86
     }
+#endif
 }
 
-intern void cdecl farattrflip( LP_PIXEL start, size_t len, bool snow )
+intern void farattrflip( LP_PIXEL start, size_t len, bool snow )
 {
     size_t      i;
     PIXEL       p;
 
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( snow ) {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = _snowget( start );
             p.attr = p.attr ^ ATTR_FLIP_MASK;
             start = _snowput( start, p );
         }
-    } else
+    } else {
 #else
-    _unused( snow );
+    /* unused parameters */ (void)snow;
 #endif
-    {
-        for( i = 0 ; i < len ; ++i ) {
+        for( i = 0; i < len; ++i ) {
             p = *start;
             p.attr = p.attr ^ ATTR_FLIP_MASK;
             *start = p;
             ++start;
         }
+#ifdef _M_I86
     }
+#endif
 }

@@ -43,18 +43,23 @@
 #define sm_file_handle                  file_handle
 #define sm_mod_handle                   mod_handle
 #define sm_cue_fileid                   cue_fileid
+#define sm_read_len                     int
 
 #define SM_NO_MOD                       NO_MOD
 #define SM_BUF_SIZE                     512
 
 #define SMSeekStart( fp )               SeekStream( fp, 0L, DIO_SEEK_CUR )
 #define SMSeekOrg( fp, offset )         SeekStream( fp, offset, DIO_SEEK_ORG )
-#define SMSeekEnd( fp )                 SeekStream( fp, 0L, DIO_SEEK_END );
+#define SMSeekEnd( fp )                 SeekStream( fp, 0L, DIO_SEEK_END )
+#define SMSeekFail(x)                   ((x) == ERR_SEEK)
+
+#define SMTell( fp )                    SeekStream( fp, 0L, DIO_SEEK_CUR )
 
 #define SMOpenRead( name )              FileOpen( name, OP_READ )
 #define SMNilHandle( fp)                ( fp == NIL_HANDLE )
 #define SMClose( fp )                   FileClose( fp )
 
 #define SMReadStream( fp, buff, len )   ReadStream( fp, buff, len )
+#define SMReadError( fp, len )          ( len == -1 )
 
 #define SMFileRemote( fp )              ( (FileHandleInfo( fp ) & OP_REMOTE) != 0 )

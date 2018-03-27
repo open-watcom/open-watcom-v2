@@ -31,20 +31,13 @@
 
 #include "variety.h"
 #include "rtfpehdl.h"
+#include "fpexcept.h"
+
 
 /*
     __FPE_exception is called from machine language with parm in EAX/AX
     (see "fstatus" module in CGSUPP)
 */
-
-#if defined(_M_I86)
-    #define parmreg ax
-#else
-    #define parmreg eax
-#endif
-
-void __FPE_exception( int fpe_type );
-#pragma aux __FPE_exception "*_" parm caller [parmreg];
 
 void __FPE_exception( int fpe_type )
 {

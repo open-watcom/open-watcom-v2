@@ -32,17 +32,16 @@
 
 #include <stddef.h>
 #include "dbgdefn.h"
-#undef AddrMod
-#undef AddrSym
-#undef AddrScope
-#undef AddrCue
+#undef DIPAddrMod
+#undef DIPAddrSym
+#undef DIPAddrScope
+#undef DIPAddrCue
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dipimp.h"
 #include "dipcli.h"
-#include "dipwv.h"
 #include "mad.h"
 #include "strutil.h"
 #include "dbgloc.h"
@@ -95,11 +94,11 @@ imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
     return( DoSymCreate( iih, (sym_list **)d ) );
 }
 
-void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
+void MadTypeToDipTypeInfo( mad_type_handle mth, dip_type_info *ti )
 {
     mad_type_info       mti;
 
-    MADTypeInfo( mt, &mti );
+    MADTypeInfo( mth, &mti );
     ti->size = BITS2BYTES( mti.b.bits );
     ti->modifier = TM_NONE;
     switch( mti.b.kind ) {
@@ -261,10 +260,10 @@ search_result DeAliasAddrScope( mod_handle mh, address a, scope_block *sb )
     return( DIPAddrScope( mh, a, sb ) );
 }
 
-search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch )
+search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *cueh )
 {
     DeAlias( &a.mach );
-    return( DIPAddrCue( mh, a, ch ) );
+    return( DIPAddrCue( mh, a, cueh ) );
 }
 
 /*
@@ -273,17 +272,17 @@ search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch )
 
 static char     WVImp( Name )[] = "Debugger Internal";
 
-static unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
+OVL_EXTERN unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    wih,
+        #define pick(e,hdl,imphdl,wvimphdl) wvimphdl,
         #include "diphndls.h"
         #undef pick
     };
     return( Sizes[hk] );
 }
 
-static dip_status WVIMPENTRY( MoreMem )( size_t amount )
+OVL_EXTERN dip_status WVIMPENTRY( MoreMem )( size_t amount )
 {
     /* unused parameters */ (void)amount;
 
@@ -291,49 +290,49 @@ static dip_status WVIMPENTRY( MoreMem )( size_t amount )
 }
 
 #if 0
-static dip_status WVImp( Startup )( void )
+OVL_EXTERN dip_status WVImp( Startup )( void )
 {
     return( DS_OK );
 }
 #endif
 
-static void WVIMPENTRY( Shutdown )( void )
+OVL_EXTERN void WVIMPENTRY( Shutdown )( void )
 {
 }
 
-static void WVIMPENTRY( Cancel )( void )
+OVL_EXTERN void WVIMPENTRY( Cancel )( void )
 {
 }
 
-static dip_status WVIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
+OVL_EXTERN dip_status WVIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 {
-    /* unused parameters */ (void)fid; (void)ii;
+    /* unused parameters */ (void)fp; (void)iih;
 
     return( DS_FAIL );
 }
 
-static void WVIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
+OVL_EXTERN void WVIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
 {
-    /* unused parameters */ (void)ii; (void)d;
+    /* unused parameters */ (void)iih; (void)d;
 }
 
-static void WVIMPENTRY( UnloadInfo )( imp_image_handle *ii )
+OVL_EXTERN void WVIMPENTRY( UnloadInfo )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 }
 
-static walk_result WVIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
+OVL_EXTERN walk_result WVIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKER *wk, void *d )
 {
-    return( wk( ii, WV_INT_MH, d ) );
+    return( wk( iih, WV_INT_MH, d ) );
 }
 
 static const char InternalName[] = "_dbg";
 
-static size_t WVIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im, char *name, size_t max )
+OVL_EXTERN size_t WVIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle im, char *name, size_t max )
 {
     size_t  len;
 
-    /* unused parameters */ (void)ii; (void)im;
+    /* unused parameters */ (void)iih; (void)im;
 
     len = sizeof( InternalName ) - 1;
     if( max > 0 ) {
@@ -347,163 +346,160 @@ static size_t WVIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im, ch
 }
 
 
-static char *WVIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
+OVL_EXTERN char *WVIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 {
-    /* unused parameters */ (void)ii; (void)im;
+    /* unused parameters */ (void)iih; (void)im;
 
     return( LIT_ENG( Empty ) );
 }
 
-static dip_status WVIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im,
-                        handle_kind hk )
+OVL_EXTERN dip_status WVIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im, handle_kind hk )
 {
     static const dip_status Kinds[] = { DS_FAIL, DS_OK, DS_FAIL, DS_OK };
 
-    /* unused parameters */ (void)ii; (void)im;
+    /* unused parameters */ (void)iih; (void)im;
 
     return( Kinds[hk] );
 }
 
-static dip_status WVIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
+OVL_EXTERN dip_status WVIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle im,
                         default_kind dk, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)dk; (void)ti;
+    /* unused parameters */ (void)iih; (void)im; (void)dk; (void)ti;
 
     /* never called */
     return( DS_FAIL );
 }
 
-static search_result WVIMPENTRY( AddrMod )( imp_image_handle *ii, address a, imp_mod_handle *imp )
+OVL_EXTERN search_result WVIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imp )
 {
-    /* unused parameters */ (void)ii; (void)a; (void)imp;
+    /* unused parameters */ (void)iih; (void)a; (void)imp;
 
     return( SR_NONE );
 }
 
-static address WVIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
+OVL_EXTERN address WVIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
 {
-    /* unused parameters */ (void)ii; (void)im;
+    /* unused parameters */ (void)iih; (void)im;
 
     return( NilAddr );
 }
 
 
-static walk_result WVIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im,
-                        DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it, void *d )
+OVL_EXTERN walk_result WVIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle im,
+                        DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)it; (void)d;
+    /* unused parameters */ (void)iih; (void)im; (void)wk; (void)ith; (void)d;
 
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle WVIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *it )
+OVL_EXTERN imp_mod_handle WVIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return( WV_INT_MH );
 }
 
-static dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *ii, imp_type_handle *it,
+OVL_EXTERN dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *iih, imp_type_handle *ith,
                         location_context *lc, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
-    if( it->ri != NULL ) {
-        MadTypeToDipTypeInfo( it->ri->type, ti );
+    if( ith->ri != NULL ) {
+        MadTypeToDipTypeInfo( ith->ri->mth, ti );
     } else {
-        ti->kind = it->t.k;
-        ti->modifier = it->t.m;
-        ti->size = it->t.s;
+        ti->kind = ith->t.k;
+        ti->modifier = ith->t.m;
+        ti->size = ith->t.s;
     }
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( TypeBase )( imp_image_handle *ii, imp_type_handle *src_it,
-                                imp_type_handle *dst_it )
+OVL_EXTERN dip_status WVIMPENTRY( TypeBase )( imp_image_handle *iih, imp_type_handle *src_ith, imp_type_handle *dst_ith )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
-    *dst_it = *src_it;
+    *dst_ith = *src_ith;
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( TypeBaseLocation )( imp_image_handle *ii, imp_type_handle *src_it,
-                    imp_type_handle *dst_it, location_context *lc, location_list *ll )
+OVL_EXTERN dip_status WVIMPENTRY( TypeBaseLocation )( imp_image_handle *iih, imp_type_handle *src_ith,
+                    imp_type_handle *dst_ith, location_context *lc, location_list *ll )
 {
-    /* unused parameters */ (void)ii; (void)lc; (void)ll;
+    /* unused parameters */ (void)iih; (void)lc; (void)ll;
 
-    *dst_it = *src_it;
+    *dst_ith = *src_ith;
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( TypeArrayInfo )( imp_image_handle *ii, imp_type_handle *it,
-                location_context *lc, array_info *ai, imp_type_handle *index_it )
+OVL_EXTERN dip_status WVIMPENTRY( TypeArrayInfo )( imp_image_handle *iih, imp_type_handle *ith,
+                location_context *lc, array_info *ai, imp_type_handle *index_ith )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)lc; (void)ai; (void)index_it;
+    /* unused parameters */ (void)iih; (void)ith; (void)lc; (void)ai; (void)index_ith;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( TypeProcInfo )( imp_image_handle *ii, imp_type_handle *it,
-                imp_type_handle *parm_it, unsigned parm )
+OVL_EXTERN dip_status WVIMPENTRY( TypeProcInfo )( imp_image_handle *iih, imp_type_handle *ith,
+                imp_type_handle *parm_ith, unsigned parm )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)parm_it; (void)parm;
+    /* unused parameters */ (void)iih; (void)ith; (void)parm_ith; (void)parm;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii, imp_type_handle *it,
+OVL_EXTERN dip_status WVIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih, imp_type_handle *ith,
                         location_context *lc, address *addr )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)lc; (void)addr;
+    /* unused parameters */ (void)iih; (void)ith; (void)lc; (void)addr;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii, imp_type_handle *obj_it,
-                imp_type_handle *member_it, location_context *lc, address *a )
+OVL_EXTERN dip_status WVIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih, imp_type_handle *obj_ith,
+                imp_type_handle *member_ith, location_context *lc, address *a )
 {
-    /* unused parameters */ (void)ii; (void)obj_it; (void)member_it; (void)lc; (void)a;
+    /* unused parameters */ (void)iih; (void)obj_ith; (void)member_ith; (void)lc; (void)a;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static walk_result WVIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
+OVL_EXTERN walk_result WVIMPENTRY( WalkSymList )( imp_image_handle *iih, symbol_source ss,
                     void *src, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
-    /* unused parameters */ (void)ii; (void)ss; (void)src; (void)wk; (void)is; (void)d;
+    /* unused parameters */ (void)iih; (void)ss; (void)src; (void)wk; (void)is; (void)d;
 
     return( WR_CONTINUE );
 }
 
-static walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
+OVL_EXTERN walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
                     void *src, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                     location_context *lc, void *d )
 {
-    /* unused parameters */ (void)ii; (void)ss; (void)src; (void)wk; (void)is; (void)lc; (void)d;
+    /* unused parameters */ (void)iih; (void)ss; (void)src; (void)wk; (void)is; (void)lc; (void)d;
 
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle WVIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
+OVL_EXTERN imp_mod_handle WVIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return( WV_INT_MH );
 }
 
-static size_t WVIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
-                        location_context *lc,
-                        symbol_name sn, char *name, size_t max )
+OVL_EXTERN size_t WVIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *is,
+                        location_context *lc, symbol_name sn, char *name, size_t max )
 {
     size_t      len;
     char  const *p;
 
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
     if( sn == SN_DEMANGLED )
         return( 0 );
@@ -524,28 +520,27 @@ static size_t WVIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
     return( len );
 }
 
-static dip_status WVIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
-                        imp_type_handle *it )
+OVL_EXTERN dip_status WVIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *is, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     if( is->ri != NULL ) {
-        it->t.k = TK_NONE;
-        it->ri = is->ri;
+        ith->t.k = TK_NONE;
+        ith->ri = is->ri;
     } else {
-        it->t  = is->p->info.t;
-        it->ri = NULL;
+        ith->t  = is->p->info.t;
+        ith->ri = NULL;
     }
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
+OVL_EXTERN dip_status WVIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *is,
                         location_context *lc, location_list *ll )
 {
     const wv_sym_entry  *se;
     void                *d;
 
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     se = is->p;
     if( is->ri != NULL ) {
@@ -566,10 +561,10 @@ static dip_status WVIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handl
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
+OVL_EXTERN dip_status WVIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *is,
                         location_context *lc, void *d )
 {
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
     if( is->ri != NULL || is->p->info.sc != SC_INTERNAL )
         return( DS_ERR|DS_BAD_PARM );
@@ -577,10 +572,10 @@ static dip_status WVIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
+OVL_EXTERN dip_status WVIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *is,
                         location_context *lc, sym_info *si )
 {
-    /* unused parameters */ (void)ii; (void)lc;
+    /* unused parameters */ (void)iih; (void)lc;
 
     memset( si, 0, sizeof( *si ) );
     si->is_global = true;
@@ -602,46 +597,46 @@ static dip_status WVIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *i
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymParmLocation )( imp_image_handle *ii, imp_sym_handle *proc_is,
+OVL_EXTERN dip_status WVIMPENTRY( SymParmLocation )( imp_image_handle *iih, imp_sym_handle *proc_is,
                     location_context *lc, location_list *ll, unsigned parm )
 {
-    /* unused parameters */ (void)ii; (void)proc_is; (void)lc; (void)ll; (void)parm;
+    /* unused parameters */ (void)iih; (void)proc_is; (void)lc; (void)ll; (void)parm;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( SymObjType )( imp_image_handle *ii, imp_sym_handle *proc_is,
-                    imp_type_handle *it, dip_type_info *ti )
+OVL_EXTERN dip_status WVIMPENTRY( SymObjType )( imp_image_handle *iih, imp_sym_handle *proc_is,
+                    imp_type_handle *ith, dip_type_info *ti )
 {
-    /* unused parameters */ (void)ii; (void)proc_is; (void)it; (void)ti;
+    /* unused parameters */ (void)iih; (void)proc_is; (void)ith; (void)ti;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static dip_status WVIMPENTRY( SymObjLocation )( imp_image_handle *ii, imp_sym_handle *proc_is,
+OVL_EXTERN dip_status WVIMPENTRY( SymObjLocation )( imp_image_handle *iih, imp_sym_handle *proc_is,
                     location_context *lc, location_list *ll )
 {
-    /* unused parameters */ (void)ii; (void)proc_is; (void)lc; (void)ll;
+    /* unused parameters */ (void)iih; (void)proc_is; (void)lc; (void)ll;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static search_result WVIMPENTRY( AddrSym )( imp_image_handle *ii, imp_mod_handle im,
+OVL_EXTERN search_result WVIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_handle im,
                         address addr, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)addr; (void)is;
+    /* unused parameters */ (void)iih; (void)im; (void)addr; (void)is;
 
     return( SR_NONE );
 }
 
-static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
+static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
                                   void *src, lookup_item *li,
                                   location_context *lc, sym_list **sl_head )
 {
-    imp_type_handle     *it;
+    imp_type_handle     *ith;
     imp_sym_handle      *is;
     const wv_sym_entry  *se;
     const mad_reg_info  *ri;
@@ -654,8 +649,8 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     ri = NULL;
     switch( ss ) {
     case SS_TYPE:
-        it = src;
-        ri = LookupRegName( it->ri, li );
+        ith = src;
+        ri = LookupRegName( ith->ri, li );
         break;
     case SS_MODULE:
     case SS_SCOPED:
@@ -670,205 +665,204 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     }
     if( se == NULL && ri == NULL )
         return( SR_NONE );
-    is = DoSymCreate( ii, sl_head );
+    is = DoSymCreate( iih, sl_head );
     is->p  = se;
     is->ri = ri;
     return( SR_EXACT );
 }
 
-static search_result WVIMPENTRY( LookupSym )( imp_image_handle *ii,
+OVL_EXTERN search_result WVIMPENTRY( LookupSym )( imp_image_handle *iih,
                 symbol_source ss, void *src, lookup_item *li, void *d )
 {
-    return( DoLookupSym( ii, ss, src, li, NULL, (sym_list **)d ) );
+    return( DoLookupSym( iih, ss, src, li, NULL, (sym_list **)d ) );
 }
 
-static search_result WVIMPENTRY( LookupSymEx )( imp_image_handle *ii,
+OVL_EXTERN search_result WVIMPENTRY( LookupSymEx )( imp_image_handle *iih,
                 symbol_source ss, void *src, lookup_item *li,
                 location_context *lc, void *d )
 {
-    return( DoLookupSym( ii, ss, src, li, lc, (sym_list **)d ) );
+    return( DoLookupSym( iih, ss, src, li, lc, (sym_list **)d ) );
 }
 
-static search_result WVIMPENTRY( AddrScope )( imp_image_handle *ii, imp_mod_handle im,
+OVL_EXTERN search_result WVIMPENTRY( AddrScope )( imp_image_handle *iih, imp_mod_handle im,
                         address pos, scope_block *scope )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)pos; (void)scope;
+    /* unused parameters */ (void)iih; (void)im; (void)pos; (void)scope;
 
     /* never called */
     return( SR_NONE );
 }
 
-static search_result WVIMPENTRY( ScopeOuter )( imp_image_handle *ii, imp_mod_handle im,
+OVL_EXTERN search_result WVIMPENTRY( ScopeOuter )( imp_image_handle *iih, imp_mod_handle im,
                         scope_block *in, scope_block *out )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)in; (void)out;
+    /* unused parameters */ (void)iih; (void)im; (void)in; (void)out;
 
     /* never called */
     return( SR_NONE );
 }
 
 
-static walk_result WVIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
-            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
+OVL_EXTERN walk_result WVIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
+            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)ic; (void)d;
+    /* unused parameters */ (void)iih; (void)im; (void)wk; (void)imp_cueh; (void)d;
 
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle WVIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN imp_mod_handle WVIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     /* will never get called */
     return( WV_INT_MH );
 }
 
-static size_t WVIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
+OVL_EXTERN size_t WVIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh, char *name, size_t max )
 {
-    /* unused parameters */ (void)ii; (void)ic; (void)name; (void)max;
+    /* unused parameters */ (void)iih; (void)imp_cueh; (void)name; (void)max;
 
     /* will never get called */
     return( 0 );
 }
 
 
-static cue_fileid   WVIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN cue_fileid   WVIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-static dip_status WVIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *orig_ic,
-                        int adj, imp_cue_handle *adj_ic )
+OVL_EXTERN dip_status WVIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_imp_cueh,
+                        int adj, imp_cue_handle *dst_imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)orig_ic; (void)adj; (void)adj_ic;
+    /* unused parameters */ (void)iih; (void)src_imp_cueh; (void)adj; (void)dst_imp_cueh;
 
     /* will never get called */
     return( DS_FAIL );
 }
 
-static unsigned long WVIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN unsigned long WVIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-static unsigned WVIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN unsigned WVIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     /* will never get called */
     return( 0 );
 }
 
-static address WVIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
+OVL_EXTERN address WVIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)ic;
+    /* unused parameters */ (void)iih; (void)imp_cueh;
 
     /* will never get called */
     return( NilAddr );
 }
 
 
-static search_result WVIMPENTRY( LineCue )( imp_image_handle *ii,imp_mod_handle im, cue_fileid file,
-                    unsigned long line, unsigned column, imp_cue_handle *ic )
+OVL_EXTERN search_result WVIMPENTRY( LineCue )( imp_image_handle *iih,imp_mod_handle im, cue_fileid file,
+                    unsigned long line, unsigned column, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)file; (void)line; (void)column; (void)ic;
+    /* unused parameters */ (void)iih; (void)im; (void)file; (void)line; (void)column; (void)imp_cueh;
 
     return( SR_NONE );
 }
 
-static search_result WVIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
-                                address a, imp_cue_handle *ic )
+OVL_EXTERN search_result WVIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
+                                address a, imp_cue_handle *imp_cueh )
 {
-    /* unused parameters */ (void)ii; (void)im; (void)a; (void)ic;
+    /* unused parameters */ (void)iih; (void)im; (void)a; (void)imp_cueh;
 
     return( SR_NONE );
 }
 
 
-static int WVIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
-                        imp_type_handle *it2 )
+OVL_EXTERN int WVIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1,
+                        imp_type_handle *ith2 )
 {
-    /* unused parameters */ (void)ii; (void)it1; (void)it2;
+    /* unused parameters */ (void)iih; (void)ith1; (void)ith2;
 
     /* never called */
     return( 0 );
 }
 
 
-static int WVIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
+OVL_EXTERN int WVIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
-    /* unused parameters */ (void)ii; (void)is1; (void)is2;
+    /* unused parameters */ (void)iih; (void)is1; (void)is2;
 
     /* never called */
     return( 0 );
 }
 
 
-static int WVIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                        imp_cue_handle *ic2 )
+OVL_EXTERN int WVIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
 {
-    /* unused parameters */ (void)ii; (void)ic1; (void)ic2;
+    /* unused parameters */ (void)iih; (void)imp_cueh1; (void)imp_cueh2;
 
     /* never called */
     return( 0 );
 }
 
 
-static size_t WVIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
+OVL_EXTERN size_t WVIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
                 unsigned num, symbol_type *tag, char *buff, size_t max )
 {
-    /* unused parameters */ (void)ii; (void)it; (void)num; (void)tag; (void)buff; (void)max;
+    /* unused parameters */ (void)iih; (void)ith; (void)num; (void)tag; (void)buff; (void)max;
 
     return( 0 );
 }
 
 
-static dip_status WVIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
+OVL_EXTERN dip_status WVIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
+OVL_EXTERN dip_status WVIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
 {
-    /* unused parameters */ (void)ii; (void)it;
+    /* unused parameters */ (void)iih; (void)ith;
 
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
+OVL_EXTERN dip_status WVIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
+OVL_EXTERN dip_status WVIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
+OVL_EXTERN dip_status WVIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *is )
 {
-    /* unused parameters */ (void)ii; (void)is;
+    /* unused parameters */ (void)iih; (void)is;
 
     return( DS_OK );
 }
 
-static dip_status WVIMPENTRY( SymFreeAll )( imp_image_handle *ii )
+OVL_EXTERN dip_status WVIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 {
-    /* unused parameters */ (void)ii;
+    /* unused parameters */ (void)iih;
 
     return( DS_OK );
 }

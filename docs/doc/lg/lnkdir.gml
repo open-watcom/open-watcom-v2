@@ -119,7 +119,7 @@
 .dir custom             opcustom.gml    netware
 .dir cvpack             opcvpack.gml    all
 .dir debug              lddebug.gml     all
-.dir description        opdescri.gml    os2 win16 win32
+.dir description        opdescri.gml    netware os2 win16 win32
 .dir disable            lddisabl.gml    all
 .if '&overlay' eq 'yes' .do begin
 .dir distribute         opdistri.gml    dos

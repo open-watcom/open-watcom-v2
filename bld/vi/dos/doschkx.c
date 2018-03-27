@@ -39,11 +39,12 @@
 
 
 #define FILE_BUFFER_SIZE    0x8000
+#define TINY_HANDLE_NULL    ((tiny_handle_t)-1)
 
 #define SPAWN_FILE_NAME    "SWXXXXXX"
 
 static char             *fullName = NULL;
-static int              fileHandle = -1;
+static tiny_handle_t    fileHandle = TINY_HANDLE_NULL;
 
 #if defined( USE_XMS ) || defined( USE_EMS )
 
@@ -99,7 +100,7 @@ void XcleanUp( where_parm where )
     switch( where ) {
     case ON_DISK:
         TinyClose( fileHandle );
-        fileHandle = -1;
+        fileHandle = TINY_HANDLE_NULL;
         TinyDelete( fullName );
         fullName = NULL;
         break;
@@ -126,11 +127,11 @@ bool XchkOpen( where_parm where, char *f_buff )
             fullName = f_buff;
             MakeTmpPath( f_buff, SPAWN_FILE_NAME );
             fileHandle = mkstemp( f_buff );
-            if( fileHandle == -1 ) {
+            if( fileHandle == TINY_HANDLE_NULL ) {
                 fullName = NULL;
             }
         } else {
-            fileHandle = -1;
+            fileHandle = TINY_HANDLE_NULL;
             if( fullName != NULL ) {
                 rc = TinyOpen( fullName, TIO_READ );
                 if( TINY_OK( rc ) ) {
@@ -138,7 +139,7 @@ bool XchkOpen( where_parm where, char *f_buff )
                 }
             }
         }
-        return( fileHandle != -1 );
+        return( fileHandle != TINY_HANDLE_NULL );
 #if defined( USE_EMS )
     case IN_EMS:
         currMem = 0;
@@ -158,7 +159,7 @@ void XchkClose( where_parm where )
     switch( where ) {
     case ON_DISK:
         TinyClose( fileHandle );
-        fileHandle = -1;
+        fileHandle = TINY_HANDLE_NULL;
         break;
     }
 }

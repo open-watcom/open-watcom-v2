@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,17 +69,17 @@ void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
 void intern dirtynext( SAREA area, UI_WINDOW *wptr )
 /**************************************************/
 {
-    register    int                     i;
-    auto        SAREA                   areas[ 5 ];
+    int         i;
+    SAREA       areas[5];
 
     dividearea( area, wptr->area, areas );
-    if( areas[ 0 ].height > 0 ) {
-        dirtyarea( wptr, areas[ 0 ] );
+    if( areas[0].height > 0 ) {
+        dirtyarea( wptr, areas[0] );
     }
     if( wptr->next != NULL ) {
-        for( i = 1 ; i < 5 ; ++i ) {
-            if( areas[ i ].height > 0 ) {
-                dirtynext( areas[ i ], wptr->next );
+        for( i = 1; i < 5; ++i ) {
+            if( areas[i].height > 0 ) {
+                dirtynext( areas[i], wptr->next );
             }
         }
     }

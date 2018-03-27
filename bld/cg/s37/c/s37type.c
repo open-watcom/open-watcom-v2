@@ -32,9 +32,8 @@
 
 
 #include "cgstd.h"
-#include "cgdefs.h"
-#include "typclass.h"
 #include "typedef.h"
+#include "typclass.h"
 #include "types.h"
 #include "model.h"
 

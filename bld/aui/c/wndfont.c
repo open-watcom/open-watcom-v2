@@ -30,25 +30,29 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 
-extern bool             WndSetFontInfo( a_window *wnd, char *info )
+bool    WndSetFontInfo( a_window wnd, char *info )
 {
-    if( !GUIFontsSupported() ) return( true );
-    if( info == NULL ) return( false );
+    if( !GUIFontsSupported() )
+        return( true );
+    if( info == NULL )
+        return( false );
     return( GUISetFontInfo( wnd->gui, info ) );
 }
 
 
-extern bool             WndSetSysFont( a_window *wnd, bool fixed )
+bool    WndSetSysFont( a_window wnd, bool fixed )
 {
-    if( !GUIFontsSupported() ) return( true );
+    if( !GUIFontsSupported() )
+        return( true );
     return( GUISetSystemFont( wnd->gui, fixed ) );
 }
 
 
-extern char             *WndGetFontInfo( a_window *wnd )
+char    *WndGetFontInfo( a_window wnd )
 {
-    if( !GUIFontsSupported() ) return( NULL );
+    if( !GUIFontsSupported() )
+        return( NULL );
     return( GUIGetFontInfo( wnd->gui ) );
 }

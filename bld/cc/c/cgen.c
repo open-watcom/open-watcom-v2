@@ -33,7 +33,6 @@
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "pragdefn.h"
 #include "cgcli.h"
 #include "cgprotos.h"
 #include "feprotos.h"
@@ -1826,6 +1825,7 @@ cg_type CGenType( TYPEPTR typ )
         break;
     case TYPE_ENUM:
         typ = typ->object;
+        /* fall through */
     default:
         dtype = CGDataType[typ->decl_type];
     }

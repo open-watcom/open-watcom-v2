@@ -35,20 +35,20 @@
 #include "uidef.h"
 
 
-#ifndef __386__
+#ifdef _M_I86
+extern void vertsync( void );
 #pragma aux vertsync =                                          \
                     0xba 0xda 0x03      /* mov dx,3da   */      \
                     0xec                /* in al,dx     */      \
                     0xa8 0x08           /* test al,8    */      \
                     0x74 0xfb           /* jz -5        */      \
                 modify [ax dx];
-extern void vertsync( void );
 #endif
 
 void intern vertretrace( void )
 /*****************************/
 {
-#ifndef __386__
+#ifdef _M_I86
     if( ( UIData->colour == M_CGA ) && !UIData->no_snow ) {
         /* wait for vertical retrace */
         vertsync();
@@ -59,7 +59,7 @@ void intern vertretrace( void )
 bool intern issnow( BUFFER *bptr )
 /********************************/
 {
-    register    bool                    snow;
+    bool            snow;
 
     snow = false;
     if( isscreen( bptr ) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,7 @@
 #include "dbgwmod.h"
 #include "dbgwset.h"
 #include "dbgwvar.h"
+#include "dbgchopt.h"
 
 
 typedef struct dlg_window_set {
@@ -103,7 +105,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
+OVL_EXTERN bool WndSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *wndset;
@@ -121,16 +123,16 @@ OVL_EXTERN bool WndSetEvent( gui_window *gui, gui_event gui_ev, void *param )
             wndset->cancel = false;
             GetDlgStatus( gui );
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_WIND_CANCEL:
             wndset->cancel = true;
             GUICloseDialog( gui );
-            break;
+            return( true );
         case CTL_WIND_DEFAULTS:
             SetDlgStatus( gui );
-            break;
+            return( true );
         }
-        return( true );
+        break;
     }
     return( false );
 }
@@ -141,6 +143,6 @@ bool    DlgWndSet( void )
     dlg_window_set      wndset;
 
     wndset.cancel = true;
-    ResDlgOpen( &WndSetEvent, &wndset, DIALOG_WIND );
+    ResDlgOpen( WndSetGUIEventProc, &wndset, DIALOG_WIND );
     return( !wndset.cancel );
 }

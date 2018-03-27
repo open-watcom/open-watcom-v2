@@ -29,6 +29,7 @@
 ;*****************************************************************************
 
 
+include langenv.inc
 include mdef.inc
 
         modstart    _8087
@@ -43,9 +44,10 @@ __8087          db  0   ; 0 => no 8087 and no EMU, otherwise 8087 or EMU present
 __real87        db  0   ; 0 => no real 8087 is used, otherwise real 8087 is used
 enddata
 
+        endmod
+
 include xinit.inc
 
         xinit   __chk8087,INIT_PRIORITY_FPU + 3
 
-        endmod
         end

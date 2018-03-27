@@ -432,7 +432,7 @@ trap_retval ReqGet_lib_name( void )
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
     name = GetOutPtr( sizeof( *ret ) );
-    ret->handle = GetLibName( acc->handle, name );
+    ret->mod_handle = GetLibName( acc->mod_handle, name );
     return( sizeof( *ret ) );
 }
 

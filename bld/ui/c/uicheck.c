@@ -51,10 +51,10 @@ static void within( register SAREA inside, register SAREA outside )
 }
 
 
-void intern okarea( register SAREA area )
-/***************************************/
+void intern okarea( SAREA area )
+/******************************/
 {
-    auto        SAREA                   scr;
+    SAREA           scr;
 
     scr.row = 0;
     scr.col = 0;
@@ -64,18 +64,18 @@ void intern okarea( register SAREA area )
 }
 
 
-void intern oksubarea( register SAREA inside, register SAREA outside )
-/********************************************************************/
+void intern oksubarea( SAREA inside, SAREA outside )
+/**************************************************/
 {
     okarea( outside );
     within( inside, outside );
 }
 
 
-void intern okline( register ORD row, register ORD col, register int len, register SAREA area )
-/*********************************************************************************************/
+void intern okline( ORD row, ORD col, uisize len, SAREA area )
+/************************************************************/
 {
-    auto        SAREA                   line;
+    SAREA       line;
 
     line.row = row;
     line.col = col;
@@ -85,8 +85,8 @@ void intern okline( register ORD row, register ORD col, register int len, regist
 }
 
 
-void intern okopen( register VSCREEN *vptr )
-/******************************************/
+void intern okopen( VSCREEN *vptr )
+/*********************************/
 {
     if( !(vptr->open) ) {
         uibarf();

@@ -40,6 +40,10 @@
 #include "tinyio.h"
 #include "local.h"
 
+
+#define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
+#define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
+
 extern void __buffered_keyboard_input( char * );
 #pragma aux __buffered_keyboard_input = \
         _MOV_AH 0x0a \
@@ -76,12 +80,12 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = date.day_of_week;
 }
 
-bool LocalInteractive( sys_handle fh )
+bool LocalInteractive( sys_handle sh )
 /************************************/
 {
     tiny_ret_t rc;
 
-    rc = TinyGetDeviceInfo( fh );
+    rc = TinyGetDeviceInfo( SYSH2LH( sh ) );
     if( TINY_ERROR( rc ) ) {
         return( false );
     }
@@ -173,7 +177,7 @@ long LocalGetFreeSpace( int drv )
     return( TinyFreeSpace( drv ) );
 }
 
-error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
+error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
 /************************************************************************/
 {
     tiny_ftime_t *ptime;
@@ -184,9 +188,9 @@ error_handle LocalDateTime( sys_handle fh, int *time, int *date, int set )
     ptime = (tiny_ftime_t *)time;
     pdate = (tiny_fdate_t *)date;
     if( set ) {
-        rc = TinySetFileStamp( fh, *ptime, *pdate );
+        rc = TinySetFileStamp( SYSH2LH( sh ), *ptime, *pdate );
     } else {
-        rc = TinyGetFileStamp( fh );
+        rc = TinyGetFileStamp( SYSH2LH( sh ) );
         file_stamp = (void *) &rc;
         *ptime = file_stamp->time;
         *pdate = file_stamp->date;

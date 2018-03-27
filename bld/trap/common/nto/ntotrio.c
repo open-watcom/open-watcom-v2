@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
@@ -191,14 +192,14 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     bool                has_ext;
     bool                has_path;
     char                *ptr;
     char                *endptr;
     char                trpfile[256];
-    int                 fd;
+    FILE                *fp;
 
     result = result; max_result = max_result;
     has_ext = FALSE;
@@ -222,30 +223,28 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         trpfile[name_len++] = '.';
         memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
     }
-    fd = -1;
+    fp = NULL;
     if( has_path ) {
-        fd = open( trpfile, O_RDONLY );
+        fp = fopen( trpfile, "rb" );
     } else if( FindFilePath( trpfile, RWBuff ) ) {
-        fd = open( RWBuff, O_RDONLY );
+        fp = fopen( RWBuff, "rb" );
     }
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    return( fp );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( FILE *fp, void *buff, size_t len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( fread( buff, 1, len, fp ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( FILE *fp, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( fseek( fp, offs, where ) );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( FILE *fp )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( fclose( fp ) );
 }
 
 void *DIGCLIENTRY( Alloc )( size_t amount )

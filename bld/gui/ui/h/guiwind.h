@@ -135,7 +135,7 @@ struct gui_window {
     gui_window          *next;          // Used by guizlist for z-order
     p_gadget            vgadget;        // vertical scroll gadget
     p_gadget            hgadget;        // horizontal scroll gadget
-    MENUITEM            *menu;          // pulldown menu under closer
+    UIMENUITEM          *menu;          // pulldown menu under closer
     VBARMENU            *vbarmenu;      // top level menu
     int                 min_pos;        // unused
     toolbarinfo         *tbinfo;        // pointer to toolbar, if exists
@@ -191,7 +191,7 @@ enum {
 
 #define IS_CTLEVENT(x)  (x >= GUI_FIRST_USER_EVENT)
 
-#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT)
-#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT)
+#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT + 1)
+#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT - 1)
 
 #endif // _GUIWIND_H_

@@ -41,7 +41,7 @@
 #include "modcomp.h"
 
 
-static const char *ModGetName( const void *data_handle, int item )
+OVL_EXTERN const char *ModGetName( const void *data_handle, int item )
 {
     const module_list *list = data_handle;
 
@@ -72,7 +72,8 @@ void ModComplete( gui_window *gui, gui_ctl_id id )
         new = 0;
         break;
     default:
-        new = DlgPickWithRtn( LIT_DUI( Modules ), &list, 0, ModGetName, ModListNumRows( &list ) );
+        new = -1;
+        DlgPickWithRtn( LIT_DUI( Modules ), &list, 0, ModGetName, ModListNumRows( &list ), &new );
         break;
     }
     strcpy( TxtBuff, savebuff );

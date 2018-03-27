@@ -32,6 +32,8 @@
 
         name    p5psegs
 
+include tinit.inc
+
 DGROUP group TIB,TI,TIE
 
         public  "C",_Start_TI
@@ -40,9 +42,6 @@ DGROUP group TIB,TI,TIE
 TIB     segment byte public 'DATA'
 _Start_TI label byte
 TIB     ends
-
-TI      segment byte public 'DATA'
-TI      ends
 
 TIE     segment byte public 'DATA'
 _End_TI label byte

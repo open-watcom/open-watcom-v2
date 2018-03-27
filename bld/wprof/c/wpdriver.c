@@ -60,71 +60,58 @@
 #define OFN_SAMPLE_FILE (OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST)
 
 static gui_menu_struct fileMenu[] = {
-    { "&Open...", MENU_OPEN_SAMPLE, GUI_ENABLED, "Open a sample file." },
-    { "&Close", MENU_CLOSE_SAMPLE, GUI_ENABLED,
-                            "Close the current sample information." },
-    { "", 0, GUI_SEPARATOR },
-    { "Op&tions...", MENU_OPTIONS, GUI_ENABLED, "Set profiler options." },
+    { "&Open...",               MENU_OPEN_SAMPLE,   GUI_STYLE_MENU_ENABLED, "Open a sample file." },
+    { "&Close",                 MENU_CLOSE_SAMPLE,  GUI_STYLE_MENU_ENABLED, "Close the current sample information." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
+    { "Op&tions...",            MENU_OPTIONS,       GUI_STYLE_MENU_ENABLED, "Set profiler options." },
 #if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2__ ) && !defined( __UNIX__ )
-    { "S&ystem", MENU_SYSTEM, GUI_ENABLED, "Start an operating system shell." },
+    { "S&ystem",                MENU_SYSTEM,        GUI_STYLE_MENU_ENABLED, "Start an operating system shell." },
 #endif
 #ifdef TRMEM
-    { "&Memory Usage(Debug)", MENU_MEMPRT, GUI_ENABLED, "Print out current memory usage." },
+    { "&Memory Usage(Debug)",   MENU_MEMPRT,        GUI_STYLE_MENU_ENABLED, "Print out current memory usage." },
 #endif
-    { "", 0, GUI_SEPARATOR },
-    { "E&xit", MENU_EXIT, GUI_ENABLED, "Exit the Open Watcom Profiler." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
+    { "E&xit",                  MENU_EXIT,          GUI_STYLE_MENU_ENABLED, "Exit the Open Watcom Profiler." },
 };
 
 
 static gui_menu_struct convertMenu[] = {
-    { "Current &Module...", MENU_CONVERT_MODULE, GUI_ENABLED,
-                            "Convert the current module." },
-    { "Current &Image...", MENU_CONVERT_IMAGE, GUI_ENABLED,
-                            "Convert the current image." },
-    { "&All Images...", MENU_CONVERT_ALL, GUI_ENABLED,
-                            "Convert all of the images." },
+    { "Current &Module...", MENU_CONVERT_MODULE,    GUI_STYLE_MENU_ENABLED, "Convert the current module." },
+    { "Current &Image...",  MENU_CONVERT_IMAGE,     GUI_STYLE_MENU_ENABLED, "Convert the current image." },
+    { "&All Images...",     MENU_CONVERT_ALL,       GUI_STYLE_MENU_ENABLED, "Convert all of the images." },
 };
 
 
 static gui_menu_struct helpMenu[] = {
-    { "&Contents", MENU_HELP_CONTENTS, GUI_ENABLED,
-                            "List Open Watcom Profile help topics." },
+    { "&Contents",              MENU_HELP_CONTENTS, GUI_STYLE_MENU_ENABLED, "List Open Watcom Profile help topics." },
 #if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
-    { "&Search for Help On...", MENU_HELP_SEARCH, GUI_ENABLED,
-                            "Search for help on a specific topic." },
-    { "", 0, GUI_SEPARATOR },
-    { "&How to Use Help", MENU_HELP_ONHELP, GUI_ENABLED,
-                            "Display information on how to use help." },
+    { "&Search for Help On...", MENU_HELP_SEARCH,   GUI_STYLE_MENU_ENABLED, "Search for help on a specific topic." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
+    { "&How to Use Help",       MENU_HELP_ONHELP,   GUI_STYLE_MENU_ENABLED, "Display information on how to use help." },
 #endif
-    { "", 0, GUI_SEPARATOR },
-    { "&About...", MENU_ABOUT, GUI_ENABLED, "Display program information." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
+    { "&About...",              MENU_ABOUT,         GUI_STYLE_MENU_ENABLED, "Display program information." },
 };
 
 
 gui_menu_struct WndMainMenu[] = {
-    { "&File",  MENU_FILE, GUI_ENABLED,
-      "", WndMenuFields( fileMenu ) },
-    { "&Convert",  MENU_CONVERT, GUI_ENABLED,
-      "Convert the data to an output format.", WndMenuFields( convertMenu ) },
-    { "&Windows", MENU_WINDOWS, GUI_ENABLED+GUI_MDIWINDOW,
-      "Select an active window." },
-    { "&Actions",  MENU_ACTIONS, GUI_ENABLED+WND_MENU_POPUP,
-      "Select an action for the active window.", 0, 0 },
-    { "&Help",  MENU_HELP, GUI_ENABLED,
-      "Display Open Watcom Profiler help.", WndMenuFields( helpMenu ) },
+    { "&File",      MENU_FILE,      GUI_STYLE_MENU_ENABLED,                             "",                                         WndMenuFields( fileMenu ) },
+    { "&Convert",   MENU_CONVERT,   GUI_STYLE_MENU_ENABLED,                             "Convert the data to an output format.",    WndMenuFields( convertMenu ) },
+    { "&Windows",   MENU_WINDOWS,   GUI_STYLE_MENU_ENABLED + GUI_STYLE_MENU_MDIWINDOW,  "Select an active window." },
+    { "&Actions",   MENU_ACTIONS,   GUI_STYLE_MENU_ENABLED + WND_MENU_POPUP,            "Select an action for the active window." },
+    { "&Help",      MENU_HELP,      GUI_STYLE_MENU_ENABLED,                             "Display Open Watcom Profiler help.",       WndMenuFields( helpMenu ) },
 };
 
-int WndNumMenus = { WndMenuSize( WndMainMenu ) };
+int WndNumMenus = ArraySize( WndMainMenu );
 
 
-
-bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
-/**************************************************/
+bool WndMainMenuProc( a_window wnd, gui_ctl_id id )
+/*************************************************/
 {
-    a_window *      active;
-    sio_data *      curr_sio;
+    a_window    active;
+    sio_data    *curr_sio;
 #if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2__ ) && !defined( __UNIX__ )
-    char *          sys_spec;
+    char        *sys_spec;
 #endif
 
     /* unused parameters */ (void)wnd;
@@ -145,8 +132,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
     case MENU_SYSTEM:
         GUISpawnStart();
         sys_spec = getenv( "COMSPEC" );
-        if( sys_spec == NULL
-         || spawnl( P_WAIT, sys_spec, sys_spec, NULL ) == -1 ) {
+        if( sys_spec == NULL || spawnl( P_WAIT, sys_spec, sys_spec, NULL ) == -1 ) {
             ErrorMsg( LIT( Bad_System_Load ) );
         }
         GUISpawnEnd();
@@ -196,16 +182,16 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
 void OpenSample( void )
 /*********************/
 {
-    void        *cursor_type;
+    gui_mcursor_handle  old_cursor;
 
 #if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
     AboutClose();
 #else
     AboutSetOff();
 #endif
-    cursor_type = WndHourGlass( NULL );
+    old_cursor = WndHourGlass( NULL );
     if( GetSampleInfo() ) {
         WPSampleOpen();
     }
-    WndHourGlass( cursor_type );
+    WndHourGlass( old_cursor );
 }

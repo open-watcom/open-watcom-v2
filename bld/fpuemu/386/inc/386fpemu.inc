@@ -39,11 +39,7 @@ ifndef NDEBUG
 endif
 ifndef __WIN387__
         extrn   __GETDS : near
-if _OS eq _QNX
-        extrn   "C",__FPEhandler : near
-else
-        extrn   __FPE_exception_  : near
-endif
+        extrn   "C",__FPE_exception : proc
 endif
 
 ifndef NDEBUG
@@ -946,12 +942,8 @@ ifndef __WIN387__
           mov   ECX,108/4               ; - number of dwords to copy
           cld                           ; - make sure forward direction
           rep   movsd                   ; - copy it
-          movzx EAX,AH                  ; - get exception code  21-jul-90
-if _OS eq _QNX
-          call  __FPEhandler            ; - jump to SIGFPE handler rtn
-else
-          call  __FPE_exception_        ; - jump to SIGFPE handler rtn
-endif
+          movzx EAX,AH                  ; - get exception code
+          call  __FPE_exception         ; - jump to SIGFPE handler rtn
           mov   CX,DS                   ; - set ES=DS
           mov   ES,CX                   ; - ...
           mov   CX,SS                   ; - set DS=SS

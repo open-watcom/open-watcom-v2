@@ -33,8 +33,8 @@
 #include "dipwat.h"
 #include "watloc.h"
 #include "watgbl.h"
+#include "watlcl.h"
 
-extern const char   *GetAddress( imp_image_handle *, const char *, address *, int );
 
 void LocationCreate( location_list *ll, location_type lt, void *d )
 {
@@ -216,7 +216,7 @@ location_info InfoLocation( const char *e )
 }
 
 
-static const char *ParseLocEntry( imp_image_handle *ii, const char *ptr,
+static const char *ParseLocEntry( imp_image_handle *iih, const char *ptr,
                         loc_entry *location )
 {
     byte    numregs;
@@ -243,10 +243,10 @@ static const char *ParseLocEntry( imp_image_handle *ii, const char *ptr,
     case CONSTANT:
         switch( location->memory.class ) {
         case CONSTANT + ADDR386:
-            ptr = GetAddress( ii, ptr, &location->memory.addr, 1 );
+            ptr = GetAddress( iih, ptr, &location->memory.addr, 1 );
             break;
         case CONSTANT + ADDR286:
-            ptr = GetAddress( ii, ptr, &location->memory.addr, 0 );
+            ptr = GetAddress( iih, ptr, &location->memory.addr, 0 );
             location->constant.class = CONSTANT + ADDR386;
             break;
         case CONSTANT + INT_1:
@@ -382,7 +382,7 @@ void PushBaseLocation( location_list *ll )
 }
 
 
-dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char *e,
+dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char *e,
                         location_list *ll )
 {
     const char                  *end;
@@ -415,7 +415,7 @@ dip_status EvalLocation( imp_image_handle *ii, location_context *lc, const char 
     sp = LocStack + LocStkPtr - 1;
     start = sp;
     while( e < end ) {
-        e = ParseLocEntry( ii, e, &loc );
+        e = ParseLocEntry( iih, e, &loc );
         switch( loc.locvoid.class ) {
         case BP_OFFSET:
             ++sp;

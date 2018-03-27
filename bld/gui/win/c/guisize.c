@@ -37,8 +37,8 @@
 #include "guiscale.h"
 #include "guirect.h"
 #include "guipaint.h"
+#include "guimdi.h"
 
-extern  bool    GUIMDI;
 
 bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 {
@@ -75,7 +75,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
             wnd->root_client_rect = wnd->hwnd_client_rect;
             GUISetRowCol( wnd, NULL );
             GUIScreenToScaleR( &size );
-            GUIEVENTWND( wnd, GUI_RESIZE, &size );
+            GUIEVENT( wnd, GUI_RESIZE, &size );
 #endif
         } else {
             _wpi_setwindowpos( frame, NULLHANDLE, pos.x, pos.y, size.x, size.y,
@@ -128,7 +128,7 @@ bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
         parent = _wpi_getparent( top_hwnd );
         _wpi_getrestoredrect( top_hwnd, &new_rect );
         _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&new_rect, 2 );
-        DoGetRelRect( top_hwnd, &new_rect, rect, ( wnd->style & GUI_POPUP ) );
+        DoGetRelRect( top_hwnd, &new_rect, rect, (wnd->style & GUI_POPUP) );
         return( true );
     }
 

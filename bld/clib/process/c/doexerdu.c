@@ -59,11 +59,8 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *ep;
     int rc = -1;
     int fh;
-    int pid;
     char *drive;
     char *dir;
-    int wait;
-    int res;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -104,24 +101,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok ) {
-        if( RdosIsForked() ) {
-            RdosExec( pgmname, cmdline, 0, envpar );
-        } else {
-            pid = RdosFork();
-            if( pid ) {
-                wait = RdosCreateWait();
-                RdosAddWaitForProcessEnd( wait, pid, (void *)pid );
-                res = RdosWaitForever( wait );
-                RdosCloseWait( wait );
-                if( res == 0 ) {
-                    rc = -1;
-                } else {
-                    rc = RdosGetExitCode();
-                }
-            } else {
-                RdosExec( pgmname, cmdline, 0, envpar );
-            }
-        }
+        RdosExec( pgmname, cmdline, 0, envpar );
     }
 
     lib_free( p );

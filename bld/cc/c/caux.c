@@ -30,7 +30,6 @@
 
 
 #include "cvars.h"
-#include "pragdefn.h"
 #include "pdefn2.h"
 #include "caux.h"
 

@@ -203,24 +203,6 @@ extern short            PharlapRMI( void __far *parms, short bx, short cx, short
                         "pop  ds      ", \
                         parm caller [fs edx] [ebx] [ecx] [edi] value [ax];
 
-extern long             PharlapRMI2( void __far *parms );
-#pragma aux             PharlapRMI2 = \
-                        "push ds      ", \
-                        "push esi     ", \
-                        "xor  esi,esi ", \
-                        "push fs      ", \
-                        "pop  ds      ", \
-                        "mov  ax,2511h", \
-                        "int  021h    ", \
-                        "sub  eax,eax ",        /* return (ds<<4)+si */ \
-                        "mov  ax,word ptr 2[edx]", \
-                        "shl  eax,4   ", \
-                        "and  esi,0ffffh", \
-                        "add  eax,esi ", \
-                        "pop  esi     ", \
-                        "pop  ds      ", \
-                        parm caller [fs edx] value [eax];
-
 
 short _RMAlloc( int size, RM_ALLOC *stg )
 //=======================================
@@ -292,28 +274,6 @@ short _RMInterrupt( short intnum, short ax, short bx, short cx,
         parms.edx = dx;
         parms.es = es;
         return( PharlapRMI( &parms, bx, cx, di ) );
-    }
-}
-
-
-long _RMInterrupt2( short intnum, short ax )
-//==========================================
-
-// issue real-mode interrupt, return ds:si as a long
-{
-    RMI                 rmi;
-    PARM_BLOCK          parms;
-
-    if( _IsRational() ) {
-        memset( &rmi, 0, sizeof( RMI ) );
-        rmi.eax = ax;
-        DPMIRealModeInterrupt( intnum, 0, 0, &rmi );
-        return( (rmi.ds << 4) + rmi.esi );
-    } else {
-        memset( &parms, 0, sizeof( PARM_BLOCK ) );
-        parms.intnum = intnum;
-        parms.eax = ax;
-        return( PharlapRMI2( &parms ) );
     }
 }
 

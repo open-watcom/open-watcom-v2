@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "drwatcom.h"
 #include "wclbproc.h"
 #include "notelog.h"

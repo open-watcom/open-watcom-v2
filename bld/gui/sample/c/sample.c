@@ -304,10 +304,6 @@ static void HandlePopup( gui_window *gui, gui_rect *rect, gui_ctl_id id )
     }
 }
 
-/*
- * MainEventWnd - call back routine for the main window
- */
-
 static void SetFixedFloat( gui_window *gui )
 {
     if( GUIHasToolBar( gui ) ) {
@@ -457,9 +453,12 @@ static change_struct *MakeChangeStruct( char *str, int length,
     return( old );
 }
 
-bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+/*
+ * MainWndGUIEventProc - call back routine for the main window
+ */
+
+bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    bool                ret;
     gui_ctl_id          id;
     char                *new;
     int                 numrows;
@@ -479,17 +478,13 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     char                Buffer[80];
 #endif
 
-
-    ret = false;
-    gui = gui;
     switch( gui_ev ) {
     case GUI_CLOSE :
         GUIHelpFini( help_inst, HelpWindow, help_file );
-        ret = true;
-        break;
+        return( true );
     case GUI_PAINT :
         GUIGetPaintRect( gui, &client );
-        break;
+        return( true );
     case GUI_STATUS_CLEARED :
         GUIDrawStatusText( gui, "Ready!" );
         client.x = 700;
@@ -497,7 +492,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         client.width = 100;
         client.height = 100;
         GUIWndDirtyRect( gui, &client );
-        break;
+        return( true );
     case GUI_INIT_WINDOW :
         if( MainWnd == NULL ) {
 #if dynamic_menus
@@ -531,11 +526,10 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         scroll.x = GUIGetHScrollCol( gui );
         scroll.y = GUIGetVScrollRow( gui );
         numrows = GUIGetNumRows( gui );
-        ret = true;
-        break;
+        return( true );
     case GUI_FONT_CHANGED :
         GUIResizeStatusWindow( gui, 0, 0 );
-        break;
+        return( true );
     case GUI_CONTROL_RCLICKED :
 #ifndef __OS2_PM__
         //WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
@@ -545,7 +539,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         text = GUIGetText( gui, id );
         GUIDisplayMessage( gui, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
-        break;
+        return( true );
     case GUI_RBUTTONUP :
         if( gui != MainWnd ) {
             GUI_GET_POINT( param, point );
@@ -554,25 +548,25 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                                     GUI_TRACK_RIGHT, &CurrPopupItem );
 #endif
         }
-        break;
+        return( true );
     case GUI_INITMENUPOPUP:
         {
             char        text[100];
 
             GUI_GETID( param, id );
-            sprintf ( text,"GUI_INITMENUPOPUP: id = %d", id );
+            sprintf( text, "GUI_INITMENUPOPUP: id = %d", id );
             GUIDrawStatusText( MainWnd, text );
         }
         //GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
-        break;
+        return( true );
     case GUI_SCROLL_UP :
         Percent--;
         GUISetVScrollThumb( gui, Percent );
-        break;
+        return( true );
     case GUI_SCROLL_DOWN :
         Percent++;
         GUISetVScrollThumb( gui, Percent );
-        break;
+        return( true );
     case GUI_DESTROY :
         GUIMemFree( OldValue );
         OldValue = NULL;
@@ -584,18 +578,17 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         if( Child3Wnd == gui ) {
             Child3Wnd = NULL;
         }
-        break;
+        return( true );
     case GUI_TOOLBAR_FLOATING :
     case GUI_TOOLBAR_FIXED :
         SetFixedFloat( gui );
-        break;
+        return( true );
     case GUI_TOOLBAR_DESTROYED :
         SetFixedFloat( gui );
         SetToolbarCreate( gui );
-        break;
+        return( true );
     case GUI_CONTROL_CLICKED :
-        StaticDialogEventWnd( gui, gui_ev, param );
-        break;
+        return( StaticDialogWndGUIEventProc( gui, gui_ev, param ) );
     case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -624,14 +617,16 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             ResDialogCreate( MainWnd );
             {
                 gui_menu_struct *menu;
-                int             num;
-                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num );
-                if( menu && num ) {
-                    int     i;
-                    for( i = 0; i < num; i++ ) {
-                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[i], false );
+                int             num_items;
+
+                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num_items );
+                if( menu != NULL && num_items > 0 ) {
+                    int     item;
+
+                    for( item = 0; item < num_items; item++ ) {
+                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[item], false );
                     }
-                    GUIFreeGUIMenuStruct( menu, num );
+                    GUIFreeGUIMenuStruct( menu, num_items );
                 }
             }
             break;
@@ -788,7 +783,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIMemFree( new );
             break;
         }
-        break;
+        return( true );
     case GUI_KEY_CONTROL :
         GUI_GET_KEY_CONTROL( param, id, key );
         if( key == GUI_KEY_ENTER ) {
@@ -797,7 +792,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIMemFree( new );
             GUIClearText( gui, id );
         }
-        break;
+        return( true );
     case GUI_KEYDOWN :
         KeyDown = true;
 #if parent_keys
@@ -806,18 +801,24 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         break;
     case GUI_KEYUP :
 #if parent_keys
-        GUI_GET_KEY( param, key );
-        if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
-            ret = DisplayKey( key, Buffer );
-            KeyDown = false;
+        {
+            bool    ret;
+
+            ret = false;
+            GUI_GET_KEY( param, key );
+            if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
+                ret = DisplayKey( key, Buffer );
+                KeyDown = false;
+            }
+            return( ret );
         }
-#endif
-        ret = false;
+#else
         break;
+#endif
     default :
         break;
     }
-    return( ret );
+    return( false );
 }
 
 static void DoOkay( gui_window *gui )
@@ -862,10 +863,10 @@ static void DoCancel( gui_window *gui )
 }
 
 /*
- * ControlEventWnd - call back routine for the Controls
+ * ControlWndGUIEventProc - call back routine for the Controls
  */
 
-bool ControlEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool ControlWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     change_struct       *change;
@@ -889,19 +890,18 @@ bool ControlEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         switch( id ) {
         case CANCELBUTTON_CONTROL :
-           DoCancel( gui );
-           return( true );
-           break;
+            DoCancel( gui );
+            return( true );
         case OKBUTTON_CONTROL :
-           DoOkay( gui );
-           break;
+            DoOkay( gui );
+            return( true );
         default :
             break;
         }
     default :
         break;
     }
-    return( StaticDialogEventWnd( gui, gui_ev, param ) );
+    return( StaticDialogWndGUIEventProc( gui, gui_ev, param ) );
 }
 
 static void GetNewVal( char *str, int length, gui_window *gui )
@@ -980,7 +980,7 @@ static void ProcessCursor( gui_window *gui, gui_key key )
         point.y += metrics.avg.y;
         break;
     default :
-       return;
+        return;
     }
     GUISetCursorPos( gui, &point );
 }
@@ -993,8 +993,7 @@ static void InitIndent( gui_window *gui, int num_rows, out_info *out )
 
     max_length = 0;
     for( i = 0; i < num_rows; i++ ) {
-        extent = GUIGetExtentX( gui, out->display[i].data,
-                        strlen( out->display[i].data ) );
+        extent = GUIGetExtentX( gui, out->display[i].data, strlen( out->display[i].data ) );
         if( extent > max_length ) {
             max_length = extent;
         }
@@ -1004,8 +1003,7 @@ static void InitIndent( gui_window *gui, int num_rows, out_info *out )
     }
 }
 
-static int GetStringIndent( int *indent, gui_ord hscroll,
-                            gui_text_metrics *metrics )
+static int GetStringIndent( int *indent, gui_ord hscroll, gui_text_metrics *metrics )
 {
     int string_indent;
 
@@ -1097,12 +1095,11 @@ static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
 }
 
 /*
- * Child1EventWnd - call back routine for the first child window
+ * Child1WndGUIEventProc - call back routine for the first child window
  */
 
-bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool Child1WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    bool                ret;
     int                 diff;
     gui_rect            client;
     gui_text_metrics    metrics;
@@ -1114,7 +1111,6 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_char_cursor     cursor;
     char                Buffer[80];
 
-    ret = false;
     switch( gui_ev ) {
     case GUI_INIT_WINDOW :
         GUIGetClientRect( gui, &client );
@@ -1126,54 +1122,52 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIInitHScroll( gui, 0 );
         InitIndent( gui, NUM_CHILD1_ROWS, GUIGetExtra( gui ) );
         GUIAppendMenuToPopup( gui, MENU_MORE, &MenuMore, false );
-        ret = true;
-        break;
+        return( true );
     case GUI_PAINT :
         GUI_GET_ROWS( param, row, num );
-        PaintWindow( gui, row, num, GUIGetVScrollRow( gui ),
-                     GUIGetHScrollCol( gui ) );
-        break;
+        PaintWindow( gui, row, num, GUIGetVScrollRow( gui ), GUIGetHScrollCol( gui ) );
+        return( true );
     case GUI_FONT_CHANGED :
     case GUI_RESIZE :
         GUISetVScrollRangeRows( gui, NUM_CHILD1_ROWS );
         GUISetHScrollRangeCols( gui, Child1HScrollRange );
-        break;
+        return( true );
     case GUI_SCROLL_UP :
         VScroll( gui, -1 );
-        break;
+        return( true );
     case GUI_SCROLL_DOWN :
         VScroll( gui, 1 );
-        break;
+        return( true );
     case GUI_SCROLL_LEFT :
         HScroll( gui, -1 );
-        break;
+        return( true );
     case GUI_SCROLL_RIGHT :
         HScroll( gui, 1 );
-        break;
+        return( true );
     case GUI_SCROLL_PAGE_UP :
         VScroll( gui, -GUIGetNumRows( gui ) );
-        break;
+        return( true );
     case GUI_SCROLL_PAGE_DOWN :
         VScroll( gui, GUIGetNumRows( gui ) );
-        break;
+        return( true );
     case GUI_SCROLL_PAGE_LEFT :
         GUIGetClientRect( gui, &client );
         GUIGetTextMetrics( gui, &metrics );
         HScroll( gui, -( client.width / metrics.avg.x ) );
-        break;
+        return( true );
     case GUI_SCROLL_PAGE_RIGHT :
         GUIGetClientRect( gui, &client );
         GUIGetTextMetrics( gui, &metrics );
         HScroll( gui, client.width / metrics.avg.x );
-        break;
+        return( true );
     case GUI_SCROLL_VERTICAL :
         GUI_GET_SCROLL( param, diff );
         VScroll( gui, diff );
-        break;
+        return( true );
     case GUI_SCROLL_HORIZONTAL :
         GUI_GET_SCROLL( param, diff );
         HScroll( gui, diff );
-        break;
+        return( true );
     case GUI_LBUTTONDOWN :
     case GUI_RBUTTONDOWN :
         GUI_GET_POINT( param, point );
@@ -1192,7 +1186,7 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
             }
             GUISetCursorType( gui, cursor );
         }
-        break;
+        return( true );
     case GUI_KEYDOWN :
         GUI_GET_KEY( param, key );
         switch( key ) {
@@ -1205,39 +1199,40 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
             ProcessCursor( gui, key );
             break;
         case GUI_KEY_PAGEUP :
-                Child1EventWnd( gui, GUI_SCROLL_PAGE_UP, NULL );
-                break;
+            Child1WndGUIEventProc( gui, GUI_SCROLL_PAGE_UP, NULL );
+            break;
         case GUI_KEY_PAGEDOWN :
-                Child1EventWnd( gui, GUI_SCROLL_PAGE_DOWN, NULL );
-                break;
+            Child1WndGUIEventProc( gui, GUI_SCROLL_PAGE_DOWN, NULL );
+            break;
         default :
             break;
         }
-        break;
+        return( true );
     case GUI_KEYUP :
 #if keys
         GUI_GET_KEY( param, key );
-        ret = DisplayKey( key, Buffer );
+        return( DisplayKey( key, Buffer ) );
+#else
+        return( true );
 #endif
-        ret = false;
-     case GUI_CLICKED :
+    case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case MENU_RESET_MENU :
             GUIResetMenus( MainWnd, NUM_MAIN_MENUS, MainMenu );
             GUIResetMenus( Child1Wnd, NUM_CHILD_MENUS, ChildMenu );
         }
+        return( true );
     default :
-        return( ChildEventWnd( gui, gui_ev, param ) );
+        return( Child2WndGUIEventProc( gui, gui_ev, param ) );
     }
-    return( ret );
 }
 
 /*
- * Child3EventWnd - call back routine for the third child window
+ * Child3WndGUIEventProc - call back routine for the third child window
  */
 
-bool Child3EventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool Child3WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_point           point;
     gui_rgb             rgb, green;
@@ -1246,7 +1241,7 @@ bool Child3EventWnd( gui_window *gui, gui_event gui_ev, void *param )
     switch( gui_ev ) {
     case GUI_LBUTTONDOWN :
         GUI_GET_POINT( param, StartRectPoint );
-        break;
+        return( true );
     case GUI_LBUTTONUP :
         GUI_GET_POINT( param, point );
         SFillRect.x = StartRectPoint.x;
@@ -1254,14 +1249,14 @@ bool Child3EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         SFillRect.width = point.x - StartRectPoint.x;
         SFillRect.height = point.y - StartRectPoint.y;
         GUIWndDirty( gui );
-        break;
+        return( true );
     case GUI_RBUTTONDOWN :
         GUI_GET_POINT( param, StartPoint );
-        break;
+        return( true );
     case GUI_RBUTTONUP :
         GUI_GET_POINT( param, EndPoint );
         GUIWndDirty( gui );
-        break;
+        return( true );
     case GUI_PAINT :
         GUIGetTextMetrics( gui, &text_metrics );
 //      GUIDrawLine( gui, &StartPoint, &EndPoint, GUI_PEN_SOLID,
@@ -1281,47 +1276,45 @@ bool Child3EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIDrawTextRGB( gui, "Shadow Bars", 11, 9, 75, rgb, green );
         GUIDrawBar( gui, 10, 1, 30, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, true );
         GUIDrawBar( gui, 11, 1, 50, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, false );
-        break;
+        return( true );
     default :
-        return( MainEventWnd( gui, gui_ev, param ) );
+        return( MainWndGUIEventProc( gui, gui_ev, param ) );
     }
-    return( false );
 }
 
 #if swap_enable
 static bool Enabled = true;
 #endif
 
-static void CreatePopup( gui_window *gui, int num_menus,
-                         gui_menu_struct *menu, gui_ctl_id popup_id, bool sub )
+static void CreatePopup( gui_window *gui, int num_items, gui_menu_struct *menu, gui_ctl_id popup_id, bool submenu )
 {
-    int                 i;
-    gui_menu_struct     *sub_menu;
-    int                 num_sub;
+    gui_menu_struct     *child;
+    int                 child_num_items;
 
-    for( i = 0; i < num_menus; i++ ) {
-        if( sub ) {
-            GUIAppendMenuToPopup( gui, popup_id, &menu[i], true );
+    while( num_items-- > 0 ) {
+        if( submenu ) {
+            GUIAppendMenuToPopup( gui, popup_id, menu, true );
         } else {
-            sub_menu = menu[i].child;
-            num_sub = menu[i].num_child_menus;
-            menu[i].num_child_menus = 0;
-            menu[i].child = NULL;
-            GUIAppendMenu( gui, &menu[i], true );
-            menu[i].num_child_menus = num_sub;
-            menu[i].child = sub_menu;
+            child = menu->child;
+            child_num_items = menu->child_num_items;
+            menu->child_num_items = 0;
+            menu->child = NULL;
+            GUIAppendMenu( gui, menu, true );
+            menu->child_num_items = child_num_items;
+            menu->child = child;
         }
-        if( menu[i].child != NULL ) {
-            CreatePopup( gui, menu[i].num_child_menus, menu[i].child, menu[i].id, true );
+        if( menu->child != NULL ) {
+            CreatePopup( gui, menu->child_num_items, menu->child, menu->id, true );
         }
+        menu++;
     }
 }
 
 /*
- * ChildEventWnd - call back routine for the child window(s)
+ * Child2WndGUIEventProc - call back routine for the child window(s)
  */
 
-bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     bool                ret;
     gui_point           point;
@@ -1353,16 +1346,14 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     vscroll = 0;
     switch( gui_ev ) {
     case GUI_CLOSE :
-        ret = true;
-        break;
+        return( true );
     case GUI_INIT_WINDOW :
         GUIGetClientRect( gui, &client );
         GUIGetTextMetrics( gui, &metrics );
         GUISetHScrollRangeCols( gui, client.width / metrics.avg.x );
         GUISetVScrollRangeRows( gui, NUM_CHILD2_ROWS );
         InitIndent( gui, NUM_CHILD2_ROWS, GUIGetExtra( gui ) );
-        ret = true;
-        break;
+        return( true );
     case GUI_LBUTTONDOWN :
         if( gui == Child2Wnd ) {
             GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
@@ -1371,18 +1362,18 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIEnableMDIMenus( Enabled );
 #endif
         }
-        break;
+        return( true );
     case GUI_LBUTTONUP :
         if( gui == Child2Wnd ) {
             GUISetMouseCursor( GUI_ARROW_CURSOR );
         }
-        break;
+        return( true );
     case GUI_ICONIFIED :
         GUIBringToFront( MainWnd );
-        break;
+        return( true );
     case GUI_RESIZE :
         GUI_GET_SIZE( param, size );
-        break;
+        return( true );
     case GUI_DESTROY :
         out = GUIGetExtra( gui );
         for( i = 0; i < out->numrows; i++ ) {
@@ -1398,11 +1389,11 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         if( gui == Child2Wnd ) {
             Child2Wnd = NULL;
         }
-        break;
+        return( true );
     case GUI_PAINT :
         GUI_GET_ROWS( param, row, num );
         PaintWindow( gui, row, num, 0, 0 );
-        break;
+        return( true );
     case GUI_MOUSEMOVE :
         if( Highlight ) {
             GUI_GET_POINT( param, point );
@@ -1432,20 +1423,19 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 }
             }
         }
-        break;
+        return( true );
     case GUI_RBUTTONUP :
         Highlight = false;
         GUI_GET_POINT( param, point );
         GUIGetMousePosn( gui, &point );
 #if dynamic_menus
-        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, GUI_NO_EVENT, false );
-//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], GUI_NO_EVENT, false );
+        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, 0, false );
+//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], 0, false );
         GUITrackFloatingPopup( gui, &point, GUI_TRACK_RIGHT, NULL); //&CurrPopupItem );
 #else
-        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true,
-                                &CurrPopupItem );
+        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true, &CurrPopupItem );
 #endif
-        break;
+        return( true );
     case GUI_RBUTTONDOWN :
         GUI_GET_POINT( param, point );
         Highlight = true;
@@ -1485,7 +1475,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUIWndDirtyRow( gui, row );
             }
         }
-        break;
+        return( true );
     case GUI_LBUTTONDBLCLK :
         GUI_GET_POINT( param, point );
         row = GUIGetRow( gui, &point );
@@ -1512,7 +1502,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 }
             }
         }
-        break;
+        return( true );
     case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -1553,7 +1543,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIDisplayMessage( gui, Buffer, "SAMPLE PROGRAM", GUI_INFORMATION );
             break;
         }
-        break;
+        return( true );
     case GUI_KEYDOWN :
         KeyDown = true;
 #if keys
@@ -1563,27 +1553,30 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         if( KeyDownKey == GUI_KEY_s  ) {
             GUIGetMousePosn( gui, &point );
-            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, PopupMenu, true,
-                                    &CurrPopupItem );
-
+            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, PopupMenu, true, &CurrPopupItem );
         }
 #endif
-        ret = true;
-        break;
+        return( true );
     case GUI_KEYUP :
 #if keys
-        GUI_GET_KEY( param, key );
-        if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
-            ret = DisplayKey( key, Buffer );
-            KeyDown = false;
+        {
+            bool    ret;
+
+            ret = false;
+            GUI_GET_KEY( param, key );
+            if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
+                ret = DisplayKey( key, Buffer );
+                KeyDown = false;
+            }
+            return( ret );
         }
-#endif
-        ret = false;
+#else
         break;
+#endif
     default :
         break;
     }
-    return( ret );
+    return( false );
 }
 
 void SetWidthHeight( gui_rect *rect, bool has_parent )
@@ -1691,7 +1684,7 @@ void GUImain( void )
         }
         ControlsScaled = true;
         GUISetExtra( MainWnd, &act_num );
-        StaticDialogEventWnd( MainWnd, GUI_INIT_DIALOG, NULL );
+        StaticDialogWndGUIEventProc( MainWnd, GUI_INIT_DIALOG, NULL );
     }
 #endif
 #if controls_on_parent

@@ -31,8 +31,8 @@
 
 #include <sys/time.h>
 #include "uidef.h"
-#include "uivirt.h"
-#include "unxuiext.h"
+#include "uivirts.h"
+#include "uiextrn.h"
 #include "kbwait.h"
 
 

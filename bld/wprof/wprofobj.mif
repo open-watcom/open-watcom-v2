@@ -1,19 +1,3 @@
-dig_os_nt       = nt
-dig_os_dos      = dsx
-dig_os_os2      = os2v2
-dig_os_qnx      = qnx
-dig_os_win      = win
-dig_os_linux    = linux
-dig_os_bsd      = bsd
-dig_os_osx      = osx
-dig_os_haiku    = haiku
-
-dig_os          = $(dig_os_$(host_os))
-
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/dipcli.mif
-!include $(dig_dir)/madcli.mif
-
 srcmgt_obj = srcmgt.obj
 
 !ifeq release 0
@@ -58,4 +42,5 @@ objs = &
     wpstart.obj &
     wpsrcfil.obj &
     pathlist.obj &
-    wpwind.obj
+    wpwind.obj &
+    $(dip_objs) $(mad_objs) $(dig_objs)

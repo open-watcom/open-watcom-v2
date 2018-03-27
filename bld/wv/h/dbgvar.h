@@ -117,23 +117,23 @@ typedef struct var_node {
 #define VarNodeHdl( v ) ((sym_handle*)((v)->u.__hdl))
 
 typedef struct scope_state {
-    struct scope_state  *next;              // link for memory cleanup
-    struct scope_state  *outer;             // a scope surrounding this one
-    mappable_addr       scope;              // the scope handle (for locals window)
-    addr_off            scope_len;          //
+    struct scope_state  *next;                  // link for memory cleanup
+    struct scope_state  *outer;                 // a scope surrounding this one
+    mappable_addr       scope;                  // the scope handle (for locals window)
+    addr_off            scope_len;              //
     unsigned long       scope_unique;
-    mod_handle          mod;                // the module (for filescope variables window)
-    var_node            *v;                 // the variable nodes
-    long                scope_timestamp;    // LRU timestamp used for garbage collection
-    int                 wnd_data[3];        // window can save stuff here
-    bool                unmapped        : 1;// is this scope unmapped (are we in the process of restarting the program)
+    mod_handle          mod;                    // the module (for filescope variables window)
+    var_node            *v;                     // the variable nodes
+    long                scope_timestamp;        // LRU timestamp used for garbage collection
+    void                *wnd_data;              // window can save stuff here
+    bool                unmapped        : 1;    // is this scope unmapped (are we in the process of restarting the program)
 } scope_state;
 
 typedef struct {
-    var_node            *exprsp_cache;  // if ExprSP is still around, what expression is it for
-    int                 exprsp_cacherow;//   - and on what row
-    long                exprsp_timestamp;// incremented when we blow away ExprSP
-    scope_state         *s;             // the current scope for this window
+    var_node            *exprsp_cache;          // if ExprSP is still around, what expression is it for
+    int                 exprsp_cacherow;        //   - and on what row
+    long                exprsp_timestamp;       // incremented when we blow away ExprSP
+    scope_state         *s;                     // the current scope for this window
 //  var_type_bits       hide;
     int                 name_end_row;
     bool                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
@@ -176,7 +176,10 @@ typedef enum {
     NUM_VAR_TYPE
 } var_type;
 
-typedef void            VARDIRTRTN( void *, int );
+typedef struct scope_list {
+    struct scope_list *next;
+    scope_block scope;
+} scope_list;
 
 extern type_display     *TypeDisplay;
 
@@ -224,7 +227,7 @@ extern var_node         *VarExpandNode( var_node *v );
 extern var_node         *VarFirstExpandNode( var_info *i, var_node *v );
 extern var_node         *VarFirstNode(var_info *i);
 extern void             VarInitInfo(var_info *i);
-extern bool             VarInfoRefresh(var_type vtype,var_info *i,address *addr,void *wnd_handle);
+extern bool             VarInfoRefresh(var_type vtype,var_info *i,address *addr);
 extern void             VarSetValue( var_node *v, const char *value );
 
 extern void             VarDisplaySetHex(var_node*v);
@@ -267,6 +270,7 @@ extern void             VarDisplaySetHidden( var_node *v, var_type_bits bit, boo
 extern bool             VarDisplayIsStruct( var_node *v );
 extern void             VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit );
 extern var_node         *VarNextVisibleSibling( var_info *i, var_node *v );
-extern void             VarRefreshVisible( var_info *, int, int, VARDIRTRTN *, void * );
 extern void             VarBaseName( var_node *v );
-extern var_node         *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );
+
+extern scope_state      *NewScope( var_info *i, scope_block *scope, mod_handle mod, bool *new );
+extern bool             SameScope( scope_block *scope, scope_state *s );

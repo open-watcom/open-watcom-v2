@@ -538,7 +538,6 @@ sym_id    CkAssignOk( void ) {
             ClassErr( EQ_CANNOT_ASSIGN, CITNode->sym_ptr );
             return( NULL );
         }
-        break;
     default:
         Error( EQ_BAD_TARGET );
         return( NULL );
@@ -953,7 +952,7 @@ static  void    IFPrmChk( void ) {
                         if( TypeIs( parm_typ ) ) {
                             break;
                         }
-                        // else drop through to error
+                        /* fall through */
                     default:
                         // consider:
                         //          I = 5
@@ -1265,15 +1264,13 @@ static  void    InlineCnvt( void ) {
         case IF_MIN0:
         case IF_MIN1:           GMin( func_type );      break;
         case IF_REAL:           // Make sure that D<-REAL(Z) && X<-REAL(Q)
-            switch( typ ) {
-            case( FT_DCOMPLEX ):
-                func_type = FT_DOUBLE;
-                break;
-            case( FT_TRUE_XCOMPLEX ):
+            if( typ == FT_TRUE_XCOMPLEX ) {
                 func_type = FT_EXTENDED;
                 break;
-            break;
-            }                   // Fall through to default:
+            } else if( typ == FT_DCOMPLEX ) {
+                func_type = FT_DOUBLE;
+            }
+            /* fall through */
         default:
             GILCnvTo( func_type, TypeSize( func_type ) );
             break;

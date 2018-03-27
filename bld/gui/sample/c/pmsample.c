@@ -35,11 +35,10 @@
 
 static  gui_rect        Scale           = { 0, 0, 1000, 1000 };
 
-bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
+bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
-    gui = gui;
-    gui_ev = gui_ev;
-    param = param;
+    /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
+
     return( true );
 }
 
@@ -49,9 +48,9 @@ static gui_create_info Parent = {
     GUI_HSCROLL | GUI_VSCROLL,
     GUI_GADGETS | GUI_VISIBLE,
     NULL,
-    0, NULL,
-    0, NULL,
-    &MainEventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Colour attribute array
+    &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     NULL,
     NULL                                // Menu Resource
@@ -63,10 +62,9 @@ static gui_create_info Child = {
     GUI_SCROLL_BOTH,
     GUI_VISIBLE+GUI_CLOSEABLE+GUI_MAXIMIZE+GUI_RESIZEABLE+GUI_MINIMIZE,
     NULL,
-    0,
-    NULL,
-    0, NULL,
-    &MainEventWnd,
+    0, NULL,                            // Menu array
+    0, NULL,                            // Colour attribute array
+    &MainWndGUIEventProc,               // GUI Event Callback function
     NULL,
     NULL,
     NULL                                // Menu Resource

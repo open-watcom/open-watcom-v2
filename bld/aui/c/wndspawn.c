@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "auipvt.h"
+#include "_aui.h"
 #include <setjmp.h>
 
 static jmp_buf          *ExitSP;
