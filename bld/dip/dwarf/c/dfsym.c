@@ -148,28 +148,28 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
 
 
 dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
-                    imp_sym_handle *is, imp_type_handle *ith )
-/***********************************************************/
+                    imp_sym_handle *ish, imp_type_handle *ith )
+/*************************************************************/
 {
     /* Get the implementation type handle for the type of the given symbol. */
     dip_status  ret;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    if( is->state == DF_NOT ) {
-        is->stype = DRGetTagType( is->sym );
+    if( ish->state == DF_NOT ) {
+        ish->stype = DRGetTagType( ish->sym );
     }
-    switch( is->stype ) {
+    switch( ish->stype ) {
     case DR_TAG_FUNCTION:
     case DR_TAG_CLASS:
     case DR_TAG_ENUM:
-        ith->type = is->sym;
+        ith->type = ish->sym;
         break;
     default:
-        ith->type = DRGetTypeAT( is->sym );
+        ith->type = DRGetTypeAT( ish->sym );
         break;
     }
     ret = DS_OK;
-    ith->im = is->im;
+    ith->im = ish->im;
     if( ith->type != DRMEM_HDL_NULL ) {
         ith->state = DF_NOT;
     } else {
@@ -178,7 +178,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
         ith->typeinfo.kind = DR_TYPEK_DATA;
         ith->typeinfo.size = 0;
         ith->typeinfo.mclass = DR_MOD_NONE;
-        if( is->stype == DR_TAG_LABEL ) {
+        if( ish->stype == DR_TAG_LABEL ) {
             ith->typeinfo.kind = DR_TYPEK_CODE;
         }
     }
@@ -813,8 +813,8 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
 {
     /* Search the given module for a symbol who's address is greater than
      * or equal to 'addr'. If none is found return SR_NONE. If you find
-     * a symbol at that address exactly, fill in '*is' and return SR_EXACT.
-     * Otherwise, fill in '*is' and return SR_CLOSEST.
+     * a symbol at that address exactly, fill in '*ish' and return SR_EXACT.
+     * Otherwise, fill in '*ish' and return SR_CLOSEST.
      */
     addrsym_info    info;
     search_result   ret;

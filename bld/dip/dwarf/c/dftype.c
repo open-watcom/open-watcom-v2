@@ -921,8 +921,8 @@ static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
 };
 
 static void SetSymHandle( type_wlk *d, imp_sym_handle *ish )
-{
 // Set is with info from com
+{
     ish->sclass = d->com.sclass;
     ish->im = d->com.im;
     ish->state = DF_NOT;

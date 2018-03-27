@@ -817,8 +817,7 @@ static walk_result hllScopeOneModSymbol( imp_image_handle *iih, hll_dir_entry *h
             imp_sym_handle ish;
 
             ish.im = hde->iMod;
-            ds = hllSymFillIn( iih, &ish, *segp,
-                               *posp - len + hde->lfo, len );
+            ds = hllSymFillIn( iih, &ish, *segp, *posp - len + hde->lfo, len );
             if( ds != DS_OK ) {
                 return( WR_FAIL );
             }
@@ -1141,8 +1140,7 @@ struct match_data {
     unsigned    idx;
 };
 
-static search_result MatchSym( imp_image_handle *iih, s_all *p,
-                        imp_sym_handle *ish, void *d )
+static search_result MatchSym( imp_image_handle *iih, s_all *p, imp_sym_handle *ish, void *d )
 {
     struct match_data   *md = d;
 

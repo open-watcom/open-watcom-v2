@@ -762,8 +762,7 @@ static dip_status VFuncLocation( imp_image_handle *iih, imp_sym_handle *ish,
     ds = ImpTypeBase( iih, &ith, &ith );
     if( ds != DS_OK )
         return( ds );
-    vfsp = VMBlock( iih, ith.handle + sizeof(unsigned_16)*2 + ish->mfunc_idx/2,
-                        sizeof( *vfsp ) );
+    vfsp = VMBlock( iih, ith.handle + sizeof( unsigned_16 ) * 2 + ish->mfunc_idx / 2, sizeof( *vfsp ) );
     if( vfsp == NULL )
         return( DS_ERR|DS_FAIL );
     if( (ish->mfunc_idx % 2) != 0 ) {
