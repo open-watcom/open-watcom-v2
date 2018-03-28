@@ -682,7 +682,7 @@ static dip_status hllScopeFillIn( imp_image_handle *iih, hll_dir_entry *hde,
 }
 
 #if 0
-static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle im,
+static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
                                 address addr, scope_info *scope )
 {
     virt_mem            chk;
@@ -691,7 +691,7 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle im,
     scope_info          new;
     dip_status          ds;
 
-    scope->cde = hllFindDirEntry( iih, im, sstAlignSym );
+    scope->cde = hllFindDirEntry( iih, imh, sstAlignSym );
     if( scope->cde == NULL ) return( DS_FAIL );
     chk = scope->cde->lfo + sizeof( unsigned_32 );
     len = scope->cde->cb - sizeof( unsigned_32 );
@@ -816,7 +816,7 @@ static walk_result hllScopeOneModSymbol( imp_image_handle *iih, hll_dir_entry *h
         } else {
             imp_sym_handle ish;
 
-            ish.im = hde->iMod;
+            ish.imh = hde->iMod;
             ds = hllSymFillIn( iih, &ish, *segp, *posp - len + hde->lfo, len );
             if( ds != DS_OK ) {
                 return( WR_FAIL );
@@ -897,14 +897,14 @@ static walk_result ScopeWalkClass( imp_image_handle *iih, scope_info *scope,
     return( TypeSymWalkList( iih, &ith, wk, &ish, d ) );
 }
 
-static walk_result ScopeWalkAll( imp_image_handle *iih, imp_mod_handle im,
+static walk_result ScopeWalkAll( imp_image_handle *iih, imp_mod_handle imh,
                         address addr, DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
     walk_result         wr;
     scope_info          scope;
 
-    ds = ScopeFindFirst( iih, im, addr, &scope );
+    ds = ScopeFindFirst( iih, imh, addr, &scope );
     if( ds & DS_ERR ) return( WR_FAIL );
     if( ds != DS_OK ) return( WR_CONTINUE );
     for( ;; ) {
@@ -1219,7 +1219,7 @@ static walk_result hllWalkModulePublics( imp_image_handle *iih,
         ish->type = HLL_SYM_TYPE_PUB;
         ish->handle = pos + hde->lfo;
         ish->len = len;
-        ish->im = hde->iMod;
+        ish->imh = hde->iMod;
         ish->containing_type = 0;
         ish->adjustor_type = 0;
         ish->adjustor_offset = 0;
@@ -1350,7 +1350,7 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
                             imp_sym_handle *ish, void *d )
 {
     struct glue_info    glue;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     //scope_block         *sc_block;
     //s_all               *p;
     //scope_info          sc_info;
@@ -1369,11 +1369,11 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
          * module scope & global symbols in the indicated module.
          */
     case SS_MODULE:
-        im = *(imp_mod_handle *)source;
-        if( im == IMH_NOMOD ) {
+        imh = *(imp_mod_handle *)source;
+        if( imh == IMH_NOMOD ) {
             wr = hllWalkDirList( iih, hll_sstModule, &hllWalkModuleGlobals, &glue );
         } else  {
-            hll_dir_entry *hde = hllFindDirEntry( iih, im, hll_sstModule );
+            hll_dir_entry *hde = hllFindDirEntry( iih, imh, hll_sstModule );
             if( hde ) {
                 wr = hllWalkModuleGlobals( iih, hde, &glue );
             } else {
@@ -1384,16 +1384,16 @@ static walk_result hllWalkSymList( imp_image_handle *iih, symbol_source ss,
 
 #if 0
     case SS_SCOPED:
-        if( ImpAddrMod( iih, *(address *)source, &im ) == SR_NONE ) {
+        if( ImpAddrMod( iih, *(address *)source, &imh ) == SR_NONE ) {
             return( WR_CONTINUE );
         }
-        return( ScopeWalkAll( iih, im, *(address *)source, &WalkGlue, &glue ) );
+        return( ScopeWalkAll( iih, imh, *(address *)source, &WalkGlue, &glue ) );
     case SS_BLOCK:
         sc_block = source;
-        if( ImpAddrMod( iih, sc_block->start, &im ) == SR_NONE ) {
+        if( ImpAddrMod( iih, sc_block->start, &imh ) == SR_NONE ) {
             return( WR_CONTINUE );
         }
-        sc_info.cde = hllFindDirEntry( iih, im, sstAlignSym );
+        sc_info.cde = hllFindDirEntry( iih, imh, sstAlignSym );
         if( sc_info.cde == NULL ) return( WR_FAIL );
         ds = hllScopeFillIn( iih, sc_block->unique & SCOPE_UNIQUE_MASK,
                                 &sc_info, &p );
@@ -1446,7 +1446,7 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih,
 imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     iih = iih;
-    return( ish->im );
+    return( ish->imh );
 }
 
 /*
@@ -2129,16 +2129,16 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *ish )
+                            imp_mod_handle imh, address a, imp_sym_handle *ish )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)a; (void)ish;
+    /* unused parameters */ (void)iih; (void)imh; (void)a; (void)ish;
 
 #if 0
     search_result       sr;
     search_result       prev_sr;
     addr_off            best_off;
 
-    ish->im = im;
+    ish->imh = imh;
     best_off = 0;
     sr = TableSearchForAddr( iih, a, ish, &best_off, sstStaticSym );
     switch( sr ) {
@@ -2208,10 +2208,10 @@ static walk_result SymFind( imp_image_handle *iih, sym_walk_info swi,
     return( WR_CONTINUE );
 }
 
-static search_result SearchFileScope( imp_image_handle *iih, imp_mod_handle im,
+static search_result SearchFileScope( imp_image_handle *iih, imp_mod_handle imh,
                 struct search_data *d )
 {
-    if( MH2IMH( d->li.mod ) != im && MH2IMH( d->li.mod ) != IMH_NOMOD ) {
+    if( MH2IMH( d->li.mod ) != imh && MH2IMH( d->li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     switch( d->li.type ) {
@@ -2221,7 +2221,7 @@ static search_result SearchFileScope( imp_image_handle *iih, imp_mod_handle im,
     default:
         return( SR_NONE );
     }
-    if( ScopeWalkFile( iih, im, SymFind, d ) == WR_FAIL ) {
+    if( ScopeWalkFile( iih, imh, SymFind, d ) == WR_FAIL ) {
         return( SR_FAIL );
     }
     return( d->found ? SR_EXACT : SR_NONE );
@@ -2262,7 +2262,7 @@ static search_result    DoLookupSym( imp_image_handle *iih,
         data.li.scope.start = scope_name;
         data.li.scope.len = len;
         ss = SS_MODULE;
-        data.li.mod = IMH2MH( scope_ish->im );
+        data.li.mod = IMH2MH( scope_ish->imh );
         source = &data.li.mod;
     }
     switch( li->type ) {
@@ -2274,28 +2274,28 @@ static search_result    DoLookupSym( imp_image_handle *iih,
     }
     switch( ss ) {
     case SS_MODULE:
-        ish.im = *(imp_mod_handle *)source;
-        sr = SearchFileScope( iih, ish.im, &data );
+        ish.imh = *(imp_mod_handle *)source;
+        sr = SearchFileScope( iih, ish.imh, &data );
         if( sr != SR_NONE ) return( sr );
         break;
     case SS_SCOPED:
-        if( ImpAddrMod( iih, *(address *)source, &ish.im ) == SR_NONE ) {
+        if( ImpAddrMod( iih, *(address *)source, &ish.imh ) == SR_NONE ) {
             /* just check the global symbols */
             break;
         }
-        if( MH2IMH( data.li.mod ) != ish.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
+        if( MH2IMH( data.li.mod ) != ish.imh && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
             return( SR_NONE );
         }
         switch( data.li.type ) {
         case ST_NONE:
         case ST_TYPE:
-            if( ScopeWalkAll( iih, ish.im, *(address *)source, SymFind, &data ) == WR_FAIL ) {
+            if( ScopeWalkAll( iih, ish.imh, *(address *)source, SymFind, &data ) == WR_FAIL ) {
                 return( SR_FAIL );
             }
             if( data.found ) return( SR_EXACT );
             break;
         }
-        sr = SearchFileScope( iih, ish.im, &data );
+        sr = SearchFileScope( iih, ish.imh, &data );
         if( sr != SR_NONE ) return( sr );
         break;
     case SS_TYPE:
@@ -2308,7 +2308,7 @@ static search_result    DoLookupSym( imp_image_handle *iih,
     default:
         return( SR_NONE );
     }
-    if( MH2IMH( data.li.mod ) != ish.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
+    if( MH2IMH( data.li.mod ) != ish.imh && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     hash = CalcHash( data.li.name.start, data.li.name.len );
@@ -2410,14 +2410,14 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
-                imp_mod_handle im, address addr, scope_block *scope )
+                imp_mod_handle imh, address addr, scope_block *scope )
 {
 #if 0
     scope_info  sc_info;
     dip_status  ds;
 
     scope->unique = 0;
-    ds = ScopeFindFirst( iih, im, addr, &sc_info );
+    ds = ScopeFindFirst( iih, imh, addr, &sc_info );
     if( ds & DS_ERR ) return( SR_FAIL );
     if( ds != DS_OK ) return( SR_NONE );
     scope->start = sc_info.start;
@@ -2425,21 +2425,21 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
     scope->unique= sc_info.scope;
     return( sc_info.start.mach.offset == addr.mach.offset ? SR_EXACT : SR_CLOSEST );
 #else
-    /* unused parameters */ (void)iih; (void)im; (void)addr; (void)scope;
+    /* unused parameters */ (void)iih; (void)imh; (void)addr; (void)scope;
 
     return( SR_NONE );
 #endif
 }
 
 search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
-                imp_mod_handle im, scope_block *in, scope_block *out )
+                imp_mod_handle imh, scope_block *in, scope_block *out )
 {
 #if 0
     scope_info  sc_info;
     dip_status  ds;
 
     if( in->unique == 0 ) return( SR_NONE );
-    sc_info.cde = hllFindDirEntry( iih, im, sstAlignSym );
+    sc_info.cde = hllFindDirEntry( iih, imh, sstAlignSym );
     if( sc_info.cde == NULL ) return( SR_FAIL );
     ds = hllScopeFillIn( iih, in->unique & SCOPE_UNIQUE_MASK, &sc_info, NULL );
     if( ds != DS_OK ) return( SR_FAIL );
@@ -2463,7 +2463,7 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
     out->unique= sc_info.scope;
     return( SR_CLOSEST );
 #else
-    /* unused parameters */ (void)iih; (void)im; (void)in; (void)out;
+    /* unused parameters */ (void)iih; (void)imh; (void)in; (void)out;
 
     return( SR_NONE );
 #endif

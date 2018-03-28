@@ -37,9 +37,9 @@
  */
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
+                imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)wk; (void)ith; (void)d;
+    /* unused parameters */ (void)iih; (void)imh; (void)wk; (void)ith; (void)d;
 
     return( WR_CONTINUE );
 }

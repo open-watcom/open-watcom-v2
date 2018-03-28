@@ -1343,7 +1343,7 @@ search_result hllTypeSearchNestedSym( imp_image_handle *iih, imp_type_handle *it
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                                         imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk,
+                                         imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk,
                                          imp_type_handle *ith, void *d )
 {
     unsigned long       count;

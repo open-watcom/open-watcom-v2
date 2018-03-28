@@ -59,7 +59,7 @@ typedef unsigned long   virt_mem;
 struct imp_sym_handle {
     virt_mem            handle;
     unsigned short      len;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     virt_mem            containing_type;
     virt_mem            adjustor_type;
     unsigned long       adjustor_offset;
@@ -76,7 +76,7 @@ struct imp_cue_handle {
     virt_mem            file;
     virt_mem            line;
     unsigned_16         pair;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 };
 
 #define DIRECTORY_BLOCK_ENTRIES         256
@@ -135,7 +135,7 @@ extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_hand
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               TypeSymGetInfo( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
 extern dip_status               TypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
-extern walk_result              TypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
+extern walk_result              TypeSymWalkList( imp_image_handle *, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *, void *d );
 extern dip_status               TypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result            TypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result            TypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

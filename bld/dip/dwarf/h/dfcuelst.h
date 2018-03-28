@@ -40,6 +40,6 @@ typedef struct {
 
 typedef struct {
     seg_cue         *head;
-    imp_mod_handle  im;
+    imp_mod_handle  imh;
     cue_item        last;
 } cue_list;

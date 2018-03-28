@@ -631,7 +631,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     struct methodblock  method;
     dip_status          ds;
     unsigned            i;
-    imp_sym_handle      is_this;
+    imp_sym_handle      this_ish;
     ji_ptr              cp;
     ji_ptr              name;
     unsigned            cp_idx;
@@ -642,23 +642,23 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     if( ds != DS_OK ) return( ds );
     if( method.fb.access & (ACC_NATIVE | ACC_STATIC) ) return( DS_FAIL );
     cp = GetPointer( (ji_ptr)method.fb.clazz + offsetof( ClassClass, constantpool ) );
-    is_this.kind = JS_LOCAL;
-    is_this.u.lv = (ji_ptr)method.localvar_table;
+    this_ish.kind = JS_LOCAL;
+    this_ish.u.lv = (ji_ptr)method.localvar_table;
     /* guessing "this" pointer is near start of local var list */
     for( i = 0; i < method.localvar_table_length; ++i ) {
-        cp_idx = GetU16( is_this.u.lv + offsetof( struct localvar, nameoff ) );
+        cp_idx = GetU16( this_ish.u.lv + offsetof( struct localvar, nameoff ) );
         name = GetPointer( cp + cp_idx * sizeof( union cp_item_type ) );
         GetString( name, NameBuff, sizeof( NameBuff ) );
         if( strcmp( NameBuff, "this" ) == 0 ) {
-            return( ImpSymLocation( iih, &is_this, lc, ll, &handle ) );
+            return( ImpSymLocation( iih, &this_ish, lc, ll, &handle ) );
         }
-        is_this.u.lv += sizeof( struct localvar );
+        this_ish.u.lv += sizeof( struct localvar );
     }
     return( DS_FAIL );
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *ish )
+                            imp_mod_handle imh, address a, imp_sym_handle *ish )
 {
     search_result       sr;
     unsigned            i;
@@ -966,7 +966,7 @@ static search_result FindAScope( imp_image_handle *iih, scope_block *scope )
 }
 
 search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
-                imp_mod_handle im, address a, scope_block *scope )
+                imp_mod_handle imh, address a, scope_block *scope )
 {
 
     scope->start = a;
@@ -975,7 +975,7 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
-                imp_mod_handle im, scope_block *in, scope_block *out )
+                imp_mod_handle imh, scope_block *in, scope_block *out )
 {
     if( in->unique == OBJECT_SCOPE ) return( SR_NONE );
     *out = *in;

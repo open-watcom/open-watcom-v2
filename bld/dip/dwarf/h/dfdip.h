@@ -82,7 +82,7 @@ typedef struct {
 struct imp_sym_handle {
     /* any stuff for getting information on symbols */
     sym_sclass          sclass;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     unsigned            size;
     drmem_hdl           sym;
     dr_tag_type         stype;
@@ -111,7 +111,7 @@ typedef struct {
 
 struct imp_type_handle {
     /* any stuff for getting information on types */
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     drmem_hdl           type;
     dr_typeinfo         typeinfo;
     imp_array           array;
@@ -121,7 +121,7 @@ struct imp_type_handle {
 
 struct imp_cue_handle {
     /* any stuff for getting information on source line cues */
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     address             a;
     uint_16             fno;
     uint_16             line;
@@ -145,7 +145,7 @@ typedef struct seg_cue     seg_cue;   // private type
 typedef struct { // value of an AddrMod
     addr_ptr            mach;
     dword               len;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 } addrmod;
 
 struct imp_image_handle {

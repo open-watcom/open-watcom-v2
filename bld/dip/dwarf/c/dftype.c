@@ -87,7 +87,7 @@ static bool GetStrLen( imp_image_handle *iih,
     addr_seg        seg;
     location_list   src;
     location_list   dst;
-    imp_mod_handle  im;
+    imp_mod_handle  imh;
     union {
         long  l;
         short s;
@@ -96,11 +96,11 @@ static bool GetStrLen( imp_image_handle *iih,
     unsigned        idx_size;
     mod_info        *modinfo;
 
-    im = DwarfMod( iih, dr_sym );
-    if( im == IMH_NOMOD ){
+    imh = DwarfMod( iih, dr_sym );
+    if( imh == IMH_NOMOD ){
         return( false );
     }
-    modinfo = IMH2MODI( iih, im );
+    modinfo = IMH2MODI( iih, imh );
     if( modinfo->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
@@ -252,7 +252,7 @@ static void InitTypeHandle( imp_image_handle *iih,
                 }else{
                     btype = DRGetTypeAT( btype );    /* get base type */
                     sub_ith.type = btype;
-                    sub_ith.im = ith->im;
+                    sub_ith.imh = ith->imh;
                     sub_ith.state = DF_NOT;
                     InitTypeHandle( iih, &sub_ith, lc );
                     base_stride = sub_ith.typeinfo.size;
@@ -263,7 +263,7 @@ static void InitTypeHandle( imp_image_handle *iih,
                     if( info.ordering == DW_ORD_col_major ){
                         ith->array.column_major = 1;
                     }
-                }else if( IMH2MODI( iih, ith->im )->lang == DR_LANG_FORTRAN ){
+                }else if( IMH2MODI( iih, ith->imh )->lang == DR_LANG_FORTRAN ){
                     ith->array.column_major = 1;
                 }
                 if( info.child == DRMEM_HDL_NULL ) { // set info now
@@ -313,7 +313,7 @@ static void InitTypeHandle( imp_image_handle *iih,
 
 struct mod_type{
     imp_image_handle    *iih;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     DIP_IMP_TYPE_WALKER *wk;
     imp_type_handle     *ith;
     void                *d;
@@ -332,7 +332,7 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
 
     ret = true;
     ith = typ_wlk->ith;
-    ith->im = typ_wlk->im;
+    ith->imh = typ_wlk->imh;
     ith->state = DF_NOT;
     ith->type = type;
     saved = DRGetDebug();
@@ -344,16 +344,16 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
     return( ret );
 }
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle im,
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle imh,
                          DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
     drmem_hdl       cu_tag;
     struct mod_type typ_wlk;
 
     DRSetDebug( iih->dwarf->handle ); /* must do at each interface */
-    cu_tag = IMH2MODI( iih, im )->cu_tag;
+    cu_tag = IMH2MODI( iih, imh )->cu_tag;
     typ_wlk.iih = iih;
-    typ_wlk.im = im;
+    typ_wlk.imh = imh;
     typ_wlk.wk = wk;
     typ_wlk.ith = ith;
     typ_wlk.d   = d;
@@ -368,7 +368,7 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
     /*
         Return the module that the type handle comes from.
     */
-    return( ith->im );
+    return( ith->imh );
 }
 
 void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
@@ -586,7 +586,7 @@ static bool GetSymVal( imp_image_handle *iih,
 //  Find value of scalar
     drmem_hdl       dr_type;
     dr_typeinfo     typeinfo[1];
-    imp_mod_handle  im;
+    imp_mod_handle  imh;
     addr_seg        seg;
     location_list   src;
     location_list   dst;
@@ -599,11 +599,11 @@ static bool GetSymVal( imp_image_handle *iih,
     if( typeinfo->size > sizeof( *ret ) ){
         return( false );
     }
-    im = DwarfMod( iih, dr_sym );
-    if( im == IMH_NOMOD ){
+    imh = DwarfMod( iih, dr_sym );
+    if( imh == IMH_NOMOD ){
         return( false );
     }
-    if( IMH2MODI( iih, im )->is_segment == false ){
+    if( IMH2MODI( iih, imh )->is_segment == false ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( iih, dr_sym, &seg );
@@ -650,7 +650,7 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     DRGetSubrangeInfo( tsub, &info );
     /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
     if( info.low.val_class == DR_VAL_NOT ) {
-        if( IMH2MODI( df->iih, df->ith->im )->lang == DR_LANG_FORTRAN )
+        if( IMH2MODI( df->iih, df->ith->imh )->lang == DR_LANG_FORTRAN )
             low = 1;
         else
             low = 0;
@@ -702,7 +702,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
     ai->column_major = array_ith->array.column_major;
     ai->stride = array_ith->array.base_stride;
     if( index_ith != NULL ){
-        index_ith->im = array_ith->im;
+        index_ith->imh = array_ith->imh;
         if( array_ith->array.index == DRMEM_HDL_NULL ) { //Fake a type up
             index_ith->state = DF_SET;
             index_ith->type  = DRMEM_HDL_NULL;
@@ -795,7 +795,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
     if( parm_type != DRMEM_HDL_NULL ) {
         parm_ith->state = DF_NOT;
         parm_ith->type = parm_type;
-        parm_ith->im = proc_ith->im;
+        parm_ith->imh = proc_ith->imh;
         ret = DS_OK;
     }else{
         ret = DS_FAIL;
@@ -839,7 +839,7 @@ typedef struct inh_vbase {
 } inh_vbase;
 
 typedef struct {
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     imp_image_handle    *iih;
     sym_sclass          sclass;
     void                *d;
@@ -924,7 +924,7 @@ static void SetSymHandle( type_wlk *d, imp_sym_handle *ish )
 // Set is with info from com
 {
     ish->sclass = d->com.sclass;
-    ish->im = d->com.im;
+    ish->imh = d->com.imh;
     ish->state = DF_NOT;
     if( d->com.sclass == SYM_ENUM ){
         ish->f.einfo = d->com.einfo;
@@ -1159,7 +1159,7 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
     if( ith->state == DF_NOT ){
         return( WR_STOP );
     }
-    df.com.im = ith->im;
+    df.com.imh = ith->imh;
     df.com.iih = iih;
     df.com.d = d;
     df.com.root = ith->type;
@@ -1211,7 +1211,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith, lookup_ite
     if( ith->state == DF_NOT ){
         return( SR_NONE );
     }
-    df.com.im = ith->im;
+    df.com.imh = ith->imh;
     df.com.iih = iih;
     df.com.d = d;
     df.com.root = ith->type;

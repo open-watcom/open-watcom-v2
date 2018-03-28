@@ -79,18 +79,17 @@ static unsigned         TimeStamp;
 /*
  * InfoSize -- return size of demand info section
  */
-unsigned InfoSize( imp_image_handle *iih, imp_mod_handle im,
-                        demand_kind dk, word entry )
+unsigned InfoSize( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk, word entry )
 {
     demand_info         *dmnd;
     section_info        *inf;
     dword               real_entry;
 
-    dmnd = ModPointer( iih, im )->di + dk;
+    dmnd = ModPointer( iih, imh )->di + dk;
     if( entry >= dmnd->u.entries )
         return( 0 );
     real_entry = dmnd->info_off + entry;
-    inf = FindInfo( iih, im );
+    inf = FindInfo( iih, imh );
     return( (unsigned)DMND_SIZE( inf, real_entry ) );
 }
 
@@ -103,7 +102,7 @@ struct walk_demand {
     unsigned long       max_size;
 };
 
-static walk_result WlkDmnd( imp_image_handle *iih, imp_mod_handle im, void *d )
+static walk_result WlkDmnd( imp_image_handle *iih, imp_mod_handle imh, void *d )
 {
     struct walk_demand  *wdd = d;
     unsigned long       size;
@@ -113,7 +112,7 @@ static walk_result WlkDmnd( imp_image_handle *iih, imp_mod_handle im, void *d )
     for( dk = 0; dk < MAX_DMND; ++dk ) {
         i = 0;
         for( ;; ) {
-            size = InfoSize( iih, im, dk, i );
+            size = InfoSize( iih, imh, dk, i );
             if( size == 0 )
                 break;
             if( size > wdd->max_size )
@@ -186,7 +185,7 @@ void FiniDemand( void )
     TimeStamp = 0;
 }
 
-static walk_result WlkClear( imp_image_handle *iih, imp_mod_handle im, void *d )
+static walk_result WlkClear( imp_image_handle *iih, imp_mod_handle imh, void *d )
 {
     demand_kind         dk;
     mod_dbg_info        *mp;
@@ -197,8 +196,8 @@ static walk_result WlkClear( imp_image_handle *iih, imp_mod_handle im, void *d )
 
     /* unused parameters */ (void)d;
 
-    mp = ModPointer( iih, im );
-    sect = FindInfo( iih, im );
+    mp = ModPointer( iih, imh );
+    sect = FindInfo( iih, imh );
     for( dk = 0; dk < MAX_DMND; ++dk ) {
         for( entry = mp->di[dk].u.entries; entry-- > 0; ) {
             real_entry = mp->di[dk].info_off + entry;
@@ -237,7 +236,7 @@ void InfoUnlock( void )
  * InfoLoad -- load demand info
  */
 
-void *InfoLoad( imp_image_handle *iih, imp_mod_handle im, demand_kind dk,
+void *InfoLoad( imp_image_handle *iih, imp_mod_handle imh, demand_kind dk,
                 word entry, void (*clear)(void *, void *) )
 {
     demand_ctrl         *section;
@@ -255,11 +254,11 @@ void *InfoLoad( imp_image_handle *iih, imp_mod_handle im, demand_kind dk,
             section->time_stamp = 0;
         }
     }
-    info = ModPointer( iih, im )->di + dk;
+    info = ModPointer( iih, imh )->di + dk;
     if( entry >= info->u.entries )
         return( NULL );
     real_entry = info->info_off + entry;
-    sect = FindInfo( iih, im );
+    sect = FindInfo( iih, imh );
     lnk = &GET_LINK( sect, real_entry );
     if( IS_RESIDENT( *lnk ) ) {
         section = MK_DMND_PTR( *lnk );

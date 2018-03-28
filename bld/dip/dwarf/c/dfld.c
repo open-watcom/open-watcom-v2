@@ -348,13 +348,13 @@ static bool AModHash( drmem_hdl sym, void *_iih, dr_search_context *cont )
 }
 
 
-static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle im, void *d )
-/***********************************************************************************/
+static walk_result ModGlbSymHash( imp_image_handle *iih, imp_mod_handle imh, void *d )
+/************************************************************************************/
 // Add module's global syms to the name hash
 {
     /* unused parameters */ (void)d;
 
-    DRWalkModFunc( IMH2MODI( iih, im )->cu_tag, false, AModHash, iih );   /* load hash */
+    DRWalkModFunc( IMH2MODI( iih, imh )->cu_tag, false, AModHash, iih );   /* load hash */
     return( WR_CONTINUE );
 }
 
@@ -401,7 +401,7 @@ typedef struct {
     imp_image_handle    *iih;
     addr_off            low_pc;
     addr_off            high_pc;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 } a_walk_info;
 
 static bool ARangeItem( void *_info, dr_arange_data *arange )
@@ -415,12 +415,12 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
 
     iih = info->iih;
     if( arange->is_start ) {
-        info->im = Dwarf2Mod( iih, arange->dbg );
-        if( info->im == IMH_NOMOD ) {
+        info->imh = Dwarf2Mod( iih, arange->dbg );
+        if( info->imh == IMH_NOMOD ) {
             return( false );
         }
     }
-    modinfo = IMH2MODI( iih, info->im );
+    modinfo = IMH2MODI( iih, info->imh );
     if( arange->is_start ) {
         if( modinfo->is_segment ) {
             info->low_pc = 0;
@@ -438,7 +438,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
     } else {
         seg = SEG_FLAT;
     }
-    addr_info.im = info->im;
+    addr_info.imh = info->imh;
     addr_info.map_seg = seg;
     addr_info.map_offset = arange->addr;
     addr_info.len = arange->len;
@@ -463,7 +463,7 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *iih, void *d )
     SortMapAddr( iih->addr_map );
     DRDbgClear( iih->dwarf->handle );    /* clear some memory */
     iih->last.len = 0;
-    iih->last.im = IMH_NOMOD;
+    iih->last.imh = IMH_NOMOD;
     iih->last.mach.segment = 0;
     iih->last.mach.offset = 0;
 }

@@ -36,7 +36,7 @@ typedef struct {
     dword           len;
     addr_off        map_offset;
     addr_seg        map_seg;
-    imp_mod_handle  im;
+    imp_mod_handle  imh;
 } off_info;
 
 extern void     InitAddrInfo( seg_list *list );

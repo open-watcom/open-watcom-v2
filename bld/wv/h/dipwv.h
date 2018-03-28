@@ -95,4 +95,4 @@ struct imp_type_handle {
     const mad_reg_info  *ri;
 };
 
-#define WV_INT_MH       1
+#define IMH_WV      IMH_BASE

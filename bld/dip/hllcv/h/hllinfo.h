@@ -54,7 +54,7 @@ struct imp_sym_handle {
     virt_mem            handle;         /* The record position. */
     unsigned_16         len;            /* The record length. */
     unsigned_16         segment;        /* The current segment. */
-    imp_mod_handle      im;             /* The module handle. */
+    imp_mod_handle      imh;            /* The module handle. */
     unsigned short      mfunc_idx;
     virt_mem            containing_type;
     virt_mem            adjustor_type;
@@ -85,7 +85,7 @@ struct imp_cue_handle {
     unsigned_16         num_lines;      /* The number of lines. */
     unsigned_16         cur_line;       /* The current table index. */
     unsigned_16         segment;        /* The current segment. */
-    imp_mod_handle      im;             /* The module handle. */
+    imp_mod_handle      imh;            /* The module handle. */
     hll_line_style      style;          /* The line number style. */
     union {
         struct {

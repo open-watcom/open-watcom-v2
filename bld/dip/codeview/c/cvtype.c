@@ -1395,7 +1395,7 @@ search_result TypeSearchNestedSym( imp_image_handle *iih, imp_type_handle *ith,
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
+                    imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
     unsigned long       count;
@@ -1404,7 +1404,7 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
     unsigned_32         *array_p;
     walk_result         wr;
 
-    if( im != IMH_GBL )
+    if( imh != IMH_GBL )
         return( WR_CONTINUE );
     cde = FindDirEntry( iih, IMH_GBL, sstGlobalTypes );
     if( cde == NULL )
@@ -1441,20 +1441,20 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
 
 static int IsFortranModule( imp_image_handle *iih, location_context *lc )
 {
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     location_list       ll;
     cs_compile          *comp_info;
 
-    im = IMH_FORTRAN;
+    imh = IMH_FORTRAN;
     if( DCItemLocation( lc, CI_EXECUTION, &ll ) == DS_OK ) {
-        switch( ImpAddrMod( iih, ll.e[0].u.addr, &im ) ) {
+        switch( ImpAddrMod( iih, ll.e[0].u.addr, &imh ) ) {
         case SR_NONE:
         case SR_FAIL:
-            im = IMH_FORTRAN;
+            imh = IMH_FORTRAN;
             break;
         }
     }
-    comp_info = GetCompInfo( iih, im );
+    comp_info = GetCompInfo( iih, imh );
     if( comp_info == NULL )
         return( 0 );
     return( comp_info->language == LANG_FORTRAN );

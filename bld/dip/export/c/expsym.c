@@ -173,9 +173,8 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
-                                imp_sym_handle *ish, location_context *lc,
-                                 location_list *ll )
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih, imp_sym_handle *ish,
+                                            location_context *lc, location_list *ll )
 {
     /* unused parameters */ (void)iih; (void)ish; (void)lc; (void)ll;
 
@@ -183,11 +182,11 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
-                            imp_mod_handle im, address a, imp_sym_handle *ish )
+                            imp_mod_handle imh, address a, imp_sym_handle *ish )
 {
     exp_sym     *s;
 
-    /* unused parameters */ (void)im;
+    /* unused parameters */ (void)imh;
 
     ish->p = NULL;
     s = iih->gbl;
@@ -253,17 +252,17 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *iih,
 }
 
 search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
-                imp_mod_handle im, address addr, scope_block *scope )
+                imp_mod_handle imh, address addr, scope_block *scope )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)addr; (void)scope;
+    /* unused parameters */ (void)iih; (void)imh; (void)addr; (void)scope;
 
     return( SR_NONE );
 }
 
 search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
-                imp_mod_handle im, scope_block *in, scope_block *out )
+                imp_mod_handle imh, scope_block *in, scope_block *out )
 {
-    /* unused parameters */ (void)iih; (void)im; (void)in; (void)out;
+    /* unused parameters */ (void)iih; (void)imh; (void)in; (void)out;
 
     return( SR_NONE );
 }

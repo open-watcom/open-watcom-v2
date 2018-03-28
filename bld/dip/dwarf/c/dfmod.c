@@ -334,12 +334,12 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih, DIP_IMP_MOD_WALKE
 }
 
 size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
-                        imp_mod_handle im, char *buff, size_t buff_size )
+                        imp_mod_handle imh, char *buff, size_t buff_size )
 {
     char        *name;
     size_t      len;
 
-    if( im == IMH_NOMOD || (name = IMH2MODI( iih, im )->name) == NULL ) {
+    if( imh == IMH_NOMOD || (name = IMH2MODI( iih, imh )->name) == NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -347,15 +347,15 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( len );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     char       *ret = NULL;
 
-    if( im == IMH_NOMOD ) {
+    if( imh == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( NULL );
     }
-    switch( IMH2MODI( iih, im )->lang ) {
+    switch( IMH2MODI( iih, imh )->lang ) {
     case DR_LANG_UNKNOWN:
 //      ret = "unknown";
         ret = "c";
@@ -374,14 +374,14 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
 }
 
 
-search_result DFAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
+search_result DFAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
     off_info    *off;
 
     if(  a.mach.segment == iih->last.mach.segment
       && a.mach.offset  >= iih->last.mach.offset
       && a.mach.offset  <  iih->last.mach.offset + iih->last.len ) {
-        *im = iih->last.im;
+        *imh = iih->last.imh;
         if( a.mach.offset == iih->last.mach.offset ) {
             return( SR_EXACT );
         } else {
@@ -394,8 +394,8 @@ search_result DFAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
         iih->last.mach.segment = a.mach.segment;
         iih->last.mach.offset = off->offset;
         iih->last.len = off->len;
-        iih->last.im = off->im;
-        *im = off->im;
+        iih->last.imh = off->imh;
+        *imh = off->imh;
         if( a.mach.offset == off->offset ) {
             return( SR_EXACT );
         } else {
@@ -405,20 +405,20 @@ search_result DFAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
     return( SR_NONE );
 }
 
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
-    imp_mod_handle  cim;
+    imp_mod_handle  curr_imh;
     search_result   ret;
 
-    ret = DFAddrMod( iih, a, &cim );
-    *im = cim;
+    ret = DFAddrMod( iih, a, &curr_imh );
+    *imh = curr_imh;
     return( ret );
 }
 
 
 typedef struct {
     imp_image_handle    *iih;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     address             *ret;
 } l_walk_info;
 
@@ -439,7 +439,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
         iih = info->iih;
         DCMapAddr( &info->ret->mach, iih->dcmap );
         off = FindMapAddr( iih->addr_map, info->ret );
-        if( off->im == info->im ) {
+        if( off->imh == info->imh ) {
             ret = false;
         }
     }
@@ -462,16 +462,16 @@ static bool ALineCue( void *_info, dr_line_data *curr )
     return( ret );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 {
     l_walk_info walk;
     address     a;
     drmem_hdl   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IMH2MODI( iih, im )->stmts) != DRMEM_HDL_NULL ) {
+    if( imh != IMH_NOMOD && (stmts = IMH2MODI( iih, imh )->stmts) != DRMEM_HDL_NULL ) {
         DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
         walk.iih = iih;
-        walk.im = im;
+        walk.imh = imh;
         walk.ret = &a;
         if( !DRWalkLines( stmts, SEG_CODE, AModAddr, &walk ) ) {
             // found
@@ -482,8 +482,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
     return( NilAddr );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
-                                imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
     /*
         Return DS_OK if the module has the kind of information indicated
@@ -494,11 +493,11 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
     mod_info    *modinfo;
 
     ret = DS_FAIL;
-    if( im == IMH_NOMOD ) {
+    if( imh == IMH_NOMOD ) {
         DCStatus( ret );
         return( ret );
     }
-    modinfo = IMH2MODI( iih, im );
+    modinfo = IMH2MODI( iih, imh );
     switch( hk ) {
     case HK_IMAGE:
         break;
@@ -514,7 +513,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
             address     a;
 
             walk.iih = iih;
-            walk.im = im;
+            walk.imh = imh;
             walk.ret = &a;
             DRSetDebug( iih->dwarf->handle ); /* set dwarf to image */
             if( !DRWalkLines( stmts, SEG_CODE, ALineCue, &walk ) ) {
@@ -534,7 +533,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle im, default_kind dk, dip_type_info *ti )
+                imp_mod_handle imh, default_kind dk, dip_type_info *ti )
 {
     /*
         Return the default type information for indicated type. The
@@ -546,7 +545,7 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
     mod_info    *modinfo;
 
 //TODO: finish
-    modinfo = IMH2MODI( iih, im );
+    modinfo = IMH2MODI( iih, imh );
     ti->size = modinfo->addr_size;
     switch( dk ) {
     case DK_INT:
@@ -616,12 +615,12 @@ size_t NameCopy( char *buff, const char *from, size_t buff_size, size_t len )
 }
 
 void  SetModPubNames( imp_image_handle *iih, drmem_hdl mod_handle )
-/****************************************************************/
+/*****************************************************************/
 {
-    imp_mod_handle im;
+    imp_mod_handle imh;
 
-    im = Dwarf2Mod( iih, mod_handle );
-    if( im != IMH_NOMOD ) {
-        IMH2MODI( iih, im )->has_pubnames = true;
+    imh = Dwarf2Mod( iih, mod_handle );
+    if( imh != IMH_NOMOD ) {
+        IMH2MODI( iih, imh )->has_pubnames = true;
     }
 }

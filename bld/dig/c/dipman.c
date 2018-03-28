@@ -587,8 +587,7 @@ typedef struct {
     location_context    *lc;
 } walk_glue;
 
-OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh,
-                                        void *d )
+OVL_EXTERN walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle imh, void *d )
 {
     walk_glue           *wd = d;
     image_handle        *ih;
@@ -625,8 +624,7 @@ walk_result DIPWalkModList( mod_handle mh, DIP_MOD_WALKER *mw, void *d )
     }
 }
 
-OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
-                                imp_type_handle *ith, void *d )
+OVL_EXTERN walk_result DIGCLIENT TypeGlue( imp_image_handle *iih, imp_type_handle *ith, void *d )
 {
     walk_glue   *wd = d;
 
@@ -650,14 +648,13 @@ walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
         glue.lc = NULL;
         th->ii = MH_IMAGE( mh );
         th->ap = 0;
-        wr = ih->dip->WalkTypeList( IH2IIH( ih ), MH2IMH( mh ),
-                                TypeGlue, TH2ITH( th ), &glue );
+        wr = ih->dip->WalkTypeList( IH2IIH( ih ), MH2IMH( mh ), TypeGlue, TH2ITH( th ), &glue );
     }
     return( wr );
 }
 
-OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
-                            sym_walk_info swi, imp_sym_handle *ish, void *d )
+OVL_EXTERN walk_result DIGCLIENT SymGlue( imp_image_handle *iih, sym_walk_info swi,
+                                                    imp_sym_handle *ish, void *d )
 {
     walk_glue   *wd = d;
     sym_handle  *sh;
@@ -683,7 +680,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     imp_mod_handle      imh;
     mod_handle          mh;
     type_handle         *th;
-    sym_handle          *is;
+    sym_handle          *scope_sh;
     walk_result         wr;
 
     switch( ss ) {
@@ -716,9 +713,9 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
         ii = MH_IMAGE( mh );
         break;
     case SS_SCOPESYM:
-        is = start;
-        start = SH2ISH( is );
-        ii = is->ii;
+        scope_sh = (sym_handle *)start;
+        start = SH2ISH( scope_sh );
+        ii = scope_sh->ii;
         break;
     }
     wr = WR_CONTINUE;
@@ -752,14 +749,13 @@ walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, v
     return( DIPWalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
-OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
-                                imp_cue_handle *imp_cueh, void *d )
+OVL_EXTERN walk_result DIGCLIENT CueGlue( imp_image_handle *iih, imp_cue_handle *icueh, void *d )
 {
     walk_glue   *wd = d;
 
     /* unused parameters */ (void)iih;
 
-    return( wd->walk.c( ICH2CH( imp_cueh ), wd->d ) );
+    return( wd->walk.c( ICH2CH( icueh ), wd->d ) );
 }
 
 walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
@@ -1200,7 +1196,7 @@ int DIPSymCmp( sym_handle *sh1, sym_handle *sh2 )
 }
 
 dip_status DIPSymAddRef( sym_handle *sh )
-/**************************************/
+/***************************************/
 {
     image_handle        *ih;
 
@@ -1215,7 +1211,7 @@ dip_status DIPSymAddRef( sym_handle *sh )
 }
 
 dip_status DIPSymRelease( sym_handle *sh )
-/**************************************/
+/****************************************/
 {
     image_handle        *ih;
 
@@ -1419,7 +1415,7 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
                         lookup_item *li, location_context *lc, void *d )
 {
     image_handle        *ih;
-    image_handle        *cih;
+    image_handle        *curr_ih;
     mod_handle          curr_mod;
     mod_handle          save_mod;
     search_result       sr;
@@ -1462,8 +1458,8 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
             li->mod = curr_mod;
         break;
     }
-    cih = (curr_mod == NO_MOD) ? NULL : MH2IH( curr_mod );
-    ih = (li->mod == NO_MOD) ? cih : MH2IH( li->mod );
+    curr_ih = (curr_mod == NO_MOD) ? NULL : MH2IH( curr_mod );
+    ih = (li->mod == NO_MOD) ? curr_ih : MH2IH( li->mod );
     li->mod = IMH2MH( MH2IMH( li->mod ) );
     if( ih != NULL ) {
         if( ih->dip->minor == DIP_MINOR ) {
@@ -1475,9 +1471,9 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
         sr = SR_NONE;
     }
     if( sr == SR_NONE && save_mod == NO_MOD && ss == SS_SCOPED ) {
-        cih = ih;
+        curr_ih = ih;
         for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
-            if( ih != cih ) {
+            if( ih != curr_ih ) {
                 if( ih->dip->minor == DIP_MINOR ) {
                     sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
                 } else {
@@ -1493,8 +1489,7 @@ search_result DIPLookupSymEx( symbol_source ss, void *source,
     return( sr );
 }
 
-search_result DIPLookupSym( symbol_source ss, void *source,
-                        lookup_item *li, void *d )
+search_result DIPLookupSym( symbol_source ss, void *source, lookup_item *li, void *d )
 {
     return( DIPLookupSymEx( ss, source, li, NULL, d ) );
 }

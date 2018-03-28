@@ -80,7 +80,7 @@ size_t NameCopy( char *buff, const char *src, size_t buff_size, size_t len )
     return( len );
 }
 
-cv_directory_entry *FindDirEntry( imp_image_handle *iih, imp_mod_handle im,
+cv_directory_entry *FindDirEntry( imp_image_handle *iih, imp_mod_handle imh,
                                 unsigned subsection_type )
 {
     unsigned            i;
@@ -93,7 +93,7 @@ cv_directory_entry *FindDirEntry( imp_image_handle *iih, imp_mod_handle im,
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
             p = &iih->directory[block][i];
-            if( p->subsection == subsection_type && p->iMod == im ) {
+            if( p->subsection == subsection_type && p->iMod == imh ) {
                 return( p );
             }
         }
@@ -101,7 +101,7 @@ cv_directory_entry *FindDirEntry( imp_image_handle *iih, imp_mod_handle im,
     remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
         p = &iih->directory[block][i];
-        if( p->subsection == subsection_type && p->iMod == im ) {
+        if( p->subsection == subsection_type && p->iMod == imh ) {
             return( p );
         }
     }

@@ -108,7 +108,7 @@ size_t hllNameCopy( char *buff, const char *src, size_t buff_size, size_t len )
 /*
  * Finds a subsection directory entry for a specific module.
  */
-hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_sst sst )
+hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle imh, hll_sst sst )
 {
     unsigned            i;
     unsigned            block;
@@ -120,7 +120,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_ss
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
             p = &iih->directory[block][i];
-            if( p->iMod == im && p->subsection == sst ) {
+            if( p->iMod == imh && p->subsection == sst ) {
                 return( p );
             }
         }
@@ -128,7 +128,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *iih, imp_mod_handle im, hll_ss
     remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
         p = &iih->directory[block][i];
-        if( p->iMod == im && p->subsection == sst ) {
+        if( p->iMod == imh && p->subsection == sst ) {
             return( p );
         }
     }

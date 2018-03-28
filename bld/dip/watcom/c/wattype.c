@@ -44,7 +44,7 @@ typedef struct typeinfo {
     const char          *start;
     const char          *end;
     word                entry;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     struct typeinfo     *prev;
 } typeinfo;
 
@@ -76,16 +76,16 @@ void KillTypeLoadStack( void )
     Type = NULL;
 }
 
-static dip_status LoadType( imp_image_handle *iih, imp_mod_handle im, word entry )
+static dip_status LoadType( imp_image_handle *iih, imp_mod_handle imh, word entry )
 {
     FreeLoad();
-    Type->start = InfoLoad( iih, im, DMND_TYPES, entry, NULL );
+    Type->start = InfoLoad( iih, imh, DMND_TYPES, entry, NULL );
     if( Type->start == NULL ) {
         return( DS_FAIL );
     }
-    Type->end = Type->start + InfoSize( iih, im, DMND_TYPES, entry );
+    Type->end = Type->start + InfoSize( iih, imh, DMND_TYPES, entry );
     Type->entry = entry;
-    Type->im = im;
+    Type->imh = imh;
     return( DS_OK );
 }
 
@@ -263,7 +263,7 @@ static unsigned long GetScalar( address addr, unsigned scalar )
 
 typedef struct {
     imp_image_handle    *iih;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     unsigned            index;
     struct type_pos     t;
 } type_cache;
@@ -271,7 +271,7 @@ typedef struct {
 static type_cache       TypeCache[TYPE_CACHE_SIZE];
 static int              TypeCacheRover;
 
-static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle im,
+static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle imh,
                         unsigned index, imp_type_handle *ith )
 {
     int         i;
@@ -279,19 +279,19 @@ static dip_status FindTypeCache( imp_image_handle *iih, imp_mod_handle im,
 
     for( i = 0; i < TYPE_CACHE_SIZE; ++i ) {
         cache = TypeCache + i;
-        if( cache->iih == iih && cache->im == im && cache->index == index ) {
-            ith->im = im;
+        if( cache->iih == iih && cache->imh == imh && cache->index == index ) {
+            ith->imh = imh;
             ith->f.all = 0;
             ith->t.entry = cache->t.entry;
             ith->t.offset = cache->t.offset;
-            return( LoadType( iih, im, ith->t.entry ) );
+            return( LoadType( iih, imh, ith->t.entry ) );
         }
     }
     return( DS_FAIL );
 }
 
 
-static void SetTypeCache( imp_image_handle *iih, imp_mod_handle im,
+static void SetTypeCache( imp_image_handle *iih, imp_mod_handle imh,
                         unsigned index, imp_type_handle *ith )
 {
     type_cache  *cache;
@@ -299,7 +299,7 @@ static void SetTypeCache( imp_image_handle *iih, imp_mod_handle im,
     cache = TypeCache + TypeCacheRover++;
     TypeCacheRover &= TYPE_CACHE_SIZE - 1;
     cache->iih = iih;
-    cache->im = im;
+    cache->imh = imh;
     cache->index = index;
     cache->t.entry = ith->t.entry;
     cache->t.offset = ith->t.offset;
@@ -318,7 +318,7 @@ void ClearTypeCache( imp_image_handle *iih )
 }
 
 
-static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     const char  *p;
@@ -328,13 +328,13 @@ static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle im,
 
     if( index == 0 )
         return( DS_FAIL );
-    if( FindTypeCache( iih, im, index, ith ) == DS_OK ) {
+    if( FindTypeCache( iih, imh, index, ith ) == DS_OK ) {
         return( DS_OK );
     }
     entry = 0;
     count = index;
     for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
+        if( LoadType( iih, imh, entry ) != DS_OK )
             break;
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = GETU8( p + 1 );
@@ -365,11 +365,11 @@ static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle im,
                 --count;
             }
             if( count == 0 ) {
-                ith->im = im;
+                ith->imh = imh;
                 ith->f.all = 0;
                 ith->t.entry = entry;
                 ith->t.offset = p - Type->start;
-                SetTypeCache( iih, im, index, ith );
+                SetTypeCache( iih, imh, index, ith );
                 return( DS_OK );
             }
         }
@@ -421,7 +421,7 @@ static byte GetRealTypeHandle( imp_image_handle *iih, imp_type_handle *ith )
         if( !(is_char && len >= 4 && CharName( p, len )) ) {
             is_char = 0;
         }
-        if( FindRawTypeHandle( iih, ith->im, index, ith ) != DS_OK )
+        if( FindRawTypeHandle( iih, ith->imh, index, ith ) != DS_OK )
             return( NO_TYPE );
         if( is_char )
             ith->f.s.chr = 1;
@@ -429,7 +429,7 @@ static byte GetRealTypeHandle( imp_image_handle *iih, imp_type_handle *ith )
     }
 }
 
-static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     byte                type;
@@ -437,7 +437,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
     imp_type_handle     base_ith;
     dip_status          ret;
 
-    ret = FindRawTypeHandle( iih, im, index, ith );
+    ret = FindRawTypeHandle( iih, imh, index, ith );
     if( ret != DS_OK )
         return( ret );
     type = GetRealTypeHandle( iih, ith );
@@ -445,7 +445,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
     case NO_TYPE:
         return( DS_FAIL );
     case ARRAY_TYPE:
-        if( stricmp( ImpInterface.ModSrcLang( iih, im ), "fortran" ) == 0 ) {
+        if( stricmp( ImpInterface.ModSrcLang( iih, imh ), "fortran" ) == 0 ) {
             ith->f.s.col_major = 1;
             ith->f.s.array_ss = 0;
             base_ith = *ith;
@@ -455,7 +455,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
                     break;
                 p = BaseTypePtr( p );
                 GetIndex( p, &index );
-                FindRawTypeHandle( iih, base_ith.im, index, &base_ith );
+                FindRawTypeHandle( iih, base_ith.imh, index, &base_ith );
                 ith->f.s.array_ss++;
             }
         }
@@ -464,14 +464,14 @@ static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
     return( DS_OK );
 }
 
-dip_status FindTypeHandle( imp_image_handle *iih, imp_mod_handle im,
+dip_status FindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 unsigned index, imp_type_handle *ith )
 {
     typeinfo            typeld;
     dip_status          ret;
 
     PushLoad( &typeld );
-    ret = DoFindTypeHandle( iih, im, index, ith );
+    ret = DoFindTypeHandle( iih, imh, index, ith );
     PopLoad();
     return( ret );
 }
@@ -584,7 +584,7 @@ static const char *FindAName( struct name_state *state, const char *p,
     return( NULL );
 }
 
-search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle im,
+search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle imh,
                 lookup_item *li, imp_type_handle *ith )
 {
     word                entry;
@@ -598,11 +598,11 @@ search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle im,
     sr = SR_NONE;
     entry = 0;
     for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
+        if( LoadType( iih, imh, entry ) != DS_OK )
             break;
         p = FindAName( &state, Type->start, ET_TYPE, li );
         if( p != NULL ) {
-            ith->im = im;
+            ith->imh = imh;
             ith->f.all = 0;
             ith->t.entry = entry;
             ith->t.offset = p - Type->start;
@@ -617,7 +617,7 @@ search_result LookupTypeName( imp_image_handle *iih, imp_mod_handle im,
     return( sr );
 }
 
-static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle im,
+static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d, type_or_enum which )
 {
     word                entry;
@@ -632,7 +632,7 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
     InitNameState( &state );
     entry = 0;
     for( ;; ) {
-        if( LoadType( iih, im, entry ) != DS_OK )
+        if( LoadType( iih, imh, entry ) != DS_OK )
             break;
         p = Type->start;
         for( ;; ) {
@@ -640,7 +640,7 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
             if( p == NULL )
                 break;
             ish = DCSymCreate( iih, d );
-            ish->im = im;
+            ish->imh = imh;
             ish->name_off = (byte)( NamePtr( p ) - p );
             ish->u.typ.t.entry = entry;
             ish->u.typ.t.offset = p - Type->start;
@@ -667,19 +667,19 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
     return( sr );
 }
 
-search_result SearchEnumName( imp_image_handle *iih, imp_mod_handle im,
+search_result SearchEnumName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d )
 {
-    return( SearchEnumTypeName( iih, im, li, d, ET_ENUM ) );
+    return( SearchEnumTypeName( iih, imh, li, d, ET_ENUM ) );
 }
 
-search_result SearchTypeName( imp_image_handle *iih, imp_mod_handle im,
+search_result SearchTypeName( imp_image_handle *iih, imp_mod_handle imh,
                          lookup_item *li, void *d )
 {
-    return( SearchEnumTypeName( iih, im, li, d, ET_TYPE ) );
+    return( SearchEnumTypeName( iih, imh, li, d, ET_TYPE ) );
 }
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle im,
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle imh,
                         DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
     const char  *p;
@@ -688,11 +688,11 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle i
     walk_result wr;
 
     PushLoad( &typeld );
-    ith->im = im;
+    ith->imh = imh;
     ith->f.all = 0;
     ith->t.entry = 0;
     for( ;; ) {
-        if( LoadType( iih, im, ith->t.entry ) != DS_OK )
+        if( LoadType( iih, imh, ith->t.entry ) != DS_OK )
             break;
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = GETU8( p + 1 );
@@ -790,7 +790,7 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
         ScalarInfo( ith->t.offset, ti );
     } else {
         is_char = ith->f.s.chr;
-        ret = LoadType( iih, ith->im, ith->t.entry );
+        ret = LoadType( iih, ith->imh, ith->t.entry );
         if( ret != DS_OK ) {
             PopLoad();
             return( ret );
@@ -889,7 +889,7 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
                            field will only be absent in older objects,
                            and thus will only have one type section per
                            module. */
-                        FindTypeHandle( iih, ith->im, index, &tmp_ith );
+                        FindTypeHandle( iih, ith->imh, index, &tmp_ith );
                         GetTypeInfo( iih, &tmp_ith, lc, ti, NULL );
                         offset += ti->size;
                         if( offset > max ) {
@@ -961,7 +961,7 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *iih, imp_type_handle *ith,
 
     PushLoad( &typeld );
     *base_ith = *ith;
-    ret = LoadType( iih, ith->im, ith->t.entry );
+    ret = LoadType( iih, ith->imh, ith->t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -975,7 +975,7 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *iih, imp_type_handle *ith,
             do {
                 p = BaseTypePtr( p );
                 GetIndex( p, &index );
-                FindRawTypeHandle( iih, base_ith->im, index, base_ith );
+                FindRawTypeHandle( iih, base_ith->imh, index, base_ith );
                 p = base_ith->t.offset + Type->start;
             } while( (GETU8( p + 1 ) & CLASS_MASK) == ARRAY_TYPE );
         }
@@ -990,7 +990,7 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *iih, imp_type_handle *ith,
             return( DS_FAIL );
         GetIndex( p, &index );
         PopLoad();
-        FindTypeHandle( iih, ith->im, index, base_ith );
+        FindTypeHandle( iih, ith->imh, index, base_ith );
     }
     return( DS_OK );
 }
@@ -1022,7 +1022,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
         return( DS_OK );
     }
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
+    ret = LoadType( iih, ith->imh, ith->t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1046,12 +1046,12 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
         break;
     case ARRAY_TYPE+ARRAY_TYPE_INDEX:
         GetIndex( p + 2, &index_idx );
-        ret = FindTypeHandle( iih, ith->im, index_idx, &tmp_ith );
+        ret = FindTypeHandle( iih, ith->imh, index_idx, &tmp_ith );
         if( ret != DS_OK ) {
             PopLoad();
             return( ret );
         }
-        ret = LoadType( iih, tmp_ith.im, tmp_ith.t.entry );
+        ret = LoadType( iih, tmp_ith.imh, tmp_ith.t.entry );
         if( ret != DS_OK ) {
             PopLoad();
             return( ret );
@@ -1094,9 +1094,9 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
     ai->column_major = 0;
     if( index_ith != NULL ) {
         if( index_idx != 0 ) {
-            FindTypeHandle( iih, ith->im, index_idx, index_ith );
+            FindTypeHandle( iih, ith->imh, index_idx, index_ith );
         } else {
-            index_ith->im = ith->im;
+            index_ith->imh = ith->imh;
             index_ith->f.all = 0;
             index_ith->f.s.sclr = 1;
             index_ith->t.offset = scalar;
@@ -1115,7 +1115,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *iih, imp_type_handle *i
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
+    ret = LoadType( iih, ith->imh, ith->t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1144,7 +1144,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *iih, imp_type_handle *i
         return( DS_NO_PARM );
     }
     PopLoad();
-    return( FindTypeHandle( iih, ith->im, index, parm_ith ) );
+    return( FindTypeHandle( iih, ith->imh, index, parm_ith ) );
 }
 
 dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
@@ -1158,7 +1158,7 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ith->im, ith->t.entry );
+    ret = LoadType( iih, ith->imh, ith->t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1191,7 +1191,7 @@ unsigned SymHdl2CstName( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    if( LoadType( iih, ish->im, ish->u.typ.t.entry ) != DS_OK ) {
+    if( LoadType( iih, ish->imh, ish->u.typ.t.entry ) != DS_OK ) {
         PopLoad();
         return( 0 );
     }
@@ -1229,7 +1229,7 @@ dip_status SymHdl2CstValue( imp_image_handle *iih, imp_sym_handle *ish, void *d 
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
+    ret = LoadType( iih, ish->imh, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1261,7 +1261,7 @@ dip_status SymHdl2CstType( imp_image_handle *iih, imp_sym_handle *ish,
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = ish->im;
+    ith->imh = ish->imh;
     ith->t = ish->u.typ.h;
     ith->f.all = 0;
     return( DS_OK );
@@ -1272,7 +1272,7 @@ dip_status SymHdl2TypType( imp_image_handle *iih, imp_sym_handle *ish,
 {
     /* unused parameters */ (void)iih;
 
-    ith->im = ish->im;
+    ith->imh = ish->imh;
     ith->t = ish->u.typ.t;
     ith->f.all = 0;
     return( DS_OK );
@@ -1287,7 +1287,7 @@ dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo    typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
+    ret = LoadType( iih, ish->imh, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1296,7 +1296,7 @@ dip_status SymHdl2MbrType( imp_image_handle *iih, imp_sym_handle *ish,
     p = BaseTypePtr( p );
     GetIndex( p, &index );
     PopLoad();
-    return( FindTypeHandle( iih, ish->im, index, ith ) );
+    return( FindTypeHandle( iih, ish->imh, index, ith ) );
 }
 
 
@@ -1334,7 +1334,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
+    ok = LoadType( iih, ish->imh, ish->u.typ.t.entry );
     if( ok != DS_OK ) {
         PopLoad();
         return( ok );
@@ -1350,7 +1350,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
         break;
     }
     if( info & (NEED_BASE|EMPTY_EXPR) ) {
-        ok = LoadType( iih, ish->im, ish->u.typ.h.entry );
+        ok = LoadType( iih, ish->imh, ish->u.typ.h.entry );
         if( ok != DS_OK ) {
             PopLoad();
             return( ok );
@@ -1362,7 +1362,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
             if( count == 0 ) {
                 if( pending == NULL )
                     return( DS_FAIL );
-                ok = LoadType( iih, ish->im, pending->entry );
+                ok = LoadType( iih, ish->imh, pending->entry );
                 if( ok != DS_OK ) {
                     PopLoad();
                     return( ok );
@@ -1382,7 +1382,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
                 pending = new;
                 p = SkipLocation( p + 2 );
                 GetIndex( p, &index );
-                ok = DoFindTypeHandle( iih, ish->im, index, &new_ith );
+                ok = DoFindTypeHandle( iih, ish->imh, index, &new_ith );
                 if( ok != DS_OK ) {
                     PopLoad();
                     return( ok );
@@ -1413,7 +1413,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
             return( ok );
         }
         while( new != NULL ) {
-            ok = LoadType( iih, ish->im, new->entry );
+            ok = LoadType( iih, ish->imh, new->entry );
             if( ok != DS_OK ) {
                 PopLoad();
                 return( ok );
@@ -1433,7 +1433,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
             LocationAdd( ll, adj.e[0].u.addr.mach.offset * 8 );
             new = new->prev;
         }
-        ok = LoadType( iih, ish->im, ish->u.typ.t.entry );
+        ok = LoadType( iih, ish->imh, ish->u.typ.t.entry );
         if( ok != DS_OK ) {
             PopLoad();
             return( ok );
@@ -1501,7 +1501,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    ret = LoadType( iih, ish->im, ish->u.typ.t.entry );
+    ret = LoadType( iih, ish->imh, ish->u.typ.t.entry );
     if( ret != DS_OK ) {
         PopLoad();
         return( ret );
@@ -1518,7 +1518,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
     }
     p = BaseTypePtr( p );
     GetIndex( p, &index );
-    ret = FindRawTypeHandle( iih, ish->im, index, &tmp_ith );
+    ret = FindRawTypeHandle( iih, ish->imh, index, &tmp_ith );
     if( ret != DS_OK )
         return( ret );
     kind = GetRealTypeHandle( iih, &tmp_ith ) & CLASS_MASK;
@@ -1528,7 +1528,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *iih, imp_sym_handle *ish,
         si->kind = SK_PROCEDURE;
         ret = SymHdl2MbrLoc( iih, ish, lc, &ll );
         if( ret == DS_OK ) {
-            func_ish.im = ish->im;
+            func_ish.imh = ish->imh;
             if( LookupLclAddr( iih, ll.e[0].u.addr, &func_ish ) == SR_EXACT ) {
                 ret = SymHdl2LclInfo( iih, &func_ish, si );
             }
@@ -1563,10 +1563,10 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
     location_list       adj;
     typeinfo            typeld;
 
-    if( oith->im != mith->im )
+    if( oith->imh != mith->imh )
         return( DS_FAIL );
     PushLoad( &typeld );
-    ok = LoadType( iih, oith->im, oith->t.entry );
+    ok = LoadType( iih, oith->imh, oith->t.entry );
     if( ok != DS_OK ) {
         PopLoad();
         return( ok );
@@ -1578,7 +1578,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
         if( count == 0 ) {
             if( pending == NULL )
                 return( DS_FAIL );
-            ok = LoadType( iih, oith->im, pending->entry );
+            ok = LoadType( iih, oith->imh, pending->entry );
             if( ok != DS_OK ) {
                 PopLoad();
                 return( ok );
@@ -1598,7 +1598,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
             pending = new;
             p = SkipLocation( p + 2 );
             GetIndex( p, &index );
-            ok = DoFindTypeHandle( iih, oith->im, index, &new_ith );
+            ok = DoFindTypeHandle( iih, oith->imh, index, &new_ith );
             if( ok != DS_OK ) {
                 PopLoad();
                 return( ok );
@@ -1620,7 +1620,7 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
     }
     /* do the adjustors at each level */
     while( new != NULL ) {
-        ok = LoadType( iih, oith->im, new->entry );
+        ok = LoadType( iih, oith->imh, new->entry );
         if( ok != DS_OK ) {
             PopLoad();
             return( ok );
@@ -1659,7 +1659,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
     typeinfo            typeld;
 
     PushLoad( &typeld );
-    if( LoadType( iih, ith->im, ith->t.entry ) != DS_OK ) {
+    if( LoadType( iih, ith->imh, ith->t.entry ) != DS_OK ) {
         PopLoad();
         return( SR_NONE );
     }
@@ -1680,7 +1680,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
         if( count == 0 ) {
             if( pending == NULL )
                 break;
-            if( LoadType( iih, ith->im, pending->entry ) != DS_OK ) {
+            if( LoadType( iih, ith->imh, pending->entry ) != DS_OK ) {
                 PopLoad();
                 return( WR_STOP );
             }
@@ -1699,7 +1699,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
             pending = new;
             p = SkipLocation( p + 2 );
             GetIndex( p, &index );
-            if( DoFindTypeHandle( iih, ith->im, index, &new_ith ) != DS_OK ) {
+            if( DoFindTypeHandle( iih, ith->imh, index, &new_ith ) != DS_OK ) {
                 PopLoad();
                 return( WR_STOP );
             }
@@ -1713,7 +1713,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
                 ish->u.typ.t.offset = p - Type->start;
                 ish->u.typ.t.entry = Type->entry;
                 ish->name_off = (byte)( name - p );
-                ish->im = ith->im;
+                ish->imh = ith->imh;
                 ish->u.typ.h = ith->t;
                 ish->type = SH_MBR;
                 sr = SR_EXACT;
@@ -1737,11 +1737,11 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
     typeinfo                    typeld;
 
     PushLoad( &typeld );
-    if( LoadType( iih, ith->im, ith->t.entry ) != DS_OK ) {
+    if( LoadType( iih, ith->imh, ith->t.entry ) != DS_OK ) {
         PopLoad();
         return( WR_STOP );
     }
-    ish->im = ith->im;
+    ish->imh = ith->imh;
     ish->u.typ.h = ith->t;
     list = NULL;
     used = NULL;
@@ -1775,7 +1775,7 @@ do_walk:
                 if( pending == NULL )
                     break;
                 wk( iih, SWI_INHERIT_END, NULL, d );
-                if( LoadType( iih, ith->im, pending->entry ) != DS_OK ) {
+                if( LoadType( iih, ith->imh, pending->entry ) != DS_OK ) {
                     PopLoad();
                     return( WR_STOP );
                 }
@@ -1794,7 +1794,7 @@ do_walk:
                     }
                     p = SkipLocation( p + 2 );
                     GetIndex( p, &index );
-                    if( DoFindTypeHandle( iih, ith->im, index, &new_ith ) != DS_OK ) {
+                    if( DoFindTypeHandle( iih, ith->imh, index, &new_ith ) != DS_OK ) {
                         PopLoad();
                         return( WR_STOP );
                     }
@@ -1831,10 +1831,10 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
 {
     /* unused parameters */ (void)iih;
 
-    return( ith->im );
+    return( ith->imh );
 }
 
-const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle im, const char **base )
+const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle imh, const char **base )
 {
     typeinfo            typeld;
     const char          *p;
@@ -1843,14 +1843,14 @@ const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle im, const ch
     unsigned            size;
 
     PushLoad( &typeld );
-    if( LoadType( iih, im, 0 ) != DS_OK )
+    if( LoadType( iih, imh, 0 ) != DS_OK )
         goto missing;
     for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
         if( GETU8( p + 1 ) == (NAME_TYPE+TYPE_CUE_TABLE) ) {
             offset = GETU32( p + 2 );
             entry = 0;
             for( ;; ) {
-                size = InfoSize( iih, im, DMND_TYPES, entry );
+                size = InfoSize( iih, imh, DMND_TYPES, entry );
                 if( size == 0 )
                     goto missing;
                 if( size > offset )
@@ -1858,7 +1858,7 @@ const char *FindSpecCueTable( imp_image_handle *iih, imp_mod_handle im, const ch
                 offset -= size;
                 ++entry;
             }
-            if( LoadType( iih, im, entry ) != DS_OK )
+            if( LoadType( iih, imh, entry ) != DS_OK )
                 goto missing;
             p = Type->start;
             *base = p;
@@ -1877,9 +1877,9 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *iih, imp_type_handle *ith1, imp_ty
 {
     /* unused parameters */ (void)iih;
 
-    if( ith1->im < ith2->im )
+    if( ith1->imh < ith2->imh )
         return( -1 );
-    if( ith1->im > ith2->im )
+    if( ith1->imh > ith2->imh )
         return( 1 );
     if( ith1->t.entry < ith2->t.entry )
         return( -1 );

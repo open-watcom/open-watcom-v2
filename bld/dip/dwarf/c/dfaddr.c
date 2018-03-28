@@ -373,7 +373,7 @@ void DmpBlk( off_blk *blk, int count )
             info->len,
             info->map_seg,
             info->map_offset,
-            info->im );
+            info->imh );
         ++info;
         --count;
     }

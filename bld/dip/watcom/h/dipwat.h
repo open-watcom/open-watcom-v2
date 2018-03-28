@@ -54,7 +54,7 @@ typedef struct type_pos {
 } type_pos;
 
 typedef struct imp_sym_handle {
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     union {
         /* for SH_GBL */
         gbl_info        *gbl;
@@ -82,7 +82,7 @@ typedef struct imp_sym_handle {
 } imp_sym_handle;
 
 typedef struct imp_type_handle {
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     struct type_pos     t;
     union {
         struct {
@@ -102,7 +102,7 @@ typedef struct subrange_info {
 } subrange_info;
 
 typedef struct imp_cue_handle {
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
     word                entry;
     unsigned short      seg_bias;
     unsigned short      info_bias;

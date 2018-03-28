@@ -37,9 +37,9 @@
 /*
  * Gets the size of a line number entry.
  */
-static unsigned hllLinnumSize( imp_cue_handle *imp_cueh )
+static unsigned hllLinnumSize( imp_cue_handle *icueh )
 {
-    switch( imp_cueh->style ) {
+    switch( icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
         return( sizeof( cv3_linnum_entry_16 ) );
@@ -119,7 +119,7 @@ static int hllLinnumCmpHL3(const void *_e1, const void *_e2)
 /*
  * VM destructure callback for tracking sorted linnum blocks.
  */
-static void hllLinnumDtor( imp_image_handle *iih, void *entries)
+static void hllLinnumDtor( imp_image_handle *iih, void *entries )
 {
     int i;
     for( i = 0; i < HLLINFO_NUM_SORTED; i++ ) {
@@ -139,13 +139,13 @@ static void hllLinnumDtor( imp_image_handle *iih, void *entries)
  * return them as if they were ordered by [sfi,] line. So, since I'm lazy
  * (don't sue me) we'll do that.
  */
-static void *hllGetSortedLinnums( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+static void *hllGetSortedLinnums( imp_image_handle *iih, imp_cue_handle *icueh )
 {
-    const unsigned  entry_size = hllLinnumSize( imp_cueh );
+    const unsigned  entry_size = hllLinnumSize( icueh );
     void           *entries;
     int             i;
 
-    entries = VMBlock( iih, imp_cueh->lines, imp_cueh->num_lines * entry_size );
+    entries = VMBlock( iih, icueh->lines, icueh->num_lines * entry_size );
     if( !entries ) {
         return( NULL );
     }
@@ -158,27 +158,27 @@ static void *hllGetSortedLinnums( imp_image_handle *iih, imp_cue_handle *imp_cue
     }
 
     /* sort and register a destructor */
-    switch( imp_cueh->style ) {
+    switch( icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
-        qsort( entries, imp_cueh->num_lines, entry_size, hllLinnumCmp16CV3 );
+        qsort( entries, icueh->num_lines, entry_size, hllLinnumCmp16CV3 );
         break;
     case HLL_LINE_STYLE_SRC_LINES_SEG_32:
-        qsort( entries, imp_cueh->num_lines, entry_size, hllLinnumCmp32CV3 );
+        qsort( entries, icueh->num_lines, entry_size, hllLinnumCmp32CV3 );
         break;
     case HLL_LINE_STYLE_HLL_01:
     case HLL_LINE_STYLE_HLL_02:
-        qsort( entries, imp_cueh->num_lines, entry_size, hllLinnumCmpHL1 );
+        qsort( entries, icueh->num_lines, entry_size, hllLinnumCmpHL1 );
         break;
     default:
         hllConfused();
     case HLL_LINE_STYLE_HLL_03:
     case HLL_LINE_STYLE_HLL_04:
-        qsort( entries, imp_cueh->num_lines, entry_size, hllLinnumCmpHL3 );
+        qsort( entries, icueh->num_lines, entry_size, hllLinnumCmpHL3 );
         break;
     }
 
-    VMAddDtor( iih, imp_cueh->lines, hllLinnumDtor, entries );
+    VMAddDtor( iih, icueh->lines, hllLinnumDtor, entries );
 
     for( i = 0; i < HLLINFO_NUM_SORTED; i++ ) {
         if( !iih->sorted_linnum_blocks[i] ) {
@@ -196,8 +196,8 @@ static void *hllGetSortedLinnums( imp_image_handle *iih, imp_cue_handle *imp_cue
 /*
  * Walk the list of source files of a module.
  */
-walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle im,
-                       DIP_IMP_CUE_WALKER *wk, imp_cue_handle *imp_cueh, void *d )
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle imh,
+                       DIP_IMP_CUE_WALKER *wk, imp_cue_handle *icueh, void *d )
 {
     hll_dir_entry                       *hde;
     //hl4_linnum_first                    *hdr4;
@@ -209,7 +209,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
     /*
      * Really old line numbers.
      */
-    hde = hllFindDirEntry( iih, im, hll_sstSrcLines );
+    hde = hllFindDirEntry( iih, imh, hll_sstSrcLines );
     if( hde ) {
         /*
          *  while (more data) {
@@ -225,32 +225,32 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         unsigned_32         pos;
         const unsigned_32   entry_size = sizeof( cv3_linnum_entry_16 );
 
-        imp_cueh->style = HLL_LINE_STYLE_SRC_LINES;
-        imp_cueh->im = im;
-        imp_cueh->cur_line = 0;
-        imp_cueh->segment = 1;
+        icueh->style = HLL_LINE_STYLE_SRC_LINES;
+        icueh->imh = imh;
+        icueh->cur_line = 0;
+        icueh->segment = 1;
         pos = 0;
         while( pos < hde->cb ) {
             unsigned_8  name_len;
 
             /* read the header */
-            imp_cueh->num_lines = 0;
+            icueh->num_lines = 0;
             if( !VMSsGetU8( iih, hde, pos, &name_len )
-             || !VMSsGetU16( iih, hde, pos + 1 + name_len, (unsigned_16 *)&imp_cueh->num_lines )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len, (unsigned_16 *)&icueh->num_lines )
                 ) {
                 return( WR_FAIL );
             }
 
-            imp_cueh->file = hde->lfo + pos;
-            imp_cueh->lines = imp_cueh->file + 1 + name_len + 2;
+            icueh->file = hde->lfo + pos;
+            icueh->lines = icueh->file + 1 + name_len + 2;
 
-            pos += 1 + name_len + 2 + imp_cueh->num_lines * entry_size;
+            pos += 1 + name_len + 2 + icueh->num_lines * entry_size;
             if( pos > hde->cb ) {
                 return( WR_FAIL );
             }
 
-            if( imp_cueh->num_lines > 0  ) {
-                wr = wk( iih, imp_cueh, d );
+            if( icueh->num_lines > 0  ) {
+                wr = wk( iih, icueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
@@ -261,7 +261,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
     /*
      * Old line numbers.
      */
-    hde = hllFindDirEntry( iih, im, hll_sstSrcLnSeg );
+    hde = hllFindDirEntry( iih, imh, hll_sstSrcLnSeg );
     if( hde ) {
         /*
          * while (more data) {
@@ -286,36 +286,36 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         if( iih->format_lvl == HLL_LVL_NB00
          || iih->format_lvl == HLL_LVL_NB02 ) {
             entry_size = sizeof( cv3_linnum_entry_16 );
-            imp_cueh->style  = HLL_LINE_STYLE_SRC_LINES_SEG_16;
+            icueh->style  = HLL_LINE_STYLE_SRC_LINES_SEG_16;
         } else {
             entry_size = sizeof( cv3_linnum_entry_32 );;
-            imp_cueh->style  = HLL_LINE_STYLE_SRC_LINES_SEG_32;
+            icueh->style  = HLL_LINE_STYLE_SRC_LINES_SEG_32;
         }
-        imp_cueh->im = im;
-        imp_cueh->cur_line = 0;
+        icueh->imh = imh;
+        icueh->cur_line = 0;
         pos = 0;
         while( pos < hde->cb ) {
             unsigned_8  name_len;
 
             /* read the header */
-            imp_cueh->num_lines = 0;
+            icueh->num_lines = 0;
             if( !VMSsGetU8( iih, hde, pos, &name_len )
-             || !VMSsGetU16( iih, hde, pos + 1 + name_len, &imp_cueh->segment )
-             || !VMSsGetU16( iih, hde, pos + 1 + name_len + 2, (unsigned_16 *)&imp_cueh->num_lines )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len, &icueh->segment )
+             || !VMSsGetU16( iih, hde, pos + 1 + name_len + 2, (unsigned_16 *)&icueh->num_lines )
                 ) {
                 return( WR_FAIL );
             }
 
-            imp_cueh->file = hde->lfo + pos;
-            imp_cueh->lines = imp_cueh->file + 1 + name_len + 4;
+            icueh->file = hde->lfo + pos;
+            icueh->lines = icueh->file + 1 + name_len + 4;
 
-            pos += 1 + name_len + 4 + imp_cueh->num_lines * entry_size;
+            pos += 1 + name_len + 4 + icueh->num_lines * entry_size;
             if( pos > hde->cb ) {
                 return( WR_FAIL );
             }
 
-            if( imp_cueh->num_lines > 0  ) {
-                wr = wk( iih, imp_cueh, d );
+            if( icueh->num_lines > 0  ) {
+                wr = wk( iih, icueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
@@ -331,7 +331,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
      * with the code in this file! I.e. path tables, listing, and source + listing
      * blocks are completely ignored.
      */
-    hde = hllFindDirEntry( iih, im, hll_sstHLLSrc );
+    hde = hllFindDirEntry( iih, imh, hll_sstHLLSrc );
     if( hde )  {
         unsigned_32     pos = 0;
         unsigned_32     num_files;
@@ -339,13 +339,13 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         unsigned_32     first_sfi;
         unsigned        i;
 
-        imp_cueh->im          = im;
-        imp_cueh->cur_line    = 0;
-        imp_cueh->lines       = 0;
-        imp_cueh->file        = 0;
-        imp_cueh->u.hll.base_offset = 0;
-        imp_cueh->u.hll.first = 0;
-        imp_cueh->u.hll.last  = 0;
+        icueh->imh         = imh;
+        icueh->cur_line    = 0;
+        icueh->lines       = 0;
+        icueh->file        = 0;
+        icueh->u.hll.base_offset = 0;
+        icueh->u.hll.first = 0;
+        icueh->u.hll.last  = 0;
 
         num_files = 0;
         end_files = 0;
@@ -354,7 +354,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         /*
          * Find the two tables.
          */
-        switch( hllGetModStyle( iih, im ) ) {
+        switch( hllGetModStyle( iih, imh ) ) {
             /*
              * In HLL V1, there is only one block which starts with
              * line numbers, continues with paths and finishes off
@@ -366,7 +366,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                 hl1_linnum_first   *first;
                 hl1_filetab_hdr    *hdr;
 
-                imp_cueh->style  = HLL_LINE_STYLE_HLL_01;
+                icueh->style  = HLL_LINE_STYLE_HLL_01;
 
                 /* get the 'first' record. */
                 first = VMSsBlock( iih, hde, pos, sizeof( *first ) );
@@ -379,15 +379,15 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                 }
 
                 end_files = hde->cb;
-                imp_cueh->segment = 1;
-                imp_cueh->lines = pos + sizeof( *first );
-                imp_cueh->num_lines = first->num_line_entries;
-                imp_cueh->file = imp_cueh->lines
-                         + imp_cueh->num_lines * sizeof( hl1_linnum_entry )
+                icueh->segment = 1;
+                icueh->lines = pos + sizeof( *first );
+                icueh->num_lines = first->num_line_entries;
+                icueh->file = icueh->lines
+                         + icueh->num_lines * sizeof( hl1_linnum_entry )
                          + first->num_path_entries * sizeof( hl1_pathtab_entry );
 
                 /* get the file table header */
-                hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
+                hdr = VMSsBlock( iih, hde, icueh->file, sizeof( *hdr ) );
                 if( !hdr ) {
                     return( WR_FAIL );
                 }
@@ -406,8 +406,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
          * FIXME: Not 100% sure about > 1 blocks and entry types. Needs testing.
          */
         case HLL_STYLE_HL02:
-            imp_cueh->style  = HLL_LINE_STYLE_HLL_02;
-            while ( pos < hde->cb && ( !imp_cueh->lines || !imp_cueh->file ) ) {
+            icueh->style  = HLL_LINE_STYLE_HLL_02;
+            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 hl2_linnum_first   *first;
                 hl1_filetab_hdr    *hdr;
                 unsigned_32         pos_next;
@@ -427,18 +427,18 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                          + first->file_tab_size;
 
                 if( first->num_line_entries ) {
-                    imp_cueh->segment = first->seg;
-                    imp_cueh->lines = pos + sizeof( *first );
-                    imp_cueh->num_lines = first->num_line_entries;
+                    icueh->segment = first->seg;
+                    icueh->lines = pos + sizeof( *first );
+                    icueh->num_lines = first->num_line_entries;
                 }
 
                 if ( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
-                    imp_cueh->file = imp_cueh->lines
-                             + imp_cueh->num_lines * sizeof( hl1_linnum_entry );
-                    end_files = imp_cueh->file + first->file_tab_size;
+                    icueh->file = icueh->lines
+                             + icueh->num_lines * sizeof( hl1_linnum_entry );
+                    end_files = icueh->file + first->file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, icueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -456,8 +456,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
              * FIXME: Not 100% sure about > 1 blocks and entry types. Needs testing.
              */
         case HLL_STYLE_HL03:
-            imp_cueh->style  = HLL_LINE_STYLE_HLL_03;
-            while ( pos < hde->cb && ( !imp_cueh->lines || !imp_cueh->file ) ) {
+            icueh->style  = HLL_LINE_STYLE_HLL_03;
+            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 hl2_linnum_first   *first;
                 hl1_filetab_hdr    *hdr;
                 unsigned_32         pos_next;
@@ -477,18 +477,18 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                          + first->file_tab_size;
 
                 if( first->num_line_entries ) {
-                    imp_cueh->segment = first->seg;
-                    imp_cueh->lines = pos + sizeof( *first );
-                    imp_cueh->num_lines = first->num_line_entries;
+                    icueh->segment = first->seg;
+                    icueh->lines = pos + sizeof( *first );
+                    icueh->num_lines = first->num_line_entries;
                 }
 
                 if ( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
-                    imp_cueh->file = pos + sizeof( *first )
-                             + imp_cueh->num_lines * sizeof( hl3_linnum_entry );
-                    end_files = imp_cueh->file + first->file_tab_size;
+                    icueh->file = pos + sizeof( *first )
+                             + icueh->num_lines * sizeof( hl3_linnum_entry );
+                    end_files = icueh->file + first->file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, icueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -511,8 +511,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         case HLL_STYLE_HL04:
         case HLL_STYLE_HL05:
         case HLL_STYLE_HL06:
-            imp_cueh->style  = HLL_LINE_STYLE_HLL_04;
-            while ( pos < hde->cb && ( !imp_cueh->lines || !imp_cueh->file ) ) {
+            icueh->style  = HLL_LINE_STYLE_HLL_04;
+            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 union {
                     hl4_linnum_first_core   core;
                     hl4_linnum_first_files  files;
@@ -528,25 +528,25 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                 }
                 switch( first->core.entry_type ) {
                 case HLL_LNE_TYPE_SOURCE:
-                    imp_cueh->segment = first->lines.seg;
-                    imp_cueh->lines = pos + sizeof( *first );
-                    imp_cueh->num_lines = first->lines.num_line_entries;
-                    imp_cueh->u.hll.base_offset = first->lines.base_offset;
-                    if( imp_cueh->segment
-                     && iih->seg_count > imp_cueh->segment
-                     && imp_cueh->u.hll.base_offset >= iih->segments[imp_cueh->segment-1].address ){
-                        imp_cueh->u.hll.base_offset -= iih->segments[imp_cueh->segment-1].address;
+                    icueh->segment = first->lines.seg;
+                    icueh->lines = pos + sizeof( *first );
+                    icueh->num_lines = first->lines.num_line_entries;
+                    icueh->u.hll.base_offset = first->lines.base_offset;
+                    if( icueh->segment
+                     && iih->seg_count > icueh->segment
+                     && icueh->u.hll.base_offset >= iih->segments[icueh->segment-1].address ){
+                        icueh->u.hll.base_offset -= iih->segments[icueh->segment-1].address;
                     }
                     pos_next = pos
                              + first->lines.num_line_entries * sizeof( hl3_linnum_entry );
                     break;
 
                 case HLL_LNE_TYPE_FILE_TABLE:
-                    imp_cueh->file = pos + sizeof( *first );
-                    end_files = imp_cueh->file + first->files.file_tab_size;
+                    icueh->file = pos + sizeof( *first );
+                    end_files = icueh->file + first->files.file_tab_size;
 
                     /* get the file table header */
-                    hdr = VMSsBlock( iih, hde, imp_cueh->file, sizeof( *hdr ) );
+                    hdr = VMSsBlock( iih, hde, icueh->file, sizeof( *hdr ) );
                     if( !hdr ) {
                         return( WR_FAIL );
                     }
@@ -573,16 +573,16 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
             hllConfused();
             end_files = hde->cb;
         }
-        imp_cueh->lines += hde->lfo;
-        imp_cueh->u.hll.first = 0;
-        imp_cueh->u.hll.last  = 0;
+        icueh->lines += hde->lfo;
+        icueh->u.hll.first = 0;
+        icueh->u.hll.last  = 0;
 
         first_sfi++; /* one based */
 
         /*
          * Iterate the two tables in parallel.
          */
-        pos = imp_cueh->file + sizeof( hl1_filetab_hdr );
+        pos = icueh->file + sizeof( hl1_filetab_hdr );
         for( i = 0; i < num_files && pos < end_files; i++ ) {
             union {
                 hl1_linnum_entry hl1;
@@ -592,37 +592,37 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
             unsigned_8      file_len;
 
             /* get the line numbers (again). */
-            entries = hllGetSortedLinnums( iih, imp_cueh );
+            entries = hllGetSortedLinnums( iih, icueh );
             if( !entries ) {
                 return( WR_FAIL );
             }
-            sfi = imp_cueh->style < HLL_LINE_STYLE_HLL_03
-                ? entries[imp_cueh->u.hll.first].hl1.sfi
-                : entries[imp_cueh->u.hll.first].hl3.sfi;
+            sfi = icueh->style < HLL_LINE_STYLE_HLL_03
+                ? entries[icueh->u.hll.first].hl1.sfi
+                : entries[icueh->u.hll.first].hl3.sfi;
             if( sfi == i + first_sfi) {
                 /* find the end of the line numbers for this file. */
-                imp_cueh->u.hll.last = imp_cueh->u.hll.first + 1;
-                while( imp_cueh->u.hll.last < imp_cueh->num_lines
-                    && ( imp_cueh->style < HLL_LINE_STYLE_HLL_03
-                        ? entries[imp_cueh->u.hll.last].hl1.sfi
-                        : entries[imp_cueh->u.hll.last].hl3.sfi )
+                icueh->u.hll.last = icueh->u.hll.first + 1;
+                while( icueh->u.hll.last < icueh->num_lines
+                    && ( icueh->style < HLL_LINE_STYLE_HLL_03
+                        ? entries[icueh->u.hll.last].hl1.sfi
+                        : entries[icueh->u.hll.last].hl3.sfi )
                        == sfi ) {
-                    imp_cueh->u.hll.last++;
+                    icueh->u.hll.last++;
                 }
-                imp_cueh->u.hll.last--;
-                imp_cueh->file = hde->lfo + pos;
+                icueh->u.hll.last--;
+                icueh->file = hde->lfo + pos;
 
                 /* do the callback */
-                wr = wk( iih, imp_cueh, d );
+                wr = wk( iih, icueh, d );
                 if( wr != WR_CONTINUE ) {
                     return( wr );
                 }
 
                 /* advance the current (hll) line number. */
-                if( ++imp_cueh->u.hll.last >= imp_cueh->num_lines ) {
+                if( ++icueh->u.hll.last >= icueh->num_lines ) {
                     break;
                 }
-                imp_cueh->cur_line = imp_cueh->u.hll.first = imp_cueh->u.hll.last;
+                icueh->cur_line = icueh->u.hll.first = icueh->u.hll.last;
             }
 
             /* next file name */
@@ -640,23 +640,23 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
 /*
  * Get the module of a cue.
  */
-imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
     iih = iih;
-    return( imp_cueh->im );
+    return( icueh->imh );
 }
 
 /*
  * Get the filename of a cue.
  */
-size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *icueh,
                                  char *buff, size_t buff_size )
 {
     unsigned_8  name_len;
     const char *file_name;
 
-    if( VMGetU8( iih, imp_cueh->file, &name_len)
-     && (file_name = VMBlock( iih, imp_cueh->file + 1, name_len ) ) != NULL ) {
+    if( VMGetU8( iih, icueh->file, &name_len)
+     && (file_name = VMBlock( iih, icueh->file + 1, name_len ) ) != NULL ) {
         return( hllNameCopy( buff, file_name, buff_size, name_len ) );
     }
 
@@ -666,32 +666,32 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih, imp_cue_handle *imp_cueh,
 /*
  * Get the 'file id'.
  */
-cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
     /* unused parameters */ (void)iih;
 
-    return( imp_cueh->file );
+    return( icueh->file );
 }
 
 /*
  * Get the linenumber.
  */
-unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
     unsigned_8 * entries;
 
     /* Load and sort the line number. */
-    entries = hllGetSortedLinnums( iih, imp_cueh );
+    entries = hllGetSortedLinnums( iih, icueh );
     if( !entries ) {
         return( DS_ERR | DS_FAIL );
     }
 
-    switch( imp_cueh->style ) {
+    switch( icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
         {
             cv3_linnum_entry_16 *linnum;
-            linnum = (cv3_linnum_entry_16 *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (cv3_linnum_entry_16 *)( entries + icueh->cur_line * sizeof( *linnum ) );
             return( linnum->line );
         }
         break;
@@ -699,7 +699,7 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp
     case HLL_LINE_STYLE_SRC_LINES_SEG_32:
         {
             cv3_linnum_entry_32 *linnum;
-            linnum = (cv3_linnum_entry_32 *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (cv3_linnum_entry_32 *)( entries + icueh->cur_line * sizeof( *linnum ) );
             return( linnum->line );
         }
         break;
@@ -708,7 +708,7 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp
     case HLL_LINE_STYLE_HLL_02:
         {
             hl1_linnum_entry *linnum;
-            linnum = (hl1_linnum_entry *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (hl1_linnum_entry *)( entries + icueh->cur_line * sizeof( *linnum ) );
             return( linnum->line );
         }
         break;
@@ -717,7 +717,7 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp
     case HLL_LINE_STYLE_HLL_04:
         {
             hl3_linnum_entry *linnum;
-            linnum = (hl3_linnum_entry *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (hl3_linnum_entry *)( entries + icueh->cur_line * sizeof( *linnum ) );
             return( linnum->line );
         }
         break;
@@ -728,9 +728,9 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *imp
 /*
  * Get the column number - we've got no such information.
  */
-unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
-    /* unused parameters */ (void)iih; (void)imp_cueh;
+    /* unused parameters */ (void)iih; (void)icueh;
 
     return( 0 );
 }
@@ -738,24 +738,24 @@ unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *iih, imp_cue_handle *imp_cu
 /*
  * Get the address.
  */
-address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
     unsigned_8 *entries;
     address     addr;
 
     /* Load and sort the line number. */
-    entries = hllGetSortedLinnums( iih, imp_cueh );
+    entries = hllGetSortedLinnums( iih, icueh );
     if( !entries ) {
         return( NilAddr );
     }
 
     /* get addr.offset */
-    switch( imp_cueh->style ) {
+    switch( icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
         {
             cv3_linnum_entry_16 *linnum;
-            linnum = (cv3_linnum_entry_16 *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (cv3_linnum_entry_16 *)( entries + icueh->cur_line * sizeof( *linnum ) );
             addr.mach.offset = linnum->offset;
         }
         break;
@@ -763,7 +763,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh 
     case HLL_LINE_STYLE_SRC_LINES_SEG_32:
         {
             cv3_linnum_entry_32 *linnum;
-            linnum = (cv3_linnum_entry_32 *)( entries + imp_cueh->cur_line * sizeof( *linnum ));
+            linnum = (cv3_linnum_entry_32 *)( entries + icueh->cur_line * sizeof( *linnum ));
             addr.mach.offset = linnum->offset;
         }
         break;
@@ -772,7 +772,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh 
     case HLL_LINE_STYLE_HLL_02:
         {
             hl1_linnum_entry *linnum;
-            linnum = (hl1_linnum_entry *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
+            linnum = (hl1_linnum_entry *)( entries + icueh->cur_line * sizeof( *linnum ) );
             addr.mach.offset = linnum->offset;
         }
         break;
@@ -781,8 +781,8 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh 
     case HLL_LINE_STYLE_HLL_04:
         {
             hl3_linnum_entry *linnum;
-            linnum = (hl3_linnum_entry *)( entries + imp_cueh->cur_line * sizeof( *linnum ) );
-            addr.mach.offset = linnum->offset + imp_cueh->u.hll.base_offset;
+            linnum = (hl3_linnum_entry *)( entries + icueh->cur_line * sizeof( *linnum ) );
+            addr.mach.offset = linnum->offset + icueh->u.hll.base_offset;
         }
         break;
     }
@@ -790,7 +790,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh 
     /* Construct the address and return. */
     addr.indirect = 0;
     addr.sect_id = 0;
-    addr.mach.segment = imp_cueh->segment;
+    addr.mach.segment = icueh->segment;
     hllMapLogical( iih, &addr );
     return( addr );
 }
@@ -815,39 +815,39 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *imp_cueh 
  * Reminder: A cue is a source file location. For HLL/CV it's a line for
  *           which code was generated.
  */
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_imp_cueh,
-                                     int adj, imp_cue_handle *dst_imp_cueh )
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
+                                     int adj, imp_cue_handle *dst_icueh )
 {
     dip_status rc;
 
     /* unused parameters */ (void)iih;
 
     HLL_LOG(( "DIPImpCueAdjust: ic=%p:{cur_line=%lu file=%#lx} adj=%d aic=%p",
-              src_imp_cueh, (long)ic->cur_line, (long)src_imp_cueh->file, adj, dst_imp_cueh ));
+              src_icueh, (long)ic->cur_line, (long)src_icueh->file, adj, dst_icueh ));
 
     /*
      * Since we sort the linnumbers this walking is extremely simple.
      */
     rc = DS_OK;
-    *dst_imp_cueh = *src_imp_cueh;
+    *dst_icueh = *src_icueh;
 
-    switch( src_imp_cueh->style ) {
+    switch( src_icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
     case HLL_LINE_STYLE_SRC_LINES_SEG_32:
         while( adj > 0 ) {
-            dst_imp_cueh->cur_line++;
-            if( dst_imp_cueh->cur_line >= dst_imp_cueh->num_lines ) {
-                dst_imp_cueh->cur_line = 0;
+            dst_icueh->cur_line++;
+            if( dst_icueh->cur_line >= dst_icueh->num_lines ) {
+                dst_icueh->cur_line = 0;
                 rc = DS_WRAPPED;
             }
             adj--;
         }
         while( adj < 0 ) {
-            if( dst_imp_cueh->cur_line != 0 ) {
-                dst_imp_cueh->cur_line--;
+            if( dst_icueh->cur_line != 0 ) {
+                dst_icueh->cur_line--;
             } else {
-                dst_imp_cueh->cur_line = dst_imp_cueh->num_lines - 1;
+                dst_icueh->cur_line = dst_icueh->num_lines - 1;
                 rc = DS_WRAPPED;
             }
             adj++;
@@ -861,18 +861,18 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
     case HLL_LINE_STYLE_HLL_03:
     case HLL_LINE_STYLE_HLL_04:
         while( adj > 0 ) {
-            dst_imp_cueh->cur_line++;
-            if( dst_imp_cueh->cur_line > dst_imp_cueh->u.hll.last ) {
-                dst_imp_cueh->cur_line = dst_imp_cueh->u.hll.first;
+            dst_icueh->cur_line++;
+            if( dst_icueh->cur_line > dst_icueh->u.hll.last ) {
+                dst_icueh->cur_line = dst_icueh->u.hll.first;
                 rc = DS_WRAPPED;
             }
             adj--;
         }
         while( adj < 0 ) {
-            if( dst_imp_cueh->cur_line > dst_imp_cueh->u.hll.first ) {
-                dst_imp_cueh->cur_line--;
+            if( dst_icueh->cur_line > dst_icueh->u.hll.first ) {
+                dst_icueh->cur_line--;
             } else {
-                dst_imp_cueh->cur_line = dst_imp_cueh->u.hll.last;
+                dst_icueh->cur_line = dst_icueh->u.hll.last;
                 rc = DS_WRAPPED;
             }
             adj++;
@@ -880,7 +880,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
         break;
     }
 
-    HLL_LOG(( " -> %d (%ld)\n", rc, (long)dst_imp_cueh->cur_line ));
+    HLL_LOG(( " -> %d (%ld)\n", rc, (long)dst_icueh->cur_line ));
     return( rc );
 }
 
@@ -888,7 +888,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
 typedef struct {
     cue_fileid      file;               /* The file we're looking for. */
     unsigned_16     line;               /* The line we're looking for. */
-    imp_cue_handle  best_imp_cueh;         /* The best cue so far. */
+    imp_cue_handle  best_icueh;         /* The best cue so far. */
     search_result   rc;                 /* The search result. */
 } hll_find_line_cue_in_file;
 
@@ -896,7 +896,7 @@ typedef struct {
 /*
  * Search a file for a line number in a file.
  */
-static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *imp_cueh, void *_state )
+static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *icueh, void *_state )
 {
     hll_find_line_cue_in_file  *state = _state;
     unsigned_16                 entry_size;
@@ -909,7 +909,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
     /*
      * Does the file id match?
      */
-    if( imp_cueh->file != state->file && state->file != 0 ) {
+    if( icueh->file != state->file && state->file != 0 ) {
         return( WR_CONTINUE );
     }
 
@@ -917,7 +917,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
      * Simple first line query?
      */
     if( state->line == 0 ) {
-        state->best_imp_cueh = *imp_cueh;
+        state->best_icueh = *icueh;
         state->rc = SR_EXACT;
         return( WR_STOP );
     }
@@ -928,18 +928,18 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
      * We exploit the fact that all the linnum entry structs starts with
      * the a 16-bit linenumber member.
      */
-    entries = hllGetSortedLinnums( iih, imp_cueh );
+    entries = hllGetSortedLinnums( iih, icueh );
     if( !entries ) {
         return( WR_FAIL );
     }
 
-    entry_size = hllLinnumSize( imp_cueh );
-    if( imp_cueh->style >= HLL_LINE_STYLE_HLL_01 ) {
-        start = imp_cueh->u.hll.first;
-        last = imp_cueh->u.hll.last;
+    entry_size = hllLinnumSize( icueh );
+    if( icueh->style >= HLL_LINE_STYLE_HLL_01 ) {
+        start = icueh->u.hll.first;
+        last = icueh->u.hll.last;
     } else {
         start = 0;
-        last = imp_cueh->num_lines - 1;
+        last = icueh->num_lines - 1;
     }
     for( ;; ) {
         i = start + ((last - start) / 2);
@@ -962,12 +962,12 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
      * is 100% exact, and mainly because there can be multiplentries for the same line.
      * We always return the first cue for a line, even if the match isn't exact.
      */
-    if( imp_cueh->style >= HLL_LINE_STYLE_HLL_01 ) {
-        start = imp_cueh->u.hll.first;
-        last = imp_cueh->u.hll.last;
+    if( icueh->style >= HLL_LINE_STYLE_HLL_01 ) {
+        start = icueh->u.hll.first;
+        last = icueh->u.hll.last;
     } else {
         start = 0;
-        last = imp_cueh->num_lines - 1;
+        last = icueh->num_lines - 1;
     }
 
     while( i < last ) {
@@ -992,8 +992,8 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
     /* Set the return values on success. */
     if( *line_num <= state->line ) {
         state->rc = *line_num == state->line ? SR_EXACT : SR_CLOSEST;
-        state->best_imp_cueh = *imp_cueh;
-        state->best_imp_cueh.cur_line = i;
+        state->best_icueh = *icueh;
+        state->best_icueh.cur_line = i;
     }
     return( WR_STOP );
 }
@@ -1007,16 +1007,16 @@ static walk_result hllFindLineCueInFile( imp_image_handle *iih, imp_cue_handle *
  * If 'column' is zero, use the first column with a source cue
  * in the given line.
  *
- * Fill in the '*imp_cueh' handle with the result. If there was a cue at
+ * Fill in the '*icueh' handle with the result. If there was a cue at
  * exactly the file/line/column specified return SR_EXACT. If there
  * are cues with in the file with a line/column less than the given
  * values, return the largest cue possible that is less then the
  * passed in values and return SR_CLOSEST. If there are no cues with
  * the proper characteristics, return SR_NONE
  */
-search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle im,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle imh,
                                       cue_fileid file, unsigned long line,
-                                      unsigned column, imp_cue_handle *imp_cueh )
+                                      unsigned column, imp_cue_handle *icueh )
 {
     /* unused parameters */ (void)column;
 
@@ -1034,14 +1034,14 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle im,
 //    if( state.line > UINT16_MAX )
 //        state.line = UINT16_MAX;
     state.rc   = SR_NONE;
-    walk_rc = DIPImpWalkFileList( iih, im, hllFindLineCueInFile, imp_cueh, &state );
+    walk_rc = DIPImpWalkFileList( iih, imh, hllFindLineCueInFile, icueh, &state );
     HLL_LOG(( "DIPImpLineCue: mod=%x file=%lx line=%lx -> %d (%lx)\n",
-              im, file, line, state.rc, state.best_imp_cueh.cur_line ));
+              imh, file, line, state.rc, state.best_icueh.cur_line ));
     if( walk_rc == WR_FAIL) {
         return( SR_FAIL );
     }
     if( state.rc != SR_NONE ) {
-        *imp_cueh = state.best_imp_cueh;
+        *icueh = state.best_icueh;
     }
     return( state.rc );
 }
@@ -1051,14 +1051,14 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle im,
 typedef struct {
     address         addr;                   /* what we're looking for. */
     unsigned_32     best_delta;             /* The delta between addr and the best cue. */
-    imp_cue_handle  best_imp_cueh;             /* The best cue so far. */
+    imp_cue_handle  best_icueh;             /* The best cue so far. */
 } hll_find_addr_cue_in_file;
 
 
 /*
  * Search a file for the line number closes to a given address.
  */
-static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *imp_cueh, void *_state )
+static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *icueh, void *_state )
 {
     hll_find_addr_cue_in_file  *state = _state;
     void                       *entries;
@@ -1069,14 +1069,14 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
     /*
      * Check if this segment is the right one, and get the mapping offset of the segment.
      */
-    addr.mach.segment = imp_cueh->segment;
+    addr.mach.segment = icueh->segment;
     hllMapLogical( iih, &addr );
     if( addr.mach.segment != state->addr.mach.segment ) {
         return( WR_CONTINUE );
     }
     /* logical mapping offset. */
-    if( imp_cueh->segment <= iih->seg_count ) {
-        map_offset = iih->segments[imp_cueh->segment - 1].map.offset;
+    if( icueh->segment <= iih->seg_count ) {
+        map_offset = iih->segments[icueh->segment - 1].map.offset;
     } else {
         map_offset = 0;
     }
@@ -1084,12 +1084,12 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
     /*
      * Traverse the line numbers.
      */
-    entries = hllGetSortedLinnums( iih, imp_cueh );
+    entries = hllGetSortedLinnums( iih, icueh );
     if( !entries ) {
         return( WR_FAIL );
     }
-    i = imp_cueh->num_lines;
-    switch( imp_cueh->style ) {
+    i = icueh->num_lines;
+    switch( icueh->style ) {
     case HLL_LINE_STYLE_SRC_LINES:
     case HLL_LINE_STYLE_SRC_LINES_SEG_16:
         {
@@ -1099,8 +1099,8 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
                     unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
                     if( state->best_delta >= delta ) {
                         state->best_delta = delta;
-                        state->best_imp_cueh = *imp_cueh;
-                        state->best_imp_cueh.cur_line = i;
+                        state->best_icueh = *icueh;
+                        state->best_icueh.cur_line = i;
                         if( delta == 0 ) {
                             return( WR_STOP );
                         }
@@ -1118,8 +1118,8 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
                     unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
                     if( state->best_delta >= delta ) {
                         state->best_delta = delta;
-                        state->best_imp_cueh = *imp_cueh;
-                        state->best_imp_cueh.cur_line = i;
+                        state->best_icueh = *icueh;
+                        state->best_icueh.cur_line = i;
                         if( delta == 0 ) {
                             return( WR_STOP );
                         }
@@ -1142,14 +1142,14 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
     case HLL_LINE_STYLE_HLL_04:
         {
             hl1_linnum_entry *linnum = entries;
-            map_offset += imp_cueh->u.hll.base_offset;
+            map_offset += icueh->u.hll.base_offset;
             while( i-- > 0 ) {
                 if( state->addr.mach.offset >= ( linnum[i].offset + map_offset ) ) {
                     unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
                     if( state->best_delta >= delta ) {
                         state->best_delta = delta;
-                        state->best_imp_cueh = *imp_cueh;
-                        state->best_imp_cueh.cur_line = i;
+                        state->best_icueh = *icueh;
+                        state->best_icueh.cur_line = i;
                         if( delta == 0 ) {
                             return( WR_STOP );
                         }
@@ -1169,8 +1169,8 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *iih, imp_cue_handle *
  * return SR_NONE. If there is one exactly at the address return
  * SR_EXACT. Otherwise, return SR_CLOSEST.
  */
-search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
-                                      address addr, imp_cue_handle *imp_cueh )
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle imh,
+                                      address addr, imp_cue_handle *icueh )
 {
     /*
      * It's likely that the line number information of a module, at least HLL,
@@ -1188,10 +1188,10 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
     hll_find_addr_cue_in_file   state = {0};
     state.addr = addr;
     state.best_delta = INT32_MAX;
-    walk_rc = DIPImpWalkFileList( iih, im, hllFindAddrCueInFile, imp_cueh, &state );
+    walk_rc = DIPImpWalkFileList( iih, imh, hllFindAddrCueInFile, icueh, &state );
     if( walk_rc != WR_FAIL) {
         if( state.best_delta != INT32_MAX ) {
-            *imp_cueh = state.best_imp_cueh;
+            *icueh = state.best_icueh;
             rc = walk_rc == WR_STOP ? SR_EXACT : SR_CLOSEST;
         } else {
             rc = SR_NONE;
@@ -1200,7 +1200,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
         rc = SR_FAIL;
     }
     HLL_LOG(( "DIPImpAddrCue: mod=%x addr=%04x:%08lx -> %d (%lx)\n",
-              im, addr.mach.segment, (long)addr.mach.offset, rc, state.best_imp_cueh.cur_line ));
+              imh, addr.mach.segment, (long)addr.mach.offset, rc, state.best_icueh.cur_line ));
     return( rc );
 }
 
@@ -1215,20 +1215,20 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle im,
  * The reason for the constraints is so that a client can sort a list of handles
  * and binary search them.
  */
-int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *imp_cueh1, imp_cue_handle *imp_cueh2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )
 {
     iih = iih;
-    if( imp_cueh1->im < imp_cueh2->im )
+    if( icueh1->imh < icueh2->imh )
         return( -1 );
-    if( imp_cueh1->im > imp_cueh2->im )
+    if( icueh1->imh > icueh2->imh )
         return( 1 );
-    if( imp_cueh1->lines < imp_cueh2->lines )
+    if( icueh1->lines < icueh2->lines )
         return( -1 );
-    if( imp_cueh1->lines > imp_cueh2->lines )
+    if( icueh1->lines > icueh2->lines )
         return( 1 );
-    if( imp_cueh1->cur_line < imp_cueh2->cur_line )
+    if( icueh1->cur_line < icueh2->cur_line )
         return( -1 );
-    if( imp_cueh1->cur_line > imp_cueh2->cur_line )
+    if( icueh1->cur_line > icueh2->cur_line )
         return( 1 );
     return( 0 );
 }

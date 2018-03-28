@@ -35,7 +35,7 @@
 struct find_mod {
     DIP_IMP_MOD_WALKER  *wk;
     void                *d;
-    imp_mod_handle      im;
+    imp_mod_handle      imh;
 };
 
 static walk_result FindMods( imp_image_handle *iih, cv_directory_entry *cde, void *d )
@@ -67,7 +67,7 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
 #define GBL_NAME "__global"
 
 size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
-                        imp_mod_handle im, char *buff, size_t buff_size )
+                        imp_mod_handle imh, char *buff, size_t buff_size )
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;
@@ -76,10 +76,10 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     const char          *end;
     unsigned            len;
 
-    if( im == IMH_GBL ) {
+    if( imh == IMH_GBL ) {
         return( NameCopy( buff, GBL_NAME, buff_size, sizeof( GBL_NAME ) - 1 ) );
     }
-    cde = FindDirEntry( iih, im, sstModule );
+    cde = FindDirEntry( iih, imh, sstModule );
 
     mp = VMBlock( iih, cde->lfo, cde->cb );
     if( mp == NULL ) return( 0 );
@@ -101,14 +101,14 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( NameCopy( buff, start, buff_size, end - start ) );
 }
 
-cs_compile *GetCompInfo( imp_image_handle *iih, imp_mod_handle im )
+cs_compile *GetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
 {
     cv_directory_entry  *cde;
     virt_mem            vm;
     s_compile           *rec;
     long                left;
 
-    cde = FindDirEntry( iih, im, sstAlignSym );
+    cde = FindDirEntry( iih, imh, sstAlignSym );
     if( cde == NULL )
         return( NULL );
     vm = cde->lfo + sizeof( unsigned_32 );
@@ -122,11 +122,11 @@ cs_compile *GetCompInfo( imp_image_handle *iih, imp_mod_handle im )
     }
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     cs_compile  *comp_info;
 
-    comp_info = GetCompInfo( iih, im );
+    comp_info = GetCompInfo( iih, imh );
     if( comp_info != NULL ) {
         switch( comp_info->language ) {
         case LANG_C:
@@ -140,7 +140,7 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle im )
     return( "c" );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
     static const unsigned DmndType[MAX_HK] = {
         0,
@@ -154,7 +154,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle im, han
     type = DmndType[hk];
     if( type == 0 )
         return( DS_FAIL );
-    cde = FindDirEntry( iih, im, type );
+    cde = FindDirEntry( iih, imh, type );
     if( cde == NULL )
         return( DS_FAIL );
     if( cde->cb == 0 )
@@ -186,7 +186,7 @@ static walk_result FindAddr( imp_image_handle *iih, cv_directory_entry *cde, voi
         if( code.mach.segment == a->mach.segment &&
             code.mach.offset <= a->mach.offset &&
             (code.mach.offset+sp->cbSeg) > a->mach.offset ) {
-            md->im = cde->iMod;
+            md->imh = cde->iMod;
             return( WR_STOP );
         }
         ++sp;
@@ -194,7 +194,7 @@ static walk_result FindAddr( imp_image_handle *iih, cv_directory_entry *cde, voi
     }
 }
 
-search_result ImpAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
+search_result ImpAddrMod( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
     int                 left;
     seg_desc            *map;
@@ -218,28 +218,28 @@ search_result ImpAddrMod( imp_image_handle *iih, address a, imp_mod_handle *im )
         sections and look at the code section information. If it's a
         data segment, or we can't find it, return IMH_GBL.
     */
-    *im = IMH_GBL;
+    *imh = IMH_GBL;
     if( map->u.b.fExecute ) {
         d.d = &a;
         if( WalkDirList( iih, FindAddr, &d ) == WR_STOP ) {
-            *im = d.im;
+            *imh = d.imh;
         }
     }
     return( SR_CLOSEST );
 }
 
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *iih, address a, imp_mod_handle *imh )
 {
-    return( ImpAddrMod( iih, a, im ) );
+    return( ImpAddrMod( iih, a, imh ) );
 }
 
-address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 {
     cv_sst_module       *mp;
     cv_directory_entry  *cde;
     address             addr;
 
-    cde = FindDirEntry( iih, im, sstModule );
+    cde = FindDirEntry( iih, imh, sstModule );
     if( cde == NULL ) return( NilAddr );
     mp = VMBlock( iih, cde->lfo, cde->cb );
     if( mp == NULL ) return( NilAddr );
@@ -251,11 +251,11 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle im )
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle im, default_kind dk, dip_type_info *ti )
+                imp_mod_handle imh, default_kind dk, dip_type_info *ti )
 {
     cs_compile  *comp_info;
 
-    comp_info = GetCompInfo( iih, im );
+    comp_info = GetCompInfo( iih, imh );
     if( comp_info == NULL )
         return( DS_FAIL );
     ti->kind = TK_POINTER;

@@ -36,7 +36,7 @@
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
+                    imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
                     void *d )
 {
     ith->sig = iih->cc + offsetof( ClassClass, name );
@@ -146,7 +146,7 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }
@@ -213,7 +213,7 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }
@@ -249,7 +249,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
         location_list   ll;
         dip_status      ds;
 
-        ds = ImpSymLocation( iih, &ith->u.is, lc, &ll, &ith->u.object );
+        ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
         if( ds != DS_OK ) return( ds );
         ith->kind = JT_SIGNATURE;
     }

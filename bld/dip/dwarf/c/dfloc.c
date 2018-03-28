@@ -780,20 +780,20 @@ static bool IsEntry( imp_image_handle *iih, location_context *lc ) {
     addrsym_info    info;
     dip_status      ret;
     seg_list        *addr_sym;
-    imp_mod_handle  im;
+    imp_mod_handle  imh;
 
 // Get execution location
     ret = SafeDCItemLocation( lc, CI_EXECUTION, &ll );
     if( ret != DS_OK ) {
         return( false );
     }
-    if( DFAddrMod( iih, ll.e[0].u.addr, &im ) == SR_NONE ) {
+    if( DFAddrMod( iih, ll.e[0].u.addr, &imh ) == SR_NONE ) {
         return( false );
     }
     if( !Real2Map( iih->addr_map, &ll.e[0].u.addr ) ) {
         return( false );
     }
-    addr_sym = DFLoadAddrSym( iih, im );
+    addr_sym = DFLoadAddrSym( iih, imh );
     if( FindAddrSym( addr_sym, &ll.e[0].u.addr.mach, &info ) >= 0 ) {
         if( info.map_offset == ll.e[0].u.addr.mach.offset ) {
             return( true );
