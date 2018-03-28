@@ -108,7 +108,9 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             } else {
                 *ish = fill in symbol handle information;
                 wr = wk( iih, SWI_SYMBOL, ish, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE ) {
+                    return( wr );
+                }
             }
         }
     */

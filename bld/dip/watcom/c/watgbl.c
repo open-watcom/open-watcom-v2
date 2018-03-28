@@ -435,8 +435,8 @@ static dip_status DoMakeGblLst( imp_image_handle *iih, info_block *inf, unsigned
     }
     link_data = DCAlloc( sizeof( gbl_link_info ) + ( num_syms - 1 ) * sizeof( gbl_link ) );
     if( link_data == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     inf->link = link_data;
     link_data->end = link_data->link + num_syms;

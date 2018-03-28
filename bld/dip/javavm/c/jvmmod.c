@@ -65,7 +65,9 @@ search_result FindMBIndex( imp_image_handle *iih, addr_off off, unsigned *idx )
                 i = 0;
                 mb = iih->methods;
             }
-            if( i == iih->last_method ) break;
+            if( i == iih->last_method ) {
+                break;
+            }
         }
     }
     *idx = (unsigned)-1;

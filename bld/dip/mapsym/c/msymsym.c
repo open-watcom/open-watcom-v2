@@ -87,7 +87,8 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
 {
     /* unused parameters */ (void)iih; (void)lc;
 
-    if( sn == SN_DEMANGLED ) return( 0 );
+    if( sn == SN_DEMANGLED )
+        return( 0 );
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > ish->p->len )
@@ -188,18 +189,18 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
     /* unused parameters */ (void)imh;
 
     ish->p = NULL;
-    s = iih->gbl;
-    for( ;; ) {
-        if( s == NULL ) break;
+    for( s = iih->gbl; s != NULL; s = s->next ) {
         if( SameAddrSpace( s->addr, a.mach ) && s->addr.offset <= a.mach.offset ) {
               if( ish->p == NULL || ish->p->addr.offset < s->addr.offset ) {
                   ish->p = s;
               }
-              if( ish->p->addr.offset == a.mach.offset ) return( SR_EXACT );
+              if( ish->p->addr.offset == a.mach.offset ) {
+                  return( SR_EXACT );
+              }
         }
-        s = s->next;
     }
-    if( ish->p != NULL ) return( SR_CLOSEST );
+    if( ish->p != NULL )
+        return( SR_CLOSEST );
     return( SR_NONE );
 }
 
@@ -220,8 +221,10 @@ static search_result DoLookupSym( imp_image_handle *iih,
     default:
         return( SR_NONE );
     }
-    if( li->type != ST_NONE ) return( SR_NONE );
-    if( li->scope.start != NULL ) return( SR_NONE );
+    if( li->type != ST_NONE )
+        return( SR_NONE );
+    if( li->scope.start != NULL )
+        return( SR_NONE );
     if( li->case_sensitive ) {
         cmp = memcmp;
     } else {

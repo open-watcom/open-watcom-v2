@@ -213,11 +213,11 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
     hde = hllFindDirEntry( iih, imh, hll_sstSrcLines );
     if( hde ) {
         /*
-         *  while (more data) {
+         *  while( more data ) {
          *      +0      DB  filename len
          *      +1..n   DB  filename
          *      n       DW  number of entries
-         *      while (more entries) {
+         *      while( more entries ) {
          *          n + 2   DW  line number
          *          n + 4   DW  code offset
          *      }
@@ -265,13 +265,13 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
     hde = hllFindDirEntry( iih, imh, hll_sstSrcLnSeg );
     if( hde ) {
         /*
-         * while (more data) {
+         * while( more data ) {
          *      +0      DB  filename len
          *      +1..n   DB  filename
          *      n       DW  segment index
          *      n + 2   DW  number of entries
-         *      while (more entries) {
-         *          if (32-bit) {
+         *      while( more entries ) {
+         *          if( 32-bit ) {
          *              n + 2   DW  line number
          *              n + 4   DD  code offset
          *          } else {
@@ -408,7 +408,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
          */
         case HLL_STYLE_HL02:
             icueh->style  = HLL_LINE_STYLE_HLL_02;
-            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
+            while( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 hl2_linnum_first   *first;
                 hl1_filetab_hdr    *hdr;
                 unsigned_32         pos_next;
@@ -433,7 +433,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                     icueh->num_lines = first->num_line_entries;
                 }
 
-                if ( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
+                if( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
                     icueh->file = icueh->lines
                              + icueh->num_lines * sizeof( hl1_linnum_entry );
                     end_files = icueh->file + first->file_tab_size;
@@ -458,7 +458,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
              */
         case HLL_STYLE_HL03:
             icueh->style  = HLL_LINE_STYLE_HLL_03;
-            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
+            while( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 hl2_linnum_first   *first;
                 hl1_filetab_hdr    *hdr;
                 unsigned_32         pos_next;
@@ -483,7 +483,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                     icueh->num_lines = first->num_line_entries;
                 }
 
-                if ( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
+                if( first->file_tab_size > sizeof( hl1_filetab_hdr ) ) {
                     icueh->file = pos + sizeof( *first )
                              + icueh->num_lines * sizeof( hl3_linnum_entry );
                     end_files = icueh->file + first->file_tab_size;
@@ -513,7 +513,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
         case HLL_STYLE_HL05:
         case HLL_STYLE_HL06:
             icueh->style  = HLL_LINE_STYLE_HLL_04;
-            while ( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
+            while( pos < hde->cb && ( !icueh->lines || !icueh->file ) ) {
                 union {
                     hl4_linnum_first_core   core;
                     hl4_linnum_first_files  files;
@@ -535,7 +535,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
                     icueh->u.hll.base_offset = first->lines.base_offset;
                     if( icueh->segment
                      && iih->seg_count > icueh->segment
-                     && icueh->u.hll.base_offset >= iih->segments[icueh->segment-1].address ){
+                     && icueh->u.hll.base_offset >= iih->segments[icueh->segment-1].address ) {
                         icueh->u.hll.base_offset -= iih->segments[icueh->segment-1].address;
                     }
                     pos_next = pos
@@ -627,7 +627,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
             }
 
             /* next file name */
-            if (!VMSsGetU8( iih, hde, pos, &file_len )) {
+            if( !VMSsGetU8( iih, hde, pos, &file_len ) ) {
                 return( WR_FAIL );
             }
             pos += 1 + file_len;

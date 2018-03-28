@@ -51,7 +51,7 @@ dip_status SymFillIn( imp_image_handle *iih, imp_sym_handle *ish, virt_mem h )
     ish->mfunc_idx = 0;
     ref = VMBlock( iih, h, sizeof( ref->procref ) );
     if( ref == NULL )
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     if( ref->common.code == S_ALIGN ) {
         h += ref->common.length + sizeof( ref->common.length );
         ref = VMBlock( iih, h, sizeof( ref->procref ) );
@@ -62,11 +62,11 @@ dip_status SymFillIn( imp_image_handle *iih, imp_sym_handle *ish, virt_mem h )
         ish->imh = ref->procref.f.module;
         cde = FindDirEntry( iih, ish->imh, sstAlignSym );
         if( cde == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         h = ref->procref.f.offset + cde->lfo;
         ref = VMBlock( iih, h, sizeof( s_common ) );
         if( ref == NULL ) {
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         }
     }
     ish->handle = h;
@@ -169,11 +169,14 @@ static dip_status SymGetName( imp_image_handle *iih, imp_sym_handle *ish,
     return( DS_OK );
 }
 
+#define DEFTYPE( t ) \
+    if( idx == 0 ) \
+        idx = t;
+
 static unsigned SymTypeIdx( imp_image_handle *iih, s_all *p )
 {
     unsigned    idx;
 
-#define DEFTYPE( t ) if( idx == 0 ) idx = t;
     switch( p->common.code ) {
     case S_REGISTER:
         idx = p->register_.f.type;
@@ -431,7 +434,7 @@ static dip_status ScopeFillIn( imp_image_handle *iih, virt_mem chk,
     if( pp != NULL )
         *pp = p;
     if( p == NULL )
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     scope->code = p->common.code;
     scope->scope = chk;
     scope->next = 0;
@@ -529,7 +532,7 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
             return( DS_FAIL );
         p = VMBlock( iih, chk, sizeof( s_ssearch ) );
         if( p == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         if( p->common.code == S_SSEARCH ) {
             scope->start.mach.segment = p->ssearch.f.segment;
             scope->start.mach.offset  = 0;
@@ -546,7 +549,7 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
     for( ;; ) {
         ds = ScopeFillIn( iih, chk, scope, NULL );
         if( ds != DS_OK )
-            return( DS_ERR|ds );
+            return( DS_ERR | ds );
         if( addr.mach.offset >= scope->start.mach.offset
           && addr.mach.offset < (scope->start.mach.offset + scope->len) ) {
             break;
@@ -582,7 +585,7 @@ static dip_status ScopeFindFirst( imp_image_handle *iih, imp_mod_handle imh,
         }
         p = VMBlock( iih, chk, sizeof( p->common ) );
         if( p == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         chk += p->common.length + sizeof( p->common.length );
     }
 }
@@ -1008,14 +1011,14 @@ dip_status SymFindMatchingSym( imp_image_handle *iih, const char *name, size_t n
     sr = TableSearchForName( iih, 1, name, name_len, hash, ish, MatchSym, &data, sstStaticSym );
     switch( sr ) {
     case SR_FAIL:
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     case SR_EXACT:
         return( DS_OK );
     }
     sr = TableSearchForName( iih, 1, name, name_len, hash, ish, MatchSym, &data, sstGlobalSym );
     switch( sr ) {
     case SR_FAIL:
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     case SR_EXACT:
         return( DS_OK );
     }
@@ -1447,7 +1450,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
         type = p->lproc32.f.proctype;
         break;
     default:
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     }
     ds = TypeCallInfo( iih, type, &call, &parm_count );
     if( ds != DS_OK )
@@ -1458,7 +1461,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
         /* return value */
         p = VMRecord( iih, ish->handle + ish->len );
         if( p == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         /* WARNING: assuming that S_RETURN directly follows func defn */
         if( p->common.code == S_RETURN ) {
             switch( p->return_.f.style ) {
@@ -1475,7 +1478,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
                 NYI();
                 break;
             }
-            return( DS_ERR|DS_BAD_LOCATION );
+            return( DS_ERR | DS_BAD_LOCATION );
         }
         /* find out about return type */
         ds = TypeIndexFillIn( iih, type, &ith );
@@ -1515,7 +1518,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
             case MAD_AXP:
                  return( LocationOneReg( iih, CV_AXP_r0, lc, ll ) );
             }
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         case TK_REAL:
             switch( iih->mad ) {
             case MAD_X86:
@@ -1523,20 +1526,20 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
             case MAD_AXP:
                 return( LocationOneReg( iih, CV_AXP_f0, lc, ll ) );
             }
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         case TK_COMPLEX:
             switch( iih->mad ) {
             case MAD_X86:
                 return( LocationManyReg( iih, sizeof( ST1ST0List ), ST1ST0List, lc, ll ) );
             }
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         case TK_STRUCT:
         case TK_ARRAY:
             //NYI: have to handle these suckers
             NYI();
             break;
         }
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     }
     switch( call ) {
     case CV_NEARC:
@@ -1559,7 +1562,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
         NYI();
         break;
     }
-    return( DS_ERR|DS_NO_PARM );
+    return( DS_ERR | DS_NO_PARM );
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
@@ -1612,7 +1615,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     for( ;; ) {
         p = VMRecord( iih, check );
         if( p == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         next = check + p->common.length + sizeof( p->common.length );
         switch( p->common.code ) {
         case S_END:

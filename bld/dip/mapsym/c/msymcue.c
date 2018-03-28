@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,12 +70,11 @@ cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icue
     return( 0 );
 }
 
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
-                imp_cue_handle *src, int adj, imp_cue_handle *dst )
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
     /* unused parameters */ (void)iih; (void)src; (void)adj; (void)dst;
 
-    return( DS_ERR|DS_FAIL );
+    return( DS_ERR | DS_FAIL );
 }
 
 unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icueh )

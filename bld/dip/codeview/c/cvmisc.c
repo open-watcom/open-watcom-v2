@@ -122,14 +122,18 @@ walk_result WalkDirList( imp_image_handle *iih, DIP_DIR_WALKER *wk, void *d )
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
             p = &iih->directory[block][i];
             wr = wk( iih, p, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     }
     remainder = iih->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
         p = &iih->directory[block][i];
         wr = wk( iih, p, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -169,8 +173,8 @@ const void *GetNumLeaf( const void *p, numeric_leaf *v )
         v->int_val = key;
     } else {
         v->valp = (const unsigned_8 *)p + sizeof( unsigned_16 );
-        v->size = LeafInfo[ key - LF_NUMERIC ].size;
-        v->k = LeafInfo[ key - LF_NUMERIC ].k;
+        v->size = LeafInfo[key - LF_NUMERIC].size;
+        v->k = LeafInfo[key - LF_NUMERIC].k;
         switch( key ) {
         case LF_CHAR:
             v->int_val = *(signed_8 *)v->valp;
@@ -195,8 +199,7 @@ const void *GetNumLeaf( const void *p, numeric_leaf *v )
 }
 
 
-dip_status DoIndirection( imp_image_handle *iih, dip_type_info *ti,
-                        location_context *lc, location_list *ll )
+dip_status DoIndirection( imp_image_handle *iih, dip_type_info *ti, location_context *lc, location_list *ll )
 {
     union {
         unsigned_8      u8;
@@ -214,9 +217,11 @@ dip_status DoIndirection( imp_image_handle *iih, dip_type_info *ti,
 
     LocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, ll, ti->size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     if( ti->modifier == TM_NEAR ) {
         if( ti->size == sizeof( addr32_off ) ) {
             ll->e[0].u.addr.mach.offset = tmp.ao32;

@@ -179,7 +179,7 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
         ByteSwapShdr( &elf_sec, *byteswap );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
-        if ( sect < DR_DEBUG_NUM_SECTS ){
+        if( sect < DR_DEBUG_NUM_SECTS ) {
             bases[sect] = elf_sec.sh_offset + start;
             sizes[sect] = elf_sec.sh_size;
         }
@@ -252,10 +252,10 @@ static void DWRErr( dr_except code )
         DCStatus( DS_ERR | DS_NO_READ_MEM );
         break;
     case DREXCEP_BAD_DBG_VERSION:
-        DCStatus( DS_ERR |DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         break;
     case DREXCEP_BAD_DBG_INFO:
-        DCStatus( DS_ERR |DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
         break;
     case DREXCEP_OUT_OF_MMEM:        // DWRMALLOC or DWRREALLOC failed
         DCStatus( DS_ERR | DS_NO_MEM );

@@ -79,7 +79,8 @@ void LocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {
@@ -194,24 +195,24 @@ dip_status LocationManyReg( imp_image_handle *iih,
             } else if( idx >= CV_X86_ST0 && idx <= CV_X86_STATUS ) {
                 reg = &X86_FPURegTable[idx-CV_X86_ST0];
             } else {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             break;
         case MAD_AXP:
             if( !(idx >= CV_AXP_f0 && idx <= CV_AXP_fltfsr) ) {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             reg = &AXP_RegTable[idx-CV_AXP_f0];
             if( reg->ci == CI_LAST ) {
-                DCStatus( DS_ERR|DS_FAIL );
-                return( DS_ERR|DS_FAIL );
+                DCStatus( DS_ERR | DS_FAIL );
+                return( DS_ERR | DS_FAIL );
             }
             break;
         default:
-            DCStatus( DS_ERR|DS_FAIL );
-            return( DS_ERR|DS_FAIL );
+            DCStatus( DS_ERR | DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         }
         ds = DCItemLocation( lc, reg->ci, &reg_ll );
         if( ds != DS_OK ) {

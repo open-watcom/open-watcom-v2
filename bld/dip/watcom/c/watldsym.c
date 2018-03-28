@@ -103,15 +103,15 @@ static dip_status GetBlockInfo( imp_image_handle *iih, section_info *new, unsign
             block_size = size;
         curr = DCAlloc( sizeof( info_block ) - 1 + block_size );
         if( curr == NULL ) {
-            DCStatus( DS_ERR|DS_NO_MEM );
-            return( DS_ERR|DS_NO_MEM );
+            DCStatus( DS_ERR | DS_NO_MEM );
+            return( DS_ERR | DS_NO_MEM );
         }
         *owner = curr;
         curr->size = block_size;
         curr->next = NULL;
         curr->link = NULL;
         if( InfoRead( iih->sym_fp, off, block_size, curr->info ) != DS_OK )
-            return( DS_ERR|DS_INFO_INVALID );
+            return( DS_ERR | DS_INFO_INVALID );
         if( block_size == size )
             return( DS_OK );
         split_size = split( iih, curr, new );
@@ -135,23 +135,23 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
     *count = 0;
     while( curr < end ) {
         if( DCRead( fp, &header, sizeof( header ) ) != sizeof( header ) ) {
-            DCStatus( DS_ERR|DS_INFO_INVALID );
-            return( DS_ERR|DS_INFO_INVALID );
+            DCStatus( DS_ERR | DS_INFO_INVALID );
+            return( DS_ERR | DS_INFO_INVALID );
         }
         /* if there are no modules in the section, it's a 'placekeeper' section
             for the linker overlay structure -- just ignore it */
         if( header.mod_offset != header.gbl_offset ) {
             if( header.mod_offset > header.gbl_offset ) {
-                DCStatus( DS_ERR|DS_INFO_INVALID );
-                return( DS_ERR|DS_INFO_INVALID );
+                DCStatus( DS_ERR | DS_INFO_INVALID );
+                return( DS_ERR | DS_INFO_INVALID );
             }
             if( header.gbl_offset > header.addr_offset ) {
-                DCStatus( DS_ERR|DS_INFO_INVALID );
-                return( DS_ERR|DS_INFO_INVALID );
+                DCStatus( DS_ERR | DS_INFO_INVALID );
+                return( DS_ERR | DS_INFO_INVALID );
             }
             if( header.addr_offset >= header.section_size ) {
-                DCStatus( DS_ERR|DS_INFO_INVALID );
-                return( DS_ERR|DS_INFO_INVALID );
+                DCStatus( DS_ERR | DS_INFO_INVALID );
+                return( DS_ERR | DS_INFO_INVALID );
             }
         }
         (*count)++;
@@ -159,8 +159,8 @@ static dip_status GetNumSect( FILE *fp, unsigned long curr, unsigned long end, u
         DCSeek( fp, curr, DIG_ORG );
     }
     if( curr > end ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     return( DS_OK );
 }
@@ -215,8 +215,8 @@ static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
         iih->num_sects++;
         pos += header.section_size;
         if( DCSeek( iih->sym_fp, pos, DIG_ORG ) ) {
-            DCStatus( DS_ERR|DS_INFO_INVALID );
-            return( DS_ERR|DS_INFO_INVALID );
+            DCStatus( DS_ERR | DS_INFO_INVALID );
+            return( DS_ERR | DS_INFO_INVALID );
         }
     }
     return( DS_OK );
@@ -244,8 +244,8 @@ static dip_status DoPermInfo( imp_image_handle *iih )
             || header.signature == FOX_SIGNATURE2
             || header.signature == WAT_RES_SIG ) {
         if( header.debug_size > end ) {
-            DCStatus( DS_ERR|DS_INFO_INVALID );
-            return( DS_ERR|DS_INFO_INVALID );
+            DCStatus( DS_ERR | DS_INFO_INVALID );
+            return( DS_ERR | DS_INFO_INVALID );
         }
         end -= header.debug_size;
         DCSeek( iih->sym_fp, end, DIG_ORG );
@@ -261,24 +261,24 @@ static dip_status DoPermInfo( imp_image_handle *iih )
         v2 = true;
         break;
     default:
-        DCStatus( DS_ERR|DS_INFO_BAD_VERSION );
-        return( DS_ERR|DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
+        return( DS_ERR | DS_INFO_BAD_VERSION );
     }
     if( header.exe_minor_ver > EXE_MINOR_VERSION ) {
-        DCStatus( DS_ERR|DS_INFO_BAD_VERSION );
-        return( DS_ERR|DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
+        return( DS_ERR | DS_INFO_BAD_VERSION );
     }
     if( header.obj_major_ver != OBJ_MAJOR_VERSION ) {
-        DCStatus( DS_ERR|DS_INFO_BAD_VERSION );
-        return( DS_ERR|DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
+        return( DS_ERR | DS_INFO_BAD_VERSION );
     }
     if( header.obj_minor_ver > OBJ_MINOR_VERSION ) {
-        DCStatus( DS_ERR|DS_INFO_BAD_VERSION );
-        return( DS_ERR|DS_INFO_BAD_VERSION );
+        DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
+        return( DS_ERR | DS_INFO_BAD_VERSION );
     }
     if( ( end + sizeof( header ) ) < header.debug_size ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     num_segs = header.segment_size / sizeof( addr_seg );
     DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_CUR );
@@ -290,8 +290,8 @@ static dip_status DoPermInfo( imp_image_handle *iih )
                 + num_segs * ( sizeof( addr_seg ) + sizeof( addr_ptr ) )
                 + num_sects * sizeof( section_info ) );
     if( new == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     iih->v2 = v2;
     iih->lang = new;
@@ -302,12 +302,12 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     iih->num_sects = 0;
     DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_ORG );
     if( DCRead( iih->sym_fp, iih->lang, header.lang_size ) != header.lang_size ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     if( DCRead( iih->sym_fp, iih->map_segs, header.segment_size ) != header.segment_size ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     ret = ProcSectionsInfo( iih, num_sects );
     if( ret != DS_OK ) {
@@ -342,12 +342,12 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 dip_status InfoRead( FILE *fp, unsigned long offset, size_t size, void *buff )
 {
     if( DCSeek( fp, offset, DIG_ORG ) ) {
-        DCStatus( DS_ERR|DS_FSEEK_FAILED );
-        return( DS_ERR|DS_FSEEK_FAILED );
+        DCStatus( DS_ERR | DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, buff, size ) != size ) {
-        DCStatus( DS_ERR|DS_FREAD_FAILED );
-        return( DS_ERR|DS_FREAD_FAILED );
+        DCStatus( DS_ERR | DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     return( DS_OK );
 }

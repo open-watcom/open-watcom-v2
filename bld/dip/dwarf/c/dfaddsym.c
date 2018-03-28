@@ -82,7 +82,7 @@ static off_info *AddMapOffset( seg_off *ctl, off_info *new )
 
     rem = ctl->entry.count % OFF_PER_BLK;
     blk = ctl->head;
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk = DCAlloc( sizeof( *blk ) );
         blk->next = ctl->head;
         ctl->head = blk;

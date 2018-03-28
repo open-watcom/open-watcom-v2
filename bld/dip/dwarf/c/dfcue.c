@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -386,9 +387,9 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
-    imp_cue_handle *src_icueh, int adj, imp_cue_handle *dst_icueh )
-/*****************************************************************/
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
+                                                int adj, imp_cue_handle *dst_icueh )
+/************************************************************************************/
 {
     drmem_hdl       stmts;
     dfline_search   start_state;
@@ -402,7 +403,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
     stmts = IMH2MODI( iih, src_icueh->imh )->stmts;
     if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
-        return( DS_ERR|DS_FAIL  );
+        return( DS_ERR | DS_FAIL  );
     }
     cue_map = iih->cue_map;
     if( cue_map->imh != src_icueh->imh ) {
@@ -424,7 +425,8 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
     find = LINE_NOT;
     while( 0 != adj ) {
         find = FindCue( cue_map, &cue, start_state );
-        if( find == LINE_NOT ) break;
+        if( find == LINE_NOT )
+            break;
         --adj;
     }
     dst_icueh->imh = src_icueh->imh;

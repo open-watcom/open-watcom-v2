@@ -519,7 +519,7 @@ do_ind:
                 tmp.addr.mach.segment = sp->u.num;
             } else {
                 if( sp->u.ll.num != 1 || sp->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR|DS_BAD_PARM;
+                    ok = DS_ERR | DS_BAD_PARM;
                     goto done;
                 }
                 tmp.addr = sp->u.ll.e[0].u.addr;
@@ -528,7 +528,7 @@ do_ind:
                 tmp.addr.mach.offset = op1->u.num;
             } else {
                 if( op1->u.ll.num != 1 || op1->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR|DS_BAD_LOCATION;
+                    ok = DS_ERR | DS_BAD_LOCATION;
                     goto done;
                 }
                 tmp.addr.mach.offset = op1->u.ll.e[0].u.addr.mach.offset;
@@ -580,7 +580,7 @@ do_ind:
     }
     if( LocStkPtr == 0 && sp == start ) {
         /* empty location */
-        ok = DS_ERR|DS_BAD_LOCATION;
+        ok = DS_ERR | DS_BAD_LOCATION;
         goto done;
     }
     if( sp->type == LS_ADDR ) {

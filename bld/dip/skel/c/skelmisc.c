@@ -68,7 +68,7 @@ dip_status DIPImp( Startup )( void )
 {
     //TODO:
 /*
-        Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?
+        Return DS_OK if startup initialization when OK, or a DS_ERR | DS_?
         constant if something went wrong.
 */
     return( DS_OK );

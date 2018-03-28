@@ -43,15 +43,15 @@ scope_node *FindScope( scope_node *last, addr_off in )
     scope_node *down;
 
     down = NULL;
-    while( last != NULL ){ /* shimmey down to containing branch */
-        if( last->start <= in  && in < last->end  ){
+    while( last != NULL ) { /* shimmey down to containing branch */
+        if( last->start <= in  && in < last->end ) {
             break;
         }
         last = last->down;
     }
     /* climp up and across tree until you fall out */
-    while( last != NULL ){  //look for containing down scope
-        if( last->start <= in  && in < last->end  ){
+    while( last != NULL ) {  //look for containing down scope
+        if( last->start <= in  && in < last->end ) {
             down = last; // if containing go up the branch
             last = last->up;
         }else{
@@ -61,18 +61,18 @@ scope_node *FindScope( scope_node *last, addr_off in )
     return( down );
 }
 
-static void FreeScope( scope_node *last ){
+static void FreeScope( scope_node *last ) {
 /** find the down scope of start, len*****/
     scope_node *old;
 
     /* climp up and across free across and down */
-    while( last != NULL ){  //look for containing down scope
-        if( last->up != NULL ){
+    while( last != NULL ) {  //look for containing down scope
+        if( last->up != NULL ) {
             old = last;
             last = last->up;
             old->up = NULL; /* don't go up again */
         }else{
-            if( last->next != NULL ){
+            if( last->next != NULL ) {
                 old = last;
                 last = last->next;
             }else{/* done this level */
@@ -97,7 +97,7 @@ scope_node *AddScope( scope_node *where, addr_off start, addr_off end, drmem_hdl
     new->start = start;
     new->end = end;
     new->what = what;
-    if( where != NULL ){
+    if( where != NULL ) {
         down = FindScope( where, start );
         if( down != NULL ) {
             new->down = down;

@@ -70,7 +70,8 @@ unsigned        PPPutOffset( link_packet *pkt, unsigned new_point )
     unsigned    old;
 
     old = pkt->buff->len;
-    if( new_point != 0 ) pkt->buff->len = new_point;
+    if( new_point != 0 )
+        pkt->buff->len = new_point;
     return( old );
 }
 
@@ -153,7 +154,8 @@ unsigned        PPGetOffset( link_packet *pkt, unsigned new_point )
     unsigned    old;
 
     old = pkt->curr;
-    if( new_point != 0 ) pkt->curr = new_point;
+    if( new_point != 0 )
+        pkt->curr = new_point;
     return( old );
 }
 

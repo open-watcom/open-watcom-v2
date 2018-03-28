@@ -49,7 +49,9 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
         for( each type in the module ) {
             *ith = fill in the implemenation type handle;
             wr = wk( iih, ith, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     */
     return( WR_CONTINUE );

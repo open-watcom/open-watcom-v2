@@ -275,9 +275,9 @@ static dip_status FoundHLLSign( imp_image_handle *iih, unsigned long off,
      */
     iih->bias = off;
     iih->size = off_trailer - off + sizeof( hdr );
-    if ( !memcmp( hdr.sig, HLL_NB04, HLL_SIG_SIZE ) ) {
+    if( !memcmp( hdr.sig, HLL_NB04, HLL_SIG_SIZE ) ) {
         iih->format_lvl = HLL_LVL_NB04;
-    } else if ( !memcmp( hdr.sig, HLL_NB02, HLL_SIG_SIZE ) ) {
+    } else if( !memcmp( hdr.sig, HLL_NB02, HLL_SIG_SIZE ) ) {
         iih->format_lvl = HLL_LVL_NB02;
     } else if( !memcmp( hdr.sig, HLL_NB00, HLL_SIG_SIZE ) ) {
         iih->format_lvl = iih->is_32bit ? HLL_LVL_NB00_32BIT : HLL_LVL_NB00;
@@ -318,8 +318,8 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
         return( rc );
     }
 
-    debug_rva = buf.pe.table[ PE_TBL_DEBUG ].rva;
-    debug_len = buf.pe.table[ PE_TBL_DEBUG ].size;
+    debug_rva = buf.pe.table[PE_TBL_DEBUG].rva;
+    debug_len = buf.pe.table[PE_TBL_DEBUG].size;
     if( !debug_rva || !debug_len ) {
         return( DS_FAIL );
     }
@@ -340,9 +340,9 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
            + offsetof( pe_header, flags ) + sizeof( buf.pe.flags )
            + buf.pe.nt_hdr_size;
 
-    for ( i = 0; i < iih->seg_count; i++, sh_off += sizeof( buf.sh ) ) {
+    for( i = 0; i < iih->seg_count; i++, sh_off += sizeof( buf.sh ) ) {
         rc = DCReadAt( iih->sym_fp, &buf.sh, sizeof( buf.sh ), sh_off );
-        if ( rc & DS_ERR ) {
+        if( rc & DS_ERR ) {
             return( rc );
         }
 
@@ -376,7 +376,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
                 left = debug_len / sizeof( debug_directory );
                 if( left < 16 )
                     left = 16;
-                for ( ;; ) {
+                for( ;; ) {
                     if( buf.dbg_dir.debug_type == DEBUG_TYPE_CODEVIEW ) {
                         /* found something? */
                         rc = FoundHLLSign( iih, buf.dbg_dir.data_seek, buf.dbg_dir.data_seek );
@@ -390,7 +390,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *iih, unsigned long nh_off 
                     if( left <= 0) {
                         break;
                     }
-                    if ( DCRead( iih->sym_fp, &buf.dbg_dir, sizeof( buf.dbg_dir ) ) != sizeof( buf.dbg_dir ) ) {
+                    if( DCRead( iih->sym_fp, &buf.dbg_dir, sizeof( buf.dbg_dir ) ) != sizeof( buf.dbg_dir ) ) {
                         break;
                     }
                 }
@@ -584,9 +584,11 @@ static walk_result FindCompUnit( imp_image_handle *iih,
 {
     cs_compile          **rec = d;
 
-    if( cde->subsection != hll_sstModules ) return( WR_CONTINUE );
+    if( cde->subsection != hll_sstModules )
+        return( WR_CONTINUE );
     *rec = GetCompInfo( iih, cde->iMod );
-    if( *rec == NULL ) return( WR_CONTINUE );
+    if( *rec == NULL )
+        return( WR_CONTINUE );
     return( WR_STOP );
 }
 #endif

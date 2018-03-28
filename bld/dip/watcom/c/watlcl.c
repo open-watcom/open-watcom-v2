@@ -56,7 +56,7 @@ const char *GetIndex( const char *ptr, unsigned *value )
     unsigned tmp;
 
     tmp = GETU8( ptr++ );
-    if ( tmp & 0x80 ) {
+    if( tmp & 0x80 ) {
         tmp = (tmp & 0x7f) << 8;
         tmp += GETU8( ptr++ );
     }
@@ -706,7 +706,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
     if( parm == 0 ) { /* return value */
         ret = EvalLocation( iih, lc, defn.i.unparsed, ll );
-        if( ret == (DS_ERR|DS_BAD_LOCATION) ) {
+        if( ret == (DS_ERR | DS_BAD_LOCATION) ) {
             ret = DS_NO_PARM;
         }
     } else {

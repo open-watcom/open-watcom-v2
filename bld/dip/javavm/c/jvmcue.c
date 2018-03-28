@@ -42,7 +42,8 @@ static dip_status GetMethodBlock( imp_cue_handle *icueh, struct methodblock *mb 
     ji_ptr      mbp;
 
     mbp = GetPointer( icueh->cc + offsetof( ClassClass, methods ) );
-    if( mbp == 0 ) return( DS_FAIL );
+    if( mbp == 0 )
+        return( DS_FAIL );
     return( GetData( mbp + icueh->mb_idx * sizeof( *mb ), mb, sizeof( *mb ) ) );
 }
 
@@ -73,9 +74,12 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih,
     name = GetPointer( icueh->cc + offsetof( ClassClass, name ) );
     class_len = GetString( name, NameBuff, sizeof( NameBuff ) );
     for( ;; ) {
-        if( class_len == 0 ) break;
-        if( NameBuff[class_len-1] == '/' ) break;
-        if( NameBuff[class_len-1] == '\\' ) break;
+        if( class_len == 0 )
+            break;
+        if( NameBuff[class_len-1] == '/' )
+            break;
+        if( NameBuff[class_len-1] == '\\' )
+            break;
         --class_len;
     }
     name = GetPointer( icueh->cc + offsetof( ClassClass, source_name ) );
@@ -97,7 +101,8 @@ static dip_status FillInLastIC( imp_cue_handle *icueh, unsigned mb_idx )
 
     icueh->mb_idx = mb_idx;
     ds = GetMethodBlock( icueh, &mb );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     icueh->ln_idx = mb.line_number_table_length - 1;
     return( DS_OK );
 }
@@ -136,7 +141,8 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 /* have to back up to previous method */
                 adj += backup;
                 mb_idx = dst_icueh->mb_idx;
-                if( mb_idx == 0 ) break;
+                if( mb_idx == 0 )
+                    break;
                 FillInLastIC( dst_icueh, mb_idx - 1 );
                 backup = dst_icueh->ln_idx + 1;
             }
@@ -149,7 +155,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
         for( ;; ) {
             for( ;; ) {
                 if( !GetMethodBlock( dst_icueh, &mb ) != DS_OK ) {
-                    return( DS_ERR|DS_FAIL );
+                    return( DS_ERR | DS_FAIL );
                 }
                 if( adj < (mb.line_number_table_length - dst_icueh->ln_idx) ) {
                     dst_icueh->ln_idx += adj;
@@ -158,7 +164,8 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
                 adj -= mb.line_number_table_length - dst_icueh->ln_idx;
                 /* advance to next method */
                 mb_idx = dst_icueh->mb_idx;
-                if( mb_idx >= GetNumMethods( dst_icueh ) ) break;
+                if( mb_idx >= GetNumMethods( dst_icueh ) )
+                    break;
                 FillInFirstIC( dst_icueh, mb_idx + 1 );
             }
             /* have to wrap around to first method */
@@ -172,7 +179,8 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icu
 {
     struct methodblock  mb;
 
-    if( GetMethodBlock( icueh, &mb ) != DS_OK ) return( 0 );
+    if( GetMethodBlock( icueh, &mb ) != DS_OK )
+        return( 0 );
     return( GetU32( (ji_ptr)mb.line_number_table
                 + icueh->ln_idx * sizeof( struct lineno )
                 + offsetof( struct lineno, line_number ) ) );
@@ -189,7 +197,8 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
     address             a;
     struct methodblock  mb;
 
-    if( GetMethodBlock( icueh, &mb ) != DS_OK ) return( NilAddr );
+    if( GetMethodBlock( icueh, &mb ) != DS_OK )
+        return( NilAddr );
 
     a = DefCodeAddr;
     ln_tbl = (ji_ptr)mb.line_number_table;
@@ -223,7 +232,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih,
         ln_tbl = (ji_ptr)iih->methods[mb_idx].line_number_table;
         for( left = iih->methods[mb_idx].line_number_table_length; left > 0; left -= get ) {
             get = left;
-            if( get > LN_CACHE_SIZE ) get = LN_CACHE_SIZE;
+            if( get > LN_CACHE_SIZE )
+                get = LN_CACHE_SIZE;
             if( GetData( ln_tbl, cache, get * sizeof( cache[0] ) ) != DS_OK ) {
                 return( SR_NONE );
             }
@@ -300,7 +310,8 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
             return( SR_EXACT );
         }
     }
-    if( hi < 0 ) return( SR_NONE );
+    if( hi < 0 )
+        return( SR_NONE );
     icueh->ln_idx = hi;
     return( SR_CLOSEST );
 #endif

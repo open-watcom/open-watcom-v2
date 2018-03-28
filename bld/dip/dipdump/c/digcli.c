@@ -173,7 +173,7 @@ static FILE *findFileOpenRead( char *fullname, char *name, char *path_list )
 {
     char        *p;
     char        c;
-    FILE		*fp;
+    FILE                *fp;
 
     fp = fopen( name, "rb" );
     if( fp != NULL ) {
@@ -236,7 +236,7 @@ void PathFini( void )
 FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 /************************************************************************************************************/
 {
-    char        realname[ _MAX_PATH2 ];
+    char        realname[_MAX_PATH2];
     char        *filename;
     FILE        *fp;
 

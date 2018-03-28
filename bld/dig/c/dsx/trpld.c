@@ -182,7 +182,7 @@ static P1616 __cdecl find_entry( void )
     P1616 retval = 0;
 
     RSI_extensions = DPMIGetVendorSpecificAPI( sig_str );
-    if (RSI_extensions != NULL ) {
+    if( RSI_extensions != NULL ) {
         retval = RSI_extensions( 0, pkg_entry, pkg_name );
     }
     return (retval);

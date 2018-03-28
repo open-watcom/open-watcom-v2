@@ -125,9 +125,12 @@ static long BlkOffRangeSearch( off_cmp *cmp )
 
     for( ctr = 0; ctr < cmp->hi; ctr++ ) {
         cmp->last = ctr;
-        if( cmp->key  < cmp->base->offset ) return( -1 );
-        if( cmp->key == cmp->base->offset ) return( 0 );
-        if( cmp->key  < (cmp->base->offset + cmp->base->len) ) return( 0 );
+        if( cmp->key  < cmp->base->offset )
+            return( -1 );
+        if( cmp->key == cmp->base->offset )
+            return( 0 );
+        if( cmp->key  < (cmp->base->offset + cmp->base->len) )
+            return( 0 );
         cmp->base++;
     }
     /* So the offset is greater than the current one but it could fall
@@ -151,8 +154,10 @@ static long BlkOffSearch( off_cmp *cmp )
 
     for( ctr = 0; ctr < cmp->hi; ctr++ ) {
         cmp->last = ctr;
-        if( cmp->key  < cmp->base->offset ) return( -1 );
-        if( cmp->key == cmp->base->offset ) return( 0 );
+        if( cmp->key  < cmp->base->offset )
+            return( -1 );
+        if( cmp->key == cmp->base->offset )
+            return( 0 );
         cmp->base++;
     }
     /* So the offset is greater than the current one but it could fall
@@ -165,8 +170,8 @@ static long BlkOffSearch( off_cmp *cmp )
     Mike's old flawed binary search (did not work with addresses >= 0x80000000)
 */
 
-// static long BlkOffSearch( off_cmp *cmp ){
-// /***************************************/
+// static long BlkOffSearch( off_cmp *cmp ) {
+// /****************************************/
 // // Do a B-search on the blk
 //     off_info    *curr;
 //     off_info    *base;
@@ -180,22 +185,22 @@ static long BlkOffSearch( off_cmp *cmp )
 //     base = cmp->base;
 //     hi = cmp->hi;
 //     lo = 0;
-//     for(;;){
+//     for(;;) {
 //         mid = MIDIDX16( lo, hi );
 //         curr = &base[mid];
 //         diff = (long)key - (long)curr->offset;
-//         if( mid == lo ){ /* fix up last cmp */
-//             if( diff > 0 && diff < curr->len ){
+//         if( mid == lo ) { /* fix up last cmp */
+//             if( diff > 0 && diff < curr->len ) {
 //                 diff = 0;
 //             }
 //             break;
 //         }
-//         if( diff < 0 ){               // key < mid
+//         if( diff < 0 ) {                 // key < mid
 //             hi = mid;
-//         }else if( diff < curr->len ){ // key == mid
+//         }else if( diff < curr->len ) {   // key == mid
 //             diff = 0;
 //             break;
-//         }else{                        // key > mid
+//         }else{                           // key > mid
 //             lo = mid;
 //         }
 //     }
@@ -223,7 +228,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
     blk = ctl->off.head;
     rem = ctl->entry.count;
     rem = ctl->entry.count % OFF_PER_BLK;
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk_count = OFF_PER_BLK;
     } else {
         blk_count = rem;
@@ -243,7 +248,8 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         // where new will insert. This means it has to be >= the
         // next block.
         while( (next = blk->next) != NULL ) {
-            if( new->offset >= next->info[OFF_PER_BLK-1].offset ) break;
+            if( new->offset >= next->info[OFF_PER_BLK-1].offset )
+                break;
             blk = next;
         }
         if( blk != ctl->off.head ) {
@@ -254,7 +260,8 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.hi = blk_count;
                 cmp.last = 0;
         diff = BlkOffSearch( &cmp );
-        if( diff == 0 ) goto exit;
+        if( diff == 0 )
+            goto exit;
         if( diff > 0 ) {
             ++cmp.last; // if new > insert after
             ++cmp.base; //  last compare
@@ -326,7 +333,7 @@ static bool CheckInfo( seg_info *ctl )
     for( curr = ctl->off.head; curr != NULL; curr = next ) { // shuffle free space down to blk
         next = curr->next;
         info = curr->info;
-        if( next != NULL ){
+        if( next != NULL ) {
             if( info->offset < next->info[OFF_PER_BLK-1].offset ) {
                 goto error;
             }
@@ -334,7 +341,7 @@ static bool CheckInfo( seg_info *ctl )
         last_info = info;
         ++info;
         --blk_count;
-        while( blk_count > 0 ){
+        while( blk_count > 0 ) {
             if( info->offset < last_info->offset )
                 goto error;
             last_info = info;
@@ -430,7 +437,7 @@ static bool WlkSegInfos( void *_d, void *_curr )
     cont = true;
     if( DCSameAddrSpace( *d->a, d->seg_base ) == DS_OK ) {
         d->info = SearchBlkList( curr, d->a->mach.offset );
-        if( d->info != NULL ){
+        if( d->info != NULL ) {
             cont = false;
         }
     }
@@ -448,7 +455,7 @@ off_info *FindMapAddr( seg_list *addr_map, address *a )
 //  Left original code in case I got a better idea.
 //  info = NULL;
 //  ctl = FindRealSeg( addr_map, a->mach.segment );
-//  if( ctl != NULL ){
+//  if( ctl != NULL ) {
 //      info = SearchBlkList( ctl, a->mach.offset );
 //  }else{
         wlk_seg_offsets d;

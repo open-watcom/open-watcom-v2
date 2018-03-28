@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +116,7 @@ static line_number SpecCueLine( imp_image_handle *iih, imp_cue_handle *icueh, li
     line = 0;
     start = FindSpecCueTable( iih, icueh->imh, &base );
     if( start != NULL ) {
-        if( CueFind( start, cue, &info ) ){
+        if( CueFind( start, cue, &info ) ) {
             line = info.line;
         }
         InfoSpecUnlock( base );
@@ -133,7 +134,7 @@ static cue_fileid SpecCueFileId( imp_image_handle *iih, imp_cue_handle *icueh, l
     fno = 0;
     start = FindSpecCueTable( iih, icueh->imh, &base );
     if( start != NULL ) {
-        if( CueFind( start, cue, &info ) ){
+        if( CueFind( start, cue, &info ) ) {
             fno = info.fno;
         }
         InfoSpecUnlock( base );

@@ -210,8 +210,8 @@ const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
         v->int_val = key;
     } else {
         v->valp = (const unsigned_8 *)p + sizeof( unsigned_16 );
-        v->size = LeafInfo[ key - LF_NUMERIC ].size;
-        v->k = LeafInfo[ key - LF_NUMERIC ].k;
+        v->size = LeafInfo[key - LF_NUMERIC].size;
+        v->k = LeafInfo[key - LF_NUMERIC].k;
         switch( key ) {
         case LF_CHAR:
             v->int_val = *(signed_8 *)v->valp;
@@ -254,9 +254,11 @@ dip_status hllDoIndirection( imp_image_handle *iih, dip_type_info *ti,
     iih = iih;
     hllLocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, ll, ti->size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     if( ti->modifier == TM_NEAR ) {
         if( ti->size == sizeof( addr32_off ) ) {
             ll->e[0].u.addr.mach.offset = tmp.ao32;

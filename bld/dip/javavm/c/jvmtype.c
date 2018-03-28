@@ -125,7 +125,8 @@ static unsigned ElementSize( ji_ptr sig )
 
     do {
     } while( isdigit( GetU8( ++sig ) ) );
-    if( ImpInfoFromSig( sig, &ti ) != DS_OK ) return( 0 );
+    if( ImpInfoFromSig( sig, &ti ) != DS_OK )
+        return( 0 );
     switch( ti.kind ) {
     case TK_ARRAY:
     case TK_STRUCT:
@@ -147,7 +148,8 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         dip_status      ds;
 
         ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ith->kind = JT_SIGNATURE;
     }
     switch( ith->kind ) {
@@ -158,7 +160,8 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         return( DS_OK );
     case JT_SIGNATURE:
         ds = ImpInfoFromSig( ith->sig, ti );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         switch( ti->kind ) {
         case TK_STRUCT:
             name = ith->sig + 1;
@@ -184,7 +187,8 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         ti->kind = TK_STRING;
         ti->modifier = TM_UNICODE;
         ds = GetData( ith->u.object, &str, sizeof( str ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ti->size = str.count * sizeof( unicode );
     } else {
         clazz = GetClass( name );
@@ -214,7 +218,8 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
         dip_status      ds;
 
         ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ith->kind = JT_SIGNATURE;
     }
     *base_ith = *ith;
@@ -232,7 +237,8 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
         case SIGNATURE_FUNC:
             GetString( base_ith->sig, NameBuff, sizeof( NameBuff ) );
             p = strchr( NameBuff, SIGNATURE_ENDFUNC );
-            if( p == NULL ) p = &NameBuff[strlen(NameBuff)-1];
+            if( p == NULL )
+                p = &NameBuff[strlen( NameBuff ) - 1];
             base_ith->sig += (p - NameBuff) + 1;
             break;
         }
@@ -250,7 +256,8 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
         dip_status      ds;
 
         ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ith->kind = JT_SIGNATURE;
     }
     ai->stride = ElementSize( ith->sig );
@@ -299,7 +306,8 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
     size_t      len;
 
     *tag = ST_NONE;
-    if( num != 0 ) return( 0 );
+    if( num != 0 )
+        return( 0 );
     len = GetString( ith->sig, NameBuff, sizeof( NameBuff ) );
     switch( ith->kind ) {
     case JT_RAWNAME:
@@ -307,9 +315,11 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *iih, imp_type_handle *ith,
         return( NameCopy( buff, NameBuff, buff_size, len ) );
     case JT_WANTOBJECT:
     case JT_SIGNATURE:
-        if( NameBuff[0] != SIGNATURE_CLASS ) return( 0 );
+        if( NameBuff[0] != SIGNATURE_CLASS )
+            return( 0 );
         p = strchr( NameBuff, SIGNATURE_ENDCLASS );
-        if( p == NULL ) p = &NameBuff[len];
+        if( p == NULL )
+            p = &NameBuff[len];
         len = p - &NameBuff[1];
         NormalizeClassName( &NameBuff[1], len );
         return( NameCopy( buff, &NameBuff[1], buff_size, len ) );

@@ -257,12 +257,12 @@ static dip_status ProcTable( FILE *fp, imp_image_handle *iih, unsigned resident 
     first = 1;
     for( ;; ) {
         if( BRead( fp, &len, sizeof( len ) ) != sizeof( len ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( len == 0 )
             break;
         if( BRead( fp, buff, len + 2 ) != ( len + 2 ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         ord = *(unsigned_16 *)&buff[len];
         if( resident && first ) {
@@ -300,7 +300,7 @@ static dip_status TryNE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     }
     for( i = 0; i < head->ne.segments; ++i ) {
         if( BRead( fp, &seg, sizeof( seg ) ) != sizeof( seg ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         ds = AddBlock( iih, i + 1, 0, seg.size == 0 ? 0x10000 : seg.size, (seg.info & SEG_DATA) == 0 );
         if( ds != DS_OK ) {
@@ -308,14 +308,14 @@ static dip_status TryNE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
         }
     }
     if( BSeek( fp, off + head->ne.resident_off, DIG_ORG ) != off + head->ne.resident_off ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = ProcTable( fp, iih, 1 );
     if( ds != DS_OK )
         return( ds );
     if( head->ne.nonres_size != 0 ) {
         if( BSeek( fp, head->ne.nonres_off, DIG_ORG ) != head->ne.nonres_off ) {
-            return( DS_ERR|DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         ds = ProcTable( fp, iih, 0 );
         if( ds != DS_OK ) {
@@ -339,11 +339,11 @@ static dip_status TryNE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
             for( i = 0; i < pref.number; ++i ) {
                 if( pref.type == MOVABLE_ENTRY_PNT ) {
                     if( BRead( fp, &entry.mov, sizeof( entry.mov ) ) != sizeof( entry.mov ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                 } else {
                     if( BRead( fp, &entry.fix, sizeof( entry.fix ) ) != sizeof( entry.fix ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                     entry.mov.entry = entry.fix.entry;
                     entry.mov.entrynum = pref.type;
@@ -380,11 +380,11 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     exp_sym             *s;
 
     if( BSeek( fp, off + head->lx.objtab_off, DIG_ORG ) != off + head->lx.objtab_off ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     for( i = 0; i < head->lx.num_objects; ++i ) {
         if( BRead( fp, &seg, sizeof( seg ) ) != sizeof( seg ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( (seg.flags & OBJ_RESOURCE) == 0 ) {
             ds = AddBlock( iih, i + 1, 0, seg.size, (seg.flags&OBJ_EXECUTABLE)!=0 );
@@ -394,14 +394,14 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, any_header *head, unsi
         }
     }
     if( BSeek( fp, off + head->lx.resname_off, DIG_ORG ) != off + head->lx.resname_off ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     ds = ProcTable( fp, iih, 1 );
     if( ds != DS_OK )
         return( ds );
     if( head->lx.nonres_size != 0 ) {
         if( BSeek( fp, head->lx.nonres_off, DIG_ORG ) != head->lx.nonres_off ) {
-            return( DS_ERR|DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         ds = ProcTable( fp, iih, 0 );
         if( ds != DS_OK ) {
@@ -410,13 +410,13 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     }
     /* change all the symbol addresses from entry numbers to seg/offsets */
     if( BSeek( fp, off + head->lx.entry_off, DIG_ORG ) != off + head->lx.entry_off ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     ord = 1;
     memset( &entry, 0, sizeof( entry ) );
     for( ;; ) {
         if( BRead( fp, &pref, sizeof( pref ) ) != sizeof( pref ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( pref.b32_cnt == 0 )
             break;
@@ -428,24 +428,24 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, any_header *head, unsi
                 switch( pref.b32_type ) {
                 case FLT_BNDL_ENTRY16:
                     if( BRead( fp, &entry.e16, sizeof( entry.e16 ) ) != sizeof( entry.e16 ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                     entry.e32.e32_offset = entry.e16.e32_offset;
                     break;
                 case FLT_BNDL_GATE16:
                     if( BRead( fp, &entry.g16, sizeof( entry.g16 ) ) != sizeof( entry.g16 ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                     entry.e32.e32_offset = entry.g16.offset;
                     break;
                 case FLT_BNDL_ENTRY32:
                     if( BRead( fp, &entry.e32, sizeof( entry.e32 ) ) != sizeof( entry.e32 ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                     break;
                 case FLT_BNDL_ENTRYFWD:
                     if( BRead( fp, &entry.fwd, sizeof( entry.fwd ) ) != sizeof( entry.fwd ) ) {
-                        return( DS_ERR|DS_FREAD_FAILED );
+                        return( DS_ERR | DS_FREAD_FAILED );
                     }
                     /* don't know how to handle these */
                     entry.fwd.e32_flags &= ~ENTRY_EXPORTED;
@@ -522,11 +522,11 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
         }
         pos = RVAToPos( rva, exp->head, exp->obj );
         if( BSeek( exp->fp, pos, DIG_ORG ) != pos ) {
-            DCStatus( DS_ERR|DS_FSEEK_FAILED );
+            DCStatus( DS_ERR | DS_FSEEK_FAILED );
             return( NULL );
         }
         if( BRead( exp->fp, exp->name_cache, exp->cache_name_len ) != exp->cache_name_len ) {
-            DCStatus( DS_ERR|DS_FREAD_FAILED );
+            DCStatus( DS_ERR | DS_FREAD_FAILED );
             return( NULL );
         }
         /* Assuming a single name is < NAME_CACHE_SIZE */
@@ -544,16 +544,16 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
     dip_status          ds;
 
     if( BSeek( exp->fp, exp->name_ptr_base, DIG_ORG ) != exp->name_ptr_base ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( exp->fp, exp->name_ptrs, num * sizeof( unsigned_32 ) ) != num * sizeof( unsigned_32 ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( BSeek( exp->fp, exp->ord_base, DIG_ORG ) != exp->ord_base ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( exp->fp, exp->ords, num * sizeof( unsigned_16 ) ) != num * sizeof( unsigned_16 ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     for( i = 0; i < num; ++i ) {
         /* MS document lies about bias in export ordinal table! */
@@ -567,7 +567,7 @@ static dip_status PEExportBlock( imp_image_handle *iih, pe_export_info *exp, uns
                     /* found the object */
                     name = CacheName( exp, exp->name_ptrs[i] );
                     if( name == NULL ) {
-                        return( DS_ERR|DS_FAIL );
+                        return( DS_ERR | DS_FAIL );
                     }
                     ds = AddSymbol( iih, j + 1, exp_rva - exp->obj[j].rva, strlen( name ), name );
                     if( ds != DS_OK ) {
@@ -600,12 +600,12 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
 
     pos = head->pe.nt_hdr_size + offsetof( pe_header, magic ) + off;
     if( BSeek( fp, pos, DIG_ORG ) != pos ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     obj_size = head->pe.num_objects * sizeof( *obj );
     obj = walloca( obj_size );
     if( BRead( fp, obj, obj_size ) != obj_size ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     for( i = 0; i < head->pe.num_objects; ++i ) {
         ds = AddBlock( iih, i + 1, 0, ObjSize( &obj[i] ), (obj[i].flags & PE_OBJ_EXECUTABLE) != 0 );
@@ -615,14 +615,14 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     }
     pos = RVAToPos( EXPORT_RVA, head, obj );
     if( BSeek( fp, pos, DIG_ORG ) != pos ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( fp, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     exp = DCAlloc( sizeof( *exp ) + dir.num_eat_entries * sizeof( unsigned_32 ) );
     if( exp == NULL ) {
-        return( DS_ERR|DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     exp->eat  = (unsigned_32 *)&exp[1];
     exp->fp  = fp;
@@ -632,11 +632,11 @@ static dip_status TryPE( FILE *fp, imp_image_handle *iih, any_header *head, unsi
     exp->cache_name_len = 0;
 
     pos = RVAToPos( dir.address_table_rva, head, obj );
-    ds = DS_ERR|DS_FSEEK_FAILED;
+    ds = DS_ERR | DS_FSEEK_FAILED;
     if( BSeek( fp, pos, DIG_ORG ) == pos ) {
-        ds = DS_ERR|DS_FREAD_FAILED;
+        ds = DS_ERR | DS_FREAD_FAILED;
         if( BRead( fp, exp->eat, dir.num_eat_entries * sizeof( unsigned_32 ) ) == dir.num_eat_entries * sizeof( unsigned_32 ) ) {
-            ds = DS_ERR|DS_FAIL;
+            ds = DS_ERR | DS_FAIL;
             name = CacheName( exp, dir.name_rva );
             if( name != NULL ) {
                 ds = AddName( iih, strlen( name ), name );
@@ -672,7 +672,7 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
 
     switch( BRead( fp, &head.mz, sizeof( head.mz ) ) ) {
     case DIG_RW_ERROR:
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     case sizeof( head.mz ):
         break;
     default:
@@ -683,16 +683,16 @@ static dip_status TryStub( FILE *fp, imp_image_handle *iih )
     if( head.mz.reloc_offset < (OS2_NE_OFFSET + sizeof( off )) )
         return( DS_FAIL );
     if( BSeek( fp, OS2_NE_OFFSET, DIG_ORG ) != OS2_NE_OFFSET ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( fp, &off, sizeof( off ) ) != sizeof( off ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( BSeek( fp, off, DIG_ORG ) != off ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( BRead( fp, &head, sizeof( head ) ) != sizeof( head ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     switch( head.ne.signature ) {
     case OS2_SIGNATURE_WORD:
@@ -724,7 +724,7 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
 
     switch( BRead( fp, &head, sizeof( head ) ) ) {
     case DIG_RW_ERROR:
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     case sizeof( head ):
         break;
     default:
@@ -756,14 +756,14 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
     if( head.numberOfDebugRecords != 0 ) {
         /* use the Novell style debugging information */
         if( BSeek( fp, head.debugInfoOffset, DIG_ORG ) != head.debugInfoOffset ) {
-            return( DS_ERR|DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         for( count = head.numberOfDebugRecords; count > 0; --count ) {
             if( BRead( fp, &dbg, sizeof( dbg ) ) != sizeof( dbg ) ) {
-                return( DS_ERR|DS_FREAD_FAILED );
+                return( DS_ERR | DS_FREAD_FAILED );
             }
             if( BRead( fp, name, dbg.namelen ) != dbg.namelen ) {
-                return( DS_ERR|DS_FREAD_FAILED );
+                return( DS_ERR | DS_FREAD_FAILED );
             }
             seg = (dbg.type == DBG_DATA) ? DATA_SEGMENT : CODE_SEGMENT;
             ds = AddSymbol( iih, seg, dbg.offset, dbg.namelen, name );
@@ -774,17 +774,17 @@ static dip_status TryNLM( FILE *fp, imp_image_handle *iih )
         return( DS_OK );
     }
     if( BSeek( fp, head.publicsOffset, DIG_ORG ) != head.publicsOffset ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     for( count = head.numberOfPublics; count > 0; --count ) {
         if( BRead( fp, &dbg.namelen, sizeof( dbg.namelen ) ) != sizeof( dbg.namelen ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( BRead( fp, name, dbg.namelen ) != dbg.namelen ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( BRead( fp, &dbg.offset, sizeof( dbg.offset ) ) != sizeof( dbg.offset ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( dbg.offset & NOV_EXP_ISCODE ) {
             dbg.offset &= ~NOV_EXP_ISCODE;
@@ -863,7 +863,7 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
 
     switch( BRead( fp, &head, sizeof( head ) ) ) {
     case DIG_RW_ERROR:
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     case sizeof( head ):
         break;
     default:
@@ -907,10 +907,10 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
     i = 0;
     for( i = 0; i < head.e_phnum; ++i ) {
         if( BSeek( fp, off, DIG_ORG ) != off ) {
-            return( DS_ERR|DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         if( BRead( fp, &phe, sizeof( phe ) ) != sizeof( phe ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         ByteSwapPhdr( &phe, byte_swap );
         if( phe.p_type == PT_LOAD ) {
@@ -933,10 +933,10 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
     off = head.e_shoff;
     for( i = 0; i < head.e_shnum; ++i ) {
         if( BSeek( fp, off, DIG_ORG ) != off ) {
-            return( DS_ERR|DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         if( BRead( fp, &sect[i], sizeof( sect[i] ) ) != sizeof( sect[i] ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         ByteSwapShdr( &sect[i], byte_swap );
         off += head.e_shentsize;
@@ -970,16 +970,16 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
                 new = DCRealloc( strings, strtab->sh_size );
                 if( new == NULL ) {
                     DCFree( strings );
-                    return( DS_ERR|DS_NO_MEM );
+                    return( DS_ERR | DS_NO_MEM );
                 }
                 strings = new;
                 if( BSeek( fp, strtab->sh_offset, DIG_ORG ) != strtab->sh_offset ) {
                     DCFree( strings );
-                    return( DS_ERR|DS_FSEEK_FAILED );
+                    return( DS_ERR | DS_FSEEK_FAILED );
                 }
                 if( BRead( fp, strings, strtab->sh_size ) != strtab->sh_size ) {
                     DCFree( strings );
-                    return( DS_ERR|DS_FREAD_FAILED );
+                    return( DS_ERR | DS_FREAD_FAILED );
                 }
             }
             off = sect[i].sh_offset;
@@ -987,11 +987,11 @@ static dip_status TryELF( FILE *fp, imp_image_handle *iih )
             for( j = 0; j < num_syms; ++j ) {
                 if( BSeek( fp, off, DIG_ORG ) != off ) {
                     DCFree( strings );
-                    return( DS_ERR|DS_FSEEK_FAILED );
+                    return( DS_ERR | DS_FSEEK_FAILED );
                 }
                 if( BRead( fp, &sym, sizeof( sym ) ) != sizeof( sym ) ) {
                     DCFree( strings );
-                    return( DS_ERR|DS_FREAD_FAILED );
+                    return( DS_ERR | DS_FREAD_FAILED );
                 }
                 ByteSwapSym( &sym, byte_swap );
                 name = &strings[sym.st_name];

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,9 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
             *icueh = fill in cue handle information for the first
                         source cue for the file;
             wr = wk( iih, icueh, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     */
     return( WR_CONTINUE );
@@ -112,7 +115,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih,
         DCStatus be called in this case). Otherwise DS_OK should be returned
         unless an error occurred.
     */
-    return( DS_ERR|DS_FAIL );
+    return( DS_ERR | DS_FAIL );
 }
 
 unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *iih, imp_cue_handle *icueh )

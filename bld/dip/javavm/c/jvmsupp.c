@@ -74,8 +74,10 @@ void LocationAdd( location_list *ll, long sbits )
     num = 0;
     le = &ll->e[0];
     for( ;; ) {
-        if( le->bit_length == 0 ) break;
-        if( le->bit_length > bits ) break;
+        if( le->bit_length == 0 )
+            break;
+        if( le->bit_length > bits )
+            break;
         bits -= le->bit_length;
         ++num;
     }
@@ -86,7 +88,8 @@ void LocationAdd( location_list *ll, long sbits )
     add = bits / 8;
     bits = bits % 8;
     ll->e[0].bit_start += bits;
-    if( ll->e[0].bit_length != 0 ) ll->e[0].bit_length -= bits;
+    if( ll->e[0].bit_length != 0 )
+        ll->e[0].bit_length -= bits;
     if( ll->e[0].type == LT_ADDR ) {
         ll->e[0].u.addr.mach.offset += add;
     } else {
@@ -126,7 +129,8 @@ dip_status GetData( ji_ptr off, void *p, unsigned len )
         LocationCreate( &dst, LT_INTERNAL, p );
         ds = DCAssignLocation( &dst, &src, len );
     }
-    if( ds != DS_OK ) memset( p, 0, len );
+    if( ds != DS_OK )
+        memset( p, 0, len );
     return( ds );
 }
 
@@ -212,7 +216,8 @@ ji_ptr GetClass( ji_ptr off )
     LocationCreate( &src, LT_ADDR, &src_addr );
     LocationCreate( &dst, LT_INTERNAL, &clazz );
     ds = DCAssignLocation( &dst, &src, sizeof( clazz ) );
-    if( ds != DS_OK ) return( 0 );
+    if( ds != DS_OK )
+        return( 0 );
     return( clazz );
 }
 
@@ -228,7 +233,8 @@ dip_status GetLineCue( struct mad_jvm_findlinecue_acc *acc, struct mad_jvm_findl
     LocationCreate( &dst, LT_ADDR, &addr );
     LocationCreate( &src, LT_INTERNAL, acc );
     ds = DCAssignLocation( &dst, &src, sizeof( *acc ) );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     LocationCreate( &src, LT_ADDR, &addr );
     LocationCreate( &dst, LT_INTERNAL, ret );
     return( DCAssignLocation( &dst, &src, sizeof( *ret ) ) );
@@ -246,7 +252,8 @@ dip_status      GetAddrCue( struct mad_jvm_findaddrcue_acc *acc, struct mad_jvm_
     LocationCreate( &dst, LT_ADDR, &addr );
     LocationCreate( &src, LT_INTERNAL, acc );
     ds = DCAssignLocation( &dst, &src, sizeof( *acc ) );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     LocationCreate( &src, LT_ADDR, &addr );
     LocationCreate( &dst, LT_INTERNAL, ret );
     return( DCAssignLocation( &dst, &src, sizeof( *ret ) ) );

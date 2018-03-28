@@ -42,7 +42,8 @@ static walk_result FindMods( imp_image_handle *iih, cv_directory_entry *cde, voi
 {
     struct find_mod     *md = d;
 
-    if( cde->subsection != sstModule ) return( WR_CONTINUE );
+    if( cde->subsection != sstModule )
+        return( WR_CONTINUE );
     return( md->wk( iih, cde->iMod, md->d ) );
 }
 
@@ -66,8 +67,7 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
 
 #define GBL_NAME "__global"
 
-size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
-                        imp_mod_handle imh, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh, char *buff, size_t buff_size )
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;
@@ -82,7 +82,8 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     cde = FindDirEntry( iih, imh, sstModule );
 
     mp = VMBlock( iih, cde->lfo, cde->cb );
-    if( mp == NULL ) return( 0 );
+    if( mp == NULL )
+        return( 0 );
     name = (char *)&mp->SegInfo[mp->cSeg];
     len = *(unsigned_8 *)name;
     ++name;
@@ -114,9 +115,11 @@ cs_compile *GetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
     vm = cde->lfo + sizeof( unsigned_32 );
     left = cde->cb - sizeof( unsigned_32 );
     for( ;; ) {
-        if( left <= 0 ) return( NULL );
+        if( left <= 0 )
+            return( NULL );
         rec = VMRecord( iih, vm );
-        if( rec->common.code == S_COMPILE ) return( &rec->f );
+        if( rec->common.code == S_COMPILE )
+            return( &rec->f );
         vm += rec->common.length + sizeof( rec->common.length );
         left -= rec->common.length + sizeof( rec->common.length );
     }
@@ -171,15 +174,19 @@ static walk_result FindAddr( imp_image_handle *iih, cv_directory_entry *cde, voi
     cv_seginfo          *sp;
     int                 left;
 
-    if( cde->subsection != sstModule ) return( WR_CONTINUE );
+    if( cde->subsection != sstModule )
+        return( WR_CONTINUE );
     a = md->d;
     mp = VMBlock( iih, cde->lfo, cde->cb );
-    if( mp == NULL ) return( WR_CONTINUE );
-    if( mp->ovlNumber != a->sect_id ) return( WR_CONTINUE );
+    if( mp == NULL )
+        return( WR_CONTINUE );
+    if( mp->ovlNumber != a->sect_id )
+        return( WR_CONTINUE );
     sp =  &mp->SegInfo[0];
     left = mp->cSeg;
     for( ;; ) {
-        if( left <= 0 ) return( WR_CONTINUE );
+        if( left <= 0 )
+            return( WR_CONTINUE );
         code.mach.segment = sp->Seg;
         code.mach.offset  = sp->offset;
         MapLogical( iih, &code );
@@ -240,18 +247,20 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
     address             addr;
 
     cde = FindDirEntry( iih, imh, sstModule );
-    if( cde == NULL ) return( NilAddr );
+    if( cde == NULL )
+        return( NilAddr );
     mp = VMBlock( iih, cde->lfo, cde->cb );
-    if( mp == NULL ) return( NilAddr );
-    if( mp->cSeg == 0 ) return( NilAddr );
+    if( mp == NULL )
+        return( NilAddr );
+    if( mp->cSeg == 0 )
+        return( NilAddr );
     addr.mach.segment = mp->SegInfo[0].Seg;
     addr.mach.offset  = mp->SegInfo[0].offset;
     MapLogical( iih, &addr );
     return( addr );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle imh, default_kind dk, dip_type_info *ti )
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dip_type_info *ti )
 {
     cs_compile  *comp_info;
 

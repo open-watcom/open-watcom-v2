@@ -754,10 +754,10 @@ static bool Live( void *_d, uint_32 *where )
         return( false );
     }
     if( !Real2Map( d->iih->addr_map, &ll.e[0].u.addr ) ) {
-        d->ret = DS_ERR|DS_BAD_LOCATION;
-        DCStatus( DS_ERR|DS_BAD_LOCATION );
+        d->ret = DS_ERR | DS_BAD_LOCATION;
+        DCStatus( DS_ERR | DS_BAD_LOCATION );
     }
-    *where  =  ll.e[0].u.addr.mach.offset;
+    *where = ll.e[0].u.addr.mach.offset;
     return( true );
 }
 
@@ -1035,7 +1035,7 @@ static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
             d->base.mach.segment = offset;
         }
     } else {
-        d->ret = DS_ERR|DS_BAD_LOCATION;
+        d->ret = DS_ERR | DS_BAD_LOCATION;
         DCStatus( d->ret );
         return( false );
     }

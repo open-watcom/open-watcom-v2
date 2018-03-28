@@ -155,8 +155,8 @@ dip_status InitDemand( imp_image_handle *iih )
     d.max_size = 0;
     MyWalkModList( iih, WlkDmnd, &d );
     if( d.max_size >= ( 0x10000UL - sizeof( demand_ctrl ) ) ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     if( d.max_size <= LastDmndSize )
         return( DS_OK );
@@ -167,8 +167,8 @@ dip_status InitDemand( imp_image_handle *iih )
     LastDmndSize = d.max_size;
     LastDemand = DCAlloc( _demand_size( d.max_size ) );
     if( LastDemand == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     LastDemand->link = NULL;
     LastDemand->owner = NULL;

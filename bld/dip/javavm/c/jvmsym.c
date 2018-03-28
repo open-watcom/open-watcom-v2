@@ -66,7 +66,8 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
             wr = wk( iih, SWI_INHERIT_START, ish, d );
             if( wr == WR_CONTINUE ) {
                 wr = WalkObject( iih, statics_only, super, wk, ish, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 wk( iih, SWI_INHERIT_END, NULL, d );
             }
         }
@@ -78,11 +79,15 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
     for( i = 0; i < num; ++i, block += sizeof( struct fieldblock ) ) {
         if( statics_only ) {
             acc = GetU16( block + offsetof( struct fieldblock, access ) );
-            if( !(acc & ACC_STATIC) ) continue;
+            if( !(acc & ACC_STATIC) ) {
+                continue;
+            }
         }
         ish->u.fb = block;
         wr = wk( iih, SWI_SYMBOL, ish, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     /* walk the methods */
     block = GetPointer( clazz + offsetof( ClassClass, methods ) );
@@ -94,7 +99,9 @@ static walk_result WalkObject( imp_image_handle *iih, bool statics_only,
             /* Don't bother telling debugger about native methods */
             ish->u.mb = block;
             wr = wk( iih, SWI_SYMBOL, ish, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
         block += sizeof( struct methodblock );
     }
@@ -124,7 +131,9 @@ static walk_result WalkAScope( imp_image_handle *iih, unsigned mb_idx,
             return( WR_CONTINUE );
         }
         wr = wk( iih, SWI_SYMBOL, ish, d );
-        if( wr != WR_CONTINUE ) return( wr );
+        if( wr != WR_CONTINUE ) {
+            return( wr );
+        }
     }
     return( WR_CONTINUE );
 }
@@ -149,7 +158,9 @@ static walk_result WalkAllScopes( imp_image_handle *iih, unsigned mb_idx,
         }
         if( (off >= var.pc0) && (off < (var.pc0+var.length)) ) {
             wr = wk( iih, SWI_SYMBOL, ish, d );
-            if( wr != WR_CONTINUE ) return( wr );
+            if( wr != WR_CONTINUE ) {
+                return( wr );
+            }
         }
     }
     return( WalkObject( iih, FALSE, iih->cc, wk, ish, d ) );
@@ -221,7 +232,8 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *iih,
             break;
         case JT_WANTOBJECT:
         case JT_SIGNATURE:
-            if( GetU8( ith->sig ) != SIGNATURE_CLASS ) return( WR_CONTINUE );
+            if( GetU8( ith->sig ) != SIGNATURE_CLASS )
+                return( WR_CONTINUE );
             clazz = GetClass( ith->sig + 1 );
             break;
         default:
@@ -325,7 +337,8 @@ static char *DoDemangle( char *name, unsigned *add, unsigned *len, char *sig )
         *add += Insert( name, add, len, "(" );
         first = 1;
         for( ;; ) {
-            if( *sig == SIGNATURE_ENDFUNC ) break;
+            if( *sig == SIGNATURE_ENDFUNC )
+                break;
             if( !first ) {
                 *add += Insert( name, add, len, "," );
             }
@@ -440,15 +453,18 @@ dip_status FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle )
 
     /* follow the object pointer(s) */
 
-    if( sig == 0 ) return( DS_OK );
+    if( sig == 0 )
+        return( DS_OK );
     len = GetString( sig, NameBuff, sizeof( NameBuff ) );
-    if( len == 0 ) return( DS_ERR | DS_FAIL );
+    if( len == 0 )
+        return( DS_ERR | DS_FAIL );
     switch( NameBuff[0] ) {
     case SIGNATURE_CLASS:
     case SIGNATURE_ARRAY:
         LocationCreate( &var, LT_INTERNAL, &off );
         ds = DCAssignLocation( &var, ll, sizeof( off ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ll->e[0].u.addr.mach.offset = GetPointer( off + offsetof( JHandle, obj ) );
         *handle = off;
         break;
@@ -461,7 +477,8 @@ dip_status FollowObject( ji_ptr sig, location_list *ll, ji_ptr *handle )
         /* Got a string, get pointer to actual character storage */
         *handle = ll->e[0].u.addr.mach.offset;
         ds = GetData( ll->e[0].u.addr.mach.offset, &str, sizeof( str ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         ll->e[0].u.addr.mach.offset = GetPointer( (ji_ptr)str.value + offsetof( JHandle, obj ) )
                                         + str.offset * sizeof( unicode );
     }
@@ -483,7 +500,8 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
     case JS_METHOD:
         sig = 0;
         acc = GetU16( ish->u.mb + offsetof( struct methodblock, fb.access ) );
-        if( acc & ACC_NATIVE ) return( DS_ERR | DS_BAD_LOCATION );
+        if( acc & ACC_NATIVE )
+            return( DS_ERR | DS_BAD_LOCATION );
         a = DefCodeAddr;
         a.mach.offset = GetPointer( ish->u.mb + offsetof( struct methodblock, code ) );
         LocationCreate( ll, LT_ADDR, &a );
@@ -507,18 +525,21 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *ish,
             LocationCreate( ll, LT_ADDR, &a );
         } else {
             ds = DCItemLocation( lc, CI_OBJECT, ll );
-            if( ds != DS_OK ) return( ds );
+            if( ds != DS_OK )
+                return( ds );
             off = GetU32( ish->u.fb + offsetof( struct fieldblock, u.offset ) );
             LocationAdd( ll, off * 8 );
         }
         break;
     case JS_LOCAL:
         ds = DCItemLocation( lc, CI_JVM_vars, &var );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         a = DefDataAddr;
         LocationCreate( ll, LT_INTERNAL, &a.mach.offset );
         ds = DCAssignLocation( ll, &var, sizeof( a.mach.offset ) );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK )
+            return( ds );
         a.mach.offset += GetU32( ish->u.lv + offsetof( struct localvar, slot ) )
                                 * sizeof( unsigned_32 );
         LocationCreate( ll, LT_ADDR, &a );
@@ -586,10 +607,14 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih,
         return( DS_OK );
     }
     acc = GetU16( ish->u.fb + offsetof( struct fieldblock, access ) );
-    if( acc & ACC_PUBLIC ) si->is_public = 1;
-    if( acc & ACC_PRIVATE ) si->is_private = 1;
-    if( acc & ACC_PROTECTED ) si->is_protected = 1;
-    if( acc & ACC_STATIC ) si->is_static = 1;
+    if( acc & ACC_PUBLIC )
+        si->is_public = 1;
+    if( acc & ACC_PRIVATE )
+        si->is_private = 1;
+    if( acc & ACC_PROTECTED )
+        si->is_protected = 1;
+    if( acc & ACC_STATIC )
+        si->is_static = 1;
     return( DS_OK );
 }
 
@@ -606,10 +631,13 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     struct methodblock  method;
     dip_status          ds;
 
-    if( ish->kind != JS_METHOD ) return( DS_FAIL );
+    if( ish->kind != JS_METHOD )
+        return( DS_FAIL );
     ds = GetData( ish->u.mb, &method, sizeof( method ) );
-    if( ds != DS_OK ) return( ds );
-    if( method.fb.access & ACC_NATIVE ) return( DS_FAIL );
+    if( ds != DS_OK )
+        return( ds );
+    if( method.fb.access & ACC_NATIVE )
+        return( DS_FAIL );
     if( ti != NULL ) {
         if( method.fb.access & ACC_STATIC ) {
             ti->kind = TK_NONE;
@@ -637,10 +665,13 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     unsigned            cp_idx;
     ji_ptr              handle;
 
-    if( ish->kind != JS_METHOD ) return( DS_FAIL );
+    if( ish->kind != JS_METHOD )
+        return( DS_FAIL );
     ds = GetData( ish->u.mb, &method, sizeof( method ) );
-    if( ds != DS_OK ) return( ds );
-    if( method.fb.access & (ACC_NATIVE | ACC_STATIC) ) return( DS_FAIL );
+    if( ds != DS_OK )
+        return( ds );
+    if( method.fb.access & (ACC_NATIVE | ACC_STATIC) )
+        return( DS_FAIL );
     cp = GetPointer( (ji_ptr)method.fb.clazz + offsetof( ClassClass, constantpool ) );
     this_ish.kind = JS_LOCAL;
     this_ish.u.lv = (ji_ptr)method.localvar_table;
@@ -694,10 +725,13 @@ static walk_result CheckOneSym( imp_image_handle *iih, sym_walk_info swi,
         return( ld->static_only ? WR_STOP : WR_CONTINUE );
     }
     len = GetName( iih, ish );
-    if( ld->li->name.len != len ) return( WR_CONTINUE );
-    if( ld->cmp( NameBuff, ld->li->name.start, len ) != 0 ) return( WR_CONTINUE );
+    if( ld->li->name.len != len )
+        return( WR_CONTINUE );
+    if( ld->cmp( NameBuff, ld->li->name.start, len ) != 0 )
+        return( WR_CONTINUE );
     new = DCSymCreate( iih, ld->d );
-    if( new == NULL ) return( WR_FAIL );
+    if( new == NULL )
+        return( WR_FAIL );
     *new = *ish;
     ld->sr = SR_EXACT;
     return( WR_CONTINUE );
@@ -734,7 +768,8 @@ static search_result CheckScopeName( struct lookup_data *ld )
         }
     }
     pk_len = strlen( NameBuff );
-    if( j > pk_len ) return( SR_NONE );
+    if( j > pk_len )
+        return( SR_NONE );
     if( j == 0 ) {
         switch( NameBuff[0] ) {
         case '\0':
@@ -752,12 +787,16 @@ static search_result CheckScopeName( struct lookup_data *ld )
             return( SR_EXACT );
         }
     }
-    if( have_multi ) return( SR_NONE );
+    if( have_multi )
+        return( SR_NONE );
     /* Try the last element of the package name */
     i = pk_len - j;
-    if( i == 0 ) return( SR_NONE );
-    if( ld->cmp( &NameBuff[i], scope, j ) != 0 ) return( SR_NONE );
-    if( NameBuff[i-1] != '/' ) return( SR_NONE );
+    if( i == 0 )
+        return( SR_NONE );
+    if( ld->cmp( &NameBuff[i], scope, j ) != 0 )
+        return( SR_NONE );
+    if( NameBuff[i-1] != '/' )
+        return( SR_NONE );
     return( SR_EXACT );
 }
 
@@ -807,10 +846,13 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
         return( sr );
     }
     if( li->type == ST_NAMESPACE ) {
-        if( sr != SR_CLOSEST ) return( SR_NONE );
+        if( sr != SR_CLOSEST )
+            return( SR_NONE );
         len = strlen( data.unmatched );
-        if( len < li->name.len ) return( SR_NONE );
-        if( data.cmp( li->name.start, data.unmatched, li->name.len ) != 0 ) return( SR_NONE );
+        if( len < li->name.len )
+            return( SR_NONE );
+        if( data.cmp( li->name.start, data.unmatched, li->name.len ) != 0 )
+            return( SR_NONE );
         switch( data.unmatched[li->name.len] ) {
         case '/':
         case '\0':
@@ -819,12 +861,14 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
             return( SR_NONE );
         }
         new = DCSymCreate( iih, data.d );
-        if( new == NULL ) return( SR_FAIL );
+        if( new == NULL )
+            return( SR_FAIL );
         new->kind = JS_PACKAGE;
         new->u.pk = iih->cc;
         return( SR_EXACT );
     }
-    if( sr != SR_EXACT ) return( SR_NONE );
+    if( sr != SR_EXACT )
+        return( SR_NONE );
     switch( ss ) {
     case SS_MODULE:
         data.static_only = 1;
@@ -836,10 +880,13 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
             break;
         case ST_TYPE:
             len = strlen( p );
-            if( len != li->name.len ) return( SR_NONE );
-            if( data.cmp( li->name.start, p, len ) != 0 ) return( SR_NONE );
+            if( len != li->name.len )
+                return( SR_NONE );
+            if( data.cmp( li->name.start, p, len ) != 0 )
+                return( SR_NONE );
             new = DCSymCreate( iih, data.d );
-            if( new == NULL ) return( SR_FAIL );
+            if( new == NULL )
+                return( SR_FAIL );
             new->kind = JS_TYPE;
             new->u.cn = iih->cc;
             return( SR_EXACT );
@@ -875,7 +922,8 @@ return( SR_NONE );
         }
         return( data.sr );
     case SS_TYPE:
-        if( li->type != ST_NONE ) return( SR_NONE );
+        if( li->type != ST_NONE )
+            return( SR_NONE );
         ith = (imp_type_handle)source;
         switch( ith->kind ) {
         case JT_RAWNAME:
@@ -883,13 +931,15 @@ return( SR_NONE );
             break;
         case JT_WANTOBJECT:
         case JT_SIGNATURE:
-            if( GetU8( ith->sig ) != SIGNATURE_CLASS ) return( SR_NONE );
+            if( GetU8( ith->sig ) != SIGNATURE_CLASS )
+                return( SR_NONE );
             clazz = GetClass( ith->sig + 1 );
             break;
         default:
             return( SR_NONE );
         }
-        if( clazz == 0 ) return( SR_NONE );
+        if( clazz == 0 )
+            return( SR_NONE );
         if( WalkObject( iih, FALSE, clazz, CheckOneSym, &ish, &data ) == WR_FAIL ) {
             return( SR_FAIL );
         }
@@ -933,7 +983,8 @@ static search_result FindAScope( imp_image_handle *iih, scope_block *scope )
     lv_num = iih->methods[mb_idx].localvar_table_length;
     for( idx = 0; idx < lv_num; idx += get ) {
         get = lv_num - idx;
-        if( get > LV_CACHE_SIZE ) get = LV_CACHE_SIZE;
+        if( get > LV_CACHE_SIZE )
+            get = LV_CACHE_SIZE;
         if( GetData( lv_tbl, cache, get * sizeof( cache[0] ) ) != DS_OK ) {
             return( SR_NONE );
         }
@@ -977,7 +1028,8 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
 search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
                 imp_mod_handle imh, scope_block *in, scope_block *out )
 {
-    if( in->unique == OBJECT_SCOPE ) return( SR_NONE );
+    if( in->unique == OBJECT_SCOPE )
+        return( SR_NONE );
     *out = *in;
     return( FindAScope( iih, out ) );
 }

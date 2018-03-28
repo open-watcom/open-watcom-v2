@@ -45,7 +45,9 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *iih,
        for( each module in 'iih' ) {
            im = implementation module handle for module;
            wr = wk( iih, im, d );
-           if( wr != WR_CONTINUE ) return( wr );
+           if( wr != WR_CONTINUE ) {
+               return( wr );
+           }
        }
    */
    return( WR_CONTINUE );

@@ -58,7 +58,7 @@ mod_info  *NextModInfo( mod_list *list )
     unsigned_16 rem;    /*#entries in last blk */
 
     rem = list->count % MODS_PER_BLK;
-    if( rem == 0 ){
+    if( rem == 0 ) {
         blk = DCAlloc( sizeof( *blk ) );
         blk->next = NULL;
         *list->lnk = blk;

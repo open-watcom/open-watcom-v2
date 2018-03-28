@@ -50,7 +50,7 @@ static void CallCleaners( void )
 /******************************/
 //Call all stacked resource cleanup
 {
-    while( Cleaners != NULL ){
+    while( Cleaners != NULL ) {
         Cleaners->rtn( Cleaners->d );
         Cleaners = Cleaners->prev;
     }
@@ -105,13 +105,13 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
 
     ret = DS_FAIL;
     for( curr = Images; curr != NULL; curr = curr->next ) {
-        if( ClearMods( curr ) ){
+        if( ClearMods( curr ) ) {
             ret = DS_OK;
         }
-        if( DRDbgClear( curr->dwarf->handle ) ){
+        if( DRDbgClear( curr->dwarf->handle ) ) {
             ret = DS_OK;
         }
-        if( FiniImpCueInfo( curr ) ){
+        if( FiniImpCueInfo( curr ) ) {
             ret = DS_OK;
         }
     }
@@ -121,7 +121,7 @@ dip_status DIPIMPENTRY( MoreMem )( size_t size )
 dip_status DIPImp( Startup )(void)
 {
 /*
-        Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
+        Return DS_OK if startup initialization went OK, or a DS_ERR | DS_?
         constant if something went wrong.
 */
     Cleaners = NULL;

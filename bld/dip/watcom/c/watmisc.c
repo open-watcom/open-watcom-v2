@@ -104,6 +104,10 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_handle imh,
 }
 
 #define SH_ESCAPE       0xf0
+#define STUFF_IT( c )   \
+    if((len + 1) < buff_size ) \
+        *ep++ = (c); \
+    ++len
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
                                 location_context *lc,
@@ -122,7 +126,6 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
         sp = (byte *)ish;
         ++ish;
         len = 0;
-        #define STUFF_IT( c )   if( (len+1) < buff_size ) *ep++ = (c); ++len
         ep = (byte *)buff;
         STUFF_IT( SH_ESCAPE );
         while( sp < (byte *)ish ) {
@@ -278,7 +281,7 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
             if( src == sym_li.source.start ) {
                 op_len = __mangle_operator( src, sym_li.source.len, buff );
                 if( op_len == 0 ) {
-                    DCStatus( DS_ERR|DS_INVALID_OPERATOR );
+                    DCStatus( DS_ERR | DS_INVALID_OPERATOR );
                     return( SR_NONE );
                 }
                 dst += op_len;
@@ -363,7 +366,7 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *is
     case SH_MBR:
         return( SymHdl2MbrLoc( iih, ish, lc, ll ) );
     }
-    return( DS_ERR|DS_BAD_PARM );
+    return( DS_ERR | DS_BAD_PARM );
 }
 
 
@@ -376,7 +379,7 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *ish,
     case SH_CST:
         return( SymHdl2CstValue( iih, ish, value ) );
     }
-    return( DS_ERR|DS_BAD_PARM );
+    return( DS_ERR | DS_BAD_PARM );
 }
 
 
@@ -394,7 +397,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_handle *ish, i
     case SH_CST:
         return( SymHdl2CstType( iih, ish, ith ) );
     }
-    return( DS_ERR|DS_BAD_PARM );
+    return( DS_ERR | DS_BAD_PARM );
 }
 
 dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
@@ -415,7 +418,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
         si->kind = SK_CONST;
         break;
     default:
-        return( DS_ERR|DS_BAD_PARM );
+        return( DS_ERR | DS_BAD_PARM );
     }
     return( DS_OK );
 

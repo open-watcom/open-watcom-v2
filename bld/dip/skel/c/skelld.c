@@ -43,7 +43,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
         See if the given file handle has our kind of symbolic information
         on it. If so, fill in the "*iih" structure and return DS_OK. If it
         isn't our type of information, return DS_FAIL. If it's our information,
-        but something goes wrong during the load, return a DS_ERR|DS_?
+        but something goes wrong during the load, return a DS_ERR | DS_?
         constant. If the load succeeds the client will not close the
         file handle so if you don't need to read out of the file after the
         load, you should close the handle at this point.

@@ -90,22 +90,22 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
     debug_directory     dir;
 
     if( DCSeek( fp, 0, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( hdr.dos.signature != DOS_SIGNATURE ) {
         return( DS_FAIL );
     }
     if( DCSeek( fp, NH_OFFSET, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( DCSeek( fp, nh_off, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
         return( DS_FAIL );
@@ -123,20 +123,20 @@ static dip_status TryFindPE( FILE *fp, unsigned long *offp, unsigned long *sizep
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
     if( DCSeek( fp, section_off, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     for( i = 0; i < hdr.pe.num_objects; i++ ) {
         if( DCRead( fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
                             hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
             if( DCSeek( fp, debug_rva, DIG_ORG ) ) {
-                return( DS_ERR|DS_FSEEK_FAILED );
+                return( DS_ERR | DS_FSEEK_FAILED );
             }
             if( DCRead( fp, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
-                return( DS_ERR|DS_FREAD_FAILED );
+                return( DS_ERR | DS_FREAD_FAILED );
             }
             if( dir.debug_type != DEBUG_TYPE_CODEVIEW ) {
                 return( DS_FAIL );
@@ -154,11 +154,11 @@ static dip_status TryFindTrailer( FILE *fp, unsigned long *offp, unsigned long *
     unsigned long       pos;
 
     if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     pos = DCTell( fp );
     if( DCRead( fp, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( memcmp( sig.sig, CV4_NB09, sizeof( sig.sig ) ) != 0 ) {
         return( DS_FAIL );
@@ -183,10 +183,10 @@ static dip_status FindCV( FILE *fp, unsigned long *offp, unsigned long *sizep )
         }
     }
     if( DCSeek( fp, *offp, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( fp, sig, sizeof( sig ) ) != sizeof( sig ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( memcmp( sig, CV4_NB09, sizeof( sig ) ) != 0 ) {
         return( DS_FAIL );
@@ -205,26 +205,26 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long off )
     unsigned                    num;
 
     if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &directory, sizeof( directory ) ) != sizeof( directory ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( DCSeek( iih->sym_fp, iih->bias + directory, DIG_ORG ) ) {
-        return( DS_ERR|DS_FSEEK_FAILED );
+        return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( iih->sym_fp, &dir_header, sizeof( dir_header ) ) != sizeof( dir_header ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_ERR | DS_FREAD_FAILED );
     }
     if( dir_header.cbDirHeader != sizeof( dir_header )
       || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
-        return( DS_ERR|DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     iih->dir_count = dir_header.cDir;
     block_count = BLOCK_FACTOR( iih->dir_count, DIRECTORY_BLOCK_ENTRIES );
     iih->directory = DCAlloc( block_count * sizeof( cv_directory_entry * ) );
     if( iih->directory == NULL ) {
-        return( DS_ERR|DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     memset( iih->directory, 0, block_count * sizeof( cv_directory_entry * ) );
     i = 0;
@@ -236,10 +236,10 @@ static dip_status LoadDirectory( imp_image_handle *iih, unsigned long off )
         block_size = num * sizeof( cv_directory_entry );
         iih->directory[i] = DCAlloc( block_size );
         if( iih->directory[i] == NULL ) {
-            return( DS_ERR|DS_NO_MEM );
+            return( DS_ERR | DS_NO_MEM );
         }
         if( DCRead( iih->sym_fp, iih->directory[i], block_size ) != block_size ) {
-            return( DS_ERR|DS_FREAD_FAILED );
+            return( DS_ERR | DS_FREAD_FAILED );
         }
         ++i;
         left -= num;
@@ -258,14 +258,14 @@ static dip_status LoadMapping( imp_image_handle *iih )
 
     cde = FindDirEntry( iih, IMH_GBL, sstSegMap );
     if( cde == NULL )
-        return( DS_ERR|DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     map = VMBlock( iih, cde->lfo, cde->cb );
     if( map == NULL )
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     size = map->cSegLog * sizeof( map->segdesc[0] );
     iih->mapping = DCAlloc( size );
     if( iih->mapping == NULL )
-        return( DS_ERR|DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     map = VMBlock( iih, cde->lfo, cde->cb ); /* malloc might have unloaded */
     memcpy( iih->mapping, &map->segdesc[0], size );
     iih->map_count = map->cSegLog;
@@ -301,7 +301,7 @@ static dip_status SetMADType( imp_image_handle *iih )
         iih->mad = MAD_AXP;
         break;
     default:
-        return( DS_ERR|DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     return( DS_OK );
 }

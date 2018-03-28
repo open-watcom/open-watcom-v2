@@ -1177,7 +1177,7 @@ dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *iih,
     if( ret != DS_OK )
         return( ret );
     if( ll.num != 1 || ll.e[0].type != LT_ADDR ) {
-        return( DS_ERR|DS_BAD_LOCATION );
+        return( DS_ERR | DS_BAD_LOCATION );
     }
     *addr = ll.e[0].u.addr;
     return( DS_OK );
@@ -1349,7 +1349,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
         info = NEED_BASE;
         break;
     }
-    if( info & (NEED_BASE|EMPTY_EXPR) ) {
+    if( info & (NEED_BASE | EMPTY_EXPR) ) {
         ok = LoadType( iih, ish->imh, ish->u.typ.h.entry );
         if( ok != DS_OK ) {
             PopLoad();
@@ -1427,8 +1427,8 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
             }
             if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
                 PopLoad();
-                DCStatus( DS_ERR|DS_BAD_LOCATION );
-                return( DS_ERR|DS_BAD_LOCATION );
+                DCStatus( DS_ERR | DS_BAD_LOCATION );
+                return( DS_ERR | DS_BAD_LOCATION );
             }
             LocationAdd( ll, adj.e[0].u.addr.mach.offset * 8 );
             new = new->prev;
@@ -1467,7 +1467,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
         break;
     case STRUCT_TYPE+ST_FIELD_LOC:
     case STRUCT_TYPE+ST_BIT_LOC:
-        if( info & (NEED_BASE|EMPTY_EXPR) )
+        if( info & (NEED_BASE | EMPTY_EXPR) )
             PushBaseLocation( ll );
         ok = EvalLocation( iih, lc, p + 3, ll );
         if( ok != DS_OK ) {
@@ -1633,8 +1633,8 @@ dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *iih,
         }
         if( adj.num != 1 || adj.e[0].type != LT_ADDR ) {
             PopLoad();
-            DCStatus( DS_ERR|DS_BAD_LOCATION );
-            return( DS_ERR|DS_BAD_LOCATION );
+            DCStatus( DS_ERR | DS_BAD_LOCATION );
+            return( DS_ERR | DS_BAD_LOCATION );
         }
         addr->mach.offset += adj.e[0].u.addr.mach.offset;
         new = new->prev;

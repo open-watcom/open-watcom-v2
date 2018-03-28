@@ -130,7 +130,8 @@ link_buffer     *LSuppQueuePull( volatile link_queue *lq )
     unsigned long       save;
     link_buffer         volatile *buff;
 
-    if( lq->head == NULL ) return( NULL );
+    if( lq->head == NULL )
+        return( NULL );
     save = LSuppCritEnter();
     buff = lq->head;
     lq->head = buff->next;

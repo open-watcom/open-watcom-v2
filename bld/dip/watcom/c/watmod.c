@@ -113,8 +113,8 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
     tbl_entries = ( ( num_links + ( MAX_LINK_ENTRIES - 1 ) ) / MAX_LINK_ENTRIES ) + 1;
     lnk_tbl = DCAlloc( tbl_entries * sizeof( pointer_int * ) );
     if( lnk_tbl == NULL ) {
-        DCStatus( DS_ERR|DS_NO_MEM );
-        return( DS_ERR|DS_NO_MEM );
+        DCStatus( DS_ERR | DS_NO_MEM );
+        return( DS_ERR | DS_NO_MEM );
     }
     for( i = 0; i < tbl_entries; ++i )
         lnk_tbl[i] = NULL;
@@ -126,14 +126,14 @@ static dip_status AllocLinkTable( imp_image_handle *iih, section_info *inf, dwor
             num = count;
         lnk = DCAlloc( num * sizeof( pointer_int ) );
         if( lnk == NULL ) {
-            DCStatus( DS_ERR|DS_NO_MEM );
-            return( DS_ERR|DS_NO_MEM );
+            DCStatus( DS_ERR | DS_NO_MEM );
+            return( DS_ERR | DS_NO_MEM );
         }
         lnk_tbl[i++] = lnk;
         if( !iih->v2 ) {
             if( DCRead( iih->sym_fp, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
-                DCStatus( DS_ERR|DS_FREAD_FAILED );
-                return( DS_ERR|DS_FREAD_FAILED );
+                DCStatus( DS_ERR | DS_FREAD_FAILED );
+                return( DS_ERR | DS_FREAD_FAILED );
             }
 #if defined( _M_X64 )
             for( j = num; j-- > 0; ) {
@@ -216,8 +216,8 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
         }
         tbl = DCAlloc( sizeof( mod_table ) + ( count - 1 ) * sizeof( mod_dbg_info * ) );
         if( tbl == NULL ) {
-            DCStatus( DS_ERR|DS_NO_MEM );
-            return( DS_ERR|DS_NO_MEM );
+            DCStatus( DS_ERR | DS_NO_MEM );
+            return( DS_ERR | DS_NO_MEM );
         }
         tbl->count = count;
         blk->link = tbl;
@@ -248,8 +248,8 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
     if( !iih->v2 ) {
         off = first_link + adjust;
         if( DCSeek( iih->sym_fp, off, DIG_ORG ) ) {
-            DCStatus( DS_ERR|DS_FSEEK_FAILED );
-            return( DS_ERR|DS_FSEEK_FAILED );
+            DCStatus( DS_ERR | DS_FSEEK_FAILED );
+            return( DS_ERR | DS_FSEEK_FAILED );
         }
         num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,15 +186,15 @@ static dip_status AdjForward( imp_image_handle *iih, unsigned long bias, imp_cue
     for( ;; ) {
         lp = VMBlock( iih, icueh->line, sizeof( *lp ) );
         if( lp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         if( icueh->pair < lp->cPair )
             return( ds );
         fp = VMBlock( iih, icueh->file, sizeof( *fp ) );
         if( fp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         fp = VMBlock( iih, icueh->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
         if( fp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         i = 0;
         for( ;; ) {
             if( (fp->baseSrcLn[i] + bias) == icueh->line )
@@ -220,7 +221,7 @@ static dip_status AdjBackward( imp_image_handle *iih, unsigned long bias, imp_cu
     icueh->pair--;
     lp = VMBlock( iih, icueh->line, sizeof( *lp ) );
     if( lp == NULL )
-        return( DS_ERR|DS_FAIL );
+        return( DS_ERR | DS_FAIL );
     for( ;; ) {
         /* if icueh->pair went negative, the following compare will fail
            because of unsigned comparison */
@@ -228,10 +229,10 @@ static dip_status AdjBackward( imp_image_handle *iih, unsigned long bias, imp_cu
             return( ds );
         fp = VMBlock( iih, icueh->file, sizeof( *fp ) );
         if( fp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         fp = VMBlock( iih, icueh->file, sizeof( *fp ) + fp->cSeg * sizeof( unsigned_32 ) );
         if( fp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         i = 0;
         for( ;; ) {
             if( (fp->baseSrcLn[i] + bias) == icueh->line )
@@ -245,7 +246,7 @@ static dip_status AdjBackward( imp_image_handle *iih, unsigned long bias, imp_cu
         icueh->line = fp->baseSrcLn[i] + bias;
         lp = VMBlock( iih, icueh->line, sizeof( *lp ) );
         if( lp == NULL )
-            return( DS_ERR|DS_FAIL );
+            return( DS_ERR | DS_FAIL );
         icueh->pair = lp->cPair - 1;
     }
 }
@@ -259,8 +260,8 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
 
     cde = FindDirEntry( iih, src_icueh->imh, sstSrcModule );
     if( cde == NULL ) {
-        DCStatus( DS_ERR|DS_INFO_INVALID );
-        return( DS_ERR|DS_INFO_INVALID );
+        DCStatus( DS_ERR | DS_INFO_INVALID );
+        return( DS_ERR | DS_INFO_INVALID );
     }
     *dst_icueh = *src_icueh;
     ok = DS_OK;
