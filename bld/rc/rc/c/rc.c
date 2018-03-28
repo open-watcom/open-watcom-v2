@@ -180,7 +180,9 @@ void RCmain( void )
 #if defined( __WATCOMC__ )
 #if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL
 #if !defined( __OSI__ ) /* _grow_handles doesn't work yet */
+#if !defined( __RDOS__ ) /* shouldn't be needed */
     _grow_handles( 100 );
+#endif
 #endif
 #endif
 #endif

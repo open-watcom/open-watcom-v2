@@ -55,6 +55,9 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wrc.exe        <OWRELROOT>/binl/wrc
     <CCCMD> linux386/wrc.sym        <OWRELROOT>/binl/
     <CCCMD> linux386/*.uni          <OWRELROOT>/binl/
+    <CCCMD> rdos386/wrc.exe         <OWRELROOT>/rdos/
+    <CCCMD> rdos386/wrc.sym         <OWRELROOT>/rdos/
+    <CCCMD> rdos386/*.uni           <OWRELROOT>/rdos/
 
     <CCCMD> linuxx64/wrc.exe        <OWRELROOT>/binl64/wrc
     <CCCMD> linuxx64/*.uni          <OWRELROOT>/binl64/
