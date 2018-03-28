@@ -197,14 +197,14 @@ Document::Document( Compiler& c, const char* loc ) :
     controls( new Controls() ),
     gnames( new GNames() ),
     dict( new GlobalDictionary() ),
+    tmpBitmaps( NULL ),
     lastPrintableItem( 0 ),
     maxHeaderLevel( 3 ),
     headerLevel( 1 ),
     currentLeftMargin( 1 ),
     lastPrintableToken( Lexer::END ),
     inDoc( false ),
-    spacing( true ),
-    tmpBitmaps( NULL )
+    spacing( true )
 {
     fonts.reset( new FontCollection( codePage() ) );
     FontEntry fnt;
