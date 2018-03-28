@@ -476,6 +476,8 @@ unsigned GblSymSplit( imp_image_handle *iih, info_block *gbl, section_info *inf 
     unsigned        total;
     unsigned        next;
 
+    /* unused parameters */ (void)inf;
+
     ptr = gbl->info;
     /* check if there is enough there to pick up the name length field */
     for( total = 0; ( total + sizeof( gbl_info ) + 1 ) <= gbl->size; total = next ) {

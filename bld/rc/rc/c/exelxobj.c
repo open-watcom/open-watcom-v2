@@ -85,7 +85,7 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
     object_record   *new_obj;
     lx_map_entry    *old_page;
     lx_map_entry    *new_page;
-    int             obj_index;
+    unsigned        obj_index;
     int             old_obj_index;
     int             old_num_objects;
     int             page_index;
@@ -171,7 +171,7 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
     lx_map_entry    *new_map;
     uint_32         old_offset;
     uint_32         new_offset;
-    int             i;
+    unsigned        i;
 
     for( i = 0; i < old_obj->mapsize; ++i ) {
         old_map = &old->u.LXInfo.Pages[old_obj->mapidx + i - 1];
@@ -300,7 +300,7 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
         uint_32     last_fix_pg;
         uint_32     new_fixpg_length;
         uint_32     old_fixpg_length;
-        int         i;
+        unsigned    i;
 
         // the fixup page table must be extended if resource pages were added
         old_pages = new_head->num_pages - new->u.LXInfo.Res.num_pages;

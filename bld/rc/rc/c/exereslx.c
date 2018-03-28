@@ -164,7 +164,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
     uint_32         padded_size;
     uint_32         padded_res_size;
     int             page_shift;
-    int             i;
+    unsigned        i;
 
     dir = &exe->u.LXInfo.Res;
 
@@ -258,7 +258,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 {
     LXResTable      *dir;
     WResMergeError  *errs;
-    int             i;
+    unsigned        i;
     LXResEntry      *entry;
     unsigned_32     total = 0;
     unsigned_32     curr_total;

@@ -298,6 +298,8 @@ static dip_status DefnLocation( imp_image_handle *iih, lcl_defn *defn, location_
 {
     address     addr;
 
+    /* unused parameters */ (void)local;
+
     switch( defn->i.class ) {
     case VAR_SYMBOL | VAR_MODULE386:
         GetAddress( iih, defn->i.unparsed, &addr, 1 );
