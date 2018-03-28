@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,6 +85,8 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *iih,
 
 cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *iih, imp_cue_handle *icueh )
 {
+    /* unused parameters */ (void)ii; (void)icueh;
+
     return( 1 );
 }
 
@@ -271,7 +274,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih,
     long                hi;
     long                target;
 
-    switch( FindMBIndex( iih, addr.mach.offset, &ich->mb_idx ) ) {
+    switch( FindMBIndex( iih, addr.mach.offset, &icueh->mb_idx ) ) {
     case SR_EXACT:
     case SR_CLOSEST:
         break;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -294,9 +295,9 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_
         return( 0 );
     }
 #else
-    if( (char*)g1 < (char*)g2 )
+    if( (char *)g1 < (char *)g2 )
         return( -1 );
-    if( (char*)g1 > (char*)g2 )
+    if( (char *)g1 > (char *)g2 )
         return( 1 );
     return( 0 );
 #endif

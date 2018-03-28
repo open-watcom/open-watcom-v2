@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -447,7 +448,7 @@ static void CompareCues( cue_handle *cueh1, cue_handle *cueh2,
         failed |= exp_le_addr && ( addr2.mach.segment != addr1.mach.segment || addr2.mach.offset <= addr1.mach.offset );
         if( failed ) {
             printf( "FAILED: %s: cue2:{file=%#x line=%lu addr=%04x:%08lx}\n"
-                    "       %*s != cue:{file=%#x line=%lu addr=%04x:%08lx}\n",
+                    "       %*s != cue1:{file=%#x line=%lu addr=%04x:%08lx}\n",
                     operation,
                     DIPCueFileId( cueh2 ), line2, addr2.mach.segment, (long)addr2.mach.offset,
                     strlen( operation ), "",
@@ -489,8 +490,7 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     /* check the LineCue function */
     if( Opts.do_cue_tests ) {
         search_rc = DIPLineCue( mod, file_id, 0, 0, cueh2 );
-        CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false,
-                     "DIPLineCue(,,0,)" );
+        CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, true, false, "DIPLineCue(,,0,)" );
     }
 
     /* lines */
@@ -512,30 +512,24 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
         /* do tests */
         if( Opts.do_cue_tests ) {
             if( DIPCueFileId( cueh1 ) !=  file_id ) {
-                printf( "ERROR: file id changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueFileId( cueh1 ), (long)file_id );
+                printf( "ERROR: file id changed! new:%#lx old:%#lx\n", (long)DIPCueFileId( cueh1 ), (long)file_id );
             }
             if( DIPCueMod( cueh1 ) !=  mod ) {
-                printf( "ERROR: module changed! new:%#lx old:%#lx\n",
-                        (long)DIPCueMod( cueh1 ), (long)file_id );
+                printf( "ERROR: module changed! new:%#lx old:%#lx\n", (long)DIPCueMod( cueh1 ), (long)file_id );
             }
 
             /* line searches */
             search_rc = DIPLineCue( mod, file_id, line, 0, cueh2 );
-            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false,
-                         "DIPLineCue(,,n,)" );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, true, false, false, false, "DIPLineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
                 search_rc = DIPLineCue( mod, file_id, line - 1, 0, cueh2 );
-                CompareCues( prev_cueh, cueh2,
-                             prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
-                             search_rc, true, false, false, false,
-                             "DIPLineCue(,,n-1,)" );
+                CompareCues( prev_cueh, cueh2, prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
+                             search_rc, true, false, false, false, "DIPLineCue(,,n-1,)" );
             }
 
             /* address searches */
             search_rc = DIPAddrCue( mod, addr, cueh2 );
-            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false,
-                         "DIPAddrCue(,,n,)" );
+            CompareCues( cueh1, cueh2, SR_EXACT, search_rc, false, false, true, false, "DIPAddrCue(,,n,)" );
         }
 
 

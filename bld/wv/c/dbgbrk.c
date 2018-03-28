@@ -1093,7 +1093,7 @@ void SetPointAddr( brkp *bp, address addr )
     DIPHDL( cue, cueh );
     image_entry *image;
     mod_handle  mod;
-    char  const *start;
+    const char  *start;
     bool        ok;
 
     if( bp->status.b.unmapped )

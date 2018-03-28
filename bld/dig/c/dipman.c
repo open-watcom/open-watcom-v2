@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,7 +318,7 @@ void DIPCancel( void )
 
 static image_idx FindImageMapSlot( process_info *p )
 {
-    image_handle        **new;
+    image_handle        **new_ih;
     image_idx           new_num;
     image_idx           ii;
     image_idx           j;
@@ -329,16 +329,16 @@ static image_idx FindImageMapSlot( process_info *p )
         }
     }
     new_num = p->map_entries + IMAGE_MAP_GROW;
-    new = DIGCli( Realloc )( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
-    if( new == NULL ) {
+    new_ih = DIGCli( Realloc )( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
+    if( new_ih == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NO_IMAGE_IDX );
     }
     ii = p->map_entries;
     p->map_entries = new_num;
-    p->ih_map = new;
+    p->ih_map = new_ih;
     for( j = ii; j < new_num; ++j )
-        new[j] = NULL;
+        new_ih[j] = NULL;
     return( ii );
 }
 
@@ -723,18 +723,15 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     if( ih != NULL ) {
         sh->ii = ii;
         if( ih->dip->minor == DIP_MINOR ) {
-            wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start,
-                                    SymGlue, SH2ISH( sh ), wd->lc, wd );
+            wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd->lc, wd );
         } else {
-            wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start,
-                                    SymGlue, SH2ISH( sh ), wd );
+            wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start, SymGlue, SH2ISH( sh ), wd );
         }
     }
     return( wr );
 }
 
-walk_result DIPWalkSymListEx( symbol_source ss, void *start, DIP_SYM_WALKER *sw,
-                           location_context *lc, void *d )
+walk_result DIPWalkSymListEx( symbol_source ss, void *start, DIP_SYM_WALKER *sw, location_context *lc, void *d )
 {
     walk_glue   glue;
 
@@ -895,8 +892,7 @@ void DIPTypeInit( type_handle *th, mod_handle mh )
     th->ap = 0;
 }
 
-dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size,
-                        type_handle *ptr_th )
+dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size, type_handle *ptr_th )
 {
     if( base_th->ap & AP_FULL )
         return( DS_ERR | DS_TOO_MANY_POINTERS );
@@ -933,11 +929,9 @@ dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context 
     base_th->ii = th->ii;
     base_th->ap = 0;
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->TypeBase( IH2IIH( ih ),
-                TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
+        return( ih->dip->TypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
     } else {
-        return( ih->dip->OldTypeBase( IH2IIH( ih ),
-                TH2ITH( th ), TH2ITH( base_th ) ) );
+        return( ih->dip->OldTypeBase( IH2IIH( ih ), TH2ITH( th ), TH2ITH( base_th ) ) );
     }
 }
 
@@ -972,7 +966,7 @@ dip_status DIPTypeRelease( type_handle *th )
 }
 
 dip_status DIPTypeFreeAll( void )
-/****************************/
+/*******************************/
 {
     image_handle        *ih;
 
@@ -986,8 +980,7 @@ dip_status DIPTypeFreeAll( void )
     return( DS_OK );
 }
 
-dip_status DIPTypeArrayInfo( type_handle *th, location_context *lc,
-                        array_info *ai, type_handle *index_th )
+dip_status DIPTypeArrayInfo( type_handle *th, location_context *lc, array_info *ai, type_handle *index_th )
 {
     image_handle        *ih;
     imp_type_handle     *ith;
@@ -1034,8 +1027,7 @@ dip_status DIPTypePtrAddrSpace( type_handle *th, location_context *lc, address *
     return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
-dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
-                        location_context *lc, address *a )
+dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2, location_context *lc, address *a )
 {
     image_handle        *ih;
 
@@ -1046,8 +1038,7 @@ dip_status DIPTypeThunkAdjust( type_handle *th1, type_handle *th2,
     ih = II2IH( th1->ii );
     if( ih == NULL )
         return( DS_ERR | DS_NO_PROCESS );
-    return( ih->dip->TypeThunkAdjust( IH2IIH( ih ),
-        TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
+    return( ih->dip->TypeThunkAdjust( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ), lc, a ) );
 }
 
 int DIPTypeCmp( type_handle *th1, type_handle *th2 )
@@ -1147,8 +1138,7 @@ void DIPSymInit( sym_handle *sh, image_handle *ih )
     }
 }
 
-dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc,
-                        location_list *ll, unsigned parm )
+dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc, location_list *ll, unsigned parm )
 {
     image_handle        *ih;
 
@@ -1170,8 +1160,7 @@ dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
     return( ih->dip->SymObjType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ), ti ) );
 }
 
-dip_status DIPSymObjLocation( sym_handle *sh, location_context *lc,
-                        location_list *ll )
+dip_status DIPSymObjLocation( sym_handle *sh, location_context *lc, location_list *ll )
 {
     image_handle        *ih;
 
@@ -1226,7 +1215,7 @@ dip_status DIPSymRelease( sym_handle *sh )
 }
 
 dip_status DIPSymFreeAll( void )
-/***************************/
+/******************************/
 {
     image_handle        *ih;
 
@@ -1310,8 +1299,7 @@ address DIPCueAddr( cue_handle *cueh )
     return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( cueh ) ) );
 }
 
-search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
-                        unsigned column, cue_handle *cueh )
+search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line, unsigned column, cue_handle *cueh )
 {
     image_handle        *ih;
 
@@ -1411,8 +1399,7 @@ search_result DIPAddrSym( mod_handle mh, address a, sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-search_result DIPLookupSymEx( symbol_source ss, void *source,
-                        lookup_item *li, location_context *lc, void *d )
+search_result DIPLookupSymEx( symbol_source ss, void *source, lookup_item *li, location_context *lc, void *d )
 {
     image_handle        *ih;
     image_handle        *curr_ih;

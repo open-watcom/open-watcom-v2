@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1217,7 +1218,8 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle imh,
  */
 int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )
 {
-    iih = iih;
+    /* unused parameters */ (void)iih;
+
     if( icueh1->imh < icueh2->imh )
         return( -1 );
     if( icueh1->imh > icueh2->imh )
@@ -1232,4 +1234,3 @@ int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cu
         return( 1 );
     return( 0 );
 }
-

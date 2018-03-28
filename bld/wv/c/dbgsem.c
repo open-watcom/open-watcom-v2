@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,25 +80,9 @@ enum {
     SEM_MECHANISM   = 0xe0,
 };
 
-extern void             AddChar( void );
-
-#define type_bitsII     int
-
-/* SSL Table Variables */
-static type_bitsII      Bits;
-static int              Num;
-static bool             EvalSubstring;
-static struct {
-    lookup_item         li;
-    bool                multi_module    : 1;
-    bool                any_image       : 1;
-    enum { GET_NAME, GET_OPERATOR, GET_LNUM }   kind;
-}                       CurrGet;
-
-#define MAX_SCANSAVE_PTRS 20
-static  const char      *CurrScan[MAX_SCANSAVE_PTRS];
-        int             ScanSavePtr;
-
+typedef struct internal_mod {
+    mod_handle          mh;
+} internal_mod;
 
 //NYI: begin temp until SSL files can be updated
 typedef enum {
@@ -127,6 +112,26 @@ typedef enum {
                                 addresses (286 / 386)
                             */
 } stack_class;
+
+extern void             AddChar( void );
+
+int                     ScanSavePtr;
+
+#define type_bitsII     int
+
+/* SSL Table Variables */
+static type_bitsII      Bits;
+static int              Num;
+static bool             EvalSubstring;
+static struct {
+    lookup_item         li;
+    bool                multi_module    : 1;
+    bool                any_image       : 1;
+    enum { GET_NAME, GET_OPERATOR, GET_LNUM }   kind;
+}                       CurrGet;
+
+#define MAX_SCANSAVE_PTRS 20
+static  const char      *CurrScan[MAX_SCANSAVE_PTRS];
 
 static stack_class TypeInfoToClass( dip_type_info *ti )
 {
@@ -689,23 +694,19 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
 }
 
 
-struct internal_mod {
-    mod_handle          mh;
-};
-
 OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
 {
     if( !IsInternalMod( mh ) )
         return( WR_CONTINUE );
-    ((struct internal_mod *)d)->mh = mh;
+    ((internal_mod *)d)->mh = mh;
     return( WR_STOP );
 }
 
 static void BasicType( unsigned basic_type )
 {
-    struct internal_mod         mod_srch;
-    struct imp_type_handle      *ith;
-    dip_type_info               info;
+    internal_mod        mod_srch;
+    imp_type_handle     *ith;
+    dip_type_info       info;
     DIPHDL( type, th );
 
     DIPWalkModList( NO_MOD, FindInternalMod, &mod_srch );
