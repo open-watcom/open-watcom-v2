@@ -76,14 +76,14 @@ typedef enum {
     MAX_HK
 } handle_kind;
 
-typedef unsigned_8 symbol_source; enum {
+typedef enum {
     SS_MODULE,
     SS_SCOPED,
     SS_TYPE,
     SS_BLOCK,
     SS_SCOPESYM,
     SS_LAST
-};
+} symbol_source;
 
 typedef enum {
     SWI_SYMBOL,
@@ -153,7 +153,7 @@ typedef struct {
     unsigned            column_major    : 1;
 } array_info;
 
-typedef unsigned_8 sym_kind; enum {
+typedef enum {
     SK_NONE,
     SK_CODE,
     SK_DATA,
@@ -162,7 +162,7 @@ typedef unsigned_8 sym_kind; enum {
     SK_PROCEDURE,
     SK_NAMESPACE,
     SK_LAST
-};
+} sym_kind;
 
 typedef struct {
     sym_kind            kind;
@@ -172,13 +172,13 @@ typedef struct {
     unsigned            is_private              : 1;
     unsigned            is_protected            : 1;
     unsigned            is_public               : 1;
+    /* is_static is valid for all symbols */
+    unsigned            is_static               : 1;
     /* only valid for SK_PROCEDURE */
     unsigned            rtn_far                 : 1;
     unsigned            rtn_calloc              : 1;
     unsigned            ret_modifier            : 3;
     unsigned            ret_size                : 4;
-    /* is_static is valid for all symbols */
-    unsigned            is_static               : 1;
     unsigned short      num_parms;
     addr_off            ret_addr_offset;
     addr_off            prolog_size;
@@ -211,7 +211,7 @@ typedef struct {
     size_t      len;
 } lookup_token;
 
-typedef unsigned_8 symbol_type; enum {
+typedef enum {
     ST_NONE,
     ST_OPERATOR,
     ST_DESTRUCTOR,
@@ -222,16 +222,16 @@ typedef unsigned_8 symbol_type; enum {
     ST_ENUM_TAG,
     ST_NAMESPACE,
     ST_LAST
-};
+} symbol_type;
 
 typedef struct {
     mod_handle          mod;
     lookup_token        name;
     lookup_token        scope;
     lookup_token        source;
+    symbol_type         type;
     unsigned            file_scope      : 1;
     unsigned            case_sensitive  : 1;
-    unsigned            type            : 4; /* symbol_type values */
 } lookup_item;
 
 #include "digunpck.h"

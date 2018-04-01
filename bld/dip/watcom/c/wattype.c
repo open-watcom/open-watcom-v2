@@ -502,7 +502,7 @@ static const char *FindAName( struct name_state *state, const char *p,
     int         (*comp)(void const*,void const*,size_t);
     unsigned    index;
     unsigned    i;
-    unsigned    type;
+    symbol_type type;
 
     if( li->case_sensitive ) {
         comp = memcmp;
