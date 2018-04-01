@@ -899,7 +899,7 @@ static unsigned long CalcHash( const char *name, size_t len )
 typedef search_result   SEARCH_CREATOR( imp_image_handle *, s_all *, imp_sym_handle *, void * );
 
 static search_result TableSearchForName( imp_image_handle *iih,
-                int case_sense, const char *name, size_t name_len,
+                bool case_sense, const char *name, size_t name_len,
                 unsigned long hash, imp_sym_handle *ish,
                 SEARCH_CREATOR *create, void *d, unsigned tbl_type )
 {
@@ -1008,14 +1008,14 @@ dip_status SymFindMatchingSym( imp_image_handle *iih, const char *name, size_t n
 
     data.idx = idx;
     hash = CalcHash( name, name_len );
-    sr = TableSearchForName( iih, 1, name, name_len, hash, ish, MatchSym, &data, sstStaticSym );
+    sr = TableSearchForName( iih, true, name, name_len, hash, ish, MatchSym, &data, sstStaticSym );
     switch( sr ) {
     case SR_FAIL:
         return( DS_ERR | DS_FAIL );
     case SR_EXACT:
         return( DS_OK );
     }
-    sr = TableSearchForName( iih, 1, name, name_len, hash, ish, MatchSym, &data, sstGlobalSym );
+    sr = TableSearchForName( iih, true, name, name_len, hash, ish, MatchSym, &data, sstGlobalSym );
     switch( sr ) {
     case SR_FAIL:
         return( DS_ERR | DS_FAIL );

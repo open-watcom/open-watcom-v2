@@ -186,16 +186,19 @@ typedef struct {
     addr_off            rtn_size;
 } sym_info;
 
-typedef unsigned_8 location_type; enum { LT_ADDR, LT_INTERNAL };
+typedef enum {
+    LT_ADDR,
+    LT_INTERNAL
+} location_type;
 
 typedef struct {
-    unsigned    type            : 1;
-    unsigned    bit_start       : 15;
-    unsigned    bit_length      : 16;
+    dig_size_bits       bit_start;
+    dig_size_bits       bit_length;
     union {
-        address                 addr;
-        void                    *p;
-    }           u;
+        address     addr;
+        void        *p;
+    }                   u;
+    location_type       type;
 } location_entry;
 
 #define MAX_LOC_ENTRIES 16
@@ -230,8 +233,8 @@ typedef struct {
     lookup_token        scope;
     lookup_token        source;
     symbol_type         type;
-    unsigned            file_scope      : 1;
-    unsigned            case_sensitive  : 1;
+    bool                file_scope      : 1;
+    bool                case_sensitive  : 1;
 } lookup_item;
 
 #include "digunpck.h"

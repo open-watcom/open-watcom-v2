@@ -36,6 +36,7 @@
 #include <windows.h>
 #include <i86.h>
 #endif
+#include "bool.h"
 #include "diptypes.h"
 #include "dipimp.h"
 
