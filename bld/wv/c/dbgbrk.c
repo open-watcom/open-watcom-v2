@@ -1625,13 +1625,13 @@ bool BreakOnRawMemory( address addr, const char *comment, int size )
 void BreakOnExprSP( const char *comment )
 {
     address             addr;
-    dip_type_info       tinfo;
+    dip_type_info       ti;
     tmp_break_struct    s;
 
     LValue( ExprSP );
-    tinfo.size = ExprSP->info.size;
+    ti.size = ExprSP->info.size;
     if( !( ExprSP->flags & SF_LOCATION ) ) {
-        tinfo.size = DefaultSize( DK_INT );
+        ti.size = DefaultSize( DK_INT );
     }
     switch( WndGetExprSPInspectType( &addr ) ) {
     case INSP_CODE:
@@ -1640,7 +1640,7 @@ void BreakOnExprSP( const char *comment )
     case INSP_DATA:
     case INSP_RAW_DATA:
         s.addr = addr;
-        s.size = tinfo.size;
+        s.size = ti.size;
         s.comment = comment;
         BreakOnAddress( &s );
         break;

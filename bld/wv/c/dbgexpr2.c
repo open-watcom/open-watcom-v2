@@ -51,23 +51,23 @@
 #include "dbglkup.h"
 
 
-static bool DefaultTypeInfo( dip_type_info *info )
+static bool DefaultTypeInfo( dip_type_info *ti )
 {
     bool        real_type;
 
     real_type = true;
-    switch( info->kind ) {
+    switch( ti->kind ) {
     case TK_DATA:
     case TK_NONE:
         real_type = false;
-        info->kind = TK_INTEGER;
+        ti->kind = TK_INTEGER;
         /* fall through */
     case TK_INTEGER:
-        if( info->modifier == TM_NONE ) {
-            info->modifier = TM_UNSIGNED;
+        if( ti->modifier == TM_NONE ) {
+            ti->modifier = TM_UNSIGNED;
         }
-        if( info->size == 0 ) {
-            info->size = DefaultSize( DK_INT );
+        if( ti->size == 0 ) {
+            ti->size = DefaultSize( DK_INT );
         }
         break;
     case TK_CODE:
@@ -75,40 +75,40 @@ static bool DefaultTypeInfo( dip_type_info *info )
         real_type = false;
         /* fall through */
     case TK_POINTER:
-        if( info->modifier == TM_NONE ) {
-            info->modifier = TM_FAR;
+        if( ti->modifier == TM_NONE ) {
+            ti->modifier = TM_FAR;
         }
-        if( info->size == 0 ) {
-            info->size = DefaultSize( DK_DATA_PTR );
-            switch( info->modifier ) {
+        if( ti->size == 0 ) {
+            ti->size = DefaultSize( DK_DATA_PTR );
+            switch( ti->modifier ) {
             case TM_FAR:
             case TM_HUGE:
-                info->size += sizeof( addr_seg );
+                ti->size += sizeof( addr_seg );
                 break;
             }
         }
         break;
     case TK_STRING:
-        if( info->modifier == TM_NONE ) {
-            info->modifier = TM_ASCII;
+        if( ti->modifier == TM_NONE ) {
+            ti->modifier = TM_ASCII;
         }
         break;
     }
     return( real_type );
 }
 
-bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *info )
+bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *ti )
 {
-    DIPTypeInfo( th, lc, info );
-    return( DefaultTypeInfo( info ) );
+    DIPTypeInfo( th, lc, ti );
+    return( DefaultTypeInfo( ti ) );
 }
 
-void ClassifyEntry( stack_entry *stk, dip_type_info *info )
+void ClassifyEntry( stack_entry *stk, dip_type_info *ti )
 {
     if( stk->th == NULL ) {
-        *info = stk->info;
-        DefaultTypeInfo( info );
-    } else if( !ClassifyType( stk->lc, stk->th, info ) ) {
+        *ti = stk->info;
+        DefaultTypeInfo( ti );
+    } else if( !ClassifyType( stk->lc, stk->th, ti ) ) {
         stk->th = NULL;
     }
 }

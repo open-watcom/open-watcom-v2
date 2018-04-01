@@ -58,30 +58,29 @@ extern char             *Language;
 
 unsigned DefaultSize( default_kind dk )
 {
-    dip_type_info       info;
+    dip_type_info       ti;
     mad_type_info       mti;
 
-    if( DIPModDefault( CodeAddrMod, dk, &info ) != 0 ) {
-        info.kind = TK_NONE;
-        info.size = 0;
+    if( DIPModDefault( CodeAddrMod, dk, &ti ) != 0 ) {
+        ti.kind = TK_NONE;
+        ti.size = 0;
     }
     mti.b.kind = MTK_BASIC;
-    if( info.size == 0 ) {
-        GetMADTypeDefaultAt( GetCodeDot(),
-                ( dk == DK_INT ) ? MTK_INTEGER : MTK_ADDRESS, &mti );
-        info.size = BITS2BYTES( mti.b.bits );
+    if( ti.size == 0 ) {
+        GetMADTypeDefaultAt( GetCodeDot(), ( dk == DK_INT ) ? MTK_INTEGER : MTK_ADDRESS, &mti );
+        ti.size = BITS2BYTES( mti.b.bits );
         if( mti.b.kind == MTK_ADDRESS ) {
-            info.size -= BITS2BYTES( mti.a.seg.bits );
+            ti.size -= BITS2BYTES( mti.a.seg.bits );
         }
     }
-    if( info.kind == TK_POINTER && info.modifier == TM_FAR ) {
+    if( ti.kind == TK_POINTER && ti.modifier == TM_FAR ) {
         if( mti.b.kind == MTK_BASIC ) {
             /* haven't gotten the info yet */
             GetMADTypeDefaultAt( GetCodeDot(), MTK_ADDRESS, &mti );
         }
-        info.size -= BITS2BYTES( mti.a.seg.bits );
+        ti.size -= BITS2BYTES( mti.a.seg.bits );
     }
-    return( info.size );
+    return( ti.size );
 }
 
 static char *DoMadLongConv( char *buff, size_t buff_len, unsigned long value, mad_radix radix, int size )

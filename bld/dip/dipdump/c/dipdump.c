@@ -363,7 +363,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     char            buff[2048];
     unsigned        len;
     symbol_type     tag;
-    dip_type_info   tinfo;
+    dip_type_info   ti;
     dip_status      rc;
 
     printf( "%5d  ", ++*idx );
@@ -379,14 +379,14 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     }
 
     /* type info */
-    rc = DIPTypeInfo( th, NULL, &tinfo );
+    rc = DIPTypeInfo( th, NULL, &ti );
     if( rc == DS_OK ) {
         printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x %s\n",
-                tinfo.size,
-                tinfo.kind, GetTypeKind( tinfo.kind ),
-                tinfo.modifier, GetTypeModifier( tinfo.modifier, tinfo.kind ) );
+                ti.size,
+                ti.kind, GetTypeKind( ti.kind ),
+                ti.modifier, GetTypeModifier( ti.modifier, ti.kind ) );
 
-        switch( tinfo.kind ) {
+        switch( ti.kind ) {
         case TK_ARRAY: {
                 array_info ainfo;
                 rc = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );

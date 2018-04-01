@@ -522,33 +522,33 @@ void DoPoints( type_kind def )
 
 static void ConvertGiven( stack_entry *object, stack_entry *new )
 {
-    dip_type_info       new_type;
-    dip_type_info       obj_type;
+    dip_type_info       new_ti;
+    dip_type_info       obj_ti;
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
     if( object->th != NULL )
         HDLAssign( type, obj_th, object->th );
-    ClassifyEntry( new, &new_type );
-    new_type.modifier &= TM_MOD_MASK; /* turn off DEREF bit */
-    ConvertTo( object, new_type.kind, new_type.modifier, new_type.size );
+    ClassifyEntry( new, &new_ti );
+    new_ti.modifier &= TM_MOD_MASK; /* turn off DEREF bit */
+    ConvertTo( object, new_ti.kind, new_ti.modifier, new_ti.size );
     if( object->th == NULL )
         goto no_adjust;
-    ClassifyEntry( object, &obj_type );
-    if( obj_type.kind != TK_POINTER )
+    ClassifyEntry( object, &obj_ti );
+    if( obj_ti.kind != TK_POINTER )
         goto no_adjust;
     if( AddrComp( object->v.addr, NilAddr ) == 0 )
         goto no_adjust;
     DIPTypeBase( obj_th, obj_th, NULL, NULL );
-    ClassifyType( object->lc, obj_th, &obj_type );
-    if( obj_type.kind != TK_STRUCT )
+    ClassifyType( object->lc, obj_th, &obj_ti );
+    if( obj_ti.kind != TK_STRUCT )
         goto no_adjust;
-    ClassifyEntry( new, &new_type );
-    if( new_type.kind != TK_POINTER )
+    ClassifyEntry( new, &new_ti );
+    if( new_ti.kind != TK_POINTER )
         goto no_adjust;
     DIPTypeBase( new->th, new_th, NULL, NULL );
-    ClassifyType( object->lc, new_th, &new_type );
-    if( new_type.kind != TK_STRUCT )
+    ClassifyType( object->lc, new_th, &new_ti );
+    if( new_ti.kind != TK_STRUCT )
         goto no_adjust;
     /*
      * At this point we know both the old type and the new type were
@@ -598,18 +598,18 @@ void DoConvert( void )
 void DoLConvert( void )
 {
     stack_entry     *left;
-    dip_type_info   new;
+    dip_type_info   ti;
 
     left = StkEntry( 1 );
     LValue( ExprSP );
     if( ExprSP->flags & SF_LOCATION ) {
-        ClassifyEntry( left, &new );
+        ClassifyEntry( left, &ti );
         if( ExprSP->v.loc.e[ExprSP->v.loc.num-1].type != LT_ADDR ) {
-            if( new.size > ExprSP->info.size ) {
+            if( ti.size > ExprSP->info.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
             }
         }
-        ExprSP->info = new;
+        ExprSP->info = ti;
         MoveTH( left, ExprSP );
     } else {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );

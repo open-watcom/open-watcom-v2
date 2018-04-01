@@ -73,21 +73,21 @@ typedef enum {
 } conv_class;
 
 
-static conv_class ConvIdx( dip_type_info *info )
+static conv_class ConvIdx( dip_type_info *ti )
 {
     unsigned    size;
 
-    if( info->kind == TK_STRING )
+    if( ti->kind == TK_STRING )
         return( STR );
-    if( info->size > sizeof( item_mach ) )
+    if( ti->size > sizeof( item_mach ) )
         return( ERR );
-    size = info->size;
-    switch( info->kind ) {
+    size = ti->size;
+    switch( ti->kind ) {
     case TK_BOOL:
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( (info->modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        if( (ti->modifier & TM_MOD_MASK) == TM_SIGNED ) {
             switch( size ) {
             case 1:
                 return( I1 );
@@ -133,7 +133,7 @@ static conv_class ConvIdx( dip_type_info *info )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( info->modifier & TM_MOD_MASK ) {
+        switch( ti->modifier & TM_MOD_MASK ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -797,7 +797,7 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     conv_class      lclass;
     conv_class      rclass;
     conv_class      result_class;
-    dip_type_info   *result_info;
+    dip_type_info   *result_ti;
     bool            promote_left;
 
     lclass = ConvIdx( &left->info );
@@ -810,19 +810,19 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }
     if( left->info.kind == TK_ENUM ) {
-        result_info = &left->info;
+        result_ti = &left->info;
     } else if( right->info.kind == TK_ENUM ) {
-        result_info = &right->info;
+        result_ti = &right->info;
     } else {
-        result_info = &ResultInfo[result_class];
+        result_ti = &ResultInfo[result_class];
     }
     promote_left = false;
     if( lclass != result_class ) {
         promote_left = true;
-        ConvertTo( left, result_info->kind, result_info->modifier, result_info->size );
+        ConvertTo( left, result_ti->kind, result_ti->modifier, result_ti->size );
     }
     if( rclass != result_class ) {
-        ConvertTo( right, result_info->kind, result_info->modifier, result_info->size );
+        ConvertTo( right, result_ti->kind, result_ti->modifier, result_ti->size );
     }
     /* set up result type in left operand */
     if( left->th != NULL && right->th != NULL ) {

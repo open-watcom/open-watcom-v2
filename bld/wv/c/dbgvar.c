@@ -732,10 +732,10 @@ static bool     CheckPointerValid( void )
 
 static type_kind        TypeKind( type_handle *th )
 {
-    dip_type_info   tinfo;
+    dip_type_info       ti;
 
-    DIPTypeInfo( th, NULL, &tinfo );
-    return( tinfo.kind );
+    DIPTypeInfo( th, NULL, &ti );
+    return( ti.kind );
 }
 
 
@@ -1027,15 +1027,15 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
 static void ArrayParms( var_node *v, array_info *ainfo )
 {
     DIPHDL( type, th );
-    dip_type_info   tinfo;
+    dip_type_info       ti;
 
     if( TypeKind( v->th ) == TK_ARRAY ) {
         DIPTypeArrayInfo( v->th, ExprSP->lc, ainfo, NULL );
     } else {
         DIPTypeBase( v->th, th, NULL, NULL );
         ainfo->low_bound = 0;
-        DIPTypeInfo( th, ExprSP->lc, &tinfo );
-        ainfo->stride = tinfo.size;
+        DIPTypeInfo( th, ExprSP->lc, &ti );
+        ainfo->stride = ti.size;
     }
 }
 
@@ -2629,7 +2629,7 @@ void VarDoAssign( var_info *i, var_node *v, const char *value )
 bool VarParentIsArray( var_node * v )
 {
     var_node            *vparent = v;
-    dip_type_info       tinfo;
+    dip_type_info       ti;
 
     while( vparent->parent != NULL ) {
         if( vparent->parent->node_type != NODE_INHERIT ) {
@@ -2642,8 +2642,8 @@ bool VarParentIsArray( var_node * v )
     if( ( vparent == v ) || ( NULL == vparent ) )
         return( false );
 
-    DIPTypeInfo( vparent->th, NULL, &tinfo );
+    DIPTypeInfo( vparent->th, NULL, &ti );
 
-    return( tinfo.kind == TK_ARRAY || vparent->fake_array );
+    return( ti.kind == TK_ARRAY || vparent->fake_array );
 }
 

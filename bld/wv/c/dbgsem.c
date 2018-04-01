@@ -225,43 +225,43 @@ static void ClassToTypeInfo( stack_class c, dip_type_info *ti )
 
 //NYI: end temp
 
-static void FillInDefaults( dip_type_info *info )
+static void FillInDefaults( dip_type_info *ti )
 {
     mad_type_info       mti;
 
-    switch( info->kind ) {
+    switch( ti->kind ) {
     case TK_INTEGER:
-        if( info->modifier == TM_NONE )
-            info->modifier = TM_SIGNED;
-        if( info->size == 0 ) {
-            if( DIPModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
+        if( ti->modifier == TM_NONE )
+            ti->modifier = TM_SIGNED;
+        if( ti->size == 0 ) {
+            if( DIPModDefault( CodeAddrMod, DK_INT, ti ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
-                info->size = BITS2BYTES( mti.b.bits );
+                ti->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
     case TK_POINTER:
     case TK_CODE:
     case TK_DATA:
-        if( info->modifier == TM_NONE ) {
-            if( DIPModDefault( CodeAddrMod, (info->kind == TK_CODE) ? DK_CODE_PTR : DK_DATA_PTR, info ) != DS_OK ) {
-                info->modifier = TM_NONE;
-                info->size = 0;
+        if( ti->modifier == TM_NONE ) {
+            if( DIPModDefault( CodeAddrMod, (ti->kind == TK_CODE) ? DK_CODE_PTR : DK_DATA_PTR, ti ) != DS_OK ) {
+                ti->modifier = TM_NONE;
+                ti->size = 0;
             }
         }
-        if( info->modifier == TM_NONE || info->size == 0 ) {
+        if( ti->modifier == TM_NONE || ti->size == 0 ) {
             GetMADTypeDefault( MTK_ADDRESS, &mti );
-            if( info->modifier == TM_NONE ) {
+            if( ti->modifier == TM_NONE ) {
                 if( mti.a.seg.bits != 0 ) {
-                    info->modifier = TM_FAR;
+                    ti->modifier = TM_FAR;
                 } else {
-                    info->modifier = TM_NEAR;
+                    ti->modifier = TM_NEAR;
                 }
             }
-            if( info->size == 0 ) {
-                if( info->modifier == TM_NEAR )
+            if( ti->size == 0 ) {
+                if( ti->modifier == TM_NEAR )
                     mti.b.bits -= mti.a.seg.bits;
-                info->size = BITS2BYTES( mti.b.bits );
+                ti->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
@@ -554,7 +554,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
     unsigned long       size;
     ssl_value           result;
     DIPHDL( type, th );
-    dip_type_info       info;
+    dip_type_info       ti;
     mad_type_info       mti;
 
     result = 0;
@@ -590,8 +590,8 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         DoAddr();
         break;
     case 10:
-        ClassToTypeInfo( parm, &info );
-        DoPoints( info.kind );
+        ClassToTypeInfo( parm, &ti );
+        DoPoints( ti.kind );
         break;
     case 11:
         DoField();
@@ -668,11 +668,11 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         DoPoints( TI_KIND_EXTRACT( parm ) );
         break;
     case 30:
-        info.kind = TK_POINTER;
-        info.size = TI_SIZE_EXTRACT( parm );
-        info.modifier = TI_MOD_EXTRACT( parm );
-        FillInDefaults( &info );
-        DIPTypePointer( ExprSP->th, info.modifier, info.size, th );
+        ti.kind = TK_POINTER;
+        ti.size = TI_SIZE_EXTRACT( parm );
+        ti.modifier = TI_MOD_EXTRACT( parm );
+        FillInDefaults( &ti );
+        DIPTypePointer( ExprSP->th, ti.modifier, ti.size, th );
         PopEntry();
         PushType( th );
         break;
@@ -706,19 +706,19 @@ static void BasicType( unsigned basic_type )
 {
     internal_mod        mod_srch;
     imp_type_handle     *ith;
-    dip_type_info       info;
+    dip_type_info       ti;
     DIPHDL( type, th );
 
     DIPWalkModList( NO_MOD, FindInternalMod, &mod_srch );
     DIPTypeInit( th, mod_srch.mh );
-    info.kind = TI_KIND_EXTRACT( basic_type );
-    info.modifier = TI_MOD_EXTRACT( basic_type );
-    info.size = TI_SIZE_EXTRACT( basic_type );
-    FillInDefaults( &info );
+    ti.kind = TI_KIND_EXTRACT( basic_type );
+    ti.modifier = TI_MOD_EXTRACT( basic_type );
+    ti.size = TI_SIZE_EXTRACT( basic_type );
+    FillInDefaults( &ti );
     ith = TH2ITH( th );
-    ith->t.k = info.kind;
-    ith->t.m = info.modifier;
-    ith->t.s = info.size;
+    ith->t.k = ti.kind;
+    ith->t.m = ti.modifier;
+    ith->t.s = ti.size;
     ith->ri = NULL;
     PushType( th );
 }

@@ -854,9 +854,9 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
                     #undef pick
                 };
 
-                ti->t.kind = TK_POINTER;
-                ti->t.size = PSize[subkind];
-                ti->t.modifier = PMods[subkind];
+                ti->kind = TK_POINTER;
+                ti->size = PSize[subkind];
+                ti->modifier = PMods[subkind];
             }
             break;
         case ENUM_TYPE:
@@ -1021,7 +1021,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
     address             addr;
     byte                is_32;
     long                hi = 0;
-    dip_type_info       info;
+    dip_type_info       ti;
     unsigned            count;
     dip_status          ret;
     typeinfo            typeld;
@@ -1103,10 +1103,10 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
     PopLoad();
     ImpInterface.TypeBase( iih, ith, &tmp_ith, NULL, NULL );
     ai->num_dims = 1;
-    ret = GetTypeInfo( iih, &tmp_ith, lc, &info, &ai->num_dims );
+    ret = GetTypeInfo( iih, &tmp_ith, lc, &ti, &ai->num_dims );
     if( ret != DS_OK )
         return( ret );
-    ai->stride = info.size;
+    ai->stride = ti.size;
     ai->column_major = 0;
     if( index_ith != NULL ) {
         if( index_idx != 0 ) {
