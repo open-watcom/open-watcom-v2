@@ -373,7 +373,7 @@ static type_display *VarDisplayAddFieldSym( type_display *parent, sym_handle *fi
 {
     int         len;
 
-    len = DIPSymName( field, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    len = DIPSymName( field, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     if( len == 0 )
         return( NULL );
     return( VarDisplayAddField( parent, TxtBuff ) );
@@ -658,7 +658,7 @@ OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void 
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    DIPSymName( sh, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    DIPSymName( sh, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     if( strcmp( TxtBuff, info->name ) != 0 )
         return( WR_CONTINUE );
     DoGivenField( sh );
@@ -1521,9 +1521,9 @@ void VarBaseName( var_node *v )
 {
     TxtBuff[0] = NULLCHAR;
     if( v->is_sym_handle ) {
-        if( DIPSymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) )
+        if( DIPSymName( VarNodeHdl( v ), NULL, SNT_SCOPED, TxtBuff, TXT_LEN ) )
             return;
-        DIPSymName( VarNodeHdl( v ), NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+        DIPSymName( VarNodeHdl( v ), NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
@@ -1576,9 +1576,9 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 name = LIT_ENG( field );
                 len = strlen( LIT_ENG( field ) );
             } else {
-                len = DIPSymName( field, NULL, SN_SOURCE, NULL, 0 );
+                len = DIPSymName( field, NULL, SNT_SOURCE, NULL, 0 );
                 _AllocA( name, len+1 );
-                DIPSymName( field, NULL, SN_SOURCE, name, len+1 );
+                DIPSymName( field, NULL, SNT_SOURCE, name, len+1 );
             }
             if( delay_indirect ) {
                 prio = AddToName( T_SSL_SPEC_POINTER_FIELD, name, len, prio );
@@ -2291,7 +2291,7 @@ OVL_EXTERN walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
         DIPSymInfo( sym, NULL, &sinfo );
         if( !sinfo.is_member && sinfo.kind != SK_TYPE ) {
             if( d->v == NULL ) {
-                DIPSymName( sym, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+                DIPSymName( sym, NULL, SNT_SOURCE, TxtBuff, TXT_LEN );
                 // nyi - use SymInfo when Brian implements the "this" indicator
                 if( stricmp( TxtBuff, "this" ) == 0 ) {
                     new = VarAdd1( d->i, sym, sym_SIZE, d->i->members, true );

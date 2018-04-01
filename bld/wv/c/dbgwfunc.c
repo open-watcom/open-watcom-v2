@@ -108,7 +108,7 @@ static void FuncGetSourceName( a_window wnd, int row )
 {
     func_window *func = WndFunc( wnd );
 
-    NameListName( NameList( func ), row, TxtBuff, SN_QUALIFIED );
+    NameListName( NameList( func ), row, TxtBuff, SNT_QUALIFIED );
 }
 
 OVL_EXTERN wnd_row FuncNumRows( a_window wnd )
@@ -206,7 +206,7 @@ OVL_EXTERN  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd
         FuncGetSourceName( wnd, row );
         return( true );
     case PIECE_DEMANGLED:
-        if( NameListName( NameList( func ), row, TxtBuff, SN_DEMANGLED ) == 0 ) {
+        if( NameListName( NameList( func ), row, TxtBuff, SNT_DEMANGLED ) == 0 ) {
             return( false );
         }
         line->text = TxtBuff;

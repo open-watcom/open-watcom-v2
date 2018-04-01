@@ -99,7 +99,7 @@ void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece
         WndAddrInspect( addr );
         break;
     case MENU_GLOB_WATCH:
-        NameListName( NameList( glob ), row, buff, SN_QUALIFIED );
+        NameListName( NameList( glob ), row, buff, SNT_QUALIFIED );
         WndVarInspect( buff );
         break;
     case MENU_GLOB_D2_ONLY:
@@ -125,7 +125,7 @@ bool    GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece 
         return( false );
     switch( piece ) {
     case PIECE_NAME:
-        NameListName( NameList( glob ), row, TxtBuff, SN_QUALIFIED );
+        NameListName( NameList( glob ), row, TxtBuff, SNT_QUALIFIED );
         line->text = TxtBuff;
         return( true );
     default:

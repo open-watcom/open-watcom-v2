@@ -309,12 +309,12 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );
@@ -674,12 +674,12 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
     /* finally, the name. */
     /* try get the name */
     buff[0] = '\0';
-    len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, sizeof( buff ) );
+    len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, sizeof( buff ) );
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_OBJECT, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_OBJECT, buff, sizeof( buff ) );
     }
     if( len == 0 ) {
-        len = DIPSymName( sym, NULL, SN_SOURCE, buff, sizeof( buff ) );
+        len = DIPSymName( sym, NULL, SNT_SOURCE, buff, sizeof( buff ) );
     }
     if( len > 0 ) {
         printf( "%s\n", buff );

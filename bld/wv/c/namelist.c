@@ -60,7 +60,7 @@ static void SetKey( a_symbol *sym )
     b[1] = 0;
     b[2] = 0;
     b[3] = 0;
-    DIPSymName( ASymHdl( sym ), NULL, SN_SOURCE, (char *)b, sizeof( b ) );
+    DIPSymName( ASymHdl( sym ), NULL, SNT_SOURCE, (char *)b, sizeof( b ) );
     sym->key = ((unsigned long)tolower(b[0])<<24)+
                ((unsigned long)tolower(b[1])<<16)+
                               (tolower(b[2])<< 8)+
@@ -82,8 +82,8 @@ OVL_EXTERN int SymCompare( void *pa, void *pb )
     if( a->key < b->key )
         return( -1 );
     cmpa = TxtBuff;
-    cmpb = cmpa + DIPSymName( ASymHdl( a ), NULL, SN_SOURCE, cmpa, TXT_LEN/2 ) + 1;
-    DIPSymName( ASymHdl( b ), NULL, SN_SOURCE, cmpb, TXT_LEN/2-1 );
+    cmpb = cmpa + DIPSymName( ASymHdl( a ), NULL, SNT_SOURCE, cmpa, TXT_LEN / 2 ) + 1;
+    DIPSymName( ASymHdl( b ), NULL, SNT_SOURCE, cmpb, TXT_LEN / 2 - 1 );
     return( stricmp( cmpa, cmpb ) );
 }
 
@@ -251,7 +251,7 @@ int     NameListNumRows( name_list *name )
     return( name->numrows );
 }
 
-unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
+unsigned NameListName( name_list *name, int i, char *buff, symbol_name_type snt )
 {
     unsigned    rc;
     sym_handle  *sh;
@@ -260,12 +260,12 @@ unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
     if( i >= name->numrows || name->list == NULL )
         return( 0 );
     sh = ASymHdl( NameGetRow( name, i ) );
-    if( type == SN_PARSEABLE ) {
+    if( snt == SNT_PARSEABLE ) {
         rc = QualifiedSymName( sh, buff, TXT_LEN, true );
-    } else if( type == SN_QUALIFIED ) {
+    } else if( snt == SNT_QUALIFIED ) {
         rc = QualifiedSymName( sh, buff, TXT_LEN, false );
     } else {
-        rc = DIPSymName( sh, NULL, type, buff, TXT_LEN );
+        rc = DIPSymName( sh, NULL, snt, buff, TXT_LEN );
     }
     return( rc );
 }

@@ -1077,14 +1077,14 @@ mod_handle DIPSymMod( sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-size_t DIPSymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff, size_t buff_size )
+size_t DIPSymName( sym_handle *sh, location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, sn, buff, buff_size ) );
+    return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, snt, buff, buff_size ) );
 }
 
 dip_status DIPSymType( sym_handle *sh, type_handle *th )

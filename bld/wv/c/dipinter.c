@@ -494,14 +494,14 @@ OVL_EXTERN imp_mod_handle WVIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_h
 }
 
 OVL_EXTERN size_t WVIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
-                        location_context *lc, symbol_name sn, char *name, size_t max )
+    location_context *lc, symbol_name_type snt, char *name, size_t max )
 {
     size_t      len;
     char  const *p;
 
     /* unused parameters */ (void)iih; (void)lc;
 
-    if( sn == SN_DEMANGLED )
+    if( snt == SNT_DEMANGLED )
         return( 0 );
     if( ish->ri != NULL ) {
         p   = ish->ri->name;

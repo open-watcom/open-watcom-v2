@@ -183,8 +183,8 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         break;
     }
     if( sr != SR_NONE ) {
-        DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
-//      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
+        DIPSymName( symhdl, NULL, SNT_OBJECT, si->name, MAX_SYM_NAME );
+//      DIPSymName( symhdl, NULL, SNT_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
             cueh = walloca( DIPHandleSize( HK_CUE ) );
             if( DIPAddrCue( NO_MOD, dipaddr, cueh ) == SR_NONE ) {

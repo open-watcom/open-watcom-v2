@@ -394,9 +394,8 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
     return( len );
 }
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                    imp_sym_handle *ish, location_context *lc,
-                    symbol_name sn, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     size_t      len;
     ji_ptr      sig;
@@ -404,7 +403,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
     len = GetName( iih, ish );
     switch( ish->kind ) {
     case JS_METHOD:
-        if( sn == SN_DEMANGLED ) {
+        if( snt == SNT_DEMANGLED ) {
             sig = GetSignature( iih, ish );
             if( sig != 0 ) {
                 len = Demangle( NameBuff, len, sig );

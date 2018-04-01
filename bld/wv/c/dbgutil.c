@@ -186,13 +186,13 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len = name_len + 1;
     }
-    if( uniq && DIPSymName( sh, NULL, SN_DEMANGLED, NULL, 0 ) != 0 ) {
+    if( uniq && DIPSymName( sh, NULL, SNT_DEMANGLED, NULL, 0 ) != 0 ) {
         if( name != NULL ) {
             *name++ = '`';
             max--;
         }
         len++;
-        name_len = DIPSymName( sh, NULL, SN_OBJECT, name, max );
+        name_len = DIPSymName( sh, NULL, SNT_OBJECT, name, max );
         len += name_len;
         if( name != NULL ) {
             name += name_len;
@@ -202,9 +202,9 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len++;
     } else {
-        rc = DIPSymName( sh, NULL, SN_SCOPED, name, max );
+        rc = DIPSymName( sh, NULL, SNT_SCOPED, name, max );
         if( rc == 0 ) {
-            rc = DIPSymName( sh, NULL, SN_SOURCE, name, max );
+            rc = DIPSymName( sh, NULL, SNT_SOURCE, name, max );
         }
         len += rc;
     }

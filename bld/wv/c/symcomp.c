@@ -106,13 +106,13 @@ void SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *p
 
     len = strlen( match );
     for( first = 0; first < NameListNumRows( list ); ++first ) {
-        NameListName( list, first, TxtBuff, SN_SOURCE );
+        NameListName( list, first, TxtBuff, SNT_SOURCE );
         if( strnicmp( match, TxtBuff, len ) == 0 ) {
             break;
         }
     }
     for( last = first; last < NameListNumRows( list ); ++last ) {
-        NameListName( list, last, TxtBuff, SN_SOURCE );
+        NameListName( list, last, TxtBuff, SNT_SOURCE );
         if( strnicmp( match, TxtBuff, len ) != 0 ) {
             break;
         }

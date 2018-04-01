@@ -1259,9 +1259,9 @@ bool CnvAddr( address addr, char *buff, size_t buff_len )
     default:
         return( false );
     }
-    name_len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, buff_len );
+    name_len = DIPSymName( sym, NULL, SNT_DEMANGLED, buff, buff_len );
     if( name_len == 0 ) {
-        DIPSymName( sym, NULL, SN_SOURCE, buff, buff_len );
+        DIPSymName( sym, NULL, SNT_SOURCE, buff, buff_len );
     }
     return( true );
 }

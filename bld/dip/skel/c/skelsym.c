@@ -140,9 +140,8 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
     return( IMH_NOMOD );
 }
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                        imp_sym_handle *ish, location_context *lc,
-                        symbol_name sn, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     //TODO:
     /*
@@ -155,21 +154,21 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
         return zero. NOTE: the client might pass in zero for 'buff_size'. In that
         case, just return the length of the symbol name and do not attempt
         to put anything into the buffer.
-        The 'sn' parameter indicates what type of symbol name the client
+        The 'snt' parameter indicates what type of symbol name the client
         is interested in. It can have the following values:
 
-        SN_SOURCE:
+        SNT_SOURCE:
                 The name of the symbol as it appears in the source code.
 
-        SN_OBJECT:
+        SNT_OBJECT:
                 The name of the symbol as it appeared to the linker.
 
-        SN_DEMANGLED:
+        SNT_DEMANGLED:
                 C++ names, with full typing (essentially it looks like
                 a function prototype). If the symbol is not a C++ symbol
                 (not mangled), return zero for the length.
 
-        SN_EXPRESSION:
+        SNT_EXPRESSION:
                 Return whatever character string is necessary such that
                 when scanned in an expression, the symbol handle can
                 be reconstructed. Deprecated - never used.

@@ -110,8 +110,7 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_handle imh,
     ++len
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
-                                location_context *lc,
-                                symbol_name sn, char *buff, size_t buff_size )
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     byte                *sp;
     byte                *ep;
@@ -121,8 +120,8 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
     location_list       ll;
     imp_sym_handle      gbl_ish;
 
-    switch( sn ) {
-    case SN_EXPRESSION:
+    switch( snt ) {
+    case SNT_EXPRESSION:
         sp = (byte *)ish;
         ++ish;
         len = 0;
@@ -149,16 +148,16 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
         if( buff_size > 0 )
             *ep++ = '\0';
         return( len );
-    case SN_DEMANGLED:
-        len = ImpInterface.SymName( iih, ish, lc, SN_OBJECT, NULL, 0 );
+    case SNT_DEMANGLED:
+        len = ImpInterface.SymName( iih, ish, lc, SNT_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
         mangled_name = walloca( len + 1 );
-        ImpInterface.SymName( iih, ish, lc, SN_OBJECT, mangled_name, len + 1 );
+        ImpInterface.SymName( iih, ish, lc, SNT_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
         return( __demangle_l( mangled_name, len, buff, buff_size ) );
-    case SN_OBJECT:
+    case SNT_OBJECT:
         switch( ish->type ) {
         case SH_LCL:
             if( Lcl2GblHdl( iih, ish, &gbl_ish ) != DS_OK )
@@ -179,7 +178,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
             return( SymHdl2ObjGblName( iih, ish, buff, buff_size ) );
         }
         /* fall through */
-    case SN_SOURCE:
+    case SNT_SOURCE:
         switch( ish->type ) {
         case SH_GBL:
             return( SymHdl2GblName( iih, ish, buff, buff_size ) );
@@ -261,9 +260,9 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
         scope_ish = source;
-        len = ImpInterface.SymName( iih, scope_ish, NULL, SN_SOURCE, NULL, 0 );
+        len = ImpInterface.SymName( iih, scope_ish, NULL, SNT_SOURCE, NULL, 0 );
         scope_name = walloca( len + 1 );
-        ImpInterface.SymName( iih, scope_ish, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpInterface.SymName( iih, scope_ish, NULL, SNT_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;

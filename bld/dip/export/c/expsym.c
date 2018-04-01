@@ -88,13 +88,12 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
     return( IMH_EXPORT );
 }
 
-size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
-                        imp_sym_handle *ish, location_context *lc,
-                        symbol_name sn, char *buff, size_t buff_size )
+size_t DIPIMPENTRY( SymName )( imp_image_handle *iih, imp_sym_handle *ish,
+    location_context *lc, symbol_name_type snt, char *buff, size_t buff_size )
 {
     /* unused parameters */ (void)iih; (void)lc;
 
-    if( sn == SN_DEMANGLED )
+    if( snt == SNT_DEMANGLED )
         return( 0 );
     if( buff_size > 0 ) {
         --buff_size;

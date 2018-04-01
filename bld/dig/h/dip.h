@@ -116,7 +116,7 @@ dip_status      DIPTypeFreeAll( void );
  * Symbol Information
  */
 mod_handle      DIPSymMod( sym_handle * );
-size_t          DIPSymName( sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size );
+size_t          DIPSymName( sym_handle *, location_context *, symbol_name_type, char *buff, size_t buff_size );
 dip_status      DIPSymType( sym_handle *, type_handle * );
 dip_status      DIPSymLocation( sym_handle *, location_context *, location_list * );
 dip_status      DIPSymValue( sym_handle *, location_context *, void * );

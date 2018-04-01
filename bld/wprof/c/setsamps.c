@@ -179,14 +179,14 @@ STATIC void initModuleInfo( image_info *curr_image )
 STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_new_mod )
 /**************************************************************************************/
 {
-    mod_info        *new_mod = _new_mod;
-    sym_info        sinfo;
-    file_info       *sym_file;
-    rtn_info        *new_rtn;
-    int             rtn_count;
-    size_t          name_len;
-    int             sym_size;
-    int             demangle_type;
+    mod_info            *new_mod = _new_mod;
+    sym_info            sinfo;
+    file_info           *sym_file;
+    rtn_info            *new_rtn;
+    int                 rtn_count;
+    size_t              name_len;
+    int                 sym_size;
+    symbol_name_type    demangle_name_type;
 
     if( swi != SWI_SYMBOL ) {
         return( WR_CONTINUE );
@@ -196,15 +196,15 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_n
         return( WR_CONTINUE );
     }
     sym_file = loadFileInfo( new_mod, sym );
-    name_len = DIPSymName( sym, NULL, SN_DEMANGLED, NULL, 0 );
+    name_len = DIPSymName( sym, NULL, SNT_DEMANGLED, NULL, 0 );
     if( name_len == 0 ) {
-        name_len = DIPSymName( sym, NULL, SN_SOURCE, NULL, 0 );
-        demangle_type = SN_SOURCE;
+        name_len = DIPSymName( sym, NULL, SNT_SOURCE, NULL, 0 );
+        demangle_name_type = SNT_SOURCE;
     } else {
-        demangle_type = SN_DEMANGLED;
+        demangle_name_type = SNT_DEMANGLED;
     }
     new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
-    DIPSymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
+    DIPSymName( sym, NULL, demangle_name_type, new_rtn->name, name_len + 1 );
     sym_size = DIPHandleSize( HK_SYM );
     new_rtn->sh = ProfAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );

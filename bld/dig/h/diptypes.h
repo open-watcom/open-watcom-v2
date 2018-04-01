@@ -92,14 +92,14 @@ typedef unsigned_8 sym_walk_info; enum {
     SWI_LAST
 };
 
-typedef unsigned_8 symbol_name; enum {
-    SN_EXPRESSION,
-    SN_SOURCE,
-    SN_OBJECT,
-    SN_DEMANGLED,
-    SN_SCOPED,
-    SN_LAST
-};
+typedef enum {
+    SNT_EXPRESSION,
+    SNT_SOURCE,
+    SNT_OBJECT,
+    SNT_DEMANGLED,
+    SNT_SCOPED,
+    SNT_LAST
+} symbol_name_type;
 
 typedef enum {
     DK_INT,

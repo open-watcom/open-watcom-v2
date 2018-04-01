@@ -1210,7 +1210,7 @@ imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *iih, imp_sym_handle *ish
 }
 
 static size_t ImpSymName( imp_image_handle *iih, imp_sym_handle *ish, location_context *lc,
-                                            symbol_name sn, char *buff, size_t buff_size )
+                                            symbol_name_type snt, char *buff, size_t buff_size )
 {
     const char          *name;
     size_t              len;
@@ -1220,11 +1220,11 @@ static size_t ImpSymName( imp_image_handle *iih, imp_sym_handle *ish, location_c
     addr_off            dummy_off;
     search_result       sr;
 
-    switch( sn ) {
-    case SN_EXPRESSION:
+    switch( snt ) {
+    case SNT_EXPRESSION:
         return( 0 );
-    case SN_OBJECT:
-    case SN_DEMANGLED:
+    case SNT_OBJECT:
+    case SNT_DEMANGLED:
         ds = ImpSymLocation( iih, ish, lc, &ll );
         if( ds != DS_OK )
             break;
@@ -1238,16 +1238,16 @@ static size_t ImpSymName( imp_image_handle *iih, imp_sym_handle *ish, location_c
             break;
         if( SymGetName( iih, &global_ish, &name, &len, NULL ) != DS_OK )
             break;
-        if( sn == SN_OBJECT ) {
+        if( snt == SNT_OBJECT ) {
             return( NameCopy( buff, name, buff_size, len ) );
         }
         if( !__is_mangled( name, len ) )
             return( 0 );
         return( __demangle_l( name, len, buff, buff_size ) );
     }
-    if( sn == SN_DEMANGLED )
+    if( snt == SNT_DEMANGLED )
         return( 0 );
-    /* SN_SOURCE: */
+    /* SNT_SOURCE: */
     if( SymGetName( iih, ish, &name, &len, NULL ) != DS_OK )
         return( 0 );
     return( NameCopy( buff, name, buff_size, len ) );
@@ -1255,9 +1255,9 @@ static size_t ImpSymName( imp_image_handle *iih, imp_sym_handle *ish, location_c
 
 size_t DIPIMPENTRY( SymName )( imp_image_handle *iih,
                         imp_sym_handle *ish, location_context *lc,
-                        symbol_name sn, char *buff, size_t buff_size )
+                        symbol_name_type snt, char *buff, size_t buff_size )
 {
-    return( ImpSymName( iih, ish, lc, sn, buff, buff_size ) );
+    return( ImpSymName( iih, ish, lc, snt, buff, buff_size ) );
 }
 
 dip_status ImpSymType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
@@ -1782,9 +1782,9 @@ static search_result    DoLookupSym( imp_image_handle *iih,
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
         scope_ish = source;
-        len = ImpSymName( iih, scope_ish, NULL, SN_SOURCE, NULL, 0 );
+        len = ImpSymName( iih, scope_ish, NULL, SNT_SOURCE, NULL, 0 );
         scope_name = walloca( len + 1 );
-        ImpSymName( iih, scope_ish, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpSymName( iih, scope_ish, NULL, SNT_SOURCE, scope_name, len + 1 );
         data.li.scope.start = scope_name;
         data.li.scope.len = len;
         ss = SS_MODULE;

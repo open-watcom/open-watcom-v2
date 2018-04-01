@@ -55,7 +55,7 @@ pick( int,              TypeCmp,            ( imp_image_handle *, imp_type_handl
 pick( size_t,           TypeName,           ( imp_image_handle *, imp_type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size) )
 pick( walk_result,      WalkSymList,        ( imp_image_handle *, symbol_source, void *, DIP_IMP_SYM_WALKER *, imp_sym_handle *, void * ) )
 pick( imp_mod_handle,   SymMod,             ( imp_image_handle *, imp_sym_handle * ) )
-pick( size_t,           SymName,            ( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size) )
+pick( size_t,           SymName,            ( imp_image_handle *, imp_sym_handle *, location_context *, symbol_name_type, char *buff, size_t buff_size) )
 pick( dip_status,       SymType,            ( imp_image_handle *, imp_sym_handle *, imp_type_handle * ) )
 pick( dip_status,       SymLocation,        ( imp_image_handle *, imp_sym_handle *, location_context *, location_list * ) )
 pick( dip_status,       SymValue,           ( imp_image_handle *, imp_sym_handle *, location_context *, void * ) )

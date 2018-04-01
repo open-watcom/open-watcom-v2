@@ -91,7 +91,7 @@ bool GetSymbolName( address *addr, char *name, DWORD *symoff )
         MemFree( symhdl );
         return( false );
     }
-    DIPSymName( symhdl, NULL, SN_OBJECT, name, MAX_SYM_NAME );
+    DIPSymName( symhdl, NULL, SNT_OBJECT, name, MAX_SYM_NAME );
     MemFree( symhdl );
     return( true );
 }

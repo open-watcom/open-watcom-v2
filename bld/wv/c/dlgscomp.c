@@ -48,7 +48,7 @@ OVL_EXTERN const char *SymGetName( const void *data_handle, int item )
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) )
         return( NULL );
-    NameListName( SortedNames, item, TxtBuff, SN_QUALIFIED );
+    NameListName( SortedNames, item, TxtBuff, SNT_QUALIFIED );
     return( TxtBuff );
 }
 
@@ -109,7 +109,7 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
     strcpy( TxtBuff, savebuff );
     if( new != -1 ) {
         new += first;
-        NameListName( SortedNames, new, TxtBuff + matchoff, SN_QUALIFIED );
+        NameListName( SortedNames, new, TxtBuff + matchoff, SNT_QUALIFIED );
         GUISetText( gui, id, TxtBuff );
     }
     GUISetFocus( gui, id );

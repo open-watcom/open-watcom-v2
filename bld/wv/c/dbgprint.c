@@ -692,9 +692,9 @@ OVL_EXTERN walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl,
         }
         d->first_time = false;
         DupStack();
-        len = DIPSymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
+        len = DIPSymName( member_hdl, NULL, SNT_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
-        len = DIPSymName( member_hdl, NULL, SN_SOURCE, name, len + 1 );
+        len = DIPSymName( member_hdl, NULL, SNT_SOURCE, name, len + 1 );
         PrtStr( name, len );
         PrtChar( '=' );
         DoGivenField( member_hdl );
@@ -820,7 +820,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     d.value = ExprSP->v.uint;
     DIPWalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
     if( d.found ) {
-        return( DIPSymName( sh, NULL, SN_SOURCE, buff, len ) );
+        return( DIPSymName( sh, NULL, SNT_SOURCE, buff, len ) );
     }
     p = buff;
     while( U64Test( &d.value ) != 0 ) {
@@ -836,7 +836,7 @@ static unsigned ValueToName( char *buff, unsigned len )
             *p++ = '+';
             --len;
         }
-        name_len = DIPSymName( sh, NULL, SN_SOURCE, p, len );
+        name_len = DIPSymName( sh, NULL, SNT_SOURCE, p, len );
         if( name_len > len )
             return( 0 );
         p += name_len;
