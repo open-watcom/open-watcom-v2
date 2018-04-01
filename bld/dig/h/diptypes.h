@@ -85,12 +85,12 @@ typedef unsigned_8 symbol_source; enum {
     SS_LAST
 };
 
-typedef unsigned_8 sym_walk_info; enum {
+typedef enum {
     SWI_SYMBOL,
     SWI_INHERIT_START,
     SWI_INHERIT_END,
     SWI_LAST
-};
+} sym_walk_info;
 
 typedef enum {
     SNT_EXPRESSION,

@@ -221,11 +221,11 @@ static const char *GetTypeTag( symbol_type tag )
  * WalkSymList callback, the module pass.
  *
  * @returns WR_CONTINUE;
- * @param   info    Symbol walk info.
+ * @param   swi     Symbol walk info.
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx )
+static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
     int             *idx = (int *)_idx;
     char            buff[2048];
@@ -290,20 +290,20 @@ static walk_result Sym2Callback( sym_walk_info info, sym_handle *sym, void *_idx
         ll.num = 0;
     }
 
-    /* info */
-    switch( info ) {
-        case SWI_SYMBOL:
-            printf( "SYMBOL    " );
-            break;
-        case SWI_INHERIT_START:
-            printf( "INH-STRT  " );
-            break;
-        case SWI_INHERIT_END:
-            printf( "INH-END   " );
-            break;
-        default:
-            printf( "%#d  ", info );
-            break;
+    /* swi */
+    switch( swi ) {
+    case SWI_SYMBOL:
+        printf( "SYMBOL    " );
+        break;
+    case SWI_INHERIT_START:
+        printf( "INH-STRT  " );
+        break;
+    case SWI_INHERIT_END:
+        printf( "INH-END   " );
+        break;
+    default:
+        printf( "%#d  ", swi );
+        break;
     }
 
     /* finally, the name. */
@@ -618,14 +618,14 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
  * WalkSymList callback.
  *
  * @returns WR_CONTINUE;
- * @param   info    Symbol walk info.
+ * @param   swi     Symbol walk info.
  * @param   sym     The Symbol.
  * @param   _idx    Pointer to the symbol index number.
  */
-static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx )
+static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
 {
 #if 1
-    return( Sym2Callback( info, sym, _idx ) );
+    return( Sym2Callback( swi, sym, _idx ) );
 #else
     int             *idx = (int *)_idx;
     char            buff[2048];
@@ -655,20 +655,20 @@ static walk_result SymCallback( sym_walk_info info, sym_handle *sym, void *_idx 
         ll.num = 0;
     }
 
-    /* info */
-    switch( info ) {
-        case SWI_SYMBOL:
-            printf("SYMBOL    ");
-            break;
-        case SWI_INHERIT_START:
-            printf("INH-STRT  ");
-            break;
-        case SWI_INHERIT_END:
-            printf("INH-END   ");
-            break;
-        default:
-            printf("%#d  ", info);
-            break;
+    /* swi */
+    switch( swi ) {
+    case SWI_SYMBOL:
+        printf("SYMBOL    ");
+        break;
+    case SWI_INHERIT_START:
+        printf("INH-STRT  ");
+        break;
+    case SWI_INHERIT_END:
+        printf("INH-END   ");
+        break;
+    default:
+        printf("%#d  ", swi);
+        break;
     }
 
     /* finally, the name. */
