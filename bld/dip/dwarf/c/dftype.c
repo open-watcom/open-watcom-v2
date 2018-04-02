@@ -135,14 +135,14 @@ static bool GetStrLen( imp_image_handle *iih,
 /* Walk array dims     */
 /***********************/
 typedef struct {
-    int_32           low;
-    uint_32          count;
-    imp_image_handle *iih;
-    imp_type_handle  *ith;
-    location_context *lc;
-    uint_32          num_elts;
-    int              dim;
-    bool             cont;
+    dig_type_bound      low;
+    dig_type_size       count;
+    imp_image_handle    *iih;
+    imp_type_handle     *ith;
+    location_context    *lc;
+    uint_32             num_elts;
+    int                 dim;
+    bool                cont;
 } array_wlk_wlk;
 
 static bool ArraySubRange( drmem_hdl tsub, int index, void *df );
@@ -551,7 +551,7 @@ static bool AEnum( drmem_hdl var, int index, void *_de )
     }
     if( value < de->low ) {
         de->low = value;
-    }else if( value > de->high ) {
+    } else if( value > de->high ) {
         de->high = value;
     }
     return( true );

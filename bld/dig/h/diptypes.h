@@ -146,9 +146,9 @@ typedef struct {
 } scope_block;
 
 typedef struct {
-    long                low_bound;
-    unsigned long       num_elts;
-    unsigned long       stride;
+    dig_type_bound      low_bound;
+    dig_type_size       num_elts;
+    dig_type_size       stride;
     unsigned            num_dims;
     unsigned            column_major    : 1;
 } array_info;
@@ -177,8 +177,8 @@ typedef struct {
     /* only valid for SK_PROCEDURE */
     unsigned            rtn_far                 : 1;
     unsigned            rtn_calloc              : 1;
-    unsigned            ret_modifier            : 3;
-    unsigned            ret_size                : 4;
+    type_modifier       ret_modifier;
+    dig_type_size       ret_size;
     unsigned short      num_parms;
     addr_off            ret_addr_offset;
     addr_off            prolog_size;

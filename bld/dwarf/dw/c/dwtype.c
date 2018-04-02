@@ -234,7 +234,7 @@ dw_handle DWENTRY DWSimpleArray( dw_client cli, dw_handle elt_type, int elt_coun
     return( new_hdl );
 }
 
-dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint stride_size, const char *name, dw_addr_offset start_scope, uint access_flags )
+dw_handle DWENTRY DWBeginArray( dw_client cli, dw_handle elt_type, uint_32 stride_size, const char *name, dw_addr_offset start_scope, uint access_flags )
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;

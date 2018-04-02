@@ -705,7 +705,7 @@ OVL_EXTERN void     PushPointStackFirstField( void )
     DoPoints( TK_NONE );
     for( ;; ) {
         ExprValue( ExprSP );
-        if( ExprSP->info.kind != TK_STRUCT )
+        if( ExprSP->ti.kind != TK_STRUCT )
             break;
         PushFirstField( ExprSP->th );
     }
@@ -909,7 +909,7 @@ static bool PointerToChar( void )
 {
     DIPHDL( type, th );
 
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_POINTER:
     case TK_ARRAY:
         DIPTypeBase( ExprSP->th, th, NULL, NULL );
@@ -929,7 +929,7 @@ static bool PointerToStruct( void )
     if( Spawn( PushPoints ) != 0 )
         return( false );
     ExprValue( ExprSP );
-    if( ExprSP->info.kind != TK_STRUCT ) {
+    if( ExprSP->ti.kind != TK_STRUCT ) {
         PopEntry();
         return( false );
     }
@@ -960,7 +960,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     if( ExprSP->th == NULL )
         return( false );
     ok = true;
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_STRUCT:
         ok = SpawnP( PushFirstField, ExprSP->th ) == 0;
         if( ok )
@@ -977,7 +977,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     }
     ExprValue( ExprSP );
     HDLAssign( type, v->th, ExprSP->th );
-    switch( ExprSP->info.kind ) {
+    switch( ExprSP->ti.kind ) {
     case TK_POINTER:
         if( end < start ) {
             var_node *new;
@@ -1224,7 +1224,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                     if( v->display_type == NULL ) {
                         DupStack();
                         ExprValue( ExprSP );
-                        if( ExprSP->info.kind == TK_STRUCT ) {
+                        if( ExprSP->ti.kind == TK_STRUCT ) {
                             parent = VarDisplayAddStructType( ExprSP->th );
                         } else {
                             parent = NULL;
@@ -1247,7 +1247,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                         have_array_parms = true;
                         ArrayParms( v->parent, &ainfo );
                     }
-                    PushSubScript( v->element+ainfo.low_bound );
+                    PushSubScript( v->element + ainfo.low_bound );
                 }
                 break;
             case NODE_POINTS:
@@ -1258,7 +1258,7 @@ OVL_EXTERN void     VarScanForward( void *_v )
                 v->have_type = false;
                 DupStack();
                 ExprValue( ExprSP );
-                switch( ExprSP->info.kind ) {
+                switch( ExprSP->ti.kind ) {
                 case TK_STRUCT:
                     HDLAssign( type, v->th, ExprSP->th );
                     v->have_type = true;
@@ -1597,11 +1597,11 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 delay_indirect = false;
             }
             ArrayParms( v, &ainfo );
-            end = CnvLongDec( v->path->element+ainfo.low_bound, buff, sizeof( buff ) );
+            end = CnvLongDec( v->path->element + ainfo.low_bound, buff, sizeof( buff ) );
             if( just_end_bit ) {
                 *TxtBuff = NULLCHAR;
             }
-            prio = AddToName( T_SSL_SPEC_ARRAY, buff, end-buff, prio );
+            prio = AddToName( T_SSL_SPEC_ARRAY, buff, end - buff, prio );
             break;
         case NODE_POINTS:
             if( delay_indirect ) {
@@ -1770,7 +1770,7 @@ bool    VarGetStackClass( type_kind *class )
 
     DupStack();
     ExprValue( ExprSP );
-    *class = ExprSP->info.kind;
+    *class = ExprSP->ti.kind;
     followable = Followable( *class );
     PopEntry();
     return( followable );
@@ -2046,7 +2046,7 @@ var_gadget_type VarGetGadget( var_node *v )
             return( VARGADGET_INHERIT_OPEN );
         }
     }
-    class = ExprSP->info.kind;
+    class = ExprSP->ti.kind;
     if( class == TK_POINTER ) {
         if( !CheckPointerValid() ) {
             return( VARGADGET_BADPOINTS );
@@ -2166,7 +2166,7 @@ char *VarGetValue( var_info *i, var_node *v )
         value = LIT_ENG( Quest_Marks );
     } else {
         value = " ";
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             FreezeStack();
             DupStack();
@@ -2558,7 +2558,7 @@ void VarInspectPointer( void )
 /**********************/
 {
     ExprValue( ExprSP );
-    if( ExprSP->info.kind == TK_ARRAY ) {
+    if( ExprSP->ti.kind == TK_ARRAY ) {
         DUIAddrInspect( ExprSP->v.loc.e[0].u.addr );
     } else {
         DUIAddrInspect( ExprSP->v.addr );

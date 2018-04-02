@@ -106,7 +106,7 @@ bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *ti )
 void ClassifyEntry( stack_entry *stk, dip_type_info *ti )
 {
     if( stk->th == NULL ) {
-        *ti = stk->info;
+        *ti = stk->ti;
         DefaultTypeInfo( ti );
     } else if( !ClassifyType( stk->lc, stk->th, ti ) ) {
         stk->th = NULL;
@@ -119,15 +119,15 @@ static void GetTrueEntry( stack_entry *entry )
     type_modifier       mod;
 
     for( ;; ) {
-        mod = entry->info.modifier;
+        mod = entry->ti.modifier;
         if( !(mod & TM_FLAG_DEREF) )
             break;
         DoAPoints( entry, TK_NONE );
-        if( entry->info.kind == TK_VOID )
+        if( entry->ti.kind == TK_VOID )
             Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
         switch( mod & TM_MOD_MASK ) {
         case TM_NEAR:
-            if( entry->info.kind == TK_FUNCTION ) {
+            if( entry->ti.kind == TK_FUNCTION ) {
                 near_off = entry->v.loc.e[0].u.addr.mach.offset;
                 entry->v.loc.e[0].u.addr = Context.execution;
                 entry->v.loc.e[0].u.addr.mach.offset = near_off;
@@ -173,7 +173,7 @@ void ExprSymbol( stack_entry *entry, sym_handle *sh )
     SET_TH( entry );
     if( DIPSymType( sh, entry->th ) != DS_OK )
         entry->th = NULL;
-    ClassifyEntry( entry, &entry->info );
+    ClassifyEntry( entry, &entry->ti );
     SET_SH( entry );
     HDLAssign( sym, entry->v.sh, sh );
     entry->flags |= SF_SYM;
@@ -214,11 +214,9 @@ void SymResolve( stack_entry *entry )
             }
             GetTrueEntry( entry );
         } else {
-            if( entry->info.kind == TK_STRING ) {
-                _ChkAlloc( entry->v.string.allocated, entry->info.size,
-                            LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-                LocationCreate( &entry->v.string.loc, LT_INTERNAL,
-                            entry->v.string.allocated );
+            if( entry->ti.kind == TK_STRING ) {
+                _ChkAlloc( entry->v.string.allocated, entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                LocationCreate( &entry->v.string.loc, LT_INTERNAL, entry->v.string.allocated );
                 if( DIPSymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
@@ -229,7 +227,7 @@ void SymResolve( stack_entry *entry )
                 FromItem( &tmp, entry );
             }
         }
-        switch( entry->info.kind ) {
+        switch( entry->ti.kind ) {
         case TK_CODE:
         case TK_ADDRESS:
             if( !(entry->flags & SF_LOCATION) ) {
@@ -266,7 +264,7 @@ void ClassNum( stack_entry *entry )
 {
     unsigned long       val;
 
-    entry->info.kind = TK_INTEGER;
+    entry->ti.kind = TK_INTEGER;
     entry->flags &= ~SF_FORM_MASK;
     entry->flags |= SF_CONST;
     if( I64Test( &entry->v.sint ) < 0 ) {
@@ -274,31 +272,31 @@ void ClassNum( stack_entry *entry )
             A bit backwards - if the top bit is on, it won't fit in in
             63 bits.
         */
-        entry->info.modifier = TM_UNSIGNED;
-        entry->info.size = sizeof( unsigned_64 );
+        entry->ti.modifier = TM_UNSIGNED;
+        entry->ti.size = sizeof( unsigned_64 );
         return;
     }
     if( !U64IsU32( entry->v.uint ) ) {
-        entry->info.modifier = TM_SIGNED;
-        entry->info.size = sizeof( signed_64 );
+        entry->ti.modifier = TM_SIGNED;
+        entry->ti.size = sizeof( signed_64 );
         return;
     }
     val = U32FetchTrunc( entry->v.uint );
     if( val > 0x7fffffff ) {
-        entry->info.modifier = TM_UNSIGNED;
-        entry->info.size = sizeof( unsigned_32 );
+        entry->ti.modifier = TM_UNSIGNED;
+        entry->ti.size = sizeof( unsigned_32 );
     } else if( DefaultSize( DK_INT ) > 2 ) {
-        entry->info.modifier = TM_SIGNED;
-        entry->info.size = sizeof( signed_32 );
+        entry->ti.modifier = TM_SIGNED;
+        entry->ti.size = sizeof( signed_32 );
     } else if( val > 0xffff ) {
-        entry->info.modifier = TM_SIGNED;
-        entry->info.size = sizeof( signed_32 );
+        entry->ti.modifier = TM_SIGNED;
+        entry->ti.size = sizeof( signed_32 );
     } else if( val > 0x7fff ) {
-        entry->info.modifier = TM_UNSIGNED;
-        entry->info.size = sizeof( unsigned_16 );
+        entry->ti.modifier = TM_UNSIGNED;
+        entry->ti.size = sizeof( unsigned_16 );
     } else {
-        entry->info.modifier = TM_SIGNED;
-        entry->info.size = sizeof( signed_16 );
+        entry->ti.modifier = TM_SIGNED;
+        entry->ti.size = sizeof( signed_16 );
     }
 }
 
@@ -393,12 +391,12 @@ static void NearToFar( stack_entry *entry )
         }
         entry->v.addr.mach.offset = 0;
     } else {
-        entry->info.modifier = TM_FAR;
-        entry->info.size += sizeof( addr_seg );
+        entry->ti.modifier = TM_FAR;
+        entry->ti.size += sizeof( addr_seg );
     }
     entry->v.addr.mach.offset += near_off;
     if( entry->th == NULL ) {
-        entry->info.kind = TK_ADDRESS;
+        entry->ti.kind = TK_ADDRESS;
     }
 }
 
@@ -412,14 +410,14 @@ void LRValue( stack_entry *entry )
 
     ExprResolve( entry );
     if( entry->flags & SF_LOCATION ) {
-        if( entry->info.kind == TK_FUNCTION || entry->info.kind == TK_CODE ) {
+        if( entry->ti.kind == TK_FUNCTION || entry->ti.kind == TK_CODE ) {
             /* rvalue of procedure is its address */
             entry->v.addr = entry->v.loc.e[0].u.addr;
             ExprSetAddrInfo( entry, false );
-            entry->info.kind = TK_ADDRESS;
+            entry->ti.kind = TK_ADDRESS;
         } else if( !AddressExpression( entry ) ) {
             extend = false;
-            switch( entry->info.kind ) {
+            switch( entry->ti.kind ) {
             case TK_ARRAY:
                 /* rvalue of array is its address */
                 entry->v.addr = entry->v.loc.e[0].u.addr;
@@ -428,16 +426,15 @@ void LRValue( stack_entry *entry )
                     GetMADTypeDefaultAt( entry->v.addr, MTK_ADDRESS, &mti );
                     DIPTypeBase( entry->th, th, NULL, NULL );
                     DIPTypePointer( th, TM_FAR, BITS2BYTES( mti.b.bits ), entry->th );
-                    DIPTypeInfo( entry->th, entry->lc, &entry->info );
+                    DIPTypeInfo( entry->th, entry->lc, &entry->ti );
                 } else {
                     ExprSetAddrInfo( entry, false );
                 }
                 break;
             case TK_STRING:
-                _ChkAlloc( entry->v.string.allocated, entry->info.size,
-                            LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                _ChkAlloc( entry->v.string.allocated, entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
-                if( LocationAssign( &ll, &entry->v.loc, entry->info.size, false ) != DS_OK ) {
+                if( LocationAssign( &ll, &entry->v.loc, entry->ti.size, false ) != DS_OK ) {
                     _Free( entry->v.string.allocated );
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
@@ -447,12 +444,12 @@ void LRValue( stack_entry *entry )
             case TK_CHAR:
             case TK_ENUM:
             case TK_INTEGER:
-                if( (entry->info.modifier & TM_MOD_MASK) == TM_SIGNED )
+                if( (entry->ti.modifier & TM_MOD_MASK) == TM_SIGNED )
                     extend = true;
                 /* fall through */
             default:
                 LocationCreate( &ll, LT_INTERNAL, &tmp );
-                if( LocationAssign( &ll, &entry->v.loc, entry->info.size, extend ) != DS_OK ) {
+                if( LocationAssign( &ll, &entry->v.loc, entry->ti.size, extend ) != DS_OK ) {
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 FromItem( &tmp, entry );
@@ -461,8 +458,8 @@ void LRValue( stack_entry *entry )
         }
         entry->flags &= ~(SF_LOCATION | SF_IMP_ADDR);
     }
-    if( entry->info.kind == TK_POINTER
-        && (entry->info.modifier & TM_MOD_MASK) == TM_NEAR ) {
+    if( entry->ti.kind == TK_POINTER
+        && (entry->ti.modifier & TM_MOD_MASK) == TM_NEAR ) {
         NearToFar( entry );
     }
 }
@@ -478,7 +475,7 @@ void ExprValue( stack_entry *entry )
 {
     ExprResolve( entry );
     AddressExpression( entry );
-    switch( entry->info.kind ) {
+    switch( entry->ti.kind ) {
     case TK_STRUCT:
     case TK_ARRAY:
         break;

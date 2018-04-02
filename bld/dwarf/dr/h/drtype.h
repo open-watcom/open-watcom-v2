@@ -92,7 +92,7 @@ typedef enum {
 
 typedef struct {
     dr_typek kind;
-    unsigned size;
+    uint_32  size;
     dr_store acc;
     dr_mod   mclass;
     union {

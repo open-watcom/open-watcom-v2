@@ -71,7 +71,7 @@ typedef union {
 
 bool            scan_string = false;
 char            *StringStart = NULL;
-unsigned        StringLength = 0;
+dig_type_size   StringLength = 0;
 bool            ScanCCharNum = true;
 
 static const char CmdLnDelimTab[] = {
@@ -731,7 +731,7 @@ void ScanExpr( token_table *tbl )
 void AddActualChar( char data )
 {
     char    *hold, *walk1, *walk2;
-    unsigned len;
+    size_t  len;
 
     len = ++StringLength;
     _Alloc( hold, len );

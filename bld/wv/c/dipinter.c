@@ -409,9 +409,9 @@ OVL_EXTERN dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *iih, imp_type_ha
     if( ith->ri != NULL ) {
         MadTypeToDipTypeInfo( ith->ri->mth, ti );
     } else {
-        ti->kind = ith->t.k;
-        ti->modifier = ith->t.m;
-        ti->size = ith->t.s;
+        ti->kind = ith->ti.kind;
+        ti->modifier = ith->ti.modifier;
+        ti->size = ith->ti.size;
     }
     return( DS_OK );
 }
@@ -525,10 +525,10 @@ OVL_EXTERN dip_status WVIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_hand
     /* unused parameters */ (void)iih;
 
     if( ish->ri != NULL ) {
-        ith->t.k = TK_NONE;
+        ith->ti.kind = TK_NONE;
         ith->ri = ish->ri;
     } else {
-        ith->t  = ish->p->info.t;
+        ith->ti = ish->p->info.ti;
         ith->ri = NULL;
     }
     return( DS_OK );
@@ -548,7 +548,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_
     }
     switch( se->info.sc ) {
     case SC_USER:
-        if( se->info.t.k == TK_STRING ) {
+        if( se->info.ti.kind == TK_STRING ) {
             d = se->info.v.string;
         } else {
             d = (void *)&se->info.v;

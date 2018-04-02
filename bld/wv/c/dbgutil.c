@@ -56,7 +56,7 @@
 
 extern char             *Language;
 
-unsigned DefaultSize( default_kind dk )
+dig_type_size DefaultSize( default_kind dk )
 {
     dip_type_info       ti;
     mad_type_info       mti;

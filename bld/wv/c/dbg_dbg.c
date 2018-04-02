@@ -202,7 +202,7 @@ void PurgeUserNames( void )
 
     while( (sl = WmonSymLst) != NULL ) {
         WmonSymLst = sl->next;
-        if( sl->s.info.t.k == TK_STRING )
+        if( sl->s.info.ti.kind == TK_STRING )
             _Free( sl->s.info.v.string );
         _Free( sl );
     }
@@ -213,34 +213,34 @@ void PurgeUserNames( void )
  */
 bool CreateSym( lookup_item *li, dip_type_info *ti )
 {
-    wv_type_entry       info;
+    dip_type_info       new_ti;
     wv_sym_list         *new;
 
     if( ( li->mod != NO_MOD ) && !IsInternalMod( li->mod ) )
         return( false );
     if( li->scope.start != NULL )
         return( false );
-    info.k = ti->kind;
-    info.m = ti->modifier;
-    info.s = ti->size;
-    switch( info.k ) {
+    new_ti.kind = ti->kind;
+    new_ti.modifier = ti->modifier;
+    new_ti.size = ti->size;
+    switch( new_ti.kind ) {
     case TK_INTEGER:
     case TK_ENUM:
     case TK_CHAR:
-        info.k = TK_INTEGER;
-        info.s = sizeof( new->s.info.v.uint );
+        new_ti.kind = TK_INTEGER;
+        new_ti.size = sizeof( new->s.info.v.uint );
         break;
     case TK_REAL:
-        info.s = sizeof( new->s.info.v.real );
+        new_ti.size = sizeof( new->s.info.v.real );
         break;
     case TK_COMPLEX:
-        info.s = sizeof( new->s.info.v.cmplx );
+        new_ti.size = sizeof( new->s.info.v.cmplx );
         break;
     case TK_ADDRESS:
     case TK_POINTER:
-        info.k = TK_ADDRESS;
-        info.m = TM_FAR;
-        info.s = sizeof( new->s.info.v.addr.mach );
+        new_ti.kind = TK_ADDRESS;
+        new_ti.modifier = TM_FAR;
+        new_ti.size = sizeof( new->s.info.v.addr.mach );
         break;
     default:
         return( false );
@@ -248,7 +248,7 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     new = DbgMustAlloc( sizeof( *new ) + li->name.len );
     new->next = WmonSymLst;
     WmonSymLst = new;
-    new->s.info.t = info;
+    new->s.info.ti = new_ti;
     new->s.info.sc = SC_USER;
     SET_SYM_NAME_LEN( new->s.name, li->name.len );
     memcpy( SYM_NAME_NAME( new->s.name ), li->name.start, li->name.len );

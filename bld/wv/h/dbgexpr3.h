@@ -31,7 +31,7 @@
 
 extern void FromItem( item_mach *tmp, stack_entry *entry );
 extern void ToItem( stack_entry *entry, item_mach *tmp );
-extern void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, unsigned s );
+extern void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size s );
 extern void BinOp( stack_entry *left, stack_entry *right );
 extern void AddOp( stack_entry *left, stack_entry *right );
 extern void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti );

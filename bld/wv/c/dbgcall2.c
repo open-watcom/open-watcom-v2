@@ -118,7 +118,7 @@ bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
         if( ExprSP->v.loc.e[0].type != LT_ADDR && ExprSP->v.loc.e[0].u.p == NULL ) {
             /* push item */
             src = StkEntry( 1 );
-            amount = _RoundUp( src->info.size, align );
+            amount = _RoundUp( src->ti.size, align );
             if( _IsOff( SW_STACK_GROWS_UP ) ) {
                 stack.mach.offset -= amount;
             }
@@ -126,7 +126,7 @@ bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
             if( _IsOn( SW_STACK_GROWS_UP ) ) {
                 stack.mach.offset += amount;
             }
-            ExprSP->info = src->info;
+            ExprSP->ti = src->ti;
             ExprSP->flags |= SF_LOCATION;
             ExprSP->th = NULL;
         }

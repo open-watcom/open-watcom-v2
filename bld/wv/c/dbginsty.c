@@ -84,7 +84,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
 
     LValue( ExprSP );
     *paddr = NilAddr;
-    if( ExprSP->info.kind == TK_FUNCTION ) {
+    if( ExprSP->ti.kind == TK_FUNCTION ) {
         ExprValue( ExprSP );
         *paddr = ExprSP->v.addr;
         PopEntry();
@@ -98,8 +98,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
     } else {
         if( (ExprSP->flags & SF_LOCATION) && ExprSP->v.loc.e[0].type == LT_ADDR ) {
             *paddr = ExprSP->v.loc.e[0].u.addr;
-        } else if( ExprSP->info.kind == TK_ADDRESS
-                || ExprSP->info.kind == TK_POINTER ) {
+        } else if( ExprSP->ti.kind == TK_ADDRESS || ExprSP->ti.kind == TK_POINTER ) {
             *paddr = ExprSP->v.addr;
         }
         if( !IS_NIL_ADDR( *paddr ) ) {

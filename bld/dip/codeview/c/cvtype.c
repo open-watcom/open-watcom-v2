@@ -1721,8 +1721,8 @@ typedef union {
     signed_32   s32[2];
 } bound_data;
 
-static dip_status GetBound( imp_image_handle *iih, virt_mem vm, unsigned size,
-                                location_context *lc, long *bound )
+static dip_status GetBound( imp_image_handle *iih, virt_mem vm, dig_type_size size,
+                                location_context *lc, dig_type_bound *bound )
 {
     dip_status          ds;
     imp_sym_handle      bnd;
@@ -1767,7 +1767,7 @@ static dip_status GetArrayRange( imp_image_handle *iih, location_context *lc,
     dip_status          ds;
     imp_type_handle     real_ith;
     dip_type_info       ti;
-    long                hi_bound;
+    dig_type_bound      hi_bound;
 
     ds = TypeIndexFillIn( iih, idx, &real_ith );
     if( ds != DS_OK )

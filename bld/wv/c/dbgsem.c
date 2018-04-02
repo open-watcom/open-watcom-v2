@@ -338,12 +338,12 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
         ConvertTo( ExprSP, TK_INTEGER, TM_SIGNED, 4 );
         value = U32FetchTrunc( ExprSP->v.uint ) - 1;
         PopEntry();
-        if( ExprSP->info.kind == TK_STRING ) {
-            if( value < 0 || value >= ExprSP->info.size ) {
+        if( ExprSP->ti.kind == TK_STRING ) {
+            if( value < 0 || value >= ExprSP->ti.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
             LocationAdd( &ExprSP->v.string.loc, value * 8 );
-            ExprSP->info.size -= value;
+            ExprSP->ti.size -= value;
             ExprSP->v.string.ss_offset = value;
         } else {
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
@@ -354,12 +354,12 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
         ConvertTo( ExprSP, TK_INTEGER, TM_SIGNED, 4 );
         value = U32FetchTrunc( ExprSP->v.sint ) - 1;
         PopEntry();
-        if( ExprSP->info.kind == TK_STRING ) {
+        if( ExprSP->ti.kind == TK_STRING ) {
             value -= ExprSP->v.string.ss_offset;
-            if( value < 0 || value >= ExprSP->info.size ) {
+            if( value < 0 || value >= ExprSP->ti.size ) {
                 Error( ERR_NONE, LIT_ENG( ERR_BAD_SUBSTRING_INDEX ) );
             }
-            ExprSP->info.size = value;
+            ExprSP->ti.size = value;
         } else {
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
@@ -491,12 +491,12 @@ static void DoPlusScaled( void )
     left = StkEntry( 1 );
     LRValue( left );
     RValue( ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_POINTER:
         ScaleInt();
         break;
     default:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             SwapStack( 1 );
             ScaleInt();
@@ -513,9 +513,9 @@ static void DoMinusScaled( void )
     left = StkEntry( 1 );
     LRValue( left );
     RValue( ExprSP );
-    switch( left->info.kind ) {
+    switch( left->ti.kind ) {
     case TK_POINTER:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             /* Have to check if base type sizes are the same */
             PushBaseSize();
@@ -540,7 +540,7 @@ static void DoMinusScaled( void )
         }
         break;
     default:
-        switch( ExprSP->info.kind ) {
+        switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
             break;
@@ -621,7 +621,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         result = ( TstExist( SSL2INT( parm ) ) != 0 );
         break;
     case 20:
-        size = ExprSP->info.size;
+        size = ExprSP->ti.size;
         PopEntry();
         PushNum( size );
         break;
@@ -716,9 +716,9 @@ static void BasicType( unsigned basic_type )
     ti.size = TI_SIZE_EXTRACT( basic_type );
     FillInDefaults( &ti );
     ith = TH2ITH( th );
-    ith->t.k = ti.kind;
-    ith->t.m = ti.modifier;
-    ith->t.s = ti.size;
+    ith->ti.kind = ti.kind;
+    ith->ti.modifier = ti.modifier;
+    ith->ti.size = ti.size;
     ith->ri = NULL;
     PushType( th );
 }
@@ -818,7 +818,7 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
     case 2:
         entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
-        result = TypeInfoToClass( &entry->info ) & (BASE_TYPE | STK_UNSIGNED);
+        result = TypeInfoToClass( &entry->ti ) & (BASE_TYPE | STK_UNSIGNED);
         break;
     case 3:
         ExprValue( StkEntry( SSL2INT( parm ) ) );
@@ -835,7 +835,7 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
     case 7:
         entry = StkEntry( SSL2INT( parm ) );
         LValue( entry );
-        result = TI_CREATE( entry->info.kind, TM_NONE, 0 );
+        result = TI_CREATE( entry->ti.kind, TM_NONE, 0 );
         break;
     case 8:
         entry = StkEntry( SSL2INT( parm ) );

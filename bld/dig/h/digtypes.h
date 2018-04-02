@@ -413,10 +413,14 @@ typedef unsigned_16     dig_size_bits;
 
 typedef unsigned_16     dig_mad;
 
+/* these must be unsigned/signed type pair */
+typedef unsigned_32     dig_type_size;
+typedef signed_32       dig_type_bound;
+
 #include "digpck.h"
 
 typedef struct dip_type_info {
-    unsigned long       size;
+    dig_type_size       size;
     type_kind           kind;
     type_modifier       modifier;
 } dip_type_info;

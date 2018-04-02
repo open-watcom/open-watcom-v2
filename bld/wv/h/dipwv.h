@@ -48,12 +48,6 @@
 #define SL2ISH( l )     ((imp_sym_handle *)((l)->h + DIPHandleSizeWV( HK_SYM )))
 #define TH2ITH( t )     ((imp_type_handle *)((char *)(t) + DIPHandleSizeWV( HK_TYPE )))
 
-typedef struct {
-    type_kind           k;
-    type_modifier       m;
-    unsigned short      s;
-} wv_type_entry;
-
 typedef enum {
     SC_TYPE,
     SC_INTERNAL,
@@ -67,7 +61,7 @@ typedef enum {
 } internal_idx;
 
 typedef struct {
-    wv_type_entry       t;
+    dip_type_info       ti;
     wv_sym_class        sc;
     union {
         internal_idx    internal;   /* for SC_INTERNAL */
@@ -91,7 +85,7 @@ struct imp_sym_handle {
 };
 
 struct imp_type_handle {
-    wv_type_entry       t;
+    dip_type_info       ti;
     const mad_reg_info  *ri;
 };
 

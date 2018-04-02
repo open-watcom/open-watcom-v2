@@ -69,7 +69,7 @@ extern char     *GetBPCondition( brkp *bp );
 extern char     *GetBPPatch( brkp *bp );
 extern int      GetBPResume( brkp *bp );
 extern bool     BreakWrite( address addr, mad_type_handle mth, const char *comment );
-extern bool     BreakOnRawMemory( address addr, const char *comment, int size );
+extern bool     BreakOnRawMemory( address addr, const char *comment, dig_type_size size );
 extern void     BreakOnExprSP( const char *comment );
 extern void     PointFini( void );
 extern void     CheckBPErrors( void );
