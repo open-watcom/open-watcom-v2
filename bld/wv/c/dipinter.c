@@ -409,7 +409,7 @@ OVL_EXTERN dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *iih, imp_type_ha
     if( ith->ri != NULL ) {
         MadTypeToDipTypeInfo( ith->ri->mth, ti );
     } else {
-        ti = ith->ti;
+        *ti = ith->ti;
     }
     return( DS_OK );
 }
