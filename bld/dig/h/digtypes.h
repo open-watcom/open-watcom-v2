@@ -419,11 +419,11 @@ typedef signed_32       dig_type_bound;
 
 #include "digpck.h"
 
-typedef struct dip_type_info {
+typedef struct dig_type_info {
     dig_type_size       size;
     type_kind           kind;
     type_modifier       modifier;
-} dip_type_info;
+} dig_type_info;
 
 typedef struct {                //NYI: redo this for PIL
     unsigned_8          cpu;

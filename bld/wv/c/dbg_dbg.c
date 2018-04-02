@@ -211,9 +211,9 @@ void PurgeUserNames( void )
 /*
  * CreateSym -- create a symbol table entry allocated from dynamic storage
  */
-bool CreateSym( lookup_item *li, dip_type_info *ti )
+bool CreateSym( lookup_item *li, dig_type_info *ti )
 {
-    dip_type_info       new_ti;
+    dig_type_info       new_ti;
     wv_sym_list         *new;
 
     if( ( li->mod != NO_MOD ) && !IsInternalMod( li->mod ) )

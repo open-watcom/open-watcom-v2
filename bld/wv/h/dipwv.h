@@ -61,7 +61,7 @@ typedef enum {
 } internal_idx;
 
 typedef struct {
-    dip_type_info       ti;
+    dig_type_info       ti;
     wv_sym_class        sc;
     union {
         internal_idx    internal;   /* for SC_INTERNAL */
@@ -85,7 +85,7 @@ struct imp_sym_handle {
 };
 
 struct imp_type_handle {
-    dip_type_info       ti;
+    dig_type_info       ti;
     const mad_reg_info  *ri;
 };
 

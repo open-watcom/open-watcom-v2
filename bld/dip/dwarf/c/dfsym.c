@@ -684,12 +684,12 @@ static drmem_hdl GetThis( imp_image_handle *iih, drmem_hdl proc )
 
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 /********************************************************************************/
 {
     /* Fill in the imp_type_handle with the type of the 'this' object
      * for a C++ member function.
-     * If 'ti' is not NULL, fill in the dip_type_info with the kind of 'this'
+     * If 'ti' is not NULL, fill in the dig_type_info with the kind of 'this'
      * pointer that the routine is expecting (near/far, 16/32). If the
      * routine is a static member, set ti->kind to TK_NONE.
      */

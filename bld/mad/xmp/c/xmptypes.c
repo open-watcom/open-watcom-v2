@@ -136,7 +136,7 @@ mad_status MADIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
     return( MS_UNSUPPORTED );
 }
 
-mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
+mad_type_handle MADIMPENTRY( TypeForDIPType )( const dig_type_info *ti )
 {
     switch( ti->kind ) {
     case TK_DATA:

@@ -92,13 +92,13 @@ char            *DIPModSrcLang( mod_handle );
 dip_status      DIPModHasInfo( mod_handle, handle_kind );
 search_result   DIPAddrMod( address, mod_handle * );
 address         DIPModAddr( mod_handle );
-dip_status      DIPModDefault( mod_handle, default_kind, dip_type_info * );
+dip_status      DIPModDefault( mod_handle, default_kind, dig_type_info * );
 
 /*
  * Type Information
  */
 mod_handle      DIPTypeMod( type_handle * );
-dip_status      DIPTypeInfo( type_handle *, location_context *lc, dip_type_info * );
+dip_status      DIPTypeInfo( type_handle *, location_context *lc, dig_type_info * );
 dip_status      DIPTypeBase( type_handle *t, type_handle *b, location_context *lc, location_list * );
 dip_status      DIPTypeArrayInfo( type_handle *, location_context *, array_info *, type_handle * );
 dip_status      DIPTypeProcInfo( type_handle *t, type_handle *r, unsigned p );
@@ -123,7 +123,7 @@ dip_status      DIPSymValue( sym_handle *, location_context *, void * );
 dip_status      DIPSymInfo( sym_handle *, location_context *, sym_info * );
 void            DIPSymInit( sym_handle *sh, image_handle *ih );
 dip_status      DIPSymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
-dip_status      DIPSymObjType( sym_handle *, type_handle *, dip_type_info * );
+dip_status      DIPSymObjType( sym_handle *, type_handle *, dig_type_info * );
 dip_status      DIPSymObjLocation( sym_handle *, location_context *, location_list * );
 search_result   DIPAddrSym( mod_handle, address, sym_handle * );
 search_result   DIPLookupSym( symbol_source, void *, lookup_item *, void * );

@@ -73,7 +73,7 @@ typedef enum {
 } conv_class;
 
 
-static conv_class ConvIdx( dip_type_info *ti )
+static conv_class ConvIdx( dig_type_info *ti )
 {
     unsigned    size;
 
@@ -166,7 +166,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     unsigned            size;
     mad_type_info       src_mti;
     mad_type_info       dst_mti;
-    dip_type_info       ti;
+    dig_type_info       ti;
 
     if( entry->ti.size > sizeof( *tmp ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
@@ -769,7 +769,7 @@ static conv_class BinResult[NUM_CLASSES][NUM_CLASSES] = {
 /* HP4*/ { HP4,HP4,HP4,HP4,HP4,HP4,HP4,HP4,ERR,ERR,ERR,ERR,ERR,ERR,ERR,HP4,HP4,HP4,FP6,HP4}
 };
 
-static dip_type_info ResultInfo[] = {
+static dig_type_info ResultInfo[] = {
         {  1, TK_INTEGER,       TM_SIGNED },
         {  1, TK_INTEGER,       TM_UNSIGNED },
         {  2, TK_INTEGER,       TM_SIGNED },
@@ -797,7 +797,7 @@ static void DoBinOp( stack_entry *left, stack_entry *right )
     conv_class      lclass;
     conv_class      rclass;
     conv_class      result_class;
-    dip_type_info   *result_ti;
+    dig_type_info   *result_ti;
     bool            promote_left;
 
     lclass = ConvIdx( &left->ti );

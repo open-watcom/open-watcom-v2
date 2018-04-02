@@ -363,7 +363,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     char            buff[2048];
     unsigned        len;
     symbol_type     tag;
-    dip_type_info   ti;
+    dig_type_info   ti;
     dip_status      rc;
 
     printf( "%5d  ", ++*idx );

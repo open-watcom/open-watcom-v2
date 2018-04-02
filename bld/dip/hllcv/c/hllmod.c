@@ -346,10 +346,10 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 }
 
 /*
- * Construct default dip_type_info for a module.
+ * Construct default dig_type_info for a module.
  */
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
-                                      default_kind dk, dip_type_info *ti )
+                                      default_kind dk, dig_type_info *ti )
 {
     /*
      * Get the module entry and figure if it's a 16-bit or 32-bit module.

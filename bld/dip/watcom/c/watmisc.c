@@ -497,7 +497,7 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source s
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
-                        default_kind dk, dip_type_info *ti )
+                        default_kind dk, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)imh; (void)dk; (void)ti;
 

@@ -1624,7 +1624,7 @@ bool BreakOnRawMemory( address addr, const char *comment, dig_type_size size )
 void BreakOnExprSP( const char *comment )
 {
     address             addr;
-    dip_type_info       ti;
+    dig_type_info       ti;
     tmp_break_struct    s;
 
     LValue( ExprSP );

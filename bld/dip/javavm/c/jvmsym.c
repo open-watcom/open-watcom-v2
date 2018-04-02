@@ -625,7 +625,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 {
     struct methodblock  method;
     dip_status          ds;

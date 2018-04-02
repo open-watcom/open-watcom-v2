@@ -964,7 +964,7 @@ struct parsed_regs {
     const mad_reg_info  *ri;
 };
 
-void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
+void ParseRegSet( bool multiple, location_list *ll, dig_type_info *ti )
 {
     lookup_item         li;
     struct parsed_regs  *list, *new;
@@ -1041,7 +1041,7 @@ void RegNewValue( const mad_reg_info *reginfo,
 {
     char                        *p;
     location_list               dst_ll,src_ll;
-    dip_type_info               dst_ti,src_ti;
+    dig_type_info               dst_ti,src_ti;
     size_t                      max;
 
     if( !AdvMachState( ACTION_MODIFY_REGISTER ) )

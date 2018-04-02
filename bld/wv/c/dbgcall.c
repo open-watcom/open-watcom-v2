@@ -80,7 +80,7 @@ void FiniCall( void )
     FreeParms();
 }
 
-static void GetLocation( location_list *ll, dip_type_info *ti )
+static void GetLocation( location_list *ll, dig_type_info *ti )
 {
     bool        reg_set;
 
@@ -116,7 +116,7 @@ static void DoCallSet( void )
         unsigned        len;
     }                   new_parms[MAX_PARMS];
     location_list       ll;
-    dip_type_info       ti;
+    dig_type_info       ti;
 
     if( CurrToken == T_DIV ) {
         Scan();
@@ -259,8 +259,8 @@ void ProcCall( void )
     address             start;
     const char          *old;
     location_list       ll;
-    dip_type_info       ti;
-    dip_type_info       *pti;
+    dig_type_info       ti;
+    dig_type_info       *pti;
     char                *p;
     const mad_reg_info  **parm_reg;
 

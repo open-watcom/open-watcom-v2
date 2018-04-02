@@ -731,7 +731,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+                imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 {
     lcl_defn    defn;
     dip_status  ret;

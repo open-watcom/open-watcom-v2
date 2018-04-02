@@ -133,7 +133,7 @@ static struct {
 #define MAX_SCANSAVE_PTRS 20
 static  const char      *CurrScan[MAX_SCANSAVE_PTRS];
 
-static stack_class TypeInfoToClass( dip_type_info *ti )
+static stack_class TypeInfoToClass( dig_type_info *ti )
 {
     stack_class         c;
 
@@ -169,7 +169,7 @@ static stack_class TypeInfoToClass( dip_type_info *ti )
     return( c );
 }
 
-static void ClassToTypeInfo( stack_class c, dip_type_info *ti )
+static void ClassToTypeInfo( stack_class c, dig_type_info *ti )
 {
     switch( c ) {
     case STK_INT | STK_UNSIGNED:
@@ -225,7 +225,7 @@ static void ClassToTypeInfo( stack_class c, dip_type_info *ti )
 
 //NYI: end temp
 
-static void FillInDefaults( dip_type_info *ti )
+static void FillInDefaults( dig_type_info *ti )
 {
     mad_type_info       mti;
 
@@ -469,7 +469,7 @@ static bool UserType( type_handle *th )
 static void PushBaseSize( void )
 {
     DIPHDL( type, th );
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     DIPTypeBase( ExprSP->th, th, NULL, NULL );
     DIPTypeInfo( th, ExprSP->lc, &ti );
@@ -554,7 +554,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
     unsigned long       size;
     ssl_value           result;
     DIPHDL( type, th );
-    dip_type_info       ti;
+    dig_type_info       ti;
     mad_type_info       mti;
 
     result = 0;
@@ -706,7 +706,7 @@ static void BasicType( unsigned basic_type )
 {
     internal_mod        mod_srch;
     imp_type_handle     *ith;
-    dip_type_info       ti;
+    dig_type_info       ti;
     DIPHDL( type, th );
 
     DIPWalkModList( NO_MOD, FindInternalMod, &mod_srch );
@@ -726,7 +726,7 @@ static void BasicType( unsigned basic_type )
 static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
 {
     location_list           ll;
-    dip_type_info           ti;
+    dig_type_info           ti;
     ssl_value               result;
     static const unsigned   TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),

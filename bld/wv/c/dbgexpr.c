@@ -415,7 +415,7 @@ void PushAddr( address addr )
     ExprSetAddrInfo( ExprSP, false );
 }
 
-void PushLocation( location_list *ll, dip_type_info *ti )
+void PushLocation( location_list *ll, dig_type_info *ti )
 {
     CreateEntry();
     if( ti != NULL )
@@ -766,7 +766,7 @@ void AddSubscript( void )
 {
     stack_entry     *array;
     array_info      ai;
-    dip_type_info   ti;
+    dig_type_info   ti;
     stack_flags     save_imp;
     DIPHDL( type, th );
 

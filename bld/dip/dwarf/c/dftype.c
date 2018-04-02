@@ -372,7 +372,7 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
     return( ith->imh );
 }
 
-void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
+void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
 {
     /*
         Map dwarf info to dip imp
@@ -473,7 +473,7 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
 }
 
 dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
-                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
+                imp_type_handle *ith, location_context *lc, dig_type_info *ti )
 {
     /*
         Fill in the type information for the type handle. The location

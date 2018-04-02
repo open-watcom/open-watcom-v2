@@ -260,7 +260,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
     return( addr );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dip_type_info *ti )
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dig_type_info *ti )
 {
     cs_compile  *comp_info;
 

@@ -823,7 +823,7 @@ dip_status DIPModHasInfo( mod_handle mh, handle_kind hk )
     return( ih->dip->ModInfo( IH2IIH( ih ), MH2IMH( mh ), hk ) );
 }
 
-dip_status DIPModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
+dip_status DIPModDefault( mod_handle mh, default_kind dk, dig_type_info *ti )
 {
     image_handle        *ih;
 
@@ -854,7 +854,7 @@ mod_handle DIPTypeMod( type_handle *th )
     return( MK_MH( ih->ii, ih->dip->TypeMod( IH2IIH( ih ), TH2ITH( th ) ) ) );
 }
 
-dip_status DIPTypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
+dip_status DIPTypeInfo( type_handle *th, location_context *lc, dig_type_info *ti )
 {
     image_handle        *ih;
 
@@ -1148,7 +1148,7 @@ dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc, location_li
     return( ih->dip->SymParmLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll, parm ) );
 }
 
-dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
+dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dig_type_info *ti )
 {
     image_handle        *ih;
 

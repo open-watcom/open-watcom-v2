@@ -117,7 +117,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *iih, imp_mod_handle imh )
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle imh, default_kind dk, dip_type_info *ti )
+                imp_mod_handle imh, default_kind dk, dig_type_info *ti )
 {
     //TODO:
     /*

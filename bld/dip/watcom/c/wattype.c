@@ -736,7 +736,7 @@ done:
     return( WR_CONTINUE );
 }
 
-static void ScalarInfo( unsigned info, dip_type_info *ti )
+static void ScalarInfo( unsigned info, dig_type_info *ti )
 {
     ti->size = (info & SCLR_LEN_MASK) + 1;
     switch( info & SCLR_CLASS_MASK ) {
@@ -762,7 +762,7 @@ static void ScalarInfo( unsigned info, dip_type_info *ti )
 
 
 static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
-                    location_context *lc, dip_type_info *ti, unsigned *ndims )
+                    location_context *lc, dig_type_info *ti, unsigned *ndims )
 {
     const char          *p;
     byte                subkind;
@@ -959,7 +959,7 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
 }
 
 dip_status DIPIMPENTRY( TypeInfo )(imp_image_handle *iih, imp_type_handle *ith,
-                        location_context *lc, dip_type_info *ti )
+                        location_context *lc, dig_type_info *ti )
 {
     return( GetTypeInfo( iih, ith, lc, ti, NULL ) );
 }
@@ -1021,7 +1021,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *iih, imp_type_handle *
     address             addr;
     byte                is_32;
     long                hi = 0;
-    dip_type_info       ti;
+    dig_type_info       ti;
     unsigned            count;
     dip_status          ret;
     typeinfo            typeld;

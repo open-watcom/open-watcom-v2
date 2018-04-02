@@ -51,7 +51,7 @@
 #include "dbglkup.h"
 
 
-static bool DefaultTypeInfo( dip_type_info *ti )
+static bool DefaultTypeInfo( dig_type_info *ti )
 {
     bool        real_type;
 
@@ -97,13 +97,13 @@ static bool DefaultTypeInfo( dip_type_info *ti )
     return( real_type );
 }
 
-bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *ti )
+bool ClassifyType( location_context *lc, type_handle *th, dig_type_info *ti )
 {
     DIPTypeInfo( th, lc, ti );
     return( DefaultTypeInfo( ti ) );
 }
 
-void ClassifyEntry( stack_entry *stk, dip_type_info *ti )
+void ClassifyEntry( stack_entry *stk, dig_type_info *ti )
 {
     if( stk->th == NULL ) {
         *ti = stk->ti;
@@ -357,7 +357,7 @@ void ExprResolve( stack_entry *entry )
 static bool IsCodePointer( stack_entry *entry )
 {
     DIPHDL( type, base_th );
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     if( entry->th == NULL )
         return( false );

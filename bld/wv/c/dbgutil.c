@@ -58,7 +58,7 @@ extern char             *Language;
 
 dig_type_size DefaultSize( default_kind dk )
 {
-    dip_type_info       ti;
+    dig_type_info       ti;
     mad_type_info       mti;
 
     if( DIPModDefault( CodeAddrMod, dk, &ti ) != 0 ) {

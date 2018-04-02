@@ -199,7 +199,7 @@ const void *GetNumLeaf( const void *p, numeric_leaf *v )
 }
 
 
-dip_status DoIndirection( imp_image_handle *iih, dip_type_info *ti, location_context *lc, location_list *ll )
+dip_status DoIndirection( imp_image_handle *iih, dig_type_info *ti, location_context *lc, location_list *ll )
 {
     union {
         unsigned_8      u8;

@@ -94,7 +94,7 @@ imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
     return( DoSymCreate( iih, (sym_list **)d ) );
 }
 
-void MadTypeToDipTypeInfo( mad_type_handle mth, dip_type_info *ti )
+void MadTypeToDipTypeInfo( mad_type_handle mth, dig_type_info *ti )
 {
     mad_type_info       mti;
 
@@ -363,7 +363,7 @@ OVL_EXTERN dip_status WVIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_hand
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
-                        default_kind dk, dip_type_info *ti )
+                        default_kind dk, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)imh; (void)dk; (void)ti;
 
@@ -402,7 +402,7 @@ OVL_EXTERN imp_mod_handle WVIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *iih, imp_type_handle *ith,
-                        location_context *lc, dip_type_info *ti )
+                        location_context *lc, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)lc;
 
@@ -607,7 +607,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymParmLocation )( imp_image_handle *iih, imp_
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( SymObjType )( imp_image_handle *iih, imp_sym_handle *proc_ish,
-                    imp_type_handle *ith, dip_type_info *ti )
+                    imp_type_handle *ith, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)proc_ish; (void)ith; (void)ti;
 

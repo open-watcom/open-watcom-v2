@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern void             MadTypeToDipTypeInfo( mad_type_handle mth, dip_type_info * );
+extern void             MadTypeToDipTypeInfo( mad_type_handle mth, dig_type_info * );
 extern dip_status       RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll );
 extern search_result    DeAliasAddrMod( address a, mod_handle *mh );
 extern search_result    DeAliasAddrSym( mod_handle mh, address a, sym_handle *sh );

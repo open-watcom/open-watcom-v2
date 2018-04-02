@@ -49,7 +49,7 @@ imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *i
     return( IMH_JAVA );
 }
 
-dip_status ImpInfoFromSig( ji_ptr sig, dip_type_info *ti )
+dip_status ImpInfoFromSig( ji_ptr sig, dig_type_info *ti )
 {
     ti->kind = TM_NONE;
     ti->size = 0;
@@ -121,7 +121,7 @@ static unsigned long ElementCount( ji_ptr off )
 
 static unsigned ElementSize( ji_ptr sig )
 {
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     do {
     } while( isdigit( GetU8( ++sig ) ) );
@@ -136,7 +136,7 @@ static unsigned ElementSize( ji_ptr sig )
 }
 
 static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
-                        location_context *lc, dip_type_info *ti )
+                        location_context *lc, dig_type_info *ti )
 {
     ji_ptr                      clazz;
     ji_ptr                      name;
@@ -201,7 +201,7 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
 
 
 dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
-                imp_type_handle *ith, location_context *lc, dip_type_info *ti )
+                imp_type_handle *ith, location_context *lc, dig_type_info *ti )
 {
     return( ImpTypeInfo( iih, ith, lc, ti ) );
 

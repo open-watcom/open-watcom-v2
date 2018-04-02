@@ -522,8 +522,8 @@ void DoPoints( type_kind def )
 
 static void ConvertGiven( stack_entry *object, stack_entry *new )
 {
-    dip_type_info       new_ti;
-    dip_type_info       obj_ti;
+    dig_type_info       new_ti;
+    dig_type_info       obj_ti;
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
@@ -598,7 +598,7 @@ void DoConvert( void )
 void DoLConvert( void )
 {
     stack_entry     *left;
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     left = StkEntry( 1 );
     LValue( ExprSP );
@@ -946,7 +946,7 @@ static trap_elen MakeSCB( item_mach *item, address addr, item_type typ )
 
 static type_modifier DerefType( type_handle *th )
 {
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( TM_NONE );
@@ -959,7 +959,7 @@ static type_modifier DerefType( type_handle *th )
 
 static item_type DerefToSCB( type_handle *th )
 {
-    dip_type_info   ti;
+    dig_type_info   ti;
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( IT_NIL );
@@ -1066,9 +1066,9 @@ void DoCall( int num_parms, bool build_scbs )
     DIPHDL( type, parm_th );
     DIPHDL( type, th );
     sym_info            rtn_si;
-    dip_type_info       this_ti;
-    dip_type_info       ti;
-    dip_type_info       ret_ti;
+    dig_type_info       this_ti;
+    dig_type_info       ti;
+    dig_type_info       ret_ti;
     item_mach           item;
     int                 parm_loc_adjust;
     int                 parm;

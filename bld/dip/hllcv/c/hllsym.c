@@ -1734,7 +1734,7 @@ dip_status hllSymValue( imp_image_handle *iih, imp_sym_handle *ish,
     numeric_leaf        val;
     dip_status          ds;
     imp_type_handle     ith;
-    dip_type_info       ti;
+    dig_type_info       ti;
 
     if( ish->containing_type != 0 ) {
         return( TypeSymGetValue( iih, ish, lc, buff ) );
@@ -1996,7 +1996,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
     dip_status          ds;
     unsigned_8          *reg_list;
     imp_type_handle     ith;
-    dip_type_info       ti;
+    dig_type_info       ti;
 
     p = VMBlock( iih, ish->handle, ish->len );
     switch( p->common.code ) {
@@ -2130,7 +2130,7 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
-                    imp_sym_handle *ish, imp_type_handle *ith, dip_type_info *ti )
+                    imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 {
     /* unused parameters */ (void)iih; (void)ish; (void)ith; (void)ti;
 
@@ -2172,7 +2172,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     s_all               *p;
     imp_sym_handle      parm;
     imp_type_handle     ith;
-    dip_type_info       ti;
+    dig_type_info       ti;
     unsigned long       adjust;
 
     ds = ImpSymType( iih, ish, &ith );

@@ -236,7 +236,7 @@ const void *hllGetNumLeaf( const void *p, numeric_leaf *v )
 }
 
 
-dip_status hllDoIndirection( imp_image_handle *iih, dip_type_info *ti,
+dip_status hllDoIndirection( imp_image_handle *iih, dig_type_info *ti,
                              location_context *lc, location_list *ll )
 {
     union {

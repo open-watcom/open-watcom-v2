@@ -637,14 +637,14 @@ mad_radix       MADTypePreferredRadix( mad_type_handle mth )
     return( Active->rtns->TypePreferredRadix( mth ) );
 }
 
-OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
+OVL_EXTERN mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dig_type_info *ti )
 {
     /* unused parameters */ (void)ti;
 
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
+mad_type_handle MADTypeForDIPType( const dig_type_info *ti )
 {
     return( Active->rtns->TypeForDIPType( ti ) );
 }
