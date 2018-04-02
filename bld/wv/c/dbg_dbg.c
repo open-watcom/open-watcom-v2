@@ -54,7 +54,7 @@
 #define WV_SYM( prfx, tk, tm, ts, sc, intrnl, vn, np ) \
     static const WV_SYM_DEF( sizeof( np #vn ) - 1 ) wv ## prfx ## _ ## vn = {  \
         {                                       \
-            { TK_ ## tk, TM_ ## tm, ts },       \
+            { ts, TK_ ## tk, TM_ ## tm },       \
             SC_ ## sc,                          \
             { intrnl }                          \
         },                                      \
@@ -220,9 +220,7 @@ bool CreateSym( lookup_item *li, dig_type_info *ti )
         return( false );
     if( li->scope.start != NULL )
         return( false );
-    new_ti.kind = ti->kind;
-    new_ti.modifier = ti->modifier;
-    new_ti.size = ti->size;
+    new_ti = *ti;
     switch( new_ti.kind ) {
     case TK_INTEGER:
     case TK_ENUM:

@@ -716,9 +716,7 @@ static void BasicType( unsigned basic_type )
     ti.size = TI_SIZE_EXTRACT( basic_type );
     FillInDefaults( &ti );
     ith = TH2ITH( th );
-    ith->ti.kind = ti.kind;
-    ith->ti.modifier = ti.modifier;
-    ith->ti.size = ti.size;
+    ith->ti = ti;
     ith->ri = NULL;
     PushType( th );
 }
