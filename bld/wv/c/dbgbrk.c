@@ -1478,7 +1478,7 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             NewCurrRadix( old_radix );
             ReqComma();
             break;
-            /* fall thru */
+            /* fall through */
         default:
             Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
             break;

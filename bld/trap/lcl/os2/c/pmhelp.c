@@ -154,10 +154,8 @@ static MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM 
     RECTL  rc;
 
     switch( msg ) {
-
     case WM_CREATE:
         break;
-
     case WM_COMMAND:
         switch( SHORT1FROMMP( mp1 ) ) {
         case ID_UNLOCK:
@@ -182,10 +180,8 @@ static MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM 
             return( WinDefWindowProc( hwnd, msg, mp1, mp2 ) );
         }
         break;
-
     case WM_ERASEBACKGROUND:
         return( (MRESULT)TRUE );
-
     case WM_PAINT:
         hps = WinBeginPaint( hwnd, 0L, &rc );
 #ifdef DEBUG
@@ -202,15 +198,12 @@ static MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM 
 #endif
         WinEndPaint( hps );
         break;
-
     case WM_CLOSE:
         WinPostMsg( hwnd, WM_QUIT, 0, 0 );
         break;
-
     case WM_DESTROY:
         UnLockIt();
-        // fall thru
-
+        /* fall through */
     default:
         return( WinDefWindowProc( hwnd, msg, mp1, mp2 ) );
 

@@ -1945,7 +1945,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_CALL_PARM_FLT:            // SET float_used ...
             CompFlags.float_used = true;
-            // fall thru
+            /* fall through */
           case IC_CALL_PARM :               // PARAMETER FOR CALL
             CGAddParm( CallStackTopHandle(), CgExprPop(), exprn_type );
             break;

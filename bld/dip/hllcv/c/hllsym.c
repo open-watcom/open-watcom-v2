@@ -1844,7 +1844,7 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
         case HLL_SSR_STATIC:
         case HLL_SSR_STATIC2:
             si->is_global = 1; //??
-            /* fall thru */
+            /* fall through */
         case HLL_SSR_STATIC_SCOPED:
             si->kind = SK_DATA;
             si->is_static = 1;

@@ -1948,7 +1948,7 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
                     if( CDoptInlinedMember( data->optiter ) ) {
                         data->comp_options |= CI_INLINED;
                     }
-                    // fall thru
+                    /* fall through */
                   case TITER_NAKED_DTOR :
                   case TITER_CLASS_EXACT :
                   case TITER_CLASS_VBASE :

@@ -408,7 +408,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 #else
     case OPT_mem_model_mfi:
         CompFlags.mfi_switch_used = true;
-        /* fall thru */
+        /* fall through */
     case OPT_mem_model_mf:
         model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );

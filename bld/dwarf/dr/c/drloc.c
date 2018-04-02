@@ -303,7 +303,8 @@ static void DoLocExpr( unsigned_8       *p,
             top[2] = stk1;
             break;
         case DW_OP_deref:
-            op1 = addr_size; /* fall thru */
+            op1 = addr_size;
+            /* fall through */
         case DW_OP_deref_size:
             /* dref addr */
             if( kind == DR_LOC_REG ) {  // indirect of reg name
@@ -318,7 +319,8 @@ static void DoLocExpr( unsigned_8       *p,
             }
             break;
         case DW_OP_xderef:
-            op1 = addr_size; /* fall thru */
+            op1 = addr_size;
+            /* fall through */
         case DW_OP_xderef_size:
             /*  xdref addr */
             stk1 = top[0];
@@ -396,7 +398,9 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_OP_bra:
             stk1 = top[0];
             Pop( top );
-            if( stk1 == 0 ) break;  /* conditional fall thru */
+            if( stk1 == 0 )
+                break;
+            /* fall through */
         case DW_OP_skip:
             p += op1;
             break;

@@ -199,10 +199,8 @@ static MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM m
     RECTL  rc;
 
     switch (msg) {
-
     case WM_CREATE:
         break;
-
     case WM_COMMAND:
         switch (SHORT1FROMMP(mp1)) {
            case ID_UNLOCK:
@@ -237,10 +235,8 @@ static MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM m
                return WinDefWindowProc(hwnd, msg, mp1, mp2);
         }
         break;
-
     case WM_ERASEBACKGROUND:
         return (MRESULT)TRUE;
-
     case WM_PAINT:
         hps = WinBeginPaint(hwnd, 0L, &rc);
 #ifdef DEBUG
@@ -256,18 +252,14 @@ static MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM m
 #endif
         WinEndPaint(hps);
         break;
-
     case WM_CLOSE:
         WinPostMsg(hwnd, WM_QUIT, 0, 0);
         break;
-
     case WM_DESTROY:
         UnLockIt();  // Is it possible to arrive here at all if PM is locked?
-        // fall thru
-
+        /* fall through */
     default:
         return WinDefWindowProc(hwnd, msg, mp1, mp2);
-
     }
     return FALSE;
 }

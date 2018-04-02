@@ -535,7 +535,7 @@ OVL_EXTERN  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
                     p = GetMenuLabel( WndNumMenus, WndMainMenu, main_id, TxtBuff, true );
                     *p++ = '/';
                 }
-                /* fall thru */
+                /* fall through */
             case MACRO_POPUP_MENU:
                 if( mac->menu == NULL ) {
                     line->text = LIT_ENG( Quest_Marks );

@@ -498,7 +498,7 @@ static void BurnTree( tree_node *tree )
     case OP_AND:
     case OP_OR:
         BurnTree( tree->right );
-        /* fall thru */
+        /* fall through */
     case OP_NOT:
         BurnTree( tree->u.left );
         break;

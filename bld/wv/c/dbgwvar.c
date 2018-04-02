@@ -527,7 +527,7 @@ OVL_EXTERN void VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
             start = ainfo.low_bound;
             varx.start = start;
             varx.end = varx.start + ainfo.num_elts - 1;
-            /* fall thru */
+            /* fall through */
         case TK_POINTER:
             {
                 bool rc;
