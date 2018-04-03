@@ -832,31 +832,42 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
         case POINTER_TYPE:
             {
 #define POINTER_INFO() \
-    pick( 2, TM_NEAR,                   false ) \
-    pick( 4, TM_FAR,                    false ) \
-    pick( 4, TM_HUGE,                   false ) \
-    pick( 2, TM_NEAR | TM_FLAG_DEREF,   true ) \
-    pick( 4, TM_FAR  | TM_FLAG_DEREF,   true ) \
-    pick( 4, TM_HUGE | TM_FLAG_DEREF,   true ) \
-    pick( 4, TM_NEAR,                   false ) \
-    pick( 6, TM_FAR,                    false ) \
-    pick( 4, TM_NEAR | TM_FLAG_DEREF,   true ) \
-    pick( 6, TM_FAR  | TM_FLAG_DEREF,   true )
+    pick( 2, TM_NEAR,   false ) \
+    pick( 4, TM_FAR,    false ) \
+    pick( 4, TM_HUGE,   false ) \
+    pick( 2, TM_NEAR,   true ) \
+    pick( 4, TM_FAR,    true ) \
+    pick( 4, TM_HUGE,   true ) \
+    pick( 4, TM_NEAR,   false ) \
+    pick( 6, TM_FAR,    false ) \
+    pick( 4, TM_NEAR,   true ) \
+    pick( 6, TM_FAR,    true )
 
-                static const char PSize[] = {
+                static const unsigned char PSize[] = {
                     #define pick(s,m,d)     s,
                     POINTER_INFO()
                     #undef pick
                 };
-                static const char PMods[] = {
+                static const type_modifier PMods[] = {
                     #define pick(s,m,d)     m,
                     POINTER_INFO()
                     #undef pick
                 };
+                static const bool PDeref[] = {
+                    #define pick(s,m,d)     d,
+                    POINTER_INFO()
+                    #undef pick
+                };
+
 
                 ti->kind = TK_POINTER;
                 ti->size = PSize[subkind];
                 ti->modifier = PMods[subkind];
+                if( PDeref[subkind] ) {
+                    TI_DEREF_SET( *ti );
+                } else {
+                    TI_DEREF_RESET( *ti );
+                }
             }
             break;
         case ENUM_TYPE:

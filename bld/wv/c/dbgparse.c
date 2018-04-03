@@ -173,7 +173,7 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     switch( ExprSP->ti.kind ) {
     case TK_ADDRESS:
     case TK_POINTER:
-        if( (ExprSP->ti.modifier & TM_MOD_MASK) != TM_NEAR )
+        if( TI_GETMODS( ExprSP->ti ) != TM_NEAR )
             break;
         /* fall through */
     default:

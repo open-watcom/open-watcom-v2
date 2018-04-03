@@ -1522,7 +1522,7 @@ dip_status ImpTypeInfo( imp_image_handle *iih,
             break;
         }
         if( p->pointer.f.attr.f.mode == CV_REF ) {
-            ti->modifier |= TM_FLAG_DEREF;
+            TI_DEREF_SET( *ti );
         }
         break;
     case LF_ARRAY:

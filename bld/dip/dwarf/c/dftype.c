@@ -466,7 +466,7 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
             break;
         }
         if( typeinfo->kind == DR_TYPEK_REF ) {
-            ti->modifier |= TM_FLAG_DEREF;
+            TI_DEREF_SET( *ti );
         }
         break;
     }

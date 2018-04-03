@@ -614,7 +614,7 @@ int TstLT( int true_value )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( (left->ti.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
+        if( TI_GETMODS( left->ti ) == TM_UNSIGNED ) {
             temp = ( U64Cmp( &left->v.uint, &rite->v.uint ) < 0 );
         } else {
             temp = ( I64Cmp( &left->v.sint, &rite->v.sint ) < 0 );

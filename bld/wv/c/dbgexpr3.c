@@ -87,7 +87,7 @@ static conv_class ConvIdx( dig_type_info *ti )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( (ti->modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        if( TI_GETMODS( *ti ) == TM_SIGNED ) {
             switch( size ) {
             case 1:
                 return( I1 );
@@ -133,7 +133,7 @@ static conv_class ConvIdx( dig_type_info *ti )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( ti->modifier & TM_MOD_MASK ) {
+        switch( TI_GETMODS( *ti ) ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -178,7 +178,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_CHAR:
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->ti ), &src_mti );
-        if( (entry->ti.modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        if( TI_GETMODS( entry->ti ) == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_mti );
@@ -202,7 +202,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_POINTER:
     case TK_ADDRESS:
         //NYI: use MAD conversion routines....
-        switch( entry->ti.modifier & TM_MOD_MASK ) {
+        switch( TI_GETMODS( entry->ti ) ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -261,7 +261,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     case TK_CHAR:
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->ti ), &dst_mti );
-        if( (entry->ti.modifier & TM_MOD_MASK) == TM_SIGNED ) {
+        if( TI_GETMODS( entry->ti ) == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_mti );
@@ -290,7 +290,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( entry->ti.modifier & TM_MOD_MASK ) {
+        switch( TI_GETMODS( entry->ti ) ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -770,26 +770,26 @@ static conv_class BinResult[NUM_CLASSES][NUM_CLASSES] = {
 };
 
 static dig_type_info ResultInfo[] = {
-        {  1, TK_INTEGER,       TM_SIGNED },
-        {  1, TK_INTEGER,       TM_UNSIGNED },
-        {  2, TK_INTEGER,       TM_SIGNED },
-        {  2, TK_INTEGER,       TM_UNSIGNED },
-        {  4, TK_INTEGER,       TM_SIGNED },
-        {  4, TK_INTEGER,       TM_UNSIGNED },
-        {  8, TK_INTEGER,       TM_SIGNED },
-        {  8, TK_INTEGER,       TM_UNSIGNED },
-        {  4, TK_REAL,          TM_NONE },
-        {  8, TK_REAL,          TM_NONE },
-        { 10, TK_REAL,          TM_NONE },
-        {  8, TK_COMPLEX,       TM_NONE },
-        { 16, TK_COMPLEX,       TM_NONE },
-        { 20, TK_COMPLEX,       TM_NONE },
-        {  0, TK_STRING,        TM_NONE },
-        {  2, TK_POINTER,       TM_NEAR },
-        {  4, TK_POINTER,       TM_NEAR },
-        {  4, TK_POINTER,       TM_FAR },
-        {  6, TK_POINTER,       TM_FAR },
-        {  4, TK_POINTER,       TM_HUGE },
+    {  1, TK_INTEGER,       TM_SIGNED },
+    {  1, TK_INTEGER,       TM_UNSIGNED },
+    {  2, TK_INTEGER,       TM_SIGNED },
+    {  2, TK_INTEGER,       TM_UNSIGNED },
+    {  4, TK_INTEGER,       TM_SIGNED },
+    {  4, TK_INTEGER,       TM_UNSIGNED },
+    {  8, TK_INTEGER,       TM_SIGNED },
+    {  8, TK_INTEGER,       TM_UNSIGNED },
+    {  4, TK_REAL,          TM_NONE },
+    {  8, TK_REAL,          TM_NONE },
+    { 10, TK_REAL,          TM_NONE },
+    {  8, TK_COMPLEX,       TM_NONE },
+    { 16, TK_COMPLEX,       TM_NONE },
+    { 20, TK_COMPLEX,       TM_NONE },
+    {  0, TK_STRING,        TM_NONE },
+    {  2, TK_POINTER,       TM_NEAR },
+    {  4, TK_POINTER,       TM_NEAR },
+    {  4, TK_POINTER,       TM_FAR },
+    {  6, TK_POINTER,       TM_FAR },
+    {  4, TK_POINTER,       TM_HUGE },
 };
 
 static void DoBinOp( stack_entry *left, stack_entry *right )

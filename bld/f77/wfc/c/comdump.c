@@ -51,10 +51,10 @@
 #define CT_NOT_CHAR     2
 
 static  int    ClassifyType( TYPE typ )
-{
 // Classify the specified type into CHARACTER or NON-CHARACTER.
-
-    if( typ == FT_CHAR ) return( CT_CHAR );
+{
+    if( typ == FT_CHAR )
+        return( CT_CHAR );
     return( CT_NOT_CHAR );
 }
 
@@ -85,7 +85,8 @@ void    STComDump( void )
             name_in_com = com_blk->u.ns.si.cb.first;
             BIStartComBlock( com_blk );
             // in case common block empty because of errors
-            if( name_in_com == NULL ) break;
+            if( name_in_com == NULL )
+                break;
             common_type = ClassifyType( name_in_com->u.ns.u1.s.typ );
             for(;;) {
                 sym = name_in_com;

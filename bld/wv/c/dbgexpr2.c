@@ -116,16 +116,12 @@ void ClassifyEntry( stack_entry *stk, dig_type_info *ti )
 static void GetTrueEntry( stack_entry *entry )
 {
     addr_off            near_off;
-    type_modifier       mod;
 
-    for( ;; ) {
-        mod = entry->ti.modifier;
-        if( !(mod & TM_FLAG_DEREF) )
-            break;
+    for( ; TI_ISDEREF( entry->ti ); ) {
         DoAPoints( entry, TK_NONE );
         if( entry->ti.kind == TK_VOID )
             Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
-        switch( mod & TM_MOD_MASK ) {
+        switch( TI_GETMODS( entry->ti ) ) {
         case TM_NEAR:
             if( entry->ti.kind == TK_FUNCTION ) {
                 near_off = entry->v.loc.e[0].u.addr.mach.offset;
@@ -252,8 +248,7 @@ void SymResolve( stack_entry *entry )
 void LValue( stack_entry *entry )
 {
     if( !NameResolve( entry, false ) ) {
-        Error( ERR_NONE, LIT_ENG( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
-                            entry->v.li.name.len );
+        Error( ERR_NONE, LIT_ENG( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start, entry->v.li.name.len );
     }
     SymResolve( entry );
     GetTrueEntry( entry );
@@ -444,7 +439,7 @@ void LRValue( stack_entry *entry )
             case TK_CHAR:
             case TK_ENUM:
             case TK_INTEGER:
-                if( (entry->ti.modifier & TM_MOD_MASK) == TM_SIGNED )
+                if( TI_GETMODS( entry->ti ) == TM_SIGNED )
                     extend = true;
                 /* fall through */
             default:
@@ -458,8 +453,7 @@ void LRValue( stack_entry *entry )
         }
         entry->flags &= ~(SF_LOCATION | SF_IMP_ADDR);
     }
-    if( entry->ti.kind == TK_POINTER
-        && (entry->ti.modifier & TM_MOD_MASK) == TM_NEAR ) {
+    if( entry->ti.kind == TK_POINTER && TI_GETMODS( entry->ti ) == TM_NEAR ) {
         NearToFar( entry );
     }
 }
