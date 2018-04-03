@@ -155,7 +155,7 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
         if( index != -1 ) {
             return( RegBits[index] );
         }
-        if( *(str - 1) == 'r' && *(str - 1) == 'R' ) {
+        if( *(str - 1) == 'r' || *(str - 1) == 'R' ) {
             --str;
         }
         CErr2p( ERR_BAD_REGISTER_NAME, str );

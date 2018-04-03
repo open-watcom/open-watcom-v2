@@ -655,10 +655,7 @@ int ib_trans_line(
 
     // indent properly if the first char is not white-space
     if( ch != '\0' && ch != ' ' && ch != '\t') {
-        ctr = ( ch == CH_LIST_ITEM && !Box_Mode &&
-                        Curr_list->type != LIST_TYPE_SIMPLE )
-                ? Text_Indent
-                : 0;
+        ctr = ( ch == CH_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
         while( ctr < Curr_indent ) {
             ctr++;
             trans_add_char_wrap( ' ', section, &alloc_size);
@@ -673,7 +670,7 @@ int ib_trans_line(
     Blank_line = true;
     for( ;; ) {
         ch = *(unsigned char *)ptr;
-        if( ch != '\0' && ( ch != ' ' || ch != '\t' ) ) {
+        if( ch != '\0' && ch != ' ' && ch != '\t' ) {
             Blank_line = false;
         }
         if( ch == '\0' ) {

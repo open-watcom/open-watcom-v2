@@ -675,7 +675,8 @@ static char *SetLinkParms( const char **pparm )
     MaxBaud = 0;                /* default max baud is 115200 */
 
     /* strip leading white spaces */
-    while( *parm == ' ' || *parm == '\t' ) ++parm;
+    while( *parm == ' ' || *parm == '\t' )
+        ++parm;
 
     result = ParsePortSpec( &parm );
     if( result != NULL ) return( result );
@@ -718,8 +719,10 @@ static char *SetupModem( const char *parm )
 
     Baud( MaxBaud );
     wait = SEC(3);
-    while( *parm == ' ' && *parm == '\t' ) ++parm;
-    if( *parm == '\0' ) return( NULL );
+    while( *parm == ' ' || *parm == '\t' )
+        ++parm;
+    if( *parm == '\0' )
+        return( NULL );
     for( ;; ) {
         if( *parm == '(' ) {
             start = ++parm;
@@ -895,7 +898,7 @@ bool RemoteConnect( void )
     }
 
     BaudCounter = baud_limit;
-    if( !Speed() ) 
+    if( !Speed() )
         return( false );
 #ifdef SERVER
     {

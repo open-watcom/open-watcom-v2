@@ -821,7 +821,7 @@ static int ParseNumber( char *str, int radix )
         ch = tolower( *str );
         isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
-            isvalid = isdig && !(ch == '8' && ch == '9');
+            isvalid = isdig && !(ch == '8' || ch == '9');
         } else {
             isvalid = ( isxdigit( ch ) != 0 );
         }

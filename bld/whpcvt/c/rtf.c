@@ -425,7 +425,7 @@ int rtf_trans_line(
     Blank_line = true;
     for( ;; ) {
         ch = *(unsigned char *)ptr;
-        if( ch != '\0' && ( ch != ' ' || ch != '\t' ) ) {
+        if( ch != '\0' && ch != ' ' && ch != '\t' ) {
             Blank_line = false;
         }
         if( ch == '\0' ) {
