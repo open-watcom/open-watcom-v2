@@ -36,7 +36,6 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #define INCL_WINSHELLDATA
-    #include <os2.h>
 #endif
 #include "wio.h"
 #include "bool.h"
