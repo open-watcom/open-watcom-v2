@@ -264,10 +264,13 @@ unsigned VMShrink( void )
     unsigned            kill_j;
     virt_page           *pg;
     imp_image_handle    *iih;
+    imp_image_handle    *kill_iih;
 
     kill_time = UINT_MAX;
     kill_i = 0;
     kill_j = 0;
+    kill_iih = NULL;
+    /* search oldest page by time_stamp */
     for( iih = ImageList; iih != NULL; iih = iih->next_image ) {
         if( iih->virt != NULL ) {
             for( i = iih->vm_dir_num-1; i >= 0; --i ) {
@@ -279,6 +282,7 @@ unsigned VMShrink( void )
                                 kill_time = pg->block->time_stamp;
                                 kill_i = i;
                                 kill_j = j;
+                                kill_iih = iih;
                             }
                         }
                     }
@@ -286,7 +290,7 @@ unsigned VMShrink( void )
             }
         }
     }
-    if( kill_time == UINT_MAX )
+    if( kill_iih == NULL )
         return( 0 );
-    return( KillPages( iih, kill_i, kill_j ) );
+    return( KillPages( kill_iih, kill_i, kill_j ) );
 }
