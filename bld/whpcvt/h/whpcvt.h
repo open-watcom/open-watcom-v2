@@ -152,6 +152,7 @@ typedef struct link_def {
 #define CH_FONTTYPE             157
 #define CH_TABXMP               170
 #define CH_FLINK                232
+#define CH_BOX_HBAR             196
 
 
 /**** a few InfoBench specific chars ****/

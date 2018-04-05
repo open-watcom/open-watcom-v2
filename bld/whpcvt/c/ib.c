@@ -62,7 +62,7 @@ static int              Line_postfix=LPOSTFIX_NONE;
 // Some characters we use for graphics
 #define CHR_BULLET              0x07
 #define BOX_VBAR                0xB3
-#define BOX_HBAR                0xC4
+#define BOX_HBAR                CH_BOX_HBAR
 #define BOX_CORNER_TOP_LEFT     0xDA
 #define BOX_CORNER_TOP_RIGHT    0xBF
 #define BOX_CORNER_BOTOM_LEFT   0xC0

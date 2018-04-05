@@ -72,8 +72,8 @@ static bool Blank_line_sfx = true;
 
 #define IPF_TRANS_LEN           50
 
-static char	*Trans_str = NULL;
-static int 	Trans_len = 0;
+static char     *Trans_str = NULL;
+static int      Trans_len = 0;
 
 #define MAX_TABS                100     // up to 100 tab stops
 static int Tab_list[MAX_TABS];
@@ -88,7 +88,7 @@ static void draw_line(
 
     trans_add_str( ":cgraphic.\n", section, alloc_size );
     for( i = BOX_LINE_SIZE; i > 0; --i ) {
-        trans_add_char( 196, section, alloc_size );
+        trans_add_char( CH_BOX_HBAR, section, alloc_size );
     }
     trans_add_str( "\n:ecgraphic.\n", section, alloc_size );
 }
