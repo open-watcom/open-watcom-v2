@@ -88,8 +88,11 @@ static void make_inst_hash_tables( unsigned int count, sword *Words )
             *p = i + 1;
         }
         // create index for position in AsmOpTable
-        while ( AsmOpTable[pos] < i && pos < size )
-            pos++;
+        for( ; pos < size; pos++ ) {
+            if( AsmOpTable[pos] >= i ) {
+                break;
+            }
+        }
         if( AsmOpTable[pos] != i || pos >= size ) {
             printf( "Wrong data in asminsd.h. position=%d, index=%d\n", pos, i );
             exit( 1 );
@@ -207,7 +210,7 @@ int main( int argc, char *argv[] )
     fprintf( out, "const struct AsmCodeName AsmOpcode[] = {\n" );
     for( idx = 0; idx < words_count; idx++ ) {
         word = Words[idx].word;
-        fprintf( out, "\t{\t%u,\t%u,\t%u,\t%u\t},\t/* %s */\n", 
+        fprintf( out, "\t{\t%u,\t%u,\t%u,\t%u\t},\t/* %s */\n",
                  pos_table[idx], (unsigned)strlen( word ), Words[idx].index,
                  index_table[idx], get_enum_key( word ) );
     }
