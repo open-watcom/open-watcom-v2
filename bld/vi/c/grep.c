@@ -444,7 +444,9 @@ static const char _NEAR * _NEAR editOpts[] = {
  */
 static vi_rc doGREP( const char *dirlist )
 {
-    int         i, clist, n = 0;
+    int         i;
+    int         clist;
+    int         n = 0;
     window_id   wid;
     char        **list;
     window_info wi_disp, wi_opts;
@@ -456,6 +458,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * prepare list array
      */
+    clist = 0;
     list = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
 
     /*
@@ -464,104 +467,95 @@ static vi_rc doGREP( const char *dirlist )
     rc = NewWindow( &wid, dirw_info.area.x1, dirw_info.area.y1 + 4, dirw_info.area.x2,
         dirw_info.area.y1 + 6, true, dirw_info.border_color1, dirw_info.border_color2,
         &dirw_info.text_style );
-    if( rc != ERR_NO_ERR ) {
-        MemFree( list );
-        return( rc );
-    }
-    WindowTitle( wid, "File Being Searched" );
 
-
-    clist = initList( wid, dirlist, list );
-    /*
-     * got list of matches, so lets select an item, shall we?
-     */
-    CloseAWindow( wid );
-    rc = ERR_NO_ERR;
-    if( clist ) {
-
+    if( rc == ERR_NO_ERR ) {
+        WindowTitle( wid, "File Being Searched" );
+        clist = initList( wid, dirlist, list );
         /*
-         * define display window dimensions
+         * got list of matches, so lets select an item, shall we?
          */
-        memcpy( &wi_disp, &dirw_info, sizeof( window_info ) );
-        wi_disp.area.x1 = 14;
-        wi_disp.area.x2 = EditVars.WindMaxWidth - 2;
-        i = wi_disp.area.y2 - wi_disp.area.y1 + 1;
-        if( wi_disp.has_border ) {
-            i -= 2;
-        }
-        if( clist < i ) {
-            wi_disp.area.y2 -= ( i - clist );
-        }
-        show_lineno = ( clist > i );
-
-        /*
-         * build options window
-         */
-        memcpy( &wi_opts, &extraw_info, sizeof( window_info ) );
-        wi_opts.area.x1 = 0;
-        wi_opts.area.x2 = 13;
-        rc = DisplayExtraInfo( &wi_opts, &wid, editOpts, sizeof( editOpts ) / sizeof( editOpts[0] ) );
-        if( rc != ERR_NO_ERR ) {
-            return( rc );
-        }
-
-        /*
-         * process selections
-         */
-        for( ;; ) {
-
-            if( n + 1 > clist ) {
-                n = clist - 1;
-            }
-            memset( &si, 0, sizeof( si ) );
-            si.wi = &wi_disp;
-            si.title = "Files With Matches";
-            si.list = list;
-            si.maxlist = clist;
-            si.num = n;
-            si.retevents = opts_evlist;
-            si.event = VI_KEY( DUMMY );
-            si.show_lineno = show_lineno;
-            si.cln = n + 1;
-            si.eiw = wid;
-
-            rc = SelectItem( &si );
-            n = si.num;
-
-            if( rc != ERR_NO_ERR || n < 0 ) {
-                break;
-            }
-            if( si.event == VI_KEY( F3 ) ) {
-                s = 0;
-                e = clist - 1;
-            } else {
-                s = e = n;
-            }
-            for( cnt = s; cnt <= e; cnt++ ) {
-                rc = getFile( list[cnt] );
-                if( rc != ERR_NO_ERR ) {
-                    break;
-                }
-            }
-            if( rc != ERR_NO_ERR || si.event == VI_KEY( DUMMY ) ||
-                si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
-                break;
-            }
-            MemFree( list[n] );
-            for( i = n; i < clist - 1; i++ ) {
-                list[i] = list[i + 1];
-            }
-            clist--;
-            if( clist == 0 ) {
-                break;
-            }
-            MoveWindowToFrontDammit( wid, false );
-        }
         CloseAWindow( wid );
+        if( clist ) {
+            /*
+             * define display window dimensions
+             */
+            memcpy( &wi_disp, &dirw_info, sizeof( window_info ) );
+            wi_disp.area.x1 = 14;
+            wi_disp.area.x2 = EditVars.WindMaxWidth - 2;
+            i = wi_disp.area.y2 - wi_disp.area.y1 + 1;
+            if( wi_disp.has_border ) {
+                i -= 2;
+            }
+            if( clist < i ) {
+                wi_disp.area.y2 -= ( i - clist );
+            }
+            show_lineno = ( clist > i );
 
-    } else if( rc == ERR_NO_ERR ) {
-        Message1( "String \"%s\" not found", sString );
-        rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
+            /*
+             * build options window
+             */
+            memcpy( &wi_opts, &extraw_info, sizeof( window_info ) );
+            wi_opts.area.x1 = 0;
+            wi_opts.area.x2 = 13;
+            rc = DisplayExtraInfo( &wi_opts, &wid, editOpts, sizeof( editOpts ) / sizeof( editOpts[0] ) );
+            if( rc == ERR_NO_ERR ) {
+                /*
+                 * process selections
+                 */
+                for( ;; ) {
+                    if( n + 1 > clist ) {
+                        n = clist - 1;
+                    }
+                    memset( &si, 0, sizeof( si ) );
+                    si.wi = &wi_disp;
+                    si.title = "Files With Matches";
+                    si.list = list;
+                    si.maxlist = clist;
+                    si.num = n;
+                    si.retevents = opts_evlist;
+                    si.event = VI_KEY( DUMMY );
+                    si.show_lineno = show_lineno;
+                    si.cln = n + 1;
+                    si.eiw = wid;
+
+                    rc = SelectItem( &si );
+                    n = si.num;
+
+                    if( rc != ERR_NO_ERR || n < 0 ) {
+                        break;
+                    }
+                    if( si.event == VI_KEY( F3 ) ) {
+                        s = 0;
+                        e = clist - 1;
+                    } else {
+                        s = e = n;
+                    }
+                    for( cnt = s; cnt <= e; cnt++ ) {
+                        rc = getFile( list[cnt] );
+                        if( rc != ERR_NO_ERR ) {
+                            break;
+                        }
+                    }
+                    if( rc != ERR_NO_ERR || si.event == VI_KEY( DUMMY ) ||
+                        si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
+                        break;
+                    }
+                    MemFree( list[n] );
+                    for( i = n; i < clist - 1; i++ ) {
+                        list[i] = list[i + 1];
+                    }
+                    clist--;
+                    if( clist == 0 ) {
+                        break;
+                    }
+                    MoveWindowToFrontDammit( wid, false );
+                }
+                CloseAWindow( wid );
+            }
+        } else if( rc == ERR_NO_ERR ) {
+            Message1( "String \"%s\" not found", sString );
+            rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
+        }
     }
 
     /*
@@ -669,6 +663,7 @@ static vi_rc eSearch( const char *fn, char *res )
     int         i;
     char        *buff;
     FILE        *f;
+    vi_rc       rc;
 
     /*
      * init for file i/o
@@ -681,29 +676,32 @@ static vi_rc eSearch( const char *fn, char *res )
     /*
      * read lines from the file, and search through them
      */
+    rc = ERR_NO_MEMORY;
     buff = StaticAlloc();
-    while( fgets( buff, EditVars.MaxLine, f ) != NULL ) {
-        for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
-            buff[i - 1] = '\0';
-        }
-        i = RegExec( cRx, buff, true );
-        if( RegExpError != ERR_NO_ERR ) {
-            StaticFree( buff );
-            return( RegExpError );
-        }
-        if( i ) {
-            for( i = 0; i < MAX_DISP; i++ ) {
-                res[i] = buff[i];
+    if( buff != NULL ) {
+        rc = ERR_NO_ERR;
+        while( fgets( buff, EditVars.MaxLine, f ) != NULL ) {
+            for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
+                buff[i - 1] = '\0';
             }
-            res[i] = '\0';
-            fclose( f );
-            StaticFree( buff );
-            return( FGREP_FOUND_STRING );
+            i = RegExec( cRx, buff, true );
+            if( RegExpError != ERR_NO_ERR ) {
+                rc = RegExpError;
+                break;
+            }
+            if( i ) {
+                for( i = 0; i < MAX_DISP; i++ ) {
+                    res[i] = buff[i];
+                }
+                res[i] = '\0';
+                rc = FGREP_FOUND_STRING;
+                break;
+            }
         }
+        StaticFree( buff );
     }
     fclose( f );
-    StaticFree( buff );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* eSearch */
 
@@ -726,93 +724,92 @@ static vi_rc fSearch( const char *fn, char *r )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
+    rc = ERR_NO_MEMORY;
     bytecnt = 4096;
     buff = MemAlloc( bytecnt );
-    if( buff == NULL ) {
-        return( ERR_NO_MEMORY );
-    }
-
-    /*
-     * read in buffers from the file, and search through them
-     */
-    strloc = sString; // don't reset at start of new block - could span blocks
-    for( ;; ) {
-        bcnt = bytes = read( handle, buff, bytecnt );
-        buffloc = buff;
-        while( bytes ) {
-            if( *strloc == cTable[*(unsigned char *)buffloc] ) {
-                buffloc++;
-                bytes--;
-                strloc++;
-                if( *strloc == '\0' ) {
-                    close( handle );
-                    j = 0;
-                    if( buffloc - strlen( sString ) < buff ) {
-                        // match spans blocks - see context_display
-                        res = context_display + MAX_DISP - 1;
-                        for( ;; ) {
-                            if( *res == LF || res == context_display ) {
-                                if( *res == LF ) {
-                                    res++;
+    if( buff != NULL ) {
+        /*
+         * read in buffers from the file, and search through them
+         */
+        rc = ERR_NO_ERR;
+        strloc = sString; // don't reset at start of new block - could span blocks
+        for( ;; ) {
+            bcnt = bytes = read( handle, buff, bytecnt );
+            buffloc = buff;
+            while( bytes ) {
+                if( *strloc == cTable[*(unsigned char *)buffloc] ) {
+                    buffloc++;
+                    bytes--;
+                    strloc++;
+                    if( *strloc == '\0' ) {
+                        j = 0;
+                        if( buffloc - strlen( sString ) < buff ) {
+                            // match spans blocks - see context_display
+                            res = context_display + MAX_DISP - 1;
+                            for( ;; ) {
+                                if( *res == LF || res == context_display ) {
+                                    if( *res == LF ) {
+                                        res++;
+                                    }
+                                    break;
                                 }
-                                break;
+                                res--;
                             }
-                            res--;
+                            // copy the part of the string NOT in buff
+                            for( ;; ) {
+                                if( j == MAX_DISP || *res == CR || *res == LF || res == context_display + MAX_DISP ) {
+                                    r[j] = '\0';
+                                    break;
+                                }
+                                r[j++] = *res;
+                                res++;
+                            }
+                            res = buff;
+                        } else {
+                            res = buffloc - strlen( sString );
+                            for( ;; ) {
+                                if( *res == LF || res == buff ) {
+                                    if( *res == LF ) {
+                                        res++;
+                                    }
+                                    break;
+                                }
+                                res--;
+                            }
                         }
-                        // copy the part of the string NOT in buff
+                        // now copy the string ( all that is in buff )
                         for( ;; ) {
-                            if( j == MAX_DISP || *res == CR || *res == LF || res == context_display + MAX_DISP ) {
+                            if( j == MAX_DISP || *res == CR || *res == LF || res == buff + bytecnt ) {
                                 r[j] = '\0';
                                 break;
                             }
                             r[j++] = *res;
                             res++;
                         }
-                        res = buff;
-                    } else {
-                        res = buffloc - strlen( sString );
-                        for( ;; ) {
-                            if( *res == LF || res == buff ) {
-                                if( *res == LF ) {
-                                    res++;
-                                }
-                                break;
-                            }
-                            res--;
-                        }
+                        rc = FGREP_FOUND_STRING;
+                        break;
                     }
-                    // now copy the string ( all that is in buff )
-                    for( ;; ) {
-                        if( j == MAX_DISP || *res == CR || *res == LF || res == buff + bytecnt ) {
-                            r[j] = '\0';
-                            break;
-                        }
-                        r[j++] = *res;
-                        res++;
-                    }
-                    MemFree( buff );
-                    return( FGREP_FOUND_STRING );
-                }
-            } else {
-                if( strloc == sString ) {
-                    buffloc++;
-                    bytes--;
                 } else {
-                    strloc = sString;
+                    if( strloc == sString ) {
+                        buffloc++;
+                        bytes--;
+                    } else {
+                        strloc = sString;
+                    }
                 }
-            }
 
+            }
+            if( bcnt != bytecnt || rc == FGREP_FOUND_STRING ) {
+                break;
+            }
+            if( strloc != sString ) {
+                // partial match -- keep the last bunch of text as context
+                strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
+            }
         }
-        if( bcnt != bytecnt ) {
-            break;
-        }
-        if( strloc != sString ) {
-            // partial match -- keep the last bunch of text as context
-            strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
-        }
+        MemFree( buff );
     }
     close( handle );
-    MemFree( buff );
-    return( ERR_NO_ERR );
+    return( rc );
 
 } /* fSearch */
