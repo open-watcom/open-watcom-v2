@@ -207,6 +207,22 @@ system begin os2
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/cpplib/library/generic.086/ms
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mc
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mm
+    libpath %OWSRCDIR%/cpplib/library/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mh
+    libpath %OWSRCDIR%/cpplib/library/os2.286/ml_mt
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/ms
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mc
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mm
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mh
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/ms
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mc
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mm
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mh
     libpath %OWSRCDIR%/os2api/os2286/lib
     format os2 ^
 end
@@ -230,6 +246,22 @@ system begin os2_dll
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mc
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/cpplib/library/generic.086/ms
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mc
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mm
+    libpath %OWSRCDIR%/cpplib/library/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mh
+    libpath %OWSRCDIR%/cpplib/library/os2.286/ml_mt
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/ms
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mc
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mm
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mh
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/ms
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mc
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mm
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mh
     libpath %OWSRCDIR%/os2api/os2286/lib
     format os2 dll ^
 end
