@@ -236,13 +236,15 @@ static void mylocaltime( unsigned long date_time, int *time, int *date )
         }
     }
     if( ( ( num_yr_since_1970 - 2 ) % 4 ) == 0 ) {
-        for( month = 2; month <= 12; ++day_since_jan[month], ++month ) {
-            ;
+        for( month = 2; month <= 12; ++month ) {
+            ++day_since_jan[month];
         }
     }
     year = num_yr_since_1970 - 10;
-    for( month = 1; ( day > day_since_jan[month] && month <= 12 ); month++ ) {
-        ;
+    for( month = 1; month <= 12; month++ ) {
+        if( day <= day_since_jan[month] ) {
+            break;
+        }
     }
     day -= day_since_jan[month - 1];
     date_time %= 86400;
