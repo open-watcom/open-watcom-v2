@@ -431,6 +431,14 @@ static vi_rc doGREP( const char *dirlist )
     return( rc );
 }
 #else
+
+/* edit options */
+static const char _NEAR * _NEAR editOpts[] = {
+    (const char _NEAR *)"<F1> Go To",
+    (const char _NEAR *)"<F2> Edit",
+    (const char _NEAR *)"<F3> Get All"
+};
+
 /*
  * doGREP - perform GREP on a specified file
  */
@@ -440,7 +448,6 @@ static vi_rc doGREP( const char *dirlist )
     window_id   wid;
     char        **list;
     window_info wi_disp, wi_opts;
-    vi_key      evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), VI_KEY( DUMMY ) };
     int         s, e, cnt;
     bool        show_lineno;
     selectitem  si;
@@ -493,7 +500,7 @@ static vi_rc doGREP( const char *dirlist )
         memcpy( &wi_opts, &extraw_info, sizeof( window_info ) );
         wi_opts.area.x1 = 0;
         wi_opts.area.x2 = 13;
-        rc = DisplayExtraInfo( &wi_opts, &wid, EditOpts, NumEditOpts );
+        rc = DisplayExtraInfo( &wi_opts, &wid, editOpts, sizeof( editOpts ) / sizeof( editOpts[0] ) );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
@@ -512,7 +519,7 @@ static vi_rc doGREP( const char *dirlist )
             si.list = list;
             si.maxlist = clist;
             si.num = n;
-            si.retevents = evlist;
+            si.retevents = opts_evlist;
             si.event = VI_KEY( DUMMY );
             si.show_lineno = show_lineno;
             si.cln = n + 1;

@@ -44,9 +44,7 @@ extern const char _NEAR   MEMORIZE_MODE[];
 extern const char _NEAR   SingleBlank[];
 extern const char _NEAR   SingleSlash[];
 extern const char _NEAR   SingleQuote[];
-extern const char _NEAR   * _NEAR EditOpts[];
 extern const char _NEAR   * _NEAR BoolStr[];
-extern int                NumEditOpts;
 
 /* mouse data */
 #if defined( __LINUX__ )        /* compatible with the ui lib */
@@ -112,6 +110,7 @@ extern undo_stack   *UndoStack, *UndoUndoStack;
 extern event _NEAR  EventList[];
 extern int          MaxKeysBound;
 extern vi_key _NEAR SavebufBound[];
+extern const vi_key opts_evlist[];
 
 /* directory info */
 extern direct_ent * _NEAR   DirFiles[MAX_FILES];

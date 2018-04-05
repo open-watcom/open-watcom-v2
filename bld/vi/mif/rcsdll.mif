@@ -1,7 +1,7 @@
 rcsdll_dos_i86 = dosi86
 rcsdll_dos_386 = dos386
 
-rcsdll_os2_i86 = dosi86
+rcsdll_os2_i86 = os2i86
 rcsdll_os2_386 = os2386
 
 rcsdll_qnx_i86 = qnxi86

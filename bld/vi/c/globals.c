@@ -52,20 +52,19 @@ const char _NEAR    * _NEAR BoolStr[] = {
     (const char _NEAR *)"TRUE"
 };
 
-/* edit options */
-const char _NEAR * _NEAR EditOpts[] = {
-    (const char _NEAR *)"<F1> Go To",
-    (const char _NEAR *)"<F2> Edit",
-    (const char _NEAR *)"<F3> Get All"
-};
-int NumEditOpts = sizeof( EditOpts ) / sizeof( EditOpts[0] );
-
 /* event data */
 event _NEAR EventList[] = {
     #define vi_pick( enum, modeless, insert, command, nm_bits, bits ) \
         modeless, insert, command, nm_bits, bits,
     #include "events.h"
     #undef vi_pick
+};
+
+const vi_key    opts_evlist[] = {
+    VI_KEY( F1 ),
+    VI_KEY( F2 ),
+    VI_KEY( F3 ),
+    VI_KEY( DUMMY )
 };
 
 /* mouse data */

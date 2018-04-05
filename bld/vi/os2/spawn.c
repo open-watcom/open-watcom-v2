@@ -39,7 +39,7 @@
 #include "getspcmd.h"
 
 
-const char _NEAR * InternalCommands[] = {
+const char _NEAR * _NEAR InternalCommands[] = {
     (const char _NEAR *)"BREAK",
     (const char _NEAR *)"CALL",
     (const char _NEAR *)"CD",

@@ -606,7 +606,7 @@ typedef struct {
     int                 num;                // number of the picked line
     int                 *allowrl;           // allow cursor right/left (for menu bar)
     hilst               *hilite;            // chars to highlight
-    vi_key              *retevents;         // events that simulate pressing enter
+    const vi_key        *retevents;         // events that simulate pressing enter
     vi_key              event;              // event that caused a return
     linenum             cln;                // current line to display
     window_id           eiw;                // alternate window to accept events in (like the options window after fgrep...)
@@ -627,7 +627,7 @@ typedef struct {
     vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
     int                 *allow_rl;              // allow cursor right/left (for menu bar)
     hilst               *hilite;                // chars to highlight
-    vi_key              *retevents;             // events that simulate pressing enter
+    const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return
     linenum             cln;                    // current line to display
     window_id           eiw;                    // alternate window to accept events in (like the options window after fgrep...)
