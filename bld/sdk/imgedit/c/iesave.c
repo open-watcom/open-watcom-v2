@@ -251,13 +251,13 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 /*
  * getSaveFName - get the name of the file to be saved
  */
-static BOOL getSaveFName( char *fname, int imgtype )
+static bool getSaveFName( char *fname, int imgtype )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
     char                drive[_MAX_DRIVE];
     char                path[_MAX_PATH];
-    BOOL                ret_val;
+    bool                ok;
     long                of_size;
 
     of_size = sizeof( OPENFILENAME );
@@ -288,18 +288,18 @@ static BOOL getSaveFName( char *fname, int imgtype )
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
-    ret_val = GetSaveFileName( &of );
+    ok = ( GetSaveFileName( &of ) != 0 );
 #ifndef __NT__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
-    if( ret_val ) {
+    if( ok ) {
         _splitpath( fname, drive, path, NULL, NULL );
         strcpy( initialDir, drive );
         strcat( initialDir, path );
         initialDir[strlen( initialDir ) - 1] = '\0';
     }
-    return( ret_val );
+    return( ok );
 
 } /* getSaveFName */
 
@@ -466,7 +466,7 @@ static bool saveImgFile( img_node *node )
     bool                ok;
 
     count = node->num_of_images;                // Will be 1 for cursors
-    imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * (count - 1);
+    imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * ( count - 1 );
     img_file = MemAlloc( imgfile_size );
 
     img_file->count = count;
@@ -508,8 +508,7 @@ static bool saveImgFile( img_node *node )
             BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
 #endif
         if( i == 0 ) {
-            img_res.DIB_offset = sizeof( an_img_file ) +
-                                 sizeof( an_img_resource ) * (count - 1);
+            img_res.DIB_offset = sizeof( an_img_file ) + sizeof( an_img_resource ) * ( count - 1 );
         } else {
             img_res.DIB_offset = prevDIBoffset + prevDIBsize;
         }
@@ -664,7 +663,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
     }
 
     count = node->num_of_images;                // Will be 1 for cursors
-    imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * (count - 1);
+    imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * ( count - 1 );
     img_file = MemAlloc( imgfile_size );
 
     img_file->count = count;
@@ -703,8 +702,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
             BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
 #endif
         if( i == 0 ) {
-            img_res.DIB_offset = sizeof( an_img_file ) +
-                                 sizeof( an_img_resource ) * (count - 1);
+            img_res.DIB_offset = sizeof( an_img_file ) + sizeof( an_img_resource ) * ( count - 1 );
         } else {
             img_res.DIB_offset = prevDIBoffset + prevDIBsize;
         }

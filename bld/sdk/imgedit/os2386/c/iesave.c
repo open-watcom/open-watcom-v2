@@ -74,16 +74,16 @@ static bool writeDataInPieces( BITMAPINFO2 *bmi, FILE *fp, img_node *node )
         num_lines = chunk_size / one_scanline_size;
     }
 
-    buffer = calloc( chunk_size, sizeof(BYTE) );
+    buffer = calloc( chunk_size, sizeof( BYTE ) );
     while( scanline_count > num_lines ) {
         GpiQueryBitmapBits( mempres, start, num_lines, buffer, bmi );
-        fwrite( buffer, sizeof(BYTE), chunk_size, fp );
+        fwrite( buffer, sizeof( BYTE ), chunk_size, fp );
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
     GpiQueryBitmapBits( mempres, start, scanline_count, buffer, bmi );
-    fwrite( buffer, sizeof(BYTE), (one_scanline_size*scanline_count), fp );
+    fwrite( buffer, sizeof( BYTE ), one_scanline_size * scanline_count, fp );
     free( buffer );
     _wpi_selectobject( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
@@ -127,13 +127,13 @@ static bool writeImageBits( FILE *fp, img_node *node )
         inverse_bitmap = CreateInverseBitmap( new_image->handbitmap, new_image->hxorbitmap );
         oldbitmap = _wpi_selectobject( mempres, inverse_bitmap );
         GpiQueryBitmapBits( mempres, 0, new_image->height, buffer, bmi );
-        fwrite( buffer, sizeof(BYTE), byte_count, fp );
+        fwrite( buffer, sizeof( BYTE ), byte_count, fp );
         _wpi_selectobject( mempres, oldbitmap );
         _wpi_deletebitmap( inverse_bitmap );
 
         oldbitmap = _wpi_selectobject( mempres, new_image->handbitmap );
         GpiQueryBitmapBits( mempres, 0, new_image->height, buffer, bmi );
-        fwrite( buffer, sizeof(BYTE), byte_count, fp );
+        fwrite( buffer, sizeof( BYTE ), byte_count, fp );
         _wpi_selectobject( mempres, oldbitmap );
 
         MemFree( buffer );
@@ -149,7 +149,7 @@ static bool writeImageBits( FILE *fp, img_node *node )
         byte_count = BITS_TO_BYTES( new_image->width * new_image->bitcount, new_image->height );
         buffer = MemAlloc( byte_count );
         GpiQueryBitmapBits( mempres, 0, node->height, buffer, bmi );
-        fwrite( buffer, sizeof(BYTE), byte_count, fp );
+        fwrite( buffer, sizeof( BYTE ), byte_count, fp );
         MemFree( buffer );
         FreeDIBitmapInfo( bmi );
         _wpi_selectobject( mempres, oldbitmap );
@@ -166,8 +166,8 @@ static BITMAPFILEHEADER2 *fillFileHeader( img_node *node )
 {
     BITMAPFILEHEADER2   *fileheader;
 
-    fileheader = MemAlloc( sizeof(BITMAPFILEHEADER2) );
-    memset( fileheader, 0, sizeof(BITMAPFILEHEADER2) );
+    fileheader = MemAlloc( sizeof( BITMAPFILEHEADER2 ) );
+    memset( fileheader, 0, sizeof( BITMAPFILEHEADER2 ) );
 
     if( node->imgtype == ICON_IMG ) {
         fileheader->usType = BFT_COLORICON;
@@ -202,11 +202,11 @@ static void checkForExt( img_node *node )
         fullpath = next_icon->fname;
         _splitpath( fullpath, drive, dir, fname, ext );
 
-        if( strlen(ext) > 1 ) {
+        if( strlen( ext ) > 1 ) {
             return;
         }
 
-        if( fullpath[strlen(fullpath) - 1] != '.' ) {
+        if( fullpath[strlen( fullpath ) - 1] != '.' ) {
             strcat( fullpath, "." );
         }
         strcat( fullpath, default_ext[next_icon->imgtype - 1] );
@@ -224,11 +224,11 @@ static void checkForPalExt( char *filename )
 
     _splitpath( filename, NULL, NULL, NULL, ext );
 
-    if( strlen(ext) > 1 ) {
+    if( strlen( ext ) > 1 ) {
         return;
     }
 
-    if( filename[strlen(filename) - 1] != '.' ) {
+    if( filename[strlen( filename ) - 1] != '.' ) {
         strcat( filename, "." );
     }
     strcat( filename, "pal" );
@@ -250,7 +250,7 @@ static bool getSaveFName( char *fname, int imgtype )
     fname[ 0 ] = 0;
     memset( &filedlg, 0, sizeof( FILEDLG ) );
     strcpy( fullfile, initialDir );
-    if( fullfile[strlen(fullfile)-1] != '\\' ) {
+    if( fullfile[strlen( fullfile ) - 1] != '\\' ) {
         strcat( fullfile, "\\" );
     }
     if( imgtype == BITMAP_IMG ) {
@@ -272,7 +272,7 @@ static bool getSaveFName( char *fname, int imgtype )
 
     hdlg = WinFileDlg( HWND_DESKTOP, HMainWindow, &filedlg );
 
-    if( (hdlg == NULLHANDLE) || (filedlg.lReturn != DID_OK) ) {
+    if( ( hdlg == NULLHANDLE ) || ( filedlg.lReturn != DID_OK ) ) {
         return( false );
     }
 
@@ -280,7 +280,7 @@ static bool getSaveFName( char *fname, int imgtype )
     _splitpath( fname, drive, path, NULL, ext );
     strcpy( initialDir, drive );
     strcat( initialDir, path );
-    initialDir[ strlen(initialDir)-1 ] = '\0';
+    initialDir[strlen( initialDir ) - 1] = '\0';
     return( true );
 } /* getSaveFName */
 
@@ -298,52 +298,50 @@ static bool saveBitmapFile( img_node *node )
     char                        filename[ _MAX_FNAME ];
     bool                        ok;
 
-    bmi = GetXorBitmapInfo(node);
-
-    if( bmi == NULL ) {
-        return( false );
-    }
-    clrtable_size = sizeof(RGB2) * (1<<(node->bitcount));
-
-    new_file.usType = BFT_BITMAPARRAY;
-    new_file.cbSize = sizeof( BITMAPARRAYFILEHEADER2 );
-    new_file.offNext = 0;
-    new_file.cxDisplay = 0;
-    new_file.cyDisplay = 0;
-
-    new_file.bfh2.usType = BFT_BMAP;
-    new_file.bfh2.cbSize = sizeof( BITMAPFILEHEADER2 );
-    new_file.bfh2.xHotspot = 0;
-    new_file.bfh2.yHotspot = 0;
-    new_file.bfh2.offBits = new_file.cbSize + clrtable_size;
-    memcpy( &(new_file.bfh2.bmp2), bmi, sizeof(BITMAPINFOHEADER2) );
-
-    colours = (void *)&(bmi->argbColor[0]);
-
     ok = false;
-    fp = fopen( node->fname, "wb" );
-    if( fp != NULL ) {
-        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
-            if( fwrite( &new_file, sizeof(BITMAPARRAYFILEHEADER2), 1, fp ) == 1 ) {
-                if( fwrite( colours, clrtable_size, 1, fp ) == 1 ) {
-                    if( writeDataInPieces( bmi, fp, node ) ) {
-                        ok = true;
-                    } else {
-                        MessageBox(HMainWindow, "Error writing file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-                        SetHintText("Error saving file");
+    bmi = GetXorBitmapInfo(node);
+    if( bmi != NULL ) {
+        clrtable_size = sizeof( RGB2 ) * ( 1 << ( node->bitcount ) );
+
+        new_file.usType = BFT_BITMAPARRAY;
+        new_file.cbSize = sizeof( BITMAPARRAYFILEHEADER2 );
+        new_file.offNext = 0;
+        new_file.cxDisplay = 0;
+        new_file.cyDisplay = 0;
+
+        new_file.bfh2.usType = BFT_BMAP;
+        new_file.bfh2.cbSize = sizeof( BITMAPFILEHEADER2 );
+        new_file.bfh2.xHotspot = 0;
+        new_file.bfh2.yHotspot = 0;
+        new_file.bfh2.offBits = new_file.cbSize + clrtable_size;
+        memcpy( &(new_file.bfh2.bmp2), bmi, sizeof( BITMAPINFOHEADER2 ) );
+
+        colours = (void *)&(bmi->argbColor[0]);
+
+        fp = fopen( node->fname, "wb" );
+        if( fp != NULL ) {
+            if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+                if( fwrite( &new_file, sizeof( BITMAPARRAYFILEHEADER2 ), 1, fp ) == 1 ) {
+                    if( fwrite( colours, clrtable_size, 1, fp ) == 1 ) {
+                        if( writeDataInPieces( bmi, fp, node ) ) {
+                            ok = true;
+                        } else {
+                            MessageBox( HMainWindow, "Error writing file!", "Error", MB_OK | MB_ICONEXCLAMATION );
+                            SetHintText( "Error saving file" );
+                        }
                     }
                 }
             }
+            fclose( fp );
         }
-        fclose( fp );
-    }
-    FreeDIBitmapInfo( bmi );
-    if( ok ) {
-        AllowRestoreOption( node );
-        SetIsSaved( node->hwnd, TRUE );
-        GetFnameFromPath( node->fname, filename );
-        sprintf( text, "Bitmap saved to '%s'", filename );
-        SetHintText( text );
+        FreeDIBitmapInfo( bmi );
+        if( ok ) {
+            AllowRestoreOption( node );
+            SetIsSaved( node->hwnd, TRUE );
+            GetFnameFromPath( node->fname, filename );
+            sprintf( text, "Bitmap saved to '%s'", filename );
+            SetHintText( text );
+        }
     }
     return( ok );
 } /* saveBitmapFile */
@@ -465,14 +463,16 @@ bool SaveFile( short how )
     img_node    *node;
     img_node    *rootnode;
     char        new_name[ _MAX_PATH ];
+    bool        ok;
 
+    ok = false;
     node = GetCurrentNode();
     if( node == NULL )
-        return( false );
+        return( ok );
     rootnode = GetImageNode( node->hwnd );
 
     if( rootnode == NULL )
-        return( false );
+        return( ok );
 
     if( strnicmp(rootnode->fname, "(Untitled)", 10) == 0 ) {
         how = SB_SAVE_AS;
@@ -480,7 +480,7 @@ bool SaveFile( short how )
 
     if( how == SB_SAVE_AS ) {
         if( !getSaveFName(new_name, rootnode->imgtype) ) {
-            return( false );
+            return( ok );
         }
         for( node = rootnode; node != NULL; node = node->nexticon ) {
             strcpy( node->fname, new_name );
@@ -491,23 +491,18 @@ bool SaveFile( short how )
 
     switch( rootnode->imgtype ) {
     case BITMAP_IMG:
-        if( !saveBitmapFile( rootnode ) ) {
+        ok = saveBitmapFile( rootnode );
+        if( !ok )
             MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-            return( false );
-        }
         break;
     case ICON_IMG:
     case CURSOR_IMG:
-        if( !saveImageFile( rootnode ) ) {
+        ok = saveImageFile( rootnode );
+        if( !ok )
             MessageBox(HMainWindow, "Error trying to save file!", "Error", MB_OK | MB_ICONEXCLAMATION);
-            return( false );
-        }
         break;
-
-    default:
-        return( false );
     }
-    return( true );
+    return( ok );
 } /* SaveFile */
 
 #if 0
@@ -526,18 +521,18 @@ static bool getSavePalName( char *fname )
                                         "\0\0";
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    int                 ok;
+    bool                ok;
 
     fname[ 0 ] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = HMainWindow;
-    of.lpstrFilter = (LPSTR) filterList;
+    of.lpstrFilter = (LPSTR)filterList;
     of.nFilterIndex = 0L;
     of.lpstrFile = fname;
     of.nMaxFile = _MAX_PATH;
     of.lpstrFileTitle = szFileTitle;
-    of.nMaxFileTitle = sizeof(szFileTitle);
+    of.nMaxFileTitle = sizeof( szFileTitle );
     of.lpstrTitle = "Save Colour Palette File";
     of.lpstrInitialDir = initialDir;
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT | OFN_ENABLEHOOK;
@@ -615,6 +610,6 @@ void SetInitialSaveDir( char *new_dir )
  */
 char *GetInitSaveDir( void )
 {
-    return(initialDir);
+    return( initialDir );
 } /* GetInitSaveDir */
 
