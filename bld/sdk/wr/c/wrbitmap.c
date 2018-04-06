@@ -220,7 +220,7 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *in
                                           h->bcBitCount, mask_ptr );
         } else {
             if( bm_info->bmiHeader.biBitCount < 9 ) {
-                /* Bitmap has palette, create it */            
+                /* Bitmap has palette, create it */
                 new_palette = CreateDIBPalette( bm_info );
                 if( new_palette != NULL ) {
                     hdc = GetDC( (HWND)NULL );
@@ -440,74 +440,64 @@ static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size,
     return( true );
 }
 
-int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size )
+bool WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
     long                bitmap_size;
     long                number_of_bytes;
     HDC                 hdc;
+    bool                ok;
 
+    ok = false;
     if( hbitmap == (HBITMAP)NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( ok );
     }
 
     bmi = WRGetDIBitmapInfo( hbitmap );
-    if( bmi == NULL ) {
-        return( FALSE );
-    }
+    if( bmi != NULL ) {
+        number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount * bmi->bmiHeader.biWidth,
+                                         bmi->bmiHeader.biHeight );
 
-    number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount * bmi->bmiHeader.biWidth,
-                                     bmi->bmiHeader.biHeight );
+        bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
-    bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
+        hdc = GetDC( (HWND)NULL );
+        GetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, NULL, bmi, DIB_RGB_COLORS );
+        ReleaseDC( (HWND)NULL, hdc );
 
-    hdc = GetDC( (HWND)NULL );
-    GetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, NULL, bmi, DIB_RGB_COLORS );
-    ReleaseDC( (HWND)NULL, hdc );
+        if( bmi->bmiHeader.biSizeImage == 0 ) {
+            bmi->bmiHeader.biSizeImage = number_of_bytes;
+        } else {
+            number_of_bytes = bmi->bmiHeader.biSizeImage;
+        }
 
-    if( bmi->bmiHeader.biSizeImage == 0 ) {
-        bmi->bmiHeader.biSizeImage = number_of_bytes;
-    } else {
-        number_of_bytes = bmi->bmiHeader.biSizeImage;
-    }
+        bmfh.bfType = BITMAP_TYPE;
+        bmfh.bfSize = sizeof( BITMAPFILEHEADER ) + bitmap_size + number_of_bytes;
+        bmfh.bfReserved1 = 0;
+        bmfh.bfReserved2 = 0;
+        bmfh.bfOffBits = sizeof( BITMAPFILEHEADER ) + bitmap_size;
 
-    bmfh.bfType = BITMAP_TYPE;
-    bmfh.bfSize = sizeof( BITMAPFILEHEADER ) + bitmap_size + number_of_bytes;
-    bmfh.bfReserved1 = 0;
-    bmfh.bfReserved2 = 0;
-    bmfh.bfOffBits = sizeof( BITMAPFILEHEADER ) + bitmap_size;
-
-    // make sure the bitmap can actually be malloc'd!!
-    if( bmfh.bfSize > INT_MAX ) {
+        // make sure the bitmap can actually be malloc'd!!
+        if( bmfh.bfSize <= INT_MAX ) {
+            *data = MemAlloc( bmfh.bfSize );
+            if( *data != NULL ) {
+                ok = true;
+                *size = 0;
+                memcpy( *data + *size, &bmfh, sizeof( BITMAPFILEHEADER ) );
+                *size += sizeof( BITMAPFILEHEADER );
+                memcpy( *data + *size, bmi, bitmap_size );
+                *size += bitmap_size;
+                if( !WRWriteDataInPiecesData( bmi, data, size, hbitmap ) ) {
+                    ok = false;
+                }
+            }
+        }
         MemFree( bmi );
-        return( FALSE );
     }
-
-    *data = MemAlloc( bmfh.bfSize );
-    if( *data == NULL ) {
-        MemFree( bmi );
-        return( FALSE );
-    }
-    *size = 0;
-
-    memcpy( *data + *size, &bmfh, sizeof( BITMAPFILEHEADER ) );
-    *size += sizeof( BITMAPFILEHEADER );
-
-    memcpy( *data + *size, bmi, bitmap_size );
-    *size += bitmap_size;
-
-    if( !WRWriteDataInPiecesData( bmi, data, size, hbitmap ) ) {
-        MemFree( bmi );
-        return( FALSE );
-    }
-
-    MemFree( bmi );
-
-    return( TRUE );
+    return( ok );
 }
 
-int WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
+bool WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    *bmfh;
     BITMAPINFO          *bmi;
@@ -516,7 +506,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
     bool                is_core;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     is_core = ( *(DWORD *)*data == sizeof( BITMAPCOREHEADER ) );
@@ -524,7 +514,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
     hsize = sizeof( BITMAPFILEHEADER );
     *data = MemRealloc( *data, *size + hsize );
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
     memmove( *data + hsize, *data, *size );
     memset( *data, 0, hsize );
@@ -543,20 +533,20 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
         bmfh->bfOffBits += DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size )
+bool WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size )
 {
     int         bfhsize;
+
     if( data != NULL && size != NULL ) {
         bfhsize = sizeof( BITMAPFILEHEADER );
         memmove( *data, *data + bfhsize, *size - bfhsize );
         *size -= bfhsize;
-        return( TRUE );
+        return( true );
     }
-
-    return( FALSE );
+    return( false );
 }
 
 void WRAPI WRForgetBitmapName( void )
