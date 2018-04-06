@@ -61,7 +61,7 @@ dig_type_size DefaultSize( default_kind dk )
     dig_type_info       ti;
     mad_type_info       mti;
 
-    if( DIPModDefault( CodeAddrMod, dk, &ti ) != 0 ) {
+    if( DIPModDefault( CodeAddrMod, dk, &ti ) != DS_OK ) {
         ti.kind = TK_NONE;
         ti.size = 0;
     }
