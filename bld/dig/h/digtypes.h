@@ -33,6 +33,7 @@
 #define DIGTYPES_H_INCLUDED
 
 #include <stddef.h>
+#include "bool.h"
 #include "machtype.h"
 
 #if defined( __WINDOWS__ )

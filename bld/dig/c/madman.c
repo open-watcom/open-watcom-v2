@@ -43,7 +43,6 @@
 #elif defined( __OS2__ )
 #include <os2.h>
 #endif
-#include "bool.h"
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"

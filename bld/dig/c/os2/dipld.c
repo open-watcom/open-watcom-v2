@@ -36,7 +36,6 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
 #include <os2.h>
-#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"
