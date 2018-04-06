@@ -102,7 +102,7 @@ void uprintf(int z, char * fmt, ... )
 
         if (write(z, buf, strlen(buf)) != strlen(buf))
         {
-                sprintf(buf, "uprintf: fd %d");
+                sprintf(buf, "uprintf: fd %d", z);
                 perror(buf);
         }
 
@@ -251,7 +251,7 @@ void bzero(char * s1, int n)
 
 void bzero(char * s1, int n)
 {
-        while (n-- > 0) 
+        while (n-- > 0)
                 *s1++ = 0;
 }
 
