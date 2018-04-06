@@ -103,27 +103,30 @@ extern savebuf _NEAR    SpecialSavebufs[MAX_SPECIAL_SAVEBUFS + 1];
 extern savebuf          *WorkSavebuf;
 
 /* undo data */
-extern int          MaxUndoStack;
-extern undo_stack   *UndoStack, *UndoUndoStack;
+extern int              MaxUndoStack;
+extern undo_stack       *UndoStack;
+extern undo_stack       *UndoUndoStack;
 
 /* bound key data */
-extern event _NEAR  EventList[];
-extern int          MaxKeysBound;
-extern vi_key _NEAR SavebufBound[];
-extern const vi_key opts_evlist[];
+extern event _NEAR      EventList[];
+extern int              MaxKeysBound;
+extern vi_key _NEAR     SavebufBound[];
+#ifndef __WIN__
+extern const vi_key     opts_evlist[];
+#endif
 
 /* directory info */
 extern direct_ent * _NEAR   DirFiles[MAX_FILES];
 extern int                  DirFileCount;
 
 /* window info */
-extern window_info  editw_info, messagew_info, statusw_info;
-extern window_info  cmdlinew_info, dirw_info;
-extern window_info  setw_info, filelistw_info, setvalw_info;
-extern window_info  linenumw_info, filecw_info;
-extern window_info  repcntw_info, menubarw_info, menuw_info;
-extern window_info  extraw_info, defaultw_info;
-extern window_info  activemenu_info, greyedmenu_info, activegreyedmenu_info;
+extern window_info      editw_info, messagew_info, statusw_info;
+extern window_info      cmdlinew_info, dirw_info;
+extern window_info      setw_info, filelistw_info, setvalw_info;
+extern window_info      linenumw_info, filecw_info;
+extern window_info      repcntw_info, menubarw_info, menuw_info;
+extern window_info      extraw_info, defaultw_info;
+extern window_info      activemenu_info, greyedmenu_info, activegreyedmenu_info;
 
 /* misc data */
 extern long             SystemRC;

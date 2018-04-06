@@ -343,6 +343,7 @@ vi_rc EditFile( const char *name, bool dammit )
 } /* EditFile */
 
 #ifndef __WIN__
+
 static const char _NEAR *_NEAR fileOpts[] =  {
     (const char _NEAR *)"<F1> Go To",
     (const char _NEAR *)"<F2> Quit",

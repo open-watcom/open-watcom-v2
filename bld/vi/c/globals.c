@@ -60,12 +60,14 @@ event _NEAR EventList[] = {
     #undef vi_pick
 };
 
+#ifndef __WIN__
 const vi_key    opts_evlist[] = {
     VI_KEY( F1 ),
     VI_KEY( F2 ),
     VI_KEY( F3 ),
     VI_KEY( DUMMY )
 };
+#endif
 
 /* mouse data */
 #if !defined( __UNIX__ )
@@ -123,12 +125,18 @@ key_map         *InputKeyMaps;
 /*
  * savebuf data
  */
-vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] =
-                        { VI_KEY( CTRL_F1 ), VI_KEY( CTRL_F2 ),
-                          VI_KEY( CTRL_F3 ), VI_KEY( CTRL_F4 ),
-                          VI_KEY( CTRL_F5 ), VI_KEY( CTRL_F6 ),
-                          VI_KEY( CTRL_F7 ), VI_KEY( CTRL_F8 ),
-                          VI_KEY( CTRL_F9 ) };
+vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] = {
+    VI_KEY( CTRL_F1 ),
+    VI_KEY( CTRL_F2 ),
+    VI_KEY( CTRL_F3 ),
+    VI_KEY( CTRL_F4 ),
+    VI_KEY( CTRL_F5 ),
+    VI_KEY( CTRL_F6 ),
+    VI_KEY( CTRL_F7 ),
+    VI_KEY( CTRL_F8 ),
+    VI_KEY( CTRL_F9 )
+};
+
 int             CurrentSavebuf = 0;     /* this is 0 based */
 char            LastSavebuf;    /* this is 1 based - users see it */
 savebuf         _NEAR Savebufs[MAX_SAVEBUFS];
