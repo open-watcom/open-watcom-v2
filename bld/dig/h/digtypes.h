@@ -365,15 +365,7 @@ typedef enum {
     TM_ASCII = 1,
     TM_EBCIDIC,
     TM_UNICODE,
-
-    TM_MOD_MASK         = 0x0f,
-    TM_FLAG_DEREF       = 0x10
 } type_modifier;
-
-#define TI_ISDEREF(ti)      (((ti).modifier & TM_FLAG_DEREF) != 0)
-#define TI_GETMODS(ti)      ((ti).modifier & TM_MOD_MASK)
-#define TI_DEREF_SET(ti)    (ti).modifier |= TM_FLAG_DEREF
-#define TI_DEREF_RESET(ti)  (ti).modifier &= ~TM_FLAG_DEREF
 
 typedef unsigned_8  dig_seek; enum {
     DIG_ORG,
@@ -429,6 +421,7 @@ typedef struct dig_type_info {
     dig_type_size       size;
     type_kind           kind;
     type_modifier       modifier;
+    bool                deref;
 } dig_type_info;
 
 typedef struct {                //NYI: redo this for PIL

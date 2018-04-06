@@ -229,7 +229,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
             case TK_CHAR:
             case TK_INTEGER:
             case TK_ENUM:
-                if( TI_GETMODS( ExprSP->ti ) == TM_UNSIGNED ) {
+                if( ExprSP->ti.modifier == TM_UNSIGNED ) {
                     sign_type = NUM_UNSIGNED;
                 } else {
                     sign_type = NUM_SIGNED;
@@ -269,7 +269,7 @@ static void PrintRadix( int radixfmt, char base_letter, sign_class sign_type )
     case TK_ADDRESS:
     case TK_POINTER:
         AddrFix( &ExprSP->v.addr );
-        if( TI_GETMODS( ExprSP->ti ) == TM_NEAR ) {
+        if( ExprSP->ti.modifier == TM_NEAR ) {
             mth = MADTypeDefault( MTK_ADDRESS, MAF_OFFSET, &DbgRegs->mr, &ExprSP->v.addr );
         } else {
             mth = MADTypeDefault( MTK_ADDRESS, MAF_FULL, &DbgRegs->mr, &ExprSP->v.addr );

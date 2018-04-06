@@ -782,8 +782,9 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
 
     PushLoad( &typeld );
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     if( ith->f.s.gbl ) {
         ti->kind = GblTypeClassify( ith->t.offset );
     } else if( ith->f.s.sclr ) {
@@ -820,9 +821,10 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
             ith->f.s.col_major = save_major;
             if( ndims != NULL )
                 ++*ndims;
+            ti->kind = TK_ARRAY;
             ti->size *= info.num_elts;
             ti->modifier = TM_NONE;
-            ti->kind = TK_ARRAY;
+            ti->deref = false;
             Type->start = NULL;
             break;
         case SUBRANGE_TYPE:
@@ -859,14 +861,11 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
                     #undef pick
                 };
 
-
                 ti->kind = TK_POINTER;
                 ti->size = PSize[subkind];
                 ti->modifier = PMods[subkind];
                 if( PDeref[subkind] ) {
-                    TI_DEREF_SET( *ti );
-                } else {
-                    TI_DEREF_RESET( *ti );
+                    ti->deref = true;
                 }
             }
             break;

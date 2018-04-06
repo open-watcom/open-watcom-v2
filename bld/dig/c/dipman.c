@@ -877,6 +877,7 @@ dip_status DIPTypeInfo( type_handle *th, location_context *lc, dig_type_info *ti
             ti->size = 6;
             break;
         }
+        ti->deref = false;
         return( DS_OK );
     }
     ih = II2IH( th->ii );

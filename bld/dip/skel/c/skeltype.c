@@ -76,8 +76,9 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
         the size of the type (variable dimensioned arrays and the like).
     */
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     return( DS_FAIL );
 }
 

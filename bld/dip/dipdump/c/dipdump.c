@@ -123,14 +123,8 @@ static const char *GetTypeKind(type_kind kind)
  */
 static const char *GetTypeModifier( dig_type_info *ti )
 {
-    type_modifier   modifier;
-    bool            deref;
-
-    deref = TI_ISDEREF( *ti );
-    modifier = TI_GETMODS( *ti );
-
-    if( modifier == TM_NONE ) {
-        return( ( deref ) ? "TM_NONE|TM_FLAG_DEREF" : "TM_NONE" );
+    if( ti->modifier == TM_NONE ) {
+        return( ( ti->deref ) ? "TM_NONE|TM_FLAG_DEREF" : "TM_NONE" );
     }
 
     switch( ti->kind ) {
@@ -150,37 +144,37 @@ static const char *GetTypeModifier( dig_type_info *ti )
 
     case TK_ADDRESS: //??
     case TK_POINTER:
-        switch( modifier ) {
-        case TM_NEAR:       return( ( deref ) ? "TM_NEAR|TM_FLAG_DEREF" : "TM_NEAR" );
-        case TM_FAR:        return( ( deref ) ? "TM_FAR|TM_FLAG_DEREF" : "TM_FAR" );
-        case TM_HUGE:       return( ( deref ) ? "TM_HUGE|TM_FLAG_DEREF" : "TM_HUGE" );
+        switch( ti->modifier ) {
+        case TM_NEAR:       return( ( ti->deref ) ? "TM_NEAR|TM_FLAG_DEREF" : "TM_NEAR" );
+        case TM_FAR:        return( ( ti->deref ) ? "TM_FAR|TM_FLAG_DEREF" : "TM_FAR" );
+        case TM_HUGE:       return( ( ti->deref ) ? "TM_HUGE|TM_FLAG_DEREF" : "TM_HUGE" );
         default:
             return( "!unknown pointer modifier!" );
         }
 
     case TK_INTEGER:
-        switch( modifier ) {
-        case TM_SIGNED:     return( ( deref ) ? "TM_SIGNED|TM_FLAG_DEREF" : "TM_SIGNED" );
-        case TM_UNSIGNED:   return( ( deref ) ? "TM_UNSIGNED|TM_FLAG_DEREF" : "TM_UNSIGNED" );
+        switch( ti->modifier ) {
+        case TM_SIGNED:     return( ( ti->deref ) ? "TM_SIGNED|TM_FLAG_DEREF" : "TM_SIGNED" );
+        case TM_UNSIGNED:   return( ( ti->deref ) ? "TM_UNSIGNED|TM_FLAG_DEREF" : "TM_UNSIGNED" );
         default:
             return( "!unknown integer modifier!" );
         }
 
     case TK_REAL:
     case TK_COMPLEX: //??
-        switch( modifier ) {
-        case TM_IEEE:       return( ( deref ) ? "TM_IEEE|TM_FLAG_DEREF" : "TM_IEEE" );
-        case TM_VAX1:       return( ( deref ) ? "TM_VAX1|TM_FLAG_DEREF" : "TM_VAX1" );
-        case TM_VAX2:       return( ( deref ) ? "TM_VAX2|TM_FLAG_DEREF" : "TM_VAX2" );
+        switch( ti->modifier ) {
+        case TM_IEEE:       return( ( ti->deref ) ? "TM_IEEE|TM_FLAG_DEREF" : "TM_IEEE" );
+        case TM_VAX1:       return( ( ti->deref ) ? "TM_VAX1|TM_FLAG_DEREF" : "TM_VAX1" );
+        case TM_VAX2:       return( ( ti->deref ) ? "TM_VAX2|TM_FLAG_DEREF" : "TM_VAX2" );
         default:
             return( "!unknown floating point modifier!" );
         }
 
     case TK_STRING:
-        switch( modifier ) {
-        case TM_ASCII:      return( ( deref ) ? "TM_ASCII|TM_FLAG_DEREF" : "TM_ASCII" );
-        case TM_EBCIDIC:    return( ( deref ) ? "TM_EBCIDIC|TM_FLAG_DEREF" : "TM_EBCIDIC" );
-        case TM_UNICODE:    return( ( deref ) ? "TM_UNICODE|TM_FLAG_DEREF" : "TM_UNICODE" );
+        switch( ti->modifier ) {
+        case TM_ASCII:      return( ( ti->deref ) ? "TM_ASCII|TM_FLAG_DEREF" : "TM_ASCII" );
+        case TM_EBCIDIC:    return( ( ti->deref ) ? "TM_EBCIDIC|TM_FLAG_DEREF" : "TM_EBCIDIC" );
+        case TM_UNICODE:    return( ( ti->deref ) ? "TM_UNICODE|TM_FLAG_DEREF" : "TM_UNICODE" );
         default:
             return( "!unknown string modifier!" );
         }

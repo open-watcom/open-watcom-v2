@@ -56,13 +56,14 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
 {
     /* unused parameters */ (void)iih; (void)lc;
 
-    ti->modifier = TM_NONE;
-    ti->size = 0;
     if( ith->code ) {
         ti->kind = TK_CODE;
     } else {
         ti->kind = TK_DATA;
     }
+    ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     return( DS_OK );
 }
 

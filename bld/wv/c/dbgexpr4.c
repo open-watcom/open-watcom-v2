@@ -100,7 +100,7 @@ void DoPlus( void )
         default:
             Error( ERR_NONE, LIT_ENG( ERR_ILL_TYPE ) );
         }
-        if( TI_GETMODS( left->ti ) == TM_NEAR ) {
+        if( left->ti.modifier == TM_NEAR ) {
             //NYI: 64 bit offsets
             left->v.addr.mach.offset += U32FetchTrunc( ExprSP->v.uint );
         } else {
@@ -239,7 +239,7 @@ void DoDiv( void )
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_DIV ) );
         }
-        if( TI_GETMODS( left->ti ) == TM_UNSIGNED ) {
+        if( left->ti.modifier == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &left->v.uint, NULL );
         } else {
             I64Div( &left->v.sint, &ExprSP->v.sint, &left->v.sint, NULL );
@@ -304,7 +304,7 @@ void DoMod( void )
         if( U64Test( &ExprSP->v.uint ) == 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_ZERO_MOD ) );
         }
-        if( TI_GETMODS( left->ti ) == TM_UNSIGNED ) {
+        if( left->ti.modifier == TM_UNSIGNED ) {
             U64Div( &left->v.uint, &ExprSP->v.uint, &dummy.u, &left->v.uint );
         } else {
             I64Div( &left->v.sint, &ExprSP->v.sint, &dummy.s, &left->v.sint );
@@ -414,7 +414,7 @@ void DoShift( void )
     case TK_INTEGER:
         if( shift >= 0 ) {
             U64ShiftL( &left->v.uint, shift, &left->v.uint );
-        } else if( TI_GETMODS( left->ti ) == TM_UNSIGNED ) {
+        } else if( left->ti.modifier == TM_UNSIGNED ) {
             U64ShiftR( &left->v.uint, -shift, &left->v.uint );
         } else {
             I64ShiftR( &left->v.sint, -shift, &left->v.sint );
@@ -530,7 +530,7 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
     if( object->th != NULL )
         HDLAssign( type, obj_th, object->th );
     ClassifyEntry( new, &new_ti );
-    TI_DEREF_RESET( new_ti );   /* turn off DEREF bit */
+    new_ti.deref = false;       /* turn off DEREF bit */
     ConvertTo( object, new_ti.kind, new_ti.modifier, new_ti.size );
     if( object->th == NULL )
         goto no_adjust;
@@ -950,8 +950,8 @@ static type_modifier DerefType( type_handle *th )
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( TM_NONE );
-    if( ti.kind == TK_POINTER && TI_ISDEREF( ti ) )
-        return( TI_GETMODS( ti ) );
+    if( ti.kind == TK_POINTER && ti.deref )
+        return( ti.modifier );
     return( TM_NONE );
 }
 
@@ -961,8 +961,8 @@ static item_type DerefToSCB( type_handle *th )
 
     if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( IT_NIL );
-    if( ti.kind == TK_POINTER && TI_ISDEREF( ti ) ) {
-        switch( TI_GETMODS( ti ) ) {
+    if( ti.kind == TK_POINTER && ti.deref ) {
+        switch( ti.modifier ) {
         case TM_NEAR:
             //MAD: ????
             if( ti.size == sizeof( addr32_off ) ) {
@@ -1086,7 +1086,7 @@ void DoCall( int num_parms, bool build_scbs )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        if( TI_GETMODS( rtn_entry->ti ) == TM_NEAR ) {
+        if( rtn_entry->ti.modifier == TM_NEAR ) {
             addr = Context.execution;
             addr.mach.offset = rtn_entry->v.addr.mach.offset;
         } else {
@@ -1243,10 +1243,10 @@ void InitReturnInfo( sym_handle *f, return_info *ri )
     TypeProcInfo( rtn_th, ret_th, 0 );
     TypeInfo( ret_th, &Context, &ri->ti );
     /* check if it is Fortran function returning CHARACTER blocks */
-    if( (ri->ti.kind == TK_POINTER) && TI_ISDEREF( ri->ti ) ) {
+    if( (ri->ti.kind == TK_POINTER) && ri->ti.deref ) {
         ri->want_base_type = 1;
         ri->ref_size = ri->ti.size;
-        if( TI_GETMODS( ri->ti ) != TM_NEAR ) {
+        if( ri->ti.modifier != TM_NEAR ) {
             ri->ref_far = true;
         }
         TypeBase( ret_th, ret_th, NULL, NULL );

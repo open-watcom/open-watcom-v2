@@ -377,9 +377,8 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
     /*
         Map dwarf info to dip imp
     */
-    type_kind   kind = TK_NONE;
+    type_kind   kind;
 
-    ti->modifier = TM_NONE;
     switch( typeinfo->kind ) {
     case DR_TYPEK_NONE:
         kind = TK_NONE;
@@ -434,10 +433,14 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
     case DR_TYPEK_FUNCTION:
         kind = TK_FUNCTION;
         break;
+    default:
+        kind = TK_NONE;
+        break;
     }
     ti->kind = kind;
     ti->size = typeinfo->size;
     ti->modifier = TM_NONE;
+    ti->deref = false;
     switch( typeinfo->mclass ) {
     case DR_MOD_BASE:
         if( (ti->kind == TK_INTEGER) || (ti->kind == TK_CHAR)) {
@@ -466,7 +469,7 @@ void MapImpTypeInfo( dr_typeinfo *typeinfo, dig_type_info *ti )
             break;
         }
         if( typeinfo->kind == DR_TYPEK_REF ) {
-            TI_DEREF_SET( *ti );
+            ti->deref = true;
         }
         break;
     }

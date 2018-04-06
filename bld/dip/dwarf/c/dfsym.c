@@ -714,7 +714,12 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
             ret = DS_FAIL;
         }
     } else {
-        ti->kind = TK_NONE;
+        if( ti != NULL ) {
+            ti->kind = TK_NONE;
+            ti->size = 0;
+            ti->modifier = TM_NONE;
+            ti->deref = false;
+        }
         ret = DS_FAIL;
     }
     return( ret );

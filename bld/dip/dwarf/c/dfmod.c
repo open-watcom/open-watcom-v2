@@ -532,8 +532,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
     return( ret );
 }
 
-dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
-                imp_mod_handle imh, default_kind dk, dig_type_info *ti )
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dig_type_info *ti )
 {
     /*
         Return the default type information for indicated type. The
@@ -547,6 +546,7 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih,
 //TODO: finish
     modinfo = IMH2MODI( iih, imh );
     ti->size = modinfo->addr_size;
+    ti->deref = false;
     switch( dk ) {
     case DK_INT:
         ti->kind = TK_INTEGER;

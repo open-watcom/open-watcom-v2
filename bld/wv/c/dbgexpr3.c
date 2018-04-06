@@ -87,7 +87,7 @@ static conv_class ConvIdx( dig_type_info *ti )
     case TK_ENUM:
     case TK_CHAR:
     case TK_INTEGER:
-        if( TI_GETMODS( *ti ) == TM_SIGNED ) {
+        if( ti->modifier == TM_SIGNED ) {
             switch( size ) {
             case 1:
                 return( I1 );
@@ -133,7 +133,7 @@ static conv_class ConvIdx( dig_type_info *ti )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( TI_GETMODS( *ti ) ) {
+        switch( ti->modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -178,7 +178,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_CHAR:
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->ti ), &src_mti );
-        if( TI_GETMODS( entry->ti ) == TM_SIGNED ) {
+        if( entry->ti.modifier == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &dst_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &dst_mti );
@@ -202,7 +202,7 @@ void FromItem( item_mach *tmp, stack_entry *entry )
     case TK_POINTER:
     case TK_ADDRESS:
         //NYI: use MAD conversion routines....
-        switch( TI_GETMODS( entry->ti ) ) {
+        switch( entry->ti.modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:
@@ -261,7 +261,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
     case TK_CHAR:
     case TK_INTEGER:
         MADTypeInfo( MADTypeForDIPType( &entry->ti ), &dst_mti );
-        if( TI_GETMODS( entry->ti ) == TM_SIGNED ) {
+        if( entry->ti.modifier == TM_SIGNED ) {
             MADTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( entry->v.sint ) ), &src_mti );
         } else {
             MADTypeInfoForHost( MTK_INTEGER, sizeof( entry->v.sint ), &src_mti );
@@ -290,7 +290,7 @@ void ToItem( stack_entry *entry, item_mach *tmp )
         break;
     case TK_POINTER:
     case TK_ADDRESS:
-        switch( TI_GETMODS( entry->ti ) ) {
+        switch( entry->ti.modifier ) {
         case TM_NEAR:
             switch( size ) {
             case 2:

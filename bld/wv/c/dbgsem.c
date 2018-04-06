@@ -671,6 +671,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         ti.kind = TK_POINTER;
         ti.size = TI_SIZE_EXTRACT( parm );
         ti.modifier = TI_MOD_EXTRACT( parm );
+        ti.deref = false;
         FillInDefaults( &ti );
         DIPTypePointer( ExprSP->th, ti.modifier, ti.size, th );
         PopEntry();
@@ -712,8 +713,9 @@ static void BasicType( unsigned basic_type )
     DIPWalkModList( NO_MOD, FindInternalMod, &mod_srch );
     DIPTypeInit( th, mod_srch.mh );
     ti.kind = TI_KIND_EXTRACT( basic_type );
-    ti.modifier = TI_MOD_EXTRACT( basic_type );
     ti.size = TI_SIZE_EXTRACT( basic_type );
+    ti.modifier = TI_MOD_EXTRACT( basic_type );
+    ti.deref = false;
     FillInDefaults( &ti );
     ith = TH2ITH( th );
     ith->ti = ti;

@@ -364,8 +364,9 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
     /* ASSUMES everything is 32-bit for now */
 
     ti->kind = TK_POINTER;
-    ti->modifier = TM_NEAR;
     ti->size = sizeof( addr48_off );  /*FIXME: 16-bit: sizeof( addr32_off )*/
+    ti->modifier = TM_NEAR;
+    ti->deref = false;
     switch( dk ) {
     case DK_INT:
         ti->kind = TK_INTEGER;

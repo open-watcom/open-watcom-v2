@@ -640,13 +640,15 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     if( ti != NULL ) {
         if( method.fb.access & ACC_STATIC ) {
             ti->kind = TK_NONE;
+            ti->size = 0;
         } else {
             ti->kind = TK_POINTER;
             ti->size = sizeof( ji_ptr );
         }
+        ti->modifier = TM_NONE;
+        ti->deref = false;
     }
-    ith->sig = GetPointer( GetPointer( (ji_ptr)method.fb.clazz )
-                                + offsetof( ClassClass, name ) );
+    ith->sig = GetPointer( GetPointer( (ji_ptr)method.fb.clazz ) + offsetof( ClassClass, name ) );
     ith->kind = JT_RAWNAME;
     return( DS_FAIL );
 }

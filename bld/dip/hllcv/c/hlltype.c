@@ -1468,8 +1468,9 @@ dip_status hllTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
     int                         maybe_string;
 
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     ds = TypeReal( iih, ith, &real, NULL );
     if( ds != DS_OK )
         return( ds );
@@ -1519,7 +1520,7 @@ dip_status hllTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
             break;
         }
         if( p->pointer.f.attr.f.mode == CV_REF ) {
-            TI_DEREF_SET( *ti );
+            ti->deref = true;
         }
         break;
     case LF_ARRAY:

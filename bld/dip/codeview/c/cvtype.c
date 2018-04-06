@@ -1460,8 +1460,7 @@ static int IsFortranModule( imp_image_handle *iih, location_context *lc )
     return( comp_info->language == LANG_FORTRAN );
 }
 
-dip_status ImpTypeInfo( imp_image_handle *iih,
-                imp_type_handle *ith, location_context *lc, dig_type_info *ti )
+dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith, location_context *lc, dig_type_info *ti )
 {
     imp_type_handle             real_ith;
     dip_status                  ds;
@@ -1471,8 +1470,9 @@ dip_status ImpTypeInfo( imp_image_handle *iih,
     int                         maybe_string;
 
     ti->kind = TK_NONE;
-    ti->modifier = TM_NONE;
     ti->size = 0;
+    ti->modifier = TM_NONE;
+    ti->deref = false;
     ds = TypeReal( iih, ith, &real_ith, NULL );
     if( ds != DS_OK )
         return( ds );
@@ -1522,7 +1522,7 @@ dip_status ImpTypeInfo( imp_image_handle *iih,
             break;
         }
         if( p->pointer.f.attr.f.mode == CV_REF ) {
-            TI_DEREF_SET( *ti );
+            ti->deref = true;
         }
         break;
     case LF_ARRAY:

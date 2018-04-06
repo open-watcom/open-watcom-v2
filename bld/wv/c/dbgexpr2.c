@@ -117,11 +117,11 @@ static void GetTrueEntry( stack_entry *entry )
 {
     addr_off            near_off;
 
-    for( ; TI_ISDEREF( entry->ti ); ) {
+    for( ; entry->ti.deref; ) {
         DoAPoints( entry, TK_NONE );
         if( entry->ti.kind == TK_VOID )
             Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
-        switch( TI_GETMODS( entry->ti ) ) {
+        switch( entry->ti.modifier ) {
         case TM_NEAR:
             if( entry->ti.kind == TK_FUNCTION ) {
                 near_off = entry->v.loc.e[0].u.addr.mach.offset;
@@ -439,7 +439,7 @@ void LRValue( stack_entry *entry )
             case TK_CHAR:
             case TK_ENUM:
             case TK_INTEGER:
-                if( TI_GETMODS( entry->ti ) == TM_SIGNED )
+                if( entry->ti.modifier == TM_SIGNED )
                     extend = true;
                 /* fall through */
             default:
@@ -453,7 +453,7 @@ void LRValue( stack_entry *entry )
         }
         entry->flags &= ~(SF_LOCATION | SF_IMP_ADDR);
     }
-    if( entry->ti.kind == TK_POINTER && TI_GETMODS( entry->ti ) == TM_NEAR ) {
+    if( entry->ti.kind == TK_POINTER && entry->ti.modifier == TM_NEAR ) {
         NearToFar( entry );
     }
 }
