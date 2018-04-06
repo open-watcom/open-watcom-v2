@@ -38,97 +38,96 @@
 #define MAX_TOKEN_LEN   256
 
 typedef enum {
-        /* single character delimiters */
-        T_SEMI,
-        T_COLON,
-        T_QUESTION,
-        T_DOT,
-        T_POUND,
-        T_LEFT_BRACE,
-        T_RITE_BRACE,
-        T_LEFT_BRACKET,
-        T_RITE_BRACKET,
-        T_LEFT_PAREN,
-        T_RITE_PAREN,
-        T_GT,
-        T_OR,
-        T_STAR,
-        T_AT,
-        T_COMMA,
-        T_EQUALS,
-        /* two character delimiters */
-        T_GT_GT,
-        /* keywords */
-        T_INPUT,
-        T_OUTPUT,
-        T_ERROR,
-        T_TYPE,
-        T_MECH,
-        T_RULES,
-        /* other things */
-        T_LITERAL,
-        T_NAME,
-        T_BAD_CHAR,
-        T_EOF,
+    /* single character delimiters */
+    T_SEMI,
+    T_COLON,
+    T_QUESTION,
+    T_DOT,
+    T_POUND,
+    T_LEFT_BRACE,
+    T_RITE_BRACE,
+    T_LEFT_BRACKET,
+    T_RITE_BRACKET,
+    T_LEFT_PAREN,
+    T_RITE_PAREN,
+    T_GT,
+    T_OR,
+    T_STAR,
+    T_AT,
+    T_COMMA,
+    T_EQUALS,
+    /* two character delimiters */
+    T_GT_GT,
+    /* keywords */
+    T_INPUT,
+    T_OUTPUT,
+    T_ERROR,
+    T_TYPE,
+    T_MECH,
+    T_RULES,
+    /* other things */
+    T_LITERAL,
+    T_NAME,
+    T_BAD_CHAR,
+    T_EOF,
 } token;
 
-typedef enum { CLASS_INPUT,
-               CLASS_OUTPUT,
-               CLASS_INOUT,
-               CLASS_ERROR,
-               CLASS_TYPE,
-               CLASS_SEM,
-               CLASS_RULE,
-               CLASS_ENUMS,
-               CLASS_ANY,
+typedef enum {
+    CLASS_INPUT,
+    CLASS_OUTPUT,
+    CLASS_INOUT,
+    CLASS_ERROR,
+    CLASS_TYPE,
+    CLASS_SEM,
+    CLASS_RULE,
+    CLASS_ENUMS,
+    CLASS_ANY,
 } class;
-
 
 #define NO_LOCATION ((unsigned short)-1)
 
 typedef struct instruction {
-        struct instruction      *flink, *blink;
-        unsigned short          location;
-        unsigned short          operand;
-        void                    *ptr;
-        op_code                 ins;
+    struct instruction      *flink, *blink;
+    unsigned short          location;
+    unsigned short          operand;
+    void                    *ptr;
+    op_code                 ins;
 } instruction;
 
 typedef struct choice_entry {
-        struct choice_entry     *link;
-        unsigned short          value;
-        instruction             *lbl;
+    struct choice_entry     *link;
+    unsigned short          value;
+    instruction             *lbl;
 } choice_entry;
 
 typedef union {
-        unsigned        token;          /* for tokens */
-        struct {                        /* for semantic actions */
-            unsigned short value;
-            struct symbol  *ret;
-            struct symbol  *parm;
-        }               sem;
-        struct {                        /* for rules */
-            instruction *lbl;
-            struct symbol    *ret;
-            unsigned short   exported        : 1;
-            unsigned short   defined         : 1;
-        }               rule;
-        struct {                        /* for type values */
-            struct symbol   *type;
-            unsigned short  value;
-        }               enums;
+    unsigned        token;          /* for tokens */
+    struct {                        /* for semantic actions */
+        unsigned short value;
+        struct symbol  *ret;
+        struct symbol  *parm;
+    }               sem;
+    struct {                        /* for rules */
+        instruction *lbl;
+        struct symbol    *ret;
+        unsigned short   exported        : 1;
+        unsigned short   defined         : 1;
+    }               rule;
+    struct {                        /* for type values */
+        struct symbol   *type;
+        unsigned short  value;
+    }               enums;
 } values;
 
 typedef struct symbol {
-        struct  symbol  *link;
-        char            *name;
-        char            *alias;
-        values          v;
-        class           typ;
+    struct  symbol  *link;
+    char            *name;
+    char            *alias;
+    values          v;
+    class           typ;
 } symbol;
 
 #include "poppck.h"
-
 
 extern token           CurrToken;
 extern char            TokenBuff[MAX_TOKEN_LEN];
