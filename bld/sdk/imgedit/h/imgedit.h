@@ -294,9 +294,9 @@ void    WriteIconLoadedText( char *filename, int num );
 /* iesave.c */
 bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
 bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
-BOOL    SaveFile( int how );
-BOOL    SaveFileFromNode( img_node *node, int how );
-BOOL    SaveColorPalette( void );
+bool    SaveFile( int how );
+bool    SaveFileFromNode( img_node *node, int how );
+bool    SaveColorPalette( void );
 void    SetInitialSaveDir( char *new_dir );
 char    *GetInitSaveDir( void );
 

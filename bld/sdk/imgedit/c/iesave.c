@@ -155,15 +155,13 @@ static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
     }
 
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, node->hxorbitmap, start, num_lines, *data + *size,
-                   bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, node->hxorbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
         *size += chunk_size;
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, *data + *size,
-               bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
     *size += scanline_count * one_scanline_size;
     DeleteDC( memdc );
     return( TRUE );
@@ -308,7 +306,7 @@ static BOOL getSaveFName( char *fname, int imgtype )
 /*
  * saveBitmapFile - get the bitmap data and save it in fname
  */
-static BOOL saveBitmapFile( img_node *node )
+static bool saveBitmapFile( img_node *node )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -317,6 +315,7 @@ static BOOL saveBitmapFile( img_node *node )
     FILE                *fp;
     char                filename[_MAX_FNAME + _MAX_EXT];
     HDC                 hdc;
+    bool                ok;
 
     bmi = GetDIBitmapInfo( node );
 #if 0
@@ -350,47 +349,29 @@ static BOOL saveBitmapFile( img_node *node )
     bmfh.bfOffBits = sizeof( BITMAPFILEHEADER ) + bitmap_size;
 
     GetFnameFromPath( node->fname, filename );
+    ok = false;
     fp = fopen( node->fname, "wb" );
-    if( fp == NULL ) {
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    if( fseek( fp, 0L, SEEK_SET ) ) {
+    if( fp != NULL ) {
+        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+            if( fwrite( &bmfh, sizeof( BITMAPFILEHEADER ), 1, fp ) == 1 ) {
+                if( fwrite( bmi, bitmap_size, 1, fp ) == 1 ) {
+                    if( writeDataInPieces( bmi, fp, node ) ) {
+                        ok = true;
+                    }
+                }
+            }
+        }
         fclose( fp );
-        FreeDIBitmapInfo( bmi );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
     }
-
-    if( fwrite( &bmfh, sizeof( BITMAPFILEHEADER ), 1, fp ) != 1 ) {
-        fclose( fp );
-        FreeDIBitmapInfo( bmi );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    if( fwrite( bmi, bitmap_size, 1, fp ) != 1 ) {
-        fclose( fp );
-        FreeDIBitmapInfo( bmi );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    if( !writeDataInPieces( bmi, fp, node ) ) {
-        fclose( fp );
-        FreeDIBitmapInfo( bmi );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    fclose( fp );
     FreeDIBitmapInfo( bmi );
-
-    AllowRestoreOption( node );
-    SetIsSaved( node->hwnd, TRUE );
-    PrintHintTextByID( WIE_BITMAPSAVEDTO, filename );
-    return( TRUE );
+    if( ok ) {
+        AllowRestoreOption( node );
+        SetIsSaved( node->hwnd, TRUE );
+        PrintHintTextByID( WIE_BITMAPSAVEDTO, filename );
+    } else {
+        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
+    }
+    return( ok );
 
 } /* saveBitmapFile */
 
@@ -404,9 +385,11 @@ bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
     long                bitmap_size;
     long                number_of_bytes;
     HDC                 hdc;
+    bool                ok;
 
+    ok = false;
     if( data == NULL || size == NULL ) {
-        return( false );
+        return( ok );
     }
 
     bmi = GetDIBitmapInfo( node );
@@ -441,32 +424,23 @@ bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
     bmfh.bfOffBits = sizeof( BITMAPFILEHEADER ) + bitmap_size;
 
     // Make sure the bitmap can actually be malloc'd!!
-    if( bmfh.bfSize > INT_MAX ) {
-        FreeDIBitmapInfo( bmi );
-        return( false );
+    if( bmfh.bfSize <= INT_MAX ) {
+        *data = MemAlloc( bmfh.bfSize );
+        if( *data != NULL ) {
+            ok = true;
+            *size = 0;
+            memcpy( *data + *size, &bmfh, sizeof( BITMAPFILEHEADER ) );
+            *size += sizeof( BITMAPFILEHEADER );
+            memcpy( *data + *size, bmi, bitmap_size );
+            *size += bitmap_size;
+            if( !writeDataInPiecesData( bmi, data, size, node ) ) {
+                ok = false;
+            }
+        }
     }
-
-    *data = MemAlloc( bmfh.bfSize );
-    if( *data == NULL ) {
-        FreeDIBitmapInfo( bmi );
-        return( false );
-    }
-    *size = 0;
-
-    memcpy( *data + *size, &bmfh, sizeof( BITMAPFILEHEADER ) );
-    *size += sizeof( BITMAPFILEHEADER );
-
-    memcpy( *data + *size, bmi, bitmap_size );
-    *size += bitmap_size;
-
-    if( !writeDataInPiecesData( bmi, data, size, node ) ) {
-        FreeDIBitmapInfo( bmi );
-        return( false );
-    }
-
     FreeDIBitmapInfo( bmi );
 
-    return( true );
+    return( ok );
 
 } /* SaveBitmapToData */
 
@@ -474,7 +448,7 @@ bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
  * saveImgFile - save the image (icon or cursor) file
  *             - note that node points to the "root" of the icon nodes
  */
-static BOOL saveImgFile( img_node *node )
+static bool saveImgFile( img_node *node )
 {
     an_img_file         *img_file;
     an_img_resource     img_res;
@@ -489,6 +463,7 @@ static BOOL saveImgFile( img_node *node )
     short               i;
     img_node            *currentimage;
     char                filename[_MAX_FNAME + _MAX_EXT];
+    bool                ok;
 
     count = node->num_of_images;                // Will be 1 for cursors
     imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * (count - 1);
@@ -506,9 +481,6 @@ static BOOL saveImgFile( img_node *node )
 
     currentimage = node;
     for( i = 0; i < img_file->count; i++ ) {
-        if( currentimage == NULL ) {
-            break;
-        }
         FillImageResource( &img_res, currentimage );
 
         if( currentimage->imgtype == CURSOR_IMG ) {
@@ -546,113 +518,88 @@ static BOOL saveImgFile( img_node *node )
 
         memcpy( &img_file->resources[i], &img_res, sizeof( an_img_resource ) );
         currentimage = currentimage->nexticon;
-    }
-
-    GetFnameFromPath( node->fname, filename );
-    fp = fopen( node->fname, "wb" );
-    if( fp == NULL ) {
-        MemFree( img_file );
-        MemFree( imginfo );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-    if( fseek( fp, 0L, SEEK_SET ) ) {
-        MemFree( img_file );
-        MemFree( imginfo );
-        fclose( fp );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-    if( fwrite( img_file, imgfile_size, 1, fp ) != 1 ) {
-        MemFree( img_file );
-        MemFree( imginfo );
-        fclose( fp );
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    currentimage = node;
-    for( i = 0; i < img_file->count; i++ ) {
         if( currentimage == NULL ) {
             break;
         }
-        bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
-#if 0
-        if( imginfo[i].biWidth > 32 ) {
-            img.xor_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                            imginfo[i].biHeight );
-            img.and_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-        } else {
-            img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount,
-                                          imginfo[i].biHeight );
-            img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-        }
-#else
-        img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
-        img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-#endif
-        img.bm = MemAlloc( bitmap_size );
-        // JAMIE
-        MemFree( img.bm );
-        img.bm = MemAlloc( bitmap_size );
-
-        img.xor_mask = MemAlloc( img.xor_size );
-        img.and_mask = MemAlloc( img.and_size );
-        memcpy( &img.bm->bmiHeader, &imginfo[i], sizeof( BITMAPINFOHEADER ) );
-
-        GetImageData( &img, currentimage );
-
-        /*
-         * Here's a couple of quirks:  1. we have to reverse the and_mask bits
-         * We multilply the height by 2 because this height represents the
-         * combined height of the AND mask and the XOR mask.
-         * Addendum:  Actually, we only reverse the and bits when we open
-         * AND if we store the bits in device DEPENDENT bitmap form.
-         */
-
-        img.bm->bmiHeader.biHeight = img.bm->bmiHeader.biHeight * 2;
-        img.bm->bmiHeader.biSizeImage = img.xor_size + img.and_size;
-
-        if( fwrite( img.bm, bitmap_size, 1, fp ) != 1 ) {
-            MemFree( img_file );
-            MemFree( imginfo );
-            fclose( fp );
-            WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-            return( FALSE );
-        }
-        if( fwrite( img.xor_mask, sizeof( BYTE ), img.xor_size, fp ) != img.xor_size ) {
-            MemFree( img_file );
-            MemFree( imginfo );
-            fclose( fp );
-            WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-            return( FALSE );
-        }
-        if( fwrite( img.and_mask, sizeof( BYTE ), img.and_size, fp ) != img.and_size ) {
-            MemFree( img_file );
-            MemFree( imginfo );
-            fclose( fp );
-            WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-            return( FALSE );
-        }
-        MemFree( img.bm );
-        MemFree( img.xor_mask );
-        MemFree( img.and_mask );
-        currentimage = currentimage->nexticon;
     }
 
-    fclose( fp );
+    GetFnameFromPath( node->fname, filename );
+    ok = false;
+    fp = fopen( node->fname, "wb" );
+    if( fp != NULL ) {
+        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+            if( fwrite( img_file, imgfile_size, 1, fp ) == 1 ) {
+                ok = true;
+                currentimage = node;
+                for( i = 0; i < img_file->count; i++ ) {
+                    bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
+#if 0
+                    if( imginfo[i].biWidth > 32 ) {
+                        img.xor_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                        img.and_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+                    } else {
+                        img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                        img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+                    }
+#else
+                    img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                    img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
+                    img.bm = MemAlloc( bitmap_size );
+                    // JAMIE
+                    MemFree( img.bm );
+                    img.bm = MemAlloc( bitmap_size );
+
+                    img.xor_mask = MemAlloc( img.xor_size );
+                    img.and_mask = MemAlloc( img.and_size );
+                    memcpy( &img.bm->bmiHeader, &imginfo[i], sizeof( BITMAPINFOHEADER ) );
+
+                    GetImageData( &img, currentimage );
+
+                    /*
+                     * Here's a couple of quirks:  1. we have to reverse the and_mask bits
+                     * We multilply the height by 2 because this height represents the
+                     * combined height of the AND mask and the XOR mask.
+                     * Addendum:  Actually, we only reverse the and bits when we open
+                     * AND if we store the bits in device DEPENDENT bitmap form.
+                     */
+
+                    img.bm->bmiHeader.biHeight = img.bm->bmiHeader.biHeight * 2;
+                    img.bm->bmiHeader.biSizeImage = img.xor_size + img.and_size;
+
+                    if( fwrite( img.bm, bitmap_size, 1, fp ) != 1 ) {
+                        ok = false;
+                    } else if( fwrite( img.xor_mask, sizeof( BYTE ), img.xor_size, fp ) != img.xor_size ) {
+                        ok = false;
+                    } else if( fwrite( img.and_mask, sizeof( BYTE ), img.and_size, fp ) != img.and_size ) {
+                        ok = false;
+                    }
+                    MemFree( img.bm );
+                    MemFree( img.xor_mask );
+                    MemFree( img.and_mask );
+                    currentimage = currentimage->nexticon;
+                    if( !ok || currentimage == NULL ) {
+                        break;
+                    }
+                }
+            }
+        }
+        fclose( fp );
+    }
     MemFree( img_file );
     MemFree( imginfo );
-
-    AllowRestoreOption( node );
-    SetIsSaved( node->hwnd, TRUE );
-
-    if( node->imgtype == ICON_IMG ) {
-        PrintHintTextByID( WIE_ICONSAVEDTO, filename );
+    if( ok ) {
+        AllowRestoreOption( node );
+        SetIsSaved( node->hwnd, TRUE );
+        if( node->imgtype == ICON_IMG ) {
+            PrintHintTextByID( WIE_ICONSAVEDTO, filename );
+        } else {
+            PrintHintTextByID( WIE_CURSORSAVEDTO, filename );
+        }
     } else {
-        PrintHintTextByID( WIE_CURSORSAVEDTO, filename );
+        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
     }
-    return( TRUE );
+    return( ok );
 
 } /* saveImgFile */
 
@@ -670,9 +617,6 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
 
     currentimage = node;
     for( i = 0; i < img_file->count; i++ ) {
-        if( currentimage == NULL ) {
-            break;
-        }
         data_length += DIB_INFO_SIZE( imginfo[i].biBitCount );
 #if 0
         if( imginfo[i].biWidth > 32 ) {
@@ -687,6 +631,9 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
         data_length += (int)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
 #endif
         currentimage = currentimage->nexticon;
+        if( currentimage == NULL ) {
+            break;
+        }
     }
 
     return( data_length );
@@ -710,6 +657,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
     short               i;
     img_node            *currentimage;
     uint_32             data_length;
+    bool                ok;
 
     if( data == NULL || size == NULL ) {
         return( false );
@@ -731,9 +679,6 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
 
     currentimage = node;
     for( i = 0; i < img_file->count; i++ ) {
-        if( currentimage == NULL ) {
-            break;
-        }
         FillImageResource( &img_res, currentimage );
 
         if( currentimage->imgtype == CURSOR_IMG ) {
@@ -768,86 +713,81 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
 
         memcpy( &img_file->resources[i], &img_res, sizeof( an_img_resource ) );
         currentimage = currentimage->nexticon;
-    }
-
-    data_length = getSaveImgDataLength( node, img_file, imginfo, imgfile_size );
-    // Make sure the bitmap can actually be malloc'd!!
-    if( data_length > INT_MAX ) {
-        MemFree( img_file );
-        MemFree( imginfo );
-        return( false );
-    }
-
-    // allocate the data for the image
-    *data = MemAlloc( data_length );
-    if( *data == NULL ) {
-        MemFree( img_file );
-        MemFree( imginfo );
-        return( false );
-    }
-    *size = 0;
-
-    memcpy( *data + *size, img_file, imgfile_size );
-    *size += imgfile_size;
-
-    currentimage = node;
-    for( i = 0; i < img_file->count; i++ ) {
         if( currentimage == NULL ) {
             break;
         }
-        bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
-        img.bm = MemAlloc( bitmap_size );
-#if 0
-        if( imginfo[i].biWidth > 32 ) {
-            img.xor_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
-            img.and_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-        } else {
-            img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
-            img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-        }
-#else
-        img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
-        img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
-#endif
-        img.xor_mask = MemAlloc( img.xor_size );
-        img.and_mask = MemAlloc( img.and_size );
-        memcpy( &img.bm->bmiHeader, &imginfo[i], sizeof( BITMAPINFOHEADER ) );
-
-        GetImageData( &img, currentimage );
-
-        /*
-         * Here's a couple of quirks:  1. we have to reverse the and_mask bits
-         * We multilply the height by 2 because this height represents the
-         * combined height of the AND mask and the XOR mask.
-         * Addendum:  Actually, we only reverse the and bits when we open
-         * AND if we store the bits in device DEPENDENT bitmap form.
-         */
-
-        img.bm->bmiHeader.biHeight = img.bm->bmiHeader.biHeight * 2;
-        img.bm->bmiHeader.biSizeImage = img.xor_size + img.and_size;
-
-        memcpy( *data + *size, img.bm, bitmap_size );
-        *size += bitmap_size;
-
-        memcpy( *data + *size, img.xor_mask, img.xor_size );
-        *size += img.xor_size;
-
-        memcpy( *data + *size, img.and_mask, img.and_size );
-        *size += img.and_size;
-
-        MemFree( img.bm );
-        MemFree( img.xor_mask );
-        MemFree( img.and_mask );
-        currentimage = currentimage->nexticon;
     }
 
+    ok = false;
+    data_length = getSaveImgDataLength( node, img_file, imginfo, imgfile_size );
+    // Make sure the bitmap can actually be malloc'd!!
+    if( data_length <= INT_MAX ) {
+        // allocate the data for the image
+        *data = MemAlloc( data_length );
+        if( *data != NULL ) {
+            ok = true;
+            *size = 0;
+            memcpy( *data + *size, img_file, imgfile_size );
+            *size += imgfile_size;
+            currentimage = node;
+            for( i = 0; i < img_file->count; i++ ) {
+                bitmap_size = DIB_INFO_SIZE( imginfo[i].biBitCount );
+                img.bm = MemAlloc( bitmap_size );
+#if 0
+                if( imginfo[i].biWidth > 32 ) {
+                    img.xor_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                    img.and_size = (WORD)BITS_INTO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+                } else {
+                    img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                    img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+                }
+#else
+                img.xor_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth * imginfo[i].biBitCount, imginfo[i].biHeight );
+                img.and_size = (WORD)BITS_TO_BYTES( imginfo[i].biWidth, imginfo[i].biHeight );
+#endif
+                img.xor_mask = MemAlloc( img.xor_size );
+                img.and_mask = MemAlloc( img.and_size );
+                memcpy( &img.bm->bmiHeader, &imginfo[i], sizeof( BITMAPINFOHEADER ) );
+
+                GetImageData( &img, currentimage );
+
+                /*
+                 * Here's a couple of quirks:  1. we have to reverse the and_mask bits
+                 * We multilply the height by 2 because this height represents the
+                 * combined height of the AND mask and the XOR mask.
+                 * Addendum:  Actually, we only reverse the and bits when we open
+                 * AND if we store the bits in device DEPENDENT bitmap form.
+                 */
+
+                img.bm->bmiHeader.biHeight = img.bm->bmiHeader.biHeight * 2;
+                img.bm->bmiHeader.biSizeImage = img.xor_size + img.and_size;
+
+                memcpy( *data + *size, img.bm, bitmap_size );
+                *size += bitmap_size;
+
+                memcpy( *data + *size, img.xor_mask, img.xor_size );
+                *size += img.xor_size;
+
+                memcpy( *data + *size, img.and_mask, img.and_size );
+                *size += img.and_size;
+
+                MemFree( img.bm );
+                MemFree( img.xor_mask );
+                MemFree( img.and_mask );
+                currentimage = currentimage->nexticon;
+                if( currentimage == NULL ) {
+                    break;
+                }
+            }
+        }
+    }
     MemFree( img_file );
     MemFree( imginfo );
-
-    AllowRestoreOption( node );
-    SetIsSaved( node->hwnd, TRUE );
-
-    return( true );
+    if( ok ) {
+        AllowRestoreOption( node );
+        SetIsSaved( node->hwnd, TRUE );
+    }
+    return( ok );
 
 } /* SaveImgToData */
 
@@ -972,13 +912,11 @@ static bool saveResourceFile( img_node *node )
                 if( is32bit ) {
                     break;
                 } else {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16,
-                                       MB_ICONSTOP | MB_OK );
+                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE32TO16, MB_ICONSTOP | MB_OK );
                 }
             } else {
                 if( is32bit ) {
-                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32,
-                                       MB_ICONSTOP | MB_OK );
+                    IEDisplayErrorMsg( WIE_SAVEIMAGETITLE2, WIE_NOSAVE16TO32, MB_ICONSTOP | MB_OK );
                 } else {
                     break;
                 }
@@ -1063,19 +1001,21 @@ static bool saveResourceFile( img_node *node )
 /*
  * SaveFileFromNode - save the image file (bitmap, cursor, or icon)
  */
-BOOL SaveFileFromNode( img_node *node, int how )
+bool SaveFileFromNode( img_node *node, int how )
 {
     img_node    *rootnode;
     char        new_name[_MAX_PATH];
     char        ext[_MAX_EXT];
+    bool        ok;
 
+    ok = false;
     if( node == NULL ) {
-        return( FALSE );
+        return( ok );
     }
     rootnode = GetImageNode( node->hwnd );
 
     if( rootnode == NULL ) {
-        return( FALSE );
+        return( ok );
     }
 
     if( strnicmp( rootnode->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
@@ -1084,7 +1024,7 @@ BOOL SaveFileFromNode( img_node *node, int how )
 
     if( how == SB_SAVE_AS ) {
         if( !getSaveFName( new_name, rootnode->imgtype ) ) {
-            return( FALSE );
+            return( ok );
         }
         node = rootnode;
         while( node != NULL ) {
@@ -1103,29 +1043,21 @@ BOOL SaveFileFromNode( img_node *node, int how )
 
     switch( rootnode->imgtype ) {
     case BITMAP_IMG:
-        if( !saveBitmapFile( rootnode ) ) {
-            return( FALSE );
-        }
+        ok = saveBitmapFile( rootnode );
         break;
-
     case ICON_IMG:
     case CURSOR_IMG:
-        if( !saveImgFile( rootnode ) ) {
-            return( FALSE );
-        }
+        ok = saveImgFile( rootnode );
         break;
-
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ok );
 
 } /* SaveFileFromNode */
 
 /*
  * SaveFile - save the image file (bitmap, cursor, or icon)
  */
-BOOL SaveFile( int how )
+bool SaveFile( int how )
 {
     img_node    *node;
 
@@ -1138,11 +1070,11 @@ BOOL SaveFile( int how )
 /*
  * getSavePalName - get the name of the palette file to be saved
  */
-static BOOL getSavePalName( char *fname )
+static bool getSavePalName( char *fname )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    int                 rc;
+    bool                ok;
     long                of_size;
 
     of_size = sizeof( OPENFILENAME );
@@ -1172,54 +1104,52 @@ static BOOL getSavePalName( char *fname )
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
 #endif
-    rc = GetSaveFileName( &of );
+    ok = ( GetSaveFileName( &of ) != 0 );
 #ifndef __NT__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
-    return( rc );
+    return( ok );
 
 } /* getSavePalName */
 
 /*
  * SaveColorPalette - save the current color palette
  */
-BOOL SaveColorPalette( void )
+bool SaveColorPalette( void )
 {
     a_pal_file          pal_file;
     FILE                *fp;
     char                fname[_MAX_PATH];
     char                filename[_MAX_FNAME + _MAX_EXT];
+    bool                ok;
 
     if( !GetPaletteFile( &pal_file ) ) {
         WImgEditError( WIE_ERR_PALETTE_NOT16, NULL );
-        return( TRUE );                   // Just return ... no error
+        return( true );                     // Just return ... no error
     }
 
+    ok = false;
     if( !getSavePalName( fname ) ) {
-        return( FALSE );
+        return( ok );
     }
     checkForPalExt( fname );
 
     GetFnameFromPath( fname, filename );
     fp = fopen( fname, "wb" );
-    if( fp == NULL ) {
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
+    if( fp != NULL ) {
+        if( fseek( fp, 0L, SEEK_SET ) == 0 ) {
+            if( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) == 1 ) {
+                ok = true;
+            }
+        }
+        fclose( fp );
     }
-
-    if( fseek( fp, 0L, SEEK_SET ) ) {
+    if( ok ) {
+        PrintHintTextByID( WIE_PALETTESAVEDTO, filename );
+    } else {
         WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
     }
-
-    if( fwrite( &pal_file, sizeof( a_pal_file ), 1, fp ) != 1 ) {
-        WImgEditError( WIE_ERR_SAVE_FAIL, filename );
-        return( FALSE );
-    }
-
-    fclose( fp );
-    PrintHintTextByID( WIE_PALETTESAVEDTO, filename );
-    return( TRUE );
+    return( ok );
 
 } /* SaveColorPalette */
 
