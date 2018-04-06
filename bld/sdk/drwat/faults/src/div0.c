@@ -31,7 +31,7 @@
 
 #include <windows.h>
 
-void foo( int *a )
+static void foo( int *a )
 {
     *a = 0;
 }
@@ -40,7 +40,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {
     int b,c,d;
 
-    c =5;
+    c = 5;
     foo( &b );
     d = c/b;
     foo( &d );
