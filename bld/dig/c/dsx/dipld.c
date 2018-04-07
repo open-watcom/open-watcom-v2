@@ -57,7 +57,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     FILE                *fp;
     imp_header          *dip;
     dip_init_func       *init_func;
-    dip_status          status;
+    dip_status          ds;
     char                dip_name[_MAX_PATH];
 
     *sys_hdl = NULL_SYSHDL;
@@ -67,7 +67,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     }
     dip = ReadInImp( fp );
     DIGLoader( Close )( fp );
-    status = DS_ERR | DS_INVALID_DIP;
+    ds = DS_ERR | DS_INVALID_DIP;
     if( dip != NULL ) {
 #ifdef __WATCOMC__
         if( dip->sig == DIPSIG ) {
@@ -78,7 +78,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
             NotifyWDLoad( dip_name, (unsigned long)dip );
 #endif
             init_func = (dip_init_func *)dip->init_rtn;
-            if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+            if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
                 *sys_hdl = dip;
                 return( DS_OK );
             }
@@ -90,5 +90,5 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #endif
         DIGCli( Free )( dip );
     }
-    return( status );
+    return( ds );
 }

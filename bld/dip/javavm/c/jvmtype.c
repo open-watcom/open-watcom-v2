@@ -145,7 +145,6 @@ static dip_status ImpTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
 
     if( ith->kind == JT_WANTOBJECT ) {
         location_list   ll;
-        dip_status      ds;
 
         ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
         if( ds != DS_OK )
@@ -211,11 +210,11 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *iih,
                         imp_type_handle *ith, imp_type_handle *base_ith,
                         location_context *lc, location_list *ll )
 {
-    char        *p;
+    char            *p;
+    dip_status      ds;
 
     if( ith->kind == JT_WANTOBJECT ) {
         location_list   ll;
-        dip_status      ds;
 
         ds = ImpSymLocation( iih, &ith->u.ish, lc, &ll, &ith->u.object );
         if( ds != DS_OK )

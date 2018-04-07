@@ -203,7 +203,7 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
     pointer_int         *lnk;
     pointer_int         **lnk_tbl;
     unsigned long       off;
-    dip_status          ok;
+    dip_status          ds;
 
     last_link = 0;
     first_link = (dword)-1L;
@@ -253,9 +253,9 @@ dip_status AdjustMods( imp_image_handle *iih, section_info *inf, unsigned long a
         }
         num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
     }
-    ok = AllocLinkTable( iih, inf, num_links, first_link );
-    if( ok != DS_OK )
-        return( ok );
+    ds = AllocLinkTable( iih, inf, num_links, first_link );
+    if( ds != DS_OK )
+        return( ds );
     num = 0;
     lnk_tbl = inf->dmnd_link;
     lnk = *lnk_tbl;

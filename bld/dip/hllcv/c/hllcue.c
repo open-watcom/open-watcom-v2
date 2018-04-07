@@ -819,7 +819,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *iih, imp_cue_handle *icueh )
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
                                      int adj, imp_cue_handle *dst_icueh )
 {
-    dip_status rc;
+    dip_status ds;
 
     /* unused parameters */ (void)iih;
 
@@ -829,7 +829,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
     /*
      * Since we sort the linnumbers this walking is extremely simple.
      */
-    rc = DS_OK;
+    ds = DS_OK;
     *dst_icueh = *src_icueh;
 
     switch( src_icueh->style ) {
@@ -840,7 +840,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
             dst_icueh->cur_line++;
             if( dst_icueh->cur_line >= dst_icueh->num_lines ) {
                 dst_icueh->cur_line = 0;
-                rc = DS_WRAPPED;
+                ds = DS_WRAPPED;
             }
             adj--;
         }
@@ -849,7 +849,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
                 dst_icueh->cur_line--;
             } else {
                 dst_icueh->cur_line = dst_icueh->num_lines - 1;
-                rc = DS_WRAPPED;
+                ds = DS_WRAPPED;
             }
             adj++;
         }
@@ -865,7 +865,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
             dst_icueh->cur_line++;
             if( dst_icueh->cur_line > dst_icueh->u.hll.last ) {
                 dst_icueh->cur_line = dst_icueh->u.hll.first;
-                rc = DS_WRAPPED;
+                ds = DS_WRAPPED;
             }
             adj--;
         }
@@ -874,15 +874,15 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
                 dst_icueh->cur_line--;
             } else {
                 dst_icueh->cur_line = dst_icueh->u.hll.last;
-                rc = DS_WRAPPED;
+                ds = DS_WRAPPED;
             }
             adj++;
         }
         break;
     }
 
-    HLL_LOG(( " -> %d (%ld)\n", rc, (long)dst_icueh->cur_line ));
-    return( rc );
+    HLL_LOG(( " -> %d (%ld)\n", ds, (long)dst_icueh->cur_line ));
+    return( ds );
 }
 
 /* line search state data */

@@ -255,8 +255,8 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
                                                 int adj, imp_cue_handle *dst_icueh )
 {
     cv_directory_entry  *cde;
-    dip_status          status;
-    dip_status          ok;
+    dip_status          ds;
+    dip_status          ret_ds;
 
     cde = FindDirEntry( iih, src_icueh->imh, sstSrcModule );
     if( cde == NULL ) {
@@ -264,24 +264,24 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
         return( DS_ERR | DS_INFO_INVALID );
     }
     *dst_icueh = *src_icueh;
-    ok = DS_OK;
+    ret_ds = DS_OK;
     while( adj > 0 ) {
-        status = AdjForward( iih, cde->lfo, dst_icueh );
-        if( status & DS_ERR )
-            return( status );
-        if( status != DS_OK )
-            ok = status;
+        ds = AdjForward( iih, cde->lfo, dst_icueh );
+        if( ds & DS_ERR )
+            return( ds );
+        if( ds != DS_OK )
+            ret_ds = ds;
         --adj;
     }
     while( adj < 0 ) {
-        status = AdjBackward( iih, cde->lfo, dst_icueh );
-        if( status & DS_ERR )
-            return( status );
-        if( status != DS_OK )
-            ok = status;
+        ds = AdjBackward( iih, cde->lfo, dst_icueh );
+        if( ds & DS_ERR )
+            return( ds );
+        if( ds != DS_OK )
+            ret_ds = ds;
         ++adj;
     }
-    return( ok );
+    return( ret_ds );
 }
 
 search_result DIPIMPENTRY( LineCue )( imp_image_handle *iih, imp_mod_handle imh, cue_fileid file,

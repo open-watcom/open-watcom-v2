@@ -457,15 +457,16 @@ static dip_status DoMakeGblLst( imp_image_handle *iih, info_block *inf, unsigned
 dip_status MakeGblLst( imp_image_handle *iih, section_info *inf )
 {
     info_block          *gbl;
-    dip_status          status;
+    dip_status          ds;
 
+    ds = DS_OK;
     for( gbl = inf->gbl; gbl != NULL; gbl = gbl->next ) {
-        status = DoMakeGblLst( iih, gbl, gbl->size );
-        if( status != DS_OK ) {
-            return( status );
+        ds = DoMakeGblLst( iih, gbl, gbl->size );
+        if( ds != DS_OK ) {
+            break;
         }
     }
-    return( DS_OK );
+    return( ds );
 }
 
 

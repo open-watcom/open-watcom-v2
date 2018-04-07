@@ -55,7 +55,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     dip_init_func       *init_func;
     char                newpath[_MAX_PATH];
     char                full_path[_MAX_PATH];
-    dip_status          status;
+    dip_status          ds;
 
     *sys_hdl = NULL_SYSHDL;
     strcpy( newpath, path );
@@ -68,12 +68,12 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
             return( DS_ERR | DS_FOPEN_FAILED );
         }
     }
-    status = DS_ERR | DS_INVALID_DIP;
+    ds = DS_ERR | DS_INVALID_DIP;
     init_func = (dip_init_func *)dlsym( shlib, "DIPLOAD" );
-    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+    if( init_func != NULL && (*imp = init_func( &ds, cli )) != NULL ) {
         *sys_hdl = shlib;
         return( DS_OK );
     }
     dlclose( shlib );
-    return( status );
+    return( ds );
 }

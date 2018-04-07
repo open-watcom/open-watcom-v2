@@ -155,9 +155,9 @@ dip_status     InitModMap( imp_image_handle *iih )
 // Make the imp_mod_handle  to  drmem_hdl map
 {
     mod_list    list;
-    dip_status  ret;
+    dip_status  ds;
 
-    ret = DS_OK;
+    ds = DS_OK;
     InitModList( &list );
     InitAddrSym( iih->addr_sym );
     DRSetDebug( iih->dwarf->handle ); /* set dwarf to image */
@@ -173,9 +173,9 @@ dip_status     InitModMap( imp_image_handle *iih )
         DRDbgWatProducerVer( iih->dwarf->handle, VER_V1 );
     } else if( list.wat_producer_ver == VER_ERROR ) {
         DCStatus( DS_INFO_BAD_VERSION );
-        ret = DS_FAIL | DS_INFO_BAD_VERSION;
+        ds = DS_FAIL | DS_INFO_BAD_VERSION;
     }
-    return( ret );
+    return( ds );
 }
 
 bool    ClearMods( imp_image_handle *iih )
@@ -488,14 +488,14 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
         Return DS_OK if the module has the kind of information indicated
         by 'hk', DS_FAIL if it does not.
     */
-    dip_status  ret;
+    dip_status  ds;
     drmem_hdl   stmts;
     mod_info    *modinfo;
 
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     if( imh == IMH_NOMOD ) {
-        DCStatus( ret );
-        return( ret );
+        DCStatus( ds );
+        return( ds );
     }
     modinfo = IMH2MODI( iih, imh );
     switch( hk ) {
@@ -503,7 +503,7 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
         break;
     case HK_TYPE:
         if( modinfo->stmts != DRMEM_HDL_NULL ) {
-            ret = DS_OK;
+            ds = DS_OK;
         }
         break;
     case HK_CUE:
@@ -517,19 +517,19 @@ dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, ha
             walk.ret = &a;
             DRSetDebug( iih->dwarf->handle ); /* set dwarf to image */
             if( !DRWalkLines( stmts, SEG_CODE, ALineCue, &walk ) ) {
-                ret = DS_OK;
+                ds = DS_OK;
             }
         }
         break;
     case HK_SYM: /* if no lang assumed linker generated */
         if( modinfo->lang != DR_LANG_UNKNOWN ) {
-            ret = DS_OK;
+            ds = DS_OK;
         }
         break;
     default:
         break;
     }
-    return( ret );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh, default_kind dk, dig_type_info *ti )

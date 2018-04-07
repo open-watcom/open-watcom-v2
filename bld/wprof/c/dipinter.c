@@ -53,7 +53,7 @@
 //#include "support.def"
 //#include "msg.def"
 
-STATIC char *       errMsgText( dip_status );
+STATIC char         *errMsgText( dip_status );
 STATIC bool         loadDIP( const char *, bool, bool );
 
 STATIC dip_status   DIPStatus;
@@ -92,7 +92,7 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context * lc,
 {
     /* unused parameters */ (void)lc; (void)ci; (void)ll;
 
-    return( DS_ERR|DS_NO_CONTEXT );
+    return( DS_ERR | DS_NO_CONTEXT );
 }
 
 
@@ -133,10 +133,10 @@ void DIPCLIENTRY( AddrSection )( address * addr )
 
 
 
-void DIPCLIENTRY( Status )( dip_status status )
-/*********************************************/
+void DIPCLIENTRY( Status )( dip_status ds )
+/*****************************************/
 {
-    DIPStatus = status;
+    DIPStatus = ds;
 }
 
 dig_mad DIPCLIENTRY( CurrMAD )( void )
@@ -159,11 +159,11 @@ void WPDipInit( void )
 {
     char        *dip_name;
     unsigned    dip_count;
-    dip_status  dip_stat;
+    dip_status  ds;
 
-    dip_stat = DIPInit();
-    if( dip_stat != DS_OK ) {
-        fatal( LIT( Dip_Init_Failed ), dip_stat&~DS_ERR );
+    ds = DIPInit();
+    if( ds != DS_OK ) {
+        fatal( LIT( Dip_Init_Failed ), ds & ~DS_ERR );
     }
     dip_count = 0;
     if( WProfDips == NULL ) {
@@ -247,17 +247,17 @@ void WPDipFini( void )
 STATIC bool loadDIP( const char *dip, bool defaults, bool fail_big )
 /******************************************************************/
 {
-    dip_status  ret;
+    dip_status  ds;
 
-    ret = DIPLoad( dip );
-    if( ret != DS_OK ) {
-        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) {
+    ds = DIPLoad( dip );
+    if( ds != DS_OK ) {
+        if( defaults && ( ds == (DS_ERR | DS_FOPEN_FAILED) ) ) {
             return( false );
         }
         if( fail_big ) {
-            fatal( LIT( Dip_Load_Failed ), dip, errMsgText( ret ) );
+            fatal( LIT( Dip_Load_Failed ), dip, errMsgText( ds ) );
         }
-        ErrorMsg( LIT( Dip_Load_Failed ), dip, errMsgText( ret ) );
+        ErrorMsg( LIT( Dip_Load_Failed ), dip, errMsgText( ds ) );
         return( false );
     }
     return( true );
@@ -265,40 +265,40 @@ STATIC bool loadDIP( const char *dip, bool defaults, bool fail_big )
 
 
 
-STATIC char * errMsgText( dip_status status )
-/*******************************************/
+STATIC char * errMsgText( dip_status ds )
+/***************************************/
 {
     static char * WPDIPText[] = {
-        "Ok",                           /* DS_OK */
-        "Failed!",                      /* DS_FAIL */
-        "Too many DIPs",                /* DS_TOO_MANY_DIPS */
-        "Invalid DIP version number",   /* DS_INVALID_DIP_VERSION */
-        "Out of memory",                /* DS_NO_MEM */
-        "Not debugging anything",       /* DS_NO_PROCESS */
-        "Too many images",              /* DS_TOO_MANY_IMAGES */
-        "Too many pointer types",       /* DS_TOO_MANY_POINTERS */
-        "Incorrect type for operation", /* DS_IMPROPER_TYPE */
-        "File open failed",             /* DS_FOPEN_FAILED */
-        "File read failed",             /* DS_FREAD_FAILED */
-        "File write failed",            /* DS_FWRITE_FAILED */
-        "File seek failed",             /* DS_FSEEK_FAILED */
-        "Invalid DIP file",             /* DS_INVALID_DIP */
-        "Incorrect parameter",          /* DS_BAD_PARM */
-        "Wrapped",                      /* DS_WRAPPED */
-        "Invalid debugging information",/* DS_INFO_INVALID */
+        "Ok",                                   /* DS_OK */
+        "Failed!",                              /* DS_FAIL */
+        "Too many DIPs",                        /* DS_TOO_MANY_DIPS */
+        "Invalid DIP version number",           /* DS_INVALID_DIP_VERSION */
+        "Out of memory",                        /* DS_NO_MEM */
+        "Not debugging anything",               /* DS_NO_PROCESS */
+        "Too many images",                      /* DS_TOO_MANY_IMAGES */
+        "Too many pointer types",               /* DS_TOO_MANY_POINTERS */
+        "Incorrect type for operation",         /* DS_IMPROPER_TYPE */
+        "File open failed",                     /* DS_FOPEN_FAILED */
+        "File read failed",                     /* DS_FREAD_FAILED */
+        "File write failed",                    /* DS_FWRITE_FAILED */
+        "File seek failed",                     /* DS_FSEEK_FAILED */
+        "Invalid DIP file",                     /* DS_INVALID_DIP */
+        "Incorrect parameter",                  /* DS_BAD_PARM */
+        "Wrapped",                              /* DS_WRAPPED */
+        "Invalid debugging information",        /* DS_INFO_INVALID */
         "Incorrect debugging information version", /* DS_INFO_BAD_VERSION */
-        "No parameter",                 /* DS_NO_PARM */
-        "Incorrect location",           /* DS_BAD_LOCATION */
-        "No context for location expression", /* DS_NO_CONTEXT */
-        "Do not have correct register value", /* DS_CONTEXT_ITEM_INVALID */
-        "Can not read memory location", /* DS_NO_READ_MEM */
-        "Can not write memory location",/* DS_NO_WRITE_MEM */
-        "Invalid operator token"        /* DS_INVALID_OPERATOR */
+        "No parameter",                         /* DS_NO_PARM */
+        "Incorrect location",                   /* DS_BAD_LOCATION */
+        "No context for location expression",   /* DS_NO_CONTEXT */
+        "Do not have correct register value",   /* DS_CONTEXT_ITEM_INVALID */
+        "Can not read memory location",         /* DS_NO_READ_MEM */
+        "Can not write memory location",        /* DS_NO_WRITE_MEM */
+        "Invalid operator token"                /* DS_INVALID_OPERATOR */
     };
-/*myassert( DS_LAST == 25 );*/
-    status &= ~DS_ERR;
-    if( status > DS_INVALID_OPERATOR ) {
-        status = DS_FAIL;
+    /*myassert( DS_LAST == 25 );*/
+    ds &= ~DS_ERR;
+    if( ds > DS_INVALID_OPERATOR ) {
+        ds = DS_FAIL;
     }
-    return( WPDIPText[ status ] );
+    return( WPDIPText[ds] );
 }

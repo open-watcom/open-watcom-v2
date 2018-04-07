@@ -108,7 +108,7 @@ typedef enum {
     DK_LAST
 } default_kind;
 
-typedef unsigned_16 dip_status; enum {
+typedef enum {
     DS_OK,
     DS_FAIL,
     DS_TOO_MANY_DIPS,
@@ -135,8 +135,8 @@ typedef unsigned_16 dip_status; enum {
     DS_NO_WRITE_MEM,
     DS_INVALID_OPERATOR,
     DS_LAST,
-    DS_ERR=0x4000
-};
+    DS_ERR = 0x4000
+} dip_status;
 
 
 typedef struct {

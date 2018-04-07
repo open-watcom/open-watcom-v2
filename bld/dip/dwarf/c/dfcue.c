@@ -394,7 +394,7 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
     drmem_hdl       stmts;
     dfline_search   start_state;
     dfline_find     find;
-    dip_status      ret;
+    dip_status      ds;
     cue_item        cue;
     cue_list        *cue_map;
     address         map_addr;
@@ -434,20 +434,20 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_
     dst_icueh->line = cue.line;
     dst_icueh->col = cue.col;
     dst_icueh->a.mach = cue.mach;
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     switch( find ) {
     case LINE_NOT:
         DCStatus( DS_FAIL );
-        ret = DS_ERR | DS_FAIL;
+        ds = DS_ERR | DS_FAIL;
         break;
     case LINE_WRAPPED:
-        ret = DS_WRAPPED;
+        ds = DS_WRAPPED;
         break;
     case LINE_FOUND:
-        ret = DS_OK;
+        ds = DS_OK;
         break;
     }
-    return( ret );
+    return( ds );
 }
 
 

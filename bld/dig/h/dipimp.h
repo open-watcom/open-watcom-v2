@@ -186,7 +186,7 @@ typedef struct dip_client_routines {
 
 #include "digunpck.h"
 
-typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
+typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *ds, dip_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY dip_fini_func( void );
 

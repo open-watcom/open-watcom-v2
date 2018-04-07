@@ -530,10 +530,10 @@ static dip_status AdjForward( imp_image_handle *iih, imp_cue_handle *icueh )
     line_dbg_info       *info;
     line_segment        *seg;
     word                num_entries;
-    dip_status          status;
+    dip_status          ds;
 
     num_entries = ModPointer( iih, icueh->imh )->di[DMND_LINES].u.entries;
-    while( (status = GetLineInfo( iih, icueh->imh, icueh->entry )) == DS_OK ) {
+    while( (ds = GetLineInfo( iih, icueh->imh, icueh->entry )) == DS_OK ) {
         seg = UNBIAS( icueh->seg_bias );
         info = UNBIAS( icueh->info_bias );
         ++info;
@@ -561,7 +561,7 @@ static dip_status AdjForward( imp_image_handle *iih, imp_cue_handle *icueh )
         icueh->seg_bias = BIAS( seg );
         icueh->info_bias = BIAS( info );
     }
-    return( status );
+    return( ds );
 }
 
 static line_segment *FindPrevSeg( line_segment *seg )
@@ -583,10 +583,10 @@ static dip_status AdjBackward( imp_image_handle *iih, imp_cue_handle *icueh )
     line_dbg_info       *info;
     line_segment        *seg;
     word                num_entries;
-    dip_status          status;
+    dip_status          ds;
 
     LinStart = NULL;
-    while( (status = GetLineInfo( iih, icueh->imh, icueh->entry )) == DS_OK ) {
+    while( (ds = GetLineInfo( iih, icueh->imh, icueh->entry )) == DS_OK ) {
         seg = UNBIAS( icueh->seg_bias );
         info = UNBIAS( icueh->info_bias );
         --info;
@@ -605,9 +605,9 @@ static dip_status AdjBackward( imp_image_handle *iih, imp_cue_handle *icueh )
         if( icueh->entry == 0 ) {
             num_entries = ModPointer( iih, icueh->imh )->di[DMND_LINES].u.entries;
             icueh->entry = num_entries - 1;
-            status = GetLineInfo( iih, icueh->imh, icueh->entry );
-            if( status != DS_OK )
-                return( status );
+            ds = GetLineInfo( iih, icueh->imh, icueh->entry );
+            if( ds != DS_OK )
+                return( ds );
             seg = FindPrevSeg( seg );
             info = LINE_LINE( seg ) + LINE_COUNT( seg ) - 1;
             icueh->seg_bias = BIAS( seg );
@@ -623,37 +623,37 @@ static dip_status AdjBackward( imp_image_handle *iih, imp_cue_handle *icueh )
         icueh->seg_bias = BIAS( seg );
         icueh->info_bias = BIAS( info );
     }
-    return( status );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *iih, imp_cue_handle *src_icueh,
                         int adj, imp_cue_handle *dst_icueh )
 {
-    dip_status  status;
-    dip_status  ok;
+    dip_status  ds;
+    dip_status  ret_ds;
 
     if( src_icueh->entry == NO_LINE )
         return( DS_BAD_PARM );
     //NYI: handle special cues
     *dst_icueh = *src_icueh;
-    ok = DS_OK;
+    ret_ds = DS_OK;
     for( ; adj > 0; --adj ) {
-        status = AdjForward( iih, dst_icueh );
-        if( status & DS_ERR )
-            return( status );
-        if( status != DS_OK ) {
-            ok = status;
+        ds = AdjForward( iih, dst_icueh );
+        if( ds & DS_ERR )
+            return( ds );
+        if( ds != DS_OK ) {
+            ret_ds = ds;
         }
     }
     for( ; adj < 0; ++adj ) {
-        status = AdjBackward( iih, dst_icueh );
-        if( status & DS_ERR )
-            return( status );
-        if( status != DS_OK ) {
-            ok = status;
+        ds = AdjBackward( iih, dst_icueh );
+        if( ds & DS_ERR )
+            return( ds );
+        if( ds != DS_OK ) {
+            ret_ds = ds;
         }
     }
-    return( ok );
+    return( ret_ds );
 }
 
 int DIPIMPENTRY( CueCmp )( imp_image_handle *iih, imp_cue_handle *icueh1, imp_cue_handle *icueh2 )

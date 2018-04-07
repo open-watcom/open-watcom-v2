@@ -210,16 +210,16 @@ static void SetHdlSizes( dip_imp_routines *rtns )
 dip_status DIPLoad( const char *path )
 {
     int         i;
-    dip_status  status;
+    dip_status  ds;
 
     for( i = 0; LoadedDIPs[i].rtns != NULL; ++i ) {
         if( i >= MAX_LOAD_DIPS ) {
             return( DS_ERR | DS_TOO_MANY_DIPS );
         }
     }
-    status = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
-    if( status != DS_OK )
-        return( status );
+    ds = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
+    if( ds != DS_OK )
+        return( ds );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
       || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
         DIPSysUnload( &LoadedDIPs[i].sys_hdl );
@@ -482,7 +482,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
     image_idx           ii;
     int                 j;
     image_handle        *ih;
-    dip_status          ret;
+    dip_status          ds;
 
     if( ActProc == NULL ) {
         DIPCli( Status )( DS_ERR | DS_NO_PROCESS );
@@ -501,8 +501,8 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
             continue;
         if( LoadedDIPs[j].rtns->priority != priority )
             continue;
-        ret = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
-        if( ret == DS_OK ) {
+        ds = LoadedDIPs[j].rtns->LoadInfo( fp, IH2IIH( ih ) );
+        if( ds == DS_OK ) {
             ActProc->map_ih[ii] = ih;
             ih->next = *ActProc->add_ih;
             *ActProc->add_ih = ih;
@@ -513,7 +513,7 @@ mod_handle DIPLoadInfo( FILE *fp, unsigned extra, dip_priority priority )
             LoadingImageIdx = ii;
             return( MK_MH( ii, 0 ) );
         }
-        if( ret & DS_ERR ) {
+        if( ds & DS_ERR ) {
             break;
         }
     }

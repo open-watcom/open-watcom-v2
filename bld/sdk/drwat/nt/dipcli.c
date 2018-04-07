@@ -167,9 +167,9 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 /*
  * DIPCliStatus
  */
-void DIPCLIENTRY( Status )( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    stat = stat;
+    /* unused parameters */ (void)ds;
 }
 
 /*

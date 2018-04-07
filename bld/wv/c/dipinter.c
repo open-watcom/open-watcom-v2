@@ -128,7 +128,7 @@ dip_status RegLocation( machine_state *regs, const mad_reg_info *ri, location_li
 {
 
     if( regs == NULL || ri == NULL )
-        return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
+        return( DS_ERR | DS_CONTEXT_ITEM_INVALID );
     LocationCreate( ll, LT_INTERNAL, &regs->mr );
     LocationSet( ll, ri->bit_start, ri->bit_size );
     ll->flags = ri->flags << LLF_REG_FLAGS_SHIFT;
@@ -142,7 +142,7 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context *lc, context_item ci,
     DIPHDL( sym, sh );
 
     if( lc == NULL )
-        return( DS_ERR|DS_NO_CONTEXT );
+        return( DS_ERR | DS_NO_CONTEXT );
     switch( ci ) {
     case CI_FRAME:
         if( lc->maybe_have_frame ) {
@@ -228,9 +228,9 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 }
 
 
-void DIPCLIENTRY( Status )( dip_status status )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    DIPStatus = status;
+    DIPStatus = ds;
 }
 
 dig_mad DIPCLIENTRY( CurrMAD )( void )
@@ -355,7 +355,12 @@ OVL_EXTERN char *WVIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle
 
 OVL_EXTERN dip_status WVIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )
 {
-    static const dip_status Kinds[] = { DS_FAIL, DS_OK, DS_FAIL, DS_OK };
+    static const dip_status Kinds[] = {
+        DS_FAIL,
+        DS_OK,
+        DS_FAIL,
+        DS_OK
+    };
 
     /* unused parameters */ (void)iih; (void)imh;
 
@@ -554,7 +559,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_
         LocationCreate( ll, LT_INTERNAL, d );
         break;
     default:
-        return( DS_ERR|DS_BAD_PARM );
+        return( DS_ERR | DS_BAD_PARM );
     }
     return( DS_OK );
 }
@@ -565,7 +570,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_han
     /* unused parameters */ (void)iih; (void)lc;
 
     if( ish->ri != NULL || ish->p->info.sc != SC_INTERNAL )
-        return( DS_ERR|DS_BAD_PARM );
+        return( DS_ERR | DS_BAD_PARM );
     InternalValue( ish->p->info.v.internal, d );
     return( DS_OK );
 }
@@ -967,24 +972,24 @@ static char **DIPErrTxt[] = {
     LITREF_ENG( Empty ),
 };
 
-char *DIPMsgText( dip_status status )
+char *DIPMsgText( dip_status ds )
 {
-    status &= ~DS_ERR;
-    if( status > DS_INVALID_OPERATOR )
-        status = DS_FAIL;
-    return( *DIPErrTxt[status] );
+    ds &= ~DS_ERR;
+    if( ds > DS_INVALID_OPERATOR )
+        ds = DS_FAIL;
+    return( *DIPErrTxt[ds] );
 }
 
 static bool CheckDIPLoad( char *dip, bool defaults )
 {
-    dip_status  ret;
+    dip_status  ds;
 
-    ret = DIPLoad( dip );
-    if( ret != DS_OK ) {
-        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) )
+    ds = DIPLoad( dip );
+    if( ds != DS_OK ) {
+        if( defaults && ( ds == (DS_ERR | DS_FOPEN_FAILED) ) )
             return( false );
         DIPFini();
-        Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ret ) );
+        Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ds ) );
         StartupErr( TxtBuff );
     }
     return( true );

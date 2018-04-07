@@ -151,7 +151,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
 /*************************************************************/
 {
     /* Get the implementation type handle for the type of the given symbol. */
-    dip_status  ret;
+    dip_status  ds;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
     if( ish->state == DF_NOT ) {
@@ -167,7 +167,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
         ith->type = DRGetTypeAT( ish->sym );
         break;
     }
-    ret = DS_OK;
+    ds = DS_OK;
     ith->imh = ish->imh;
     if( ith->type != DRMEM_HDL_NULL ) {
         ith->state = DF_NOT;
@@ -181,7 +181,7 @@ dip_status DIPIMPENTRY( SymType )( imp_image_handle *iih,
             ith->typeinfo.kind = DR_TYPEK_CODE;
         }
     }
-    return( ret );
+    return( ds );
 }
 
 
@@ -324,13 +324,13 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
 /****************************************************************************/
 {
     /* Get the location of the given symbol. */
-    dip_status       ret;
+    dip_status       ds;
     address          base; /* base segment & offset */
     addr_seg         seg;
     drmem_hdl        sym;
     bool             is_segment;
 
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     base = NilAddr;
     is_segment = IMH2MODI( iih, ish->imh )->is_segment;
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
@@ -343,7 +343,7 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
         base.mach.segment = seg;
         DCMapAddr( &base.mach, iih->dcmap );
         LocationCreate( ll, LT_ADDR, &base );
-        ret = DS_OK;
+        ds = DS_OK;
     } else {
         switch( ish->sclass ) {
         case SYM_MEM:
@@ -352,16 +352,16 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
             dr_bitfield info;
             int         b_strt;
 
-            ret = SafeDCItemLocation( lc, CI_OBJECT, ll );
-            if( ret != DS_OK ) {
-                DCStatus( ret );
-                return( ret );
+            ds = SafeDCItemLocation( lc, CI_OBJECT, ll );
+            if( ds != DS_OK ) {
+                DCStatus( ds );
+                return( ds );
             }
             if( ish->f.minfo.inh != DRMEM_HDL_NULL ) {
                 DFBaseAdjust( iih, ish->f.minfo.root,
                       DRGetTypeAT( ish->f.minfo.inh ),lc, &ll->e[0].u.addr );
             }
-            ret = EvalLocAdj( iih, lc, ish->sym, &ll->e[0].u.addr  );
+            ds = EvalLocAdj( iih, lc, ish->sym, &ll->e[0].u.addr  );
             if( ish->sclass == SYM_VIRTF ) {
                 ll->e[0].u.addr.mach.segment = GetCodeSeg( iih );
             } else if( DRGetBitFieldInfo( ish->sym, &info ) ) {
@@ -383,7 +383,7 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
             if( sym == DRMEM_HDL_NULL ) {
                 base = NilAddr; /* for now say it's NULL */
                 LocationCreate( ll, LT_ADDR, &base );
-                ret = DS_OK;
+                ds = DS_OK;
                 break;
             } else {
                 ish->sym = sym;
@@ -398,7 +398,7 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
                 base.mach.segment = seg;
                 DCMapAddr( &base.mach, iih->dcmap );
                 LocationCreate( ll, LT_ADDR, &base );
-                ret = DS_OK;
+                ds = DS_OK;
             }
             break;
         case SYM_MEMVAR:
@@ -412,11 +412,11 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *iih,
             } else {
                 EvalSeg( iih, ish->sym, &seg );
             }
-            ret = EvalLocation( iih, lc, ish->sym, seg, ll );
+            ds = EvalLocation( iih, lc, ish->sym, seg, ll );
             break;
         }
     }
-    return( ret );
+    return( ds );
 }
 
 
@@ -625,23 +625,23 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *iih,
      */
 //TODO: brian only wants regs for now
     drmem_hdl       parm;
-    dip_status      ret;
+    dip_status      ds;
 
     DRSetDebug( iih->dwarf->handle );    /* must do at each call into DWARF */
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     if( n > 0 ) {
         parm = GetParmN( iih, ish->sym, n );
         if( parm != DRMEM_HDL_NULL ) {
-            ret = EvalParmLocation( iih, lc, parm, ll );
+            ds = EvalParmLocation( iih, lc, parm, ll );
         }
     } else if( n == 0 ) {
         //TODO: get ret location
         parm = GetRet( iih, ish->sym );
         if( parm != DRMEM_HDL_NULL ) {
-            ret = EvalRetLocation( iih, lc, parm, ll );
+            ds = EvalRetLocation( iih, lc, parm, ll );
         }
     }
-    return( ret );
+    return( ds );
 }
 
 
@@ -696,7 +696,7 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     drmem_hdl   dr_this;
     drmem_hdl   dr_type;
     dr_typeinfo typeinfo;
-    dip_status  ret;
+    dip_status  ds;
 
     dr_this = GetThis( iih, ish->sym );
     if( dr_this != DRMEM_HDL_NULL ) {
@@ -709,9 +709,9 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
             ith->type = DRGetTypeAT( dr_type );
             ith->state = DF_NOT;
             ith->imh = ish->imh;
-            ret = DS_OK;
+            ds = DS_OK;
         } else {
-            ret = DS_FAIL;
+            ds = DS_FAIL;
         }
     } else {
         if( ti != NULL ) {
@@ -720,9 +720,9 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
             ti->modifier = TM_NONE;
             ti->deref = false;
         }
-        ret = DS_FAIL;
+        ds = DS_FAIL;
     }
-    return( ret );
+    return( ds );
 }
 
 
@@ -741,7 +741,7 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     addr_seg        seg;
     address         base;   /* base segment & offset */
     location_list   tmp;
-    dip_status      ret;
+    dip_status      ds;
     union{
         addr32_off  n16;
         addr48_off  n32;
@@ -756,20 +756,20 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
         } else {
             EvalSeg( iih, ish->sym, &seg );
         }
-        ret = EvalLocation( iih, lc, dr_this, seg, &tmp );
-        if( ret == DS_OK ) {
+        ds = EvalLocation( iih, lc, dr_this, seg, &tmp );
+        if( ds == DS_OK ) {
             dr_type =  DRGetTypeAT( dr_this );
             if( dr_type != DRMEM_HDL_NULL ) {
                 DRGetTypeInfo( dr_type, &typeinfo );
                 LocationCreate( ll, LT_INTERNAL, &obj_ptr );
-                ret = DCAssignLocation( ll, &tmp, typeinfo.size );
-                if( ret == DS_OK ) {
+                ds = DCAssignLocation( ll, &tmp, typeinfo.size );
+                if( ds == DS_OK ) {
                     base = NilAddr;
                     switch( typeinfo.modifier.ptr ) {   /* set segment */
                     case DR_PTR_none:
                     case DR_PTR_near16:
                     case DR_PTR_near32:
-                        ret = SafeDCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
+                        ds = SafeDCItemLocation( lc, CI_DEF_ADDR_SPACE, ll );
                         base = ll->e[0].u.addr; /* set base */
                         break;
                     }
@@ -805,9 +805,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
             }
         }
     } else {
-        ret = DS_FAIL;
+        ds = DS_FAIL;
     }
-    return( ret );
+    return( ds );
 }
 
 

@@ -353,7 +353,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
 dip_status LocationAssign( location_list *dst, location_list *src,
                         unsigned long len, bool sign_extend )
 {
-    dip_status  st;
+    dip_status  ds;
     unsigned    flags;
     unsigned    i;
 
@@ -366,7 +366,7 @@ dip_status LocationAssign( location_list *dst, location_list *src,
             }
         }
     }
-    st = DoLocAssign( dst, src, len, sign_extend );
+    ds = DoLocAssign( dst, src, len, sign_extend );
     if( flags != 0 ) {
         for( i = 0; i < dst->num; ++i ) {
             if( dst->e[i].type == LT_INTERNAL ) {
@@ -375,5 +375,5 @@ dip_status LocationAssign( location_list *dst, location_list *src,
             }
         }
     }
-    return( st );
+    return( ds );
 }

@@ -552,35 +552,35 @@ dip_status SymHdl2LclLoc( imp_image_handle *iih, imp_sym_handle *ish,
                         location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
-    dip_status  ret;
+    dip_status  ds;
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     SetBase( iih, ish, local );
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    ret = DefnLocation( iih, &defn, lc, ll, local );
+    ds = DefnLocation( iih, &defn, lc, ll, local );
     PopLoad( local );
-    return( ret );
+    return( ds );
 }
 
 dip_status SymHdl2LclType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_handle *ith )
 {
     lcl_defn    defn;
-    dip_status  ret;
+    dip_status  ds;
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     local->base_off = 0;
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    ret = FindTypeHandle( iih, ish->imh, defn.i.type_index, ith );
+    ds = FindTypeHandle( iih, ish->imh, defn.i.type_index, ith );
     PopLoad( local );
-    return( ret );
+    return( ds );
 }
 
 void SetGblLink( imp_sym_handle *ish, gbl_info *link )
@@ -592,7 +592,7 @@ dip_status Lcl2GblHdl( imp_image_handle *iih,
                         imp_sym_handle *lcl_ish, imp_sym_handle *gbl_ish )
 {
     lcl_defn            defn;
-    dip_status          ret;
+    dip_status          ds;
     location_list       ll;
     lclinfo             lclld;
     lclinfo             *local = &lclld;
@@ -600,24 +600,24 @@ dip_status Lcl2GblHdl( imp_image_handle *iih,
     if( lcl_ish->u.lcl.gbl_link != NULL ) {
         return( Link2GblHdl( iih, lcl_ish->u.lcl.gbl_link, gbl_ish ) );
     }
-    ret = LoadLocalSyms( iih, lcl_ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, lcl_ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     SetBase( iih, lcl_ish, local );
     ProcDefn( iih, local->start + lcl_ish->u.lcl.offset, &defn, local );
-    ret = DefnLocation( iih, &defn, NULL, &ll, local );
-    if( ret != DS_OK )
+    ds = DefnLocation( iih, &defn, NULL, &ll, local );
+    if( ds != DS_OK )
         goto done;
-    ret = DS_FAIL;
+    ds = DS_FAIL;
     if( ll.num != 1 || ll.e[0].type != LT_ADDR )
         goto done;
     gbl_ish->imh = lcl_ish->imh;
     if( LookupGblAddr( iih, ll.e[0].u.addr, gbl_ish ) != SR_EXACT )
         goto done;
-    ret = DS_OK;
+    ds = DS_OK;
 done:
     PopLoad( local );
-    return( ret );
+    return( ds );
 }
 
 dip_status SymHdl2LclInfo( imp_image_handle *iih, imp_sym_handle *ish,
@@ -625,14 +625,14 @@ dip_status SymHdl2LclInfo( imp_image_handle *iih, imp_sym_handle *ish,
 {
     lcl_defn            defn;
     const char          *p;
-    dip_status          ret;
+    dip_status          ds;
     lclinfo             lclld;
     lclinfo             *local = &lclld;
     imp_sym_handle      gbl_ish;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     if( Lcl2GblHdl( iih, ish, &gbl_ish ) == DS_OK ) {
         SymHdl2GblInfo( iih, &gbl_ish, si ); /* get the global bit set */
     }
@@ -697,24 +697,24 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
 {
     lcl_defn    defn;
     const char  *p;
-    dip_status  ret;
+    dip_status  ds;
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     local->base_off = 0;
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
     if( parm == 0 ) { /* return value */
-        ret = EvalLocation( iih, lc, defn.i.unparsed, ll );
-        if( ret == (DS_ERR | DS_BAD_LOCATION) ) {
-            ret = DS_NO_PARM;
+        ds = EvalLocation( iih, lc, defn.i.unparsed, ll );
+        if( ds == (DS_ERR | DS_BAD_LOCATION) ) {
+            ds = DS_NO_PARM;
         }
     } else {
         p = SkipLocation( defn.i.unparsed );
         if( parm > GETU8( p ) ) {
-            ret = DS_NO_PARM;
+            ds = DS_NO_PARM;
         } else {
             ++p;
             for( ;; ) {
@@ -723,24 +723,24 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
                     break;
                 p = SkipLocation( p );
             }
-            ret = EvalLocation( iih, lc, p, ll );
+            ds = EvalLocation( iih, lc, p, ll );
         }
     }
     PopLoad( local );
-    return( ret );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
                 imp_sym_handle *ish, imp_type_handle *ith, dig_type_info *ti )
 {
     lcl_defn    defn;
-    dip_status  ret;
+    dip_status  ds;
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     local->base_off = 0;
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
     if( (defn.i.class & CLASS_MASK) != CODE_SYMBOL )
@@ -783,13 +783,13 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
         imp_sym_handle *ish, location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
-    dip_status  ret;
+    dip_status  ds;
     lclinfo     lclld;
     lclinfo     *local = &lclld;
 
-    ret = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, ish->imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     local->base_off = 0;
     ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
     if( (defn.i.class & CLASS_MASK) != CODE_SYMBOL )
@@ -801,9 +801,9 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
         return( DS_FAIL );
     if( defn.i.unparsed == NULL )
         return( DS_FAIL );
-    ret = EvalLocation( iih, lc, defn.i.unparsed + 1, ll );
+    ds = EvalLocation( iih, lc, defn.i.unparsed + 1, ll );
     PopLoad( local );
-    return( ret );
+    return( ds );
 }
 
 static const char *FindBlockScope( imp_image_handle *iih, const char *ptr, lcl_defn *blk, address *addr, lclinfo *local )
@@ -934,12 +934,12 @@ dip_status WalkLclModSymList( imp_image_handle *iih, imp_mod_handle imh,
     lcl_defn            defn;
     lclinfo             lclld;
     lclinfo             *local = &lclld;
-    dip_status          ret;
+    dip_status          ds;
 
     *last = WR_CONTINUE;
-    ret = LoadLocalSyms( iih, imh, &lclld );
-    if( ret != DS_OK )
-        return( ret );
+    ds = LoadLocalSyms( iih, imh, &lclld );
+    if( ds != DS_OK )
+        return( ds );
     curr = local->start;
     for( ;; ) {
         curr = ModAddrLkupVar( iih, curr, local );

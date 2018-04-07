@@ -405,13 +405,13 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
     unsigned                    item_size;
     reg_entry                   const *reg;
     int                         item_addr;
-    dip_status                  ok;
+    dip_status                  ds;
 
     end = SkipLocation( e );
     if( (unsigned char)*e & LOC_EXPR_IND ) {
         ++e;
     }
-    ok = DS_OK;
+    ds = DS_OK;
     sp = LocStack + LocStkPtr - 1;
     start = sp;
     while( e < end ) {
@@ -420,9 +420,9 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
         case BP_OFFSET:
             ++sp;
             sp->type = LS_ADDR;
-            ok = DCItemLocation( lc, CI_FRAME, &sp->u.ll );
-            if( ok != DS_OK ) {
-                DCStatus( ok );
+            ds = DCItemLocation( lc, CI_FRAME, &sp->u.ll );
+            if( ds != DS_OK ) {
+                DCStatus( ds );
                 goto done;
             }
             LocationAdd( &sp->u.ll, loc.bp_offset.offset * 8 );
@@ -444,9 +444,9 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
             j = 0;
             for( i = 0; i < loc.multi_reg.numregs; ++i ) {
                 reg = RegTable + loc.multi_reg.regs[i];
-                ok = DCItemLocation( lc, reg->ci, &tmp.ll );
-                if( ok != DS_OK ) {
-                    DCStatus( ok );
+                ds = DCItemLocation( lc, reg->ci, &tmp.ll );
+                if( ds != DS_OK ) {
+                    DCStatus( ds );
                     goto done;
                 }
                 memcpy( sp->u.ll.e + j, tmp.ll.e,
@@ -476,15 +476,15 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, const char
 do_ind:
             if( sp->type == LS_NUM ) {
                 tmp.num = sp->u.num;
-                ok = DCItemLocation( lc, CI_DEF_ADDR_SPACE, &sp->u.ll );
-                if( ok != DS_OK )
+                ds = DCItemLocation( lc, CI_DEF_ADDR_SPACE, &sp->u.ll );
+                if( ds != DS_OK )
                     goto done;
                 sp->u.ll.e[0].u.addr.mach.offset = tmp.num;
             }
             LocationCreate( &tmp.ll, LT_INTERNAL, &item );
-            ok = DCAssignLocation( &tmp.ll, &sp->u.ll, item_size );
-            if( ok != DS_OK ) {
-                DCStatus( ok );
+            ds = DCAssignLocation( &tmp.ll, &sp->u.ll, item_size );
+            if( ds != DS_OK ) {
+                DCStatus( ds );
                 goto done;
             }
             if( item_addr ) {
@@ -519,7 +519,7 @@ do_ind:
                 tmp.addr.mach.segment = sp->u.num;
             } else {
                 if( sp->u.ll.num != 1 || sp->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR | DS_BAD_PARM;
+                    ds = DS_ERR | DS_BAD_PARM;
                     goto done;
                 }
                 tmp.addr = sp->u.ll.e[0].u.addr;
@@ -528,7 +528,7 @@ do_ind:
                 tmp.addr.mach.offset = op1->u.num;
             } else {
                 if( op1->u.ll.num != 1 || op1->u.ll.e[0].type != LT_ADDR ) {
-                    ok = DS_ERR | DS_BAD_LOCATION;
+                    ds = DS_ERR | DS_BAD_LOCATION;
                     goto done;
                 }
                 tmp.addr.mach.offset = op1->u.ll.e[0].u.addr.mach.offset;
@@ -580,7 +580,7 @@ do_ind:
     }
     if( LocStkPtr == 0 && sp == start ) {
         /* empty location */
-        ok = DS_ERR | DS_BAD_LOCATION;
+        ds = DS_ERR | DS_BAD_LOCATION;
         goto done;
     }
     if( sp->type == LS_ADDR ) {
@@ -591,5 +591,5 @@ do_ind:
     }
 done:
     LocStkPtr = 0;
-    return( ok );
+    return( ds );
 }

@@ -207,7 +207,7 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     int             *idx = (int *)_idx;
     char            buff[2048];
     unsigned        len;
-    dip_status      rc;
+    dip_status      ds;
     location_list   ll = {0};
     sym_info        sinfo;
     int             i;
@@ -216,8 +216,8 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     printf( "%5d  ", ++*idx );
 
     /* symbol info */
-    rc = DIPSymInfo( sym, NULL, &sinfo );
-    if( rc == DS_OK ) {
+    ds = DIPSymInfo( sym, NULL, &sinfo );
+    if( ds == DS_OK ) {
         switch( sinfo.kind ) {
         case SK_NONE:       printf( "NONE  " ); break;
         case SK_CODE:       printf( "CODE  " ); break;
@@ -229,15 +229,15 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
         default:            printf( "kind=%#x!  ", sinfo.kind ); break;
         }
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         memset( &sinfo, 0, sizeof( sinfo ) );
         sinfo.kind= SK_NONE;
     }
 
     /* location (i.e. address) */
     ll.num = MAX_LOC_ENTRIES;
-    rc = DIPSymLocation( sym, NULL, &ll );
-    if( rc == DS_OK ) {
+    ds = DIPSymLocation( sym, NULL, &ll );
+    if( ds == DS_OK ) {
         if( ll.num > 0 ) {
             if( ll.e[0].type == LT_ADDR ) {
                 printf( "%04x:%08lx  ", ll.e[0].u.addr.mach.segment, (long)ll.e[0].u.addr.mach.offset );
@@ -250,20 +250,20 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     } else if( sinfo.kind == SK_CONST ) {
         ll.num = 0;
         memset( buff, 0, sizeof( buff ) );
-        rc = DIPSymValue( sym, NULL, &buff[0] );
-        if( rc == DS_OK ) {
+        ds = DIPSymValue( sym, NULL, &buff[0] );
+        if( ds == DS_OK ) {
             switch( sinfo.ret_modifier ) {
             }
             printf( "               " );
         } else {
-            printf( "SymValue rc=%#x ", rc );
+            printf( "SymValue status=%#x ", ds );
         }
     } else if( sinfo.kind == SK_NONE || sinfo.kind == SK_TYPE
             || sinfo.kind == SK_NAMESPACE ) {
         printf( "               " );
         ll.num = 0;
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         ll.num = 0;
     }
 
@@ -304,8 +304,8 @@ static walk_result Sym2Callback( sym_walk_info swi, sym_handle *sym, void *_idx 
     if( 1 ) {
         type_handle *th = alloca( DIPHandleSize( HK_TYPE ) );
 
-        rc = DIPSymType( sym, th );
-        if( rc ) {
+        ds = DIPSymType( sym, th );
+        if( ds ) {
         }
     }
 
@@ -341,7 +341,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     unsigned        len;
     symbol_type     tag;
     dig_type_info   ti;
-    dip_status      rc;
+    dip_status      ds;
 
     printf( "%5d  ", ++*idx );
 
@@ -356,8 +356,8 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     }
 
     /* type info */
-    rc = DIPTypeInfo( th, NULL, &ti );
-    if( rc == DS_OK ) {
+    ds = DIPTypeInfo( th, NULL, &ti );
+    if( ds == DS_OK ) {
         printf( "size=%#06lx  kind=%2d %-12s  modifier=%#04x deref=%d %s\n",
                 ti.size,
                 ti.kind, GetTypeKind( ti.kind ),
@@ -366,14 +366,14 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
         switch( ti.kind ) {
         case TK_ARRAY: {
                 array_info ainfo;
-                rc = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
-                if( rc == DS_OK ) {
+                ds = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
+                if( ds == DS_OK ) {
                     printf( "       "
                             "low_bound=%ld num_elts=%lu stride=%lu num_dims=%u column_major=%d\n",
                             ainfo.low_bound, ainfo.num_elts, ainfo.stride,
                             ainfo.num_dims, ainfo.column_major );
                 } else {
-                    printf( "DIPTypeArrayInfo -> %d\n", rc );
+                    printf( "DIPTypeArrayInfo -> %d\n", ds );
                 }
             }
             break;
@@ -382,7 +382,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
             break;
         }
     } else {
-        printf( "DIPTypeInfo -> %d\n", rc );
+        printf( "DIPTypeInfo -> %d\n", ds );
     }
 
     return( WR_CONTINUE );
@@ -453,7 +453,7 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
     search_result   search_rc;
     char            buff[1024];
     size_t          len;
-    dip_status      rc;
+    dip_status      ds;
 
     /* filename */
     buff[0] = '\0';
@@ -511,13 +511,13 @@ static walk_result File2Callback( cue_handle *cueh1, void *ignored )
 
 
         /* next */
-        rc = DIPCueAdjust( cueh1, 1, next_cueh );
+        ds = DIPCueAdjust( cueh1, 1, next_cueh );
         prev_cueh  = cueh1;
         cueh1      = next_cueh;
         next_cueh  = prev_cueh;
         prev_addr = addr;
         prev_line = line;
-    } while( rc == DS_OK );
+    } while( ds == DS_OK );
 
     return( WR_CONTINUE );
 }
@@ -607,7 +607,7 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
     int             *idx = (int *)_idx;
     char            buff[2048];
     unsigned        len;
-    dip_status      rc;
+    dip_status      ds;
     location_list   ll = {0};
     int             i;
 
@@ -616,8 +616,8 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
 
     /* location (i.e. address) */
     ll.num = MAX_LOC_ENTRIES;
-    rc = SymLocation( sym, NULL, &ll );
-    if( rc == DS_OK ) {
+    ds = SymLocation( sym, NULL, &ll );
+    if( ds == DS_OK ) {
         if( ll.num > 0 ) {
             if( ll.e[0].type == LT_ADDR ) {
                 printf( "%04x:%08lx  ", ll.e[0].u.addr.mach.segment, (long)ll.e[0].u.addr.mach.offset );
@@ -628,7 +628,7 @@ static walk_result SymCallback( sym_walk_info swi, sym_handle *sym, void *_idx )
             printf( "               ");
         }
     } else {
-        printf( "rc=%#x  ", rc );
+        printf( "status=%#x  ", ds );
         ll.num = 0;
     }
 
@@ -840,12 +840,13 @@ static bool InitDIP( char **dips )
         char        *ptr;
         unsigned    dips_loaded = 0;
 
-        for( ptr = *dips++; ptr; ptr = *dips++ ) {
-            int     rc = DIPLoad( ptr );
+        for( ptr = *dips++; ptr != NULL; ptr = *dips++ ) {
+            dip_status  ds;
 
-            if( rc & DS_ERR ) {
-                rc &= ~DS_ERR;
-                switch( rc ) {
+            ds = DIPLoad( ptr );
+            if( ds & DS_ERR ) {
+                ds &= ~DS_ERR;
+                switch( ds ) {
                 case DS_FOPEN_FAILED:
                     ErrorMsg( "%s - not found\n", ptr );
                     break;
@@ -859,7 +860,7 @@ static bool InitDIP( char **dips )
                     ErrorMsg( "%s - too many DIPs\n", ptr );
                     break;
                 default:
-                    ErrorMsg( "%s - rc=%#x (%d)\n", ptr, rc, rc );
+                    ErrorMsg( "%s - status=%#x (%d)\n", ptr, ds, ds );
                     break;
                 }
             } else {

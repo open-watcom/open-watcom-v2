@@ -39,14 +39,15 @@
 #include "dfloc.h"
 
 
-dip_status SafeDCItemLocation( location_context *lc, context_item ci, location_list *ll ) {
+dip_status SafeDCItemLocation( location_context *lc, context_item ci, location_list *ll )
+{
     dr_dbg_handle   old_handle;
-    dip_status  rc;
+    dip_status      ds;
 
     old_handle = DRGetDebug();
-    rc = DCItemLocation( lc, ci, ll );
+    ds = DCItemLocation( lc, ci, ll );
     DRSetDebug( old_handle );
-    return( rc );
+    return( ds );
 }
 
 static void LocationInit( location_list *ll )
@@ -454,7 +455,7 @@ typedef struct {
     location_context *lc;  /* addr context          */
     location_list    *ll;  /* where to store addr   */
     address          base; /* base segment & offset */
-    dip_status       ret;
+    dip_status       ds;
     dr_loc_kind      init; /* how to get stack going */
     uint_32          value;/* value on top of stack  */
     int              val_count;
@@ -538,9 +539,9 @@ static bool Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
             DCStatus( DS_ERR | DS_BAD_LOCATION );
             return( false );
         }
-        d->ret = SafeDCItemLocation( d->lc, areg, &tmp );
-        if( d->ret != DS_OK ) {
-            DCStatus( d->ret );
+        d->ds = SafeDCItemLocation( d->lc, areg, &tmp );
+        if( d->ds != DS_OK ) {
+            DCStatus( d->ds );
             return( false );
         }
         LocationAdd( &tmp, start );
@@ -560,9 +561,9 @@ static bool DRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size ) {
     location_list tmp;
     location_list ll;
 #if 1
-    d->ret = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     a = ll.e[0].u.addr;
@@ -573,9 +574,9 @@ static bool DRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size ) {
     LocationCreate( &ll, LT_ADDR, &a );
     ll.e[0].bit_length = size * 8;
     LocationCreate( &tmp, LT_INTERNAL, where );
-    d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     return( true );
@@ -596,9 +597,9 @@ static bool DRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_1
     LocationCreate( &ll, LT_ADDR, &a );
     ll.e[0].bit_length = size * 8;
     LocationCreate( &tmp, LT_INTERNAL, where );
-    d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     return( true );
@@ -613,9 +614,9 @@ static bool Frame( void *_d, uint_32 *where )
 // Get frame location
 //    mad =  DCCurrMAD();
     DCCurrMAD();
-    d->ret = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     d->base = ll.e[0].u.addr; /* set base */
@@ -684,9 +685,9 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
         DCStatus( DS_ERR | DS_BAD_LOCATION );
         return( false );
     }
-    d->ret = SafeDCItemLocation( d->lc, areg, &ll );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = SafeDCItemLocation( d->lc, areg, &ll );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     LocationAdd( &ll, start );
@@ -694,23 +695,23 @@ static bool Reg( void *_d, uint_32 *where, uint_16 reg )
 //    ll.e[0].bit_start  = start;
 //    ll.e[0].bit_length = size;
     LocationCreate( &tmp, LT_INTERNAL, where );
-    d->ret = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = DCAssignLocation( &tmp, &ll, sizeof( *where ) );
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     if( mad == MAD_X86 && (reg == DW_X86_esp || reg == DW_X86_sp) ) { /* kludge for now */
-        d->ret = SafeDCItemLocation( d->lc, CI_STACK, &ll );
-        if( d->ret != DS_OK ) {
-            DCStatus( d->ret );
+        d->ds = SafeDCItemLocation( d->lc, CI_STACK, &ll );
+        if( d->ds != DS_OK ) {
+            DCStatus( d->ds );
             return( false );
         }
         d->base = ll.e[0].u.addr;    /* set base */
         d->base.mach.offset = 0;
     } else {
-        d->ret = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
-        if( d->ret != DS_OK ) {
-            DCStatus( d->ret );
+        d->ds = SafeDCItemLocation( d->lc, CI_DEF_ADDR_SPACE, &ll );
+        if( d->ds != DS_OK ) {
+            DCStatus( d->ds );
             return( false );
         }
         d->base = ll.e[0].u.addr;    /* set base */
@@ -743,18 +744,18 @@ static bool Live( void *_d, uint_32 *where )
 // find the appropriate live range
     loc_handle  *d = _d;
     location_list ll;
-//    dip_status    ret;
+//    dip_status    ds;
 
 // Get execution location
-//    ret = SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
+//    ds = SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
     SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
-    d->ret = DS_OK;
-    if( d->ret != DS_OK ) {
-        DCStatus( d->ret );
+    d->ds = DS_OK;
+    if( d->ds != DS_OK ) {
+        DCStatus( d->ds );
         return( false );
     }
     if( !Real2Map( d->iih->addr_map, &ll.e[0].u.addr ) ) {
-        d->ret = DS_ERR | DS_BAD_LOCATION;
+        d->ds = DS_ERR | DS_BAD_LOCATION;
         DCStatus( DS_ERR | DS_BAD_LOCATION );
     }
     *where = ll.e[0].u.addr.mach.offset;
@@ -778,13 +779,13 @@ static bool IsEntry( imp_image_handle *iih, location_context *lc ) {
     */
     location_list   ll;
     addrsym_info    info;
-    dip_status      ret;
+    dip_status      ds;
     seg_list        *addr_sym;
     imp_mod_handle  imh;
 
 // Get execution location
-    ret = SafeDCItemLocation( lc, CI_EXECUTION, &ll );
-    if( ret != DS_OK ) {
+    ds = SafeDCItemLocation( lc, CI_EXECUTION, &ll );
+    if( ds != DS_OK ) {
         return( false );
     }
     if( DFAddrMod( iih, ll.e[0].u.addr, &imh ) == SR_NONE ) {
@@ -810,7 +811,7 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, drmem_hdl 
     d.iih = iih;
     d.lc = lc;
     d.ll = ll;
-    d.ret = DS_OK;
+    d.ds = DS_OK;
     d.base = NilAddr;
     d.val_count = 0;
     d.base.mach.segment = 0;
@@ -819,11 +820,11 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, drmem_hdl 
     d.init = DR_LOC_NONE;
     LocationInit( ll ); /* set to 0 */
     if( !DRLocationAT( sym, &CallBck, &d ) ) {
-        if( d.ret == DS_OK ) {
-            d.ret = DS_FAIL;
+        if( d.ds == DS_OK ) {
+            d.ds = DS_FAIL;
         }
     }
-    if( d.ret != DS_OK ) {
+    if( d.ds != DS_OK ) {
         if( DRIsParm( sym ) ) {
             if( IsEntry( iih, lc ) ) {
                 d.val_count = 0;
@@ -832,15 +833,15 @@ dip_status EvalLocation( imp_image_handle *iih, location_context *lc, drmem_hdl 
                 d.init = DR_LOC_NONE;
                 LocationInit( ll ); /* set to 0 */
                 if( !DRParmEntryAT( sym, &CallBck, &d ) ) {
-                    if( d.ret == DS_OK ) {
-                        d.ret = DS_FAIL;
+                    if( d.ds == DS_OK ) {
+                        d.ds = DS_FAIL;
                     }
                 }
             }
         }
     }
     LocationLast( ll );
-    return( d.ret );
+    return( d.ds );
 }
 
 static bool NoFrame( void *_d, uint_32 *where )
@@ -848,7 +849,7 @@ static bool NoFrame( void *_d, uint_32 *where )
 //For EvalParmLocation frame not valid
     loc_handle  *d = _d;
 
-    d->ret = DS_FAIL;
+    d->ds = DS_FAIL;
     *where = 0;
     return( false  );
 }
@@ -859,7 +860,7 @@ static bool FakeLive( void *_d, uint_32 *where )
 // Get execution location
     loc_handle  *d = _d;
 
-    d->ret = DS_OK;
+    d->ds = DS_OK;
     *where  =  d->base.mach.offset;
     return( true );
 }
@@ -873,15 +874,15 @@ static bool RegOnlyRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind
     location_list tmp, *ll;
 
     if( kind == DR_LOC_ADDR ) {
-        d->ret = DS_FAIL;
+        d->ds = DS_FAIL;
         return( false );
     } else {
         reg_entry  clreg;
 
         clreg = CLRegX86[offset];
-        d->ret = SafeDCItemLocation( d->lc, clreg.ci, &tmp );
-        if( d->ret != DS_OK ) {
-            DCStatus( d->ret );
+        d->ds = SafeDCItemLocation( d->lc, clreg.ci, &tmp );
+        if( d->ds != DS_OK ) {
+            DCStatus( d->ds );
             return( false );
         }
         LocationAdd( &tmp, clreg.start );
@@ -911,19 +912,19 @@ dip_status EvalParmLocation( imp_image_handle *iih, location_context *lc, drmem_
     d.iih = iih;
     d.lc = lc;
     d.ll = ll;
-    d.ret = DS_OK;
+    d.ds = DS_OK;
     d.base = NilAddr;
     d.val_count = 0;
     d.seg = SEG_DATA;
     d.init = DR_LOC_NONE;
     LocationInit( ll ); /* set to 0 */
     if( !DRParmEntryAT( sym, &ParmBck, &d ) ) {
-        if( d.ret == DS_OK ) {
-            d.ret = DS_FAIL;
+        if( d.ds == DS_OK ) {
+            d.ds = DS_FAIL;
         }
     }
 //  LocationLast( ll );
-    return( d.ret );
+    return( d.ds );
 
 }
 
@@ -935,19 +936,19 @@ dip_status EvalRetLocation( imp_image_handle *iih, location_context *lc, drmem_h
     d.iih = iih;
     d.lc = lc;
     d.ll = ll;
-    d.ret = DS_OK;
+    d.ds = DS_OK;
     d.base = NilAddr;
     d.val_count = 0;
     d.seg = SEG_DATA;
     d.init = DR_LOC_NONE;
     LocationInit( ll ); /* set to 0 */
     if( !DRLocationAT( sym, &ParmBck, &d ) ) {
-        if( d.ret == DS_OK ) {
-            d.ret = DS_FAIL;
+        if( d.ds == DS_OK ) {
+            d.ds = DS_FAIL;
         }
     }
 //  LocationLast( ll );
-    return( d.ret );
+    return( d.ds );
 
 }
 
@@ -988,14 +989,14 @@ dip_status EvalLocAdj( imp_image_handle *iih, location_context *lc, drmem_hdl sy
     d.iih = iih;
     d.lc = lc;
     d.ll = &ll;
-    d.ret = DS_OK;
+    d.ds = DS_OK;
     d.base = *addr;
     d.val_count = 0;
     d.init = DR_LOC_ADDR;
     LocationInit( &ll ); /* set to 0 */
     if( !DRLocBasedAT( sym, &AdjBck, &d ) ) {
-        if( d.ret == DS_OK ) {
-            d.ret = DS_FAIL;
+        if( d.ds == DS_OK ) {
+            d.ds = DS_FAIL;
         }
     }
     /* DWARF V2 spec is unclear at best, but DWARF V3 spells out that
@@ -1018,7 +1019,7 @@ dip_status EvalLocAdj( imp_image_handle *iih, location_context *lc, drmem_hdl sy
         ll.num = 1;
     }
     *addr = ll.e[0].u.addr;
-    return( d.ret );
+    return( d.ds );
 }
 
 static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
@@ -1035,8 +1036,8 @@ static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
             d->base.mach.segment = offset;
         }
     } else {
-        d->ret = DS_ERR | DS_BAD_LOCATION;
-        DCStatus( d->ret );
+        d->ds = DS_ERR | DS_BAD_LOCATION;
+        DCStatus( d->ds );
         return( false );
     }
     return( true );
@@ -1067,16 +1068,16 @@ dip_status EvalBasedPtr( imp_image_handle *iih, location_context *lc, drmem_hdl 
     d.iih = iih;
     d.lc = lc;
     d.ll = NULL;
-    d.ret = DS_OK;
+    d.ds = DS_OK;
     d.seg = 0;
     d.val_count = 0;
     d.init = DR_LOC_NONE;
     if( DRSegLocation( sym, &ValBck, &d ) ) {
         *addr = d.base;
-    } else if( d.ret == DS_OK ) {
-        d.ret = DS_FAIL;
+    } else if( d.ds == DS_OK ) {
+        d.ds = DS_FAIL;
     }
-    return( d.ret );
+    return( d.ds );
 
 }
 

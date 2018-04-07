@@ -273,28 +273,28 @@ static dip_status InitDwarf( imp_image_handle *iih )
 {
     unsigned long   sect_sizes[DR_DEBUG_NUM_SECTS];
     dwarf_info      *dwarf;
-    dip_status      ret;
+    dip_status      ds;
 
-    ret = DS_ERR | DS_NO_MEM;
+    ds = DS_ERR | DS_NO_MEM;
     dwarf = DCAlloc( sizeof( *dwarf ) );
     if( dwarf != NULL ) {
         iih->dwarf = dwarf;
-        ret = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->is_byteswapped );
-        if( ret == DS_OK ) {
+        ds = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->is_byteswapped );
+        if( ds == DS_OK ) {
             dwarf->handle = DRDbgInitNFT( iih, sect_sizes, iih->is_byteswapped );
             if( dwarf->handle != NULL ) {
                 iih->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
-                return( ret );
+                return( ds );
             }
-            ret = DS_ERR | DS_NO_MEM;
+            ds = DS_ERR | DS_NO_MEM;
         }
     }
     if( dwarf != NULL ) {
         DCFree( dwarf );
     }
     iih->dwarf = NULL;
-    DCStatus( ret );
-    return( ret );
+    DCStatus( ds );
+    return( ds );
 }
 
 
@@ -376,24 +376,24 @@ static void LoadGlbHash( imp_image_handle *iih )
 dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
 /*******************************************************************/
 {
-    dip_status          ret;
+    dip_status          ds;
 
     iih->sym_fp = fp;
-    ret = InitDwarf( iih );
-    if( ret == DS_OK ) {
-        ret = InitModMap( iih );
-        if( ret == DS_OK ) {
+    ds = InitDwarf( iih );
+    if( ds == DS_OK ) {
+        ds = InitModMap( iih );
+        if( ds == DS_OK ) {
             InitImpCueInfo( iih );
             iih->name_map = InitHashName();
             LoadGlbHash( iih );
             iih->dcmap = NULL;
             InitScope( &iih->scope );
             DFAddImage( iih );
-            return( ret );
+            return( ds );
         }
     }
     iih->sym_fp = NULL;
-    return( ret );
+    return( ds );
 }
 
 

@@ -139,10 +139,10 @@ void DIPCLIENTRY( AddrSection )( address *addr )
 /*
  * DIPCliStatus
  */
-void DIPCLIENTRY( Status )( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status ds )
 {
-    dprintf(( "DIPCliStatus: stat=%d\n", stat ));
-    stat = stat;
+    dprintf(( "DIPCliStatus: status=%d\n", ds ));
+    /* unused parameters */ (void)ds;
 }
 
 /*

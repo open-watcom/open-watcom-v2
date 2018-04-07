@@ -61,7 +61,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 {
     dip_sys_handle      dip_mod;
     dip_init_func       *init_func;
-    dip_status          status;
+    dip_status          ds;
 #ifndef _M_I86
     char                dipname[CCHMAXPATH];
     char                dippath[CCHMAXPATH];
@@ -80,11 +80,11 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     if( LOAD_MODULE( path, dip_mod ) ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    status = DS_ERR | DS_INVALID_DIP;
-    if( GET_PROC_ADDRESS( dip_mod, "DIPLOAD", init_func ) && (*imp = init_func( &status, cli )) != NULL ) {
+    ds = DS_ERR | DS_INVALID_DIP;
+    if( GET_PROC_ADDRESS( dip_mod, "DIPLOAD", init_func ) && (*imp = init_func( &ds, cli )) != NULL ) {
         *sys_hdl = dip_mod;
         return( DS_OK );
     }
     DosFreeModule( dip_mod );
-    return( status );
+    return( ds );
 }
