@@ -29,14 +29,16 @@
 ****************************************************************************/
 
 #include "plusplus.h"
-#include "lambda.h"
-#include "class.h"
 #include "gstack.h"
 #include "decl.h"
 #include "ptree.h"
 #include "name.h"
 #include "decl.h"
 #include "symtype.h"
+#include "class.h"
+#include "ctokens.h"
+#include "yydriver.h"
+#include "lambda.h"
 
 void LambdaStartClosure(PARSE_STACK *state)
 {

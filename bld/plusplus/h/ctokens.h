@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+#ifndef _CTOKENS_H
+#define _CTOKENS_H
 
 typedef enum TOKEN {
     #define pick(token,string,class,prec) token,
@@ -38,3 +40,5 @@ typedef enum TOKEN {
 } TOKEN;
 
 extern  const char  *Tokens[];
+
+#endif

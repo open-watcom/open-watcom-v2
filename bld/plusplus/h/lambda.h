@@ -31,10 +31,6 @@
 #ifndef _LAMBDA_H
 #define _LAMBDA_H
 
-#include "ptree.h"
-#include "yydriver.h"
-#include "symtype.h"
-
 extern void       LambdaStartClosure(PARSE_STACK *state);
 extern PTREE      LambdaFinishClosure();
 extern DECL_INFO *LambdaMakeClosureCallOpDeclaration(DECL_INFO *parameter_declaration_clause,
