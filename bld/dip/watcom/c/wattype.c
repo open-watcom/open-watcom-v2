@@ -989,7 +989,7 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *iih, imp_type_handle *ith,
                     p = base_ith->t.offset + Type->start;
                 } while( (GETU8( p + 1 ) & CLASS_MASK) == ARRAY_TYPE );
             }
-        } else if( GETU8( p + 1 ) == ENUM_TYPE | ENUM_LIST ) {
+        } else if( GETU8( p + 1 ) == (ENUM_TYPE | ENUM_LIST) ) {
             base_ith->t.offset = GETU8( p + 4 );
             base_ith->f.s.sclr = 1;
         } else {
@@ -1372,7 +1372,7 @@ dip_status SymHdl2MbrLoc( imp_image_handle *iih, imp_sym_handle *ish,
                     }
                     --count;
                     p = NEXT_TYPE( p );
-                    if( GETU8( p + 1 ) == STRUCT_TYPE | ST_INHERIT ) {
+                    if( GETU8( p + 1 ) == (STRUCT_TYPE | ST_INHERIT) ) {
                         new = walloca( sizeof( *new ) );
                         new->entry = Type->entry;
                         new->u.s.off = p - Type->start;
