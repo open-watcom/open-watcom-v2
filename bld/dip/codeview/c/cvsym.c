@@ -299,7 +299,7 @@ dip_status ImpSymLocation( imp_image_handle *iih, imp_sym_handle *ish, location_
     case S_CONSTANT:
     case S_UDT:
     case S_COBOLUDT:
-        return( SR_FAIL );
+        return( DS_FAIL );
     case S_MANYREG:
         return( LocationManyReg( iih, p->manyreg.f.count, (unsigned_8 *)&p->manyreg + 1, lc, ll ) );
     case S_BPREL16:
@@ -1997,19 +1997,19 @@ dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish 
 {
     /* unused parameters */ (void)iih; (void)ish;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
 {
     /* unused parameters */ (void)iih; (void)ish;
 
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
 {
     /* unused parameters */ (void)iih;
 
-    return(DS_OK);
+    return( DS_OK );
 }
