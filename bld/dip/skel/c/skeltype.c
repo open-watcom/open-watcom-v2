@@ -248,7 +248,7 @@ dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *iih, imp_type_handle *it
     /*
     ith->r->refCount++;
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *ith )
@@ -256,7 +256,7 @@ dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *iih, imp_type_handle *i
     /*
     ith->r->refCount--;
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
@@ -270,6 +270,6 @@ dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *iih )
         }
     }
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 

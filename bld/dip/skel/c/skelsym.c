@@ -468,7 +468,7 @@ dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *iih, imp_sym_handle *ish 
     /*
     see DIPImpTypeAddRef
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish )
@@ -476,7 +476,7 @@ dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *iih, imp_sym_handle *ish
     /*
     see DIPImpTypeRelease
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
@@ -484,6 +484,6 @@ dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *iih )
     /*
     see DIPImpTypeFreeAll
     */
-    return(DS_OK);
+    return( DS_OK );
 }
 
