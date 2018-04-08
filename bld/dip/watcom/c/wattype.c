@@ -766,6 +766,7 @@ static dip_status GetTypeInfo(imp_image_handle *iih, imp_type_handle *ith,
     typeinfo            typeld;
     location_list       ll;
 
+    ds = DS_OK;
     PushLoad( &typeld );
     ti->kind = TK_NONE;
     ti->size = 0;
