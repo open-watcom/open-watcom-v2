@@ -1344,8 +1344,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                                 cont = false;
                             }
                         } else {
-                            df->lookup.sr = SearchMbr( iih, &ith,
-                                          df->lookup.li, df->com.d );
+                            df->lookup.sr = SearchMbr( iih, &ith, df->lookup.li, df->com.d );
                             if( df->lookup.sr == SR_EXACT ) {
                                 cont = false;
                             }
