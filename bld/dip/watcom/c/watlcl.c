@@ -101,20 +101,23 @@ static void LclCreate( imp_sym_handle *ish, const char *ptr, const char *name, l
 
 static dip_status LoadLocalSyms( imp_image_handle *iih, imp_mod_handle imh, lclinfo *new )
 {
-    if( imh == IMH_NOMOD )
-        return( DS_FAIL );
-    new->start = InfoLoad( iih, imh, DMND_LOCALS, 0, NULL );
-    if( new->start == NULL ) {
-        return( DS_FAIL );
+    dip_status  ds;
+
+    ds = DS_FAIL;
+    if( imh != IMH_NOMOD ) {
+        new->start = InfoLoad( iih, imh, DMND_LOCALS, 0, NULL );
+        if( new->start != NULL ) {
+            new->end = new->start + InfoSize( iih, imh, DMND_LOCALS, 0 );
+            new->imh = imh;
+            new->inf = FindInfo( iih, imh );
+            new->base_off = NO_BASE;
+            ds = DS_OK;
+        }
     }
-    new->end = new->start + InfoSize( iih, imh, DMND_LOCALS, 0 );
-    new->imh = imh;
-    new->inf = FindInfo( iih, imh );
-    new->base_off = NO_BASE;
-    return( DS_OK );
+    return( ds );
 }
 
-static void PopLoad( lclinfo *local )
+static void PopLocal( lclinfo *local )
 {
     if( local->start != NULL ) {
         InfoSpecUnlock( local->start );
@@ -136,7 +139,7 @@ static const char *ProcBlock( imp_image_handle *iih, const char *ptr, lcl_defn *
     } else {
         defn->b.start = local->code_base;
     }
-    if( defn->i.class >= (CODE_SYMBOL + CODE_BLOCK386) ) {
+    if( defn->i.class >= (CODE_SYMBOL | CODE_BLOCK386) ) {
         defn->b.start.mach.offset += *((dword *)ptr);
         ptr += sizeof( dword );
         defn->b.size = *((dword *)ptr);
@@ -190,7 +193,7 @@ static const char *ProcDefn( imp_image_handle *iih, const char *ptr, lcl_defn *d
         ptr = ProcBlock( iih, ptr, defn, local );
         defn->r.pro_size = GETU8( ptr++ );
         defn->r.epi_size = GETU8( ptr++ );
-        if( defn->i.class >= (CODE_SYMBOL + CODE_BLOCK386) ) {
+        if( defn->i.class >= (CODE_SYMBOL | CODE_BLOCK386) ) {
             defn->r.ret_addr_offset = *((dword *)ptr);
             ptr += sizeof( dword );
         } else {
@@ -251,8 +254,7 @@ static const char *FindBlockRout( imp_image_handle *iih, const char *ptr, lclinf
 
     while( ptr < local->end ) {
         cls = GETU8( ptr + 1 );
-        if( (cls & CLASS_MASK) == CODE_SYMBOL
-          && cls != (CODE_SYMBOL | CODE_MEMBER_SCOPE) )  {
+        if( (cls & CLASS_MASK) == CODE_SYMBOL && cls != (CODE_SYMBOL | CODE_MEMBER_SCOPE) )  {
             return( ptr );
         }
         NewBase( iih, ptr, local );
@@ -325,8 +327,7 @@ static address DefnAddr( imp_image_handle *iih, lcl_defn *defn, lclinfo *local )
     location_list       ll;
 
     if( DefnLocation( iih, defn, NULL, &ll, local ) == DS_OK
-        && ll.num == 1
-        && ll.e[0].type == LT_ADDR ) {
+      && ll.num == 1 && ll.e[0].type == LT_ADDR ) {
         return( ll.e[0].u.addr );
     } else {
         return( NilAddr );
@@ -334,60 +335,53 @@ static address DefnAddr( imp_image_handle *iih, lcl_defn *defn, lclinfo *local )
 }
 
 
-search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle imh,
-                lookup_item *li, void *d )
+search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle imh, lookup_item *li, void *d )
 {
     lcl_defn            defn;
     int                 (*compare)(void const*,void const*,size_t);
-    const char          *ptr;
+    const char          *curr;
     const char          *next;
     const char          *name;
     size_t              len;
     imp_sym_handle      *ish;
     search_result       sr;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
 
 
-    if( li->scope.start != NULL )
-        return( SR_NONE );
-    if( LoadLocalSyms( iih, imh, &lclld ) != DS_OK )
-        return( SR_NONE );
-    if( li->case_sensitive ) {
-        compare = memcmp;
-    } else {
-        compare = memicmp;
-    }
-    name = li->name.start;
-    len = li->name.len;
     sr = SR_NONE;
-    ptr = local->start;
-    for( ;; ) {
-        ptr = ModAddrLkupVar( iih, ptr, local );
-        if( ptr == NULL )
-            break;
-        next = ProcDefn( iih, ptr, &defn, local );
-        if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
-            ish = DCSymCreate( iih, d );
-            LclCreate( ish, ptr, defn.i.name, local );
-            sr = SR_EXACT;
+    if( li->scope.start == NULL ) {
+        if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+            local = &lclld;
+            if( li->case_sensitive ) {
+                compare = memcmp;
+            } else {
+                compare = memicmp;
+            }
+            name = li->name.start;
+            len = li->name.len;
+            for( curr = local->start; (curr = ModAddrLkupVar( iih, curr, local )) != NULL; curr = next ) {
+                next = ProcDefn( iih, curr, &defn, local );
+                if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
+                    ish = DCSymCreate( iih, d );
+                    LclCreate( ish, curr, defn.i.name, local );
+                    sr = SR_EXACT;
+                }
+            }
+            PopLocal( local );
         }
-        ptr = next;
     }
-    PopLoad( local );
     return( sr );
 }
 
 
 static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
-                                address addr, lookup_item *li,
-                                void *d, lclinfo *local )
+                    address addr, lookup_item *li, void *d, lclinfo *local )
 {
     lcl_defn            blk;
     lcl_defn            defn;
-    const char          *ptr;
+    const char          *curr;
     const char          *next;
-    unsigned            parent;
     int                 (*compare)(void const*,void const*,size_t);
     const char          *name;
     size_t              len;
@@ -396,13 +390,6 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
     imp_type_handle     ith;
     imp_sym_handle      *ish;
 
-    if( li->case_sensitive ) {
-        compare = memcmp;
-    } else {
-        compare = memicmp;
-    }
-    name = li->name.start;
-    len  = li->name.len;
     if( li->scope.start != NULL ) {
         type_li.name = li->scope;
         type_li.file_scope = li->file_scope;
@@ -411,48 +398,43 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
         type_li.type = ST_TYPE;
         sr = LookupTypeName( iih, imh, &type_li, &ith );
         if( sr == SR_NONE )
-            return( SR_NONE );
+            return( sr );
         return( SearchMbr( iih, &ith, li, d ) );
     }
-    ptr = local->start;
-    for( ;; ) {
-        ptr = FindBlockRout( iih, ptr, local );
-        if( ptr == NULL )
-            return( SR_NONE );
-        ptr = ProcDefn( iih, ptr, &blk, local );
-        if( DCSameAddrSpace( blk.b.start, addr ) == DS_OK
-          && (blk.b.start.mach.offset <= addr.mach.offset)
-          && ( blk.b.start.mach.offset + blk.b.size > addr.mach.offset ) ) {
-            break;
-        }
-    }
     sr = SR_NONE;
-    for( ;; ) {
-        if( blk.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) ) {
-            if( FindTypeHandle( iih, imh, blk.i.type_index, &ith ) == DS_OK ) {
-                sr = SearchMbr( iih, &ith, li, d );
+    for( curr = local->start; (curr = FindBlockRout( iih, curr, local )) != NULL; curr = next ) {
+        next = ProcDefn( iih, curr, &blk, local );
+        if( DCSameAddrSpace( blk.b.start, addr ) == DS_OK
+          && ( blk.b.start.mach.offset <= addr.mach.offset )
+          && ( blk.b.start.mach.offset + blk.b.size > addr.mach.offset ) ) {
+            name = li->name.start;
+            len = li->name.len;
+            if( li->case_sensitive ) {
+                compare = memcmp;
+            } else {
+                compare = memicmp;
             }
-        } else {
             for( ;; ) {
-                ptr = FindLclVar( iih, ptr, local );
-                if( ptr == NULL )
-                    break;
-                next = ProcDefn( iih, ptr, &defn, local );
-                if( len == defn.i.namelen
-                  && compare( name, defn.i.name, len ) == 0 ) {
-                    ish = DCSymCreate( iih, d );
-                    LclCreate( ish, ptr, defn.i.name, local );
-                    sr = SR_EXACT;
+                if( blk.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) ) {
+                    if( FindTypeHandle( iih, imh, blk.i.type_index, &ith ) == DS_OK ) {
+                        sr = SearchMbr( iih, &ith, li, d );
+                    }
+                } else {
+                    for( ; (curr = FindLclVar( iih, curr, local )) != NULL; curr = next ) {
+                        next = ProcDefn( iih, curr, &defn, local );
+                        if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
+                            ish = DCSymCreate( iih, d );
+                            LclCreate( ish, curr, defn.i.name, local );
+                            sr = SR_EXACT;
+                        }
+                    }
                 }
-                ptr = next;
+                if( sr != SR_NONE || blk.b.parent_block == 0 )
+                    break;
+                curr = ProcDefn( iih, local->start + blk.b.parent_block, &blk, local );
             }
+            break;
         }
-        if( sr != SR_NONE )
-            break;
-        parent = blk.b.parent_block;
-        if( parent == 0 )
-            break;
-        ptr = ProcDefn( iih, local->start + parent, &blk, local );
     }
     return( sr );
 }
@@ -463,12 +445,14 @@ search_result SearchLclScope( imp_image_handle *iih, imp_mod_handle imh,
 {
     search_result       sr;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
 
-    if( LoadLocalSyms( iih, imh, &lclld ) != DS_OK )
-        return( SR_NONE );
-    sr = DoLclScope( iih, imh, *addr, li, d, local );
-    PopLoad( local );
+    sr = SR_NONE;
+    if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+        local = &lclld;
+        sr = DoLclScope( iih, imh, *addr, li, d, local );
+        PopLocal( local );
+    }
     return( sr );
 }
 
@@ -478,40 +462,36 @@ search_result LookupLclAddr( imp_image_handle *iih, address addr, imp_sym_handle
     lcl_defn            defn;
     address             mod_addr;
     address             close_addr;
-    const char          *ptr;
+    const char          *curr;
     const char          *next;
     search_result       sr;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
 
-    if( LoadLocalSyms( iih, ish->imh, &lclld ) != DS_OK )
-        return( SR_NONE );
     sr = SR_NONE;
-    next = local->start;
-    close_addr.mach.offset = 0;
-    for( ;; ) {
-        ptr = ModAddrLkupVar( iih, next, local );
-        if( ptr == NULL )
-            break;
-        next = ProcDefn( iih, ptr, &defn, local );
-        mod_addr = DefnAddr( iih, &defn, local );
-        if( DCSameAddrSpace( addr, mod_addr ) == DS_OK ) {
-            if( addr.mach.offset >= mod_addr.mach.offset ) {
-                /* possible */
-                if( sr == SR_NONE
-                  || close_addr.mach.offset <= mod_addr.mach.offset ) {
-                    LclCreate( ish, ptr, defn.i.name, local );
-                    close_addr = mod_addr;
-                    if( addr.mach.offset == mod_addr.mach.offset ) {
-                        sr = SR_EXACT;
-                        break;
+    if( LoadLocalSyms( iih, ish->imh, &lclld ) == DS_OK ) {
+        local = &lclld;
+        close_addr.mach.offset = 0;
+        for( curr = local->start; (curr = ModAddrLkupVar( iih, curr, local )) != NULL; curr = next ) {
+            next = ProcDefn( iih, curr, &defn, local );
+            mod_addr = DefnAddr( iih, &defn, local );
+            if( DCSameAddrSpace( addr, mod_addr ) == DS_OK ) {
+                if( addr.mach.offset >= mod_addr.mach.offset ) {
+                    /* possible */
+                    if( sr == SR_NONE || close_addr.mach.offset <= mod_addr.mach.offset ) {
+                        LclCreate( ish, curr, defn.i.name, local );
+                        close_addr = mod_addr;
+                        if( addr.mach.offset == mod_addr.mach.offset ) {
+                            sr = SR_EXACT;
+                            break;
+                        }
+                        sr = SR_CLOSEST;
                     }
-                    sr = SR_CLOSEST;
                 }
             }
         }
+        PopLocal( local );
     }
-    PopLoad( local );
     return( sr );
 }
 
@@ -522,21 +502,23 @@ unsigned SymHdl2LclName( imp_image_handle *iih, imp_sym_handle *ish,
     const char  *ptr;
     unsigned    len;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
-    if( LoadLocalSyms( iih, ish->imh, &lclld ) != DS_OK )
-        return( 0 );
-    ptr = local->start + ish->u.lcl.offset;
-    len = GETU8( ptr ) - ish->name_off;
-    if( buff_size > 0 ) {
-        --buff_size;
-        if( buff_size > len )
-            buff_size = len;
-        ptr += ish->name_off;
-        memcpy( buff, ptr, buff_size );
-        buff[buff_size] = '\0';
+    len = 0;
+    if( LoadLocalSyms( iih, ish->imh, &lclld ) == DS_OK ) {
+        local = &lclld;
+        ptr = local->start + ish->u.lcl.offset;
+        len = GETU8( ptr ) - ish->name_off;
+        if( buff_size > 0 ) {
+            --buff_size;
+            if( buff_size > len )
+                buff_size = len;
+            ptr += ish->name_off;
+            memcpy( buff, ptr, buff_size );
+            buff[buff_size] = '\0';
+        }
+        PopLocal( local );
     }
-    PopLoad( local );
     return( len );
 }
 
@@ -554,15 +536,16 @@ dip_status SymHdl2LclLoc( imp_image_handle *iih, imp_sym_handle *ish,
     lcl_defn    defn;
     dip_status  ds;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    SetBase( iih, ish, local );
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    ds = DefnLocation( iih, &defn, lc, ll, local );
-    PopLoad( local );
+    if( ds == DS_OK ) {
+        local = &lclld;
+        SetBase( iih, ish, local );
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        ds = DefnLocation( iih, &defn, lc, ll, local );
+        PopLocal( local );
+    }
     return( ds );
 }
 
@@ -571,15 +554,16 @@ dip_status SymHdl2LclType( imp_image_handle *iih, imp_sym_handle *ish, imp_type_
     lcl_defn    defn;
     dip_status  ds;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    local->base_off = 0;
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    ds = FindTypeHandle( iih, ish->imh, defn.i.type_index, ith );
-    PopLoad( local );
+    if( ds == DS_OK ) {
+        local = &lclld;
+        local->base_off = 0;
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        ds = FindTypeHandle( iih, ish->imh, defn.i.type_index, ith );
+        PopLocal( local );
+    }
     return( ds );
 }
 
@@ -595,101 +579,101 @@ dip_status Lcl2GblHdl( imp_image_handle *iih,
     dip_status          ds;
     location_list       ll;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
 
     if( lcl_ish->u.lcl.gbl_link != NULL ) {
         return( Link2GblHdl( iih, lcl_ish->u.lcl.gbl_link, gbl_ish ) );
     }
     ds = LoadLocalSyms( iih, lcl_ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    SetBase( iih, lcl_ish, local );
-    ProcDefn( iih, local->start + lcl_ish->u.lcl.offset, &defn, local );
-    ds = DefnLocation( iih, &defn, NULL, &ll, local );
-    if( ds != DS_OK )
-        goto done;
-    ds = DS_FAIL;
-    if( ll.num != 1 || ll.e[0].type != LT_ADDR )
-        goto done;
-    gbl_ish->imh = lcl_ish->imh;
-    if( LookupGblAddr( iih, ll.e[0].u.addr, gbl_ish ) != SR_EXACT )
-        goto done;
-    ds = DS_OK;
-done:
-    PopLoad( local );
+    if( ds == DS_OK ) {
+        local = &lclld;
+        SetBase( iih, lcl_ish, local );
+        ProcDefn( iih, local->start + lcl_ish->u.lcl.offset, &defn, local );
+        ds = DefnLocation( iih, &defn, NULL, &ll, local );
+        if( ds == DS_OK ) {
+            ds = DS_FAIL;
+            if( ll.num == 1 && ll.e[0].type == LT_ADDR ) {
+                gbl_ish->imh = lcl_ish->imh;
+                if( LookupGblAddr( iih, ll.e[0].u.addr, gbl_ish ) == SR_EXACT ) {
+                    ds = DS_OK;
+                }
+            }
+        }
+        PopLocal( local );
+    }
     return( ds );
 }
 
-dip_status SymHdl2LclInfo( imp_image_handle *iih, imp_sym_handle *ish,
-                        sym_info *si )
+dip_status SymHdl2LclInfo( imp_image_handle *iih, imp_sym_handle *ish, sym_info *si )
 {
     lcl_defn            defn;
     const char          *p;
     dip_status          ds;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
     imp_sym_handle      gbl_ish;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    if( Lcl2GblHdl( iih, ish, &gbl_ish ) == DS_OK ) {
-        SymHdl2GblInfo( iih, &gbl_ish, si ); /* get the global bit set */
+    if( ds == DS_OK ) {
+        local = &lclld;
+        if( Lcl2GblHdl( iih, ish, &gbl_ish ) == DS_OK ) {
+            SymHdl2GblInfo( iih, &gbl_ish, si ); /* get the global bit set */
+        }
+        SetBase( iih, ish, local );
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        switch( defn.i.class & CLASS_MASK ) {
+        case VAR_SYMBOL:
+            si->kind = SK_DATA;
+            break;
+        case CODE_SYMBOL:
+            si->kind = SK_PROCEDURE; /* never get handled a block */
+            switch( defn.i.class & SUBCLASS_MASK ) {
+            case CODE_FAR_ROUT:
+            case CODE_FAR_ROUT386:
+                si->rtn_far = 1;
+                break;
+            default:
+                si->rtn_far = 0;
+                break;
+            }
+            si->rtn_calloc = 0;
+            si->ret_modifier = TM_NONE;
+            si->ret_size = 0;
+            switch( *defn.i.unparsed ) {
+            case IND_REG | IR_RALLOC_NEAR:
+                si->ret_modifier = TM_NEAR;
+                break;
+            case IND_REG | IR_RALLOC_FAR:
+                si->ret_modifier = TM_FAR;
+                break;
+            case IND_REG | IR_CALLOC_NEAR:
+                si->rtn_calloc = 1;
+                si->ret_modifier = TM_NEAR;
+                break;
+            case IND_REG | IR_CALLOC_FAR:
+                si->rtn_calloc = 1;
+                si->ret_modifier = TM_FAR;
+                break;
+            }
+            switch( si->ret_modifier ) {
+            case TM_FAR:
+                si->ret_size = sizeof( addr_seg );
+                /* fall through */
+            case TM_NEAR:
+                si->ret_size += RegSize( defn.i.unparsed[1] );
+                break;
+            }
+            si->ret_addr_offset = defn.r.ret_addr_offset;
+            p = SkipLocation( defn.i.unparsed );
+            si->num_parms = GETU8( p );
+            si->prolog_size = defn.r.pro_size;
+            si->epilog_size = defn.r.epi_size;
+            si->rtn_size = defn.b.size;
+            break;
+        }
+        PopLocal( local );
     }
-    SetBase( iih, ish, local );
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    switch( defn.i.class & CLASS_MASK ) {
-    case VAR_SYMBOL:
-        si->kind = SK_DATA;
-        break;
-    case CODE_SYMBOL:
-        si->kind = SK_PROCEDURE; /* never get handled a block */
-        switch( defn.i.class & SUBCLASS_MASK ) {
-        case CODE_FAR_ROUT:
-        case CODE_FAR_ROUT386:
-            si->rtn_far = 1;
-            break;
-        default:
-            si->rtn_far = 0;
-            break;
-        }
-        si->rtn_calloc = 0;
-        si->ret_modifier = TM_NONE;
-        si->ret_size = 0;
-        switch( *defn.i.unparsed ) {
-        case IND_REG+IR_RALLOC_NEAR:
-            si->ret_modifier = TM_NEAR;
-            break;
-        case IND_REG+IR_RALLOC_FAR:
-            si->ret_modifier = TM_FAR;
-            break;
-        case IND_REG+IR_CALLOC_NEAR:
-            si->rtn_calloc = 1;
-            si->ret_modifier = TM_NEAR;
-            break;
-        case IND_REG+IR_CALLOC_FAR:
-            si->rtn_calloc = 1;
-            si->ret_modifier = TM_FAR;
-            break;
-        }
-        switch( si->ret_modifier ) {
-        case TM_FAR:
-            si->ret_size = sizeof( addr_seg );
-            /* fall through */
-        case TM_NEAR:
-            si->ret_size += RegSize( defn.i.unparsed[1] );
-            break;
-        }
-        si->ret_addr_offset = defn.r.ret_addr_offset;
-        p = SkipLocation( defn.i.unparsed );
-        si->num_parms = GETU8( p );
-        si->prolog_size = defn.r.pro_size;
-        si->epilog_size = defn.r.epi_size;
-        si->rtn_size = defn.b.size;
-        break;
-    }
-    PopLoad( local );
-    return( DS_OK );
+    return( ds );
 }
 
 dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
@@ -699,34 +683,32 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *iih, imp_sym_handle *ish,
     const char  *p;
     dip_status  ds;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    local->base_off = 0;
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    if( parm == 0 ) { /* return value */
-        ds = EvalLocation( iih, lc, defn.i.unparsed, ll );
-        if( ds == (DS_ERR | DS_BAD_LOCATION) ) {
-            ds = DS_NO_PARM;
-        }
-    } else {
-        p = SkipLocation( defn.i.unparsed );
-        if( parm > GETU8( p ) ) {
-            ds = DS_NO_PARM;
-        } else {
-            ++p;
-            for( ;; ) {
-                --parm;
-                if( parm == 0 )
-                    break;
-                p = SkipLocation( p );
+    if( ds == DS_OK ) {
+        local = &lclld;
+        local->base_off = 0;
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        if( parm == 0 ) { /* return value */
+            ds = EvalLocation( iih, lc, defn.i.unparsed, ll );
+            if( ds == (DS_ERR | DS_BAD_LOCATION) ) {
+                ds = DS_NO_PARM;
             }
-            ds = EvalLocation( iih, lc, p, ll );
+        } else {
+            p = SkipLocation( defn.i.unparsed );
+            if( GETU8( p ) < parm ) {
+                ds = DS_NO_PARM;
+            } else {
+                ++p;
+                while( parm-- > 0 ) {
+                    p = SkipLocation( p );
+                }
+                ds = EvalLocation( iih, lc, p, ll );
+            }
         }
+        PopLocal( local );
     }
-    PopLoad( local );
     return( ds );
 }
 
@@ -736,47 +718,50 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     lcl_defn    defn;
     dip_status  ds;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    local->base_off = 0;
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    if( (defn.i.class & CLASS_MASK) != CODE_SYMBOL )
-        return( DS_FAIL );
-    if( defn.b.parent_block == 0 )
-        return( DS_FAIL );
-    ProcDefn( iih, local->start + defn.b.parent_block, &defn, local );
-    if( defn.i.class != (CODE_SYMBOL+CODE_MEMBER_SCOPE) )
-        return( DS_FAIL );
-    if( ti != NULL ) {
-        if( defn.i.unparsed == NULL ) {
-            ti->kind = TK_NONE;
-        } else {
-            ti->kind = TK_POINTER;
-            switch( *defn.i.unparsed ) {
-            case 0:
-               ti->size = sizeof( addr32_off );
-               ti->modifier = TM_NEAR;
-               break;
-            case 1:
-               ti->size = sizeof( addr32_ptr );
-               ti->modifier = TM_FAR;
-               break;
-            case 6:
-               ti->size = sizeof( addr48_off );
-               ti->modifier = TM_NEAR;
-               break;
-            case 7:
-               ti->size = sizeof( addr48_ptr );
-               ti->modifier = TM_FAR;
-               break;
+    if( ds == DS_OK ) {
+        local = &lclld;
+        local->base_off = 0;
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        ds = DS_FAIL;
+        if( (defn.i.class & CLASS_MASK) == CODE_SYMBOL && defn.b.parent_block != 0 ) {
+            ProcDefn( iih, local->start + defn.b.parent_block, &defn, local );
+            if( defn.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) ) {
+                ds = DS_OK;
+                if( ti != NULL ) {
+                    if( defn.i.unparsed == NULL ) {
+                        ti->kind = TK_NONE;
+                    } else {
+                        ti->kind = TK_POINTER;
+                        switch( *defn.i.unparsed ) {
+                        case 0:
+                           ti->size = sizeof( addr32_off );
+                           ti->modifier = TM_NEAR;
+                           break;
+                        case 1:
+                           ti->size = sizeof( addr32_ptr );
+                           ti->modifier = TM_FAR;
+                           break;
+                        case 6:
+                           ti->size = sizeof( addr48_off );
+                           ti->modifier = TM_NEAR;
+                           break;
+                        case 7:
+                           ti->size = sizeof( addr48_ptr );
+                           ti->modifier = TM_FAR;
+                           break;
+                        }
+                    }
+                }
             }
         }
+        PopLocal( local );
     }
-    PopLoad( local );
-    return( FindTypeHandle( iih, ish->imh, defn.i.type_index, ith ) );
+    if( ds == DS_OK )
+        return( FindTypeHandle( iih, ish->imh, defn.i.type_index, ith ) );
+    return( ds );
 }
 
 dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
@@ -785,43 +770,38 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
     lcl_defn    defn;
     dip_status  ds;
     lclinfo     lclld;
-    lclinfo     *local = &lclld;
+    lclinfo     *local;
 
     ds = LoadLocalSyms( iih, ish->imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    local->base_off = 0;
-    ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
-    if( (defn.i.class & CLASS_MASK) != CODE_SYMBOL )
-        return( DS_FAIL );
-    if( defn.b.parent_block == 0 )
-        return( DS_FAIL );
-    ProcDefn( iih, local->start + defn.b.parent_block, &defn, local );
-    if( defn.i.class != (CODE_SYMBOL+CODE_MEMBER_SCOPE) )
-        return( DS_FAIL );
-    if( defn.i.unparsed == NULL )
-        return( DS_FAIL );
-    ds = EvalLocation( iih, lc, defn.i.unparsed + 1, ll );
-    PopLoad( local );
+    if( ds == DS_OK ) {
+        local = &lclld;
+        local->base_off = 0;
+        ProcDefn( iih, local->start + ish->u.lcl.offset, &defn, local );
+        ds = DS_FAIL;
+        if( (defn.i.class & CLASS_MASK) == CODE_SYMBOL && defn.b.parent_block != 0 ) {
+            ProcDefn( iih, local->start + defn.b.parent_block, &defn, local );
+            if( defn.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) && defn.i.unparsed != NULL ) {
+                ds = EvalLocation( iih, lc, defn.i.unparsed + 1, ll );
+            }
+        }
+        PopLocal( local );
+    }
     return( ds );
 }
 
-static const char *FindBlockScope( imp_image_handle *iih, const char *ptr, lcl_defn *blk, address *addr, lclinfo *local )
+static const char *FindBlockScope( imp_image_handle *iih, const char *curr, lcl_defn *blk, address *addr, lclinfo *local )
 {
-    const char  *blk_ptr;
+    const char  *next;
 
-    for( ;; ) {
-        ptr = FindBlockRout( iih, ptr, local );
-        if( ptr == NULL )
-            return( NULL );
-        blk_ptr = ptr;
-        ptr = ProcDefn( iih, ptr, blk, local );
+    for( ; (curr = FindBlockRout( iih, curr, local )) != NULL; curr = next ) {
+        next = ProcDefn( iih, curr, blk, local );
         if( DCSameAddrSpace( blk->b.start, *addr ) == DS_OK
-            && (blk->b.start.mach.offset <= addr->mach.offset)
-            && (blk->b.start.mach.offset + blk->b.size > addr->mach.offset ) ) {
-            return( blk_ptr );
+          && (blk->b.start.mach.offset <= addr->mach.offset)
+          && (blk->b.start.mach.offset + blk->b.size > addr->mach.offset ) ) {
+            break;
         }
     }
+    return( curr );
 }
 
 static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_defn *blk,
@@ -832,14 +812,12 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     lcl_defn                    defn;
     walk_result                 wr;
 
+    wr = WR_CONTINUE;
     switch( blk->i.class ) {
     case CODE_SYMBOL | CODE_MEMBER_SCOPE:
         /* process member list */
         if( FindTypeHandle( iih, local->imh, blk->i.type_index, &ith ) == DS_OK ) {
             wr = WalkTypeSymList( iih, &ith, wk, ish, d );
-            if( wr != WR_CONTINUE ) {
-                return( wr );
-            }
         }
         break;
     case CODE_SYMBOL | CODE_BLOCK:
@@ -849,20 +827,17 @@ static walk_result WalkOneBlock( imp_image_handle *iih, const char *ptr, lcl_def
     case CODE_SYMBOL | CODE_FAR_ROUT:
     case CODE_SYMBOL | CODE_FAR_ROUT386:
         /* process local scope */
-        for( ;; ) {
-            ptr = FindLclVar( iih, ptr, local );
-            if( ptr == NULL )
-                break;
+        for( ; (ptr = FindLclVar( iih, ptr, local )) != NULL; ptr = next ) {
             next = ProcDefn( iih, ptr, &defn, local );
             LclCreate( ish, ptr, defn.i.name, local );
             wr = wk( iih, SWI_SYMBOL, ish, d );
-            if( wr != WR_CONTINUE )
-                return( wr );
-            ptr = next;
+            if( wr != WR_CONTINUE ) {
+                break;
+            }
         }
         break;
     }
-    return( WR_CONTINUE );
+    return( wr );
 }
 
 walk_result WalkScopedSymList( imp_image_handle *iih, address *addr, DIP_IMP_SYM_WALKER *wk,
@@ -872,26 +847,24 @@ walk_result WalkScopedSymList( imp_image_handle *iih, address *addr, DIP_IMP_SYM
     const char          *ptr;
     lcl_defn            blk;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
     walk_result         wr;
 
     wr = WR_CONTINUE;
     if( ImpInterface.AddrMod( iih, *addr, &imh ) != SR_NONE ) {
         if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+            local = &lclld;
             ptr = FindBlockScope( iih, local->start, &blk, addr, local );
             if( ptr != NULL ) {
                 ptr += GETU8( ptr );
-                for( ;; ) {
-                    wr = WalkOneBlock( iih, ptr, &blk, wk, ish, d, local );
-                    if( wr != WR_CONTINUE )
-                        break;
+                for( ; (wr = WalkOneBlock( iih, ptr, &blk, wk, ish, d, local )) == WR_CONTINUE; ) {
                     if( blk.b.parent_block == 0 )
                         break;
                     ptr = local->start + blk.b.parent_block;
                     ptr = ProcDefn( iih, ptr, &blk, local );
                 }
             }
-            PopLoad( local );
+            PopLocal( local );
         }
     }
     return( wr );
@@ -902,7 +875,7 @@ walk_result WalkBlockSymList( imp_image_handle *iih, scope_block *scope, DIP_IMP
 {
     imp_mod_handle      imh;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
     unsigned_16         base;
     const char          *ptr;
     lcl_defn            blk;
@@ -911,6 +884,7 @@ walk_result WalkBlockSymList( imp_image_handle *iih, scope_block *scope, DIP_IMP
     wr = WR_CONTINUE;
     if( ImpInterface.AddrMod( iih, scope->start, &imh ) != SR_NONE ) {
         if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+            local = &lclld;
             base = scope->unique >> 16;
             local->base_off = base;
             if( base != NO_BASE ) {
@@ -919,7 +893,7 @@ walk_result WalkBlockSymList( imp_image_handle *iih, scope_block *scope, DIP_IMP
             ptr = local->start + (unsigned_16)scope->unique;
             ptr = ProcDefn( iih, ptr, &blk, local );
             wr = WalkOneBlock( iih, ptr, &blk, wk, ish, d, local );
-            PopLoad( local );
+            PopLocal( local );
         }
     }
     return( wr );
@@ -933,27 +907,26 @@ dip_status WalkLclModSymList( imp_image_handle *iih, imp_mod_handle imh,
     const char          *next;
     lcl_defn            defn;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
     dip_status          ds;
+    walk_result         wr;
 
-    *last = WR_CONTINUE;
+    wr = WR_CONTINUE;
     ds = LoadLocalSyms( iih, imh, &lclld );
-    if( ds != DS_OK )
-        return( ds );
-    curr = local->start;
-    for( ;; ) {
-        curr = ModAddrLkupVar( iih, curr, local );
-        if( curr == NULL )
-            break;
-        next = ProcDefn( iih, curr, &defn, local );
-        LclCreate( ish, curr, defn.i.name, local );
-        *last = wk( iih, SWI_SYMBOL, ish, d );
-        if( *last != WR_CONTINUE )
-            break;
-        curr = next;
+    if( ds == DS_OK ) {
+        local = &lclld;
+        for( curr = local->start; (curr = ModAddrLkupVar( iih, curr, local )) != NULL; curr = next ) {
+            next = ProcDefn( iih, curr, &defn, local );
+            LclCreate( ish, curr, defn.i.name, local );
+            wr = wk( iih, SWI_SYMBOL, ish, d );
+            if( wr != WR_CONTINUE ) {
+                break;
+            }
+        }
+        PopLocal( local );
     }
-    PopLoad( local );
-    return( DS_OK );
+    *last = wr;
+    return( ds );
 }
 
 
@@ -963,20 +936,22 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *iih,
     lcl_defn            blk;
     const char          *curr;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
+    search_result       sr;
 
-    if( LoadLocalSyms( iih, imh, &lclld ) != DS_OK )
-        return( SR_NONE );
-    curr = FindBlockScope( iih, local->start, &blk, &addr, local );
-    if( curr == NULL ) {
-        PopLoad( local );
-        return( SR_NONE );
+    sr = SR_NONE;
+    if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+        local = &lclld;
+        curr = FindBlockScope( iih, local->start, &blk, &addr, local );
+        if( curr != NULL ) {
+            scope->start = blk.b.start;
+            scope->len = blk.b.size;
+            scope->unique = ( curr - local->start ) + ((unsigned_32)local->base_off << 16);
+            sr = SR_CLOSEST;
+        }
+        PopLocal( local );
     }
-    scope->start = blk.b.start;
-    scope->len = blk.b.size;
-    scope->unique = (curr - local->start) + ((unsigned_32)local->base_off << 16);
-    PopLoad( local );
-    return( SR_CLOSEST );
+    return( sr );
 }
 
 
@@ -986,26 +961,29 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *iih,
     lcl_defn            blk;
     const char          *curr;
     lclinfo             lclld;
-    lclinfo             *local = &lclld;
+    lclinfo             *local;
     unsigned_16         base;
+    search_result       sr;
 
-    if( LoadLocalSyms( iih, imh, &lclld ) != DS_OK )
-        return( SR_NONE );
-    base = in->unique >> 16;
-    local->base_off = base;
-    if( base != NO_BASE ) {
-        NewBase( iih, local->start + base, local );
+    sr = SR_NONE;
+    if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
+        local = &lclld;
+        base = in->unique >> 16;
+        local->base_off = base;
+        if( base != NO_BASE ) {
+            NewBase( iih, local->start + base, local );
+        }
+        curr = local->start + (unsigned_16)in->unique;
+        ProcDefn( iih, curr, &blk, local );
+        if( blk.b.parent_block != 0 ) {
+            curr = local->start + blk.b.parent_block;
+            ProcDefn( iih, curr, &blk, local );
+            out->start = blk.b.start;
+            out->len = blk.b.size;
+            out->unique = ( curr - local->start ) + ((unsigned_32)local->base_off << 16);
+            sr = SR_CLOSEST;
+        }
+        PopLocal( local );
     }
-    curr = local->start + (unsigned_16)in->unique;
-    ProcDefn( iih, curr, &blk, local );
-    if( blk.b.parent_block == 0 ) {
-        return( SR_NONE );
-    }
-    curr = local->start + blk.b.parent_block;
-    ProcDefn( iih, curr, &blk, local );
-    out->start = blk.b.start;
-    out->len = blk.b.size;
-    out->unique = (curr - local->start) + ((unsigned_32)local->base_off << 16);
-    PopLoad( local );
-    return( SR_CLOSEST );
+    return( sr );
 }
