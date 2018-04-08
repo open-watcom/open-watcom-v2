@@ -60,20 +60,20 @@
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
 
-typedef unsigned_8 search_result; enum {
+typedef enum {
     SR_NONE,
     SR_EXACT,
     SR_CLOSEST,
     SR_FAIL,
     SR_LAST
-};
+} search_result;
 
-typedef unsigned_8 walk_result; enum {
+typedef enum {
     WR_CONTINUE,
     WR_STOP,
     WR_FAIL,
     WR_LAST
-};
+} walk_result;
 
 typedef unsigned context_item; enum {
     /* common */
