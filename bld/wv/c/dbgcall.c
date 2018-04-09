@@ -49,7 +49,7 @@
 #include "dbgprint.h"
 #include "dbgparse.h"
 #include "dbgreg.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 
 #define MAX_PARMS       10

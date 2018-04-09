@@ -53,7 +53,7 @@
 #include "dbgupdt.h"
 #include "dbglkup.h"
 #include "dbgsem.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

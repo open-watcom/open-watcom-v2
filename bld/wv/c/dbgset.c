@@ -56,6 +56,7 @@
 #include "dbglkup.h"
 #include "dbgchopt.h"
 #include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

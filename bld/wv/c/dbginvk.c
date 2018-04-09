@@ -42,7 +42,7 @@
 #include "dbgsrc.h"
 #include "dbglog.h"
 #include "dbgset.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

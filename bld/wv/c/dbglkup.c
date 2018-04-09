@@ -46,7 +46,7 @@
 #include "dipimp.h"
 #include "dipinter.h"
 #include "dbglkup.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

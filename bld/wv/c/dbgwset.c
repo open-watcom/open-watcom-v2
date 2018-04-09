@@ -60,7 +60,7 @@
 #include "dbgwvar.h"
 #include "dbgwdisp.h"
 #include "wndmenu.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 #include "clibext.h"
 

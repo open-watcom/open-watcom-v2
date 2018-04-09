@@ -58,7 +58,7 @@
 #include "addarith.h"
 #include "dbgevent.h"
 #include "dbgset.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 
 
 enum {

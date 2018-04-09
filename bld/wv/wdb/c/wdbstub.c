@@ -105,7 +105,7 @@ Done:
 #include "dlgcmd.h"
 #include "dbgwintr.h"
 #include "dbgchopt.h"
-#include "dbgsetfn.h"
+#include "dbgsetfg.h"
 #include "dbginsp.h"
 #include "dbgwvar1.h"
 #include "dlgfile.h"
