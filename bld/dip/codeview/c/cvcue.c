@@ -87,7 +87,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
             }
         }
     }
-    return( WR_CONTINUE );
+    return( wr );
 }
 
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *iih, imp_cue_handle *icueh )
