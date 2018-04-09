@@ -1394,9 +1394,8 @@ search_result TypeSearchNestedSym( imp_image_handle *iih, imp_type_handle *ith,
 }
 
 
-walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
-                    imp_mod_handle imh, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith,
-                    void *d )
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle imh,
+                            DIP_IMP_TYPE_WALKER *wk, imp_type_handle *ith, void *d )
 {
     unsigned long       count;
     cv_directory_entry  *cde;
@@ -1404,32 +1403,34 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
     unsigned_32         *array_p;
     walk_result         wr;
 
-    if( imh != IMH_GBL )
-        return( WR_CONTINUE );
-    cde = FindDirEntry( iih, IMH_GBL, sstGlobalTypes );
-    if( cde == NULL )
-        return( SR_NONE );
-    array_vm = cde->lfo + sizeof( unsigned_32 );
-    array_p = VMBlock( iih, array_vm, sizeof( *array_p ) );
-    if( array_p == NULL )
-        return( SR_FAIL );
-    ith->array_dim = 0;
-    ith->idx = CV_FIRST_USER_TYPE;
-    count = *array_p;
-    for( ;; ) {
-        if( count == 0 )
-            return( WR_CONTINUE );
-        array_vm += sizeof( *array_p );
-        array_p = VMBlock( iih, array_vm, sizeof( *array_p ) );
-        if( array_p == NULL )
-            return( WR_FAIL );
-        ith->handle = iih->types_base + *array_p + sizeof( unsigned_16 );
-        wr = wk( iih, ith, d );
-        if( wr != WR_CONTINUE )
-            return( wr );
-        ith->idx++;
-        --count;
+    wr = WR_CONTINUE;
+    if( imh == IMH_GBL ) {
+        cde = FindDirEntry( iih, IMH_GBL, sstGlobalTypes );
+        if( cde != NULL ) {
+            array_vm = cde->lfo + sizeof( unsigned_32 );
+            array_p = VMBlock( iih, array_vm, sizeof( *array_p ) );
+            if( array_p == NULL ) {
+                wr = WR_FAIL;
+            } else {
+                ith->array_dim = 0;
+                ith->idx = CV_FIRST_USER_TYPE;
+                for( count = *array_p; count > 0; count-- ) {
+                    array_vm += sizeof( *array_p );
+                    array_p = VMBlock( iih, array_vm, sizeof( *array_p ) );
+                    if( array_p == NULL ) {
+                        wr = WR_FAIL;
+                        break;
+                    }
+                    ith->handle = iih->types_base + *array_p + sizeof( unsigned_16 );
+                    wr = wk( iih, ith, d );
+                    if( wr != WR_CONTINUE )
+                        break;
+                    ith->idx++;
+                }
+            }
+        }
     }
+    return( wr );
 }
 
 imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *iih, imp_type_handle *ith )

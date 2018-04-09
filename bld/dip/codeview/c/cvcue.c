@@ -52,35 +52,39 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *iih, imp_mod_handle i
     unsigned                            i;
     walk_result                         wr;
 
-    if( imh == IMH_GBL )
-        return( WR_CONTINUE );
-
-    cde = FindDirEntry( iih, imh, sstSrcModule );
-    if( cde == NULL )
-        return(  WR_CONTINUE );
-    hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) );
-    if( hdr == NULL )
-        return( WR_FAIL );
-    file_tab_count = hdr->cFile;
-    file_tab_size = file_tab_count * sizeof( unsigned_32 );
-    hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) + file_tab_size );
-    /*
-        Make a copy of the file table offset so that we don't have to worry
-        about the VM system throwing it out.
-    */
-    file_off = walloca( file_tab_size );
-    memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
-    icueh->imh = imh;
-    for( i = 0; i < file_tab_count; ++i ) {
-        icueh->pair = 0;
-        icueh->file = cde->lfo + file_off[i];
-        fp = VMBlock( iih, icueh->file, sizeof( *fp ) );
-        if( fp == NULL )
-            return( WR_FAIL );
-        icueh->line = cde->lfo + fp->baseSrcLn[0];
-        wr = wk( iih, icueh, d );
-        if( wr != WR_CONTINUE ) {
-            return( wr );
+    wr = WR_CONTINUE;
+    if( imh != IMH_GBL ) {
+        cde = FindDirEntry( iih, imh, sstSrcModule );
+        if( cde != NULL ) {
+            hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) );
+            if( hdr == NULL ) {
+                wr = WR_FAIL;
+            } else {
+                file_tab_count = hdr->cFile;
+                file_tab_size = file_tab_count * sizeof( unsigned_32 );
+                hdr = VMBlock( iih, cde->lfo, sizeof( *hdr ) + file_tab_size );
+                /*
+                    Make a copy of the file table offset so that we don't have to worry
+                    about the VM system throwing it out.
+                */
+                file_off = walloca( file_tab_size );
+                memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
+                icueh->imh = imh;
+                for( i = 0; i < file_tab_count; ++i ) {
+                    icueh->pair = 0;
+                    icueh->file = cde->lfo + file_off[i];
+                    fp = VMBlock( iih, icueh->file, sizeof( *fp ) );
+                    if( fp == NULL ) {
+                        wr = WR_FAIL;
+                        break;
+                    }
+                    icueh->line = cde->lfo + fp->baseSrcLn[0];
+                    wr = wk( iih, icueh, d );
+                    if( wr != WR_CONTINUE ) {
+                        break;
+                    }
+                }
+            }
         }
     }
     return( WR_CONTINUE );

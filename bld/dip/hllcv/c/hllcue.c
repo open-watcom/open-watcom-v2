@@ -1193,7 +1193,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *iih, imp_mod_handle imh,
     if( walk_rc != WR_FAIL) {
         if( state.best_delta != INT32_MAX ) {
             *icueh = state.best_icueh;
-            rc = walk_rc == WR_STOP ? SR_EXACT : SR_CLOSEST;
+            rc = ( walk_rc == WR_STOP ) ? SR_EXACT : SR_CLOSEST;
         } else {
             rc = SR_NONE;
         }
