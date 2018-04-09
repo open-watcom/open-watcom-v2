@@ -344,10 +344,17 @@ vi_rc EditFile( const char *name, bool dammit )
 
 #ifndef __WIN__
 
-static const char _NEAR *_NEAR fileOpts[] =  {
-    (const char _NEAR *)"<F1> Go To",
-    (const char _NEAR *)"<F2> Quit",
-    (const char _NEAR *)"<F3> Save & Quit"
+static const char *fileOpts[] =  {
+    (const char *)"<F1> Go To",
+    (const char *)"<F2> Quit",
+    (const char *)"<F3> Save & Quit"
+};
+
+static const vi_key     fileopts_evlist[] = {
+    VI_KEY( F1 ),
+    VI_KEY( F2 ),
+    VI_KEY( F3 ),
+    VI_KEY( DUMMY )
 };
 
 /*
@@ -421,7 +428,7 @@ vi_rc EditFileFromList( void )
         si.list = list;
         si.maxlist = j;
         si.num = n;
-        si.retevents = opts_evlist;
+        si.retevents = fileopts_evlist;
         si.event = VI_KEY( DUMMY );
         si.show_lineno = show_lineno;
         si.cln = n + 1;

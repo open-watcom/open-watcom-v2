@@ -33,31 +33,36 @@
 #include "vi.h"
 #ifdef __WIN__
   #include "wwinhelp.h"
+#else
+  #include "viuihelp.h"
 #endif
 
 #include "clibext.h"
 
 
 #ifndef __WIN__
-static char *helpCmds =
-    "COMmandline\0"
-    "KEYS\0"
-    "REGularexpressions\0"
-    "SCRipts\0"
-    "SETtings\0"
-    "STARTing\0"
-    "\0";
-#endif
+#define HELPCMDS() \
+    pick( "COMmandline",        "cmd.hlp" ) \
+    pick( "KEYS",               "key.hlp" ) \
+    pick( "REGularexpressions", "regexp.hlp" ) \
+    pick( "SCRipts",            "script.hlp" ) \
+    pick( "SETtings",           "set.hlp" ) \
+    pick( "STARTing",           "start.hlp" )
+
+static char helpCmds[] = {
+    #define pick(t,h)   t "\0"
+    HELPCMDS()
+    #undef pick
+    "\0"
+};
 
 char *helpFiles[] = {
-    "cmd.hlp",
-    "key.hlp",
-    "regexp.hlp",
-    "script.hlp",
-    "set.hlp",
-    "start.hlp"
+    #define pick(t,h)   h,
+    HELPCMDS()
+    #undef pick
 };
 int nHelpFiles = sizeof( helpFiles ) / sizeof( char * );
+#endif
 
 
 /*

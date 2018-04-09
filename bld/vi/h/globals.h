@@ -45,6 +45,7 @@ extern const char _NEAR   SingleBlank[];
 extern const char _NEAR   SingleSlash[];
 extern const char _NEAR   SingleQuote[];
 extern const char _NEAR   * _NEAR BoolStr[];
+extern const char _NEAR   SpinData[];
 
 /* mouse data */
 #if defined( __LINUX__ )        /* compatible with the ui lib */
@@ -63,7 +64,6 @@ extern long         NextAutoSave;
 extern int          HalfPageLines;
 extern vi_key       LastEvent;
 extern int          SpinCount;
-extern char _NEAR   SpinData[];
 extern char         VideoPage;
 extern char         *BndMemory, *EXEName;
 extern int          FcbBlocksInUse;
@@ -111,9 +111,6 @@ extern undo_stack       *UndoUndoStack;
 extern event _NEAR      EventList[];
 extern int              MaxKeysBound;
 extern vi_key _NEAR     SavebufBound[];
-#ifndef __WIN__
-extern const vi_key     opts_evlist[];
-#endif
 
 /* directory info */
 extern direct_ent * _NEAR   DirFiles[MAX_FILES];

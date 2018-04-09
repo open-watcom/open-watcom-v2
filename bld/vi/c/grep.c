@@ -433,10 +433,17 @@ static vi_rc doGREP( const char *dirlist )
 #else
 
 /* edit options */
-static const char _NEAR * _NEAR editOpts[] = {
-    (const char _NEAR *)"<F1> Go To",
-    (const char _NEAR *)"<F2> Edit",
-    (const char _NEAR *)"<F3> Get All"
+static const char *editOpts[] = {
+    (const char *)"<F1> Go To",
+    (const char *)"<F2> Edit",
+    (const char *)"<F3> Get All"
+};
+
+static const vi_key     editopts_evlist[] = {
+    VI_KEY( F1 ),
+    VI_KEY( F2 ),
+    VI_KEY( F3 ),
+    VI_KEY( DUMMY )
 };
 
 /*
@@ -512,7 +519,7 @@ static vi_rc doGREP( const char *dirlist )
                     si.list = list;
                     si.maxlist = clist;
                     si.num = n;
-                    si.retevents = opts_evlist;
+                    si.retevents = editopts_evlist;
                     si.event = VI_KEY( DUMMY );
                     si.show_lineno = show_lineno;
                     si.cln = n + 1;

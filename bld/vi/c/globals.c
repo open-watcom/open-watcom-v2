@@ -51,6 +51,7 @@ const char _NEAR    * _NEAR BoolStr[] = {
     (const char _NEAR *)"FALSE",
     (const char _NEAR *)"TRUE"
 };
+const char          _NEAR SpinData[] = { '-', '\\', '|', '/' };
 
 /* event data */
 event _NEAR EventList[] = {
@@ -59,15 +60,6 @@ event _NEAR EventList[] = {
     #include "events.h"
     #undef vi_pick
 };
-
-#ifndef __WIN__
-const vi_key    opts_evlist[] = {
-    VI_KEY( F1 ),
-    VI_KEY( F2 ),
-    VI_KEY( F3 ),
-    VI_KEY( DUMMY )
-};
-#endif
 
 /* mouse data */
 #if !defined( __UNIX__ )
@@ -82,7 +74,6 @@ long            NextAutoSave;
 int             HalfPageLines;
 vi_key          LastEvent;
 int             SpinCount;
-char            _NEAR SpinData[] = { '\xC4', '\\', '|', '/' };
 char            VideoPage;
 char            *EXEName;
 char            *BndMemory;

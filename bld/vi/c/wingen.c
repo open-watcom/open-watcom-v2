@@ -206,7 +206,7 @@ void SetWindowCursorForReal( void )
 /*
  * DisplayExtraInfo - display info in extra window
  */
-vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, const char _NEAR * _NEAR *data, int numopts )
+vi_rc DisplayExtraInfo( window_info *wi, window_id *wid, const char **data, int numopts )
 {
     int     j;
     vi_rc   rc;

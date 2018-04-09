@@ -66,14 +66,21 @@ static char winTokens[] = {
     "\0"
 };
 
+#define HELPTOKENS() \
+    pick( "HELP_KEY",           WINHELP_KEY ) \
+    pick( "HELP_PARTIALKEY",    WINHELP_PARTIALKEY )
+
 static char helpTokens[] = {
-    "HELP_KEY\0"
-    "HELP_PARTIALKEY\0"
-    "0"
+    #define pick(t,e)   t "\0"
+    HELPTOKENS()
+    #undef pick
+    "\0"
 };
+
 enum {
-    WINHELP_KEY,
-    WINHELP_PARTIALKEY
+    #define pick(t,e)   e,
+    HELPTOKENS()
+    #undef pick
 };
 
 /*

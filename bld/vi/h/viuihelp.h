@@ -24,66 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Declaration of UI Help data.
 *
 ****************************************************************************/
 
 
-#include "vi.h"
 #ifndef __WIN__
-#include "viuihelp.h"
+extern char *helpFiles[];
+extern int  nHelpFiles;
 #endif
-
-#include "clibext.h"
-
-
-/*
- * UpdateLastFilesList - update the list of the last files edited
- */
-void UpdateLastFilesList( char *fname )
-{
-    history_data        *h;
-    int                 i;
-    char                buff[FILENAME_MAX];
-
-    // don't add viw-generated filenames
-    if( strcmp( fname, "no_name" ) == 0 || strncmp( fname, "untitled", 8 ) == 0 ) {
-        return;
-    }
-
-#ifndef __WIN__
-    // don't add help files
-    for( i = 0; i < nHelpFiles; i++ ) {
-        const char  *root;
-
-        root = fname + strlen( fname ) - 1;
-        while( root != fname && *root != '\\' ) {
-            root--;
-        }
-        if( *root == '\\' ) {
-            root++;
-        }
-        if( strcmp( root, helpFiles[i] ) == 0 ) {
-            return;
-        }
-    }
-#endif
-
-    _fullpath( buff, fname, FILENAME_MAX );
-
-    // if name already in list, dont add it.
-    h = &EditVars.Hist[HIST_LASTFILES];
-    for( i = 0; i < h->max; i++ ) {
-        if( h->data[i] != NULL ) {
-            if( stricmp( buff, h->data[i] ) == 0 ) {
-                return;
-            }
-        }
-    }
-
-    // add in the next available spot
-    ReplaceString( &(h->data[h->curr % h->max]), buff );
-    h->curr += 1;
-
-} /* UpdateLastFilesList */
