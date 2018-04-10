@@ -491,8 +491,7 @@ dip_status DIPIMPENTRY( TypeInfo )( imp_image_handle *iih,
 
         name =  DRGetName( ith->type );
         if( name != NULL ) {
-            if( strcmp( name, "char" ) == 0
-             || strcmp( name, "unsigned char" ) == 0 ) {
+            if( strcmp( name, "char" ) == 0 || strcmp( name, "unsigned char" ) == 0 ) {
                 ti->kind = TK_CHAR;
             }
             DCFree( name );
@@ -768,8 +767,8 @@ drmem_hdl GetParmN( imp_image_handle *iih, drmem_hdl proc, int count )
     return( ret );
 }
 
-int GetParmCount(  imp_image_handle *iih, drmem_hdl proc )
-/********************************************************/
+int GetParmCount( imp_image_handle *iih, drmem_hdl proc )
+/*******************************************************/
 // return handle of the n parm
 {
     parm_wlk df;
@@ -1156,7 +1155,7 @@ walk_result WalkTypeSymList( imp_image_handle *iih, imp_type_handle *ith,
 
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( ith->state == DF_NOT ) {
-        if(  DRGetTypeInfo( ith->type, &ith->typeinfo ) ) {
+        if( DRGetTypeInfo( ith->type, &ith->typeinfo ) ) {
             ith->state = DF_SET;
         }
     }
