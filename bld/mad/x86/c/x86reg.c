@@ -1613,8 +1613,6 @@ mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_regi
         a->mach.segment = mr->x86.cpu.ds;
     } else if( bit_start == REG_BIT_OFF( cpu.es ) ) {
         a->mach.segment = mr->x86.cpu.es;
-    } else if( bit_start == REG_BIT_OFF( cpu.es ) ) {
-        a->mach.segment = mr->x86.cpu.es;
     } else if( bit_start == REG_BIT_OFF( cpu.ss ) ) {
         a->mach.segment = mr->x86.cpu.ss;
     } else if( bit_start == REG_BIT_OFF( cpu.fs ) ) {
