@@ -1475,130 +1475,137 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
     *index = inIndex;
 }
 
-STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, size_t *tokenLength )
-/*************************************************************************************/
+STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
+/******************************************************************/
 {
     const char  *pString;
     size_t      index = 0;
-    char        c;
 
     pString = SkipWS( inString );
-    c = pString[index];
-    if( c != EOL || c != NULLCHAR || c != COMMENT ) {
-        switch( c ) {
-        case COMPLEMENT:
-            makeToken( OP_COMPLEMENT, current, &index );
-            break;
-        case ADD:
-            makeToken( OP_ADD, current, &index );
-            break;
-        case SUBTRACT:
-            makeToken( OP_SUBTRACT, current, &index );
-            break;
-        case MULTIPLY:
-            makeToken( OP_MULTIPLY, current, &index );
-            break;
-        case DIVIDE:
-            makeToken( OP_DIVIDE, current, &index );
-            break;
-        case MODULUS:
-            makeToken( OP_MODULUS, current, &index );
-            break;
-        case BIT_XOR:
-            makeToken( OP_BIT_XOR, current, &index );
-            break;
-        case PAREN_LEFT:
-            makeToken( OP_PAREN_LEFT, current, &index );
-            break;
-        case PAREN_RIGHT:
-            makeToken( OP_PAREN_RIGHT, current, &index );
-            break;
-        case LOG_NEGATION:
-            switch( pString[index + 1] ) {
-            case EQUAL:
-                makeToken( OP_INEQU, current, &index );
-                break;
-            default:
-                makeToken( OP_LOG_NEGATION, current, &index );
-                break;
-            }
-            break;
-        case BIT_AND:
-            switch( pString[index + 1] ) {
-            case BIT_AND:
-                makeToken( OP_LOG_AND, current, &index );
-                break;
-            default:
-                makeToken( OP_BIT_AND, current, &index );
-                break;
-            }
-            break;
-        case BIT_OR:
-            switch( pString[index + 1] ) {
-            case BIT_OR:
-                makeToken( OP_LOG_OR, current, &index );
-                break;
-            default:
-                makeToken( OP_BIT_OR, current, &index );
-                break;
-            }
-            break;
-        case LESSTHAN:
-            switch( pString[index + 1] ) {
-            case LESSTHAN:
-                makeToken( OP_SHIFT_LEFT, current, &index );
-                break;
-            case EQUAL:
-                makeToken( OP_LESSEQU, current, &index );
-                break;
-            default:
-                makeToken( OP_LESSTHAN, current, &index );
-                break;
-            }
-            break;
-        case GREATERTHAN:
-            switch( pString[index + 1] ) {
-            case GREATERTHAN:
-                makeToken( OP_SHIFT_RIGHT, current, &index );
-                break;
-            case EQUAL:
-                makeToken( OP_GREATEREQU, current, &index );
-                break;
-            default:
-                makeToken( OP_GREATERTHAN, current, &index );
-                break;
-            }
-            break;
+    switch( pString[index] ) {
+    case NULLCHAR:
+    case EOL:
+    case COMMENT:
+        makeToken( OP_ENDOFSTRING, current, &index );
+        break;
+    case COMPLEMENT:
+        makeToken( OP_COMPLEMENT, current, &index );
+        break;
+    case ADD:
+        makeToken( OP_ADD, current, &index );
+        break;
+    case SUBTRACT:
+        makeToken( OP_SUBTRACT, current, &index );
+        break;
+    case MULTIPLY:
+        makeToken( OP_MULTIPLY, current, &index );
+        break;
+    case DIVIDE:
+        makeToken( OP_DIVIDE, current, &index );
+        break;
+    case MODULUS:
+        makeToken( OP_MODULUS, current, &index );
+        break;
+    case BIT_XOR:
+        makeToken( OP_BIT_XOR, current, &index );
+        break;
+    case PAREN_LEFT:
+        makeToken( OP_PAREN_LEFT, current, &index );
+        break;
+    case PAREN_RIGHT:
+        makeToken( OP_PAREN_RIGHT, current, &index );
+        break;
+    case LOG_NEGATION:
+        switch( pString[index + 1] ) {
         case EQUAL:
-            switch( pString[index + 1] ) {
-            case EQUAL:
-                makeToken( OP_EQUAL, current, &index );
-                break;
-            default:
-                makeToken( OP_ERROR, current, &index );
-                break;
-
-            }
-            break;
-        case DOUBLEQUOTE:
-            makeStringToken( pString, current, &index );
-            break;
-        case BRACKET_LEFT:
-            makeCmdToken( pString, current, &index );
+            makeToken( OP_INEQU, current, &index );
             break;
         default:
-            if( c >= '0' && c <= '9') {
-                makeNumberToken( pString, current, &index );
-            } else {
-                makeFuncToken( pString, current, &index );
-            }
+            makeToken( OP_LOG_NEGATION, current, &index );
             break;
         }
-    } else {
-        makeToken( OP_ENDOFSTRING, current, &index );
+        break;
+    case BIT_AND:
+        switch( pString[index + 1] ) {
+        case BIT_AND:
+            makeToken( OP_LOG_AND, current, &index );
+            break;
+        default:
+            makeToken( OP_BIT_AND, current, &index );
+            break;
+        }
+        break;
+    case BIT_OR:
+        switch( pString[index + 1] ) {
+        case BIT_OR:
+            makeToken( OP_LOG_OR, current, &index );
+            break;
+        default:
+            makeToken( OP_BIT_OR, current, &index );
+            break;
+        }
+        break;
+    case LESSTHAN:
+        switch( pString[index + 1] ) {
+        case LESSTHAN:
+            makeToken( OP_SHIFT_LEFT, current, &index );
+            break;
+        case EQUAL:
+            makeToken( OP_LESSEQU, current, &index );
+            break;
+        default:
+            makeToken( OP_LESSTHAN, current, &index );
+            break;
+        }
+        break;
+    case GREATERTHAN:
+        switch( pString[index + 1] ) {
+        case GREATERTHAN:
+            makeToken( OP_SHIFT_RIGHT, current, &index );
+            break;
+        case EQUAL:
+            makeToken( OP_GREATEREQU, current, &index );
+            break;
+        default:
+            makeToken( OP_GREATERTHAN, current, &index );
+            break;
+        }
+        break;
+    case EQUAL:
+        switch( pString[index + 1] ) {
+        case EQUAL:
+            makeToken( OP_EQUAL, current, &index );
+            break;
+        default:
+            makeToken( OP_ERROR, current, &index );
+            break;
+
+        }
+        break;
+    case DOUBLEQUOTE:
+        makeStringToken( pString, current, &index );
+        break;
+    case BRACKET_LEFT:
+        makeCmdToken( pString, current, &index );
+        break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        makeNumberToken( pString, current, &index );
+        break;
+    default:
+        makeFuncToken( pString, current, &index );
+        break;
     }
 
-    *tokenLength = index + ( pString - inString );
+    return( index + ( pString - inString ) );
 }
 
 
@@ -1607,11 +1614,8 @@ STATIC void nextToken( void )
  * Get the next token
  */
 {
-    size_t  tokenLength;
-
     if( *currentPtr != NULLCHAR ) {
-        ScanToken( currentPtr, &currentToken, &tokenLength );
-        currentPtr += tokenLength;
+        currentPtr += ScanToken( currentPtr, &currentToken );
         while( cisws( *currentPtr ) ) {
             ++currentPtr;
         }
