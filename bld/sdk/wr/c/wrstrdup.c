@@ -124,8 +124,8 @@ void WRStripStr( char *_s )
             return;
         }
 
-        // string has is all spaces
-        if( last_space == NULL ) {
+        // string has all spaces
+        if( last_nonspace == NULL ) {
             s[0] = '\0';
             return;
         }
