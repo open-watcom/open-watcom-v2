@@ -547,7 +547,7 @@ void DumpType(                  // DUMP TYPE ENTRY
         return;
     }
     if( tp->id >= TYP_MAX ) {
-        sprintf( (char *)( unknown_type + sizeof( unknown_type ) - 2 ), "%2x", tp->id );
+        sprintf( (char *)( unknown_type + ( sizeof( unknown_type ) - 1 ) - 2 ), "%2x", tp->id );
         id = unknown_type;
     } else {
         id = id_names[ tp->id ];
