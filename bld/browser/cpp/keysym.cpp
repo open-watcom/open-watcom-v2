@@ -243,7 +243,7 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
         }
     }
 
-    if( _nameProg && ctxt->name ) {
+    if( _nameProg ) {
         if( ctxt->name ) {
             if( !RegExec( (regexp *)_nameProg, ctxt->name, true ) ) {
                 return( false );
