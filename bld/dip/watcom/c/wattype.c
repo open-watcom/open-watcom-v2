@@ -340,12 +340,12 @@ static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                 return( DS_FAIL );
             }
             switch( kind & CLASS_MASK ) {
-            case ENUM_TYPE :
+            case ENUM_TYPE:
                 if( (kind & SUBCLASS_MASK) == ENUM_LIST ) {
                     --count;
                 }
                 break;
-            case STRUCT_TYPE :
+            case STRUCT_TYPE:
                 if( (kind & SUBCLASS_MASK) == STRUCT_LIST ) {
                     --count;
                 }
@@ -355,8 +355,9 @@ static dip_status FindRawTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
                     --count;
                 }
                 break;
-            default :
+            default:
                 --count;
+                break;
             }
             if( count == 0 ) {
                 ith->imh = imh;
@@ -472,10 +473,29 @@ dip_status FindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
     return( ds );
 }
 
-typedef enum { ET_ENUM = 1, ET_TYPE = 2 } type_or_enum;
+typedef enum {
+    ET_ENUM = 1,
+    ET_TYPE = 2
+} type_or_enum;
 
-enum { STRUCT_IDX, CLASS_IDX, UNION_IDX, ENUM_IDX, NUM_IDX };
-static const char *Scopes[] = { "struct", "class", "union", "enum", NULL };
+#define SCOPESDEF() \
+    pick( STRUCT_IDX,   "struct" ) \
+    pick( CLASS_IDX,    "class" ) \
+    pick( UNION_IDX,    "union" ) \
+    pick( ENUM_IDX,     "enum" )
+
+enum {
+    #define pick(e,t)   e,
+    SCOPESDEF()
+    #undef pick
+    NUM_IDX
+};
+
+static const char *Scopes[] = {
+    #define pick(e,t)   t,
+    SCOPESDEF()
+    #undef pick
+};
 
 
 struct name_state {
@@ -692,12 +712,12 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle i
                     continue;
                 }
                 break;
-            case ENUM_TYPE :
+            case ENUM_TYPE:
                 if( (kind & SUBCLASS_MASK) != ENUM_LIST ) {
                     continue;
                 }
                 break;
-            case STRUCT_TYPE :
+            case STRUCT_TYPE:
                 if( (kind & SUBCLASS_MASK) != STRUCT_LIST ) {
                     continue;
                 }
