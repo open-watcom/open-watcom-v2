@@ -4163,7 +4163,7 @@ static bool NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_nu
     for( i = 0; i < ins->num_ops; ++i ) {
         switch( ins->op[i].type & DO_MASK ) {
         case DO_REG:
-            if( ( ins->op[i].base >= DR_X86_es ) || ( ins->op[i].base <= DR_X86_gs ) ) {
+            if( ( ins->op[i].base >= DR_X86_es ) && ( ins->op[i].base <= DR_X86_gs ) ) {
                 return( true );
             } else {
                 /* if you've got a reg, you know the size */
