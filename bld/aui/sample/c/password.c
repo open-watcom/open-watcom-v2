@@ -51,7 +51,7 @@
 
 enum {
     DUMMY_ID = 100,
-    #define pick_p4id(id,m,p1,p2,p3,p4)     id ## _IDX,
+    #define pick_p4id(id,m,p1,p2,p3,p4)     CTL_ ## id,
     DLGPASSWORD_CTLS()
     #undef pick_p4id
 };
