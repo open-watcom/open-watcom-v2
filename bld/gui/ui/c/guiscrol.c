@@ -50,37 +50,38 @@ void GUIScroll( int change, p_gadget gadget )
     bool        range_set;
     int         pos;
 
-    wnd = (gui_window *)gadget->win;
-
-    if( ( wnd != NULL ) && ( gadget != NULL )  ) {
-        if( ( gadget->pos + change ) < 0 ) {
-            pos = 0;
-        } else {
-            pos = gadget->pos + change;
-        }
-        if( pos != gadget->pos ) {
-            if( gadget->dir == VERTICAL ) {
-                range_set = GUI_VRANGE_SET( wnd );
+    if( gadget != NULL ) {
+        wnd = (gui_window *)gadget->win;
+        if( wnd != NULL ) {
+            if( ( gadget->pos + change ) < 0 ) {
+                pos = 0;
             } else {
-                range_set = GUI_HRANGE_SET( wnd );
+                pos = gadget->pos + change;
             }
-            if( range_set ) {
-                if( ( gadget->total_size != 0 ) &&
-                    ( pos > ( gadget->total_size - gadget->page_size ) ) ) {
-                    pos = gadget->total_size - gadget->page_size;
-                    if( pos < 0 ) {
-                        pos = 0;
-                    }
-                    change = pos - gadget->pos;
+            if( pos != gadget->pos ) {
+                if( gadget->dir == VERTICAL ) {
+                    range_set = GUI_VRANGE_SET( wnd );
+                } else {
+                    range_set = GUI_HRANGE_SET( wnd );
                 }
-            } else {
-                gadget->total_size = gadget->page_size + pos;
-            }
-            GUISetShowGadget( gadget, true, true, pos );
-            if( gadget->dir == VERTICAL ) {
-                GUIDoVScroll( wnd, change );
-            } else {
-                GUIDoHScroll( wnd, change );
+                if( range_set ) {
+                    if( ( gadget->total_size != 0 ) &&
+                        ( pos > ( gadget->total_size - gadget->page_size ) ) ) {
+                        pos = gadget->total_size - gadget->page_size;
+                        if( pos < 0 ) {
+                            pos = 0;
+                        }
+                        change = pos - gadget->pos;
+                    }
+                } else {
+                    gadget->total_size = gadget->page_size + pos;
+                }
+                GUISetShowGadget( gadget, true, true, pos );
+                if( gadget->dir == VERTICAL ) {
+                    GUIDoVScroll( wnd, change );
+                } else {
+                    GUIDoHScroll( wnd, change );
+                }
             }
         }
     }
