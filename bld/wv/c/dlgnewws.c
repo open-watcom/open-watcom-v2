@@ -38,11 +38,6 @@
 #include "modcomp.h"
 
 
-#define CTL_NEW_OK      100
-#define CTL_NEW_CANCEL  101
-#define CTL_NEW_EDIT    102
-#define CTL_NEW_SYMBOL  103
-
 #define R0 0
 #define R1 2
 #define C0 1
@@ -56,14 +51,32 @@
 //                      ROWS    COLS    MAX_COLS
 #define DLG_SIZE_DATA   4,      W,      70
 
-static void     (*CompRtn)( gui_window *gui, gui_ctl_id id );
+#define DLGNEW_CTLS() \
+    pick_p4id( EDIT,     DLG_EDIT,       "",     C0, R0, W - 1 ) \
+    pick_p4id( OK,       DLG_DEFBUTTON,  NULL,   B1, R1, B1 + BW ) \
+    pick_p4id( SYMBOL,   DLG_BUTTON,     NULL,   B2, R1, B2 + BW ) \
+    pick_p4id( CANCEL,   DLG_BUTTON,     NULL,   B3, R1, B3 + BW )
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p4id(id,m,p1,p2,p3,p4) CTL_ ## id,
+    DLGNEW_CTLS()
+    #undef pick_p4id
+};
+
+enum {
+    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    DLGNEW_CTLS()
+    #undef pick_p4id
+};
 
 static gui_control_info Controls[] = {
-    DLG_EDIT(       "",     CTL_NEW_EDIT,   C0, R0, W - 1 ),
-    DLG_DEFBUTTON(  NULL,   CTL_NEW_OK,     B1, R1, B1 + BW ),
-    DLG_BUTTON(     NULL,   CTL_NEW_SYMBOL, B2, R1, B2 + BW ),
-    DLG_BUTTON(     NULL,   CTL_NEW_CANCEL, B3, R1, B3 + BW ),
+    #define pick_p4id(id,m,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
+    DLGNEW_CTLS()
+    #undef pick_p4id
 };
+
+static void     (*CompRtn)( gui_window *gui, gui_ctl_id id );
 
 OVL_EXTERN bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
@@ -73,24 +86,24 @@ OVL_EXTERN bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
     dlgnew = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        GUISetText( gui, CTL_NEW_EDIT, dlgnew->buff );
-        GUISetFocus( gui, CTL_NEW_EDIT );
+        GUISetText( gui, CTL_EDIT, dlgnew->buff );
+        GUISetFocus( gui, CTL_EDIT );
         dlgnew->buff[0] = '\0';
         return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         dlgnew->buff[0] = '\0';
         switch( id ) {
-        case CTL_NEW_OK:
-            GUIDlgBuffGetText( gui, CTL_NEW_EDIT, dlgnew->buff, dlgnew->buff_len );
+        case CTL_OK:
+            GUIDlgBuffGetText( gui, CTL_EDIT, dlgnew->buff, dlgnew->buff_len );
             dlgnew->cancel = false;
             /* fall through */
-        case CTL_NEW_CANCEL:
+        case CTL_CANCEL:
             GUICloseDialog( gui );
             return( true );
-        case CTL_NEW_SYMBOL:
+        case CTL_SYMBOL:
             dlgnew->cancel = false;
-            CompRtn( gui, CTL_NEW_EDIT );
+            CompRtn( gui, CTL_EDIT );
             return( true );
         default:
             break;
@@ -106,21 +119,21 @@ OVL_EXTERN bool newSymGUIEventProc( gui_window *gui, gui_event gui_ev, void *par
 
 static bool doDlgNewWithCtl( const char *title, char *buff, size_t buff_len )
 {
-    Controls[1].text = LIT_DUI( OK );
-    Controls[3].text = LIT_DUI( Cancel );
+    Controls[OK_IDX].text = LIT_DUI( OK );
+    Controls[CANCEL_IDX].text = LIT_DUI( Cancel );
     return( DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), newSymGUIEventProc, DLG_SIZE_DATA ) );
 }
 
 bool    DlgNewWithMod( const char *title, char *buff, size_t buff_len )
 {
     CompRtn = ModComplete;
-    Controls[2].text = LIT_DUI( XModule_ );
+    Controls[SYMBOL_IDX].text = LIT_DUI( XModule_ );
     return( doDlgNewWithCtl( title, buff, buff_len ) );
 }
 
 bool    DlgNewWithSym( const char *title, char *buff, size_t buff_len )
 {
     CompRtn = SymComplete;
-    Controls[2].text = LIT_DUI( XSymbol_ );
+    Controls[SYMBOL_IDX].text = LIT_DUI( XSymbol_ );
     return( doDlgNewWithCtl( title, buff, buff_len ) );
 }

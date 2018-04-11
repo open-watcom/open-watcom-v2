@@ -42,10 +42,25 @@
 #define DLG_PICK_COLS   30
 #define DLG_MAX_COLS    75
 
+#define DLGPICK_CTLS() \
+    pick_p4id( LIST,     DLG_LIST_BOX,   1,  1,  29, 10 ) \
+    pick_p3id( OK,       DLG_DEFBUTTON,  2,  12, 12 ) \
+    pick_p3id( CANCEL,   DLG_BUTTON,     18, 12, 28 )
+
+enum {
+    #define pick_p3id(id,m,p1,p2,p3)    id ## _IDX,
+    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    DLGPICK_CTLS()
+    #undef pick_p4id
+    #undef pick_p3id
+};
+
 static gui_control_info Controls[] = {
-    DLG_LIST_BOX(   NULL, CTL_PICK_LIST,    1,  1,  29, 10 ),
-    DLG_DEFBUTTON(  NULL, CTL_PICK_OK,      2,  12, 12 ),
-    DLG_BUTTON(     NULL, CTL_PICK_CANCEL,  18, 12, 28 ),
+    #define pick_p3id(id,m,p1,p2,p3)     m(NULL,CTL_PICK_ ## id,p1,p2,p3),
+    #define pick_p4id(id,m,p1,p2,p3,p4)  m(NULL,CTL_PICK_ ## id,p1,p2,p3,p4),
+    DLGPICK_CTLS()
+    #undef pick_p4id
+    #undef pick_p3id
 };
 
 bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
@@ -99,8 +114,8 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
     if( len > DLG_MAX_COLS )
         len = DLG_MAX_COLS;
 
-    Controls[1].text = LIT( OK );
-    Controls[2].text = LIT( Cancel );
+    Controls[OK_IDX].text = LIT( OK );
+    Controls[CANCEL_IDX].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.choice = -1;
     openrtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );

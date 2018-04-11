@@ -31,7 +31,3 @@
 
 
 #define DIALOG_AMBIG 3009
-
-#define CTL_PICK_LIST 102
-#define CTL_PICK_OK 100
-#define CTL_PICK_CANCEL 101

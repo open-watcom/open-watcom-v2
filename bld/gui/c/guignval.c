@@ -46,22 +46,38 @@
 #define START_EQUAL     7
 #define START_EDIT      9
 
-enum {
-    STATIC = 1,
-    EQUAL,
-    EDIT,
-    CANCEL,
-    OK
-};
-
 /* all 0 values are set in the code */
 
+#define DLGNEW_CTLS() \
+    pick_p4(   STATIC,  DLG_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
+    pick_p4(   EQUAL,   DLG_STRING,     "=",    0,            TEXT_ROW,   1 ) \
+    pick_p4id( EDIT,    DLG_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
+    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
+    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p4(id,m,p1,p2,p3,p4)   CTL_ ## id,
+    #define pick_p4id(id,m,p1,p2,p3,p4) CTL_ ## id,
+    DLGNEW_CTLS()
+    #undef pick_p4id
+    #undef pick_p4
+};
+
+enum {
+    #define pick_p4(id,m,p1,p2,p3,p4)   id ## _IDX,
+    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    DLGNEW_CTLS()
+    #undef pick_p4id
+    #undef pick_p4
+};
+
 static gui_control_info GetNew[] = {
-    DLG_STRING(     NULL,           START_STATIC, TEXT_ROW,   0 ),            /* STATIC */
-    DLG_STRING(     "=",            0,            TEXT_ROW,   1 ),            /* EQUAL  */
-    DLG_EDIT(       NULL,   EDIT,   0,            TEXT_ROW,   0 ),            /* EDIT   */
-    DLG_BUTTON(     NULL,   CANCEL, 0,            BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
-    DLG_DEFBUTTON(  NULL,   OK,     0,            BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
+    #define pick_p4(id,m,p1,p2,p3,p4)   m(p1,p2,p3,p4),
+    #define pick_p4id(id,m,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
+    DLGNEW_CTLS()
+    #undef pick_p4id
+    #undef pick_p4
 };
 
 typedef struct ret_info {
@@ -86,12 +102,12 @@ static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *para
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
-        case CANCEL :
+        case CTL_CANCEL :
             GUICloseDialog( gui );
             info->ret_val = GUI_RET_CANCEL;
             return( true );
-        case OK :
-            info->text = GUIGetText( gui, EDIT );
+        case CTL_OK :
+            info->text = GUIGetText( gui, CTL_EDIT );
             GUICloseDialog( gui );
             info->ret_val = GUI_RET_OK;
             return( true );
@@ -130,25 +146,25 @@ gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_
         disp_length = MAX_LENGTH;
     }
 
-    GetNew[CANCEL].text = LIT( Cancel );
-    GetNew[OK].text = LIT( OK );
+    GetNew[CANCEL_IDX].text = LIT( Cancel );
+    GetNew[OK_IDX].text = LIT( OK );
 
-    GetNew[EDIT].style |= GUI_STYLE_CONTROL_FOCUS;
+    GetNew[EDIT_IDX].style |= GUI_STYLE_CONTROL_FOCUS;
 
-    GetNew[STATIC].rect.width = DLG_COL( disp_length );
-    GetNew[STATIC].text = old;
+    GetNew[STATIC_IDX].rect.width = DLG_COL( disp_length );
+    GetNew[STATIC_IDX].text = old;
 
-    GetNew[EQUAL].rect.x = DLG_COL( START_EQUAL + disp_length );
+    GetNew[EQUAL_IDX].rect.x = DLG_COL( START_EQUAL + disp_length );
 
-    GetNew[EDIT].rect.x = DLG_COL( START_EDIT + disp_length );
-    GetNew[EDIT].rect.width = DLG_COL( disp_length );
-    GetNew[EDIT].text = old;
+    GetNew[EDIT_IDX].rect.x = DLG_COL( START_EDIT + disp_length );
+    GetNew[EDIT_IDX].rect.width = DLG_COL( disp_length );
+    GetNew[EDIT_IDX].text = old;
 
     cols = START_EDIT + disp_length * 2 + START_STATIC;
 
-    GetNew[OK].rect.x = DLG_COL( ( cols / 2 ) -
+    GetNew[OK_IDX].rect.x = DLG_COL( ( cols / 2 ) -
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
-    GetNew[CANCEL].rect.x = DLG_COL( cols -
+    GetNew[CANCEL_IDX].rect.x = DLG_COL( cols -
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
 
 

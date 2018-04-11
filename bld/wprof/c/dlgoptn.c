@@ -46,8 +46,56 @@
 #include "dlgoptn.h"
 
 
-//#include "wpdriver.def"
-//#include "setsamps.def"
+#define SMALL_CUT_WIDTH 10
+#define DLG_OPTS_ROWS   17
+#define DLG_OPTS_COLS   50
+
+#define C0 0
+#define C1 1
+
+#define R0 0
+#define R1 5
+#define R2 9
+#define R3 15
+
+#define BW 10
+#define W 50
+#define B1 BUTTON_POS( 1, 3, W, BW )
+#define B2 BUTTON_POS( 2, 3, W, BW )
+#define B3 BUTTON_POS( 3, 3, W, BW )
+
+#define DLGOPTS_CTLS() \
+    pick_p5(   BARGRAPHBOX, DLG_BOX,            "Bar Graph",                    C1+1, R0,   W-2, R0+4 ) \
+    pick_p4id( STRETCH,     DLG_CHECK,          "&Stretch the graph",           C1+2, R0+1, W-3 ) \
+    pick_p4id( ABS_BAR,     DLG_CHECK,          "Show &Absolute Bar Graphs",    C1+2, R0+2, W-3 ) \
+    pick_p4id( REL_BAR,     DLG_CHECK,          "Show &Relative Bar Graphs",    C1+2, R0+3, W-3 ) \
+    pick_p5(   SORTBYBOX,   DLG_BOX,            "Sort by",                      C1+1, R1,   W-2, R1+3 ) \
+    pick_p4id( SORT_COUNT,  DLG_RADIO_START,    "Sample &Count",                C1+2, R1+1, W-3 ) \
+    pick_p4id( SORT_NAME,   DLG_RADIO_END,      "&Name",                        C1+2, R1+2, W-3 ) \
+    pick_p5(   GATHERBOX,   DLG_BOX,            "Gather",                       C1+1, R2,   W-2, R2+4 ) \
+    pick_p4id( GATHER_TEXT, DLG_DYNSTRING,      "Cutoff Percentage",            C1+2, R2+1, W-3 ) \
+    pick_p4id( GATHER_CUT,  DLG_EDIT,           "",                             W-13, R2+1, W-3 ) \
+    pick_p4id( GATHER,      DLG_CHECK,          "Gather Small &Values",         C1+2, R2+3, W-3 ) \
+    pick_p4id( OK,          DLG_DEFBUTTON,      "OK",                           B1,   R3,   B1+BW ) \
+    pick_p4id( DEFAULTS,    DLG_BUTTON,         "&Defaults",                    B2,   R3,   B2+BW ) \
+    pick_p4id( CANCEL,      DLG_BUTTON,         "Cancel",                       B3,   R3,   B3+BW )
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p4id(id,m,p1,p2,p3,p4)     CTL_ ## id,
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    CTL_ ## id,
+    DLGOPTS_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
+
+enum {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     id ## _IDX,
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    id ## _IDX,
+    DLGOPTS_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
 
 bool                OptStretchGlobal   = false;
 bool                OptAbsBarGlobal    = true;
@@ -56,6 +104,14 @@ bool                OptSortCountGlobal = true;
 bool                OptSortNameGlobal  = false;
 bool                OptGatherGlobal    = false;
 int                 OptGatherCut       = 10;
+
+static gui_control_info optionControls[] = {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     m(p1,CTL_ ## id,p2,p3,p4),
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    m(p1,p2,p3,p4,p5),
+    DLGOPTS_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
 
 STATIC bool         getDlgValues( gui_window * );
 STATIC void         setDlgValues( gui_window * );

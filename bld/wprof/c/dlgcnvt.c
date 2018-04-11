@@ -49,6 +49,59 @@
 #include "clibext.h"
 
 
+#define DLG_CNVT_ROWS   10
+#define DLG_CNVT_COLS   50
+
+#define C0 0
+#define C1 38
+
+#define R0 0
+#define R1 3
+#define R2 8
+
+#define BW 10
+#define W 50
+#define B1 BUTTON_POS( 1, 3, W, BW )
+#define B2 BUTTON_POS( 2, 3, W, BW )
+#define B3 BUTTON_POS( 3, 3, W, BW )
+
+#define DLGCONVERT_CTLS() \
+    pick_p5(   OUTFILEBOX,  DLG_BOX,            "Output File Name",     C0,   R0,   C1-2, R0+2 ) \
+    pick_p4id( NAME,        DLG_EDIT,           "",                     C0+1, R0+1, C1-3 ) \
+    pick_p4id( BROWSE,      DLG_BUTTON,         "&Browse ...",          C1,   R0+1, W-1 ) \
+    pick_p5(   FORMATBOX,   DLG_BOX,            "Format Type",          C0,   R1,   C1-2, R1+3 ) \
+    pick_p4id( DIF_FMT,     DLG_RADIO_START,    "&DIF Format",          C0+1, R1+1, C1-3 ) \
+    pick_p4id( COMMA_FMT,   DLG_RADIO_END,      "&Comma Format",        C0+1, R1+2, C1-3 ) \
+    pick_p4id( OK,          DLG_DEFBUTTON,      "OK",                   B1,   R2,   B1+BW ) \
+    pick_p4id( DEFAULTS,    DLG_BUTTON,         "&Defaults",            B2,   R2,   B2+BW ) \
+    pick_p4id( CANCEL,      DLG_BUTTON,         "Cancel",               B3,   R2,   B3+BW )
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p4id(id,m,p1,p2,p3,p4)     CTL_ ## id,
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    CTL_ ## id,
+    DLGCONVERT_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
+
+enum {
+    #define pick_p4id(id,m,p1,p2,p3,p4)     id ## _IDX,
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    id ## _IDX,
+    DLGCONVERT_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
+
+static gui_control_info convertControls[] =
+{
+    #define pick_p4id(id,m,p1,p2,p3,p4)     m(p1,CTL_ ## id,p2,p3,p4),
+    #define pick_p5(id,m,p1,p2,p3,p4,p5)    m(p1,p2,p3,p4,p5),
+    DLGCONVERT_CTLS()
+    #undef pick_p5
+    #undef pick_p4id
+};
+
 static char * cnvtFilterList = {
     "DIF Files (*.dif)\0*.dif\0"
     "Comma Delimited Files (*.txt)\0*.txt\0"

@@ -34,7 +34,6 @@
 #include "dbgdata.h"
 #include "dbglit.h"
 #include "dbgerr.h"
-#include "dlgamb.h"
 #include "dui.h"
 #include "strutil.h"
 #include "dbgutil.h"
