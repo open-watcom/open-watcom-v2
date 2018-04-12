@@ -707,11 +707,12 @@ static bool setFileList( gui_window *gui, const char *ext )
     char                ext1[_MAX_PATH];
     int                 item;
     dlg_info            *dlg = GUIGetExtra( gui );
+    bool                ok;
 
     num_items = 0;
     list = NULL;
     strcpy( ext1, ext );
-
+    ok = true;
     for( ptr = strtok( ext1, ";" ); ptr != NULL; ptr = strtok( NULL, ";" ) ) {
 
         if( getcwd( path, sizeof( path ) ) == NULL ) {
@@ -738,9 +739,8 @@ static bool setFileList( gui_window *gui, const char *ext )
                     }
 #endif
                     if( !addToList( &list, num_items, dent->d_name, strlen( dent->d_name ) ) ) {
-                        freeStringList( &list );
-                        closedir( directory );
-                        return( false );
+                        ok = false;
+                        break;
                     }
                     num_items++;
                 }
@@ -750,13 +750,15 @@ static bool setFileList( gui_window *gui, const char *ext )
     }
     GUIClearList( gui, CTL_FILE_LIST );
     if( num_items > 0 ) {
-        qsort( (void *)list, num_items, sizeof( char * ), Compare );
-        for( item = 0; item < num_items; item++ ) {
-            GUIAddText( gui, CTL_FILE_LIST, list[item] );
+        if( ok ) {
+            qsort( (void *)list, num_items, sizeof( char * ), Compare );
+            for( item = 0; item < num_items; item++ ) {
+                GUIAddText( gui, CTL_FILE_LIST, list[item] );
+            }
         }
         freeStringList( &list );
     }
-    return( true );
+    return( ok );
 
 } /* setFileList */
 
@@ -781,13 +783,14 @@ static bool setDirList( gui_window *gui )
     int                 selected_item;
     int                 num_items;
     const char          **list;
+    bool                ok;
 
     GUIClearList( gui, CTL_DIR_LIST );
     num_items = 0;
     list = NULL;
-
+    ok = true;
     if( getcwd( path, sizeof( path ) ) == NULL ) {
-        return( true );
+        return( ok );
     }
 
     if( path[strlen( path ) - 1] == FILE_SEP_CHAR ) {
@@ -802,12 +805,6 @@ static bool setDirList( gui_window *gui )
 #endif
     }
     splitPath( path, drive + 1, dir, NULL, NULL );
-
-    directory = opendir( path );
-    if( directory == NULL ) {
-        return( false );
-    }
-
     drive[0] = OPENED_DIR_CHAR;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = GetDriveTextList();
@@ -820,59 +817,66 @@ static bool setDirList( gui_window *gui )
     drive[3] = '\\';
     drive[4] = '\0';
 #endif
-    if( !addToList( &list, num_items, drive, strlen( drive ) ) ) {
+    ok = false;
+    if( addToList( &list, num_items, drive, strlen( drive ) ) ) {
+        num_items++;
+        ok = true;
+        strcpy( indent, INDENT_STR );
+        start = dir + 1;
+        for( ptr = start; *ptr != '\0'; ptr++ ) {
+            if( *ptr == FILE_SEP_CHAR ) {
+                *ptr = '\0';
+                len = strlen( indent );
+                memcpy( tmp, indent, len );
+                tmp[len++] = OPENED_DIR_CHAR;
+                strcpy( tmp + len, start );
+                if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
+                    ok = false;
+                    break;
+                }
+                num_items++;
+                start = ptr + 1;
+                strcat( indent, INDENT_STR );
+            }
+        }
+        if( ok ) {
+            selected_item = num_items;
+            directory = opendir( path );
+            if( directory == NULL ) {
+                ok = false;
+            } else {
+                while( (dent = readdir( directory )) != NULL ) {
+                    if( isdir( dent, path ) ) {
+                        if( ( dent->d_name[0] == '.' ) && ( ( dent->d_name[1] == 0 )
+                          || ( dent->d_name[1] == '.' && dent->d_name[2] == 0 ) ) ) {
+                            continue;
+                        }
+                        len = strlen( indent );
+                        memcpy( tmp, indent, len );
+                        tmp[len++] = UNOPENED_DIR_CHAR;
+                        strcpy( tmp + len, dent->d_name );
+                        if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
+                            ok = false;
+                            break;
+                        }
+                        num_items++;
+                    }
+                }
+                closedir( directory );
+                if( ok ) {
+                    qsort( (void *)list, num_items, sizeof( char * ), Compare );
+                    for( item = 0; item < num_items; item++ ) {
+                        GUIAddText( gui, CTL_DIR_LIST, list[item] );
+                    }
+                    GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
+                }
+            }
+        }
+    }
+    if( num_items > 0 ) {
         freeStringList( &list );
-        return( false );
     }
-    num_items++;
-    strcpy( indent, INDENT_STR );
-
-    start = dir + 1;
-    for( ptr = start; *ptr != '\0'; ptr++ ) {
-        if( *ptr == FILE_SEP_CHAR ) {
-            *ptr = '\0';
-            len = strlen( indent );
-            memcpy( tmp, indent, len );
-            tmp[len++] = OPENED_DIR_CHAR;
-            strcpy( tmp + len, start );
-            if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
-                freeStringList( &list );
-                return( false );
-            }
-            num_items++;
-            start = ptr + 1;
-            strcat( indent, INDENT_STR );
-        }
-    }
-
-    selected_item = num_items;
-    while( ( dent = readdir( directory ) ) != NULL ) {
-        if( isdir( dent, path ) ) {
-            if( (dent->d_name[0] == '.') && ((dent->d_name[1] == 0) ||
-                (dent->d_name[1] == '.' && dent->d_name[2] == 0)) ) {
-                continue;
-            }
-            len = strlen( indent );
-            memcpy( tmp, indent, len );
-            tmp[len++] = UNOPENED_DIR_CHAR;
-            strcpy( tmp + len, dent->d_name );
-            if( !addToList( &list, num_items, tmp, strlen( tmp ) ) ) {
-                freeStringList( &list );
-                return( false );
-            }
-            num_items++;
-        }
-    }
-    closedir( directory );
-
-    qsort( (void *)list, num_items, sizeof( char * ), Compare );
-    for( item = 0; item < num_items; item++ ) {
-        GUIAddText( gui, CTL_DIR_LIST, list[item] );
-    }
-    GUISetCurrSelect( gui, CTL_DIR_LIST, selected_item - 1 );
-    freeStringList( &list );
-
-    return( true );
+    return( ok );
 
 } /* setDirList */
 
