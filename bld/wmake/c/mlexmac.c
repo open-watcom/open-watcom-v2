@@ -55,18 +55,17 @@ STATIC TOKEN_T lexFormQualifier( TOKEN_T tok )
     s = PreGetCH();
 
     switch( s ) {
-        case '@':   CurAttr.u.form = FORM_FULL;            break;
-        case '*':   CurAttr.u.form = FORM_NOEXT;           break;
-        case '&':   CurAttr.u.form = FORM_NOEXT_NOPATH;    break;
-        case '.':   CurAttr.u.form = FORM_NOPATH;          break;
-        case ':':   CurAttr.u.form = FORM_PATH;            break;
-        case '!':   CurAttr.u.form = FORM_EXT;             break;
-        default:
-            PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
-            UnGetCH( s );               /* put character back */
-            CurAttr.u.form = FORM_FULL;   /* assume full name */
+    case '@':   CurAttr.u.form = FORM_FULL;            break;
+    case '*':   CurAttr.u.form = FORM_NOEXT;           break;
+    case '&':   CurAttr.u.form = FORM_NOEXT_NOPATH;    break;
+    case '.':   CurAttr.u.form = FORM_NOPATH;          break;
+    case ':':   CurAttr.u.form = FORM_PATH;            break;
+    case '!':   CurAttr.u.form = FORM_EXT;             break;
+    default:
+        PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
+        UnGetCH( s );               /* put character back */
+        CurAttr.u.form = FORM_FULL;   /* assume full name */
     }
-
     return( tok );
 }
 

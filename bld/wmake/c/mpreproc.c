@@ -1306,14 +1306,14 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
             break;
         }
         switch( inString[inIndex] ) {
-            // error did not find closing quotation
-            case NULLCHAR :
-            case EOL:
-            case COMMENT:
-                current->type = OP_ERROR;
-                break;
-            default:
-                current->data.string[currentIndex] = inString[inIndex];
+        // error did not find closing quotation
+        case NULLCHAR :
+        case EOL:
+        case COMMENT:
+            current->type = OP_ERROR;
+            break;
+        default:
+            current->data.string[currentIndex] = inString[inIndex];
         }
 
         if( current->type == OP_ERROR ) {
@@ -1454,14 +1454,14 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
             break;
         }
         switch( inString[inIndex] ) {
-            // error did not find closing quotation
-            case NULLCHAR :
-            case EOL:
-            case COMMENT:
-                current->type = OP_ERROR;
-                break;
-            default:
-                current->data.string[currentIndex] = inString[inIndex];
+        // error did not find closing quotation
+        case NULLCHAR :
+        case EOL:
+        case COMMENT:
+            current->type = OP_ERROR;
+            break;
+        default:
+            current->data.string[currentIndex] = inString[inIndex];
         }
 
         if( current->type == OP_ERROR ) {
@@ -1579,7 +1579,6 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
         default:
             makeToken( OP_ERROR, current, &index );
             break;
-
         }
         break;
     case DOUBLEQUOTE:
