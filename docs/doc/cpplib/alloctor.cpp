@@ -22,62 +22,62 @@ const int ElemsPerBlock = 50;
 // free all allocated blocks
 //
 // This implementation assumes sizeof( char ) == 1
-// 
+//
 
 class BlockAlloc {
 private:
     // the size of elements (in bytes)
-    unsigned elem_size;			
+    unsigned elem_size;
 
     // number of elements allocated
-    unsigned num_allocated;		
+    unsigned num_allocated;
 
     // free space of this number of elements available in first block
-    unsigned num_free_in_block;		
+    unsigned num_free_in_block;
 
     // list of blocks used to store elements (block are chunks of memory,
     // pointed by (char *) pointers.
     WCPtrSList<char> block_list;
-   
-    // pointer to the first block in the list 
+
+    // pointer to the first block in the list
     char *curr_block;
 
 public:
-    inline BlockAlloc( unsigned size ) 
-    		: elem_size( size ), num_allocated( 0 )
-		, num_free_in_block( 0 ) {};
-		
+    inline BlockAlloc( unsigned size )
+                : elem_size( size ), num_allocated( 0 )
+                , num_free_in_block( 0 ) {};
+
 
     inline ~BlockAlloc() {
-	block_list.clearAndDestroy();
+        block_list.clearAndDestroy();
     };
-    
-    // get memory for an element using block allocation 
+
+    // get memory for an element using block allocation
     void *allocator( size_t elem_size );
 
     // free memory for an element using block allocation and deallocation
     void deallocator( void *old_ptr, size_t elem_size );
 };
-		
+
 
 void *BlockAlloc::allocator( size_t size ) {
     // need a new block to perform allocation
     if( num_free_in_block == 0 ) {
-	// allocate memory for ElemsPerBlock elements
-	curr_block = new char[ size * ElemsPerBlock ];
-	if( curr_block == 0 ) {
-	    // allocation failed
-	    return( 0 );
-	}
-	// add new block to beginning of list
-	if( !block_list.insert( curr_block ) ) {
-	    // allocation of list element failed
-	    delete( curr_block );
-	    return( 0 );
-	}
-	num_free_in_block = ElemsPerBlock;
+        // allocate memory for ElemsPerBlock elements
+        curr_block = new char [size * ElemsPerBlock];
+        if( curr_block == 0 ) {
+            // allocation failed
+            return( 0 );
+        }
+        // add new block to beginning of list
+        if( !block_list.insert( curr_block ) ) {
+            // allocation of list element failed
+            delete[] curr_block;
+            return( 0 );
+        }
+        num_free_in_block = ElemsPerBlock;
     }
-    
+
     // curr block points to a block of memory with some free memory
     num_allocated++;
     num_free_in_block--;
@@ -85,22 +85,19 @@ void *BlockAlloc::allocator( size_t size ) {
     // of the block
     return( curr_block + num_free_in_block * size );
 }
-	
+
 
 void BlockAlloc::deallocator( void *, size_t ) {
     // just decrement the count
     // don't free anything until all elements are deallocated
     num_allocated--;
     if( num_allocated == 0 ) {
-	// all the elements allocated BlockAlloc object have now been
-	// deallocated, free all the blocks
-	block_list.clearAndDestroy();
-	num_free_in_block = 0;
+        // all the elements allocated BlockAlloc object have now been
+        // deallocated, free all the blocks
+        block_list.clearAndDestroy();
+        num_free_in_block = 0;
     }
 }
-	
-
-
 
 const unsigned NumTestElems = 200;
 
@@ -109,9 +106,9 @@ static unsigned test_elems[ NumTestElems ];
 
 static void fill_test_elems() {
     for( int i = 0; i < NumTestElems; i++ ) {
-	test_elems[ i ] = rand();
+        test_elems[ i ] = rand();
     }
-} 
+}
 
 
 
@@ -139,11 +136,11 @@ public:
     isvInt( int datum ) : data( datum ) {};
 
     void *operator new( size_t size ) {
-	return( memory_manage.allocator( size ) );
+        return( memory_manage.allocator( size ) );
     };
 
     void operator delete( void *old, size_t size ) {
-	memory_manage.deallocator( old, size );
+        memory_manage.deallocator( old, size );
     };
 };
 
@@ -153,14 +150,14 @@ BlockAlloc isvInt::memory_manage( sizeof( isvInt ) );
 
 void test_isv_list() {
     WCIsvSList<isvInt> list;
-    
+
     for( int i = 0; i < NumTestElems; i++ ) {
-	list.insert( new isvInt( test_elems[ i ] ) );
+        list.insert( new isvInt( test_elems[ i ] ) );
     }
 
     WCIsvSListIter<isvInt> iter( list );
     while( ++iter ) {
-	cout << iter.current()->data << " ";
+        cout << iter.current()->data << " ";
     }
     cout << "\n\n\n";
     list.clearAndDestroy();
@@ -182,14 +179,14 @@ static void val_list_dealloc( void *old, size_t size ) {
 // test WCValSList<int>
 void test_val_list() {
     WCValSList<int> list( &val_list_alloc, &val_list_dealloc );
-    
+
     for( int i = 0; i < NumTestElems; i++ ) {
-	list.insert( test_elems[ i ] );
+        list.insert( test_elems[ i ] );
     }
-    
+
     WCValSListIter<int> iter( list );
     while( ++iter ) {
-	cout << iter.current() << " ";
+        cout << iter.current() << " ";
     }
     cout << "\n\n\n";
     list.clear();
@@ -207,26 +204,26 @@ static BlockAlloc two_ptr_manager( two_ptr_size );
 
 static void *val_skip_list_alloc( size_t size ) {
     switch( size ) {
-	case one_ptr_size:
-	    return( one_ptr_manager.allocator( size ) );
-	case two_ptr_size:
-	    return( two_ptr_manager.allocator( size ) );
-	default:
-	    return( new char[ size ] );
+    case one_ptr_size:
+        return( one_ptr_manager.allocator( size ) );
+    case two_ptr_size:
+        return( two_ptr_manager.allocator( size ) );
+    default:
+        return( new char[ size ] );
     }
 }
 
 static void val_skip_list_dealloc( void *old, size_t size ) {
     switch( size ) {
-	case one_ptr_size:
-	    one_ptr_manager.deallocator( old, size );
-	    break;
-	case two_ptr_size:
-	    two_ptr_manager.deallocator( old, size );
-	    break;
-	default:
-	    delete old;
-	    break;
+    case one_ptr_size:
+        one_ptr_manager.deallocator( old, size );
+        break;
+    case two_ptr_size:
+        two_ptr_manager.deallocator( old, size );
+        break;
+    default:
+        delete old;
+        break;
     }
 }
 
@@ -234,17 +231,17 @@ static void val_skip_list_dealloc( void *old, size_t size ) {
 // test WCValSkipList<int>
 void test_val_skip_list() {
     WCValSkipList<int> skiplist( WCSKIPLIST_PROB_QUARTER
-    			       , WCDEFAULT_SKIPLIST_MAX_PTRS
-			       , &val_skip_list_alloc
-    			       , &val_skip_list_dealloc );
-    
+                               , WCDEFAULT_SKIPLIST_MAX_PTRS
+                               , &val_skip_list_alloc
+                               , &val_skip_list_dealloc );
+
     for( int i = 0; i < NumTestElems; i++ ) {
-	skiplist.insert( test_elems[ i ] );
+        skiplist.insert( test_elems[ i ] );
     }
-    
+
     WCValSkipListIter<int> iter( skiplist );
     while( ++iter ) {
-	cout << iter.current() << " ";
+        cout << iter.current() << " ";
     }
     cout << "\n\n\n";
     skiplist.clear();
