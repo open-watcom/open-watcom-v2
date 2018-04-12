@@ -1,7 +1,7 @@
 #include <iostream.h>
 #include <fstream.h>
 
-void main( void ) {
+int main( void ) {
 
     fstream    test ( "temp.txt", ios::in|ios::out );  // S1
 

@@ -1,6 +1,6 @@
 #include <strstrea.h>
 
-void main( void ) {
+int main( void ) {
 
     char     *pch,  s[20];
     int       len = 11;
@@ -16,5 +16,5 @@ void main( void ) {
     input >> s;
     cout << "The second string in the ostrstream object is \""
          << s << "\"" << endl;
-    delete pch;
+    delete[] pch;
 }

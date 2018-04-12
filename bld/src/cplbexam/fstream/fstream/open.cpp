@@ -1,6 +1,6 @@
 #include <fstream.h>
 
-void main( void ) {
+int main( void ) {
 
     char    s[20];
 

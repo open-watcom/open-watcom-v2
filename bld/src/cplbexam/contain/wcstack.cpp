@@ -1,7 +1,7 @@
 #include <wcstack.h>
 #include <iostream.h>
 
-void main() {
+int main( void ) {
     WCStack<int,WCValSList<int> >       stack;
 
     stack.push( 7 );

@@ -1,6 +1,6 @@
 #include <string.hpp>
 
-void main( void ) {
+int main( void ) {
 
     String    s1 ("Open Watcom "), s2 ("C++");
     char     *pch1, *pch2;

@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     cout << "Hello, my world!";
     cout.flush();

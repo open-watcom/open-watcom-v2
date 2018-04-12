@@ -1,6 +1,6 @@
 #include <string.hpp>
 
-void main( void ) {
+int main( void ) {
 
     String    s ("Open Watcom C++ compiler");
     int       pos = 14;

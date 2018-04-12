@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     cout.setf( ios::hex );
     cout.setf( ios::unitbuf );

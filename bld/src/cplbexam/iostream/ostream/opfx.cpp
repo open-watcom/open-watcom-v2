@@ -32,7 +32,7 @@ lowstream &lowstream::operator<< ( char *p ) {
     return ( *this );
 }
 
-void main( void ) {
+int main( void ) {
 
     lowstream    test ( cout );
     test << "HELLO!" << endl;

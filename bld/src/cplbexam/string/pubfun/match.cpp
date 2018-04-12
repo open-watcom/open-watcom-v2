@@ -1,6 +1,6 @@
 #include <string.hpp>
 
-void main( void ) {
+int main( void ) {
 
     String    s1 ("Open Watcom C++ compiler");
     String    s2 ("Open Watcom C   compiler");

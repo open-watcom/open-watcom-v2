@@ -24,7 +24,7 @@ upstream &upstream::operator>> ( char *p ) {
     return ( *this );
 }
 
-void main( void ) {
+int main( void ) {
 
     char    buf[50];
 

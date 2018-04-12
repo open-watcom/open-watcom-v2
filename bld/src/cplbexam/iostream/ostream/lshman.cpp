@@ -34,7 +34,7 @@ uplowstream &uplowstream::operator<< ( char *p ) {
     return ( *this );
 }
 
-void main( void ) {
+int main( void ) {
 
     uplowstream    test ( cout );
     test << "Hello, Open Watcom C/C++ users!" << endl;      // manipulator endl

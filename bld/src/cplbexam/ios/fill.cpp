@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     cout.width( 8 );
     cout <<  "Hello"  << endl;

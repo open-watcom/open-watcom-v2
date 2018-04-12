@@ -17,7 +17,7 @@ mystream &mystream::operator >> ( char &ch ) {
     return *this;
 }
 
-void main( void ) {
+int main( void ) {
 
     char    ch;
 

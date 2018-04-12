@@ -2,7 +2,7 @@
 #include <iostream.h>
 
 
-main() {
+int main( void ) {
     WCQueue<int,WCValSList<int> >       queue;
 
     queue.insert( 7 );

@@ -3,7 +3,7 @@
 #include <sys/stat.h>                      //   C library
 #include <fcntl.h>                         //
 
-void main( void ) {
+int main( void ) {
 
     char    s[20];
     int     handle;

@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-void main( void ) {
+int main( void ) {
 
     int len = 20;
     char *bp;
@@ -10,6 +10,6 @@ void main( void ) {
     cin.read( bp, len );
     cout << "The string you have just entered: " << endl;
     cout.write( bp, cin.gcount() );
-    delete bp;
+    delete[] bp;
 }
 

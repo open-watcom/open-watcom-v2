@@ -5,7 +5,7 @@ class mystream : public ostream {
     mystream ( ostream &os ) : ios ( os ), ostream ( os ) {}
 };
 
-void main( void ) {
+int main( void ) {
 
     mystream    test ( cout );
     test << "Hello my world!" << endl;

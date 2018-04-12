@@ -5,7 +5,7 @@ class mystream : public istream {
     mystream ( istream &is ) : ios ( is ), istream ( is ) {};
 };
 
-void main( void ) {
+int main( void ) {
 
     char    ch;
 
