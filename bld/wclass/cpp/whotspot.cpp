@@ -48,7 +48,7 @@ WEXPORT WHotSpots::~WHotSpots() {
 /*******************************/
 
     if( _hotSpotItems ) {
-        delete []_hotSpotItems;
+        delete[] _hotSpotItems;
     }
 }
 

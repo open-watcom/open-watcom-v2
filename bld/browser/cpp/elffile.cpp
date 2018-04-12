@@ -76,7 +76,7 @@ static ComponentFile * ComponentFile::createComponent( uint_32 t, bool en, const
     uint_16 len;
 
     len = (uint_16)( strlen( name ) + 1 );
-    comp = (ComponentFile *) new char[ sizeof( ComponentFile ) + len ];
+    comp = (ComponentFile *) new char [sizeof( ComponentFile ) + len];
 
     comp->time =    t;
     comp->enabled = en;
@@ -89,7 +89,7 @@ static ComponentFile * ComponentFile::createComponent( uint_32 t, bool en, const
 static void ComponentFile::freeComponent( ComponentFile * comp )
 //--------------------------------------------------------------
 {
-    delete [] ( (char *) comp );
+    delete[] (char *)comp;
 }
 
 ElfFile::ElfFile()
@@ -161,7 +161,7 @@ bool ElfFile::initSections()
     _file->seek( _elfHdr.e_shoff + _elfHdr.e_shstrndx * _elfHdr.e_shentsize, SEEK_SET );
     _file->read( &sectHdr, _elfHdr.e_shentsize );
 
-    buffer = new char[ sectHdr.sh_size ];
+    buffer = new char [sectHdr.sh_size];
     _file->seek( sectHdr.sh_offset, SEEK_SET );
     _file->read( buffer, sectHdr.sh_size );
 
@@ -172,7 +172,7 @@ bool ElfFile::initSections()
         addSection( buffer + sectHdr.sh_name, &sectHdr );// this may do seeks and reads
     }
 
-    delete [] buffer;
+    delete[] buffer;
     _initialized = true;
 
     return true;
@@ -300,7 +300,7 @@ void ElfFile::readComponentSect( long offset, long )
     for( int i = 0; i < hdr.numItms; i += 1 ) {
         _file->read( &tmp, sizeof( ComponentFile ) );
 
-        newFile = (ComponentFile *) new char[  sizeof( ComponentFile ) + tmp.nameLen - 1 ];
+        newFile = (ComponentFile *) new char [sizeof( ComponentFile ) + tmp.nameLen - 1];
 
         *newFile = tmp;             // copy over fields already read
         _file->read( newFile->name + 1, newFile->nameLen - 1 );

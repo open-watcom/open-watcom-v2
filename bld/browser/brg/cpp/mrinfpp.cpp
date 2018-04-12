@@ -53,13 +53,13 @@ MergeInfoPP::MergeInfoPP( int numFiles )
 {
     int i;
 
-    _requests = new PPReqP[ _numFiles ];
-    _reqCount = new int[ _numFiles ];
+    _requests = new PPReqP[_numFiles];
+    _reqCount = new int [_numFiles];
 
     for( i = 0; i < _numFiles; i += 1 ) {
-        _requests[ i ] = (InfoPPReq *) _pool.alloc();
-        new( _requests[ i ] ) InfoPPReq();
-        _reqCount[ i ] = 0;
+        _requests[i] = (InfoPPReq *)_pool.alloc();
+        new( _requests[i] ) InfoPPReq();
+        _reqCount[i] = 0;
     }
 }
 
@@ -76,8 +76,8 @@ MergeInfoPP::~MergeInfoPP()
     }
     #endif
 
-    delete [] _requests;
-    delete [] _reqCount;
+    delete[] _requests;
+    delete[] _reqCount;
     _pool.ragnarok();
 }
 
@@ -133,7 +133,7 @@ void MergeInfoPP::execute( MergeInfoSection * sect,
         maxSize = (_reqCount[ i ] > maxSize) ? _reqCount[ i ] : maxSize;
     }
 
-    vector = new PPReqNP[ maxSize ];
+    vector = new PPReqNP[maxSize];
 
     for( i = 0; i < _numFiles; i += 1 ) {
         k = 0;
@@ -154,7 +154,7 @@ void MergeInfoPP::execute( MergeInfoSection * sect,
         }
     }
 
-    delete [] vector;
+    delete[] vector;
 }
 
 void MergeInfoPP::doFile( MergeInfoSection * sect,
@@ -241,8 +241,7 @@ void MergeInfoPP::doFile( MergeInfoSection * sect,
                             }
                         #endif
 
-                        outFile.writeForm( att.form(), referredTo->getNewOff(),
-                                            addrSize );
+                        outFile.writeForm( att.form(), referredTo->getNewOff(), addrSize );
                     }
                     break;
                 case DW_FORM_ref8: /* can't handle 8-byte references */

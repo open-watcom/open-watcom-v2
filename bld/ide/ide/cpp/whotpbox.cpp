@@ -93,7 +93,7 @@ void WEXPORT WHotPickBox::fillBox()
             jcount += 1;
         }
     }
-    _tags= new void*[jcount];
+    _tags= new void *[jcount];
     _tagsCount = jcount;
     int maxWid = 0;
     int j = 0;

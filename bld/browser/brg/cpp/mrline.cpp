@@ -218,25 +218,27 @@ void MergeLineSection::readLineSect( MergeFile * file, MergeOffset& moff )
     moff.offset += 1 + 1 + 1 + 1;
 
     op_base = file->readByte( DR_DEBUG_LINE, moff.offset );
-    standard_opcode_lengths = new uint_8[ op_base ];
+    standard_opcode_lengths = new uint_8[op_base];
 
     for( i = 0; i < op_base - 1; i += 1 ) {
-        standard_opcode_lengths[ i ] = file->readByte( DR_DEBUG_LINE,
-                                                        moff.offset );
+        standard_opcode_lengths[ i ] = file->readByte( DR_DEBUG_LINE, moff.offset );
     }
 
     // directory indicies start at 1
     for( i = 1; moff.offset < lineEnd; i += 1 ) {
         string = file->readString( DR_DEBUG_LINE, moff.offset );
 
-        if( string == NULL ) break;     // <------- end of directories
+        if( string == NULL )
+            break;     // <------- end of directories
         name = string;
 
         addDirectory( moff.fileIdx, i, name );
     }
 
     for( i = 1; moff.offset < lineEnd; i += 1 ) {
-        if( !readFileEntry( file, moff, i ) ) break;  // <----- end of files
+        if( !readFileEntry( file, moff, i ) ) {
+            break;  // <----- end of files
+        }
     }
 
     while( moff.offset < lineEnd ) {

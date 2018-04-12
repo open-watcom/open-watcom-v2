@@ -324,12 +324,12 @@ char * StrucViewItem::name( void )
     initState();
 
     if( _indentLevel > 0 ) {
-        tmp = new char[ _indentLevel * 2 + 3 + _name.size() ];
+        tmp = new char [_indentLevel * 2 + 3 + _name.size()];
         memset( tmp, ' ', _indentLevel * 2 );
-        tmp[ _indentLevel * 2 ] = '\0';
+        tmp[_indentLevel * 2] = '\0';
     } else {
-        tmp = new char[ _name.size() + 3 ];
-        tmp[ 0 ] = '\0';
+        tmp = new char [_name.size() + 3];
+        tmp[0] = '\0';
     }
 
     switch( _expandState ) {

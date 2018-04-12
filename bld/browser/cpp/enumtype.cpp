@@ -111,7 +111,7 @@ EnumElement::EnumElement( char * name, unsigned byteSize, unsigned_32 val )
 EnumElement::~EnumElement()
 //-------------------------
 {
-    delete [] _name;
+    delete[] _name;
 }
 
 WString & EnumElement::value( WString & str )

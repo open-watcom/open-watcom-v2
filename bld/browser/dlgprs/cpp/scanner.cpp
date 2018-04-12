@@ -231,10 +231,10 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 
     buffer[bufPos] = '\0';
 
-    dupStr = new char[strlen( buffer ) + 1];
+    dupStr = new char [strlen( buffer ) + 1];
     strcpy( dupStr, buffer );
 
-    lval =  (YYSTYPE) _strings->size();
+    lval = (YYSTYPE)_strings->size();
     _strings->push_back( dupStr );
 }
 
@@ -318,10 +318,10 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
     if( res ) {
         return res->token;
     } else {
-        dupStr = new char[strlen( tok ) + 1];
+        dupStr = new char [strlen( tok ) + 1];
         strcpy( dupStr, tok );
 
-        lval =  (YYSTYPE) _identifiers->size();
+        lval = (YYSTYPE)_identifiers->size();
         _identifiers->push_back( dupStr );
 
         return T_Ident;

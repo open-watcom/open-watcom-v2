@@ -1479,7 +1479,7 @@ char* VpeMain::getFilters()
     maxLen += 14 + 1;
     filtList.add( new WString( "*.*" ) );
     maxLen += 3 + 1;
-    char* filts = new char[maxLen + 1];
+    char* filts = new char [maxLen + 1];
     size_t off = 0;
     icount = filtList.count();
     for( i = 0; i < icount; i++ ) {

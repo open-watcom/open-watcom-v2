@@ -57,7 +57,7 @@ void GlobalHashContainer::Rehash()
         }
     }
     if (_buckets) {
-        delete [] _buckets;
+        delete[] _buckets;
         _buckets=NULL;
     }
     _bucketSize = newSize;

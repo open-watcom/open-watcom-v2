@@ -143,13 +143,13 @@ WString * WEXPORT WClient::sendMsg( const char *msg, WClientFlags flags ) {
     DdeFreeStringHandle( _procid, hsz );
     if( hdata != NULL && _timeout != TIMEOUT_ASYNC ) {
         int len = (int)DdeGetData( hdata, NULL, 0, 0 );
-        char *r = new char[len + 1];
+        char *r = new char [len + 1];
         DdeGetData( hdata, (unsigned char *)r, len, 0 );
         DdeFreeDataHandle( hdata );
         if( flags & CS_WANTREPLY ) {
             reply = new WString( r );
         }
-        delete r;
+        delete[] r;
     }
     return( reply );
 }

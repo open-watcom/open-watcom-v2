@@ -429,7 +429,7 @@ bool AddrHashTable::TryToInsert( SymbolStruct* sym )
     }
     if ( seg > 0 ) {
         --seg; // segments are 1 based.
-        _oTab[seg].append( new offset_table(sym->Offset(),sym->MemOffset()));
+        _oTab[seg].append( new offset_table(sym->Offset(),sym->MemOffset()) );
         return true;
     }
     return false;
@@ -474,7 +474,7 @@ void AddrHashTable::Put( ExeMaker& eMaker ) const
         cerr << "\n";
         cerr.flush();
         */
-        tempTable = new offset_table* [_oTab[i].entries()];
+        tempTable = new offset_table *[_oTab[i].entries()];
         iter.reset(_oTab[i]);
         for ( j = 0; ++iter; j++ ) {
             tempTable[j] = iter.current();
@@ -491,7 +491,7 @@ void AddrHashTable::Put( ExeMaker& eMaker ) const
             eMaker.DumpToExe(tempTable[j] -> _fileOffset);
             eMaker.DumpToExe(tempTable[j] -> _memOffset);
         }
-        delete [] tempTable;
+        delete[] tempTable;
     }
     /*
     cerr << "AddHashTable done.\n";

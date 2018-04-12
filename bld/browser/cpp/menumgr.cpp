@@ -204,7 +204,7 @@ MenuManager::MenuManager()
 MenuManager::~MenuManager()
 //-------------------------
 {
-    delete [] _topMenus;
+    delete[] _topMenus;
     _receivers->clear();
     delete _receivers;
 }

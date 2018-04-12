@@ -84,7 +84,7 @@ class VariantString {
 
         ~VariantString() {
             if (_string) {
-                delete [] _string;
+                delete[] _string;
             }
         }
 

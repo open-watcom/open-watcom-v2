@@ -200,7 +200,7 @@ class NameHashTable {
             for ( uint i = 0; i < _cHash; i++ ) {
                 _cTab[i].clearAndDestroy();
             }
-            delete [] _cTab;
+            delete[] _cTab;
         }
 
         bool TryToInsert( SymbolStruct* );
@@ -245,7 +245,7 @@ class AddrHashTable {
             for ( uint i = 0; i < _cSeg; i++ ) {
                 _oTab[i].clearAndDestroy();
             }
-            delete [] _oTab;
+            delete[] _oTab;
         }
 
         bool TryToInsert( SymbolStruct* );

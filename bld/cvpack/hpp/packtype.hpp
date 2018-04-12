@@ -652,7 +652,7 @@ class LFVftPath : public LFLeafStruct {
                   _bases( bases ) { }
 
         virtual ~LFVftPath() {
-            delete [] _bases;
+            delete[] _bases;
         }
 
         static LFLeafStruct* Construct( const char*, const uint );
@@ -688,7 +688,7 @@ class LFArgList : public LFLeafStruct {
                   _indices( indices ) { }
 
         virtual ~LFArgList() {
-            delete [] _indices;
+            delete[] _indices;
         }
 
         static LFLeafStruct* Construct( const char*, const uint );
@@ -790,7 +790,7 @@ class LFDerived : public LFLeafStruct {
                   _indices( indices ) { }
 
         virtual ~LFDerived() {
-            delete [] _indices;
+            delete[] _indices;
         }
 
         static LFLeafStruct* Construct( const char*, const uint );

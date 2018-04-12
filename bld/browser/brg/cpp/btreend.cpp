@@ -341,8 +341,8 @@ split( Key_T & key, BTreeNodeBase *& newNode )
     newNode = other;
     key.operator= ( seps[ _keyOrder ] );
 
-    delete [] seps;
-    delete [] children;
+    delete[] seps;
+    delete[] children;
 }
 
 

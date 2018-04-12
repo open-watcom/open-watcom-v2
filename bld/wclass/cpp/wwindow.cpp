@@ -686,10 +686,10 @@ void WEXPORT WWindow::getText( WString& str )
 /*******************************************/
 {
     size_t len = getTextLength();
-    char* t = new char[len + 1];
+    char* t = new char [len + 1];
     getText( t, len + 1 );
     str = t;
-    delete [] t;
+    delete[] t;
 }
 
 

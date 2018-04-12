@@ -52,7 +52,7 @@ Description::Description( char * name )
 Description::~Description()
 //-------------------------
 {
-    delete [] _name;
+    delete[] _name;
 }
 
 const char * Description::name()

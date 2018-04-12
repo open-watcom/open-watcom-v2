@@ -188,8 +188,9 @@ bool Browse::makeFileName( char *buff )
         return( false );
     }
 
-    p = new char[_searchPath.length()+1];
-    if( p == NULL ) return( false );
+    p = new char [_searchPath.length() + 1];
+    if( p == NULL )
+        return( false );
     strcpy( p, _searchPath );
 
     q = strtok( p, ";" );
@@ -200,13 +201,13 @@ bool Browse::makeFileName( char *buff )
         nfile.setExt( file.ext() );
         if( nfile.attribs( NULL ) ) {
             strcpy( buff, nfile.gets() );
-            delete []p;
+            delete[] p;
             return( true );
         }
         q = strtok( NULL, ";" );
     }
-    delete []p;
-    return false;
+    delete[] p;
+    return( false );
 }
 
 void Browse::event( ViewEvent ve, View * )

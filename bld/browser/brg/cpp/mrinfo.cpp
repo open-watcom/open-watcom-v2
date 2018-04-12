@@ -126,7 +126,7 @@ void MergeInfoSection::writePass( MergeFile * outFile,
 
     relocPass( postProcess );
 
-    block = new char [ BufSize ];
+    block = new char [BufSize];
     memset( block, 0, BufSize );
     len = _compunitHdr->_infoLength + sizeof(uint_32);
     while( len ) {
@@ -134,7 +134,7 @@ void MergeInfoSection::writePass( MergeFile * outFile,
         outFile->writeBlock( block, size );
         len -= size;
     }
-    delete [] block;
+    delete[] block;
 
     outFile->seekSect( DR_DEBUG_INFO, 0 );
     outFile->writeBlock( _compunitHdr, sizeof(MergeCompunitHdr) );

@@ -203,7 +203,7 @@ class CSCompile : public SymbolStruct {
         }
 
         ~CSCompile() {
-            delete [] _version;
+            delete[] _version;
         }
 
         static SymbolStruct* Construct( const char* );
@@ -771,7 +771,7 @@ class CSWith16 : public SymbolStruct {
         }
 
         ~CSWith16() {
-            delete [] _expr;
+            delete[] _expr;
         }
 
         bool IsStartSym() const {
@@ -1234,7 +1234,7 @@ class CSWith32 : public SymbolStruct {
         }
 
         ~CSWith32() {
-            delete [] _expr;
+            delete[] _expr;
         }
 
         bool IsStartSym() const {
@@ -1498,7 +1498,7 @@ class CSProcRef : public SymbolStruct {
         }
 
         ~CSProcRef() {
-            delete [] _refName;
+            delete[] _refName;
         }
 
         unsigned_32 cSum() const {
@@ -1555,7 +1555,7 @@ class CSDataRef : public SymbolStruct {
         }
 
         ~CSDataRef() {
-            delete [] _refName;
+            delete[] _refName;
         }
 
         unsigned_32 cSum() const {

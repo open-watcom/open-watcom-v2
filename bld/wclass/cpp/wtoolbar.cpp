@@ -84,7 +84,7 @@ WEXPORT WToolBar::~WToolBar() {
         delete _children[_children.count() - 1];
     }
     if( _toolBarItems ) {
-        delete []_toolBarItems;
+        delete[] _toolBarItems;
     }
 }
 

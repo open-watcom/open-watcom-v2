@@ -83,14 +83,13 @@ OutlineElement::OutlineElement( int level, TreeNode * node, OutlineElement * nex
     OutlineElement *    prevChild = next;
     OutlineElement *    lastChild = NULL;
 
-    _name = new char[ strlen( node->name() ) + 1 ];
+    _name = new char [strlen( node->name() ) + 1];
     strcpy( _name, node->name() );
 
     numChildren = node->getCount( TreeNode::ChildList );
 
     for( i = numChildren; i > 0; i -= 1 ) {
-        _child = new OutlineElement( level + 1, node->getNode( TreeNode::ChildList, i - 1 ),
-                                    prevChild );
+        _child = new OutlineElement( level + 1, node->getNode( TreeNode::ChildList, i - 1 ), prevChild );
         if( i == numChildren ) {
             lastChild = _child;
         }
@@ -115,7 +114,7 @@ OutlineElement::~OutlineElement()
 {
     delete _symbol;
     delete _child;
-    delete [] _name;
+    delete[] _name;
 
     if( !_lastSib ) {
         delete _sibling;
@@ -276,9 +275,9 @@ Outline::Outline( const char * text )
     _findFilter = new KeySymbol;
     _loadFilter = new KeySymbol( WBRWinBase::optManager()->getQueryFilt() );
 
-    onHotPress( this, (cbw) &Outline::toggleExpand );
-    onDblClick( this, (cbw) &Outline::detailView );
-    onChanged( this, (cbw) &Outline::changed );
+    onHotPress( this, (cbw)&Outline::toggleExpand );
+    onDblClick( this, (cbw)&Outline::detailView );
+    onChanged( this, (cbw)&Outline::changed );
 
     menuManager()->trackPopup( this, MMTree );
     viewManager()->registerForEvents( this );

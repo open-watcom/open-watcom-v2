@@ -536,7 +536,7 @@ void WEXPORT WFileName::removeQuotes( char ch )
 void WEXPORT WFileName::addQuotes( char ch )
 {
     size_t len = size();
-    char* quotedName = new char[len + 3];
+    char* quotedName = new char [len + 3];
     quotedName[0] = ch;
     for( size_t i=0; i<len; i++ ) {
         quotedName[i + 1] = (*this)[i];
@@ -544,7 +544,7 @@ void WEXPORT WFileName::addQuotes( char ch )
     quotedName[len + 1] = ch;
     quotedName[len + 2] = '\0';
     (*this) = quotedName;
-    delete [] quotedName;
+    delete[] quotedName;
 }
 
 bool WEXPORT WFileName::legal() const
@@ -661,7 +661,7 @@ char WEXPORT WFileName::setPathSep( char pathsep )
 void WEXPORT WFileName::normalize()
 {
     if( PATHSEP_CHAR == '/' ) {
-        
+
     } else {
 
     }
@@ -693,7 +693,7 @@ bool WEXPORT WFileName::addPath( const char *path )
 
 #ifdef __WATCOMC__
 // Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
+// definition only for warning levels above 8
 #pragma warning 657 9
 #endif
 

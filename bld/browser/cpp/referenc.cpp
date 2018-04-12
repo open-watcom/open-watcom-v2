@@ -46,7 +46,7 @@ Reference::Reference( dr_ref_info * ref, char *name )
 Reference::~Reference()
 //---------------------
 {
-    delete [] _name;
+    delete[] _name;
 }
 
 char * Reference::name()
