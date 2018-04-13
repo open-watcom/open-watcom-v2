@@ -107,7 +107,7 @@ void SetTimerRate( char **cmd )
 
 unsigned long TimerRate( void )
 {
-    return( 1000L * SleepTime );
+    return( 1000UL * SleepTime );
 }
 
 unsigned SafeMargin( void )

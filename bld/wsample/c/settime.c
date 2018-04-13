@@ -99,7 +99,7 @@ extern void ResolveRateDifferences( void )
 
 unsigned long TimerRate( void )
 {
-    return( 100000000 / TICKS_PER_HUNDRED );
+    return( 100000000UL / TICKS_PER_HUNDRED );
 }
 
 unsigned SafeMargin( void )
@@ -117,7 +117,7 @@ unsigned SafeMargin( void )
         safe_wait = Ceiling / 2;
     margin = Ceiling - safe_wait;
 
-    if( margin < (TICKS_PER_HUNDRED / 100) ) {
+    if( margin < ( TICKS_PER_HUNDRED / 100UL ) ) {
         Output( MsgArray[MSG_BUFF_SMALL - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();

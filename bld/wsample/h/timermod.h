@@ -40,13 +40,13 @@ global_timer_data unsigned      TimerRestoreValue;
 
 #undef global_timer_data
 
-#define DIVISOR                 (65536/TimerMult)
-#define MN_MULT                 1
-#define MX_MULT                 100
+#define DIVISOR                 (65536UL / TimerMult)
+#define MN_MULT                 1U
+#define MX_MULT                 100U
 
-#define DEF_MULT               MN_MULT
-#define MN_MILLISEC            1
-#define MX_MILLISEC            55
-#define MILLISEC_PER_TICK      55
+#define DEF_MULT                MN_MULT
+#define MN_MILLISEC             1
+#define MX_MILLISEC             55
+#define MILLISEC_PER_TICK       55
 
-#define TICKS_PER_HUNDRED       ((1193180*100)/DIVISOR)
+#define TICKS_PER_HUNDRED       (( 1193180UL * 100UL ) / DIVISOR)
