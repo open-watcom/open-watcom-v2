@@ -238,7 +238,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
  */
 static FILE *SearchForTags( void )
 {
-    char    path[FILENAME_MAX];
+    char    path[_MAX_PATH];
     char    *eop;
 
     if( CurrentFile && CurrentFile->name ) {
@@ -252,7 +252,7 @@ static FILE *SearchForTags( void )
             *eop = '\0';
         }
     } else {
-        GetCWD2( path, FILENAME_MAX );
+        GetCWD2( path, sizeof( path ) );
     }
 
     eop = &path[strlen( path ) - 1];

@@ -134,7 +134,7 @@ vi_rc   Filter( range * );
 /* dir.c */
 void    DirFini( void );
 void    GetCWD1( char ** );
-void    GetCWD2( char *, int );
+void    GetCWD2( char *, size_t );
 void    UpdateCurrentDirectory( void );
 vi_rc   ChangeDirectory( const char * );
 vi_rc   ConditionalChangeDirectory( const char * );

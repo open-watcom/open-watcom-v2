@@ -41,7 +41,7 @@ static char White_space[] = " \t";
 
 static int Line = 1;
 
-static char *get_line( char *buf, FILE *file ) 
+static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
@@ -65,7 +65,7 @@ static char *get_line( char *buf, FILE *file )
 }
 
 #if 0
-static int empty_data( char *ret ) 
+static int empty_data( char *ret )
 /********************************/
 {
     char    *end;
@@ -84,7 +84,7 @@ static int empty_data( char *ret )
 }
 #endif
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     FILE                *in;
@@ -174,7 +174,8 @@ int main( int argc, char *argv[] )
         }
 
         start = strpbrk( line, White_space );
-        *start++ = '\0';
+        if( start != NULL )
+            *start++ = '\0';
         strcpy( type, line );
 
         if( strcmp( type, "DYN_TPL_DIM" ) == 0 ) {
@@ -185,7 +186,7 @@ int main( int argc, char *argv[] )
 
         do {
             end = strpbrk( start, White_space );
-            if( end ) {
+            if( end != NULL ) {
                 *end++ = '\0';
             }
             fprintf( out, "%s, ", start );

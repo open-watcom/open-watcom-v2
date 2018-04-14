@@ -57,7 +57,7 @@ char *my_strupr( char *string )
         }
     }
     return( string );
-} 
+}
 
 char *my_strlwr( char *string )
 /*****************************/
@@ -72,7 +72,7 @@ char *my_strlwr( char *string )
     return( string );
 }
 
-static char *get_line( char *buf, FILE *file ) 
+static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
@@ -94,7 +94,7 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-static int empty_data( char *ret ) 
+static int empty_data( char *ret )
 /********************************/
 {
     char                *end;
@@ -111,7 +111,7 @@ static int empty_data( char *ret )
     return( 0 );
 }
 
-int main( int argc, char *argv[] ) 
+int main( int argc, char *argv[] )
 /********************************/
 {
     FILE                *in;
@@ -128,7 +128,6 @@ int main( int argc, char *argv[] )
     }
 
     in = fopen( argv[1], "r" );
-
     if( in == NULL ) {
         printf( "Could not open input file: %s\n", argv[1] );
         return( -1 );
@@ -147,7 +146,7 @@ int main( int argc, char *argv[] )
     fputs( "struct {\n", out );
     fputs( "    int            num_ctls;\n", out );
 
-    for( elt = 0;; ++elt ) {
+    for( elt = 0; ; ++elt ) {
         line = get_line( buf, in );
         if( line == NULL ) {
             break;
@@ -195,17 +194,17 @@ int main( int argc, char *argv[] )
 
     for( ;; ) {
         line = get_line( buf, in );
-        if( line == NULL ) {
+        if( line == NULL )
             break;
+        end = strpbrk( line, White_space );
+        if( end != NULL ) {
+            *end++ = '\0';
+            fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
         }
 
-        end = strpbrk( line, White_space );
-        *end = '\0';
-        ++end;
-
-        fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
-
         line = get_line( buf, in );
+        if( line == NULL )
+            break;
         fprintf( out, " %s", line );
 
         line = get_line( buf, in );

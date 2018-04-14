@@ -230,7 +230,7 @@ static void getConfigFilePaths( void )
  */
 static void readConfigFile( void )
 {
-    char        cname[FILENAME_MAX];
+    char        cname[_MAX_PATH];
     //char      str[MAX_STR]; // not used if not prompting for new cfg files
     char        *cfgname;
     struct stat cfg;

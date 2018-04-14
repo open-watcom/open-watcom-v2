@@ -78,7 +78,7 @@ void PushDirectory( const char *orig )
 {
     orig = orig;
     oldPath[0] = '\0';
-    GetCWD2( oldPath, _MAX_PATH );
+    GetCWD2( oldPath, sizeof( oldPath ) );
     ChangeDirectory( orig );
 
 } /* PushDirectory */

@@ -472,7 +472,7 @@ void PushDirectory( const char *orig )
     if( orig[1] == DRV_SEP ) {
         ChangeDrive( orig[0] );
     }
-    GetCWD2( oldPath, FILENAME_MAX );
+    GetCWD2( oldPath, sizeof( oldPath ) );
     ChangeDirectory( orig );
 
 } /* PushDirectory */

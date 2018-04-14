@@ -359,7 +359,7 @@ static void finiSource( labels *lab, vlist *vl, sfile *sf, undo_stack *atomic )
  */
 void FileSPVAR( void )
 {
-    char        path[FILENAME_MAX];
+    char        path[_MAX_PATH];
     char        drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
     int         i;
 
@@ -392,7 +392,7 @@ void FileSPVAR( void )
     }
     if( CurrentFile != NULL ) {
         PushDirectory( path );
-        GetCWD2( path, FILENAME_MAX );
+        GetCWD2( path, sizeof( path ) );
         PopDirectory();
     } else {
         path[0] = '\0';

@@ -42,9 +42,9 @@
  */
 void GetCWD1( char **str )
 {
-    char        bob[FILENAME_MAX];
+    char        bob[_MAX_PATH];
 
-    GetCWD2( bob, FILENAME_MAX );
+    GetCWD2( bob, sizeof( bob ) );
     *str = DupString( bob );
 
 } /* GetCWD1 */
@@ -52,9 +52,9 @@ void GetCWD1( char **str )
 /*
  * GetCWD2 - get current working directory
  */
-void GetCWD2( char *str, int maxlen )
+void GetCWD2( char *str, size_t maxlen )
 {
-    if( getcwd( str, maxlen - 1 ) == NULL ) {
+    if( getcwd( str, maxlen ) == NULL ) {
         str[0] = '\0';
     }
     // Don't lowercase the filename

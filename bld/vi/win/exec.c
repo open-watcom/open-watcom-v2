@@ -87,7 +87,7 @@ long MySpawn( const char *cmd )
     FARPROC             proc;
     HANDLE              inst;
     cmd_struct          cmds;
-    char                path[FILENAME_MAX];
+    char                path[_MAX_PATH];
 #ifndef __WINDOWS_386__
     char                buffer[FILENAME_MAX];
 #endif
@@ -102,7 +102,7 @@ long MySpawn( const char *cmd )
     }
     strcat( path, " " );
     strcat( path, cmds.cmd );
-    inst = (HANDLE) WinExec( (LPCSTR)path, SW_SHOWNORMAL );
+    inst = (HANDLE)WinExec( (LPCSTR)path, SW_SHOWNORMAL );
     if( inst > (HANDLE)32 ) {
         union REGS in_regs, out_regs;
 

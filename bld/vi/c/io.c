@@ -200,7 +200,7 @@ static int closeAFile( void )
  */
 FILE *GetFromEnvAndOpen( const char *path )
 {
-    char        tmppath[FILENAME_MAX];
+    char        tmppath[_MAX_PATH];
 
     GetFromEnv( path, tmppath );
     if( tmppath[0] != '\0' ) {
