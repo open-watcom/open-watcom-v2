@@ -2140,18 +2140,13 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     imp_type_handle     this_ith;
 
     ds = ImpSymType( iih, ish, &func_ith );
-    if( ds != DS_OK )
-        return( ds );
-    ds = TypeMemberFuncInfo( iih, &func_ith, ith, &this_ith, NULL );
-    if( ds != DS_OK )
-        return( ds );
-    if( ti != NULL ) {
-        ds = hllTypeInfo( iih, &this_ith, NULL, ti );
-        if( ds != DS_OK ) {
-            return( ds );
+    if( ds == DS_OK ) {
+        ds = TypeMemberFuncInfo( iih, &func_ith, ith, &this_ith, NULL );
+        if( ds == DS_OK && ti != NULL ) {
+            ds = hllTypeInfo( iih, &this_ith, NULL, ti );
         }
     }
-    return( DS_OK );
+    return( ds );
 #else
     return( DS_FAIL );
 #endif

@@ -653,9 +653,8 @@ dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *iih,
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih,
-                                imp_sym_handle *ish, location_context *lc,
-                                 location_list *ll )
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *iih, imp_sym_handle *ish,
+                                            location_context *lc, location_list *ll )
 {
     struct methodblock  method;
     dip_status          ds;
