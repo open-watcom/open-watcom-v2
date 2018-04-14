@@ -1477,6 +1477,8 @@ TYPE MakeSimpleFunction( TYPE return_type, ... )
     va_start( args1, return_type );
     va_start( args2, return_type );
     fn_type = buildFnType( return_type, args1, args2 );
+    va_end( args2 );
+    va_end( args1 );
     return( CheckDupType( fn_type ) );
 }
 
@@ -1490,6 +1492,8 @@ TYPE MakeModifiableFunction( TYPE return_type, ... )
     va_start( args1, return_type );
     va_start( args2, return_type );
     fn_type = buildFnType( return_type, args1, args2 );
+    va_end( args2 );
+    va_end( args1 );
     return( fn_type );
 }
 

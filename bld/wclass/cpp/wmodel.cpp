@@ -77,6 +77,7 @@ SayReturn WEXPORT WModel::sayf( SayStyle style, SayCode code, const char* text..
         va_list args;
         va_start( args, text );
         vsprintf( txt, text, args );
+        va_end( args );
         ret = ((WView*)_views[0])->say( style, code, txt );  //illegal cast
         delete[] txt;
     }

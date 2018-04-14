@@ -124,6 +124,8 @@ void AsmErr( int msgnum, ... )
         print_include_file_nesting_structure();
     } else {
         PrtMsg1( "", ERR_TOO_MANY_ERRORS, args1, args2 );
+        va_end( args1 );
+        va_end( args2 );
         AsmSuicide();
     }
 }
@@ -178,6 +180,7 @@ void PrtMsg( int msgnum, ... )
         OpenErrFile();
     va_start( args1, msgnum );
     PutMsg( errout, "Warning!", msgnum, args1 );
+    va_end( args1 );
     fflush( errout );
 }
 

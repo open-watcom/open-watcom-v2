@@ -80,6 +80,7 @@ MsgRetType WEXPORT WMessageDialog::messagef( WWindow* parent, MsgLevel level,
     va_list args;
     va_start( args, text );
     vsprintf( (char *)txt, text, args );
+    va_end( args );
     unsigned type = (unsigned)level | (unsigned)button;
     rc = domessage( parent, txt, caption, type );
     delete[] txt;
@@ -120,6 +121,7 @@ void WEXPORT WMessageDialog::info( WWindow* parent, const char *text, ... ) {
     va_list args;
     va_start( args, text );
     vsprintf( txt, text, args );
+    va_end( args );
     domessage( parent, txt, NULL, MsgOk );
     delete[] txt;
 }

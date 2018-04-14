@@ -71,12 +71,13 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     char            *where;
     bool            cmderror;
 
-    va_start( args, fmt );
     ptr = buff;
     if( flg & ERR_INTERNAL ) {
         ptr = StrCopy( LIT_ENG( Internal_Error ), ptr );
     }
+    va_start( args, fmt );
     ptr = FmtStr( ptr, fmt, args );
+    va_end( args );
     ptr = StrCopy( ".", ptr );
     if( flg & ERR_LOC ) {
         ptr = StrCopy( "\n    ", ptr );

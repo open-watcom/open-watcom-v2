@@ -180,9 +180,12 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
 char *Format( char *buff, const char *fmt, ... )
 {
     va_list args;
+    char    *p;
 
     va_start( args, fmt );
-    return( FmtStr( buff, fmt, args ) );
+    p = FmtStr( buff, fmt, args );
+    va_end( args );
+    return( p );
 }
 
 char *DupStrLen( const char *str, size_t len )

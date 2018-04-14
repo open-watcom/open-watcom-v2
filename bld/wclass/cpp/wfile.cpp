@@ -234,6 +234,7 @@ bool WEXPORT WFile::printf( const char* parms... )
     va_list args;
     va_start( args, parms );
     vsprintf( buffer, parms, args );
+    va_end( args );
     bool ok = putBytes( buffer, strlen( buffer ) );
     delete[] buffer;
     return( ok );
