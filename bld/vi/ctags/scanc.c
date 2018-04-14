@@ -318,7 +318,7 @@ typedef enum {
  */
 static tag_type doFunction( int *brace_level )
 {
-    char        ch;
+    int     ch;
 
     eatUntilClosingBracket();
     for( ;; ) {

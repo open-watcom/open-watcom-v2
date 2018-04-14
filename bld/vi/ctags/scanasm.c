@@ -55,7 +55,7 @@ void ScanAsm( void )
             continue;
         }
         i = 0;
-        while( IsTokenChar( *buffptr ) ) {
+        while( IsTokenChar( *(unsigned char *)buffptr ) ) {
             token[i++] = *buffptr++;
         }
         if( i == 0 ) {

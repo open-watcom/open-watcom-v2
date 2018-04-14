@@ -464,7 +464,7 @@ int main( int argc, char *argv[] )
 /*
  * IsTokenChar - determine if a character is part of a token
  */
-bool IsTokenChar( char ch )
+bool IsTokenChar( int ch )
 {
     if( isalnum( ch ) ) {
         return( true );

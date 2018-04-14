@@ -60,7 +60,7 @@ extern bool     VerboseFlag;
  * function prototypes
  */
 /* ctags.c */
-extern bool     IsTokenChar( char ch );
+extern bool     IsTokenChar( int ch );
 extern int      MyStricmp( char **buf, char *literal );
 extern void     ErrorMsgExit( const char *, ... );
 
