@@ -110,89 +110,80 @@ int InsertTabSpace( int j, char *buff, bool *tabme )
 
 
 /*
- * ExpandTabsInABufferUpToColumn - remove tabs only up to specified column
+ * ExpandTabsInABufferUpToColumn - expand tabs only up to specified column
  */
-bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out,
-                                    int outlen )
+bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out, int outsize )
 {
     int         i, j;
     bool        res;
 
-    res = ExpandTabsInABuffer( in, endcol, out, outlen );
-    j = inlen - endcol;
-    i = strlen( out );
-    if( i + j >= outlen ) {
-        inlen = outlen - i + endcol;
+    if( outsize > 0 ) {
+        res = ExpandTabsInABuffer( in, endcol, out, outsize );
+        outsize--;  /* reserve space for '\0' terminator */
+        j = inlen - endcol;
+        i = strlen( out );
+        if( i + j > outsize ) {
+            inlen = outsize - i + endcol;
+        }
+        for( j = endcol; j < inlen; j++ ) {
+            out[i++] = in[j];
+        }
+        out[i] = '\0';
+        return( res );
     }
-    for( j = endcol; j < inlen; j++ ) {
-        out[i++] = in[j];
-    }
-    out[i] = '\0';
-    return( res );
+    return( false );
 
 } /* ExpandTabsInABufferUpToColumn */
 
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outlen )
+bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outsize )
 {
-    int             j, k, tb, l;
-    bool            tabme = false;
-    char            ch;
+    int             j, k, tb;
+    bool            tabme;
     int             c;
 
     /*
      * run through each character
      */
-    k = 0;
-    outlen--;
-    for( j = 0; j < inlen; j++ ) {
-        /*
-         * if we have a tab, insert some spaces
-         */
-        c = (unsigned char)in[j];
-        if( c < ' ' || c > 127 ) {
-            if( c == '\t' ) {
-                TabCnt++;
-                tb = Tab( k + 1, EditVars.HardTab );
-                for( l = k; l < k + tb; l++ ) {
-                    if( l < outlen ) {
-                        out[l] = ' ';
-                    } else {
-                        out[outlen] = '\0';
-                        return( true );
+    tabme = false;
+    if( outsize > 0 ) {
+        outsize--;  /* reserve space for '\0' terminator */
+        k = 0;
+        for( j = 0; j < inlen && k < outsize; j++ ) {
+            /*
+             * if we have a tab, insert some spaces
+             */
+            c = (unsigned char)in[j];
+            if( c < ' ' || c > 127 ) {
+                if( c == '\t' ) {
+                    tabme = true;
+                    TabCnt++;
+                    tb = k + Tab( k + 1, EditVars.HardTab );
+                    if( tb > outsize )
+                        tb = outsize;
+                    while( k < tb ) {
+                        out[k++] = ' ';
                     }
-                }
-                k = l;
-                tabme = true;
-            } else if( !EditFlags.EightBits ) {
-                if( c > 127 ) {
-                    ch = '?';
-                } else {
-                    ch = c + 'A' - 1;
-                }
-                if( k + 1 < outlen ) {
+                    continue;
+                } else if( !EditFlags.EightBits ) {
+                    tabme = true;
+                    if( k + 1 >= outsize ) {
+                        break;
+                    }
+                    if( c > 127 ) {
+                        c = '?';
+                    } else {
+                        c = c + 'A' - 1;
+                    }
                     out[k++] = '^';
-                    out[k++] = ch;
-                } else {
-                    out[outlen] = '\0';
-                    return( true );
                 }
-                tabme = true;
-            } else {
-                out[k++] = c;
             }
-        } else {
-            if( k + 1 >= outlen ) {
-                break;
-            } else {
-                out[k++] = c;
-            }
+            out[k++] = c;
         }
-
+        out[k] = '\0';
     }
-    out[k] = '\0';
     return( tabme );
 
 } /* ExpandTabsInABuffer */
@@ -244,7 +235,7 @@ int WinRealCursorPosition( char *buff, int vc )
         }
     }
     return( len );
-    
+
 } /* WinRealCursorPosition */
 
 /*
@@ -442,7 +433,7 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
         start++;
     }
     tmp = StaticAlloc();
-    ExpandTabsInABuffer( buff, j,  tmp, EditVars.MaxLine );
+    ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLine + 1 );
     while( tmp[i] == ' ' ) {
         i++;
     }
@@ -488,8 +479,7 @@ bool AddLeadingTabSpace( short *len, char *buff, int amount )
 /*
  * ConvertSpacesToTabsUpToColumn - add tabs only up to specified column
  */
-bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out,
-                                    int outlen )
+bool ConvertSpacesToTabsUpToColumn( int endcol, char *in, int inlen, char *out, int outlen )
 {
     int         first_blank, j, extra, l, n, k, m, i;
     bool        blanks_inprog, tabme;

@@ -587,8 +587,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     break;
                 }
             }
-            if( rlMenu && sfd->allow_rl != NULL ) {
-                *(sfd->allow_rl) = rlMenuNum;
+            if( rlMenu && sfd->allowrl != NULL ) {
+                *(sfd->allowrl) = rlMenuNum;
                 done = true;
                 break;
             }
@@ -701,16 +701,16 @@ vi_rc SelectLineInFile( selflinedata *sfd )
 
         case VI_KEY( LEFT ):
         case VI_KEY( h ):
-            if( sfd->allow_rl != NULL ) {
-                *(sfd->allow_rl) = -1;
+            if( sfd->allowrl != NULL ) {
+                *(sfd->allowrl) = -1;
                 done = true;
             }
             break;
 
         case VI_KEY( RIGHT ):
         case VI_KEY( l ):
-            if( sfd->allow_rl != NULL ) {
-                *(sfd->allow_rl) = 1;
+            if( sfd->allowrl != NULL ) {
+                *(sfd->allowrl) = 1;
                 done = true;
             }
             break;

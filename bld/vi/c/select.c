@@ -96,7 +96,7 @@ vi_rc SelectItem( selectitem *si )
     sfd.f = cfile;
     sfd.wi= si->wi;
     sfd.title = si->title;
-    sfd.allow_rl = si->allowrl;
+    sfd.allowrl = si->allowrl;
     sfd.hilite = si->hilite;
     sfd.show_lineno = si->show_lineno;
     sfd.retevents = si->retevents;

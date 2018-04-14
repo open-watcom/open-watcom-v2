@@ -435,14 +435,13 @@ dc_line *DCFindLine( int c_line_no, window_id wid )
 
     for( info = InfoHead; info != NULL; info = info->next ) {
         if( info->current_window_id == wid ) {
-            break;
+            assert( c_line_no >= 0 && c_line_no < info->dc_size );
+            dcline = info->dclines;
+            return( dcline + c_line_no );
         }
     }
     assert( info );
-    assert( c_line_no >= 0 && c_line_no < info->dc_size );
-
-    dcline = info->dclines;
-    return( dcline + c_line_no );
+    return( NULL );
 }
 
 void DCValidateLine( dc_line *dcline, int start_col, char *text )

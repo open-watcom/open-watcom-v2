@@ -106,7 +106,9 @@ vi_rc EditFile( const char *name, bool dammit )
     char        mask[FILENAME_MAX];
     bool        reset_dir;
     int         index;
+#ifdef __WIN__
     char        *altname = NULL;
+#endif
     vi_rc       rc;
 
     fn = MemAlloc( FILENAME_MAX );
@@ -326,9 +328,11 @@ vi_rc EditFile( const char *name, bool dammit )
         name = GetNextFileName( name, fn );
     } while( *fn != '\0' );
 
+#ifdef __WIN__
     if( altname != NULL ) {
         MemFree( altname );
     }
+#endif
     MemFree( fn );
 
 #ifdef __WIN__

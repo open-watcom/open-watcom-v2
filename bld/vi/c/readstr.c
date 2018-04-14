@@ -435,51 +435,49 @@ static bool insertString( input_buffer *input, char *str )
 /*
  * GetTextForSpecialKey - get text for ^D,^E,^W, ALT_L, ^L, ^R
  */
-bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
+bool GetTextForSpecialKey( vi_key event, char *buff, int buffsize )
 {
-    int         i, l;
+    int         i;
+    int         len;
 
+    if( buffsize > 0 )
+        buff[0] = '\0';
     switch( event ) {
     case VI_KEY( CTRL_E ):
     case VI_KEY( CTRL_W ):
-        tmp[0] = '\0';
-        GimmeCurrentWord( tmp, str_max, event == VI_KEY( CTRL_E ) );
-        tmp[str_max] = '\0';
+        GimmeCurrentWord( buff, buffsize, event == VI_KEY( CTRL_E ) );
         break;
     case VI_KEY( ALT_L ):
-        if( CurrentLine == NULL ) {
-            break;
+        if( CurrentLine != NULL ) {
+            i = CurrentPos.column - 1;
+            if( i < 0 )
+                i = 0;
+            ExpandTabsInABuffer( &CurrentLine->data[i], CurrentLine->len - i, buff, buffsize );
         }
-        i = CurrentPos.column - 1;
-        if( i < 0 )
-            i = 0;
-        ExpandTabsInABuffer( &CurrentLine->data[i], CurrentLine->len - i, tmp, str_max );
         break;
     case VI_KEY( CTRL_L ):
-        if( CurrentLine == NULL ) {
-            break;
+        if( CurrentLine != NULL ) {
+            ExpandTabsInABuffer( &CurrentLine->data[0], CurrentLine->len, buff, buffsize );
         }
-        ExpandTabsInABuffer( &CurrentLine->data[0], CurrentLine->len, tmp, str_max );
         break;
     case VI_KEY( CTRL_R ):
-        if( CurrentLine == NULL ) {
-            break;
-        }
-        if( SelRgn.lines ) {
-            assert( SelRgn.start.line == SelRgn.end.line );
-            i = 1;
-            l = CurrentLine->len + 1;
-        } else {
-            if( SelRgn.start.column < SelRgn.end.column ) {
-                i = SelRgn.start.column;
-                l = SelRgn.end.column - SelRgn.start.column + 1;
+        if( CurrentLine != NULL ) {
+            if( SelRgn.lines ) {
+                assert( SelRgn.start.line == SelRgn.end.line );
+                i = 1;
+                len = CurrentLine->len + 1;
             } else {
-                i = SelRgn.end.column;
-                l = SelRgn.start.column - SelRgn.end.column + 1;
+                if( SelRgn.start.column < SelRgn.end.column ) {
+                    i = SelRgn.start.column;
+                    len = SelRgn.end.column - SelRgn.start.column + 1;
+                } else {
+                    i = SelRgn.end.column;
+                    len = SelRgn.start.column - SelRgn.end.column + 1;
+                }
             }
+            ExpandTabsInABuffer( &CurrentLine->data[i - 1], len, buff, buffsize );
         }
-        ExpandTabsInABuffer( &CurrentLine->data[i - 1], l, tmp, str_max );
-        tmp[l] = '\0';
+        break;
     default:
         return( false );
     }
@@ -539,8 +537,7 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
         } else {
             tmp = MemAlloc( input->buffer_length );
             assert( tmp != NULL );
-            GetTextForSpecialKey( input->buffer_length - strlen( input->buffer ) - 1,
-                                  event, tmp );
+            GetTextForSpecialKey( event, tmp, input->buffer_length - strlen( input->buffer ) );
             saveStr( input );
             insertString( input, tmp );
             MemFree( tmp );

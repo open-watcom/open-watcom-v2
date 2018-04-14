@@ -92,7 +92,7 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
     case VI_KEY( ALT_L ):
     case VI_KEY( CTRL_L ):
         if( process ) {
-            if( GetTextForSpecialKey( sizeof( tmp ), key, tmp ) ) {
+            if( GetTextForSpecialKey( key, tmp, sizeof( tmp ) ) ) {
                 insertEditText( hwnd, tmp );
             }
         }

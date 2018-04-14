@@ -203,7 +203,7 @@ vi_rc Change( range *r )
 #else
     vecol = VirtualColumnOnCurrentLine( ecol + 1 );
     vecol--;
-    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine );
+    ExpandTabsInABuffer( CurrentLine->data, CurrentLine->len, WorkLine->data, EditVars.MaxLine + 1 );
     WorkLine->len = strlen( WorkLine->data );
     tmp = WorkLine->data[vecol];
     WorkLine->data[vecol] = '$';

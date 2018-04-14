@@ -638,7 +638,7 @@ vi_rc IMTabs( void )
          * create a real version of the line
          */
         buff = StaticAlloc();
-        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data, WorkLine->len, buff, EditVars.MaxLine );
+        ExpandTabsInABufferUpToColumn( CurrentPos.column - 1, WorkLine->data, WorkLine->len, buff, EditVars.MaxLine + 1 );
         len = strlen( buff );
 
         /*

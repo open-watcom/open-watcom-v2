@@ -765,7 +765,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
         si.is_menu = true;
         si.wi = &menuw_info;
         si.list = cmenu->list;
-        si.maxlist = (int) cmenu->itemcnt;
+        si.maxlist = (int)cmenu->itemcnt;
         si.result = result;
         si.allowrl = arl;
         si.hilite = cmenu->hilist;
@@ -786,7 +786,7 @@ static vi_rc processMenu( int sel, menu *cmenu, windim xpos, windim ypos, windim
             }
             return( rc );
         }
-        if( !allowrl ) {
+        if( allowrl == 0 ) {
             break;
         }
 

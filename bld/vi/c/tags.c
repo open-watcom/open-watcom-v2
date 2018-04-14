@@ -51,7 +51,7 @@ vi_rc GetCurrentTag( void )
     vi_rc       rc;
     char        tag[MAX_STR];
 
-    rc = GimmeCurrentWord( tag, sizeof( tag ) - 1, false );
+    rc = GimmeCurrentWord( tag, sizeof( tag ), false );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -117,7 +117,7 @@ vi_rc FindTag( const char *tag )
 /*
  * PickATag - pick a tag
  */
-static int PickATag( int clist, char **list, const char *tagname )
+static int PickATag( int tag_count, char **tag_list, const char *tagname )
 {
     window_info wi;
     int         i;
@@ -133,17 +133,17 @@ static int PickATag( int clist, char **list, const char *tagname )
     if( wi.has_border ) {
         i -= 2;
     }
-    if( clist < i ) {
-        wi.area.y2 -= i - clist;
+    if( tag_count < i ) {
+        wi.area.y2 -= i - tag_count;
     }
-    show_lineno = ( clist > i );
+    show_lineno = ( tag_count > i );
     MySprintf( title, "Pick A File For Tag \"%s\"", tagname );
 
     memset( &si, 0, sizeof( si ) );
     si.wi = &wi;
     si.title = title;
-    si.list = list;
-    si.maxlist = clist;
+    si.list = tag_list;
+    si.maxlist = tag_count;
     si.num = 0;
     si.retevents = NULL;
     si.event = VI_KEY( DUMMY );
@@ -165,26 +165,26 @@ static int PickATag( int clist, char **list, const char *tagname )
  */
 static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
 {
-    int         tagcnt;
-    char        **taglist;
+    int         tag_count;
+    char        **tag_list;
     int         i;
     int         whichtag;
     char        tag[MAX_STR];
     char        *p;
 
-    tagcnt = 0;
-    taglist = NULL;
+    tag_count = 0;
+    tag_list = NULL;
     p = GetNextWord1( buff, tag );
     for( ;; ) {
         p = SkipLeadingSpaces( p );
-        taglist = MemReAlloc( taglist, sizeof( char * ) * ( tagcnt + 1 ) );
-        taglist[tagcnt] = DupString( p );
+        tag_list = MemReAlloc( tag_list, sizeof( char * ) * ( tag_count + 1 ) );
+        tag_list[tag_count] = DupString( p );
         i = 0;
-        while( !isspace( taglist[tagcnt][i] ) ) {
+        while( !isspace( tag_list[tag_count][i] ) ) {
             i++;
         }
-        taglist[tagcnt][i] = '\0';
-        tagcnt++;
+        tag_list[tag_count][i] = '\0';
+        tag_count++;
         if( fgets( buff, MAX_STR, f ) == NULL )  {
             break;
         }
@@ -205,17 +205,17 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
         }
     }
     fclose( f );
-    if( EditFlags.TagPrompt && EditFlags.WindowsStarted && tagcnt > 1 ) {
-        whichtag = PickATag( tagcnt, taglist, str );
+    if( EditFlags.TagPrompt && EditFlags.WindowsStarted && tag_count > 1 ) {
+        whichtag = PickATag( tag_count, tag_list, str );
         if( whichtag < 0 ) {
             return( DO_NOT_CLEAR_MESSAGE_WINDOW );
         }
     } else {
         whichtag = 0;
     }
-    taglist[whichtag][strlen( taglist[whichtag] )] = ' ';
-    strcpy( buff, taglist[whichtag] );
-    MemFreeList( tagcnt, taglist );
+    tag_list[whichtag][strlen( tag_list[whichtag] )] = ' ';
+    strcpy( buff, tag_list[whichtag] );
+    MemFreeList( tag_count, tag_list );
     p = GetNextWord1( buff, fname );
     if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );

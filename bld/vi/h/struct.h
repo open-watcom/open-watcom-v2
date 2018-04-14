@@ -625,7 +625,7 @@ typedef struct {
     linenum             sl;                     // selected line
     char                *title;                 // title of window
     vi_rc (*checkres)(const char *, char *, int * ); // check if selected change is valid
-    int                 *allow_rl;              // allow cursor right/left (for menu bar)
+    int                 *allowrl;               // allow cursor right/left (for menu bar)
     hilst               *hilite;                // chars to highlight
     const vi_key        *retevents;             // events that simulate pressing enter
     vi_key              event;                  // event that caused a return

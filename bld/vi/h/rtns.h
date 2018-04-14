@@ -679,7 +679,7 @@ void    Lead( char c, int num, char *buff );
 /* readstr.c */
 bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
 vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *h );
-bool    GetTextForSpecialKey( int str_max, vi_key event, char *tmp );
+bool    GetTextForSpecialKey( vi_key event, char *buff, int buffsize );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
 
 /* replace.c */

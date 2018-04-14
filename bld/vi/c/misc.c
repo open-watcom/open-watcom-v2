@@ -275,8 +275,7 @@ static long doExec( const char *std_in, const char *std_out, const char *cmd )
     }
     if( std_out != NULL ) {
         save_out = dup( STDOUT_FILENO );
-        new_out = doRedirect( STDOUT_FILENO, std_out,
-                              O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
+        new_out = doRedirect( STDOUT_FILENO, std_out, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
         if( new_out == -1 ) {
             close( save_out );
             if( std_in != NULL ) {

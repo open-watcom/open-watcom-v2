@@ -231,7 +231,7 @@ static void processFile( const char *arg )
     char        buff[_MAX_EXT + 5];
     char        *ext;
     file_type   ftype;
-    unsigned    tagcnt;
+    unsigned    tag_count;
 
     StartFile( arg );
     _splitpath2( arg, buff, NULL, NULL, NULL, &ext );
@@ -251,10 +251,10 @@ static void processFile( const char *arg )
     } else {
         ftype = fileType;
     }
-    tagcnt = 0;
+    tag_count = 0;
     if( VerboseFlag ) {
         printf( "Processing %s", arg );
-        tagcnt = TagCount;
+        tag_count = GetTagCount();
         fflush( stdout );
     }
     switch( ftype ) {
@@ -275,7 +275,7 @@ static void processFile( const char *arg )
         break;
     }
     if( VerboseFlag ) {
-        printf( ", %u tags.\n", TagCount - tagcnt );
+        printf( ", %u tags.\n", GetTagCount() - tag_count );
     }
     EndFile();
 
@@ -452,7 +452,7 @@ int main( int argc, char *argv[] )
     }
     if( appendFlag ) {
         if( VerboseFlag ) {
-            printf( "Generated %u tags.\n", TagCount );
+            printf( "Generated %u tags.\n", GetTagCount() );
         }
         ReadExtraTags( fileName );
     }

@@ -624,7 +624,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
             }
             if( rc == FGREP_FOUND_STRING ) {
 
-                ExpandTabsInABuffer( ts, strlen( ts ), data, MAX_DISP );
+                ExpandTabsInABuffer( ts, strlen( ts ), data, MAX_DISP + 1 );
                 strcpy( ts, data );
                 MySprintf( data, "%X \"%s\"", fn, ts );
 #ifdef __WIN__

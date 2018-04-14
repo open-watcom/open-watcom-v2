@@ -64,9 +64,6 @@ void StartUndoGroupWithPosition( undo_stack *stack, linenum lne,
      * no group active, make this the head group
      */
     stack->OpenUndo = 1;
-    if( cundo == NULL ) {
-        return;
-    }
     cundo->data.sdata.depth = 1;
     cundo->data.sdata.p.line = lne;
     cundo->data.sdata.top = top;
