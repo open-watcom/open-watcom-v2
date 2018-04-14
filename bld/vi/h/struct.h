@@ -487,9 +487,7 @@ typedef union ss_flags {
 } ss_flags;
 
 typedef enum syntax_element {
-    SE_UNPARSED = -2,   // basically used to flag problems
-    SE_UNUSED = -1,     // use to temporarily setup a style
-    SE_TEXT = 0,        // always first
+    SE_TEXT,            // always first
     SE_WHITESPACE,      // don't mess with order (fonts in .cfg parallel #s)
     SE_SELECTION,
     SE_EOFTEXT,
@@ -508,8 +506,12 @@ typedef enum syntax_element {
     SE_STRING,
     SE_VARIABLE,
     SE_REGEXP,
-    SE_NUMTYPES,        // always last
+    SE_UNUSED,          // hidden, use to temporarily setup a style
+    SE_UNPARSED,        // hidden, basically used to flag problems
+    SE_MAXSIZE          // max style array size
 } syntax_element;
+
+#define SE_NUMTYPES     SE_UNUSED
 
 typedef struct ss_block {
     short               end;

@@ -43,7 +43,7 @@
 /*----- STRUCTURES -----*/
 
 /*----- EXPORTS -----*/
-extern type_style   SEType[SE_NUMTYPES];
+extern type_style   SEType[SE_MAXSIZE];
 
 
 /*----- PROTOTYPES -----*/

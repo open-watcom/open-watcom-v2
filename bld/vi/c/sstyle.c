@@ -42,7 +42,7 @@
 
 
 /*----- EXPORTS -----*/
-type_style      SEType[SE_NUMTYPES];
+type_style      SEType[SE_MAXSIZE];
 
 
 static void getEOFText( ss_block *ss_new, char *text )
