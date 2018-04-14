@@ -1430,6 +1430,9 @@ OVL_EXTERN brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
     unmapped = false;
     mapaddress = false;
     symaddress = false;
+    image_name = NULL;
+    mod_name = NULL;
+    sym_name = NULL;
     while( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( PointNameTab );
