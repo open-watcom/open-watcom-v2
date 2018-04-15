@@ -163,7 +163,7 @@ static int PickATag( int tag_count, char **tag_list, const char *tagname )
 /*
  * selectTag - select a tag from a list of possible tags
  */
-static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
+static vi_rc selectTag( FILE *fp, const char *str, char *buff, char *fname )
 {
     int         tag_count;
     char        **tag_list;
@@ -185,7 +185,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
         }
         tag_list[tag_count][i] = '\0';
         tag_count++;
-        if( fgets( buff, MAX_STR, f ) == NULL )  {
+        if( fgets( buff, MAX_STR, fp ) == NULL )  {
             break;
         }
         for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
@@ -204,7 +204,7 @@ static vi_rc selectTag( FILE *f, const char *str, char *buff, char *fname )
             break;
         }
     }
-    fclose( f );
+    fclose( fp );
     if( EditFlags.TagPrompt && EditFlags.WindowsStarted && tag_count > 1 ) {
         whichtag = PickATag( tag_count, tag_list, str );
         if( whichtag < 0 ) {
@@ -284,18 +284,18 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
 {
     char        tag[MAX_STR];
     int         i;
-    FILE        *f;
+    FILE        *fp;
 
     /*
      * get file and buffer
      */
-    f = GetFromEnvAndOpen( EditVars.TagFileName );
-    if( f == NULL ) {
+    fp = GetFromEnvAndOpen( EditVars.TagFileName );
+    if( fp == NULL ) {
         if( EditFlags.SearchForTagfile ) {
-            f = SearchForTags();
+            fp = SearchForTags();
         }
 
-        if( f == NULL ) {
+        if( fp == NULL ) {
             return( ERR_FILE_NOT_FOUND );
         }
     }
@@ -304,8 +304,8 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
      * loop until tag found
      */
     for( ;; ) {
-        if( fgets( buff, MAX_STR, f ) == NULL )  {
-            fclose( f );
+        if( fgets( buff, MAX_STR, fp ) == NULL )  {
+            fclose( fp );
             return( ERR_TAG_NOT_FOUND );
         }
         for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
@@ -320,12 +320,12 @@ vi_rc LocateTag( const char *str, char *fname, char *buff )
         } else {
             i = strcmp( str, tag );
             if( i < 0 ) {
-                fclose( f );
+                fclose( fp );
                 return( ERR_TAG_NOT_FOUND );
             }
         }
         if( i == 0 ) {
-            return( selectTag( f, str, buff, fname ) );
+            return( selectTag( fp, str, buff, fname ) );
         }
     }
 

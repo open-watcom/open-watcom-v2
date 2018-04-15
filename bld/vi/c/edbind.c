@@ -284,7 +284,7 @@ int main( int argc, char *argv[] )
     int                 j, k;
     size_t              len, sl;
     bind_size           fi;
-    FILE                *f;
+    FILE                *fp;
     struct stat         fs;
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
     char                fname[_MAX_FNAME], ext[_MAX_EXT];
@@ -352,12 +352,12 @@ int main( int argc, char *argv[] )
          * read in all data files
          */
         MyPrintf( "Getting data files from" );
-        f = GetFromEnvAndOpen( bindfile );
+        fp = GetFromEnvAndOpen( bindfile );
         MyPrintf( "\n" );
-        if( f == NULL ) {
+        if( fp == NULL ) {
             Abort( "Could not open %s", bindfile );
         }
-        while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
+        while( (ptr = fgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
             for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len ) {
                 ptr[len - 1] = '\0';
             }
@@ -375,7 +375,7 @@ int main( int argc, char *argv[] )
                 Abort( "Too many files to bind!" );
             }
         }
-        fclose( f );
+        fclose( fp );
 
         buffn = data;
 
@@ -406,16 +406,16 @@ int main( int argc, char *argv[] )
         buff2 = MyAlloc( FILE_BUFF_SIZE );
         for( fi = 0; fi < FileCount; fi++ ) {
             MyPrintf( "Loading" );
-            f = GetFromEnvAndOpen( dats[fi] );
-            if( f == NULL ) {
+            fp = GetFromEnvAndOpen( dats[fi] );
+            if( fp == NULL ) {
                 Abort( "\nLoad of %s failed!", dats[fi] );
             }
             free( dats[fi] );
-            setvbuf( f, buff2, _IOFBF, FILE_BUFF_SIZE );
+            setvbuf( fp, buff2, _IOFBF, FILE_BUFF_SIZE );
             index[fi] = data_len;
             lines = 0;
             len1 = 0;
-            while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
+            while( (ptr = fgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
                 for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len )
                     ptr[len - 1] = '\0';
                 if( ptr[0] == '\0' ) {
@@ -434,7 +434,7 @@ int main( int argc, char *argv[] )
                 len1 += (bind_size)( len + 1 );
                 lines++;
             }
-            fclose( f );
+            fclose( fp );
             data_len += len1;
             entries[fi] = lines;
             MyPrintf( "Added %d lines (%d bytes)\n", lines, len1 );

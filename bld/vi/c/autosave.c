@@ -139,7 +139,7 @@ void DoAutoSave( void )
     char        path2[FILENAME_MAX];
     char        tmp[FILENAME_MAX];
     bool        quiet;
-    FILE        *f;
+    FILE        *fp;
     vi_rc       rc;
     status_type lastst;
 
@@ -182,10 +182,10 @@ void DoAutoSave( void )
         GetCurrentFilePath( path2 );
         CurrentFile->been_autosaved = true;
         MakeTmpPath( tmp, checkFileName );
-        f = fopen( tmp, "a" );
-        if( f != NULL ) {
-            MyFprintf( f, "%s %s\n", path, path2 );
-            fclose( f );
+        fp = fopen( tmp, "a" );
+        if( fp != NULL ) {
+            MyFprintf( fp, "%s %s\n", path, path2 );
+            fclose( fp );
         }
     }
 
@@ -288,7 +288,7 @@ void AutoSaveInit( void )
     char        asl_path[FILENAME_MAX];
     int         len;
     int         cnt;
-    FILE        *f;
+    FILE        *fp;
     int         pid;
     int         ch;
     int         handle;
@@ -344,9 +344,9 @@ void AutoSaveInit( void )
             if( handle < 0 ) {
                 continue;
             }
-            f = fdopen( handle, "r" );
-            if( f != NULL ) {
-                while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+            fp = fdopen( handle, "r" );
+            if( fp != NULL ) {
+                while( (p = fgets( path2, FILENAME_MAX, fp )) != NULL ) {
                     for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
                         p[i - 1] = '\0';
                     }
@@ -361,7 +361,7 @@ void AutoSaveInit( void )
                     FTSRunCmds( p );
                     cnt++;
                 }
-                fclose( f );
+                fclose( fp );
                 remove( as_path );
             } else {
                 close( handle );
@@ -442,7 +442,7 @@ void SetNextAutoSaveTime( void )
  */
 void RemoveFromAutoSaveList( void )
 {
-    FILE        *f, *f2;
+    FILE        *fpi, *fpo;
     char        as_path[FILENAME_MAX];
     char        as2_path[FILENAME_MAX];
     char        path[FILENAME_MAX];
@@ -468,16 +468,16 @@ void RemoveFromAutoSaveList( void )
     GetCurrentFilePath( path );
 
 //    found = false;
-    f = fopen( as_path, "r" );
-    if( f == NULL ) {
+    fpi = fopen( as_path, "r" );
+    if( fpi == NULL ) {
         return;
     }
-    f2 = fopen( as2_path, "w" );
-    if( f2 == NULL ) {
-        fclose( f );
+    fpo = fopen( as2_path, "w" );
+    if( fpo == NULL ) {
+        fclose( fpi );
         return;
     }
-    while( (p = fgets( path2, FILENAME_MAX, f )) != NULL ) {
+    while( (p = fgets( path2, FILENAME_MAX, fpi )) != NULL ) {
         for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
             p[i - 1] = '\0';
         }
@@ -488,19 +488,19 @@ void RemoveFromAutoSaveList( void )
             if( strcmp( data, p ) == 0 ) {
 //                found = true;
                 remove( p );
-                while( fgets( data, FILENAME_MAX, f ) != NULL ) {
+                while( fgets( data, FILENAME_MAX, fpi ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
                         data[i - 1] = '\0';
                     }
-                    MyFprintf( f2, "%s\n", data );
+                    MyFprintf( fpo, "%s\n", data );
                 }
                 break;
             }
         }
-        MyFprintf( f2, "%s %s\n", data, p );
+        MyFprintf( fpo, "%s %s\n", data, p );
     }
-    fclose( f );
-    fclose( f2 );
+    fclose( fpi );
+    fclose( fpo );
     remove( as_path );
     rename( as2_path, as_path );
 

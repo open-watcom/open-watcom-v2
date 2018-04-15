@@ -137,22 +137,22 @@ static int compareStrings( const void *p1, const void *p2 )
  */
 void GenerateTagsFile( const char *fname )
 {
-    FILE        *f;
+    FILE        *fp;
     int         i;
 
     if( tagList != NULL ) {
         qsort( tagList, tagCount, sizeof( char * ), compareStrings );
-        f = fopen( fname, "w" );
-        if( f == NULL ) {
+        fp = fopen( fname, "w" );
+        if( fp == NULL ) {
             ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
         }
         if( tagList != NULL ) {
             total_size += tagCount * sizeof( char * );
         }
         for( i = 0; i < tagCount; i++ ) {
-            fprintf( f, "%s\n", tagList[i] );
+            fprintf( fp, "%s\n", tagList[i] );
         }
-        fclose( f );
+        fclose( fp );
     }
     if( VerboseFlag ) {
         printf( "Wrote %u tags.\n", tagCount );
@@ -166,21 +166,21 @@ void GenerateTagsFile( const char *fname )
  */
 void ReadExtraTags( const char *fname )
 {
-    FILE        *f;
+    FILE        *fp;
     char        res[MAX_STR];
     int         i;
 
-    f = fopen( fname, "r" );
-    if( f == NULL ) {
+    fp = fopen( fname, "r" );
+    if( fp == NULL ) {
         return;
     }
-    while( fgets( res, sizeof( res ), f ) != NULL ) {
+    while( fgets( res, sizeof( res ), fp ) != NULL ) {
         for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
             res[i - 1] = '\0';
         }
         addToTagList( res );
     }
-    fclose( f );
+    fclose( fp );
 
 } /* ReadExtraTags */
 

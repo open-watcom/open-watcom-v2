@@ -247,8 +247,8 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
      */
     gf->type = GF_FILE;
     gf->gf.a.currline = 0;
-    gf->data.f = GetFromEnvAndOpen( fn );
-    if( gf->data.f == NULL ) {
+    gf->data.fp = GetFromEnvAndOpen( fn );
+    if( gf->data.fp == NULL ) {
         return( false );
     }
     return( true );
@@ -260,7 +260,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
  */
 void SpecialFclose( GENERIC_FILE *gf )
 {
-    fclose( gf->data.f );
+    fclose( gf->data.fp );
 
 } /* SpecialFclose */
 
@@ -271,7 +271,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
     size_t      i;
 
-    if( fgets( buff, max, gf->data.f ) == NULL ) {
+    if( fgets( buff, max, gf->data.fp ) == NULL ) {
         return( true );
     }
     gf->gf.a.currline++;

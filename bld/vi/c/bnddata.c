@@ -189,8 +189,8 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
      * process regular file
      */
     gf->type = GF_FILE;
-    gf->data.f = GetFromEnvAndOpen( fn );
-    return( gf->data.f != NULL );
+    gf->data.fp = GetFromEnvAndOpen( fn );
+    return( gf->data.fp != NULL );
 
 } /* SpecialOpen */
 
@@ -201,7 +201,7 @@ void SpecialFclose( GENERIC_FILE *gf )
 {
     switch( gf->type ) {
     case GF_FILE:
-        fclose( gf->data.f );
+        fclose( gf->data.fp );
         break;
     case GF_BOUND:
         EditFlags.BndMemoryLocked = false;
@@ -223,7 +223,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 
     switch( gf->type ) {
     case GF_FILE:
-        if( fgets( buff, max, gf->data.f ) == NULL ) {
+        if( fgets( buff, max, gf->data.fp ) == NULL ) {
             return( true );
         }
         for( len = strlen( buff ); len > 0 && isWSorCtrlZ( buff[len - 1] ); --len ) {

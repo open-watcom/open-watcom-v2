@@ -654,7 +654,7 @@ typedef struct {
 
 typedef struct {
     union {
-        FILE            *f;
+        FILE            *fp;
         int             handle;
         char            *pos;
         struct file     *cfile;

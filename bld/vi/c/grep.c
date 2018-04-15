@@ -678,14 +678,14 @@ static vi_rc eSearch( const char *fn, char *res )
 {
     int         i;
     char        *buff;
-    FILE        *f;
+    FILE        *fp;
     vi_rc       rc;
 
     /*
      * init for file i/o
      */
-    f = fopen( fn, "r" );
-    if( f == NULL ) {
+    fp = fopen( fn, "r" );
+    if( fp == NULL ) {
         return( ERR_FILE_NOT_FOUND );
     }
 
@@ -696,7 +696,7 @@ static vi_rc eSearch( const char *fn, char *res )
     buff = StaticAlloc();
     if( buff != NULL ) {
         rc = ERR_NO_ERR;
-        while( fgets( buff, EditVars.MaxLine, f ) != NULL ) {
+        while( fgets( buff, EditVars.MaxLine, fp ) != NULL ) {
             for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
                 buff[i - 1] = '\0';
             }
@@ -716,7 +716,7 @@ static vi_rc eSearch( const char *fn, char *res )
         }
         StaticFree( buff );
     }
-    fclose( f );
+    fclose( fp );
     return( rc );
 
 } /* eSearch */

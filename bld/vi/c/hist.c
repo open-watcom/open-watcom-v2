@@ -54,7 +54,7 @@ static void updateHist( history_data *h, const char *str )
  */
 void LoadHistory( const char *cmd )
 {
-    FILE            *f;
+    FILE            *fp;
     char            str[MAX_INPUT_LINE];
     int             cnt;
     int             i;
@@ -63,13 +63,13 @@ void LoadHistory( const char *cmd )
     historyLoaded = true;
 
     while( EditVars.HistoryFile != NULL ) {
-        f = fopen( EditVars.HistoryFile, "rt" );
-        if( f == NULL ) {
+        fp = fopen( EditVars.HistoryFile, "rt" );
+        if( fp == NULL ) {
             break;
         }
         cnt = 0;
         h = EditVars.Hist - 1;
-        while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
+        while( fgets( str, MAX_INPUT_LINE, fp ) != NULL ) {
             for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1] ); --i ) {
                 str[i - 1] = '\0';
             }
@@ -88,7 +88,7 @@ void LoadHistory( const char *cmd )
             updateHist( h, str );
             cnt--;
         }
-        fclose( f );
+        fclose( fp );
         break;
     }
     if( cmd != NULL ) {
@@ -125,15 +125,15 @@ static int getHistCount( history_data *h )
 /*
  * writeHistory - write out history to a file
  */
-static void writeHistory( FILE *f, history_data *h )
+static void writeHistory( FILE *fp, history_data *h )
 {
     int i, j;
 
-    MyFprintf( f, "%d\n", getHistCount( h ) );
+    MyFprintf( fp, "%d\n", getHistCount( h ) );
     j = h->curr;
     for( i = 0; i < h->max; i++ ) {
         if( h->data[j % h->max] != NULL ) {
-            MyFprintf( f, "%s\n", h->data[j % h->max] );
+            MyFprintf( fp, "%s\n", h->data[j % h->max] );
             DeleteString( &h->data[j % h->max] );
         }
         j++;
@@ -146,17 +146,17 @@ static void writeHistory( FILE *f, history_data *h )
  */
 void SaveHistory( void )
 {
-    FILE            *f;
+    FILE            *fp;
     history_data    *h;
 
     if( historyLoaded ) {
         if( EditVars.HistoryFile != NULL ) {
-            f = fopen( EditVars.HistoryFile, "wt" );
-            if( f != NULL ) {
+            fp = fopen( EditVars.HistoryFile, "wt" );
+            if( fp != NULL ) {
                 for( h = EditVars.Hist; h - EditVars.Hist < MAX_HIST; h++ ) {
-                    writeHistory( f, h );
+                    writeHistory( fp, h );
                 }
-                fclose( f );
+                fclose( fp );
             }
         }
     }
