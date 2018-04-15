@@ -41,6 +41,8 @@
     #include "font.h"
     #include "loadcc.h"
     #ifdef __NT__
+        #undef _WIN32_IE
+        #define _WIN32_IE   0x0400
         #include <commctrl.h>
     #endif
     #include "wclbproc.h"
@@ -239,36 +241,39 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
   #ifdef __NT__
     }
   #endif
-    getFile( files[i] );
-    if( leave ) {
-        EndDialog( dlg, ERR_NO_ERR );
+    if( i == -1 ) {
     } else {
-        /* remove it from the list box */
-  #ifdef __NT__
-        if( IsCommCtrlLoaded() ) {
-            SendMessage( list_box, LVM_DELETEITEM, i, 0L );
-            lvi.stateMask = LVIS_SELECTED;
-            lvi.state = LVIS_SELECTED;
-            if( !SendMessage( list_box, LVM_SETITEMSTATE, i, (LPARAM)&lvi ) ) {
-                SendMessage( list_box, LVM_SETITEMSTATE, i - 1, (LPARAM)&lvi );
-            }
-        } else {
-  #endif
-            j = SendMessage( list_box, LB_DELETESTRING, i, 0L );
-            assert( (j + 1) == (*count) );
-            if( SendMessage( list_box, LB_SETCURSEL, i, 0L ) == LB_ERR ) {
-                SendMessage( list_box, LB_SETCURSEL, i - 1, 0L );
-            }
-  #ifdef __NT__
-        }
-  #endif
-        MemFree( files[i] );
-        for( j = i; j < *count; j++ ) {
-            files[j] = files[j + 1];
-        }
-        (*count)--;
-        if( *count == 0 ) {
+        getFile( files[i] );
+        if( leave ) {
             EndDialog( dlg, ERR_NO_ERR );
+        } else {
+            /* remove it from the list box */
+      #ifdef __NT__
+            if( IsCommCtrlLoaded() ) {
+                SendMessage( list_box, LVM_DELETEITEM, i, 0L );
+                lvi.stateMask = LVIS_SELECTED;
+                lvi.state = LVIS_SELECTED;
+                if( !SendMessage( list_box, LVM_SETITEMSTATE, i, (LPARAM)&lvi ) ) {
+                    SendMessage( list_box, LVM_SETITEMSTATE, i - 1, (LPARAM)&lvi );
+                }
+            } else {
+      #endif
+                j = SendMessage( list_box, LB_DELETESTRING, i, 0L );
+                assert( (j + 1) == (*count) );
+                if( SendMessage( list_box, LB_SETCURSEL, i, 0L ) == LB_ERR ) {
+                    SendMessage( list_box, LB_SETCURSEL, i - 1, 0L );
+                }
+      #ifdef __NT__
+            }
+      #endif
+            MemFree( files[i] );
+            for( j = i; j < *count; j++ ) {
+                files[j] = files[j + 1];
+            }
+            (*count)--;
+            if( *count == 0 ) {
+                EndDialog( dlg, ERR_NO_ERR );
+            }
         }
     }
 }
@@ -350,10 +355,12 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
     LVCOLUMN            lvc;
     LVITEM              lvi;
     RECT                rc;
+    LPNMITEMACTIVATE    x;
 
     switch( msg ) {
     case WM_INITDIALOG:
         list_box = GetDlgItem( dlg, ID_FILE_LIST );
+        SendMessage( list_box, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
         SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
@@ -398,7 +405,8 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         }
         break;
     case WM_NOTIFY:
-        if( ((NMHDR *)lparam)->code == NM_DBLCLK ) {
+        x = (LPNMITEMACTIVATE)lparam;
+        if( x->hdr.code == NM_DBLCLK ) {
             getOneFile( dlg, fileList, &fileCount, true );
         }
         break;
