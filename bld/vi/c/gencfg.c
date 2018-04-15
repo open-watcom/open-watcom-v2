@@ -102,7 +102,7 @@ static void doWindow( FILE *fp, int id, window_info *wi, bool colour_only )
 {
     char        token[64];
 
-    MyFprintf( fp, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, true ) );
+    MyFprintf( fp, "%s\n", GetTokenStringCVT( CmdLineTokens, id, token, true ) );
     if( !colour_only ) {
         MyFprintf( fp, "    dimension %d %d %d %d\n", wi->area.x1, wi->area.y1, wi->area.x2, wi->area.y2 );
         if( wi->has_border ) {
@@ -198,11 +198,11 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     int         i;
     char        token[128];
     const char  *str;
-    char        boolstr[3];
     char        *buff;
     int         num;
     rgb         c;
     const char  *res;
+    char        tmpstr[MAX_STR];
 
     if( fname == NULL ) {
         fname = CFG_NAME;
@@ -239,12 +239,12 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     doHookAssign( fp, SRC_HOOK_MOUSE_CHARSEL );
 
     writeTitle( fp, "General Settings" );
-    num = GetNumberOfTokens( TokensSetVar );
+    num = GetNumberOfTokens( SetVarTokens );
     for( i = 0; i < num; i++ ) {
         if( i == SETVAR_T_TILECOLOR || i == SETVAR_T_FIGNORE || i == SETVAR_T_FILENAME ) {
             continue;
         }
-        res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, true ) );
+        res = GetASetVal( GetTokenStringCVT( SetVarTokens, i, token, true ), tmpstr );
         switch( i ) {
         case SETVAR_T_STATUSSTRING:
         case SETVAR_T_FILEENDSTRING:
@@ -264,16 +264,10 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     }
 
     writeTitle( fp, "Boolean Settings" );
-    num = GetNumberOfTokens( TokensSetFlag );
+    num = GetNumberOfTokens( SetFlagTokens );
     for( i = 0; i < num; i++ ) {
-        str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, true ) );
-        boolstr[0] = '\0';
-        if( str[0] == '0' ) {
-            boolstr[0] = 'n';
-            boolstr[1] = 'o';
-            boolstr[2] = '\0';
-        }
-        MyFprintf( fp, "set %s%s\n", boolstr, token );
+        str = GetASetVal( GetTokenStringCVT( SetFlagTokens, i, token, true ), tmpstr );
+        MyFprintf( fp, "set %s%s\n", (*str == '0') ? "no" : "", token );
     }
     writeTitle( fp, "Match pairs" );
     for( i = INITIAL_MATCH_COUNT; i < MatchCount; i += 2 ) {

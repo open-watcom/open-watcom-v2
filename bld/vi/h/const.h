@@ -279,12 +279,30 @@ typedef enum event_type {
 #define MAX_COLOR_REGISTERS     16
 
 /*
- * Color type
+ * Colour type
  */
+#define COLOURTOKENS() \
+    pick( BLACK ) \
+    pick( BLUE ) \
+    pick( GREEN ) \
+    pick( CYAN ) \
+    pick( RED ) \
+    pick( MAGENTA ) \
+    pick( BROWN ) \
+    pick( WHITE ) \
+    pick( DARK_GRAY ) \
+    pick( LIGHT_BLUE ) \
+    pick( LIGHT_GREEN ) \
+    pick( LIGHT_CYAN ) \
+    pick( LIGHT_RED ) \
+    pick( LIGHT_MAGENTA ) \
+    pick( YELLOW ) \
+    pick( BRIGHT_WHITE )
+
 typedef enum {
-    #define vi_pick(a) a,
-    #include "colors.h"
-    #undef vi_pick
+    #define pick(a) a,
+    COLOURTOKENS()
+    #undef pick
 #ifdef __WIN__
     MAX_COLORS = 64
 #else

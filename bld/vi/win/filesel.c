@@ -40,12 +40,11 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static char *filterList = {
+static char filterList[] = {
     #define LANG_FILTER
     #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
     #include "langdef.h"
     #undef pick_lang
-    "\0"
 };
 
 static char *FileNameList;
@@ -180,7 +179,7 @@ vi_rc SelectFileSave( char *result )
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = root_window_id;
-    of.lpstrFilter = (LPSTR) filterList;
+    of.lpstrFilter = (LPSTR)filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;
     of.lpstrFile = result;

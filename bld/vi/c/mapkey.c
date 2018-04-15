@@ -34,7 +34,7 @@
 #include "win.h"
 
 static bool     keysRead = false;
-static char     *charTokens;
+static char     *CharTokens;
 static vi_key   *keyVals;
 
 
@@ -61,9 +61,9 @@ static vi_rc readKeyData( void )
         return( ERR_NO_ERR );
     }
 #ifdef VICOMP
-    rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save );
+    rc = ReadDataFile( "keys.dat", &CharTokens, key_alloc, key_save );
 #else
-    rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save, true );
+    rc = ReadDataFile( "keys.dat", &CharTokens, key_alloc, key_save, true );
 #endif
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -117,7 +117,7 @@ vi_rc MapKey( int flag, const char *data )
 #ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
 #endif
-        j = Tokenize( charTokens, keystr, true );
+        j = Tokenize( CharTokens, keystr, true );
         if( j == TOK_INVALID ) {
             key = C2VIKEY( keystr[0] );
         } else {
@@ -356,7 +356,7 @@ static vi_key extractViKeyToken( const char **data )
     if( rc != ERR_NO_ERR ) {
         return( VI_KEY( ESC ) );
     }
-    j = Tokenize( charTokens, str, true );
+    j = Tokenize( CharTokens, str, true );
     if( j == TOK_INVALID ) {
         return( C2VIKEY( str[0] ) );
     } else {
@@ -450,7 +450,7 @@ void FiniKeyMaps( void )
     int i;
 
     MemFree( keyVals );
-    MemFree( charTokens );
+    MemFree( CharTokens );
 
     // assuming Keymaps and InputKeymaps are inited to 0
     // this should be OK
@@ -506,7 +506,7 @@ char *LookUpCharToken( vi_key key, bool want_single )
         if( readKeyData() != ERR_NO_ERR ) {
             return( NULL );
         }
-        num = GetNumberOfTokens( charTokens );
+        num = GetNumberOfTokens( CharTokens );
     }
     if( want_single ) {
         switch( key ) {
@@ -524,7 +524,7 @@ char *LookUpCharToken( vi_key key, bool want_single )
     }
     for( i = 0; i < num; i++ ) {
         if( key == keyVals[i] ) {
-            return( GetTokenString( charTokens, i ) );
+            return( GetTokenString( CharTokens, i ) );
         }
     }
     return( NULL );

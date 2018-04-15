@@ -30,32 +30,37 @@
 ****************************************************************************/
 
 
+#define WINCMDS() \
+    pick( "DDEINIT",                DDEINIT ) \
+    pick( "DDESERVER",              DDESERVER ) \
+    pick( "CREATEDDESTRing",        CREATEDDESTRING ) \
+    pick( "DELETEDDESTRing",        DELETEDDESTRING ) \
+    pick( "DDECONnect",             DDECONNECT ) \
+    pick( "DDEDISconnect",          DDEDISCONNECT ) \
+    pick( "DDEREQuest",             DDEREQUEST ) \
+    pick( "DDEPOKE",                DDEPOKE ) \
+    pick( "DDERET",                 DDERET ) \
+    pick( "DDECREATEDATAHandle",    DDECREATEDATAHANDLE ) \
+    pick( "DDEGETData",             DDEGETDATA ) \
+    pick( "DDEQUERYSTRING",         DDEQUERYSTRING ) \
+    pick( "TAKEFOCUS",              TAKEFOCUS ) \
+    pick( "MINIMIZE",               MINIMIZE ) \
+    pick( "RESTORE",                RESTORE ) \
+    pick( "EXIT",                   EXIT ) \
+    pick( "SETMAINSIZE",            SETMAINSIZE ) \
+    pick( "UPDATEWINDOWS",          UPDATEWINDOWS ) \
+    pick( "WINHELP",                WINHELP ) \
+    pick( "PROMPTFORSAVE",          PROMPT_FOR_SAVE ) \
+    pick( "PROMPTTHISFILEFORSAVE",  PROMPT_THIS_FILE_FOR_SAVE ) \
+    pick( "QUERYFILE",              QUERY_FILE ) \
+    pick( "INPUTBOOL",              INPUT_BOOL ) \
+    pick( "EDITFILE",               EDITFILE ) \
+    pick( "LOCATE",                 LOCATE )
+
 enum {
-    T_DDEINIT,
-    T_DDESERVER,
-    T_CREATEDDESTRING,
-    T_DELETEDDESTRING,
-    T_DDECONNECT,
-    T_DDEDISCONNECT,
-    T_DDEREQUEST,
-    T_DDEPOKE,
-    T_DDERET,
-    T_DDECREATEDATAHANDLE,
-    T_DDEGETDATA,
-    T_DDEQUERYSTRING,
-    T_TAKEFOCUS,
-    T_MINIMIZE,
-    T_RESTORE,
-    T_EXIT,
-    T_SETMAINSIZE,
-    T_UPDATEWINDOWS,
-    T_WINHELP,
-    T_PROMPT_FOR_SAVE,
-    T_PROMPT_THIS_FILE_FOR_SAVE,
-    T_QUERY_FILE,
-    T_INPUT_BOOL,
-    T_EDITFILE,
-    T_LOCATE
+    #define pick(t,e)   T_ ## e,
+    WINCMDS()
+    #undef pick
 };
 
 bool RunDDECommand( int token, const char *str, char *tmp1, vi_rc *result, vlist *vl );

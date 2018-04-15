@@ -37,48 +37,25 @@
 #include "srcwin.h"
 #include "wwinhelp.h"
 
-static char winTokens[] = {
-    "DDEINIT\0"
-    "DDESERVER\0"
-    "CREATEDDESTRing\0"
-    "DELETEDDESTRing\0"
-    "DDECONnect\0"
-    "DDEDISconnect\0"
-    "DDEREQuest\0"
-    "DDEPOKE\0"
-    "DDERET\0"
-    "DDECREATEDATAHandle\0"
-    "DDEGETData\0"
-    "DDEQUERYSTRING\0"
-    "TAKEFOCUS\0"
-    "MINIMIZE\0"
-    "RESTORE\0"
-    "EXIT\0"
-    "SETMAINSIZE\0"
-    "UPDATEWINDOWS\0"
-    "WINHELP\0"
-    "PROMPTFORSAVE\0"
-    "PROMPTTHISFILEFORSAVE\0"
-    "QUERYFILE\0"
-    "INPUTBOOL\0"
-    "EDITFILE\0"
-    "LOCATE\0"
-    "\0"
+
+static char WinCmdTokens[] = {
+    #define pick(t,e)   t "\0"
+    WINCMDS()
+    #undef pick
 };
 
 #define HELPTOKENS() \
-    pick( "HELP_KEY",           WINHELP_KEY ) \
-    pick( "HELP_PARTIALKEY",    WINHELP_PARTIALKEY )
+    pick( HELP_KEY ) \
+    pick( HELP_PARTIALKEY )
 
-static char helpTokens[] = {
-    #define pick(t,e)   t "\0"
+static char WinHelpTokens[] = {
+    #define pick(t)   #t "\0"
     HELPTOKENS()
     #undef pick
-    "\0"
 };
 
 enum {
-    #define pick(t,e)   e,
+    #define pick(t)   WIN ## t,
     HELPTOKENS()
     #undef pick
 };
@@ -118,7 +95,7 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
     if( *tmp == '\0' ) {
         return( false );
     }
-    token = Tokenize( winTokens, tmp, false );
+    token = Tokenize( WinCmdTokens, tmp, false );
     if( token == TOK_INVALID ) {
         return( false );
     }
@@ -254,7 +231,7 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
         if( *str == '\0' ) {
             return( true );
         }
-        token = Tokenize( helpTokens, str, false );
+        token = Tokenize( WinHelpTokens, str, false );
         if( token == TOK_INVALID ) {
             return( true );
         }

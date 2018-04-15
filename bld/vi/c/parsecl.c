@@ -162,9 +162,9 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         }
     }
 
-    j = Tokenize( TokensCmdLine, tres, false );
+    j = Tokenize( CmdLineTokens, tres, false );
     if( j == TOK_INVALID ) {
-        j = Tokenize( TokensEx, tres, false );
+        j = Tokenize( ExCmdTokens, tres, false );
         if( j != TOK_INVALID ) {
             j += 1000;
         }

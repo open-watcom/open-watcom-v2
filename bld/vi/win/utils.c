@@ -520,38 +520,38 @@ void CursorOp( CursorOps op )
 
 //    ShowCursor( FALSE );
     switch( op ) {
-        case COP_INIT:
-            noDrop = LoadCursor( InstanceHandle, "NODROP" );
-            dropFt = LoadCursor( InstanceHandle, "DROPFT" );
-            dropClr = LoadCursor( InstanceHandle, "DROPCLR" );
-            dropSS = LoadCursor( InstanceHandle, "DROPSS" );
-            statMove = LoadCursor( InstanceHandle, "STATMOVE" );
-            break;
-        case COP_FINI:
-            DestroyCursor( noDrop );
-            DestroyCursor( dropClr );
-            DestroyCursor( dropFt );
-            DestroyCursor( dropSS );
-            DestroyCursor( statMove );
-            break;
-        case COP_ARROW:
-            SetCursor( LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW ) );
-            break;
-        case COP_DROPFT:
-            SetCursor( dropFt );
-            break;
-        case COP_DROPSS:
-            SetCursor( dropSS );
-            break;
-        case COP_DROPCLR:
-            SetCursor( dropClr );
-            break;
-        case COP_NODROP:
-            SetCursor( noDrop );
-            break;
-        case COP_STATMOVE:
-            SetCursor( statMove );
-            break;
+    case COP_INIT:
+        noDrop = LoadCursor( InstanceHandle, "NODROP" );
+        dropFt = LoadCursor( InstanceHandle, "DROPFT" );
+        dropClr = LoadCursor( InstanceHandle, "DROPCLR" );
+        dropSS = LoadCursor( InstanceHandle, "DROPSS" );
+        statMove = LoadCursor( InstanceHandle, "STATMOVE" );
+        break;
+    case COP_FINI:
+        DestroyCursor( noDrop );
+        DestroyCursor( dropClr );
+        DestroyCursor( dropFt );
+        DestroyCursor( dropSS );
+        DestroyCursor( statMove );
+        break;
+    case COP_ARROW:
+        SetCursor( LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW ) );
+        break;
+    case COP_DROPFT:
+        SetCursor( dropFt );
+        break;
+    case COP_DROPSS:
+        SetCursor( dropSS );
+        break;
+    case COP_DROPCLR:
+        SetCursor( dropClr );
+        break;
+    case COP_NODROP:
+        SetCursor( noDrop );
+        break;
+    case COP_STATMOVE:
+        SetCursor( statMove );
+        break;
     }
 //    ShowCursor( TRUE );
 
@@ -677,26 +677,20 @@ void SetEditInt( HWND hwnd, UINT id, int value )
  */
 void UpdateBoolSetting( HWND hwnd, int token, int id, bool oldval )
 {
-    char        *str;
     char        *ptr;
     char        result[MAX_STR];
-    int         val;
+    bool        val;
 
     val = IsDlgButtonChecked( hwnd, id );
-    if( val == oldval ) {
-        return;
-    }
-    if( !val ) {
-        result[0] = 'n';
-        result[1] = 'o';
-        ptr = &result[2];
-    } else {
+    if( val != oldval ) {
         ptr = result;
+        if( !val ) {
+            *ptr++ = 'n';
+            *ptr++ = 'o';
+        }
+        strcpy( ptr, GetTokenString( SetFlagTokens, token ) );
+        Set( result );
     }
-
-    str = GetTokenString( TokensSetFlag, token );
-    strcpy( ptr, str );
-    Set( result );
 
 } /* UpdateBoolSetting */
 
@@ -708,7 +702,7 @@ void DoStrSet( char *value, int token )
     char        result[MAX_STR];
     char        *str;
 
-    str = GetTokenString( TokensSetVar, token );
+    str = GetTokenString( SetVarTokens, token );
     strcpy( result, str );
     strcat( result, " " );
     strcat( result, value );
@@ -724,10 +718,9 @@ void UpdateStrSetting( HWND hwnd, int token, int id, char *oldval )
     char        value[MAX_STR];
 
     GetDlgItemText( hwnd, id, value, sizeof( value ) );
-    if( strcmp( oldval, value ) == 0 ) {
-        return;
+    if( strcmp( oldval, value ) != 0 ) {
+        DoStrSet( value, token );
     }
-    DoStrSet( value, token );
 
 } /* UpdateStrSetting */
 
@@ -741,10 +734,9 @@ void UpdateIntSetting( HWND hwnd, int token, int id, long oldval )
 
     GetDlgItemText( hwnd, id, value, sizeof( value ) );
     lval = atol( value );
-    if( lval == oldval ) {
-        return;
+    if( lval != oldval ) {
+        DoStrSet( value, token );
     }
-    DoStrSet( value, token );
 
 } /* UpdateIntSetting */
 
@@ -830,7 +822,7 @@ vi_rc ChangeDrive( int drive )
     unsigned    b;
     unsigned    total, c;
 
-    a = (char) tolower( drive ) - (char) 'a';
+    a = (char)tolower( drive ) - (char)'a';
     b = a + 1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );

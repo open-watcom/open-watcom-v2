@@ -78,7 +78,7 @@ vi_rc   ReadAFile( linenum, const char * );
 
 /* clset.c */
 vi_rc   Set( const char * );
-const char *GetASetVal( const char *token );
+const char *GetASetVal( const char *token, char * );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */

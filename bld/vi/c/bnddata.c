@@ -42,7 +42,7 @@
 
 static bind_size    *dataOffsets = NULL;
 static bind_size    *entryCounts = NULL;
-static char         *dataFnames  = NULL;
+static char         *DataFnameTokens = NULL;
 static long         dataStart;
 
 /*
@@ -97,8 +97,8 @@ void BoundDataInit( void )
     tmp = BndMemory + sizeof( bind_size );
     size = *(bind_size *)tmp;
     tmp += sizeof( bind_size );
-    dataFnames = MemAlloc( size );
-    memcpy( dataFnames, tmp, size );
+    DataFnameTokens = MemAlloc( size );
+    memcpy( DataFnameTokens, tmp, size );
     tmp += size;
 
     /*
@@ -121,7 +121,7 @@ void BoundDataFini( void )
     MemFree( BndMemory );
     MemFree( dataOffsets );
     MemFree( entryCounts );
-    MemFree( dataFnames );
+    MemFree( DataFnameTokens );
 
 } /* BoundDataFini */
 
@@ -143,7 +143,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
         if( strcmp( fn, CONFIG_FILE ) == 0 ) {
             i = 0;
         } else {
-            i = Tokenize( dataFnames, fn, true );
+            i = Tokenize( DataFnameTokens, fn, true );
         }
         if( i != TOK_INVALID && bounddata ) {
 

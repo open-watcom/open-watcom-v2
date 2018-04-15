@@ -672,13 +672,13 @@ typedef struct {
     /*
      * set booleans are here
      */
-    #define PICK(a,b,c,d,e)     bool c;
+    #define PICK(a,b,c,d,e)     bool c :1;
     #include "setb.h"
     #undef PICK
     /*
      * internal booleans are here
      */
-    #define PICK(a,b)           bool a;
+    #define PICK(a,b)           bool a :1;
     #include "setbi.h"
     #undef PICK
 } eflags;               // don't forget to give default in globals.c

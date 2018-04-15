@@ -164,10 +164,10 @@ extern int          ScrollBarCharColor;
 
 /* parse constants */
 extern int          MaxColorTokens, ColorTokensSize;
-extern const char _NEAR   TokensCmdLine[];
-extern const char _NEAR   TokensSetVar[];
-extern const char _NEAR   TokensSetFlag[];
-extern const char _NEAR   TokensSetFlagShort[];
+extern const char _NEAR   CmdLineTokens[];
+extern const char _NEAR   SetVarTokens[];
+extern const char _NEAR   SetFlagTokens[];
+extern const char _NEAR   SetFlagShortTokens[];
 
 /* Toolbar constants */
 

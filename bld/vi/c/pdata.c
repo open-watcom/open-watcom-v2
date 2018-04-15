@@ -35,36 +35,32 @@
 /*
  * command line tokens
  */
-const char _NEAR TokensCmdLine[] = {
+const char _NEAR CmdLineTokens[] = {
     #define PICK( a,b ) a
     #include "cmds.h"
     #undef PICK
-    "\0"
 };
 
 /*
  * Set tokens (values)
  */
-const char _NEAR TokensSetVar[] = {
+const char _NEAR SetVarTokens[] = {
     #define PICK( a,b,c,d,e,f ) a "\0"
     #include "setnb.h"
     #undef PICK
-    "\0"
 };
 
 /*
  * Set tokens (booleans)
  */
-const char _NEAR TokensSetFlag[] = {
+const char _NEAR SetFlagTokens[] = {
     #define PICK( a,b,c,d,e ) a "\0"
     #include "setb.h"
     #undef PICK
-    "\0"
 };
 
-const char _NEAR TokensSetFlagShort[] = {
+const char _NEAR SetFlagShortTokens[] = {
     #define PICK( a,b,c,d,e ) b "\0"
     #include "setb.h"
     #undef PICK
-    "\0"
 };
