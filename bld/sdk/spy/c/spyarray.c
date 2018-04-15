@@ -224,11 +224,12 @@
 
 /**********************************************************/
 
-#define msgpick1(a,b,c,d)   { true, false, a, b, c, d },
+#define msgpick1(a,b)       { true, false, a, #a, b, 0L },
+#define msgpick1x(a,b,c)    { true, false, a, b, c, 0L },
 #ifdef __WINDOWS__
-#define msgpick2(a,b,c,d)
+#define msgpick2(a,b)
 #else
-#define msgpick2(a,b,c,d)   { true, false, a, b, c, d },
+#define msgpick2(a,b)       { true, false, a, #a, b, 0L },
 #endif
 #define msgpick3(a,b,c,d)   { true, false, a, b, c, d },
 #ifdef __WINDOWS__
