@@ -478,7 +478,6 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
             }
         }
     }
-
     image = DoCreateImage( exe, symfile );
     if( image == NULL ) {
         ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
@@ -1508,15 +1507,11 @@ OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
 
 bool SymUserModLoad( const char *fname, address *loadaddr )
 {
-    size_t      fname_len;
     image_entry *image;
     map_entry   **owner;
     map_entry   *curr;
 
-    if( !fname )
-        return( true );
-
-    if( ( fname_len = strlen( fname ) ) == 0 )
+    if( *fname == '\0' )
         return( true );
 
     image = DoCreateImage( fname, fname );
@@ -1532,6 +1527,7 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
 
     _Alloc( curr, sizeof( *curr ) );
     if( curr == NULL ) {
+        image->map_list = NULL;
         DIPUnloadInfo( image->dip_handle );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     }
