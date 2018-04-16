@@ -1622,18 +1622,18 @@ bool IsStringConstant( PTREE node, bool *multi_line_concat )
 /**********************************************************/
 {
     STRING_CONSTANT str;
-    bool retb;
+    bool ok;
 
     *multi_line_concat = false;
-    retb = false;
+    ok = false;
     if( node->op == PT_STRING_CONSTANT ) {
         str = node->u.string;
         if( str->concat && str->multi_line ) {
             *multi_line_concat = true;
         }
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 SYMBOL FunctionSymbol( PTREE node )

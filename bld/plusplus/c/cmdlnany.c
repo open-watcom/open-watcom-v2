@@ -162,10 +162,10 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     ( FBI_KIND* a_kind          // - addr[ option kinds ]
     , FBI_KIND def_kind )       // - default kind
 {
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND kind;              // - options scanned
 
-    retb = false;
+    ok = false;
     kind = 0;
     CmdRecogEquals();
     for( ; ; ) {
@@ -174,7 +174,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             if( 0 == kind ) {
                 kind = def_kind;
             }
-            retb = true;
+            ok = true;
             break;
         }
         switch( CmdScanChar() ) {
@@ -195,13 +195,13 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
             continue;
           default :
             BadCmdLine( ERR_INVALID_OPTION );
-            retb = false;
+            ok = false;
             break;
         }
         break;
     }
     *a_kind = kind;
-    return( retb );
+    return( ok );
 }
 
 #endif
@@ -209,7 +209,7 @@ static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
 static bool scanFBX( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND options;           // - options scanned
 
     /* unused parameters */ (void)p;
@@ -230,11 +230,11 @@ static bool scanFBX( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = false;
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 #else
     /* unused parameters */ (void)p;
 
@@ -246,7 +246,7 @@ static bool scanFBX( OPT_STRING **p )
 static bool scanFBI( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    bool retb;                  // - return: 1 ==> ok, 0 ==> error
+    bool ok;                    // - return: true ==> ok
     FBI_KIND options;           // - options scanned
 
     /* unused parameters */ (void)p;
@@ -267,11 +267,11 @@ static bool scanFBI( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = true;
         }
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 #else
     /* unused parameters */ (void)p;
 

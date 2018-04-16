@@ -3370,20 +3370,20 @@ bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
 {
     SYMBOL *a_fun1;             // - addr[ fun1 ]
     NAME name;                  // - name for checking
-    bool retb;                  // - true ==> is same virtual function
+    bool ok;                    // - true ==> is same virtual function
 
     a_fun1 = &fun1;
     name = fun1->name->name;
     switch( distinctVirtualFunction( a_fun1, fun2, name ) ) {
       case FNOV_NOT_DISTINCT_RETURN:
       case FNOV_EXACT_MATCH:
-        retb = true;
+        ok = true;
         break;
       default :
-        retb = false;
+        ok = false;
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
@@ -4545,7 +4545,7 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
 
 static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retb;
+    bool ok;
     SYMBOL_NAME sym_name;
     PSTK_CTL *curr;
     PSTK_CTL *next;
@@ -4565,24 +4565,24 @@ static bool disambigNSLookup( lookup_walk *data, SCOPE scope )
     PstkPush( curr, scope );
     PstkPush( &cycle, scope );
     for(;;) {
-        retb = tryDisambigLookup( data, scope, curr, next, &cycle );
-        if( retb || PstkTopElement( next ) == NULL ) {
+        ok = tryDisambigLookup( data, scope, curr, next, &cycle );
+        if( ok || PstkTopElement( next ) == NULL ) {
             break;
         }
-        retb = tryDisambigLookup( data, scope, next, curr, &cycle );
-        if( retb || PstkTopElement( curr ) == NULL ) {
+        ok = tryDisambigLookup( data, scope, next, curr, &cycle );
+        if( ok || PstkTopElement( curr ) == NULL ) {
             break;
         }
     }
     PstkClose( &stack1 );
     PstkClose( &stack2 );
     PstkClose( &cycle );
-    return( retb );
+    return( ok );
 }
 
 static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
 {
-    bool retb;
+    bool ok;
     SCOPE trigger_scope;
     SCOPE top_scope;
     SCOPE edge_scope;
@@ -4627,10 +4627,10 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
             } RingIterEnd( curr )
         }
     }
-    retb = processNSLookup( data );
+    ok = processNSLookup( data );
     PstkClose( &cycle );
     PstkClose( &stack );
-    return( retb );
+    return( ok );
 }
 
 static bool searchScope( lookup_walk *data, SCOPE scope )
@@ -7038,21 +7038,21 @@ static bool changePragmaType(   // TEST IF NEW NEW PRAGMA TYPE REQUIRED
     SYMBOL sym,                 // - old symbol
     AUX_INFO *auxinfo )         // - new aux info
 {
-    bool        retb;           // - return: true ==> change required
+    bool        ok;             // - return: true ==> change required
     AUX_INFO    *old_pragma;    // - old aux info
 
     old_pragma = TypeHasPragma( sym->sym_type );
     if( old_pragma == NULL ) {
-        retb = true;
+        ok = true;
     } else if( old_pragma == auxinfo ) {
-        retb = false;
+        ok = false;
     } else if( PragmaChangeConsistent( old_pragma, auxinfo ) ) {
-        retb = true;
+        ok = true;
     } else {
         CErr2p( WARN_PRAGMA_MERGE, sym );
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 static void changeNonFunction( SYMBOL sym, AUX_INFO *auxinfo )
@@ -7205,18 +7205,18 @@ void ScopeWalkAncestry(         // VISIT ONCE ALL CLASSES IN ANCESTRY
 bool ScopeDebugable(            // DETERMINE IF SCOPE TO BE DEBUGGED
     SCOPE scope )               // - the scope
 {
-    bool retb;                  // - true ==> pass scope to debugger
+    bool ok;                    // - true ==> pass scope to debugger
 
     if( NULL == scope ) {
-        retb = false;
+        ok = false;
     } else if( ScopeFunction( scope->enclosing ) ) {
-        retb = false;
+        ok = false;
     } else if( HashEmpty( scope->names ) ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME e )

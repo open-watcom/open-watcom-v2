@@ -162,10 +162,10 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
     CGFILE* file_ctl,           // - current file information
     FN_CTL* fctl )              // - current file generation information
 {
-    bool retb;                  // - true ==> state table will be genned
+    bool ok;                    // - true ==> state table will be genned
     unsigned flag_bytes;        // - number of flag bytes
 
-    retb = false;
+    ok = false;
     if( 0 == CgNonThunkDepth( fctl ) && ! SymIsThunk( fctl->func ) ) {
         fstab.marked_posn = NULL;
         flag_bytes = ( file_ctl->cond_flags + 7 ) / 8;
@@ -183,7 +183,7 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
                 if( ! fctl->is_dtor ) {
                     CgFunRegister( fctl, fstab.rw, fStabDefn.ro );
                 }
-                retb = true;
+                ok = true;
 //          } else {
 //              CondInfoDirectFlags( flag_bytes );
 //              fStabDefn.ro = NULL;
@@ -193,7 +193,7 @@ bool FstabSetup(                // SETUP FUNCTION STATE TABLE
             fStabDefn.ro = NULL;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 

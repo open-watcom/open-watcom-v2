@@ -114,9 +114,9 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
     SE* state_table )           // - state table
 {
     SE* last;                   // - last state entry in table
-    bool retb;                  // - true ==> same entry
+    bool ok;                    // - true ==> same entry
 
-    retb = false;
+    ok = false;
     last = state_table;
     if( last != NULL ) {
         if( last->base.se_type == DTC_CTOR_TEST ) {
@@ -133,13 +133,13 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
                     DbgDumpStateEntry( last );
                 }
 #endif
-                retb = true;
+                ok = true;
                 break;
             case DTC_TEST_FLAG :
                 if(  last->test_flag.index    == se->test_flag.index
                   && last->test_flag.se_true  == se->test_flag.se_true
                   && last->test_flag.se_false == se->test_flag.se_false ) {
-                    retb = true;
+                    ok = true;
                 }
                 break;
             default :
@@ -147,7 +147,7 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 

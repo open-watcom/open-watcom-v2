@@ -252,10 +252,10 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
     BLK_INIT *blk,              // - current initialization block
     SYMBOL sym )                // - symbol
 {
-    bool retb;                  // - true ==> requires DTOR
+    bool ok;                    // - true ==> requires DTOR
     SYMBOL dtor;                // - DTOR for symbol
 
-    retb = false;
+    ok = false;
     if( SymRequiresDtoring( sym ) ) {
         if( TypeTruncByMemModel( sym->sym_type ) ) {
             CErr1( ERR_DTOR_OBJ_MEM_MODEL );
@@ -268,10 +268,10 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
                 blk->scope->u.s.dtor_reqd = true;
                 ScopeKeep( blk->scope );
             }
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -420,7 +420,7 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
     BLK_INIT *blk;              // - BLK_INIT's for label definition
     BLK_INIT *blk_com;          // - BLK_INIT's for common scope
     BLK_INIT *blk_src;          // - BLK_INIT for source of jump
-    bool retb;                  // - true ==> success
+    bool ok;                    // - true ==> success
     unsigned src_var_no;        // - source: variable no.
     unsigned tgt_var_no;        // - target: variable no.
     SYMBOL tgt_sym;             // - target: init. symbol
@@ -436,11 +436,11 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
                 if( blk == blk_com ) {
                     if( src_var_no < tgt_var_no ) {
                         bypassError( blk->sym );
-                        retb = false;
+                        ok = false;
                     } else {
                         *cblk = blk_com;
                         *cvar = tgt_sym;
-                        retb = true;
+                        ok = true;
                     }
                     break;
                 }
@@ -451,23 +451,23 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
         if( blk->try_blk ) {
             CErr1( ERR_JUMP_INTO_TRY );
             InfMsgPtr( INF_PREVIOUS_TRY, &blk->locn );
-            retb = false;
+            ok = false;
             break;
         } else if( blk->catch_blk ) {
             CErr1( ERR_JUMP_INTO_CATCH );
             InfMsgPtr( INF_PREVIOUS_CATCH, &blk->locn );
-            retb = false;
+            ok = false;
             break;
         }
         if( tgt_var_no != 0 ) {
             bypassError( blk->first_init );
-            retb = false;
+            ok = false;
             break;
         }
         tgt_sym = blk->sym_containing;
         tgt_var_no = blk->var_no_containing;
     }
-    return( retb );
+    return( ok );
 }
 
 

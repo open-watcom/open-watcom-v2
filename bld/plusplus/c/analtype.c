@@ -245,22 +245,22 @@ unsigned SizeTargetSizeT(       // GET SIZE OF TARGET'S size_t
 bool TypeTruncByMemModel(       // TEST TYPE TRUNCATION FOR DEF. MEMORY MODEL
     TYPE type )                 // - the type
 {
-    bool retb;                  // - true ==> type matches default mem. model
+    bool ok;                    // - true ==> type matches default mem. model
     type_flag flags;            // - flags for the type
     type_flag mflags;           // - memory-model flags for the type
 
     type = TypeGetActualFlags( type, &flags );
     mflags = flags & TF1_MEM_MODEL;
     if( 0 == mflags ) {
-        retb = false;
+        ok = false;
     } else {
         if( type->id == TYP_FUNCTION ) {
-            retb = ( !IsBigCode() && (TF1_NEAR & mflags) == 0 );
+            ok = ( !IsBigCode() && (TF1_NEAR & mflags) == 0 );
         } else {
-            retb = ( !IsBigData() && (TF1_NEAR & mflags) == 0 );
+            ok = ( !IsBigData() && (TF1_NEAR & mflags) == 0 );
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -303,15 +303,15 @@ TYPE TypeSegAddr(               // GET INTERNAL TYPE OF BASE :> ADDRESS
 bool TypeIsBasedPtr(            // SEE IF A PTR TO BASED ITEM
     TYPE type )                 // - the type
 {
-    bool retb;                  // - false ==> not based
+    bool ok;                    // - false ==> not based
     type_flag flags;            // - flags for item pointed at
 
     if( NULL == TypePointedAt( type, &flags ) ) {
-        retb = false;
+        ok = false;
     } else {
-        retb = ( (flags & TF1_BASED) != 0 );
+        ok = ( (flags & TF1_BASED) != 0 );
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -530,20 +530,20 @@ bool TypeRequiresCtorParm(      // TEST IF EXTRA CTOR PARM REQUIRED
 bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
     TYPE type )
 {
-    bool retb;                  // - return: true ==> equiv. to ptr to funct.
+    bool ok;                    // - return: true ==> equiv. to ptr to funct.
     type_flag not_used;
 
-    retb = false;
+    ok = false;
     type = TypedefModifierRemove( type );
     if( type->id == TYP_FUNCTION ) {
-        retb = true;
+        ok = true;
     } else if( PointerTypeEquivalent( type ) ) {
         type = TypePointedAt( type, &not_used );
         if( type->id == TYP_FUNCTION ) {
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -551,17 +551,17 @@ bool PointerToFuncEquivalent(   // TEST IF EQUIVALENT TO PTR(FUNCTION)
 bool TypeIsCppFunc(             // TEST IF C++ FUNCTION TYPE
     TYPE type )                 // - type to be tested
 {
-    bool retb;                  // - return: true ==> C++ function
+    bool ok;                    // - return: true ==> C++ function
 
     type = FunctionDeclarationType( type );
     if( type == NULL ) {
-        retb = false;
+        ok = false;
     } else if( type->flag & TF1_PLUSPLUS ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 #endif
 
@@ -627,16 +627,16 @@ bool TypeRequiresRWMemory(      // TEST IF TYPE MUST BE IN NON-CONST STORAGE
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    bool retb;                  // - true ==> requires CTOR'ING
+    bool ok;                    // - true ==> requires CTOR'ING
 
-    retb = false;
+    ok = false;
     info = getClassInfo( type );
     if( info != NULL ) {
         if( info->needs_ctor || info->needs_dtor || info->has_mutable ) {
-            retb = true;
+            ok = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -644,17 +644,17 @@ bool TypeRequiresCtoring(       // TEST IF TYPE MUST BE CTOR'ED
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    bool retb;                  // - true ==> requires CTOR'ING
+    bool ok;                    // - true ==> requires CTOR'ING
 
     info = getClassInfo( type );
     if( info == NULL ) {
-        retb = false;
+        ok = false;
     } else if( info->needs_ctor ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -662,17 +662,17 @@ bool TypeRequiresDtoring(       // TEST IF TYPE MUST BE DTOR'ED
     TYPE type )                 // - type
 {
     CLASSINFO* info;            // - information for class
-    bool retb;                  // - true ==> requires CTOR'ING
+    bool ok;                    // - true ==> requires CTOR'ING
 
     info = getClassInfo( type );
     if( info == NULL ) {
-        retb = false;
+        ok = false;
     } else if( info->needs_dtor ) {
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 static TYPE augmentWithNear(    // AUGMENT TYPE WITH TF1_NEAR, IF REQ'D
@@ -728,22 +728,22 @@ TYPE TypeForLvalue              // GET TYPE FOR LVALUE
 bool ExprIsLvalue               // TEST IF EXPRESSION IS LVALUE
     ( PTREE expr )              // - expression
 {
-    bool retb;                  // - return: true ==> is lvalue
+    bool ok;                    // - return: true ==> is lvalue
 
     if( expr->flags & PTF_LVALUE ) {
-        retb = true;
+        ok = true;
     } else {
 #ifndef NDEBUG
         TYPE type_expr;
         TYPE type_lv;
         type_expr = NodeType( expr );
         type_lv = TypeReference( type_expr );
-        retb = ( NULL != type_lv );
+        ok = ( NULL != type_lv );
 #else
-        retb = ( NULL != TypeForLvalue( expr ) );
+        ok = ( NULL != TypeForLvalue( expr ) );
 #endif
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -753,11 +753,11 @@ bool TypeDefedNonAbstract       // REQUIRE DEFINED, NON-ABSTRACT TYPE
     , MSG_NUM msg_abstract      // - message when abstract
     , MSG_NUM msg_undefed )     // - message when undefined
 {
-    bool retb;                  // - return: true ==> defined & non-abstract
+    bool ok;                    // - return: true ==> defined & non-abstract
 
     /* unused parameters */ (void)expr;
 
-    retb = false;
+    ok = false;
     if( ! TypeDefined( type ) ) {
         CErr1( msg_undefed );
         InfClassDecl( type );
@@ -766,7 +766,7 @@ bool TypeDefedNonAbstract       // REQUIRE DEFINED, NON-ABSTRACT TYPE
         InfClassDecl( type );
         ScopeNotePureFunctions( type );
     } else {
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }

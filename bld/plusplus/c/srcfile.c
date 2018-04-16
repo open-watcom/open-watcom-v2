@@ -494,7 +494,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     SRCFILE old_src;            // - SRCFILE being closed
     OPEN_FILE *act;             // - open-file information
     LINE_NO lines_read;         // - number of lines read from file
-    bool retb;                  // - return: true ==> not EOF
+    bool ok;                    // - return: true ==> not EOF
     bool browsed;               // - true ==> file was browsed
 
     if( CompFlags.scanning_c_comment ) {
@@ -532,7 +532,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     if( old_src->cmdline ) {
         popSrcFile( old_src, act );
         CurrChar = LCHR_EOF;
-        retb = false;
+        ok = false;
     } else {
         lines_read = act->line - 1;
         if( old_src->parent == NULL ) {
@@ -542,7 +542,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
             }
             SrcLineCount += lines_read;
             CurrChar = LCHR_EOF;
-            retb = false;
+            ok = false;
         } else {
             popSrcFile( old_src, act );
             act = activeSrc();
@@ -558,7 +558,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
                 }
                 EmitLineNL( old_src->parent_locn, srcFile->name );
             }
-            retb = true;
+            ok = true;
         }
     }
     if( browsed ) {
@@ -572,7 +572,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
         SrcFileCurrentLocation();
         PCHeaderCreate( tmp_src->name );
     }
-    return( retb );
+    return( ok );
 }
 
 

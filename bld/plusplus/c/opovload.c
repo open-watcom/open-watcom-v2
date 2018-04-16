@@ -921,14 +921,14 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
     PTREE expr,                 // - expression being analysed
     PTREE operand )             // - operand to be diagnosed
 {
-    bool retb;                  // - return: true ==> diagnosed
+    bool ok;                    // - return: true ==> diagnosed
     PTREE fnode;                // - function node
     PTREE node;                 // - node to be examined
 
     node = PTreeOp( &operand );
     switch( NodeAddrOfFun( node, &fnode ) ) {
       default :
-        retb = false;
+        ok = false;
         break;
       case ADDR_FN_ONE :
         if( SymIsThisFuncMember( fnode->u.symcg.symbol ) ) {
@@ -936,9 +936,9 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
                                 , ERR_ADDR_NONSTAT_MEMBER_FUNC
                                 , fnode->u.symcg.symbol );
             PTreeErrorNode( expr );
-            retb = true;
+            ok = true;
         } else {
-            retb = false;
+            ok = false;
         }
         break;
       case ADDR_FN_MANY :
@@ -946,10 +946,10 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
                             , ERR_ADDR_OF_OVERLOADED_FUN
                             , fnode->u.symcg.symbol );
         PTreeErrorNode( expr );
-        retb = true;
+        ok = true;
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 

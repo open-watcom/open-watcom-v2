@@ -81,21 +81,21 @@ bool ConvCtlWarning             // ISSUE WARNING
     ( CONVCTL* ctl              // - conversion control
     , MSG_NUM msg_no )          // - message number
 {
-    bool retb;                  // - return: true ==> ERROR was issued
+    bool ok;                    // - return: true ==> ERROR was issued
     msg_status_t status;        // - message status
 
     status = PTreeErrorExpr( ctl->expr, msg_no );
     if( MS_PRINTED & status ) {
         if( MS_WARNING & status ) {
             ConvCtlDiagnoseTypes( ctl );
-            retb = false;
+            ok = false;
         } else {
-            retb = true;
+            ok = true;
         }
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -115,7 +115,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     , TYPE type )               // - type
 {
     type_id id;                 // - id for unmodified type
-    bool retb;                  // - true ==> is bit_field, array, function
+    bool ok;                    // - true ==> is bit_field, array, function
     TYPE cl_type;               // - class type
 
     ctype->orig = type;
@@ -129,14 +129,14 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     ctype->class_operand = false;
     ctype->pc_ptr = PC_PTR_NOT;
     id = ctype->unmod->id;
-    retb = false;
+    ok = false;
     cl_type = NULL;
     if( id == TYP_BITFIELD ) {
         ctype->bit_field = true;
-        retb = true;
+        ok = true;
     } else if( id == TYP_ARRAY ) {
         ctype->array = true;
-        retb = true;
+        ok = true;
     } else {
         ctype->kind = RkdForTypeId( id );
         switch( ctype->kind ) {
@@ -148,7 +148,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
             }
             break;
           case RKD_FUNCTION :
-            retb = true;
+            ok = true;
             break;
           case RKD_CLASS :
             cl_type = ctype->unmod;
@@ -169,7 +169,7 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
             ctype->class_operand = true;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -593,7 +593,7 @@ static void moveAhead           // MOVES TYPE_FLAGS AHEAD ONE LEVEL
 bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
     ( CONVCTL* info )           // - pointer-conversion information
 {
-    bool retb;                  // - return: true ==> can convert trivially
+    bool ok;                    // - return: true ==> can convert trivially
     bool first_level;           // - true ==> at first level
     bool const_always;          // - true ==> const on all preceding levels
     bool cv_ok;                 // - true ==> no CV mismatch
@@ -707,7 +707,7 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                     got_array = true;
                     continue;
                 } else {
-                    retb = false;
+                    ok = false;
                     break;
                 }
             }
@@ -735,31 +735,31 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             if( src.ext == tgt.ext ) {
                 if( TYP_FUNCTION != src.id
                  || ( (TF1_MEM_MODEL & src.object) == (TF1_MEM_MODEL & tgt.object) ) ) {
-                    retb = true;
+                    ok = true;
                     break;
                 }
             }
             info->reint_cast_ok = cv_ok;
-            retb = false;
+            ok = false;
             break;
         } else if( src.id != tgt.id ) {
             if( info->to_void || info->from_void ) {
-                retb = true;
+                ok = true;
                 break;
             }
             if( TYP_FUNCTION != src.id && TYP_FUNCTION != tgt.id ) {
                 info->reint_cast_ok = cv_ok;
             }
-            retb = false;
+            ok = false;
             break;
         } else if( src.ext != tgt.ext ) {
             info->reint_cast_ok = cv_ok;
-            retb = false;
+            ok = false;
             break;
         }
         if( TYP_FUNCTION == src.id || TYP_ENUM == src.id ) {
             info->reint_cast_ok = cv_ok;
-            retb = ( src.ext == tgt.ext )
+            ok = ( src.ext == tgt.ext )
                 && TypeCompareExclude( src.type
                                      , tgt.type
                                      , TC1_FUN_LINKAGE | TC1_NOT_ENUM_CHAR );
@@ -768,15 +768,15 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             if( src.type->u.mp.host != tgt.type->u.mp.host ) {
                 info->reint_cast_ok = cv_ok;
                 info->static_cast_ok = cv_ok;
-                retb = false;
+                ok = false;
                 break;
             }
         } else if( TYP_CLASS == src.id ) {
             info->reint_cast_ok = cv_ok;
             if( info->to_base || info->to_derived ) {
-                retb = true;
+                ok = true;
             } else {
-                retb = false;
+                ok = false;
             }
             break;
         } else if( TYP_ARRAY == src.id ) {
@@ -784,11 +784,11 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 got_array = true;
                 continue;
             } else {
-                retb = false;
+                ok = false;
                 break;
             }
         } else if( TYP_POINTER != src.id ) {
-            retb = true;
+            ok = true;
             break;
         }
         if( got_array ) {
@@ -797,14 +797,14 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             const_always = false;
         }
     }
-    if( retb ) {
+    if( ok ) {
         if( cv_ok ) {
             info->implicit_cast_ok = true;
             info->static_cast_ok = true;
             info->const_cast_ok = true;
             info->reint_cast_ok = true;
         } else {
-            retb = false;
+            ok = false;
             info->const_cast_ok = true;
             info->cv_mismatch = true;
         }
@@ -841,10 +841,10 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
         }
     }
     info->explicit_cast_ok = true;
-    if( retb && !info->to_derived && !info->to_base ) {
+    if( ok && !info->to_derived && !info->to_base ) {
         info->converts = true;
     }
-    return( retb );
+    return( ok );
 }
 
 

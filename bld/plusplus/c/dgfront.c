@@ -97,27 +97,27 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
 // store constant pointer expr
 // return true if pointer is zero
 {
-    bool retb;
+    bool ok;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
-    retb = false;
+    ok = false;
     switch( expr->op ) {
     case PT_FLOATING_CONSTANT:
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
-        retb = ( BFSign( expr->u.floating_constant ) == 0 );
+        ok = ( BFSign( expr->u.floating_constant ) == 0 );
         break;
     case PT_PTR_CONSTANT:
         CgFrontDataPtr( IC_DATA_INT, 0 );
-        retb = true;
+        ok = true;
         break;
     case PT_INT_CONSTANT:
         if( NULL == Integral64Type( expr->type ) ) {
             CgFrontDataInt( IC_DATA_INT, expr->u.int_constant );
-            retb = ( expr->u.int_constant == 0 );
+            ok = ( expr->u.int_constant == 0 );
         } else {
             POOL_CON* pcon = ConPoolInt64Add( expr->u.int64_constant );
             CgFrontDataPtr( IC_DATA_INT64, pcon );
-            retb = Zero64( &expr->u.int64_constant );
+            ok = Zero64( &expr->u.int64_constant );
         }
         break;
     case PT_STRING_CONSTANT:
@@ -132,7 +132,7 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
         CFatal( "dgfront.c unexpected pointer data in DgStoreScalarValue" );
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 static bool DgStoreMemberPointer( TYPE type, PTREE expr )
@@ -140,21 +140,21 @@ static bool DgStoreMemberPointer( TYPE type, PTREE expr )
 // store constant member-pointer expr
 // return true if member-pointer is zero
 {
-    bool retb;
+    bool ok;
 
     CgFrontDataPtr( IC_SET_TYPE, type );
-    retb = false;
+    ok = false;
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         DgZeroBytes( CgMemorySize( type ) );
-        retb = true;
+        ok = true;
         break;
     case PT_UNARY:
         if( expr->cgop != CO_MEMPTR_CONST ) {
             CFatal( "dgfront.c unexpected operator in DgStoreMemberPointer" );
         } else if( MembPtrZeroConst( expr ) ) {
             DgZeroBytes( CgMemorySize( type ) );
-            retb = true;
+            ok = true;
         } else {
             expr = expr->u.subtree[0];
             DgStoreScalarValue( expr->type, expr->u.subtree[1], 0 );
@@ -168,7 +168,7 @@ static bool DgStoreMemberPointer( TYPE type, PTREE expr )
         CFatal( "dgfront.c unexpected data in DgStoreMemberPointer" );
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
@@ -199,15 +199,15 @@ bool DgStoreScalar( PTREE expr, target_size_t offset, TYPE type )
 /***************************************************************/
 // return true If all bytes are zero
 {
-    bool retb;
+    bool ok;
 
     type = TypedefModifierRemove( type );
     if( type->id == TYP_MEMBER_POINTER ) {
-        retb = DgStoreMemberPointer( type, expr );
+        ok = DgStoreMemberPointer( type, expr );
     } else {
-        retb = DgStoreScalarValue( type, expr, offset );
+        ok = DgStoreScalarValue( type, expr, offset );
     }
-    return( retb );
+    return( ok );
 }
 
 bool DgStoreBitfield( TYPE type, target_ulong value )

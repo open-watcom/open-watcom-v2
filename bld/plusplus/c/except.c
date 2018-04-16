@@ -173,24 +173,24 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
     SCOPE base_scope,           // - scope for base class
     THROW_CNV_CTL *ctl )        // - control area
 {
-    bool retb;                  // - true ==> generate conversion
+    bool ok;                    // - true ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
-    retb = false;
+    ok = false;
     thr_scope = TypeScope( ctl->src_type );
     switch( ScopeDerived( thr_scope, base_scope ) ) {
     DbgDefault( "validateBase -- impossible derived type" );
     case DERIVED_YES :
     case DERIVED_YES_BUT_VIRTUAL :
         ctl->offset = ThrowBaseOffset( thr_scope, base_scope );
-        retb = true;
+        ok = true;
         break;
     case DERIVED_YES_BUT_AMBIGUOUS :
     case DERIVED_YES_BUT_PRIVATE :
     case DERIVED_YES_BUT_PROTECTED :
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 

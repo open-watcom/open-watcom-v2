@@ -151,19 +151,19 @@ target_long FoldSignedRShiftMax( target_long v )
 static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     PTREE node )                // - the expression
 {
-    bool retb;                  // - true ==> conditionally decorated
+    bool ok;                    // - true ==> conditionally decorated
 
-    retb = false;
+    ok = false;
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
         if( node->op == PT_IC ) {
             if( node->u.ic.opcode == IC_COND_TRUE
              || node->u.ic.opcode == IC_COND_FALSE ) {
-                retb = true;
+                ok = true;
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -1261,7 +1261,7 @@ static PTREE FoldBinaryLeft( bool *has_folded,
         op2 = PTreeCopySrcLocation( op2, expr );
         NodeFreeDupedExpr( expr );
         *has_folded = true;
-        return( op2 ); 
+        return( op2 );
     case CO_QUESTION:
         DbgVerify( ! has_decoration, "FoldBinary -- bad ?" );
         op_t = op2->u.subtree[0];
@@ -1331,7 +1331,7 @@ PTREE FoldBinary( PTREE expr )
     op2 = overCondDecor( orig2 );
     has_decoration_right = op2 != orig2;
     has_decoration = has_decoration_left | has_decoration_right;
-    
+
     if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
 
     // Try performing left-folding on the expression.
@@ -1387,7 +1387,7 @@ PTREE FoldBinary( PTREE expr )
         return( expr );
 
     }
-    
+
     typ1 = op1->op;
     typ2 = op2->op;
     if( ! isIntFloatOp( typ1 ) || ! isIntFloatOp( typ2 ) ) {

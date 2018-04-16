@@ -1197,33 +1197,33 @@ static bool isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 {
     unsigned        i;
     FNOV_RANK       *rank;
-    bool            retb;
+    bool            ok;
 
-    retb = true;
+    ok = true;
     rank = entry->rankvector;
     i = entry->num_args;
-    while( retb && ( i > 0 ) ) {
-        retb = ( rank->rank <= level );
+    while( ok && ( i > 0 ) ) {
+        ok = ( rank->rank <= level );
         i--;
         rank++;
     }
-    if( retb ) {
-        retb = ( entry->thisrank.rank <= level );
+    if( ok ) {
+        ok = ( entry->thisrank.rank <= level );
     }
-    return( retb );
+    return( ok );
 }
 
 static bool isReturnIdentical( TYPE sym1, TYPE sym2 )
 /***************************************************/
 // see if two functions have indentical return types
 {
-    bool retb;
+    bool ok;
 
-    retb = TypesSameExclude( FunctionDeclarationType( sym1 )->of
+    ok = TypesSameExclude( FunctionDeclarationType( sym1 )->of
                            , FunctionDeclarationType( sym2 )->of
                            , TC1_NOT_ENUM_CHAR );
 
-    return( retb );
+    return( ok );
 }
 
 static void doComputeArgRank( SYMBOL sym, TYPE src, TYPE tgt, PTREE *pt,
@@ -2098,22 +2098,23 @@ bool IsOverloadedFunc( SYMBOL sym )
 /*********************************/
 // test if a function has been overloaded
 {
-    bool retb = false;
+    bool ok;
 
+    ok = false;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
-            retb = ( sym->next != sym );
+            ok = ( sym->next != sym );
         }
     }
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
-        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), retb ? " " : " not " );
+        printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retb );
+    return( ok );
 }
 
 static bool doneCheckIdentical( SYMBOL curr, bool isUDC, TYPE udc_retn, SYMBOL *retn )
@@ -2193,16 +2194,18 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OV
 // test if a function has been really overloaded
 // ignore functions with SC_DEFAULT id's
 {
-    bool retb = ( NULL == ActualNonOverloadedFunc( sym, result ) );
+    bool ok;
+
+    ok = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_rank ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
-            FormatSym( sym, &name ), retb ? " " : " not " );
+            FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
     }
 #endif
-    return( retb );
+    return( ok );
 }
 
 static void fnovInit( INITFINI* defn )

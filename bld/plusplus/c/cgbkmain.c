@@ -837,20 +837,20 @@ static bool initCDtorStateTable(// OBTAIN STATE TABLE FOR CTOR OR DTOR
     TYPE type )                 // - type of object
 {
     STAB_OBJ* obj;              // - object ptr for type
-    bool retb;                  // - true ==> set up the table
+    bool ok;                    // - true ==> set up the table
     OBJ_INIT* init;             // - initialization entry
 
     obj = buildObjectStateTable( type );
     fctl->obj_registration = obj;
     if( obj == NULL ) {
-        retb = false;
+        ok = false;
     } else {
         init = ObjInitPush( type );
         init->defn = obj;
         init->reg = DtregObj( fctl );
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 

@@ -587,7 +587,7 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
     ( SYMBOL fun                // - the function
     , CALLNODE** a_callnode )   // - addr[ NULL or CALLNODE for function ]
 {
-    bool retb;                  // - return: true ==> process it
+    bool ok;                    // - return: true ==> process it
 
     *a_callnode = NULL;
     if( NULL == fun ) return true;
@@ -595,12 +595,12 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
     fun = symDefaultBase( fun );
     if( fun->flag & SF_FN_LONGJUMP ) {
         _print( (fun->flag & SF_LONGJUMP) ? "throwable\n" : "non-throwable\n" );
-        retb = true;
+        ok = true;
     } else {
         if( SymIsInitialized( fun ) ) {
             _print( "not resolved\n" );
             *a_callnode = CgrfCallNode( fun );
-            retb = true;
+            ok = true;
         } else {
             TYPE* except_spec = SymFuncArgList( fun )->except_spec;
             if( NULL != except_spec
@@ -613,18 +613,18 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
                 if( NULL == frec ) {
                     _print( "assumed throwable, called not initialized\n" );
                     fun->flag |= SF_LONGJUMP;
-                    retb = true;
+                    ok = true;
                 } else {
                     _print( "deleted: repository has IGN_LONGJUMP\n" );
                     DbgVerify( frec->flags & RFFLAG_IGN_LONGJUMP
                              , "resolveSymbol -- bad repository function" );
                     RepoFunRelease( frec );
-                    retb = false;
+                    ok = false;
                 }
             }
         }
     }
-    return( retb );
+    return( ok );
 }
 
 

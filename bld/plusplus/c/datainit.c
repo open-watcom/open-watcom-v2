@@ -1081,20 +1081,21 @@ static bool dataInitCheckAnalyse( PTREE *pexpr )
 /**********************************************/
 {
     PTREE   expr = *pexpr;
-    bool    retb = true;        // return true if no error
+    bool    ok;             // return true if no error
 
     _dump( "- Analysed Expression ---------------------------------" );
     _dumpPTree( expr );
     _dump( "-------------------------------------------------------" );
 
     // check for error in expression
+    ok = true;
     if( ( expr->op == PT_ERROR ) || ( expr->cgop != CO_EXPR_DONE ) ) {
         PTreeErrorNode( expr );
         currInit->state = DS_ERROR;
-        retb = false;
+        ok = false;
     }
     *pexpr = expr;
-    return( retb );
+    return( ok );
 }
 
 static void setModuleInitFnScope( void )
@@ -1122,7 +1123,7 @@ static bool dataInitAnalyseExpr( PTREE *pexpr )
     PTREE       expr = *pexpr;
     PTREE       left;
     PTREE       right;
-    bool        retb;
+    bool        ok;
     TOKEN_LOCN  locn;       // - location of RHS
 
     right = PTreeExtractLocn( expr, &locn );
@@ -1155,21 +1156,21 @@ static bool dataInitAnalyseExpr( PTREE *pexpr )
         dataInitCodeFileClose();
         break;
     }
-    retb = dataInitCheckAnalyse( &expr );
+    ok = dataInitCheckAnalyse( &expr );
 
     *pexpr = expr;
-    return( retb );
+    return( ok );
 }
 
 static bool dataInitAnalyseCtor( PTREE *pexpr )
 /*********************************************/
 // return false if error in analysis
 {
-    bool     retb;
+    bool     ok;
 
     currInit->use_simple = true;
-    retb = dataInitAnalyseExpr( pexpr );
-    return( retb );
+    ok = dataInitAnalyseExpr( pexpr );
+    return( ok );
 }
 
 static void dataInitEmitExpr( PTREE node )
@@ -1502,36 +1503,37 @@ static bool dataInitIsFull( INITIALIZE_INFO *nest )
 // return true if stack entry is full
 // braces and root_type are never full
 {
-    bool retb = false;
+    bool ok;
 
+    ok = false;
     if( ( nest->entry != DE_BRACE ) && ( nest->entry != DE_ROOT_TYPE ) ) {
         switch( nest->target ) {
         case DT_SCALAR:
-            retb = true;
+            ok = true;
             break;
         case DT_ARRAY:
             if( nest->offset == nest->mem_size ) {
-                retb = true;
+                ok = true;
             }
             break;
         case DT_CLASS:
             if( nest->u.c.curr == NULL ) {
-                retb = true;
+                ok = true;
             }
             break;
         case DT_BITFIELD:
             // type has already been advanced to next aggregate entry
             if( nest->type == NULL ) {
-                retb = true;
+                ok = true;
             } else if( nest->type->id != TYP_BITFIELD ) {
-                retb = true;
+                ok = true;
             } else if( nest->type->u.b.field_start == 0 ) {
-                retb = true;
+                ok = true;
             }
             break;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 static void dataInitEnQueue( target_size_t start, target_size_t size )

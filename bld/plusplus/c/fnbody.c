@@ -1002,7 +1002,7 @@ SYMBOL FnRetnOptSym(            // GET SYMBOL FOR RETURN OPTIMIZATION
 bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
     SYMBOL sym )                // - candidate symbol
 {
-    bool retb;                  // - return: false ==> symbol never optimized
+    bool ok;                    // - return: false ==> symbol never optimized
 
     if( currFunction->retn_opt
      && SymIsAutomatic( sym )
@@ -1011,11 +1011,11 @@ bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
      && ! SymIsArgument( sym ) ) {
         SYMBOL func = ScopeFunctionInProgress();
         TYPE retn_type = FunctionDeclarationType( func->sym_type ) -> of;
-        retb = TypesIdentical( retn_type, sym->sym_type );
+        ok = TypesIdentical( retn_type, sym->sym_type );
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 
@@ -1183,7 +1183,7 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     TYPE old_test;              // - test type: old
     bool errors;                // - indicates errors during typesig lookup
     TYPE_SIG_ACCESS access;     // - type of type-sig access
-    bool retb;                  // - true ==> no errors
+    bool ok;                    // - true ==> no errors
     #define CATT_REF_PTR_CLS (CATT_CLS | CATT_PTR | CATT_REF)
 
     SetErrLoc( cat_locn );
@@ -1214,18 +1214,18 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     } else {
         access = 0;
     }
-    retb = true;
+    ok = true;
     TypeSigFind( access, type, NULL, &errors );
     if( errors ) {
         try_block->u.t.catch_err = true;
-        retb = false;
+        ok = false;
     }
     new_attrs &= ~CATT_REF;
     RingIterBeg( try_block->u.t.catches, test ) {
         if( test->type == NULL ) {
             catchMsg( ERR_CATCH_FOLLOWS_ELLIPSIS, test );
             try_block->u.t.catch_err = true;
-            retb = false;
+            ok = false;
             break;
         }
         getCatchTypeAttrs( test->type, &old_test, &old_attrs );
@@ -1250,7 +1250,7 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     catch_entry->defined = *cat_locn;
     CgFrontCodePtr( IC_CATCH_VAR, try_block->next->try_var );
     CgFrontCodePtr( IC_CATCH, type );
-    return( retb );
+    return( ok );
 
     #undef CATT_REF_PTR_CLS
 }

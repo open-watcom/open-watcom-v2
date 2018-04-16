@@ -110,16 +110,16 @@ bool CallStabCdArgGet(          // GET CD-ARG FOR A CALL
     unsigned *a_cd_arg )        // - addr[ value for CD-ARG ]
 {
     CALL_STAB* cstb;            // - call information
-    bool retb;                  // - true ==> have CDTOR arg.
+    bool ok;                    // - true ==> have CDTOR arg.
 
     cstb = callStabEntry( handle );
     if( cstb != NULL && cstb->has_cd_arg ) {
         *a_cd_arg = cstb->cd_arg;
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 

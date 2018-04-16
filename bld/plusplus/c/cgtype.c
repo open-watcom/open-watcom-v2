@@ -229,31 +229,40 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
     bool string )               // - array of string not aggregate
 {
-    bool retb = false;          // - true if aggregate
+    bool ok;                    // - true if aggregate
     CLASSINFO *info;            // - info part of class type
 
+    ok = false;
     type = TypedefModifierRemove( type );
     switch( type->id ) {
       case TYP_ARRAY :
-        if( string && TypeIsCharString( type ) ) break;
-        retb = true;
+        if( string && TypeIsCharString( type ) )
+            break;
+        ok = true;
         break;
       case TYP_BITFIELD :
-        retb = true;
+        ok = true;
         break;
       case TYP_CLASS :
         info = type->u.c.info;
-        if( info->corrupted ) break;
-        if( info->bases != NULL ) break;
-        if( info->size != type->u.c.info->vsize ) break;
-        if( info->last_vfn != 0 ) break;
-        if( info->last_vbase != 0 ) break;
-        if( info->has_data == 0 ) break;
-        if( info->has_ctor != 0 ) break;
-        retb = true;
+        if( info->corrupted )
+            break;
+        if( info->bases != NULL )
+            break;
+        if( info->size != type->u.c.info->vsize )
+            break;
+        if( info->last_vfn != 0 )
+            break;
+        if( info->last_vbase != 0 )
+            break;
+        if( info->has_data == 0 )
+            break;
+        if( info->has_ctor != 0 )
+            break;
+        ok = true;
         break;
     }
-    return( retb );
+    return( ok );
 }
 
 

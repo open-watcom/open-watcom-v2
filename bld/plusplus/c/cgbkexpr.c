@@ -125,18 +125,18 @@ bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 {
     CGEXPR* top;                // - top of stack
-    bool retb;                  // - true ==> garbage was popped
+    bool ok;                    // - true ==> garbage was popped
 
     top = VstkTop( &expressions );
     if( top == NULL ) {
-        retb = true;
+        ok = true;
     } else if( top->garbage ) {
         VstkPop( &expressions );
-        retb = true;
+        ok = true;
     } else {
-        retb = false;
+        ok = false;
     }
-    return( retb );
+    return( ok );
 }
 
 

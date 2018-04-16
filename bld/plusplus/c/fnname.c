@@ -163,16 +163,17 @@ static bool nameHasPrefix(      // TEST IF NAME HAS A PREFIX
     const NAME name,            // - name to be tested
     const char *prefix )        // - prefix
 {
-    bool retb = true;           // - true ==> has prefix
+    bool ok;                    // - true ==> has prefix
     const char *sname = NameStr( name );
 
+    ok = true;
     for( ; *prefix != '\0'; ++sname, ++prefix ) {
         if( *prefix != *sname ) {
-            retb = false;
+            ok = false;
             break;
         }
     }
-    return( retb );
+    return( ok );
 }
 
 static void appendChar(         // APPEND A CHARACTER

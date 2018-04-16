@@ -225,7 +225,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     target_offset_t *offset )   // - addr[ offset from bound reference ]
 {
     IBRP *ibrp;                 // - current inline bound reference parm.
-    bool retb;                  // - true ==> bound was located
+    bool ok;                    // - true ==> bound was located
     FN_CTL* fctl;               // - current file control
 
     fctl = FnCtlTop();
@@ -237,7 +237,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     *trans = sym;
     *bound = NULL;
     *offset = 0;
-    retb = false;
+    ok = false;
     RingIterBeg( ibrps, ibrp ) {
         if( ( sym == ibrp->u.parm )
           &&( fctl->handle == ibrp->handle ) ) {
@@ -254,11 +254,11 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
                 DumpSymbol( ibrp->u.parm );
             }
 #endif
-            retb = true;
+            ok = true;
             break;
         }
     } RingIterEnd( ibrp )
-    return( retb );
+    return( ok );
 }
 
 
@@ -488,14 +488,14 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn)// - addr[ return adjustment ]
 {
-    bool retb;                  // - true ==> can directly call *a_vfun
+    bool ok;                    // - true ==> can directly call *a_vfun
     SYMBOL exact_vfun;          // - exact vfun called
 
     exact_vfun = ScopeFindExactVfun( vfun
                                    , scopeForSymType( sym )
                                    , a_adj_this
                                    , a_adj_retn );
-    retb = false;
+    ok = false;
     if( NULL == exact_vfun ) {
     } else if( 0 != *a_adj_retn ) {
     } else if( CgBackFuncInlined( exact_vfun ) ) {
@@ -509,14 +509,14 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
             if( cgfile->u.s.state_table && FstabHasStateTable() ) {
             } else {
                 *a_vfun = exact_vfun;
-                retb = true;
+                ok = true;
             }
         }
     } else {
         *a_vfun = exact_vfun;
-        retb = true;
+        ok = true;
     }
-    return( retb );
+    return( ok );
 }
 
 

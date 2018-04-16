@@ -144,16 +144,16 @@ bool DgrfWalkEdges(             // WALK ALL EDGES FROM OBJECT
         , DIRGRAPH_EDGE * ) )   // - - EDGE
 {
     DIRGRAPH_EDGE *edge;        // - current edge
-    bool retb;                  // - true ==> walking terminated
+    bool ok;                    // - true ==> walking terminated
 
-    retb = false;
+    ok = false;
     RingIterBegSafe( node->edges, edge ){
-        retb = (*walker)( ctl, edge );
-        if( retb ) {
+        ok = (*walker)( ctl, edge );
+        if( ok ) {
             break;
         }
     } RingIterEndSafe( edge )
-    return( retb );
+    return( ok );
 }
 
 
@@ -164,16 +164,16 @@ bool DgrfWalkObjects(           // WALK ALL OBJECTS
         , DIRGRAPH_NODE * ) )   // - - node
 {
     DIRGRAPH_NODE *node;        // - current object
-    bool retb;                  // - true ==> walking terminated
+    bool ok;                    // - true ==> walking terminated
 
-    retb = false;
+    ok = false;
     RingIterBegSafe( ctl->objects, node ) {
-        retb = (*walker)( ctl, node );
-        if( retb ) {
+        ok = (*walker)( ctl, node );
+        if( ok ) {
             break;
         }
     } RingIterEndSafe( node )
-    return( retb );
+    return( ok );
 }
 
 

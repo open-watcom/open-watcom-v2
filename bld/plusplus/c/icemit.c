@@ -424,38 +424,34 @@ static bool klugedTyping(       // DEBUG -- see if ptr/ref consistency
     TYPE t1,                    // - type[1]
     TYPE t2 )                   // - type[2]
 {
-    bool retb;                  // - return: true ==> ok
+    bool ok;                    // - return: true ==> ok
 
-    retb = false;
+    ok = false;
     t1 = TypePointedAtModified( t1 );
     if( t1 != NULL ) {
         t2 = TypeReference( t2 );
         if( t2 != NULL ) {
-            retb = TypesIdentical( t1, t2 );
+            ok = TypesIdentical( t1, t2 );
         }
     }
-    return( retb );
+    return( ok );
 }
 
 
 static bool goodArgType(        // DEBUG -- verify arg/expr consistency
     PTREE expr )                // - CO_LIST expression
 {
-    bool retb;                  // - return: true ==> ok
+    bool ok;                    // - return: true ==> ok
     TYPE atype;                 // - argument type
     TYPE etype;                 // - expression type
 
     atype = NodeType( expr );
     etype = NodeType( expr->u.subtree[1] );
-    retb = TypesIdentical( etype, atype );
-    if( !retb ) {
-        if( klugedTyping( etype, atype ) || klugedTyping( atype, etype ) ) {
-            retb = true;
-        } else {
-            retb = false;
-        }
+    ok = TypesIdentical( etype, atype );
+    if( !ok ) {
+        ok = ( klugedTyping( etype, atype ) || klugedTyping( atype, etype ) );
     }
-    return( retb );
+    return( ok );
 }
 #endif
 

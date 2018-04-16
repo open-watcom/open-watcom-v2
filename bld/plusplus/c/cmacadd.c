@@ -286,7 +286,7 @@ void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
 bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 {
-    bool retb;
+    bool ok;
     bool macros_different;
     unsigned max_rlen;
     unsigned rlen;
@@ -320,7 +320,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             endif
         endif
     */
-    retb = true;
+    ok = true;
     max_rlen = PCHReadUInt();
     pch_macro = CMemAlloc( max_rlen );
     for( ; (rlen = PCHReadUInt()) != 0; ) {
@@ -340,7 +340,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                         break;
                     }
                     PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, pch_macro->macro_name );
-                    retb = false;
+                    ok = false;
                     break;
                 }
                 if( macros_different ) {
@@ -353,7 +353,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         } RingIterEnd( new_macro )
         if( matched_macro != NULL ) {
             /* macro is in current compilation */
-            if( !retb ) {
+            if( !ok ) {
                 /* problem was detected */
                 break;
             }
@@ -363,7 +363,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                 // (1) original macro was referenced during first #include
                 // but no definition in current compilation
                 PCHWarn2p( WARN_PCH_CONTENTS_MACRO_NOT_PRESENT, pch_macro->macro_name );
-                retb = false;
+                ok = false;
                 break;
             }
             // (3) queue macro to be deleted when PCH is loaded
@@ -375,24 +375,24 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         }
     }
     CMemFree( pch_macro );
-    if( retb ) {
+    if( ok ) {
         for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
             RingIterBeg( macroHashTable[i], cmdln_macro ) {
                 if(( cmdln_macro->macro_flags & MFLAG_PCH_CHECKED ) == 0 ) {
                     // (4) macro was not defined when pch was created
                     if( cmdln_macro->macro_flags & MFLAG_USER_DEFINED ) {
                         PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, cmdln_macro->macro_name );
-                        retb = false;
+                        ok = false;
                         break;
                     }
                 }
             } RingIterEnd( cmdln_macro )
         }
     }
-    if( !retb ) {
+    if( !ok ) {
         RingFree( &macroPCHDeletes );
     }
-    return( retb );
+    return( ok );
 }
 
 pch_status PCHReadMacros( void )
@@ -640,13 +640,13 @@ bool MacroExists(           // TEST IF MACRO EXISTS
 bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
     ( void )
 {
-    bool retb;
+    bool ok;
 
-    retb = MacroExists( Buffer, TokenLen );
+    ok = MacroExists( Buffer, TokenLen );
 #ifdef OPT_BR
-    retb = BrinfDependsMacroDefined( retb, Buffer, TokenLen );
+    ok = BrinfDependsMacroDefined( ok, Buffer, TokenLen );
 #endif
-    return( retb );
+    return( ok );
 }
 
 
