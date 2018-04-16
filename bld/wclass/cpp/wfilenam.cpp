@@ -507,6 +507,7 @@ static bool isLongDirName( char* dirNames, const char *pathsep )
         }
         aDirName = strtok( NULL, pathsep );
     }
+    free( cpDirNames );
     return( rc );
 }
 

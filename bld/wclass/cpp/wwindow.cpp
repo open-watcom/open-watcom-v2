@@ -610,7 +610,7 @@ static key_map KeyMapping[] = {
 static WKeyCode MapAccelKey( int key )
 /************************************/
 {
-    for( unsigned i = 0; i < sizeof( KeyMapping ); ++i ) {
+    for( unsigned i = 0; i < sizeof( KeyMapping ) / sizeof( KeyMapping[0] ); ++i ) {
         if( KeyMapping[i].ascii == key ) {
             return( KeyMapping[i].alt_key );
         }

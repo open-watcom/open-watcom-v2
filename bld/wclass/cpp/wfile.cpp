@@ -123,7 +123,7 @@ long WEXPORT WFile::getl()
 {
     char temp[30];
     int len = 0;
-    for( unsigned i = 0; !_eof && i <= sizeof( temp ); i++ ) {
+    for( unsigned i = 0; !_eof && i < sizeof( temp ); i++ ) {
         temp[i] = getch();
         len = i;
         if( !( isdigit( temp[i] ) || temp[i] == '-' ) ) {

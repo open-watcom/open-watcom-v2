@@ -83,7 +83,7 @@ WEXPORT WToolBar::~WToolBar() {
     while( _children.count() ) {
         delete _children[_children.count() - 1];
     }
-    if( _toolBarItems ) {
+    if( _toolBarItems != NULL ) {
         delete[] _toolBarItems;
     }
 }
@@ -107,6 +107,7 @@ void WEXPORT WToolBar::removeTool( WToolBarItem *tool ) {
 void WToolBar::attach( WWindow *win ) {
 /*************************************/
 
+    bool rc;
     int num_tools = _children.count();
     _toolBarItems = new gui_toolbar_struct[num_tools];
     if( _toolBarItems != NULL ) {
@@ -120,29 +121,20 @@ void WToolBar::attach( WWindow *win ) {
             trect.y = _rect.y();
             trect.width = _rect.w();
             trect.height = _rect.h();
-            if( GUICreateFloatToolBar( win->handle(), fixed, 0, num_tools,
-                              _toolBarItems, false, NULL, NULL, &trect ) ) {
-                _parent = win;
-            } else {
-                delete _toolBarItems;
-                _toolBarItems = NULL;
-            }
+            rc = GUICreateFloatToolBar( win->handle(), fixed, 0, num_tools,
+                              _toolBarItems, false, NULL, NULL, &trect );
         } else if( _flags & WToolFlagsUseTips ) {
-            if( GUICreateToolBarWithTips( win->handle(), fixed, 0, num_tools,
-                                          _toolBarItems, false, NULL, NULL ) ) {
-                _parent = win;
-            } else {
-                delete _toolBarItems;
-                _toolBarItems = NULL;
-            }
+            rc = GUICreateToolBarWithTips( win->handle(), fixed, 0, num_tools,
+                                          _toolBarItems, false, NULL, NULL );
         } else {
-            if( GUICreateToolBar( win->handle(), fixed, 0, num_tools,
-                                  _toolBarItems, false, NULL, NULL ) ) {
-                _parent = win;
-            } else {
-                delete _toolBarItems;
-                _toolBarItems = NULL;
-            }
+            rc = GUICreateToolBar( win->handle(), fixed, 0, num_tools,
+                                  _toolBarItems, false, NULL, NULL );
+        }
+        if( rc ) {
+            _parent = win;
+        } else {
+            delete[] _toolBarItems;
+            _toolBarItems = NULL;
         }
     }
 }
