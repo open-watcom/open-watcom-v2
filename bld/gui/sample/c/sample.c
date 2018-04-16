@@ -1051,19 +1051,17 @@ static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
             GUIDrawTextPos( gui, out->display[row + i].data + string_indent,
                          length, &pos, GUI_MENU_PLAIN );
         }
-        for( currattr = out->display[row + i].attr_list; currattr != NULL;
-             currattr = currattr->next ) {
-            indent = GUIGetExtentX( gui, out->display[row+i].data,
-                                    currattr->start );
+        for( currattr = out->display[row + i].attr_list; currattr != NULL; currattr = currattr->next ) {
+            indent = GUIGetExtentX( gui, out->display[row + i].data, currattr->start );
             string_indent = GetStringIndent( &indent, hscroll, &metrics ) + currattr->start;
-            length = strlen( out->display[row+i].data );
+            length = strlen( out->display[row + i].data );
             if( string_indent < length ) {
                 length = currattr->end - currattr->start + 1;
                 if( currattr->start < string_indent ) {
                     length -= ( string_indent - currattr->start );
                 }
                 if( length > 0 ) {
-                    GUIDrawText( gui, out->display[row+i].data + string_indent,
+                    GUIDrawText( gui, out->display[row + i].data + string_indent,
                                  length, row + i - vscroll, indent,
                                  currattr->attr );
                 }
@@ -1079,7 +1077,7 @@ static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
             data = NULL;
             length = 0;
         } else {
-            data = IndentData[row+i].data + string_indent;
+            data = IndentData[row + i].data + string_indent;
         }
         extent = client.width;
         if( hscroll == 0 ) {
@@ -1377,8 +1375,7 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_DESTROY :
         out = GUIGetExtra( gui );
         for( i = 0; i < out->numrows; i++ ) {
-            for( currattr = out->display[i].attr_list; currattr != NULL;
-                 currattr = nextattr ) {
+            for( currattr = out->display[i].attr_list; currattr != NULL; currattr = nextattr ) {
                  nextattr = currattr->next;
                  GUIMemFree( currattr );
             }

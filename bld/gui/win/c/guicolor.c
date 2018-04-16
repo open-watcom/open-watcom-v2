@@ -276,19 +276,21 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
  * GUISetColours -- record the colours selected by the application
  */
 
-bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
+bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
-    int size;
+    size_t          size;
+    gui_colour_set  *attrs;
 
     if( colours != NULL ) {
-        size = sizeof( gui_colour_set ) * wnd->num_attrs;
-        wnd->colours = (gui_colour_set *)GUIMemAlloc( size );
-        if( wnd->colours == NULL ) {
-            return( false );
+        size = sizeof( gui_colour_set ) * num_attrs;
+        attrs = (gui_colour_set *)GUIMemAlloc( size );
+        if( attrs != NULL ) {
+            wnd->colours = attrs;
+            wnd->num_attrs = num_attrs;
+            memcpy( attrs, colours, size );
+            SetBKBrush( wnd );
+            return( true );
         }
-        memcpy( wnd->colours, colours, size );
-        SetBKBrush( wnd );
-        return( true );
     }
     return( false );
 }

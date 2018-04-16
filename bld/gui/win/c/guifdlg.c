@@ -136,14 +136,14 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 
     if( ofn->file_name ) {
         strncpy( fdlg.szFullFile, ofn->file_name, CCHMAXPATH );
-        fdlg.szFullFile[CCHMAXPATH-1] = '\0';
+        fdlg.szFullFile[CCHMAXPATH - 1] = '\0';
     }
 
     if( ( !ofn->file_name || !*ofn->file_name ) && ofn->filter_index >= 0 ) {
         str_index = 0;
-        for( i=0; ;i++ ) {
+        for( i = 0; ; i++ ) {
             if( ofn->filter_list[i] == '\0' ) {
-                if( ofn->filter_list[i+1] == '\0' ) {
+                if( ofn->filter_list[i + 1] == '\0' ) {
                     break;
                 }
                 str_index++;
@@ -155,7 +155,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         }
         if( ofn->filter_list[i] != '\0' ) {
             strncpy( fdlg.szFullFile, ofn->filter_list + i, CCHMAXPATH );
-            fdlg.szFullFile[CCHMAXPATH-1] = '\0';
+            fdlg.szFullFile[CCHMAXPATH - 1] = '\0';
         }
     }
 
@@ -174,7 +174,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     if( fdlg.papszFQFilename ) {
         ofn->file_name[0] = '\0';
         slen = 0;
-        for( i=0; i<fdlg.ulFQFCount; i++ ) {
+        for( i = 0; i < fdlg.ulFQFCount; i++ ) {
             flen = strlen( fdlg.papszFQFilename[0][i] );
             if( ( slen + flen + 2 ) > ofn->max_file_name ) {
                 return( FN_RC_FAILED_TO_INITIALIZE );
@@ -186,7 +186,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
             slen += flen;
         }
         WinFreeFileDlgList( fdlg.papszFQFilename );
-        if( ofn->base_file_name  != NULL ) {
+        if( ofn->base_file_name != NULL ) {
             ofn->base_file_name[0] = '\0';
         }
     } else {
@@ -197,7 +197,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
             _splitpath( fdlg.szFullFile, NULL, NULL, fname, NULL );
             _splitpath( fdlg.szFullFile, NULL, NULL, NULL, fname+strlen(fname) );
         }
-        if( ofn->base_file_name  != NULL ) {
+        if( ofn->base_file_name != NULL ) {
             ofn->base_file_name[0] = '\0';
             if( strlen( fname ) <= ofn->max_base_file_name ) {
                 strcpy( ofn->base_file_name, fname );
@@ -295,7 +295,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     LastPath = NULL;
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' && ofn->initial_dir[1] == ':' ) {
         drive = ofn->initial_dir[0];
-        memmove( ofn->initial_dir, ofn->initial_dir+2, strlen( ofn->initial_dir+2 ) + 1 );
+        memmove( ofn->initial_dir, ofn->initial_dir + 2, strlen( ofn->initial_dir + 2 ) + 1 );
     } else {
         drive = 0;
     }

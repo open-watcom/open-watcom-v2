@@ -36,6 +36,31 @@
 #define HEIGHT 5
 #define WIDTH 8
 
+#define DLGNEW_CTLS() \
+    pick_p5id( STATIC,  GUI_STATIC,         "Please enter install path:", 4, 4, 30 ) \
+    pick_p5id( EDIT,    GUI_EDIT,           NULL,                         4, 15, 30 ) \
+    pick_p5id( CANCEL,  GUI_PUSH_BUTTON,   "CANCEL",                      6, 30, WIDTH ) \
+    pick_p5id( OK,      GUI_DEFPUSH_BUTTON, "OK",                         26, 30, WIDTH )
+
+enum {
+    DUMMY_ID = 100,
+    #define pick_p5id(id,p1,p2,p3,p4,p5)    CTL_ ## id,
+    DLGNEW_CTLS()
+    #undef pick_p5id
+};
+
+enum {
+    #define pick_p5id(id,p1,p2,p3,p4,p5)    id ## _IDX,
+    DLGNEW_CTLS()
+    #undef pick_p5id
+};
+
+static gui_control_info GetNew[] = {
+    #define pick_p5id(id,p1,p2,p3,p4,p5) p1,p2,p3,p4,p5, HEIGHT, NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, CTL_ ## id,
+    DLGNEW_CTLS()
+    #undef pick_p5id
+};
+
 static gui_rect Scale = { 0, 0, 80, 100 };
 static gui_ord Width = 0;
 
@@ -65,7 +90,7 @@ static gui_rect Rect;
 static int Row;
 static int NumEnters = 0;
 
-static gui_colour_set StatusColours[GUI_NUM_ATTRS+1] = {
+static gui_colour_set StatusColours[GUI_NUM_ATTRS + 1] = {
     /* Fore              Back        */
     GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_PLAIN     */
     GUI_BLUE,          GUI_WHITE,   /* GUI_MENU_STANDOUT  */
@@ -89,20 +114,6 @@ static gui_create_info StatusWnd = {
     NULL,
     NULL,
     NULL                                // Menu Resource
-};
-
-enum {
-   ctr_static,
-   ctr_edit,
-   ctr_cancelbutton,
-   ctr_okbutton
-};
-
-static gui_control_info GetNew[] = {
-    { GUI_STATIC,         "Please enter install path:", { 4, 4, 30, HEIGHT },       NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_static },
-    { GUI_EDIT,           NULL,                         { 4, 15, 30, HEIGHT },      NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_edit },
-    { GUI_PUSH_BUTTON,   "CANCEL",                      { 6, 30, WIDTH, HEIGHT },   NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_cancelbutton },
-    { GUI_DEFPUSH_BUTTON, "OK",                         { 26, 30, WIDTH, HEIGHT },  NULL, GUI_NOSCROLL, GUI_STYLE_CONTROL_NOSTYLE, ctr_okbutton }
 };
 
 static gui_colour_set Colours[GUI_NUM_INIT_COLOURS] = {
@@ -135,12 +146,12 @@ static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
-        case ctr_cancelbutton :
+        case CTL_CANCEL:
             GUICloseDialog( gui );
             ret_val = GUI_RET_CANCEL;
             break;
-        case ctr_okbutton :
-            text = GUIGetText( gui, ctr_edit );
+        case CTL_OK:
+            text = GUIGetText( gui, CTL_EDIT );
             if( Status == NULL ) {
                 Status = GUICreateWindow( &StatusWnd );
             } else {
