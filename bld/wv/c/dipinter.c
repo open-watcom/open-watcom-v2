@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -481,9 +482,8 @@ OVL_EXTERN walk_result WVIMPENTRY( WalkSymList )( imp_image_handle *iih, symbol_
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss,
-                    void *src, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish,
-                    location_context *lc, void *d )
+OVL_EXTERN walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *iih, symbol_source ss, void *src,
+                        DIP_IMP_SYM_WALKER *wk, imp_sym_handle *ish, location_context *lc, void *d )
 {
     /* unused parameters */ (void)iih; (void)ss; (void)src; (void)wk; (void)ish; (void)lc; (void)d;
 
@@ -539,7 +539,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymType )( imp_image_handle *iih, imp_sym_hand
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_handle *ish,
-                        location_context *lc, location_list *ll )
+                                                location_context *lc, location_list *ll )
 {
     const wv_sym_entry  *se;
     void                *d;
@@ -566,7 +566,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymLocation )( imp_image_handle *iih, imp_sym_
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_handle *ish,
-                        location_context *lc, void *d )
+                                                        location_context *lc, void *d )
 {
     /* unused parameters */ (void)iih; (void)lc;
 
@@ -577,7 +577,7 @@ OVL_EXTERN dip_status WVIMPENTRY( SymValue )( imp_image_handle *iih, imp_sym_han
 }
 
 OVL_EXTERN dip_status WVIMPENTRY( SymInfo )( imp_image_handle *iih, imp_sym_handle *ish,
-                        location_context *lc, sym_info *si )
+                                                location_context *lc, sym_info *si )
 {
     /* unused parameters */ (void)iih; (void)lc;
 
@@ -636,9 +636,8 @@ OVL_EXTERN search_result WVIMPENTRY( AddrSym )( imp_image_handle *iih, imp_mod_h
     return( SR_NONE );
 }
 
-static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
-                                  void *src, lookup_item *li,
-                                  location_context *lc, sym_list **sl_head )
+static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void *src, lookup_item *li,
+                                                        location_context *lc, sym_list **sl_head )
 {
     imp_type_handle     *ith;
     imp_sym_handle      *ish;
@@ -675,15 +674,14 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
     return( SR_EXACT );
 }
 
-OVL_EXTERN search_result WVIMPENTRY( LookupSym )( imp_image_handle *iih,
-                symbol_source ss, void *src, lookup_item *li, void *d )
+OVL_EXTERN search_result WVIMPENTRY( LookupSym )( imp_image_handle *iih, symbol_source ss, void *src,
+                                                                        lookup_item *li, void *d )
 {
     return( DoLookupSym( iih, ss, src, li, NULL, (sym_list **)d ) );
 }
 
-OVL_EXTERN search_result WVIMPENTRY( LookupSymEx )( imp_image_handle *iih,
-                symbol_source ss, void *src, lookup_item *li,
-                location_context *lc, void *d )
+OVL_EXTERN search_result WVIMPENTRY( LookupSymEx )( imp_image_handle *iih, symbol_source ss, void *src,
+                                                    lookup_item *li, location_context *lc, void *d )
 {
     return( DoLookupSym( iih, ss, src, li, lc, (sym_list **)d ) );
 }
