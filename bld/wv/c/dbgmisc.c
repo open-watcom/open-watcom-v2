@@ -758,9 +758,11 @@ void ProcThread( void )
         }
     } else {
         thd = FindThread( tid );
-        if( thd == NULL )
+        if( thd == NULL ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_THREAD ), tid );
-        ThdCmd( thd, tcmd );
+        } else {
+            ThdCmd( thd, tcmd );
+        }
     }
 }
 

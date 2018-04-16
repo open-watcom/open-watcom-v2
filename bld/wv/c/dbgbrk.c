@@ -540,12 +540,10 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
     char        *end = buff + buff_len ;
 
     cmds = cond = LIT_ENG( Empty );
-    if( bp != NULL ) {
-        if( bp->cmds != NULL )
-            cmds = bp->cmds->buff;
-        if( bp->condition != NULL ) {
-            cond = bp->condition;
-        }
+    if( bp->cmds != NULL )
+        cmds = bp->cmds->buff;
+    if( bp->condition != NULL ) {
+        cond = bp->condition;
     }
     p = Format( buff, "%s", GetCmdName( CMD_BREAK ) );
     switch( event ) {
@@ -621,12 +619,8 @@ static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len 
     case B_UNRESUME:
         *p++ = '/';
         p = GetCmdEntry( PointNameTab, event, p );
-        if( bp == NULL ) {
-            p = StrCopy( "*", p );
-        } else {
-            p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
-//          p = Format( p, " %A", bp->loc.addr );
-        }
+        p = AddrToString( &bp->loc.addr, MAF_FULL, p, end - p );
+//        p = Format( p, " %A", bp->loc.addr );
         return( p );
     }
     return( NULL );
@@ -2023,7 +2017,7 @@ brkp *GetBPAtIndex( int index )
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if ( bp->index == index ) {
-            return( bp );
+            break;
         }
     }
     return( bp );

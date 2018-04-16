@@ -90,46 +90,50 @@ OVL_EXTERN void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_p
 
     /* unused parameters */ (void)piece;
 
-    if( row < 0 ) {
-        bp = NULL;
-    } else {
-        bp = BrkGetBP( row );
-    }
-    switch( id ) {
-    case MENU_INITIALIZE:
-        if( bp != NULL ) {
-            WndMenuEnableAll( wnd );
-            WndMenuEnable( wnd, MENU_BREAK_ENABLE, !bp->status.b.active );
-            WndMenuEnable( wnd, MENU_BREAK_DISABLE, bp->status.b.active );
-            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
-            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
-        } else {
-            WndMenuGrayAll( wnd );
-        }
-        WndMenuEnable( wnd, MENU_BREAK_CREATE_NEW, true );
-        break;
-    case MENU_BREAK_ENABLE:
-        ActPoint( bp, true );
-        break;
-    case MENU_BREAK_DISABLE:
-        ActPoint( bp, false );
-        break;
-    case MENU_BREAK_CREATE_NEW:
-        if( DlgBreak( NilAddr ) )
+    if( id == MENU_BREAK_CREATE_NEW ) {
+        if( DlgBreak( NilAddr ) ) {
             WndScrollBottom( wnd );
-        break;
-    case MENU_BREAK_CLEAR:
-        RemoveBreak( bp->loc.addr );
-        break;
-    case MENU_BREAK_MODIFY:
-        DlgBreak( bp->loc.addr );
-        break;
-    case MENU_BREAK_SOURCE:
-        WndSrcInspect( bp->loc.addr );
-        break;
-    case MENU_BREAK_ASSEMBLY:
-        WndAsmInspect( bp->loc.addr );
-        break;
+        }
+    } else {
+        if( row < 0 ) {
+            bp = NULL;
+        } else {
+            bp = BrkGetBP( row );
+        }
+        if( bp == NULL ) {
+            if( id == MENU_INITIALIZE ) {
+                WndMenuGrayAll( wnd );
+                WndMenuEnable( wnd, MENU_BREAK_CREATE_NEW, true );
+            }
+        } else {
+            switch( id ) {
+            case MENU_INITIALIZE:
+                WndMenuEnableAll( wnd );
+                WndMenuEnable( wnd, MENU_BREAK_ENABLE, !bp->status.b.active );
+                WndMenuEnable( wnd, MENU_BREAK_DISABLE, bp->status.b.active );
+                WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
+                WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->mth ) );
+                break;
+            case MENU_BREAK_ENABLE:
+                ActPoint( bp, true );
+                break;
+            case MENU_BREAK_DISABLE:
+                ActPoint( bp, false );
+                break;
+            case MENU_BREAK_CLEAR:
+                RemoveBreak( bp->loc.addr );
+                break;
+            case MENU_BREAK_MODIFY:
+                DlgBreak( bp->loc.addr );
+                break;
+            case MENU_BREAK_SOURCE:
+                WndSrcInspect( bp->loc.addr );
+                break;
+            case MENU_BREAK_ASSEMBLY:
+                WndAsmInspect( bp->loc.addr );
+                break;
+            }
+        }
     }
 }
 
