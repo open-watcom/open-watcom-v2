@@ -416,27 +416,28 @@ static image_entry *DoCreateImage( const char *exe, const char *symfile )
     image_entry         **owner;
     size_t              len;
 
-
     len = ( exe == NULL ) ? 0 : strlen( exe );
-    _ChkAlloc( image, sizeof( *image ) + len, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-    if( image == NULL )
-        return( NULL );
-    memset( image, 0, sizeof( *image ) );
-    if( len != 0 )
-        memcpy( image->image_name, exe, len + 1 );
-    if( symfile != NULL ) {
-        _Alloc( image->symfile_name, strlen( symfile ) + 1 );
-        if( image->symfile_name == NULL ) {
-            _Free( image );
-            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-            return( NULL );
+    _Alloc( image, sizeof( *image ) + len );
+    if( image != NULL ) {
+        memset( image, 0, sizeof( *image ) );
+        if( len != 0 )
+            memcpy( image->image_name, exe, len + 1 );
+        if( symfile != NULL ) {
+            _Alloc( image->symfile_name, strlen( symfile ) + 1 );
+            if( image->symfile_name == NULL ) {
+                _Free( image );
+                image = NULL;
+            } else {
+                strcpy( image->symfile_name, symfile );
+            }
         }
-        strcpy( image->symfile_name, symfile );
+        if( image != NULL ) {
+            image->mapper = MapAddrSystem;
+            for( owner = &DbgImageList; *owner != NULL; owner = &(*owner)->link )
+                ;
+            *owner = image;
+        }
     }
-    image->mapper = MapAddrSystem;
-    for( owner = &DbgImageList; *owner != NULL; owner = &(*owner)->link )
-        ;
-    *owner = image;
     return( image );
 }
 
@@ -478,9 +479,10 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
         }
     }
 
-    _SwitchOn( SW_ERROR_RETURNS );
     image = DoCreateImage( exe, symfile );
-    _SwitchOff( SW_ERROR_RETURNS );
+    if( image == NULL ) {
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     return( image );
 }
 
@@ -1421,6 +1423,9 @@ OVL_EXTERN void SymFileNew( void )
     memcpy( TxtBuff, fname, fname_len );
     TxtBuff[fname_len] = NULLCHAR;
     image = DoCreateImage( NULL, TxtBuff );
+    if( image == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     image->mapper = MapAddrUser;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );
@@ -1515,6 +1520,9 @@ bool SymUserModLoad( const char *fname, address *loadaddr )
         return( true );
 
     image = DoCreateImage( fname, fname );
+    if( image == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    }
     image->mapper = MapAddrUsrMod;
     if( !ProcImgSymInfo( image ) ) {
         FreeImage( image );

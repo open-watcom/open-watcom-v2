@@ -248,33 +248,31 @@ void ReportMADFailure( mad_status ms )
     SysConfig.mad = MAD_NIL;
     /* this deregisters the MAD, and sets the active one to the dummy */
     MADRegister( mad_old, NULL, NULL );
-    _SwitchOn( SW_ERROR_RETURNS );
     switch( ms & ~MS_ERR ) {
     case MS_UNREGISTERED_MAD:
-        Error( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), mad_old );
+        ErrorRet( ERR_NONE, LIT_ENG( LMS_UNREGISTERED_MAD ), mad_old );
         break;
     case MS_INVALID_MAD_VERSION:
-        Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
+        ErrorRet( ERR_NONE, LIT_ENG( LMS_INVALID_MAD_VERSION ), buff );
         break;
     case MS_INVALID_STATE:
-        Error( ERR_INTERNAL, "MAD state" );
+        ErrorRet( ERR_INTERNAL, "MAD state" );
         break;
     case MS_FOPEN_FAILED:
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), buff );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), buff );
         break;
     case MS_FREAD_FAILED:
     case MS_FSEEK_FAILED:
-        Error( ERR_NONE, LIT_ENG( LMS_FREAD_FAILED ), buff );
+        ErrorRet( ERR_NONE, LIT_ENG( LMS_FREAD_FAILED ), buff );
         break;
     case MS_NO_MEM:
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         break;
     case MS_INVALID_MAD:
     default:
-        Error( ERR_NONE, LIT_ENG( LMS_INVALID_MAD ), buff );
+        ErrorRet( ERR_NONE, LIT_ENG( LMS_INVALID_MAD ), buff );
         break;
     }
-    _SwitchOff( SW_ERROR_RETURNS );
 }
 
 void CheckMADChange( void )

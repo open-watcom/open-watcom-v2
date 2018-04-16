@@ -61,10 +61,9 @@ extern void             Suicide( void );
  * Error - output error message and suicide
  */
 
-void Error( dbg_err_flags flg, char *fmt, ... )
+static int error( dbg_err_flags flg, char *fmt, va_list args )
 {
     char            buff[TXT_LEN];
-    va_list         args;
     char            *ptr;
     invokes         *inv;
     input_stack     *inp;
@@ -75,9 +74,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     if( flg & ERR_INTERNAL ) {
         ptr = StrCopy( LIT_ENG( Internal_Error ), ptr );
     }
-    va_start( args, fmt );
     ptr = FmtStr( ptr, fmt, args );
-    va_end( args );
     ptr = StrCopy( ".", ptr );
     if( flg & ERR_LOC ) {
         ptr = StrCopy( "\n    ", ptr );
@@ -113,43 +110,71 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     if( _IsOn( SW_ERR_IN_TXTBUFF ) ) {
         PurgeInpStack();
         StrCopy( buff, TxtBuff );
+    } else {
+        if( (flg & ERR_SILENT) == 0 ) {
+            where = LIT_ENG( ERR_EXECUTING_AT );
+            for( inp = InpStack; inp != NULL; inp = inp->link ) {
+                if( inp->type & INP_CMD_FILE ) {
+                    inv = inp->handle;
+                    ptr = StrCopy( "\n    ", ptr );
+                    ptr = Format( ptr, where, inv->line, inv->name );
+                    where = LIT_ENG( ERR_CALLED_FROM );
+                }
+            }
+            DUIFlushKeys();
+            PrevError( buff );
+        }
+        cmderror = false;
+        for( inp = InpStack; inp != NULL; inp = inp->link ) {
+            if( inp->type & INP_BREAK_POINT ) {
+                BrkCmdError();
+            }
+            if( inp->type & INP_CAPTURED ) {
+                CaptureError();
+            }
+            if( inp->type & INP_DLG_CMD ) {
+                cmderror = true;
+            }
+        }
+        PurgeInpStack();
+        if( cmderror && fmt != LIT_ENG( ERR_DBG_INTERRUPT ) ) {
+            DlgCmd();
+            ProcInput();
+        }
+        if( _IsOn( SW_ERROR_RETURNS ) ) {
+            return( 0 );
+        }
+    }
+    return( 1 );
+}
+
+void Error( dbg_err_flags flg, char *fmt, ... )
+/* this function never return to the caller */
+{
+    va_list args;
+
+    va_start( args, fmt );
+    error( flg, fmt, args );
+    va_end( args );
+    DUIArrowCursor();
+    Suicide();
+}
+
+void ErrorRet( dbg_err_flags flg, char *fmt, ... )
+/* this function return to the caller */
+{
+    va_list args;
+    int     rc;
+
+    _SwitchOn( SW_ERROR_RETURNS );
+    va_start( args, fmt );
+    rc = error( flg, fmt, args );
+    va_end( args );
+    _SwitchOff( SW_ERROR_RETURNS );
+    if( rc ) {
         DUIArrowCursor();
         Suicide();
     }
-    if( (flg & ERR_SILENT) == 0 ) {
-        where = LIT_ENG( ERR_EXECUTING_AT );
-        for( inp = InpStack; inp != NULL; inp = inp->link ) {
-            if( inp->type & INP_CMD_FILE ) {
-                inv = inp->handle;
-                ptr = StrCopy( "\n    ", ptr );
-                ptr = Format( ptr, where, inv->line, inv->name );
-                where = LIT_ENG( ERR_CALLED_FROM );
-            }
-        }
-        DUIFlushKeys();
-        PrevError( buff );
-    }
-    cmderror = false;
-    for( inp = InpStack; inp != NULL; inp = inp->link ) {
-        if( inp->type & INP_BREAK_POINT ) {
-            BrkCmdError();
-        }
-        if( inp->type & INP_CAPTURED ) {
-            CaptureError();
-        }
-        if( inp->type & INP_DLG_CMD ) {
-            cmderror = true;
-        }
-    }
-    PurgeInpStack();
-    if( cmderror && fmt != LIT_ENG( ERR_DBG_INTERRUPT ) ) {
-        DlgCmd();
-        ProcInput();
-    }
-    if( _IsOn( SW_ERROR_RETURNS ) )
-        return;
-    DUIArrowCursor();
-    Suicide();
 }
 
 void PrevError( const char *msg )

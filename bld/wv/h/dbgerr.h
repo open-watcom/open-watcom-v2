@@ -37,6 +37,9 @@ typedef unsigned_8 dbg_err_flags; enum {
     ERR_SILENT  = 0x04,
 };
 
+/* this function never return to the caller */
 extern void Error( dbg_err_flags, char *, ... );
+/* this function return to the caller */
+extern void ErrorRet( dbg_err_flags, char *, ... );
 extern void PrevError( const char *msg );
 extern void StartupErr( const char *err );

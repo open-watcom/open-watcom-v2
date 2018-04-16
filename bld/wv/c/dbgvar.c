@@ -558,9 +558,7 @@ static var_node *NewNode( var_info *i, unsigned len )
     new = DbgAlloc( size + type_SIZE );
     i->mem_lock = false;
     if( new == NULL ) {
-        _SwitchOn( SW_ERROR_RETURNS );
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
-        _SwitchOff( SW_ERROR_RETURNS );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
         return( NULL );
     }
     memset( new, 0, size );
