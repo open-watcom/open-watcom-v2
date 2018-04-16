@@ -1153,9 +1153,8 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     }
     fh_rem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
     if( fh_rem == NIL_HANDLE ) {
-        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
         FileClose( fh_lcl );
-        return( false );
+        Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
     }
     bsize = 0x8000;
     _Alloc( buff, bsize );

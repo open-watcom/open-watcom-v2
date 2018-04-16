@@ -177,8 +177,8 @@ static void DoCallSet( void )
                 for( i = 0; i < parm; ++i ) {
                     _Free( new_parms[i].u.start );
                 }
-                Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 parm = 0;
+                Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 break;
             } else {
                 memcpy( new_arg, new_parms[i].u.arg, new_parms[i].len );
