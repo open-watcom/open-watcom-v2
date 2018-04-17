@@ -208,7 +208,7 @@ int main( int argc, char *argv[] )
         fprintf( out, " %s", line );
 
         line = get_line( buf, in );
-        if( !empty_data( line ) ) {
+        if( line != NULL && !empty_data( line ) ) {
             fprintf( out, ", %s },\n", line );
         } else {
             fputs( "},\n", out );

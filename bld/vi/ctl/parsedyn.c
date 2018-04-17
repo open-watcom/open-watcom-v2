@@ -145,7 +145,6 @@ int main( int argc, char *argv[] )
         }
 
         line = get_line( buf, in );     // get data line and count entries
-
         if( line == NULL ) {
             printf( "No data at line %d\n", Line );
             goto error;
@@ -194,6 +193,9 @@ int main( int argc, char *argv[] )
         } while( end );
 
         line = get_line( buf, in );
+        if( line == NULL ) {
+            break;
+        }
         fprintf( out, "\n    %s,\n    -1,\n", line );
     }
     fputs( "};\n\n", out );
