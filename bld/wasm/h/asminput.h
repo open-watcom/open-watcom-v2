@@ -40,7 +40,7 @@ extern void     InputQueueLine( const char *line );
 extern bool     InputQueueFile( const char *path );
 extern char     *ReadTextLine( char *string );
 extern void     PushMacro( const char *name, bool hidden );
-extern char     *ScanLine( char *line, size_t len );
+extern bool     ScanLine( char *line, size_t len );
 extern void     AddItemToIncludePath( const char *string, const char *end );
 extern void     FreeIncludePath( void );
 

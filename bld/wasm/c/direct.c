@@ -3257,7 +3257,7 @@ bool EnumDef( token_idx i )
                 continue;
             } else {
                 if( in_braces ) {
-                    if( ScanLine( string, MAX_LINE_LEN ) == NULL ) {
+                    if( !ScanLine( string, MAX_LINE_LEN ) ) {
                         AsmError( UNEXPECTED_END_OF_FILE );
                         return( RC_ERROR );
                     }

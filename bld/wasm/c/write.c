@@ -1190,9 +1190,7 @@ static unsigned long OnePass( char *string )
     IfCondInit();
     ProcStackInit();
 
-    for(;;) {
-        if( ScanLine( string, MAX_LINE_LEN ) == NULL )
-            break; // EOF
+    while( ScanLine( string, MAX_LINE_LEN ) ) {
         AsmLine( string );
         if( EndDirectiveFound ) {
             break;
@@ -1226,9 +1224,7 @@ void WriteObjModule( void )
     prev_total = OnePass( string );
     if( EndDirectiveFound ) {
         if( !Options.stop_at_end ) {
-            for( ;; ) {
-                if( ScanLine( string, MAX_LINE_LEN ) == NULL )
-                    break;
+            while( ScanLine( string, MAX_LINE_LEN ) ) {
                 p = string;
                 while( isspace( *p ) )
                     ++p;
@@ -1273,7 +1269,7 @@ void WriteObjModule( void )
 #endif
         curr_total = OnePass( string );
         // remove all remaining lines and deallocate corresponding memory
-        while( ScanLine( string, MAX_LINE_LEN ) != NULL ) {
+        while( ScanLine( string, MAX_LINE_LEN ) ) {
         }
         while( PopLineQueue() ) {
         }

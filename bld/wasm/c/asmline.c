@@ -484,8 +484,8 @@ static char *join_multiline_cmds( char *line, size_t max_len )
     return( line );
 }
 
-char *ScanLine( char *string, size_t max_len )
-/********************************************/
+bool    ScanLine( char *string, size_t max_len )
+/**********************************************/
 {
     char        *line;
     char        buffer[MAX_LINE_LEN];
@@ -494,7 +494,6 @@ char *ScanLine( char *string, size_t max_len )
     line = ( max_len < MAX_LINE_LEN ? buffer : string );
     line = ReadTextLine( line );
     if( line != NULL ) {
-
         prep_line_for_conditional_assembly( line );
         if( line != string ) {          /* comparing the pointers */
             len = strlen( line ) + 1;
@@ -502,12 +501,12 @@ char *ScanLine( char *string, size_t max_len )
                 memcpy( string, line, len );
             } else {
                 AsmError( ASM_CODE_TOO_LONG );
-                return( NULL );
+                return( false );
             }
         }
         join_multiline_cmds( string, max_len );
     }
-    return( line );
+    return( line != NULL );
 }
 
 void AsmCodeByte( unsigned char byte )
