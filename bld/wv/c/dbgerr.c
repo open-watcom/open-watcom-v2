@@ -58,7 +58,7 @@ extern void             CmdError( void );
 extern void             Suicide( void );
 
 /*
- * Error - output error message and suicide
+ * error - output error message
  */
 
 static int error( dbg_err_flags flg, char *fmt, va_list args )
@@ -148,6 +148,10 @@ static int error( dbg_err_flags flg, char *fmt, va_list args )
     return( 1 );
 }
 
+/*
+ * Error - output error message and suicide
+ */
+
 void Error( dbg_err_flags flg, char *fmt, ... )
 /* this function never return to the caller */
 {
@@ -159,6 +163,10 @@ void Error( dbg_err_flags flg, char *fmt, ... )
     DUIArrowCursor();
     Suicide();
 }
+
+/*
+ * ErrorRet - output error message
+ */
 
 void ErrorRet( dbg_err_flags flg, char *fmt, ... )
 /* this function return to the caller */

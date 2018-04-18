@@ -466,6 +466,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
         this_name = SkipPathInfo( exe, OP_REMOTE );
         this_len = ExtPointer( exe, OP_REMOTE ) - exe;
         for( curr = LocalDebugInfo; curr != NULL; curr = curr->next ) {
+            oattrs = 0;
             curr_name = SkipPathInfo( curr->name, OP_LOCAL );
             curr_name = RealFName( curr_name, &oattrs );
             if( curr_name[0] == '@' && curr_name[1] == 'l' )
@@ -870,6 +871,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
 #endif
     if( task[0] == NULLCHAR )
         return( TASK_NONE );
+    oattrs = 0;
     name = FileLoc( task, &oattrs );
     if( DownLoadTask ) {
         strcpy( fullname, name );

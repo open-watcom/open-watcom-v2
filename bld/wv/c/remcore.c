@@ -442,6 +442,7 @@ bool Redirect( bool input, char *hndlname )
     redirect_stdin_ret  ret;
     obj_attrs           oattrs;
 
+    oattrs = 0;
     acc.req = input ? REQ_REDIRECT_STDIN : REQ_REDIRECT_STDOUT;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
