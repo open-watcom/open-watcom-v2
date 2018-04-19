@@ -62,6 +62,8 @@
  * is no further input available in the stream.
  */
 
+#define CTRLZ       0x1a
+
 typedef enum {                  /* the different stream types           */
     SENT_FILE,
     SENT_STR,
@@ -348,12 +350,14 @@ STRM_T GetCHR( void )
                     return( EOL );
                 }
             }
-            s = *(head->data.file.cur++);
+            s = *(unsigned char *)head->data.file.cur;
+            head->data.file.cur++;
             if( sisbarf( s ) ) {
                 /* ignore \r in \r\n */
                 if( s == '\r' && head->data.file.cur[0] == EOL ) {
-                    s = *(head->data.file.cur++);
-                } else if( Glob.compat_nmake && s == 0x1a ) {
+                    s = *(unsigned char *)head->data.file.cur;
+                    head->data.file.cur++;
+                } else if( Glob.compat_nmake && s == CTRLZ ) {
                     /* embedded ^Z terminates stream in MS mode */
                     s = EOL;
                     popSENT();
@@ -464,8 +468,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
      * evaluate improperly).
      */
     *pline = cur->data.file.line;
-    if( cur->data.file.cur > cur->data.file.buf &&
-        cur->data.file.cur[-1] == EOL ) {
+    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == EOL ) {
         --(*pline);
     }
 
@@ -502,7 +505,7 @@ void dispSENT( void )
                     pos += FmtStr( &buf[pos],
                         "fh %d, in buf %d, next 0x%x, line %d",
                         cur->data.file.fh, cur->data.file.max - cur->data.file.cur,
-                        *(cur->data.file.cur), cur->data.file.line );
+                        *(unsigned char *)cur->data.file.cur, cur->data.file.line );
                 }
                 if( cur->data.file.name ) {
                     pos += FmtStr( &buf[pos], ", name %s", cur->data.file.name );
