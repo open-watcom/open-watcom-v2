@@ -846,11 +846,9 @@ STATIC void bangInclude( void )
 {
     char    *text;
     char    *temp = NULL;
-#ifdef __WATCOMC__
     char    *p;
     char    full_path[_MAX_PATH];
     RET_T   ret;
-#endif
 
     assert( !curNest.skip );
 
@@ -859,7 +857,6 @@ STATIC void bangInclude( void )
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
-#ifdef __WATCOMC__
     if( *text == LESSTHAN ) {
         p = text;
         while( *p != GREATERTHAN && *p != NULLCHAR ) {
@@ -896,9 +893,7 @@ STATIC void bangInclude( void )
         } else {
               PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
-    } else
-#endif
-    {
+    } else {
         temp = text;
         text = formatLongFileName( text );
         if( text == NULL ) {
