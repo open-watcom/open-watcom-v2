@@ -355,12 +355,9 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
         DWLocTrash( Client, dl_virt );
     } else {
         dl = dwarfDebugStaticLoc( sym );
-    #if _CPU == _AXP
         dl_seg = NULL;
-    #else
-        if( IsFlat() ) {
-            dl_seg = NULL;
-        } else {
+    #if _INTEL_CPU
+        if( !IsFlat() ) {
             dl_seg =  dwarfDebugStaticSeg( sym );
         }
     #endif
@@ -371,9 +368,11 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
                    name,
                    flags );
         DWLocTrash( Client, dl );
+    #if _INTEL_CPU
         if( dl_seg != NULL ) {
             DWLocTrash( Client, dl_seg );
         }
+    #endif
     }
     return( dh );
 }
@@ -611,9 +610,11 @@ static bool dwarfClassInfo( TYPE type )
                          CppNameDebug( curr ),
                          0,
                          flags );
+#if _INTEL_CPU
                 if( dl_seg != NULL ) {
                     DWLocTrash( Client, dl_seg );
                 }
+#endif
                 if( InDebug ) {
                     dh = 0;   // if debug we don't want to clash with cg_handle
                 }
@@ -1641,9 +1642,11 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
                 0,
                 flags );
     DWLocTrash( Client, dl );
+#if _INTEL_CPU
     if( dl_seg != NULL ) {
         DWLocTrash( Client, dl_seg );
     }
+#endif
     if( flags & DW_FLAG_GLOBAL ){
         name = CppClassPathDebug( sym ); //non rent do after dwarftype
         DWPubname( Client, dh, name );

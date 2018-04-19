@@ -523,8 +523,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
         lr_state = RIGHT;
         StackFMT = NULL;
         fmtTypePush( &StackFMT, type, control );
-        top = StackPop( &StackFMT );
-        while( top ) {
+        while( (top = StackPop( &StackFMT )) != NULL ) {
             top_type = top->type;
             switch( top_type->id ) {
             case TYP_ERROR:
@@ -578,8 +577,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 fmtTypeChangeState( &lr_state, RIGHT, pprefix, psuffix );
                 class_type = MemberPtrClass( top->type );
                 if( class_type != NULL ) {
-                    fmtTypeScope( class_type->u.c.scope->enclosing,
-                                  pprefix );
+                    fmtTypeScope( class_type->u.c.scope->enclosing, pprefix );
                     name = SimpleTypeName( class_type );
                     if( name != NULL ) {
                         VbufConcStr( pprefix, NameStr( name ) );
@@ -592,8 +590,9 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 VbufConcStr( pprefix, typeName[top->type->id] );
                 break;
             case TYP_TYPEDEF:
-                if( (control & FF_TYPEDEF_STOP) == 0 ) break;
-                // otherwise drop through
+                if( (control & FF_TYPEDEF_STOP) == 0 )
+                    break;
+                // fall through
             case TYP_ENUM:
                 fmtTypeScope( top->type->u.t.scope, pprefix );
                 name = SimpleTypeName( top->type );
@@ -667,11 +666,6 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 break;
             }
             CarveFree( carveFMT, top );
-            top = StackPop( &StackFMT );
-        }
-        while( top ) {
-            CarveFree( carveFMT, top );
-            top = StackPop( &StackFMT );
         }
         VbufTruncWhite( psuffix );
     }
