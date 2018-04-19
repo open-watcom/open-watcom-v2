@@ -497,7 +497,7 @@ void PrtMsg( enum MsgClass num, ... )
     }
     va_end( args );
     if( (num & NEOL) == 0 ) {
-        buff[len++] = EOL;
+        buff[len++] = '\n';
     }
     writeOutput( class, fh, buff, len );
 }

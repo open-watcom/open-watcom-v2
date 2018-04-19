@@ -274,7 +274,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
 
         s = PreGetCHR();
         switch( s ) {
-        case EOL:               /* always stop on these characters */
+        case '\n':               /* always stop on these characters */
         case STRM_END:
         case STRM_MAGIC:
         case ')':
@@ -312,7 +312,7 @@ TOKEN_T LexMacSubst( STRM_T s )
         return( lexDollar() );
     case ')':
         return( MAC_CLOSE );
-    case EOL:
+    case '\n':
         return( TOK_EOL );
     case STRM_END:
         return( TOK_END );
@@ -342,7 +342,7 @@ TOKEN_T LexMacDef( STRM_T s )
     if( s == STRM_MAGIC ) {
         return( TOK_MAGIC );
     }
-    if( s == EOL ) {
+    if( s == '\n' ) {
         return( TOK_EOL );
     }
 
@@ -367,7 +367,7 @@ TOKEN_T LexMacDef( STRM_T s )
 
         if(    s == STRM_END
             || s == STRM_MAGIC
-            || s == EOL
+            || s == '\n'
             || s == DOLLAR
             || (onlyws && !sisws( s ))
             || (!onlyws && sisws( s )) ) {

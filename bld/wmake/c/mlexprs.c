@@ -64,7 +64,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     /* \" is considered a double quote character                         */
     /* and if a double quote is found again then we break out as the end */
     /* of the filename                                                   */
-    while( pos < _MAX_PATH && s != DOUBLEQUOTE && s != EOL && s != STRM_END ) {
+    while( pos < _MAX_PATH && s != DOUBLEQUOTE && s != '\n' && s != STRM_END ) {
         file[pos++] = s;
         s = PreGetCHR();
         if( s == BACKSLASH ) {
@@ -113,7 +113,7 @@ TOKEN_T LexPath( STRM_T s )
     VECSTR      vec;                /* we'll store file/path here */
 
     for( ;; ) {                     /* get first valid character */
-        if( s == EOL || s == STRM_END ) {
+        if( s == '\n' || s == STRM_END ) {
             /* now we pass this to LexParser() so that it can reset */
             return( LexParser( s ) );
         }
@@ -146,13 +146,13 @@ TOKEN_T LexPath( STRM_T s )
 
         string_open = false;
 
-        while( pos < _MAX_PATH && s != EOL && s != STRM_END ) {
+        while( pos < _MAX_PATH && s != '\n' && s != STRM_END ) {
             if( s == BACKSLASH ) {
                 s = PreGetCHR();
 
                 if( s == DOUBLEQUOTE ) {
                     path[pos++] = DOUBLEQUOTE;
-                } else if( s == EOL || s == STRM_END ) {
+                } else if( s == '\n' || s == STRM_END ) {
                     // Handle special case when backslash is placed at end of
                     // line or file
                     path[pos++] = BACKSLASH;
@@ -315,12 +315,12 @@ STATIC char *getCurlPath( void )
     s = PreGetCHR();
 
     if( s == L_CURL_PAREN ) {
-        for( s = PreGetCHR(); s != R_CURL_PAREN && s != EOL && pos < _MAX_PATH; s = PreGetCHR() ) {
+        for( s = PreGetCHR(); s != R_CURL_PAREN && s != '\n' && pos < _MAX_PATH; s = PreGetCHR() ) {
             path[pos++] = s;
         }
         path[pos] = NULLCHAR;
-        if( s == EOL ) {
-            UnGetCHR( EOL );
+        if( s == '\n' ) {
+            UnGetCHR( '\n' );
             PrtMsg( ERR | LOC | NON_MATCHING_CURL_PAREN);
         } else if( pos == _MAX_PATH ) {
             PrtMsg( WRN | LOC | PATH_TOO_LONG );
@@ -509,7 +509,7 @@ STATIC bool checkMacro( STRM_T s )
 
     UnGetCHR( s );           /* not a macro line, put everything back*/
     if( ws ) {
-        UnGetCHR( SPACE );
+        UnGetCHR( ' ' );
     }
     InsString( StrDupSafe( mac + 1 ), true );
     return( false );
@@ -538,14 +538,14 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
 
     s = PreGetCHR();
     UnGetCHR( s );
-    if( s == EOL || s == STRM_END || s == STRM_MAGIC ) {
+    if( s == '\n' || s == STRM_END || s == STRM_MAGIC ) {
         return( StrDupSafe( "" ) );
     }
     if( s == STRM_TMP_LEX_START ) {
         PreGetCHR();  /* Eat STRM_TMP_LEX_START */
         pos = 0;
         for( s = PreGetCHR(); s != STRM_MAGIC && pos < _MAX_PATH; s = PreGetCHR() ) {
-            assert( s != EOL || s != STRM_END );
+            assert( s != '\n' || s != STRM_END );
             buffer[pos++] = s;
         }
 
@@ -643,7 +643,7 @@ TOKEN_T LexParser( STRM_T s )
         case STRM_END:
             atstart = true;
             return( TOK_END );
-        case EOL:
+        case '\n':
             atstart = true;
             return( TOK_EOL );
         case STRM_TMP_LEX_START:
@@ -655,7 +655,7 @@ TOKEN_T LexParser( STRM_T s )
                 while( sisws( s ) ) {
                     s = PreGetCHR();
                 }
-                if( s == EOL ) {
+                if( s == '\n' ) {
                     atstart = true;
                     return( TOK_EOL );
                 }
@@ -669,8 +669,8 @@ TOKEN_T LexParser( STRM_T s )
             UnGetCHR( STRM_MAGIC );  /* mark spot we have to expand from nxt */
             InsString( p, true );   /* put expansion in stream */
             break;
-        case SPACE: /* fall through */
-        case TAB:
+        case ' ': /* fall through */
+        case '\t':
             break;
         case L_CURL_PAREN:          /* could only be a sufsuf */
         case DOT:
@@ -688,7 +688,7 @@ TOKEN_T LexParser( STRM_T s )
             return( TOK_SCOLON );
         default:
             if( sisfilec( s ) || s == DOUBLEQUOTE ||
-                ( (Glob.compat_nmake || Glob.compat_posix) &&  s == SPECIAL_TMP_DOL_C ) ) {
+                ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL_C ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );

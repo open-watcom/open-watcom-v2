@@ -182,7 +182,7 @@ STATIC STRM_T eatToEOL( void )
     STRM_T  s;
 
     s = PreGetCHR();
-    while( s != EOL && s != STRM_END ) {
+    while( s != '\n' && s != STRM_END ) {
         s = PreGetCHR();
     }
 
@@ -209,7 +209,7 @@ STATIC directiveTok getPreTok( void )
 
     s = eatWhite();
 
-    if( s == EOL ) {
+    if( s == '\n' ) {
         UnGetCHR( s );
         return( D_BLANK );
     }
@@ -362,7 +362,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
         return;
     }
 
-    UnGetCHR( EOL );
+    UnGetCHR( '\n' );
     InsString( value, true );
     value = DeMacro( TOK_EOL );
     (void)eatToEOL();
@@ -697,7 +697,7 @@ STATIC void bangInject( void )
         if( !IsMacroName( mac_name ) ) {
             break;
         }
-        UnGetCHR( EOL );
+        UnGetCHR( '\n' );
         InsString( contents, false );
         value = GetMacroValue( mac_name );
         if( value != NULL ) {
@@ -1034,7 +1034,7 @@ STRM_T PreGetCHR( void )
     }
 
     for( ;; ) {
-        if( !doingPreProc && (atStartOfLine == EOL || s == STRM_TMP_EOL) ) {
+        if( !doingPreProc && (atStartOfLine == '\n' || s == STRM_TMP_EOL) ) {
             if( s == STRM_TMP_EOL ) {
                 // Throw away the unwanted TMP character
                 s = GetCHR();
@@ -1056,7 +1056,7 @@ STRM_T PreGetCHR( void )
             while( s == BANG ) {
                 handleBang();
 
-                assert( atStartOfLine == EOL );
+                assert( atStartOfLine == '\n' );
 
                 s = GetCHR();
             }
@@ -1075,7 +1075,7 @@ STRM_T PreGetCHR( void )
         }
         if( s == COMMENT && lastChar != DOLLAR && inlineLevel == 0 ) {
             s = GetCHR();
-            while( s != EOL && s != STRM_END ) {
+            while( s != '\n' && s != STRM_END ) {
                 s = GetCHR();
             }
             if( temp == STRM_TMP_EOL ) {
@@ -1089,7 +1089,7 @@ STRM_T PreGetCHR( void )
             curNest.skip = false;       /* so we don't skip a later file */
             curNest.skip2endif = false;
 
-            atStartOfLine = EOL;   /* reset preprocessor */
+            atStartOfLine = '\n';   /* reset preprocessor */
             lastChar = STRM_END;
             return( s );
         }
@@ -1104,8 +1104,8 @@ STRM_T PreGetCHR( void )
         } else {
             if( Glob.compat_nmake && s == MS_LINECONT ) {
                 s = GetCHR();
-                if( s == EOL ) {
-                    lastChar = SPACE;
+                if( s == '\n' ) {
+                    lastChar = ' ';
                     if( skip ) {
                         s = STRM_TMP_EOL;
                         continue;
@@ -1114,7 +1114,7 @@ STRM_T PreGetCHR( void )
                     // this is to be able to implement the
                     // bang statements after line continues
                     UnGetCHR( STRM_TMP_EOL );
-                    return( SPACE );
+                    return( ' ' );
                 } else {
                     lastChar = MS_LINECONT;
                     if( skip ) {
@@ -1136,7 +1136,7 @@ STRM_T PreGetCHR( void )
                     return( s );
                 }
                 s = GetCHR();
-                if( s != EOL ) {
+                if( s != '\n' ) {
                     lastChar = UNIX_LINECONT;
                     if( skip ) {
                         continue;       /* already have next char */
@@ -1151,7 +1151,7 @@ STRM_T PreGetCHR( void )
                 }
             } else {
                 s = GetCHR();           /* check if '&' followed by {nl} */
-                if( s != EOL || lastChar == '^' ||
+                if( s != '\n' || lastChar == '^' ||
                     lastChar == '[' || lastChar == ']' ) {
                            /* nope... restore state */
                     lastChar = LINECONT;
@@ -1303,7 +1303,7 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
         switch( inString[inIndex] ) {
         // error did not find closing quotation
         case NULLCHAR :
-        case EOL:
+        case '\n':
         case COMMENT:
             current->type = OP_ERROR;
             break;
@@ -1451,7 +1451,7 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
         switch( inString[inIndex] ) {
         // error did not find closing quotation
         case NULLCHAR :
-        case EOL:
+        case '\n':
         case COMMENT:
             current->type = OP_ERROR;
             break;
@@ -1479,7 +1479,7 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
     pString = SkipWS( inString );
     switch( pString[index] ) {
     case NULLCHAR:
-    case EOL:
+    case '\n':
     case COMMENT:
         makeToken( OP_ENDOFSTRING, current, &index );
         break;

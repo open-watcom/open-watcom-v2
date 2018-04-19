@@ -270,7 +270,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     // we will push the whole body back into the stream to be fully
     // deMacroed
     for( index = 0; (c = body[index++]) != NULLCHAR; ) {
-        if( c == EOL ) {
+        if( c == '\n' ) {
             InsString( body + currentSent, false );
             DeMacroBody = ignoreWSDeMacro( false, ForceDeMacro() );
             currentSent = index;

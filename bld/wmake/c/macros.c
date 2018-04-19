@@ -610,7 +610,7 @@ char *WrnGetMacroValue( const char *name )
         PrtMsg( DBG | WRN | LOC | MACRO_UNDEFINED, name );
         // we did this to minimize the number of debugging messages but
         // it causes problems when it defines a macro for the user
-        //UnGetCHR( EOL );
+        //UnGetCHR( '\n' );
         //DefMacro( name );
     }
     /* note we return NULL if it was undefined! */
@@ -770,7 +770,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
                         break;
                     } else if( s == STRM_MAGIC ||
                                s == STRM_END   ||
-                               s == EOL ) {
+                               s == '\n' ) {
                         UnGetCHR( s );
                         break;
                     }
@@ -902,7 +902,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
         InsString( CurAttr.u.ptr, true );
         break;
     case TOK_EOL:       /* fall through */
-        UnGetCHR( EOL );
+        UnGetCHR( '\n' );
         break;
     case TOK_END:
         UnGetCHR( STRM_END );
@@ -1019,7 +1019,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     // set text to non-whitespace string and TrailSpace to next character.
     p_max = text + MAX_COMMANDLINE - 1;
     for( TrailSpace = p = text; p < p_max; ++p ) {
-        if( s == STRM_END || s == STRM_MAGIC || s == EOL ) {
+        if( s == STRM_END || s == STRM_MAGIC || s == '\n' ) {
             break;
         }
         if( !sisws( s ) ) {
@@ -1288,7 +1288,7 @@ void DefMacro( const char *name )
         if( *name != ENVVAR ) {
             unused_value = addMacro( name, value );
         }
-        UnGetCHR( EOL );
+        UnGetCHR( '\n' );
         InsString( value, false );
         EnvVarValue = DeMacro( TOK_EOL );
         PreGetCHR();  // eat EOL token (used to avoid assertion failure)

@@ -54,9 +54,6 @@
 #define R_CURL_PAREN    '}'
 
 #define NULLCHAR        '\0'
-#define TAB             '\t'
-#define EOL             '\n'
-#define SPACE           ' '
 
 /*
  * When we initialize ourselves, this is how many objects we will preallocate

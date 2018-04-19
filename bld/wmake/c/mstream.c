@@ -256,7 +256,7 @@ RET_T InsFile( const char *name, bool envsearch )
         pushFH( tmp, fh );
 
         if( !Glob.overide ) {
-            UnGetCHR( EOL );
+            UnGetCHR( '\n' );
             InsString( path, false );
             InsString( "$+$(__MAKEFILES__)$- ", false );
             DefMacro( "__MAKEFILES__" );
@@ -347,19 +347,19 @@ STRM_T GetCHR( void )
                     }
                     popSENT();
                     flagEOF = true;
-                    return( EOL );
+                    return( '\n' );
                 }
             }
             s = *(unsigned char *)head->data.file.cur;
             head->data.file.cur++;
             if( sisbarf( s ) ) {
                 /* ignore \r in \r\n */
-                if( s == '\r' && head->data.file.cur[0] == EOL ) {
+                if( s == '\r' && head->data.file.cur[0] == '\n' ) {
                     s = *(unsigned char *)head->data.file.cur;
                     head->data.file.cur++;
                 } else if( Glob.compat_nmake && s == CTRLZ ) {
                     /* embedded ^Z terminates stream in MS mode */
-                    s = EOL;
+                    s = '\n';
                     popSENT();
                     flagEOF = true;
                 } else {
@@ -369,9 +369,9 @@ STRM_T GetCHR( void )
                 }
             }
             if( s == '\f' ) {
-                s = EOL;
+                s = '\n';
             }
-            if( s == EOL ) {
+            if( s == '\n' ) {
                 head->data.file.line++;
             }
             return( s );
@@ -468,7 +468,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
      * evaluate improperly).
      */
     *pline = cur->data.file.line;
-    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == EOL ) {
+    if( cur->data.file.cur > cur->data.file.buf && cur->data.file.cur[-1] == '\n' ) {
         --(*pline);
     }
 

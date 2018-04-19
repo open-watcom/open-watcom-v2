@@ -66,7 +66,7 @@ void LexInit( void )
 /*************************/
 {
     PreProcInit();
-    LexParser( EOL );    /* sync parser to start of line */
+    LexParser( '\n' );  /* sync parser to start of line */
     targ_path = "";
     dep_path  = "";
 }
