@@ -1151,9 +1151,8 @@ STRM_T PreGetCHR( void )
                 }
             } else {
                 s = GetCHR();           /* check if '&' followed by {nl} */
-                if( s != '\n' || lastChar == '^' ||
-                    lastChar == '[' || lastChar == ']' ) {
-                           /* nope... restore state */
+                if( s != '\n' || lastChar == '^' || lastChar == '[' || lastChar == ']' ) {
+                                        /* nope... restore state */
                     lastChar = LINECONT;
                     if( skip ) {
                         continue;       /* already have next char */

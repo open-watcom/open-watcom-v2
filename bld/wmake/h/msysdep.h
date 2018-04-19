@@ -95,7 +95,6 @@
 
 # define PATH_SPLIT         ':'     /* path seperator                       */
 # define IS_PATH_SPLIT(c)   ((c)==PATH_SPLIT||(c)==';')
-# define PATH_SPLIT_S       ":"     /* path seperator in string form        */
 # define SHELL_METAS        "<>|&()"/* characters that force use of shell   */
 # define SHELL_ESC          '^'     /* character that escapes a meta char   */
 # define WILD_METAS         "*?"    /* wild card characters opendir supports*/
