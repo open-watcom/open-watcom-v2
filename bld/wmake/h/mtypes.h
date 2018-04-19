@@ -98,7 +98,7 @@ extern const UINT8 IsArray[258];
 #define cismacc(__c)        sismacc((byte)(__c))
 #define cisbarf(__c)        sisbarf((byte)(__c))
 
-#define ctolower(__c)       tolower((byte)(__c))
-#define ctoupper(__c)       toupper((byte)(__c))
+#define ctolower(__c)       (byte)tolower((byte)(__c))
+#define ctoupper(__c)       (byte)toupper((byte)(__c))
 
 #endif  /* !_MTYPES_H */

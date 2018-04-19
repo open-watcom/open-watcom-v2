@@ -80,7 +80,7 @@ TOKEN_T LexToken( enum LexMode mode )
     STRM_T s;
     TOKEN_T t = TOK_NULL;
 
-    s = PreGetCH();
+    s = PreGetCHR();
 
     switch( mode ) {
     case LEX_MAC_DEF:   t = LexMacDef( s );     break;

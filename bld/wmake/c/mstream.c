@@ -254,7 +254,7 @@ RET_T InsFile( const char *name, bool envsearch )
         pushFH( tmp, fh );
 
         if( !Glob.overide ) {
-            UnGetCH( EOL );
+            UnGetCHR( EOL );
             InsString( path, false );
             InsString( "$+$(__MAKEFILES__)$- ", false );
             DefMacro( "__MAKEFILES__" );
@@ -305,7 +305,7 @@ void InsString( const char *str, bool weFree )
 }
 
 
-void UnGetCH( STRM_T s )
+void UnGetCHR( STRM_T s )
 /******************************
  * Push back a single character
  */

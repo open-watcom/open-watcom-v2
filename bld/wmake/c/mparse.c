@@ -408,7 +408,7 @@ STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
         return;
     }
 
-    nodep = t == TOK_EOL || t == TOK_END;  /* check if there wasn't a colon */
+    nodep = ( t == TOK_EOL || t == TOK_END );   /* check if there wasn't a colon */
 
     /* set the scolon attribute for each of these targets */
     setSColon( *btlist, (int)(t == TOK_SCOLON || nodep) );
@@ -774,14 +774,14 @@ STATIC void getBody( FLIST *head )
         buf = StartVec();
         WriteVec( buf, "" );
         for( ;; ) {
-            s = PreGetCH();
+            s = PreGetCHR();
             if( s == STRM_END ) {
-                UnGetCH( s );
+                UnGetCHR( s );
                 FreeVec( buf );
                 PrtMsg( ERR | LOC | UNEXPECTED_EOF );
                 return;
             }
-            UnGetCH( s );
+            UnGetCHR( s );
             temp = ignoreWSDeMacro( true, ForceDeMacro() );
             if( temp[0] == LESSTHAN ) {
                 if( temp[1] == LESSTHAN ) {

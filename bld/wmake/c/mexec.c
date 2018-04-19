@@ -323,14 +323,17 @@ STATIC char *RemoveBackSlash( const char *inString )
  * remove backslash from \"
  */
 {
-    char    buffer[_MAX_PATH];
-    char    *p;
-    int     pos;
-    char    c;
+    char        buffer[_MAX_PATH];
+    const char  *p;
+    int         pos;
+    char        c;
 
     assert( inString != NULL );
 
-    for( pos = 0, p = (char *)inString; (c = *p++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
+    pos = 0;
+    for( p = inString; (c = *p++) != NULLCHAR; ) {
+        if( pos >= sizeof( buffer ) - 1 )
+            break;
         if( c == BACKSLASH ) {
             if( *p == DOUBLEQUOTE ) {
                 c = *p++;
@@ -375,7 +378,7 @@ STATIC RET_T createFile( const FLIST *head )
         /* Push the filename back into the stream
          * and then get it back out using DeMacro to fully DeMacro
          */
-        UnGetCH( STRM_MAGIC );
+        UnGetCHR( STRM_MAGIC );
         InsString( head->fileName, false );
         fileName = DeMacro( TOK_MAGIC );
         GetCHR();           /* eat STRM_MAGIC */
@@ -1802,18 +1805,18 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     int         retcode;            // from spawnvp
     UINT16      tmp_env = 0;        // for * commands
     RET_T       my_ret;             // return code for this function
-    int         quote;              // true if inside quotes
+    bool        quote;              // true if inside quotes
 
     assert( cmd != NULL );
 
     percent_cmd = cmd[0] == '%';
     arg = cmd + (percent_cmd ? 1 : 0);      /* split cmd name from args */
 
-    quote = 0;                              /* no quotes yet */
+    quote = false;                          /* no quotes yet */
     while( !((cisws( *arg ) || *arg == Glob.swchar || *arg == '+' ||
         *arg == '=' ) && !quote) && *arg != NULLCHAR ) {
         if( *arg == '\"' ) {
-            quote = !quote;  /* found a quote */
+            quote = !quote;     /* found a quote */
         }
         ++arg;
     }
@@ -2076,7 +2079,7 @@ RET_T ExecCList( CLIST *clist )
         ret = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
         if( ret == RET_SUCCESS ) {
-            UnGetCH( STRM_MAGIC );
+            UnGetCHR( STRM_MAGIC );
             InsString( clist->text, false );
             line = DeMacro( TOK_MAGIC );
             GetCHR();        /* eat STRM_MAGIC */

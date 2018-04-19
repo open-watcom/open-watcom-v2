@@ -479,7 +479,7 @@ int PutEnvSafe( ENV_TRACKER *env )
     p = env->value;
                                 // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
-        *p = (char)ctoupper( *p );
+        *p = ctoupper( *p );
         ++p;
     }
     rc = putenv( env->value );  // put into environment

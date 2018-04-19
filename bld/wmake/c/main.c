@@ -244,7 +244,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     while( (p = *++argv) != NULL ) {
         checkCtrl( p );
         select = p[0];
-        option = (char)ctolower( p[1] );
+        option = ctolower( p[1] );
         if( select == '-' || select == Glob.swchar ) {
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
                 switch( option ) {

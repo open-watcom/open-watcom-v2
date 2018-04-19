@@ -73,7 +73,7 @@ STATIC const char * const directives[] = {   // table must be lexically sorted.
 #define MAX_DIR_LEN     8       // num chars incl null-terminator
 
 STATIC char     atStartOfLine;  /* EOL at the start of a line...
- * This is a slight optimization for the critical code in PreGetCH().  DJG
+ * This is a slight optimization for the critical code in PreGetCHR().
  */
 STATIC STRM_T   lastChar;
 STATIC bool     doingPreProc;   // are we doing some preprocessing?
@@ -163,9 +163,9 @@ STATIC STRM_T eatWhite( void )
 {
     STRM_T  s;
 
-    s = PreGetCH();
+    s = PreGetCHR();
     while( sisws( s ) ) {
-        s = PreGetCH();
+        s = PreGetCHR();
     }
 
     return( s );
@@ -181,9 +181,9 @@ STATIC STRM_T eatToEOL( void )
 {
     STRM_T  s;
 
-    s = PreGetCH();
+    s = PreGetCHR();
     while( s != EOL && s != STRM_END ) {
-        s = PreGetCH();
+        s = PreGetCHR();
     }
 
     return( s );
@@ -210,14 +210,14 @@ STATIC directiveTok getPreTok( void )
     s = eatWhite();
 
     if( s == EOL ) {
-        UnGetCH( s );
+        UnGetCHR( s );
         return( D_BLANK );
     }
 
     pos = 0;
     while( sisalpha( s ) && ( pos < MAX_PRE_TOK - 1 ) ) {
         tok[pos++] = s;
-        s = PreGetCH();
+        s = PreGetCHR();
         // MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
         // similar for other types of if preprocessor directives
         if( pos == 4 ) {
@@ -229,8 +229,8 @@ STATIC directiveTok getPreTok( void )
     }
     tok[pos] = NULLCHAR;
 
-    UnGetCH( s );
-    UnGetCH( eatWhite() );
+    UnGetCHR( s );
+    UnGetCHR( eatWhite() );
 
     tmp = tok;
     key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ), KWCompare );
@@ -362,7 +362,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
         return;
     }
 
-    UnGetCH( EOL );
+    UnGetCHR( EOL );
     InsString( value, true );
     value = DeMacro( TOK_EOL );
     (void)eatToEOL();
@@ -697,7 +697,7 @@ STATIC void bangInject( void )
         if( !IsMacroName( mac_name ) ) {
             break;
         }
-        UnGetCH( EOL );
+        UnGetCHR( EOL );
         InsString( contents, false );
         value = GetMacroValue( mac_name );
         if( value != NULL ) {
@@ -1002,9 +1002,9 @@ static bool PreTestString( const char *str )
     for( ;; ) {
         s = GetCHR();
         if( s != *p ) {
-            UnGetCH( s );
+            UnGetCHR( s );
             while( p-- > str ) {
-                UnGetCH( *p );
+                UnGetCHR( *p );
             }
             break;
         }
@@ -1018,7 +1018,7 @@ static bool PreTestString( const char *str )
 }
 
 
-STRM_T PreGetCH( void )
+STRM_T PreGetCHR( void )
 /*****************************
  * returns: next character of input that is not a preprocessor directive
  * errors:  if an EOF occurs while nested
@@ -1039,7 +1039,7 @@ STRM_T PreGetCH( void )
                 // Throw away the unwanted TMP character
                 s = GetCHR();
                 if( s != BANG ) {
-                    UnGetCH( s );
+                    UnGetCHR( s );
                     s = STRM_TMP_EOL;
                 }
             }
@@ -1048,7 +1048,7 @@ STRM_T PreGetCH( void )
             if( Glob.compat_nmake || Glob.compat_posix ) {
                 /* Check for NMAKE and UNIX compatible 'include' directive */
                 if( s == 'i' && PreTestString( "nclude " ) ) {
-                    UnGetCH( eatWhite() );
+                    UnGetCHR( eatWhite() );
                     bangInclude();
                     s = GetCHR();
                 }
@@ -1113,7 +1113,7 @@ STRM_T PreGetCH( void )
                     // place holder for temporary EOL
                     // this is to be able to implement the
                     // bang statements after line continues
-                    UnGetCH( STRM_TMP_EOL );
+                    UnGetCHR( STRM_TMP_EOL );
                     return( SPACE );
                 } else {
                     lastChar = MS_LINECONT;
@@ -1121,7 +1121,7 @@ STRM_T PreGetCH( void )
                         s = GetCHR();
                         continue;
                     }
-                    UnGetCH( s );
+                    UnGetCHR( s );
                     return( MS_LINECONT );
                 }
             }
@@ -1141,13 +1141,13 @@ STRM_T PreGetCH( void )
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( s );
+                    UnGetCHR( s );
                     return( UNIX_LINECONT );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( STRM_TMP_EOL );
+                    UnGetCHR( STRM_TMP_EOL );
                 }
             } else {
                 s = GetCHR();           /* check if '&' followed by {nl} */
@@ -1158,13 +1158,13 @@ STRM_T PreGetCH( void )
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( s );
+                    UnGetCHR( s );
                     return( LINECONT );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
                     }
-                    UnGetCH( STRM_TMP_EOL );
+                    UnGetCHR( STRM_TMP_EOL );
                 }
             }
         }

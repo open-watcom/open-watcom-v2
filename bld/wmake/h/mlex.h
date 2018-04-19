@@ -266,7 +266,7 @@ enum LexMode {
     LEX_MAC_DEF,    /* send back MAC_EXPAND_ON, otherwise MAC_TEXT          */
     LEX_MAC_SUBST,  /* send back all MAC tokens                             */
     LEX_PARSER,     /* send back only TOK tokens - silently do MAC stuff    */
-    LEX_PATH,       /* send back only TOK_PATH/EOL/STRM_END                 */
+    LEX_PATH,       /* send back only TOK_PATH/TOK_EOL/TOK_END              */
     LEX_MS_MAC      /* sned back tokens for microsoft demacro               */
 };
 

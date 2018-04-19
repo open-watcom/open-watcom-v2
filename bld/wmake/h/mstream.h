@@ -46,7 +46,7 @@ typedef enum {
                                 /* bang                                      */
     STRM_MAGIC         = -2,    /* this value is never placed in the stream by
                                  * the stream routines - someone must do an
-                                 * UnGetCH( STRM_MAGIC )
+                                 * UnGetCHR( STRM_MAGIC )
                                  */
     STRM_END           = -1,    /* no more data in waiting */
 
@@ -61,7 +61,7 @@ typedef enum {
 extern RET_T    InsFile( const char *namem, bool envsearch );
 extern void     InsOpenFile( int fh );
 extern void     InsString( const char *str, bool weFree );
-extern void     UnGetCH( STRM_T s );
+extern void     UnGetCHR( STRM_T s );
 extern STRM_T   GetCHR( void );
 extern void     StreamInit( void );
 extern void     StreamFini( void );
