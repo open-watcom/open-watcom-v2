@@ -95,13 +95,13 @@ SLIST *NewSList( void )
  * allocate a NKLIST, fill in default values
  */
 {
-    SLIST   *s;
+    SLIST   *slist;
 
     if( freeSLists != NULL ) {
-        s = freeSLists;
-        freeSLists = s->next;
-        memset( s, 0, sizeof( *s ) );
-        return( s );
+        slist = freeSLists;
+        freeSLists = slist->next;
+        memset( slist, 0, sizeof( *slist ) );
+        return( slist );
     }
     return( (SLIST *)CallocSafe( sizeof( SLIST ) ) );
 }
@@ -740,7 +740,7 @@ STATIC RET_T cleanupLeftovers( void )
 {
     DEPEND      *dep;
     CLIST       *c;
-    SLIST       *s;
+    SLIST       *slist;
     TLIST       *t;
     FLIST       *f;
     NKLIST      *nk;
@@ -771,9 +771,9 @@ STATIC RET_T cleanupLeftovers( void )
     }
     if( freeSLists != NULL ) {
         do {
-            s = freeSLists;
-            freeSLists = s->next;
-            FreeSafe( s );
+            slist = freeSLists;
+            freeSLists = slist->next;
+            FreeSafe( slist );
         } while( freeSLists != NULL );
         return( RET_SUCCESS );
     }

@@ -122,7 +122,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
  */
 {
     char        sufname[MAX_SUFFIX];
-    const char  *s;
+    const char  *n;
     char        *d;
 
     assert( name != NULL );
@@ -132,15 +132,15 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
     }
 
     d = sufname;
-    s = name;
-    while( *s != NULLCHAR && *s != DOT ) {
-        *d++ = *s++;
+    n = name;
+    while( *n != NULLCHAR && *n != DOT ) {
+        *d++ = *n++;
     }
     *d = NULLCHAR;
 
     if( p != NULL ) {
-        if( *s == DOT ) {
-            *p = s;
+        if( *n == DOT ) {
+            *p = n;
         } else {
             *p = NULL;
         }
@@ -156,7 +156,7 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
 
 SUFFIX *FindSuffix( const char *name )
-/*******************************************/
+/************************************/
 {
     return( findSuffixNode( name, NULL ) );
 }
@@ -354,7 +354,7 @@ char *AddCreator( const char *sufsuf )
     CREATOR     *new;
     CREATOR     **cur;
     SLIST       *slist;
-    SLIST       **sl;
+    SLIST       **pslist;
     char        *fullsufsuf;
     char        *cur_targ_path;
     char        *cur_dep_path;
@@ -387,7 +387,7 @@ char *AddCreator( const char *sufsuf )
         cur_dep_path = StrDupSafe( FixName( buf ) );
     }
 
-    sl = NULL;
+    pslist = NULL;
     if( *cur != NULL && src->id == (*cur)->suffix->id ) {
         for( slist = (*cur)->slist; ; slist = slist->next ) {
             if( stricmp( slist->targ_path, cur_targ_path ) == 0 && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
@@ -400,16 +400,16 @@ char *AddCreator( const char *sufsuf )
                 return( StrDupSafe( slist->cretarg->node.name ) );
             }
             if( slist->next == NULL ) {
-                sl = &slist->next;
+                pslist = &slist->next;
                 break;
             }
         }
     }
-    if( sl == NULL ) {
+    if( pslist == NULL ) {
         new = newCreator();
         new->suffix = src;
         new->slist = NULL;
-        sl = &new->slist;
+        pslist = &new->slist;
 
         new->next = *cur;
         *cur = new;
@@ -424,8 +424,8 @@ char *AddCreator( const char *sufsuf )
     slist->cretarg->special = true;
     slist->cretarg->sufsuf  = true;
     slist->cretarg->depend = NewDepend();
-    slist->next = *sl;
-    *sl = slist;
+    slist->next = *pslist;
+    *pslist = slist;
     return( fullsufsuf );
 }
 
@@ -438,7 +438,6 @@ STATIC bool printSuf( void *node, void *ptr )
     PATHNODE    *currpath;
     SLIST       *slist;
     CLIST       *cmds;
-    bool        printed;
 
     (void)ptr; // Unused
     PrtMsg( INF | PSUF_SUFFIX, suffix->node.name );
@@ -448,17 +447,13 @@ STATIC bool printSuf( void *node, void *ptr )
             PrtMsg( INF | PSUF_FOUND_IN, currpath->name );
             currpath = currpath->next;
         } while( currpath != suffix->currpath );
-        printed = true;
-    } else {
-        printed = false;
+        if( suffix->creator != NULL ) {
+            PrtMsg( INF | NEWLINE );
+        }
     }
-    cur = suffix->creator;
-    if( cur != NULL && printed ) {
-        PrtMsg( INF | NEWLINE );
-    }
-    while( cur != NULL ) {
-        slist = cur->slist;
-        while( slist != NULL ) {
+
+    for( cur = suffix->creator; cur != NULL; cur = cur->next ) {
+        for( slist = cur->slist; slist != NULL; slist = slist->next ) {
             PrtMsg( INF | NEOL | PSUF_MADE_FROM, cur->suffix->node.name );
             PrintTargFlags( &slist->cretarg->attr );
             PrtMsg( INF | NEWLINE );
@@ -473,13 +468,11 @@ STATIC bool printSuf( void *node, void *ptr )
                 PrtMsg( INF | PSUF_USING_CMDS );
                 PrintCList( cmds );
             }
-            slist = slist->next;
-            if( slist != NULL ) {
+            if( slist->next != NULL ) {
                 PrtMsg( INF | NEWLINE );
             }
         }
-        cur = cur->next;
-        if( cur != NULL ) {
+        if( cur->next != NULL ) {
             PrtMsg( INF | NEWLINE );
         }
     }

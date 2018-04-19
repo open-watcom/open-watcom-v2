@@ -1309,7 +1309,6 @@ STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
     char        *p;     // pointer to walk with
-    char        *s;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_CD] );
@@ -1327,8 +1326,7 @@ STATIC RET_T handleCD( char *cmd )
     }
 
     if( p[1] == ':' ) {             /* just a drive: arg, print the cd */
-        s = SkipWS( p + 2 );
-        if( *s == NULLCHAR ) {
+        if( *SkipWS( p + 2 ) == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
     }

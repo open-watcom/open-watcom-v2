@@ -136,14 +136,14 @@ void PreProcInit( void )
 {
     StreamInit();
 
-    atStartOfLine = EOL;
+    atStartOfLine = '\n';
     doingPreProc = false;
 
     curNest.skip2endif = false;
     curNest.skip = false;
     curNest.elseFound = false;
     nestLevel = 0;
-    lastChar = 0;
+    lastChar = NULLCHAR;
 }
 
 
