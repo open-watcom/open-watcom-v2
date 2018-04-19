@@ -5111,22 +5111,21 @@ AUX_INFO *TypeHasPragma( TYPE type )
 {
     AUX_INFO *pragma;
 
+    pragma = NULL;
     for( ; type != NULL; type = type->of ) {
-        if( type->id == TYP_MODIFIER ) {
-            pragma = type->u.m.pragma;
-            if( pragma != NULL ) {
-                return( pragma );
-            }
+        if( type->id == TYP_TYPEDEF ) {
             continue;
+        } else if( type->id == TYP_MODIFIER ) {
+            pragma = type->u.m.pragma;
+            if( pragma == NULL ) {
+                continue;
+            }
+        } else if( type->id == TYP_FUNCTION ) {
+            pragma = type->u.f.pragma;
         }
-        if( type->id != TYP_TYPEDEF ) {
-            break;
-        }
+        break;
     }
-    if( type->id == TYP_FUNCTION ) {
-        return( type->u.f.pragma );
-    }
-    return( NULL );
+    return( pragma );
 }
 
 #define defaultMemoryFlag( t ) ( (t)->id == TYP_FUNCTION    \
