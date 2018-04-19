@@ -261,7 +261,7 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
     p = path;
     while( *p != NULLCHAR ) {
         /* find end of path in string */
-        while( *p != NULLCHAR && *p != PATH_SPLIT && *p != ';' ) {
+        while( *p != NULLCHAR && !IS_PATH_SPLIT( *p ) ) {
             ++p;
         }
         len = p - path;                                     /* get length of sub-path */

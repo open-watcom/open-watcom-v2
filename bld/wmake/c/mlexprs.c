@@ -120,7 +120,7 @@ TOKEN_T LexPath( STRM_T s )
 
         if( s == STRM_MAGIC ) {
             InsString( DeMacro( TOK_EOL ), true );
-        } else if( !sisfilec( s ) && s != PATH_SPLIT && s != ';' && s != '\"' && !sisws( s ) ) {
+        } else if( !sisfilec( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
             PrtMsg( ERR | LOC | EXPECTING_M, M_PATH );
         } else if( !sisws( s ) ) {
             break;
@@ -129,7 +129,7 @@ TOKEN_T LexPath( STRM_T s )
         s = PreGetCHR(); /* keep fetching characters */
     }
     /* just so you know what we've got now */
-    assert( sisfilec( s ) || s == PATH_SPLIT || s == ';' || s == '\"' );
+    assert( sisfilec( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
 
     vec = StartVec();
 
@@ -198,7 +198,7 @@ TOKEN_T LexPath( STRM_T s )
         path[pos] = NULLCHAR;
         WriteVec( vec, path );
 
-        if( s != PATH_SPLIT && s != ';' ) {
+        if( !IS_PATH_SPLIT( s ) ) {
             break;
         }
 
@@ -378,7 +378,7 @@ STATIC TOKEN_T lexDotName( void )
         s = PreGetCHR();
     }
 
-    if( sisdirc( s ) || s == PATH_SPLIT || s == ';' ) {  // check for "."{dirc}
+    if( sisdirc( s ) || IS_PATH_SPLIT( s ) ) {          // check for "."{dirc}
         UnGetCHR( s );
         if( *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
@@ -389,7 +389,7 @@ STATIC TOKEN_T lexDotName( void )
     if( s == DOT ) {        /* check if ".."{extc} or ".."{dirc} */
         s2 = PreGetCHR();    /* probe one character */
         UnGetCHR( s2 );
-        if( sisdirc( s2 ) || s2 == PATH_SPLIT || s2 == ';' ) {   // is ".."{dirc}
+        if( sisdirc( s2 ) || IS_PATH_SPLIT( s2 ) ) {    // is ".."{dirc}
             UnGetCHR( s );
             if( *dep_path != NULLCHAR ) {
                 PrtMsg( ERR | LOC | INVALID_SUFSUF );

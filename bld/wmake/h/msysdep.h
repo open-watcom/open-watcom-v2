@@ -59,7 +59,7 @@
 
 #if defined( __DOS__ )
 # define PATH_SPLIT         ';'     /* path seperator                       */
-# define PATH_SPLIT_S       ";"     /* path seperator in string form        */
+# define IS_PATH_SPLIT(c)   ((c)==PATH_SPLIT)
 # define SHELL_METAS        "<>|"   /* characters that force use of shell   */
 # define WILD_METAS         "*?"    /* wild card characters opendir supports*/
                                     /* dir entries to ignore (direct.h)     */
@@ -76,7 +76,7 @@
 #elif defined( __OS2__ ) || defined( __NT__ )
 
 # define PATH_SPLIT         ';'     /* path seperator                       */
-# define PATH_SPLIT_S       ";"     /* path seperator in string form        */
+# define IS_PATH_SPLIT(c)   ((c)==PATH_SPLIT)
 # define SHELL_METAS        "<>|&()"/* characters that force use of shell   */
 # define SHELL_ESC          '^'     /* character that escapes a meta char   */
 # define WILD_METAS         "*?"    /* wild card characters opendir supports*/
@@ -94,6 +94,7 @@
 #elif defined( __UNIX__ )
 
 # define PATH_SPLIT         ':'     /* path seperator                       */
+# define IS_PATH_SPLIT(c)   ((c)==PATH_SPLIT||(c)==';')
 # define PATH_SPLIT_S       ":"     /* path seperator in string form        */
 # define SHELL_METAS        "<>|&()"/* characters that force use of shell   */
 # define SHELL_ESC          '^'     /* character that escapes a meta char   */
