@@ -642,19 +642,19 @@ static int ExitSafe( int rc )
     return( rc );
 }
 
-NO_RETURN( void ExitFatal( void ) )
+void ExitFatal( void )
 {
     exit( ExitSafe( EXIT_FATAL ) );
     // never return
 }
 
-NO_RETURN( void ExitError( void ) )
+void ExitError( void )
 {
     exit( ExitSafe( EXIT_ERROR ) );
     // never return
 }
 
-NO_RETURN( void ExitOK( void ) )
+void ExitOK( void )
 {
     exit( ExitSafe( EXIT_OK ) );
     // never return

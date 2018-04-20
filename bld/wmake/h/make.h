@@ -109,7 +109,7 @@ struct Glob {
 #if defined( __WATCOMC__ )
 #define NO_RETURN(x)    _WCNORETURN x
 #elif defined( __GNUC__ ) || defined( __clang__ )
-#define NO_RETURN(x)    x  __attribute__ ((noreturn))
+#define NO_RETURN(x)    x  __attribute__ ((__noreturn__))
 #elif defined( _MSC_VER )
 #define NO_RETURN(x)    __declspec(noreturn)  x
 #else
