@@ -118,7 +118,7 @@ static void massageDollarOctothorpe( char *p )
     for( ; *p != NULLCHAR; ++p ) {
         switch( *p ) {
         case '$':
-            *p = TMP_DOL;
+            *p = TMP_DOLLAR;
             break;
         case '#':
             *p = TMP_COMMENT;
@@ -238,7 +238,7 @@ STATIC MACRO *getMacroNode( const char *name )
 {
     bool    caseSensitive;
 
-    assert( name != NULL && *name != ENVVAR );
+    assert( name != NULL && *name != ENVVAR_C );
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
         caseSensitive = true;
@@ -257,7 +257,7 @@ STATIC char *findEqual( char *inString )
 {
     char    *ret;
 
-    ret = strrchr( inString, EQUAL );
+    ret = strrchr( inString, '=' );
     if( ret == inString ) {
         ret = NULL;
     }
@@ -336,7 +336,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
-    if( *macro == ENVVAR ) {
+    if( *macro == ENVVAR_C ) {
         env = getenv( macro + 1 );
         if( env != NULL ) {
             return( env );
@@ -424,7 +424,7 @@ char *GetMacroValue( const char *name )
     char        *line;
 
     InName = StrDupSafe( name );
-    p = strchr( InName, COLON );
+    p = strchr( InName, ':' );
 
     if( p == NULL ) {
         beforeSub = GetMacroValueProcess( InName );
@@ -441,7 +441,7 @@ char *GetMacroValue( const char *name )
         } else {
             line = NULL;
             // recursively expand so $(macro:sub) OK if macro contains another
-            if( strchr( beforeSub, DOLLAR ) != NULL ) {
+            if( strchr( beforeSub, '$' ) != NULL ) {
                 UnGetCHR( STRM_MAGIC );
                 InsString( beforeSub, false );
                 beforeSub = line = DeMacro( TOK_MAGIC );
@@ -505,7 +505,7 @@ STATIC bool addMacro( const char *name, char *value )
     MACRO   *new;
     bool    unused_value;
 
-    assert( *name != ENVVAR );
+    assert( *name != ENVVAR_C );
 
     value = trimMacroValue( value );
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
@@ -544,7 +544,7 @@ bool IsMacroName( const char *inName )
 
     assert( inName != NULL );
 
-    while( pos < MAX_MAC_NAME && *p != NULLCHAR && *p != COLON ) {
+    while( pos < MAX_MAC_NAME && *p != NULLCHAR && *p != ':' ) {
         if( !cismacc( *p ) ) {
             PrtMsg( ERR | LOC | INVALID_MACRO_NAME, inName );
             return( false );
@@ -578,7 +578,7 @@ void UnDefMacro( const char *name )
 
     makeMacroName( macro, name ); // Does assert( IsMacroName( name ) );
 
-    if( *macro == ENVVAR ) {
+    if( *macro == ENVVAR_C ) {
         ENV_TRACKER     *env;
 
         env = MallocSafe( sizeof( ENV_TRACKER ) + strlen( macro ) + 1 );
@@ -637,7 +637,7 @@ char *DeMacroSpecial( const char *InString )
     outString = StartVec();
 
     for( p = InString; *p != NULLCHAR; ++p ) {
-        if( *p == SPECIAL_TMP_DOL ) {
+        if( *p == SPECIAL_TMP_DOLLAR ) {
             CatNStrToVec( outString, old, p - old );
             pos = 0;
             UnGetCHR( STRM_MAGIC );
@@ -676,10 +676,10 @@ char *DeMacroSpecial( const char *InString )
  * handle constructs such as $(text); thus allowing $(text$(subtext)).  All
  * other constructs are written with their current value.
  *
- * deMacroText scans the string that deMacroToEnd returned for DOLLARs.  If
- * it doesn't find one it returns the string.  If a DOLLAR is found, a
+ * deMacroText scans the string that deMacroToEnd returned for '$'s.  If
+ * it doesn't find one it returns the string.  If a '$' is found, a
  * STRM_MAGIC is pushed, the string is pushed, and deMacroToEnd is called
- * again (ending at STRM_MAGIC).  This process is repeated until no DOLLARs
+ * again (ending at STRM_MAGIC).  This process is repeated until no '$'s
  * remain.
  *
  * This pair always stops at EOL, STRM_MAGIC, or STRM_END.
@@ -731,7 +731,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         break;
 
     case MAC_DOLLAR:
-        return( CharToStrSafe( TMP_DOL ) );         /* write a place holder */
+        return( CharToStrSafe( TMP_DOLLAR ) );      /* write a place holder */
 
     case MAC_COMMENT:
         return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
@@ -932,7 +932,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     }
 
     result = deMacroToEnd( depth, end1, end2 );
-    while( strchr( result, DOLLAR ) != NULL ) {
+    while( strchr( result, '$' ) != NULL ) {
         UnGetCHR( STRM_MAGIC );
         InsString( result, true );
 
@@ -963,23 +963,23 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     if( !IsPartDeMacro ) {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case TMP_DOL:       *p = DOLLAR;    break;
-            case TMP_COMMENT:   *p = COMMENT;   break;
+            case TMP_DOLLAR:    *p = '$';       break;
+            case TMP_COMMENT:   *p = COMMENT_C; break;
 #if 0
-            case SPECIAL_TMP_DOL:
-                  if( Glob.compat_nmake ) {
-                       if( cismsspecial( *(p + 1) ) ) {
-                          *p = DOLLAR;
-                       }
-                  }
-                  break;
+            case SPECIAL_TMP_DOLLAR:
+                if( Glob.compat_nmake ) {
+                    if( cismsspecial( *(p + 1) ) ) {
+                        *p = '$';
+                    }
+                }
+                break;
 #endif
             }
         }
     } else {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case SPECIAL_TMP_DOL: *p = DOLLAR;    break;
+            case SPECIAL_TMP_DOLLAR:    *p = '$';   break;
             }
         }
     }
@@ -1211,12 +1211,12 @@ STATIC char *DeMacroName( const char *text, const char *name )
     oldptr = p = text;
 
     outtext = StartVec();
-    while( (p = strchr( p, DOLLAR )) != NULL ) {
-        switch( *++p ) {  // Swallow that DOLLAR
-        case '$':               // Swallow literal DOLLAR.
+    while( (p = strchr( p, '$' )) != NULL ) {
+        switch( *++p ) {    // Swallow that '$'
+        case '$':           // Swallow literal '$'.
             p++;
             break;
-        case '(':               // Possible regular substitution
+        case '(':           // Possible regular substitution
             p++;
             // bracket or colon (for string substitution) after matching name?
             if( NMacroNameEq( p, name, len ) && (p[len] == ')' || p[len] == ':') ) {
@@ -1281,8 +1281,8 @@ void DefMacro( const char *name )
     unused_value = true;
     EnvVarValue = NULL;
 
-    if( *name == ENVVAR || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
-        if( *name != ENVVAR ) {
+    if( *name == ENVVAR_C || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
+        if( *name != ENVVAR_C ) {
             unused_value = addMacro( name, value );
         }
         UnGetCHR( '\n' );
@@ -1291,9 +1291,9 @@ void DefMacro( const char *name )
         PreGetCHR();  // eat EOL token (used to avoid assertion failure)
     }
 
-    if( *name == ENVVAR ) {
+    if( *name == ENVVAR_C ) {
         /* remember strlen( name ) is one byte larger than we want
-         * because *name == ENVVAR, and we'll ignore that byte
+         * because *name == ENVVAR_C, and we'll ignore that byte
          */
         assert( EnvVarValue != NULL );
         env = MallocSafe( sizeof( ENV_TRACKER )
