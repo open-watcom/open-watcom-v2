@@ -701,31 +701,27 @@ STATIC char *getFileName( const char *intext, size_t *offset )
     *offset     = 0;
     doubleQuote = false;
 
-    if( intext[*offset] == DOUBLEQUOTE ) {
+    if( intext[*offset] == '\"' ) {
         doubleQuote = true;
         *offset     = 1;
     }
     for( ;; ) {
         if( intext[*offset] == NULLCHAR ) {
             break;
-        } else if( (cisws( intext[*offset] )        ||
-                    intext[*offset]== LESSTHAN     ||
-                    intext[*offset]== GREATERTHAN) &&
-                    !doubleQuote ) {
+        } else if( (cisws( intext[*offset] ) || intext[*offset] == '<' || intext[*offset] == '>') && !doubleQuote ) {
             break;
-        } else if( doubleQuote && intext[*offset] == BACKSLASH ) {
-            if( intext[*offset + 1] == DOUBLEQUOTE ) {
+        } else if( doubleQuote && intext[*offset] == '\\' ) {
+            if( intext[*offset + 1] == '\"' ) {
                 *offset = *offset + 1;
             }
-        } else if( doubleQuote && intext[*offset] == DOUBLEQUOTE ) {
+        } else if( doubleQuote && intext[*offset] == '\"' ) {
             ++(*offset);
             break;
         }
         ++(*offset);
     }
 
-    if( (intext[(*offset) - 1] != DOUBLEQUOTE && doubleQuote) ||
-        (*offset == 1                         && doubleQuote) ) {
+    if( (intext[(*offset) - 1] != '\"' && doubleQuote) || (*offset == 1 && doubleQuote) ) {
         /* error */
         PrtMsg( ERR | LOC | NON_MATCHING_QUOTE );
         ret = NULL;
@@ -783,8 +779,8 @@ STATIC void getBody( FLIST *head )
             }
             UnGetCHR( s );
             temp = ignoreWSDeMacro( true, ForceDeMacro() );
-            if( temp[0] == LESSTHAN ) {
-                if( temp[1] == LESSTHAN ) {
+            if( temp[0] == '<' ) {
+                if( temp[1] == '<' ) {
                     /* terminator of inline file is found when first
                      * two characters are <<
                      */
@@ -861,8 +857,8 @@ STATIC FLIST *GetInlineFile( char **commandIn )
      * is explicitly defined
      */
     for( index = 0; cmdText[index] != NULLCHAR; ++index ) {
-        if( cmdText[index] == LESSTHAN ) {
-            if( cmdText[index + 1] == LESSTHAN ) {
+        if( cmdText[index] == '<' ) {
+            if( cmdText[index + 1] == '<' ) {
                 // Add the current vector into the new command
                 WriteNVec( newCommand, cmdText + start, index - start );
 
@@ -880,7 +876,7 @@ STATIC FLIST *GetInlineFile( char **commandIn )
                 current->fileName = getFileName( cmdText + 2 + index, &offset );
 
                 // Check for long file name
-                if( *(cmdText + 2 + index) == DOUBLEQUOTE ) {
+                if( *(cmdText + 2 + index) == '\"' ) {
                     WriteVec( newCommand, "\"" );
                     WriteVec( newCommand, current->fileName );
                     WriteVec( newCommand, "\"" );

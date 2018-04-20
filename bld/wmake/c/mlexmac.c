@@ -150,10 +150,10 @@ TOKEN_T LexMSDollar( STRM_T s )
     assert( sismsspecial( s ) );
 
     if( IsPartDeMacro || !DoingUpdate ) {
-        /* we need to use SPECIAL_TMP_DOL to prevent recursion
+        /* we need to use SPECIAL_TMP_DOLLAR to prevent recursion
            from kicking in because recursion occurs when there are
            still dollars remaining */
-        temp[0] = SPECIAL_TMP_DOL;
+        temp[0] = SPECIAL_TMP_DOLLAR;
         temp[1] = s;
         if( s == '*' ) {
             s = PreGetCHR();
@@ -219,8 +219,8 @@ STATIC TOKEN_T lexDollar( void )
         return( t );
     }
     switch( s ) {
-    case DOLLAR:                            return( MAC_DOLLAR );
-    case COMMENT:                           return( MAC_COMMENT );
+    case '$':                               return( MAC_DOLLAR );
+    case COMMENT_C:                         return( MAC_COMMENT );
     case '(':                               return( MAC_OPEN );
     case '+':                               return( MAC_EXPAND_ON );
     case '-':                               return( MAC_EXPAND_OFF );
@@ -278,7 +278,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
         case STRM_END:
         case STRM_MAGIC:
         case ')':
-        case DOLLAR:
+        case '$':
             done = true;
             break;
         default:
@@ -307,8 +307,8 @@ TOKEN_T LexMacSubst( STRM_T s )
  */
 {
     switch( s ) {
-    case SPECIAL_TMP_DOL:
-    case DOLLAR:
+    case SPECIAL_TMP_DOLLAR:
+    case '$':
         return( lexDollar() );
     case ')':
         return( MAC_CLOSE );
@@ -350,8 +350,8 @@ TOKEN_T LexMacDef( STRM_T s )
 
     cur = text;
 
-    if( s == DOLLAR ) {
-        *cur++ = DOLLAR;
+    if( s == '$' ) {
+        *cur++ = '$';
         s = PreGetCHR();
         if( s == '+' ) {
             return( MAC_EXPAND_ON );
@@ -368,7 +368,7 @@ TOKEN_T LexMacDef( STRM_T s )
         if(    s == STRM_END
             || s == STRM_MAGIC
             || s == '\n'
-            || s == DOLLAR
+            || s == '$'
             || (onlyws && !sisws( s ))
             || (!onlyws && sisws( s )) ) {
             break;

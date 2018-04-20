@@ -55,7 +55,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     char    file[_MAX_PATH];
     int     pos;
 
-    assert( s == DOUBLEQUOTE );
+    assert( s == '\"' );
 
     pos = 0;
 
@@ -64,19 +64,19 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     /* \" is considered a double quote character                         */
     /* and if a double quote is found again then we break out as the end */
     /* of the filename                                                   */
-    while( pos < _MAX_PATH && s != DOUBLEQUOTE && s != '\n' && s != STRM_END ) {
+    while( pos < _MAX_PATH && s != '\"' && s != '\n' && s != STRM_END ) {
         file[pos++] = s;
         s = PreGetCHR();
-        if( s == BACKSLASH ) {
+        if( s == '\\' ) {
             if( pos >= _MAX_PATH ) {
                 break;
             }
             s = PreGetCHR();
-            if( s == DOUBLEQUOTE ) {
+            if( s == '\"' ) {
                 file[pos++] = s;
                 s = PreGetCHR();
             } else {
-                file[pos++] = BACKSLASH;
+                file[pos++] = '\\';
             }
         }
     }
@@ -88,7 +88,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     }
     file[pos] = NULLCHAR;
 
-    if( s != DOUBLEQUOTE ) {
+    if( s != '\"' ) {
         UnGetCHR( s );
     }
 
@@ -147,17 +147,17 @@ TOKEN_T LexPath( STRM_T s )
         string_open = false;
 
         while( pos < _MAX_PATH && s != '\n' && s != STRM_END ) {
-            if( s == BACKSLASH ) {
+            if( s == '\\' ) {
                 s = PreGetCHR();
 
-                if( s == DOUBLEQUOTE ) {
-                    path[pos++] = DOUBLEQUOTE;
+                if( s == '\"' ) {
+                    path[pos++] = '\"';
                 } else if( s == '\n' || s == STRM_END ) {
                     // Handle special case when backslash is placed at end of
                     // line or file
-                    path[pos++] = BACKSLASH;
+                    path[pos++] = '\\';
                 } else {
-                    path[pos++] = BACKSLASH;
+                    path[pos++] = '\\';
 
                     // make sure we don't cross boundaries
                     if( pos < _MAX_PATH ) {
@@ -165,7 +165,7 @@ TOKEN_T LexPath( STRM_T s )
                     }
                 }
             } else {
-                if( s == DOUBLEQUOTE ) {
+                if( s == '\"' ) {
                     string_open = !string_open;
                 } else {
                     if( string_open ) {
@@ -230,16 +230,16 @@ STATIC TOKEN_T lexFileName( STRM_T s )
     char        file[_MAX_PATH];
     unsigned    pos;
 
-    assert( sisfilec( s ) || s == DOUBLEQUOTE ||
-       ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL ) );
+    assert( sisfilec( s ) || s == '\"' ||
+       ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) );
 
-    if( s == DOUBLEQUOTE ) {
+    if( s == '\"' ) {
         return( lexLongFilePathName( s, TOK_FILENAME ) );
     }
 
     pos = 0;
     while( pos < _MAX_PATH && (sisfilec( s ) ||
-            ( s == SPECIAL_TMP_DOL && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
+            ( s == SPECIAL_TMP_DOLLAR && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
         file[pos++] = s;
         s = PreGetCHR();
     }
@@ -253,18 +253,18 @@ STATIC TOKEN_T lexFileName( STRM_T s )
 
     /* if it is a file, we have to check last position for a ':', and
      * trim it off if it's there */
-    if( pos > 1 && file[pos - 1] == COLON ) {
-        file[pos - 1] = NULLCHAR; /* trim a trailing colon */
-        UnGetCHR( COLON );       /* push back the colon */
+    if( pos > 1 && file[pos - 1] == ':' ) {
+        file[pos - 1] = NULLCHAR;   /* trim a trailing colon */
+        UnGetCHR( ':' );            /* push back the colon */
         --pos;
     }
     /*
      * try to do the trim twice because if file ends with a double colon
      * it means its a double colon explicit rule
      */
-    if( pos > 1 && file[pos - 1] == COLON ) {
+    if( pos > 1 && file[pos - 1] == ':' ) {
         file[pos - 1] = NULLCHAR;   /* trim a trailing colon */
-        UnGetCHR( COLON );           /* push back the colon */
+        UnGetCHR( ':' );            /* push back the colon */
     }
 
     CurAttr.u.ptr = StrDupSafe( file );
@@ -564,7 +564,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
     StartDoubleQuote = IsDoubleQuote;
 
     for( current = p; *current != NULLCHAR; ++current ) {
-        if( *current == DOUBLEQUOTE ) {
+        if( *current == '\"' ) {
             if( !IsDoubleQuote ) {
                 /* Found the start of a Double Quoted String */
                 if( current != p ) {
@@ -676,19 +676,18 @@ TOKEN_T LexParser( STRM_T s )
         case '.':
             UnGetCHR( s );
             return( lexDotName() ); /* could be a file... */
-        case SEMI:                  /* treat semi-colon as {nl}{ws} */
+        case ';':                   /* treat semi-colon as {nl}{ws} */
             InsString( "\n ", false );
             break;                  /* try again */
-        case COLON:
+        case ':':
             s = PreGetCHR();
-            if( s == COLON ) {
+            if( s == ':' ) {
                 return( TOK_DCOLON );
             }
             UnGetCHR( s );
             return( TOK_SCOLON );
         default:
-            if( sisfilec( s ) || s == DOUBLEQUOTE ||
-                ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL ) ) {
+            if( sisfilec( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );

@@ -221,7 +221,7 @@ STATIC char *createTmpFileName( void )
             result = FinishVec( buf );
         } else {
             WriteVec( buf, tmpPath );
-            if( tmpPath[strlen( tmpPath ) - 1] != BACKSLASH ) {
+            if( tmpPath[strlen( tmpPath ) - 1] != '\\' ) {
                 buf2 = StartVec();
 #if defined( __UNIX__ )
                 WriteVec( buf2, "/" );
@@ -334,8 +334,8 @@ STATIC char *RemoveBackSlash( const char *inString )
     for( p = inString; (c = *p++) != NULLCHAR; ) {
         if( pos >= sizeof( buffer ) - 1 )
             break;
-        if( c == BACKSLASH ) {
-            if( *p == DOUBLEQUOTE ) {
+        if( c == '\\' ) {
+            if( *p == '\"' ) {
                 c = *p++;
             }
         }
@@ -449,8 +449,8 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
         // the filename into a temp filename
         if( strcmp( current->fileName, INLINE_SYMBOL ) == 0 ) {
             for( ;; ) {
-                if( cmdText[index] == LESSTHAN ) {
-                    if( cmdText[index + 1] == LESSTHAN ) {
+                if( cmdText[index] == '<' ) {
+                    if( cmdText[index + 1] == '<' ) {
                         index += 2;
                         break;
                     }
@@ -464,7 +464,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
             if( ret == RET_ERROR ) {
                 break;
             }
-            CatNStrToVec( newCommand, cmdText+start, index-start-2 );
+            CatNStrToVec( newCommand, cmdText + start, index - start - 2 );
             start = index;
             FreeSafe( current->fileName );
             current->fileName = createTmpFileName();
@@ -612,14 +612,14 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     }
 
     fn = p = SkipWS( arg );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {
@@ -716,14 +716,14 @@ STATIC RET_T percentRename( char *arg )
 
     /* Get first file name, must end in space but may be surrounded by double quotes */
     fn1 = p = SkipWS( arg );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn1;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {
@@ -741,14 +741,14 @@ STATIC RET_T percentRename( char *arg )
 
     /* Get second file name as well */
     fn2 = p = SkipWS( p );
-    if( *p != DOUBLEQUOTE ) {
+    if( *p != '\"' ) {
         while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
         ++p;    // Skip the first quote
         ++fn2;
-        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
+        while( *p != '\"' && *p != NULLCHAR ) {
             ++p;
         }
         if( *p != NULLCHAR ) {

@@ -39,15 +39,12 @@
 #include "msysdep.h"
 #include "massert.h"
 
-#define DOLLAR          '$'     /* macro introducer                          */
-#define LINECONT        '&'     /* line continuation                         */
-#define UNIX_LINECONT   '\\'    /* UNIX line continuation                    */
-#define MS_LINECONT     '\\'    /* MS line continuation                      */
-#define COMMENT         '#'     /* beginning of comment                      */
-#define COLON           ':'     /* target, dependants seperator              */
-#define BANG            '!'     /* preprocessor introducer                   */
-#define ENVVAR          '%'     /* %environment-var                          */
-#define SEMI            ';'     /* dependent/cmd seperator                   */
+#define LINECONT_C      '&'     /* line continuation                         */
+#define UNIX_LINECONT_C '\\'    /* UNIX line continuation                    */
+#define MS_LINECONT_C   '\\'    /* MS line continuation                      */
+#define COMMENT_C       '#'     /* beginning of comment                      */
+#define BANG_C          '!'     /* preprocessor introducer                   */
+#define ENVVAR_C        '%'     /* %environment-var                          */
 
 #define NULLCHAR        '\0'
 
@@ -109,10 +106,14 @@ struct Glob {
 #define STATIC static
 #endif
 
-#if defined( _WCNORETURN )
-#define NO_RETURN   _WCNORETURN
+#if defined( __WATCOMC__ )
+#define NO_RETURN(x)    _WCNORETURN x
+#elif defined( __GNUC__ ) || defined( __clang__ )
+#define NO_RETURN(x)    x  __attribute__ ((noreturn))
+#elif defined( _MSC_VER )
+#define NO_RETURN(x)    __declspec(noreturn)  x
 #else
-#define NO_RETURN
+#define NO_RETURN(x)    x
 #endif
 
 extern struct Glob      Glob;
@@ -125,9 +126,9 @@ extern const char FAR   MSSuffixList[];
 extern const char FAR   UNIXSuffixList[];
 extern const char FAR   POSIXSuffixList[];
 
-NO_RETURN extern void ExitFatal( void );
-NO_RETURN extern void ExitError( void );
-NO_RETURN extern void ExitOK( void );
+NO_RETURN( extern void ExitFatal( void ) );
+NO_RETURN( extern void ExitError( void ) );
+NO_RETURN( extern void ExitOK( void ) );
 extern void Header( void );
 
 #endif

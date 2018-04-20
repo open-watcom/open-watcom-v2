@@ -83,11 +83,11 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
 
     string_open = false;
     while( (c = *str) != NULLCHAR ) {
-        if( c == BACKSLASH ) {
+        if( c == '\\' ) {
             if( string_open && str[1] != NULLCHAR ) {
                 ++str;
             }
-        } else if( c == DOUBLEQUOTE ) {
+        } else if( c == '\"' ) {
             string_open = !string_open;
         } else if( !string_open && chk_sep( c ) ) {
             break;
@@ -140,14 +140,14 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
             break;
         }
 
-        if( t == BACKSLASH ) {
+        if( t == '\\' ) {
             t = *src++;
 
-            if( t == DOUBLEQUOTE ) {
-                *dst++ = DOUBLEQUOTE;
+            if( t == '\"' ) {
+                *dst++ = '\"';
                 pos++;
             } else {
-                *dst++ = BACKSLASH;
+                *dst++ = '\\';
                 pos++;
 
                 if( pos < maxlen ) {
@@ -156,7 +156,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
                 }
             }
         } else {
-            if( t == DOUBLEQUOTE ) {
+            if( t == '\"' ) {
                 string_open = !string_open;
             } else {
                 if( string_open ) {

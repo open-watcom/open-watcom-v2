@@ -50,11 +50,11 @@ extern char *dep_path;    /* Current sufsuf dependent path */
  * These are used as place holders while doing macro expansion, they are
  * assumed to not be in the input stream.
  */
-#define TMP_DOL             '\x01'  /* replace $ with this temporarily */
+#define TMP_DOLLAR          '\x01'  /* replace $ with this temporarily */
 #define TMP_COMMENT         '\x02'  /* replace $# with this temporarily */
 /* only good for microsoft option when doing partial deMacros     */
 /* for special macros            */
-#define SPECIAL_TMP_DOL     '\x03' /* replace $ with this temporarily */
+#define SPECIAL_TMP_DOLLAR  '\x03' /* replace $ with this temporarily */
 
 /*
  * Is this a special microsoft character in a macro
@@ -166,25 +166,6 @@ typedef enum {
 
 } TOKEN_O;
 
-#define COMPLEMENT      '~'
-#define LOG_NEGATION    '!'
-#define ADD             '+'
-#define SUBTRACT        '-'
-#define MULTIPLY        '*'
-#define DIVIDE          '/'
-#define MODULUS         '%'
-#define BIT_AND         '&'
-#define BIT_OR          '|'
-#define BIT_XOR         '^'
-#define EQUAL           '='
-#define LESSTHAN        '<'
-#define GREATERTHAN     '>'
-#define PAREN_LEFT      '('
-#define PAREN_RIGHT     ')'
-#define BRACKET_LEFT    '['
-#define BRACKET_RIGHT   ']'
-#define DOUBLEQUOTE     '\"'
-#define BACKSLASH       '\\'
 #define MAX_STRING      256
 #define EXIST           "EXIST"
 #define EXISTS          "EXISTS"

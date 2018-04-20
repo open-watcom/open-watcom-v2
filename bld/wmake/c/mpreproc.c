@@ -813,19 +813,19 @@ STATIC char *formatLongFileName( char *text )
     pRet = ret;
     pTxt = text;
 
-    if( pTxt[0] == DOUBLEQUOTE ) {
+    if( pTxt[0] == '\"' ) {
         ++pTxt;
     }
-    while( *pTxt != NULLCHAR && *pTxt != DOUBLEQUOTE ) {
+    while( *pTxt != NULLCHAR && *pTxt != '\"' ) {
         if( *pTxt == '\\' ) {
-            if( *(pTxt + 1) == DOUBLEQUOTE ) {
+            if( *(pTxt + 1) == '\"' ) {
                 ++pTxt;
             }
         }
         *(pRet++) = *(pTxt++);
     }
     *pRet = NULLCHAR;
-    if( *pTxt == DOUBLEQUOTE ) {
+    if( *pTxt == '\"' ) {
         if( *(pTxt + 1) != NULLCHAR ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
             FreeSafe( ret );
@@ -857,12 +857,12 @@ STATIC void bangInclude( void )
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
-    if( *text == LESSTHAN ) {
+    if( *text == '<' ) {
         p = text;
-        while( *p != GREATERTHAN && *p != NULLCHAR ) {
+        while( *p != '>' && *p != NULLCHAR ) {
             ++p;
         }
-        if( *p == GREATERTHAN ) {
+        if( *p == '>' ) {
             *p = NULLCHAR;
             temp = text;
             text = formatLongFileName( temp + 1 );
@@ -1038,7 +1038,7 @@ STRM_T PreGetCHR( void )
             if( s == STRM_TMP_EOL ) {
                 // Throw away the unwanted TMP character
                 s = GetCHR();
-                if( s != BANG ) {
+                if( s != BANG_C ) {
                     UnGetCHR( s );
                     s = STRM_TMP_EOL;
                 }
@@ -1053,7 +1053,7 @@ STRM_T PreGetCHR( void )
                     s = GetCHR();
                 }
             }
-            while( s == BANG ) {
+            while( s == BANG_C ) {
                 handleBang();
 
                 assert( atStartOfLine == '\n' );
@@ -1073,7 +1073,7 @@ STRM_T PreGetCHR( void )
         if( s == STRM_TMP_EOL ) {
             s = GetCHR();
         }
-        if( s == COMMENT && lastChar != DOLLAR && inlineLevel == 0 ) {
+        if( s == COMMENT_C && lastChar != '$' && inlineLevel == 0 ) {
             s = GetCHR();
             while( s != '\n' && s != STRM_END ) {
                 s = GetCHR();
@@ -1102,7 +1102,7 @@ STRM_T PreGetCHR( void )
             }
             return( s );
         } else {
-            if( Glob.compat_nmake && s == MS_LINECONT ) {
+            if( Glob.compat_nmake && s == MS_LINECONT_C ) {
                 s = GetCHR();
                 if( s == '\n' ) {
                     lastChar = ' ';
@@ -1116,18 +1116,18 @@ STRM_T PreGetCHR( void )
                     UnGetCHR( STRM_TMP_EOL );
                     return( ' ' );
                 } else {
-                    lastChar = MS_LINECONT;
+                    lastChar = MS_LINECONT_C;
                     if( skip ) {
                         s = GetCHR();
                         continue;
                     }
                     UnGetCHR( s );
-                    return( MS_LINECONT );
+                    return( MS_LINECONT_C );
                 }
             }
 
-            if( s != LINECONT ) {
-                if( s != UNIX_LINECONT || !Glob.compat_unix ) {
+            if( s != LINECONT_C ) {
+                if( s != UNIX_LINECONT_C || !Glob.compat_unix ) {
                     lastChar = s;
                     if( skip ) {
                         s = GetCHR();   /* must get next char */
@@ -1137,12 +1137,12 @@ STRM_T PreGetCHR( void )
                 }
                 s = GetCHR();
                 if( s != '\n' ) {
-                    lastChar = UNIX_LINECONT;
+                    lastChar = UNIX_LINECONT_C;
                     if( skip ) {
                         continue;       /* already have next char */
                     }
                     UnGetCHR( s );
-                    return( UNIX_LINECONT );
+                    return( UNIX_LINECONT_C );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
@@ -1153,12 +1153,12 @@ STRM_T PreGetCHR( void )
                 s = GetCHR();           /* check if '&' followed by {nl} */
                 if( s != '\n' || lastChar == '^' || lastChar == '[' || lastChar == ']' ) {
                                         /* nope... restore state */
-                    lastChar = LINECONT;
+                    lastChar = LINECONT_C;
                     if( skip ) {
                         continue;       /* already have next char */
                     }
                     UnGetCHR( s );
-                    return( LINECONT );
+                    return( LINECONT_C );
                 } else {
                     if( skip ) {
                         continue;       /* already have next char */
@@ -1286,11 +1286,11 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
     size_t  inIndex;
     size_t  currentIndex;
 
-    inIndex       = 1;   // skip initial DOUBLEQUOTE
+    inIndex       = 1;   // skip initial double quote
     currentIndex  = 0;
     current->type = OP_STRING;
     for( ;; ) {
-        if( inString[inIndex] == DOUBLEQUOTE ) {
+        if( inString[inIndex] == '\"' ) {
             // skip the second double quote
             ++inIndex;
             break;
@@ -1303,7 +1303,7 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
         // error did not find closing quotation
         case NULLCHAR :
         case '\n':
-        case COMMENT:
+        case COMMENT_C:
             current->type = OP_ERROR;
             break;
         default:
@@ -1335,7 +1335,7 @@ STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, size_t *i
 
     // Note that in this case we are looking at a string that has no quotations
     // nmake gives expected error with exists(a(b) but also with exists("a(b")
-    while( *r != PAREN_RIGHT && *r != PAREN_LEFT && !cisws( *r ) ) {
+    while( *r != ')' && *r != '(' && !cisws( *r ) ) {
         if( pwrite >= pwritelast ) {
             // VC++ 6 nmake allows 512 or more bytes here. We limit to 255.
             current->type = OP_ENDOFSTRING; // This truncates.
@@ -1391,7 +1391,7 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *in
     makeAlphaToken( inString, current, index );
     // check that the next token is a '(', swallow it, and check we have more.
     probe = SkipWS( inString + *index );
-    if( *probe != PAREN_LEFT || (probe = SkipWS( probe + 1), *probe == NULLCHAR) ) {
+    if( *probe != '(' || (probe = SkipWS( probe + 1), *probe == NULLCHAR) ) {
         current->type = OP_ERROR;
     } else {
         bool (*is)(const char *);
@@ -1399,7 +1399,7 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *in
         if( name2function( current, DEFINED, IsMacro,   &is )
           || name2function( current, EXIST,  existFile, &is )
           || name2function( current, EXISTS, existFile, &is ) ) {
-            if( *probe == DOUBLEQUOTE ) {   // Get macro or file name
+            if( *probe == '\"' ) {      // Get macro or file name
                 makeStringToken( probe, current, index );
             } else {
                 makeAlphaToken( probe, current, index );
@@ -1407,7 +1407,7 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *in
             probe += *index;
             if( current->type == OP_STRING ) {
                 probe = SkipWS( probe );
-                if( *probe != PAREN_RIGHT ) {
+                if( *probe != ')' ) {
                     current->type = OP_ERROR;
                 } else {
                     if( is == existFile ) {
@@ -1438,7 +1438,7 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
     currentIndex  = 0;
     current->type = OP_SHELLCMD;
     for( ;; ) {
-        if( inString[inIndex] == BRACKET_RIGHT ) {
+        if( inString[inIndex] == ']' ) {
             // skip the closing bracket
             ++inIndex;
             break;
@@ -1451,7 +1451,7 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
         // error did not find closing quotation
         case NULLCHAR :
         case '\n':
-        case COMMENT:
+        case COMMENT_C:
             current->type = OP_ERROR;
             break;
         default:
@@ -1479,39 +1479,39 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
     switch( pString[index] ) {
     case NULLCHAR:
     case '\n':
-    case COMMENT:
+    case COMMENT_C:
         makeToken( OP_ENDOFSTRING, current, &index );
         break;
-    case COMPLEMENT:
+    case '~':
         makeToken( OP_COMPLEMENT, current, &index );
         break;
-    case ADD:
+    case '+':
         makeToken( OP_ADD, current, &index );
         break;
-    case SUBTRACT:
+    case '-':
         makeToken( OP_SUBTRACT, current, &index );
         break;
-    case MULTIPLY:
+    case '*':
         makeToken( OP_MULTIPLY, current, &index );
         break;
-    case DIVIDE:
+    case '/':
         makeToken( OP_DIVIDE, current, &index );
         break;
-    case MODULUS:
+    case '%':
         makeToken( OP_MODULUS, current, &index );
         break;
-    case BIT_XOR:
+    case '^':
         makeToken( OP_BIT_XOR, current, &index );
         break;
-    case PAREN_LEFT:
+    case '(':
         makeToken( OP_PAREN_LEFT, current, &index );
         break;
-    case PAREN_RIGHT:
+    case ')':
         makeToken( OP_PAREN_RIGHT, current, &index );
         break;
-    case LOG_NEGATION:
+    case '!':
         switch( pString[index + 1] ) {
-        case EQUAL:
+        case '=':
             makeToken( OP_INEQU, current, &index );
             break;
         default:
@@ -1519,9 +1519,9 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case BIT_AND:
+    case '&':
         switch( pString[index + 1] ) {
-        case BIT_AND:
+        case '&':
             makeToken( OP_LOG_AND, current, &index );
             break;
         default:
@@ -1529,9 +1529,9 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case BIT_OR:
+    case '|':
         switch( pString[index + 1] ) {
-        case BIT_OR:
+        case '|':
             makeToken( OP_LOG_OR, current, &index );
             break;
         default:
@@ -1539,12 +1539,12 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case LESSTHAN:
+    case '<':
         switch( pString[index + 1] ) {
-        case LESSTHAN:
+        case '<':
             makeToken( OP_SHIFT_LEFT, current, &index );
             break;
-        case EQUAL:
+        case '=':
             makeToken( OP_LESSEQU, current, &index );
             break;
         default:
@@ -1552,12 +1552,12 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case GREATERTHAN:
+    case '>':
         switch( pString[index + 1] ) {
-        case GREATERTHAN:
+        case '>':
             makeToken( OP_SHIFT_RIGHT, current, &index );
             break;
-        case EQUAL:
+        case '=':
             makeToken( OP_GREATEREQU, current, &index );
             break;
         default:
@@ -1565,9 +1565,9 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case EQUAL:
+    case '=':
         switch( pString[index + 1] ) {
-        case EQUAL:
+        case '=':
             makeToken( OP_EQUAL, current, &index );
             break;
         default:
@@ -1575,10 +1575,10 @@ STATIC size_t ScanToken( const char *inString, TOKEN_TYPE *current )
             break;
         }
         break;
-    case DOUBLEQUOTE:
+    case '\"':
         makeStringToken( pString, current, &index );
         break;
-    case BRACKET_LEFT:
+    case '[':
         makeCmdToken( pString, current, &index );
         break;
     case '0':
