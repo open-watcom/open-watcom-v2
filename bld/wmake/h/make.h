@@ -40,18 +40,14 @@
 #include "massert.h"
 
 #define DOLLAR          '$'     /* macro introducer                          */
-// #define DOLLAR_S        "$"
 #define LINECONT        '&'     /* line continuation                         */
 #define UNIX_LINECONT   '\\'    /* UNIX line continuation                    */
 #define MS_LINECONT     '\\'    /* MS line continuation                      */
 #define COMMENT         '#'     /* beginning of comment                      */
 #define COLON           ':'     /* target, dependants seperator              */
-#define DOT             '.'     /* beginning of a suffix/extension           */
 #define BANG            '!'     /* preprocessor introducer                   */
 #define ENVVAR          '%'     /* %environment-var                          */
 #define SEMI            ';'     /* dependent/cmd seperator                   */
-#define L_CURL_PAREN    '{'
-#define R_CURL_PAREN    '}'
 
 #define NULLCHAR        '\0'
 

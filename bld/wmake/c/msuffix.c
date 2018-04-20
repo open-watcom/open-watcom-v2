@@ -127,19 +127,19 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 
     assert( name != NULL );
 
-    if( name[0] == DOT ) {
+    if( name[0] == '.' ) {
         ++name;
     }
 
     d = sufname;
     n = name;
-    while( *n != NULLCHAR && *n != DOT ) {
+    while( *n != NULLCHAR && *n != '.' ) {
         *d++ = *n++;
     }
     *d = NULLCHAR;
 
     if( p != NULL ) {
-        if( *n == DOT ) {
+        if( *n == '.' ) {
             *p = n;
         } else {
             *p = NULL;
@@ -165,7 +165,7 @@ SUFFIX *FindSuffix( const char *name )
 bool SufExists( const char *name )    /* with . */
 /********************************/
 {
-    assert( name != NULL && name[0] == DOT );
+    assert( name != NULL && name[0] == '.' );
 
     return( FindSuffix( name ) != NULL );
 }
@@ -181,7 +181,7 @@ STATIC void AddFrontSuffix( char const *name )
 {
     SUFFIX  *new;
 
-    assert( (name + 1) != NULL && name[0] == DOT && !SufExists( name ) );
+    assert( (name + 1) != NULL && name[0] == '.' && !SufExists( name ) );
 
     new = CallocSafe( sizeof( *new ) );
     new->node.name = FixName( StrDupSafe( name + 1 ) );
@@ -200,7 +200,7 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
 {
     char const  *ptr;
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
     if( findSuffixNode( sufsuf, &ptr ) == NULL ) {
         return( false );
@@ -229,8 +229,8 @@ void AddSuffix( const char *name )
 {
     SUFFIX  *new;
 
-    assert( ( name != NULL && name[0] == DOT && !SufExists( name ) ) ||
-            ( name != NULL && name[0] == DOT && SufExists( name ) &&
+    assert( ( name != NULL && name[0] == '.' && !SufExists( name ) ) ||
+            ( name != NULL && name[0] == '.' && SufExists( name ) &&
             Glob.compat_nmake ) );
 
     new = CallocSafe( sizeof( *new ) );
@@ -292,7 +292,7 @@ void SetSufPath( const char *name, const char *path )
 {
     SUFFIX      *suffix;
 
-    assert( name != NULL && name[0] == DOT );
+    assert( name != NULL && name[0] == '.' );
 
     suffix = FindSuffix( name );
 
@@ -360,7 +360,7 @@ char *AddCreator( const char *sufsuf )
     char        *cur_dep_path;
     char        buf[_MAX_PATH];
 
-    assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
+    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
 
     src = findSuffixNode( sufsuf, &ptr );
     dest = FindSuffix( ptr );

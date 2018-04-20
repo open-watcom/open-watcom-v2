@@ -50,14 +50,11 @@ extern char *dep_path;    /* Current sufsuf dependent path */
  * These are used as place holders while doing macro expansion, they are
  * assumed to not be in the input stream.
  */
-#define TMP_DOL_C           '\x01'  /* replace $ with this temporarily */
-#define TMP_DOL_S           "\x01"
-#define TMP_COMMENT_C       '\x02'  /* replace $# with this temporarily */
-#define TMP_COMMENT_S       "\x02"
+#define TMP_DOL             '\x01'  /* replace $ with this temporarily */
+#define TMP_COMMENT         '\x02'  /* replace $# with this temporarily */
 /* only good for microsoft option when doing partial deMacros     */
 /* for special macros            */
-#define SPECIAL_TMP_DOL_C   '\x03' /* replace $ with this temporarily */
-#define SPECIAL_TMP_DOL_S   "\x03"
+#define SPECIAL_TMP_DOL     '\x03' /* replace $ with this temporarily */
 
 /*
  * Is this a special microsoft character in a macro

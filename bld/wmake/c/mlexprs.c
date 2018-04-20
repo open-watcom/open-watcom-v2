@@ -231,7 +231,7 @@ STATIC TOKEN_T lexFileName( STRM_T s )
     unsigned    pos;
 
     assert( sisfilec( s ) || s == DOUBLEQUOTE ||
-       ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL_C ) );
+       ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL ) );
 
     if( s == DOUBLEQUOTE ) {
         return( lexLongFilePathName( s, TOK_FILENAME ) );
@@ -239,7 +239,7 @@ STATIC TOKEN_T lexFileName( STRM_T s )
 
     pos = 0;
     while( pos < _MAX_PATH && (sisfilec( s ) ||
-            ( s == SPECIAL_TMP_DOL_C && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
+            ( s == SPECIAL_TMP_DOL && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
         file[pos++] = s;
         s = PreGetCHR();
     }
@@ -285,7 +285,7 @@ STATIC bool checkDotName( const char *str )
     char        **key;
     char const  *ptr;
 
-    assert( str[0] == DOT );
+    assert( str[0] == '.' );
 
     ptr = str + 1;
     key = bsearch( &ptr, DotNames, DOT_MAX, sizeof( char * ), KWCompare );
@@ -314,8 +314,8 @@ STATIC char *getCurlPath( void )
 
     s = PreGetCHR();
 
-    if( s == L_CURL_PAREN ) {
-        for( s = PreGetCHR(); s != R_CURL_PAREN && s != '\n' && pos < _MAX_PATH; s = PreGetCHR() ) {
+    if( s == '{' ) {
+        for( s = PreGetCHR(); s != '}' && s != '\n' && pos < _MAX_PATH; s = PreGetCHR() ) {
             path[pos++] = s;
         }
         path[pos] = NULLCHAR;
@@ -370,11 +370,11 @@ STATIC TOKEN_T lexDotName( void )
     }
     dep_path = getCurlPath();
     s = PreGetCHR();
-    if( s != DOT ) {
+    if( s != '.' ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
         return( TOK_NULL );
     } else {
-        ext[pos++] = DOT;
+        ext[pos++] = '.';
         s = PreGetCHR();
     }
 
@@ -383,10 +383,10 @@ STATIC TOKEN_T lexDotName( void )
         if( *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
         }
-        return( lexFileName( DOT ) );
+        return( lexFileName( '.' ) );
     }
 
-    if( s == DOT ) {        /* check if ".."{extc} or ".."{dirc} */
+    if( s == '.' ) {        /* check if ".."{extc} or ".."{dirc} */
         s2 = PreGetCHR();    /* probe one character */
         UnGetCHR( s2 );
         if( sisdirc( s2 ) || IS_PATH_SPLIT( s2 ) ) {    // is ".."{dirc}
@@ -394,10 +394,10 @@ STATIC TOKEN_T lexDotName( void )
             if( *dep_path != NULLCHAR ) {
                 PrtMsg( ERR | LOC | INVALID_SUFSUF );
             }
-            return( lexFileName( DOT ) );
+            return( lexFileName( '.' ) );
         }
     } else {    /* get string {extc}+ */
-        while( pos < MAX_SUFFIX && sisextc( s ) && s != L_CURL_PAREN ) {
+        while( pos < MAX_SUFFIX && sisextc( s ) && s != '{' ) {
             ext[pos++] = s;
             s = PreGetCHR();
         }
@@ -415,7 +415,7 @@ STATIC TOKEN_T lexDotName( void )
 
     s = PreGetCHR();         /* next char */
 
-    if( s == DOT ) {        /* maybe of form "."{extc}*"."{extc}* */
+    if( s == '.' ) {        /* maybe of form "."{extc}*"."{extc}* */
         ext[pos++] = s;
         for( s = PreGetCHR(); pos < MAX_SUFFIX && sisextc( s ); s = PreGetCHR() ) {
             ext[pos++] = s;
@@ -539,7 +539,7 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
     s = PreGetCHR();
     UnGetCHR( s );
     if( s == '\n' || s == STRM_END || s == STRM_MAGIC ) {
-        return( StrDupSafe( "" ) );
+        return( CharToStrSafe( NULLCHAR ) );
     }
     if( s == STRM_TMP_LEX_START ) {
         PreGetCHR();  /* Eat STRM_TMP_LEX_START */
@@ -666,14 +666,14 @@ TOKEN_T LexParser( STRM_T s )
                 UnGetCHR( s );
                 p = DeMacroDoubleQuote( false );
             }
-            UnGetCHR( STRM_MAGIC );  /* mark spot we have to expand from nxt */
+            UnGetCHR( STRM_MAGIC ); /* mark spot we have to expand from nxt */
             InsString( p, true );   /* put expansion in stream */
             break;
         case ' ': /* fall through */
         case '\t':
             break;
-        case L_CURL_PAREN:          /* could only be a sufsuf */
-        case DOT:
+        case '{':                   /* could only be a sufsuf */
+        case '.':
             UnGetCHR( s );
             return( lexDotName() ); /* could be a file... */
         case SEMI:                  /* treat semi-colon as {nl}{ws} */
@@ -688,7 +688,7 @@ TOKEN_T LexParser( STRM_T s )
             return( TOK_SCOLON );
         default:
             if( sisfilec( s ) || s == DOUBLEQUOTE ||
-                ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL_C ) ) {
+                ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOL ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );

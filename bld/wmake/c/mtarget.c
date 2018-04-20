@@ -41,11 +41,15 @@
 #include "clibext.h"
 
 
+#define BEFORE_S        "BEFORE"
+#define AFTER_S         "AFTER"
+#define DEFAULT_S       "DEFAULT"
+
+#define HASH_PRIME      211
+#define CASESENSITIVE   false   // Is Target Name case sensitive
+
 /* just for people to copy in */
 const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
-
-#define HASH_PRIME    211
-#define CASESENSITIVE false  // Is Target Name case sensitive
 
 STATIC HASHTAB    *targTab;
 STATIC DEPEND     *freeDepends;
@@ -175,7 +179,7 @@ CLIST *DotCList( DotName dot )
     char                name[MAX_DOT_NAME];
     TARGET const        *cur;
 
-    name[0] = DOT;
+    name[0] = '.';
     FixName( strcpy( name + 1, DotNames[dot] ) );
 
     cur = FindTarget( name );
@@ -474,7 +478,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
         targ = NewTarget( name );
-        if( name[0] == DOT && cisextc( name[1] ) ) {
+        if( name[0] == '.' && cisextc( name[1] ) ) {
             targ->special = true;
             if( stricmp( name + 1, BEFORE_S ) == 0 ||
                 stricmp( name + 1, AFTER_S )  == 0 ) {

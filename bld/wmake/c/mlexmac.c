@@ -150,10 +150,10 @@ TOKEN_T LexMSDollar( STRM_T s )
     assert( sismsspecial( s ) );
 
     if( IsPartDeMacro || !DoingUpdate ) {
-        /* we need to use SPECIAL_TMP_DOL_C to prevent recursion
+        /* we need to use SPECIAL_TMP_DOL to prevent recursion
            from kicking in because recursion occurs when there are
            still dollars remaining */
-        temp[0] = SPECIAL_TMP_DOL_C;
+        temp[0] = SPECIAL_TMP_DOL;
         temp[1] = s;
         if( s == '*' ) {
             s = PreGetCHR();
@@ -307,7 +307,7 @@ TOKEN_T LexMacSubst( STRM_T s )
  */
 {
     switch( s ) {
-    case SPECIAL_TMP_DOL_C:
+    case SPECIAL_TMP_DOL:
     case DOLLAR:
         return( lexDollar() );
     case ')':

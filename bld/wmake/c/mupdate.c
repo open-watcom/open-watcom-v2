@@ -1063,7 +1063,7 @@ char *GetCurDeps( bool younger, bool isMacInf )
 
     if( (younger && cur.targ == NULL) ||
         cur.dep == NULL || cur.dep->targs == NULL ) {
-        return( StrDupSafe( "" ) );
+        return( CharToStrSafe( NULLCHAR ) );
     }
 
     vec = StartVec();

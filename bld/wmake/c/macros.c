@@ -118,10 +118,10 @@ static void massageDollarOctothorpe( char *p )
     for( ; *p != NULLCHAR; ++p ) {
         switch( *p ) {
         case '$':
-            *p = TMP_DOL_C;
+            *p = TMP_DOL;
             break;
         case '#':
-            *p = TMP_COMMENT_C;
+            *p = TMP_COMMENT;
             break;
         }
     }
@@ -637,7 +637,7 @@ char *DeMacroSpecial( const char *InString )
     outString = StartVec();
 
     for( p = InString; *p != NULLCHAR; ++p ) {
-        if( *p == SPECIAL_TMP_DOL_C ) {
+        if( *p == SPECIAL_TMP_DOL ) {
             CatNStrToVec( outString, old, p - old );
             pos = 0;
             UnGetCHR( STRM_MAGIC );
@@ -697,7 +697,6 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
  */
 {
     STRM_T      s;
-    char        temp_str[2];
     char        macname[MAX_TOK_SIZE];
     int         pos;
     char        *p;
@@ -717,11 +716,9 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         } else {
             s = PreGetCHR();
             if( sismacc( s ) ) {
-                temp_str[1] = NULLCHAR;
-                temp_str[0] = s;
-                p = StrDupSafe( temp_str );
+                p = CharToStrSafe( s );
             } else {
-                p = StrDupSafe( "" );
+                p = CharToStrSafe( NULLCHAR );
             }
         }
 
@@ -734,12 +731,12 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         break;
 
     case MAC_DOLLAR:
-        return( StrDupSafe( TMP_DOL_S ) );      /* write a place holder */
+        return( CharToStrSafe( TMP_DOL ) );         /* write a place holder */
 
     case MAC_COMMENT:
-        return( StrDupSafe( TMP_COMMENT_S ) );  /* write a place holder */
+        return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
 
-    case MAC_OPEN:                      /* recurse, get macro name */
+    case MAC_OPEN:                                  /* recurse, get macro name */
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
@@ -875,7 +872,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         if( t == MAC_CLOSE && end2 != MAC_CLOSE ) {
             t = MAC_PUNC;
-            CurAttr.u.ptr = StrDupSafe( ")" );
+            CurAttr.u.ptr = CharToStrSafe( ')' );
         }
 
         if(     t == TOK_END               /* always stops at these */
@@ -966,10 +963,10 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     if( !IsPartDeMacro ) {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case TMP_DOL_C:         *p = DOLLAR;    break;
-            case TMP_COMMENT_C:     *p = COMMENT;   break;
+            case TMP_DOL:       *p = DOLLAR;    break;
+            case TMP_COMMENT:   *p = COMMENT;   break;
 #if 0
-            case SPECIAL_TMP_DOL_C:
+            case SPECIAL_TMP_DOL:
                   if( Glob.compat_nmake ) {
                        if( cismsspecial( *(p + 1) ) ) {
                           *p = DOLLAR;
@@ -982,7 +979,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     } else {
         for( p = result; *p != NULLCHAR; ++p ) {
             switch( *p ) {
-            case SPECIAL_TMP_DOL_C: *p = DOLLAR;    break;
+            case SPECIAL_TMP_DOL: *p = DOLLAR;    break;
             }
         }
     }

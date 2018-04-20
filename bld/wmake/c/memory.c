@@ -430,6 +430,34 @@ char *StrDupSafe( const char *str )
 }
 
 
+char *CharToStrSafe( char c )
+/*****************************************
+ * returns: Pointer to a string with one character in a new block of memory.
+ * aborts:  If not enough memory to make a string.
+ */
+{
+    char    *p;
+
+#ifdef TRMEM
+    p = doAlloc( 2, _trmem_guess_who() );
+    if( p == NULL ) {
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
+        // never return
+    }
+    p[0] = c;
+    p[1] = '\0';
+#else
+    p = MallocSafe( 2 );
+    if( p != NULL ) {
+        p[0] = c;
+        p[1] = '\0';
+    }
+#endif
+    return( p );
+}
+
+
 void MemShrink( void )
 /***************************/
 {

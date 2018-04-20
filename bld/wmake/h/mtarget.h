@@ -47,10 +47,6 @@ typedef struct envStruct    ELIST;
 typedef struct fileList     NKLIST;
 typedef struct sufsufList   SLIST;
 
-#define BEFORE_S   "BEFORE"
-#define AFTER_S    "AFTER"
-#define DEFAULT_S  "DEFAULT"
-
 /*
  *  Attributes which are placed on the right hand side of a targ : dep line,
  *  and also may be passed in implicit rules.
