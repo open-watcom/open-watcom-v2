@@ -80,7 +80,7 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
 
 bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
 {
-    if( (wnd->style & GUI_CURSOR) == 0 | ( cursor == NULL ) ) {
+    if( (wnd->style & GUI_CURSOR) == 0 || ( cursor == NULL ) ) {
         return( false );
     }
     switch( wnd->screen.cursor ) {
