@@ -121,7 +121,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }
-        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC && !( app_type & FAPPTYP_DOS ) ) {
+        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC && (app_type & FAPPTYP_DOS) == 0 ) {
             /* type of program not specified in executable file */
             use_exec_pgm = 1;
         } else {
@@ -129,7 +129,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             if( rc != 0 ) {
                 return( __set_errno_dos( rc ) );
             }
-            if( !( app_type & FAPPTYP_DOS ) ) {
+            if( (app_type & FAPPTYP_DOS) == 0 ) {
                 app_type &= FAPPTYP_EXETYPE;
                 if( (ppib->pib_ultype == FS_SESSION)
                  || (ppib->pib_ultype == DETACH_SESSION) ) {
@@ -209,7 +209,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
         if( rc != 0 ) {
             app_type = 0x00;  // Works around a prob in the NT OS/2 subsystem
         }
-        if( ( app_type & 0x03 ) == 0 || ( app_type & 0x20 ) ) {
+        if( (app_type & 0x03) == 0 || (app_type & 0x20) ) {
             /* type of program not specified, or is a DOS app */
             use_exec_pgm = 1;
         } else {
@@ -218,13 +218,13 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 return( __set_errno_dos( rc ) );
             }
             local = (LINFOSEG _WCFAR *) (slocal:>0);
-            if( !( app_type & 0x20 ) ) {
+            if( (app_type & 0x20) == 0 ) {
                 app_type &= 0x03;
                 if( local->typeProcess == FS_SESSION ) {
                     if( (app_type == FS_SESSION) || (app_type == PMC_SESSION) ){
                         use_exec_pgm = 1;
                     }
-                } else if( local->typeProcess == app_type & 0x03 ) {
+                } else if( local->typeProcess == (app_type & 0x03) ) {
                     use_exec_pgm = 1;
                 }
             }
@@ -237,11 +237,11 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 // merge argv[0] & argv[1]
                 cmdline[ strlen( cmdline ) ] = ' ';
                 len = strlen( cmdline ) + 8;
-                #if defined( __BIG_DATA__ )
-                    np = lib_fmalloc( len );
-                #else
-                    np = lib_nmalloc( len );
-                #endif
+    #if defined( __BIG_DATA__ )
+                np = lib_fmalloc( len );
+    #else
+                np = lib_nmalloc( len );
+    #endif
                 if( np == NULL ) {
                     np = (char *)alloca( len );
                     if( np == NULL ) {
@@ -257,29 +257,30 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             rc = DosExecPgm( NULL, 0, exec_flag,
                              cmdline, envp, &returncodes, pgm );
             if( app_type & 0x20 ) { // cleanup: DOS app only
-                #if defined( __BIG_DATA__ )
-                    lib_ffree( cmdline );
-                #else
-                    lib_nfree( cmdline );
-                #endif
+    #if defined( __BIG_DATA__ )
+                lib_ffree( cmdline );
+    #else
+                lib_nfree( cmdline );
+    #endif
             }
         } else {
             termq = 0;
-            related = 0; //SSF_RELATED_INDEPENDENT;
+            related = 0;        //SSF_RELATED_INDEPENDENT;
             makeqname( queuename, local->pidCurrent, local->tidCurrent );
             if( mode == P_WAIT ) {
                 rc = DosCreateQueue( &termq, 0, queuename );
                 if( rc != 0 ) {
                     return( __set_errno_dos( rc ) );
                 }
-                related = 1; //SSF_RELATED_CHILD;
+                related = 1;    //SSF_RELATED_CHILD;
             }
             sd.Length = 30;
             sd.Related = related;
             sd.FgBg = 0;
             sd.TraceOpt = 0;
             sd.PgmTitle = NULL;
-            while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
+            while( *cmdline != '\0' )
+                ++cmdline;      // don't need argv[0]
             ++cmdline;
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
