@@ -48,8 +48,10 @@
 
 
 UINT16          inlineLevel;
+
 STATIC TLIST    *firstTarget;   /* first set of targets parsed this invocation */
 
+static const TATTR FalseAttr = { false, false, false, false, false, false, false, false };
 
 STATIC void ignoring( TOKEN_T t, bool freelex )
 /**********************************************
@@ -103,7 +105,7 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
 
     for( ;; ) {                     /* read till SCOLON or DCOLON */
         switch( t ) {
-        case TOK_SCOLON:            /* fall through */
+        case TOK_SCOLON:
         case TOK_DCOLON:
         case TOK_EOL:
         case TOK_END:
@@ -134,7 +136,6 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
             ignoring( t, true );
             break;
         }
-
         t = LexToken( LEX_PARSER ); /* get next token */
     }
 }
@@ -262,7 +263,6 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
 
     for( ;; ) {
         t = LexToken( LEX_PARSER );
-
         if( t == TOK_EOL || t == TOK_END ) {
             break;
         }
@@ -280,11 +280,11 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
                 pattr->precious = true;
                 break;
             case DOT_MULTIPLE:
-                pattr->multi= true;
+                pattr->multi = true;
                 break;
             case DOT_PROCEDURE:
-                pattr->multi= true;
-                // fall through
+                pattr->multi = true;
+                /* fall through */
             case DOT_SYMBOLIC:
                 pattr->symbolic = true;
                 break;
@@ -304,8 +304,8 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
             break;
         case TOK_FILENAME:
             WildTList( list, CurAttr.u.ptr, true, false );
-            FreeSafe( CurAttr.u.ptr );        /* not needed any more */
-            while( *list != NULL ) {        /* find tail again */
+            FreeSafe( CurAttr.u.ptr );  /* not needed any more */
+            while( *list != NULL ) {    /* find tail again */
                 list = &(*list)->next;
             }
             break;

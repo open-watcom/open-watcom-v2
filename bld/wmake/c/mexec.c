@@ -1892,7 +1892,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_IF:    my_ret = handleIf( cmd );           break;
         case COM_RM:    my_ret = handleRM( cmd );           break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
-        case COM_CD:    /* fall through */
+        case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
 #endif
 #if defined( __OS2__ ) || defined( __NT__ )

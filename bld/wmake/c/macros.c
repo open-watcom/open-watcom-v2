@@ -149,19 +149,15 @@ const char *procPath( const char *fullpath )
     case FORM_FULL:
         _makepath( dirBuf, pg.drive, pg.dir, pg.fname, pg.ext );
         break;
-
     case FORM_NOEXT:
         _makepath( dirBuf, pg.drive, pg.dir, pg.fname, NULL );
         break;
-
     case FORM_NOEXT_NOPATH:
         _makepath( dirBuf, NULL, NULL, pg.fname, NULL );
         break;
-
     case FORM_NOPATH:
         _makepath( dirBuf, NULL, NULL, pg.fname, pg.ext );
         break;
-
     case FORM_PATH:
         _makepath( dirBuf, pg.drive, pg.dir, NULL, NULL );
         if( Glob.compat_nmake ) {
@@ -179,7 +175,6 @@ const char *procPath( const char *fullpath )
             }
         }
         break;
-
     case FORM_EXT:
         _makepath( dirBuf, NULL, NULL, NULL, pg.ext );
         break;
@@ -729,14 +724,12 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         }
         FreeSafe( p );
         break;
-
     case MAC_DOLLAR:
         return( CharToStrSafe( TMP_DOLLAR ) );      /* write a place holder */
-
     case MAC_COMMENT:
         return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
-
-    case MAC_OPEN:                                  /* recurse, get macro name */
+    case MAC_OPEN:
+        /* recurse, get macro name */
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
@@ -784,13 +777,11 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
             }
         }
         break;
-
-    case MAC_EXPAND_ON:                 /* fall through */
+    case MAC_EXPAND_ON:
     case MAC_EXPAND_OFF:
         /* do nothing */
         break;
-
-    case MAC_CUR:                       /* fall through */
+    case MAC_CUR:
     case MAC_FIRST:
     case MAC_LAST:
         /* static pointer returned so we need to duplicate string */
@@ -799,29 +790,24 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
             return( StrDupSafe( cp2 ) );
         }
         return( NULL );
-
     case MAC_ALL_DEP:
         p = GetCurDeps( false, false );
         massageDollarOctothorpe( p );
         return( p );
-
     case MAC_INF_DEP:
         p = GetCurDeps( false, true );
         massageDollarOctothorpe( p );
         return( p );
-
     case MAC_YOUNG_DEP:
         p = GetCurDeps( true, false );
         massageDollarOctothorpe( p );
         return( p );
-
-    case MAC_NAME:                      /* fall through */
+    case MAC_NAME:
     case MAC_WS:
     case MAC_PUNC:
         p = CurAttr.u.ptr;
         CurAttr.u.ptr  = NULL;
         return( p );
-
     default:
 #ifdef DEVELOPMENT
         PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
@@ -898,7 +884,7 @@ STATIC char *deMacroToEnd( int depth, TOKEN_T end1, TOKEN_T end2 )
     case MAC_WS:
         InsString( CurAttr.u.ptr, true );
         break;
-    case TOK_EOL:       /* fall through */
+    case TOK_EOL:
         UnGetCHR( '\n' );
         break;
     case TOK_END:
@@ -1081,7 +1067,8 @@ STATIC char *PartDeMacroProcess( void )
 
     while( ( t = LexToken( LEX_MAC_DEF ) ) != TOK_END && t != TOK_EOL ) {
         switch( t ) {
-        case TOK_MAGIC:        /* we ignore these */
+        case TOK_MAGIC:
+            /* do nothing */
             break;
         case MAC_EXPAND_ON:
             text = deMacroText( 0, TOK_EOL, MAC_EXPAND_OFF );

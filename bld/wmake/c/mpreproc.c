@@ -1086,7 +1086,7 @@ STRM_T PreGetCHR( void )
         }
 
         if( s == STRM_END ) {
-            curNest.skip = false;       /* so we don't skip a later file */
+            curNest.skip = false;   /* so we don't skip a later file */
             curNest.skip2endif = false;
 
             atStartOfLine = '\n';   /* reset preprocessor */
@@ -1094,8 +1094,8 @@ STRM_T PreGetCHR( void )
             return( s );
         }
 
-        if( inlineLevel > 0 ) {   // We are currently defining an inline file
-            lastChar = s;         // ignore all special characters ie {nl}
+        if( inlineLevel > 0 ) {     // We are currently defining an inline file
+            lastChar = s;           // ignore all special characters ie {nl}
             if( skip ) {
                 s = GetCHR();
                 continue;
@@ -1300,10 +1300,10 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *
             break;
         }
         switch( inString[inIndex] ) {
-        // error did not find closing quotation
-        case NULLCHAR :
+        case NULLCHAR:
         case '\n':
         case COMMENT_C:
+            /* error did not find closing quotation */
             current->type = OP_ERROR;
             break;
         default:
@@ -1448,10 +1448,10 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *ind
             break;
         }
         switch( inString[inIndex] ) {
-        // error did not find closing quotation
         case NULLCHAR :
         case '\n':
         case COMMENT_C:
+            // error did not find closing quotation
             current->type = OP_ERROR;
             break;
         default:

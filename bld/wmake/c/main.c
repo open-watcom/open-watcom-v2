@@ -176,15 +176,15 @@ STATIC void handleMacroDefn( const char *buf )
     if( Glob.compat_nmake ) {
         /* Insert twice because in nmake declaring a macro in the command line */
         /* is equivalent to declaring one as is and one that is all upper case */
-        /* Approximately so. we cater for foo meaning FOO but not FoO W.Briscoe 20031114 */
-        /* This is no problem! In make, foo=bar only sets foo and FOO W.Briscoe 20041014 */
+        /* Approximately so. we cater for foo meaning FOO but not FoO */
+        /* This is no problem! In make, foo=bar only sets foo and FOO */
         while( --p >= q ) {
             *p = ctoupper( *p );
         }
 
         InsString( q, false );     /* put arg into stream */
         while( LexToken( LEX_PARSER ) != TOK_END ) {
-            /* NOP - eat the characters. Needs own eater. W.Briscoe 20041014 */
+            /* NOP - eat the characters. Needs own eater. */
         }
     }
     FreeSafe( q );
@@ -252,31 +252,31 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     Usage();
                     // never return
                     break;
-                case 'a':   Glob.all       = true;  break;
-                case 'b':   Glob.block     = true;  break;
-                case 'c':   Glob.nocheck   = true;  break;
-                case 'd':   Glob.debug     = true;  break;
-                case 'e':   Glob.erase     = true;  break;
-                case 'h':   Glob.noheader  = true;  break;
-                case 'i':   Glob.ignore    = true;  break;
-                case 'j':   Glob.rcs_make  = true;  break;
-                case 'k':   Glob.cont      = true;  break;
-                case 'm':   Glob.nomakeinit= true;  break;
-                case 'n':   Glob.noexec    = true;  break;
-                case 'o':   Glob.optimize  = true;  break;
-                case 'p':   Glob.print     = true;  break;
-                case 'q':   Glob.query     = true;  break;
-                case 'r':   Glob.overide   = true;  break;
-                case 's':   Glob.silent    = true;  break;
-                case 't':   Glob.touch     = true;  break;
-                case 'u':   Glob.compat_unix= true;  break;
-                case 'v':   Glob.verbose   = true;  break;
-                case 'w':   Glob.auto_depends = true;break;
+                case 'a':   Glob.all            = true; break;
+                case 'b':   Glob.block          = true; break;
+                case 'c':   Glob.nocheck        = true; break;
+                case 'd':   Glob.debug          = true; break;
+                case 'e':   Glob.erase          = true; break;
+                case 'h':   Glob.noheader       = true; break;
+                case 'i':   Glob.ignore         = true; break;
+                case 'j':   Glob.rcs_make       = true; break;
+                case 'k':   Glob.cont           = true; break;
+                case 'm':   Glob.nomakeinit     = true; break;
+                case 'n':   Glob.noexec         = true; break;
+                case 'o':   Glob.optimize       = true; break;
+                case 'p':   Glob.print          = true; break;
+                case 'q':   Glob.query          = true; break;
+                case 'r':   Glob.overide        = true; break;
+                case 's':   Glob.silent         = true; break;
+                case 't':   Glob.touch          = true; break;
+                case 'u':   Glob.compat_unix    = true; break;
+                case 'v':   Glob.verbose        = true; break;
+                case 'w':   Glob.auto_depends   = true; break;
 #ifdef CACHE_STATS
-                case 'x':   Glob.cachestat = true;  break;
+                case 'x':   Glob.cachestat      = true; break;
 #endif
                 case 'y':   Glob.show_offenders = true; break;
-                case 'z':   Glob.hold      = true;  break;
+                case 'z':   Glob.hold           = true; break;
                     /* these options require a filename */
                 case 'f':
                 case 'l':

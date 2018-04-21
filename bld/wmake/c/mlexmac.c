@@ -274,11 +274,12 @@ STATIC TOKEN_T lexSubString( STRM_T s )
 
         s = PreGetCHR();
         switch( s ) {
-        case '\n':               /* always stop on these characters */
+        case '\n':
         case STRM_END:
         case STRM_MAGIC:
         case ')':
         case '$':
+            /* always stop on these characters */
             done = true;
             break;
         default:

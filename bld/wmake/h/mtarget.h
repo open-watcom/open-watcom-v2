@@ -173,8 +173,6 @@ struct sufsufList {
 };
 
 
-extern const TATTR  FalseAttr;
-
 extern void     TargetInit( void );
 extern void     TargetFini( void );
 

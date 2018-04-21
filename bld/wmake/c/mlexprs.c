@@ -413,7 +413,7 @@ STATIC TOKEN_T lexDotName( void )
 
     targ_path = getCurlPath();
 
-    s = PreGetCHR();         /* next char */
+    s = PreGetCHR();        /* next char */
 
     if( s == '.' ) {        /* maybe of form "."{extc}*"."{extc}* */
         ext[pos++] = s;
@@ -505,7 +505,6 @@ STATIC bool checkMacro( STRM_T s )
         UnGetCHR( s );
         s = '+';
     }
-
 
     UnGetCHR( s );           /* not a macro line, put everything back*/
     if( ws ) {
@@ -651,7 +650,7 @@ TOKEN_T LexParser( STRM_T s )
             p = DeMacroDoubleQuote( false );  /* expand to next white space */
             if( *p == NULLCHAR ) {  /* already at ws */
                 FreeSafe( p );
-                s = PreGetCHR();     /* eat the ws */
+                s = PreGetCHR();    /* eat the ws */
                 while( sisws( s ) ) {
                     s = PreGetCHR();
                 }
@@ -669,7 +668,7 @@ TOKEN_T LexParser( STRM_T s )
             UnGetCHR( STRM_MAGIC ); /* mark spot we have to expand from nxt */
             InsString( p, true );   /* put expansion in stream */
             break;
-        case ' ': /* fall through */
+        case ' ':
         case '\t':
             break;
         case '{':                   /* could only be a sufsuf */

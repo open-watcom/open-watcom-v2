@@ -100,7 +100,7 @@ void LexMaybeFree( TOKEN_T tok )
  *          FreeSafes the region if tok is one of these token types.
  */
 {
-    switch( tok ) {         /* fall through intentional */
+    switch( tok ) {
     case TOK_FILENAME:
     case TOK_CMD:
     case TOK_SUF:
