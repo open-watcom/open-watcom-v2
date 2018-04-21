@@ -751,7 +751,7 @@ void ExpOp::print                       // PRINT A TREE
                         top._edge = edge_call;
                     } else if( type & PRT_ARG ) {
                         top._edge = edge_none;
-                        if( ! type & PRT_AFTER_LEFT ) {
+                        if( (type & PRT_AFTER_LEFT) == 0 ) {
                             ((&top)-1)->_edge = edge_left_prt;
                         }
                     } else {
@@ -795,7 +795,8 @@ void ExpOp::print                       // PRINT A TREE
             }
           case NS_DONE :
             _pstk.pop();
-            if( _pstk.empty() ) break;
+            if( _pstk.empty() )
+                break;
             continue;
         }
         break;
