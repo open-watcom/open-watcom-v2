@@ -61,7 +61,7 @@ BOOL CTreeCtrl::GetCheck( HTREEITEM hItem ) const
     tvi.hItem = hItem;
     tvi.stateMask = TVIS_STATEIMAGEMASK;
     ::SendMessage( m_hWnd, TVM_GETITEM, 0, (LPARAM)&tvi );
-    return( tvi.state & TVIS_STATEIMAGEMASK == INDEXTOSTATEIMAGEMASK( 2 ) );
+    return( (tvi.state & TVIS_STATEIMAGEMASK) == INDEXTOSTATEIMAGEMASK( 2 ) );
 }
 
 DWORD_PTR CTreeCtrl::GetItemData( HTREEITEM hItem ) const
