@@ -257,7 +257,7 @@ byte    HasZero( score *sc, name *n )
     if( n->n.class == N_CONSTANT ) {
         if( n->c.const_type == CONS_ABSOLUTE ) {
             if( n->c.lo.int_value == 0 ) {
-                bits = LO_HALF | HI_HALF;
+                bits |= LO_HALF | HI_HALF;
             } else if( n->n.size == 2 ) {
                 if( ( n->c.lo.int_value & 0x00ff ) == 0 ) {
                     bits |= LO_HALF;

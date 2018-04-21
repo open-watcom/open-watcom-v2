@@ -332,7 +332,7 @@ static  void    RestoreMem16Move( instruction *ins )
     } else {
         return;
     }
-    if( ( other->ins_flags & INS_SPLIT ) == EMPTY )
+    if( (other->ins_flags & INS_SPLIT) == 0 )
         return;
     if( ins->result->n.class == N_REGISTER && other->result->n.class == N_REGISTER ) {
         full = HW_EMPTY;

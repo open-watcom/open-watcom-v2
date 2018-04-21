@@ -110,7 +110,7 @@ type_length     AdjustBase( void ) {
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != last_location &&
             temp->t.v.alt_location != NO_LOCATION ) {
-            bp = ( temp->t.v.alt_location-(MAX_SHORT_POS-1) ) & ~1;
+            bp = ( temp->t.v.alt_location - ( MAX_SHORT_POS - 1 ) ) & ~1;
             savings = CalcBaseSave( bp, temp );
             if( savings > best_savings ) {
                 best_bp = bp;

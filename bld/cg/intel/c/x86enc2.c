@@ -393,7 +393,7 @@ void    GenCall( instruction *ins ) {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
             lbl = FEBack( sym )->lbl;
-            imp = (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0;
+            imp = ( (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0 );
         } else {
             // handles mismatch Fix it!
             lbl = (label_handle)sym;
@@ -448,7 +448,7 @@ void    GenRCall( instruction *ins )
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    ReFormat( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ? OC_CALLI | ATTR_POP : OC_CALLI );
+    ReFormat( ( (ins->flags.call_flags & CALL_POPS_PARMS) != 0 ) ? OC_CALLI | ATTR_POP : OC_CALLI );
     LayOpword( M_CJINEAR );
     op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );

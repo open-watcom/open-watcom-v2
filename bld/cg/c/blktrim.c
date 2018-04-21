@@ -134,7 +134,7 @@ void    RemoveBlock( block *blk )
     for( i = 0; i < blk->targets; ++i ) {
         /* block may have already been removed by dead code removal*/
         if( FindBlock( blk->edge[i].destination.u.blk ) ) {
-            RemoveInputEdge( & blk->edge[i] );
+            RemoveInputEdge( &blk->edge[i] );
         }
     }
     last_line = blk->ins.hd.line_num;
@@ -384,7 +384,7 @@ static  bool    DoBlockTrim( void )
                 target = blk->edge[0].destination.u.blk;
                 if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
                     for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
-                        if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) {
+                        if( ins->flags.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
                         }
                     }

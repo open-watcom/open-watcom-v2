@@ -222,7 +222,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         if( OptForSize > 50 )
             return( true );
         break;
-    case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility)*/
+    case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility) */
         if( !_CPULevel( CPU_286 ) && ins->type_class != U1 && ins->type_class != U2 )
             return( true );
         break;

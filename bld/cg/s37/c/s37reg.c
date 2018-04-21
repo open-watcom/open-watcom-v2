@@ -102,7 +102,7 @@ static  void    SetLinkage( aux_handle aux, call_state *state ) {
     regs->RA = RegTrans( linkage->ra );
     regs->PR = RegTrans( linkage->pr );
     regs->SA = RegTrans( linkage->sa );
-    if( !( state->attr & ROUTINE_OS ) ) {
+    if( (state->attr & ROUTINE_OS) == 0 ) {
         regs->SA = 16;
         regs->PR = 17;
     }
@@ -193,7 +193,7 @@ extern  hw_reg_set      CallZap( call_state *state ) {
     hw_reg_set  tmp;
 
     zap = state->modify;
-    if( ( state->attr & ROUTINE_MODIFY_EXACT ) == EMPTY ) {
+    if( (state->attr & ROUTINE_MODIFY_EXACT) == 0 ) {
         HW_TurnOn( zap, state->parm.used );
         HW_TurnOn( zap, state->return_reg );
     }

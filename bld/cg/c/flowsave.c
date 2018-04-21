@@ -46,6 +46,14 @@
 #include "utils.h"
 
 
+typedef struct {
+    hw_reg_set          reg;                    // actual register bit
+    dom_bit_set         dom_usage;              // dominator set for all uses/references
+    dom_bit_set         post_dom_usage;         // post-dominator "
+    block               *save;                  // block we have picked to save reg in
+    block               *restore;               // ditto for restore
+} reg_flow_info;
+
 extern  hw_reg_set      PushRegs[];
 
 static  block           *blockArray[_DBit_SIZE];
@@ -221,14 +229,6 @@ static int CountDomBits( dom_bit_set *dbits )
     return( bitCount );
 }
 
-typedef struct {
-    hw_reg_set          reg;                    // actual register bit
-    dom_bit_set         dom_usage;              // dominator set for all uses/references
-    dom_bit_set         post_dom_usage;         // post-dominator "
-    block               *save;                  // block we have picked to save reg in
-    block               *restore;               // ditto for restore
-} reg_flow_info;
-
 static void GetRegUsage( reg_flow_info *info )
 /********************************************/
 {
@@ -322,14 +322,15 @@ void FlowSave( hw_reg_set *preg )
     InitBlockArray();
     curr_push = PushRegs;
     for( curr_reg = 0; curr_reg < num_regs; curr_reg++ ) {
-        while( !HW_Ovlap( *curr_push, *preg ) ) curr_push++;
+        while( !HW_Ovlap( *curr_push, *preg ) )
+            curr_push++;
         HW_Asgn( reg_info[curr_reg].reg, *curr_push );
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
-    #if _TARGET & _TARG_INTEL
+#if _TARGET & _TARG_INTEL
         if( HW_COvlap( *curr_push, HW_BP ) )
             continue;  // don't mess with BP - it's magical
-    #endif
+#endif
         GetRegUsage( &reg_info[curr_reg] );
         best = 0;
         for( i = 0; i < num_blocks; i++ ) {
@@ -357,11 +358,11 @@ void FlowSave( hw_reg_set *preg )
         restore = reg_info[curr_reg].restore;
         if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
             reg_type = WD;
-        #if _TARGET & _TARG_INTEL
+#if _TARGET & _TARG_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {
                 reg_type = U2;
             }
-        #endif
+#endif
             ins = MakeUnary( OP_PUSH, AllocRegName( reg_info[curr_reg].reg ), NULL, reg_type );
             ResetGenEntry( ins );
             PrefixIns( save->ins.hd.next, ins );

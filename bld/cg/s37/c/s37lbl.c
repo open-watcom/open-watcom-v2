@@ -302,7 +302,7 @@ static void AddHWLabel( label_struct  *lbl ){
         if( attr & ( FE_IMPORT | FE_GLOBAL ) ) { /* 90-05-22 */
             Copy8( FEName( sym ), buff );
             hwlabel = HWFRefSym( buff );
-            hwlabel->class = attr & FE_IMPORT ? HW_EXTERN : HW_ENTRY;
+            hwlabel->class = ( attr & FE_IMPORT ) ? HW_EXTERN : HW_ENTRY;
         } else { /* local sym */
             hwlabel = HWSymHandle();
         }

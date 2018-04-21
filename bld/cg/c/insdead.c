@@ -58,7 +58,7 @@ static  void    InitVisitedTemps( void )
         op->t.temp_flags &= ~VISITED;
     }
     for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
-        if( op->v.usage & (USE_ADDRESS|VAR_VOLATILE) ) {
+        if( op->v.usage & (USE_ADDRESS | VAR_VOLATILE) ) {
             alias = op;
             do {
                 alias->t.temp_flags |= VISITED;
@@ -180,7 +180,7 @@ extern  bool            SideEffect(instruction* ins)
         return( true );
     if( ins->head.opcode == OP_POP )
         return( true );
-    if( ins->ins_flags & INS_CC_USED
+    if( (ins->ins_flags & INS_CC_USED)
       && ins->head.opcode != OP_MOV )
         return( true );
     if( FPSideEffect( ins ) )

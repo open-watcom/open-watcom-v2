@@ -97,7 +97,7 @@ extern  dbg_type DBScalar( char *nm, cg_type tipe ){
             new->common.class = CDEBUG_TYPE_FLOAT;
         } else {
             new->common.class = CDEBUG_TYPE_INTEGER;
-            new->sign =  tipe_addr->attr & TYPE_SIGNED ? -1 : 0;
+            new->sign = ( tipe_addr->attr & TYPE_SIGNED ) ? -1 : 0;
         }
     }
     tnum = AddType( new );

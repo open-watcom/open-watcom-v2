@@ -106,8 +106,7 @@ static void addAutoLocn( sym s, cg_type type )
     curr->offset = next_auto_offset;
     curr->next = auto_locations;
     auto_locations = curr;
-    next_auto_offset += ( BETypeLength( type ) + AUTO_PACK - 1 )
-                      & ( - AUTO_PACK );
+    next_auto_offset += _RoundUp( BETypeLength( type ), AUTO_PACK );
 }
 
 
@@ -318,18 +317,30 @@ extern  void    Attrs( sym s ) {
     fe_attr     a;
     Action( "\n----" );
     a = FEAttr( s );
-    if( a & FE_PROC ) Action( " FE_PROC" );
-    if( a & FE_STATIC ) Action( " FE_STATIC" );
-    if( a & FE_GLOBAL ) Action( " FE_GLOBAL" );
-    if( a & FE_IMPORT ) Action( " FE_IMPORT" );
-    if( a & FE_CONSTANT ) Action( " FE_CONSTANT" );
-    if( a & FE_MEMORY ) Action( " FE_MEMORY" );
-    if( a & FE_VISIBLE ) Action( " FE_VISIBLE" );
-    if( a & FE_NOALIAS ) Action( " FE_NOALIAS" );
-    if( a & FE_UNIQUE ) Action( " FE_UNIQUE" );
-    if( a & FE_COMMON ) Action( " FE_COMMON" );
-    if( a & FE_ADDR_TAKEN ) Action( " FE_ADDR_TAKEN" );
-    if( a & FE_VOLATILE ) Action( " FE_VOLATILE" );
+    if( a & FE_PROC )
+        Action( " FE_PROC" );
+    if( a & FE_STATIC )
+        Action( " FE_STATIC" );
+    if( a & FE_GLOBAL )
+        Action( " FE_GLOBAL" );
+    if( a & FE_IMPORT )
+        Action( " FE_IMPORT" );
+    if( a & FE_CONSTANT )
+        Action( " FE_CONSTANT" );
+    if( a & FE_MEMORY )
+        Action( " FE_MEMORY" );
+    if( a & FE_VISIBLE )
+        Action( " FE_VISIBLE" );
+    if( a & FE_NOALIAS )
+        Action( " FE_NOALIAS" );
+    if( a & FE_UNIQUE )
+        Action( " FE_UNIQUE" );
+    if( a & FE_COMMON )
+        Action( " FE_COMMON" );
+    if( a & FE_ADDR_TAKEN )
+        Action( " FE_ADDR_TAKEN" );
+    if( a & FE_VOLATILE )
+        Action( " FE_VOLATILE" );
     Action( " seg id %d%n", FESegID( s ) );
 }
 
@@ -337,15 +348,24 @@ extern  void    DumpCClass( call_class c ) {
 /******************************************/
 
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-    if( c & FAR_CALL ) Action( "FAR " );
-    if( c & ROUTINE_RETURN ) Action( "ROUTINE_RETURN " );
-    if( c & SPECIAL_RETURN ) Action( "SPECIAL_RETURN " );
+    if( c & FAR_CALL )
+        Action( "FAR " );
+    if( c & ROUTINE_RETURN )
+        Action( "ROUTINE_RETURN " );
+    if( c & SPECIAL_RETURN )
+        Action( "SPECIAL_RETURN " );
 #endif
-    if( c & CALLER_POPS ) Action( "CALLER_POPS " );
-    if( c & NO_MEMORY_CHANGED ) Action( "NO_MEMORY_CHANGED " );
-    if( c & NO_MEMORY_READ ) Action( "NO_MEMORY_READ " );
-    if( c & SUICIDAL ) Action( "SUICIDAL " );
-    if( c & NORETURN ) Action( "NORETURN " );
+    if( c & CALLER_POPS )
+        Action( "CALLER_POPS " );
+    if( c & NO_MEMORY_CHANGED )
+        Action( "NO_MEMORY_CHANGED " );
+    if( c & NO_MEMORY_READ )
+        Action( "NO_MEMORY_READ " );
+    if( c & SUICIDAL )
+        Action( "SUICIDAL " );
+    if( c & NORETURN ) {
+        Action( "NORETURN " );
+    }
 }
 
 extern  void    CClass( sym  s ) {

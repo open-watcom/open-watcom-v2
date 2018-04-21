@@ -142,7 +142,7 @@ static  void    EndSym( cv_out *out )
     ptr = out->ptr;
     len = ptr - out->beg;
 #if CVSIZE == 32
-    while( (len & CV_ALIGN-1)  != 0 ) {
+    while( (len & ( CV_ALIGN - 1 )) != 0 ) {
         *ptr = '\0';
         ++len;
         ++ptr;
@@ -156,7 +156,7 @@ void    CVInitDbgInfo( void )
 /***************************/
 /* called after ObjInit */
 {
-    TypeIdx   = CV_FIRST_USER_TYPE-1;
+    TypeIdx   = CV_FIRST_USER_TYPE - 1;
 }
 
 #define MAX_LANG 4

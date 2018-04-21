@@ -99,7 +99,7 @@ extern  void    DBModSym( sym_handle sym, cg_type indirect ) {
 
     indirect = indirect;
     attr = FEAttr( sym );
-    if( (attr & FE_IMPORT) == 0 && attr & FE_PROC ) {
+    if( (attr & FE_IMPORT) == 0 && (attr & FE_PROC) ) {
         BegProcDef();
     }else{
         DBModObj( sym, attr );
@@ -133,7 +133,7 @@ static  void    DBModObj( sym_handle sym, fe_attr attr ) {
     new->common.attr = attr;
     label =  AskForSymLabel( sym, CG_FE );
     new->common.label =  label;
-    if (attr & FE_IMPORT) {
+    if( attr & FE_IMPORT ) {
         id = SetOP( DBG_SEG ); /* stupid segments */
         new->def = GetanAddr( label, MemNeedsReloc(sym, CG_FE) );
         SetOP( id ); /* stupid segments */
@@ -180,7 +180,7 @@ extern  void    DBLocalSym( sym_handle sym, cg_type indirect ) {
             new->sym = sym;
             new->where.class = LOC_STACK;
             temp = DeAlias( AllocUserTemp( sym, XX ) );
-            temp->v.usage |= VAR_VOLATILE+NEEDS_MEMORY+USE_IN_ANOTHER_BLOCK+USE_ADDRESS;
+            temp->v.usage |= VAR_VOLATILE | NEEDS_MEMORY | USE_IN_ANOTHER_BLOCK | USE_ADDRESS;
             new->where.where = temp;
         }
     }
@@ -346,7 +346,7 @@ static bool  GetLocAddr( cdebug_local *new, dbg_local *loc ){
         new->acc = LACC_REG;
         new->base = hwop.r;
     }
-    return( var->n.class == N_TEMP && var->t.temp_flags & STACK_PARM );
+    return( var->n.class == N_TEMP && (var->t.temp_flags & STACK_PARM) );
 }
 
 static void AddSym( cdebug_sym_any *new ) {
@@ -445,7 +445,7 @@ static void YTags( handle dbgfile, cdebug_sym_any *list, int index ) {
     refno = 0;
     while( list != NULL ) {
         attr = list->common.attr;
-        if (attr & FE_IMPORT) {
+        if( attr & FE_IMPORT ) {
             if( attr & FE_PROC ){
                 class = CDEBUG_Y_EXTPROC;
             }else{
@@ -482,7 +482,7 @@ static void YTags( handle dbgfile, cdebug_sym_any *list, int index ) {
         }
         old  = list;
         list = list->common.next;
-        if( attr & FE_IMPORT == 0 && attr & FE_PROC ){
+        if( (attr & FE_IMPORT) == 0 && (attr & FE_PROC) ) {
             CGFree( old );
         }else{
             CGFree( old );
@@ -654,9 +654,9 @@ static void STags( handle dbgfile, bead_def *start ) {
 
 extern char *DbgFmtInt( char *buff, offset num ) {
 /** format 32 bit into 4byte dbg number ********/
-    buff[0] = num>>24 & 0xff;
-    buff[1] = num>>16 & 0xff;
-    buff[2] = num>>8  & 0xff;
+    buff[0] = (num >> 24) & 0xff;
+    buff[1] = (num >> 16) & 0xff;
+    buff[2] = (num >> 8)  & 0xff;
     buff[3] = num     & 0xff;
     return( &buff[4] );
 }
@@ -665,9 +665,9 @@ extern char *DbgFmtStr( char *buff, char *str, id_len num ) {
 /** format a str into int followed by chars**/
     char   *curr;
 
-    buff[0] = num>>24 & 0xff;
-    buff[1] = num>>16 & 0xff;
-    buff[2] = num>>8  & 0xff;
+    buff[0] = (num >> 24) & 0xff;
+    buff[1] = (num >> 16) & 0xff;
+    buff[2] = (num >> 8)  & 0xff;
     buff[3] = num     & 0xff;
     curr   = &buff[4]; /* skip length */
     while( num != 0 ) {

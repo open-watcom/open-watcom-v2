@@ -238,10 +238,14 @@ static  bool    ZappedBy( cn call, reg_num reg ) {
 
     zap = CallZap( call->state );
     this = WordReg( reg );
-    if( HW_Ovlap( zap, this ) ) return( true );
-    if( !( call->state->attr & ROUTINE_OS ) ) return( false );
-    if( call->state->regs.SA == reg ) return( true );
-    if( call->state->regs.PR == reg ) return( true );
+    if( HW_Ovlap( zap, this ) )
+        return( true );
+    if( (call->state->attr & ROUTINE_OS) == 0 )
+        return( false );
+    if( call->state->regs.SA == reg )
+        return( true );
+    if( call->state->regs.PR == reg )
+        return( true );
     return( false );
 }
 
@@ -346,7 +350,7 @@ extern  void    PreCall( cn call ) {
         bump += call->parm_size;
     }
     sa = AllocRegName( WordReg( cstate->regs.SA ) );
-    if( !( state->attr & ROUTINE_OS )
+    if( (state->attr & ROUTINE_OS) == 0
       && ( cstate->attr & ROUTINE_OS ) ) {
         HW_TurnOn( used, sa->r.reg );
         AddIns( MakeBinary( OP_ADD, sp, AllocS32Const( bump ), sa, PT ) );
@@ -388,7 +392,7 @@ extern  void    PostCall( cn call ) {
     state = &CurrProc->state;
     cstate = call->state;
     fixed = FixedRegs();
-    if( !( call->ins->flags.call_flags & CALL_IGNORES_RETURN ) ){
+    if( (call->ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 ) {
         reg = call->ins->result;
         if( reg->n.class == N_INDEXED ){
             reg = reg->i.index;
@@ -412,7 +416,8 @@ extern  void    PostCall( cn call ) {
     }
     if( cstate->attr & ROUTINE_OS ) {
         size = call->parm_size;
-        if( !( state->attr & ROUTINE_OS ) ) size += 18*4;
+        if( (state->attr & ROUTINE_OS) == 0 )
+            size += 18 * 4;
         reg = AllocRegName( StackReg() );
         AddIns( MakeBinary( OP_SUB, reg, AllocS32Const( size ), reg, PT ) );
     }

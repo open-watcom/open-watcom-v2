@@ -88,7 +88,7 @@ conflict_node   *AddConflictNode( name *opnd )
     } else {
         if( opnd->m.memory_type == CG_FE ) {
             attr = FEAttr( opnd->v.symbol );
-            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL|FE_VISIBLE)) == 0 ) && _IsModel( RELAX_ALIAS ) ) ) {
+            if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( RELAX_ALIAS ) ) ) {
                 _SetTrue( new, CST_OK_ACROSS_CALLS );
             }
         }

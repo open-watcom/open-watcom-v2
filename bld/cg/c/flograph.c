@@ -435,7 +435,7 @@ static  void    NestingDepth( void )
             for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
                 if( blk->next_block == NULL ) {
                     for( i = blk->targets; i-- > 0; ) {
-                        edge = & blk->edge[i];
+                        edge = &blk->edge[i];
                         if( edge->join_level <= level ) {
                             target = edge->destination.u.blk->next_block;
                             if( target != NULL ) {

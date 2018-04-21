@@ -71,7 +71,9 @@ static void Prt( void *handle, const char *buff, size_t len )
     size_t i;
 
     handle=handle;
-    for( i = 0; i < len; ++i ) fputc( *buff++, stderr );
+    for( i = 0; i < len; ++i ) {
+        fputc( *buff++, stderr );
+    }
 }
 
 #elif _MEMORY_TRACKING & _CHUNK_TRACKING

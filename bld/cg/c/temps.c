@@ -388,7 +388,7 @@ static  void    AllocNewLocal( name *temp )
     }
 #endif
     size = _RoundUp( temp->n.size, REG_SIZE ); /* align size*/
-    if( ( temp->v.usage & ( USE_IN_ANOTHER_BLOCK | USE_ADDRESS ) ) == EMPTY
+    if( (temp->v.usage & (USE_IN_ANOTHER_BLOCK | USE_ADDRESS)) == 0
      && temp->t.u.block_id != NO_BLOCK_ID ) {
         CalcRange( &st_temp, temp );
         if( st_temp.first != st_temp.last ) { /*% actually needed*/
@@ -410,7 +410,7 @@ static  void    AllocNewLocal( name *temp )
             temp->v.usage &= ~NEEDS_MEMORY;
         }
     } else {
-        if( BlockByBlock || ( temp->v.usage & USE_ADDRESS ) != EMPTY ) {
+        if( BlockByBlock || (temp->v.usage & USE_ADDRESS) ) {
             NewLocation( temp, size );
             return;
         }
@@ -501,9 +501,12 @@ extern  void    AssignOtherLocals( void )
         CalcNumberOfUses();
     }
     for( temp = Names[N_TEMP]; temp != LastTemp; temp = temp->n.next_name ) {
-        if( (temp->v.usage & NEEDS_MEMORY) == 0 ) continue;
-        if( temp->v.usage & HAS_MEMORY ) continue;
-        if( temp->t.temp_flags & ALIAS ) continue;
+        if( (temp->v.usage & NEEDS_MEMORY) == 0 )
+            continue;
+        if( temp->v.usage & HAS_MEMORY )
+            continue;
+        if( temp->t.temp_flags & ALIAS )
+            continue;
         AllocNewLocal( temp );
     }
 }
@@ -522,7 +525,7 @@ static void PropAParm( name *temp )
     }
     if( temp->n.class != N_TEMP )
         return;
-    if( ( temp->v.usage & HAS_MEMORY ) != EMPTY )
+    if( temp->v.usage & HAS_MEMORY )
         return;
     if( temp->t.location == NO_LOCATION )
         return;
@@ -559,7 +562,7 @@ extern  void    AllocALocal( name *name )
 /***************************************/
 {
     name = DeAlias( name );
-    if( ( name->v.usage & HAS_MEMORY ) == EMPTY ) {
+    if( (name->v.usage & HAS_MEMORY) == 0 ) {
         name->v.block_usage = USED_ONCE;
         AllocNewLocal( name );
     }
@@ -579,7 +582,7 @@ static void AssgnATemp( name *temp, block_num curr_id )
         PropLocal( temp );
         return;
     }
-    if( ( temp->v.usage & NEEDS_MEMORY ) == EMPTY )
+    if( (temp->v.usage & NEEDS_MEMORY) == 0 )
         return;
     if( ( curr_id == NO_BLOCK_ID )
       || ( temp->t.u.block_id == curr_id )
@@ -598,9 +601,12 @@ extern  void    FiniStackMap( void )
     name        *temp;
 
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
-        if( ( temp->t.temp_flags & ALIAS ) != EMPTY ) continue;
-        if( ( temp->v.usage & USE_ADDRESS ) == EMPTY ) continue;
-        if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) continue;
+        if( temp->t.temp_flags & ALIAS )
+            continue;
+        if( (temp->v.usage & USE_ADDRESS) == 0 )
+            continue;
+        if( temp->v.usage & HAS_MEMORY )
+            continue;
         AllocNewLocal( temp );
     }
 

@@ -192,7 +192,7 @@ static  void    RefInt( hwins_op_any *hwop, offset i ) {
 static long     DWord( long x ) {
 /*******************************/
 
-    return( ( x + ( DWORD_SIZE - 1 ) ) & ~( DWORD_SIZE - 1 ) );
+    return( _RoundUp( x, DWORD_SIZE ) );
 }
 
 
@@ -469,8 +469,8 @@ static void CLinkSaveRegs( hwins_op_any *savearea )
     if( NeedStackCheck() ) {
         StackCheck( RT_STKCHK );
     }
-    savearea->sx.disp += WORD_SIZE*( ( ( last_save_reg + 1 ) & 0xF ) )
-                     +  WORD_SIZE*( 16 - first_save_reg );
+    savearea->sx.disp += WORD_SIZE * ( ( ( last_save_reg + 1 ) & 0xF ) )
+                     +  WORD_SIZE * ( 16 - first_save_reg );
 }
 
 
@@ -566,7 +566,7 @@ static void SetUpAR( hwins_op_any *savearea, bool sp_bumped )
             ST  SP,SP_OFFSET(AR)        - save the orignal SP value
         */
         HWInsGen( HWOP_ST, &sp_op, &hwop, NULL );
-        if( !( CurrProc->state.attr & ROUTINE_ALTERNATE_AR ) ) {
+        if( (CurrProc->state.attr & ROUTINE_ALTERNATE_AR) == 0 ) {
             /*
                 LR      AR,SP                   - set up pointer to local vars
             */
@@ -717,6 +717,5 @@ extern  int     AskDisplaySize( int level ) {
 extern  type_length     PushSize( type_length len ) {
 /*******************************************/
 
-    if( len < WORD_SIZE ) return( WORD_SIZE );
-    return( ( len + (WORD_SIZE-1) ) & ~(WORD_SIZE-1) );
+    return( _RoundUp( len, WORD_SIZE ) );
 }

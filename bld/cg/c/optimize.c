@@ -227,7 +227,7 @@ void    DeadTemps( void )
             if( !SideEffect( ins ) && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
              && ins->result->n.class == N_TEMP
-             && ( ins->result->v.usage & (USE_ADDRESS|HAS_MEMORY|USE_WITHIN_BLOCK|USE_IN_ANOTHER_BLOCK) ) == 0 ) {
+             && ( ins->result->v.usage & (USE_ADDRESS | HAS_MEMORY | USE_WITHIN_BLOCK | USE_IN_ANOTHER_BLOCK) ) == 0 ) {
                 FreeIns( ins );
             }
         }

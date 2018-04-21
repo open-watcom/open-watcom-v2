@@ -281,7 +281,8 @@ void DoAlignment( int len )
         i = !i;
     }
     /* find the correct size NOP pattern to use */
-    for( ptr = &NopLists[i][1]; nop != len; --nop ) ptr += nop;
+    for( ptr = &NopLists[i][1]; nop != len; --nop )
+        ptr += nop;
     SendBytes( ptr, len );
     SavePendingLine( save_line );
 }

@@ -37,8 +37,8 @@ extern unsigned_32      TargetBigInt(unsigned_32);
 extern void             TargAddL(unsigned_32 *,unsigned_32);
 extern void             TargAddW(unsigned_16 *,unsigned_16);
 
-#define _IntToByte( value )             ( ( value ) & 0xff )
-#define _IntToWord( value )             ( value & 0xffff )
+#define _IntToByte( value )             ((value) & 0xff)
+#define _IntToWord( value )             ((value) & 0xffff)
 #define _TargetShort( value )           TargetShort( value )
 #define _TargetBigInt( value )          TargetBigInt( value )
 #define _TargetOffset( value )          TargetOffset( value )
@@ -50,8 +50,8 @@ extern void             TargAddW(unsigned_16 *,unsigned_16);
 
 #else
 
-#define _IntToByte( value )             ( value & 0xff )
-#define _IntToWord( value )             ( value & 0xffff )
+#define _IntToByte( value )             ((value) & 0xff)
+#define _IntToWord( value )             ((value) & 0xffff)
 #define _TargetShort( value )           ( value )
 #define _TargetBigInt( value )          ( value )
 #define _TargetOffset( value )          ( value )

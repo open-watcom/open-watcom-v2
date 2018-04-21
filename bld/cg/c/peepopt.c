@@ -634,7 +634,7 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
     if( ins->result != NULL ) {
         switch( ins->result->n.class ) {
         case N_TEMP:
-            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY )
+            if( ( ins->result->v.usage & USE_ADDRESS ) == 0 )
                 break;
             /* fall down */
         case N_INDEXED:

@@ -643,7 +643,7 @@ static  name    *High8Part( instruction *ins, name *temp )
 {
     eight_byte_name     expand;
 
-    Split8Name( ins, temp, & expand );
+    Split8Name( ins, temp, &expand );
     return( expand.high );
 }
 

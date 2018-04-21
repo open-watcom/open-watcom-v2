@@ -110,7 +110,7 @@ static  void    RoughSortTemps( void )
     opcnt               i;
 
     for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
-        if( ( opnd->v.usage & ( USE_MEMORY|USE_ADDRESS ) ) ) {
+        if( ( opnd->v.usage & (USE_MEMORY | USE_ADDRESS) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
             actual_name = DeAlias( opnd );
@@ -150,7 +150,7 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
     }
     _GBitInit( all_used, EMPTY );
     for( opnd = Names[list]; opnd != NULL; opnd = opnd->n.next_name ) {
-        if( ( opnd->v.usage & ( USE_MEMORY | USE_ADDRESS ) ) ) {
+        if( ( opnd->v.usage & (USE_MEMORY | USE_ADDRESS) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
             actual_name = opnd;

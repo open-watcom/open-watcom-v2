@@ -390,7 +390,7 @@ static  bool    Idx( name *op ) {
         return( false );
     if( op->n.class != N_TEMP )
         return( false );
-    if( ( op->t.temp_flags & INDEXED ) == EMPTY )
+    if( ( op->t.temp_flags & INDEXED ) == 0 )
         return( false );
     return( true );
 }

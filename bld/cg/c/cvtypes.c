@@ -107,7 +107,7 @@ static  void  *AlignBuff( cv_out *out )
     ptr = out->ptr;
     len = ptr - out->buff;
 //    len4 = ((len+CV_ALIGN-1)& -CV_ALIGN);
-    len = ( ( len + CV_ALIGN - 1 ) & -CV_ALIGN ) - len;
+    len = _RoundUp( len, CV_ALIGN ) - len;
     for( ; len > 0; --len ) {
         *ptr = (LF_PAD0 | len);
         ++ptr;

@@ -213,18 +213,21 @@ static bool ConvertIfPossible( name *temp )
     Convert temp to an integer if we can.
 */
 {
-    if( ( temp->v.usage & USE_ADDRESS+USE_MEMORY+VAR_VOLATILE+NEEDS_MEMORY ) ) {
+    if( temp->v.usage & (USE_ADDRESS | USE_MEMORY | VAR_VOLATILE | NEEDS_MEMORY) ) {
         return( false );
     }
-    if( temp->t.temp_flags & ALIAS ) return( false );
-    if( temp->t.alias != temp ) return( false );
+    if( temp->t.temp_flags & ALIAS )
+        return( false );
+    if( temp->t.alias != temp )
+        return( false );
     switch( temp->n.name_class ) {
     case I1:
     case I2:
         return( ConvertToInt( temp ) );
     case U1:
     case U2:
-        if( !WorthAConversion( temp ) ) return( false );
+        if( !WorthAConversion( temp ) )
+            return( false );
         return( ConvertToInt( temp ) );
     }
     return( false );

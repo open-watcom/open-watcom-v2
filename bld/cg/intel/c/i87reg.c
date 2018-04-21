@@ -320,7 +320,7 @@ static  void    FPAlloc( void ) {
                     break;
                 if( ins->operands[0]->n.class == N_REGISTER )
                     break;
-                if( ins->operands[0]->n.class == N_TEMP && ( ( ins->operands[0]->t.temp_flags & CAN_STACK ) != EMPTY ) )
+                if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & CAN_STACK ) )
                     break;
                 name = AllocTemp( ins->base_type_class );
                 name->t.temp_flags |= CAN_STACK;
@@ -749,7 +749,7 @@ extern  bool    FPIsStack( name *name ) {
 
     if( name->n.class != N_TEMP )
         return( false );
-    if( ( name->t.temp_flags & CAN_STACK ) == EMPTY )
+    if( ( name->t.temp_flags & CAN_STACK ) == 0 )
         return( false );
     return( true );
 }

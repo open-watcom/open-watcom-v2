@@ -822,7 +822,7 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
     rem = size % 4;
     if( rem ) {
         if( ins->result->n.class == N_TEMP ) {
-            if( ( ins->result->t.temp_flags & ALIAS ) == EMPTY ) {
+            if( ( ins->result->t.temp_flags & ALIAS ) == 0 ) {
                 // we have a write to a struct on the stack which is a master
                 // since we don't 'pack' anything into the empty space after
                 // this struct, we can safely overwrite it and not bother

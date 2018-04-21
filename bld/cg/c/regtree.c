@@ -325,7 +325,7 @@ static  reg_tree        *CheckTree( reg_tree *tree )
     temp = alias;
     for( ;; ) {
         temp = temp->t.alias;
-        if( ( temp->t.temp_flags & VISITED ) == EMPTY ) {
+        if( ( temp->t.temp_flags & VISITED ) == 0 ) {
             BurnRegTree( tree );
             tree = NULL;
             break;

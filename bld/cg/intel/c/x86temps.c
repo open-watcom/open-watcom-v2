@@ -131,7 +131,7 @@ extern  void    AdjustPushLocal( name *temp ) {
 
     name        *scan;
 
-    if( ( temp->t.temp_flags & PUSH_LOCAL ) == EMPTY ) { /* if not already adjusted*/
+    if( (temp->t.temp_flags & PUSH_LOCAL) == 0 ) { /* if not already adjusted*/
         temp->t.location += -CurrProc->locals.size - CurrProc->locals.base;
         for( scan = temp->t.alias; scan != temp; scan = scan->t.alias ) {
             scan->t.location = temp->t.location;

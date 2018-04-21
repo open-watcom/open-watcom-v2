@@ -287,7 +287,7 @@ static void FixRef( txtseg_rec *rec, bead_addr *bead ) {
     hw_sym *sym;
 
     sym = bead->ref;
-    if( !(sym->defflag & rec->txtseg)  ) {
+    if( (sym->defflag & rec->txtseg) == 0 ) {
         bead->val += sym->def->address;
         bead->ref = rec->other->sym;
     }
@@ -378,11 +378,10 @@ static void TxtRecs( bead_xsym *entry, txtseg_rec *rec ) {
         }
         if( rec->txtseg == TXT_DATA ) { /* abit crude for now */
             strcpy( datname, rec->csect->sym->name );
-            strcat( datname, txt.opts & LST_OBJ ? LST_SUFFIX:ASM_SUFFIX );
+            strcat( datname, ( txt.opts & LST_OBJ ) ? LST_SUFFIX : ASM_SUFFIX );
             txt.asmfi = AsmOpen( datname, txt.size, txt.opts & LST_OBJ );
         } else {
-            txt.asmfi = AsmOpen( FEAuxInfo( NULL, ASM_NAME ), txt.size,
-                                                     txt.opts & LST_OBJ );
+            txt.asmfi = AsmOpen( FEAuxInfo( NULL, ASM_NAME ), txt.size, txt.opts & LST_OBJ );
         }
     }
     PutBeads( &txt, rec->first );
@@ -463,7 +462,7 @@ static void PutBeads( txt_obj *obj, bead_def *bead ){
         default:
             Zoiks( ZOIKS_061 );
         }
-        if( ( obj->opts & LST_ASM )&& (bead->class != BEAD_QUEUE) ){
+        if( ( obj->opts & LST_ASM ) && (bead->class != BEAD_QUEUE) ){
             PutAsm( obj );
         }
         bead = bead->next;
@@ -1030,7 +1029,7 @@ static void DmpDisp( txt_obj *obj, bead_disp *bead ) {
     }
     switch( bead->op_len & DISP_LEN ) {
     case 1 :
-        out[0] = num_part&0xff;
+        out[0] = num_part & 0xff;
         break;
     case 2 :
         Stick16( out, num_part );
@@ -1155,7 +1154,7 @@ static char *PrtDisp( char *cur,  bead_disp *bead ) {
         *cur++ = '+';
         cur = fmt_dec( cur, bead->val );
     }
-    *cur++ = bead->op_len & DISP_SUB ? '-' : '+';
+    *cur++ = ( bead->op_len & DISP_SUB ) ? '-' : '+';
     cur = OutSym( cur, bead->base, true );
     *cur++ = ')';
     return( cur );
@@ -1244,13 +1243,13 @@ static bead_def *DmpLtorg( txt_obj *obj, bead_ltorg *bead ) {
     if( obj->opts & LST_ASM ) {
         fmt_str( obj->asm->code, "LTORG" );
         curr_opts = obj->opts;
-        if( !(obj->opts & LST_OBJ) ) {
+        if( (obj->opts & LST_OBJ) == 0 ) {
             obj->opts &= ~LST_ASM;
         }
         current = current->next; /*skip ltorg */
         done = bead->end->next; /* end is last in pool */
         while( current != done ){
-            if(  obj->opts & LST_ASM ){
+            if( obj->opts & LST_ASM ){
                 PutAsm( obj );
             }
             switch( current->class ){
@@ -1267,7 +1266,7 @@ static bead_def *DmpLtorg( txt_obj *obj, bead_ltorg *bead ) {
                 Zoiks( ZOIKS_061 );
             }
             current = current->next;
-            if(  obj->opts & LST_ASM ){
+            if( obj->opts & LST_ASM ){
                 obj->asm->sep1[0] = '=';
             }
         }
@@ -1297,10 +1296,10 @@ static void DmpQueue( txt_obj *obj, bead_queue *bead ) {
     unsigned    last_line;
     unsigned    i;
 
-    if( !( obj->opts & LST_ASM ) ){
+    if( (obj->opts & LST_ASM) == 0 ){
         return;
     }
-    if( !( obj->opts & LST_SRC ) ){
+    if( (obj->opts & LST_SRC) == 0 ){
         obj->asm->label[0] = '*';
         fmt_str( obj->asm->code, "LINE" );
         fmt_dec( obj->asm->ops, bead->num );
@@ -1483,23 +1482,23 @@ static void  EndRecs(  bead_xsym *entry, txtseg_rec *rec ) {
 
 static void Stick32( char *in, offset num ) {
 /** format 32 bit into 4byte number ********/
-    in[0] = num>>24 & 0xff;
-    in[1] = num>>16 & 0xff;
-    in[2] = num>>8  & 0xff;
-    in[3] = num     & 0xff;
+    in[0] = (num >> 24) & 0xff;
+    in[1] = (num >> 16) & 0xff;
+    in[2] = (num >> 8)  & 0xff;
+    in[3] = num         & 0xff;
 }
 
 static void Stick24( char *in, offset num ) {
 /** format 32 bit into 3byte number ********/
-    in[0] = num>>16 & 0xff;
-    in[1] = num>>8  & 0xff;
-    in[2] = num     & 0xff;
+    in[0] = (num >> 16) & 0xff;
+    in[1] = (num >> 8)  & 0xff;
+    in[2] = num         & 0xff;
 }
 
 static void Stick16( char *in, short num ) {
 /** format 16 bit into 2byte number ********/
-    in[0] = num>>8  & 0xff;
-    in[1] = num     & 0xff;
+    in[0] = (num >> 8)  & 0xff;
+    in[1] = num         & 0xff;
 }
 
 static char *OutSym( char *to, const hw_sym *sym, int flag ) {
@@ -1564,9 +1563,9 @@ static char *fmt_lxstr( char *to, char *from, int len ) {
 //  static char const con[16] = "0123456789ABCDEF";
     auto char const con[16] = "0123456789ABCDEF";
 
-    for( ;len > 0;len--) {
-        to[0] = con[ *from >> 4  ];
-        to[1] = con[ *from & 0x0f ];
+    for( ; len > 0; len-- ) {
+        to[0] = con[*(unsigned char *)from >> 4];
+        to[1] = con[*(unsigned char *)from & 0x0f];
         to += 2;
         from++;
    }
@@ -1597,7 +1596,7 @@ static char *fmt_rdec( char *to, offset num ) {
     from = buff;
     ltoa( num, from, 10 );
     len = Length( from );
-    len = 5-len;
+    len = 5 - len;
     if( len < 0 ) {
         len = 5;
     }
@@ -1619,8 +1618,8 @@ static char *fmt_hex( char *to, offset num, int len ) {
     from = buff;
     Stick32( from, num );
     fmt_lxstr( hex, buff, 4 );
-    from = &hex[8-len];
-    for( ;len > 0;len--) {
+    from = &hex[8 - len];
+    for( ; len > 0; len-- ) {
         *to++ = *from++;
    }
    return( to );

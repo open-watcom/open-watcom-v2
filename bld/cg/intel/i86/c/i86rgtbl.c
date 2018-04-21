@@ -571,8 +571,8 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
     intersect_class     class;
     reg_set_index       result;
 
-    set1 = & IntersectInfo[s1];
-    set2 = & IntersectInfo[s2];
+    set1 = &IntersectInfo[s1];
+    set2 = &IntersectInfo[s2];
     class = set1->class;
     if( class == set2->class ) {
         result = InterTable[class][set1->index * Width[class] + set2->index];

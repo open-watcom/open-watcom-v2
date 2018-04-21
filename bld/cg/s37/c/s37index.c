@@ -330,9 +330,8 @@ static  name   *RepAux( name * mem_loc ) {
     if( mem_loc->m.memory_type == CG_FE && mem_loc->v.symbol != NULL ) {
         attr = FEAttr( mem_loc->v.symbol );
     }
-    if( !( attr & FE_PROC ) && ( attr & (FE_IMPORT|FE_GLOBAL) ) ) {
-        offset = (int)FEAuxInfo( FEAuxInfo( mem_loc->v.symbol, AUX_LOOKUP ),
-                                 AUX_OFFSET );
+    if( (attr & FE_PROC) == 0 && ( attr & (FE_IMPORT | FE_GLOBAL) ) ) {
+        offset = (int)FEAuxInfo( FEAuxInfo( mem_loc->v.symbol, AUX_LOOKUP ), AUX_OFFSET );
     }
     if( offset != -1 ) {
         flags = X_FAKE_BASE;

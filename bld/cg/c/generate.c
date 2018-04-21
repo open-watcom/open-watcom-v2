@@ -575,7 +575,7 @@ static  void    ForceConflictsMemory( void )
         if( !_GBitEmpty( conf->id.out_of_block )
          || ( conf->name->n.class == N_TEMP && _FrontEndTmp( conf->name ) )
          || ( conf->name->n.class == N_MEMORY && conf->name->v.symbol != NULL )
-         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) != EMPTY ) {
+         || ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
             next = InMemory( conf );
         }
     }

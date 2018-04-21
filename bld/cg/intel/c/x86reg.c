@@ -208,32 +208,40 @@ void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, a
     hw_reg_set  normal;
 
     if( _FPULevel( FPU_87 ) && _NPX( state->attr )
-      && ( ( tipe->attr & TYPE_FLOAT ) != EMPTY ) ) {
+      && ( tipe->attr & TYPE_FLOAT ) ) {
         HW_COnlyOn( state->return_reg, HW_ST0 );
     } else {
         HW_CTurnOff( state->return_reg, HW_FLTS );
     }
     if( tipe == TypeNone ) {
-        if( HW_CEqual( state->return_reg, HW_EMPTY ) ) return;
+        if( HW_CEqual( state->return_reg, HW_EMPTY ) )
+            return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
         HW_CAsgn( state->return_reg, HW_EMPTY );
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else if( class == XX ) {
         normal = ReturnReg( WD, _NPX( state->attr ) );
-        if( HW_Equal( state->return_reg, normal ) ) return;
-        if( HW_CEqual( state->return_reg, HW_EMPTY ) ) return;
+        if( HW_Equal( state->return_reg, normal ) )
+            return;
+        if( HW_CEqual( state->return_reg, HW_EMPTY ) )
+            return;
         // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, WD ) ) return;
-        if( IsRegClass( state->return_reg, WD ) ) return;
+        //    IsRegClass( state->return_reg, WD ) )
+        //     return;
+        if( IsRegClass( state->return_reg, WD ) )
+            return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
     } else {
         normal = ReturnReg( class, _NPX( state->attr ) );
-        if( HW_Equal( state->return_reg, normal ) ) return;
+        if( HW_Equal( state->return_reg, normal ) )
+            return;
         // if( !HW_Ovlap( state->return_reg, state->unalterable ) &&
-        //    IsRegClass( state->return_reg, class ) ) return;
-        if( IsRegClass( state->return_reg, class ) ) return;
+        //    IsRegClass( state->return_reg, class ) )
+        //     return;
+        if( IsRegClass( state->return_reg, class ) )
+            return;
         FEMessage( MSG_BAD_RETURN_REGISTER, aux );
         state->return_reg = normal;
         state->attr &= ~ROUTINE_HAS_SPECIAL_RETURN;
@@ -248,7 +256,7 @@ hw_reg_set      CallZap( call_state *state )
     hw_reg_set  tmp;
 
     zap = state->modify;
-    if( ( state->attr & ROUTINE_MODIFY_EXACT ) == EMPTY ) {
+    if( (state->attr & ROUTINE_MODIFY_EXACT) == 0 ) {
         HW_TurnOn( zap, state->parm.used );
         HW_TurnOn( zap, state->return_reg );
         zap = FullReg( zap );

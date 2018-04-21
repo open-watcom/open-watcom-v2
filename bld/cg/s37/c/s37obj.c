@@ -112,7 +112,7 @@ extern void SetDataOffsets( offset location ) {
 
     curr = SegDefs;
     while( curr != NULL ) { /* link segments to correct txtseg */
-        if( !(curr->attr & ( ROM | EXEC ))  ) { /* if not code */
+        if( (curr->attr & ( ROM | EXEC )) == 0 ) { /* if not code */
             rec =  AskSegIndex( curr->id );
             location = HWCalcAddr( rec->first, location );
             bead = rec->first;
@@ -610,7 +610,7 @@ extern void HWExtern( hw_sym *sym ) {
 /***************************/
     bead_xsym *bead;
 
-    if( !(sym->defflag & CurrIndex->txtseg) ) { /*add extern to txtseg */
+    if( (sym->defflag & CurrIndex->txtseg) == 0 ) { /*add extern to txtseg */
         bead = HWExSym( XSYM_EXTRN );  /* an EXTERN references a sym */
         sym->def = (bead_def *)bead;
         sym->class = HW_EXTERN;

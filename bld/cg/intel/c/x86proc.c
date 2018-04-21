@@ -126,7 +126,6 @@ type_length StackDepth;
 
 hw_reg_set   PushRegs[] = {
 #if _TARGET & _TARG_IAPX86
-#define ALL_REG_SIZE 8*WORD_SIZE+4*2
 #define HW_STACK_CHECK HW_AX
     HW_D( HW_AX ),
     HW_D( HW_BX ),
@@ -134,13 +133,7 @@ hw_reg_set   PushRegs[] = {
     HW_D( HW_DX ),
     HW_D( HW_SI ),
     HW_D( HW_DI ),
-    HW_D( HW_DS ),
-    HW_D( HW_ES ),
-    HW_D( HW_FS ),
-    HW_D( HW_GS ),
-    HW_D( HW_SS ),
 #else
-#define ALL_REG_SIZE 12*WORD_SIZE
 #define HW_STACK_CHECK HW_EAX
     HW_D( HW_EAX ),
     HW_D( HW_EBX ),
@@ -148,12 +141,12 @@ hw_reg_set   PushRegs[] = {
     HW_D( HW_EDX ),
     HW_D( HW_ESI ),
     HW_D( HW_EDI ),
+#endif
     HW_D( HW_DS ),
     HW_D( HW_ES ),
     HW_D( HW_FS ),
     HW_D( HW_GS ),
     HW_D( HW_SS ),
-#endif
     HW_D( HW_BP ),
     HW_D( HW_EMPTY )
 };
@@ -212,7 +205,7 @@ static  void    ChkFDOp( name *op, level_depth depth )
     if( op->t.temp_flags & STACK_PARM )
         return;
     if( op->t.location != NO_LOCATION ) {
-        if( op->v.usage & (USE_ADDRESS|HAS_MEMORY) )
+        if( op->v.usage & (USE_ADDRESS | HAS_MEMORY) )
             return;
         if( op->t.alias != op )
             return;
@@ -376,7 +369,7 @@ static  bool    NeedBPProlog( void ) {
         return( true );
     if( BlockByBlock != 0 )
         return( true );
-    if( ( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) != 0 )
+    if( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG )
         return( true );
     if( FAR_RET_ON_STACK ) {
         if( CHAIN_FRAME ) {
@@ -501,7 +494,7 @@ static  void    EpilogHook( void )
 {
     int      size;
 
-    if( ( CurrProc->prolog_state & GENERATE_EPILOG_HOOKS ) ) {
+    if( CurrProc->prolog_state & GENERATE_EPILOG_HOOKS ) {
         DoRTCall( RT_EPIHOOK, false );
     }
     size = ProEpiDataSize();
@@ -609,8 +602,8 @@ void    GenProlog( void )
     }
 
 #if _TARGET & _TARG_80386
-    if( ( attr & FE_NAKED ) == EMPTY ) {
-        if( _IsTargetModel( NEW_P5_PROFILING|P5_PROFILING ) ) {
+    if( (attr & FE_NAKED) == 0 ) {
+        if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
             GenP5ProfilingProlog( label );
         }
         if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
@@ -628,7 +621,7 @@ void    GenProlog( void )
 #endif
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
-        ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
+        (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) ) {
         ret_size = 0;
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
         ret_size = 2 * WORD_SIZE;
@@ -647,7 +640,7 @@ void    GenProlog( void )
         HW_CTurnOff( to_push, HW_BP );
     }
 
-    if( ( attr & FE_NAKED ) != EMPTY ) {
+    if( attr & FE_NAKED ) {
         // don't do anything - empty prologue
     } else if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
         ret_size = -PushAll();
@@ -860,7 +853,8 @@ static  int PushAll( void )
             QuickSave( HW_ES, OP_POP );
         }
     }
-    return( ALL_REG_SIZE );
+    /* 8 general purpose registers + 4 segment registers */
+    return( 12 * WORD_SIZE );
 }
 
 
@@ -968,46 +962,42 @@ static  void    CalcUsedRegs( void ) {
 }
 
 
-static  int Push( hw_reg_set to_push ) {
-/******************************************/
-
-    hw_reg_set  *curr_push;
-    int     size;
+static  int Push( hw_reg_set to_push )
+/************************************/
+{
+    int         size;
+    int         i;
 
     size = 0;
     if( _IsntModel( NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
         FlowSave( &to_push );
     }
-    curr_push = PushRegs;
-    while( !HW_CEqual( to_push, HW_EMPTY ) ) {
-        if( HW_Ovlap( *curr_push, to_push ) ) {
-            QuickSave( *curr_push, OP_PUSH );
-            size += WORD_SIZE;
-            HW_TurnOff( to_push, *curr_push );
-        }
-        ++ curr_push;
-        if( HW_CEqual( *curr_push, HW_EMPTY ) ) {
+    for( i = 0; i < sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i++ ) {
+        if( HW_CEqual( to_push, HW_EMPTY ) )
             break;
+        if( HW_Ovlap( PushRegs[i], to_push ) ) {
+            QuickSave( PushRegs[i], OP_PUSH );
+            size += WORD_SIZE;
+            HW_TurnOff( to_push, PushRegs[i] );
         }
     }
     return( size );
 }
 
-static  void        Pop( hw_reg_set to_pop ) {
-/************************************************/
-    hw_reg_set  *curr_pop;
+static  void        Pop( hw_reg_set to_pop )
+/******************************************/
+{
+    int         i;
 
     if( _IsntModel( NO_OPTIMIZATION ) && CurrProc->targ.sp_frame && !CurrProc->targ.sp_align ) {
         FlowRestore( &to_pop );
     }
-    for( curr_pop = PushRegs; !HW_CEqual( *curr_pop, HW_EMPTY ); ) {
-        ++curr_pop;
-    }
-    while( !HW_CEqual( to_pop, HW_EMPTY ) ) {
-        -- curr_pop;
-        if( HW_Ovlap( *curr_pop, to_pop ) ) {
-            QuickSave( *curr_pop, OP_POP );
-            HW_TurnOff( to_pop, *curr_pop );
+    for( i = sizeof( PushRegs ) / sizeof( PushRegs[0] ) - 1; i-- > 0 ; ) {
+        if( HW_CEqual( to_pop, HW_EMPTY ) )
+            break;
+        if( HW_Ovlap( PushRegs[i], to_pop ) ) {
+            QuickSave( PushRegs[i], OP_POP );
+            HW_TurnOff( to_pop, PushRegs[i] );
         }
     }
 }
@@ -1096,7 +1086,7 @@ void    GenEpilog( void )
         EmitEpiBeg();
     }
 
-    if( ( attr & FE_NAKED ) == EMPTY ) {
+    if( (attr & FE_NAKED) == 0 ) {
         if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 ) {
             DoEpilog();
         }
@@ -1136,7 +1126,7 @@ static  void    DoEpilog( void )
         to_pop = SaveRegs();
         HW_CTurnOff( to_pop, HW_FLTS );
         if( CHAIN_FRAME ) {
-            if( ( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) != 0
+            if( (CurrProc->state.attr & ROUTINE_NEEDS_PROLOG)
              || CurrProc->locals.size+CurrProc->targ.push_local_size != 0 ) {
                 if( CurrProc->targ.base_adjust == 0 ) {
                     GenRegMove( HW_BP, HW_SP );
