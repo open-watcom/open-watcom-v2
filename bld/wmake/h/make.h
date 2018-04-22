@@ -106,7 +106,7 @@ struct Glob {
 #define STATIC static
 #endif
 
-#if defined( __WATCOMC__ )
+#if defined( _WCNORETURN )
 #define NO_RETURN(x)    _WCNORETURN x
 #elif defined( __GNUC__ ) || defined( __clang__ )
 #define NO_RETURN(x)    x  __attribute__ ((__noreturn__))
