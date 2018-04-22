@@ -68,12 +68,11 @@ static carve_t carveFNLABEL;
 static carve_t carveFNCATCH;
 
 
-enum                            // EXPR_ANAL -- result of expression analysis
-{   EXPR_ANAL_OK                // - expression parsed, analyzis succeeded
-,   EXPR_ANAL_NONE              // - no expression existed to be parsed
-,   EXPR_ANAL_ERR               // - expression parsed, analysis failed
-};
-typedef unsigned EXPR_ANAL;     // - typed as unsigned for efficiency
+typedef enum            // EXPR_ANAL -- result of expression analysis
+{   EXPR_ANAL_OK        // - expression parsed, analyzis succeeded
+,   EXPR_ANAL_NONE      // - no expression existed to be parsed
+,   EXPR_ANAL_ERR       // - expression parsed, analysis failed
+} EXPR_ANAL;
 
 static void nextYYToken( void )
 {
