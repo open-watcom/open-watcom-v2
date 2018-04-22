@@ -759,7 +759,8 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     }
     // '\n' or LCHR_EOF don't print nicely
     --TokenLen;
-    Buffer[TokenLen - 1] = '\0';
+    if( TokenLen > 0 )
+        Buffer[TokenLen - 1] = '\0';
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
