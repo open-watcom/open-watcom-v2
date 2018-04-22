@@ -538,7 +538,7 @@ PCH_struct base_class {
     BASE_CLASS          *next;
     TYPE                type;           // base class type
     target_offset_t     delta;          // offset within this class
-    uint_16             vb_index;       // index into virtual base table
+    vindex              vb_index;       // index into virtual base table
     inherit_flag        flag;           // inheritance flags
 };
 
@@ -1169,7 +1169,7 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
 
         if( control & RL_VIRTUAL ) {
             this += RTTI.vbptr;
-            this += (*this)[ vb_index ];
+            this += (*this)[vb_index];
         }
         this += offset;
 */

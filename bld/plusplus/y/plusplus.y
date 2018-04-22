@@ -856,7 +856,7 @@ postfix-expression-before-dot
     : postfix-expression
     {
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );
-        if( ! ( $1->flags & PTF_LV_CHECKED ) ) {
+        if( ($1->flags & PTF_LV_CHECKED) == 0 ) {
             AnalyseLvalue( &$1 );
         }
         $1 = PTreeTraversePostfix( $1, &setAnalysedFlag );
@@ -866,7 +866,7 @@ postfix-expression-before-dot
             cls = TypedefModifierRemoveOnly( $1->type );
             if( ( cls != NULL )
              && ( cls->id == TYP_POINTER )
-             && ( cls->flag & TF1_REFERENCE ) ) {
+             && (cls->flag & TF1_REFERENCE) ) {
                 cls = cls->of;
             }
 
@@ -889,7 +889,7 @@ postfix-expression-before-arrow
     : postfix-expression
     {
         $1 = PTreeTraversePostfix( $1, &AnalyseNode );
-        if( ! ( $1->flags & PTF_LV_CHECKED ) ) {
+        if( ($1->flags & PTF_LV_CHECKED) == 0 ) {
             AnalyseLvalue( &$1 );
         }
         $$ = PTreeBinary( CO_ARROW, $1, NULL );
@@ -901,7 +901,7 @@ postfix-expression-before-arrow
             cls = TypedefModifierRemoveOnly( $$->u.subtree[0]->type );
             if( ( cls != NULL )
              && ( cls->id == TYP_POINTER )
-             && ( cls->flag & TF1_REFERENCE ) ) {
+             && (cls->flag & TF1_REFERENCE) ) {
                 cls = TypedefModifierRemoveOnly( cls->of );
             }
 

@@ -66,8 +66,8 @@ struct class_data {
     target_offset_t pack_amount;        /* class packing requirement */
     target_offset_t vf_offset;          /* offset of virtual fn ptr field */
     target_offset_t vb_offset;          /* offset of virtual base ptr field */
-    uint_16         vf_index;           /* next index for virtual fns */
-    uint_16         vb_index;           /* next index for virtual bases */
+    vindex          vf_index;           /* next index for virtual fns */
+    vindex          vb_index;           /* next index for virtual bases */
     type_flag       tflag;              /* TF1_STRUCT or TF1_UNION */
     type_flag       fn_flags;           /* function flags for member functions */
     type_flag       mod_flags;          /* modifier flags for members */
