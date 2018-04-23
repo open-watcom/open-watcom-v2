@@ -4428,7 +4428,6 @@ PTREE AnalyseRawExpr(       // ANALYZE AN EXPRESSION
     return expr;
 }
 
-
 PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
     PTREE expr )
 {
@@ -4438,7 +4437,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             if( 0 == ( expr->flags & PTF_BOOLEAN ) ) {
                 warnBoolAssignment( expr );
             }
-            expr = CastImplicit( expr, GetBasicType( TYP_BOOL ), CNV_EXPR, &diagInit);
+            expr = NodeConvertToBool( expr );
         }
     }
     return expr;
