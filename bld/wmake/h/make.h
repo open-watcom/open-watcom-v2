@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
+#include "wnoret.h"
 #include "mtypes.h"
 #include "msysdep.h"
 #include "massert.h"
@@ -104,16 +105,6 @@ struct Glob {
 #define STATIC
 #else
 #define STATIC static
-#endif
-
-#if defined( _WCNORETURN )
-#define NO_RETURN(x)    _WCNORETURN x
-#elif defined( __GNUC__ ) || defined( __clang__ )
-#define NO_RETURN(x)    x  __attribute__ ((__noreturn__))
-#elif defined( _MSC_VER )
-#define NO_RETURN(x)    __declspec(noreturn)  x
-#else
-#define NO_RETURN(x)    x
 #endif
 
 extern struct Glob      Glob;
