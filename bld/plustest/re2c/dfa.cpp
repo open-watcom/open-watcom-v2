@@ -168,8 +168,8 @@ DFA::DFA(Ins *ins, uint ni, uint lb, uint ub, Char *rep)
 
     }
     delete work;
-    delete goTo;
-    delete span;
+    delete[] goTo;
+    delete[] span;
 }
 
 DFA::~DFA(){
