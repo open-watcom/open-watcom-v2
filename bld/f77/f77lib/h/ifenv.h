@@ -997,6 +997,7 @@ extern intstar2 I2MOD( intstar2 arg1, intstar2 arg2 );
 extern intstar2 XI2MOD( intstar2 *arg1, intstar2 *arg2 );
 extern intstar4 MOD( intstar4 arg1, intstar4 arg2 );
 extern intstar4 XMOD( intstar4 *arg1, intstar4 *arg2 );
+extern void     CHAR( intstar4 arg, string PGM *dest );
 extern intstar4 ICHAR( string PGM *arg );
 extern single   AIMAG( single rp, single ip );
 extern single   XAIMAG( scomplex *arg );
