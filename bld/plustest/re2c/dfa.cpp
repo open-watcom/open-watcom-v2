@@ -167,7 +167,7 @@ DFA::DFA(Ins *ins, uint ni, uint lb, uint ub, Char *rep)
         new Match(s);
 
     }
-    delete work;
+    delete[] work;
     delete[] goTo;
     delete[] span;
 }
