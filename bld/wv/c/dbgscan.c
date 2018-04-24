@@ -333,7 +333,7 @@ bool TokenName( tokens token, const char **start, size_t *len )
         *len = strlen( LIT_ENG( Sym_Name_Name ) ) + 1;
         return( true );
     }
-    if( token < LAST_CMDLN_DELIM ) {
+    if( token >= FIRST_CMDLN_DELIM && token < ( FIRST_CMDLN_DELIM + SIZE_CMDLN_DELIM ) ) {
         *start = CmdLnDelimTab + token - FIRST_CMDLN_DELIM;
         *len = sizeof( char );
         return( true );
@@ -504,17 +504,23 @@ static bool ScanExprDelim( const char *table )
 static bool ScanCmdLnDelim( void )
 {
     const char  *ptr;
+    bool        rc;
 
-    for( ptr = CmdLnDelimTab; *ScanPtr != *ptr; ptr++ ) {
+    rc = false;
+    for( ptr = CmdLnDelimTab; ; ptr++ ) {
+        if( *ptr == *ScanPtr ) {
+            CurrToken = ptr - CmdLnDelimTab + FIRST_CMDLN_DELIM;
+            if( *ScanPtr != NULLCHAR ) {
+                ScanPtr++;
+            }
+            rc = true;
+            break;
+        }
         if( *ptr == NULLCHAR ) {
-            return( false );
+           break;
         }
     }
-    CurrToken = FIRST_CMDLN_DELIM + ( ptr - CmdLnDelimTab );
-    if( *ScanPtr != NULLCHAR ) {
-        ++ScanPtr;
-    }
-    return( true );
+    return( rc );
 }
 
 

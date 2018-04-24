@@ -67,7 +67,7 @@ typedef enum
 } tokens;
 
 #define FIRST_CMDLN_DELIM     T_LT
-#define LAST_CMDLN_DELIM      T_UNKNOWN
+#define SIZE_CMDLN_DELIM      (T_INT_NUM - FIRST_CMDLN_DELIM)
 #define FIRST_SSL_ESCAPE_CHAR T_SSL_ESCAPE_CHARS
 
 typedef struct {
