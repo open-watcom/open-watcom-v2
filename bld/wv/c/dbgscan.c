@@ -501,26 +501,28 @@ static bool ScanExprDelim( const char *table )
 }
 
 
+static bool ScanCmdLnSepar( void )
+{
+    if( *ScanPtr == NULLCHAR ) {
+        CurrToken = T_LINE_SEPARATOR;
+        return( true );
+    }
+    return( false );
+}
+
+
 static bool ScanCmdLnDelim( void )
 {
     const char  *ptr;
-    bool        rc;
 
-    rc = false;
-    for( ptr = CmdLnDelimTab; ; ptr++ ) {
+    for( ptr = CmdLnDelimTab; *ptr != NULLCHAR; ptr++ ) {
         if( *ptr == *ScanPtr ) {
             CurrToken = ptr - CmdLnDelimTab + FIRST_CMDLN_DELIM;
-            if( *ScanPtr != NULLCHAR ) {
-                ScanPtr++;
-            }
-            rc = true;
-            break;
-        }
-        if( *ptr == NULLCHAR ) {
-           break;
+            ScanPtr++;
+            return( true );
         }
     }
-    return( rc );
+    return( false );
 }
 
 
@@ -810,6 +812,8 @@ void Scan( void )
                 return;
             }
         }
+        if( ScanCmdLnSepar() )
+            return;
         if( ScanCmdLnDelim() )
             return;   /*sf do this if the others fail */
         if( ScanRealNum() )
