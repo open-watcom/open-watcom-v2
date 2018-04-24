@@ -1356,6 +1356,36 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     DTC_KIND dtor_kind;         // - DTC_... when ctor called
     label_handle lbl;           // - Label for IC_GOTO_NEAR
 
+//
+//          PROCEDURE DECLARATIONS
+//
+    cg_name set_expr;               // expression for set
+//
+//          Virtual Function reference with inlined args
+//
+    bool vf_call;                   // true ==> virtual call gen'ed
+    target_offset_t vf_offset;      // offset to virtual function ptr
+    vindex vf_index;                // index for virtual function
+    target_offset_t vf_adj_this;    // adjustment for "this" on virt call
+    target_offset_t vf_adj_retn;    // adjustment for return on virt call
+    SYMBOL vf_this;                 // this for function (bound ?)
+    cg_name vf_ptr;                 // pre-computation of vf_ptr
+//
+//          Virtual Base reference with inlined args
+//
+    target_offset_t vb_exact;       // exact for virtual base
+    target_offset_t vb_delta;       // delta for virtual base
+    target_offset_t vb_offset;      // offset to virtual base ptr.
+    vindex          vb_index;       // index for virtual base
+//
+// EXCEPTION HANDLING
+//
+    target_size_t elem_size;        // size of element
+    SE *se_dlt;                     // SE entry created
+    SE *try_se;                     // try SE for catch
+    SE *catch_se;                   // catch SE
+
+
     static cg_op cg_opcodes[] ={// - opcodes for code generator
     #include "ppopscop.h"
     };
@@ -1366,9 +1396,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     ic_sp = 0;
     dtor_kind = 0;
     dtor_last_reqd = NULL;
-    for( ; ; ) {
+    for( ;; ) {
         ins = CgioReadIC( file_ctl );
-        if( ins->opcode == IC_EOF ) break;
+        if( ins->opcode == IC_EOF )
+            break;
         ExtraRptIncrementCtr( ctr_ic_codes );
         ins_value = ins->value;
         switch( ins->opcode ) {
@@ -1376,20 +1407,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          CONTROL OPCODES
 //
-
           case IC_DEF_SEG :                 // SET THE CURRENT SEGMENT
             curr_seg = (segment_id)ins_value.uvalue;
             BESetSeg( curr_seg );
             break;
 
-
 //
 //          LABELS
 //
-
-
-        {
-
           case IC_LABGET_CS :               // GET CONTROL-SEQUENCE LABELS
           { label_handle *lab;              // - next label handle
             for( ctr = ins_value.uvalue; ctr > 0; -- ctr ) {
@@ -1461,11 +1486,10 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             CgControl( ins_value.uvalue, op1, type, lbl );
             dump_label( printf( "Goto near %p %p\n", op1, lbl ) );
           } break;
-        }
+
 //
 //          SWITCH STATEMENT
 //
-
           case IC_SWITCH_BEG :              // SWITCH : START
           { label_handle select;
             select = CgSwitchBeg( fctl );
@@ -1494,7 +1518,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          EXPRESSIONS
 //
-
           case IC_EXPR_TRASH :              // TRASH EXPRESSION
           { cg_name expr;                   // - expression
             cg_type type;                   // - expression type
@@ -1605,7 +1628,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_OPR_BINARY :              // OPERATION : BINARY
             cg_opcode = cg_opcodes[ ins_value.uvalue ];
             if( O_COMMA == cg_opcode ) {
-                if( CgExprPopGarbage() ) break;
+                if( CgExprPopGarbage() )
+                    break;
                 op2 = CgExprPop();
                 CgCommaWithTopExpr( op2, exprn_type );
                 break;
@@ -1798,7 +1822,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_RARG_SYM :                // SYMBOL FOR BOUND REF. ARG.
           { SYMBOL sym;                     // - symbol
             sym = ins_value.pvalue;
-            if( ! CallStackTopInlined() ) break;
+            if( ! CallStackTopInlined() )
+                break;
             if( CgRetnOptIsOptVar( fctl, sym ) ) {
                 sym = fctl->return_symbol;
             } else {
@@ -1811,23 +1836,27 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { SYMBOL bound;                   // - bound reference
             SYMBOL sym;                     // - current symbol
             target_offset_t offset;         // - offset of bound reference
-            if( ! CallStackTopInlined() ) break;
+            if( ! CallStackTopInlined() )
+                break;
             IbpReference( ins_value.pvalue, &sym, &bound, &offset );
             IbpAdd( bound, offset, fctl );
           } break;
 
           case IC_RARG_FUNC :               // ARG # FOR BOUND REF. ARG
-            if( ! CallStackTopInlined() ) break;
+            if( ! CallStackTopInlined() )
+                break;
             IbpDefineIndex( ins_value.uvalue );
             break;
 
           case IC_RARG_OFFSET :             // SET OFFSET FOR REFERENCE ARG.
-            if( ! CallStackTopInlined() ) break;
+            if( ! CallStackTopInlined() )
+                break;
             IbpDefineOffset( ins_value.uvalue );
             break;
 
           case IC_RARG_VBOFFSET :           // SET OFFSET FOR VB-REF ARG.
-            if( ! CallStackTopInlined() ) break;
+            if( ! CallStackTopInlined() )
+                break;
             IbpDefineVbOffset( ins_value.uvalue );
             break;
 
@@ -1858,7 +1887,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          FUNCTION CALLING
 //
-
           case IC_RETNOPT_BEG :             // START CONDITIONAL RETURN CODE
             CgRetnOpt_RETNOPT_BEG( fctl );
             break;
@@ -1953,7 +1981,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          INITIALIZATION (CODE AND DATA)
 //
-
           case IC_INIT_BEG :                // START AN INITIALIZATION
           { SYMBOL sym;
             sym = ins_value.pvalue;
@@ -1990,11 +2017,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_INIT_DONE :               // END AN INITIALIZATION
             break;
 
-
 //
 //          DATA GENERATION
 //
-
           case IC_DATA_SYMBOL :             // GENERATE DATA FOR SYMBOL
           { SYMBOL sym;
             sym = ins_value.pvalue;
@@ -2103,7 +2128,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          PROCEDURE DECLARATIONS
 //
-
           case IC_FUNCTION_OPEN :           // OPEN FUNCTION SCOPE
           { SYMBOL sym;                     // - function symbol
             sym = ins_value.pvalue;
@@ -2510,18 +2534,18 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_VBASE_VPTR_INIT : // GENERATE VBASE OFFSET VPTR INIT CODE
           { SYMBOL table_sym;
-            target_offset_t vb_offset;
-            vindex vb_index;
+            target_offset_t vb_offset_l;
+            vindex vb_index_l;
 //            target_offset_t exact_delta;
             bool vbptr;
 //            IC_PARM_POP_INT( exact_delta );
             IC_PARM_SKIP;
-            IC_PARM_POP_INT( vb_index );
-            IC_PARM_POP_INT( vb_offset );
+            IC_PARM_POP_INT( vb_index_l );
+            IC_PARM_POP_INT( vb_offset_l );
             IC_PARM_POP_PTR( table_sym );
             IC_PARM_POP_INT( vbptr );
             IC_PARM_DONE;
-            genVBaseVPtrInit( fctl, vb_offset, vb_index, ins_value.uvalue, table_sym, vbptr );
+            genVBaseVPtrInit( fctl, vb_offset_l, vb_index_l, ins_value.uvalue, table_sym, vbptr );
           } break;
 
           case IC_DTOR_STATIC :     // STATIC SYMBOL NEEDS DTOR
@@ -2577,9 +2601,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             CondInfoPop();
             break;
 
-        {
-            cg_name set_expr;       // expression for set
-
           case IC_INIT_REF_BEG :    // START OF DTORABLE REF INIT
           { SE* se;                 // - state entry
             se = dtorAutoSymbol( fctl, ins_value.pvalue );
@@ -2611,20 +2632,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             CgExprPush( top_expr, top_type );
           } break;
 
-        }
-
 //
 //          Virtual Function reference with inlined args
 //
-        {
-            bool vf_call;               // true ==> virtual call gen'ed
-            target_offset_t vf_offset;  // offset to virtual function ptr
-            vindex vf_index;            // index for virtual function
-            target_offset_t vf_adj_this;// adjustment for "this" on virt call
-            target_offset_t vf_adj_retn;// adjustment for return on virt call
-            SYMBOL vf_this;             // this for function (bound ?)
-            cg_name vf_ptr;             // pre-computation of vf_ptr
-
           case IC_CALL_EXEC_VFUN :      // EXECUTE VIRTUAL FUNCTION CALL
           { call_handle handle1;        // - handle for call
             target_offset_t retn_adj;   // - return adjustment
@@ -2700,17 +2710,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             CgExprPush( op, exprn_type );
           } break;
 
-        }
-
 //
 //          Virtual Base reference with inlined args
 //
-        {
-            target_offset_t vb_exact;   // exact for virtual base
-            target_offset_t vb_delta;   // delta for virtual base
-            target_offset_t vb_offset;  // offset to virtual base ptr.
-            vindex          vb_index;   // index for virtual base
-
           case IC_VB_EXACT :        // SET vb_exact
             vb_exact = ins_value.uvalue;
             break;
@@ -2737,12 +2739,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             CgExprPush( op, exprn_type );
           } break;
 
-        }
-
 //
 //          TEST OF EXTRA ARG
 //
-
           case IC_CDARG_TEST_ON :           // TEST IF ON
             cdArgTest( fctl, ins_value.uvalue, true );
             break;
@@ -2758,11 +2757,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             }
             break;
 
-
 //
 //          DEBUGGING -- for program
 //
-
           case IC_DBG_SRCFILE :             // SET SOURCE FILE
             current_src = ins_value.pvalue;
             break;
@@ -2783,11 +2780,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
 //
-// EXCEPTION HANDLING
+//          EXCEPTION HANDLING
 //
-
-          // Top of stack is new'ed expression
-          //
+          /* Top of stack is new'ed expression */
           case IC_NEW_ALLOC :               // CTORING OF NEW EXPRESSION
           { cg_name expr;                   // - expression being gen'ed
             cg_name new_expr;               // - CTOR'ed expression
@@ -2826,10 +2821,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
 
-        {
-            target_size_t elem_size;        // size of element
-            SE* se_dlt;                     // SE entry created
-
           case IC_DLT_DTOR_SIZE :           // SET SIZE OF ELEMENT
             elem_size = ins_value.uvalue;
             break;
@@ -2853,8 +2844,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_DLT_DTORED :              // DTORABLE ELEMENT DTORED
             DtorForDelEnd( fctl, se_dlt );
             break;
-
-        }
 
           case IC_DTORABLE_INIT :           // INITIALIZATION OF DTORABLE
             fctl->ctor_test = true;
@@ -2906,9 +2895,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           } break;
 
 
-        { SE* try_se;                       // try SE for catch
-          SE* catch_se;                     // catch SE
-
           case IC_CATCH_VAR :               // SET TRY_IMPL FOR CATCH
             try_se = stateTableTryBlk( tryImpl( ins_value.pvalue ) );
             FstabSetSvSe( FstabPrevious( try_se ) );
@@ -2933,8 +2919,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             FstabAssignStateVar( se );
             FstabSetSvSe( catch_se );
           } break;
-
-        }
 
           case IC_SET_TRY_STATE :           // SET TRY STATE
           { SE* try_se = stateTableTryBlk( tryImpl( ins_value.pvalue ) );
@@ -3082,8 +3066,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             break;
 
 //
-// IC parm stack support
-
+//          IC parm stack support
+//
           case IC_PARM_BIN :                // push an integer
             IC_PARM_PUSH_INT( ins_value.ivalue );
             break;
@@ -3093,9 +3077,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             IC_PARM_PUSH_PTR( ins_value.pvalue );
             break;
 
-
 //
-// Virtual function thunk adjustments
+//          Virtual function thunk adjustments
+//
           case IC_VTHUNK_MDELTA :           // - this -= delta;
             genVthunkDelta( fctl, O_MINUS, ins_value.ivalue );
             break;
@@ -3109,10 +3093,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             genVthunkVBase( fctl, ins_value.ivalue );
             break;
 
-
 //
-// Generation of Virtual-Function Tables
-
+//          Generation of Virtual-Function Tables
+//
           case IC_VFT_BEG :                 // VFT: START
           { SYMBOL vft;
             vft = ins_value.pvalue;
@@ -3135,7 +3118,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 //          DEBUGGING -- internal (not in production version)
 //
-
           case IC_TRACE_BEG :               // TURN IC TRACE ON
             PragDbgToggle.dump_exec_ic = true;
             break;
@@ -3143,7 +3125,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_TRACE_END :               // TURN IC TRACE OFF
             PragDbgToggle.dump_exec_ic = false;
             break;
-
 #endif
         }
     }
@@ -3309,7 +3290,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     CtxSetCurrContext( CTX_CG_FUNC );
     if( BELoad( NULL ) ) {
         cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
-        if( ! cg_info.success ) {
+        if( !cg_info.success ) {
             CErr1( ERR_CODEGEN_CANT_INITIALIZE );
             CSuicide();
 #ifndef NDEBUG
