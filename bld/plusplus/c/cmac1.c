@@ -495,7 +495,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
         ppscan_mode = InitPPScan();             // enable T_PPNUMBER tokens
         htokenbuf = TokenBufInit( NULL );
         if( parm_cnt_reqd > 0 ) {
-            macro_parms = CMemAlloc( parm_cnt_reqd * sizeof( MACRO_ARG ) );
+            macro_parms = CMemAlloc( parm_cnt_reqd * sizeof( *macro_parms ) );
             if( fmentry->macro_flags & MFLAG_HAS_VAR_ARGS ) {
                 macro_parms[parm_cnt_reqd-1].arg = NULL;
             }

@@ -77,16 +77,15 @@ typedef enum macro_flags {
 
 /* Actual macro definition is at (char *)mentry + mentry->macro_defn */
 
-typedef struct macro_entry MEDEFN, *MEPTR;
-struct macro_entry {
-    MEPTR       next_macro;     /* next macro in this hash chain */
-    TOKEN_LOCN  defn;           /* where it was defined */
-    uint_16     macro_defn;     /* offset to defn, 0 ==> special macro name*/
-    uint_16     macro_len;      /* length of macro definition */
-    macro_flags macro_flags;    /* flags */
-    uint_8      parm_count;     /* special macro indicator if defn == 0 */
-    unsigned    : 0;            /* align macro_name to a DWORD boundary */
-    char        macro_name[1];  /* name,parms, and macro definition */
-};
+typedef struct macro_entry {
+    struct macro_entry  *next_macro;    /* next macro in this hash chain */
+    TOKEN_LOCN          defn;           /* where it was defined */
+    uint_16             macro_defn;     /* offset to defn, 0 ==> special macro name*/
+    uint_16             macro_len;      /* length of macro definition */
+    macro_flags         macro_flags;    /* flags */
+    uint_8              parm_count;     /* special macro indicator if defn == 0 */
+    unsigned            : 0;            /* align macro_name to a DWORD boundary */
+    char                macro_name[1];  /* name,parms, and macro definition */
+} MEDEFN, *MEPTR;
 
 #endif

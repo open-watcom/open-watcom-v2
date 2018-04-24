@@ -128,12 +128,12 @@ static BRI_Handle* bri_handle;  // handle for browse-file writer
 
 
 static char* brinfPchGetBuffer  // GET BUFFER FOR READ
-    ( BRI_PCH_CTL* ctl        // - control
+    ( BRI_PCH_CTL* ctl          // - control
     , unsigned size )           // - size required
 {
     if( size > ctl->bsize ) {
         CMemFreePtr( &ctl->buffer );
-        ctl->buffer = CMemAlloc( ( size + 1024 - 1 ) &  -1024 );
+        ctl->buffer = CMemAlloc( _RoundUp( size, 1024 ) );
     }
     return ctl->buffer;
 }

@@ -1265,7 +1265,7 @@ void CreateAux(                 // CREATE AUX ID
 {
     CurrEntry = CMemAlloc( offsetof( AUX_ENTRY, name ) + strlen( id ) + 1 );
     strcpy( CurrEntry->name, id );
-    CurrInfo = CMemAlloc( sizeof( AUX_INFO ) );
+    CurrInfo = CMemAlloc( sizeof( *CurrInfo ) );
     // AuxCopy assumes destination is valid
     CurrInfo->parms = NULL;
     CurrInfo->objname = NULL;
@@ -1558,7 +1558,7 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
         buff[i] = list;
     }
     HW_CAsgn( buff[i], HW_EMPTY );
-    i = ( i + 1 ) * sizeof( hw_reg_set );
+    i = ( i + 1 ) * sizeof( *sets );
     sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
     if( !IsAuxParmsBuiltIn( CurrInfo->parms ) ) {

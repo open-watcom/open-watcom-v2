@@ -159,7 +159,7 @@ static BRI_SymbolID symbolIDForClass( CLASSINFO *c )
 
 // NOTE:  the following static data is initialized and de-initialized
 //        by brinfWriteFileContents().
-static uint_32 *        type_ops = NULL;
+static uint_32          *type_ops = NULL;
 static unsigned         num_type_ops = 0;
 
 static BRI_TypeID writeType     // DUMP A TYPE
@@ -260,7 +260,7 @@ static BRI_TypeID writeType     // DUMP A TYPE
                 if( num_ops > num_type_ops ){
                     CMemFree( type_ops );
                     num_type_ops = num_ops;
-                    type_ops = CMemAlloc( num_type_ops * sizeof(uint_32) );
+                    type_ops = CMemAlloc( num_type_ops * sizeof( *type_ops ) );
                 }
                 type_ops[0] = writeType( dtype->of );
                 for( i = 1; i < num_ops; i++ ) {
@@ -514,7 +514,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
 
     // Initialize static data used by writeType
     num_type_ops = 4;
-    type_ops = (uint_32 *) CMemAlloc( num_type_ops * sizeof( uint_32 ) );
+    type_ops = CMemAlloc( num_type_ops * sizeof( *type_ops ) );
 
     for( ; ; ) {
     // The following comment is a trigger for the ICMASK program to start

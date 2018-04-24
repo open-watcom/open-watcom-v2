@@ -43,12 +43,12 @@
 #define MACRO_HASH_SIZE         NAME_HASH
 #define MAC_SEGMENT_SIZE        (0x8000 - sizeof( char * ))
 #define MAC_SEGMENT_LIMIT       (MAC_SEGMENT_SIZE - 2)
-#define HASH_TABLE_SIZE         (MACRO_HASH_SIZE * sizeof( macroHashTable ))
+#define HASH_TABLE_SIZE         (MACRO_HASH_SIZE * sizeof( *macroHashTable ))
 
 typedef struct macro_seg_list MACRO_SEG_LIST;
 struct macro_seg_list {
     MACRO_SEG_LIST  *next;
-    char            segment[ MAC_SEGMENT_SIZE ];
+    char            segment[MAC_SEGMENT_SIZE];
 };
 
 typedef struct pch_delmac PCH_DELMAC;
@@ -59,7 +59,7 @@ struct pch_delmac {
 };
 
 static size_t           macroSegmentLimit;  // last free byte in MacroSegment
-static MEPTR            *macroHashTable;    // hash table [ MACRO_HASH_SIZE ]
+static MEPTR            *macroHashTable;    // hash table [MACRO_HASH_SIZE]
 static MEPTR            beforeIncludeChecks;// #undef macros defined before first #include
 static MACRO_SEG_LIST   *macroSegmentList;  // pointer to list of macro segments
 static PCH_DELMAC       *macroPCHDeletes;   // macros to delete after PCH load
@@ -167,7 +167,7 @@ void MacroWriteBrinf            // WRITE MACROS TO BRINF
     MEPTR curr;
 
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
-        RingIterBeg( macroHashTable[ i ], curr ) {
+        RingIterBeg( macroHashTable[i], curr ) {
             BrinfDeclMacro( curr );
         } RingIterEnd( curr )
     }
@@ -248,7 +248,7 @@ static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
 
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
         hash = i;
-        RingIterBeg( macroHashTable[ i ], curr ) {
+        RingIterBeg( macroHashTable[i], curr ) {
             if( curr->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
                 if( data == NULL ) {
                     (*rtn)( curr, &hash );
@@ -417,16 +417,16 @@ pch_status PCHReadMacros( void )
         hash = PCHGetUInt( new_mac->next_macro );
         new_mac->next_macro = NULL;
         new_mac->defn.src_file = SrcFileMapIndex( new_mac->defn.src_file );
-        RingAppend( &macroHashTable[ hash ], new_mac );
+        RingAppend( &macroHashTable[hash], new_mac );
     }
     // add macros from current compilation that should override the PCH macros
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
-        RingIterBeg( old_hashtab[ i ], curr ) {
+        RingIterBeg( old_hashtab[i], curr ) {
             if( curr->macro_flags & MFLAG_PCH_OVERRIDE ) {
                 // macro is different but doesn't affect PCH contents
                 // action: replace with current compilation unit's defn
                 pch_prev = NULL;
-                RingIterBeg( macroHashTable[ i ], pch_curr ) {
+                RingIterBeg( macroHashTable[i], pch_curr ) {
                     if( strcmp( curr->macro_name, pch_curr->macro_name ) == 0 ) {
                         RingPruneWithPrev( &macroHashTable[i], pch_curr, pch_prev );
                         mlen = curr->macro_len;
@@ -444,7 +444,7 @@ pch_status PCHReadMacros( void )
     // delete unreferenced macros that existed in PCH but don't exist now
     RingIterBeg( macroPCHDeletes, del_name ) {
         prev = NULL;
-        RingIterBeg( macroHashTable[ del_name->hash ], curr ) {
+        RingIterBeg( macroHashTable[del_name->hash], curr ) {
             if( strcmp( curr->macro_name, del_name->name ) == 0 ) {
                 RingPruneWithPrev( &macroHashTable[del_name->hash], curr, prev );
                 break;
@@ -473,13 +473,13 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
     *phash = hash;
     ++len;
     if( len > NAME_MAX_MASK_INDEX ) {
-        mask = NameCmpMask[ NAME_MAX_MASK_INDEX ];
+        mask = NameCmpMask[NAME_MAX_MASK_INDEX];
     } else {
-        mask = NameCmpMask[ len ];
+        mask = NameCmpMask[len];
     }
-    RingIterBeg( macroHashTable[ hash ], curr ) {
+    RingIterBeg( macroHashTable[hash], curr ) {
         id = curr->macro_name;
-        if(( *((unsigned*)id) ^ *((unsigned*)name) ) & mask ) {
+        if(( *((unsigned *)id) ^ *((unsigned *)name) ) & mask ) {
             continue;
         }
         if( NameMemCmp( id, name, len ) == 0 ) {
@@ -512,7 +512,7 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
 static void unlinkMacroFromTable( MEPTR fmentry, unsigned hash )
 {
     ++undefCount;
-    RingPrune( &macroHashTable[ hash ], fmentry );
+    RingPrune( &macroHashTable[hash], fmentry );
     if(( InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
         // make sure we only do this *after* the first include has started
         // processing otherwise the PCH is created in such a way that
@@ -568,7 +568,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
             mentry->macro_flags = InitialMacroFlag;
             mptr = macroAllocateInSeg( len );
             DbgAssert( mptr == mentry );
-            RingAppend( &macroHashTable[ hash ], mptr );
+            RingAppend( &macroHashTable[hash], mptr );
             ExtraRptIncrementCtr( macros_defined );
 #ifdef XTRA_RPT
             if( mentry->parm_count != 0 ) {
