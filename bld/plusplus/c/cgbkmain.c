@@ -1357,11 +1357,11 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     label_handle lbl;           // - Label for IC_GOTO_NEAR
 
 //
-//          PROCEDURE DECLARATIONS
+//  group - PROCEDURE DECLARATIONS
 //
     cg_name set_expr;               // expression for set
 //
-//          Virtual Function reference with inlined args
+//  group - Virtual Function reference with inlined args
 //
     bool vf_call;                   // true ==> virtual call gen'ed
     target_offset_t vf_offset;      // offset to virtual function ptr
@@ -1371,14 +1371,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     SYMBOL vf_this;                 // this for function (bound ?)
     cg_name vf_ptr;                 // pre-computation of vf_ptr
 //
-//          Virtual Base reference with inlined args
+//  group - Virtual Base reference with inlined args
 //
     target_offset_t vb_exact;       // exact for virtual base
     target_offset_t vb_delta;       // delta for virtual base
     target_offset_t vb_offset;      // offset to virtual base ptr.
     vindex          vb_index;       // index for virtual base
 //
-// EXCEPTION HANDLING
+//  group - EXCEPTION HANDLING
 //
     target_size_t elem_size;        // size of element
     SE *se_dlt;                     // SE entry created
@@ -1387,7 +1387,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
 
     static cg_op cg_opcodes[] ={// - opcodes for code generator
-    #include "ppopscop.h"
+        #include "ppopscop.h"
     };
 
     CgioOpenInput( file_ctl );
@@ -1396,7 +1396,35 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
     ic_sp = 0;
     dtor_kind = 0;
     dtor_last_reqd = NULL;
-    for( ;; ) {
+
+    curr_seg = UNDEFSEG;
+    lbl = NULL;
+    exprn_type = TY_UNKNOWN;
+    lvalue_type = TY_UNKNOWN;
+    indexing_type = TY_UNKNOWN;
+    ptr_offset = 0;
+    data_size = 0;
+    current_src = NULL;
+
+    // group variables initialization
+    set_expr = NULL;
+    vf_call = false;
+    vf_offset = 0;
+    vf_index = 0;
+    vf_adj_this = 0;
+    vf_adj_retn = 0;
+    vf_this = NULL;
+    vf_ptr = NULL;
+    vb_exact = 0;
+    vb_delta = 0;
+    vb_offset = 0;
+    vb_index = 0;
+    elem_size = 0;
+    se_dlt = NULL;
+    try_se = NULL;
+    catch_se = NULL;
+
+for( ;; ) {
         ins = CgioReadIC( file_ctl );
         if( ins->opcode == IC_EOF )
             break;
