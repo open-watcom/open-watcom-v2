@@ -23,6 +23,7 @@ set PROJDIR=<CWD>
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/dos/cmain086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/os2/cmain086.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/libmno16.c        <OWRELROOT>/src/startup/os2/libmno16.c
+    <CPCMD> <OWSRCDIR>/clib/startup/c/dmaino16.c        <OWRELROOT>/src/startup/os2/dmaino16.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/main2o32.c        <OWRELROOT>/src/startup/386/main2o32.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/libmno32.c        <OWRELROOT>/src/startup/386/libmno32.c
     <CPCMD> <OWSRCDIR>/clib/startup/c/dmaino32.c        <OWRELROOT>/src/startup/386/dmaino32.c
