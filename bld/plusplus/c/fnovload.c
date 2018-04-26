@@ -131,8 +131,6 @@ static void initRankVector( FNOV_CONTROL control, FNOV_RANK *rv, unsigned num_ar
     unsigned    i;
     FNOV_RANK   *rank;
 
-    if( num_args == 0 )
-        num_args = 1;
     rank = rv;
     memset( rank, 0, sizeof( *rank ) * num_args );
     for( i = num_args ; i > 0 ; i-- ) {
@@ -242,15 +240,15 @@ static FNOV_SCALAR rankCtorReturn(
     PTREE *src_ptree )
 {
     TYPE ret_type;
-    FNOV_RANK rank;
+    FNOV_RANK rank[1];
 
     ret_type = SymFuncReturnType( match->sym );
     // ctor type returned above is class &, but the type
     // of a ctor is defined to be just the class
     ret_type = ClassTypeForType( ret_type );
-    initRankVector( FNC_EXCLUDE_UDCONV, &rank, 0 );
-    FnovArgRank( ret_type, tgt, src_ptree, &rank );
-    return( rank.u.no_ud );
+    initRankVector( FNC_EXCLUDE_UDCONV, rank, 1 );
+    FnovArgRank( ret_type, tgt, src_ptree, rank );
+    return( rank->u.no_ud );
 }
 
 static void udcRankUDCF( FNOV_LIST *list, TYPE src, TYPE tgt,
@@ -1488,10 +1486,10 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     addr_func_t         retn;
     SYMBOL              curr;
     SYM_REGION          *region;
-    auto FNOV_RANK      curr_rank;
+    auto FNOV_RANK      curr_rank[1];
     SEARCH_RESULT       *result;
 
-    initRankVector( FNC_DEFAULT, &curr_rank, 0 );
+    initRankVector( FNC_DEFAULT, curr_rank, 1 );
     retn = NodeAddrOfFun( *ptlist, &fn );
     DbgAssert( retn != ADDR_FN_NONE );
     src_mptr = false;
@@ -1509,7 +1507,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
                               , curr
                               , tgt
                               , bestrank
-                              , &curr_rank
+                              , curr_rank
                               , src_mptr );
         } RingIterEnd( curr )
     } else {
@@ -1520,7 +1518,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
                                   , curr
                                   , tgt
                                   , bestrank
-                                  , &curr_rank
+                                  , curr_rank
                                   , src_mptr );
             } RingIterEndTo( curr, region->to )
         } RingIterEnd( region )
@@ -1621,11 +1619,9 @@ static bool getRank( FNOV_INFO* info )
         if( contender && SymIsThisFuncMember( candidate->sym ) ) {
             type_flag   srcflags = info->alist->qualifier;
             type_flag   tgtflags = candidate->alist->qualifier;
-            contender = !FnovCvFlagsRank( srcflags, tgtflags,
-                                          &candidate->thisrank );
+            contender = !FnovCvFlagsRank( srcflags, tgtflags, &candidate->thisrank );
             if( contender ) {
-                FnovMemFlagsRank( srcflags, tgtflags, NULL, NULL,
-                                  &candidate->thisrank );
+                FnovMemFlagsRank( srcflags, tgtflags, NULL, NULL, &candidate->thisrank );
             }
         }
     }

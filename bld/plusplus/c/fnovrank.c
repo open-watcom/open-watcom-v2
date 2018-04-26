@@ -62,7 +62,7 @@ typedef struct                  // FNOV_CONV -- control for a conversion
 {
     FNOV_TYPE wsrc;             // - source
     FNOV_TYPE wtgt;             // - target
-    FNOV_RANK* rank;            // - ranking
+    FNOV_RANK *rank;            // - ranking
 } FNOV_CONV;
 
 bool FnovCvFlagsRank( type_flag src, type_flag tgt, FNOV_RANK *rank )
@@ -968,7 +968,7 @@ static void clstoClsRank( FNOV_CONV *conv )
     TYPE                src_basic, tgt_basic;
     type_flag           srcflags, tgtflags;
     FNOV_INTRNL_CONTROL ictl;
-    FNOV_RANK* rank = conv->rank;
+    FNOV_RANK           *rank = conv->rank;
 
     src_basic = conv->wsrc.basic;
     tgt_basic = conv->wtgt.basic;
