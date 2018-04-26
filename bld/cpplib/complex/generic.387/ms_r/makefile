@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_osi
+#pmake: build flat cpu_386 os_osi os_dos
 #
 # cplx7r.lib -- register based 32-bit COMPLEX library -fpi
 #

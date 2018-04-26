@@ -62,6 +62,7 @@ sw_c_windows = -bt=windows -DSTRICT -zW
 sw_c_winnt   = -bt=nt $(win32ver)
 sw_c_os2     = -bt=os2
 sw_c_qnx     = -bt=qnx
+sw_c_rdos    = -bt=rdos
 sw_c_linux   = -bt=linux
 
 #####################
@@ -111,6 +112,7 @@ sw_a_windows = -bt=windows
 sw_a_winnt   = -bt=nt $(win32ver)
 sw_a_os2     = -bt=os2
 sw_a_qnx     = -bt=qnx
+sw_a_rdos    = -bt=rdos
 sw_a_linux   = -bt=linux
 
 #######################
@@ -178,6 +180,7 @@ plib_c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
 plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_$(processor)))
 plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
+plib_c_inc_dirs_rdos    =-I"$(hdr_dir)/dos"
 plib_c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
 
 plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"

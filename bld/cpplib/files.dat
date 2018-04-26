@@ -56,10 +56,6 @@ type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
 type="l"    usr="plib3s.lib"    conda="3s"
 type="l"    usr="plbx3r.lib"    conda="3r"
 type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
 
 [ DEFAULT dir="lib386/dos" cond="cplusplus dostarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
 # ---------- 32 bit DOS libraries (small) -----------
@@ -67,14 +63,24 @@ type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
 type="l"    usr="plib3s.lib"    conda="3s"
 type="l"    usr="plbx3r.lib"    conda="3r"
 type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
 type="l"    usr="cplx3r.lib"    conda="3r"
 type="l"    usr="cplx3s.lib"    conda="3s"
 type="l"    usr="cplx73r.lib"   conda="3r"
 type="l"    usr="cplx73s.lib"   conda="3s"
+
+[ DEFAULT dir="lib386/linux" cond="cplusplus lnxtarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+# ---------- Linux libraries (flat) -----------
+type="l"    usr="plibmt3r.lib"  conda="3r"      wherea="c"
+type="l"    usr="plibmt3s.lib"  conda="3s"      wherea="c"
+type="l"    usr="plbxmt3r.lib"  conda="3r"      wherea="c"
+type="l"    usr="plbxmt3s.lib"  conda="3s"      wherea="c"
+
+[ DEFAULT dir="lib386/rdos" cond="cplusplus rdostarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+# ---------- RDOS libraries (flat) -----------
+type="l"    usr="plibmt3r.lib"  conda="3r"      wherea="c"
+type="l"    usr="plibmt3s.lib"  conda="3s"      wherea="c"
+type="l"    usr="plbxmt3r.lib"  conda="3r"      wherea="c"
+type="l"    usr="plbxmt3s.lib"  conda="3s"      wherea="c"
 
 [ DEFAULT dir="lib386/nt" cond="cplusplus wnttarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
 # ---------- NT libraries (flat) -----------

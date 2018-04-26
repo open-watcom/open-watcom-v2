@@ -20,6 +20,7 @@ plib_host_os_winnt   = nt
 plib_host_os_windows = win
 plib_host_os_os2     = os2
 plib_host_os_qnx     = qnx
+plib_host_os_rdos    = rdos
 plib_host_os_netware = nov
 plib_host_os_linux   = linux
 host_os = $(plib_host_os_$(system))

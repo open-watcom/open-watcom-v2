@@ -1,4 +1,4 @@
-#pmake: build flat cpu_386 os_osi os_dos os_linux
+#pmake: build flat cpu_386 os_osi os_win os_rdos os_linux os_nt os_os2
 #
 # cplx3s.lib -- stack based 32-bit COMPLEX library fpc
 #
