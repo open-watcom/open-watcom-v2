@@ -424,16 +424,16 @@ static SYMBOL classArrayRtn(    // OBTAIN ARRAY ROUTINE FOR ARRAY TYPE
     alist.type_list[0] = cltype;
     rtn = result->sym_name->name_syms;
     switch( FuncOverloaded( &rtn, result, rtn, &alist, NULL ) ) {
-      case FNOV_AMBIGUOUS :
+    case FNOV_AMBIGUOUS :
         CErr2p( ambig_msg, rtn );
         rtn = NULL;
         break;
-      case FNOV_NONAMBIGUOUS :
+    case FNOV_NONAMBIGUOUS :
         if( ScopeCheckSymbol( result, rtn ) ) {
             rtn = NULL;
         }
         break;
-      DbgDefault( "classAssignMember: impossible return" );
+    DbgDefault( "classAssignMember: impossible return" );
     }
     ScopeFreeResult( result );
     return rtn;
@@ -533,10 +533,10 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
     }
     ScopeGenAccessSet( cltype );
     switch( comp_type ) {
-      case TITER_CLASS_EXACT :
-      case TITER_CLASS_VBASE :
-      case TITER_CLASS_DBASE :
-      case TITER_NAKED_DTOR  :
+    case TITER_CLASS_EXACT :
+    case TITER_CLASS_VBASE :
+    case TITER_CLASS_DBASE :
+    case TITER_NAKED_DTOR  :
         if( NULL == StructType( cltype ) ) {
             expr = bitFieldNodeAssign( tgt, src, NodeRvalue );
         } else {
@@ -544,8 +544,8 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
             expr = ClassAssign( expr );
         }
         break;
-      case TITER_ARRAY_EXACT :
-      case TITER_ARRAY_VBASE :
+    case TITER_ARRAY_EXACT :
+    case TITER_ARRAY_VBASE :
         if( NULL == StructType( cltype ) ) {
             src = NodeConvertFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
             tgt = NodeConvertFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
@@ -606,11 +606,12 @@ static void emitOpeq(           // EMIT DEFAULT ASSIGNMENTS FOR COMPONENT
     for( ; ; ) {
         comp_type = CDoptIterNextElement( iter );
         switch( comp_type ) {
-          case TITER_NONE :
-            if( depth == 0 ) break;
-            -- depth;
+        case TITER_NONE :
+            if( depth == 0 )
+                break;
+            --depth;
             continue;
-          case TITER_ARRAY_EXACT :
+        case TITER_ARRAY_EXACT :
             artype = CDoptIterType( iter );
             emitOpeqCall( comp_type
                         , qualifier
@@ -620,8 +621,8 @@ static void emitOpeq(           // EMIT DEFAULT ASSIGNMENTS FOR COMPONENT
                         , artype
                         , NULL );
             continue;
-          case TITER_CLASS_EXACT :
-          case TITER_CLASS_DBASE :
+        case TITER_CLASS_EXACT :
+        case TITER_CLASS_DBASE :
             emitOpeqCall( comp_type
                         , qualifier
                         , scope
@@ -630,7 +631,7 @@ static void emitOpeq(           // EMIT DEFAULT ASSIGNMENTS FOR COMPONENT
                         , NULL
                         , NULL );
             continue;
-          case TITER_ARRAY_VBASE :
+        case TITER_ARRAY_VBASE :
             artype = CDoptIterType( iter );
             emitOpeqCall( comp_type
                         , qualifier
@@ -640,8 +641,8 @@ static void emitOpeq(           // EMIT DEFAULT ASSIGNMENTS FOR COMPONENT
                         , artype
                         , CDoptIterVBase( iter ) );
             continue;
-          case TITER_CLASS_VBASE :
-          case TITER_NAKED_DTOR :
+        case TITER_CLASS_VBASE :
+        case TITER_NAKED_DTOR :
             emitOpeqCall( comp_type
                         , qualifier
                         , scope
@@ -650,12 +651,12 @@ static void emitOpeq(           // EMIT DEFAULT ASSIGNMENTS FOR COMPONENT
                         , NULL
                         , CDoptIterVBase( iter ) );
             continue;
-          case TITER_MEMB :
-          case TITER_DBASE :
-          case TITER_VBASE :
+        case TITER_MEMB :
+        case TITER_DBASE :
+        case TITER_VBASE :
             ++depth;
             continue;
-          DbgDefault( "emitOpeq -- bad TITER value" );
+        DbgDefault( "emitOpeq -- bad TITER value" );
         }
         break;
     }
@@ -1027,7 +1028,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
                     , &fnov_diag );
     opt = CALL_OPT_ERR;
     switch( rank ) {
-      case OV_RANK_UD_CONV :
+    case OV_RANK_UD_CONV :
         ctor_udc = fnov_list->sym;
         FnovListFree( &fnov_list );
         FnovFreeDiag( &fnov_diag );
@@ -1063,13 +1064,13 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
             }
         }
         break;
-      case OV_RANK_UD_CONV_AMBIG :
+    case OV_RANK_UD_CONV_AMBIG :
         CallDiagAmbiguous( src, ERR_UDC_AMBIGUOUS, &fnov_diag );
         FnovFreeDiag( &fnov_diag );
         ConversionTypesSet( type_left, type_right );
         ConversionDiagnoseInf();
         break;
-      case OV_RANK_NO_MATCH :
+    case OV_RANK_NO_MATCH :
 #if 0
         CallDiagnoseRejects( src, diagnosis->msg_no_match_one, &fnov_diag );
 #else
@@ -1081,7 +1082,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
 #endif
         FnovFreeDiag( &fnov_diag );
         break;
-      DbgDefault( "FindConvFunc -- bad return from overloading" );
+    DbgDefault( "FindConvFunc -- bad return from overloading" );
     }
     if( opt == CALL_OPT_NONE ) {
         opt = AnalyseCallOpts( type, src, &dtor, &right );
@@ -1926,8 +1927,9 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
                 target_offset_t offset = CDoptIterOffsetExact( data->optiter );
                 TYPE type = CDoptIterType( data->optiter );
                 switch( elem_titer ) {
-                  case TITER_NONE :
-                    if( depth == 0 ) break;
+                case TITER_NONE :
+                    if( depth == 0 )
+                        break;
                     --depth;
                     if( depth <= 1 ) {
                         data->comp_options &= ~ CI_INLINED;
@@ -1942,17 +1944,17 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
                                         );
                     }
                     continue;
-                  case TITER_ARRAY_EXACT :
-                  case TITER_ARRAY_VBASE :
+                case TITER_ARRAY_EXACT :
+                case TITER_ARRAY_VBASE :
                     // note: comes thru here only for default ctor
                     if( CDoptInlinedMember( data->optiter ) ) {
                         data->comp_options |= CI_INLINED;
                     }
                     /* fall through */
-                  case TITER_NAKED_DTOR :
-                  case TITER_CLASS_EXACT :
-                  case TITER_CLASS_VBASE :
-                  case TITER_CLASS_DBASE :
+                case TITER_NAKED_DTOR :
+                case TITER_CLASS_EXACT :
+                case TITER_CLASS_VBASE :
+                case TITER_CLASS_DBASE :
                     if( CDoptIterCannotDefine( data->optiter ) ) {
                         CErr2p( ERR_NO_DEFAULT_INIT_CTOR, type );
                         continue;
@@ -1973,9 +1975,9 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
                     }
                     data->comp_options &= ~ remove_mask;
                     continue;
-                  case TITER_MEMB :
-                  case TITER_DBASE :
-                  case TITER_VBASE :
+                case TITER_MEMB :
+                case TITER_DBASE :
+                case TITER_VBASE :
                     if( TypeExactDtorable( type ) ) {
                         PtdObjPush( NULL, type, NULL, offset );
                     }
@@ -1984,7 +1986,7 @@ static void ctorPrologueComponents( // GENERATE CTOR OF COMPONENTS
                         data->comp_options |= CI_INLINED;
                     }
                     continue;
-                  DbgDefault( "ctorGenComponents: bad TITER value" );
+                DbgDefault( "ctorGenComponents: bad TITER value" );
                 }
                 break;
             }
@@ -2487,35 +2489,37 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     for(;;) {
         unsigned depth;
         TITER iter_status = CDoptIterNextComp( iter );
-        if( iter_status == TITER_NONE ) break;
+        if( iter_status == TITER_NONE )
+            break;
         depth = 0;
         for(;;) {
 //            bool is_exact;
             TITER sub_status = CDoptIterNextElement( iter );
             switch( sub_status ) {
-              case TITER_NONE :
-                if( depth == 0 ) break;
-                -- depth;
+            case TITER_NONE :
+                if( depth == 0 )
+                    break;
+                --depth;
                 continue;
-              case TITER_MEMB :
-              case TITER_DBASE :
-              case TITER_VBASE :
-                ++ depth;
-                // drops thru
-              case TITER_CLASS_EXACT :
-              case TITER_CLASS_DBASE :
-              case TITER_CLASS_VBASE :
+            case TITER_MEMB :
+            case TITER_DBASE :
+            case TITER_VBASE :
+                ++depth;
+                /* fall through */
+            case TITER_CLASS_EXACT :
+            case TITER_CLASS_DBASE :
+            case TITER_CLASS_VBASE :
 //                is_exact = CDoptIterExact( iter );
                 dtorSubObject( CDoptIterFunction( iter ) );
                 regster = true;
                 continue;
-              case TITER_ARRAY_EXACT :
-              case TITER_ARRAY_VBASE :
+            case TITER_ARRAY_EXACT :
+            case TITER_ARRAY_VBASE :
               { TYPE artype = CDoptIterType( iter );
                 dtorSubObject( RoDtorFindType( artype ) );
                 regster = true;
               } continue;
-              DbgDefault( "DtorEpilogue -- bad TITER" );
+            DbgDefault( "DtorEpilogue -- bad TITER" );
             }
             break;
         }

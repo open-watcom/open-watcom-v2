@@ -41,10 +41,10 @@
 
 class MsgDscr                           // MsgDscr -- message-file description
 {                                       // - private data
-    unsigned char file[ MAX_MSGS ];     // - - # files per message
+    unsigned char file[MAX_MSGS];       // - - # files per message
     const char *file_prefix;            // - - file-name prefix
     int max_msg;                        // - - maximum message
-    static char filename[ _MAX_FNAME ]; // - - buffer for file name (one only)
+    static char filename[_MAX_FNAME];   // - - buffer for file name (one only)
                                         // - private functions:
     MsgDscr( const MsgDscr& );          // - - copy CTOR (never defined)
 public:                                 // - public functions:

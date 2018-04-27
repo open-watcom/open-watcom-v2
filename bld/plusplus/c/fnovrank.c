@@ -1426,18 +1426,19 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
     rkd_src = initFNOV_TYPE( &conv.wsrc, src, pt );
     rkd_tgt = initFNOV_TYPE( &conv.wtgt, tgt, NULL );
     ExtraRptTabIncr( type_combos, rkd_tgt, rkd_src );
-    rkd_index = rkdTable[ rkd_tgt ][ rkd_src ];
+    rkd_index = rkdTable[rkd_tgt][rkd_src];
     switch( rkd_index ) {
-      case 7 :
-        if( fromZeroConstOrNull( &conv ) ) return;
-        // drops thru
-      case 1 :
+    case 7 :
+        if( fromZeroConstOrNull( &conv ) )
+            return;
+        /* fall through */
+    case 1 :
         conv.rank->rank = OV_RANK_NO_MATCH;
         return;
-      case 2 :
+    case 2 :
         conv.rank->rank = OV_RANK_ELLIPSIS;
         return;
-      case 3 :
+    case 3 :
         if( TypesSameFnov( conv.wsrc.basic, conv.wtgt.basic ) ) {
             // check for non-ranking reference or flag change (for distinctness)
             if( ( conv.wsrc.reference == conv.wtgt.reference )
@@ -1460,36 +1461,37 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             conv.rank->rank = OV_RANK_NO_MATCH;
         }
         return;
-      case 4 :
+    case 4 :
         if( functionsAreIdentical( conv.wsrc.basic, conv.wtgt.basic ) ) {
             conv.rank->rank = OV_RANK_EXACT;
         } else {
             conv.rank->rank = OV_RANK_NO_MATCH;
         }
         return;
-      case 5 :
+    case 5 :
         completeFNOV_TYPE( &conv.wtgt );
         rankFuncToPtr( &conv );
         return;
-      case 6 :
+    case 6 :
         completeFNOV_TYPE( &conv.wtgt );
         rankPtrToFunc( &conv );
         return;
-      case 8 :
+    case 8 :
         completeFNOV_TYPE( &conv.wsrc );
         completeFNOV_TYPE( &conv.wtgt );
         rankPtrToPtr( &conv );
         return;
-      case 9 :
+    case 9 :
         completeFNOV_TYPE( &conv.wsrc );
         completeFNOV_TYPE( &conv.wtgt );
         rankMbrPtrToMbrPtr( &conv );
         return;
-      case 10 :
+    case 10 :
         rankArithEnumToArith( &conv );
         return;
-      case 11:                          // CLASS --> CLASS
-        if( exactRank( &conv ) ) return;
+    case 11:                          // CLASS --> CLASS
+        if( exactRank( &conv ) )
+            return;
 
         // asume rank is same
         conv.rank->rank = OV_RANK_SAME;
@@ -1501,7 +1503,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
         }
         clstoClsRank( &conv );
         return;
-      case 12:                          // CLASS --> ARITHMETIC
+    case 12:                          // CLASS --> ARITHMETIC
         // asume rank is same
         conv.rank->rank = OV_RANK_SAME;
         conv.rank->u.no_ud.not_exact = 1;
@@ -1512,7 +1514,9 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             triv = rankTgtRefCvMem( &conv );
         }
         if( ! triv ) {
-            if( toBoolRank( &conv ) ) return;
+            if( toBoolRank( &conv ) ) {
+                return;
+            }
         }
         // try to find user-defined conversion
         if( rank->control & FNC_DISTINCT_CHECK  ) {
@@ -1521,7 +1525,7 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             fromClsRank( &conv );
         }
         return;
-      case 13:                          // CLASS --> PTR
+    case 13:                          // CLASS --> PTR
         completeFNOV_TYPE( &conv.wtgt );
 
         // asume rank is same
@@ -1534,7 +1538,9 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             triv = rankTgtRefCvMem( &conv );
         }
         if( ! triv ) {
-            if( toPtrRank( &conv ) ) return;
+            if( toPtrRank( &conv ) ) {
+                return;
+            }
         }
         // try to find user-defined conversion
         if( rank->control & FNC_DISTINCT_CHECK  ) {
@@ -1543,22 +1549,22 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             fromClsRank( &conv );
         }
         return;
-      case 14:
+    case 14:
         if( conv.wtgt.basic->id != TYP_BOOL ) {
             conv.rank->rank = OV_RANK_NO_MATCH;
             return;
-        } else {
-        // drops thru
-      case 19 :
-        completeFNOV_TYPE( &conv.wtgt );
         }
-        // drops thru
-      default :
+        /* fall through */
+    case 19 :
+        completeFNOV_TYPE( &conv.wtgt );
+        /* fall through */
+    default :
         if( rkd_src == RKD_POINTER
          || rkd_src == RKD_MEMBPTR ) {
             completeFNOV_TYPE( &conv.wsrc );
         }
-        if( rkd_src == rkd_tgt && exactRank( &conv ) ) return;
+        if( rkd_src == rkd_tgt && exactRank( &conv ) )
+            return;
 
         // asume rank is same
         conv.rank->rank = OV_RANK_SAME;
@@ -1570,17 +1576,23 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             triv = rankTgtRefCvMem( &conv );
         }
         switch( rkd_tgt ) {
-          case RKD_ARITH :
-            if( triv ) break;
-            if( toBoolRank( &conv ) ) return;
+        case RKD_ARITH :
+            if( triv )
+                break;
+            if( toBoolRank( &conv ) )
+                return;
             break;
-          case RKD_POINTER :
-            if( triv ) break;
-            if( toPtrRank( &conv ) ) return;
+        case RKD_POINTER :
+            if( triv )
+                break;
+            if( toPtrRank( &conv ) )
+                return;
             break;
-          case RKD_MEMBPTR :
-            if( triv ) break;
-            if( toMbrPtrRank( &conv ) ) return;
+        case RKD_MEMBPTR :
+            if( triv )
+                break;
+            if( toMbrPtrRank( &conv ) )
+                return;
             break;
         }
         // try to find user-defined conversion
@@ -1592,10 +1604,10 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             conv.rank->rank = OV_RANK_NO_MATCH;
         }
         return;
-      case 15 :                         // ???? --> class
+    case 15 :                         // ???? --> class
         completeFNOV_TYPE( &conv.wsrc );
-        // drops thru
-      case 16 :
+        /* fall through */
+    case 16 :
         // asume rank is same
         conv.rank->rank = OV_RANK_SAME;
         conv.rank->u.no_ud.not_exact = 1;
@@ -1610,10 +1622,10 @@ void FNOV_ARG_RANK( TYPE src, TYPE tgt, PTREE *pt, FNOV_RANK *rank )
             toClsRank( &conv );
         }
         return;
-      case 17 :                         // class --> ?
+    case 17 :                         // class --> ?
         completeFNOV_TYPE( &conv.wtgt );
-        // drops thru
-      case 18 :
+        /* fall through */
+    case 18 :
         // asume rank is same
         conv.rank->rank = OV_RANK_SAME;
         conv.rank->u.no_ud.not_exact = 1;

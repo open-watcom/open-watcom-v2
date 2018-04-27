@@ -275,33 +275,33 @@ void _dbgScope
     IfDbgToggle( browse ) {
         VBUF vbuf;
         switch( scope->id ) {
-          case SCOPE_FILE :
+        case SCOPE_FILE :
             printf( "%s: File Scope %x\n", text, scope );
             break;
-          case SCOPE_CLASS :
+        case SCOPE_CLASS :
             printf( "%s: Class Scope: %x", text, scope );
             PrintFullType( scope->owner.type );
             break;
-          case SCOPE_FUNCTION :
+        case SCOPE_FUNCTION :
             printf( "%s: Function Scope: %x %s\n"
                   , text
                   , scope
                   , DbgSymNameFull( scope->owner.sym, &vbuf ) );
             VbufFree( &vbuf );
             break;
-          case SCOPE_BLOCK :
+        case SCOPE_BLOCK :
             printf( "%s: Block Scope: %x %u\n"
                   , text
                   , scope
                   , scope->owner.index );
             break;
-          case SCOPE_TEMPLATE_DECL :
+        case SCOPE_TEMPLATE_DECL :
             printf( "%s: Template Declaration Scope %x\n", text, scope );
             break;
-          case SCOPE_TEMPLATE_INST :
+        case SCOPE_TEMPLATE_INST :
             printf( "%s: Template Instantiation Scope %x\n", text, scope );
             break;
-          case SCOPE_TEMPLATE_PARM :
+        case SCOPE_TEMPLATE_PARM :
             printf( "%s: Template Parameters Scope %x\n", text, scope );
             break;
         }
@@ -398,15 +398,15 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             scope = scope->enclosing;
         }
         switch( scope->id ) {
-          default :
+        default :
             if( scope == top ) {
                 short_circuit = true;
                 break;
             }
-            // drops thru
-          case SCOPE_TEMPLATE_DECL :
-          case SCOPE_TEMPLATE_PARM :
-          case SCOPE_TEMPLATE_INST :
+            /* fall through */
+        case SCOPE_TEMPLATE_DECL :
+        case SCOPE_TEMPLATE_PARM :
+        case SCOPE_TEMPLATE_INST :
             short_circuit = false;
             break;
         }
@@ -610,23 +610,22 @@ static void typeUsage           // TYPE USAGE
     if( CompFlags.optbr_t ) {
         for( ; type != NULL; type = type->of ) {
             switch( type->id ) {
-              case TYP_ENUM :
-              case TYP_CLASS :
+            case TYP_ENUM :
+            case TYP_CLASS :
                 brinfIcReference( IC_BR_REF_TYPE, type, locn );
                 break;
-              case TYP_MEMBER_POINTER :
+            case TYP_MEMBER_POINTER :
                 brinfIcReference( IC_BR_REF_TYPE, type->u.mp.host, locn );
                 continue;
-              case TYP_FUNCTION :
+            case TYP_FUNCTION :
               {
                 arg_list *args = type->u.f.args;
                 unsigned i = args->num_args;
                 while( i-- > 0 ) {
                     typeUsage( args->type_list[i], locn );
                 }
-              }
-              // drops thru
-              default :
+              } /* fall through */
+            default :
                 continue;
             }
             break;
@@ -1114,7 +1113,7 @@ void BrinfWrite                 // WRITE OUT BROWSE INFORMATION
 static void startBrinfPCH       // START A BROWSE-FILE WHICH HAS PCH REFERENCE
     ( void )
 {
-    char full_name[ _MAX_PATH ];
+    char full_name[_MAX_PATH];
     char *fname;
     SRCFILE srcf;
     TOKEN_LOCN start = { 0, 0, 0 };
@@ -1277,15 +1276,15 @@ static void brinfFini           // COMPLETION OF PROCESSING FOR BROWSE INFO
     if( brinfo_state != BRS_CMDLINE
      && brinfo_state != BRS_INACTIVE ) {
         switch( brinfo_state ) {
-          DbgDefault( "impossible brinfo state" );
-          case BRS_COLLECTING :
+        DbgDefault( "impossible brinfo state" );
+        case BRS_COLLECTING :
             completeInputPhase();
             BrinfDepFini();
             break;
-          case BRS_COLLECTED :
+        case BRS_COLLECTED :
             BrinfDepFini();
             break;
-          case BRS_WRITING :
+        case BRS_WRITING :
             brinfClose();
             BrinfDepFini();
             break;

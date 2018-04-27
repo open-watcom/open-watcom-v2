@@ -136,11 +136,11 @@ static void printChar           // PRINT A CHARACTER
     ( char chr )                // - to be printed
 {
     if( chr == '\n' ) {
-        printCtl.buffer[ printCtl.index ] = '\0';
+        printCtl.buffer[printCtl.index] = '\0';
         printIDE( printCtl.buffer );
         printCtl.index = 0;
     } else {
-        printCtl.buffer[ printCtl.index ] = chr;
+        printCtl.buffer[printCtl.index] = chr;
         ++ printCtl.index;
         if( printCtl.index >= printCtl.size_buf ) {
             unsigned old_size = printCtl.size_buf;
@@ -216,8 +216,8 @@ static void fillInputOutput( char *input, char *output )
         if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
             input[0] = '"';
             len = strlen( &input[1] );
-            input[ 1 + len ] = '"';
-            input[ 1 + len + 1 ] = '\0';
+            input[1 + len] = '"';
+            input[1 + len + 1] = '\0';
         }
         if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)&output[5] ) ) {
             output[0] = '-';
@@ -226,8 +226,8 @@ static void fillInputOutput( char *input, char *output )
             output[3] = '=';
             output[4] = '"';
             len = strlen( &output[5] );
-            output[ 5 + len ] = '"';
-            output[ 5 + len + 1 ] = '\0';
+            output[5 + len] = '"';
+            output[5 + len + 1] = '\0';
         }
     }
 }
@@ -249,9 +249,9 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     , const char* opts          // - options
     , IDEBool* fatal_error )    // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;           // - information passed to DLL
-    auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
-    auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                           // - information passed to DLL
+    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
+    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 
@@ -273,9 +273,9 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
-    DLL_DATA dllinfo;           // - information passed to DLL
-    auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
-    auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
+    DLL_DATA dllinfo;                           // - information passed to DLL
+    auto char input[1 + _MAX_PATH + 1];         // - input file name ("<fname>")
+    auto char output[4 + 1 + _MAX_PATH + 1];    //- output file name (-fo="<fname>")
 
     /* unused parameters */ (void)hdl;
 

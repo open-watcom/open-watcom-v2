@@ -363,8 +363,8 @@ bool SymIsStaticData(           // TEST IF SYMBOL IS STATIC DATA ELEMENT
         symGetScope( sym, scope );
         if( scope != NULL ) {
             switch( ScopeId( scope ) ) {
-              case SCOPE_BLOCK :
-              case SCOPE_FILE :
+            case SCOPE_BLOCK :
+            case SCOPE_FILE :
                 if( sym->id == SC_STATIC ) {
                     ok = true;
                 }
@@ -1342,7 +1342,7 @@ SYMBOL SymBindConstant              // BIND A CONSTANT TO A SYMBOL
 {
     if( NULL != sym ) {
         if( NULL == Integral64Type( sym->sym_type ) ) {
-            sym->u.sval = con.u._32[ I64LO32 ];
+            sym->u.sval = con.u._32[I64LO32];
         } else {
             sym->u.pval = ConPoolInt64Add( con );
             sym->flag |= SF_CONSTANT_INT64;

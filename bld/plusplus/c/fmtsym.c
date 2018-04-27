@@ -68,10 +68,10 @@ static const char *fmtSymCgop( CGOP number )
 
     if( number >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
         name = "***INVALID CGOP***";
-    } else if( strlen( opNames[ number ] ) == 0 ) {
+    } else if( strlen( opNames[number] ) == 0 ) {
         name = "***INVALID CGOP LENGTH***";
     } else {
-        name = opNames[ number ];
+        name = opNames[number];
     }
     return( name );
 }

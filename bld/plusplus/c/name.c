@@ -58,7 +58,7 @@
 #define NAME_RETVAL(n)  (n)
 #endif
 
-static idname           *hashTable[ NAME_TABLE_HASH ];
+static idname           *hashTable[NAME_TABLE_HASH];
 
 static name_dummy_index_t nameDummyIndex;
 static unsigned         nameCount;
@@ -110,7 +110,7 @@ int NameMemCmp( const char *t1, const char *t2, size_t len )
             len -= sizeof( unsigned );
         } while( len > sizeof( unsigned ) );
     }
-    mask = NameCmpMask[ len ];
+    mask = NameCmpMask[len];
     return( ( *s1 & mask ) - ( *s2 & mask ) );
 }
 
@@ -139,7 +139,7 @@ unsigned NameCalcHashLen( const char *id, size_t len )
             len -= sizeof( unsigned );
         } while( len > sizeof( unsigned ) );
     }
-    mask = NameCmpMask[ len ];
+    mask = NameCmpMask[len];
     c ^= *s & mask;
     h = ( h << 4 ) + c;
     g = h & ~0x0ffffff;
@@ -194,7 +194,7 @@ NAME NameCreateLen( const char *id, size_t len )
 #endif
     // xhash cannot overflow a uint_16 ( 0x0fff + 0x00ff <= 0x1fff )
     xhash += (uint_8)len;
-    head = &(hashTable[ bucket ]);
+    head = &(hashTable[bucket]);
     prev = head;
     cmp_len = len + 1;
     ExtraRptZeroCtr( ctr_length );
@@ -239,7 +239,7 @@ NAME NameCreateNoLen( const char *id )
     ni = nameDummyIndex++;
     xhash = ni % NAME_TABLE_HASH;
     bucket = xhash;
-    head = &(hashTable[ bucket ]);
+    head = &(hashTable[bucket]);
     return( nameAdd( head, bucket, xhash, id, len ) );
 }
 
@@ -257,7 +257,7 @@ NAME NameDummy( void )
     unsigned bucket;
     size_t len;
     idname **head;
-    char buff[ 1 + 1 + sizeof( ni ) * 3 + 1 ];
+    char buff[1 + 1 + sizeof( ni ) * 3 + 1];
 
     ExtraRptIncrementCtr( ctr_dummy_names );
     ni = nameDummyIndex++;
@@ -274,7 +274,7 @@ NAME NameDummy( void )
     buff[3] = '\0';
     len = 3;
 #endif
-    head = &(hashTable[ bucket ]);
+    head = &(hashTable[bucket]);
     return( nameAdd( head, bucket, xhash, buff, len ) );
 }
 
@@ -309,7 +309,7 @@ pch_status PCHInitNames( bool writing )
     nameTranslateTable = CMemAlloc( nameCount * sizeof( idname * ) );
     p = nameTranslateTable;
     for( i = 0; i < NAME_TABLE_HASH; ++i ) {
-        for( name = hashTable[ i ]; name != NULL; name = name->next ) {
+        for( name = hashTable[i]; name != NULL; name = name->next ) {
             *p = name;
             ++p;
         }
@@ -353,7 +353,7 @@ pch_status PCHReadNames( void )
     for( ; (len = PCHReadUInt()) != 0; ) {
         name = CPermAlloc( NAME_SIZE + len + 1 );
         PCHRead( &(name->xhash), NAME_SIZE_PCH + len + 1 );
-        head = &hashTable[ name->hash ];
+        head = &hashTable[name->hash];
         name->next = *head;
         *head = name;
         *p++ = name;
@@ -393,7 +393,7 @@ NAME NameMapIndex( NAME index )
         CFatal( "invalid name index" );
     }
 #endif
-    return( NAME_RETVAL( nameTranslateTable[ PCHGetUInt( index ) - PCH_FIRST_INDEX ] ) );
+    return( NAME_RETVAL( nameTranslateTable[PCHGetUInt( index ) - PCH_FIRST_INDEX] ) );
 }
 
 static int cmpFindName( const void *kp, const void *tp )
@@ -485,7 +485,7 @@ static void dumpNames( void )
     fprintf( fp, "histogram chart of chain contents:\n" );
     for( i = 0; i < NAME_TABLE_HASH; ++i ) {
         fprintf( fp, "%4u:", i );
-        name = hashTable[ i ];
+        name = hashTable[i];
         length = 0;
         for( ; name != NULL; name = name->next ) {
             fprintf( fp, " %s", name->name );
@@ -503,12 +503,12 @@ static void dumpNames( void )
         if( length >= (sizeof(freq)/sizeof(freq[0])) ) {
             length = (sizeof(freq)/sizeof(freq[0]))-1;
         }
-        freq[ length ]++;
+        freq[length]++;
     }
     perfect_stat = sum * ( sum + 2.0 * NAME_TABLE_HASH - 1 ) / ( 2 * NAME_TABLE_HASH );
     fprintf( fp, "histogram chart of chain lengths:\n" );
     for( i = 0; i < NAME_TABLE_HASH; ++i ) {
-        name = hashTable[ i ];
+        name = hashTable[i];
         length = 0;
         for( ; name != NULL; name = name->next ) {
             ++length;

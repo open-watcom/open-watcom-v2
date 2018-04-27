@@ -78,7 +78,7 @@ enum {
 };
 
 TYPE TypeError;
-TYPE TypeCache[ TYPC_LAST ];
+TYPE TypeCache[TYPC_LAST];
 
 static TYPE basicTypes[TYP_MAX];
 static TYPE typeTable[TYP_MAX];
@@ -240,8 +240,8 @@ TYPE GetBasicType( type_id id )
 /*****************************/
 /* return a pointer to one of the predefined "standard" types */
 {
-    DbgAssert( basicTypes[ id ] != NULL );
-    return( basicTypes[ id ] );
+    DbgAssert( basicTypes[id] != NULL );
+    return( basicTypes[id] );
 }
 
 static CLASSINFO *newINFO( void )
@@ -1057,7 +1057,7 @@ TYPE CheckDupType( TYPE newtype )
         }
     }
 #endif
-    head = typeHashTables[ id ];
+    head = typeHashTables[id];
     if( head == NULL ) {
         switch( id ) {
         case TYP_FUNCTION:
@@ -1066,19 +1066,19 @@ TYPE CheckDupType( TYPE newtype )
             num_args = newtype->u.f.args->num_args;
             if( num_args < ARGS_HASH ) {
                 ExtraRptIncrementCtr( ctr_dup_fns );
-                head = &fnHashTable[ num_args ][ typeHashVal( newtype ) ];
+                head = &fnHashTable[num_args][typeHashVal( newtype )];
             } else if( num_args < ARGS_MAX ) {
                 ExtraRptIncrementCtr( ctr_dup_fns );
-                head = &fnTable[ num_args - ARGS_HASH ];
+                head = &fnTable[num_args - ARGS_HASH];
             } else {
                 ExtraRptIncrementCtr( ctr_dup_fns_big );
-                head = &typeTable[ id ];
+                head = &typeTable[id];
             }
             newtype = typeDuplicated( newtype, head );
             break;
         case TYP_MEMBER_POINTER:
         case TYP_GENERIC:
-            newtype = typeDuplicated( newtype, &typeTable[ id ] );
+            newtype = typeDuplicated( newtype, &typeTable[id] );
             break;
         default:
             #ifdef XTRA_RPT
@@ -1096,7 +1096,7 @@ TYPE CheckDupType( TYPE newtype )
                     ExtraRptTabIncr( ctr_fn_args, ARGS_MAX+1, 0 );
                 }
             #endif
-            newtype = RingPush( &typeTable[ id ], newtype );
+            newtype = RingPush( &typeTable[id], newtype );
         }
     } else {
         if( head == arrayHashTable ) {
@@ -1107,8 +1107,7 @@ TYPE CheckDupType( TYPE newtype )
         }
         DbgVerify( newtype->of != NULL
                  , "type: attempt to set base type to NULL" );
-        newtype = typeDuplicated( newtype
-                                , &head[ typeHashVal( newtype ) ] );
+        newtype = typeDuplicated( newtype, &head[typeHashVal( newtype )] );
     }
     return newtype;
 }
@@ -1147,28 +1146,28 @@ void TypeTraverse( type_id id, void (*rtn)( TYPE, void *), void *data )
     unsigned num_args;
 
     switch( id ) {
-      case TYP_POINTER :
+    case TYP_POINTER :
         traverseTypeHashed( pointerHashTable, rtn, data );
         break;
-      case TYP_BITFIELD :
+    case TYP_BITFIELD :
         traverseTypeHashed( bitfieldHashTable, rtn, data );
         break;
-      case TYP_ARRAY :
+    case TYP_ARRAY :
         traverseTypeHashed( arrayHashTable, rtn, data );
         break;
-      case TYP_MODIFIER :
+    case TYP_MODIFIER :
         traverseTypeHashed( modifierHashTable, rtn, data );
         break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         traverseTypeRing( typeTable[id], rtn, data );
         for( num_args = 0; num_args < ARGS_HASH; ++num_args ) {
-            traverseTypeHashed( fnHashTable[ num_args ], rtn, data );
+            traverseTypeHashed( fnHashTable[num_args], rtn, data );
         }
         for( ; num_args < ARGS_MAX; ++num_args ) {
-            traverseTypeRing( fnTable[ num_args - ARGS_HASH ], rtn, data );
+            traverseTypeRing( fnTable[num_args - ARGS_HASH], rtn, data );
         }
         break;
-      default :
+    default :
         traverseTypeRing( typeTable[id], rtn, data );
         break;
     }
@@ -1575,27 +1574,27 @@ void DumpTypeTables( void )
     head = &typeTable[0];
     for( i = 0; i < TYP_MAX; ++i ) {
         switch( i ) {
-          case TYP_POINTER :
+        case TYP_POINTER :
             dumpTypeVector( pointerHashTable
                           , &stats
                           , "pointer types %3d\n" );
             break;
-          case TYP_BITFIELD :
+        case TYP_BITFIELD :
             dumpTypeVector( bitfieldHashTable
                           , &stats
                           , "bitfield types %3d\n" );
             break;
-          case TYP_ARRAY :
+        case TYP_ARRAY :
             dumpTypeVector( arrayHashTable
                           , &stats
                           , "array types %3d\n" );
             break;
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             dumpTypeVector( modifierHashTable
                           , &stats
                           , "modifier types %3d\n" );
             break;
-          default :
+        default :
             printf( "type id %3d:\n", i );
             head = dumpTypeRing( head, &stats );
             break;
@@ -1628,7 +1627,7 @@ TYPE PTypeListOfTypes( type_id id )
 void PTypeSignedChar( void )
 /**************************/
 {
-    basicTypes[ TYP_CHAR ]->of = basicTypes[ TYP_SCHAR ];
+    basicTypes[TYP_CHAR]->of = basicTypes[TYP_SCHAR];
 }
 
 static void initCacheAfterOptions( void )
@@ -1651,9 +1650,9 @@ void PTypeCheckInit( void )
 
     // code that must execute after the command line options have been parsed
     for( index = TYP_MIN; index < TYP_MAX; index++ ) {
-        basic_type = basicTypes[ index ];
+        basic_type = basicTypes[index];
         if( basic_type != NULL ) {
-            basicTypes[ index ] = CheckDupType( basic_type );
+            basicTypes[index] = CheckDupType( basic_type );
         }
     }
     initCacheAfterOptions();
@@ -4843,16 +4842,16 @@ TYPE Integral64Type             // GET 64-BIT TYPE IF POSSIBLE
 {
     type = TypedefModifierRemoveOnly( type );
     switch( type->id ) {
-      case TYP_ENUM :
+    case TYP_ENUM :
         if( NULL == Integral64Type( type->of ) ) {
             type = NULL;
             break;
         }
-        // drops thru
-      case TYP_ULONG64 :
-      case TYP_SLONG64 :
+        /* fall through */
+    case TYP_ULONG64 :
+    case TYP_SLONG64 :
         break;
-      default :
+    default :
         type = NULL;
         break;
     }
@@ -5152,23 +5151,23 @@ TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             mod_flag = type->flag;
             flag |= mod_flag;
             if( mod_flag & TF1_BASED ) {
                 *a_baser = type->u.m.base;
             }
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          case TYP_BOOL :
-          case TYP_CHAR :
-          case TYP_ENUM :
+        case TYP_BOOL :
+        case TYP_CHAR :
+        case TYP_ENUM :
             if( (mask & TC1_NOT_ENUM_CHAR) == 0 ) {
                 type = type->of;
             }
-            // drops thru
-          default :
+            /* fall through */
+        default :
             if( mask & TC1_NOT_MEM_MODEL ) {
                 if( (flag & TF1_MEM_MODEL) == 0 ) {
                     flag |= defaultMemoryFlag( type );
@@ -5191,12 +5190,12 @@ TYPE TypeGetActualFlags( TYPE type, type_flag *flags )
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             break;
         }
         break;
@@ -5226,12 +5225,12 @@ TYPE TypeModFlagsEC(            // GET MODIFIER FLAGS, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -5257,16 +5256,16 @@ TYPE TypeModFlagsBaseEC(        // GET MODIFIER FLAGS & BASE, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             mod_flag = type->flag;
             flag |= mod_flag;
             if( mod_flag & TF1_BASED ) {
                 *a_baser = type->u.m.base;
             }
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          default :
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -5289,17 +5288,17 @@ TYPE TypeModFlags(              // GET MODIFIER FLAGS, UNMODIFIED TYPE
     flag = TF1_NULL;
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_MODIFIER :
+        case TYP_MODIFIER :
             flag |= type->flag;
             continue;
-          case TYP_TYPEDEF :
+        case TYP_TYPEDEF :
             continue;
-          case TYP_BOOL :
-          case TYP_CHAR :
-          case TYP_ENUM :
+        case TYP_BOOL :
+        case TYP_CHAR :
+        case TYP_ENUM :
             type = type->of;
-            // drops thru
-          default :
+            /* fall through */
+        default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
                 flag |= defaultMemoryFlag( type );
             }
@@ -6098,7 +6097,7 @@ static void verifyIncDecSecondArg( TYPE fn_type, bool non_static_member )
     if( ! non_static_member ) {
         ++arg_idx;
     }
-    arg = fn_type->u.f.args->type_list[ arg_idx ];
+    arg = fn_type->u.f.args->type_list[arg_idx];
     int_type = IntegralType( arg );
     if( int_type == NULL || int_type->id != TYP_SINT ) {
         CErr1( ERR_OPERATOR_INC_DEC_SECOND_ARG );
@@ -6142,8 +6141,8 @@ static bool checkOperatorArgs( TYPE fn_type )
     TYPE *stop;
 
     args = fn_type->u.f.args;
-    stop = &(args->type_list[ args->num_args ]);
-    for( curr = &(args->type_list[ 0 ]); curr != stop; ++curr ) {
+    stop = &(args->type_list[args->num_args]);
+    for( curr = &(args->type_list[0]); curr != stop; ++curr ) {
         if( classOrClassRef( *curr ) ) {
             return( true );
         }
@@ -7205,7 +7204,7 @@ bool TypeHasEllipsisArg( TYPE type )
         args = type->u.f.args;
         num_args = args->num_args;
         if( num_args > 0 ) {
-            arg_type = args->type_list[ num_args - 1 ];
+            arg_type = args->type_list[num_args - 1];
             if( arg_type->id == TYP_DOT_DOT_DOT ) {
                 return( true );
             }
@@ -7239,7 +7238,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
         }
         /* move to index of arg before ... arg */
         --num_args;
-        arg_type = args->type_list[ num_args ];
+        arg_type = args->type_list[num_args];
         test_type = TypeReference( arg_type );
         if( test_type != NULL ) {
             /* arg before ... arg is a reference arg */
@@ -8401,14 +8400,14 @@ static void initBasicTypes( void )
     };
 
     for( p = basics_init_list; *p != TYP_MAX; ++p ) {
-        basicTypes[ *p ] = MakeType( *p );
+        basicTypes[*p] = MakeType( *p );
     }
     /*
       'char' must be distinct from 'signed char' and 'unsigned char'
       for overload resolution but it still has "signed-ness"
     */
-    basicTypes[ TYP_CHAR ]->of = basicTypes[ TYP_UCHAR ];
-    basicTypes[ TYP_BOOL ]->of = basicTypes[ TYP_UCHAR ];
+    basicTypes[TYP_CHAR]->of = basicTypes[TYP_UCHAR];
+    basicTypes[TYP_BOOL]->of = basicTypes[TYP_UCHAR];
 }
 
 static TYPE makeErrFormat( tfmt_index fi )
@@ -8557,21 +8556,21 @@ static void typesInit(          // TYPES INITIALIZATION
         zero_table( typeHashTables );
         zero_table( TypeCache );
     }
-    typeHashTables[ TYP_POINTER ] = pointerHashTable;
-    typeHashTables[ TYP_BITFIELD ] = bitfieldHashTable;
-    typeHashTables[ TYP_ARRAY ] = arrayHashTable;
-    typeHashTables[ TYP_MODIFIER ] = modifierHashTable;
+    typeHashTables[TYP_POINTER] = pointerHashTable;
+    typeHashTables[TYP_BITFIELD] = bitfieldHashTable;
+    typeHashTables[TYP_ARRAY] = arrayHashTable;
+    typeHashTables[TYP_MODIFIER] = modifierHashTable;
     carveDECL_SPEC = CarveCreate( sizeof( DECL_SPEC ), BLOCK_DECL_SPEC );
     carveTYPE = CarveCreate( sizeof( struct type ), BLOCK_TYPE );
     carveCLASSINFO = CarveCreate( sizeof( CLASSINFO ), BLOCK_CLASSINFO );
     carveDECL_INFO = CarveCreate( sizeof(struct decl_info), BLOCK_DECL_INFO );
     initBasicTypes();
     initCache();
-    TypeError = basicTypes[ TYP_ERROR ];
-    CompInfo.ptr_diff_near = basicTypes[ TYP_SINT ];
-    CompInfo.ptr_diff_far = basicTypes[ TYP_SINT ];
-    CompInfo.ptr_diff_far16 = basicTypes[ TYP_SSHORT ];
-    CompInfo.ptr_diff_huge = basicTypes[ TYP_SLONG ];
+    TypeError = basicTypes[TYP_ERROR];
+    CompInfo.ptr_diff_near = basicTypes[TYP_SINT];
+    CompInfo.ptr_diff_far = basicTypes[TYP_SINT];
+    CompInfo.ptr_diff_far16 = basicTypes[TYP_SSHORT];
+    CompInfo.ptr_diff_huge = basicTypes[TYP_SLONG];
     ClassInit();
     cdeclPragma = PragmaLookup( NULL, M_CDECL );
     ExtraRptRegisterCtr( &types_defined, "unique type entries defined" );
@@ -8844,7 +8843,7 @@ static void pchWriteArgLists( type_pch_walk *data )
     arg_list *args;
 
     // figure out max size of translation table
-    count = RingCount( typeTable[ TYP_FUNCTION ] );
+    count = RingCount( typeTable[TYP_FUNCTION] );
     for( i = 0; i < ARGS_HASH; ++i ) {
         count += pchCountHashes( fnHashTable[i] );
     }
@@ -8862,7 +8861,7 @@ static void pchWriteArgLists( type_pch_walk *data )
     // (protect against case where count == 0)
     table = CMemAlloc( ( count + 1 ) * sizeof( arg_list * ) );
     p = table;
-    RingIterBeg( typeTable[ TYP_FUNCTION ], curr ) {
+    RingIterBeg( typeTable[TYP_FUNCTION], curr ) {
         *p = curr->u.f.args;
         ++p;
     } RingIterEnd( curr )
@@ -9516,7 +9515,7 @@ static void relocType( void *e, carve_walk_base *d )
     }
     DbgAssert( ed->amount >= __type_reloc_size );
     DbgAssert(( ed->amount % __type_reloc_size ) == 0 );
-    pch_type = (TYPE) &(ed->curr[ sizeof( pch_type_index ) ]);
+    pch_type = (TYPE) &(ed->curr[sizeof( pch_type_index )]);
     if( s->dbgflag & TF2_DWARF ) {
         if( s->dbgflag & TF2_SYMDBG ) {
             pch_type->dbgflag |= TF2_PCH_DBG_EXTERN;

@@ -893,8 +893,8 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
     btype = BasedType( type->of );
     switch( btype->flag & TF1_BASED ) {
     case TF1_BASED_STRING:
-    //   __based(__segname("_name"))
-    // on stack top->| offset 0 | seg sym |
+        //   __based(__segname("_name"))
+        // on stack top->| offset 0 | seg sym |
         if( SegmentFindBased( btype ) == SEG_CODE ) {
 #if _INTEL_CPU
             if( !IsFlat() ) {  /* should check Client */
@@ -918,19 +918,19 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
         DWLocConstS( Client, locid, 0 );
         break;
     case TF1_BASED_SELF:
-    //  char __based((__segment)__self) *sp; -- inherits base from expression
-    // on stack top->| offset 0 |
+        //  char __based((__segment)__self) *sp; -- inherits base from expression
+        // on stack top->| offset 0 |
         DWLocConstS( Client, locid, 0 );
         break;
     case TF1_BASED_VOID:
-    //   char __based(void) *vp;           -- just an offset (based on nothing)
-    // on stack top->| offset 0 | seg 0 |
+        //   char __based(void) *vp;           -- just an offset (based on nothing)
+        // on stack top->| offset 0 | seg 0 |
         DWLocConstS( Client, locid, 0 );
         DWLocConstS( Client, locid, 0 );
         break;
     case TF1_BASED_FETCH:
-   // char __based(seg_var) *bp;        -- fetch segment from seg_var
-   // on stack top->| offset 0 | seg (seg_var) |
+        // char __based(seg_var) *bp;        -- fetch segment from seg_var
+        // on stack top->| offset 0 | seg (seg_var) |
         sym = dwarfDebugSymAlias( btype->u.m.base );
         DbgAddrTaken( sym );
         dref = DW_LOC_deref_size;
@@ -943,10 +943,10 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
         DWLocConstS( Client, locid, 0 );
         break;
     case TF1_BASED_ADD:
-    // char __based(fp) *pp;             -- add offset to fp to produce pointer
-    // on stack top->| offset (fp) | seg (fp) | if far
-    // on stack top->| offset (fp) | if flat
-    {
+        // char __based(fp) *pp;             -- add offset to fp to produce pointer
+        // on stack top->| offset (fp) | seg (fp) | if far
+        // on stack top->| offset (fp) | if flat
+      {
         TYPE        bptr;
         type_flag   bflags;
 
@@ -983,7 +983,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags ) {
             dwarfRefSymLoc( locid, sym ); /*  offset on top  */
             DWLocOp( Client, locid, dref, CgTypeOffset() );
         }
-    }   break;
+      } break;
     }
     dl_seg = DWLocFini( Client, locid );
     dh = DWBasedPointer( Client, dwarfType( type->of, DC_DEFAULT ), dl_seg, flags );
@@ -1331,11 +1331,9 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
         // scanning for case IC_* patterns.
         // ICMASK BEGIN DWARF (do not remove)
         switch( ins->opcode ) {
-
         case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
             DbgNever();
             break;
-
 //
 //          SYMBOL REFERENCES
 //
@@ -1348,14 +1346,12 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 }
             }
             break;
-
 //
 //          PROCEDURE DECLARATIONS
 //
         case IC_FUNCTION_ARGS :           // DEFINE FUNCTION ARG.S
             ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_define_parm );
             break;
-
         case IC_BLOCK_OPEN :              // OPEN BLOCK SCOPE (LIVE CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
@@ -1363,7 +1359,6 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_block_open );
             }
             break;
-
         case IC_BLOCK_DEAD :              // OPEN BLOCK SCOPE (DEAD CODE)
             if( ins_value.pvalue != NULL ) {
                 DWBeginLexicalBlock( Client, NULL, NULL );
@@ -1371,18 +1366,15 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 ScopeWalkOrderedSymbols( ins_value.pvalue, &dwarf_block_open );
             }
             break;
-
         case IC_BLOCK_END :               // CLOSE BLOCK SCOPE
             DWEndLexicalBlock( Client );
             break;
-
 //
 //          DEBUGGING -- for program
 //
         case IC_DBG_LINE :                // SET LINE NUMBER
             line = ins_value.uvalue;
             break;
-
 //
 //          EXCEPTION HANDLING
 //
@@ -1392,14 +1384,12 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 DWReference( Client, line, column, dh );
             }
             break;
-
         case IC_CATCH_VAR :               // SET TRY_VAR FOR CATCH
             dh = dwarfSymbol( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
             break;
-
         case IC_CATCH :                   // SET TYPE OF A CATCH
             if( ins_value.pvalue != 0 ) {
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
@@ -1408,7 +1398,6 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 }
             }
             break;
-
         case IC_EXCEPT_SPEC :             // FUNCTION EXCEPTION SPEC.
             if( ins_value.pvalue != NULL ) { // not throw()
                 dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
@@ -1417,14 +1406,12 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
                 }
             }
             break;
-
         case IC_THROW_RO_BLK :            // SET THROW R/O BLOCK
             dh = dwarfType( ins_value.pvalue, DC_DEFAULT );
             if( dh != 0 ) {
                 DWReference( Client, line, column, dh );
             }
             break;
-
         default:
             DbgNever();
         }

@@ -137,7 +137,7 @@ static void addDirectoryEntry( CGIOBUFF *e )
     if( dict_index != maxDictIndex ) {
         dict = newDict();
     }
-    dict->dict[ dict_offset ] = e;
+    dict->dict[dict_offset] = e;
 }
 
 static CGIOBUFF **findDirectoryEntry( DISK_ADDR disk_addr )
@@ -159,7 +159,7 @@ static CGIOBUFF **findDirectoryEntry( DISK_ADDR disk_addr )
         dict = dict->next;
         DbgAssert( dict != NULL );
     }
-    return( &(dict->dict[ dict_offset ]) );
+    return( &(dict->dict[dict_offset]) );
 }
 
 static void setDirectoryEntry( DISK_ADDR disk_addr, CGIOBUFF *e )
@@ -358,7 +358,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
     for( ;; ) {
         PCHReadVar( buff );
         p_instr = buff;
-        s_instr = &p_instr[ CGINTER_BLOCKING ];
+        s_instr = &p_instr[CGINTER_BLOCKING];
         do {
             if( dest >= stop ) {
                 ctl->free_offset += (char *)dest - (char *)start;
@@ -368,7 +368,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
                 stop = pointXferOffset( ctl, MAX_WRITE_AMT );
             }
             opcode = p_instr->opcode;
-            if( icMaskTable[ opcode ] & ICOPM_PCHREAD ) {
+            if( icMaskTable[opcode] & ICOPM_PCHREAD ) {
                 ctl->free_offset += ((char*)dest) - (char*)start;
                 *pctl = ctl;
                 // rest of block can be ignored
@@ -385,7 +385,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
 #endif
                 return( *p_instr );
             }
-            reloc_fn = relocReadOperand[ ICOpTypes[ opcode ] ];
+            reloc_fn = relocReadOperand[ICOpTypes[opcode]];
             if( reloc_fn != NULL ) {
                 dest->value.pvalue = (*reloc_fn)( p_instr->value.pvalue );
             } else {
@@ -405,8 +405,8 @@ CGVALUE CgioMapIndex( CGINTEROP opcode, CGVALUE value )
     ic_op_type op_class;
     CGIRELOCFN *reloc_fn;
 
-    op_class = ICOpTypes[ opcode ];
-    reloc_fn = relocReadOperand[ op_class ];
+    op_class = ICOpTypes[opcode];
+    reloc_fn = relocReadOperand[op_class];
     if( reloc_fn != NULL ) {
         value.pvalue = (*reloc_fn)( value.pvalue );
     }
@@ -436,7 +436,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
 #endif
 #ifndef NDEBUG
     DbgAssert( ins->opcode != IC_EOF );
-    if( icMaskTable[ ins->opcode ] & ICOPM_BRINFO ) {
+    if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
         if( PragDbgToggle.browse_emit ) {
             DumpCgFront( "BiEm", ctl->disk_addr, ctl->free_offset, ins );
         }
@@ -444,7 +444,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
         if( PragDbgToggle.dump_emit_ic ) {
             DumpCgFront( "Emit", ctl->disk_addr, ctl->free_offset, ins );
         }
-        if( ICOpTypes[ ins->opcode ] == ICOT_SYM ) {
+        if( ICOpTypes[ins->opcode] == ICOT_SYM ) {
             SYMBOL sym = ins->value.pvalue;
             if( sym != NULL && !SymIsCatchAlias( sym ) && SymIsAlias( sym ) ) {
                 if( ErrCount == 0 ) {
@@ -492,7 +492,7 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
 {
     char * prefix = NULL;       // - NULL or prefix when tracing
 
-    if( IC_EOF != curr->opcode && (icMaskTable[ curr->opcode ] & ICOPM_BRINFO) ) {
+    if( IC_EOF != curr->opcode && (icMaskTable[curr->opcode] & ICOPM_BRINFO) ) {
         if( PragDbgToggle.browse_read ) {
             prefix = "BiRd";
         }
@@ -573,7 +573,8 @@ CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     ++curr;
     for(;;) {
         opcode = curr->opcode;
-        if( icMaskTable[ opcode ] & mask ) break;
+        if( icMaskTable[opcode] & mask )
+            break;
         if( opcode == IC_NEXT ) {
             _NEXT_BLOCK( ctl, curr );
         } else {
@@ -603,11 +604,12 @@ CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS 
     ++curr;
     for(;;) {
         opcode = curr->opcode;
-        op_mask = icMaskTable[ opcode ];
+        op_mask = icMaskTable[opcode];
         if( op_mask & count_mask ) {
             ++extra;
         }
-        if( op_mask & mask ) break;
+        if( op_mask & mask )
+            break;
         if( opcode == IC_NEXT ) {
             _NEXT_BLOCK( ctl, curr );
         } else {
@@ -791,7 +793,7 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
 
     ctl = findRdBuffer( zap.block );
 #ifndef NDEBUG
-    if( icMaskTable[ ins->opcode ] & ICOPM_BRINFO ) {
+    if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
         if( PragDbgToggle.browse_emit ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }

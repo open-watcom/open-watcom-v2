@@ -221,42 +221,42 @@ static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
     if( is_zero ) {
         ctl->expr_false = true;
         switch( ctl->id ) {
-          case CS_IF :
+        case CS_IF :
             PTreeWarnExpr( expr, WARN_IF_ALWAYS_FALSE );
             break;
-          case CS_FOR :
+        case CS_FOR :
             PTreeWarnExpr( expr, WARN_FOR_FALSE );
             break;
-          case CS_WHILE :
+        case CS_WHILE :
             PTreeWarnExpr( expr, WARN_WHILE_FALSE );
             break;
-          case CS_DO :
+        case CS_DO :
             if( ! parsed_int_const ) {
                 PTreeWarnExpr( expr, WARN_WHILE_FALSE );
             }
             break;
-          case CS_SWITCH :
+        case CS_SWITCH :
             PTreeWarnExpr( expr, WARN_SWITCH_ALWAYS_CONSTANT );
             break;
         }
     } else {
         ctl->expr_true = true;
         switch( ctl->id ) {
-          case CS_WHILE :
-          case CS_DO :
+        case CS_WHILE :
+        case CS_DO :
             if( ! parsed_int_const ) {
                 PTreeWarnExpr( expr, WARN_WHILE_TRUE );
             }
             break;
-          case CS_FOR :
+        case CS_FOR :
             if( ! parsed_int_const ) {
                 PTreeWarnExpr( expr, WARN_FOR_TRUE );
             }
             break;
-          case CS_IF :
+        case CS_IF :
             PTreeWarnExpr( expr, WARN_IF_ALWAYS_TRUE );
             break;
-          case CS_SWITCH :
+        case CS_SWITCH :
             PTreeWarnExpr( expr, WARN_SWITCH_ALWAYS_CONSTANT );
             break;
         }
@@ -611,7 +611,7 @@ static void parseForStmt( void )
     mustRecog( T_RIGHT_PAREN );
     loop = beginLoopControl( CS_FOR );
     switch( inc_type ) {
-      case EXPR_ANAL_OK :
+    case EXPR_ANAL_OK :
         around = CgFrontLabelCs();
         doJUMP( IC_LABEL_CS, O_GOTO, around );
         dumpCSLabel( loop->u.l.top_loop );
@@ -619,7 +619,7 @@ static void parseForStmt( void )
         dumpCSLabel( around );
         CgFrontLabfreeCs( 1 );
         break;
-      case EXPR_ANAL_NONE :
+    case EXPR_ANAL_NONE :
         dumpCSLabel( loop->u.l.top_loop );
         break;
     }
@@ -885,9 +885,9 @@ static CSTACK *findContinuable( void )
 
     Stack_forall( currFunction->control, curr ) {
         switch( curr->id ) {
-          case CS_FOR:
-          case CS_DO:
-          case CS_WHILE:
+        case CS_FOR:
+        case CS_DO:
+        case CS_WHILE:
             return( curr );
         }
     }
@@ -1574,14 +1574,14 @@ static void insertFunctionReturn( SYMBOL func )
     ret = FunctionDeclarationType( func->sym_type );
     base = TypedefModifierRemove( ret->of );
     switch( ObjModelFunctionReturn( ret ) ) {
-      case OMR_VOID :
+    case OMR_VOID :
         break;
-      case OMR_SCALAR :
-      case OMR_CLASS_VAL :
+    case OMR_SCALAR :
+    case OMR_CLASS_VAL :
         retn_sym = SymAllocReturn( GetCurrScope(), base );
         CgFrontCodePtr( IC_FUNCTION_RETN, retn_sym );
         break;
-      case OMR_CLASS_REF :
+    case OMR_CLASS_REF :
         if( NULL == SymFunctionReturn() ) {
             retn_sym = SymAllocReturn( GetCurrScope()->enclosing, base );
             CgFrontCodePtr( IC_FUNCTION_RETN, retn_sym );
@@ -2215,23 +2215,25 @@ void FunctionBody( DECL_INFO *dinfo )
                 fn_data.always_dead_code = true;
             }
         }
-        if( fn_data.depth == 0 ) break;
+        if( fn_data.depth == 0 ) {
+            break;
+        }
     }
     switch( returnIsRequired( fn_type ) ) {
-      case RETN_REQUIRED :
+    case RETN_REQUIRED :
         if( ! MainProcedure( func ) ) {
             CErr1( ERR_MISSING_RETURN_VALUE );
             break;
         }
-        // drops thru, see 3.6.1 (5)
-      case RETN_DFLT_INT :
+        /* fall through */      // see 3.6.1 (5)
+    case RETN_DFLT_INT :
         if( MainProcedure( func ) ) {
             PTREE expr;
             expr = AnalyseReturnExpr( func, NodeZero() );
             IcEmitExpr( expr );
         }
-        // drops thru
-      case RETN_NOT_REQD :
+        /* fall through */
+    case RETN_NOT_REQD :
         CgFrontReturnSymbol( NULL );
         FunctionBodyDeadCode();
         break;

@@ -381,7 +381,7 @@ static bool COperand( void )
 
     done = false;
     switch( CurToken ) {
-      case T_ID:
+    case T_ID:
         SrcFileGetTokenLocn( &loc.locn ); // need this to store result
         loc.pos = Pos;
         Pos++;
@@ -416,34 +416,34 @@ static bool COperand( void )
             done = PpNextToken();
         }
         break;
-      case T_FALSE:
-      case T_TRUE:
+    case T_FALSE:
+    case T_TRUE:
         I32ToI64( CurToken == T_TRUE, &(p.u.sval) );
         p.no_sign = 0;
         PushOperandCurLocation( p );
         done = PpNextToken();
         break;
-      case T_CONSTANT:
+    case T_CONSTANT:
         switch( ConstType ) {
-          case TYP_FLOAT:
-          case TYP_DOUBLE:
-          case TYP_LONG_DOUBLE:
+        case TYP_FLOAT:
+        case TYP_DOUBLE:
+        case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
             I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
             // LMW add long double support if available
             p.no_sign = 0;
             break;
-          case TYP_WCHAR:
-          case TYP_UCHAR:
-          case TYP_USHORT:
-          case TYP_UINT:
-          case TYP_ULONG:
-          case TYP_ULONG64:
+        case TYP_WCHAR:
+        case TYP_UCHAR:
+        case TYP_USHORT:
+        case TYP_UINT:
+        case TYP_ULONG:
+        case TYP_ULONG64:
             p.u.uval = Constant64;
             p.no_sign = 1;
             break;
-          default:
+        default:
             p.u.sval = Constant64;
             p.no_sign = 0;
         }
@@ -452,8 +452,7 @@ static bool COperand( void )
             done = PpNextToken();
         }
         break;
-
-      default:
+    default:
         CErr2p( WARN_UNDEFD_MACRO_IS_ZERO, Buffer );
         I64SetZero( p );
         p.no_sign = 0;
@@ -588,7 +587,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
             return( true );
         } else {
             PushOperator( op2, &op2_info, Prec[op2] );
-            PushCurToken( Prec[ CurToken] );
+            PushCurToken( Prec[CurToken] );
             return( PpNextToken() );
         }
     }
@@ -604,7 +603,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
     if( op2 != T_COLON || op1 != T_QUESTION ) {
         PushOperator( op1, &op1_info, Prec[op1] );
         PushOperator( op2, &op2_info, Prec[op2] );
-        PushCurToken( Prec[ CurToken] );
+        PushCurToken( Prec[CurToken] );
         return( PpNextToken() );
     }
     if( PopOperand( &e3, &e3_info ) && ( e3_info.pos > op2_info.pos ) ) {
@@ -786,7 +785,7 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
-          case T_LT :
+        case T_LT :
             if( e1.no_sign || e2.no_sign ) {
                 val = U64LT( e1, e2 );
             } else {
@@ -794,7 +793,7 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
             }
             I32ToI64( val, &(e1.u.sval) );
             break;
-          case T_LE :
+        case T_LE :
             if( e1.no_sign || e2.no_sign ) {
                 val = U64LE( e1, e2 );
             } else {
@@ -802,7 +801,7 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
             }
             I32ToI64( val, &(e1.u.sval) );
             break;
-          case T_GT :
+        case T_GT :
             if( e1.no_sign || e2.no_sign ) {
                 val = U64GT( e1, e2 );
             } else {
@@ -810,7 +809,7 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
             }
             I32ToI64( val, &(e1.u.sval) );
             break;
-          case T_GE :
+        case T_GE :
             if( e1.no_sign || e2.no_sign ) {
                 val = U64GE( e1, e2 );
             } else {
@@ -818,7 +817,7 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
             }
             I32ToI64( val, &(e1.u.sval) );
             break;
-          DbgDefault( "Default in CRelational\n" );
+        DbgDefault( "Default in CRelational\n" );
         }
         e1.no_sign = 0;
         PushOperand( e1, &loc );
@@ -836,7 +835,7 @@ static bool CShift( void )  // reduce a<<b or a>>b
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
-          case T_RSHIFT :
+        case T_RSHIFT :
             if( U64Low(e2) > 64 || ( U64High( e2 ) != 0 ) ) {
                 if( e1.no_sign ) {
                     U64SetZero( e1 );
@@ -855,14 +854,14 @@ static bool CShift( void )  // reduce a<<b or a>>b
                 }
             }
             break;
-          case T_LSHIFT :
+        case T_LSHIFT :
             if( U64Low(e2) > 64 || ( U64High( e2 ) != 0 ) ) {
                 U64SetZero( e1 );
             } else {
                 U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
             }
             break;
-          DbgDefault( "Default in CShift\n" );
+        DbgDefault( "Default in CShift\n" );
         }
         PushOperand( e1, &loc );
         return( false );
@@ -879,15 +878,15 @@ static bool CAdditive( void )   // reduce a+b or a-b
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
-          case T_PLUS :
+        case T_PLUS :
             U64AddEq( e1, e2 );
             e1.no_sign |= e2.no_sign;
             break;
-          case T_MINUS :
+        case T_MINUS :
             U64SubEq( e1, e2 );
             e1.no_sign = 0;
             break;
-          DbgDefault( "Default in CAdditive\n" );
+        DbgDefault( "Default in CAdditive\n" );
         }
         PushOperand( e1, &loc );
         return( false );
@@ -905,10 +904,10 @@ static bool CMultiplicative( void ) // reduce a/b or a*b
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
-          case T_TIMES :
+        case T_TIMES :
             U64MulEq( e1, e2 );
             break;
-          case T_DIV :
+        case T_DIV :
             if( U64Zero( e2 ) ) {
                 U64SetZero( e1 );
             } else if( e1.no_sign || e2.no_sign ) {
@@ -919,7 +918,7 @@ static bool CMultiplicative( void ) // reduce a/b or a*b
                 I64Div( &((e1).u.sval), &((e2).u.sval), &((e1).u.sval), &unused );
             }
             break;
-          case T_PERCENT :
+        case T_PERCENT :
             if( U64Zero( e2 ) ) {
                 U64SetZero( e1 );
             } else if( e1.no_sign || e2.no_sign ) {
@@ -930,7 +929,7 @@ static bool CMultiplicative( void ) // reduce a/b or a*b
                 I64Div( &(e1.u.sval), &(e2.u.sval), &unused, &e1.u.sval );
             }
             break;
-          DbgDefault( "Default in CMultiplicative\n" );
+        DbgDefault( "Default in CMultiplicative\n" );
         }
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
@@ -950,13 +949,13 @@ static bool CUnary( void )      // reduce +a or -a or !a or ~a
     if( PopOperand( &p, &operand_info ) &&
         ( operator_info.pos < operand_info.pos ) ) {
         switch( top ) {
-          case T_UNARY_PLUS:
+        case T_UNARY_PLUS:
             break;
-          case T_UNARY_MINUS:
+        case T_UNARY_MINUS:
             U64Neg( &((p).u.uval), &((p).u.uval ) );
             break;
-          case T_EXCLAMATION:
-          case T_ALT_EXCLAMATION:
+        case T_EXCLAMATION:
+        case T_ALT_EXCLAMATION:
             if( I64Zero( p ) ) {
                 I32ToI64( 1, &(p.u.sval) );
             } else {
@@ -964,11 +963,11 @@ static bool CUnary( void )      // reduce +a or -a or !a or ~a
             }
             p.no_sign = 0;
             break;
-          case T_TILDE:
-          case T_ALT_TILDE:
+        case T_TILDE:
+        case T_ALT_TILDE:
             U64Not( &(p.u.sval), &(p.u.sval) );
             break;
-          DbgDefault( "Default in CUnary\n" );
+        DbgDefault( "Default in CUnary\n" );
         }
         PushOperand( p, &operator_info );
     } else {

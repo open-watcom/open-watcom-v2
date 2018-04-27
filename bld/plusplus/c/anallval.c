@@ -861,7 +861,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
             }
             break;
         }
-        // drops thru
+        /* fall through */
     default :
         expr->flags |= PTF_LV_CHECKED;
         ok = true;

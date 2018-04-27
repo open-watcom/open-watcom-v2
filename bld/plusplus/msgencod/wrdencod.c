@@ -1135,7 +1135,7 @@ static int process_input()      // PROCESS INPUT FILE
                 ENDIF
             ENDIF
             IF( record != REC_NONE )
-                state = state_table[ state ][ record ];
+                state = state_table[state][record];
                 QUITIF( state == FOUND_EOF ) :: PROCESS_LINE;
                 IF( ( state == MOD_GROUP ) || ( state == MOD_NO_GRP ) )
                     retn = process_modifier( type, level );

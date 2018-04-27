@@ -80,8 +80,8 @@ char* Str::StoreList::alloc     // ALLOCATOR( vector, size )
         _list = alloced;
         _left = _BlkSize;
     }
-    char* tgt = &_list->_data[ _BlkSize - _left ];
-    tgt[ size ] = '\0';
+    char* tgt = &_list->_data[_BlkSize - _left];
+    tgt[size] = '\0';
     memcpy( tgt, input, size );
     _left -= size + 1;
     return tgt;

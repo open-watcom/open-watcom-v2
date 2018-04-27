@@ -71,11 +71,11 @@ static int io_open(             // OPEN AN OUTPUT FILE
     const char *dflt )          // - default extension
 {
     int retn;                   // - return: 0 ==> ok
-    char dev[ _MAX_DRIVE ];     // - drive
-    char dir[ _MAX_DIR   ];     // - directory
-    char fnm[ _MAX_FNAME ];     // - file name
-    char ext[ _MAX_EXT   ];     // - extension
-    char pth[ _MAX_PATH  ];     // - full name
+    char dev[_MAX_DRIVE];       // - drive
+    char dir[_MAX_DIR];         // - directory
+    char fnm[_MAX_FNAME];       // - file name
+    char ext[_MAX_EXT];         // - extension
+    char pth[_MAX_PATH];        // - full name
 
     _splitpath( fname, dev, dir, fnm, ext );
     IF( ext[0] == '\0' )

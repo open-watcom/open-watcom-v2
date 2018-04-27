@@ -70,29 +70,29 @@ int main( int argc, char **argv )
     createTable();
 
     /* alternative tokens */
-    toYACC[ T_ALT_LEFT_BRACKET ] = toYACC[ T_LEFT_BRACKET ];
-    toYACC[ T_ALT_RIGHT_BRACKET ] = toYACC[ T_RIGHT_BRACKET ];
-    toYACC[ T_ALT_LEFT_BRACE ] = toYACC[ T_LEFT_BRACE ];
-    toYACC[ T_ALT_RIGHT_BRACE ] = toYACC[ T_RIGHT_BRACE ];
-    toYACC[ T_ALT_SHARP ] = toYACC[ T_SHARP ];
-    toYACC[ T_ALT_SHARP_SHARP ] = toYACC[ T_SHARP_SHARP ];
-    toYACC[ T_ALT_AND ] = toYACC[ T_AND ];
-    toYACC[ T_ALT_AND_EQUAL ] = toYACC[ T_AND_EQUAL ];
-    toYACC[ T_ALT_AND_AND ] = toYACC[ T_AND_AND ];
-    toYACC[ T_ALT_OR ] = toYACC[ T_OR ];
-    toYACC[ T_ALT_OR_EQUAL ] = toYACC[ T_OR_EQUAL ];
-    toYACC[ T_ALT_OR_OR ] = toYACC[ T_OR_OR ];
-    toYACC[ T_ALT_XOR ] = toYACC[ T_XOR ];
-    toYACC[ T_ALT_XOR_EQUAL ] = toYACC[ T_XOR_EQUAL ];
-    toYACC[ T_ALT_EXCLAMATION ] = toYACC[ T_EXCLAMATION ];
-    toYACC[ T_ALT_NE ] = toYACC[ T_NE ];
-    toYACC[ T_ALT_TILDE ] = toYACC[ T_TILDE ];
+    toYACC[T_ALT_LEFT_BRACKET] = toYACC[T_LEFT_BRACKET];
+    toYACC[T_ALT_RIGHT_BRACKET] = toYACC[T_RIGHT_BRACKET];
+    toYACC[T_ALT_LEFT_BRACE] = toYACC[T_LEFT_BRACE];
+    toYACC[T_ALT_RIGHT_BRACE] = toYACC[T_RIGHT_BRACE];
+    toYACC[T_ALT_SHARP] = toYACC[T_SHARP];
+    toYACC[T_ALT_SHARP_SHARP] = toYACC[T_SHARP_SHARP];
+    toYACC[T_ALT_AND] = toYACC[T_AND];
+    toYACC[T_ALT_AND_EQUAL] = toYACC[T_AND_EQUAL];
+    toYACC[T_ALT_AND_AND] = toYACC[T_AND_AND];
+    toYACC[T_ALT_OR] = toYACC[T_OR];
+    toYACC[T_ALT_OR_EQUAL] = toYACC[T_OR_EQUAL];
+    toYACC[T_ALT_OR_OR] = toYACC[T_OR_OR];
+    toYACC[T_ALT_XOR] = toYACC[T_XOR];
+    toYACC[T_ALT_XOR_EQUAL] = toYACC[T_XOR_EQUAL];
+    toYACC[T_ALT_EXCLAMATION] = toYACC[T_EXCLAMATION];
+    toYACC[T_ALT_NE] = toYACC[T_NE];
+    toYACC[T_ALT_TILDE] = toYACC[T_TILDE];
 
     fprintf( ofp, "static const unsigned char YYFAR yytranslate[257] = {\n" );
     for( i = 0; i < 256; ++i ) {
         fprintf( ofp, "%3u,", toYACC[i] );
         if( i < T_LAST_TOKEN ) {
-            fprintf( ofp, "\t/* %s */", Tokens[ i ] );
+            fprintf( ofp, "\t/* %s */", Tokens[i] );
         }
         fprintf( ofp, "\n" );
     }

@@ -277,45 +277,45 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
     TYPE type;                  // - node type
 
     switch( NodeAddrOfFun( PTreeOpRight( arg ), &afun ) ) {
-      case ADDR_FN_MANY :
-      case ADDR_FN_MANY_USED :
+    case ADDR_FN_MANY :
+    case ADDR_FN_MANY_USED :
         PTreeErrorExpr( arg->u.subtree[1], ERR_ELLIPSE_ADDR_OVERLOAD );
         ok = false;
         break;
-      default :
+    default :
         right = NodeRvalue( arg->u.subtree[1] );
         arg->u.subtree[1] = right;
         type =  TypedefModifierRemove( right->type );
         switch( type->id ) {
-          case TYP_CHAR :
-          case TYP_SCHAR :
-          case TYP_UCHAR :
-          case TYP_SSHORT :
-          case TYP_WCHAR :
-          case TYP_USHORT :
+        case TYP_CHAR :
+        case TYP_SCHAR :
+        case TYP_UCHAR :
+        case TYP_SSHORT :
+        case TYP_WCHAR :
+        case TYP_USHORT :
             type = TypeUnArithResult( type );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
             ok = true;
             break;
-          case TYP_FLOAT :
+        case TYP_FLOAT :
             type = GetBasicType( TYP_DOUBLE );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
             ok = true;
             break;
-          case TYP_ARRAY :
+        case TYP_ARRAY :
             type = PointerTypeForArray( right->type );
             right = NodeConvert( type, right );
             arg_finish( right, arg );
             ok = true;
             break;
-          case TYP_MEMBER_POINTER :
+        case TYP_MEMBER_POINTER :
             ConvertMembPtrConst( &arg->u.subtree[1] );
             arg_fillout( arg );
             ok = true;
             break;
-          case TYP_POINTER :
+        case TYP_POINTER :
             if( NULL == FunctionDeclarationType( type->of ) ) {
                 type_flag def_flags;
                 type_flag act_flags;
@@ -347,10 +347,10 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
                 ok = true;
             }
             break;
-          case TYP_CLASS :
+        case TYP_CLASS :
             ok = passStructOnStack( arg, WARN_ELLIPSIS_CLASS_ARG );
             break;
-          default :
+        default :
             arg_fillout( arg );
             ok = true;
             break;
@@ -725,10 +725,10 @@ static PTREE insertCppRetnCopy( // INSERT C++ RETURN COPY
     OMR return_kind )           // - kind of return
 {
     switch( return_kind ) {
-      case OMR_CLASS_VAL :
+    case OMR_CLASS_VAL :
         callnode = insertRetnCopy( callnode, retnnode );
         break;
-      case OMR_CLASS_REF :
+    case OMR_CLASS_REF :
         callnode->flags |= PTF_CLASS_RVREF;
         break;
     }
@@ -774,20 +774,20 @@ PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     arglist = NULL;
     return_kind = ObjModelFunctionReturn( ftype );
     switch( PcCallImpl( ftype ) ) {
-      case CALL_IMPL_REV_C :
+    case CALL_IMPL_REV_C :
         return_kind = OMR_CLASS_VAL;
-        // drops thru
-      case CALL_IMPL_REV_CPP :
+        /* fall through */
+    case CALL_IMPL_REV_CPP :
         arglist = insertCDtor( thisnode, cdtor );
         arglist = insertCppRetnArg( arglist, retnnode, return_kind );
         arglist = appendArg( userargs, arglist );
         break;
-      case CALL_IMPL_ELL_C :
-      case CALL_IMPL_C :
+    case CALL_IMPL_ELL_C :
+    case CALL_IMPL_C :
         return_kind = OMR_CLASS_VAL;
-        // drops thru
-      case CALL_IMPL_ELL_CPP :
-      case CALL_IMPL_CPP :
+        /* fall through */
+    case CALL_IMPL_ELL_CPP :
+    case CALL_IMPL_CPP :
         arglist = insertCppRetnArg( userargs, retnnode, return_kind );
         arglist = insertCDtor( arglist, cdtor );
         arglist = insertArg( arglist, thisnode );
@@ -864,8 +864,8 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     static_fn_this = NULL;
     virtual_call = false;
     switch( left->cgop ) {
-      case CO_DOT:
-      case CO_ARROW:
+    case CO_DOT:
+    case CO_ARROW:
         this_node = left->u.subtree[0];
         left->u.subtree[0] = NULL;
         left = NodePruneTop( left );
@@ -883,7 +883,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             return( expr );
         }
         break;
-      case CO_CALL_EXEC_IND:
+    case CO_CALL_EXEC_IND:
         if( left->flags & PTF_CALLED_ONLY ) {
             /* member pointer dereference being called */
             deref_args = left->u.subtree[1];
@@ -938,13 +938,13 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         }
 
         switch( ovret ) {
-          case FNOV_AMBIGUOUS :
+        case FNOV_AMBIGUOUS :
             CallDiagAmbiguous( expr, diagnostic->msg_ambiguous, &fnov_diag );
             NodeFreeDupedExpr( this_node );
             ArgListTempFree( alist, num_args );
             PtListFree( ptlist, num_args );
             return( expr );
-          case FNOV_NO_MATCH :
+        case FNOV_NO_MATCH :
             if( this_node == NULL ) {
                 if( SymIsThisFuncMember( orig ) ) {
                     this_node = NodeThisCopyLocation( left );

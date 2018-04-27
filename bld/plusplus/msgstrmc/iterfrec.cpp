@@ -80,7 +80,7 @@ Boolean IterFileRec::next(      // GET NEXT RECORD
     } else if( file.fail() ) {
         throw ExcFileRead( filename );
     } else {
-        buffer[ strlen( buffer ) - 1 ] = '\0';
+        buffer[strlen( buffer ) - 1] = '\0';
         retn = TRUE;
     }
     return retn;

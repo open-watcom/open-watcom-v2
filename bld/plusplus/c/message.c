@@ -190,7 +190,7 @@ static void doDecodeMessage(            // extract message from tables
 
     if( data != NULL ) {
         if( msg < data->errors_count ) {
-            strcpy( buff, data->errors_text[ msg ] );
+            strcpy( buff, data->errors_text[msg] );
             return;
         }
     }
@@ -290,24 +290,24 @@ static void setMsgLocation      // SET LOCATION FOR MESSAGE
     ( CTX context )             // - current context
 {
     switch( context ) {
-      case CTX_FINI :
-      case CTX_FUNC_GEN :
-      case CTX_CG_FUNC :
-      case CTX_CG_OPT :
-      case CTX_ENDFILE :
+    case CTX_FINI :
+    case CTX_FUNC_GEN :
+    case CTX_CG_FUNC :
+    case CTX_CG_OPT :
+    case CTX_ENDFILE :
         if( CompFlags.ew_switch_used ) {
-      // drops thru
-      case CTX_INIT :
-      case CTX_CMDLN_ENV :
-      case CTX_CMDLN_PGM :
-      case CTX_CMDLN_VALID :
+        /* fall through */
+    case CTX_INIT :
+    case CTX_CMDLN_ENV :
+    case CTX_CMDLN_PGM :
+    case CTX_CMDLN_VALID :
             err_locn.src_file = NULL;
             break;
         }
-        // drops thru
-      case CTX_PREINCL :
-      case CTX_FORCED_INCS :
-      case CTX_SOURCE :
+        /* fall through */
+    case CTX_PREINCL :
+    case CTX_FORCED_INCS :
+    case CTX_SOURCE :
         if( err_locn.src_file == NULL ) {
             if( SrcFilesOpen() ) {
                 SrcFileGetTokenLocn( &err_locn );
@@ -344,46 +344,46 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     VbufInit( &buffer );
     sym = msgBuild( msgnum, args, &buffer );
     switch( severity ) {
-      case IDEMSGSEV_ERROR :
-      case IDEMSGSEV_WARNING :
+    case IDEMSGSEV_ERROR :
+    case IDEMSGSEV_WARNING :
         if( CompFlags.ew_switch_used ) {
             switch( context ) {
-              case CTX_INIT :
-              case CTX_FINI :
-              case CTX_CMDLN_VALID :
-              case CTX_CG_OPT :
-              case CTX_ENDFILE :
+            case CTX_INIT :
+            case CTX_FINI :
+            case CTX_CMDLN_VALID :
+            case CTX_CG_OPT :
+            case CTX_ENDFILE :
                 if( context_changed ) {
                     fmt_inf_hdr( inf_prefix );
                 }
                 break;
-              case CTX_CMDLN_ENV :
-              case CTX_CMDLN_PGM :
+            case CTX_CMDLN_ENV :
+            case CTX_CMDLN_PGM :
                 if( context_changed ) {
                     fmt_inf_hdr_switch( inf_prefix, inf );
                 }
                 break;
-              case CTX_CG_FUNC :
-              case CTX_FUNC_GEN :
+            case CTX_CG_FUNC :
+            case CTX_FUNC_GEN :
                 if( context_changed ) {
                     fmt_inf_hdr_sym( inf_prefix, (SYMBOL)inf );
                 }
                 break;
-              case CTX_PREINCL :
-              case CTX_FORCED_INCS :
-              case CTX_SOURCE :
+            case CTX_PREINCL :
+            case CTX_FORCED_INCS :
+            case CTX_SOURCE :
                 build_file_nesting();
                 break;
-              DbgDefault( "Unexpected message context" );
+            DbgDefault( "Unexpected message context" );
             }
         }
         msg_locn = &prt_locn;
         break;
-      case IDEMSGSEV_NOTE :
-      case IDEMSGSEV_NOTE_MSG :
+    case IDEMSGSEV_NOTE :
+    case IDEMSGSEV_NOTE_MSG :
         msg_locn = &notes_locn;
         break;
-      default :
+    default :
         msg_locn = NULL;
         break;
     }
@@ -594,22 +594,22 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     int level;
 
     print_err = true;
-    level = msg_level[ msgnum ] & 0x0F;
-    switch( msg_level[ msgnum ] >> 4 ) {
-      case MSG_TYPE_INFO :
+    level = msg_level[msgnum] & 0x0F;
+    switch( msg_level[msgnum] >> 4 ) {
+    case MSG_TYPE_INFO :
         level = WLEVEL_NOTE;
         break;
-      case MSG_TYPE_ANSIERR :
-      case MSG_TYPE_ANSIWARN :
+    case MSG_TYPE_ANSIERR :
+    case MSG_TYPE_ANSIWARN :
         print_err = !CompFlags.extensions_enabled;
         break;
-      case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSI :
         if( !CompFlags.extensions_enabled ) {
             level = WLEVEL_ERROR;
         }
         break;
-      case MSG_TYPE_WARNING :
-      case MSG_TYPE_ERROR :
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ERROR :
         break;
     }
     *plevel = level;
@@ -834,7 +834,7 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
         orig_err_levs = CMemAlloc( sizeof( msg_level ) );
         memcpy( orig_err_levs, msg_level, sizeof( msg_level ) );
     }
-    msg_level[ msgnum ] = ( msg_level[ msgnum ] & 0xF0 ) + level;
+    msg_level[msgnum] = ( msg_level[msgnum] & 0xF0 ) + level;
 }
 
 void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
@@ -845,15 +845,15 @@ void WarnChangeLevel(           // CHANGE WARNING LEVEL FOR A MESSAGE
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         return;
     }
-    switch( msg_level[ msgnum ] >> 4 ) {
-      case MSG_TYPE_ERROR :
-      case MSG_TYPE_INFO :
-      case MSG_TYPE_ANSIERR :
+    switch( msg_level[msgnum] >> 4 ) {
+    case MSG_TYPE_ERROR :
+    case MSG_TYPE_INFO :
+    case MSG_TYPE_ANSIERR :
         CErr2( ERR_PRAG_WARNING_BAD_MESSAGE, msgnum );
         break;
-      case MSG_TYPE_WARNING :
-      case MSG_TYPE_ANSI :
-      case MSG_TYPE_ANSIWARN :
+    case MSG_TYPE_WARNING :
+    case MSG_TYPE_ANSI :
+    case MSG_TYPE_ANSIWARN :
         changeLevel( level, msgnum );
         break;
     }
@@ -868,10 +868,10 @@ void WarnChangeLevels(          // CHANGE WARNING LEVELS FOR ALL MESSAGES
         for( index = 0
            ; index < ARRAY_SIZE( msg_level )
            ; ++ index ) {
-            switch( msg_level[ index ] >> 4 ) {
-              case MSG_TYPE_WARNING :
-              case MSG_TYPE_ANSI :
-              case MSG_TYPE_ANSIWARN :
+            switch( msg_level[index] >> 4 ) {
+            case MSG_TYPE_WARNING :
+            case MSG_TYPE_ANSI :
+            case MSG_TYPE_ANSIWARN :
                 changeLevel( level, index );
                 break;
             }
@@ -1037,7 +1037,7 @@ pch_status PCHReadErrWarnData( void )
     } else {
         orig_levels = msg_level;
     }
-    stop = &tmp_buff[ sizeof( msg_level ) ];
+    stop = &tmp_buff[sizeof( msg_level )];
     for( p = tmp_buff, o = orig_levels; p < stop; ++p, ++o ) {
         if( *p != *o ) {
             // reflect a change from the header file into current levels

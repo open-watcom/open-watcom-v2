@@ -224,7 +224,7 @@ void PTreeFreeSubtrees( PTREE tree )
         ExtraRptIncrementCtr( null_frees );
         return;
     }
-    if( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) {
+    if( ptreePTSFlags[tree->op] & PTS_OPERATOR ) {
         PTreeTraversePostfix( tree, PTreeFree );
     } else {
         ExtraRptIncrementCtr( simple_frees );
@@ -527,14 +527,14 @@ bool PTreePropogateError(       // CHECK AND PROPOGATE ERRORS FROM SUB-TREES
 
     DbgAssert( curr != NULL );
     op = curr->op;
-    if( ptreePTSFlags[ op ] & PTS_OPERATOR ) {
+    if( ptreePTSFlags[op] & PTS_OPERATOR ) {
         left = curr->u.subtree[0];
         if( left != NULL && left->op == PT_ERROR ) {
             PTreeErrorNode( curr );
             return true;
         }
     }
-    if( ptreePTSFlags[ op ] & PTS_BINARY ) {
+    if( ptreePTSFlags[op] & PTS_BINARY ) {
         right = curr->u.subtree[1];
         if( right != NULL && right->op == PT_ERROR ) {
             PTreeErrorNode( curr );
@@ -583,7 +583,7 @@ PTREE PTreeTraversePostfix(     // TRAVERSE A PTREE IN (LEFT,RIGHT,SELF) ORDER
     PTREE_LEFT:
         if( tree->flags & PTF_DUP_VISITED ) {
             goto PTREE_UNWIND;
-        } else if( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) {
+        } else if( ptreePTSFlags[tree->op] & PTS_OPERATOR ) {
             left = tree->u.subtree[0];
             if( left != NULL ) {
                 /* has a left subtree; store current parent */
@@ -603,7 +603,7 @@ PTREE PTreeTraversePostfix(     // TRAVERSE A PTREE IN (LEFT,RIGHT,SELF) ORDER
             goto PTREE_PROCESS;
         }
     PTREE_RIGHT:
-        if( ptreePTSFlags[ tree->op ] & PTS_BINARY ) {
+        if( ptreePTSFlags[tree->op] & PTS_BINARY ) {
             right = tree->u.subtree[1];
             if( right != NULL ) {
                 /* has a right subtree; store current parent */
@@ -690,7 +690,7 @@ PTREE PTreeTraverseInitRef(     // TRAVERSE A PTREE FOR REFERENCE INIT.
     for(;;) {
         switch( state ) {
         case PTREE_LEFT:
-            if( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) {
+            if( ptreePTSFlags[tree->op] & PTS_OPERATOR ) {
                 left = tree->u.subtree[0];
                 if( left != NULL
                  && !( tree->op == PT_BINARY && tree->cgop == CO_COMMA ) ) {
@@ -713,7 +713,7 @@ PTREE PTreeTraverseInitRef(     // TRAVERSE A PTREE FOR REFERENCE INIT.
             }
             continue;
         case PTREE_RIGHT:
-            if( ptreePTSFlags[ tree->op ] & PTS_BINARY ) {
+            if( ptreePTSFlags[tree->op] & PTS_BINARY ) {
                 right = tree->u.subtree[1];
                 if( right != NULL ) {
                     /* has a right subtree; store current parent */
@@ -808,7 +808,7 @@ PTREE PTreeTraversePrefix(      // TRAVERSE A PTREE IN (SELF,LEFT,RIGHT) ORDER
             state = PTREE_LEFT;
             /* fall through */
         case PTREE_LEFT:
-            if( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) {
+            if( ptreePTSFlags[tree->op] & PTS_OPERATOR ) {
                 if( tree->u.subtree[0] != NULL ) {
                     /* has a left subtree; store current parent */
                     temp = tree;
@@ -829,7 +829,7 @@ PTREE PTreeTraversePrefix(      // TRAVERSE A PTREE IN (SELF,LEFT,RIGHT) ORDER
             }
             continue;
         case PTREE_RIGHT:
-            if( ( ptreePTSFlags[ tree->op ] & PTS_BINARY )
+            if( ( ptreePTSFlags[tree->op] & PTS_BINARY )
               &&( tree->u.subtree[1] != NULL ) ) {
                 /* has a right subtree; store current parent */
                 temp = tree;
@@ -926,7 +926,7 @@ PTREE PTreeErrorNode(           // MAKE NODE AN ERROR NODE
     } else if( curr->op == PT_DUP_EXPR ) {
         NodeUnduplicate( curr );
     } else {
-        flags = ptreePTSFlags[ curr->op ];
+        flags = ptreePTSFlags[curr->op];
         if( flags & PTS_OPERATOR ) {
             if( flags & PTS_BINARY ) {
                 NodeFreeDupedExpr( curr->u.subtree[1] );
@@ -1037,8 +1037,8 @@ PTO_FLAG PTreeOpFlags(          // GET FLAGS FOR A PTREE NODE
     PTO_FLAG flags;             // - flags for the node
 
     flags = PTO_NULL;
-    if( ptreePTSFlags[ curr->op ] & PTS_HAS_CGOP ) {
-        flags |= oper_flags[ curr->cgop ];
+    if( ptreePTSFlags[curr->op] & PTS_HAS_CGOP ) {
+        flags |= oper_flags[curr->cgop];
     }
     return flags;
 }
@@ -1411,15 +1411,16 @@ PTREE *PTreeRef(                // FIND REFERENCE TO OPERAND (PAST COMMAS)
 
     for( ; ; ) {
         node = *tgt;
-        if( node == NULL ) break;
+        if( node == NULL )
+            break;
         switch( node->op ) {
-          case PT_BINARY :
+        case PT_BINARY :
             if( node->cgop == CO_COMMA ) {
                 tgt = &((*tgt)->u.subtree[1]);
                 continue;
             }
             break;
-          default :
+        default :
             break;
         }
         break;
@@ -1707,7 +1708,7 @@ PTREE PTreeIntrinsicOperator( PTREE expr, CGOP cgop )
     arg1 = expr->u.subtree[1];
     op1 = arg1->u.subtree[1];
     arg1->u.subtree[1] = NULL;
-    flags = oper_flags[ cgop ];
+    flags = oper_flags[cgop];
     if( flags & PTO_UNARY ) {
         expr = NodeUnary( cgop, op1 );
     } else {
@@ -2057,7 +2058,7 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
             state = PTREE_LEFT;
             /* fall through */
         case PTREE_LEFT:
-            if( ( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) &&
+            if( ( ptreePTSFlags[tree->op] & PTS_OPERATOR ) &&
                 ( tree->op != PT_DUP_EXPR ||
                   ( ((*curr_copy)->u.dup.subtree[0]->flags & PTF_DEFARG_COPY)
                       == 0) ) ) {
@@ -2094,7 +2095,7 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
             }
             continue;
         case PTREE_RIGHT:
-            if( ( ptreePTSFlags[ tree->op ] & PTS_BINARY ) &&
+            if( ( ptreePTSFlags[tree->op] & PTS_BINARY ) &&
                 tree->u.subtree[1] != NULL ) {
                 /* has a right subtree; store current parent */
                 temp = tree;

@@ -1074,7 +1074,7 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
                 tree = PTreeIntConstant( I32FetchTrunc( Constant64 ), ConstType );
                 break;
             }
-            // drops thru
+            /* fall through */
         default:
             tree = PTreeIntConstant( U32Fetch( Constant64 ), ConstType );
             break;

@@ -64,21 +64,21 @@ void DbgHeapInit                // INITIALIZATION
     count = 0;
     for( ; ; ) {
         switch( _heapwalk( &hi ) ) {
-          case _HEAPEND :
-          case _HEAPEMPTY :
+        case _HEAPEND :
+        case _HEAPEMPTY :
             break;
-          case _HEAPOK :
+        case _HEAPOK :
             if( hi._useflag ) {
                 ++ count;
             }
             continue;
-          case _HEAPBADBEGIN :
+        case _HEAPBADBEGIN :
             puts( "DbgHeapInit -- BAD BEGIN" );
             abort();
-          case _HEAPBADPTR :
+        case _HEAPBADPTR :
             puts( "DbgHeapInit -- BAD PTR" );
             abort();
-          case _HEAPBADNODE :
+        case _HEAPBADNODE :
             puts( "DbgHeapInit -- BAD NODE" );
             abort();
         }
@@ -100,10 +100,10 @@ void DbgHeapInit                // INITIALIZATION
         count = 0;
         for( ; ; ) {
             switch( _heapwalk( &hi ) ) {
-              case _HEAPEND :
-              case _HEAPEMPTY :
+            case _HEAPEND :
+            case _HEAPEMPTY :
                 break;
-              case _HEAPOK :
+            case _HEAPOK :
                 if( hi._useflag ) {
                     ++ count;
                     ae->_pentry = hi._pentry;
@@ -111,13 +111,13 @@ void DbgHeapInit                // INITIALIZATION
                     ++ae;
                 }
                 continue;
-              case _HEAPBADBEGIN :
+            case _HEAPBADBEGIN :
                 puts( "DbgHeapInit -- BAD BEGIN" );
                 abort();
-              case _HEAPBADPTR :
+            case _HEAPBADPTR :
                 puts( "DbgHeapInit -- BAD PTR" );
                 abort();
-              case _HEAPBADNODE :
+            case _HEAPBADNODE :
                 puts( "DbgHeapInit -- BAD NODE" );
                 abort();
             }
@@ -144,10 +144,10 @@ void DbgHeapFini                // COMPLETION
     count = 0;
     for( ; ; ) {
         switch( _heapwalk( &hi ) ) {
-          case _HEAPEND :
-          case _HEAPEMPTY :
+        case _HEAPEND :
+        case _HEAPEMPTY :
             break;
-          case _HEAPOK :
+        case _HEAPOK :
             if( hi._useflag ) {
                 unsigned dec;
                 for( ae = entries, dec = entry_count; ; --dec, ++ae ) {
@@ -164,13 +164,13 @@ void DbgHeapFini                // COMPLETION
                 }
             }
             continue;
-          case _HEAPBADBEGIN :
+        case _HEAPBADBEGIN :
             puts( "DbgHeapFini -- BAD BEGIN" );
             abort();
-          case _HEAPBADPTR :
+        case _HEAPBADPTR :
             puts( "DbgHeapFini -- BAD PTR" );
             abort();
-          case _HEAPBADNODE :
+        case _HEAPBADNODE :
             puts( "DbgHeapFini -- BAD NODE" );
             abort();
         }

@@ -116,7 +116,7 @@ static void resetHandlers( void )
 static void MakePgmName(        // MAKE CANONICAL FILE NAME
     char *argv )                // - input name
 {
-    char buff[ _MAX_PATH2 ];
+    char buff[_MAX_PATH2];
     char *drv;                  // - drive
     char *dir;                  // - directory
     char *fnm;                  // - file name

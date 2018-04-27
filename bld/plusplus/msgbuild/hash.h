@@ -55,7 +55,7 @@ friend class HashTable;
 
 class HashTable                 // HASH TABLE
 {
-    RingHdr _table[ HashModulus ]; // - hash table
+    RingHdr _table[HashModulus]; // - hash table
     unsigned (*_hashfun)        // - hash function
         ( void const * )        // - - comparand
     ;

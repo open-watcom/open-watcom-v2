@@ -355,10 +355,10 @@ static CNV_RETN check_result_cv(// CHECK RESULT FOR CONST/VOLATILE RETURN
     }
     if( reqd_cnvptr & CNVPTR_CONST_VOLATILE ) {
         switch( retn ) {
-          case CNV_OK :
+        case CNV_OK :
             retn = CNV_OK_CV;
             break;
-          case CNV_OK_TRUNC :
+        case CNV_OK_TRUNC :
             if( reqd_cnvptr & CNVPTR_CAST ) {
                 retn = CNV_OK_TRUNC_CAST_CV;
             } else {
@@ -417,19 +417,19 @@ CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
             } else {
                 MSG_NUM msg;    // - message code
                 switch( tgt_flags ) {
-                  case 0:
+                case 0:
                     msg = ERR_CNV_VOID_STAR;
                     break;
-                  case TF1_CONST :
+                case TF1_CONST :
                     msg = ERR_CNV_VOID_STAR_CONST;
                     break;
-                  case TF1_VOLATILE :
+                case TF1_VOLATILE :
                     msg = ERR_CNV_VOID_STAR_VOLATILE;
                     break;
-                  case TF1_CONST | TF1_VOLATILE :
+                case TF1_CONST | TF1_VOLATILE :
                     msg = ERR_CNV_VOID_STAR_CONST_VOLATILE;
                     break;
-                  default:
+                default:
                     msg = ERR_FRONT_END;
                     break;
                 }
@@ -462,7 +462,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
     tgt_scope = scope_for_ptr( tgt );
     switch( TypeCommonDerivation( TypePointedAtModified( src )
                                 , TypePointedAtModified( tgt ) ) ) {
-      case CTD_NO :
+    case CTD_NO :
         if( ptr_to_void( tgt ) ) {
             *expr = NodeConvert( tgt, *expr );
             retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
@@ -470,7 +470,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
             retn = CNV_IMPOSSIBLE;
         }
         break;
-      case CTD_RIGHT_PROTECTED :
+    case CTD_RIGHT_PROTECTED :
         if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PROTECTED;
@@ -479,8 +479,8 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
             }
             break;
         }
-        // drops thru
-      case CTD_RIGHT_PRIVATE :
+        /* fall through */
+    case CTD_RIGHT_PRIVATE :
         if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
                 retn = CNV_PRIVATE;
@@ -489,8 +489,8 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
             }
             break;
         }
-        // drops thru
-      case CTD_RIGHT :
+        /* fall through */
+    case CTD_RIGHT :
         if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             NodeConvertBaseToDerived( expr, tgt, tgt_scope, src_scope );
             retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
@@ -498,41 +498,41 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
             retn = CNV_IMPOSSIBLE;
         }
         break;
-      case CTD_RIGHT_VIRTUAL :
+    case CTD_RIGHT_VIRTUAL :
         if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             retn = CNV_VIRT_DER;
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
-      case CTD_RIGHT_AMBIGUOUS :
+    case CTD_RIGHT_AMBIGUOUS :
         if( reqd_cnvptr & CNVPTR_VIRT_TO_DERIVED ) {
             retn = CNV_AMBIGUOUS;
         } else {
             retn = CNV_IMPOSSIBLE;
         }
         break;
-      case CTD_LEFT_PRIVATE :
+    case CTD_LEFT_PRIVATE :
         if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             retn = CNV_PRIVATE;
             break;
         }
-        // drops thru
-      case CTD_LEFT_PROTECTED :
+        /* fall through */
+    case CTD_LEFT_PROTECTED :
         if( (reqd_cnvptr & CNVPTR_CAST) == 0 ) {
             retn = CNV_PROTECTED;
             break;
         }
-        // drops thru
-      case CTD_LEFT :
+        /* fall through */
+    case CTD_LEFT :
         NodeConvertDerivedToBase( expr, tgt, src_scope, tgt_scope );
         retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         break;
-      case CTD_LEFT_VIRTUAL :
+    case CTD_LEFT_VIRTUAL :
         NodeConvertDerivedToVirt( expr, tgt, src_scope, tgt_scope );
         retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         break;
-      case CTD_LEFT_AMBIGUOUS :
+    case CTD_LEFT_AMBIGUOUS :
         retn = CNV_AMBIGUOUS;
         break;
     }
@@ -604,17 +604,17 @@ CNV_RETN PtrConvertCommon(      // CONVERT TO COMMON PTR
         lbtype = TypePointedAtModified( ltype );
         rbtype = TypePointedAtModified( rtype );
         switch( TypeCommonDerivation( lbtype, rbtype ) ) {
-          case CTD_LEFT :
-          case CTD_LEFT_VIRTUAL :
+        case CTD_LEFT :
+        case CTD_LEFT_VIRTUAL :
             retn = NodeConvertPtr( CNVPTR_DERIVED_ONLY, r_left, ltype, rtype );
             retn = check_common( retn, expr, rtype );
             break;
-          case CTD_RIGHT :
-          case CTD_RIGHT_VIRTUAL :
+        case CTD_RIGHT :
+        case CTD_RIGHT_VIRTUAL :
             retn = NodeConvertPtr( CNVPTR_DERIVED_ONLY, r_right, rtype, ltype );
             retn = check_common( retn, expr, ltype );
             break;
-          case CTD_NO :
+        case CTD_NO :
             common = TypeCommonBase( rbtype, lbtype );
             if( common != NULL ) {
                 lptype = TypePointedAtReplace( ltype, common );
@@ -634,19 +634,19 @@ CNV_RETN PtrConvertCommon(      // CONVERT TO COMMON PTR
                 }
             }
             break;
-          case CTD_RIGHT_AMBIGUOUS :
+        case CTD_RIGHT_AMBIGUOUS :
             ConversionTypesSet( rtype, ltype );
-          case CTD_LEFT_AMBIGUOUS :
+        case CTD_LEFT_AMBIGUOUS :
             retn = CNV_AMBIGUOUS;
             break;
-          case CTD_RIGHT_PRIVATE :
+        case CTD_RIGHT_PRIVATE :
             ConversionTypesSet( rtype, ltype );
-          case CTD_LEFT_PRIVATE :
+        case CTD_LEFT_PRIVATE :
             retn = CNV_PRIVATE;
             break;
-          case CTD_RIGHT_PROTECTED :
+        case CTD_RIGHT_PROTECTED :
             ConversionTypesSet( rtype, ltype );
-          case CTD_LEFT_PROTECTED :
+        case CTD_LEFT_PROTECTED :
             retn = CNV_PROTECTED;
             break;
         }

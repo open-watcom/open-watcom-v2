@@ -89,9 +89,9 @@ static SYMBOL getSymInScope(    // GET A SYMBOL IN A SCOPE
                                       , sym
                                       , alist
                                       , NULL ) ) {
-                  case FNOV_NONAMBIGUOUS :
+                case FNOV_NONAMBIGUOUS :
                     break;
-                  default :
+                default :
                     sym = NULL;
                     break;
                 }

@@ -131,14 +131,14 @@ void RtnGenerate( void )
             c = useSYMBOL;
             useSYMBOL = c->next;
             keep_going = true;
-            (*execSYMBOL[ c->index ])( c->parm );
+            (*execSYMBOL[c->index])( c->parm );
             CarveFree( carveRTN_GEN, c );
         }
         while( useTYPE != NULL ) {
             c = useTYPE;
             useTYPE = c->next;
             keep_going = true;
-            (*execTYPE[ c->index ])( c->parm );
+            (*execTYPE[c->index])( c->parm );
             CarveFree( carveRTN_GEN, c );
         }
         CtxSetCurrContext( CTX_SOURCE );

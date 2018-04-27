@@ -268,7 +268,7 @@ static void setGuardState(      // SET GUARD STATE FOR CURRENT FILE
         if( actual->guard_state != new_state ) {
             printf( "New Guard State[%s]: %s\n"
                   , actual->name
-                  , guardStateNames[ new_state ] );
+                  , guardStateNames[new_state] );
         }
     }
 #endif
@@ -693,7 +693,7 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
                         }
                     }
                     // mark end of buffer
-                    act->lastc = &act->buff[ amt_read ];
+                    act->lastc = &act->buff[amt_read];
                     *(act->lastc) = '\0';
                     /* CurrChar not set; must read buffer */
                     return( false );
@@ -1936,7 +1936,7 @@ FILE *SrcFileFOpen( const char *name, src_file_open kind )
     const char *mode;
     static const char *file_kind[] = { "rb", "r", "rb", "w", "wb" };
 
-    mode = file_kind[ kind ];
+    mode = file_kind[kind];
     for(;;) {
         fp = fopen( name, mode );
         if( fp != NULL ) {

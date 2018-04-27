@@ -269,14 +269,14 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
         makeThrowCnv( ctl, type, 0 );
     }
     switch( thr_obj ) {
-      case THROBJ_VOID_STAR :
-      case THROBJ_ANYTHING :
-      case THROBJ_SCALAR :
+    case THROBJ_VOID_STAR :
+    case THROBJ_ANYTHING :
+    case THROBJ_SCALAR :
         break;
-      case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_SCALAR :
         makeCnvVoidStar( ctl );
         break;
-      case THROBJ_REFERENCE :
+    case THROBJ_REFERENCE :
         type = TypeReference( type );
         if( NULL != StructType( type ) ) {
             throwClassCnvs( type, ctl );
@@ -291,20 +291,20 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
             }
         }
         break;
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
         throwClassCnvs( type, ctl );
         break;
-      case THROBJ_PTR_CLASS :
+    case THROBJ_PTR_CLASS :
         throwClassPtrCnvs( type, ctl );
         makeCnvVoidStar( ctl );
         break;
-      case THROBJ_PTR_FUN :
+    case THROBJ_PTR_FUN :
         if( CgCodePtrSize() <= CgDataPtrSize() ) {
             makeCnvVoidStar( ctl );
         }
         break;
-      DbgDefault( "EXCEPT -- illegal throw object" );
+    DbgDefault( "EXCEPT -- illegal throw object" );
     }
     return RingCount( ctl->hdr );
 }

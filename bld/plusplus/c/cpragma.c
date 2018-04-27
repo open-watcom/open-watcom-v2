@@ -855,47 +855,47 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
             }
             next = parseDtorMethod();
             switch( next ) {
-              default :
+            default :
                 method = DTM_COUNT;
                 break;
-              case DTM_DIRECT :
+            case DTM_DIRECT :
                 switch( method ) {
-                  case DTM_TABLE :
+                case DTM_TABLE :
                     method = DTM_DIRECT_TABLE;
                     continue;
-                  case DTM_TABLE_SMALL :
+                case DTM_TABLE_SMALL :
                     method = DTM_DIRECT_SMALL;
                     continue;
-                  case DTM_COUNT :
+                case DTM_COUNT :
                     method = next;
                     continue;
-                  default :
+                default :
                     continue;
                 }
-              case DTM_TABLE :
+            case DTM_TABLE :
                 switch( method ) {
-                  case DTM_DIRECT :
+                case DTM_DIRECT :
                     method = DTM_DIRECT_TABLE;
                     continue;
-                  case DTM_COUNT :
+                case DTM_COUNT :
                     method = next;
                     continue;
-                  default :
+                default :
                     continue;
                 }
-              case DTM_TABLE_SMALL :
+            case DTM_TABLE_SMALL :
                 switch( method ) {
-                  case DTM_DIRECT :
+                case DTM_DIRECT :
                     method = DTM_DIRECT_SMALL;
                     continue;
-                  case DTM_DIRECT_TABLE :
-                  case DTM_TABLE :
+                case DTM_DIRECT_TABLE :
+                case DTM_TABLE :
                     method = DTM_TABLE_SMALL;
                     continue;
-                  case DTM_COUNT :
+                case DTM_COUNT :
                     method = next;
                     continue;
-                  default :
+                default :
                     continue;
                 }
             }

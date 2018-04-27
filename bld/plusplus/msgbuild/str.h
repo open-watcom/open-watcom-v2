@@ -49,7 +49,7 @@ class Str                       // SIMPLE STRING CLASS
         struct Store                // - storage class
         {
             Store* _next;           // - - next block
-            char _data[ _BlkSize ]; // - - block of chars
+            char _data[_BlkSize];   // - - block of chars
         };
 
         Store* _list;           // - - the list

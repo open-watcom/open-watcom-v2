@@ -263,13 +263,13 @@ static PTREE dupProc(           // PROCESS NODE IN TREE
         }
     } else {
         switch( dup->op ) {
-          case PT_BINARY :
+        case PT_BINARY :
             setAncestor( dup, dup, dup->u.subtree[1] );
-            // drops thru
-          case PT_UNARY :
+            /* fall through */
+        case PT_UNARY :
             setAncestor( dup, dup, dup->u.subtree[0] );
             break;
-          case PT_DUP_EXPR :
+        case PT_DUP_EXPR :
             setAncestor( dup, dup->u.dup.node, dup->u.subtree[0] );
             addPromo( dup );
             break;

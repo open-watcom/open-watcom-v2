@@ -148,10 +148,10 @@ static PTREE fixupTraverse(     // CLEANUP before freeing
     PTREE node )                // - current node
 {
     switch( node->op ) {
-      case PT_DUP_EXPR:
+    case PT_DUP_EXPR:
         NodeUnduplicate( node );
         break;
-      case PT_SYMBOL:
+    case PT_SYMBOL:
         NodeFreeSearchResult( node );
         break;
     }
@@ -211,25 +211,25 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
     if( curr != NULL ) {
         dlt = NULL;
         switch( curr->op ) {
-          case PT_DUP_EXPR :
+        case PT_DUP_EXPR :
             dlt = fixupTraverse( curr );
             break;
-          case PT_ERROR :
-          case PT_STRING_CONSTANT :
-          case PT_INT_CONSTANT :
-          case PT_PTR_CONSTANT :
-          case PT_FLOATING_CONSTANT :
-          case PT_TYPE :
-          case PT_ID :
-          case PT_SYMBOL :
+        case PT_ERROR :
+        case PT_STRING_CONSTANT :
+        case PT_INT_CONSTANT :
+        case PT_PTR_CONSTANT :
+        case PT_FLOATING_CONSTANT :
+        case PT_TYPE :
+        case PT_ID :
+        case PT_SYMBOL :
             dlt = curr;
             curr = NULL;
             break;
-          case PT_UNARY :
+        case PT_UNARY :
             dlt = curr;
             curr = curr->u.subtree[0];
             break;
-          case PT_BINARY :
+        case PT_BINARY :
             if( curr->u.subtree[0] == NULL ) {
                 dlt = curr;
                 curr = curr->u.subtree[1];
@@ -630,19 +630,19 @@ PTREE NodeGetConstantNode(      // RETURN CONSTANT-INT NODE
     }
     if( node != NULL )
     switch( node->op ) {
-      case PT_INT_CONSTANT :
+    case PT_INT_CONSTANT :
         if( NULL == IntegralType( NodeType( node ) ) ) {
             node = NULL;
         }
         break;
-      case PT_SYMBOL :
+    case PT_SYMBOL :
         if( SymIsConstantInt( node->u.symcg.symbol ) ) {
             node = PTreeOpRight( node );
         } else {
             node = NULL;
         }
         break;
-      default :
+    default :
         node = NULL;
         break;
     }
@@ -659,13 +659,13 @@ bool NodeIsConstantInt(         // TEST IF A CONSTANT INT NODE
     if( node != NULL ) {
         node = NodeRemoveCasts( PTreeOp( &node ) );
         switch( node->op ) {
-          case PT_INT_CONSTANT :
+        case PT_INT_CONSTANT :
             ok = ( NULL != IntegralType( node->type ) );
             break;
-          case PT_SYMBOL :
+        case PT_SYMBOL :
             ok = SymIsConstantInt( node->u.symcg.symbol );
             break;
-          default :
+        default :
             ok = false;
             break;
         }
@@ -729,19 +729,19 @@ static bool nodeGetConstant     // TEST IF CONSTANT AND GET VALUE
     if( node != NULL ) {
         node = NodeRemoveCasts( PTreeOp( &node ) );
         switch( node->op ) {
-          case PT_INT_CONSTANT :
+        case PT_INT_CONSTANT :
             pval->type = TypedefModifierRemoveOnly( node->type );
             pval->u.value = node->u.int64_constant;
             ok = true;
             break;
-          case PT_SYMBOL :
+        case PT_SYMBOL :
             sym = node->u.symcg.symbol;
             ok = SymIsConstantInt( sym );
             if( ok ) {
                 SymConstantValue( sym, pval );
             }
             break;
-          default :
+        default :
             ok = false;
             break;
         }
@@ -990,10 +990,10 @@ static PTREE nodeRvalueFetch(   // FETCH RVALUE IF REQUIRED
     } else {
         type = TypedefModifierRemoveOnly( unmod );
         switch( type->id ) {
-          case TYP_ARRAY :
+        case TYP_ARRAY :
             curr = nodeRvalueArray( curr );
             break;
-          case TYP_CLASS :
+        case TYP_CLASS :
             if( OMR_CLASS_VAL == ObjModelArgument( type ) ) {
                 curr->type = unmod;
                 curr->flags |= PTF_LVALUE;
@@ -1003,14 +1003,14 @@ static PTREE nodeRvalueFetch(   // FETCH RVALUE IF REQUIRED
                 curr = NodeConvertFlags( unmod, curr, PTF_CLASS_RVREF );
             }
             break;
-          case TYP_FUNCTION :
+        case TYP_FUNCTION :
             if( curr->op == PT_SYMBOL ) {
                 SymMarkRefed( curr->u.symcg.symbol );
             }
             curr->type = MakePointerTo( unmod );
             curr->flags &= ~PTF_LVALUE;
             break;
-          default :
+        default :
             curr->type = unmod;
             curr->flags |= PTF_LVALUE;
             curr = NodeFetch( curr );
@@ -1083,26 +1083,26 @@ PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
             sym_type = TypedefModifierRemoveOnly( curr->type );
             if( sym_type != curr->type ) {
                 switch( sym_type->id ) {
-                  default :
+                default :
                     break;
-                  case TYP_BOOL :
-                  case TYP_CHAR :
-                  case TYP_SCHAR :
-                  case TYP_UCHAR :
-                  case TYP_WCHAR :
-                  case TYP_SSHORT :
-                  case TYP_USHORT :
-                  case TYP_SINT :
-                  case TYP_UINT :
-                  case TYP_SLONG :
-                  case TYP_ULONG :
-                  case TYP_SLONG64 :
-                  case TYP_ULONG64 :
-                  case TYP_FLOAT :
-                  case TYP_DOUBLE :
-                  case TYP_LONG_DOUBLE :
-                  case TYP_ENUM :
-                  case TYP_MEMBER_POINTER :
+                case TYP_BOOL :
+                case TYP_CHAR :
+                case TYP_SCHAR :
+                case TYP_UCHAR :
+                case TYP_WCHAR :
+                case TYP_SSHORT :
+                case TYP_USHORT :
+                case TYP_SINT :
+                case TYP_UINT :
+                case TYP_SLONG :
+                case TYP_ULONG :
+                case TYP_SLONG64 :
+                case TYP_ULONG64 :
+                case TYP_FLOAT :
+                case TYP_DOUBLE :
+                case TYP_LONG_DOUBLE :
+                case TYP_ENUM :
+                case TYP_MEMBER_POINTER :
                     curr->type = sym_type;
                     break;
                 }
@@ -1159,23 +1159,23 @@ PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
     exact_type = node->type;
     node = NodeRvalue( node );
     switch( TypedefModifierRemove( exact_type )->id ) {
-      case TYP_BOOL :
-      case TYP_CHAR :
-      case TYP_SCHAR :
-      case TYP_UCHAR :
-      case TYP_WCHAR :
-      case TYP_SSHORT :
-      case TYP_USHORT :
-      case TYP_SINT :
-      case TYP_UINT :
-      case TYP_SLONG :
-      case TYP_ULONG :
-      case TYP_SLONG64 :
-      case TYP_ULONG64 :
-      case TYP_FLOAT :
-      case TYP_DOUBLE :
-      case TYP_LONG_DOUBLE :
-      case TYP_ENUM :
+    case TYP_BOOL :
+    case TYP_CHAR :
+    case TYP_SCHAR :
+    case TYP_UCHAR :
+    case TYP_WCHAR :
+    case TYP_SSHORT :
+    case TYP_USHORT :
+    case TYP_SINT :
+    case TYP_UINT :
+    case TYP_SLONG :
+    case TYP_ULONG :
+    case TYP_SLONG64 :
+    case TYP_ULONG64 :
+    case TYP_FLOAT :
+    case TYP_DOUBLE :
+    case TYP_LONG_DOUBLE :
+    case TYP_ENUM :
         node->type = exact_type;
         break;
     }
@@ -1322,20 +1322,20 @@ PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
     } else {
         old = PTreeOp( expr );
         switch( old->op ) {
-          case PT_INT_CONSTANT :
-          case PT_STRING_CONSTANT :
-          case PT_FLOATING_CONSTANT :
-          case PT_SYMBOL :
+        case PT_INT_CONSTANT :
+        case PT_STRING_CONSTANT :
+        case PT_FLOATING_CONSTANT :
+        case PT_SYMBOL :
             node = PTreeAssign( NULL, old );
             break;
-          case PT_UNARY :
+        case PT_UNARY :
             if( nodeIsFetchSym( old ) ) {
                 node = PTreeAssign( NULL, old );
                 node->u.subtree[0] = PTreeAssign( NULL, old->u.subtree[0] );
                 break;
             }
-            // drops thru
-          default :
+            /* fall through */
+        default :
             node = makeDupNode( expr );
             break;
         }
@@ -1692,41 +1692,38 @@ addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     *addr_func = NULL;
     if( oper != NULL ) {
         switch( oper->op ) {
-          case PT_UNARY :
+        case PT_UNARY :
             if( oper->cgop == CO_ADDR_OF ) {
                 oper = PTreeOpLeft( oper );
                 retn = checkFunction( oper );
                 switch( retn ) {
-                  case ADDR_FN_ONE :
-                  case ADDR_FN_MANY :
-                  case ADDR_FN_ONE_USED :
-                  case ADDR_FN_MANY_USED :
+                case ADDR_FN_ONE :
+                case ADDR_FN_MANY :
+                case ADDR_FN_ONE_USED :
+                case ADDR_FN_MANY_USED :
                     *addr_func = oper;
                     break;
                 }
             }
             break;
-          case PT_BINARY :
-            if( oper->cgop == CO_ARROW
-             || oper->cgop == CO_DOT ) {
-                oper = PTreeOpRight( oper );
-                // drops thru
-            } else {
+        case PT_BINARY :
+            if( oper->cgop != CO_ARROW && oper->cgop != CO_DOT )
                 break;
-            }
-          case PT_SYMBOL :
+            oper = PTreeOpRight( oper );
+            /* fall through */
+        case PT_SYMBOL :
             retn = checkFunction( oper );
             switch( retn ) {
-              case ADDR_FN_ONE :
+            case ADDR_FN_ONE :
                 retn = ADDR_FN_ONE_USED;
-                // drops thru
-              case ADDR_FN_ONE_USED :
+                /* fall through */
+            case ADDR_FN_ONE_USED :
                 *addr_func = oper;
                 break;
-              case ADDR_FN_MANY :
+            case ADDR_FN_MANY :
                 retn = ADDR_FN_MANY_USED;
-                // drops thru
-              case ADDR_FN_MANY_USED :
+                /* fall through */
+            case ADDR_FN_MANY_USED :
                 *addr_func = oper;
                 break;
             }

@@ -357,43 +357,43 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     }
     sign = false;
     switch( TypedefModifierRemove( base->of ) -> id ) {
-      case TYP_CHAR :
-      case TYP_UCHAR :
+    case TYP_CHAR :
+    case TYP_UCHAR :
         name = "unsigned char";
         break;
-      case TYP_SCHAR :
+    case TYP_SCHAR :
         name = "signed char";
         sign = true;
         break;
-      case TYP_SSHORT :
+    case TYP_SSHORT :
         name = "signed short";
         sign = true;
         break;
-      case TYP_USHORT :
+    case TYP_USHORT :
         name = "unsigned short";
         break;
-      case TYP_SINT :
+    case TYP_SINT :
         name = "signed int";
         sign = true;
         break;
-      case TYP_UINT :
+    case TYP_UINT :
         name = "unsigned int";
         break;
-      case TYP_SLONG :
+    case TYP_SLONG :
         name = "signed long";
         sign = true;
         break;
-      case TYP_ULONG :
+    case TYP_ULONG :
         name = "unsigned long";
         break;
-      case TYP_SLONG64 :
+    case TYP_SLONG64 :
         name = "__int64";
         sign = true;
         break;
-      case TYP_ULONG64 :
+    case TYP_ULONG64 :
         name = "unsigned __int64";
         break;
-      DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
+    DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
     }
     VbufConcStr( &buffer, ", base type is " );
     VbufConcStr( &buffer, name );

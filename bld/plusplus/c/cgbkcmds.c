@@ -380,8 +380,8 @@ static bool cgGenerateCmdBase(      // EMIT BASE FOR COMMAND
         CgBackGenLabelInternal( base->sym );
 #if 1 // this kludge allows old run-time systems to work
         switch( code ) {
-          case DTC_ACTUAL_DBASE :
-          case DTC_ACTUAL_VBASE :
+        case DTC_ACTUAL_DBASE :
+        case DTC_ACTUAL_VBASE :
             code = DTC_COMP_DBASE;
             break;
         }
@@ -494,12 +494,12 @@ static void cgGenerateCmdsComponent(// EMIT COMPONENT CMDS
                 const char* code;
                 VBUF vbuf;
                 switch( curr->cmd_type ) {
-                  case DTC_COMP_VBASE :   code = "DTC_COMP_VBASE"; break;
-                  case DTC_COMP_DBASE :   code = "DTC_COMP_DBASE"; break;
-                  case DTC_ACTUAL_VBASE : code = "DTC_ACTUAL_VBASE"; break;
-                  case DTC_ACTUAL_DBASE : code = "DTC_ACTUAL_DBASE"; break;
-                  case DTC_COMP_MEMB  :   code = "DTC_COMP_MEMB "; break;
-                  default:                code = "*****BAD******"; break;
+                case DTC_COMP_VBASE :   code = "DTC_COMP_VBASE"; break;
+                case DTC_COMP_DBASE :   code = "DTC_COMP_DBASE"; break;
+                case DTC_ACTUAL_VBASE : code = "DTC_ACTUAL_VBASE"; break;
+                case DTC_ACTUAL_DBASE : code = "DTC_ACTUAL_DBASE"; break;
+                case DTC_COMP_MEMB  :   code = "DTC_COMP_MEMB "; break;
+                default:                code = "*****BAD******"; break;
                 }
                 printf( "%s obj-offset=%x var-offset=%x %s\n"
                       , code

@@ -636,7 +636,7 @@ static enum sym_type AsmType(
 
     type = TypeModFlags( type, &mod_flags );
     switch( type->id ) {
-      case TYP_POINTER :
+    case TYP_POINTER :
         type = TypeModFlags( type->of, &mod_flags );
         if( type->id == TYP_FUNCTION ) {
             return( CodePtrType( mod_flags ) );
@@ -644,20 +644,16 @@ static enum sym_type AsmType(
             return( PtrType( mod_flags ) );
         }
         break;
-      case TYP_ARRAY :
-      case TYP_BITFIELD :
-      case TYP_ENUM :
+    case TYP_ARRAY :
+    case TYP_BITFIELD :
+    case TYP_ENUM :
         return( AsmType( type->of ) );
-        break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         return( SYM_INT1 );
-        break;
-      case TYP_FUNCTION :
+    case TYP_FUNCTION :
         return( CodePtrType( mod_flags ) );
-        break;
-      default:
+    default:
         return( AsmDataType[type->id] );
-        break;
     }
 }
 #endif
@@ -1167,7 +1163,7 @@ static int GetByteSeq( void )
                 use_fpu_emu = false;
             }
 #endif
-            VbufBuffer( &code_buffer )[ len++ ] = U32Fetch( Constant64 );
+            VbufBuffer( &code_buffer )[len++] = U32Fetch( Constant64 );
             NextToken();
         } else {
 #if _CPU == 8086

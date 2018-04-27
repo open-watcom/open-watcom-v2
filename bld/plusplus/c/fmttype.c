@@ -495,9 +495,9 @@ const char *FormatErrorType( TYPE err_type )
 {
     DbgAssert( err_type != NULL && err_type->id == TYP_ERROR );
     if( err_type->flag & TF1_SPECIAL_FMT ) {
-        return( errFormats[ err_type->u.e.fmt ] );
+        return( errFormats[err_type->u.e.fmt] );
     }
-    return( typeName[ TYP_ERROR ] );
+    return( typeName[TYP_ERROR] );
 }
 
 void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
@@ -698,31 +698,26 @@ void FormatPTreeList( PTREE p, VBUF *pvbuf )
 
         switch( right->op ) {
         case PT_TYPE:
-        {
+          {
             VBUF prefix, suffix;
             FormatType( right->type, &prefix, &suffix );
             VbufConcVbuf( pvbuf, &prefix );
             VbufConcVbuf( pvbuf, &suffix );
             VbufFree( &prefix );
             VbufFree( &suffix );
-        }
-        break;
-
+          } break;
         case PT_INT_CONSTANT:
             VbufConcInteger( pvbuf, right->u.int_constant );
             break;
-
         case PT_SYMBOL:
-        {
+          {
             VBUF prefix, suffix;
             FormatType( right->u.symcg.symbol->sym_type, &prefix, &suffix );
             VbufConcVbuf( pvbuf, &prefix );
             VbufConcVbuf( pvbuf, &suffix );
             VbufFree( &prefix );
             VbufFree( &suffix );
-        }
-        break;
-
+          } break;
         default:
             DbgAssert( 0 );
         }

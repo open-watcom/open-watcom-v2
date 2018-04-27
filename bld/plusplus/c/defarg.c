@@ -310,7 +310,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             // coded like this to handle: foo( int = 0, ... )
             proto_without = TypeArgList( func->sym_type );
             proto_with = TypeArgList( func->thread->sym_type );
-            arg_type = proto_with->type_list[ proto_without->num_args + 1 - 1 ];
+            arg_type = proto_with->type_list[proto_without->num_args + 1 - 1];
             if( ! NodeConvertArgument( &defarg_expr, arg_type ) ) {
                 PTreeErrorNode( defarg_expr );
                 break;

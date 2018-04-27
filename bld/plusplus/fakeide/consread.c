@@ -53,23 +53,24 @@ unsigned ConsoleRead            // READ FROM CONSOLE
         if( kbhit() ) {
             char ch = getche();
             switch( ch ) {
-              case '\r' :
+            case '\r' :
                 putch( '\n' );
                 break;
-              case EOF :
+            case EOF :
                 getche();
                 continue;
-              case '\b' :
+            case '\b' :
                 if( index > 0 ) {
                     --index;
                     putch( ' ' );
                     putch( '\b' );
                 }
                 continue;
-              default :
-                buffer[ index ] = ch;
+            default :
+                buffer[index] = ch;
                 ++index;
-                if( index == bsize - 1 ) break;
+                if( index == bsize - 1 )
+                    break;
                 continue;
             }
             break;
@@ -77,7 +78,7 @@ unsigned ConsoleRead            // READ FROM CONSOLE
             delay( 50 );
         }
     }
-    buffer[ index ] = '\0';
+    buffer[index] = '\0';
     return index;
 }
 

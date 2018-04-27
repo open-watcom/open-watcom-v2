@@ -127,7 +127,7 @@ static unsigned Word::hashFun   // HASH FUNCTION FOR CHARACTER VECTOR
     unsigned hash = 0;
     for( unsigned index = 0; index < v->_size; ++ index ) {
         hash = ( hash << 1 ) ^ hash ;
-        hash |= v->_vect[ index ];
+        hash |= v->_vect[index];
     }
     return hash;
 }
@@ -146,7 +146,7 @@ static int Word::hashCompare    // COMPARISON FUNCTION
             retn = ( '\0' == *word );
             break;
         }
-        if( comp->_vect[ index ] != *word ) {
+        if( comp->_vect[index] != *word ) {
             retn = 0;
             break;
         }

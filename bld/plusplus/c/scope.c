@@ -3375,11 +3375,11 @@ bool ScopeSameVFuns( SYMBOL fun1, SYMBOL fun2 )
     a_fun1 = &fun1;
     name = fun1->name->name;
     switch( distinctVirtualFunction( a_fun1, fun2, name ) ) {
-      case FNOV_NOT_DISTINCT_RETURN:
-      case FNOV_EXACT_MATCH:
+    case FNOV_NOT_DISTINCT_RETURN:
+    case FNOV_EXACT_MATCH:
         ok = true;
         break;
-      default :
+    default :
         ok = false;
         break;
     }
@@ -4922,11 +4922,11 @@ static walk_status collectVBTable( BASE_STACK *top, void *parm )
     table = RingAlloc( &(data->tables), amount );
     assignLocation( &(table->h), &location );
     table->h.count = max_vbase;
-    table->data[ max_vbase ] = NULL;
+    table->data[max_vbase] = NULL;
     if( ! data->already_done ) {
         RingIterBeg( ScopeInherits( scope ), base ) {
             if( _IsVirtualBase( base ) ) {
-                table->data[ base->vb_index - 1 ] = base->type;
+                table->data[base->vb_index - 1] = base->type;
             }
         } RingIterEnd( base )
     }
@@ -5406,7 +5406,7 @@ static void handleVFN( vftable_walk *data, SYMBOL sym )
     table = data->curr;
     thunk_table = table->data;
     vf_index = sym->u.member_vf_index - 1;
-    thunk = &thunk_table[ vf_index ];
+    thunk = &thunk_table[vf_index];
     introducing_sym = thunk->sym;
     if( introducing_sym == NULL ) {
         thunk->sym = sym;

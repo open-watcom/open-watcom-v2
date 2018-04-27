@@ -338,7 +338,7 @@ static TOKEN genFUNCTION(
     DbgAssert( ( spec_macro == MACRO_FUNCTION ) || ( spec_macro == MACRO_FUNC ) );
 
     if( _FUNCTION_not_expandable ) {
-        name = SpcMacros[ spec_macro ].name;
+        name = SpcMacros[spec_macro].name;
         len = strlen( name );
         memcpy( Buffer, name, len + 1 );
         TokenLen = len;
@@ -460,7 +460,7 @@ static void saveParm(
     *h = TokenBufAddToken( *h, T_NULL );
     if( parm_cnt < fmentry->parm_count - 1 ) {
         p = CMemAlloc( total + TokenBufTotalSize( *h ) + 1 );
-        macro_parms[ parm_cnt ].arg = p;
+        macro_parms[parm_cnt].arg = p;
         if( token_list != NULL ) {
             last_token = token_list;
             do {
@@ -547,29 +547,29 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
                 continue;
             }
             switch( tok ) {
-              case T_WHITE_SPACE:
+            case T_WHITE_SPACE:
                 if( prev_tok != T_WHITE_SPACE ) {
                     htokenbuf = TokenBufAddToken( htokenbuf, tok );
                 }
                 break;
-              case T_BAD_CHAR:
+            case T_BAD_CHAR:
                 htokenbuf = TokenBufAddToken( htokenbuf, tok );
                 htokenbuf = TokenBufAddChar( htokenbuf, Buffer[0] );
                 if( Buffer[1] != '\0' ) {
                     htokenbuf = TokenBufAddToken( htokenbuf, T_WHITE_SPACE );
                 }
                 break;
-              case T_CONSTANT:
-              case T_PPNUMBER:
-              case T_STRING:
-              case T_LSTRING:
-              case T_ID:
-              case T_UNEXPANDABLE_ID:
-              case T_BAD_TOKEN:
+            case T_CONSTANT:
+            case T_PPNUMBER:
+            case T_STRING:
+            case T_LSTRING:
+            case T_ID:
+            case T_UNEXPANDABLE_ID:
+            case T_BAD_TOKEN:
                 htokenbuf = TokenBufAddToken( htokenbuf, tok );
                 htokenbuf = TokenBufAddStr( htokenbuf, Buffer );
                 break;
-              default :
+            default :
                 htokenbuf = TokenBufAddToken( htokenbuf, tok );
                 break;
             }

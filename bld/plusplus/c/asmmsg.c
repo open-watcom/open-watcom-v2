@@ -43,7 +43,7 @@
 void AsmError( int msg_number )
 /*****************************/
 {
-    CErr2p( ERR_ASSEMBLER_ERROR, AsmErrMsgs[ msg_number ] );
+    CErr2p( ERR_ASSEMBLER_ERROR, AsmErrMsgs[msg_number] );
 }
 
 #else

@@ -155,10 +155,10 @@ double SafeAtof( char *p )
 int hex_dig(                    // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
     int c )                     // - character
 {
-    if(( CharSet[ c ] & (C_HX|C_DI) ) == 0 ) {
+    if(( CharSet[c] & (C_HX|C_DI) ) == 0 ) {
         return( 16 );
     }
-    if( CharSet[ c ] & C_HX ) {
+    if( CharSet[c] & C_HX ) {
         /* a-f or A-F */
         c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
     }
@@ -184,33 +184,33 @@ int escape_char(               // GET ESCAPE CHAR FOR A LETTER
     int chr )                  // - character after "\"
 {
     switch( chr ) {
-      case 'a' :
+    case 'a' :
         chr = ESCAPE_a;
         break;
-      case 'b' :
+    case 'b' :
         chr = ESCAPE_b;
         break;
-      case 'f' :
+    case 'f' :
         chr = ESCAPE_f;
         break;
-      case 'n' :
+    case 'n' :
         chr = ESCAPE_n;
         break;
-      case 'r' :
+    case 'r' :
         chr = ESCAPE_r;
         break;
-      case 't' :
+    case 't' :
         chr = ESCAPE_t;
         break;
-      case 'v' :
+    case 'v' :
         chr = ESCAPE_v;
         break;
-      case '\\' :
-      case '\'' :
-      case '\"' :
-      case '?'  :
+    case '\\' :
+    case '\'' :
+    case '\"' :
+    case '?'  :
         break;
-      default :
+    default :
         chr = ESCAPE_NONE;
         break;
     }

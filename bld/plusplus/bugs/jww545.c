@@ -40,10 +40,10 @@ foo1( int a )
 {
     int b = 9;
     switch( a ) {
-      case 1:
+    case 1:
         b = fun( sv );      // temp for arg.
         break;
-      case 2:
+    case 2:
         b = 12;
         break;
     }
@@ -58,13 +58,13 @@ foo2( int a )
 {
     int b = 9;
     switch( a ) {
-      case 1:
+    case 1:
         b = fun( sv );      // temp for arg.
         break;
-      case 2:
+    case 2:
         b = 12;
         break;
-      default:
+    default:
         break;
     }
     printf( "foo2 return -- a=%d b=%d\n", a, b );

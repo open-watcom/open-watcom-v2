@@ -235,9 +235,9 @@ static bool scanHex( bool expanding )
     flag.at_least_one = false;
     for(;;) {
         c = saveNextChar();
-        if(( CharSet[ c ] & (C_HX|C_DI) ) == 0 )
+        if(( CharSet[c] & (C_HX|C_DI) ) == 0 )
             break;
-        if( CharSet[ c ] & C_HX ) {
+        if( CharSet[c] & C_HX ) {
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         }
         if( U64Cnv16( &Constant64, c - '0' ) ) {
@@ -476,7 +476,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
                 flag.double_byte_char = true;
             } else if( char_type == TYP_WCHAR ) {
                 if( CompFlags.use_unicode ) {
-                    c = UniCode[ c ];
+                    c = UniCode[c];
                 } else if( CompFlags.jis_to_unicode ) {
                     c = JIS2Unicode( c );
                 }
@@ -532,7 +532,8 @@ static TOKEN charConst( type_id char_type, bool expanding )
 static int printWhiteSpace( int c )
 {
     for(;;) {
-        if(( CharSet[ c ] & C_WS) == 0 ) break;
+        if(( CharSet[c] & C_WS) == 0 )
+            break;
         if( c != '\r' ) {
             PrtChar( c );
         }
@@ -1164,7 +1165,7 @@ static TOKEN scanDelim1( bool expanding )
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
-    token = TokValue[ CurrChar ];
+    token = TokValue[CurrChar];
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
     TokenLen = 1;
@@ -1184,7 +1185,7 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
-    tok = TokValue[ c ];
+    tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
     Buffer[1] = chr2;
@@ -1210,7 +1211,7 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
-    tok = TokValue[ c ];
+    tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
     Buffer[1] = chr2;
@@ -1240,7 +1241,7 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
-    tok = TokValue[ c ];
+    tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
     Buffer[1] = chr2;
@@ -1275,7 +1276,7 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
-    tok = TokValue[ c ];
+    tok = TokValue[c];
     token_len = 1;
     chr2 = NextChar();
     Buffer[1] = chr2;
@@ -1699,7 +1700,7 @@ void ScanInit( void )
     ClassTable[LCHR_CONTINUE_STRING] = SCAN_STRING2;
     ClassTable[LCHR_CONTINUE_LSTRING] = SCAN_LSTRING2;
     for( p = InitClassTable; *p != '\0'; p += 2 ) {
-        ClassTable[ p[0] ] = p[1];
+        ClassTable[p[0]] = p[1];
     }
     ExtraRptRegisterCtr( &nextTokenCalls, "NextToken calls" );
     ExtraRptRegisterCtr( &nextTokenSavedId, "NextToken T_SAVED_ID" );
@@ -1717,9 +1718,9 @@ void ScanInit( void )
 bool InitPPScan( void )
 /*********************/
 {
-    if( scanFunc[ SCAN_NUM ] == scanNum ) {
-        scanFunc[ SCAN_NUM ] = scanPPDigit;
-        scanFunc[ SCAN_FLOAT ] = scanPPDot;
+    if( scanFunc[SCAN_NUM] == scanNum ) {
+        scanFunc[SCAN_NUM] = scanPPDigit;
+        scanFunc[SCAN_FLOAT] = scanPPDot;
         return( true );         // indicate changed to PP mode
     }
     return( false );            // indicate already in PP mode
@@ -1730,8 +1731,8 @@ void FiniPPScan( bool ppscan_mode )
 /*********************************/
 {
     if( ppscan_mode ) {                 // if InitPPScan() changed into PP mode
-        scanFunc[ SCAN_NUM ] = scanNum; // reset back to normal mode
-        scanFunc[ SCAN_FLOAT ] = scanFloat;
+        scanFunc[SCAN_NUM] = scanNum; // reset back to normal mode
+        scanFunc[SCAN_FLOAT] = scanFloat;
     }
 }
 

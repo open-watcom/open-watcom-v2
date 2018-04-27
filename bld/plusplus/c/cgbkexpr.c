@@ -184,9 +184,9 @@ void CgExprDtored(              // DTOR CG EXPRESSION
     cg_type type;               // - expression type
 
     switch( CgExprStackSize() ) {
-      case 0 :
+    case 0 :
         break;
-      case 1 :
+    case 1 :
       { bool temp_dtoring = fctl->temp_dtoring;
         SYMBOL temp = getExprTempSym( &type, fctl, pop_type );
         if( temp_dtoring ) {
@@ -199,7 +199,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
             }
         }
       } break;
-      DbgDefault( "CgExprDtored -- too many temps" );
+    DbgDefault( "CgExprDtored -- too many temps" );
     }
 #else
     SYMBOL temp;                // - NULL or copied temp

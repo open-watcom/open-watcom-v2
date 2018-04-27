@@ -462,10 +462,10 @@ typedef PCH_struct {            /* used for keeping track of function arguments 
 
 typedef struct                  // TEMP_ARG_LIST
 {   arg_list base;              // - base
-    TYPE array[ AUTO_ARG_MAX-1];// - default # (1 in arg_list)
+    TYPE array[AUTO_ARG_MAX - 1];// - default # (1 in arg_list)
 } TEMP_ARG_LIST;
 
-typedef PTREE TEMP_PT_LIST[ AUTO_ARG_MAX ]; // TEMP_PT_LIST
+typedef PTREE TEMP_PT_LIST[AUTO_ARG_MAX]; // TEMP_PT_LIST
 
 //
 // list of comparisons to exclude in TypeCompareExclude
@@ -1789,8 +1789,8 @@ typedef enum typc_index {
 } typc_index;
 
 extern TYPE TypeCache[];
-#define TypeGetCache( tci )     ( TypeCache[ (tci) ] )
-#define TypeSetCache( tci, ty ) ( TypeCache[ (tci) ] = ( ty ) )
+#define TypeGetCache( tci )     ( TypeCache[(tci)] )
+#define TypeSetCache( tci, ty ) ( TypeCache[(tci)] = ( ty ) )
 
 #define TypeSegmentShort()                  TypeGetCache( TYPC_SEGMENT_SHORT )
 #define TypePtrToVoid()                     TypeGetCache( TYPC_VOID_PTR )

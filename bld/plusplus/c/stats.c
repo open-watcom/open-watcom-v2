@@ -272,30 +272,29 @@ static void extraRptTypeUsage   // TYPE USAGE
     SRCFILE current = SrcFileCurrent();
     for( ; type != NULL; type = type->of ) {
         switch( type->id ) {
-          case TYP_ENUM :
-          case TYP_TYPEDEF :
+        case TYP_ENUM :
+        case TYP_TYPEDEF :
           { SYMBOL sym = type->u.t.sym;
             reportOnType( current, type, sym );
           } break;
-          case TYP_CLASS :
+        case TYP_CLASS :
             if( type->u.c.scope->id == SCOPE_FUNCTION ) {
                 SYMBOL sym = type->u.c.scope->owner.sym;
                 reportOnType( current, type, sym );
             }
             break;
-          case TYP_MEMBER_POINTER :
+        case TYP_MEMBER_POINTER :
             extraRptTypeUsage( type->u.mp.host );
             continue;
-          case TYP_FUNCTION :
+        case TYP_FUNCTION :
           {
             arg_list *args = type->u.f.args;
             unsigned i = args->num_args;
             while( i-- > 0 ) {
                 extraRptTypeUsage( args->type_list[i] );
             }
-          }
-          // drops thru
-          default :
+          } /* fall through */
+        default :
             continue;
         }
         break;
@@ -587,7 +586,7 @@ static void extraRptTable(      // PRINT A TABLE
     maxval = 1;
     for( r = 0; r < reg->tab.dim_row; ++ r ) {
         for( c = 0; c < reg->tab.dim_col; ++ c ) {
-            int val = reg->tab.table[ r * reg->tab.dim_col + c ];
+            int val = reg->tab.table[r * reg->tab.dim_col + c];
             for( ; maxval < val; ++ digits, maxval *= 10 );
         }
     }
@@ -615,7 +614,7 @@ static void extraRptTable(      // PRINT A TABLE
         MsgDisplayLine( "" );
         sprintf( fmt, "%%%dd", digits + 1 );
         for( r = 0; r < reg->tab.dim_row; ++ r ) {
-            int *row = &reg->tab.table[ r * reg->tab.dim_col ];
+            int *row = &reg->tab.table[r * reg->tab.dim_col];
             VbufRewind( &buffer );
             if( row_lbl == NULL ) {
                 sprintf( buf, "%4d", r );
@@ -633,7 +632,7 @@ static void extraRptTable(      // PRINT A TABLE
                 VbufConcStr( &buffer, ": " );
             }
             for( c = 0; c < reg->tab.dim_col; ++ c ) {
-                sprintf( buf, fmt, row[ c ] );
+                sprintf( buf, fmt, row[c] );
                 VbufConcStr( &buffer, buf );
             }
             MsgDisplayLine( VbufString( &buffer ) );

@@ -81,11 +81,11 @@ void FileCtl::make_filename     // MAKE FILE NAME
     ( char const* fname         // - file name
     , char const* def )         // - default suffix
 {
-    char dev[ _MAX_DRIVE ];     // - drive
-    char dir[ _MAX_DIR   ];     // - directory
-    char fnm[ _MAX_FNAME ];     // - file name
-    char ext[ _MAX_EXT   ];     // - extension
-    char pth[ _MAX_PATH  ];     // - full name
+    char dev[_MAX_DRIVE];       // - drive
+    char dir[_MAX_DIR];         // - directory
+    char fnm[_MAX_FNAME];       // - file name
+    char ext[_MAX_EXT];         // - extension
+    char pth[_MAX_PATH];        // - full name
 
     _splitpath( fname, dev, dir, fnm, ext );
     if( ext[0] == '\0' ) {

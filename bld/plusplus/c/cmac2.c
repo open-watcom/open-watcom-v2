@@ -328,25 +328,25 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     for(;;) {
         if( CurToken == T_NULL ) break;
         switch( CurToken ) {
-          case T_SHARP:
-          case T_ALT_SHARP:
+        case T_SHARP:
+        case T_ALT_SHARP:
             /* if it is a function-like macro definition */
             if( parm_cnt != 0 ) {
                 CurToken = T_MACRO_SHARP;
             }
             MacroOffsetAddToken( &mlen, CurToken );
             break;
-          case T_SHARP_SHARP:
-          case T_ALT_SHARP_SHARP:
+        case T_SHARP_SHARP:
+        case T_ALT_SHARP_SHARP:
             CurToken = T_MACRO_SHARP_SHARP;
             MacroOffsetAddToken( &mlen, CurToken );
             break;
-          case T_WHITE_SPACE:
+        case T_WHITE_SPACE:
             if( prev_token != T_WHITE_SPACE ) {
                 MacroOffsetAddToken( &mlen, CurToken );
             }
             break;
-          case T_ID:
+        case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
                 if( has_var_args && parm_index == ( parm_cnt - 1 ) )
@@ -360,26 +360,26 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
                 MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             break;
-          case T_BAD_CHAR:
+        case T_BAD_CHAR:
             MacroOffsetAddToken( &mlen, CurToken );
             MacroOffsetAddChar( &mlen, Buffer[0] );
             if( Buffer[1] != '\0' ) {
                 MacroOffsetAddToken( &mlen, T_WHITE_SPACE );
             }
             break;
-          case T_BAD_TOKEN :
-          case T_CONSTANT:
-          case T_PPNUMBER:
+        case T_BAD_TOKEN :
+        case T_CONSTANT:
+        case T_PPNUMBER:
             MacroOffsetAddToken( &mlen, CurToken );
             MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             break;
-          case T_STRING:
-          case T_LSTRING:
+        case T_STRING:
+        case T_LSTRING:
             // TokenLen includes '\0' for strings
             MacroOffsetAddToken( &mlen, CurToken );
             MacroOffsetAddMem( &mlen, Buffer, TokenLen );
             break;
-          default :
+        default :
             MacroOffsetAddToken( &mlen, CurToken );
             break;
         }
@@ -391,7 +391,9 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         }
         prev_token = CurToken;
         CurToken = ScanToken( false );
-        if( (defn & MSCAN_MANY) == 0 ) break;
+        if( (defn & MSCAN_MANY) == 0 ) {
+            break;
+        }
     }
     if( prev_token == T_WHITE_SPACE ) {
         mlen -= sizeof( TOKEN );
@@ -688,12 +690,12 @@ static void CError( void )
     i = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
         if( i != 0 || CurrChar != ' ' ) {
-            Buffer[ i ] = CurrChar;
+            Buffer[i] = CurrChar;
             ++i;
         }
         NextChar();
     }
-    Buffer[ i ] = '\0';
+    Buffer[i] = '\0';
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
     CompFlags.cpp_output = false;

@@ -340,26 +340,26 @@ TYPE TypeConvertFromPcPtr(      // TRANSFORM TYPE AFTER CONVERSION FROM PC PTR
     pted = TypePointedAtModified( ptype );
     type = TypeModExtract( pted, &flags, &baser, TC1_NOT_ENUM_CHAR );
     switch( flags & TF1_BASED ) {
-      case 0 :
+    case 0 :
         if( flags & TF1_FAR16 ) {
             ptype = TypeRebuildPcPtr( type, flags, DefaultMemoryFlag( type ) );
         }
         break;
-      case TF1_BASED_VOID :
+    case TF1_BASED_VOID :
         ptype = TypeRebuildPcPtr( type, flags, TF1_NEAR );
         break;
-      case TF1_BASED_ADD :
+    case TF1_BASED_ADD :
       { type_flag bflags;       // - flags for baser
         TypePointedAt( baser->sym_type, &bflags );
         ptype = TypeRebuildPcPtr( type, flags, bflags & TF1_MEM_MODEL );
       } break;
-      case TF1_BASED_SELF :
+    case TF1_BASED_SELF :
         ptype = TypeRebuildPcPtr( type, flags, TF1_FAR );
         break;
-      case TF1_BASED_FETCH :
+    case TF1_BASED_FETCH :
         ptype = TypeRebuildPcPtr( type, flags, TF1_FAR );
         break;
-      case TF1_BASED_STRING :
+    case TF1_BASED_STRING :
         ptype = TypeRebuildPcPtr( type, flags, TF1_FAR );
         break;
     }
@@ -412,7 +412,7 @@ static type_id intPromo[] = {   // Table of integral promotions
 static type_id integralPromote( // GET type_id AFTER INTEGRAL PROMOTION
     TYPE type )                 // - original type
 {
-    return intPromo[ TypedefModifierRemove( type ) -> id ];
+    return intPromo[TypedefModifierRemove( type )->id];
 }
 
 
@@ -477,39 +477,39 @@ CTD TypeCommonDerivation(       // GET COMMON TYPE DERIVATION FOR TWO TYPES
             retn = CTD_LEFT;
         } else if( NULL != scope2 ) {
             switch( ScopeDerived( scope1, scope2 ) ) {
-              case DERIVED_YES :
+            case DERIVED_YES :
                 retn = CTD_LEFT;
                 break;
-              case DERIVED_YES_BUT_VIRTUAL :
+            case DERIVED_YES_BUT_VIRTUAL :
                 retn = CTD_LEFT_VIRTUAL;
                 break;
-              case DERIVED_YES_BUT_AMBIGUOUS :
+            case DERIVED_YES_BUT_AMBIGUOUS :
                 retn = CTD_LEFT_AMBIGUOUS;
                 break;
-              case DERIVED_YES_BUT_PRIVATE :
+            case DERIVED_YES_BUT_PRIVATE :
                 retn = CTD_LEFT_PRIVATE;
                 break;
-              case DERIVED_YES_BUT_PROTECTED :
+            case DERIVED_YES_BUT_PROTECTED :
                 retn = CTD_LEFT_PROTECTED;
                 break;
-              case DERIVED_NO :
+            case DERIVED_NO :
                 switch( ScopeDerived( scope2, scope1 ) ) {
-                  case DERIVED_YES :
+                case DERIVED_YES :
                     retn = CTD_RIGHT;
                     break;
-                  case DERIVED_YES_BUT_VIRTUAL :
+                case DERIVED_YES_BUT_VIRTUAL :
                     retn = CTD_RIGHT_VIRTUAL;
                     break;
-                  case DERIVED_YES_BUT_AMBIGUOUS :
+                case DERIVED_YES_BUT_AMBIGUOUS :
                     retn = CTD_RIGHT_AMBIGUOUS;
                     break;
-                  case DERIVED_YES_BUT_PRIVATE :
+                case DERIVED_YES_BUT_PRIVATE :
                     retn = CTD_RIGHT_PRIVATE;
                     break;
-                  case DERIVED_YES_BUT_PROTECTED :
+                case DERIVED_YES_BUT_PROTECTED :
                     retn = CTD_RIGHT_PROTECTED;
                     break;
-                  case DERIVED_NO :
+                case DERIVED_NO :
                     retn = CTD_NO;
                     break;
                 }

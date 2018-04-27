@@ -133,16 +133,16 @@ void BrinfDepWrite              // WRITE DEPENDENCY INFORMATION
     RingIterBeg( sd->deps, cd ) {
         if( ! cd->written ) {
             switch( cd->type ) {
-              case MVT_VALUE :
+            case MVT_VALUE :
                 BrinfWriteDepMacVal( cd->value );
                 break;
-              case MVT_DEFINED :
+            case MVT_DEFINED :
                 BrinfWriteDepMacDefed( cd->value );
                 break;
-              case MVT_UNDEFED :
+            case MVT_UNDEFED :
                 BrinfWriteDepMacUndefed( cd->value );
                 break;
-              DbgDefault( "bad type of macro dependency" );
+            DbgDefault( "bad type of macro dependency" );
             }
             cd->written = true;
         }
@@ -171,18 +171,18 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
     sd = PstkTopElement( &active_srcfiles );
     DbgVerify( NULL != sd, "No active srcfile" );
     switch( type ) {
-      case MVT_VALUE :
+    case MVT_VALUE :
         defn = macro->defn.src_file;
         break;
-      case MVT_DEFINED :
+    case MVT_DEFINED :
         defn = macro->defn.src_file;
         macro = NULL;
         break;
-      case MVT_UNDEFED :
+    case MVT_UNDEFED :
         defn = BrinfMacUndefSource( BrinfMacValueName( value ) );
         macro = NULL;
         break;
-      DbgDefault( "Impossible MAC_VTYPE" );
+    DbgDefault( "Impossible MAC_VTYPE" );
     }
     if( srcfilePrecedes( sd->srcfile, defn ) ) {
         // dependency only when macro set before the current source file

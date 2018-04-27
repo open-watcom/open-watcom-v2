@@ -66,7 +66,7 @@ void* Carve::alloc              // ALLOCATOR
 {
     void* retn = _freed.pop();
     if( 0 == retn ) {
-        char* data = new char[ _size_block * _size_entry ];
+        char* data = new char[_size_block * _size_entry];
         CarveBlock* blk = new CarveBlock;
         blk->_data = data;
         _blks.append( blk );

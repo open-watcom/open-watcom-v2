@@ -39,7 +39,7 @@
 
 
                                     // Static Data (between compilations)
-static char batch_buffer[ 1024 ];   // - buffer
+static char batch_buffer[1024];     // - buffer
 static int batch_file;              // - # for batch file
 static unsigned batch_bytes;        // - # bytes left in buffer
 static char* batch_cursor;          // - cursor thru batch_buffer

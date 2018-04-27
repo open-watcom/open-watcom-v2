@@ -1312,21 +1312,22 @@ void SegmentCgInit(             // INITIALIZE SEGMENTS FOR CODE-GENERATION
 
     RingIterBeg( seg_list, segment ) {
         switch( segment->seg_id ) {
-          case SEG_STACK :
+        case SEG_STACK :
             // Cg already "knows" about this segment
             segment->cg_defed = true;
             break;
-          default :
+        default :
             if( segment->attrs & BACK ) {
                 segmentCgDefine( segment );
                 break;
             }
-            if( ! segment->used ) break;
-            // drops thru
-          case SEG_DATA :
-          case SEG_CONST :
-          case SEG_CONST2 :
-          case SEG_BSS :
+            if( ! segment->used )
+                break;
+            /* fall through */
+        case SEG_DATA :
+        case SEG_CONST :
+        case SEG_CONST2 :
+        case SEG_BSS :
             // These could be defined only if they are used but unfortunately
             // the CG doesn't like DGROUP segments being defined on the fly.
             // Based pointers would cause these segments to be defined on the

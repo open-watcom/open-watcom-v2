@@ -300,7 +300,7 @@ void CgioWriteIC(               // WRITE IC RECORD TO VIRTUAL FILE
 {
 #ifndef NDEBUG
     ExtraRptIncrementCtr( cgio_write_ins );
-    if( ICOpTypes[ ins->opcode ] == ICOT_NUL ) {
+    if( ICOpTypes[ins->opcode] == ICOT_NUL ) {
         ExtraRptIncrementCtr( cgio_write_nul );
     }
 #endif
@@ -556,8 +556,8 @@ CGVALUE CgioGetIndex( CGINTEROP opcode, CGVALUE value )
     ic_op_type op_class;
     CGIRELOCFN *reloc;
 
-    op_class = ICOpTypes[ opcode ];
-    reloc = relocWriteOperand[ op_class ];
+    op_class = ICOpTypes[opcode];
+    reloc = relocWriteOperand[op_class];
     if( reloc != NULL ) {
         value.pvalue = reloc( value.pvalue );
     }
@@ -625,8 +625,8 @@ static void saveCGFILE( void *e, carve_walk_base *d )
         // CGFILE contains a finished function
         for(;;) {
             opcode = cursor->opcode;
-            op_class = ICOpTypes[ opcode ];
-            reloc = relocWriteOperand[ op_class ];
+            op_class = ICOpTypes[opcode];
+            reloc = relocWriteOperand[op_class];
             if( reloc != NULL ) {
                 void *save = cursor->value.pvalue;
                 cursor->value.pvalue = reloc( save );
@@ -677,8 +677,8 @@ static void saveCGFILE( void *e, carve_walk_base *d )
                 }
                 break;
             }
-            op_class = ICOpTypes[ opcode ];
-            reloc = relocWriteOperand[ op_class ];
+            op_class = ICOpTypes[opcode];
+            reloc = relocWriteOperand[op_class];
             if( reloc != NULL ) {
                 void *save = cursor->value.pvalue;
                 cursor->value.pvalue = reloc( save );
@@ -753,7 +753,7 @@ pch_status PCHReadCGFiles( void )
             if( opcode == IC_PCH_STOP )
                 break;
             if( opcode == IC_EOF ) {
-                DbgAssert( ICOpTypes[ opcode ] == ICOT_NUL );
+                DbgAssert( ICOpTypes[opcode] == ICOT_NUL );
                 // this writes the IC_EOF into the buffer
                 CgioCloseOutputFile( curr );
                 break;

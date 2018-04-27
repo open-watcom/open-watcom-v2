@@ -183,15 +183,15 @@ void CgrfMarkNodeGen(           // MARK NODE AS GEN-ED, IF REQ'D
     CALLNODE* cnode )           // - the node
 {
     switch( cnode->dtor_method ) {
-      case DTM_DIRECT :
+    case DTM_DIRECT :
         break;
-      case DTM_DIRECT_SMALL :
+    case DTM_DIRECT_SMALL :
       { SYMBOL func = callNodeCaller( cnode );
-        if( NULL == func
-         || ! SymIsDtor( func ) ) break;
-      }
-        // drops thru
-      default :
+        if( NULL == func || !SymIsDtor( func ) ) {
+            break;
+        }
+      } /* fall through */
+    default :
         cnode->stab_gen = true;
         break;
     }
@@ -324,18 +324,18 @@ static CALLNODE* addNode(       // ADD A CALL NODE
 {
     CALLNODE* node = CgrfAddFunction( call_graph, sym );
     switch( cgbackFuncType( sym ) ) {
-      case TCF_VFT :
+    case TCF_VFT :
         node->is_vft = true;
         break;
-      case TCF_INLINE :
+    case TCF_INLINE :
         node->inline_fun = true;
         if( funcInlineable( sym ) ) {
             node->inlineable = true;
             sym->flag |= SF_CG_INLINEABLE;
         }
         break;
-      case TCF_OTHER_FUNC :
-      case TCF_STATIC :
+    case TCF_OTHER_FUNC :
+    case TCF_STATIC :
         if( funcInlineable( sym ) ) {
             node->inlineable = true;
             if( oe_size > 0 ) {
@@ -346,9 +346,9 @@ static CALLNODE* addNode(       // ADD A CALL NODE
             }
         }
         break;
-      case TCF_MOD_INIT :
+    case TCF_MOD_INIT :
         break;
-      DbgDefault( "addNode -- bad type" );
+    DbgDefault( "addNode -- bad type" );
     }
     return node;
 }
@@ -363,12 +363,12 @@ static CALLNODE *addCallee(     // ADD CALL TO CALL GRAPH
     retn = addNode( callee );
     if( ( retn->refs == 0 ) && ( retn->addrs == 0 ) ) {
         switch( cgbackFuncType( callee ) ) {
-          case TCF_VFT :
+        case TCF_VFT :
             pfun = (SYMBOL*)VstkPush( &call_graph->calls );
             *pfun = callee;
             break;
-          case TCF_INLINE :
-          case TCF_STATIC :
+        case TCF_INLINE :
+        case TCF_STATIC :
             pfun = (SYMBOL*)VstkPush( &call_graph->calls );
             *pfun = callee;
             break;
@@ -388,15 +388,15 @@ static TCF addAddrOf(           // ADD ADDRESS-OF IF REQUIRED
     if( callee != NULL ) {
         tcf = cgbackFuncType( callee );
         switch( tcf ) {
-          case TCF_INLINE :
-          case TCF_STATIC :
-          case TCF_VFT :
+        case TCF_INLINE :
+        case TCF_STATIC :
+        case TCF_VFT :
             rnode = addCallee( callee );
             CgrfAddAddrOf( call_graph, cnode, rnode );
             break;
-          case TCF_NOT_FUNC :
+        case TCF_NOT_FUNC :
             break;
-          default :
+        default :
             callee->flag |= SF_ADDR_TAKEN;
         }
         return( tcf );
@@ -426,11 +426,11 @@ static void addCalleeFunc(      // ADD FUNCTION CALL TO CALL GRAPH
     SYMBOL callee )             // - called symbol
 {
     switch( cgbackFuncType( callee ) ) {
-      case TCF_INLINE :
-      case TCF_STATIC :
+    case TCF_INLINE :
+    case TCF_STATIC :
         CgrfAddCall( call_graph, cnode, addCallee( callee ) );
-        // drops thru
-      case TCF_OTHER_FUNC :
+        /* fall through */
+    case TCF_OTHER_FUNC :
 //      funCalled( callee );
         break;
     }
@@ -480,7 +480,7 @@ static void dtorRef(            // reference a dtor in state table
     switch( sc->func_dtm ) {
     case DTM_DIRECT_TABLE :
         addAddrOf( cnode, dtor );
-        // drops thru
+        /* fall through */
     case DTM_DIRECT :
         addCalleeFuncToGen( cnode, dtor );
         break;
@@ -530,43 +530,43 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
         // scanning for case IC_* patterns.
         // ICMASK BEGIN CALLGRAPH (do not remove)
         switch( ins->opcode ) {
-          case IC_DTOR_DLT_BEG :
+        case IC_DTOR_DLT_BEG :
 //          CgioReadICUntilOpcode( sc.file_ctl, IC_DTOR_DLT_END );
             continue;
-          case IC_DTOR_DAR_BEG :
+        case IC_DTOR_DAR_BEG :
 //          CgioReadICUntilOpcode( sc.file_ctl, IC_DTOR_DAR_END );
             continue;
-          case IC_EXPR_TS :
+        case IC_EXPR_TS :
             addTypeSigRefs( cnode, ins->value.pvalue );
             continue;
-          case IC_DATA_PTR_SYM :
+        case IC_DATA_PTR_SYM :
             addAddrOf( cnode, ins->value.pvalue );
             continue;
-          case IC_DTOR_STATIC :
+        case IC_DTOR_STATIC :
             addAddrOf( cnode, RoDtorFind( ins->value.pvalue ) );
             continue;
-          case IC_SCOPE_CALL_BDTOR :
+        case IC_SCOPE_CALL_BDTOR :
             if( call_graph->scope_call_opt ) {
                 sc.scope_call_blk_dtor = ins->value.pvalue;
             } else {
                 dtorRef( ins, &sc, cnode );
             }
             continue;
-          case IC_SCOPE_CALL_CDTOR :
+        case IC_SCOPE_CALL_CDTOR :
             if( call_graph->scope_call_opt ) {
                 sc.scope_call_cmp_dtor = ins->value.pvalue;
             } else {
                 dtorRef( ins, &sc, cnode );
             }
             continue;
-          case IC_SCOPE_CALL_TDTOR :
+        case IC_SCOPE_CALL_TDTOR :
             if( call_graph->scope_call_opt ) {
                 sc.scope_call_tmp_dtor = ins->value.pvalue;
             } else {
                 dtorRef( ins, &sc, cnode );
             }
             continue;
-          case IC_SCOPE_CALL_FUN :
+        case IC_SCOPE_CALL_FUN :
             if( ! call_graph->scope_call_opt )
                 continue;
             CgResScopeCall( cnode
@@ -578,8 +578,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             sc.scope_call_cmp_dtor = NULL;
             sc.scope_call_blk_dtor = NULL;
             continue;
-          case IC_BLOCK_OPEN :
-          case IC_BLOCK_DEAD :
+        case IC_BLOCK_OPEN :
+        case IC_BLOCK_DEAD :
           { SCOPE scope = ins->value.pvalue;
             if( NULL != scope && scope->u.s.try_catch ) {
                 CgrfMarkNodeGen( cnode );
@@ -591,9 +591,9 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             } else {
                 if( NULL != scope ) {
                     switch( sc.func_dtm ) {
-                      case DTM_DIRECT :
+                    case DTM_DIRECT :
                         break;
-                      default :
+                    default :
                         CgrfMarkNodeGen( cnode );
                         scope->u.s.cg_stab = true;
                         break;
@@ -601,42 +601,42 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                 }
             }
           } continue;
-          case IC_BLOCK_DONE :
-          case IC_BLOCK_END :
+        case IC_BLOCK_DONE :
+        case IC_BLOCK_END :
             if( ! call_graph->scope_call_opt )
                 continue;
             sc.curr_scope = CgResScScanEnd();
             continue;
-          case IC_EXPR_TEMP:
+        case IC_EXPR_TEMP:
             if( ! call_graph->scope_call_opt ) continue;
             CgResScStmtScanBegin( sc.curr_scope, cnode, sc.func_dtm );
             call_graph->stmt_scope = true;
             continue;
-          case IC_STMT_SCOPE_END :
+        case IC_STMT_SCOPE_END :
             if( ! call_graph->scope_call_opt ) continue;
             if( call_graph->stmt_scope ) {
                 CgResScScanEnd();
                 call_graph->stmt_scope = false;
             }
             continue;
-          case IC_EXCEPT_SPEC :
+        case IC_EXCEPT_SPEC :
             if( call_graph->scope_call_opt ) {
                 CgResScopeGen( cnode );
             }
             sc.has_except_spec = true;
             cnode->stab_gen = true;
-            // drops thru
-          case IC_CATCH :
+            /* fall through */
+        case IC_CATCH :
             addTypeSigRefs( cnode, ins->value.pvalue );
             continue;
-          case IC_TRY :
+        case IC_TRY :
             if( call_graph->scope_call_opt ) {
                 CgResScopeGen( cnode );
                 cnode->stmt_state = STS_GEN;
             }
             cnode->stab_gen = true;
             continue;
-          case IC_CALL_SETUP :
+        case IC_CALL_SETUP :
           { if( NULL != func
              && SymIsThunk( func ) ) {
               SYMBOL called = ins->value.pvalue;
@@ -645,49 +645,49 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             }
             addCalleeFunc( cnode, ins->value.pvalue );
           } continue;
-          case IC_DTOR_SUBOBJS :
+        case IC_DTOR_SUBOBJS :
             cnode->state_table = true;
             if( sc.func_dtm != DTM_DIRECT_SMALL )
                 continue;
-            // drops thru
-          case IC_DLT_DTORED :
+            /* fall through */
+        case IC_DLT_DTORED :
             if( ! call_graph->scope_call_opt ) {
                 cnode->state_table = true;
                 CgrfMarkNodeGen( cnode );
                 continue;
             }
-            // drops thru
-          case IC_SCOPE_CALL_GEN :
+            /* fall through */
+        case IC_SCOPE_CALL_GEN :
             if( call_graph->scope_call_opt ) {
                 CgResScopeGen( cnode );
             }
             continue;
-          case IC_SCOPE_THROW :
+        case IC_SCOPE_THROW :
             if( ! call_graph->scope_call_opt )
                 continue;
             CgResScopeThrow( cnode );
             continue;
-          case IC_NEW_CTORED :
+        case IC_NEW_CTORED :
           { SYMBOL opdel = CgBackOpDelete( ins->value.pvalue );
             addAddrOf( cnode, opdel );
             if( call_graph->scope_call_opt ) {
                 CgResScopeCall( cnode, NULL, NULL, opdel, NULL );
             }
           } continue;
-          case IC_RTTI_REF :     // REFERENCE TO RTTI CLASS INFO
+        case IC_RTTI_REF :     // REFERENCE TO RTTI CLASS INFO
             RttiRef( ins->value.pvalue );
             continue;
-          case IC_TYPEID_REF :     // REFERENCE TO TYPEID INFO
+        case IC_TYPEID_REF :     // REFERENCE TO TYPEID INFO
             TypeidRef( ins->value.pvalue );
             continue;
-          case IC_VFT_REF :     // REFERENCE TO VFT
+        case IC_VFT_REF :     // REFERENCE TO VFT
             addAddrOf( cnode, ins->value.pvalue );
             continue;
-          case IC_FUNCTION_STAB :
+        case IC_FUNCTION_STAB :
             cnode->state_table = true;
             cnode->cond_flags = ins->value.uvalue;
             continue;
-          case IC_THROW_RO_BLK :
+        case IC_THROW_RO_BLK :
           { THROW_CNV_CTL ctl;  // - controls conversions
             target_offset_t not_used; // - offset not used
             TYPE type;          // - a conversion from thrown object
@@ -699,10 +699,10 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             }
             ThrowCnvFini( &ctl );
           } continue;
-          case IC_SET_TYPE :
+        case IC_SET_TYPE :
 //            curr_type = ins->value.pvalue;
             continue;
-          case IC_LEAF_NAME_FRONT :
+        case IC_LEAF_NAME_FRONT :
             sym = ins->value.pvalue;
 //            curr_type = sym->sym_type;
             tcf = addAddrOf( cnode, sym );
@@ -714,7 +714,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                 }
             }
             continue;
-          case IC_FUNCTION_DTM :
+        case IC_FUNCTION_DTM :
             sc.func_dtm = ins->value.uvalue;
             cnode->dtor_method = sc.func_dtm;
             if( DTM_DIRECT_SMALL == sc.func_dtm
@@ -725,7 +725,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                 _DUMP_CGRF( "static'ed dtor for -xds: %s\n", func );
             }
             continue;
-          case IC_VFT_BEG :     // START OF VFT DEFINITION
+        case IC_VFT_BEG :     // START OF VFT DEFINITION
           { VFT_DEFN* pvft;     // - points at vft definition
             SYMBOL sym1;
             ExtraRptIncrementCtr( ctr_vfts_scanned );
@@ -737,9 +737,9 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             pvft->location = CgioLastRead( sc.file_ctl );
             CgioReadICUntilOpcode( sc.file_ctl, IC_INIT_DONE );
           } continue;
-          case IC_EOF :
+        case IC_EOF :
             break;
-          default:
+        default:
             DbgNever();
         }
         // ICMASK END (do not remove)
@@ -838,7 +838,7 @@ static void scanFunction(       // SCAN FUNCTION FOR CALLS
         SegmentMarkUsed( func->segid );
     }
     switch( cgbackFuncType( func ) ) {
-      case TCF_INLINE :
+    case TCF_INLINE :
         if( ! cnode->inlineable ) {
             cnode->depth = max_inline_depth + 1;
             _DUMP_CGRF( "static'ed inline function: %s\n", func );
@@ -848,7 +848,7 @@ static void scanFunction(       // SCAN FUNCTION FOR CALLS
             forceGeneration( cnode );
         }
         break;
-      case TCF_STATIC :
+    case TCF_STATIC :
 #if 1
         if( ! SymIsRegularStaticFunc( func ) || SymIsMustGen( func ) ) {
             scanFunctionBody( cnode, file_ctl );
@@ -866,7 +866,7 @@ static void scanFunction(       // SCAN FUNCTION FOR CALLS
         }
 #endif
         break;
-      default :
+    default :
         /* func may be NULL in this path */
         scanFunctionBody( cnode, file_ctl );
         if( func != NULL && SymIsMustGen( func ) ) {
@@ -1005,22 +1005,22 @@ static void genFunction(        // INDICATE FUNCTION NEEDS TO BE GEN'ED
 
     func = node->base.object;
     switch( cgbackFuncType( func ) ) {
-      case TCF_STATIC :
+    case TCF_STATIC :
       { CGFILE* cgfile = nodeCgFile( node );
         if( ! cgfile->u.s.once_inl
          && ! cgfile->u.s.oe_inl ) {
             markAsGen( node );
             break;
         }
-      } // drops thru
-      case TCF_INLINE :
+      } /* fall through */
+    case TCF_INLINE :
         if( node->depth > max_inline_depth ) {
             markAsGen( node );
         }
         break;
-      case TCF_VFT :
+    case TCF_VFT :
         break;
-      default :
+    default :
         markAsGen( node );
         break;
     }
@@ -1211,9 +1211,11 @@ static bool pruneFunction(      // PRUNE UNREFERENCED FUNCTION
     ExtraRptIncrementCtr( ctr_nodes_visited );
     sym = node->base.object;
     switch( cgbackFuncType( sym ) ) {
-      case TCF_STATIC :
-        if( ! SymIsRegularStaticFunc( sym ) ) break;
-      case TCF_INLINE :
+    case TCF_STATIC :
+        if( ! SymIsRegularStaticFunc( sym ) )
+            break;
+        /* fall through */
+    case TCF_INLINE :
         if( ( node->refs == 0 ) && ( node->addrs == 0 ) ) {
             _DUMP_CGRF( "pruned unreferenced function: %s\n", sym );
             removeCodeFile( node );

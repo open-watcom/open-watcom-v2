@@ -157,12 +157,12 @@ static void _print( char const * msg )
 
 static char const* _res_type( RES_TYPE type )
 {
-    return ( type < MAX_RES_DEF ) ? res_names[ type ] : "BAD RES_TYPE";
+    return ( type < MAX_RES_DEF ) ? res_names[type] : "BAD RES_TYPE";
 }
 
 static char const* _unr_use( UNR_USE type )
 {
-    return ( type < MAX_USAGE_DEF ) ? usage_names[ type ] : "BAD UNR_USE";
+    return ( type < MAX_USAGE_DEF ) ? usage_names[type] : "BAD UNR_USE";
 }
 
 static void _printAction( RES_ACT const * ra, char const * msg )
@@ -445,9 +445,9 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
             thrdt = false;
             RingIterBeg( sr->unresolved, su ) {
                 switch( su->type ) {
-                  case SCUSE_DTOR_BLK :
-                  case SCUSE_DTOR_TEMP :
-                  case SCUSE_DTOR_COMPONENT :
+                case SCUSE_DTOR_BLK :
+                case SCUSE_DTOR_TEMP :
+                case SCUSE_DTOR_COMPONENT :
                     if( 0 != thrdt ) {
                         sr = markScopeGen( sr );
                         _printScopeRes( sr, "scope genable, throwable not last" );
@@ -456,8 +456,8 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
                     if( su->u.fun->flag & SF_LONGJUMP ) {
                         thrdt = 1;
                     }
-                    // drops thru
-                  default :
+                    /* fall through */
+                default :
                     continue;
                 }
                 break;
@@ -1002,24 +1002,24 @@ static void resolveFunction     // RESOLUTIONS FOR FUNCTION
     fun = symDefaultBase( fun );
     RingIterBegSafe( node->unresolved, fu ) {
         switch( fu->type ) {
-          DbgDefault( "resolveFunction -- bad resolution code" );
-          case FNUSE_CALL :
+        DbgDefault( "resolveFunction -- bad resolution code" );
+        case FNUSE_CALL :
             if( fun->flag & SF_LONGJUMP ) {
                 makeThrowFun( fu->u.node );
             }
             break;
-          case FNUSE_SCOPE :
+        case FNUSE_SCOPE :
           { SCOPE_RES* sr = fu->u.res_scope;
             -- sr->toresolve;
             scopeResolve( sr );
           } break;
-          case FNUSE_CALL_TEMP :
+        case FNUSE_CALL_TEMP :
             resolvedCallInStmt( fun, fu->u.res_scope );
             break;
-          case FNUSE_CALL_SCOPE :
+        case FNUSE_CALL_SCOPE :
             resolvedCallInScope( fun, fu->u.res_scope );
             break;
-          case FNUSE_CALL_CTOR :
+        case FNUSE_CALL_CTOR :
             resolvedCtorInStmt( fun, fu->u.res_scope );
             break;
         }
@@ -1057,15 +1057,15 @@ static void resolveScopeGenned  // RESOLUTIONS FOR SCOPE WITH STATE TABLE
     CgrfMarkNodeGen( node );
     RingIterBeg( sr->unresolved, su ) {
         switch( su->type ) {
-          DbgDefault( "resolveScopeGenned -- bad resolution" );
-          case SCUSE_DTOR_BLK :
+        DbgDefault( "resolveScopeGenned -- bad resolution" );
+        case SCUSE_DTOR_BLK :
             if( dtm == DTM_DIRECT_TABLE ) {
                 CgrfDtorCall( node, su->u.fun );
                 _printFunction( su->u.fun, "call added" );
             }
-            // drops thru
-          case SCUSE_DTOR_TEMP :
-          case SCUSE_DTOR_COMPONENT :
+            /* fall through */
+        case SCUSE_DTOR_TEMP :
+        case SCUSE_DTOR_COMPONENT :
             CgrfDtorAddr( node, su->u.fun );
             _printFunction( su->u.fun, "addr taken" );
             break;
@@ -1087,8 +1087,8 @@ static void resolveScopeNoGen   // RESOLUTIONS FOR SCOPE WITHOUT STATE TABLE
     node = sr->func;
     RingIterBeg( sr->unresolved, su ) {
         switch( su->type ) {
-          DbgDefault( "resolveScopeNoGen -- bad resolution" );
-          case SCUSE_DTOR_BLK :
+        DbgDefault( "resolveScopeNoGen -- bad resolution" );
+        case SCUSE_DTOR_BLK :
             if( dtm == DTM_DIRECT ) {
                 CgrfDtorCall( node, su->u.fun );
                 _printFunction( su->u.fun, "call added" );
@@ -1097,11 +1097,11 @@ static void resolveScopeNoGen   // RESOLUTIONS FOR SCOPE WITHOUT STATE TABLE
                 _printFunction( su->u.fun, "addr taken" );
             }
             break;
-          case SCUSE_DTOR_TEMP :
-          // for now, put temp dtor in enclosing block scope, since
-          // the statement scope might be no-gen while the block scope
-          // is gen. We don't yet have support for statement scopes in
-          // CGBKMAIN (ctor10.c tests this)
+        case SCUSE_DTOR_TEMP :
+            // for now, put temp dtor in enclosing block scope, since
+            // the statement scope might be no-gen while the block scope
+            // is gen. We don't yet have support for statement scopes in
+            // CGBKMAIN (ctor10.c tests this)
 #if 0
             CgrfDtorCall( node, su->u.fun );
             _printFunction( su->u.fun, "call added" );
@@ -1126,18 +1126,19 @@ void CgResolve                  // RESOLVE ANY PENDING ACTIONS
     active = true;
     for( ; ; ) {
         RES_ACT* res = VstkPop( &actions );
-        if( NULL == res ) break;
+        if( NULL == res )
+            break;
         _printAction( res, "Executing action" );
         switch( res->type ) {
-          DbgDefault( "CgResolve -- invalid type" );
-          case RES_FN_TH :
-          case RES_FN_NT :
+        DbgDefault( "CgResolve -- invalid type" );
+        case RES_FN_TH :
+        case RES_FN_NT :
             resolveFunction( res->u.node );
             break;
-          case RES_SC_SG :
+        case RES_SC_SG :
             resolveScopeGenned( res->u.scope );
             break;
-          case RES_SC_NG :
+        case RES_SC_NG :
             resolveScopeNoGen( res->u.scope );
             break;
         }

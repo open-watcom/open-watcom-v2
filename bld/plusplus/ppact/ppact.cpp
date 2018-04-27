@@ -228,7 +228,7 @@ CLS& Varray<CLS>::operator []               // SUBSCRIPT OPERATOR
     ( unsigned index )
 {
     if( index >= _bound ) {
-        CLS* newarr = new CLS[ index + 10 ];
+        CLS* newarr = new CLS[index + 10];
         if( 0 != _array ) {
             ::memcpy( newarr, _array, _bound * sizeof( CLS ) );
             delete[] _array;
@@ -236,7 +236,7 @@ CLS& Varray<CLS>::operator []               // SUBSCRIPT OPERATOR
         _array = newarr;
         _bound = index + 10;
     }
-    return _array[ index ];
+    return _array[index];
 }
 
 
@@ -245,7 +245,7 @@ CLS const & Varray<CLS>::operator []        // SUBSCRIPT OPERATOR
     ( unsigned index )
     const
 {
-    return _array[ index ];
+    return _array[index];
 }
 
 
@@ -270,14 +270,14 @@ struct Stk
     CLS& operator[]                         // SUBSCRIPT
         ( unsigned index )
         {
-            return _stack[ index ];
+            return _stack[index];
         }
 
     CLS const & operator[]                  // SUBSCRIPT
         ( unsigned index )
         const
         {
-            return _stack[ index ];
+            return _stack[index];
         }
 
     int empty() const;                      // TEST IF EMPTY
@@ -304,7 +304,7 @@ CLS& Stk<CLS>::push                         // PUSH THE STACK
     ( void )
 {
     ++ _sp;
-    return _stack[ _sp - 1 ];
+    return _stack[_sp - 1];
 }
 
 
@@ -313,7 +313,7 @@ CLS& Stk<CLS>::pop                          // POP THE STACK
     ( void )
 {
     -- _sp;
-    return _stack[ _sp ];
+    return _stack[_sp];
 }
 
 
@@ -321,7 +321,7 @@ template< class CLS >
 CLS& Stk<CLS>::top                          // ACCESS TOP ELEMENT
     ( void )
 {
-    return _stack[ _sp - 1 ];
+    return _stack[_sp - 1];
 }
 
 
@@ -366,7 +366,7 @@ struct Str
 
     char& operator [] ( unsigned index )    // operator []
         {
-            return _str[ index ];
+            return _str[index];
         }
 
     operator char const * () const          // conversion to const char*
@@ -390,8 +390,8 @@ Str::Str                                    // CONSTRUCTOR
     : _str( 0 )
 {
     if( text != 0 && size != 0 ) {
-        _str = new char[ size + 1 ];
-        _str[ size ] = '\0';
+        _str = new char[size + 1];
+        _str[size] = '\0';
         ::memcpy( _str, text, size );
     }
 }
@@ -409,8 +409,8 @@ Str& Str::operator =                        // ASSIGNMENT
             if( size == 0 ) {
                 _str = 0;
             } else {
-                _str = new char[ size + 1 ];
-                _str[ size ] = '\0';
+                _str = new char[size + 1];
+                _str[size] = '\0';
                 ::memcpy( _str, src._str, size );
             }
         }
@@ -582,8 +582,8 @@ protected:
                 printf( "%d %p %s %s %d "
                       , index
                       , _pstk._stack._array[index]._node
-                      , state[ _pstk._stack._array[index]._state ]
-                      , edge[ _pstk._stack._array[index]._edge ]
+                      , state[_pstk._stack._array[index]._state]
+                      , edge[_pstk._stack._array[index]._edge]
                       , _pstk._stack._array[index].inlined
                       );
                 _pstk._stack._array[index]._node->printActual( stdout );
@@ -697,14 +697,14 @@ void ExpOp::print                       // PRINT A TREE
         PrintStack & top = pstackTop();
         PrtType type = top._node->printType();
         switch( top._state ) {
-          case NS_RIGHT_BEFORE :
+        case NS_RIGHT_BEFORE :
             if( type & PRT_BEFORE_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_RIGHT_BEFORE, 0 );
                 top._edge = edge_right_blank;
                 top._state = NS_RIGHT_ACTUAL;
                 continue;
             }
-          case NS_RIGHT_ACTUAL :
+        case NS_RIGHT_ACTUAL :
             if( type & PRT_ACTUAL_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_RIGHT_BEFORE, 1 );
                 if( top.inlined ) {
@@ -722,7 +722,7 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 continue;
             }
-          case NS_ACTUAL :
+        case NS_ACTUAL :
             if( top.inlined ) {
                 _pstk.pop();
                 continue;
@@ -743,7 +743,7 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 fputc( '\n', out );
             }
-          case NS_LEFT_ACTUAL :
+        case NS_LEFT_ACTUAL :
             if( type & PRT_ACTUAL_RIGHT ) {
                 pstackPush( top._node->nodeRight(), NS_LEFT_ACTUAL, 1 );
                 if( type & PRT_AFTER_LEFT ) {
@@ -767,7 +767,7 @@ void ExpOp::print                       // PRINT A TREE
                 top._state = NS_DONE;
                 continue;
             }
-          case NS_LEFT_AFTER :
+        case NS_LEFT_AFTER :
             if( type & PRT_AFTER_LEFT ) {
                 if( type & PRT_ARG ) {
                     top._node = top._node->nodeLeft();
@@ -793,7 +793,7 @@ void ExpOp::print                       // PRINT A TREE
                 }
                 continue;
             }
-          case NS_DONE :
+        case NS_DONE :
             _pstk.pop();
             if( _pstk.empty() )
                 break;
@@ -872,7 +872,7 @@ static void ExpOp::printIndentation     // PRINT INDENTATION
     char seg[5] = "    ";
     char last;
     for( index = 0; index < bound; ++ index ) {
-        PrintStack & ps = _pstk[ index ];
+        PrintStack & ps = _pstk[index];
         EdgeType& edge = ps._edge;
         if( index == curr ) {
             if( edge == edge_right_blank ) {
@@ -1446,22 +1446,22 @@ void ExpOpCode::printActual             // PRINT ACTUAL
         char last;
         PrtType pt = PrtType( printType() & ~ PRT_CALL );
         switch( pt ) {
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT :
             last = BOX_OPCODE_UP;
             break;
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_ACTUAL_LEFT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_ACTUAL_LEFT :
             last = BOX_TEE_UP;
             break;
-          case PRT_ACTUAL_SELF | PRT_ACTUAL_RIGHT | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_ACTUAL_RIGHT | PRT_AFTER_LEFT :
             last = BOX_TEE_DOWN;
             break;
-          case PRT_ACTUAL_SELF | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_AFTER_LEFT :
             last = BOX_OPCODE_DN;
             break;
-          case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_AFTER_LEFT :
+        case PRT_ACTUAL_SELF | PRT_BEFORE_RIGHT | PRT_AFTER_LEFT :
             last = BOX_OPCODE_UD;
             break;
-          default :
+        default :
             last = BOX_LINE_HORI;
             break;
         }
@@ -1470,7 +1470,7 @@ void ExpOpCode::printActual             // PRINT ACTUAL
     }
     fputs( opcd, out );
     if( options.verbose ) {
-        char buffer[ 32 ];
+        char buffer[32];
         fputs( ExpOp::nodeName( buffer ), out );
     }
 }
@@ -2681,14 +2681,14 @@ static void processOptions                  // PROCESS OPTIONS
     for( ; *opts != '\0'; ) {
         char opt = *opts++;
         switch( opt ) {
-          case 'a' :                // a = echo actions file
+        case 'a' :                // a = echo actions file
             options.actions = 1;
             break;
-          case 'v' :                // v = verbose
+        case 'v' :                // v = verbose
             options.verbose = 1;
             break;
-          case 'h' :                // h, ? = Help
-          case '?' :
+        case 'h' :                // h, ? = Help
+        case '?' :
             puts( "ppact [ options ] [ input [ output ] ]"    );
             puts( ""                                          );
             puts( "options: t -- print type information"      );
@@ -2697,11 +2697,11 @@ static void processOptions                  // PROCESS OPTIONS
             exit( 0 );
             break;
 #ifndef NDEBUG
-          case 'p' :
+        case 'p' :
             options.pstack = 1;
             break;
 #endif
-          default :
+        default :
             err( "invalid option(s):", opts, 0 );
         }
     }
@@ -2715,7 +2715,7 @@ int main( int argc, char* argv[] )          // MAIN-LINE
     char* file_out = 0;
     int arg;
     for( arg = 1; arg < argc; ++arg ) {
-        char* arg_text = argv[ arg ];
+        char* arg_text = argv[arg];
         if( arg_text[0] == '/' || arg_text[0] == '-' ) {
             processOptions( &arg_text[1] );
         } else if( arg_text[0] == '?' ) {

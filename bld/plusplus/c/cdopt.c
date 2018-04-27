@@ -238,25 +238,25 @@ static const char *titer_names[] = {
 
 static const char *__fmt_TOB( TOB tob )    // FORMAT TOB
 {
-    return ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[ tob ];
+    return ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[tob];
 }
 
 
 static const char *__fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
 {
-    return ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[ cdot ];
+    return ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[cdot];
 }
 
 #if 0
 static const char *__fmt_TIS( TIS tis )
 {
-    return ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[ tis ];
+    return ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[tis];
 }
 #endif
 
 static const char *__fmt_TITER( TITER val )
 {
-    return ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[ val ];
+    return ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[val];
 }
 
 
@@ -593,16 +593,16 @@ TITER CDoptIterNextComp(        // GET NEXT COMPONENT
             retn = TITER_NAKED_DTOR;
         } else {
             switch( elem->otype ) {
-              case TOB_VBASE :
+            case TOB_VBASE :
                 iter->off_vbase = elem->offset;
                 iter->vbase = ScopeFindVBase( TypeScope( info->orig_type )
                                             , elem->cltype );
                 retn = TITER_VBASE;
                 break;
-              case TOB_DBASE :
+            case TOB_DBASE :
                 retn = TITER_DBASE;
                 break;
-              case TOB_MEMB :
+            case TOB_MEMB :
                 retn = TITER_MEMB;
                 break;
             }
@@ -652,13 +652,15 @@ TITER CDoptIterNextElement(     // GET NEXT ELEMENT ACTION FOR COMPONENT
             if( elem->otype == TOB_VBASE ) {
                 unsigned depth = VstkDimension( &iter->stack );
                 switch( iter->otype ) {
-                  case TOB_VBASE :
-                  case TOB_DBASE :
-                    if( depth == 1 ) break;
+                case TOB_VBASE :
+                case TOB_DBASE :
+                    if( depth == 1 )
+                        break;
                     DumpCdoptIter( iter, "--NO VBASE FROM BASE", "" );
                     continue;
-                  case TOB_MEMB :
-                    if( depth == 2 ) break;
+                case TOB_MEMB :
+                    if( depth == 2 )
+                        break;
                     DumpCdoptIter( iter, "--NO VBASE FROM MEMB", "" );
                     continue;
                 }
@@ -716,18 +718,18 @@ DTC_KIND CDoptObjectKind        // DETERMINE DTC_... OBJECT KIND
 
     elem = activeElement( iter );
     switch( elem->otype ) {
-      case TOB_ARRAY :
-      case TOB_MEMB :
-      case TOB_ORIG :
+    case TOB_ARRAY :
+    case TOB_MEMB :
+    case TOB_ORIG :
         retn = DTC_COMP_MEMB;
         break;
-      case TOB_DBASE :
+    case TOB_DBASE :
         retn = isLevelZero( iter ) ? DTC_COMP_DBASE : DTC_ACTUAL_DBASE;
         break;
-      case TOB_VBASE :
+    case TOB_VBASE :
         retn = isLevelZero( iter ) ? DTC_COMP_VBASE : DTC_ACTUAL_VBASE;
         break;
-      DbgDefault( "CDoptObjectKind -- bad TOB_..." );
+    DbgDefault( "CDoptObjectKind -- bad TOB_..." );
     }
     return( retn );
 }
@@ -791,9 +793,9 @@ bool CDoptIterExact(            // GET cdarg "exact" FOR CURRENT ELEMENT
     elem = exp->elem;
     if( NULL != elem ) {
         switch( elem->otype ) {
-          case TOB_ARRAY :
-          case TOB_MEMB :
-          case TOB_ORIG :
+        case TOB_ARRAY :
+        case TOB_MEMB :
+        case TOB_ORIG :
             ok = true;
             break;
         }
@@ -896,16 +898,16 @@ static CD_DESCR** refCiPtr      // GET REF TO CD_DESCR PTR IN CLASSINFO
         cache->cdopt_opeq = NULL;
     }
     switch( opt ) {
-      case CDOPT_CTOR :
+    case CDOPT_CTOR :
         retn = &cache->cdopt_ctor;
         break;
-      case CDOPT_DTOR :
+    case CDOPT_DTOR :
         retn = &cache->cdopt_dtor;
         break;
-      case CDOPT_OPREQ :
+    case CDOPT_OPREQ :
         retn = &cache->cdopt_opeq;
         break;
-      DbgDefault( "refCiPtr -- bad opt" );
+    DbgDefault( "refCiPtr -- bad opt" );
     }
     return retn;
 }
@@ -918,16 +920,16 @@ static void cacheAdd(           // ADD TO A CACHE
 
     *( refCiPtr( info->orig_type, info->opt ) ) = info;
     switch( info->opt ) {
-      case CDOPT_CTOR :
+    case CDOPT_CTOR :
         ring = &allDescriptors.cdopt_ctor;
         break;
-      case CDOPT_DTOR :
+    case CDOPT_DTOR :
         ring = &allDescriptors.cdopt_ctor;
         break;
-      case CDOPT_OPREQ :
+    case CDOPT_OPREQ :
         ring = &allDescriptors.cdopt_ctor;
         break;
-      DbgDefault( "cacheAdd -- bad opt" );
+    DbgDefault( "cacheAdd -- bad opt" );
     }
     RingAppend( ring, info );
 }

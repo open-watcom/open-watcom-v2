@@ -140,20 +140,20 @@ bool ConvCtlTypeInit            // INITIALIZE CONVTYPE
     } else {
         ctype->kind = RkdForTypeId( id );
         switch( ctype->kind ) {
-          case RKD_POINTER :
+        case RKD_POINTER :
             if( ctype->unmod->flag & TF1_REFERENCE ) {
                 TYPE refed = ctype->unmod->of;
                 ctype->reference = true;
                 cl_type = StructType( refed );
             }
             break;
-          case RKD_FUNCTION :
+        case RKD_FUNCTION :
             ok = true;
             break;
-          case RKD_CLASS :
+        case RKD_CLASS :
             cl_type = ctype->unmod;
             break;
-          case RKD_ERROR :
+        case RKD_ERROR :
             ctl->has_err_operand = true;
             break;
         }
@@ -267,34 +267,34 @@ static void adjustFnAddrPtr     // ADJUST FOR &FUNCTION --> PTR
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
     switch( NodeAddrOfFun( addrof, &func ) ) {
-      case ADDR_FN_ONE_USED :
-      case ADDR_FN_ONE :
+    case ADDR_FN_ONE_USED :
+    case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
         adjustFnAddr( ctl, addrof, func );
         break;
-      case ADDR_FN_MANY_USED :
-      case ADDR_FN_MANY :
+    case ADDR_FN_MANY_USED :
+    case ADDR_FN_MANY :
         switch( _CNV_TYPE( ctl->reqd_cnv ) ) {
-          case CNV_ASSIGN :
-          case CNV_CAST :
-          case CNV_INIT :
-          case CNV_INIT_COPY :
-          case CNV_FUNC_ARG :
-          case CNV_FUNC_RET :
+        case CNV_ASSIGN :
+        case CNV_CAST :
+        case CNV_INIT :
+        case CNV_INIT_COPY :
+        case CNV_FUNC_ARG :
+        case CNV_FUNC_RET :
             switch( ConvertOvFunNode( ctl->tgt.orig, func ) ) {
-              case CNV_OK :
+            case CNV_OK :
                 adjustFnAddr( ctl, addrof, func );
                 break;
-              case CNV_AMBIGUOUS :
+            case CNV_AMBIGUOUS :
                 errForFunc( func, ctl->diag_cast->msg_ambiguous, ctl );
                 break;
-              case CNV_IMPOSSIBLE :
+            case CNV_IMPOSSIBLE :
                 errForFunc( func, ctl->diag_cast->msg_impossible, ctl );
                 break;
-              DbgDefault("ConvertOfFunNode -- unexpected return code");
+            DbgDefault("ConvertOfFunNode -- unexpected return code");
             }
             break;
-          default :
+        default :
             errForFunc( func, ERR_ADDR_OF_OVERLOADED_FUN, ctl );
             break;
         }
@@ -312,44 +312,44 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
     switch( NodeAddrOfFun( addrof, &func ) ) {
-      case ADDR_FN_ONE_USED :
+    case ADDR_FN_ONE_USED :
         if( !CompFlags.extensions_enabled )
             break;
         /* fall through */
-      case ADDR_FN_ONE :
+    case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
         adjustFnMembPtr( ctl, func );
         break;
-      case ADDR_FN_MANY_USED :
+    case ADDR_FN_MANY_USED :
         if( !CompFlags.extensions_enabled )
             break;
         /* fall through */
-      case ADDR_FN_MANY :
+    case ADDR_FN_MANY :
         switch( _CNV_TYPE( ctl->reqd_cnv ) ) {
-          case CNV_ASSIGN :
-          case CNV_INIT :
-          case CNV_CAST :
-          case CNV_FUNC_ARG :
-          case CNV_FUNC_RET :
+        case CNV_ASSIGN :
+        case CNV_INIT :
+        case CNV_CAST :
+        case CNV_FUNC_ARG :
+        case CNV_FUNC_RET :
             mptype = ctl->tgt.unmod;
             if( ctl->tgt.reference ) {
                 mptype = mptype->of;
             }
             ftype = MemberPtrType( mptype ) -> of;
             switch( ConvertOvFunNode( MakePointerTo( ftype ), func ) ) {
-              case CNV_OK :
+            case CNV_OK :
                 adjustFnMembPtr( ctl, func );
                 break;
-              case CNV_AMBIGUOUS :
+            case CNV_AMBIGUOUS :
                 errForFunc( func, ctl->diag_cast->msg_ambiguous, ctl );
                 break;
-              case CNV_IMPOSSIBLE :
+            case CNV_IMPOSSIBLE :
                 errForFunc( func, ctl->diag_cast->msg_impossible, ctl );
                 break;
-              DbgDefault("ConvertOfFuncnode -- unexpected return code");
+            DbgDefault("ConvertOfFuncnode -- unexpected return code");
             }
             break;
-          default :
+        default :
             errForFunc( func, ERR_ADDR_OF_OVERLOADED_FUN, ctl );
             break;
         }
@@ -650,34 +650,34 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                             if( TYP_CLASS == tgt.id ) {
                                 info->ctd = TypeCommonDerivation( src.type, tgt.type );
                                 switch( info->ctd ) {
-                                  case CTD_NO :
+                                case CTD_NO :
                                     break;
-                                  case CTD_LEFT :
+                                case CTD_LEFT :
                                     if( tgt.type == src.type )
                                         break;
                                     /* fall through */
-                                  case CTD_LEFT_VIRTUAL :
+                                case CTD_LEFT_VIRTUAL :
                                     info->to_base = true;
                                     break;
-                                  case CTD_LEFT_PRIVATE :
+                                case CTD_LEFT_PRIVATE :
                                     info->to_private = true;
                                     info->to_base = true;
                                     break;
-                                  case CTD_LEFT_PROTECTED :
+                                case CTD_LEFT_PROTECTED :
                                     info->to_protected = true;
                                     info->to_base = true;
                                     break;
-                                  case CTD_LEFT_AMBIGUOUS :
+                                case CTD_LEFT_AMBIGUOUS :
                                     info->to_ambiguous = true;
                                     info->to_base = true;
                                     break;
-                                  case CTD_RIGHT_AMBIGUOUS :
+                                case CTD_RIGHT_AMBIGUOUS :
                                     info->to_ambiguous = true;
                                     /* fall through */
-                                  case CTD_RIGHT :
-                                  case CTD_RIGHT_VIRTUAL :
-                                  case CTD_RIGHT_PRIVATE :
-                                  case CTD_RIGHT_PROTECTED :
+                                case CTD_RIGHT :
+                                case CTD_RIGHT_VIRTUAL :
+                                case CTD_RIGHT_PRIVATE :
+                                case CTD_RIGHT_PROTECTED :
                                     info->to_derived = true;
                                     break;
                                 }
@@ -809,12 +809,12 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
             info->cv_mismatch = true;
         }
         switch( mp_ctd ) {
-          case CTD_LEFT_PROTECTED :
-          case CTD_LEFT_PRIVATE :
-          case CTD_LEFT_VIRTUAL :
+        case CTD_LEFT_PROTECTED :
+        case CTD_LEFT_PRIVATE :
+        case CTD_LEFT_VIRTUAL :
             info->const_cast_ok = false;
             break;
-          case CTD_LEFT :
+        case CTD_LEFT :
             if( info->to_derived || ( info->from_void && !info->to_void ) ) {
                 info->implicit_cast_ok = false;
                 info->const_cast_ok = false;
@@ -824,15 +824,15 @@ bool ConvCtlAnalysePoints       // ANALYSE CONVERSION INFORMATION FOR POINTS
                 info->const_cast_ok = false;
             }
             break;
-          case CTD_RIGHT :
-          case CTD_RIGHT_PROTECTED :
-          case CTD_RIGHT_PRIVATE :
-          case CTD_RIGHT_VIRTUAL :
+        case CTD_RIGHT :
+        case CTD_RIGHT_PROTECTED :
+        case CTD_RIGHT_PRIVATE :
+        case CTD_RIGHT_VIRTUAL :
             info->implicit_cast_ok = false;
             info->const_cast_ok = false;
             info->bad_mptr_class = true;
             break;
-          default :
+        default :
             info->implicit_cast_ok = false;
             info->static_cast_ok = false;
             info->const_cast_ok = false;
@@ -971,36 +971,36 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
                              , &baser
                              , TC1_NOT_ENUM_CHAR );
         switch( ptr_class ) {
-          case PC_PTR_FAR16 :
+        case PC_PTR_FAR16 :
             expr = NodeUnary( CO_FAR16_TO_POINTER, expr );
             expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
             break;
-          case PC_PTR_BASED_VOID :
+        case PC_PTR_BASED_VOID :
             expr = NodeConvertFlags( tgt_type, expr, PTF_PTR_NONZERO );
             break;
-          case PC_PTR_BASED_STRING :
+        case PC_PTR_BASED_STRING :
           { PTREE bsym;         // - basing symbol
             bsym = findBasedStrSym( expr->type );
             expr = NodeBinary( CO_SEG_OP, expr, bsym );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
           } break;
-          case PC_PTR_BASED_SELF :
+        case PC_PTR_BASED_SELF :
             expr = NodeBinary( CO_SEG_OP, expr, bself );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
-          case PC_PTR_BASED_FETCH :
+        case PC_PTR_BASED_FETCH :
             expr = NodeBinary( CO_SEG_OP
                              , expr
                              , NodeRvalue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
-          case PC_PTR_BASED_ADD :
+        case PC_PTR_BASED_ADD :
             expr = NodeBinary( CO_PLUS
                              , expr
                              , NodeRvalue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
-          default :
+        default :
             expr->flags |= PTF_PTR_NONZERO;
             break;
         }
@@ -1016,20 +1016,20 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
 {
 
     switch( ptr_class ) {
-      case PC_PTR_REGULAR :
-      case PC_PTR_NOT :
+    case PC_PTR_REGULAR :
+    case PC_PTR_NOT :
         break;
-      case PC_PTR_FAR16 :
+    case PC_PTR_FAR16 :
         expr = NodeUnary( CO_POINTER_TO_FAR16, expr );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
         break;
-      case PC_PTR_BASED_SELF :
-      case PC_PTR_BASED_VOID :
-      case PC_PTR_BASED_FETCH :
-      case PC_PTR_BASED_STRING :
+    case PC_PTR_BASED_SELF :
+    case PC_PTR_BASED_VOID :
+    case PC_PTR_BASED_FETCH :
+    case PC_PTR_BASED_STRING :
         expr = NodeConvertFlags( ptr_type, expr, PTF_PTR_NONZERO );
         break;
-      case PC_PTR_BASED_ADD :
+    case PC_PTR_BASED_ADD :
       { PTREE temp;             // - temp
         SYMBOL baser;           // - based symbol
         baser = BasedPtrType( ptr_type )->u.m.base;
@@ -1080,7 +1080,7 @@ CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
 {
     CNV_RETN retn;              // - return: CNV_...
 
-    if( ( 0x80 >> pcp_tgt ) & pcPtrChk[ pcp_src ] ) {
+    if( ( 0x80 >> pcp_tgt ) & pcPtrChk[pcp_src] ) {
         retn = CNV_ERR;
         switch( pcp_src ) {
         DbgDefault( "pcPtrValidate -- bad case" );
@@ -1224,7 +1224,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
     PTREE bself;                // - expression for based self
     bool is_ref;                // - true ==> is reference
 
-    cnv_fun = pcPtrCnv[ type_src * 8 + type_tgt ];
+    cnv_fun = pcPtrCnv[type_src * 8 + type_tgt];
     if( cnv_fun == 10 ) {
         retn = CNV_OK;
     } else {
@@ -1433,7 +1433,7 @@ void DbgConvType                // DUMP CONVTYPE INFORMATION
     printf( "  kind = %s\n"
             "  modflags(%X) ptedflags(%x) reference(%d)\n"
             "  array(%d) bit_field(%d) class_operand(%d)\n"
-          , rkdstr[ type->kind ]
+          , rkdstr[type->kind]
           , type->modflags
           , type->ptedflags
           , type->reference
@@ -1458,7 +1458,7 @@ void DbgConvCtl                 // DUMP CONVCTL INFORMATION
 
     printf( "CONVCTL[%p] rough[%s]\n\n"
           , info
-          , ruffstr[ info->rough ] );
+          , ruffstr[info->rough] );
     printf( "Source Type information\n" );
     DbgConvType( &info->src );
     printf( "\nTarget Type information\n" );

@@ -211,10 +211,10 @@ static char *utoa_zz( unsigned value, char *buffer )
     rem = value % 36;
     value = value / 36;
 #endif
-    *p++ = __Alphabet36[ value / 36 ];
-    *p++ = __Alphabet36[ value % 36 ];
+    *p++ = __Alphabet36[value / 36];
+    *p++ = __Alphabet36[value % 36];
 #ifdef ZZ_LEN_3
-    *p++ = __Alphabet36[ rem ];
+    *p++ = __Alphabet36[rem];
 #endif
     *p = '\0';
     return( buffer );
@@ -691,7 +691,8 @@ static void appendScopeMangling(// APPEND CLASS SCOPES
     char buff[1 + sizeof( unsigned ) * 2 + 1];
 
     for(;;) {
-        if( scope == NULL ) break;
+        if( scope == NULL )
+            break;
         switch( ScopeId( scope ) ) {
         case SCOPE_FILE:
             appendNameSpaceName( scope );
@@ -774,14 +775,16 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
         if( nameHasPrefix( name, IN_OP_PREFIX ) ) {
             // name is an operator
             ExtraRptIncrementCtr( ctr_lookups_slow );
-            index = (CGOP)( NameHash( name ) - NameHash( operatorNames[ 0 ] ) );
+            index = (CGOP)( NameHash( name ) - NameHash( operatorNames[0] ) );
 #ifndef NDEBUG
-            operatorNames[ MAX_OP_NAMES ] = name;
+            operatorNames[MAX_OP_NAMES] = name;
             i = 0;
             for(;;) {
-                if( operatorNames[ i ] == name ) break;
+                if( operatorNames[i] == name )
+                    break;
                 ++i;
-                if( operatorNames[ i ] == name ) break;
+                if( operatorNames[i] == name )
+                    break;
                 ++i;
             }
             DbgAssert( i != MAX_OP_NAMES );
@@ -1162,7 +1165,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
     if( CppLookupOperatorName( sym->name->name, &oper ) ) {
         switch( oper ) {
         case CO_CONVERT:
-        {
+          {
             VBUF prefix, suffix;
             appendStr( "operator " );
             FormatFunctionType( SymFuncReturnType( sym ), &prefix, &suffix,
@@ -1171,7 +1174,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
             appendStr( VbufString( &suffix ) );
             VbufFree( &prefix );
             VbufFree( &suffix );
-        }   break;
+          } break;
         case CO_CTOR:
             appendStr( NameStr( SimpleTypeName( ScopeClass( SymScope( sym ) ) ) ) );
             break;

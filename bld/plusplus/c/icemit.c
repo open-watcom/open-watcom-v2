@@ -476,14 +476,14 @@ static PTREE emitNode(          // EMIT A PTREE NODE
         PtdGenBefore( expr->decor );
     }
     switch( expr->op ) {
-      // By now, nullptr should effectively equate to zero.
-      // Note that a nullptr node should only reach this point if we are trying
-      // to codegen a decltype(nullptr) variable. Otherwise, the node should
-      // have been converted to the appropriate pointer type.
-      case PT_PTR_CONSTANT:
+    // By now, nullptr should effectively equate to zero.
+    // Note that a nullptr node should only reach this point if we are trying
+    // to codegen a decltype(nullptr) variable. Otherwise, the node should
+    // have been converted to the appropriate pointer type.
+    case PT_PTR_CONSTANT:
         generate_expr_instr( expr, 0, IC_LEAF_CONST_INT );
         break;
-      case PT_INT_CONSTANT:
+    case PT_INT_CONSTANT:
         if( expr->cgop != CO_IGNORE ) {
             if( NULL == Integral64Type( expr->type ) ) {
                 generate_expr_instr( expr
@@ -496,22 +496,22 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             }
         }
         break;
-      case PT_STRING_CONSTANT :
+    case PT_STRING_CONSTANT :
         if( expr->cgop != CO_IGNORE ) {
             generate_type( expr );
             CgFrontCodePtr( IC_LEAF_CONST_STR, expr->u.string );
         }
         break;
-      case PT_FLOATING_CONSTANT :
+    case PT_FLOATING_CONSTANT :
         generate_type( expr );
         CgFrontCodePtr( IC_LEAF_CONST_FLT, ConPoolFloatAdd( expr ) );
         break;
   #ifndef NDEBUG
-      case PT_DUP_EXPR :
+    case PT_DUP_EXPR :
         CFatal( "ICEMIT -- PT_DUP_EXPR not promoted away" );
         break;
   #endif
-      case PT_SYMBOL:
+    case PT_SYMBOL:
         result = expr->u.symcg.result;
         if( result != NULL ) {
             ScopeFreeResult( result );
@@ -532,9 +532,9 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             CgFrontSymbol( sym );
         }
         break;
-      case PT_UNARY:
+    case PT_UNARY:
         switch( expr->cgop ) {
-          case CO_EXPR_DONE:
+        case CO_EXPR_DONE:
             if( init_ref_temp != NULL ) {
                 CgFrontCode( IC_INIT_REF_END );
             }
@@ -543,10 +543,10 @@ static PTREE emitNode(          // EMIT A PTREE NODE
                 CgFrontCode( IC_RETNOPT_END );
             }
             break;
-          case CO_TRASH_EXPR:
+        case CO_TRASH_EXPR:
             CgFrontCode( IC_EXPR_TRASH );
             break;
-          case CO_CALL_SETUP_IND :
+        case CO_CALL_SETUP_IND :
           { TYPE pted;                // - type, if pointer type
             type = generate_call_type( expr );
             pted = TypePointedAtModified( type );
@@ -556,7 +556,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             type = MakeNonInlineFunction( type );
             CgFrontCodePtr( IC_CALL_SETUP_IND, type );
           } break;
-          case CO_CALL_SETUP :
+        case CO_CALL_SETUP :
           { SYMBOL func;        // - current function
             unsigned spec_fun;
             generate_call_type( expr );
@@ -573,42 +573,42 @@ static PTREE emitNode(          // EMIT A PTREE NODE
                 LabelExprSetjmp();
             }
           } break;
-          case CO_BITFLD_CONVERT :
+        case CO_BITFLD_CONVERT :
             generate_type( expr );
             for( type = PTreeOpLeft( expr )->type
                ; type->id != TYP_BITFIELD
                ; type = type->of );
             CgFrontCodePtr( IC_BIT_MASK, type );
             break;
-          case CO_ADDR_OF :
-          case CO_CONVERT_INT :
+        case CO_ADDR_OF :
+        case CO_CONVERT_INT :
             break;
-          case CO_RARG_FETCH_OFF :
-          case CO_FETCH :
+        case CO_RARG_FETCH_OFF :
+        case CO_FETCH :
             generate_type( expr->u.subtree[0] );
             handleSpecialLValue( expr, 0 );
             CgFrontCodeUint( IC_OPR_UNARY, expr->cgop );
             break;
-          case CO_RARG_FETCH :
+        case CO_RARG_FETCH :
             generate_type( expr );
             CgFrontCodePtr( IC_RARG_FETCH, getLeftPtreeSymbol( expr ) );
             break;
-          case CO_INDIRECT :
+        case CO_INDIRECT :
             TypeModFlags( expr->type, &flags );
             if( flags & TF1_FAR16 ) {
                 CgFrontCodeUint( IC_OPR_UNARY, CO_FAR16_TO_POINTER );
             }
             break;
-          case CO_FAR16_TO_POINTER:
+        case CO_FAR16_TO_POINTER:
             CgFrontCodeUint( IC_OPR_UNARY, CO_FAR16_TO_POINTER );
             break;
-          case CO_POINTER_TO_FAR16:
+        case CO_POINTER_TO_FAR16:
             CgFrontCodeUint( IC_OPR_UNARY, CO_POINTER_TO_FAR16 );
             break;
-          case CO_TYPE_SIG :
+        case CO_TYPE_SIG :
             CgFrontCodePtr( IC_THROW_RO_BLK, expr->type );
             break;
-          case CO_SEGOP_SEG :
+        case CO_SEGOP_SEG :
           { unsigned segid;     // - segment #
             if( expr->u.subtree[0] == NULL ) {
                 segid = SEG_CODE;
@@ -617,24 +617,24 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             }
             CgFrontCodeUint( IC_SEGOP_SEG, segid );
           } break;
-          case CO_EXCLAMATION:
+        case CO_EXCLAMATION:
             generate_expr_instr( expr, expr->cgop, IC_OPR_UNARY );
             CgFrontResultBoolean();
             break;
-          case CO_VBASE_FETCH :
+        case CO_VBASE_FETCH :
             generate_node_type( expr );
             CgFrontCodePtr( IC_VB_FETCH, getLeftPtreeSymbol( expr ) );
             break;
 #if _CPU == _AXP
-          case CO_ALLOCA :
+        case CO_ALLOCA :
             generate_node_type( expr );
             CgFrontCode( IC_ALLOCA );
             break;
 #endif
-          case CO_VFUN_PTR :
+        case CO_VFUN_PTR :
             CgFrontCode( IC_VFUN_PTR );
             break;
-          case CO_CALL_SETUP_VFUN :
+        case CO_CALL_SETUP_VFUN :
           { PTREE callee;               // - callee node
             SYMBOL vfun;                // - virtual function
             generate_type( expr );
@@ -643,20 +643,20 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             vfun = callee->u.symcg.symbol;
             CgFrontCodePtr( IC_SETUP_VFUN, vfun );
           } break;
-          default:
+        default:
             generate_expr_instr( expr, expr->cgop, IC_OPR_UNARY );
             break;
         }
         break;
-      case PT_BINARY:
+    case PT_BINARY:
         switch( expr->cgop ) {
-          case CO_CALL_EXEC :
+        case CO_CALL_EXEC :
             generateCallRefICs( expr );
             generate_node_type( expr );
             CgFrontCode( IC_CALL_EXEC );
             generateScopeCall( expr );
             break;
-          case CO_CALL_EXEC_IND :
+        case CO_CALL_EXEC_IND :
             generate_node_type( expr );
             if( NodeIsBinaryOp( expr->u.subtree[0], CO_VIRT_FUNC ) ) {
                 CgFrontCode( IC_CALL_EXEC_VFUN );
@@ -665,43 +665,43 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             }
             FunctionCouldThrow( expr );
             break;
-          case CO_QUESTION:
+        case CO_QUESTION:
             generate_type_instr( NodeType( expr )
                                , expr->cgop
                                , IC_OPR_TERNARY );
             exprCondEnd( expr );
             break;
-          case CO_COLON_COLON :
+        case CO_COLON_COLON :
             break;
-          case CO_DOT :
+        case CO_DOT :
             generate_type_instr( NodeType( expr )
                                , expr->cgop
                                , IC_OPR_BINARY );
             break;
-          case CO_ARROW :
+        case CO_ARROW :
             generate_type_instr( expr->u.subtree[0]->type
                                , expr->cgop
                                , IC_OPR_BINARY );
             break;
-          case CO_CONST_CAST :
-          case CO_STATIC_CAST :
-          case CO_DYNAMIC_CAST :
-          case CO_REINTERPRET_CAST :
+        case CO_CONST_CAST :
+        case CO_STATIC_CAST :
+        case CO_DYNAMIC_CAST :
+        case CO_REINTERPRET_CAST :
             // we could just ignore these, but then we would have to take
             // them into consideration whenever we scan a parse tree
             DbgNever();
-            // drops thru
-          case CO_CONVERT :
+            /* fall through */
+        case CO_CONVERT :
           { TYPE type1 = NodeType( expr );
             if( NULL == StructType( type1 )
              && NULL == MemberPtrType( type1 ) ) {
                 generate_expr_instr( expr, CO_CONVERT, IC_OPR_UNARY );
             }
           } break;
-          case CO_RETURN:
+        case CO_RETURN:
             generate_type( expr );
             break;
-          case CO_LIST :
+        case CO_LIST :
             DbgVerify( goodArgType( expr )
                      , "emitNode -- parameter-type mismatch" );
             parm_type = generate_node_type( expr );
@@ -714,45 +714,45 @@ static PTREE emitNode(          // EMIT A PTREE NODE
                 CgFrontCode( IC_CALL_PARM );
             }
             break;
-          case CO_COPY_OBJECT :
+        case CO_COPY_OBJECT :
             CgSetType( NodeType( expr ) );
             CgFrontCodePtr( IC_COPY_OBJECT, expr->type );
             break;
-          case CO_DTOR :
+        case CO_DTOR :
             emitDtorMarking( expr );
             break;
-          case CO_EQ :
-          case CO_NE :
-          case CO_GT :
-          case CO_LT :
-          case CO_GE :
-          case CO_LE :
+        case CO_EQ :
+        case CO_NE :
+        case CO_GT :
+        case CO_LT :
+        case CO_GE :
+        case CO_LE :
             generate_node_type( expr->u.subtree[0] );
             CgFrontCodeUint( IC_OPR_BINARY, expr->cgop );
             CgFrontResultBoolean();
             break;
-          case CO_EQUAL_REF :
-          case CO_INIT_REF :
+        case CO_EQUAL_REF :
+        case CO_INIT_REF :
           { TYPE lv_type;
             lv_type = NodeType( expr );
             CgFrontCodePtr( IC_LVALUE_TYPE, lv_type );
             generate_type_instr( lv_type, CO_EQUAL, IC_OPR_BINARY );
           } break;
-          case CO_EQUAL :
-          case CO_PLUS_EQUAL :
-          case CO_PERCENT_EQUAL :
-          case CO_MINUS_EQUAL :
-          case CO_DIVIDE_EQUAL :
-          case CO_TIMES_EQUAL :
-          case CO_AND_EQUAL :
-          case CO_OR_EQUAL :
-          case CO_XOR_EQUAL :
-          case CO_LSHIFT_EQUAL :
-          case CO_RSHIFT_EQUAL :
-          case CO_BPRE_BOOL_PLUS_PLUS :
-          case CO_BPRE_PLUS_PLUS :
-          case CO_BPRE_MINUS_MINUS :
-          case CO_INIT :
+        case CO_EQUAL :
+        case CO_PLUS_EQUAL :
+        case CO_PERCENT_EQUAL :
+        case CO_MINUS_EQUAL :
+        case CO_DIVIDE_EQUAL :
+        case CO_TIMES_EQUAL :
+        case CO_AND_EQUAL :
+        case CO_OR_EQUAL :
+        case CO_XOR_EQUAL :
+        case CO_LSHIFT_EQUAL :
+        case CO_RSHIFT_EQUAL :
+        case CO_BPRE_BOOL_PLUS_PLUS :
+        case CO_BPRE_PLUS_PLUS :
+        case CO_BPRE_MINUS_MINUS :
+        case CO_INIT :
           { TYPE lv_type;
             TYPE rf_type;
             lv_type = NodeType( expr );
@@ -761,13 +761,13 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             handleSpecialLValue( expr, 1 );
             generate_type_instr( rf_type, expr->cgop, IC_OPR_BINARY );
           } break;
-          case CO_BPOST_PLUS_PLUS :
-          case CO_BPOST_BOOL_PLUS_PLUS :
-          case CO_BPOST_MINUS_MINUS :
+        case CO_BPOST_PLUS_PLUS :
+        case CO_BPOST_BOOL_PLUS_PLUS :
+        case CO_BPOST_MINUS_MINUS :
             handleSpecialLValue( expr, 1 );
             generate_expr_instr( expr, expr->cgop, IC_OPR_BINARY );
             break;
-          case CO_VIRT_FUNC :   // - virtual function call
+        case CO_VIRT_FUNC :   // - virtual function call
           { PTREE left;
             left = expr->u.subtree[0];
             DbgVerify( NodeIsUnaryOp( left, CO_CALL_SETUP_IND )
@@ -779,37 +779,37 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             CgFrontCodePtr( IC_VIRT_FUNC
                           , getPtreeSymbol( expr->u.subtree[1] ) );
           } break;
-          case CO_COLON:
+        case CO_COLON:
             break;
-          case CO_RESET_THIS :
+        case CO_RESET_THIS :
           { PTREE right;
             right = PTreeOpRight( expr );
             CgFrontCodeUint( IC_RESET_THIS, right->u.uint_constant );
           } break;
-          case CO_AND_AND :
-          case CO_OR_OR :
+        case CO_AND_AND :
+        case CO_OR_OR :
             generate_expr_instr( expr, expr->cgop, IC_OPR_BINARY );
             exprCondEnd( expr );
             CgFrontResultBoolean();
             break;
-          case CO_INDEX :
+        case CO_INDEX :
             CgFrontCodePtr( IC_LVALUE_TYPE, NodeType( expr ) );
             generate_expr_instr( expr, expr->cgop, IC_OPR_BINARY );
             break;
-          default:
+        default:
             generate_expr_instr( expr, expr->cgop, IC_OPR_BINARY );
             break;
         }
         break;
-      case PT_IC :
+    case PT_IC :
         switch( expr->u.ic.opcode ) {
-          case IC_COND_TRUE :
+        case IC_COND_TRUE :
             LabelCondTrue();
             break;
-          case IC_COND_FALSE :
+        case IC_COND_FALSE :
             LabelCondFalse();
             break;
-          default :
+        default :
             generate_type( expr );
             CgFrontCodePtr( expr->u.ic.opcode, expr->u.ic.value.pvalue );
             break;

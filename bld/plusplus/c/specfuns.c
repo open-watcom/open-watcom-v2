@@ -44,7 +44,7 @@ static SPEC_FUNC funs[] = {     // special functions
 #include "specfuns.dfn"
 };
 
-#define SPEC_FUN_END &funs[ sizeof(funs) / sizeof(funs[0]) ]
+#define SPEC_FUN_END &funs[sizeof( funs ) / sizeof( funs[0] )]
 
 
 SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION

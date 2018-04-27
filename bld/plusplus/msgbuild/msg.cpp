@@ -61,7 +61,7 @@ Msg::Msg                        // CONSTRUCTOR
     , _type( MSG_TYPE_ERROR )
     , _words( 0 )
 {
-    _words = (Word const * const *)new Word const *[ count ];
+    _words = (Word const * const *)new Word const *[count];
     memcpy( (void*)_words, words, count * sizeof( Word* ) );
     messageRing.append( this );
 }
@@ -83,7 +83,7 @@ unsigned Msg::encodedSize       // GET ENCODED SIZE
     size = 1;
     for( index = _word_count ; index > 0; ) {
         --index;
-        size += _words[ index ]->encodedSize();
+        size += _words[index]->encodedSize();
     }
     return size;
 }

@@ -35,7 +35,7 @@
 #include "msgdscr.h"
 
 
-static char MsgDscr::filename[ _MAX_FNAME ]; // buffer for file name (one only)
+static char MsgDscr::filename[_MAX_FNAME]; // buffer for file name (one only)
 
 
 MsgDscr::MsgDscr(               // CONSTRUCTOR
@@ -53,7 +53,7 @@ int MsgDscr::AddFile(           // ADD A NEW FILE FOR A MESSAGE
     if( msg_no > max_msg ) {
         max_msg = msg_no;
     }
-    return ++file[ msg_no ];
+    return ++file[msg_no];
 }
 
 
@@ -62,7 +62,7 @@ int MsgDscr::GetNextFile(       // GET NEXT SUB-FILE NO. FOR A MESSAGE
     int last_no )               // - last no.
 {
     ++last_no;
-    if( last_no > file[ msg_no ] ) {
+    if( last_no > file[msg_no] ) {
         last_no = 0;
     }
     return last_no;
@@ -80,7 +80,7 @@ const char* MsgDscr::GetFileName( // GET FILE NAME
     int msg_no,                 // - message no.
     unsigned char file_no )     // - file number
 {
-    char buf[ 8 ];              // - buffer for line #
+    char buf[8];                // - buffer for line #
     char last_char[2];          // - buffer for last character
 
     ::strcpy( filename, file_prefix );

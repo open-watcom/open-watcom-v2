@@ -100,32 +100,32 @@ void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
     } else if( !CompFlags.virtual_stripping ) {
         retn = (void*)IMPORT_IS_LAZY;
         switch( rinfo->type ) {
-          case EXTRF_FN_LAZY :
+        case EXTRF_FN_LAZY :
             retn = (void*)IMPORT_IS_LAZY;
             break;
-          case EXTRF_FN_WEAK :
+        case EXTRF_FN_WEAK :
             retn = (void*)IMPORT_IS_WEAK;
             break;
-          case EXTRF_VFN_CONDITIONAL :
-          case EXTRF_PURE_VFN_CONDITIONAL :
+        case EXTRF_VFN_CONDITIONAL :
+        case EXTRF_PURE_VFN_CONDITIONAL :
             break;
-          DbgDefault( "IMPORT_TYPE: funny type" );
+        DbgDefault( "IMPORT_TYPE: funny type" );
         }
     } else {
         switch( rinfo->type ) {
-          case EXTRF_FN_LAZY :
+        case EXTRF_FN_LAZY :
             retn = (void*)IMPORT_IS_LAZY;
             break;
-          case EXTRF_FN_WEAK :
+        case EXTRF_FN_WEAK :
             retn = (void*)IMPORT_IS_WEAK;
             break;
-          case EXTRF_VFN_CONDITIONAL :
+        case EXTRF_VFN_CONDITIONAL :
             retn = (void*)IMPORT_IS_CONDITIONAL;
             break;
-          case EXTRF_PURE_VFN_CONDITIONAL :
+        case EXTRF_PURE_VFN_CONDITIONAL :
             retn = (void*)IMPORT_IS_CONDITIONAL_PURE;
             break;
-          DbgDefault( "IMPORT_TYPE: funny type" );
+        DbgDefault( "IMPORT_TYPE: funny type" );
         }
     }
     return retn;

@@ -87,7 +87,7 @@ ExtraRptCtr( ctr_pch_length );
 ExtraRptCtr( ctr_pch_waste );
 ExtraRptTable( ctr_pchw_region, PCHRW_MAX + 1, 1 );
 
-static pch_reloc_info relocInfo[ PCHRELOC_MAX ];
+static pch_reloc_info relocInfo[PCHRELOC_MAX];
 
 static char *pchName;
 static NAME pchDebugInfoName;
@@ -1013,15 +1013,15 @@ pch_status PCHFiniVerify( bool writing )
 void PCHRelocStart( pch_reloc_index ri )
 /**************************************/
 {
-    relocInfo[ ri ].start = cursorWriteFilePosition();
-    DbgVerify( relocInfo[ ri ].start != 0, "PCH reloc cannot be at start of file" );
+    relocInfo[ri].start = cursorWriteFilePosition();
+    DbgVerify( relocInfo[ri].start != 0, "PCH reloc cannot be at start of file" );
 }
 
 void PCHRelocStop( pch_reloc_index ri )
 /*************************************/
 {
-    relocInfo[ ri ].stop = cursorWriteFilePosition();
-    DbgVerify( relocInfo[ ri ].start != 0 && relocInfo[ ri ].stop > relocInfo[ ri ].start, "PCH reloc stop has no matching start" );
+    relocInfo[ri].stop = cursorWriteFilePosition();
+    DbgVerify( relocInfo[ri].start != 0 && relocInfo[ri].stop > relocInfo[ri].start, "PCH reloc stop has no matching start" );
 }
 
 void PCHPerformReloc( pch_reloc_index ri )
@@ -1042,11 +1042,11 @@ void PCHPerformReloc( pch_reloc_index ri )
     if( ErrCount != 0 ) {
         return;
     }
-    start_position = relocInfo[ ri ].start;
+    start_position = relocInfo[ri].start;
     if( start_position == 0 ) {
         return;
     }
-    stop_position = relocInfo[ ri ].stop;
+    stop_position = relocInfo[ri].stop;
     pch_fname = PCHFileName();
     pchFile = sopen3( pch_fname, O_RDWR | O_BINARY | O_EXCL, SH_DENYRW );
     if( pchFile == -1 ) {
@@ -1108,7 +1108,7 @@ static void pchInit( INITFINI* defn )
 
     pchName = NULL;
     pchDebugInfoName = NULL;
-    for( cri = relocInfo; cri < &relocInfo[ PCHRELOC_MAX ]; ++cri ) {
+    for( cri = relocInfo; cri < &relocInfo[PCHRELOC_MAX]; ++cri ) {
         cri->start = 0;
     }
 #ifndef NDEBUG

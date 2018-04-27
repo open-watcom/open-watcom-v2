@@ -210,13 +210,13 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
                                    , &fnov_diag );
     initial = *a_initial;
     switch( retn ) {
-      case CNV_ERR :
-      case CNV_OK :
+    case CNV_ERR :
+    case CNV_OK :
         break;
-      case CNV_AMBIGUOUS :
+    case CNV_AMBIGUOUS :
         CallDiagAmbiguous( initial, ERR_CTOR_AMBIGUOUS, &fnov_diag );
         break;
-      case CNV_IMPOSSIBLE :
+    case CNV_IMPOSSIBLE :
         if( initial == NULL ) {
             if( class_type != NULL ) {
                 if( ! TypeNeedsCtor( class_type ) ) {
@@ -241,7 +241,7 @@ static CNV_RETN checkNewCtor(   // CHECK CTOR'ING OK FOR NEW
             ConversionDiagnoseInf();
         }
         break;
-      default :
+    default :
         if( initial == NULL ) {
             SetErrLoc( err_locn );
             CErr1( ERR_NO_CTOR_FOR_NEW );
@@ -330,10 +330,10 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
         sym = result_new->sym_name->name_syms;
         node = NodeMakeCall( sym, new_expr_type, node );
         switch( ovret ) {
-          case FNOV_AMBIGUOUS:
+        case FNOV_AMBIGUOUS:
             CallDiagAmbiguous( node, ERR_NEW_OVERLOAD_AMBIGUOUS, &fnov_diag );
             break;
-          case FNOV_NO_MATCH:
+        case FNOV_NO_MATCH:
             CallDiagNoMatch( node
                            , ERR_FUNCTION_NO_MATCH
                            , ERR_NEW_OVERLOAD_FAILURE
@@ -342,7 +342,7 @@ static PTREE buildNewCall(      // BUILD CALL TO NEW OPERATOR
                            , &fnov_diag
                            );
             break;
-          DbgDefault( "buildNewCall: unexpected return from FuncOverloaded" );
+        DbgDefault( "buildNewCall: unexpected return from FuncOverloaded" );
         }
     }
     FnovFreeDiag( &fnov_diag );

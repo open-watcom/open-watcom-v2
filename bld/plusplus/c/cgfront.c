@@ -578,10 +578,10 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
     dtm = CompInfo.dt_method_speced;
     if( ! SymIsDtor( func ) ) {
         switch( dtm ) {
-          case DTM_DIRECT_SMALL :
+        case DTM_DIRECT_SMALL :
             dtm = DTM_DIRECT;
             break;
-          case DTM_TABLE_SMALL :
+        case DTM_TABLE_SMALL :
             dtm = DTM_TABLE;
             break;
         }
@@ -607,11 +607,11 @@ void CgFrontFuncClose(          // CLOSE A FUNCTION (AND ITS FILE)
         if( opt_sym != NULL ) {
             codeCGFILE->opt_retn = opt_sym;
             switch( ObjModelFunctionReturn( func->sym_type ) ) {
-              case OMR_CLASS_REF :
+            case OMR_CLASS_REF :
                 codeCGFILE->u.s.opt_retn_ref = true;
                 break;
-              case OMR_CLASS_VAL :
-              case OMR_SCALAR :
+            case OMR_CLASS_VAL :
+            case OMR_SCALAR :
                 codeCGFILE->u.s.opt_retn_val = true;
                 break;
             }
@@ -755,18 +755,18 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     keep_scope = false;
     if( dtor != NULL ) {
         switch( kind ) {
-          case DTORING_SCOPE :
+        case DTORING_SCOPE :
             CgFrontCodePtr( IC_SCOPE_CALL_BDTOR, dtor );
             keep_scope = true;
             break;
-          case DTORING_TEMP :
+        case DTORING_TEMP :
             CgFrontCodePtr( IC_SCOPE_CALL_TDTOR, dtor );
             break;
-          case DTORING_COMPONENT :
+        case DTORING_COMPONENT :
             CgFrontCodePtr( IC_SCOPE_CALL_CDTOR, dtor );
             keep_scope = true;
             break;
-          DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
+        DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
     }
     if( fun != NULL && ( fun->flag & SF_NO_LONGJUMP ) ) {

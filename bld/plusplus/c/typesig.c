@@ -54,25 +54,27 @@ static SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
 
     retn = ClassDefaultCtorFind( type, &ctor, err_locn );
     switch( retn ) {
-      case CNV_OK :
+    case CNV_OK :
         break;
-      case CNV_IMPOSSIBLE :
-        if( optional ) break;
+    case CNV_IMPOSSIBLE :
+        if( optional )
+            break;
         SetErrLoc( err_locn );
         CErr2p( ERR_NO_DEFAULT_INIT_CTOR, type );
         ctor = NULL;
         break;
-      case CNV_AMBIGUOUS :
-        if( optional ) break;
+    case CNV_AMBIGUOUS :
+        if( optional )
+            break;
         SetErrLoc( err_locn );
         CErr2p( ERR_NO_UNIQUE_DEFAULT_CTOR, type );
         ctor = NULL;
         break;
-      case CNV_ERR :
+    case CNV_ERR :
         ctor = NULL;
         break;
 #ifndef NDEBUG
-      default :
+    default :
         CFatal( "DefaultCtorFind -- impossible return" );
 #endif
     }
@@ -121,16 +123,16 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
         type = info->type;
         err_locn = info->err_locn;
         switch( acc_var ) {
-          case TSA_DTOR :
+        case TSA_DTOR :
             sym = DtorFindLocn( type, err_locn );
             break;
-          case TSA_DEFAULT_CTOR :
+        case TSA_DEFAULT_CTOR :
             sym = DefaultCtorFind( type, err_locn, fill_out );
             break;
-          case TSA_COPY_CTOR :
+        case TSA_COPY_CTOR :
             sym = CopyCtorFind( type, err_locn );
             break;
-          default :
+        default :
             DbgStmt( CFatal( "typeSigAccessVar -- impossible type" ) );
             sym = NULL;
         }

@@ -816,7 +816,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
     RingIterBeg( tinfo->specializations, curr_spec ) {
         if( curr_spec->spec_args == NULL ) {
         } else if( curr_spec == tspec ) {
-            tspec->ordering[ i / 8 ] &= ~ ( 1 << ( i & 7 ) );
+            tspec->ordering[i / 8] &= ~ ( 1 << ( i & 7 ) );
             i++;
         } else {
             SCOPE parm_scope;
@@ -859,9 +859,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
              * bindings != NULL)
              */
             mask = 1 << ( ( nr_specs - 2 ) & 7 );
-            curr_spec->ordering[ ( nr_specs - 2 ) / 8 ] &= ~ mask;
-            curr_spec->ordering[ ( nr_specs - 2 ) / 8 ] |=
-                bound ? mask : 0;
+            curr_spec->ordering[( nr_specs - 2 ) / 8] &= ~ mask;
+            curr_spec->ordering[( nr_specs - 2 ) / 8] |= ( bound ) ? mask : 0;
 
             ScopeBurn( parm_scope );
 
@@ -889,8 +888,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
              * bindings != NULL)
              */
             mask = 1 << ( i & 7 );
-            tspec->ordering[ i / 8 ] &= ~ mask;
-            tspec->ordering[ i / 8 ] |= bound ? mask : 0;
+            tspec->ordering[i / 8] &= ~ mask;
+            tspec->ordering[i / 8] |= ( bound ) ? mask : 0;
 
             ScopeBurn( parm_scope );
             i++;
@@ -1492,7 +1491,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
                     fn_type1 = FunctionDeclarationType( dinfo->sym->sym_type );
                     if( fn_type1->u.f.args->num_args == 1 ) {
-                        TYPE fn_arg = fn_type1->u.f.args->type_list[ 0 ];
+                        TYPE fn_arg = fn_type1->u.f.args->type_list[0];
 
                         if( ( fn_type1->of->id == TYP_POINTER ) &&
                             ( fn_arg == fn_type1->of->of ) ) {
@@ -2448,9 +2447,9 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
                         bool candidate_at_least_as_specialized;
 
                         curr_at_least_as_specialized =
-                            curr_spec->ordering[ candidate_iter->idx / 8 ] & ( 1 << ( candidate_iter->idx & 7 ) );
+                            curr_spec->ordering[candidate_iter->idx / 8] & ( 1 << ( candidate_iter->idx & 7 ) );
                         candidate_at_least_as_specialized =
-                            candidate_iter->tspec->ordering[ i / 8 ] & ( 1 << ( i & 7 ) );
+                            candidate_iter->tspec->ordering[i / 8] & ( 1 << ( i & 7 ) );
 
                         if( curr_at_least_as_specialized
                          && ! candidate_at_least_as_specialized ) {

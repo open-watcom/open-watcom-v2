@@ -77,7 +77,7 @@ static PTREE processInitNode(   // PROCESS A NODE IN INITIALIZATION TREE
     SYMBOL sym;
 
     switch( node->op ) {
-      case PT_SYMBOL :
+    case PT_SYMBOL :
         if( inited_temp == NULL ) {
             sym = node->u.symcg.symbol;
             if( sym != NULL ) {
@@ -89,15 +89,15 @@ static PTREE processInitNode(   // PROCESS A NODE IN INITIALIZATION TREE
             }
         }
         break;
-      case PT_BINARY :
+    case PT_BINARY :
         switch( node->cgop ) {
-          case CO_CALL_EXEC :
-          case CO_CALL_EXEC_IND :
-          case CO_EQUAL :
-          case CO_EQUAL_REF :
+        case CO_CALL_EXEC :
+        case CO_CALL_EXEC_IND :
+        case CO_EQUAL :
+        case CO_EQUAL_REF :
             last_init_node = node;
             break;
-          case CO_DTOR :
+        case CO_DTOR :
             last_dtor_node = node;
             break;
         }
@@ -155,11 +155,11 @@ void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
             id = SC_AUTO;
         }
         switch( last_init_node->cgop ) {
-          case CO_EQUAL :
-          case CO_EQUAL_REF :
+        case CO_EQUAL :
+        case CO_EQUAL_REF :
             zapLifeTime( last_init_node->u.subtree[0], inited_temp, id );
             break;
-          case CO_CALL_EXEC :
+        case CO_CALL_EXEC :
             setup = PTreeOpLeft( last_init_node );
             caller = PTreeOpLeft( setup );
             if( SymIsCtor( caller->u.symcg.symbol ) ) {
@@ -168,15 +168,15 @@ void InitRefFixup(              // TRAVERSAL FOR REFERENCE INITIALIZATION
                            , id );
                 break;
             }
-            // drops thru
-          case CO_CALL_EXEC_IND :
+            /* fall through */
+        case CO_CALL_EXEC_IND :
             if( returnsStruct( last_init_node ) ) {
                 zapLifeTime( getArgNode( last_init_node, PTF_ARG_RETURN )
                            , inited_temp
                            , id );
             }
             break;
-          DbgDefault( "StaticInitChangeLifeTime -- bad assignment node" );
+        DbgDefault( "StaticInitChangeLifeTime -- bad assignment node" );
         }
     }
 }

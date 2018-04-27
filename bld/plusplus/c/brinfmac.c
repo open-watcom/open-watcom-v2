@@ -81,8 +81,8 @@ static void brinfMacFini        // COMPLETION
         MACVALUE* curr;
         RingIterBeg( values, curr ) {
             switch( curr->type ) {
-              case MVT_DEFINED :
-              case MVT_UNDEFED :
+            case MVT_DEFINED :
+            case MVT_UNDEFED :
               { void* temp = curr->defin;
                 curr->defin = NULL;
                 CMemFree( temp );   // same format for undef'ed
@@ -193,7 +193,7 @@ static MACVALUE* findDefUndef   // LOOKUP (UN)DEFINED VALUE IN SAVED VALUES
     if( NULL == retn ) {
         char * save = CMemAlloc( nlen + 1 );
         memcpy( save, name, nlen );
-        save[ nlen ] = '\0';
+        save[nlen] = '\0';
         retn = RingCarveAlloc( carveMacVals, &values );
         retn->type = type;
         retn->defin = save;   // note: undefed is same format
@@ -245,16 +245,16 @@ char const *BrinfMacValueName   // GET NAME FROM MACVALUE
     char const *name;           // - name for macro
 
     switch( mv->type ) {
-      case MVT_VALUE :
+    case MVT_VALUE :
         name = mv->value->macro_name;
         break;
-      case MVT_DEFINED :
+    case MVT_DEFINED :
         name = mv->defin;
         break;
-      case MVT_UNDEFED :
+    case MVT_UNDEFED :
         name = mv->undef;
         break;
-      DbgDefault( "Bad MACVALUE type" );
+    DbgDefault( "Bad MACVALUE type" );
     }
     return name;
 }

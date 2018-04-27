@@ -252,25 +252,25 @@ PTD* PtdDuplicateReloc          // DUPLICATE DECORATION, RELOC SYMBOLS
     RingIterBeg( src->decor, curr ) {
         copy = ptdAlloc( &ring, curr->base.kind, curr->base.fmt );
         switch( curr->base.fmt ) {
-          case PTD_FMT_BASE :
+        case PTD_FMT_BASE :
             break;
-          case PTD_FMT_SYMBOL :
+        case PTD_FMT_SYMBOL :
             if( reloc_list == NULL ) {
                 copy->symbol.sym = curr->symbol.sym;
             } else {
                 copy->symbol.sym = SymReloc( curr->symbol.sym, reloc_list );
             }
             break;
-          case PTD_FMT_TYPE :
+        case PTD_FMT_TYPE :
             copy->type.type = curr->type.type;
             break;
-          case PTD_FMT_OFFSET :
+        case PTD_FMT_OFFSET :
             copy->off.offset = curr->off.offset;
             break;
-          case PTD_FMT_SIZE :
+        case PTD_FMT_SIZE :
             copy->size.size = curr->size.size;
             break;
-          DbgDefault( "PtdDuplicate -- bad format" );
+        DbgDefault( "PtdDuplicate -- bad format" );
         }
     } RingIterEnd( curr );
     return ring;
@@ -424,24 +424,24 @@ static PTREE exprCtoring        // EXPRESSION CTORING
         ctor_called = false;
         dtor_decorated = false;
         RingIterBeg( expr->decor, ptd ) {
-          switch( ptd->base.kind ) {
+            switch( ptd->base.kind ) {
             case PTD_SCOPE_CALL :
-              if( ptd->symbol.sym == ctor ) {
-                  ctor_called = true;
-              }
-              break;
+                if( ptd->symbol.sym == ctor ) {
+                    ctor_called = true;
+                }
+                break;
             case PTD_DTOR_EXPR :
-              DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
-              ptd->base.kind = kind;
-              dtor_decorated = true;
-              break;
+                DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
+                ptd->base.kind = kind;
+                dtor_decorated = true;
+                break;
             case PTD_DTOR_SCOPE :
             case PTD_CTORED_COMP :
-              DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
-              DbgVerify( kind == PTD_DTOR_EXPR, "exprCtoring -- not PTD_EXPR" );
-              dtor_decorated = true;
-              break;
-          }
+                DbgVerify( dtor == ptd->symbol.sym, "exprCtoring -- dtor mismatch" );
+                DbgVerify( kind == PTD_DTOR_EXPR, "exprCtoring -- not PTD_EXPR" );
+                dtor_decorated = true;
+                break;
+            }
         } RingIterEnd( ptd );
         if( ! ctor_called ) {
             expr = PtdScopeCall( expr, ctor );
@@ -728,40 +728,40 @@ void PtdGenBefore               // GENERATE BEFORE NODE PROCESSED
 
     RingIterBeg( ring, ptd ) {
         switch( ptd->base.kind ) {
-          case PTD_CTORCOMP :
+        case PTD_CTORCOMP :
             CgFrontCodeUint( IC_COMPCTOR_BEG, ptd->off.offset );
             break;
-          case PTD_DTOR_KIND :
+        case PTD_DTOR_KIND :
             CgFrontCodeUint( IC_DTOR_KIND, ptd->off.offset );
             break;
-          case PTD_OBJ_OFFSET :
+        case PTD_OBJ_OFFSET :
             CgFrontCodeUint( IC_DTOBJ_OFF, ptd->off.offset );
             break;
-          case PTD_OBJ_PUSH :
+        case PTD_OBJ_PUSH :
             CgFrontCodePtr( IC_DTOBJ_PUSH, ptd->type.type );
             break;
-          case PTD_OBJ_SYM :
+        case PTD_OBJ_SYM :
             CgFrontCodePtr( IC_DTOBJ_SYM, ptd->symbol.sym );
             break;
-          case PTD_VB_DELTA :
+        case PTD_VB_DELTA :
             CgFrontCodeUint( IC_VB_DELTA, ptd->off.offset );
             break;
-          case PTD_VB_EXACT :
+        case PTD_VB_EXACT :
             CgFrontCodeUint( IC_VB_EXACT, ptd->off.offset );
             break;
-          case PTD_VB_INDEX :
+        case PTD_VB_INDEX :
             CgFrontCodeUint( IC_VB_INDEX, ptd->off.offset );
             break;
-          case PTD_VB_OFFSET :
+        case PTD_VB_OFFSET :
             CgFrontCodeUint( IC_VB_OFFSET, ptd->off.offset );
             break;
-          case PTD_VF_INDEX :
+        case PTD_VF_INDEX :
             CgFrontCodeUint( IC_VF_INDEX, ptd->off.offset );
             break;
-          case PTD_VF_OFFSET :
+        case PTD_VF_OFFSET :
             CgFrontCodeUint( IC_VF_OFFSET, ptd->off.offset );
             break;
-          case PTD_VF_SYM :
+        case PTD_VF_SYM :
             CgFrontCodePtr( IC_VF_THIS, ptd->symbol.sym );
             break;
         }
@@ -782,68 +782,68 @@ void PtdGenAfter                // GENERATE AFTER NODE PROCESSED
     kind = DTORING_NONE;
     RingIterBeg( ring, ptd ) {
         switch( ptd->base.kind ) {
-          case PTD_CTORED_COMP :
+        case PTD_CTORED_COMP :
             DbgVerify( kind == DTORING_NONE, "PtdGenAfter: dtoring twice" );
             kind = DTORING_COMPONENT;
             dtor = ptd->symbol.sym;
             break;
-          case PTD_CTORCOMP :
+        case PTD_CTORCOMP :
             CgFrontCodeUint( IC_COMPCTOR_END, ptd->off.offset );
             break;
-          case PTD_DEL_DTORED :
+        case PTD_DEL_DTORED :
             CgFrontCode( IC_DLT_DTORED );
             break;
-          case PTD_DEL_DTOR_ARR :
+        case PTD_DEL_DTOR_ARR :
             CgFrontCodePtr( IC_DLT_DTOR_ARR, ptd->symbol.sym );
             break;
-          case PTD_DEL_DTOR_ELM :
+        case PTD_DEL_DTOR_ELM :
             CgFrontCodePtr( IC_DLT_DTOR_ELM, ptd->symbol.sym );
             break;
-          case PTD_DEL_DTOR_SIZE :
+        case PTD_DEL_DTOR_SIZE :
             CgFrontCodeUint( IC_DLT_DTOR_SIZE, ptd->size.size );
             break;
-          case PTD_DTOR_EXPR :
+        case PTD_DTOR_EXPR :
             DbgVerify( kind == DTORING_NONE, "PtdGenAfter: dtoring twice" );
             kind = DTORING_TEMP;
             dtor = ptd->symbol.sym;
             break;
-          case PTD_DTOR_REF :
+        case PTD_DTOR_REF :
             CgFrontCodePtr( IC_DTOR_REF, ptd->symbol.sym );
             break;
-          case PTD_DTOR_SCOPE :
+        case PTD_DTOR_SCOPE :
             DbgVerify( kind == DTORING_NONE, "PtdGenAfter: dtoring twice" );
             kind = DTORING_SCOPE;
             dtor = ptd->symbol.sym;
             break;
-          case PTD_DTOR_USE :
+        case PTD_DTOR_USE :
             CgFrontCodePtr( IC_DTOR_USE, ptd->symbol.sym );
             break;
-          case PTD_EXPR_CONST :
+        case PTD_EXPR_CONST :
             CgFrontCode( IC_EXPR_CONST );
             break;
-          case PTD_INIT_SYM_END :
+        case PTD_INIT_SYM_END :
             PtdInitSymEnd( NULL, ptd->symbol.sym );
             break;
-          case PTD_NEW_ALLOC :
+        case PTD_NEW_ALLOC :
             CgFrontCode( IC_NEW_ALLOC );
             break;
-          case PTD_NEW_CTOR :
+        case PTD_NEW_CTOR :
             LabelExprNewCtor();
             CgFrontCodePtr( IC_NEW_CTORED, ptd->type.type );
             break;
-          case PTD_OBJ_POP :
+        case PTD_OBJ_POP :
             CgFrontCode( IC_DTOBJ_POP );
             break;
-          case PTD_SCOPE_CALL :
+        case PTD_SCOPE_CALL :
             fun = ptd->symbol.sym;
             break;
-          case PTD_RETNOPT_VAR :
+        case PTD_RETNOPT_VAR :
             PtdRetnOptVar( NULL, ptd->symbol.sym );
             break;
-          case PTD_RETNOPT_END :
+        case PTD_RETNOPT_END :
             PtdRetnOptEnd( NULL );
             break;
-          case PTD_THROW :
+        case PTD_THROW :
             CgFrontCode( IC_SCOPE_THROW );
             break;
         }
@@ -1024,21 +1024,21 @@ void PtdPrint(                  // DEBUG: print decoration for a node
         }
         printf( "  %s:", name );
         switch( curr->base.fmt ) {
-          DbgDefault( "PtdPrint -- bad PTD format" );
-          case PTD_FMT_BASE :
+        DbgDefault( "PtdPrint -- bad PTD format" );
+        case PTD_FMT_BASE :
             printf( "\n" );
             break;
-          case PTD_FMT_SYMBOL :
+        case PTD_FMT_SYMBOL :
             printf( " %s\n", DbgSymNameFull( curr->symbol.sym, &vbuf ) );
             VbufFree( &vbuf );
             break;
-          case PTD_FMT_OFFSET :
+        case PTD_FMT_OFFSET :
             printf( " offset = %x\n", curr->off.offset );
             break;
-          case PTD_FMT_SIZE :
+        case PTD_FMT_SIZE :
             printf( " size = %x\n", curr->size.size );
             break;
-          case PTD_FMT_TYPE :
+        case PTD_FMT_TYPE :
           { VBUF fmt_prefix, fmt_suffix;
             FormatType( curr->type.type, &fmt_prefix, &fmt_suffix );
             printf( " %s<id>%s\n", VbufString( &fmt_prefix ), VbufString( &fmt_suffix ) );

@@ -224,7 +224,7 @@ static bool initOLINF(          // INITIALIZE OVERLOAD INFORMATION
         mask = 0;
         scov = false;
     } else {
-        mask = opr_masks[ cnv - 1 ];
+        mask = opr_masks[cnv - 1];
         scov = ( (mask & OPM_NOAMB) == 0 );
     }
     olinf->mask = mask;
@@ -303,7 +303,7 @@ static void colonFun(           // SET UP SCALAR FOR COLON OVERLOADING
     SYMBOL fun;                 // - function in scalar-overload list
     arg_list *alist;            // - arguments for function
 
-    fun = ovfuns[ curr ];
+    fun = ovfuns[curr];
     alist = SymFuncArgList( fun );
     alist->type_list[0] = type;
     alist->type_list[1] = type;
@@ -321,7 +321,7 @@ static void overloadColon(      // OVERLOAD COLON OPERATOR
 
     type1 = olinf->left.node_type;
     type2 = olinf->right.node_type;
-    mask = colonTable[ colonIndex( type1 ) ][ colonIndex( type2 ) ];
+    mask = colonTable[colonIndex( type1 )][colonIndex( type2 )];
     if( mask & COLON_OP1 ) {
         colonFun( olinf, curr, type1 );
     }
@@ -366,11 +366,11 @@ static void scalarOperators(    // FIND SYMBOLS FOR SCALAR OPERATORS
             if( olinf->have_class_type ) {
                 for( curr = 0; curr < MAX_FUN_PROTOS; ++ curr ) {
                     OP_MASK fun_mask;
-                    fun_mask = opfun_mask[ curr ];
+                    fun_mask = opfun_mask[curr];
                     if( fun_mask & OPM_RR ) {
                         overloadColon( olinf, curr );
                     } else if( olinf->mask & fun_mask ) {
-                        RingAppend( &olinf->scalars, ovfuns[ curr ] );
+                        RingAppend( &olinf->scalars, ovfuns[curr] );
                     }
                 }
             }
@@ -380,11 +380,11 @@ static void scalarOperators(    // FIND SYMBOLS FOR SCALAR OPERATORS
                 if( !complex_assign || ( complex_assign && (olinf->mask & OPM_REF_MASK) ) ) {
                     for( curr = 0; curr < MAX_FUN_PROTOS; ++ curr ) {
                         OP_MASK fun_mask;
-                        fun_mask = opfun_mask[ curr ];
+                        fun_mask = opfun_mask[curr];
                         if( olinf->mask & fun_mask ) {
                             if( ( olinf->mask & fun_mask ) != OPM_ASSIGN ) {
                             // not just assign matching
-                                RingAppend( &olinf->scalars, ovfuns[ curr ] );
+                                RingAppend( &olinf->scalars, ovfuns[curr] );
                             }
                         }
                     }
@@ -647,11 +647,11 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     InitArgList( &alist.base );
     zero_node = NULL;
     ptlist[0] = olinf->left.operand;
-    alist.base.type_list[ 0 ] = olinf->left.node_type;
+    alist.base.type_list[0] = olinf->left.node_type;
     if( olinf->flags & PTO_BINARY ) {
         if( olinf->mask & OPM_ASSIGN ) {
             ptlist[1] = olinf->right.operand;
-            alist.base.type_list[ 1 ] = olinf->right.node_type;
+            alist.base.type_list[1] = olinf->right.node_type;
             num_args = 2;
         } else if( olinf->mask & OPM_LT ) {
             num_args = 1;
@@ -660,14 +660,14 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                 olinf->scalars = NULL;
             }
             ptlist[1] = olinf->right.operand;
-            alist.base.type_list[ 1 ] = olinf->right.node_type;
+            alist.base.type_list[1] = olinf->right.node_type;
             num_args = 2;
         }
     } else if( olinf->mask & OPM_POST ) {
         zero_node = NodeZero();
         setupOVOP( olinf, zero_node, &olinf->right );
         ptlist[1] = olinf->right.operand;
-        alist.base.type_list[ 1 ] = olinf->right.node_type;
+        alist.base.type_list[1] = olinf->right.node_type;
         num_args = 2;
     } else {
         num_args = 1;
@@ -694,10 +694,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                 if( next == NULL ) break;
                 if( next->name != NULL ) {
                     have_user_defined = true;
-                } else if( op_basic_arg[ next->u.scalar_order ][ 0 ] ==
-                           TYP_POINTER
-                        && op_basic_arg[ next->u.scalar_order ][ 1 ] ==
-                           TYP_POINTER ) {
+                } else if( op_basic_arg[next->u.scalar_order][0] == TYP_POINTER
+                        && op_basic_arg[next->u.scalar_order][1] == TYP_POINTER ) {
                     // the (void *, void *) was one of the ambiguous ones
                     have_void = true;
                 }
@@ -711,9 +709,9 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             FnovFreeDiag( &fnov_diag );
             for( i = 0; i < MAX_FUN_PROTOS_EXTRA; i++ ) {
                 OP_MASK fun_mask;
-                fun_mask = opfun_mask_extra[ i ];
+                fun_mask = opfun_mask_extra[i];
                 if( olinf->mask & fun_mask ) {
-                    RingAppend( &olinf->scalars, ovfuns_extra[ i ] );
+                    RingAppend( &olinf->scalars, ovfuns_extra[i] );
                 }
             }
             ovret = OpOverloadedLimitDiag( &fun
@@ -753,7 +751,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         }
     }
     switch( ovret ) {
-      case FNOV_AMBIGUOUS:
+    case FNOV_AMBIGUOUS:
       { FNOV_LIST* amb_list;    // - ambiguity list
         SYMBOL next;            // - next symbol
         fun = NULL;
@@ -789,9 +787,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             ScopeFreeResult( olinf->result_nonmem_namespace );
             break;
         }
-        // drops thru
-      }
-      case FNOV_NONAMBIGUOUS :
+      } /* fall through */
+    case FNOV_NONAMBIGUOUS :
         if( fun->id == SC_MEMBER ) {
             ExtraRptIncrementCtr( ctrResolveMember );
             if( olinf->expr->cgop == CO_EQUAL
@@ -815,7 +812,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             ScopeFreeResult( olinf->result_mem );
         }
         break;
-      case FNOV_NO_MATCH:
+    case FNOV_NO_MATCH:
         ExtraRptIncrementCtr( ctrResolveNone );
         ScopeFreeResult( olinf->result_mem );
         ScopeFreeResult( olinf->result_nonmem );
@@ -927,10 +924,10 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
 
     node = PTreeOp( &operand );
     switch( NodeAddrOfFun( node, &fnode ) ) {
-      default :
+    default :
         ok = false;
         break;
-      case ADDR_FN_ONE :
+    case ADDR_FN_ONE :
         if( SymIsThisFuncMember( fnode->u.symcg.symbol ) ) {
             PTreeErrorExprSymInf( node
                                 , ERR_ADDR_NONSTAT_MEMBER_FUNC
@@ -941,7 +938,7 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
             ok = false;
         }
         break;
-      case ADDR_FN_MANY :
+    case ADDR_FN_MANY :
         PTreeErrorExprSymInf( node
                             , ERR_ADDR_OF_OVERLOADED_FUN
                             , fnode->u.symcg.symbol );
@@ -1007,7 +1004,7 @@ static TYPE getOperandType(     // GET OPERAND TYPE
     TYPE type;                  // - manufactured type
 
     switch( id ) {
-      case TYP_POINTER :
+    case TYP_POINTER :
         if( ctl & GETOP_CONST ) {
             if( ctl & GETOP_VOLATILE ) {
                 // const volatile
@@ -1036,10 +1033,10 @@ static TYPE getOperandType(     // GET OPERAND TYPE
             }
         }
         break;
-      case TYP_MEMBER_POINTER :
+    case TYP_MEMBER_POINTER :
         type = TypeGetCache( TYPC_VOID_MEMBER_PTR );
         break;
-      default :
+    default :
         type = GetBasicType( id );
         break;
     }
@@ -1076,7 +1073,7 @@ static void overloadOperatorInit( // INITIALIZATION
             CheckUniqueType( fn_type );    // - don't use CheckDupType
         } else {
             GETOP_CONTROL ctl;
-            arg1 = op_basic_arg[ arg ][ 0 ];
+            arg1 = op_basic_arg[arg][0];
             retn_type = getOperandType( arg1, GETOP_CONST );
             if( mask & OPM_ASSIGN ) {
                 ctl = GETOP_CONST;
@@ -1091,7 +1088,7 @@ static void overloadOperatorInit( // INITIALIZATION
                 arg1_type = MakeReferenceTo( arg1_type );
                 retn_type = MakeReferenceTo( retn_type );
             }
-            arg2 = op_basic_arg[ arg ][ 1 ];
+            arg2 = op_basic_arg[arg][1];
             if( arg2 == TYP_MAX ) {
                 fn_type = MakeSimpleFunction( retn_type
                                             , arg1_type
@@ -1111,7 +1108,7 @@ static void overloadOperatorInit( // INITIALIZATION
         fun = AllocSymbol();
         fun->sym_type = fn_type;
         fun->u.scalar_order = arg;
-        ovfuns[ arg ] = fun;
+        ovfuns[arg] = fun;
     }
     if( CompFlags.extensions_enabled ) {
         // initializes extra function needed to implement extension for
@@ -1119,14 +1116,14 @@ static void overloadOperatorInit( // INITIALIZATION
         for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
             mask = opfun_mask_extra[arg];
 
-            arg1 = op_basic_arg_extra[ arg ][ 0 ];
+            arg1 = op_basic_arg_extra[arg][0];
             arg1_type = getOperandType( arg1, extra_ctl[arg] );
 
             fn_type = MakeSimpleFunction( arg1_type, arg1_type, arg1_type, NULL );
             fun = AllocSymbol();
             fun->sym_type = fn_type;
             fun->u.scalar_order = arg;
-            ovfuns_extra[ arg ] = fun;
+            ovfuns_extra[arg] = fun;
         }
     }
     ExtraRptRegisterCtr( &ctrBoolConv,      "# Boolean Coversions" );
@@ -1151,14 +1148,14 @@ static void overloadOperatorFini( // COMPLETION
     /* unused parameters */ (void)defn;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        if( ovfuns[ arg ] != NULL ) {
-            FreeSymbol( ovfuns[ arg ] );
+        if( ovfuns[arg] != NULL ) {
+            FreeSymbol( ovfuns[arg] );
         }
     }
     if( CompFlags.extensions_enabled ) {
         for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-            if( ovfuns_extra[ arg ] != NULL ) {
-                FreeSymbol( ovfuns_extra[ arg ] );
+            if( ovfuns_extra[arg] != NULL ) {
+                FreeSymbol( ovfuns_extra[arg] );
             }
         }
     }
@@ -1172,10 +1169,10 @@ pch_status PCHWriteOperatorOverloadData( void )
     unsigned arg;
 
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
-        SymbolPCHWrite( ovfuns[ arg ] );
+        SymbolPCHWrite( ovfuns[arg] );
     }
     for( arg = 0; arg < MAX_FUN_PROTOS_EXTRA; ++arg ) {
-        SymbolPCHWrite( ovfuns_extra[ arg ] );
+        SymbolPCHWrite( ovfuns_extra[arg] );
     }
     return( PCHCB_OK );
 }

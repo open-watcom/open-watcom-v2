@@ -315,15 +315,15 @@ DT_METHOD DtmDirect(            // CONVERT DTOR METHOD TO DIRECT COUNTERPART
     DT_METHOD dtm )             // - default method
 {
     switch( dtm ) {
-      DbgDefault( "DtmDirect -- bad method" );
-      case DTM_DIRECT :
-      case DTM_DIRECT_SMALL :
+    DbgDefault( "DtmDirect -- bad method" );
+    case DTM_DIRECT :
+    case DTM_DIRECT_SMALL :
         break;
-      case DTM_TABLE_SMALL :
+    case DTM_TABLE_SMALL :
         dtm = DTM_DIRECT_SMALL;
         break;
-      case DTM_DIRECT_TABLE :
-      case DTM_TABLE :
+    case DTM_DIRECT_TABLE :
+    case DTM_TABLE :
         dtm = DTM_DIRECT;
         break;
     }
@@ -619,12 +619,12 @@ static void addDtorArgs(        // ADD DTOR ARGUMENTS
 
     expr = CGInteger( cdtor, TY_UNSIGNED );
     switch( PcCallImpl( dtor->sym_type ) ) {
-      case CALL_IMPL_REV_CPP :
-      case CALL_IMPL_REV_C :
+    case CALL_IMPL_REV_CPP :
+    case CALL_IMPL_REV_C :
         addArgument( handle, var, TY_POINTER );
         addArgument( handle, expr, TY_UNSIGNED );
         break;
-      default :
+    default :
         addArgument( handle, expr, TY_UNSIGNED );
         addArgument( handle, var, TY_POINTER );
         break;
@@ -994,46 +994,46 @@ TYPE TypeFromCgType(            // GET C++ TYPE FOR cg_type
     TYPE type;                  // - C++ type
 
     switch( cgtype ) {
-      case TY_UINT_1 :
+    case TY_UINT_1 :
         type = GetBasicType( TYP_UCHAR );
         break;
-      case TY_INT_1 :
+    case TY_INT_1 :
         type = GetBasicType( TYP_SCHAR );
         break;
-      case TY_UINT_2 :
+    case TY_UINT_2 :
         type = GetBasicType( TYP_USHORT );
         break;
-      case TY_INT_2 :
+    case TY_INT_2 :
         type = GetBasicType( TYP_SSHORT );
         break;
-      case TY_UINT_4 :
-      #if( TARGET_INT == 4 )
+    case TY_UINT_4 :
+#if( TARGET_INT == 4 )
         type = GetBasicType( TYP_UINT );
-      #else
+#else
         type = GetBasicType( TYP_ULONG );
-      #endif
+#endif
         break;
-      case TY_INT_4 :
-      #if( TARGET_INT == 4 )
+    case TY_INT_4 :
+#if( TARGET_INT == 4 )
         type = GetBasicType( TYP_SINT );
-      #else
+#else
         type = GetBasicType( TYP_SLONG );
-      #endif
+#endif
         break;
-      case TY_INT_8 :
+    case TY_INT_8 :
         type = GetBasicType( TYP_SLONG64 );
         break;
-      case TY_UINT_8 :
+    case TY_UINT_8 :
         type = GetBasicType( TYP_ULONG64 );
         break;
-      case TY_BOOLEAN :
-      case TY_INTEGER :
+    case TY_BOOLEAN :
+    case TY_INTEGER :
         type = GetBasicType( TYP_SINT );
         break;
-      case TY_UNSIGNED :
+    case TY_UNSIGNED :
         type = GetBasicType( TYP_UINT );
         break;
-      default :
+    default :
         type = MakeInternalType( BETypeLength( cgtype ) );
         break;
     }

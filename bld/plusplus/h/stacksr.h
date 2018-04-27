@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Prototype for saferecurse 
+* Description:  Prototype for saferecurse
 *
 ****************************************************************************/
 
@@ -33,7 +33,7 @@ typedef void *(*func_sr)(void *);
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
-#pragma aux SafeRecurseCpp parm caller [ eax ebx ecx edx ]; /* just to be sure! */
+#pragma aux SafeRecurseCpp parm caller [eax ebx ecx edx]; /* just to be sure! */
 
 #else
 

@@ -214,19 +214,19 @@ static CNV_RETN ctorFindDiag(   // FIND CONSTRUCTOR FOR ARGUMENT LIST
     }
     retn = CNV_ERR;
     switch( ovret ) {
-      case FNOV_ERR :
+    case FNOV_ERR :
         retn = CNV_ERR;
         break;
-      case FNOV_NONAMBIGUOUS :
+    case FNOV_NONAMBIGUOUS :
         retn = CNV_OK;
         break;
-      case FNOV_NO_MATCH :
+    case FNOV_NO_MATCH :
         retn = CNV_IMPOSSIBLE;
         break;
-      case FNOV_AMBIGUOUS :
+    case FNOV_AMBIGUOUS :
         retn = CNV_AMBIGUOUS;
         break;
-      DbgDefault( "unexpected return from ctorExplicitDiag" );
+    DbgDefault( "unexpected return from ctorExplicitDiag" );
     }
     return retn;
 }
@@ -295,7 +295,7 @@ static CNV_RETN analyseCtorClassDiag( // ANALYSE A CLASS CTOR
                        , ctor
                        , fnov_diag );
     switch( retn ) {
-      case CNV_OK :
+    case CNV_OK :
         node = NodeConvertCallArgList( node
                                      , count
                                      , (*ctor)->sym_type
@@ -304,21 +304,21 @@ static CNV_RETN analyseCtorClassDiag( // ANALYSE A CLASS CTOR
             retn = CNV_ERR;
         }
         break;
-      case CNV_AMBIGUOUS :
+    case CNV_AMBIGUOUS :
         if( fnov_diag != NULL ) {
             CallDiagAmbiguous( node, ERR_CTOR_AMBIGUOUS, fnov_diag );
             retn = CNV_ERR;
         }
         break;
-      case CNV_IMPOSSIBLE :
+    case CNV_IMPOSSIBLE :
         if( count == 1
-         && StructType( initial->type ) == type
-         && OMR_CLASS_VAL == ObjModelArgument( type ) ) {
+          && StructType( initial->type ) == type
+          && OMR_CLASS_VAL == ObjModelArgument( type ) ) {
             retn = CNV_OK;
             break;
         }
-        // drops thru
-      default :
+        /* fall through */
+    default :
         if( initial != NULL ) {
             ConversionTypesSet( NodeType( initial ), type );
         }
@@ -363,14 +363,14 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
     expr = *initial;
     base_type = TypedefModifierRemoveOnly( type );
     switch( base_type->id ) {
-      default :
+    default :
         retn = CNV_IMPOSSIBLE;
         break;
-      case TYP_ERROR:
+    case TYP_ERROR:
         /* we've already diagnosed something somewhere */
         retn = CNV_ERR;
         break;
-      case TYP_BITFIELD :
+    case TYP_BITFIELD :
         return analyseTypeCtorDiag( scope
                                   , base_type->of
                                   , reqd_cnv
@@ -378,35 +378,37 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
                                   , initial
                                   , fnov_diag );
         break;
-      case TYP_FUNCTION :
-      case TYP_VOID :
+    case TYP_FUNCTION :
+    case TYP_VOID :
         if( NULL == *initial ) {
             retn = CNV_IMPOSSIBLE;
             break;
         }
-        // drops thru
-      case TYP_BOOL :
-      case TYP_CHAR :
-      case TYP_SCHAR :
-      case TYP_UCHAR :
-      case TYP_WCHAR :
-      case TYP_SSHORT :
-      case TYP_USHORT :
-      case TYP_SINT :
-      case TYP_UINT :
-      case TYP_SLONG :
-      case TYP_ULONG :
-      case TYP_SLONG64 :
-      case TYP_ULONG64 :
-      case TYP_FLOAT :
-      case TYP_DOUBLE :
-      case TYP_LONG_DOUBLE :
-      case TYP_ENUM :
-      case TYP_POINTER :
-      case TYP_MEMBER_POINTER :
+        /* fall through */
+    case TYP_BOOL :
+    case TYP_CHAR :
+    case TYP_SCHAR :
+    case TYP_UCHAR :
+    case TYP_WCHAR :
+    case TYP_SSHORT :
+    case TYP_USHORT :
+    case TYP_SINT :
+    case TYP_UINT :
+    case TYP_SLONG :
+    case TYP_ULONG :
+    case TYP_SLONG64 :
+    case TYP_ULONG64 :
+    case TYP_FLOAT :
+    case TYP_DOUBLE :
+    case TYP_LONG_DOUBLE :
+    case TYP_ENUM :
+    case TYP_POINTER :
+    case TYP_MEMBER_POINTER :
         retn = single_arg( initial );
-        if( retn == CNV_ERR ) break;
-        if( *initial == NULL ) break;
+        if( retn == CNV_ERR )
+            break;
+        if( *initial == NULL )
+            break;
         *initial = CastImplicit( *initial, base_type, CNV_INIT, &diagCtor );
         if( PT_ERROR == (*initial)->op ) {
             retn = CNV_ERR;
@@ -414,10 +416,10 @@ static CNV_RETN analyseTypeCtorDiag( // ANALYSE CONSTRUCTOR FOR A TYPE
             retn = CNV_OK;
         }
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         retn = analyseCtorClassDiag( base_type, scope, ctor, expr, initial, fnov_diag );
         break;
-      case TYP_ARRAY :
+    case TYP_ARRAY :
         if( expr != NULL ) {
             PTreeErrorExpr( expr, ERR_CANT_INIT_NEW_ARRAY );
             retn = CNV_IMPOSSIBLE;
@@ -504,27 +506,27 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         AnalyseNew()
     */
     switch( base_type->id ) {
-      case TYP_BOOL :
-      case TYP_CHAR :
-      case TYP_SCHAR :
-      case TYP_UCHAR :
-      case TYP_WCHAR :
-      case TYP_SSHORT :
-      case TYP_USHORT :
-      case TYP_SINT :
-      case TYP_UINT :
-      case TYP_SLONG :
-      case TYP_ULONG :
-      case TYP_SLONG64 :
-      case TYP_ULONG64 :
-      case TYP_FLOAT :
-      case TYP_DOUBLE :
-      case TYP_LONG_DOUBLE :
-      case TYP_ENUM :
-      case TYP_BITFIELD :
-      case TYP_FUNCTION :
-      case TYP_POINTER :
-      case TYP_MEMBER_POINTER :
+    case TYP_BOOL :
+    case TYP_CHAR :
+    case TYP_SCHAR :
+    case TYP_UCHAR :
+    case TYP_WCHAR :
+    case TYP_SSHORT :
+    case TYP_USHORT :
+    case TYP_SINT :
+    case TYP_UINT :
+    case TYP_SLONG :
+    case TYP_ULONG :
+    case TYP_SLONG64 :
+    case TYP_ULONG64 :
+    case TYP_FLOAT :
+    case TYP_DOUBLE :
+    case TYP_LONG_DOUBLE :
+    case TYP_ENUM :
+    case TYP_BITFIELD :
+    case TYP_FUNCTION :
+    case TYP_POINTER :
+    case TYP_MEMBER_POINTER :
         if( initial == NULL ) {
             initial = NodeZero();
         }
@@ -559,7 +561,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
         }
         break;
-      case TYP_CLASS :
+    case TYP_CLASS :
         if( ctor == NULL ) {
             node = ClassDefaultCopy( this_node, bareArg( initial ) );
         } else {
@@ -655,11 +657,11 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
         }
         break;
-      case TYP_VOID :
+    case TYP_VOID :
         node = NodeUnary( CO_TRASH_EXPR, node );
         node->type = base_type;
         break;
-      default :
+    default :
         node = this_node;
         break;
     }

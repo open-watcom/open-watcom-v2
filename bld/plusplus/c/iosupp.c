@@ -236,7 +236,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
             use_defaults = false;
             break;
         }
-        // fall down
+        /* fall through */
     case OFT_PPO:
     case OFT_OBJ:
     case OFT_MBR:

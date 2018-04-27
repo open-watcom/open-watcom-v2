@@ -163,18 +163,18 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     declareParameter( fctl->cdtor_sym );
     declareParameter( ret_sym );
     switch( PcCallImpl( fn_type ) ) {
-      case CALL_IMPL_REV_CPP :
-      case CALL_IMPL_REV_C :
+    case CALL_IMPL_REV_CPP :
+    case CALL_IMPL_REV_C :
         for(;;) {
             psym = VstkPop( &sym_stack );
             if( psym == NULL ) break;
             declareParameter( *psym );
         }
         break;
-      case CALL_IMPL_CPP :
-      case CALL_IMPL_C :
-      case CALL_IMPL_ELL_CPP :
-      case CALL_IMPL_ELL_C :
+    case CALL_IMPL_CPP :
+    case CALL_IMPL_C :
+    case CALL_IMPL_ELL_CPP :
+    case CALL_IMPL_ELL_C :
       { unsigned index;             // - parameter index
         unsigned max_parms;         // - # parameters
         SYMBOL *psym1;              // - addr[ parameter symbol ]
@@ -237,14 +237,14 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
         return;
     }
     switch( sym->id ) {
-      case SC_AUTO:
-      case SC_REGISTER:
+    case SC_AUTO:
+    case SC_REGISTER:
         if( SymIsCatchAlias( sym ) ) {
             if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
                 SYMBOL base = SymDeAlias( sym );
                 switch( base->id ) {
-                  case SC_AUTO:
-                  case SC_REGISTER:
+                case SC_AUTO:
+                case SC_REGISTER:
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
                             if( GenSwitches & DBG_DF ){
@@ -276,7 +276,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-      case SC_STATIC:
+    case SC_STATIC:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( ! SymIsAnonymous( sym ) ) {
@@ -292,7 +292,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
             }
         }
         break;
-      case SC_TYPEDEF:
+    case SC_TYPEDEF:
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & (DBG_CV | DBG_DF ) ){

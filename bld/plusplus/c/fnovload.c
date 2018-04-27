@@ -1054,46 +1054,48 @@ static OV_RESULT compareArgument(
                   retn = WP13332( first_type, second_type, retn );
             }
         }
-    } else switch( firstrank ) {
-    case OV_RANK_NO_MATCH:
-    case OV_RANK_ELLIPSIS:
-    case OV_RANK_UD_CONV_AMBIG:
-        retn = OV_CMP_SAME;
-        break;
-    case OV_RANK_UD_CONV:
-        retn = compareScalar( &first->u.ud.out
-                            , first_type
-                            , &second->u.ud.out
-                            , second_type
-                            , true
-                            , control );
-        break;
-    case OV_RANK_STD_CONV_DERIV:
-        if( ( first_type != NULL ) && ( second_type != NULL ) ) {
-            retn = compareDerived( *first_type, *second_type );
-            if( retn != OV_CMP_SAME ) {
-                break;
+    } else {
+        switch( firstrank ) {
+        case OV_RANK_NO_MATCH:
+        case OV_RANK_ELLIPSIS:
+        case OV_RANK_UD_CONV_AMBIG:
+            retn = OV_CMP_SAME;
+            break;
+        case OV_RANK_UD_CONV:
+            retn = compareScalar( &first->u.ud.out
+                                , first_type
+                                , &second->u.ud.out
+                                , second_type
+                                , true
+                                , control );
+            break;
+        case OV_RANK_STD_CONV_DERIV:
+            if( ( first_type != NULL ) && ( second_type != NULL ) ) {
+                retn = compareDerived( *first_type, *second_type );
+                if( retn != OV_CMP_SAME ) {
+                    break;
+                }
             }
+            // two target types are not releated
+            // otherwise, do the following comparison
+        case OV_RANK_STD_CONV_VOID:
+        case OV_RANK_STD_CONV:
+        case OV_RANK_STD_BOOL:
+        case OV_RANK_PROMOTION:
+        case OV_RANK_TRIVIAL:
+            retn = compareScalar( &first->u.no_ud
+                                 , first_type
+                                 , &second->u.no_ud
+                                 , second_type
+                                 , false
+                                 , control);
+            break;
+        case OV_RANK_SAME:
+        case OV_RANK_EXACT:
+            retn = OV_CMP_SAME;
+            break;
+        DbgDefault( "funny rank\n" );
         }
-        // two target types are not releated
-        // otherwise, do the following comparison
-    case OV_RANK_STD_CONV_VOID:
-    case OV_RANK_STD_CONV:
-    case OV_RANK_STD_BOOL:
-    case OV_RANK_PROMOTION:
-    case OV_RANK_TRIVIAL:
-        retn = compareScalar( &first->u.no_ud
-                             , first_type
-                             , &second->u.no_ud
-                             , second_type
-                             , false
-                             , control);
-        break;
-    case OV_RANK_SAME:
-    case OV_RANK_EXACT:
-        retn = OV_CMP_SAME;
-        break;
-    DbgDefault( "funny rank\n" );
     }
     return( retn );
 }

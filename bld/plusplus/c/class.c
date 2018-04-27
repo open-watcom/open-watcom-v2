@@ -1222,7 +1222,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     }
     SrcFileSetTokenLocn( &locn );
     CurToken = T_RIGHT_BRACE;
-    strcpy( Buffer, Tokens[ T_RIGHT_BRACE ] );
+    strcpy( Buffer, Tokens[T_RIGHT_BRACE] );
 }
 
 static void checkClassStatus( CLASS_DATA *data )
@@ -2013,7 +2013,7 @@ static bool hasNonRefArg( SYMBOL sym, TYPE class_type )
         return( false );
     }
     for( arg_index = 0; arg_index < args->num_args; ++arg_index ) {
-        arg_type = args->type_list[ arg_index ];
+        arg_type = args->type_list[arg_index];
         test_type = ClassTypeForType( arg_type );
         if( test_type != NULL ) {
             if( test_type == class_type ) {
@@ -3043,7 +3043,7 @@ void ClassMakeUniqueName( TYPE class_type, NAME signature )
     SYMBOL stop;
     SYMBOL curr;
     CLASSINFO *info;
-    char buff[ 2 + sizeof( uint_32 ) * 2 + 1 ];
+    char buff[2 + sizeof( uint_32 ) * 2 + 1];
 
     info = class_type->u.c.info;
     if( info->name != NULL ) {
